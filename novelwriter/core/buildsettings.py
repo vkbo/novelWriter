@@ -67,7 +67,7 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, str | int | float | bool]] = {
     "headings.centerPart":     (bool, True),
     "headings.centerChapter":  (bool, False),
     "headings.centerScene":    (bool, False),
-    "headings.breakTitle":     (bool, True),
+    "headings.breakTitle":     (bool, False),
     "headings.breakPart":      (bool, True),
     "headings.breakChapter":   (bool, True),
     "headings.breakScene":     (bool, False),

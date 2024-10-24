@@ -522,12 +522,17 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
     nwGUI.mainMenu.aInsShort.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%Short: \n"
 
-    # Insert Break or Space
-    # =====================
+    # Breaks and Vertical Space
+    # =========================
 
     nwGUI.docEditor.setPlainText("### Stuff\n")
     nwGUI.mainMenu.aInsNewPage.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "[newpage]\n### Stuff\n"
+
+    nwGUI.docEditor.setPlainText("Line OneLine Two\n")
+    nwGUI.docEditor.setCursorPosition(8)
+    nwGUI.mainMenu.aInsLineBreak.activate(QAction.ActionEvent.Trigger)
+    assert nwGUI.docEditor.getText() == "Line One[br]Line Two\n"
 
     nwGUI.docEditor.setPlainText("### Stuff\n")
     nwGUI.mainMenu.aInsVSpaceS.activate(QAction.ActionEvent.Trigger)

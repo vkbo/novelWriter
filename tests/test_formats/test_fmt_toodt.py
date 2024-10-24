@@ -281,6 +281,7 @@ def testFmtToOdt_ConvertHeaders(mockGUI):
 
     # Header 1
     odt._text = "# Title\n"
+    odt.setPartitionFormat(f"Part{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     odt.tokenizeText()
     odt.initDocument()
     odt.doConvert()
@@ -288,12 +289,14 @@ def testFmtToOdt_ConvertHeaders(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:h text:style-name="P1" text:outline-level="1">Title</text:h>'
+        '<text:h text:style-name="P1" text:outline-level="1">Part'
+        '<text:line-break />Title</text:h>'
         '</office:text>'
     )
 
     # Header 2
-    odt._text = "## Chapter\n"
+    odt._text = "## Title\n"
+    odt.setChapterFormat(f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     odt.tokenizeText()
     odt.initDocument()
     odt.doConvert()
@@ -301,12 +304,14 @@ def testFmtToOdt_ConvertHeaders(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:h text:style-name="P2" text:outline-level="2">Chapter</text:h>'
+        '<text:h text:style-name="P2" text:outline-level="2">Chapter 1'
+        '<text:line-break />Title</text:h>'
         '</office:text>'
     )
 
     # Header 3
-    odt._text = "### Scene\n"
+    odt._text = "### Title\n"
+    odt.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     odt.tokenizeText()
     odt.initDocument()
     odt.doConvert()
@@ -314,12 +319,13 @@ def testFmtToOdt_ConvertHeaders(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene 1'
+        '<text:line-break />Title</text:h>'
         '</office:text>'
     )
 
     # Header 4
-    odt._text = "#### Section\n"
+    odt._text = "#### Title\n"
     odt.tokenizeText()
     odt.initDocument()
     odt.doConvert()
@@ -327,7 +333,7 @@ def testFmtToOdt_ConvertHeaders(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_20_4" text:outline-level="4">Section</text:h>'
+        '<text:h text:style-name="Heading_20_4" text:outline-level="4">Title</text:h>'
         '</office:text>'
     )
 

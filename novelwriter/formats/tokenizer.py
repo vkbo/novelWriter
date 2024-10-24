@@ -56,7 +56,6 @@ class ComStyle(NamedTuple):
     textClass: str = ""
 
 
-B_EMPTY: T_Block = (BlockTyp.EMPTY, "", "", [], BlockFmt.NONE)
 COMMENT_STYLE = {
     nwComment.PLAIN:    ComStyle("Comment", "comment", "comment"),
     nwComment.IGNORE:   ComStyle(),
@@ -67,13 +66,12 @@ COMMENT_STYLE = {
     nwComment.COMMENT:  ComStyle(),
     nwComment.STORY:    ComStyle("", "modifier", "note"),
 }
-
-# Lookups
 HEADINGS = [BlockTyp.TITLE, BlockTyp.HEAD1, BlockTyp.HEAD2, BlockTyp.HEAD3, BlockTyp.HEAD4]
 SKIP_INDENT = [
     BlockTyp.TITLE, BlockTyp.HEAD1, BlockTyp.HEAD2, BlockTyp.HEAD2, BlockTyp.HEAD3,
     BlockTyp.HEAD4, BlockTyp.SEP, BlockTyp.SKIP,
 ]
+B_EMPTY: T_Block = (BlockTyp.EMPTY, "", "", [], BlockFmt.NONE)
 
 
 class Tokenizer(ABC):
@@ -182,8 +180,6 @@ class Tokenizer(ABC):
             (REGEX_PATTERNS.markdownBold,   [0, TextFmt.B_B, 0, TextFmt.B_E]),
             (REGEX_PATTERNS.markdownStrike, [0, TextFmt.D_B, 0, TextFmt.D_E]),
         ]
-        self._rxShortCodes = REGEX_PATTERNS.shortcodePlain
-        self._rxShortCodeVals = REGEX_PATTERNS.shortcodeValue
 
         self._shortCodeFmt = {
             nwShortcode.ITALIC_O: TextFmt.I_B,   nwShortcode.ITALIC_C: TextFmt.I_E,
@@ -456,20 +452,22 @@ class Tokenizer(ABC):
         self._text = ""
         self._handle = None
 
-        if (tItem := self._project.tree[tHandle]) and tItem.isRootType():
+        if (item := self._project.tree[tHandle]) and item.isRootType():
             self._handle = tHandle
+            style = BlockFmt.CENTRE
             if self._isFirst:
-                textAlign = BlockFmt.CENTRE
                 self._isFirst = False
             else:
-                textAlign = BlockFmt.PBB | BlockFmt.CENTRE
+                style |= BlockFmt.PBB
 
-            trNotes = self._localLookup("Notes")
-            title = f"{trNotes}: {tItem.itemName}"
-            self._blocks = []
-            self._blocks.append((
-                BlockTyp.TITLE, f"{self._handle}:T0001", title, [], textAlign
-            ))
+            title = item.itemName
+            if not item.isNovelLike():
+                notes = self._localLookup("Notes")
+                title = f"{notes}: {title}"
+
+            self._blocks = [(
+                BlockTyp.TITLE, f"{self._handle}:T0001", title, [], style
+            )]
             if self._keepRaw:
                 self._raw.append(f"#! {title}\n\n")
 
@@ -523,25 +521,30 @@ class Tokenizer(ABC):
         isNovel = self._isNovel
         keepRaw = self._keepRaw
         doJustify = self._doJustify
+        keepBreaks = self._keepBreaks
         indentFirst = self._indentFirst
         firstIndent = self._firstIndent
 
         if self._isNovel:
             self._hFormatter.setHandle(self._handle)
 
+        # Replace all instances of [br] with a placeholder character
+        text = REGEX_PATTERNS.lineBreak.sub("\uffff", self._text)
+
         nHead = 0
         breakNext = False
-        tmpMarkdown = []
+        rawText = []
         tHandle = self._handle or ""
         tBlocks: list[T_Block] = [B_EMPTY]
-        for aLine in self._text.splitlines():
+        for bLine in text.splitlines():
+            aLine = bLine.replace("\uffff", "")  # Remove placeholder characters
             sLine = aLine.strip().lower()
 
             # Check for blank lines
             if not sLine:
                 tBlocks.append(B_EMPTY)
                 if keepRaw:
-                    tmpMarkdown.append("\n")
+                    rawText.append("\n")
                 continue
 
             if breakNext:
@@ -607,13 +610,13 @@ class Tokenizer(ABC):
                         BlockTyp.COMMENT, "", tLine, tFmt, sAlign
                     ))
                     if keepRaw:
-                        tmpMarkdown.append(f"{aLine}\n")
+                        rawText.append(f"{aLine}\n")
 
                 elif cStyle == nwComment.FOOTNOTE:
                     tLine, tFmt = self._extractFormats(cText, skip=TextFmt.FNOTE)
                     self._footnotes[f"{tHandle}:{cKey}"] = (tLine, tFmt)
                     if keepRaw:
-                        tmpMarkdown.append(f"{aLine}\n")
+                        rawText.append(f"{aLine}\n")
 
             elif aLine.startswith("@"):
                 # Keywords
@@ -628,7 +631,7 @@ class Tokenizer(ABC):
                             BlockTyp.KEYWORD, tTag[1:], tLine, tFmt, sAlign
                         ))
                         if keepRaw:
-                            tmpMarkdown.append(f"{aLine}\n")
+                            rawText.append(f"{aLine}\n")
 
             elif aLine.startswith(("# ", "#! ")):
                 # Title or Partition Headings
@@ -664,7 +667,7 @@ class Tokenizer(ABC):
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
                 ))
                 if keepRaw:
-                    tmpMarkdown.append(f"{aLine}\n")
+                    rawText.append(f"{aLine}\n")
 
             elif aLine.startswith(("## ", "##! ")):
                 # (Unnumbered) Chapter Headings
@@ -699,7 +702,7 @@ class Tokenizer(ABC):
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
                 ))
                 if keepRaw:
-                    tmpMarkdown.append(f"{aLine}\n")
+                    rawText.append(f"{aLine}\n")
 
             elif aLine.startswith(("### ", "###! ")):
                 # (Alternative) Scene Headings
@@ -740,7 +743,7 @@ class Tokenizer(ABC):
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
                 ))
                 if keepRaw:
-                    tmpMarkdown.append(f"{aLine}\n")
+                    rawText.append(f"{aLine}\n")
 
             elif aLine.startswith("#### "):
                 # Section Headings
@@ -770,7 +773,7 @@ class Tokenizer(ABC):
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
                 ))
                 if keepRaw:
-                    tmpMarkdown.append(f"{aLine}\n")
+                    rawText.append(f"{aLine}\n")
 
             else:
                 # Text Lines
@@ -786,19 +789,19 @@ class Tokenizer(ABC):
                 alnRight = False
                 indLeft = False
                 indRight = False
-                if aLine.startswith(">>"):
+                if bLine.startswith(">>"):
                     alnRight = True
-                    aLine = aLine[2:].lstrip(" ")
-                elif aLine.startswith(">"):
+                    bLine = bLine[2:].lstrip(" ")
+                elif bLine.startswith(">"):
                     indLeft = True
-                    aLine = aLine[1:].lstrip(" ")
+                    bLine = bLine[1:].lstrip(" ")
 
-                if aLine.endswith("<<"):
+                if bLine.endswith("<<"):
                     alnLeft = True
-                    aLine = aLine[:-2].rstrip(" ")
-                elif aLine.endswith("<"):
+                    bLine = bLine[:-2].rstrip(" ")
+                elif bLine.endswith("<"):
                     indRight = True
-                    aLine = aLine[:-1].rstrip(" ")
+                    bLine = bLine[:-1].rstrip(" ")
 
                 if alnLeft and alnRight:
                     sAlign |= BlockFmt.CENTRE
@@ -813,12 +816,12 @@ class Tokenizer(ABC):
                     sAlign |= BlockFmt.IND_R
 
                 # Process formats
-                tLine, tFmt = self._extractFormats(aLine, hDialog=isNovel)
+                tLine, tFmt = self._extractFormats(bLine, hDialog=isNovel)
                 tBlocks.append((
                     BlockTyp.TEXT, "", tLine, tFmt, sAlign
                 ))
                 if keepRaw:
-                    tmpMarkdown.append(f"{aLine}\n")
+                    rawText.append(f"{aLine}\n")
 
         # If we have content, turn off the first page flag
         if self._isFirst and len(tBlocks) > 1:
@@ -834,8 +837,8 @@ class Tokenizer(ABC):
         # Always add an empty line at the end of the file
         tBlocks.append(B_EMPTY)
         if keepRaw:
-            tmpMarkdown.append("\n")
-            self._raw.append("".join(tmpMarkdown))
+            rawText.append("\n")
+            self._raw.append("".join(rawText))
 
         # Second Pass
         # ===========
@@ -844,7 +847,7 @@ class Tokenizer(ABC):
         # It also ensures that there isn't paragraph spacing between
         # meta data lines for formats that have spacing.
 
-        lineSep = "\n" if self._keepBreaks else " "
+        lineSep = "\n" if keepBreaks else " "
 
         pLines: list[T_Block] = []
         sBlocks: list[T_Block] = []
@@ -894,9 +897,12 @@ class Tokenizer(ABC):
                         # enabled, and there is no alignment, we apply it.
                         if doJustify and not cStyle & BlockFmt.ALIGNED:
                             cStyle |= BlockFmt.JUSTIFY
+
+                        pTxt = pLines[0][2].replace("\uffff", "\n")
                         sBlocks.append((
-                            BlockTyp.TEXT, pLines[0][1], pLines[0][2], pLines[0][3], cStyle
+                            BlockTyp.TEXT, pLines[0][1], pTxt, pLines[0][3], cStyle
                         ))
+
                     elif nLines > 1:
                         # The paragraph contains multiple lines, so we need to
                         # join them according to the line break policy, and
@@ -907,8 +913,11 @@ class Tokenizer(ABC):
                             tLen = len(tTxt)
                             tTxt += f"{aBlock[2]}{lineSep}"
                             tFmt.extend((p+tLen, fmt, key) for p, fmt, key in aBlock[3])
+                            cStyle |= aBlock[4]
+
+                        pTxt = tTxt[:-1].replace("\uffff", "\n")
                         sBlocks.append((
-                            BlockTyp.TEXT, pLines[0][1], tTxt[:-1], tFmt, cStyle
+                            BlockTyp.TEXT, pLines[0][1], pTxt, tFmt, cStyle
                         ))
 
                     # Reset buffer and make sure text indent is on for next pass
@@ -1136,12 +1145,12 @@ class Tokenizer(ABC):
         # Post-process text and format
         result = text
         formats = []
-        for pos, end, fmt, key in reversed(sorted(temp, key=lambda x: x[0])):
+        for pos, end, fmt, meta in reversed(sorted(temp, key=lambda x: x[0])):
             if fmt > 0:
                 if end > pos:
                     result = result[:pos] + result[end:]
-                    formats = [(p+pos-end if p > pos else p, f, k) for p, f, k in formats]
-                formats.insert(0, (pos, fmt, key))
+                    formats = [(p+pos-end if p > pos else p, f, m) for p, f, m in formats]
+                formats.insert(0, (pos, fmt, meta))
 
         return result, formats
 
@@ -1187,6 +1196,7 @@ class HeadingFormatter:
     def apply(self, hFormat: str, text: str, nHead: int) -> str:
         """Apply formatting to a specific heading."""
         hFormat = hFormat.replace(nwHeadFmt.TITLE, text)
+        hFormat = hFormat.replace(nwHeadFmt.BR, "\n")
         hFormat = hFormat.replace(nwHeadFmt.CH_NUM, str(self._chCount))
         hFormat = hFormat.replace(nwHeadFmt.SC_NUM, str(self._scChCount))
         hFormat = hFormat.replace(nwHeadFmt.SC_ABS, str(self._scAbsCount))

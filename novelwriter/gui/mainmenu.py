@@ -570,13 +570,19 @@ class GuiMainMenu(QMenuBar):
             lambda: self.requestDocInsert.emit(nwDocInsert.SHORT)
         )
 
-        # Insert > Symbols
-        self.mInsBreaks = self.insMenu.addMenu(self.tr("Page Break and Space"))
+        # Insert > Breaks and Vertical Space
+        self.mInsBreaks = self.insMenu.addMenu(self.tr("Breaks and Vertical Space"))
 
         # Insert > New Page
         self.aInsNewPage = self.mInsBreaks.addAction(self.tr("Page Break"))
         self.aInsNewPage.triggered.connect(
             lambda: self.requestDocInsert.emit(nwDocInsert.NEW_PAGE)
+        )
+
+        # Insert > Forced Line Break
+        self.aInsLineBreak = self.mInsBreaks.addAction(self.tr("Forced Line Break"))
+        self.aInsLineBreak.triggered.connect(
+            lambda: self.requestDocInsert.emit(nwDocInsert.LINE_BRK)
         )
 
         # Insert > Vertical Space (Single)

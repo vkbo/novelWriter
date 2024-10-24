@@ -1,8 +1,15 @@
 %%~name: Title Page
 %%~path: 7031beac91f75/53b69b83cdafc
 %%~kind: NOVEL/DOCUMENT
-%%~hash: c5dc35d18ecb074a9e41a1410d1bff8021cf0a5b
-%%~date: Unknown/2023-08-25 16:51:52
+%%~hash: 4072adb6d21ff877577f033f19714d9bd01396f3
+%%~date: Unknown/2024-10-24 16:25:44
+
+Jane Smith[br]
+42 Main Street[br]
+1234 Capital City <<
+
+[vspace:5]
+
 #! My Novel
 
 >> **By Jane Smith** <<

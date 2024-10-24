@@ -137,6 +137,7 @@ class nwDocInsert(Enum):
     VSPACE_M  = 9
     LIPSUM    = 10
     FOOTNOTE  = 11
+    LINE_BRK  = 12
 
 
 class nwView(Enum):

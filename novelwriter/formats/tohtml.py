@@ -30,7 +30,7 @@ from pathlib import Path
 from time import time
 
 from novelwriter.common import formatTimeStamp
-from novelwriter.constants import nwHeadFmt, nwHtmlUnicode
+from novelwriter.constants import nwHtmlUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import Tokenizer
@@ -211,23 +211,23 @@ class ToHtml(Tokenizer):
                 lines.append(f"<p{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
             elif tType == BlockTyp.TITLE:
-                tHead = tText.replace(nwHeadFmt.BR, "<br>")
+                tHead = tText.replace("\n", "<br>")
                 lines.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
 
             elif tType == BlockTyp.HEAD1:
-                tHead = tText.replace(nwHeadFmt.BR, "<br>")
+                tHead = tText.replace("\n", "<br>")
                 lines.append(f"<{h1}{h1Cl}{hStyle}>{aNm}{tHead}</{h1}>\n")
 
             elif tType == BlockTyp.HEAD2:
-                tHead = tText.replace(nwHeadFmt.BR, "<br>")
+                tHead = tText.replace("\n", "<br>")
                 lines.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
 
             elif tType == BlockTyp.HEAD3:
-                tHead = tText.replace(nwHeadFmt.BR, "<br>")
+                tHead = tText.replace("\n", "<br>")
                 lines.append(f"<{h3}{hStyle}>{aNm}{tHead}</{h3}>\n")
 
             elif tType == BlockTyp.HEAD4:
-                tHead = tText.replace(nwHeadFmt.BR, "<br>")
+                tHead = tText.replace("\n", "<br>")
                 lines.append(f"<{h4}{hStyle}>{aNm}{tHead}</{h4}>\n")
 
             elif tType == BlockTyp.SEP:

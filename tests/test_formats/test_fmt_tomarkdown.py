@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import pytest
 
+from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.tomarkdown import ToMarkdown
@@ -37,22 +38,25 @@ def testFmtToMarkdown_ConvertHeaders(mockGUI):
     md._isFirst = True
 
     # Header 1
-    md._text = "# Partition\n"
+    md._text = "# Title\n"
+    md.setPartitionFormat(f"Part{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == "# Partition\n\n"
+    assert md._pages[-1] == "# Part - Title\n\n"
 
     # Header 2
-    md._text = "## Chapter Title\n"
+    md._text = "## Title\n"
+    md.setChapterFormat(f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == "## Chapter Title\n\n"
+    assert md._pages[-1] == "## Chapter 1 - Title\n\n"
 
     # Header 3
-    md._text = "### Scene Title\n"
+    md._text = "### Title\n"
+    md.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == "### Scene Title\n\n"
+    assert md._pages[-1] == "### Scene 1 - Title\n\n"
 
     # Header 4
     md._text = "#### Section Title\n"

@@ -47,6 +47,7 @@ def testTextCounting_preProcessText():
         "[vspace:3]\n\n"
         "[New Page]\n\n"
         "[footnote:abcd]\n\n"
+        "[br]\n\n"
         "Dashes\u2013and even longer\u2014dashes.\n\n"
     )
 
@@ -60,7 +61,7 @@ def testTextCounting_preProcessText():
         "#### Heading Four",
         "", "", "",
         "A paragraph.", "",
-        "", "", "", "", "", "",
+        "", "", "", "", "", "", "", "",
         "Dashes and even longer dashes.", ""
     ]
 
@@ -68,7 +69,7 @@ def testTextCounting_preProcessText():
     assert preProcessText(text, keepHeaders=False) == [
         "", "", "",
         "A paragraph.", "",
-        "", "", "", "", "", "",
+        "", "", "", "", "", "", "", "",
         "Dashes and even longer dashes.", ""
     ]
 

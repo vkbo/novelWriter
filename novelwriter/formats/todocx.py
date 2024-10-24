@@ -255,24 +255,19 @@ class ToDocX(Tokenizer):
                 self._processFragments(par, S_NORM, tText, tFormat)
 
             elif tType == BlockTyp.TITLE:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._processFragments(par, S_TITLE, tHead, tFormat)
+                self._processFragments(par, S_TITLE, tText, tFormat)
 
             elif tType == BlockTyp.HEAD1:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._processFragments(par, S_HEAD1, tHead, tFormat)
+                self._processFragments(par, S_HEAD1, tText, tFormat)
 
             elif tType == BlockTyp.HEAD2:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._processFragments(par, S_HEAD2, tHead, tFormat)
+                self._processFragments(par, S_HEAD2, tText, tFormat)
 
             elif tType == BlockTyp.HEAD3:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._processFragments(par, S_HEAD3, tHead, tFormat)
+                self._processFragments(par, S_HEAD3, tText, tFormat)
 
             elif tType == BlockTyp.HEAD4:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._processFragments(par, S_HEAD4, tHead, tFormat)
+                self._processFragments(par, S_HEAD4, tText, tFormat)
 
             elif tType == BlockTyp.SEP:
                 self._processFragments(par, S_SEP, tText)
