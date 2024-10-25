@@ -149,4 +149,11 @@
       <w:szCs w:val="19" />
     </w:rPr>
   </w:style>
+  <w:style w:type="character" w:styleId="InternetLink">
+    <w:name w:val="Hyperlink" />
+    <w:rPr>
+      <w:color w:val="4271ae" />
+      <w:u w:val="single" />
+    </w:rPr>
+  </w:style>
 </w:styles>
