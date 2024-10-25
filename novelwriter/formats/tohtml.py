@@ -49,6 +49,7 @@ HTML_OPENER: dict[int, tuple[int, str]] = {
     TextFmt.SUB_B: (TextFmt.SUB_E, "<sub>"),
     TextFmt.COL_B: (TextFmt.COL_E, "<span style='color: {0}'>"),
     TextFmt.ANM_B: (TextFmt.ANM_E, "<a name='{0}'>"),
+    TextFmt.ARF_B: (TextFmt.ARF_E, "<a href='{0}'>"),
     TextFmt.HRF_B: (TextFmt.HRF_E, "<a href='{0}'>"),
 }
 
@@ -63,6 +64,7 @@ HTML_CLOSER: dict[int, tuple[int, str]] = {
     TextFmt.SUB_E: (TextFmt.SUB_B, "</sub>"),
     TextFmt.COL_E: (TextFmt.COL_B, "</span>"),
     TextFmt.ANM_E: (TextFmt.ANM_B, "</a>"),
+    TextFmt.ARF_E: (TextFmt.ARF_B, "</a>"),
     TextFmt.HRF_E: (TextFmt.HRF_B, "</a>"),
 }
 
@@ -398,7 +400,7 @@ class ToHtml(Tokenizer):
                 if not state.get(fmt, True):
                     if fmt == TextFmt.COL_B and (color := self._classes.get(data)):
                         tags.append((pos, m[1].format(color.name(QtHexRgb))))
-                    elif fmt in (TextFmt.ANM_B, TextFmt.HRF_B):
+                    elif fmt in (TextFmt.ANM_B, TextFmt.ARF_B, TextFmt.HRF_B):
                         tags.append((pos, m[1].format(data or "#")))
                     else:
                         tags.append((pos, m[1]))

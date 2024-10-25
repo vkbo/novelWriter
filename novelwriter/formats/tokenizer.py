@@ -1089,8 +1089,8 @@ class Tokenizer(ABC):
                     for n, bit in enumerate(bits[1:], 2):
                         end = pos + len(bit)
                         fmt.append((pos, TextFmt.COL_B, "tag"))
-                        fmt.append((pos, TextFmt.HRF_B, f"#tag_{bit}".lower()))
-                        fmt.append((end, TextFmt.HRF_E, ""))
+                        fmt.append((pos, TextFmt.ARF_B, f"#tag_{bit}".lower()))
+                        fmt.append((end, TextFmt.ARF_E, ""))
                         fmt.append((end, TextFmt.COL_E, ""))
                         txt.append(bit)
                         pos = end

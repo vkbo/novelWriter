@@ -330,12 +330,12 @@ class ToQTextDocument(Tokenizer):
                 cFmt.setAnchorNames([data])
             elif fmt == TextFmt.ANM_E:
                 cFmt.setAnchor(False)
-            elif fmt == TextFmt.HRF_B:
+            elif fmt in (TextFmt.HRF_B, TextFmt.ARF_B):
                 cFmt.setForeground(primary or self._theme.link)
                 cFmt.setFontUnderline(True)
                 cFmt.setAnchor(True)
                 cFmt.setAnchorHref(data)
-            elif fmt == TextFmt.HRF_E:
+            elif fmt in (TextFmt.HRF_E, TextFmt.ARF_E):
                 cFmt.setForeground(primary or self._theme.text)
                 cFmt.setFontUnderline(False)
                 cFmt.setAnchor(False)
