@@ -60,15 +60,15 @@ def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
 
     # Check project data
     assert overview.projName.text() == "Lorem Ipsum"
-    assert overview.projWords.text() == f"{4376:n}"
-    assert overview.projNovels.text() == f"{3638:n}"
+    assert overview.projWords.text() == f"{4378:n}"
+    assert overview.projNovels.text() == f"{3640:n}"
     assert overview.projNotes.text() == f"{738:n}"
     assert overview.projRevisions.text() != ""
     assert overview.projEditTime.text() != ""
 
     # Check novel data for "Novel"
     assert overview.novelName.text() == "Novel"
-    assert overview.novelWords.text() == f"{3000:n}"
+    assert overview.novelWords.text() == f"{3002:n}"
     assert overview.novelChapters.text() == f"{3:n}"
     assert overview.novelScenes.text() == f"{5:n}"
 
@@ -87,7 +87,7 @@ def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
     contents = details.contentsPage
 
     # Check defaults
-    words = [f"{v:n}" for v in [40, 176, 92, 6, 1071, 1615, 0]]
+    words = [f"{v:n}" for v in [40, 176, 94, 6, 1071, 1615, 0]]
     pages = [f"{v:n}" for v in [2, 2, 2, 2, 4, 6, 0]]
     page = [f"{v:n}" for v in [1, 3, 5, 7, 9, 13, 19]]
     for i in range(6):
@@ -100,7 +100,7 @@ def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
     # Change Settings
     contents.poValue.setValue(7)
     contents.wpValue.setValue(50)
-    words = [f"{v:n}" for v in [40, 176, 92, 6, 1071, 1615, 0]]
+    words = [f"{v:n}" for v in [40, 176, 94, 6, 1071, 1615, 0]]
     pages = [f"{v:n}" for v in [2, 4, 2, 2, 22, 34, 0]]
     page = ["i", "iii"] + [f"{v:n}" for v in [1, 3, 5, 27, 61]]
     for i in range(6):
@@ -114,7 +114,7 @@ def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
     contents.dblValue.setChecked(False)
     contents.poValue.setValue(0)
     contents.wpValue.setValue(100)
-    words = [f"{v:n}" for v in [40, 176, 92, 6, 1071, 1615, 0]]
+    words = [f"{v:n}" for v in [40, 176, 94, 6, 1071, 1615, 0]]
     pages = [f"{v:n}" for v in [1, 2, 1, 1, 11, 17, 0]]
     page = [f"{v:n}" for v in [1, 2, 4, 5, 6, 17, 34]]
     for i in range(6):

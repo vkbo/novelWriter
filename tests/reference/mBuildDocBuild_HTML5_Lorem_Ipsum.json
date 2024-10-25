@@ -2,8 +2,8 @@
   "meta": {
     "projectName": "Lorem Ipsum",
     "novelAuthor": "lipsum.com",
-    "buildTime": 1729676162,
-    "buildTimeStr": "2024-10-23 11:36:02"
+    "buildTime": 1729877010,
+    "buildTimeStr": "2024-10-25 19:23:30"
   },
   "text": {
     "css": [
@@ -34,7 +34,8 @@
       [
         "<h1 style='page-break-before: always;'>Prologue</h1>",
         "<p class='comment' style='text-align: justify;'><strong><span style='color: #813709'>Synopsis:</span></strong> <span style='color: #813709'>Explanation from the lipsum.com website.</span></p>",
-        "<p style='text-align: justify;'><em>Lorem Ipsum</em> is simply dummy text<sup><a href='#footnote_1'>1</a></sup> of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>"
+        "<p style='text-align: justify;'><em>Lorem Ipsum</em> is simply dummy text<sup><a href='#footnote_1'>1</a></sup> of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>",
+        "<p style='text-align: justify; text-indent: 1.40em;'>See <a href='http://lipsum.com'>http://lipsum.com</a></p>"
       ],
       [
         "<h1 class='title' style='text-align: center; page-break-before: always;'>Part: Act One</h1>",
