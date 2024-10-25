@@ -46,6 +46,7 @@ class TextDocumentTheme:
     text:      QColor = QColor(0, 0, 0)
     highlight: QColor = QColor(255, 255, 166)
     head:      QColor = QColor(66, 113, 174)
+    link:      QColor = QColor(66, 113, 174)
     comment:   QColor = QColor(100, 100, 100)
     note:      QColor = QColor(129, 55, 9)
     code:      QColor = QColor(66, 113, 174)

@@ -29,7 +29,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import QMarginsF, QSizeF
 from PyQt5.QtGui import (
-    QFont, QFontMetricsF, QPageSize, QTextBlockFormat, QTextCharFormat,
+    QColor, QFont, QFontMetricsF, QPageSize, QTextBlockFormat, QTextCharFormat,
     QTextCursor, QTextDocument
 )
 from PyQt5.QtPrintSupport import QPrinter
@@ -281,8 +281,9 @@ class ToQTextDocument(Tokenizer):
     ) -> None:
         """Apply formatting tags to text."""
         cFmt = QTextCharFormat(dFmt)
-        start = 0
         temp = text.replace("\n", nwUnicode.U_LSEP)
+        start = 0
+        primary: QColor | None = None
         for pos, fmt, data in tFmt:
 
             # Insert buffer with previous format
@@ -320,20 +321,25 @@ class ToQTextDocument(Tokenizer):
             elif fmt == TextFmt.COL_B:
                 if color := self._classes.get(data):
                     cFmt.setForeground(color)
+                    primary = color
             elif fmt == TextFmt.COL_E:
                 cFmt.setForeground(self._theme.text)
+                primary = None
             elif fmt == TextFmt.ANM_B:
                 cFmt.setAnchor(True)
                 cFmt.setAnchorNames([data])
             elif fmt == TextFmt.ANM_E:
                 cFmt.setAnchor(False)
             elif fmt == TextFmt.HRF_B:
+                cFmt.setForeground(primary or self._theme.link)
                 cFmt.setFontUnderline(True)
                 cFmt.setAnchor(True)
                 cFmt.setAnchorHref(data)
             elif fmt == TextFmt.HRF_E:
+                cFmt.setForeground(primary or self._theme.text)
                 cFmt.setFontUnderline(False)
                 cFmt.setAnchor(False)
+                cFmt.setAnchorHref("")
             elif fmt == TextFmt.FNOTE:
                 xFmt = QTextCharFormat(self._charFmt)
                 xFmt.setForeground(self._theme.code)

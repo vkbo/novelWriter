@@ -1117,6 +1117,13 @@ class Tokenizer(ABC):
                     for n, fmt in enumerate(fmts) if fmt > 0
                 )
 
+        # Match URLs
+        for res in REGEX_PATTERNS.url.finditer(text):
+            s = res.start(0)
+            e = res.end(0)
+            temp.append((s, s, TextFmt.HRF_B, res.group(0)))
+            temp.append((e, e, TextFmt.HRF_E, ""))
+
         # Match Shortcodes
         for res in REGEX_PATTERNS.shortcodePlain.finditer(text):
             temp.append((

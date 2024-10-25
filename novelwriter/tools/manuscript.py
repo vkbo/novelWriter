@@ -29,7 +29,10 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent, QTextDocument
+from PyQt5.QtGui import (
+    QCloseEvent, QColor, QCursor, QDesktopServices, QFont, QPalette,
+    QResizeEvent, QTextDocument
+)
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QFormLayout, QGridLayout, QHBoxLayout,
@@ -711,6 +714,7 @@ class _PreviewWidget(QTextBrowser):
         self.setMinimumWidth(40*SHARED.theme.textNWidth)
         self.setTabStopDistance(CONFIG.getTabWidth())
         self.setOpenExternalLinks(False)
+        self.setOpenLinks(False)
 
         self.document().setDocumentMargin(CONFIG.getTextMargin())
         self.setPlaceholderText(self.tr(
@@ -718,6 +722,9 @@ class _PreviewWidget(QTextBrowser):
         ))
 
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+
+        # Signals
+        self.anchorClicked.connect(self._linkClicked)
 
         # Document Age
         aPalette = self.palette()
@@ -854,6 +861,17 @@ class _PreviewWidget(QTextBrowser):
     ##
     #  Private Slots
     ##
+
+    @pyqtSlot("QUrl")
+    def _linkClicked(self, url: QUrl) -> None:
+        """Process a clicked link in the document."""
+        if link := url.url():
+            logger.debug("Clicked link: '%s'", link)
+            if link.startswith("#"):
+                self.navigateTo(link.lstrip("#"))
+            elif link.startswith("http"):
+                QDesktopServices.openUrl(QUrl(url))
+        return
 
     @pyqtSlot()
     def _updateBuildAge(self) -> None:
