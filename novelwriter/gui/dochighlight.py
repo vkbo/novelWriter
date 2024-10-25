@@ -428,9 +428,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             data = TextBlockData()
             self.setCurrentBlockUserData(data)
 
-        data.extractMetaData(text, xOff)
+        data.processText(text, xOff)
         if self._spellCheck:
-            for xPos, xEnd in data.spellCheck(text, xOff):
+            for xPos, xEnd in data.spellCheck():
                 for x in range(xPos, xEnd):
                     cFmt = self.format(x)
                     cFmt.merge(self._spellErr)
@@ -479,10 +479,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
 class TextBlockData(QTextBlockUserData):
 
-    __slots__ = ("_spellErrors")
+    __slots__ = ("_text", "_offset", "_metaData", "_spellErrors")
 
     def __init__(self) -> None:
         super().__init__()
+        self._text = ""
+        self._offset = 0
         self._metaData: list[tuple[int, int, str, str]] = []
         self._spellErrors: list[tuple[int, int,]] = []
         return
@@ -497,23 +499,9 @@ class TextBlockData(QTextBlockUserData):
         """Return spell error data from last check."""
         return self._spellErrors
 
-    def extractMetaData(self, text: str, offset: int) -> None:
+    def processText(self, text: str, offset: int) -> None:
         """Extract meta data from the text."""
         self._metaData = []
-        if "http" in text:
-            # Strip URLs
-            for res in RX_URL.finditer(text, offset):
-                if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:
-                    pad = " "*(e - s)
-                    text = f"{text[:s]}{pad}{text[e:]}"
-                    self._metaData.append((s, e, res.group(0), "url"))
-
-        return
-
-    def spellCheck(self, text: str, offset: int) -> list[tuple[int, int]]:
-        """Run the spell checker and cache the result, and return the
-        list of spell check errors.
-        """
         if "[" in text:
             # Strip shortcodes
             for regEx in [RX_FMT_SC, RX_FMT_SV]:
@@ -522,9 +510,25 @@ class TextBlockData(QTextBlockUserData):
                         pad = " "*(e - s)
                         text = f"{text[:s]}{pad}{text[e:]}"
 
+        if "http" in text:
+            # Strip URLs
+            for res in RX_URL.finditer(text, offset):
+                if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:
+                    pad = " "*(e - s)
+                    text = f"{text[:s]}{pad}{text[e:]}"
+                    self._metaData.append((s, e, res.group(0), "url"))
+
+        self._text = text
+
+        return
+
+    def spellCheck(self) -> list[tuple[int, int]]:
+        """Run the spell checker and cache the result, and return the
+        list of spell check errors.
+        """
         self._spellErrors = []
         checker = SHARED.spelling
-        for res in RX_WORDS.finditer(text.replace("_", " "), offset):
+        for res in RX_WORDS.finditer(self._text.replace("_", " "), self._offset):
             if (
                 (word := res.group(0))
                 and not (word.isnumeric() or word.isupper() or checker.checkWord(word))
