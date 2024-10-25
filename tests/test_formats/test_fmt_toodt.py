@@ -38,13 +38,14 @@ from novelwriter.formats.toodt import ODTParagraphStyle, ODTTextStyle, ToOdt, XM
 from tests.tools import ODT_IGNORE, cmpFiles
 
 XML_NS = [
+    ' xmlns:dc="http://purl.org/dc/elements/1.1/"',
+    ' xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"',
+    ' xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0"',
+    ' xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"',
     ' xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"',
     ' xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"',
-    ' xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0"',
     ' xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"',
-    ' xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"',
-    ' xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"',
-    ' xmlns:dc="http://purl.org/dc/elements/1.1/"'
+    ' xmlns:xlink="http://www.w3.org/1999/xlink"',
 ]
 
 
@@ -1301,7 +1302,7 @@ def testFmtToOdt_XMLParagraph():
     )
 
     # Text Span
-    xmlPar.appendSpan("spanned text", "T1")
+    xmlPar.appendSpan("spanned text", "T1", "")
     assert xmlToText(xRoot) == (
         '<root>'
         '<text:p>Hello World'
@@ -1338,7 +1339,7 @@ def testFmtToOdt_XMLParagraph():
     )
 
     # Text Span w/Line Break
-    xmlPar.appendSpan("spanned\ntext", "T1")
+    xmlPar.appendSpan("spanned\ntext", "T1", "")
     assert xmlToText(xRoot) == (
         '<root>'
         '<text:p>Hello<text:line-break />World<text:line-break />!!'
@@ -1374,7 +1375,7 @@ def testFmtToOdt_XMLParagraph():
     )
 
     # Text Span w/Line Break
-    xmlPar.appendSpan("spanned\ttext", "T1")
+    xmlPar.appendSpan("spanned\ttext", "T1", "")
     assert xmlToText(xRoot) == (
         '<root>'
         '<text:p>Hello<text:tab />World<text:tab />!!'
@@ -1389,6 +1390,18 @@ def testFmtToOdt_XMLParagraph():
         '<text:p>Hello<text:tab />World<text:tab />!!'
         '<text:span text:style-name="T1">spanned<text:tab />text</text:span>'
         'more<text:tab />text</text:p>'
+        '</root>'
+    )
+
+    # Tail Text w/Link
+    xmlPar.appendSpan("Example", "T1", "http://www.example.com")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello<text:tab />World<text:tab />!!'
+        '<text:span text:style-name="T1">spanned<text:tab />text</text:span>'
+        'more<text:tab />text'
+        '<text:a xlink:type="simple" xlink:href="http://www.example.com" text:style-name="T1">'
+        'Example</text:a></text:p>'
         '</root>'
     )
 
@@ -1410,7 +1423,7 @@ def testFmtToOdt_XMLParagraph():
     )
 
     # Text Span w/Spaces
-    xmlPar.appendSpan("spanned    text", "T1")
+    xmlPar.appendSpan("spanned    text", "T1", "")
     assert xmlToText(xRoot) == (
         '<root>'
         '<text:p>Hello <text:s />World <text:s text:c="2" />!!'
@@ -1446,7 +1459,7 @@ def testFmtToOdt_XMLParagraph():
     )
 
     # Text Span w/Many Spaces
-    xmlPar.appendSpan("  C  \t  D \n E ", "T1")
+    xmlPar.appendSpan("  C  \t  D \n E ", "T1", "")
     assert xmlToText(xRoot) == (
         '<root>'
         '<text:p><text:s text:c="2" /><text:tab /> A <text:line-break /> <text:s />B '

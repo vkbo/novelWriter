@@ -428,6 +428,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             data = TextBlockData()
             self.setCurrentBlockUserData(data)
 
+        data.extractMetaData(text, xOff)
         if self._spellCheck:
             for xPos, xEnd in data.spellCheck(text, xOff):
                 for x in range(xPos, xEnd):
@@ -496,20 +497,9 @@ class TextBlockData(QTextBlockUserData):
         """Return spell error data from last check."""
         return self._spellErrors
 
-    def spellCheck(self, text: str, offset: int) -> list[tuple[int, int]]:
-        """Run the spell checker and cache the result, and return the
-        list of spell check errors.
-        """
+    def extractMetaData(self, text: str, offset: int) -> None:
+        """Extract meta data from the text."""
         self._metaData = []
-        self._spellErrors = []
-        if "[" in text:
-            # Strip shortcodes
-            for regEx in [RX_FMT_SC, RX_FMT_SV]:
-                for res in regEx.finditer(text, offset):
-                    if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:
-                        pad = " "*(e - s)
-                        text = f"{text[:s]}{pad}{text[e:]}"
-
         if "http" in text:
             # Strip URLs
             for res in RX_URL.finditer(text, offset):
@@ -518,6 +508,21 @@ class TextBlockData(QTextBlockUserData):
                     text = f"{text[:s]}{pad}{text[e:]}"
                     self._metaData.append((s, e, res.group(0), "url"))
 
+        return
+
+    def spellCheck(self, text: str, offset: int) -> list[tuple[int, int]]:
+        """Run the spell checker and cache the result, and return the
+        list of spell check errors.
+        """
+        if "[" in text:
+            # Strip shortcodes
+            for regEx in [RX_FMT_SC, RX_FMT_SV]:
+                for res in regEx.finditer(text, offset):
+                    if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:
+                        pad = " "*(e - s)
+                        text = f"{text[:s]}{pad}{text[e:]}"
+
+        self._spellErrors = []
         checker = SHARED.spelling
         for res in RX_WORDS.finditer(text.replace("_", " "), offset):
             if (
