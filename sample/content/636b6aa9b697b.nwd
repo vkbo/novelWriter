@@ -1,13 +1,14 @@
 %%~name: Making a Scene
 %%~path: 6a2d6d5f4f401/636b6aa9b697b
 %%~kind: NOVEL/DOCUMENT
-%%~hash: c7e664867218b3a9aac5c12119ef0ec63da2e5cc
-%%~date: Unknown/2024-04-18 17:56:30
+%%~hash: 349d9ce3d59ad241d63b01380c53a7fb26ce9f19
+%%~date: Unknown/2024-10-24 23:44:27
 ### Making a Scene
 
 @pov: Jane
 @char: John, Jane
 @location: Earth
+@mention: Bob, Space
 
 A scene is defined by a level three heading, like the one at the top of this page. The scene will be assigned to the chapter preceding it in the project tree. The scene document can be sorted after the chapter document, or as a child of the chapter. Both result in the same output in the end, so it is a matter of preference.
 

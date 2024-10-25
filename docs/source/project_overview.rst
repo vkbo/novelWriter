@@ -118,6 +118,9 @@ The root folders are closely tied to the tags and reference system. Each folder 
 the categories of tags that can be used to reference them. For more information about the tags
 listed, see :ref:`a_references_references`.
 
+There is also a ``@mention`` keyword that can be used to reference any tag.
+See :ref:`a_references_references` for more details.
+
 .. note::
    You can rename root folders to whatever you want. However, this doesn't change the reference
    keyword or what they do.
