@@ -32,6 +32,7 @@ from novelwriter.constants import nwRegEx
 class RegExPatterns:
 
     # Static RegExes
+    _rxUrl     = re.compile(nwRegEx.URL, re.ASCII)
     _rxWords   = re.compile(nwRegEx.WORDS, re.UNICODE)
     _rxBreak   = re.compile(nwRegEx.BREAK, re.UNICODE)
     _rxItalic  = re.compile(nwRegEx.FMT_EI, re.UNICODE)
@@ -39,6 +40,11 @@ class RegExPatterns:
     _rxStrike  = re.compile(nwRegEx.FMT_ST, re.UNICODE)
     _rxSCPlain = re.compile(nwRegEx.FMT_SC, re.UNICODE)
     _rxSCValue = re.compile(nwRegEx.FMT_SV, re.UNICODE)
+
+    @property
+    def url(self) -> re.Pattern:
+        """Find URLs."""
+        return self._rxUrl
 
     @property
     def wordSplit(self) -> re.Pattern:

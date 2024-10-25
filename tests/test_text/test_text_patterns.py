@@ -41,6 +41,48 @@ def allMatches(regEx: re.Pattern, text: str) -> list[list[str]]:
 
 
 @pytest.mark.core
+def testTextPatterns_Urls():
+    """Test the URL regex."""
+    regEx = REGEX_PATTERNS.url
+
+    valid = [
+        "http://example.com",
+        "http://example.com/",
+        "http://example.com/path+to+page",
+        "http://example.com/path-to-page",
+        "http://example.com/path_to_page",
+        "http://example.com/path~to~page",
+        "http://example.com/path/to/page",
+        "http://example.com/path/to/page.html",
+        "http://example.com/path/to/page.html#title",
+        "http://example.com/path/to/page.html#title%20here",
+        "http://example.com/path/to/page.html#title%20here",
+        "http://example.com/path/to/page?foo=bar&bar=baz",
+        "http://example.com/path/to/page.html?foo=bar&bar=baz",
+        "http://example.com/path/to/page.html#title?foo=bar&bar=baz",
+        "http://user:password@example.com/",
+        "http://www.example.com/",
+        "http://www.www.example.com/",
+        "http://www.www.www.example.com/",
+        "https://example.com",
+        "https://www.example.com/",
+    ]
+    invalid = [
+        "hppt://example.com/",
+        "sftp://example.com/",
+        "http:/example.com/",
+        "http://www example com/",
+        "http://www\texample\tcom/",
+    ]
+
+    for test in valid:
+        assert allMatches(regEx, f"Text {test} more text") == [[(test, 5, 5 + len(test))]]
+
+    for test in invalid:
+        assert allMatches(regEx, f"Text {test} more text") == []
+
+
+@pytest.mark.core
 def testTextPatterns_Words():
     """Test the word split regex."""
     regEx = REGEX_PATTERNS.wordSplit
@@ -198,8 +240,10 @@ def testTextPatterns_ShortcodesPlain():
 
     assert allMatches(regEx, "one [x]two[/x] three") == []
 
-    # Line Break Substitution
-    # =======================
+
+@pytest.mark.core
+def testTextPatterns_LineBreakReplace():
+    """Test replacing forced line breaks."""
     regEx = REGEX_PATTERNS.lineBreak
 
     assert regEx.sub("\n", "one[br]two") == "one\ntwo"
