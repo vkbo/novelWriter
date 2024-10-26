@@ -3,6 +3,9 @@
   <w:footnotePr>
     <w:numFmt w:val="decimal" />
   </w:footnotePr>
+  <w:compat>
+    <w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="12" />
+  </w:compat>
   <w:docVars>
     <w:docVar w:name="ManuscriptTitleCount" w:val="11" />
     <w:docVar w:name="ManuscriptParagraphCount" w:val="43" />

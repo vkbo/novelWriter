@@ -556,10 +556,13 @@ def testFmtToDocX_Footnotes(mockGUI):
     assert xmlToText(doc._files["footnotes.xml"].xml) == (
         '<w:footnotes>'
         '<w:footnote w:id="1"><w:p><w:pPr><w:pStyle w:val="FootnoteText" /></w:pPr>'
+        '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr><w:footnoteRef /></w:r>'
         '<w:r><w:rPr /><w:t>Footnote text A.</w:t></w:r></w:p></w:footnote>'
         '<w:footnote w:id="2"><w:p><w:pPr><w:pStyle w:val="FootnoteText" /></w:pPr>'
+        '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr><w:footnoteRef /></w:r>'
         '<w:r><w:rPr /><w:t>Another footnote.</w:t></w:r></w:p></w:footnote>'
         '<w:footnote w:id="3"><w:p><w:pPr><w:pStyle w:val="FootnoteText" /></w:pPr>'
+        '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr><w:footnoteRef /></w:r>'
         '<w:r><w:rPr /><w:t>Again?</w:t></w:r></w:p></w:footnote>'
         '</w:footnotes>'
     )
@@ -619,6 +622,7 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
         fncPath / "extract" / "word" / "header2.xml",
         fncPath / "extract" / "word" / "settings.xml",
         fncPath / "extract" / "word" / "styles.xml",
+        fncPath / "extract" / "word" / "fontTable.xml",
     ]
 
     outDir = tstPaths.outDir / "fmtToDocX_SaveDocument"

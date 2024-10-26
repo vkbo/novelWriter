@@ -7,31 +7,24 @@
       <w:rPr />
     </w:pPr>
     <w:r>
-      <w:rPr />
       <w:t xml:space="preserve">Page </w:t>
     </w:r>
     <w:r>
-      <w:rPr />
       <w:fldChar w:fldCharType="begin" />
     </w:r>
     <w:r>
-      <w:rPr />
       <w:t xml:space="preserve"> PAGE </w:t>
     </w:r>
     <w:r>
-      <w:rPr />
       <w:fldChar w:fldCharType="separate" />
     </w:r>
     <w:r>
-      <w:rPr />
-      <w:t xml:space="preserve">2</w:t>
+      <w:t>0</w:t>
     </w:r>
     <w:r>
-      <w:rPr />
       <w:fldChar w:fldCharType="end" />
     </w:r>
     <w:r>
-      <w:rPr />
       <w:t xml:space="preserve"> - Lorem Ipsum (lipsum.com)</w:t>
     </w:r>
   </w:p>
