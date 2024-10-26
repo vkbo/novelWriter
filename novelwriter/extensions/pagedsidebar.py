@@ -52,7 +52,7 @@ class NPagedSideBar(QToolBar):
 
         self._labelCol = None
         self._spacerHeight = self.fontMetrics().height() // 2
-        self._buttons: dict[int, _NPagedToolButton] = {}
+        self._buttons: dict[int, _PagedToolButton] = {}
 
         self._group = QButtonGroup(self)
         self._group.setExclusive(True)
@@ -67,7 +67,7 @@ class NPagedSideBar(QToolBar):
 
         return
 
-    def button(self, buttonId: int) -> _NPagedToolButton:
+    def button(self, buttonId: int) -> _PagedToolButton:
         """Return a specific button."""
         return self._buttons[buttonId]
 
@@ -85,7 +85,7 @@ class NPagedSideBar(QToolBar):
 
     def addButton(self, text: str, buttonId: int = -1) -> QAction:
         """Add a new button to the toolbar."""
-        button = _NPagedToolButton(self)
+        button = _PagedToolButton(self)
         button.setText(text)
 
         action = self.insertWidget(self._stretchAction, button)
@@ -113,7 +113,7 @@ class NPagedSideBar(QToolBar):
         return
 
 
-class _NPagedToolButton(QToolButton):
+class _PagedToolButton(QToolButton):
 
     __slots__ = ("_bH", "_tM", "_lM", "_cR", "_aH")
 
@@ -154,7 +154,7 @@ class _NPagedToolButton(QToolButton):
         height = self.height()
         palette = self.palette()
 
-        if opt.state & QtMouseOver == QtMouseOver:
+        if opt.state & QtMouseOver == QtMouseOver:  # pragma: no cover
             backCol = palette.base()
             paint.setBrush(backCol)
             paint.setOpacity(0.75)
