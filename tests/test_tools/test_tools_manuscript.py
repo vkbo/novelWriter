@@ -22,9 +22,12 @@ from __future__ import annotations
 
 import sys
 
+from unittest.mock import MagicMock
+
 import pytest
 
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import QUrl, pyqtSlot
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtPrintSupport import QPrintPreviewDialog
 from PyQt5.QtWidgets import QAction, QListWidgetItem
 
@@ -225,12 +228,25 @@ def testToolManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert (item := listView.topLevelItem(3)) and item.data(0, keyRole) == "000000000000c:T0006"
     assert (item := listView.topLevelItem(4)) and item.data(0, keyRole) == "000000000000e:T0001"
 
-    # Click Outline
+    # Click outline
     item = listView.topLevelItem(4)
     assert item is not None
     with qtbot.waitSignal(manus.buildOutline.outlineEntryClicked) as signal:
         manus.buildOutline._onItemClick(item)
         assert signal.args == ["000000000000e:T0001"]
+
+    # Preview Navigation
+    assert manus.docPreview.source() == QUrl("#000000000000e:T0001")
+    manus.docPreview.navigateTo("000000000000c:T0002")
+    assert manus.docPreview.source() == QUrl("#000000000000c:T0002")
+    manus.docPreview._linkClicked(QUrl("#000000000000c:T0003"))
+    assert manus.docPreview.source() == QUrl("#000000000000c:T0003")
+    with monkeypatch.context() as mp:
+        openUrl = MagicMock()
+        mp.setattr(QDesktopServices, "openUrl", openUrl)
+        manus.docPreview._linkClicked(QUrl("http://www.example.com"))
+        assert openUrl.called is True
+        assert openUrl.call_args[0][0] == QUrl("http://www.example.com")
 
     # Check Preview Stats
     assert manus.docStats.mainStack.currentWidget() == manus.docStats.minWidget

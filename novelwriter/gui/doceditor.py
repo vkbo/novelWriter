@@ -985,7 +985,7 @@ class GuiDocEditor(QPlainTextEdit):
         pressed, check if we're clicking on a tag, and trigger the
         follow tag function.
         """
-        if QApplication.keyboardModifiers() == QtModCtrl:
+        if event.modifiers() & QtModCtrl == QtModCtrl:
             cursor = self.cursorForPosition(event.pos())
             mData, mType = self._qDocument.metaDataAtPos(cursor.position())
             if mData and mType == "url":

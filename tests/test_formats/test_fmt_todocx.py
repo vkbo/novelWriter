@@ -292,6 +292,48 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToDocX_Links(mockGUI):
+    """Test formatting of links."""
+    project = NWProject()
+    doc = ToDocX(project)
+    doc.initDocument()
+
+    # Register 2 links
+    rd1 = doc._appendExternalRel("http://example.com")
+    rd2 = doc._appendExternalRel("https://example.com")
+    assert rd1 == "rId1"
+    assert rd2 == "rId2"
+
+    # Link 1
+    xTest = ET.Element(_wTag("body"))
+    doc._text = "Foo http://example.com bar"
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
+        '<w:r><w:rPr /><w:t xml:space="preserve">Foo </w:t></w:r>'
+        '<w:hyperlink r:id="rId1"><w:r><w:rPr><w:rStyle w:val="InternetLink" /></w:rPr>'
+        '<w:t>http://example.com</w:t></w:r></w:hyperlink>'
+        '<w:r><w:rPr /><w:t xml:space="preserve"> bar</w:t></w:r></w:p></w:body>'
+    )
+
+    # Link 2
+    xTest = ET.Element(_wTag("body"))
+    doc._text = "Foo https://example.com bar"
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
+        '<w:r><w:rPr /><w:t xml:space="preserve">Foo </w:t></w:r>'
+        '<w:hyperlink r:id="rId2"><w:r><w:rPr><w:rStyle w:val="InternetLink" /></w:rPr>'
+        '<w:t>https://example.com</w:t></w:r></w:hyperlink>'
+        '<w:r><w:rPr /><w:t xml:space="preserve"> bar</w:t></w:r></w:p></w:body>'
+    )
+
+
+@pytest.mark.core
 def testFmtToDocX_ParagraphFormatting(mockGUI):
     """Test formatting of paragraphs."""
     project = NWProject()

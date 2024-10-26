@@ -20,10 +20,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+from unittest.mock import MagicMock
+
 import pytest
 
-from PyQt5.QtCore import QEvent, Qt, QThreadPool
-from PyQt5.QtGui import QClipboard, QFont, QMouseEvent, QTextBlock, QTextCursor, QTextOption
+from PyQt5.QtCore import QEvent, Qt, QThreadPool, QUrl
+from PyQt5.QtGui import (
+    QClipboard, QDesktopServices, QFont, QMouseEvent, QTextBlock, QTextCursor,
+    QTextOption
+)
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from novelwriter import CONFIG, SHARED
@@ -267,8 +272,9 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
 
     docText = (
         "### A Scene\n\n"
-        "@pov: Jane\n"
-        "Some text ..."
+        "@pov: Jane\n\n"
+        "Some text ...\n\n"
+        "... and a link to http://example.com\n\n"
     )
     docEditor.setPlainText(docText)
     assert docEditor.getText() == docText
@@ -286,6 +292,17 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
         assert sceneItem.itemName == "New Scene"
         ctxMenu.actions()[0].trigger()
         assert sceneItem.itemName == "A Scene"
+    ctxMenu.setObjectName("")
+    ctxMenu.deleteLater()
+
+    # Open Link
+    ctxMenu = getMenuForPos(docEditor, 63)
+    assert ctxMenu is not None
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Open URL", "Paste",
+        "Select All", "Select Word", "Select Paragraph"
+    ]
     ctxMenu.setObjectName("")
     ctxMenu.deleteLater()
 
@@ -1652,6 +1669,30 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     docEditor.setCursorPosition(47)
     assert docEditor._processTag() is nwTrinary.NEUTRAL
+
+    # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiEditor_Links(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
+    """Test the document editor links functionality."""
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor = nwGUI.docEditor
+    docEditor.replaceText("### Scene\n\nFoo http://www.example.com bar.\n\n")
+
+    docEditor.setCursorPosition(20)
+    position = docEditor.cursorRect().center()
+    event = QMouseEvent(
+        QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModCtrl
+    )
+
+    with monkeypatch.context() as mp:
+        openUrl = MagicMock()
+        mp.setattr(QDesktopServices, "openUrl", openUrl)
+        docEditor.mouseReleaseEvent(event)
+        assert openUrl.called is True
+        assert openUrl.call_args[0][0] == QUrl("http://www.example.com")
 
     # qtbot.stop()
 
