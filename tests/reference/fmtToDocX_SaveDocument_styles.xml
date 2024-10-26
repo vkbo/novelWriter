@@ -6,7 +6,7 @@
         <w:rFonts w:ascii="Source Sans Pro" w:hAnsi="Source Sans Pro" w:cs="Source Sans Pro" />
         <w:sz w:val="24" />
         <w:szCs w:val="24" />
-        <w:lang w:val="en_GB" />
+        <w:lang w:val="en-GB" />
       </w:rPr>
     </w:rPrDefault>
     <w:pPrDefault>
@@ -142,11 +142,18 @@
     <w:basedOn w:val="Normal" />
     <w:pPr>
       <w:spacing w:before="0" w:after="90" w:line="220" />
-      <w:ind w:left="272" w:hanging="272" />
+      <w:ind w:left="272" />
     </w:pPr>
     <w:rPr>
       <w:sz w:val="19" />
       <w:szCs w:val="19" />
+    </w:rPr>
+  </w:style>
+  <w:style w:type="character" w:styleId="InternetLink">
+    <w:name w:val="Hyperlink" />
+    <w:rPr>
+      <w:color w:val="4271ae" />
+      <w:u w:val="single" />
     </w:rPr>
   </w:style>
 </w:styles>

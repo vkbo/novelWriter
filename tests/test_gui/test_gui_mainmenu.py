@@ -20,9 +20,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+from unittest.mock import MagicMock
+
 import pytest
 
-from PyQt5.QtGui import QTextBlock, QTextCursor
+from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QDesktopServices, QTextBlock, QTextCursor
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
 from novelwriter import CONFIG, SHARED
@@ -32,6 +35,35 @@ from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.types import QtKeepAnchor, QtMoveRight
 
 from tests.tools import C, buildTestProject, writeFile
+
+
+@pytest.mark.gui
+def testGuiMainMenu_Slots(qtbot, monkeypatch, nwGUI, projPath):
+    """Test the main menu slots."""
+    buildTestProject(nwGUI, projPath)
+
+    # Open URL
+    with monkeypatch.context() as mp:
+        openUrl = MagicMock()
+        mp.setattr(QDesktopServices, "openUrl", openUrl)
+        nwGUI.mainMenu._openWebsite("http://www.example.com")
+        assert openUrl.called is True
+        assert openUrl.call_args[0][0] == QUrl("http://www.example.com")
+
+    # Open Manual
+    with monkeypatch.context() as mp:
+        openUrl = MagicMock()
+        mp.setattr(QDesktopServices, "openUrl", openUrl)
+        CONFIG.pdfDocs = projPath / "manual.pdf"
+        CONFIG.pdfDocs.touch()
+        nwGUI.mainMenu._openUserManualFile()
+        assert openUrl.called is True
+        assert "manual.pdf" in openUrl.call_args[0][0].url()
+
+    # Spell Checking
+    assert SHARED.project.data.spellLang is None
+    nwGUI.mainMenu._changeSpelling("en")
+    assert SHARED.project.data.spellLang == "en"
 
 
 @pytest.mark.gui

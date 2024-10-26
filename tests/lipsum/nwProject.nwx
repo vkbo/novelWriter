@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.5a2" hexVersion="0x020500a2" fileVersion="1.5" fileRevision="4" timeStamp="2024-04-27 16:40:24">
-  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="45" autoCount="26" editTime="2168">
+<novelWriterXML appVersion="2.6a2" hexVersion="0x020600a2" fileVersion="1.5" fileRevision="4" timeStamp="2024-10-25 19:16:56">
+  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="48" autoCount="28" editTime="2374">
     <name>Lorem Ipsum</name>
     <author>lipsum.com</author>
   </project>
@@ -31,7 +31,7 @@
       <entry key="id6b1d0" count="0" red="50" green="200" blue="0" shape="SQUARE">Main</entry>
     </importance>
   </settings>
-  <content items="21" novelWords="3109" notesWords="738">
+  <content items="21" novelWords="3111" notesWords="738">
     <item handle="b3643d0f92e32" parent="None" root="b3643d0f92e32" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="sbaa94f" import="i613591">Novel</name>
@@ -45,7 +45,7 @@
       <name status="sedd043" import="i613591" active="yes">Front Matter</name>
     </item>
     <item handle="88d59a277361b" parent="b3643d0f92e32" root="b3643d0f92e32" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="600" wordCount="92" paraCount="1" cursorPos="931" />
+      <meta expanded="no" heading="H2" charCount="605" wordCount="94" paraCount="2" cursorPos="47" />
       <name status="s92a87b" import="i613591" active="yes">Prologue</name>
     </item>
     <item handle="db7e733775d4d" parent="b3643d0f92e32" root="b3643d0f92e32" order="3" type="FILE" class="NOVEL" layout="DOCUMENT">

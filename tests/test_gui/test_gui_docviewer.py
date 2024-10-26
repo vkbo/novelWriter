@@ -20,10 +20,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+from unittest.mock import MagicMock
+
 import pytest
 
 from PyQt5.QtCore import QEvent, QPoint, Qt, QUrl
-from PyQt5.QtGui import QMouseEvent, QTextCursor
+from PyQt5.QtGui import QDesktopServices, QMouseEvent, QTextCursor
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from novelwriter import CONFIG, SHARED
@@ -164,6 +166,14 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     with qtbot.waitSignal(docViewer.sourceChanged, timeout=1000) as signal:
         docViewer._linkClicked(QUrl("#somewhere_else"))
         assert signal.args[0].url() == "#somewhere_else"
+
+    # Web links should trigger the browser
+    with monkeypatch.context() as mp:
+        openUrl = MagicMock()
+        mp.setattr(QDesktopServices, "openUrl", openUrl)
+        docViewer._linkClicked(QUrl("http://www.example.com"))
+        assert openUrl.called is True
+        assert openUrl.call_args[0][0] == QUrl("http://www.example.com")
 
     # Click mouse nav buttons
     qtbot.mouseClick(docViewer.viewport(), Qt.BackButton, pos=rect.center(), delay=100)

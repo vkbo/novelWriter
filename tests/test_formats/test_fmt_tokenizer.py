@@ -834,8 +834,8 @@ def testFmtToken_MetaFormat(mockGUI):
         BlockTyp.KEYWORD, "char", "Characters: Bod", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (11, TextFmt.COL_E, ""), (11, TextFmt.B_E, ""),
-            (12, TextFmt.COL_B, "tag"), (12, TextFmt.HRF_B, "#tag_bod"),
-            (15, TextFmt.HRF_E, ""), (15, TextFmt.COL_E, ""),
+            (12, TextFmt.COL_B, "tag"), (12, TextFmt.ARF_B, "#tag_bod"),
+            (15, TextFmt.ARF_E, ""), (15, TextFmt.COL_E, ""),
         ], BlockFmt.NONE
     )]
     assert tokens._raw[-1] == "@char: Bod\n\n"
@@ -846,22 +846,22 @@ def testFmtToken_MetaFormat(mockGUI):
         BlockTyp.KEYWORD, "pov", "Point of View: Bod", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (14, TextFmt.COL_E, ""), (14, TextFmt.B_E, ""),
-            (15, TextFmt.COL_B, "tag"), (15, TextFmt.HRF_B, "#tag_bod"),
-            (18, TextFmt.HRF_E, ""), (18, TextFmt.COL_E, ""),
+            (15, TextFmt.COL_B, "tag"), (15, TextFmt.ARF_B, "#tag_bod"),
+            (18, TextFmt.ARF_E, ""), (18, TextFmt.COL_E, ""),
         ], BlockFmt.Z_BTM
     ), (
         BlockTyp.KEYWORD, "plot", "Plot: Main", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (5, TextFmt.COL_E, ""), (5, TextFmt.B_E, ""),
-            (6, TextFmt.COL_B, "tag"), (6, TextFmt.HRF_B, "#tag_main"),
-            (10, TextFmt.HRF_E, ""), (10, TextFmt.COL_E, ""),
+            (6, TextFmt.COL_B, "tag"), (6, TextFmt.ARF_B, "#tag_main"),
+            (10, TextFmt.ARF_E, ""), (10, TextFmt.COL_E, ""),
         ], BlockFmt.Z_TOP | BlockFmt.Z_BTM
     ), (
         BlockTyp.KEYWORD, "location", "Locations: Europe", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (10, TextFmt.COL_E, ""), (10, TextFmt.B_E, ""),
-            (11, TextFmt.COL_B, "tag"), (11, TextFmt.HRF_B, "#tag_europe"),
-            (17, TextFmt.HRF_E, ""), (17, TextFmt.COL_E, ""),
+            (11, TextFmt.COL_B, "tag"), (11, TextFmt.ARF_B, "#tag_europe"),
+            (17, TextFmt.ARF_E, ""), (17, TextFmt.COL_E, ""),
         ], BlockFmt.Z_TOP
     )]
     assert tokens._raw[-1] == "@pov: Bod\n@plot: Main\n@location: Europe\n\n"
@@ -874,8 +874,8 @@ def testFmtToken_MetaFormat(mockGUI):
         BlockTyp.KEYWORD, "pov", "Point of View: Bod", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (14, TextFmt.COL_E, ""), (14, TextFmt.B_E, ""),
-            (15, TextFmt.COL_B, "tag"), (15, TextFmt.HRF_B, "#tag_bod"),
-            (18, TextFmt.HRF_E, ""), (18, TextFmt.COL_E, ""),
+            (15, TextFmt.COL_B, "tag"), (15, TextFmt.ARF_B, "#tag_bod"),
+            (18, TextFmt.ARF_E, ""), (18, TextFmt.COL_E, ""),
         ], BlockFmt.NONE
     )]
 
@@ -1831,10 +1831,10 @@ def testFmtToken_FormatMeta(mockGUI):
         "@char", "Characters: Jane, John", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (11, TextFmt.COL_E, ""), (11, TextFmt.B_E, ""),
-            (12, TextFmt.COL_B, "tag"), (12, TextFmt.HRF_B, "#tag_jane"),
-            (16, TextFmt.HRF_E, ""), (16, TextFmt.COL_E, ""),
-            (18, TextFmt.COL_B, "tag"), (18, TextFmt.HRF_B, "#tag_john"),
-            (22, TextFmt.HRF_E, ""), (22, TextFmt.COL_E, ""),
+            (12, TextFmt.COL_B, "tag"), (12, TextFmt.ARF_B, "#tag_jane"),
+            (16, TextFmt.ARF_E, ""), (16, TextFmt.COL_E, ""),
+            (18, TextFmt.COL_B, "tag"), (18, TextFmt.ARF_B, "#tag_john"),
+            (22, TextFmt.ARF_E, ""), (22, TextFmt.COL_E, ""),
         ]
     )
 

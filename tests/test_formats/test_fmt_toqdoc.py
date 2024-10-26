@@ -464,10 +464,11 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
         "With sub[sub]script[/sub] text\n\n"
         "With \u201cdialog\u201d text\n\n"
         "With |<alternative dialog>| text\n\n"
+        "With http://example.com text\n\n"
     )
     doc.tokenizeText()
     doc.doConvert()
-    assert doc.document.blockCount() == 10
+    assert doc.document.blockCount() == 11
 
     # 0: Scene
     block = doc.document.findBlockByNumber(0)
@@ -561,6 +562,18 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
     cFmt = charFmtInBlock(block, 6)
     assert cFmt.foreground() == THEME.altdialog
     cFmt = charFmtInBlock(block, 28)
+    assert cFmt.foreground() == THEME.text
+
+    # 10: Url
+    block = doc.document.findBlockByNumber(10)
+    assert block.text() == "With http://example.com text"
+    cFmt = charFmtInBlock(block, 1)
+    assert cFmt.foreground() == THEME.text
+    cFmt = charFmtInBlock(block, 6)
+    assert cFmt.foreground() == THEME.link
+    assert cFmt.isAnchor() is True
+    assert cFmt.anchorHref() == "http://example.com"
+    cFmt = charFmtInBlock(block, 24)
     assert cFmt.foreground() == THEME.text
 
 

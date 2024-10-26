@@ -1089,8 +1089,8 @@ class Tokenizer(ABC):
                     for n, bit in enumerate(bits[1:], 2):
                         end = pos + len(bit)
                         fmt.append((pos, TextFmt.COL_B, "tag"))
-                        fmt.append((pos, TextFmt.HRF_B, f"#tag_{bit}".lower()))
-                        fmt.append((end, TextFmt.HRF_E, ""))
+                        fmt.append((pos, TextFmt.ARF_B, f"#tag_{bit}".lower()))
+                        fmt.append((end, TextFmt.ARF_E, ""))
                         fmt.append((end, TextFmt.COL_E, ""))
                         txt.append(bit)
                         pos = end
@@ -1116,6 +1116,13 @@ class Tokenizer(ABC):
                     (res.start(n), res.end(n), fmt, "")
                     for n, fmt in enumerate(fmts) if fmt > 0
                 )
+
+        # Match URLs
+        for res in REGEX_PATTERNS.url.finditer(text):
+            s = res.start(0)
+            e = res.end(0)
+            temp.append((s, s, TextFmt.HRF_B, res.group(0)))
+            temp.append((e, e, TextFmt.HRF_E, ""))
 
         # Match Shortcodes
         for res in REGEX_PATTERNS.shortcodePlain.finditer(text):

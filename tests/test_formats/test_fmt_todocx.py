@@ -292,6 +292,48 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToDocX_Links(mockGUI):
+    """Test formatting of links."""
+    project = NWProject()
+    doc = ToDocX(project)
+    doc.initDocument()
+
+    # Register 2 links
+    rd1 = doc._appendExternalRel("http://example.com")
+    rd2 = doc._appendExternalRel("https://example.com")
+    assert rd1 == "rId1"
+    assert rd2 == "rId2"
+
+    # Link 1
+    xTest = ET.Element(_wTag("body"))
+    doc._text = "Foo http://example.com bar"
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
+        '<w:r><w:rPr /><w:t xml:space="preserve">Foo </w:t></w:r>'
+        '<w:hyperlink r:id="rId1"><w:r><w:rPr><w:rStyle w:val="InternetLink" /></w:rPr>'
+        '<w:t>http://example.com</w:t></w:r></w:hyperlink>'
+        '<w:r><w:rPr /><w:t xml:space="preserve"> bar</w:t></w:r></w:p></w:body>'
+    )
+
+    # Link 2
+    xTest = ET.Element(_wTag("body"))
+    doc._text = "Foo https://example.com bar"
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
+        '<w:r><w:rPr /><w:t xml:space="preserve">Foo </w:t></w:r>'
+        '<w:hyperlink r:id="rId2"><w:r><w:rPr><w:rStyle w:val="InternetLink" /></w:rPr>'
+        '<w:t>https://example.com</w:t></w:r></w:hyperlink>'
+        '<w:r><w:rPr /><w:t xml:space="preserve"> bar</w:t></w:r></w:p></w:body>'
+    )
+
+
+@pytest.mark.core
 def testFmtToDocX_ParagraphFormatting(mockGUI):
     """Test formatting of paragraphs."""
     project = NWProject()
@@ -556,10 +598,13 @@ def testFmtToDocX_Footnotes(mockGUI):
     assert xmlToText(doc._files["footnotes.xml"].xml) == (
         '<w:footnotes>'
         '<w:footnote w:id="1"><w:p><w:pPr><w:pStyle w:val="FootnoteText" /></w:pPr>'
+        '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr><w:footnoteRef /></w:r>'
         '<w:r><w:rPr /><w:t>Footnote text A.</w:t></w:r></w:p></w:footnote>'
         '<w:footnote w:id="2"><w:p><w:pPr><w:pStyle w:val="FootnoteText" /></w:pPr>'
+        '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr><w:footnoteRef /></w:r>'
         '<w:r><w:rPr /><w:t>Another footnote.</w:t></w:r></w:p></w:footnote>'
         '<w:footnote w:id="3"><w:p><w:pPr><w:pStyle w:val="FootnoteText" /></w:pPr>'
+        '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr><w:footnoteRef /></w:r>'
         '<w:r><w:rPr /><w:t>Again?</w:t></w:r></w:p></w:footnote>'
         '</w:footnotes>'
     )
@@ -619,6 +664,7 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
         fncPath / "extract" / "word" / "header2.xml",
         fncPath / "extract" / "word" / "settings.xml",
         fncPath / "extract" / "word" / "styles.xml",
+        fncPath / "extract" / "word" / "fontTable.xml",
     ]
 
     outDir = tstPaths.outDir / "fmtToDocX_SaveDocument"

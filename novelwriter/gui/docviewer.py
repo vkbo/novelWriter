@@ -31,7 +31,7 @@ import logging
 from enum import Enum
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCursor, QMouseEvent, QPalette, QResizeEvent, QTextCursor
+from PyQt5.QtGui import QCursor, QDesktopServices, QMouseEvent, QPalette, QResizeEvent, QTextCursor
 from PyQt5.QtWidgets import (
     QAction, QApplication, QFrame, QHBoxLayout, QMenu, QTextBrowser,
     QToolButton, QWidget
@@ -76,6 +76,7 @@ class GuiDocViewer(QTextBrowser):
         # Settings
         self.setMinimumWidth(CONFIG.pxInt(300))
         self.setAutoFillBackground(True)
+        self.setOpenLinks(False)
         self.setOpenExternalLinks(False)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setFrameStyle(QFrame.Shape.NoFrame)
@@ -166,6 +167,7 @@ class GuiDocViewer(QTextBrowser):
         self._docTheme.text      = SHARED.theme.colText
         self._docTheme.highlight = SHARED.theme.colMark
         self._docTheme.head      = SHARED.theme.colHead
+        self._docTheme.link      = SHARED.theme.colLink
         self._docTheme.comment   = SHARED.theme.colHidden
         self._docTheme.note      = SHARED.theme.colNote
         self._docTheme.code      = SHARED.theme.colCode
@@ -378,8 +380,10 @@ class GuiDocViewer(QTextBrowser):
             logger.debug("Clicked link: '%s'", link)
             if (bits := link.partition("_")) and bits[0] == "#tag" and bits[2]:
                 self.loadDocumentTagRequest.emit(bits[2], nwDocMode.VIEW)
-            else:
+            elif link.startswith("#"):
                 self.navigateTo(link)
+            elif link.startswith("http"):
+                QDesktopServices.openUrl(QUrl(url))
         return
 
     @pyqtSlot("QPoint")

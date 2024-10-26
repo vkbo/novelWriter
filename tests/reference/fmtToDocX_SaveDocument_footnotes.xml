@@ -7,6 +7,12 @@
       </w:pPr>
       <w:r>
         <w:rPr>
+          <w:vertAlign w:val="superscript" />
+        </w:rPr>
+        <w:footnoteRef />
+      </w:r>
+      <w:r>
+        <w:rPr>
           <w:i />
         </w:rPr>
         <w:t>Lorem ipsum</w:t>

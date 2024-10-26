@@ -95,6 +95,21 @@ class GuiTextDocument(QTextDocument):
 
         return
 
+    def metaDataAtPos(self, pos: int) -> tuple[str, str]:
+        """Check if there is meta data available at a given position in
+        the document, and if so, return it.
+        """
+        cursor = QTextCursor(self)
+        cursor.setPosition(pos)
+        block = cursor.block()
+        data = block.userData()
+        if block.isValid() and isinstance(data, TextBlockData):
+            if (check := pos - block.position()) >= 0:
+                for cPos, cEnd, cData, cType in data.metaData:
+                    if cPos <= check <= cEnd:
+                        return cData, cType
+        return "", ""
+
     def spellErrorAtPos(self, pos: int) -> tuple[str, int, int, list[str]]:
         """Check if there is a misspelled word at a given position in
         the document, and if so, return it.

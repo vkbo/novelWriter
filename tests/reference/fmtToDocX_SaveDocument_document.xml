@@ -146,6 +146,24 @@
         <w:rPr />
         <w:t xml:space="preserve"> of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</w:t>
       </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Normal" />
+        <w:ind w:firstLine="335" />
+      </w:pPr>
+      <w:r>
+        <w:rPr />
+        <w:t xml:space="preserve">See </w:t>
+      </w:r>
+      <w:hyperlink r:id="rId1">
+        <w:r>
+          <w:rPr>
+            <w:rStyle w:val="InternetLink" />
+          </w:rPr>
+          <w:t>http://lipsum.com</w:t>
+        </w:r>
+      </w:hyperlink>
       <w:r>
         <w:br w:type="page" />
       </w:r>
@@ -1380,8 +1398,8 @@
       </w:r>
     </w:p>
     <w:sectPr>
-      <w:headerReference w:type="first" r:id="rId5" />
-      <w:headerReference w:type="default" r:id="rId4" />
+      <w:headerReference w:type="first" r:id="rId7" />
+      <w:headerReference w:type="default" r:id="rId6" />
       <w:footnotePr>
         <w:numFmt w:val="decimal" />
       </w:footnotePr>

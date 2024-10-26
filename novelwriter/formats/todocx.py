@@ -87,6 +87,17 @@ def _docXCol(color: QColor) -> str:
     return color.name(QtHexRgb).lstrip("#")
 
 
+def _wText(parent: ET.Element, text: str) -> ET.Element:
+    """Create a text element and add the preserve flag if necessary."""
+    attrib = {}
+    if len(text) > len(text.strip()):
+        attrib[_mkTag("xml", "space")] = "preserve"
+    return xmlSubElem(parent, _wTag("t"), text, attrib=attrib)
+
+
+# Cached
+W_VAL = _wTag("val")
+
 # Formatting Codes
 X_BLD = 0x001  # Bold format
 X_ITA = 0x002  # Italic format
@@ -96,6 +107,7 @@ X_MRK = 0x010  # Marked format
 X_SUP = 0x020  # Superscript
 X_SUB = 0x040  # Subscript
 X_COL = 0x080  # Coloured text
+X_HRF = 0x100  # Link
 
 # Formatting Masks
 M_BLD = ~X_BLD
@@ -106,6 +118,7 @@ M_MRK = ~X_MRK
 M_SUP = ~X_SUP
 M_SUB = ~X_SUB
 M_COL = ~X_COL
+M_HRF = ~X_HRF
 
 # DocX Styles
 S_NORM  = "Normal"
@@ -120,12 +133,17 @@ S_HEAD  = "Header"
 S_FNOTE = "FootnoteText"
 
 
+class DocXXmlRel(NamedTuple):
+
+    rId: str
+    relType: str
+    targetMode: str | None = None
+
+
 class DocXXmlFile(NamedTuple):
 
     xml: ET.Element
-    rId: str
     path: str
-    relType: str
     contentType: str
 
 
@@ -138,9 +156,9 @@ class DocXParStyle(NamedTuple):
     nextStyle: str | None = None
     before: float | None = None
     after: float | None = None
+    left: float | None = None
     line: float | None = None
     indentFirst: float | None = None
-    hanging: float | None = None
     align: str | None = None
     default: bool = False
     level: int | None = None
@@ -170,6 +188,7 @@ class ToDocX(Tokenizer):
 
         # Data Variables
         self._pars: list[DocXParagraph] = []
+        self._rels: dict[str, DocXXmlRel] = {}
         self._files: dict[str, DocXXmlFile] = {}
         self._styles: dict[str, DocXParStyle] = {}
         self._usedNotes: dict[str, int] = {}
@@ -183,7 +202,7 @@ class ToDocX(Tokenizer):
     def setLanguage(self, language: str | None) -> None:
         """Set language for the document."""
         if language:
-            self._dLanguage = language
+            self._dLanguage = language.replace("_", "-")
         return
 
     def setPageLayout(
@@ -288,6 +307,7 @@ class ToDocX(Tokenizer):
         self._coreXml()
         self._appXml()
         self._stylesXml()
+        self._fontTableXml()
 
         fId = None
         dId = None
@@ -320,13 +340,17 @@ class ToDocX(Tokenizer):
         wRels = ET.Element("Relationships", attrib={
             "xmlns": f"{OOXML_SCM}/package/2006/relationships"
         })
-        for name, entry in self._files.items():
-            cDocs.append((f"/{entry.path}/{name}", entry.contentType))
+        for name, rel in self._rels.items():
             isRoot = name in ("core.xml", "app.xml", "document.xml")
-            xmlSubElem(rRels if isRoot else wRels, "Relationship", attrib={
-                "Id": entry.rId, "Type": entry.relType,
-                "Target": f"{entry.path}/{name}" if isRoot else name,
-            })
+            if xml := self._files.get(name):
+                target = f"{xml.path}/{name}" if isRoot else name
+                cDocs.append((f"/{xml.path}/{name}", xml.contentType))
+            else:
+                target = name
+            attrib = {"Id": rel.rId, "Type": rel.relType, "Target": target}
+            if rel.targetMode:
+                attrib["TargetMode"] = rel.targetMode
+            xmlSubElem(rRels if isRoot else wRels, "Relationship", attrib=attrib)
 
         # Content Types XML
         dTypes = ET.Element("Types", attrib={
@@ -345,8 +369,8 @@ class ToDocX(Tokenizer):
         with ZipFile(path, mode="w", compression=ZIP_DEFLATED, compresslevel=3) as outZip:
             xmlToZip("_rels/.rels", rRels, outZip)
             xmlToZip("word/_rels/document.xml.rels", wRels, outZip)
-            for name, entry in self._files.items():
-                xmlToZip(f"{entry.path}/{name}", entry.xml, outZip)
+            for name, rel in self._files.items():
+                xmlToZip(f"{rel.path}/{name}", rel.xml, outZip)
             xmlToZip("[Content_Types].xml", dTypes, outZip)
 
         return
@@ -363,6 +387,7 @@ class ToDocX(Tokenizer):
         xFmt = 0x00
         xNode = None
         fStart = 0
+        fLink = ""
         fClass = ""
         for fPos, fFmt, fData in tFmt or []:
 
@@ -371,7 +396,7 @@ class ToDocX(Tokenizer):
                 xNode = None
 
             if temp := text[fStart:fPos]:
-                par.addContent(self._textRunToXml(temp, xFmt, fClass))
+                par.addContent(self._textRunToXml(temp, xFmt, fClass, fLink))
 
             if fFmt == TextFmt.B_B:
                 xFmt |= X_BLD
@@ -407,6 +432,12 @@ class ToDocX(Tokenizer):
             elif fFmt == TextFmt.COL_E:
                 xFmt &= M_COL
                 fClass = ""
+            elif fFmt == TextFmt.HRF_B:
+                xFmt |= X_HRF
+                fLink = fData
+            elif fFmt == TextFmt.HRF_E:
+                xFmt &= M_HRF
+                fLink = ""
             elif fFmt == TextFmt.FNOTE:
                 xNode = self._generateFootnote(fData)
             elif fFmt == TextFmt.STRIP:
@@ -419,44 +450,49 @@ class ToDocX(Tokenizer):
             par.addContent(xNode)
 
         if temp := text[fStart:]:
-            par.addContent(self._textRunToXml(temp, xFmt, fClass))
+            par.addContent(self._textRunToXml(temp, xFmt, fClass, fLink))
 
         return
 
-    def _textRunToXml(self, text: str, fmt: int, fClass: str = "") -> ET.Element:
+    def _textRunToXml(self, text: str, fmt: int, fClass: str, fLink: str) -> ET.Element:
         """Encode the text run into XML."""
-        run = ET.Element(_wTag("r"))
-        rPr = xmlSubElem(run, _wTag("rPr"))
+        xR = ET.Element(_wTag("r"))
+        rPr = xmlSubElem(xR, _wTag("rPr"))
         if fmt & X_BLD:
             xmlSubElem(rPr, _wTag("b"))
         if fmt & X_ITA:
             xmlSubElem(rPr, _wTag("i"))
         if fmt & X_UND:
-            xmlSubElem(rPr, _wTag("u"), attrib={_wTag("val"): "single"})
+            xmlSubElem(rPr, _wTag("u"), attrib={W_VAL: "single"})
         if fmt & X_MRK:
             xmlSubElem(rPr, _wTag("shd"), attrib={
-                _wTag("fill"): _docXCol(self._theme.highlight), _wTag("val"): "clear",
+                _wTag("fill"): _docXCol(self._theme.highlight), W_VAL: "clear",
             })
         if fmt & X_DEL:
             xmlSubElem(rPr, _wTag("strike"))
         if fmt & X_SUP:
-            xmlSubElem(rPr, _wTag("vertAlign"), attrib={_wTag("val"): "superscript"})
+            xmlSubElem(rPr, _wTag("vertAlign"), attrib={W_VAL: "superscript"})
         if fmt & X_SUB:
-            xmlSubElem(rPr, _wTag("vertAlign"), attrib={_wTag("val"): "subscript"})
+            xmlSubElem(rPr, _wTag("vertAlign"), attrib={W_VAL: "subscript"})
         if fmt & X_COL and (color := self._classes.get(fClass)):
-            xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): _docXCol(color)})
+            xmlSubElem(rPr, _wTag("color"), attrib={W_VAL: _docXCol(color)})
 
         for segment in RX_TEXT.split(text):
             if segment == "\n":
-                xmlSubElem(run, _wTag("br"))
+                xmlSubElem(xR, _wTag("br"))
             elif segment == "\t":
-                xmlSubElem(run, _wTag("tab"))
-            elif len(segment) != len(segment.strip()):
-                xmlSubElem(run, _wTag("t"), segment, attrib={_mkTag("xml", "space"): "preserve"})
+                xmlSubElem(xR, _wTag("tab"))
             elif segment:
-                xmlSubElem(run, _wTag("t"), segment)
+                _wText(xR, segment)
 
-        return run
+        if fmt & X_HRF and fLink:
+            xmlSubElem(rPr, _wTag("rStyle"), attrib={W_VAL: "InternetLink"})
+            rId = self._appendExternalRel(fLink)
+            xH = ET.Element(_wTag("hyperlink"), attrib={_mkTag("r", "id"): rId})
+            xH.append(xR)
+            return xH
+
+        return xR
 
     ##
     #  DocX Content
@@ -466,12 +502,12 @@ class ToDocX(Tokenizer):
         """Generate a footnote XML object."""
         if key in self._footnotes:
             idx = len(self._usedNotes) + 1
-            run = ET.Element(_wTag("r"))
-            rPr = xmlSubElem(run, _wTag("rPr"))
-            xmlSubElem(rPr, _wTag("vertAlign"), attrib={_wTag("val"): "superscript"})
-            xmlSubElem(run, _wTag("footnoteReference"), attrib={_wTag("id"): str(idx)})
+            xR = ET.Element(_wTag("r"))
+            rPr = xmlSubElem(xR, _wTag("rPr"))
+            xmlSubElem(rPr, _wTag("vertAlign"), attrib={W_VAL: "superscript"})
+            xmlSubElem(xR, _wTag("footnoteReference"), attrib={_wTag("id"): str(idx)})
             self._usedNotes[key] = idx
-            return run
+            return xR
         return None
 
     def _generateStyles(self) -> None:
@@ -617,8 +653,8 @@ class ToDocX(Tokenizer):
             basedOn=S_NORM,
             before=0.0,
             after=fnSz * self._marginFoot[1],
+            left=fnSz * self._marginFoot[0],
             line=fnSz * self._lineHeight,
-            hanging=fnSz * self._marginFoot[0],
         ))
 
         # Add to Cache
@@ -629,7 +665,19 @@ class ToDocX(Tokenizer):
 
     def _nextRelId(self) -> str:
         """Generate the next unique rId."""
-        return f"rId{len(self._files) + 1}"
+        return f"rId{len(self._rels) + 1}"
+
+    def _appendExternalRel(self, target: str) -> str:
+        """Append external rel to the registry."""
+        if rel := self._rels.get(target):
+            return rel.rId
+        rId = self._nextRelId()
+        self._rels[target] = DocXXmlRel(
+            rId=rId,
+            relType=f"{RELS_BASE}/hyperlink",
+            targetMode="External"
+        )
+        return rId
 
     def _appXml(self) -> str:
         """Populate app.xml."""
@@ -637,11 +685,13 @@ class ToDocX(Tokenizer):
         xRoot = ET.Element("Properties", attrib={
             "xmlns": f"{OOXML_SCM}/officeDocument/2006/extended-properties"
         })
+        self._rels["app.xml"] = DocXXmlRel(
+            rId=rId,
+            relType=f"{RELS_BASE}/extended-properties",
+        )
         self._files["app.xml"] = DocXXmlFile(
             xml=xRoot,
-            rId=rId,
             path="docProps",
-            relType=f"{RELS_BASE}/extended-properties",
             contentType="application/vnd.openxmlformats-officedocument.extended-properties+xml",
         )
 
@@ -661,12 +711,14 @@ class ToDocX(Tokenizer):
     def _coreXml(self) -> str:
         """Populate app.xml."""
         rId = self._nextRelId()
-        xRoot = ET.Element("coreProperties")
+        xRoot = ET.Element(_mkTag("cp", "coreProperties"))
+        self._rels["core.xml"] = DocXXmlRel(
+            rId=rId,
+            relType=f"{OOXML_SCM}/package/2006/relationships/metadata/core-properties",
+        )
         self._files["core.xml"] = DocXXmlFile(
             xml=xRoot,
-            rId=rId,
             path="docProps",
-            relType=f"{OOXML_SCM}/package/2006/relationships/metadata/core-properties",
             contentType="application/vnd.openxmlformats-package.core-properties+xml",
         )
 
@@ -676,7 +728,6 @@ class ToDocX(Tokenizer):
         xmlSubElem(xRoot, _mkTag("dcterms", "modified"), timeStamp, attrib=tsAttr)
         xmlSubElem(xRoot, _mkTag("dc", "creator"), self._project.data.author)
         xmlSubElem(xRoot, _mkTag("dc", "title"), self._project.data.name)
-        xmlSubElem(xRoot, _mkTag("dc", "creator"), self._project.data.author)
         xmlSubElem(xRoot, _mkTag("dc", "language"), self._dLanguage)
         xmlSubElem(xRoot, _mkTag("cp", "revision"), str(self._project.data.saveCount))
         xmlSubElem(xRoot, _mkTag("cp", "lastModifiedBy"), self._project.data.author)
@@ -687,11 +738,13 @@ class ToDocX(Tokenizer):
         """Populate styles.xml."""
         rId = self._nextRelId()
         xRoot = ET.Element(_wTag("styles"))
+        self._rels["styles.xml"] = DocXXmlRel(
+            rId=rId,
+            relType=f"{RELS_BASE}/styles",
+        )
         self._files["styles.xml"] = DocXXmlFile(
             xml=xRoot,
-            rId=rId,
             path="word",
-            relType=f"{RELS_BASE}/styles",
             contentType=f"{WORD_BASE}.styles+xml",
         )
 
@@ -710,9 +763,9 @@ class ToDocX(Tokenizer):
             _wTag("hAnsi"): self._fontFamily,
             _wTag("cs"): self._fontFamily,
         })
-        xmlSubElem(xRPr, _wTag("sz"), attrib={_wTag("val"): size})
-        xmlSubElem(xRPr, _wTag("szCs"), attrib={_wTag("val"): size})
-        xmlSubElem(xRPr, _wTag("lang"), attrib={_wTag("val"): self._dLanguage})
+        xmlSubElem(xRPr, _wTag("sz"), attrib={W_VAL: size})
+        xmlSubElem(xRPr, _wTag("szCs"), attrib={W_VAL: size})
+        xmlSubElem(xRPr, _wTag("lang"), attrib={W_VAL: self._dLanguage})
         xmlSubElem(xPPr, _wTag("spacing"), attrib={_wTag("line"): line})
 
         # Paragraph Styles
@@ -726,11 +779,11 @@ class ToDocX(Tokenizer):
             size = firstFloat(style.size, self._fontSize)
 
             xStyl = xmlSubElem(xRoot, _wTag("style"), attrib=sAttr)
-            xmlSubElem(xStyl, _wTag("name"), attrib={_wTag("val"): style.name})
+            xmlSubElem(xStyl, _wTag("name"), attrib={W_VAL: style.name})
             if style.basedOn:
-                xmlSubElem(xStyl, _wTag("basedOn"), attrib={_wTag("val"): style.basedOn})
+                xmlSubElem(xStyl, _wTag("basedOn"), attrib={W_VAL: style.basedOn})
             if style.nextStyle:
-                xmlSubElem(xStyl, _wTag("next"), attrib={_wTag("val"): style.nextStyle})
+                xmlSubElem(xStyl, _wTag("next"), attrib={W_VAL: style.nextStyle})
 
             # pPr Node
             pPr = xmlSubElem(xStyl, _wTag("pPr"))
@@ -739,24 +792,33 @@ class ToDocX(Tokenizer):
                 _wTag("after"): str(int(20.0 * firstFloat(style.after))),
                 _wTag("line"): str(int(20.0 * firstFloat(style.line, size))),
             })
-            if style.hanging is not None:
+            if style.left is not None:
                 xmlSubElem(pPr, _wTag("ind"), attrib={
-                    _wTag("left"): str(int(20.0 * style.hanging)),
-                    _wTag("hanging"): str(int(20.0 * style.hanging)),
+                    _wTag("left"): str(int(20.0 * style.left)),
                 })
             if style.align:
-                xmlSubElem(pPr, _wTag("jc"), attrib={_wTag("val"): style.align})
+                xmlSubElem(pPr, _wTag("jc"), attrib={W_VAL: style.align})
             if style.level is not None:
-                xmlSubElem(pPr, _wTag("outlineLvl"), attrib={_wTag("val"): str(style.level)})
+                xmlSubElem(pPr, _wTag("outlineLvl"), attrib={W_VAL: str(style.level)})
 
             # rPr Node
             rPr = xmlSubElem(xStyl, _wTag("rPr"))
             if style.bold:
                 xmlSubElem(rPr, _wTag("b"))
             if style.color:
-                xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): style.color})
-            xmlSubElem(rPr, _wTag("sz"), attrib={_wTag("val"): str(int(2.0 * size))})
-            xmlSubElem(rPr, _wTag("szCs"), attrib={_wTag("val"): str(int(2.0 * size))})
+                xmlSubElem(rPr, _wTag("color"), attrib={W_VAL: style.color})
+            xmlSubElem(rPr, _wTag("sz"), attrib={W_VAL: str(int(2.0 * size))})
+            xmlSubElem(rPr, _wTag("szCs"), attrib={W_VAL: str(int(2.0 * size))})
+
+        # Character Style
+        xStyl = xmlSubElem(xRoot, _wTag("style"), attrib={
+            _wTag("type"): "character",
+            _wTag("styleId"): "InternetLink"
+        })
+        xmlSubElem(xStyl, _wTag("name"), attrib={W_VAL: "Hyperlink"})
+        rPr = xmlSubElem(xStyl, _wTag("rPr"))
+        xmlSubElem(rPr, _wTag("color"), attrib={W_VAL: _docXCol(self._theme.link)})
+        xmlSubElem(rPr, _wTag("u"), attrib={W_VAL: "single"})
 
         return rId
 
@@ -764,18 +826,20 @@ class ToDocX(Tokenizer):
         """Populate header1.xml."""
         rId = self._nextRelId()
         xRoot = ET.Element(_wTag("hdr"))
+        self._rels["header1.xml"] = DocXXmlRel(
+            rId=rId,
+            relType=f"{RELS_BASE}/header",
+        )
         self._files["header1.xml"] = DocXXmlFile(
             xml=xRoot,
-            rId=rId,
             path="word",
-            relType=f"{RELS_BASE}/header",
             contentType=f"{WORD_BASE}.header+xml",
         )
 
         xP = xmlSubElem(xRoot, _wTag("p"))
         xPPr = xmlSubElem(xP, _wTag("pPr"))
-        xmlSubElem(xPPr, _wTag("pStyle"), attrib={_wTag("val"): S_HEAD})
-        xmlSubElem(xPPr, _wTag("jc"), attrib={_wTag("val"): "right"})
+        xmlSubElem(xPPr, _wTag("pStyle"), attrib={W_VAL: S_HEAD})
+        xmlSubElem(xPPr, _wTag("jc"), attrib={W_VAL: "right"})
         xmlSubElem(xPPr, _wTag("rPr"))
 
         pre, page, post = self._headerFormat.partition(nwHeadFmt.DOC_PAGE)
@@ -784,25 +848,24 @@ class ToDocX(Tokenizer):
         post = post.replace(nwHeadFmt.DOC_PROJECT, self._project.data.name)
         post = post.replace(nwHeadFmt.DOC_AUTHOR, self._project.data.author)
 
-        xSpace = _mkTag("xml", "space")
         wFldCT = _wTag("fldCharType")
-
-        parts: list[tuple[str, str | None, str, str]] = []
         if pre:
-            parts.append(("t", pre, xSpace, "preserve"))
-        if page:
-            parts.append(("fldChar", None, wFldCT, "begin"))
-            parts.append(("t", " PAGE ", xSpace, "preserve"))
-            parts.append(("fldChar", None, wFldCT, "separate"))
-            parts.append(("t", "2", xSpace, "preserve"))
-            parts.append(("fldChar", None, wFldCT, "end"))
-        if post:
-            parts.append(("t", post, xSpace, "preserve"))
-
-        for part in parts:
             xR = xmlSubElem(xP, _wTag("r"))
-            xmlSubElem(xR, _wTag("rPr"))
-            xmlSubElem(xR, _wTag(part[0]), part[1], attrib={part[2]: part[3]})
+            _wText(xR, pre)
+        if page:
+            xR = xmlSubElem(xP, _wTag("r"))
+            xmlSubElem(xR, _wTag("fldChar"), attrib={wFldCT: "begin"})
+            xR = xmlSubElem(xP, _wTag("r"))
+            _wText(xR, " PAGE ")
+            xR = xmlSubElem(xP, _wTag("r"))
+            xmlSubElem(xR, _wTag("fldChar"), attrib={wFldCT: "separate"})
+            xR = xmlSubElem(xP, _wTag("r"))
+            _wText(xR, "0")
+            xR = xmlSubElem(xP, _wTag("r"))
+            xmlSubElem(xR, _wTag("fldChar"), attrib={wFldCT: "end"})
+        if post:
+            xR = xmlSubElem(xP, _wTag("r"))
+            _wText(xR, post)
 
         return rId
 
@@ -810,18 +873,20 @@ class ToDocX(Tokenizer):
         """Populate header2.xml."""
         rId = self._nextRelId()
         xRoot = ET.Element(_wTag("hdr"))
+        self._rels["header2.xml"] = DocXXmlRel(
+            rId=rId,
+            relType=f"{RELS_BASE}/header",
+        )
         self._files["header2.xml"] = DocXXmlFile(
             xml=xRoot,
-            rId=rId,
             path="word",
-            relType=f"{RELS_BASE}/header",
             contentType=f"{WORD_BASE}.header+xml",
         )
 
         xP = xmlSubElem(xRoot, _wTag("p"))
         xPPr = xmlSubElem(xP, _wTag("pPr"))
-        xmlSubElem(xPPr, _wTag("pStyle"), attrib={_wTag("val"): S_HEAD})
-        xmlSubElem(xPPr, _wTag("jc"), attrib={_wTag("val"): "right"})
+        xmlSubElem(xPPr, _wTag("pStyle"), attrib={W_VAL: S_HEAD})
+        xmlSubElem(xPPr, _wTag("jc"), attrib={W_VAL: "right"})
         xmlSubElem(xPPr, _wTag("rPr"))
 
         xR = xmlSubElem(xP, _wTag("r"))
@@ -833,12 +898,15 @@ class ToDocX(Tokenizer):
         """Populate document.xml."""
         rId = self._nextRelId()
         xRoot = ET.Element(_wTag("document"))
+        xRoot.set("xmlns:w14", "http://schemas.microsoft.com/office/word/2010/wordml")
         xBody = xmlSubElem(xRoot, _wTag("body"))
+        self._rels["document.xml"] = DocXXmlRel(
+            rId=rId,
+            relType=f"{RELS_BASE}/officeDocument",
+        )
         self._files["document.xml"] = DocXXmlFile(
             xml=xRoot,
-            rId=rId,
             path="word",
-            relType=f"{RELS_BASE}/officeDocument",
             contentType=f"{WORD_BASE}.document.main+xml",
         )
 
@@ -871,7 +939,7 @@ class ToDocX(Tokenizer):
 
         xFn = xmlSubElem(xSect, _wTag("footnotePr"))
         xmlSubElem(xFn, _wTag("numFmt"), attrib={
-            _wTag("val"): "decimal",
+            W_VAL: "decimal",
         })
 
         xmlSubElem(xSect, _wTag("pgSz"), attrib={
@@ -900,19 +968,45 @@ class ToDocX(Tokenizer):
         """Populate footnotes.xml."""
         rId = self._nextRelId()
         xRoot = ET.Element(_wTag("footnotes"))
+        self._rels["footnotes.xml"] = DocXXmlRel(
+            rId=rId,
+            relType=f"{RELS_BASE}/footnotes",
+        )
         self._files["footnotes.xml"] = DocXXmlFile(
             xml=xRoot,
-            rId=rId,
             path="word",
-            relType=f"{RELS_BASE}/footnotes",
             contentType=f"{WORD_BASE}.footnotes+xml",
         )
 
         for key, idx in self._usedNotes.items():
             par = DocXParagraph()
+            par.setIsFootnote(True)
             if content := self._footnotes.get(key):
                 self._processFragments(par, S_FNOTE, content[0], content[1])
             par.toXml(xmlSubElem(xRoot, _wTag("footnote"), attrib={_wTag("id"): str(idx)}))
+
+        return rId
+
+    def _fontTableXml(self) -> str:
+        """Populate fontTable.xml."""
+        rId = self._nextRelId()
+        xRoot = ET.Element(_wTag("fonts"))
+        self._rels["fontTable.xml"] = DocXXmlRel(
+            rId=rId,
+            relType=f"{RELS_BASE}/fontTable",
+        )
+        self._files["fontTable.xml"] = DocXXmlFile(
+            xml=xRoot,
+            path="word",
+            contentType=f"{WORD_BASE}.fontTable+xml",
+        )
+
+        xFont = xmlSubElem(xRoot, _wTag("font"), attrib={
+            _wTag("name"): self._textFont.family(),
+        })
+        xmlSubElem(xFont, _wTag("pitch"), attrib={
+            W_VAL: "fixed" if self._textFont.fixedPitch() else "variable",
+        })
 
         return rId
 
@@ -920,23 +1014,32 @@ class ToDocX(Tokenizer):
         """Populate settings.xml."""
         rId = self._nextRelId()
         xRoot = ET.Element(_wTag("settings"))
+        self._rels["settings.xml"] = DocXXmlRel(
+            rId=rId,
+            relType=f"{RELS_BASE}/settings",
+        )
         self._files["settings.xml"] = DocXXmlFile(
             xml=xRoot,
-            rId=rId,
             path="word",
-            relType=f"{RELS_BASE}/settings",
             contentType=f"{WORD_BASE}.settings+xml",
         )
 
-        xFn = xmlSubElem(xRoot, _wTag("footnotePr"))
-        xmlSubElem(xFn, _wTag("numFmt"), attrib={_wTag("val"): "decimal"})
+        xSet = xmlSubElem(xRoot, _wTag("footnotePr"))
+        xmlSubElem(xSet, _wTag("numFmt"), attrib={W_VAL: "decimal"})
+
+        xSet = xmlSubElem(xRoot, _wTag("compat"))
+        xmlSubElem(xSet, _wTag("compatSetting"), attrib={
+            _wTag("name"): "compatibilityMode",
+            _wTag("uri"): "http://schemas.microsoft.com/office/word",
+            W_VAL: "12",
+        })
 
         if self._counts:
             xVars = xmlSubElem(xRoot, _wTag("docVars"))
             for key, value in self._counts.items():
                 xmlSubElem(xVars, _wTag("docVar"), attrib={
                     _wTag("name"): f"Manuscript{key[:1].upper()}{key[1:]}",
-                    _wTag("val"): str(value),
+                    W_VAL: str(value),
                 })
 
         return rId
@@ -947,7 +1050,7 @@ class DocXParagraph:
     __slots__ = (
         "_content", "_style", "_textAlign",
         "_topMargin", "_bottomMargin", "_leftMargin", "_rightMargin",
-        "_indentFirst", "_breakBefore", "_breakAfter",
+        "_indentFirst", "_breakBefore", "_breakAfter", "_footnoteRef",
     )
 
     def __init__(self) -> None:
@@ -961,6 +1064,7 @@ class DocXParagraph:
         self._indentFirst = False
         self._breakBefore = False
         self._breakAfter = False
+        self._footnoteRef = False
         return
 
     ##
@@ -1022,6 +1126,11 @@ class DocXParagraph:
         self._breakAfter = state
         return
 
+    def setIsFootnote(self, state: bool) -> None:
+        """Set is footnote flag."""
+        self._footnoteRef = state
+        return
+
     ##
     #  Methods
     ##
@@ -1034,7 +1143,7 @@ class DocXParagraph:
     def toXml(self, body: ET.Element) -> None:
         """Called after all content is set."""
         if style := self._style:
-            par = xmlSubElem(body, _wTag("p"))
+            xP = xmlSubElem(body, _wTag("p"))
 
             # Values
             indent = {}
@@ -1046,27 +1155,32 @@ class DocXParagraph:
                 indent[_wTag("right")] = str(int(20.0 * self._rightMargin))
 
             # Paragraph
-            pPr = xmlSubElem(par, _wTag("pPr"))
-            xmlSubElem(pPr, _wTag("pStyle"), attrib={_wTag("val"): style.styleId})
+            pPr = xmlSubElem(xP, _wTag("pPr"))
+            xmlSubElem(pPr, _wTag("pStyle"), attrib={W_VAL: style.styleId})
             if self._topMargin is not None or self._bottomMargin is not None:
                 xmlSubElem(pPr, _wTag("spacing"), attrib={
                     _wTag("before"): str(int(20.0 * firstFloat(self._topMargin, style.before))),
                     _wTag("after"): str(int(20.0 * firstFloat(self._bottomMargin, style.after))),
                     _wTag("line"): str(int(20.0 * firstFloat(style.line, style.size))),
                 })
-            if self._textAlign:
-                xmlSubElem(pPr, _wTag("jc"), attrib={_wTag("val"): self._textAlign})
             if indent:
                 xmlSubElem(pPr, _wTag("ind"), attrib=indent)
+            if self._textAlign:
+                xmlSubElem(pPr, _wTag("jc"), attrib={W_VAL: self._textAlign})
 
             # Text
+            if self._footnoteRef:
+                xR = xmlSubElem(xP, _wTag("r"))
+                rPr = xmlSubElem(xR, _wTag("rPr"))
+                xmlSubElem(rPr, _wTag("vertAlign"), attrib={W_VAL: "superscript"})
+                xmlSubElem(xR, _wTag("footnoteRef"))
             if self._breakBefore:
-                wr = xmlSubElem(par, _wTag("r"))
-                xmlSubElem(wr, _wTag("br"), attrib={_wTag("type"): "page"})
-            for run in self._content:
-                par.append(run)
+                xR = xmlSubElem(xP, _wTag("r"))
+                xmlSubElem(xR, _wTag("br"), attrib={_wTag("type"): "page"})
+            for xR in self._content:
+                xP.append(xR)
             if self._breakAfter:
-                wr = xmlSubElem(par, _wTag("r"))
-                xmlSubElem(wr, _wTag("br"), attrib={_wTag("type"): "page"})
+                xR = xmlSubElem(xP, _wTag("r"))
+                xmlSubElem(xR, _wTag("br"), attrib={_wTag("type"): "page"})
 
         return

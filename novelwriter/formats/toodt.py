@@ -49,14 +49,15 @@ logger = logging.getLogger(__name__)
 
 # Main XML NameSpaces
 XML_NS = {
+    "dc":       "http://purl.org/dc/elements/1.1/",
+    "fo":       "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
+    "loext":    "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
     "manifest": "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0",
+    "meta":     "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
     "office":   "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
     "style":    "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
-    "loext":    "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
     "text":     "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
-    "meta":     "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
-    "fo":       "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
-    "dc":       "http://purl.org/dc/elements/1.1/",
+    "xlink":    "http://www.w3.org/1999/xlink",
 }
 for ns, uri in XML_NS.items():
     ET.register_namespace(ns, uri)
@@ -80,7 +81,6 @@ TAG_SPC  = _mkTag("text", "s")
 TAG_NSPC = _mkTag("text", "c")
 TAG_TAB  = _mkTag("text", "tab")
 TAG_SPAN = _mkTag("text", "span")
-TAG_STNM = _mkTag("text", "style-name")
 
 # Formatting Codes
 X_BLD = 0x001  # Bold format
@@ -91,6 +91,7 @@ X_MRK = 0x010  # Marked format
 X_SUP = 0x020  # Superscript
 X_SUB = 0x040  # Subscript
 X_COL = 0x080  # Coloured text
+X_HRF = 0x100  # Link
 
 # Formatting Masks
 M_BLD = ~X_BLD
@@ -101,6 +102,7 @@ M_MRK = ~X_MRK
 M_SUP = ~X_SUP
 M_SUB = ~X_SUB
 M_COL = ~X_COL
+M_HRF = ~X_HRF
 
 # ODT Styles
 S_TITLE = "Title"
@@ -570,6 +572,7 @@ class ToOdt(Tokenizer):
         fLast = 0
         xNode = None
         fClass = ""
+        fLink = ""
         for fPos, fFmt, fData in tFmt or []:
 
             # Add any extra nodes
@@ -582,7 +585,7 @@ class ToOdt(Tokenizer):
                 if xFmt == 0x00:
                     parProc.appendText(tFrag)
                 else:
-                    parProc.appendSpan(tFrag, self._textStyle(xFmt, fClass))
+                    parProc.appendSpan(tFrag, self._textStyle(xFmt, fClass), fLink)
 
             # Calculate the change of format
             if fFmt == TextFmt.B_B:
@@ -619,6 +622,12 @@ class ToOdt(Tokenizer):
             elif fFmt == TextFmt.COL_E:
                 xFmt &= M_COL
                 fClass = ""
+            elif fFmt == TextFmt.HRF_B:
+                xFmt |= X_HRF
+                fLink = fData
+            elif fFmt == TextFmt.HRF_E:
+                xFmt &= M_HRF
+                fLink = ""
             elif fFmt == TextFmt.FNOTE:
                 xNode = self._generateFootnote(fData)
             elif fFmt == TextFmt.STRIP:
@@ -633,7 +642,7 @@ class ToOdt(Tokenizer):
             if xFmt == 0x00:
                 parProc.appendText(tFrag)
             else:
-                parProc.appendSpan(tFrag, self._textStyle(xFmt, fClass))
+                parProc.appendSpan(tFrag, self._textStyle(xFmt, fClass), fLink)
 
         nErr, errMsg = parProc.checkError()
         if nErr > 0:  # pragma: no cover
@@ -692,6 +701,11 @@ class ToOdt(Tokenizer):
             style.setTextPosition("sub")
         if hFmt & X_COL and color:
             style.setColor(color)
+        if hFmt & X_HRF:
+            style.setColor(self._theme.link)
+            style.setUnderlineStyle("solid")
+            style.setUnderlineWidth("auto")
+            style.setUnderlineColor("font-color")
         self._autoText[tKey] = style
 
         return style.name
@@ -1497,13 +1511,22 @@ class XMLParagraph:
 
         return
 
-    def appendSpan(self, text: str, fmt: str) -> None:
+    def appendSpan(self, text: str, style: str, link: str) -> None:
         """Append a text span to the XML element. The span is always
-        closed since we do not allow nested spans (like Libre Office).
+        closed since we do not produce nested spans (like Libre Office).
         Therefore we return to the root element level when we're done
         processing the text of the span.
         """
-        self._xTail = ET.SubElement(self._xRoot, TAG_SPAN, attrib={TAG_STNM: fmt})
+        if link:
+            self._xTail = ET.SubElement(self._xRoot, _mkTag("text", "a"), attrib={
+                _mkTag("xlink", "type"): "simple",
+                _mkTag("xlink", "href"): link,
+                _mkTag("text", "style-name"): style,
+            })
+        else:
+            self._xTail = ET.SubElement(self._xRoot, TAG_SPAN, attrib={
+                _mkTag("text", "style-name"): style,
+            })
         self._xTail.text = ""  # Defaults to None
         self._xTail.tail = ""  # Defaults to None
         self._nState = X_SPAN_TEXT

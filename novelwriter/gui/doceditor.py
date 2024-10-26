@@ -38,12 +38,13 @@ from enum import Enum
 from time import time
 
 from PyQt5.QtCore import (
-    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
-    pyqtSlot
+    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, QUrl,
+    pyqtSignal, pyqtSlot
 )
 from PyQt5.QtGui import (
-    QColor, QCursor, QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap,
-    QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QColor, QCursor, QDesktopServices, QKeyEvent, QKeySequence, QMouseEvent,
+    QPalette, QPixmap, QResizeEvent, QTextBlock, QTextCursor, QTextDocument,
+    QTextOption
 )
 from PyQt5.QtWidgets import (
     QAction, QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
@@ -984,8 +985,13 @@ class GuiDocEditor(QPlainTextEdit):
         pressed, check if we're clicking on a tag, and trigger the
         follow tag function.
         """
-        if QApplication.keyboardModifiers() == QtModCtrl:
-            self._processTag(self.cursorForPosition(event.pos()))
+        if event.modifiers() & QtModCtrl == QtModCtrl:
+            cursor = self.cursorForPosition(event.pos())
+            mData, mType = self._qDocument.metaDataAtPos(cursor.position())
+            if mData and mType == "url":
+                self._openWebsite(mData)
+            else:
+                self._processTag(cursor)
         super().mouseReleaseEvent(event)
         return
 
@@ -1116,6 +1122,13 @@ class GuiDocEditor(QPlainTextEdit):
             action = ctxMenu.addAction(self.tr("Set as Document Name"))
             action.triggered.connect(lambda: self._emitRenameItem(pBlock))
 
+        # URL
+        (mData, mType) = self._qDocument.metaDataAtPos(pCursor.position())
+        if mData and mType == "url":
+            action = ctxMenu.addAction(self.tr("Open URL"))
+            action.triggered.connect(lambda: self._openWebsite(mData))
+            ctxMenu.addSeparator()
+
         # Follow
         status = self._processTag(cursor=pCursor, follow=False)
         if status == nwTrinary.POSITIVE:
@@ -1181,6 +1194,12 @@ class GuiDocEditor(QPlainTextEdit):
         ctxMenu.exec(self.viewport().mapToGlobal(pos))
         ctxMenu.deleteLater()
 
+        return
+
+    @pyqtSlot(str)
+    def _openWebsite(self, url: str) -> None:
+        """Open a URL in the system's default browser."""
+        QDesktopServices.openUrl(QUrl(url))
         return
 
     @pyqtSlot()

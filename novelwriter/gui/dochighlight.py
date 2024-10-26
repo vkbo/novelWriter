@@ -44,6 +44,7 @@ from novelwriter.text.patterns import REGEX_PATTERNS
 
 logger = logging.getLogger(__name__)
 
+RX_URL = REGEX_PATTERNS.url
 RX_WORDS = REGEX_PATTERNS.wordSplit
 RX_FMT_SC = REGEX_PATTERNS.shortcodePlain
 RX_FMT_SV = REGEX_PATTERNS.shortcodeValue
@@ -113,10 +114,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._addCharFormat("replace",   SHARED.theme.colRepTag)
         self._addCharFormat("hidden",    SHARED.theme.colHidden)
         self._addCharFormat("markup",    SHARED.theme.colHidden)
+        self._addCharFormat("link",      SHARED.theme.colLink, "u")
         self._addCharFormat("note",      SHARED.theme.colNote)
         self._addCharFormat("code",      SHARED.theme.colCode)
         self._addCharFormat("keyword",   SHARED.theme.colKey)
-        self._addCharFormat("tag",       SHARED.theme.colTag)
+        self._addCharFormat("tag",       SHARED.theme.colTag, "u")
         self._addCharFormat("modifier",  SHARED.theme.colMod)
         self._addCharFormat("value",     SHARED.theme.colVal)
         self._addCharFormat("optional",  SHARED.theme.colOpt)
@@ -226,6 +228,15 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             1: self._hStyles["code"],
             2: self._hStyles["value"],
             3: self._hStyles["code"],
+        }
+        self._minRules.append((rxRule, hlRule))
+        self._txtRules.append((rxRule, hlRule))
+        self._cmnRules.append((rxRule, hlRule))
+
+        # URLs
+        rxRule = REGEX_PATTERNS.url
+        hlRule = {
+            0: self._hStyles["link"],
         }
         self._minRules.append((rxRule, hlRule))
         self._txtRules.append((rxRule, hlRule))
@@ -417,8 +428,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             data = TextBlockData()
             self.setCurrentBlockUserData(data)
 
+        data.processText(text, xOff)
         if self._spellCheck:
-            for xPos, xEnd in data.spellCheck(text, xOff):
+            for xPos, xEnd in data.spellCheck():
                 for x in range(xPos, xEnd):
                     cFmt = self.format(x)
                     cFmt.merge(self._spellErr)
@@ -447,6 +459,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 charFormat.setFontWeight(QFont.Weight.Bold)
             if "i" in styles:
                 charFormat.setFontItalic(True)
+            if "u" in styles:
+                charFormat.setFontUnderline(True)
             if "s" in styles:
                 charFormat.setFontStrikeOut(True)
             if "err" in styles:
@@ -465,22 +479,29 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
 class TextBlockData(QTextBlockUserData):
 
-    __slots__ = ("_spellErrors")
+    __slots__ = ("_text", "_offset", "_metaData", "_spellErrors")
 
     def __init__(self) -> None:
         super().__init__()
-        self._spellErrors: list[tuple[int, int]] = []
+        self._text = ""
+        self._offset = 0
+        self._metaData: list[tuple[int, int, str, str]] = []
+        self._spellErrors: list[tuple[int, int,]] = []
         return
+
+    @property
+    def metaData(self) -> list[tuple[int, int, str, str]]:
+        """Return meta data from last check."""
+        return self._metaData
 
     @property
     def spellErrors(self) -> list[tuple[int, int]]:
         """Return spell error data from last check."""
         return self._spellErrors
 
-    def spellCheck(self, text: str, offset: int) -> list[tuple[int, int]]:
-        """Run the spell checker and cache the result, and return the
-        list of spell check errors.
-        """
+    def processText(self, text: str, offset: int) -> None:
+        """Extract meta data from the text."""
+        self._metaData = []
         if "[" in text:
             # Strip shortcodes
             for regEx in [RX_FMT_SC, RX_FMT_SV]:
@@ -489,9 +510,25 @@ class TextBlockData(QTextBlockUserData):
                         pad = " "*(e - s)
                         text = f"{text[:s]}{pad}{text[e:]}"
 
+        if "http" in text:
+            # Strip URLs
+            for res in RX_URL.finditer(text, offset):
+                if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:
+                    pad = " "*(e - s)
+                    text = f"{text[:s]}{pad}{text[e:]}"
+                    self._metaData.append((s, e, res.group(0), "url"))
+
+        self._text = text
+
+        return
+
+    def spellCheck(self) -> list[tuple[int, int]]:
+        """Run the spell checker and cache the result, and return the
+        list of spell check errors.
+        """
         self._spellErrors = []
         checker = SHARED.spelling
-        for res in RX_WORDS.finditer(text.replace("_", " "), offset):
+        for res in RX_WORDS.finditer(self._text.replace("_", " "), self._offset):
             if (
                 (word := res.group(0))
                 and not (word.isnumeric() or word.isupper() or checker.checkWord(word))
