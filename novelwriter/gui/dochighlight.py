@@ -59,7 +59,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
     __slots__ = (
         "_tHandle", "_isNovel", "_isInactive", "_spellCheck", "_spellErr",
-        "_hStyles", "_minRules", "_txtRules", "_cmnRules",
+        "_hStyles", "_minRules", "_txtRules", "_cmnRules", "_dialogLine",
+        "_narratorBreak",
     )
 
     def __init__(self, document: QTextDocument) -> None:
@@ -77,6 +78,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._minRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
         self._txtRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
         self._cmnRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
+
+        self._dialogLine = ""
+        self._narratorBreak = ""
 
         self.initHighlighter()
 
@@ -132,6 +136,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._txtRules.clear()
         self._cmnRules.clear()
 
+        self._dialogLine = CONFIG.dialogLine
+        self._narratorBreak = CONFIG.narratorBreak
+
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
             rxRule = re.compile(r"[ ]{2,}|[ ]*$", re.UNICODE)
@@ -156,20 +163,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             rxRule = REGEX_PATTERNS.dialogStyle
             hlRule = {
                 0: self._hStyles["dialog"],
-            }
-            self._txtRules.append((rxRule, hlRule))
-
-        if CONFIG.dialogLine:
-            rxRule = REGEX_PATTERNS.dialogLine
-            hlRule = {
-                0: self._hStyles["dialog"],
-            }
-            self._txtRules.append((rxRule, hlRule))
-
-        if CONFIG.narratorBreak:
-            rxRule = REGEX_PATTERNS.narratorBreak
-            hlRule = {
-                0: self._hStyles["text"],
             }
             self._txtRules.append((rxRule, hlRule))
 
@@ -410,6 +403,17 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         else:  # Text Paragraph
             self.setCurrentBlockState(BLOCK_TEXT)
             hRules = self._txtRules if self._isNovel else self._minRules
+
+        if self._dialogLine and text.startswith(self._dialogLine):
+            if self._narratorBreak:
+                tPos = 0
+                for tNum, tBit in enumerate(text[1:].split(self._narratorBreak), 1):
+                    tLen = len(tBit) + 1
+                    if tNum%2:
+                        self.setFormat(tPos, tLen, self._hStyles["dialog"])
+                    tPos += tLen
+            else:
+                self.setFormat(0, len(text), self._hStyles["dialog"])
 
         if hRules:
             for rX, hRule in hRules:
