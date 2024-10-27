@@ -97,18 +97,6 @@ class RegExPatterns:
         return re.compile(f"\\B[{symO}].*?(?:[{symC}]\\B{rxEnd})", re.UNICODE)
 
     @property
-    def dialogLine(self) -> re.Pattern:
-        """Dialogue line rule based on user settings."""
-        sym = re.escape(CONFIG.dialogLine)
-        return re.compile(f"^{sym}.*?$", re.UNICODE)
-
-    @property
-    def narratorBreak(self) -> re.Pattern:
-        """Dialogue narrator break rule based on user settings."""
-        sym = re.escape(CONFIG.narratorBreak)
-        return re.compile(f"\\B{sym}\\S.*?\\S{sym}\\B", re.UNICODE)
-
-    @property
     def altDialogStyle(self) -> re.Pattern:
         """Dialogue alternative rule based on user settings."""
         symO = re.escape(CONFIG.altDialogOpen)

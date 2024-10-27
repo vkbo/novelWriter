@@ -327,34 +327,8 @@ def testTextPatterns_DialogueSpecial():
     CONFIG.fmtDQuoteClose = nwUnicode.U_RDQUO
 
     CONFIG.dialogStyle = 3
-    CONFIG.dialogLine = nwUnicode.U_ENDASH
-    CONFIG.narratorBreak = nwUnicode.U_ENDASH
     CONFIG.altDialogOpen = "::"
     CONFIG.altDialogClose = "::"
-
-    # Dialogue Line
-    # =============
-    regEx = REGEX_PATTERNS.dialogLine
-
-    # Check dialogue line in first position
-    assert allMatches(regEx, "\u2013 one two three") == [
-        [("\u2013 one two three", 0, 15)]
-    ]
-
-    # Check dialogue line in second position
-    assert allMatches(regEx, " \u2013 one two three") == []
-
-    # Narrator Break
-    # ==============
-    regEx = REGEX_PATTERNS.narratorBreak
-
-    # Narrator break with no padding
-    assert allMatches(regEx, "one \u2013two\u2013 three") == [
-        [("\u2013two\u2013", 4, 9)]
-    ]
-
-    # Narrator break with padding
-    assert allMatches(regEx, "one \u2013 two \u2013 three") == []
 
     # Alternative Dialogue
     # ====================
