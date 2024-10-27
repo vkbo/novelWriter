@@ -1,8 +1,8 @@
 %%~name: New Scene
 %%~path: 000000000000d/000000000000f
 %%~kind: NOVEL/DOCUMENT
-%%~hash: 2a863dc53e09b0b1b0294ae7ea001853dddd596d
-%%~date: 2023-10-17 20:52:56/2023-10-17 20:53:01
+%%~hash: 0566024662fb6ed7ed645717addd64dabf058915
+%%~date: 2024-10-27 13:03:13/2024-10-27 13:03:18
 # Novel
 
 ## Chapter
@@ -33,6 +33,10 @@ This is another paragraph of much longer nonsense text. It is in fact 1 very ver
 ‘Full line single quoted text.’
 
 Some “ double quoted text with spaces padded ”.
+
+– Hi, I am a character speaking.
+
+– Hi, I am also a character speaking, – said another character. – How are you?
 
 @object: NoSpaceAdded
 
