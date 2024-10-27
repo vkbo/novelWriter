@@ -271,10 +271,13 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
         "@entity": [],
         "@focus": [],
         "@location": ["Earth"],
+        "@mention": [],
         "@object": [],
         "@plot": [],
         "@pov": ["Jane"],
-        "@time": []
+        "@story": [],
+        "@tag": [],
+        "@time": [],
     }
 
     assert index.rootChangedSince(C.hNovelRoot, 0) is True
