@@ -174,8 +174,9 @@ class nwOutline(Enum):
     OBJECT  = 13
     ENTITY  = 14
     CUSTOM  = 15
-    MENTION = 16
-    SYNOP   = 17
+    STORY   = 16
+    MENTION = 17
+    SYNOP   = 18
 
 
 class nwBuildFmt(Enum):

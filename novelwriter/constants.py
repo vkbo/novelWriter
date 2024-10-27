@@ -156,12 +156,13 @@ class nwKeyWords:
     OBJECT_KEY  = "@object"
     ENTITY_KEY  = "@entity"
     CUSTOM_KEY  = "@custom"
+    STORY_KEY   = "@story"
     MENTION_KEY = "@mention"
 
     # Set of Valid Keys
     VALID_KEYS = {
-        TAG_KEY, POV_KEY, FOCUS_KEY, CHAR_KEY, PLOT_KEY, TIME_KEY,
-        WORLD_KEY, OBJECT_KEY, ENTITY_KEY, CUSTOM_KEY, MENTION_KEY
+        TAG_KEY, POV_KEY, FOCUS_KEY, CHAR_KEY, PLOT_KEY, TIME_KEY, WORLD_KEY,
+        OBJECT_KEY, ENTITY_KEY, CUSTOM_KEY, STORY_KEY, MENTION_KEY,
     }
 
     # Map from Keys to Item Class
@@ -175,6 +176,7 @@ class nwKeyWords:
         OBJECT_KEY:  nwItemClass.OBJECT,
         ENTITY_KEY:  nwItemClass.ENTITY,
         CUSTOM_KEY:  nwItemClass.CUSTOM,
+        STORY_KEY:   nwItemClass.NOVEL,
     }
 
 
@@ -248,6 +250,7 @@ class nwLabels:
         nwKeyWords.OBJECT_KEY:  QT_TRANSLATE_NOOP("Constant", "Objects"),
         nwKeyWords.ENTITY_KEY:  QT_TRANSLATE_NOOP("Constant", "Entities"),
         nwKeyWords.CUSTOM_KEY:  QT_TRANSLATE_NOOP("Constant", "Custom"),
+        nwKeyWords.STORY_KEY:   QT_TRANSLATE_NOOP("Constant", "Story"),
         nwKeyWords.MENTION_KEY: QT_TRANSLATE_NOOP("Constant", "Mentions"),
     }
     OUTLINE_COLS = {
@@ -267,6 +270,7 @@ class nwLabels:
         nwOutline.OBJECT:  KEY_NAME[nwKeyWords.OBJECT_KEY],
         nwOutline.ENTITY:  KEY_NAME[nwKeyWords.ENTITY_KEY],
         nwOutline.CUSTOM:  KEY_NAME[nwKeyWords.CUSTOM_KEY],
+        nwOutline.STORY:   KEY_NAME[nwKeyWords.STORY_KEY],
         nwOutline.MENTION: KEY_NAME[nwKeyWords.MENTION_KEY],
         nwOutline.SYNOP:   QT_TRANSLATE_NOOP("Constant", "Synopsis"),
     }

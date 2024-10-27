@@ -640,7 +640,7 @@ class NWIndex:
         """Extract all references made in a file, and optionally title
         section.
         """
-        tRefs = {x: [] for x in nwKeyWords.KEY_CLASS}
+        tRefs = {x: [] for x in nwKeyWords.VALID_KEYS}
         for rTitle, hItem in self._itemIndex.iterItemHeaders(tHandle):
             if sTitle is None or sTitle == rTitle:
                 for aTag, refTypes in hItem.references.items():
