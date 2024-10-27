@@ -258,7 +258,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     # Syntax Highlighting
     CONFIG.dialogStyle = 3
     CONFIG.dialogLine = "–"
-    CONFIG.narratorBreak = "–"
     CONFIG.altDialogOpen = "<|"
     CONFIG.altDialogClose = "|>"
 
@@ -431,6 +430,9 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
 
+    # Dialogue
+    # ========
+
     for c in "\"Full line double quoted text.\"":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
@@ -452,6 +454,25 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 
     docEditor._typPadBefore = ""
     docEditor._typPadAfter = ""
+
+    # Dialogue Line
+    for c in "-- Hi, I am a character speaking.":
+        qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+
+    # Narrator Break
+    CONFIG.narratorBreak = "–"
+    docEditor = nwGUI.docEditor
+    docEditor._qDocument.syntaxHighlighter.initHighlighter()
+
+    for c in "-- Hi, I am also a character speaking, -- said another character. -- How are you?":
+        qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+
+    # Special Formatting
+    # ==================
 
     # Insert spaces before colon, but ignore tags and synopsis
     docEditor._typPadBefore = ":"
