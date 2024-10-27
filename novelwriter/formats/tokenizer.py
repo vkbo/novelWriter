@@ -194,7 +194,10 @@ class Tokenizer(ABC):
             nwShortcode.FOOTNOTE_B: TextFmt.FNOTE,
         }
 
+        # Dialogue
         self._rxDialogue: list[tuple[re.Pattern, tuple[int, str], tuple[int, str]]] = []
+        self._dialogLine = ""
+        self._narratorBreak = ""
 
         return
 
@@ -331,21 +334,13 @@ class Tokenizer(ABC):
                     REGEX_PATTERNS.dialogStyle,
                     (TextFmt.COL_B, "dialog"), (TextFmt.COL_E, ""),
                 ))
-            if CONFIG.dialogLine:
-                self._rxDialogue.append((
-                    REGEX_PATTERNS.dialogLine,
-                    (TextFmt.COL_B, "dialog"), (TextFmt.COL_E, ""),
-                ))
-            if CONFIG.narratorBreak:
-                self._rxDialogue.append((
-                    REGEX_PATTERNS.narratorBreak,
-                    (TextFmt.COL_E, ""), (TextFmt.COL_B, "dialog"),
-                ))
             if CONFIG.altDialogOpen and CONFIG.altDialogClose:
                 self._rxDialogue.append((
                     REGEX_PATTERNS.altDialogStyle,
                     (TextFmt.COL_B, "altdialog"), (TextFmt.COL_E, ""),
                 ))
+            self._dialogLine = CONFIG.dialogLine
+            self._narratorBreak = CONFIG.narratorBreak
         return
 
     def setTitleMargins(self, upper: float, lower: float) -> None:
@@ -1148,6 +1143,19 @@ class Tokenizer(ABC):
                 for res in regEx.finditer(text):
                     temp.append((res.start(0), 0, fmtB, clsB))
                     temp.append((res.end(0), 0, fmtE, clsE))
+
+        if self._dialogLine and text.startswith(self._dialogLine):
+            if self._narratorBreak:
+                pos = 0
+                for num, bit in enumerate(text[1:].split(self._narratorBreak), 1):
+                    length = len(bit) + 1
+                    if num%2:
+                        temp.append((pos, 0, TextFmt.COL_B, "dialog"))
+                        temp.append((pos + length, 0, TextFmt.COL_E, ""))
+                    pos += length
+            else:
+                temp.append((0, 0, TextFmt.COL_B, "dialog"))
+                temp.append((len(text), 0, TextFmt.COL_E, ""))
 
         # Post-process text and format
         result = text
