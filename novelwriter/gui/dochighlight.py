@@ -136,8 +136,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._txtRules.clear()
         self._cmnRules.clear()
 
-        self._dialogLine = CONFIG.dialogLine
-        self._narratorBreak = CONFIG.narratorBreak
+        self._dialogLine = CONFIG.dialogLine.strip()[:1]
+        self._narratorBreak = CONFIG.narratorBreak.strip()[:1]
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:

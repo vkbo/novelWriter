@@ -339,8 +339,8 @@ class Tokenizer(ABC):
                     REGEX_PATTERNS.altDialogStyle,
                     (TextFmt.COL_B, "altdialog"), (TextFmt.COL_E, ""),
                 ))
-            self._dialogLine = CONFIG.dialogLine
-            self._narratorBreak = CONFIG.narratorBreak
+            self._dialogLine = CONFIG.dialogLine.strip()[:1]
+            self._narratorBreak = CONFIG.narratorBreak.strip()[:1]
         return
 
     def setTitleMargins(self, upper: float, lower: float) -> None:
