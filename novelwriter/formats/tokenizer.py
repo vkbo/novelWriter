@@ -36,7 +36,8 @@ from PyQt5.QtGui import QColor, QFont
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, numberToRoman
 from novelwriter.constants import (
-    nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwStyles, nwUnicode, trConst
+    nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwStats, nwStyles, nwUnicode,
+    trConst
 )
 from novelwriter.core.index import processComment
 from novelwriter.core.project import NWProject
@@ -948,20 +949,20 @@ class Tokenizer(ABC):
 
     def countStats(self) -> None:
         """Count stats on the tokenized text."""
-        titleCount = self._counts.get("titleCount", 0)
-        paragraphCount = self._counts.get("paragraphCount", 0)
+        titleCount = self._counts.get(nwStats.TITLES, 0)
+        paragraphCount = self._counts.get(nwStats.PARAGRAPHS, 0)
 
-        allWords = self._counts.get("allWords", 0)
-        textWords = self._counts.get("textWords", 0)
-        titleWords = self._counts.get("titleWords", 0)
+        allWords = self._counts.get(nwStats.WORDS_ALL, 0)
+        textWords = self._counts.get(nwStats.WORDS_TEXT, 0)
+        titleWords = self._counts.get(nwStats.WORDS_TITLE, 0)
 
-        allChars = self._counts.get("allChars", 0)
-        textChars = self._counts.get("textChars", 0)
-        titleChars = self._counts.get("titleChars", 0)
+        allChars = self._counts.get(nwStats.CHARS_ALL, 0)
+        textChars = self._counts.get(nwStats.CHARS_TEXT, 0)
+        titleChars = self._counts.get(nwStats.CHARS_TITLE, 0)
 
-        allWordChars = self._counts.get("allWordChars", 0)
-        textWordChars = self._counts.get("textWordChars", 0)
-        titleWordChars = self._counts.get("titleWordChars", 0)
+        allWordChars = self._counts.get(nwStats.WCHARS_ALL, 0)
+        textWordChars = self._counts.get(nwStats.WCHARS_TEXT, 0)
+        titleWordChars = self._counts.get(nwStats.WCHARS_TITLE, 0)
 
         for tType, _, tText, _, _ in self._blocks:
             tText = tText.replace(nwUnicode.U_ENDASH, " ")
@@ -1006,20 +1007,20 @@ class Tokenizer(ABC):
                 allChars += len(tText)
                 allWordChars += len("".join(words))
 
-        self._counts["titleCount"] = titleCount
-        self._counts["paragraphCount"] = paragraphCount
+        self._counts[nwStats.TITLES] = titleCount
+        self._counts[nwStats.PARAGRAPHS] = paragraphCount
 
-        self._counts["allWords"] = allWords
-        self._counts["textWords"] = textWords
-        self._counts["titleWords"] = titleWords
+        self._counts[nwStats.WORDS_ALL] = allWords
+        self._counts[nwStats.WORDS_TEXT] = textWords
+        self._counts[nwStats.WORDS_TITLE] = titleWords
 
-        self._counts["allChars"] = allChars
-        self._counts["textChars"] = textChars
-        self._counts["titleChars"] = titleChars
+        self._counts[nwStats.CHARS_ALL] = allChars
+        self._counts[nwStats.CHARS_TEXT] = textChars
+        self._counts[nwStats.CHARS_TITLE] = titleChars
 
-        self._counts["allWordChars"] = allWordChars
-        self._counts["textWordChars"] = textWordChars
-        self._counts["titleWordChars"] = titleWordChars
+        self._counts[nwStats.WCHARS_ALL] = allWordChars
+        self._counts[nwStats.WCHARS_TEXT] = textWordChars
+        self._counts[nwStats.WCHARS_TITLE] = titleWordChars
 
         return
 
