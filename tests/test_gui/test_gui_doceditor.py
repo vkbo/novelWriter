@@ -2167,15 +2167,15 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     docEditor._lastFind = None
     docEditor.replaceNext()
     assert docEditor.textCursor().selectedText() == "a"
-    assert docEditor.getCursorPosition() == 92
+    assert docEditor.getCursorPosition() == 83
 
     # Iterate through the rest
-    finds = [104, 123, 175, 197, 206, 211, 220, 238, 250, 250]
-    for i in range(10):
+    finds = [85, 105, 110, 141, 169, 181, 200, 252, 274, 283, 288, 297]
+    for i in range(len(finds)):
         docEditor.replaceNext()
         assert docEditor.textCursor().selectedText() == "a"
         assert docEditor.getCursorPosition() == finds[i]
-    assert docEditor._lastFind == (249, 250)
+    assert docEditor._lastFind == (296, 297)
 
     # Search for something that doesn't exist
     docSearch.searchBox.setText("x")

@@ -241,9 +241,9 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert outlineData.fileValue.text() == "Lorem Ipsum"
     assert outlineData.itemValue.text() == "Finished"
 
-    assert outlineData.cCValue.text() == "230"
-    assert outlineData.wCValue.text() == "40"
-    assert outlineData.pCValue.text() == "3"
+    assert outlineData.cCValue.text() == "259"
+    assert outlineData.wCValue.text() == "44"
+    assert outlineData.pCValue.text() == "5"
 
     # Scene One
     selItem = outlineTree.topLevelItem(4)

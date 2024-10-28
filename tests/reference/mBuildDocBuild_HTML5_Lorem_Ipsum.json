@@ -2,8 +2,8 @@
   "meta": {
     "projectName": "Lorem Ipsum",
     "novelAuthor": "lipsum.com",
-    "buildTime": 1729877010,
-    "buildTimeStr": "2024-10-25 19:23:30"
+    "buildTime": 1730136403,
+    "buildTimeStr": "2024-10-28 18:26:43"
   },
   "text": {
     "css": [
@@ -23,6 +23,8 @@
       [
         "<h1 class='title' style='text-align: center;'>Lorem Ipsum</h1>",
         "<p style='text-align: center;'><strong>By lipsum.com</strong></p>",
+        "<p style='text-align: center;'>Word Count: 4,169</p>",
+        "<p style='text-align: center;'>Character Count: 27,898</p>",
         "<p style='text-align: center;'>\u201cNeque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit\u2026\u201d</p>",
         "<p style='text-align: center;'>\u201cThere is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain\u2026\u201d</p>"
       ],
