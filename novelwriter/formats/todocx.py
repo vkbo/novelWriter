@@ -192,6 +192,7 @@ class ToDocX(Tokenizer):
         self._files: dict[str, DocXXmlFile] = {}
         self._styles: dict[str, DocXParStyle] = {}
         self._usedNotes: dict[str, int] = {}
+        self._usedFields: list[tuple[ET.Element, str]] = []
 
         return
 
@@ -440,6 +441,8 @@ class ToDocX(Tokenizer):
                 fLink = ""
             elif fFmt == TextFmt.FNOTE:
                 xNode = self._generateFootnote(fData)
+            elif fFmt == TextFmt.FIELD:
+                xNode = self._generateField(fData)
             elif fFmt == TextFmt.STRIP:
                 pass
 
@@ -507,6 +510,15 @@ class ToDocX(Tokenizer):
             xmlSubElem(rPr, _wTag("vertAlign"), attrib={W_VAL: "superscript"})
             xmlSubElem(xR, _wTag("footnoteReference"), attrib={_wTag("id"): str(idx)})
             self._usedNotes[key] = idx
+            return xR
+        return None
+
+    def _generateField(self, key: str) -> ET.Element | None:
+        """Generate a data field XML object."""
+        if key and (field := key.partition(":")[2]):
+            xR = ET.Element(_wTag("r"))
+            xT = xmlSubElem(xR, _wTag("t"), "0")
+            self._usedFields.append((xT, field))
             return xR
         return None
 
@@ -919,6 +931,12 @@ class ToDocX(Tokenizer):
                 prev.setPageBreakAfter(True)
 
             pars.append(par)
+
+        # Replace fields if there are stats available
+        if self._usedFields and self._counts:
+            for xField, field in self._usedFields:
+                if (value := self._counts.get(field)) is not None:
+                    xField.text = f"{value:n}"
 
         # Write Paragraphs
         for par in pars:

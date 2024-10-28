@@ -630,6 +630,8 @@ class ToOdt(Tokenizer):
                 fLink = ""
             elif fFmt == TextFmt.FNOTE:
                 xNode = self._generateFootnote(fData)
+            elif fFmt == TextFmt.FIELD:
+                xNode = self._generateField(fData)
             elif fFmt == TextFmt.STRIP:
                 pass
 
@@ -723,6 +725,16 @@ class ToOdt(Tokenizer):
             xBody = ET.SubElement(xNote, _mkTag("text", "note-body"))
             self._addTextPar(xBody, "Footnote", nStyle, content[0], tFmt=content[1])
             return xNote
+        return None
+
+    def _generateField(self, key: str) -> ET.Element | None:
+        """Generate a data field XML object."""
+        if key and (field := key.partition(":")[2]):
+            xField = ET.Element(_mkTag("text", "user-field-get"), attrib={
+                _mkTag("text", "name"): f"Manuscript{field[:1].upper()}{field[1:]}",
+            })
+            xField.text = "0"
+            return xField
         return None
 
     def _emToCm(self, value: float) -> str:

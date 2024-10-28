@@ -127,16 +127,11 @@ class NWBuildDocument:
         makeObj = ToQTextDocument(self._project)
         filtered = self._setupBuild(makeObj)
         makeObj.initDocument()
-
         self._outline = True
-
         yield from self._iterBuild(makeObj, filtered)
-
         makeObj.closeDocument()
-
         self._error = None
         self._cache = makeObj
-
         return
 
     def iterBuildDocument(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:
@@ -152,18 +147,14 @@ class NWBuildDocument:
             makeObj = ToOdt(self._project, bFormat == nwBuildFmt.FODT)
             filtered = self._setupBuild(makeObj)
             makeObj.initDocument()
-
             yield from self._iterBuild(makeObj, filtered)
-
             makeObj.closeDocument()
 
         elif bFormat in (nwBuildFmt.HTML, nwBuildFmt.J_HTML):
             makeObj = ToHtml(self._project)
             filtered = self._setupBuild(makeObj)
             makeObj.initDocument()
-
             yield from self._iterBuild(makeObj, filtered)
-
             makeObj.closeDocument()
             if not self._build.getBool("html.preserveTabs"):
                 makeObj.replaceTabs()
@@ -171,9 +162,7 @@ class NWBuildDocument:
         elif bFormat in (nwBuildFmt.STD_MD, nwBuildFmt.EXT_MD):
             makeObj = ToMarkdown(self._project, bFormat == nwBuildFmt.EXT_MD)
             filtered = self._setupBuild(makeObj)
-
             yield from self._iterBuild(makeObj, filtered)
-
             makeObj.closeDocument()
             if self._build.getBool("format.replaceTabs"):
                 makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
@@ -181,9 +170,7 @@ class NWBuildDocument:
         elif bFormat in (nwBuildFmt.NWD, nwBuildFmt.J_NWD):
             makeObj = ToRaw(self._project)
             filtered = self._setupBuild(makeObj)
-
             yield from self._iterBuild(makeObj, filtered)
-
             makeObj.closeDocument()
             if self._build.getBool("format.replaceTabs"):
                 makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
@@ -192,18 +179,14 @@ class NWBuildDocument:
             makeObj = ToDocX(self._project)
             filtered = self._setupBuild(makeObj)
             makeObj.initDocument()
-
             yield from self._iterBuild(makeObj, filtered)
-
             makeObj.closeDocument()
 
         elif bFormat == nwBuildFmt.PDF:
             makeObj = ToQTextDocument(self._project)
             filtered = self._setupBuild(makeObj)
             makeObj.initDocument()
-
             yield from self._iterBuild(makeObj, filtered)
-
             makeObj.closeDocument()
 
         else:
