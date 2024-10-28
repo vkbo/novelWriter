@@ -224,7 +224,9 @@ class NWBuildDocument:
         # Get Settings
         textFont = QFont(CONFIG.textFont)
         textFont.fromString(self._build.getStr("format.textFont"))
+
         bldObj.setFont(textFont)
+        bldObj.setLanguage(self._project.data.language)
 
         bldObj.setPartitionFormat(
             self._build.getStr("headings.fmtPart"),
@@ -322,7 +324,6 @@ class NWBuildDocument:
             bldObj.setReplaceUnicode(self._build.getBool("format.stripUnicode"))
 
         if isinstance(bldObj, (ToOdt, ToDocX)):
-            bldObj.setLanguage(self._project.data.language)
             bldObj.setHeaderFormat(
                 self._build.getStr("doc.pageHeader"),
                 self._build.getInt("doc.pageCountOffset"),

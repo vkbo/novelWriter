@@ -36,7 +36,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 from PyQt5.QtCore import QMarginsF, QSizeF
 from PyQt5.QtGui import QColor
 
-from novelwriter import CONFIG, __version__
+from novelwriter import __version__
 from novelwriter.common import firstFloat, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
@@ -182,7 +182,6 @@ class ToDocX(Tokenizer):
         # Internal
         self._fontFamily  = "Liberation Serif"
         self._fontSize    = 12.0
-        self._dLanguage   = "en_GB"
         self._pageSize    = QSizeF(210.0, 297.0)
         self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
 
@@ -199,12 +198,6 @@ class ToDocX(Tokenizer):
     ##
     #  Setters
     ##
-
-    def setLanguage(self, language: str | None) -> None:
-        """Set language for the document."""
-        if language:
-            self._dLanguage = language.replace("_", "-")
-        return
 
     def setPageLayout(
         self, width: float, height: float, top: float, bottom: float, left: float, right: float
@@ -740,7 +733,7 @@ class ToDocX(Tokenizer):
         xmlSubElem(xRoot, _mkTag("dcterms", "modified"), timeStamp, attrib=tsAttr)
         xmlSubElem(xRoot, _mkTag("dc", "creator"), self._project.data.author)
         xmlSubElem(xRoot, _mkTag("dc", "title"), self._project.data.name)
-        xmlSubElem(xRoot, _mkTag("dc", "language"), self._dLanguage)
+        xmlSubElem(xRoot, _mkTag("dc", "language"), self._dLocale.name())
         xmlSubElem(xRoot, _mkTag("cp", "revision"), str(self._project.data.saveCount))
         xmlSubElem(xRoot, _mkTag("cp", "lastModifiedBy"), self._project.data.author)
 
@@ -777,7 +770,7 @@ class ToDocX(Tokenizer):
         })
         xmlSubElem(xRPr, _wTag("sz"), attrib={W_VAL: size})
         xmlSubElem(xRPr, _wTag("szCs"), attrib={W_VAL: size})
-        xmlSubElem(xRPr, _wTag("lang"), attrib={W_VAL: self._dLanguage})
+        xmlSubElem(xRPr, _wTag("lang"), attrib={W_VAL: self._dLocale.name()})
         xmlSubElem(xPPr, _wTag("spacing"), attrib={_wTag("line"): line})
 
         # Paragraph Styles
@@ -936,7 +929,7 @@ class ToDocX(Tokenizer):
         if self._usedFields and self._counts:
             for xField, field in self._usedFields:
                 if (value := self._counts.get(field)) is not None:
-                    xField.text = CONFIG.localInt(value)
+                    xField.text = self._formatInt(value)
 
         # Write Paragraphs
         for par in pars:

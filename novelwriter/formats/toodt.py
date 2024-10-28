@@ -223,14 +223,6 @@ class ToOdt(Tokenizer):
     #  Setters
     ##
 
-    def setLanguage(self, language: str | None) -> None:
-        """Set language for the document."""
-        if language:
-            lang, _, country = language.partition("_")
-            self._dLanguage = lang or self._dLanguage
-            self._dCountry = country or self._dCountry
-        return
-
     def setPageLayout(
         self, width: float, height: float, top: float, bottom: float, left: float, right: float
     ) -> None:
@@ -263,6 +255,10 @@ class ToOdt(Tokenizer):
         intWeight = FONT_WEIGHTS.get(self._textFont.weight(), 400)
         fontWeight = str(intWeight)
         fontBold = str(min(intWeight + 300, 900))
+
+        lang, _, country = self._dLocale.name().partition("_")
+        self._dLanguage = lang or self._dLanguage
+        self._dCountry = country or self._dCountry
 
         self._fontFamily = self._textFont.family()
         self._fontSize   = self._textFont.pointSize()

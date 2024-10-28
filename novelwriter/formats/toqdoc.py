@@ -34,7 +34,6 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtPrintSupport import QPrinter
 
-from novelwriter import CONFIG
 from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
@@ -259,7 +258,7 @@ class ToQTextDocument(Tokenizer):
                 if (value := self._counts.get(field)) is not None:
                     cursor.setPosition(pos, QtMoveAnchor)
                     cursor.setPosition(pos + 1, QtKeepAnchor)
-                    cursor.insertText(CONFIG.localInt(value))
+                    cursor.insertText(self._formatInt(value))
 
         # Add footnotes
         if self._usedNotes:

@@ -29,7 +29,6 @@ import logging
 from pathlib import Path
 from time import time
 
-from novelwriter import CONFIG
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHtmlUnicode
 from novelwriter.core.project import NWProject
@@ -259,7 +258,7 @@ class ToHtml(Tokenizer):
             for doc, field in self._usedFields:
                 if doc >= 0 and doc < pages and (value := self._counts.get(field)) is not None:
                     self._pages[doc] = self._pages[doc].replace(
-                        f"{{{{{field}}}}}", CONFIG.localInt(value)
+                        f"{{{{{field}}}}}", self._formatInt(value)
                     )
 
         # Add footnotes

@@ -31,6 +31,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import NamedTuple
 
+from PyQt5.QtCore import QLocale
 from PyQt5.QtGui import QColor, QFont
 
 from novelwriter import CONFIG
@@ -104,6 +105,7 @@ class Tokenizer(ABC):
         self._outline: dict[str, str] = {}
 
         # User Settings
+        self._dLocale      = CONFIG.locale  # The document locale
         self._textFont     = QFont("Serif", 11)  # Output text font
         self._lineHeight   = 1.15    # Line height in units of em
         self._colorHeads   = True    # Colourise headings
@@ -225,6 +227,12 @@ class Tokenizer(ABC):
     ##
     #  Setters
     ##
+
+    def setLanguage(self, language: str | None) -> None:
+        """Set language for the document."""
+        if language:
+            self._dLocale = QLocale(language)
+        return
 
     def setTheme(self, theme: TextDocumentTheme) -> None:
         """Set the document colour theme."""
@@ -1032,6 +1040,10 @@ class Tokenizer(ABC):
     ##
     #  Internal Functions
     ##
+
+    def _formatInt(self, value: int) -> str:
+        """Return a localised integer."""
+        return self._dLocale.toString(value)
 
     def _formatComment(self, style: ComStyle, key: str, text: str) -> tuple[str, T_Formats]:
         """Apply formatting to comments and notes."""

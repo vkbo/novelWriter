@@ -27,7 +27,6 @@ import logging
 
 from pathlib import Path
 
-from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
@@ -159,7 +158,7 @@ class ToMarkdown(Tokenizer):
             for doc, field in self._usedFields:
                 if doc >= 0 and doc < pages and (value := self._counts.get(field)) is not None:
                     self._pages[doc] = self._pages[doc].replace(
-                        f"{{{{{field}}}}}", CONFIG.localInt(value)
+                        f"{{{{{field}}}}}", self._formatInt(value)
                     )
 
         # Add footnotes

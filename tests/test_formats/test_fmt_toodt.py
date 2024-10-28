@@ -780,11 +780,6 @@ def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
 
     odt = ToOdt(project, isFlat=True)
     odt._isNovel = True
-    odt._dLanguage = ""
-    odt.setLanguage(None)  # type: ignore
-    assert odt._dLanguage == ""
-    odt.setLanguage("nb_NO")
-    assert odt._dLanguage == "nb"
     odt.setHeaderFormat(nwHeadFmt.DOC_AUTO, 1)
     assert odt._headerFormat == nwHeadFmt.DOC_AUTO
     odt.setFirstLineIndent(True, 1.4, False)
