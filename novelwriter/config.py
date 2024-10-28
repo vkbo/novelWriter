@@ -469,6 +469,10 @@ class Config:
         """Return a localised datetime format."""
         return self._dLocale.toString(value, self._dShortDateTime)
 
+    def localInt(self, value: int) -> str:
+        """Return a localised integer."""
+        return self._dLocale.toString(value)
+
     def listLanguages(self, lngSet: int) -> list[tuple[str, str]]:
         """List localisation files in the i18n folder. The default GUI
         language is British English (en_GB).

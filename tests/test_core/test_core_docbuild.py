@@ -21,6 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
+import zipfile
 
 from pathlib import Path
 from shutil import copyfile
@@ -130,6 +131,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
     assert error == []
 
     assert docFile.is_file()
+    assert zipfile.is_zipfile(docFile)
 
     # Check Error Handling
     # ====================
@@ -312,6 +314,52 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
 
         docFile = fncPath / "Lorem Ipsum Err.md"
         for _ in docBuild.iterBuildDocument(docFile, nwBuildFmt.STD_MD):
+            pass
+
+        assert docBuild.error == "OSError: Mock OSError"
+        assert not docFile.is_file()
+
+
+@pytest.mark.core
+def testCoreDocBuild_DocX(monkeypatch, mockGUI, prjLipsum, fncPath):
+    """Test building a Word manuscript."""
+    project = NWProject()
+    project.openProject(prjLipsum)
+
+    build = BuildSettings()
+    build.unpack(BUILD_CONF)
+
+    docBuild = NWBuildDocument(project, build)
+    docBuild.queueAll()
+
+    assert len(docBuild) == 21
+
+    # Check Build
+    # ===========
+
+    docFile = fncPath / "Lorem Ipsum.docx"
+
+    count = 0
+    error = []
+    for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.DOCX):
+        count += 1 if success else 0
+        if docBuild.error:
+            error.append(docBuild.error)
+
+    assert count == 19
+    assert error == []
+
+    assert docFile.is_file()
+    assert zipfile.is_zipfile(docFile)
+
+    # Check Error Handling
+    # ====================
+
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+
+        docFile = fncPath / "Lorem Ipsum Err.fodt"
+        for _ in docBuild.iterBuildDocument(docFile, nwBuildFmt.FODT):
             pass
 
         assert docBuild.error == "OSError: Mock OSError"

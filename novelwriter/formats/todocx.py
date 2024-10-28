@@ -36,7 +36,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 from PyQt5.QtCore import QMarginsF, QSizeF
 from PyQt5.QtGui import QColor
 
-from novelwriter import __version__
+from novelwriter import CONFIG, __version__
 from novelwriter.common import firstFloat, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
@@ -936,7 +936,7 @@ class ToDocX(Tokenizer):
         if self._usedFields and self._counts:
             for xField, field in self._usedFields:
                 if (value := self._counts.get(field)) is not None:
-                    xField.text = f"{value:n}"
+                    xField.text = CONFIG.localInt(value)
 
         # Write Paragraphs
         for par in pars:
