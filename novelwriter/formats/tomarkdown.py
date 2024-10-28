@@ -149,7 +149,7 @@ class ToMarkdown(Tokenizer):
 
         return
 
-    def appendFootnotes(self) -> None:
+    def closeDocument(self) -> None:
         """Append the footnotes in the buffer."""
         if self._usedNotes:
             tags = EXT_MD if self._extended else STD_MD

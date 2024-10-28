@@ -955,7 +955,7 @@ class _StatsWidget(QWidget):
         # Maximal
         self.maxTotalWords.setText("{0:n}".format(data.get(nwStats.WORDS_ALL, 0)))
         self.maxHeadWords.setText("{0:n}".format(data.get(nwStats.WORDS_TITLE, 0)))
-        self.maxTextWords.setText("{0:n}".format(data.get(nwStats.WORDS_TITLE, 0)))
+        self.maxTextWords.setText("{0:n}".format(data.get(nwStats.WORDS_TEXT, 0)))
         self.maxTitleCount.setText("{0:n}".format(data.get(nwStats.TITLES, 0)))
         self.maxParCount.setText("{0:n}".format(data.get(nwStats.PARAGRAPHS, 0)))
 

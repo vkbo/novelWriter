@@ -429,6 +429,10 @@ class Tokenizer(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def closeDocument(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
     def saveDocument(self, path: Path) -> None:
         raise NotImplementedError
 

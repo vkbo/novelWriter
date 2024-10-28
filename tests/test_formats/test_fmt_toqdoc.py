@@ -594,7 +594,7 @@ def testFmtToQTextDocument_Footnotes(mockGUI):
     )
     doc.tokenizeText()
     doc.doConvert()
-    doc.appendFootnotes()
+    doc.closeDocument()
     assert doc.document.blockCount() == 4
 
     # 0: Scene

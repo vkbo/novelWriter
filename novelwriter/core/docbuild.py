@@ -132,7 +132,7 @@ class NWBuildDocument:
 
         yield from self._iterBuild(makeObj, filtered)
 
-        makeObj.appendFootnotes()
+        makeObj.closeDocument()
 
         self._error = None
         self._cache = makeObj
@@ -164,7 +164,7 @@ class NWBuildDocument:
 
             yield from self._iterBuild(makeObj, filtered)
 
-            makeObj.appendFootnotes()
+            makeObj.closeDocument()
             if not self._build.getBool("html.preserveTabs"):
                 makeObj.replaceTabs()
 
@@ -174,7 +174,7 @@ class NWBuildDocument:
 
             yield from self._iterBuild(makeObj, filtered)
 
-            makeObj.appendFootnotes()
+            makeObj.closeDocument()
             if self._build.getBool("format.replaceTabs"):
                 makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
 
@@ -184,6 +184,7 @@ class NWBuildDocument:
 
             yield from self._iterBuild(makeObj, filtered)
 
+            makeObj.closeDocument()
             if self._build.getBool("format.replaceTabs"):
                 makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
 
@@ -203,7 +204,7 @@ class NWBuildDocument:
 
             yield from self._iterBuild(makeObj, filtered)
 
-            makeObj.appendFootnotes()
+            makeObj.closeDocument()
 
         else:
             logger.error("Unsupported document format")

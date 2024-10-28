@@ -44,6 +44,9 @@ class BareTokenizer(Tokenizer):
     def doConvert(self):
         super().doConvert()  # type: ignore (deliberate check)
 
+    def closeDocument(self):
+        super().doConvert()  # type: ignore (deliberate check)
+
     def saveDocument(self, path) -> None:
         super().saveDocument(path)  # type: ignore (deliberate check)
 

@@ -249,7 +249,7 @@ class ToHtml(Tokenizer):
 
         return
 
-    def appendFootnotes(self) -> None:
+    def closeDocument(self) -> None:
         """Append the footnotes in the buffer."""
         if self._usedNotes:
             footnotes = self._localLookup("Footnotes")

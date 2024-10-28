@@ -315,7 +315,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
         "or two<sup>ERR</sup> footnotes.</p>\n"
     )
 
-    html.appendFootnotes()
+    html.closeDocument()
     assert html._pages[-2] == (
         "<p>Text with one<sup><a href='#footnote_1'>1</a></sup> "
         "or two<sup>ERR</sup> footnotes.</p>\n"
