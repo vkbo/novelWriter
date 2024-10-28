@@ -92,7 +92,8 @@ class TextFmt(IntEnum):
     HRF_B = 21  # Begin href link
     HRF_E = 22  # End href link
     FNOTE = 23  # Footnote marker
-    STRIP = 24  # Strip the format code
+    FIELD = 24  # Data field
+    STRIP = 25  # Strip the format code
 
 
 class BlockTyp(IntEnum):

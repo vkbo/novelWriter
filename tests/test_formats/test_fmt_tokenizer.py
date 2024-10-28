@@ -1242,6 +1242,32 @@ def testFmtToken_LineBreak(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToken_ShortcodeValue(mockGUI):
+    """Test processing of shortcodes with values."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens._handle = TMH
+
+    # Footnote
+    tokens._text = "Hello World[footnote:abcd] to you!"
+    tokens.tokenizeText()
+    assert tokens._blocks == [(
+        BlockTyp.TEXT, "", "Hello World to you!", [
+            (11, TextFmt.FNOTE, f"{TMH}:abcd"),
+        ], BlockFmt.NONE
+    )]
+
+    # Field
+    tokens._text = "Hello World: [field:abcd] times!"
+    tokens.tokenizeText()
+    assert tokens._blocks == [(
+        BlockTyp.TEXT, "", "Hello World:  times!", [
+            (13, TextFmt.FIELD, f"{TMH}:abcd"),
+        ], BlockFmt.NONE
+    )]
+
+
+@pytest.mark.core
 def testFmtToken_Dialogue(mockGUI):
     """Test the tokenization of dialogue in the Tokenizer class."""
     CONFIG.fmtDQuoteOpen  = "\u201c"

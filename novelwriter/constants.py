@@ -89,6 +89,7 @@ class nwShortcode:
     BREAK    = "[br]"
 
     FOOTNOTE_B = "[footnote:"
+    FIELD_B    = "[field:"
 
     COMMENT_STYLES = {
         nwComment.FOOTNOTE: "[footnote:{0}]",

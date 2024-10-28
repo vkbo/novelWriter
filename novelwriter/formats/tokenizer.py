@@ -193,6 +193,7 @@ class Tokenizer(ABC):
         }
         self._shortCodeVals = {
             nwShortcode.FOOTNOTE_B: TextFmt.FNOTE,
+            nwShortcode.FIELD_B:    TextFmt.FIELD,
         }
 
         # Dialogue
