@@ -37,8 +37,8 @@ from novelwriter.common import (
     formatTimeStamp, formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle,
     isItemClass, isItemLayout, isItemType, isListInstance, isTitleTag,
     jsonEncode, makeFileNameSafe, minmax, numberToRoman, openExternalPath,
-    readTextFile, simplified, transferCase, uniqueCompact, xmlIndent,
-    xmlSubElem, yesNo
+    readTextFile, simplified, transferCase, uniqueCompact, xmlElement,
+    xmlIndent, xmlSubElem, yesNo
 )
 
 from tests.mocked import causeOSError
@@ -635,6 +635,29 @@ def testBaseCommon_xmlIndent():
 
 
 @pytest.mark.base
+def testBaseCommon_xmlElement():
+    """Test the xmlElement function."""
+    assert ET.tostring(
+        xmlElement("node", None, attrib={"a": "b"})
+    ) == b'<node a="b" />'
+    assert ET.tostring(
+        xmlElement("node", "text", attrib={"a": "b"})
+    ) == b'<node a="b">text</node>'
+    assert ET.tostring(
+        xmlElement("node", "text", tail="foo", attrib={"a": "b"})
+    ) == b'<node a="b">text</node>foo'
+    assert ET.tostring(
+        xmlElement("node", 42, attrib={"a": "b"})
+    ) == b'<node a="b">42</node>'
+    assert ET.tostring(
+        xmlElement("node", 3.14, attrib={"a": "b"})
+    ) == b'<node a="b">3.14</node>'
+    assert ET.tostring(
+        xmlElement("node", True, attrib={"a": "b"})
+    ) == b'<node a="b">true</node>'
+
+
+@pytest.mark.base
 def testBaseCommon_xmlSubElem():
     """Test the xmlSubElem function."""
     assert ET.tostring(
@@ -643,6 +666,9 @@ def testBaseCommon_xmlSubElem():
     assert ET.tostring(
         xmlSubElem(ET.Element("r"), "node", "text", attrib={"a": "b"})
     ) == b'<node a="b">text</node>'
+    assert ET.tostring(
+        xmlSubElem(ET.Element("r"), "node", "text", tail="foo", attrib={"a": "b"})
+    ) == b'<node a="b">text</node>foo'
     assert ET.tostring(
         xmlSubElem(ET.Element("r"), "node", 42, attrib={"a": "b"})
     ) == b'<node a="b">42</node>'

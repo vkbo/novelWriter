@@ -38,7 +38,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 from PyQt5.QtGui import QColor, QFont
 
 from novelwriter import __version__
-from novelwriter.common import xmlIndent, xmlSubElem
+from novelwriter.common import xmlElement, xmlIndent, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, TextFmt, stripEscape
@@ -54,6 +54,7 @@ XML_NS = {
     "loext":    "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
     "manifest": "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0",
     "meta":     "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
+    "number":   "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0",
     "office":   "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
     "style":    "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
     "text":     "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
@@ -115,6 +116,7 @@ S_FIND  = "First_20_line_20_indent"
 S_TEXT  = "Text_20_body"
 S_META  = "Text_20_Meta"
 S_HNF   = "Header_20_and_20_Footer"
+S_NUM   = "N0"
 
 # Font Data
 FONT_WEIGHT_NUM = ["100", "200", "300", "400", "500", "600", "700", "800", "900"]
@@ -513,13 +515,14 @@ class ToOdt(Tokenizer):
             oVers = _mkTag("office", "version")
             xSett = ET.Element(oRoot, attrib={oVers: X_VERS})
 
-            def xmlToZip(name: str, xObj: ET.Element, zipObj: ZipFile) -> None:
-                with zipObj.open(name, mode="w") as fObj:
-                    xml = ET.ElementTree(xObj)
-                    xml.write(fObj, encoding="utf-8", xml_declaration=True)
+            def xmlToZip(name: str, root: ET.Element, zipObj: ZipFile) -> None:
+                zipObj.writestr(
+                    name, ET.tostring(root, encoding="utf-8", xml_declaration=True),
+                    compress_type=ZIP_DEFLATED, compresslevel=3,
+                )
 
-            with ZipFile(path, mode="w", compression=ZIP_DEFLATED, compresslevel=3) as outZip:
-                outZip.writestr("mimetype", X_MIME)
+            with ZipFile(path, mode="w") as outZip:
+                outZip.writestr("mimetype", X_MIME, compress_type=None, compresslevel=None)
                 xmlToZip("META-INF/manifest.xml", xMani, outZip)
                 xmlToZip("settings.xml", xSett, outZip)
                 xmlToZip("content.xml", self._dCont, outZip)
@@ -627,7 +630,7 @@ class ToOdt(Tokenizer):
             elif fFmt == TextFmt.FNOTE:
                 xNode = self._generateFootnote(fData)
             elif fFmt == TextFmt.FIELD:
-                xNode = self._generateField(fData)
+                xNode = self._generateField(fData, xFmt)
             elif fFmt == TextFmt.STRIP:
                 pass
 
@@ -713,24 +716,31 @@ class ToOdt(Tokenizer):
         if content := self._footnotes.get(key):
             self._nNote += 1
             nStyle = ODTParagraphStyle("New")
-            xNote = ET.Element(_mkTag("text", "note"), attrib={
+            xNote = xmlElement(_mkTag("text", "note"), attrib={
                 _mkTag("text", "id"): f"ftn{self._nNote}",
                 _mkTag("text", "note-class"): "footnote",
             })
             xmlSubElem(xNote, _mkTag("text", "note-citation"), self._nNote)
-            xBody = ET.SubElement(xNote, _mkTag("text", "note-body"))
+            xBody = xmlSubElem(xNote, _mkTag("text", "note-body"))
             self._addTextPar(xBody, "Footnote", nStyle, content[0], tFmt=content[1])
             return xNote
         return None
 
-    def _generateField(self, key: str) -> ET.Element | None:
+    def _generateField(self, key: str, fmt: int) -> ET.Element | None:
         """Generate a data field XML object."""
         if key and (field := key.partition(":")[2]):
-            xField = ET.Element(_mkTag("text", "user-field-get"), attrib={
+            xField = xmlElement(_mkTag("text", "user-field-get"), "0", tail="", attrib={
+                _mkTag("style", "data-style-name"): S_NUM,
                 _mkTag("text", "name"): f"Manuscript{field[:1].upper()}{field[1:]}",
             })
-            xField.text = "0"
-            return xField
+            if fmt == 0x00:
+                return xField
+            else:
+                xSpan = xmlElement(TAG_SPAN, "", tail="", attrib={
+                    _mkTag("text", "style-name"): self._textStyle(fmt),
+                })
+                xSpan.append(xField)
+                return xSpan
         return None
 
     def _emToCm(self, value: float) -> str:
@@ -834,6 +844,14 @@ class ToOdt(Tokenizer):
             _mkTag("style", "family"): "paragraph",
             _mkTag("style", "parent-style-name"): "Standard",
             _mkTag("style", "class"): "extra",
+        })
+
+        # Numbers Style
+        xStyl = ET.SubElement(self._xStyl, _mkTag("number", "number-style"), attrib={
+            _mkTag("style", "name"): S_NUM,
+        })
+        ET.SubElement(xStyl, _mkTag("number", "number"), attrib={
+            _mkTag("number", "min-integer-digits"): "1",
         })
 
         return

@@ -334,12 +334,12 @@ class nwLabels:
         nwBuildFmt.ODT:    QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)"),
         nwBuildFmt.FODT:   QT_TRANSLATE_NOOP("Constant", "Flat Open Document (.fodt)"),
         nwBuildFmt.DOCX:   QT_TRANSLATE_NOOP("Constant", "Microsoft Word Document (.docx)"),
-        nwBuildFmt.HTML:   QT_TRANSLATE_NOOP("Constant", "novelWriter HTML (.html)"),
+        nwBuildFmt.HTML:   QT_TRANSLATE_NOOP("Constant", "HTML 5 (.html)"),
         nwBuildFmt.NWD:    QT_TRANSLATE_NOOP("Constant", "novelWriter Markup (.txt)"),
         nwBuildFmt.STD_MD: QT_TRANSLATE_NOOP("Constant", "Standard Markdown (.md)"),
         nwBuildFmt.EXT_MD: QT_TRANSLATE_NOOP("Constant", "Extended Markdown (.md)"),
         nwBuildFmt.PDF:    QT_TRANSLATE_NOOP("Constant", "Portable Document Format (.pdf)"),
-        nwBuildFmt.J_HTML: QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter HTML (.json)"),
+        nwBuildFmt.J_HTML: QT_TRANSLATE_NOOP("Constant", "JSON + HTML 5 (.json)"),
         nwBuildFmt.J_NWD:  QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter Markup (.json)"),
     }
     BUILD_EXT = {

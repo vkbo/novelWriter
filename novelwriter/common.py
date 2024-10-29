@@ -492,6 +492,10 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
     return "".join(buffer)
 
 
+##
+#  XML Helpers
+##
+
 def xmlIndent(tree: ET.Element | ET.ElementTree) -> None:
     """A modified version of the XML indent function in the standard
     library. It behaves more closely to how the one from lxml does.
@@ -535,21 +539,42 @@ def xmlIndent(tree: ET.Element | ET.ElementTree) -> None:
     return
 
 
+def xmlElement(
+    tag: str,
+    text: str | int | float | bool | None = None,
+    *,
+    attrib: dict | None = None,
+    tail: str | None = None,
+) -> ET.Element:
+    """A custom implementation of Element with more arguments."""
+    xSub = ET.Element(tag, attrib=attrib or {})
+    if text is not None:
+        if isinstance(text, bool):
+            xSub.text = str(text).lower()
+        else:
+            xSub.text = str(text)
+    if tail is not None:
+        xSub.tail = tail
+    return xSub
+
+
 def xmlSubElem(
     parent: ET.Element,
     tag: str,
     text: str | int | float | bool | None = None,
-    attrib: dict | None = None
+    *,
+    attrib: dict | None = None,
+    tail: str | None = None,
 ) -> ET.Element:
-    """A custom implementation of SubElement that takes text as an
-    argument.
-    """
+    """A custom implementation of SubElement with more arguments."""
     xSub = ET.SubElement(parent, tag, attrib=attrib or {})
     if text is not None:
         if isinstance(text, bool):
             xSub.text = str(text).lower()
         else:
             xSub.text = str(text)
+    if tail is not None:
+        xSub.tail = tail
     return xSub
 
 

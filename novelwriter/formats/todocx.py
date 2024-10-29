@@ -37,7 +37,7 @@ from PyQt5.QtCore import QMarginsF, QSizeF
 from PyQt5.QtGui import QColor
 
 from novelwriter import __version__
-from novelwriter.common import firstFloat, xmlSubElem
+from novelwriter.common import firstFloat, xmlElement, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
@@ -57,13 +57,13 @@ RELS_BASE = f"{OOXML_SCM}/officeDocument/2006/relationships"
 
 # Main XML NameSpaces
 XML_NS = {
-    "r":       RELS_BASE,
-    "w":       f"{OOXML_SCM}/wordprocessingml/2006/main",
     "cp":      f"{OOXML_SCM}/package/2006/metadata/core-properties",
     "dc":      "http://purl.org/dc/elements/1.1/",
-    "xsi":     "http://www.w3.org/2001/XMLSchema-instance",
-    "xml":     "http://www.w3.org/XML/1998/namespace",
     "dcterms": "http://purl.org/dc/terms/",
+    "r":       RELS_BASE,
+    "w":       f"{OOXML_SCM}/wordprocessingml/2006/main",
+    "xml":     "http://www.w3.org/XML/1998/namespace",
+    "xsi":     "http://www.w3.org/2001/XMLSchema-instance",
 }
 for ns, uri in XML_NS.items():
     ET.register_namespace(ns, uri)
@@ -328,10 +328,10 @@ class ToDocX(Tokenizer):
         cDocs.append(("/word/_rels/document.xml.rels", RELS_TYPE))
 
         # Relationships XML
-        rRels = ET.Element("Relationships", attrib={
+        rRels = xmlElement("Relationships", attrib={
             "xmlns": f"{OOXML_SCM}/package/2006/relationships"
         })
-        wRels = ET.Element("Relationships", attrib={
+        wRels = xmlElement("Relationships", attrib={
             "xmlns": f"{OOXML_SCM}/package/2006/relationships"
         })
         for name, rel in self._rels.items():
@@ -347,7 +347,7 @@ class ToDocX(Tokenizer):
             xmlSubElem(rRels if isRoot else wRels, "Relationship", attrib=attrib)
 
         # Content Types XML
-        dTypes = ET.Element("Types", attrib={
+        dTypes = xmlElement("Types", attrib={
             "xmlns": f"{OOXML_SCM}/package/2006/content-types"
         })
         for name, content in cExts:
@@ -355,10 +355,8 @@ class ToDocX(Tokenizer):
         for name, content in cDocs:
             xmlSubElem(dTypes, "Override", attrib={"PartName": name, "ContentType": content})
 
-        def xmlToZip(name: str, xObj: ET.Element, zipObj: ZipFile) -> None:
-            with zipObj.open(name, mode="w") as fObj:
-                xml = ET.ElementTree(xObj)
-                xml.write(fObj, encoding="utf-8", xml_declaration=True)
+        def xmlToZip(name: str, root: ET.Element, zipObj: ZipFile) -> None:
+            zipObj.writestr(name, ET.tostring(root, encoding="utf-8", xml_declaration=True))
 
         with ZipFile(path, mode="w", compression=ZIP_DEFLATED, compresslevel=3) as outZip:
             xmlToZip("_rels/.rels", rRels, outZip)
@@ -435,7 +433,7 @@ class ToDocX(Tokenizer):
             elif fFmt == TextFmt.FNOTE:
                 xNode = self._generateFootnote(fData)
             elif fFmt == TextFmt.FIELD:
-                xNode = self._generateField(fData)
+                xNode = self._generateField(fData, xFmt)
             elif fFmt == TextFmt.STRIP:
                 pass
 
@@ -450,9 +448,9 @@ class ToDocX(Tokenizer):
 
         return
 
-    def _textRunToXml(self, text: str, fmt: int, fClass: str, fLink: str) -> ET.Element:
+    def _textRunToXml(self, text: str | None, fmt: int, fClass: str, fLink: str) -> ET.Element:
         """Encode the text run into XML."""
-        xR = ET.Element(_wTag("r"))
+        xR = xmlElement(_wTag("r"))
         rPr = xmlSubElem(xR, _wTag("rPr"))
         if fmt & X_BLD:
             xmlSubElem(rPr, _wTag("b"))
@@ -473,18 +471,20 @@ class ToDocX(Tokenizer):
         if fmt & X_COL and (color := self._classes.get(fClass)):
             xmlSubElem(rPr, _wTag("color"), attrib={W_VAL: _docXCol(color)})
 
-        for segment in RX_TEXT.split(text):
-            if segment == "\n":
-                xmlSubElem(xR, _wTag("br"))
-            elif segment == "\t":
-                xmlSubElem(xR, _wTag("tab"))
-            elif segment:
-                _wText(xR, segment)
+        if isinstance(text, str):
+            for segment in RX_TEXT.split(text):
+                if segment == "\n":
+                    xmlSubElem(xR, _wTag("br"))
+                elif segment == "\t":
+                    xmlSubElem(xR, _wTag("tab"))
+                elif segment:
+                    _wText(xR, segment)
 
         if fmt & X_HRF and fLink:
             xmlSubElem(rPr, _wTag("rStyle"), attrib={W_VAL: "InternetLink"})
-            rId = self._appendExternalRel(fLink)
-            xH = ET.Element(_wTag("hyperlink"), attrib={_mkTag("r", "id"): rId})
+            xH = xmlElement(_wTag("hyperlink"), attrib={
+                _mkTag("r", "id"): self._appendExternalRel(fLink),
+            })
             xH.append(xR)
             return xH
 
@@ -498,7 +498,7 @@ class ToDocX(Tokenizer):
         """Generate a footnote XML object."""
         if key in self._footnotes:
             idx = len(self._usedNotes) + 1
-            xR = ET.Element(_wTag("r"))
+            xR = xmlElement(_wTag("r"))
             rPr = xmlSubElem(xR, _wTag("rPr"))
             xmlSubElem(rPr, _wTag("vertAlign"), attrib={W_VAL: "superscript"})
             xmlSubElem(xR, _wTag("footnoteReference"), attrib={_wTag("id"): str(idx)})
@@ -506,11 +506,11 @@ class ToDocX(Tokenizer):
             return xR
         return None
 
-    def _generateField(self, key: str) -> ET.Element | None:
+    def _generateField(self, key: str, fmt: int) -> ET.Element | None:
         """Generate a data field XML object."""
         if key and (field := key.partition(":")[2]):
-            xR = ET.Element(_wTag("r"))
-            xT = xmlSubElem(xR, _wTag("t"), "0")
+            xR = self._textRunToXml(None, fmt, "", "")
+            xT = _wText(xR, "0")
             self._usedFields.append((xT, field))
             return xR
         return None
@@ -687,7 +687,7 @@ class ToDocX(Tokenizer):
     def _appXml(self) -> str:
         """Populate app.xml."""
         rId = self._nextRelId()
-        xRoot = ET.Element("Properties", attrib={
+        xRoot = xmlElement("Properties", attrib={
             "xmlns": f"{OOXML_SCM}/officeDocument/2006/extended-properties"
         })
         self._rels["app.xml"] = DocXXmlRel(
@@ -716,7 +716,7 @@ class ToDocX(Tokenizer):
     def _coreXml(self) -> str:
         """Populate app.xml."""
         rId = self._nextRelId()
-        xRoot = ET.Element(_mkTag("cp", "coreProperties"))
+        xRoot = xmlElement(_mkTag("cp", "coreProperties"))
         self._rels["core.xml"] = DocXXmlRel(
             rId=rId,
             relType=f"{OOXML_SCM}/package/2006/relationships/metadata/core-properties",
@@ -742,7 +742,7 @@ class ToDocX(Tokenizer):
     def _stylesXml(self) -> str:
         """Populate styles.xml."""
         rId = self._nextRelId()
-        xRoot = ET.Element(_wTag("styles"))
+        xRoot = xmlElement(_wTag("styles"))
         self._rels["styles.xml"] = DocXXmlRel(
             rId=rId,
             relType=f"{RELS_BASE}/styles",
@@ -830,7 +830,7 @@ class ToDocX(Tokenizer):
     def _defaultHeaderXml(self) -> str:
         """Populate header1.xml."""
         rId = self._nextRelId()
-        xRoot = ET.Element(_wTag("hdr"))
+        xRoot = xmlElement(_wTag("hdr"))
         self._rels["header1.xml"] = DocXXmlRel(
             rId=rId,
             relType=f"{RELS_BASE}/header",
@@ -877,7 +877,7 @@ class ToDocX(Tokenizer):
     def _firstHeaderXml(self) -> str:
         """Populate header2.xml."""
         rId = self._nextRelId()
-        xRoot = ET.Element(_wTag("hdr"))
+        xRoot = xmlElement(_wTag("hdr"))
         self._rels["header2.xml"] = DocXXmlRel(
             rId=rId,
             relType=f"{RELS_BASE}/header",
@@ -902,7 +902,7 @@ class ToDocX(Tokenizer):
     def _documentXml(self, hFirst: str | None, hDefault: str | None) -> str:
         """Populate document.xml."""
         rId = self._nextRelId()
-        xRoot = ET.Element(_wTag("document"))
+        xRoot = xmlElement(_wTag("document"))
         xRoot.set("xmlns:w14", "http://schemas.microsoft.com/office/word/2010/wordml")
         xBody = xmlSubElem(xRoot, _wTag("body"))
         self._rels["document.xml"] = DocXXmlRel(
@@ -978,7 +978,7 @@ class ToDocX(Tokenizer):
     def _footnotesXml(self) -> str:
         """Populate footnotes.xml."""
         rId = self._nextRelId()
-        xRoot = ET.Element(_wTag("footnotes"))
+        xRoot = xmlElement(_wTag("footnotes"))
         self._rels["footnotes.xml"] = DocXXmlRel(
             rId=rId,
             relType=f"{RELS_BASE}/footnotes",
@@ -1001,7 +1001,7 @@ class ToDocX(Tokenizer):
     def _fontTableXml(self) -> str:
         """Populate fontTable.xml."""
         rId = self._nextRelId()
-        xRoot = ET.Element(_wTag("fonts"))
+        xRoot = xmlElement(_wTag("fonts"))
         self._rels["fontTable.xml"] = DocXXmlRel(
             rId=rId,
             relType=f"{RELS_BASE}/fontTable",
@@ -1024,7 +1024,7 @@ class ToDocX(Tokenizer):
     def _settingsXml(self) -> str:
         """Populate settings.xml."""
         rId = self._nextRelId()
-        xRoot = ET.Element(_wTag("settings"))
+        xRoot = xmlElement(_wTag("settings"))
         self._rels["settings.xml"] = DocXXmlRel(
             rId=rId,
             relType=f"{RELS_BASE}/settings",

@@ -33,6 +33,7 @@
         <w:t xml:space="preserve">Word Count: </w:t>
       </w:r>
       <w:r>
+        <w:rPr />
         <w:t>4,035</w:t>
       </w:r>
     </w:p>
@@ -46,6 +47,7 @@
         <w:t xml:space="preserve">Character Count: </w:t>
       </w:r>
       <w:r>
+        <w:rPr />
         <w:t>27,064</w:t>
       </w:r>
     </w:p>
