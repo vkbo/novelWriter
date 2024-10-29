@@ -142,6 +142,7 @@ class GuiMainMenu(QMenuBar):
         self.aSaveProject = self.projMenu.addAction(self.tr("Save Project"))
         self.aSaveProject.setShortcut("Ctrl+Shift+S")
         self.aSaveProject.triggered.connect(lambda: self.mainGui.saveProject())
+        self.mainGui.addAction(self.aSaveProject)
 
         # Project > Close Project
         self.aCloseProject = self.projMenu.addAction(self.tr("Close Project"))
@@ -168,6 +169,7 @@ class GuiMainMenu(QMenuBar):
         self.aEditItem = self.projMenu.addAction(self.tr("Rename Item"))
         self.aEditItem.setShortcut("F2")
         self.aEditItem.triggered.connect(lambda: self.mainGui.projView.renameTreeItem(None))
+        self.mainGui.addAction(self.aEditItem)
 
         # Project > Delete
         self.aDeleteItem = self.projMenu.addAction(self.tr("Delete Item"))
@@ -186,6 +188,7 @@ class GuiMainMenu(QMenuBar):
         self.aExitNW.setShortcut("Ctrl+Q")
         self.aExitNW.setMenuRole(QAction.MenuRole.QuitRole)
         self.aExitNW.triggered.connect(lambda: self.mainGui.closeMain())
+        self.mainGui.addAction(self.aExitNW)
 
         return
 
@@ -203,11 +206,13 @@ class GuiMainMenu(QMenuBar):
         self.aSaveDoc = self.docuMenu.addAction(self.tr("Save Document"))
         self.aSaveDoc.setShortcut("Ctrl+S")
         self.aSaveDoc.triggered.connect(self.mainGui.forceSaveDocument)
+        self.mainGui.addAction(self.aSaveDoc)
 
         # Document > Close
         self.aCloseDoc = self.docuMenu.addAction(self.tr("Close Document"))
         self.aCloseDoc.setShortcut("Ctrl+W")
         self.aCloseDoc.triggered.connect(self.mainGui.closeDocEditor)
+        self.mainGui.addAction(self.aCloseDoc)
 
         # Document > Separator
         self.docuMenu.addSeparator()
@@ -246,6 +251,7 @@ class GuiMainMenu(QMenuBar):
         self.aEditUndo.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.UNDO)
         )
+        self.mainGui.addAction(self.aEditUndo)
 
         # Edit > Redo
         self.aEditRedo = self.editMenu.addAction(self.tr("Redo"))
@@ -253,6 +259,7 @@ class GuiMainMenu(QMenuBar):
         self.aEditRedo.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.REDO)
         )
+        self.mainGui.addAction(self.aEditRedo)
 
         # Edit > Separator
         self.editMenu.addSeparator()
@@ -263,6 +270,7 @@ class GuiMainMenu(QMenuBar):
         self.aEditCut.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.CUT)
         )
+        self.mainGui.addAction(self.aEditCut)
 
         # Edit > Copy
         self.aEditCopy = self.editMenu.addAction(self.tr("Copy"))
@@ -270,6 +278,7 @@ class GuiMainMenu(QMenuBar):
         self.aEditCopy.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.COPY)
         )
+        self.mainGui.addAction(self.aEditCopy)
 
         # Edit > Paste
         self.aEditPaste = self.editMenu.addAction(self.tr("Paste"))
@@ -277,6 +286,7 @@ class GuiMainMenu(QMenuBar):
         self.aEditPaste.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.PASTE)
         )
+        self.mainGui.addAction(self.aEditPaste)
 
         # Edit > Separator
         self.editMenu.addSeparator()
@@ -287,6 +297,7 @@ class GuiMainMenu(QMenuBar):
         self.aSelectAll.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SEL_ALL)
         )
+        self.mainGui.addAction(self.aSelectAll)
 
         # Edit > Select Paragraph
         self.aSelectPar = self.editMenu.addAction(self.tr("Select Paragraph"))
@@ -294,6 +305,7 @@ class GuiMainMenu(QMenuBar):
         self.aSelectPar.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SEL_PARA)
         )
+        self.mainGui.addAction(self.aSelectPar)
 
         return
 
@@ -343,11 +355,13 @@ class GuiMainMenu(QMenuBar):
         self.aFocusMode = self.viewMenu.addAction(self.tr("Focus Mode"))
         self.aFocusMode.setShortcut("F8")
         self.aFocusMode.triggered.connect(self.mainGui.toggleFocusMode)
+        self.mainGui.addAction(self.aFocusMode)
 
         # View > Toggle Full Screen
         self.aFullScreen = self.viewMenu.addAction(self.tr("Full Screen Mode"))
         self.aFullScreen.setShortcut("F11")
         self.aFullScreen.triggered.connect(lambda: self.mainGui.toggleFullScreenMode())
+        self.mainGui.addAction(self.aFullScreen)
 
         return
 
@@ -365,6 +379,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsENDash.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_ENDASH)
         )
+        self.mainGui.addAction(self.aInsENDash)
 
         # Insert > Long Dash
         self.aInsEMDash = self.mInsDashes.addAction(self.tr("Long Dash"))
@@ -372,6 +387,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsEMDash.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_EMDASH)
         )
+        self.mainGui.addAction(self.aInsEMDash)
 
         # Insert > Long Dash
         self.aInsHorBar = self.mInsDashes.addAction(self.tr("Horizontal Bar"))
@@ -379,6 +395,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsHorBar.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_HBAR)
         )
+        self.mainGui.addAction(self.aInsHorBar)
 
         # Insert > Figure Dash
         self.aInsFigDash = self.mInsDashes.addAction(self.tr("Figure Dash"))
@@ -386,6 +403,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsFigDash.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_FGDASH)
         )
+        self.mainGui.addAction(self.aInsFigDash)
 
         # Insert > Quote Marks
         self.mInsQuotes = self.insMenu.addMenu(self.tr("Quote Marks"))
@@ -396,6 +414,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsQuoteLS.triggered.connect(
             lambda: self.requestDocInsert.emit(nwDocInsert.QUOTE_LS)
         )
+        self.mainGui.addAction(self.aInsQuoteLS)
 
         # Insert > Right Single Quote
         self.aInsQuoteRS = self.mInsQuotes.addAction(self.tr("Right Single Quote"))
@@ -403,6 +422,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsQuoteRS.triggered.connect(
             lambda: self.requestDocInsert.emit(nwDocInsert.QUOTE_RS)
         )
+        self.mainGui.addAction(self.aInsQuoteRS)
 
         # Insert > Left Double Quote
         self.aInsQuoteLD = self.mInsQuotes.addAction(self.tr("Left Double Quote"))
@@ -410,6 +430,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsQuoteLD.triggered.connect(
             lambda: self.requestDocInsert.emit(nwDocInsert.QUOTE_LD)
         )
+        self.mainGui.addAction(self.aInsQuoteLD)
 
         # Insert > Right Double Quote
         self.aInsQuoteRD = self.mInsQuotes.addAction(self.tr("Right Double Quote"))
@@ -417,6 +438,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsQuoteRD.triggered.connect(
             lambda: self.requestDocInsert.emit(nwDocInsert.QUOTE_RD)
         )
+        self.mainGui.addAction(self.aInsQuoteRD)
 
         # Insert > Alternative Apostrophe
         self.aInsMSApos = self.mInsQuotes.addAction(self.tr("Alternative Apostrophe"))
@@ -424,6 +446,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsMSApos.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_MAPOS)
         )
+        self.mainGui.addAction(self.aInsMSApos)
 
         # Insert > Symbols
         self.mInsPunct = self.insMenu.addMenu(self.tr("General Punctuation"))
@@ -434,6 +457,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsEllipsis.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_HELLIP)
         )
+        self.mainGui.addAction(self.aInsEllipsis)
 
         # Insert > Prime
         self.aInsPrime = self.mInsPunct.addAction(self.tr("Prime"))
@@ -441,6 +465,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsPrime.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_PRIME)
         )
+        self.mainGui.addAction(self.aInsPrime)
 
         # Insert > Double Prime
         self.aInsDPrime = self.mInsPunct.addAction(self.tr("Double Prime"))
@@ -448,6 +473,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsDPrime.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_DPRIME)
         )
+        self.mainGui.addAction(self.aInsDPrime)
 
         # Insert > White Spaces
         self.mInsSpace = self.insMenu.addMenu(self.tr("White Spaces"))
@@ -458,6 +484,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsNBSpace.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_NBSP)
         )
+        self.mainGui.addAction(self.aInsNBSpace)
 
         # Insert > Thin Space
         self.aInsThinSpace = self.mInsSpace.addAction(self.tr("Thin Space"))
@@ -465,6 +492,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsThinSpace.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_THSP)
         )
+        self.mainGui.addAction(self.aInsThinSpace)
 
         # Insert > Thin Non-Breaking Space
         self.aInsThinNBSpace = self.mInsSpace.addAction(self.tr("Thin Non-Breaking Space"))
@@ -472,6 +500,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsThinNBSpace.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_THNBSP)
         )
+        self.mainGui.addAction(self.aInsThinNBSpace)
 
         # Insert > Symbols
         self.mInsSymbol = self.insMenu.addMenu(self.tr("Other Symbols"))
@@ -482,6 +511,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsBullet.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_BULL)
         )
+        self.mainGui.addAction(self.aInsBullet)
 
         # Insert > Hyphen Bullet
         self.aInsHyBull = self.mInsSymbol.addAction(self.tr("Hyphen Bullet"))
@@ -489,6 +519,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsHyBull.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_HYBULL)
         )
+        self.mainGui.addAction(self.aInsHyBull)
 
         # Insert > Flower Mark
         self.aInsFlower = self.mInsSymbol.addAction(self.tr("Flower Mark"))
@@ -496,6 +527,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsFlower.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_FLOWER)
         )
+        self.mainGui.addAction(self.aInsFlower)
 
         # Insert > Per Mille
         self.aInsPerMille = self.mInsSymbol.addAction(self.tr("Per Mille"))
@@ -503,6 +535,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsPerMille.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_PERMIL)
         )
+        self.mainGui.addAction(self.aInsPerMille)
 
         # Insert > Degree Symbol
         self.aInsDegree = self.mInsSymbol.addAction(self.tr("Degree Symbol"))
@@ -510,6 +543,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsDegree.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_DEGREE)
         )
+        self.mainGui.addAction(self.aInsDegree)
 
         # Insert > Minus Sign
         self.aInsMinus = self.mInsSymbol.addAction(self.tr("Minus Sign"))
@@ -517,6 +551,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsMinus.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_MINUS)
         )
+        self.mainGui.addAction(self.aInsMinus)
 
         # Insert > Times Sign
         self.aInsTimes = self.mInsSymbol.addAction(self.tr("Times Sign"))
@@ -524,6 +559,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsTimes.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_TIMES)
         )
+        self.mainGui.addAction(self.aInsTimes)
 
         # Insert > Division
         self.aInsDivide = self.mInsSymbol.addAction(self.tr("Division Sign"))
@@ -531,6 +567,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsDivide.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_DIVIDE)
         )
+        self.mainGui.addAction(self.aInsDivide)
 
         # Insert > Tags and References
         self.mInsKeywords = self.insMenu.addMenu(self.tr("Tags and References"))
@@ -553,6 +590,7 @@ class GuiMainMenu(QMenuBar):
                 lambda n, keyWord=keyWord: self.requestDocKeyWordInsert.emit(keyWord)
             )
             self.mInsKeywords.addAction(self.mInsKWItems[keyWord][0])
+            self.mainGui.addAction(self.mInsKWItems[keyWord][0])
 
         # Insert > Special Comments
         self.mInsComments = self.insMenu.addMenu(self.tr("Special Comments"))
@@ -563,6 +601,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsSynopsis.triggered.connect(
             lambda: self.requestDocInsert.emit(nwDocInsert.SYNOPSIS)
         )
+        self.mainGui.addAction(self.aInsSynopsis)
 
         # Insert > Short Description Comment
         self.aInsShort = self.mInsComments.addAction(self.tr("Short Description Comment"))
@@ -570,6 +609,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsShort.triggered.connect(
             lambda: self.requestDocInsert.emit(nwDocInsert.SHORT)
         )
+        self.mainGui.addAction(self.aInsShort)
 
         # Insert > Breaks and Vertical Space
         self.mInsBreaks = self.insMenu.addMenu(self.tr("Breaks and Vertical Space"))
@@ -623,6 +663,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtBold.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.MD_BOLD)
         )
+        self.mainGui.addAction(self.aFmtBold)
 
         # Format > Italic
         self.aFmtItalic = self.fmtMenu.addAction(self.tr("Italic"))
@@ -630,6 +671,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtItalic.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.MD_ITALIC)
         )
+        self.mainGui.addAction(self.aFmtItalic)
 
         # Format > Strikethrough
         self.aFmtStrike = self.fmtMenu.addAction(self.tr("Strikethrough"))
@@ -637,6 +679,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtStrike.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.MD_STRIKE)
         )
+        self.mainGui.addAction(self.aFmtStrike)
 
         # Edit > Separator
         self.fmtMenu.addSeparator()
@@ -647,6 +690,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtDQuote.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.D_QUOTE)
         )
+        self.mainGui.addAction(self.aFmtDQuote)
 
         # Format > Single Quotes
         self.aFmtSQuote = self.fmtMenu.addAction(self.tr("Wrap Single Quotes"))
@@ -654,6 +698,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtSQuote.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.S_QUOTE)
         )
+        self.mainGui.addAction(self.aFmtSQuote)
 
         # Format > Separator
         self.fmtMenu.addSeparator()
@@ -712,6 +757,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtHead1.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H1)
         )
+        self.mainGui.addAction(self.aFmtHead1)
 
         # Format > Heading 2 (Chapter)
         self.aFmtHead2 = self.fmtMenu.addAction(trConst(nwStyles.T_LABEL["H2"]))
@@ -719,6 +765,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtHead2.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H2)
         )
+        self.mainGui.addAction(self.aFmtHead2)
 
         # Format > Heading 3 (Scene)
         self.aFmtHead3 = self.fmtMenu.addAction(trConst(nwStyles.T_LABEL["H3"]))
@@ -726,6 +773,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtHead3.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H3)
         )
+        self.mainGui.addAction(self.aFmtHead3)
 
         # Format > Heading 4 (Section)
         self.aFmtHead4 = self.fmtMenu.addAction(trConst(nwStyles.T_LABEL["H4"]))
@@ -733,6 +781,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtHead4.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H4)
         )
+        self.mainGui.addAction(self.aFmtHead4)
 
         # Format > Separator
         self.fmtMenu.addSeparator()
@@ -764,6 +813,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtAlignLeft.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.ALIGN_L)
         )
+        self.mainGui.addAction(self.aFmtAlignLeft)
 
         # Format > Align Centre
         self.aFmtAlignCentre = self.fmtMenu.addAction(self.tr("Align Centre"))
@@ -771,6 +821,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtAlignCentre.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.ALIGN_C)
         )
+        self.mainGui.addAction(self.aFmtAlignCentre)
 
         # Format > Align Right
         self.aFmtAlignRight = self.fmtMenu.addAction(self.tr("Align Right"))
@@ -778,6 +829,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtAlignRight.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.ALIGN_R)
         )
+        self.mainGui.addAction(self.aFmtAlignRight)
 
         # Format > Separator
         self.fmtMenu.addSeparator()
@@ -788,6 +840,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtIndentLeft.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.INDENT_L)
         )
+        self.mainGui.addAction(self.aFmtIndentLeft)
 
         # Format > Indent Right
         self.aFmtIndentRight = self.fmtMenu.addAction(self.tr("Indent Right"))
@@ -795,6 +848,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtIndentRight.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.INDENT_R)
         )
+        self.mainGui.addAction(self.aFmtIndentRight)
 
         # Format > Separator
         self.fmtMenu.addSeparator()
@@ -805,6 +859,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtComment.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_COM)
         )
+        self.mainGui.addAction(self.aFmtComment)
 
         # Format > Ignore Text
         self.aFmtIgnore = self.fmtMenu.addAction(self.tr("Toggle Ignore Text"))
@@ -819,6 +874,7 @@ class GuiMainMenu(QMenuBar):
         self.aFmtNoFormat.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_TXT)
         )
+        self.mainGui.addAction(self.aFmtNoFormat)
 
         # Format > Separator
         self.fmtMenu.addSeparator()
@@ -852,16 +908,19 @@ class GuiMainMenu(QMenuBar):
         self.aFind = self.srcMenu.addAction(self.tr("Find"))
         self.aFind.setShortcut("Ctrl+F")
         self.aFind.triggered.connect(lambda: self.mainGui.docEditor.beginSearch())
+        self.mainGui.addAction(self.aFind)
 
         # Search > Replace
         self.aReplace = self.srcMenu.addAction(self.tr("Replace"))
         self.aReplace.setShortcut("Ctrl+=" if CONFIG.osDarwin else "Ctrl+H")
         self.aReplace.triggered.connect(lambda: self.mainGui.docEditor.beginReplace())
+        self.mainGui.addAction(self.aReplace)
 
         # Search > Find Next
         self.aFindNext = self.srcMenu.addAction(self.tr("Find Next"))
         self.aFindNext.setShortcuts(["Ctrl+G", "F3"] if CONFIG.osDarwin else ["F3", "Ctrl+G"])
         self.aFindNext.triggered.connect(lambda: self.mainGui.docEditor.findNext())
+        self.mainGui.addAction(self.aFindNext)
 
         # Search > Find Prev
         self.aFindPrev = self.srcMenu.addAction(self.tr("Find Previous"))
@@ -869,11 +928,13 @@ class GuiMainMenu(QMenuBar):
             ["Ctrl+Shift+G", "Shift+F3"] if CONFIG.osDarwin else ["Shift+F3", "Ctrl+Shift+G"]
         )
         self.aFindPrev.triggered.connect(lambda: self.mainGui.docEditor.findNext(goBack=True))
+        self.mainGui.addAction(self.aFindPrev)
 
         # Search > Replace Next
         self.aReplaceNext = self.srcMenu.addAction(self.tr("Replace Next"))
         self.aReplaceNext.setShortcut("Ctrl+Shift+1")
         self.aReplaceNext.triggered.connect(lambda: self.mainGui.docEditor.replaceNext())
+        self.mainGui.addAction(self.aReplaceNext)
 
         # Search > Separator
         self.srcMenu.addSeparator()
@@ -896,6 +957,7 @@ class GuiMainMenu(QMenuBar):
         self.aSpellCheck.setChecked(SHARED.project.data.spellCheck)
         self.aSpellCheck.triggered.connect(self._toggleSpellCheck)  # triggered, not toggled!
         self.aSpellCheck.setShortcut("Ctrl+F7")
+        self.mainGui.addAction(self.aSpellCheck)
 
         self.mSelectLanguage = self.toolsMenu.addMenu(self.tr("Spell Check Language"))
         languages = SHARED.spelling.listDictionaries()
@@ -910,6 +972,7 @@ class GuiMainMenu(QMenuBar):
         self.aReRunSpell = self.toolsMenu.addAction(self.tr("Re-Run Spell Check"))
         self.aReRunSpell.setShortcut("F7")
         self.aReRunSpell.triggered.connect(lambda: self.mainGui.docEditor.spellCheckDocument())
+        self.mainGui.addAction(self.aReRunSpell)
 
         # Tools > Project Word List
         self.aEditWordList = self.toolsMenu.addAction(self.tr("Project Word List"))
@@ -950,6 +1013,7 @@ class GuiMainMenu(QMenuBar):
         self.aPreferences.setShortcut("Ctrl+,")
         self.aPreferences.setMenuRole(QAction.MenuRole.PreferencesRole)
         self.aPreferences.triggered.connect(self.mainGui.showPreferencesDialog)
+        self.mainGui.addAction(self.aPreferences)
 
         return
 
@@ -975,12 +1039,14 @@ class GuiMainMenu(QMenuBar):
         self.aHelpDocs = self.helpMenu.addAction(self.tr("User Manual (Online)"))
         self.aHelpDocs.setShortcut("F1")
         self.aHelpDocs.triggered.connect(lambda: self._openWebsite(nwConst.URL_DOCS))
+        self.mainGui.addAction(self.aHelpDocs)
 
         # Help > User Manual (PDF)
         if isinstance(CONFIG.pdfDocs, Path):
             self.aPdfDocs = self.helpMenu.addAction(self.tr("User Manual (PDF)"))
             self.aPdfDocs.setShortcut("Shift+F1")
             self.aPdfDocs.triggered.connect(self._openUserManualFile)
+            self.mainGui.addAction(self.aPdfDocs)
 
         # Help > Separator
         self.helpMenu.addSeparator()
