@@ -29,6 +29,7 @@ import unicodedata
 import uuid
 import xml.etree.ElementTree as ET
 
+from collections.abc import Callable
 from configparser import ConfigParser
 from datetime import datetime
 from pathlib import Path
@@ -414,6 +415,10 @@ def numberToRoman(value: int, toLower: bool = False) -> str:
     return roman.lower() if toLower else roman
 
 
+##
+#  Qt Helpers
+##
+
 def cssCol(col: QColor, alpha: int | None = None) -> str:
     """Convert a QColor object to an rgba entry to use in CSS."""
     return f"rgba({col.red()}, {col.green()}, {col.blue()}, {alpha or col.alpha()})"
@@ -427,6 +432,13 @@ def describeFont(font: QFont) -> str:
         styles = [v for v in info.styleName().split() if v not in family]
         return " ".join([f"{info.pointSize()} pt", family] + styles)
     return "Error"
+
+
+def qtLambda(func: Callable, *args: Any, **kwargs: Any) -> Callable:
+    """A replacement for Python lambdas that works for Qt slots."""
+    def wrapper(*args_: Any, **kwargs_: Any) -> None:
+        func(*args, **kwargs)
+    return wrapper
 
 
 ##

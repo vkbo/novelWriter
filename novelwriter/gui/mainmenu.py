@@ -33,7 +33,7 @@ from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QAction, QMenuBar
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import openExternalPath
+from novelwriter.common import openExternalPath, qtLambda
 from novelwriter.constants import nwConst, nwKeyWords, nwLabels, nwStyles, nwUnicode, trConst
 from novelwriter.enum import nwDocAction, nwDocInsert, nwFocus, nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
@@ -141,13 +141,13 @@ class GuiMainMenu(QMenuBar):
         # Project > Save Project
         self.aSaveProject = self.projMenu.addAction(self.tr("Save Project"))
         self.aSaveProject.setShortcut("Ctrl+Shift+S")
-        self.aSaveProject.triggered.connect(lambda: self.mainGui.saveProject())
+        self.aSaveProject.triggered.connect(qtLambda(self.mainGui.saveProject))
         self.mainGui.addAction(self.aSaveProject)
 
         # Project > Close Project
         self.aCloseProject = self.projMenu.addAction(self.tr("Close Project"))
         self.aCloseProject.setShortcut("Ctrl+Shift+W")
-        self.aCloseProject.triggered.connect(lambda: self.mainGui.closeProject(False))
+        self.aCloseProject.triggered.connect(qtLambda(self.mainGui.closeProject, False))
 
         # Project > Separator
         self.projMenu.addSeparator()
@@ -168,17 +168,17 @@ class GuiMainMenu(QMenuBar):
         # Project > Edit
         self.aEditItem = self.projMenu.addAction(self.tr("Rename Item"))
         self.aEditItem.setShortcut("F2")
-        self.aEditItem.triggered.connect(lambda: self.mainGui.projView.renameTreeItem(None))
+        self.aEditItem.triggered.connect(qtLambda(self.mainGui.projView.renameTreeItem, None))
         self.mainGui.addAction(self.aEditItem)
 
         # Project > Delete
         self.aDeleteItem = self.projMenu.addAction(self.tr("Delete Item"))
         self.aDeleteItem.setShortcut("Ctrl+Shift+Del")  # Cannot be Ctrl+Del, see #629
-        self.aDeleteItem.triggered.connect(lambda: self.mainGui.projView.requestDeleteItem(None))
+        self.aDeleteItem.triggered.connect(qtLambda(self.mainGui.projView.requestDeleteItem, None))
 
         # Project > Empty Trash
         self.aEmptyTrash = self.projMenu.addAction(self.tr("Empty Trash"))
-        self.aEmptyTrash.triggered.connect(lambda: self.mainGui.projView.emptyTrash())
+        self.aEmptyTrash.triggered.connect(qtLambda(self.mainGui.projView.emptyTrash))
 
         # Project > Separator
         self.projMenu.addSeparator()
@@ -187,7 +187,7 @@ class GuiMainMenu(QMenuBar):
         self.aExitNW = self.projMenu.addAction(self.tr("Exit"))
         self.aExitNW.setShortcut("Ctrl+Q")
         self.aExitNW.setMenuRole(QAction.MenuRole.QuitRole)
-        self.aExitNW.triggered.connect(lambda: self.mainGui.closeMain())
+        self.aExitNW.triggered.connect(qtLambda(self.mainGui.closeMain))
         self.mainGui.addAction(self.aExitNW)
 
         return
@@ -220,7 +220,7 @@ class GuiMainMenu(QMenuBar):
         # Document > Preview
         self.aViewDoc = self.docuMenu.addAction(self.tr("View Document"))
         self.aViewDoc.setShortcut("Ctrl+R")
-        self.aViewDoc.triggered.connect(lambda: self.mainGui.viewDocument(None))
+        self.aViewDoc.triggered.connect(qtLambda(self.mainGui.viewDocument, None))
 
         # Document > Close Preview
         self.aCloseView = self.docuMenu.addAction(self.tr("Close Document View"))
@@ -232,11 +232,11 @@ class GuiMainMenu(QMenuBar):
 
         # Document > Show File Details
         self.aFileDetails = self.docuMenu.addAction(self.tr("Show File Details"))
-        self.aFileDetails.triggered.connect(lambda: self.mainGui.docEditor.revealLocation())
+        self.aFileDetails.triggered.connect(qtLambda(self.mainGui.docEditor.revealLocation))
 
         # Document > Import From File
         self.aImportFile = self.docuMenu.addAction(self.tr("Import Text from File"))
-        self.aImportFile.triggered.connect(lambda: self.mainGui.importDocument())
+        self.aImportFile.triggered.connect(qtLambda(self.mainGui.importDocument))
 
         return
 
@@ -360,7 +360,7 @@ class GuiMainMenu(QMenuBar):
         # View > Toggle Full Screen
         self.aFullScreen = self.viewMenu.addAction(self.tr("Full Screen Mode"))
         self.aFullScreen.setShortcut("F11")
-        self.aFullScreen.triggered.connect(lambda: self.mainGui.toggleFullScreenMode())
+        self.aFullScreen.triggered.connect(self.mainGui.toggleFullScreenMode)
         self.mainGui.addAction(self.aFullScreen)
 
         return
@@ -583,14 +583,13 @@ class GuiMainMenu(QMenuBar):
         self.mInsKWItems[nwKeyWords.ENTITY_KEY]  = (QAction(self.mInsKeywords), "Ctrl+K, E")
         self.mInsKWItems[nwKeyWords.CUSTOM_KEY]  = (QAction(self.mInsKeywords), "Ctrl+K, X")
         self.mInsKWItems[nwKeyWords.MENTION_KEY] = (QAction(self.mInsKeywords), "Ctrl+K, M")
-        for n, keyWord in enumerate(self.mInsKWItems):
-            self.mInsKWItems[keyWord][0].setText(trConst(nwLabels.KEY_NAME[keyWord]))
-            self.mInsKWItems[keyWord][0].setShortcut(self.mInsKWItems[keyWord][1])
-            self.mInsKWItems[keyWord][0].triggered.connect(
-                lambda n, keyWord=keyWord: self.requestDocKeyWordInsert.emit(keyWord)
-            )
-            self.mInsKeywords.addAction(self.mInsKWItems[keyWord][0])
-            self.mainGui.addAction(self.mInsKWItems[keyWord][0])
+        for key in self.mInsKWItems:
+            action = self.mInsKWItems[key][0]
+            action.setText(trConst(nwLabels.KEY_NAME[key]))
+            action.setShortcut(self.mInsKWItems[key][1])
+            action.triggered.connect(qtLambda(self.requestDocKeyWordInsert.emit, key))
+            self.mInsKeywords.addAction(action)
+            self.mainGui.addAction(self.mInsKWItems[key][0])
 
         # Insert > Special Comments
         self.mInsComments = self.insMenu.addMenu(self.tr("Special Comments"))
@@ -907,19 +906,19 @@ class GuiMainMenu(QMenuBar):
         # Search > Find
         self.aFind = self.srcMenu.addAction(self.tr("Find"))
         self.aFind.setShortcut("Ctrl+F")
-        self.aFind.triggered.connect(lambda: self.mainGui.docEditor.beginSearch())
+        self.aFind.triggered.connect(qtLambda(self.mainGui.docEditor.beginSearch))
         self.mainGui.addAction(self.aFind)
 
         # Search > Replace
         self.aReplace = self.srcMenu.addAction(self.tr("Replace"))
         self.aReplace.setShortcut("Ctrl+=" if CONFIG.osDarwin else "Ctrl+H")
-        self.aReplace.triggered.connect(lambda: self.mainGui.docEditor.beginReplace())
+        self.aReplace.triggered.connect(qtLambda(self.mainGui.docEditor.beginReplace))
         self.mainGui.addAction(self.aReplace)
 
         # Search > Find Next
         self.aFindNext = self.srcMenu.addAction(self.tr("Find Next"))
         self.aFindNext.setShortcuts(["Ctrl+G", "F3"] if CONFIG.osDarwin else ["F3", "Ctrl+G"])
-        self.aFindNext.triggered.connect(lambda: self.mainGui.docEditor.findNext())
+        self.aFindNext.triggered.connect(qtLambda(self.mainGui.docEditor.findNext))
         self.mainGui.addAction(self.aFindNext)
 
         # Search > Find Prev
@@ -927,13 +926,13 @@ class GuiMainMenu(QMenuBar):
         self.aFindPrev.setShortcuts(
             ["Ctrl+Shift+G", "Shift+F3"] if CONFIG.osDarwin else ["Shift+F3", "Ctrl+Shift+G"]
         )
-        self.aFindPrev.triggered.connect(lambda: self.mainGui.docEditor.findNext(goBack=True))
+        self.aFindPrev.triggered.connect(qtLambda(self.mainGui.docEditor.findNext, goBack=True))
         self.mainGui.addAction(self.aFindPrev)
 
         # Search > Replace Next
         self.aReplaceNext = self.srcMenu.addAction(self.tr("Replace Next"))
         self.aReplaceNext.setShortcut("Ctrl+Shift+1")
-        self.aReplaceNext.triggered.connect(lambda: self.mainGui.docEditor.replaceNext())
+        self.aReplaceNext.triggered.connect(qtLambda(self.mainGui.docEditor.replaceNext))
         self.mainGui.addAction(self.aReplaceNext)
 
         # Search > Separator
@@ -971,7 +970,7 @@ class GuiMainMenu(QMenuBar):
         # Tools > Re-Run Spell Check
         self.aReRunSpell = self.toolsMenu.addAction(self.tr("Re-Run Spell Check"))
         self.aReRunSpell.setShortcut("F7")
-        self.aReRunSpell.triggered.connect(lambda: self.mainGui.docEditor.spellCheckDocument())
+        self.aReRunSpell.triggered.connect(qtLambda(self.mainGui.docEditor.spellCheckDocument))
         self.mainGui.addAction(self.aReRunSpell)
 
         # Tools > Project Word List
@@ -989,14 +988,14 @@ class GuiMainMenu(QMenuBar):
         # Tools > Rebuild Index
         self.aRebuildIndex = self.toolsMenu.addAction(self.tr("Rebuild Index"))
         self.aRebuildIndex.setShortcut("F9")
-        self.aRebuildIndex.triggered.connect(lambda: self.mainGui.rebuildIndex())
+        self.aRebuildIndex.triggered.connect(qtLambda(self.mainGui.rebuildIndex))
 
         # Tools > Separator
         self.toolsMenu.addSeparator()
 
         # Tools > Backup Project
         self.aBackupProject = self.toolsMenu.addAction(self.tr("Backup Project"))
-        self.aBackupProject.triggered.connect(lambda: SHARED.project.backupProject(True))
+        self.aBackupProject.triggered.connect(qtLambda(SHARED.project.backupProject, True))
 
         # Tools > Build Manuscript
         self.aBuildManuscript = self.toolsMenu.addAction(self.tr("Build Manuscript"))
@@ -1038,7 +1037,7 @@ class GuiMainMenu(QMenuBar):
         # Help > User Manual (Online)
         self.aHelpDocs = self.helpMenu.addAction(self.tr("User Manual (Online)"))
         self.aHelpDocs.setShortcut("F1")
-        self.aHelpDocs.triggered.connect(lambda: self._openWebsite(nwConst.URL_DOCS))
+        self.aHelpDocs.triggered.connect(qtLambda(self._openWebsite, nwConst.URL_DOCS))
         self.mainGui.addAction(self.aHelpDocs)
 
         # Help > User Manual (PDF)
@@ -1053,14 +1052,14 @@ class GuiMainMenu(QMenuBar):
 
         # Document > Report an Issue
         self.aIssue = self.helpMenu.addAction(self.tr("Report an Issue (GitHub)"))
-        self.aIssue.triggered.connect(lambda: self._openWebsite(nwConst.URL_REPORT))
+        self.aIssue.triggered.connect(qtLambda(self._openWebsite, nwConst.URL_REPORT))
 
         # Document > Ask a Question
         self.aQuestion = self.helpMenu.addAction(self.tr("Ask a Question (GitHub)"))
-        self.aQuestion.triggered.connect(lambda: self._openWebsite(nwConst.URL_HELP))
+        self.aQuestion.triggered.connect(qtLambda(self._openWebsite, nwConst.URL_HELP))
 
         # Document > Main Website
         self.aWebsite = self.helpMenu.addAction(self.tr("The novelWriter Website"))
-        self.aWebsite.triggered.connect(lambda: self._openWebsite(nwConst.URL_WEB))
+        self.aWebsite.triggered.connect(qtLambda(self._openWebsite, nwConst.URL_WEB))
 
         return

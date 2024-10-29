@@ -904,11 +904,6 @@ class GuiMain(QMainWindow):
 
         return not self.splitView.isVisible()
 
-    def toggleFullScreenMode(self) -> None:
-        """Toggle full screen mode"""
-        self.setWindowState(self.windowState() ^ Qt.WindowState.WindowFullScreen)
-        return
-
     ##
     #  Events
     ##
@@ -923,6 +918,12 @@ class GuiMain(QMainWindow):
     ##
     #  Public Slots
     ##
+
+    @pyqtSlot()
+    def toggleFullScreenMode(self) -> None:
+        """Toggle full screen mode"""
+        self.setWindowState(self.windowState() ^ Qt.WindowState.WindowFullScreen)
+        return
 
     @pyqtSlot()
     def closeDocEditor(self) -> None:
