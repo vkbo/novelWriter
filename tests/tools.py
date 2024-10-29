@@ -21,6 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import shutil
+import xml.etree.ElementTree as ET
 
 from datetime import datetime
 from pathlib import Path
@@ -108,6 +109,15 @@ def cmpFiles(
             diffFound = True
 
     return not diffFound
+
+
+def xmlToText(xElem):
+    """Get the text content of an XML element."""
+    text = ET.tostring(xElem, encoding="utf-8", xml_declaration=False).decode()
+    bits = text.partition(">")
+    node = bits[0].partition(" ")
+    rest = " ".join(x for x in node[2].split() if not x.startswith("xmlns")).replace("/", " /")
+    return f"{node[0]}{rest}{bits[1]}{bits[2]}"
 
 
 def readFile(fileName: str | Path):

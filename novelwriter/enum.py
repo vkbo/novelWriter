@@ -184,11 +184,11 @@ class nwBuildFmt(Enum):
     ODT    = 0
     FODT   = 1
     DOCX   = 2
-    HTML   = 3
-    NWD    = 4
+    PDF    = 3
+    HTML   = 4
     STD_MD = 5
     EXT_MD = 6
-    PDF    = 7
+    NWD    = 7
     J_HTML = 8
     J_NWD  = 9
 

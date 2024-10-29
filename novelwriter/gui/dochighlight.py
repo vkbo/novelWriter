@@ -523,6 +523,7 @@ class TextBlockData(QTextBlockUserData):
                     self._metaData.append((s, e, res.group(0), "url"))
 
         self._text = text
+        self._offset = offset
 
         return
 

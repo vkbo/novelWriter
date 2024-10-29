@@ -2,8 +2,8 @@
   "meta": {
     "projectName": "Lorem Ipsum",
     "novelAuthor": "lipsum.com",
-    "buildTime": 1729877010,
-    "buildTimeStr": "2024-10-25 19:23:30"
+    "buildTime": 1730136328,
+    "buildTimeStr": "2024-10-28 18:25:28"
   },
   "text": {
     "nwd": [
@@ -11,6 +11,10 @@
         "#! Lorem Ipsum",
         "",
         ">> **By lipsum.com** <<",
+        "",
+        ">> Word Count: [field:allWords] <<",
+        "",
+        ">> Character Count: [field:allChars] <<",
         "",
         ">> \u201cNeque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit\u2026\u201d <<",
         "",

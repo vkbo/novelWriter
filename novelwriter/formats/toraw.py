@@ -52,6 +52,10 @@ class ToRaw(Tokenizer):
         """No conversion to perform."""
         return
 
+    def closeDocument(self) -> None:
+        """Nothing to close."""
+        return
+
     def saveDocument(self, path: Path) -> None:
         """Save the raw text to a plain text file."""
         if path.suffix.lower() == ".json":

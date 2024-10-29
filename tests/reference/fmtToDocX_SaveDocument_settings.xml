@@ -8,15 +8,15 @@
   </w:compat>
   <w:docVars>
     <w:docVar w:name="ManuscriptTitleCount" w:val="11" />
-    <w:docVar w:name="ManuscriptParagraphCount" w:val="43" />
-    <w:docVar w:name="ManuscriptAllWords" w:val="4031" />
-    <w:docVar w:name="ManuscriptTextWords" w:val="3707" />
+    <w:docVar w:name="ManuscriptParagraphCount" w:val="45" />
+    <w:docVar w:name="ManuscriptAllWords" w:val="4035" />
+    <w:docVar w:name="ManuscriptTextWords" w:val="3711" />
     <w:docVar w:name="ManuscriptTitleWords" w:val="21" />
-    <w:docVar w:name="ManuscriptAllChars" w:val="27035" />
-    <w:docVar w:name="ManuscriptTextChars" w:val="24935" />
+    <w:docVar w:name="ManuscriptAllChars" w:val="27064" />
+    <w:docVar w:name="ManuscriptTextChars" w:val="24964" />
     <w:docVar w:name="ManuscriptTitleChars" w:val="123" />
-    <w:docVar w:name="ManuscriptAllWordChars" w:val="23095" />
-    <w:docVar w:name="ManuscriptTextWordChars" w:val="21271" />
+    <w:docVar w:name="ManuscriptAllWordChars" w:val="23120" />
+    <w:docVar w:name="ManuscriptTextWordChars" w:val="21296" />
     <w:docVar w:name="ManuscriptTitleWordChars" w:val="113" />
   </w:docVars>
 </w:settings>

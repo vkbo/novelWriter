@@ -35,26 +35,7 @@ from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, TextFmt
 from novelwriter.formats.toodt import ODTParagraphStyle, ODTTextStyle, ToOdt, XMLParagraph, _mkTag
 
-from tests.tools import ODT_IGNORE, cmpFiles
-
-XML_NS = [
-    ' xmlns:dc="http://purl.org/dc/elements/1.1/"',
-    ' xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"',
-    ' xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0"',
-    ' xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"',
-    ' xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"',
-    ' xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"',
-    ' xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"',
-    ' xmlns:xlink="http://www.w3.org/1999/xlink"',
-]
-
-
-def xmlToText(xElem):
-    """Get the text content of an XML element."""
-    rTxt = ET.tostring(xElem, encoding="utf-8", xml_declaration=False).decode()
-    for ns in XML_NS:
-        rTxt = rTxt.replace(ns, "")
-    return rTxt
+from tests.tools import ODT_IGNORE, cmpFiles, xmlToText
 
 
 @pytest.mark.core
@@ -234,6 +215,46 @@ def testFmtToOdt_TextFormatting(mockGUI):
         '<office:text>'
         '<text:p text:style-name="Standard">Hello<text:line-break /><text:tab />World</text:p>'
         '</office:text>'
+    )
+
+
+@pytest.mark.core
+def testFmtToOdt_Fields(mockGUI):
+    """Test formatting of footnotes."""
+    project = NWProject()
+    odt = ToOdt(project, True)
+    odt.initDocument()
+
+    # Field Builder
+    xNode = odt._generateField("a:allWords", 0x00)
+    assert isinstance(xNode, ET.Element)
+    assert xmlToText(xNode) == (
+        '<text:user-field-getstyle:data-style-name="N0" text:name="ManuscriptAllWords">'
+        '0</text:user-field-get>'
+    )
+    # assert odt._usedFields == [(xNode.find(_wTag("t")), "b")]
+
+    assert odt._generateField("a", 0x00) is None
+
+    # Full Processing
+    odt._text = (
+        "Word Count: [field:allWords]\n"
+        "Character Count: [field:allChars]\n"
+        "Chicken Count: [field:allChickens]\n"
+    )
+    odt.tokenizeText()
+    odt.doConvert()
+    odt.countStats()
+    assert xmlToText(odt._xBody) == (
+        '<office:body><office:text>'
+        '<text:p text:style-name="Text_20_body">'
+        'Word Count: <text:user-field-get style:data-style-name="N0" '
+        'text:name="ManuscriptAllWords">0</text:user-field-get><text:line-break />'
+        'Character Count: <text:user-field-get style:data-style-name="N0" '
+        'text:name="ManuscriptAllChars">0</text:user-field-get><text:line-break />'
+        'Chicken Count: <text:user-field-get style:data-style-name="N0" '
+        'text:name="ManuscriptAllChickens">0</text:user-field-get></text:p>'
+        '</office:text></office:body>'
     )
 
 
@@ -770,7 +791,7 @@ def testFmtToOdt_ConvertDirect(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
+def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths, ipsumText):
     """Test the document save functions."""
     project = NWProject()
     project.data.setAuthor("Jane Smith")
@@ -780,11 +801,6 @@ def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
 
     odt = ToOdt(project, isFlat=True)
     odt._isNovel = True
-    odt._dLanguage = ""
-    odt.setLanguage(None)  # type: ignore
-    assert odt._dLanguage == ""
-    odt.setLanguage("nb_NO")
-    assert odt._dLanguage == "nb"
     odt.setHeaderFormat(nwHeadFmt.DOC_AUTO, 1)
     assert odt._headerFormat == nwHeadFmt.DOC_AUTO
     odt.setFirstLineIndent(True, 1.4, False)
@@ -801,14 +817,20 @@ def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     assert odt._mDocRight  == "1.500cm"
 
     odt._text = (
+        "#! My Novel\n\n"
+        "**Word Count: [field:allWords]**\n"
+        "[field:paragraphCount] paragrphs\n"
+        "Web: http://example.com\n\n"
         "## Chapter One\n\n"
-        "Text\n\n"
+        f"{ipsumText[0]}\n\n"
         "## Chapter Two\n\n"
-        "Text\n\n"
+        f"{ipsumText[1]}[footnote:abc]\n\n"
+        "%Footnote.abc: Lorem ipsum\n\n"
     )
     odt.tokenizeText()
     odt.initDocument()
     odt.doConvert()
+    odt.countStats()
     odt.closeDocument()
 
     flatFile = fncPath / "document.fodt"
@@ -823,7 +845,7 @@ def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
 
 
 @pytest.mark.core
-def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths):
+def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths, ipsumText):
     """Test the document save functions."""
     project = NWProject()
     project.data.setAuthor("Jane Smith")
@@ -838,14 +860,20 @@ def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     odt.setHeaderFormat(f"{nwHeadFmt.DOC_PROJECT} - {nwHeadFmt.DOC_AUTHOR}", 0)
 
     odt._text = (
+        "#! My Novel\n\n"
+        "**Word Count: [field:allWords]**\n"
+        "[field:paragraphCount] paragrphs\n"
+        "Web: http://example.com\n\n"
         "## Chapter One\n\n"
-        "Text\n\n"
+        f"{ipsumText[0]}\n\n"
         "## Chapter Two\n\n"
-        "Text\n\n"
+        f"{ipsumText[1]}[footnote:abc]\n\n"
+        "%Footnote.abc: Lorem ipsum\n\n"
     )
     odt.tokenizeText()
     odt.initDocument()
     odt.doConvert()
+    odt.countStats()
     odt.closeDocument()
 
     fullFile = fncPath / "document.odt"

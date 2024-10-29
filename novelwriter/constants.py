@@ -67,7 +67,7 @@ class nwRegEx:
     FMT_EB = r"(?<![\w\\])(\*{2})(?![\s\*])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_ST = r"(?<![\w\\])(~{2})(?![\s~])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_SC = r"(?i)(?<!\\)(\[(?:b|/b|i|/i|s|/s|u|/u|m|/m|sup|/sup|sub|/sub|br)\])"
-    FMT_SV = r"(?i)(?<!\\)(\[(?:footnote):)(.+?)(?<!\\)(\])"
+    FMT_SV = r"(?i)(?<!\\)(\[(?:footnote|field):)(.+?)(?<!\\)(\])"
 
 
 class nwShortcode:
@@ -89,11 +89,14 @@ class nwShortcode:
     BREAK    = "[br]"
 
     FOOTNOTE_B = "[footnote:"
+    FIELD_B    = "[field:"
 
     COMMENT_STYLES = {
         nwComment.FOOTNOTE: "[footnote:{0}]",
         nwComment.COMMENT:  "[comment:{0}]",
     }
+
+    FIELD_VALUE = "[field:{0}]"
 
 
 class nwStyles:
@@ -159,11 +162,14 @@ class nwKeyWords:
     STORY_KEY   = "@story"
     MENTION_KEY = "@mention"
 
-    # Set of Valid Keys
-    VALID_KEYS = {
+    # Note: The order here affects the order of menu entries
+    ALL_KEYS = [
         TAG_KEY, POV_KEY, FOCUS_KEY, CHAR_KEY, PLOT_KEY, TIME_KEY, WORLD_KEY,
         OBJECT_KEY, ENTITY_KEY, CUSTOM_KEY, STORY_KEY, MENTION_KEY,
-    }
+    ]
+
+    # Set of Valid Keys
+    VALID_KEYS = set(ALL_KEYS)
 
     # Map from Keys to Item Class
     KEY_CLASS = {
@@ -190,6 +196,29 @@ class nwLists:
         nwItemClass.OBJECT,
         nwItemClass.ENTITY,
         nwItemClass.CUSTOM,
+    ]
+
+
+class nwStats:
+
+    CHARS_ALL    = "allChars"
+    CHARS_TEXT   = "textChars"
+    CHARS_TITLE  = "titleChars"
+    PARAGRAPHS   = "paragraphCount"
+    TITLES       = "titleCount"
+    WCHARS_ALL   = "allWordChars"
+    WCHARS_TEXT  = "textWordChars"
+    WCHARS_TITLE = "titleWordChars"
+    WORDS_ALL    = "allWords"
+    WORDS_TEXT   = "textWords"
+    WORDS_TITLE  = "titleWords"
+
+    # Note: The order here affects the order of menu entries
+    ALL_FIELDS = [
+        WORDS_ALL, WORDS_TEXT, WORDS_TITLE,
+        CHARS_ALL, CHARS_TEXT, CHARS_TITLE,
+        WCHARS_ALL, WCHARS_TEXT, WCHARS_TITLE,
+        PARAGRAPHS, TITLES,
     ]
 
 
@@ -253,6 +282,20 @@ class nwLabels:
         nwKeyWords.STORY_KEY:   QT_TRANSLATE_NOOP("Constant", "Story"),
         nwKeyWords.MENTION_KEY: QT_TRANSLATE_NOOP("Constant", "Mentions"),
     }
+    KEY_SHORTCUT = {
+        nwKeyWords.TAG_KEY:     "Ctrl+K, G",
+        nwKeyWords.POV_KEY:     "Ctrl+K, V",
+        nwKeyWords.FOCUS_KEY:   "Ctrl+K, F",
+        nwKeyWords.CHAR_KEY:    "Ctrl+K, C",
+        nwKeyWords.PLOT_KEY:    "Ctrl+K, P",
+        nwKeyWords.TIME_KEY:    "Ctrl+K, T",
+        nwKeyWords.WORLD_KEY:   "Ctrl+K, L",
+        nwKeyWords.OBJECT_KEY:  "Ctrl+K, O",
+        nwKeyWords.ENTITY_KEY:  "Ctrl+K, E",
+        nwKeyWords.CUSTOM_KEY:  "Ctrl+K, X",
+        nwKeyWords.STORY_KEY:   "Ctrl+K, N",
+        nwKeyWords.MENTION_KEY: "Ctrl+K, M",
+    }
     OUTLINE_COLS = {
         nwOutline.TITLE:   QT_TRANSLATE_NOOP("Constant", "Title"),
         nwOutline.LEVEL:   QT_TRANSLATE_NOOP("Constant", "Level"),
@@ -274,16 +317,29 @@ class nwLabels:
         nwOutline.MENTION: KEY_NAME[nwKeyWords.MENTION_KEY],
         nwOutline.SYNOP:   QT_TRANSLATE_NOOP("Constant", "Synopsis"),
     }
+    STATS_NAME = {
+        nwStats.CHARS_ALL:    QT_TRANSLATE_NOOP("Constant", "Characters"),
+        nwStats.CHARS_TEXT:   QT_TRANSLATE_NOOP("Constant", "Characters in Text"),
+        nwStats.CHARS_TITLE:  QT_TRANSLATE_NOOP("Constant", "Characters in Headings"),
+        nwStats.PARAGRAPHS:   QT_TRANSLATE_NOOP("Constant", "Paragraphs"),
+        nwStats.TITLES:       QT_TRANSLATE_NOOP("Constant", "Headings"),
+        nwStats.WCHARS_ALL:   QT_TRANSLATE_NOOP("Constant", "Characters, No Spaces"),
+        nwStats.WCHARS_TEXT:  QT_TRANSLATE_NOOP("Constant", "Characters in Text, No Spaces"),
+        nwStats.WCHARS_TITLE: QT_TRANSLATE_NOOP("Constant", "Characters in Headings, No Spaces"),
+        nwStats.WORDS_ALL:    QT_TRANSLATE_NOOP("Constant", "Words"),
+        nwStats.WORDS_TEXT:   QT_TRANSLATE_NOOP("Constant", "Words in Text"),
+        nwStats.WORDS_TITLE:  QT_TRANSLATE_NOOP("Constant", "Words in Headings"),
+    }
     BUILD_FMT = {
         nwBuildFmt.ODT:    QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)"),
         nwBuildFmt.FODT:   QT_TRANSLATE_NOOP("Constant", "Flat Open Document (.fodt)"),
         nwBuildFmt.DOCX:   QT_TRANSLATE_NOOP("Constant", "Microsoft Word Document (.docx)"),
-        nwBuildFmt.HTML:   QT_TRANSLATE_NOOP("Constant", "novelWriter HTML (.html)"),
+        nwBuildFmt.HTML:   QT_TRANSLATE_NOOP("Constant", "HTML 5 (.html)"),
         nwBuildFmt.NWD:    QT_TRANSLATE_NOOP("Constant", "novelWriter Markup (.txt)"),
         nwBuildFmt.STD_MD: QT_TRANSLATE_NOOP("Constant", "Standard Markdown (.md)"),
         nwBuildFmt.EXT_MD: QT_TRANSLATE_NOOP("Constant", "Extended Markdown (.md)"),
         nwBuildFmt.PDF:    QT_TRANSLATE_NOOP("Constant", "Portable Document Format (.pdf)"),
-        nwBuildFmt.J_HTML: QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter HTML (.json)"),
+        nwBuildFmt.J_HTML: QT_TRANSLATE_NOOP("Constant", "JSON + HTML 5 (.json)"),
         nwBuildFmt.J_NWD:  QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter Markup (.json)"),
     }
     BUILD_EXT = {

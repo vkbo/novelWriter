@@ -84,6 +84,7 @@ class ToHtml(Tokenizer):
         self._trMap = {}
         self._cssStyles = True
         self._usedNotes: dict[str, int] = {}
+        self._usedFields: list[tuple[int, str]] = []
         self.setReplaceUnicode(False)
         return
 
@@ -249,8 +250,18 @@ class ToHtml(Tokenizer):
 
         return
 
-    def appendFootnotes(self) -> None:
-        """Append the footnotes in the buffer."""
+    def closeDocument(self) -> None:
+        """Run close document tasks."""
+        # Replace fields if there are stats available
+        if self._usedFields and self._counts:
+            pages = len(self._pages)
+            for doc, field in self._usedFields:
+                if doc >= 0 and doc < pages and (value := self._counts.get(field)) is not None:
+                    self._pages[doc] = self._pages[doc].replace(
+                        f"{{{{{field}}}}}", self._formatInt(value)
+                    )
+
+        # Add footnotes
         if self._usedNotes:
             footnotes = self._localLookup("Footnotes")
 
@@ -416,6 +427,10 @@ class ToHtml(Tokenizer):
                     tags.append((pos, f"<sup><a href='#footnote_{index}'>{index}</a></sup>"))
                 else:
                     tags.append((pos, "<sup>ERR</sup>"))
+            elif fmt == TextFmt.FIELD:
+                if field := data.partition(":")[2]:
+                    self._usedFields.append((len(self._pages), field))
+                    tags.append((pos, f"{{{{{field}}}}}"))
 
         # Check all format types and close any tag that is still open. This
         # ensures that unclosed tags don't spill over to the next paragraph.

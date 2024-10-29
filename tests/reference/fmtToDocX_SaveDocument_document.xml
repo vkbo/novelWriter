@@ -30,6 +30,34 @@
       </w:pPr>
       <w:r>
         <w:rPr />
+        <w:t xml:space="preserve">Word Count: </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr />
+        <w:t>4,035</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Normal" />
+        <w:jc w:val="center" />
+      </w:pPr>
+      <w:r>
+        <w:rPr />
+        <w:t xml:space="preserve">Character Count: </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr />
+        <w:t>27,064</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Normal" />
+        <w:jc w:val="center" />
+      </w:pPr>
+      <w:r>
+        <w:rPr />
         <w:t>“Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit…”</w:t>
       </w:r>
     </w:p>

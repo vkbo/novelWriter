@@ -43,6 +43,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import fuzzyTime
+from novelwriter.constants import nwLabels, nwStats, trConst
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
@@ -928,8 +929,7 @@ class _StatsWidget(QWidget):
         self.toggleButton = NIconToggleButton(self, SHARED.theme.baseIconSize, "unfold")
         self.toggleButton.toggled.connect(self._toggleView)
 
-        self._buildMinimal()
-        self._buildMaximal()
+        self._buildStatsPanel()
 
         self.mainStack = QStackedWidget(self)
         self.mainStack.addWidget(self.minWidget)
@@ -949,23 +949,23 @@ class _StatsWidget(QWidget):
     def updateStats(self, data: dict[str, int]) -> None:
         """Update the stats values from a Tokenizer stats dict."""
         # Minimal
-        self.minWordCount.setText("{0:n}".format(data.get("allWords", 0)))
-        self.minCharCount.setText("{0:n}".format(data.get("allChars", 0)))
+        self.minWordCount.setText("{0:n}".format(data.get(nwStats.WORDS_ALL, 0)))
+        self.minCharCount.setText("{0:n}".format(data.get(nwStats.CHARS_ALL, 0)))
 
         # Maximal
-        self.maxTotalWords.setText("{0:n}".format(data.get("allWords", 0)))
-        self.maxHeadWords.setText("{0:n}".format(data.get("titleWords", 0)))
-        self.maxTextWords.setText("{0:n}".format(data.get("textWords", 0)))
-        self.maxTitleCount.setText("{0:n}".format(data.get("titleCount", 0)))
-        self.maxParCount.setText("{0:n}".format(data.get("paragraphCount", 0)))
+        self.maxTotalWords.setText("{0:n}".format(data.get(nwStats.WORDS_ALL, 0)))
+        self.maxHeadWords.setText("{0:n}".format(data.get(nwStats.WORDS_TITLE, 0)))
+        self.maxTextWords.setText("{0:n}".format(data.get(nwStats.WORDS_TEXT, 0)))
+        self.maxTitleCount.setText("{0:n}".format(data.get(nwStats.TITLES, 0)))
+        self.maxParCount.setText("{0:n}".format(data.get(nwStats.PARAGRAPHS, 0)))
 
-        self.maxTotalChars.setText("{0:n}".format(data.get("allChars", 0)))
-        self.maxHeaderChars.setText("{0:n}".format(data.get("titleChars", 0)))
-        self.maxTextChars.setText("{0:n}".format(data.get("textChars", 0)))
+        self.maxTotalChars.setText("{0:n}".format(data.get(nwStats.CHARS_ALL, 0)))
+        self.maxHeaderChars.setText("{0:n}".format(data.get(nwStats.CHARS_TITLE, 0)))
+        self.maxTextChars.setText("{0:n}".format(data.get(nwStats.CHARS_TEXT, 0)))
 
-        self.maxTotalWordChars.setText("{0:n}".format(data.get("allWordChars", 0)))
-        self.maxHeadWordChars.setText("{0:n}".format(data.get("titleWordChars", 0)))
-        self.maxTextWordChars.setText("{0:n}".format(data.get("textWordChars", 0)))
+        self.maxTotalWordChars.setText("{0:n}".format(data.get(nwStats.WCHARS_ALL, 0)))
+        self.maxHeadWordChars.setText("{0:n}".format(data.get(nwStats.WCHARS_TITLE, 0)))
+        self.maxTextWordChars.setText("{0:n}".format(data.get(nwStats.WCHARS_TEXT, 0)))
 
         return
 
@@ -994,37 +994,29 @@ class _StatsWidget(QWidget):
     #  Internal Functions
     ##
 
-    def _buildMinimal(self) -> None:
+    def _buildStatsPanel(self) -> None:
         """Build the minimal stats page."""
         mPx = CONFIG.pxInt(8)
-
-        self.lblWordCount = QLabel(self.tr("Words"), self)
-        self.minWordCount = QLabel(self)
-
-        self.lblCharCount = QLabel(self.tr("Characters"), self)
-        self.minCharCount = QLabel(self)
-
-        # Assemble
-        self.minLayout = QHBoxLayout()
-        self.minLayout.addWidget(self.lblWordCount)
-        self.minLayout.addWidget(self.minWordCount)
-        self.minLayout.addSpacing(mPx)
-        self.minLayout.addWidget(self.lblCharCount)
-        self.minLayout.addWidget(self.minCharCount)
-        self.minLayout.addStretch(1)
-        self.minLayout.setSpacing(mPx)
-        self.minLayout.setContentsMargins(0, 0, 0, 0)
-
-        self.minWidget.setLayout(self.minLayout)
-
-        return
-
-    def _buildMaximal(self) -> None:
-        """Build the maximal stats page."""
         hPx = CONFIG.pxInt(12)
         vPx = CONFIG.pxInt(4)
 
-        # Left Column
+        trAllChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_ALL])
+        trTextChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_TEXT])
+        trTitleChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_TITLE])
+        trParagraphCount = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
+        trTitleCount = trConst(nwLabels.STATS_NAME[nwStats.TITLES])
+        trAllWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_ALL])
+        trTextWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_TEXT])
+        trTitleWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_TITLE])
+        trAllWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS_ALL])
+        trTextWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS_TEXT])
+        trTitleWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS_TITLE])
+
+        # Minimal Form
+        self.minWordCount = QLabel(self)
+        self.minCharCount = QLabel(self)
+
+        # Maximal Form, Left Column
         self.maxTotalWords = QLabel(self)
         self.maxHeadWords = QLabel(self)
         self.maxTextWords = QLabel(self)
@@ -1038,20 +1030,19 @@ class _StatsWidget(QWidget):
         self.maxParCount.setAlignment(QtAlignRight)
 
         self.leftForm = QFormLayout()
-        self.leftForm.addRow(self.tr("Words"), self.maxTotalWords)
-        self.leftForm.addRow(self.tr("Words in Headings"), self.maxHeadWords)
-        self.leftForm.addRow(self.tr("Words in Text"), self.maxTextWords)
+        self.leftForm.addRow(trAllWords, self.maxTotalWords)
+        self.leftForm.addRow(trTitleWords, self.maxHeadWords)
+        self.leftForm.addRow(trTextWords, self.maxTextWords)
         self.leftForm.addRow("", QLabel(self))
-        self.leftForm.addRow(self.tr("Headings"), self.maxTitleCount)
-        self.leftForm.addRow(self.tr("Paragraphs"), self.maxParCount)
+        self.leftForm.addRow(trTitleCount, self.maxTitleCount)
+        self.leftForm.addRow(trParagraphCount, self.maxParCount)
         self.leftForm.setHorizontalSpacing(hPx)
         self.leftForm.setVerticalSpacing(vPx)
 
-        # Right Column
+        # Maximal Form, Right Column
         self.maxTotalChars = QLabel(self)
         self.maxHeaderChars = QLabel(self)
         self.maxTextChars = QLabel(self)
-
         self.maxTotalWordChars = QLabel(self)
         self.maxHeadWordChars = QLabel(self)
         self.maxTextWordChars = QLabel(self)
@@ -1059,22 +1050,31 @@ class _StatsWidget(QWidget):
         self.maxTotalChars.setAlignment(QtAlignRight)
         self.maxHeaderChars.setAlignment(QtAlignRight)
         self.maxTextChars.setAlignment(QtAlignRight)
-
         self.maxTotalWordChars.setAlignment(QtAlignRight)
         self.maxHeadWordChars.setAlignment(QtAlignRight)
         self.maxTextWordChars.setAlignment(QtAlignRight)
 
         self.rightForm = QFormLayout()
-        self.rightForm.addRow(self.tr("Characters"), self.maxTotalChars)
-        self.rightForm.addRow(self.tr("Characters in Headings"), self.maxHeaderChars)
-        self.rightForm.addRow(self.tr("Characters in Text"), self.maxTextChars)
-        self.rightForm.addRow(self.tr("Characters, No Spaces"), self.maxTotalWordChars)
-        self.rightForm.addRow(self.tr("Characters in Headings, No Spaces"), self.maxHeadWordChars)
-        self.rightForm.addRow(self.tr("Characters in Text, No Spaces"), self.maxTextWordChars)
+        self.rightForm.addRow(trAllChars, self.maxTotalChars)
+        self.rightForm.addRow(trTitleChars, self.maxHeaderChars)
+        self.rightForm.addRow(trTextChars, self.maxTextChars)
+        self.rightForm.addRow(trAllWordChars, self.maxTotalWordChars)
+        self.rightForm.addRow(trTitleWordChars, self.maxHeadWordChars)
+        self.rightForm.addRow(trTextWordChars, self.maxTextWordChars)
         self.rightForm.setHorizontalSpacing(hPx)
         self.rightForm.setVerticalSpacing(vPx)
 
         # Assemble
+        self.minLayout = QHBoxLayout()
+        self.minLayout.addWidget(QLabel(trAllWords, self))
+        self.minLayout.addWidget(self.minWordCount)
+        self.minLayout.addSpacing(mPx)
+        self.minLayout.addWidget(QLabel(trAllChars, self))
+        self.minLayout.addWidget(self.minCharCount)
+        self.minLayout.addStretch(1)
+        self.minLayout.setSpacing(mPx)
+        self.minLayout.setContentsMargins(0, 0, 0, 0)
+
         self.maxLayout = QHBoxLayout()
         self.maxLayout.addLayout(self.leftForm)
         self.maxLayout.addLayout(self.rightForm)
@@ -1082,6 +1082,7 @@ class _StatsWidget(QWidget):
         self.maxLayout.setSpacing(CONFIG.pxInt(32))
         self.maxLayout.setContentsMargins(0, 0, 0, 0)
 
+        self.minWidget.setLayout(self.minLayout)
         self.maxWidget.setLayout(self.maxLayout)
 
         return

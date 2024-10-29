@@ -6,7 +6,7 @@
         <w:rFonts w:ascii="Source Sans Pro" w:hAnsi="Source Sans Pro" w:cs="Source Sans Pro" />
         <w:sz w:val="24" />
         <w:szCs w:val="24" />
-        <w:lang w:val="en-GB" />
+        <w:lang w:val="en_GB" />
       </w:rPr>
     </w:rPrDefault>
     <w:pPrDefault>

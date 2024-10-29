@@ -40,8 +40,8 @@ from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
 from novelwriter.formats.tokenizer import HEADINGS, Tokenizer
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
-    QtPageBreakAfter, QtPageBreakBefore, QtTransparent, QtVAlignNormal,
-    QtVAlignSub, QtVAlignSuper
+    QtKeepAnchor, QtMoveAnchor, QtPageBreakAfter, QtPageBreakBefore,
+    QtTransparent, QtVAlignNormal, QtVAlignSub, QtVAlignSuper
 )
 
 logger = logging.getLogger(__name__)
@@ -70,6 +70,7 @@ class ToQTextDocument(Tokenizer):
         self._document.setDocumentMargin(0)
 
         self._usedNotes: dict[str, int] = {}
+        self._usedFields: list[tuple[int, str]] = []
 
         self._init = False
         self._bold = QFont.Weight.Bold
@@ -246,11 +247,21 @@ class ToQTextDocument(Tokenizer):
 
         return
 
-    def appendFootnotes(self) -> None:
-        """Append the footnotes in the buffer."""
-        if self._usedNotes:
-            self._document.blockSignals(True)
+    def closeDocument(self) -> None:
+        """Run close document tasks."""
+        self._document.blockSignals(True)
 
+        # Replace fields if there are stats available
+        if self._usedFields and self._counts:
+            cursor = QTextCursor(self._document)
+            for pos, field in reversed(self._usedFields):
+                if (value := self._counts.get(field)) is not None:
+                    cursor.setPosition(pos, QtMoveAnchor)
+                    cursor.setPosition(pos + 1, QtKeepAnchor)
+                    cursor.insertText(self._formatInt(value))
+
+        # Add footnotes
+        if self._usedNotes:
             cursor = QTextCursor(self._document)
             cursor.movePosition(QTextCursor.MoveOperation.End)
 
@@ -268,7 +279,7 @@ class ToQTextDocument(Tokenizer):
                     cursor.insertText(f"{index}. ", cFmt)
                     self._insertFragments(*content, cursor, self._charFmt)
 
-            self._document.blockSignals(False)
+        self._document.blockSignals(False)
 
         return
 
@@ -361,6 +372,11 @@ class ToQTextDocument(Tokenizer):
                     cursor.insertText(f"[{index}]", xFmt)
                 else:
                     cursor.insertText("[ERR]", cFmt)
+            elif fmt == TextFmt.FIELD:
+                if field := data.partition(":")[2]:
+                    self._usedFields.append((cursor.position(), field))
+                    cursor.insertText("0", cFmt)
+                pass
 
             # Move pos for next pass
             start = pos

@@ -86,6 +86,7 @@ class ToMarkdown(Tokenizer):
         super().__init__(project)
         self._extended = extended
         self._usedNotes: dict[str, int] = {}
+        self._usedFields: list[tuple[int, str]] = []
         return
 
     ##
@@ -149,8 +150,18 @@ class ToMarkdown(Tokenizer):
 
         return
 
-    def appendFootnotes(self) -> None:
-        """Append the footnotes in the buffer."""
+    def closeDocument(self) -> None:
+        """Run close document tasks."""
+        # Replace fields if there are stats available
+        if self._usedFields and self._counts:
+            pages = len(self._pages)
+            for doc, field in self._usedFields:
+                if doc >= 0 and doc < pages and (value := self._counts.get(field)) is not None:
+                    self._pages[doc] = self._pages[doc].replace(
+                        f"{{{{{field}}}}}", self._formatInt(value)
+                    )
+
+        # Add footnotes
         if self._usedNotes:
             tags = EXT_MD if self._extended else STD_MD
             footnotes = self._localLookup("Footnotes")
@@ -196,6 +207,10 @@ class ToMarkdown(Tokenizer):
                     md = f"[{index}]"
                 else:
                     md = "[ERR]"
+            elif fmt == TextFmt.FIELD:
+                if field := data.partition(":")[2]:
+                    self._usedFields.append((len(self._pages), field))
+                    md = f"{{{{{field}}}}}"
             else:
                 md = tags.get(fmt, "")
             temp = f"{temp[:pos]}{md}{temp[pos:]}"

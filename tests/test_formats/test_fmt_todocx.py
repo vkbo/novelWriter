@@ -32,28 +32,9 @@ from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
 from novelwriter.formats.shared import BlockFmt, BlockTyp
-from novelwriter.formats.todocx import ToDocX, _mkTag, _wTag
+from novelwriter.formats.todocx import OOXML_SCM, ToDocX, _mkTag, _wTag
 
-from tests.tools import DOCX_IGNORE, cmpFiles
-
-OOXML_SCM = "http://schemas.openxmlformats.org"
-XML_NS = [
-    f' xmlns:r="{OOXML_SCM}/officeDocument/2006/relationships"',
-    f' xmlns:w="{OOXML_SCM}/wordprocessingml/2006/main"',
-    f' xmlns:cp="{OOXML_SCM}/package/2006/metadata/core-properties"',
-    ' xmlns:dc="http://purl.org/dc/elements/1.1/"',
-    ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
-    ' xmlns:xml="http://www.w3.org/XML/1998/namespace"',
-    ' xmlns:dcterms="http://purl.org/dc/terms/"',
-]
-
-
-def xmlToText(xElem):
-    """Get the text content of an XML element."""
-    rTxt = ET.tostring(xElem, encoding="utf-8", xml_declaration=False).decode()
-    for ns in XML_NS:
-        rTxt = rTxt.replace(ns, "")
-    return rTxt
+from tests.tools import DOCX_IGNORE, cmpFiles, xmlToText
 
 
 @pytest.mark.core
@@ -607,6 +588,49 @@ def testFmtToDocX_Footnotes(mockGUI):
         '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr><w:footnoteRef /></w:r>'
         '<w:r><w:rPr /><w:t>Again?</w:t></w:r></w:p></w:footnote>'
         '</w:footnotes>'
+    )
+
+
+@pytest.mark.core
+def testFmtToDocX_Fields(mockGUI):
+    """Test formatting of footnotes."""
+    project = NWProject()
+    doc = ToDocX(project)
+    doc.initDocument()
+
+    # Field Builder
+    xNode = doc._generateField("a:b", 0x00)
+    assert isinstance(xNode, ET.Element)
+    assert xmlToText(xNode) == "<w:r><w:rPr /><w:t>0</w:t></w:r>"
+    assert doc._usedFields == [(xNode.find(_wTag("t")), "b")]
+
+    assert doc._generateField("a", 0x00) is None
+
+    # Full Processing
+    doc._text = (
+        "Word Count: [field:allWords]\n"
+        "Character Count: [field:allChars]\n"
+        "Chicken Count: [field:allChickens]\n"
+    )
+    doc.tokenizeText()
+    doc.doConvert()
+    doc.countStats()
+    doc._documentXml(None, None)
+    assert xmlToText(doc._files["document.xml"].xml) == (
+        '<w:document><w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
+        '<w:r><w:rPr /><w:t xml:space="preserve">Word Count: </w:t></w:r>'
+        '<w:r><w:rPr /><w:t>6</w:t></w:r>'
+        '<w:r><w:rPr /><w:br /><w:t xml:space="preserve">Character Count: </w:t></w:r>'
+        '<w:r><w:rPr /><w:t>46</w:t></w:r>'
+        '<w:r><w:rPr /><w:br /><w:t xml:space="preserve">Chicken Count: </w:t></w:r>'
+        '<w:r><w:rPr /><w:t>0</w:t></w:r>'
+        '</w:p><w:sectPr>'
+        '<w:footnotePr><w:numFmt w:val="decimal" /></w:footnotePr>'
+        '<w:pgSz w:w="11905" w:h="16837" w:orient="portrait" />'
+        '<w:pgMar w:top="1133" w:right="1133" w:bottom="1133" w:left="1133" '
+        'w:header="566" w:footer="0" w:gutter="0" />'
+        '<w:pgNumType w:start="1" w:fmt="decimal" /><w:titlePg />'
+        '</w:sectPr></w:body></w:document>'
     )
 
 

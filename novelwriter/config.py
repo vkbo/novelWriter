@@ -253,6 +253,10 @@ class Config:
         return self._hasError
 
     @property
+    def locale(self) -> QLocale:
+        return self._dLocale
+
+    @property
     def recentProjects(self) -> RecentProjects:
         return self._recentProjects
 

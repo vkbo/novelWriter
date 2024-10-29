@@ -28,6 +28,7 @@ from pathlib import Path
 
 import pytest
 
+from PyQt5.QtCore import QLocale
 from PyQt5.QtWidgets import QMessageBox
 
 sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
@@ -54,6 +55,7 @@ def resetConfigVars():
     CONFIG.setGuiFont(None)
     CONFIG.setTextFont(None)
     CONFIG._homePath = _TMP_ROOT
+    CONFIG._dLocale = QLocale("en_GB")
     CONFIG.guiLocale = "en_GB"
     return
 

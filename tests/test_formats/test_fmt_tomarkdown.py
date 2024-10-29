@@ -205,7 +205,7 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     md.doConvert()
     assert md._pages[-1] == "Text with one[1] or two[ERR] footnotes.\n\n"
 
-    md.appendFootnotes()
+    md.closeDocument()
     assert md._pages[-2] == (
         "Text with one[1] or two[ERR] footnotes.\n\n"
     )

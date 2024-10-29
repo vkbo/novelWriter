@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.6a2" hexVersion="0x020600a2" fileVersion="1.5" fileRevision="4" timeStamp="2024-10-25 19:16:56">
-  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="48" autoCount="28" editTime="2374">
+<novelWriterXML appVersion="2.6a3" hexVersion="0x020600a3" fileVersion="1.5" fileRevision="4" timeStamp="2024-10-28 18:19:29">
+  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="50" autoCount="29" editTime="2448">
     <name>Lorem Ipsum</name>
     <author>lipsum.com</author>
   </project>
@@ -9,7 +9,7 @@
     <language>en_GB</language>
     <spellChecking auto="no">None</spellChecking>
     <lastHandle>
-      <entry key="editor">88d59a277361b</entry>
+      <entry key="editor">7a992350f3eb6</entry>
       <entry key="viewer">None</entry>
       <entry key="novelTree">b3643d0f92e32</entry>
       <entry key="outline">None</entry>
@@ -31,17 +31,17 @@
       <entry key="id6b1d0" count="0" red="50" green="200" blue="0" shape="SQUARE">Main</entry>
     </importance>
   </settings>
-  <content items="21" novelWords="3111" notesWords="738">
+  <content items="21" novelWords="3115" notesWords="738">
     <item handle="b3643d0f92e32" parent="None" root="b3643d0f92e32" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="sbaa94f" import="i613591">Novel</name>
     </item>
     <item handle="7a992350f3eb6" parent="b3643d0f92e32" root="b3643d0f92e32" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="230" wordCount="40" paraCount="3" cursorPos="14" />
+      <meta expanded="no" heading="H1" charCount="259" wordCount="44" paraCount="5" cursorPos="116" />
       <name status="sedd043" import="i613591" active="yes">Lorem Ipsum</name>
     </item>
     <item handle="8c58a65414c23" parent="b3643d0f92e32" root="b3643d0f92e32" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H0" charCount="1058" wordCount="176" paraCount="2" cursorPos="43" />
+      <meta expanded="no" heading="H0" charCount="1058" wordCount="176" paraCount="2" cursorPos="53" />
       <name status="sedd043" import="i613591" active="yes">Front Matter</name>
     </item>
     <item handle="88d59a277361b" parent="b3643d0f92e32" root="b3643d0f92e32" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">

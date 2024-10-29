@@ -2167,15 +2167,15 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     docEditor._lastFind = None
     docEditor.replaceNext()
     assert docEditor.textCursor().selectedText() == "a"
-    assert docEditor.getCursorPosition() == 92
+    assert docEditor.getCursorPosition() == 83
 
     # Iterate through the rest
-    finds = [104, 123, 175, 197, 206, 211, 220, 238, 250, 250]
-    for i in range(10):
+    finds = [85, 105, 110, 141, 169, 181, 200, 252, 274, 283, 288, 297]
+    for i in range(len(finds)):
         docEditor.replaceNext()
         assert docEditor.textCursor().selectedText() == "a"
         assert docEditor.getCursorPosition() == finds[i]
-    assert docEditor._lastFind == (249, 250)
+    assert docEditor._lastFind == (296, 297)
 
     # Search for something that doesn't exist
     docSearch.searchBox.setText("x")
@@ -2184,27 +2184,3 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert docEditor.textCursor().selectedText() == ""
 
     # qtbot.stop()
-
-
-@pytest.mark.gui
-def testGuiEditor_StaticMethods():
-    """Test the document editor's static methods."""
-    # Check the method that decides if it is allowed to insert a space
-    # before a colon using the French, Spanish, etc language feature
-    assert GuiDocEditor._allowSpaceBeforeColon("", "") is True
-    assert GuiDocEditor._allowSpaceBeforeColon("", ":") is True
-    assert GuiDocEditor._allowSpaceBeforeColon("some text", ":") is True
-
-    assert GuiDocEditor._allowSpaceBeforeColon("@:", ":") is False
-    assert GuiDocEditor._allowSpaceBeforeColon("@>", ">") is True
-
-    assert GuiDocEditor._allowSpaceBeforeColon("%", ":") is True
-    assert GuiDocEditor._allowSpaceBeforeColon("%:", ":") is True
-    assert GuiDocEditor._allowSpaceBeforeColon("%synopsis:", ":") is False
-    assert GuiDocEditor._allowSpaceBeforeColon("%Synopsis:", ":") is False
-    assert GuiDocEditor._allowSpaceBeforeColon("% synopsis:", ":") is False
-    assert GuiDocEditor._allowSpaceBeforeColon("% Synopsis:", ":") is False
-    assert GuiDocEditor._allowSpaceBeforeColon("%  synopsis:", ":") is False
-    assert GuiDocEditor._allowSpaceBeforeColon("%  Synopsis:", ":") is False
-    assert GuiDocEditor._allowSpaceBeforeColon("%synopsis :", ":") is True
-    assert GuiDocEditor._allowSpaceBeforeColon("%Synopsis :", ":") is True

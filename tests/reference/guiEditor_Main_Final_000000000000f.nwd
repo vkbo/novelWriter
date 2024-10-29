@@ -1,8 +1,8 @@
 %%~name: New Scene
 %%~path: 000000000000d/000000000000f
 %%~kind: NOVEL/DOCUMENT
-%%~hash: 0566024662fb6ed7ed645717addd64dabf058915
-%%~date: 2024-10-27 13:03:13/2024-10-27 13:03:18
+%%~hash: 89b54ddaec2fddfd220e91dd438c84fb3aef9fc2
+%%~date: 2024-10-30 00:07:21/2024-10-30 00:07:26
 # Novel
 
 ## Chapter
@@ -40,7 +40,9 @@ Some “ double quoted text with spaces padded ”.
 
 @object: NoSpaceAdded
 
-% synopsis: No space before this colon.
+% synopsis : Space before this is OK.
+
+%Footnote.abc : A simple footnote.
 
 Add space before this colon : See?
 

@@ -127,16 +127,11 @@ class NWBuildDocument:
         makeObj = ToQTextDocument(self._project)
         filtered = self._setupBuild(makeObj)
         makeObj.initDocument()
-
         self._outline = True
-
         yield from self._iterBuild(makeObj, filtered)
-
-        makeObj.appendFootnotes()
-
+        makeObj.closeDocument()
         self._error = None
         self._cache = makeObj
-
         return
 
     def iterBuildDocument(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:
@@ -152,38 +147,31 @@ class NWBuildDocument:
             makeObj = ToOdt(self._project, bFormat == nwBuildFmt.FODT)
             filtered = self._setupBuild(makeObj)
             makeObj.initDocument()
-
             yield from self._iterBuild(makeObj, filtered)
-
             makeObj.closeDocument()
 
         elif bFormat in (nwBuildFmt.HTML, nwBuildFmt.J_HTML):
             makeObj = ToHtml(self._project)
             filtered = self._setupBuild(makeObj)
             makeObj.initDocument()
-
             yield from self._iterBuild(makeObj, filtered)
-
-            makeObj.appendFootnotes()
+            makeObj.closeDocument()
             if not self._build.getBool("html.preserveTabs"):
                 makeObj.replaceTabs()
 
         elif bFormat in (nwBuildFmt.STD_MD, nwBuildFmt.EXT_MD):
             makeObj = ToMarkdown(self._project, bFormat == nwBuildFmt.EXT_MD)
             filtered = self._setupBuild(makeObj)
-
             yield from self._iterBuild(makeObj, filtered)
-
-            makeObj.appendFootnotes()
+            makeObj.closeDocument()
             if self._build.getBool("format.replaceTabs"):
                 makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
 
         elif bFormat in (nwBuildFmt.NWD, nwBuildFmt.J_NWD):
             makeObj = ToRaw(self._project)
             filtered = self._setupBuild(makeObj)
-
             yield from self._iterBuild(makeObj, filtered)
-
+            makeObj.closeDocument()
             if self._build.getBool("format.replaceTabs"):
                 makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
 
@@ -191,19 +179,15 @@ class NWBuildDocument:
             makeObj = ToDocX(self._project)
             filtered = self._setupBuild(makeObj)
             makeObj.initDocument()
-
             yield from self._iterBuild(makeObj, filtered)
-
             makeObj.closeDocument()
 
         elif bFormat == nwBuildFmt.PDF:
             makeObj = ToQTextDocument(self._project)
             filtered = self._setupBuild(makeObj)
             makeObj.initDocument()
-
             yield from self._iterBuild(makeObj, filtered)
-
-            makeObj.appendFootnotes()
+            makeObj.closeDocument()
 
         else:
             logger.error("Unsupported document format")
@@ -240,7 +224,9 @@ class NWBuildDocument:
         # Get Settings
         textFont = QFont(CONFIG.textFont)
         textFont.fromString(self._build.getStr("format.textFont"))
+
         bldObj.setFont(textFont)
+        bldObj.setLanguage(self._project.data.language)
 
         bldObj.setPartitionFormat(
             self._build.getStr("headings.fmtPart"),
@@ -338,7 +324,6 @@ class NWBuildDocument:
             bldObj.setReplaceUnicode(self._build.getBool("format.stripUnicode"))
 
         if isinstance(bldObj, (ToOdt, ToDocX)):
-            bldObj.setLanguage(self._project.data.language)
             bldObj.setHeaderFormat(
                 self._build.getStr("doc.pageHeader"),
                 self._build.getInt("doc.pageCountOffset"),

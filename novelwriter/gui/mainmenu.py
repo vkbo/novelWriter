@@ -34,7 +34,10 @@ from PyQt5.QtWidgets import QAction, QMenuBar
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import openExternalPath, qtLambda
-from novelwriter.constants import nwConst, nwKeyWords, nwLabels, nwStyles, nwUnicode, trConst
+from novelwriter.constants import (
+    nwConst, nwKeyWords, nwLabels, nwShortcode, nwStats, nwStyles, nwUnicode,
+    trConst
+)
 from novelwriter.enum import nwDocAction, nwDocInsert, nwFocus, nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
 
@@ -571,25 +574,11 @@ class GuiMainMenu(QMenuBar):
 
         # Insert > Tags and References
         self.mInsKeywords = self.insMenu.addMenu(self.tr("Tags and References"))
-        self.mInsKWItems = {}
-        self.mInsKWItems[nwKeyWords.TAG_KEY]     = (QAction(self.mInsKeywords), "Ctrl+K, G")
-        self.mInsKWItems[nwKeyWords.POV_KEY]     = (QAction(self.mInsKeywords), "Ctrl+K, V")
-        self.mInsKWItems[nwKeyWords.FOCUS_KEY]   = (QAction(self.mInsKeywords), "Ctrl+K, F")
-        self.mInsKWItems[nwKeyWords.CHAR_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, C")
-        self.mInsKWItems[nwKeyWords.PLOT_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, P")
-        self.mInsKWItems[nwKeyWords.TIME_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, T")
-        self.mInsKWItems[nwKeyWords.WORLD_KEY]   = (QAction(self.mInsKeywords), "Ctrl+K, L")
-        self.mInsKWItems[nwKeyWords.OBJECT_KEY]  = (QAction(self.mInsKeywords), "Ctrl+K, O")
-        self.mInsKWItems[nwKeyWords.ENTITY_KEY]  = (QAction(self.mInsKeywords), "Ctrl+K, E")
-        self.mInsKWItems[nwKeyWords.CUSTOM_KEY]  = (QAction(self.mInsKeywords), "Ctrl+K, X")
-        self.mInsKWItems[nwKeyWords.MENTION_KEY] = (QAction(self.mInsKeywords), "Ctrl+K, M")
-        for key in self.mInsKWItems:
-            action = self.mInsKWItems[key][0]
-            action.setText(trConst(nwLabels.KEY_NAME[key]))
-            action.setShortcut(self.mInsKWItems[key][1])
+        for key in nwKeyWords.ALL_KEYS:
+            action = self.mInsKeywords.addAction(trConst(nwLabels.KEY_NAME[key]))
+            action.setShortcut(nwLabels.KEY_SHORTCUT[key])
             action.triggered.connect(qtLambda(self.requestDocKeyWordInsert.emit, key))
-            self.mInsKeywords.addAction(action)
-            self.mainGui.addAction(self.mInsKWItems[key][0])
+            self.mainGui.addAction(action)
 
         # Insert > Special Comments
         self.mInsComments = self.insMenu.addMenu(self.tr("Special Comments"))
@@ -609,6 +598,13 @@ class GuiMainMenu(QMenuBar):
             lambda: self.requestDocInsert.emit(nwDocInsert.SHORT)
         )
         self.mainGui.addAction(self.aInsShort)
+
+        # Insert > Word/Character Count
+        self.mInsField = self.insMenu.addMenu(self.tr("Word/Character Count"))
+        for field in nwStats.ALL_FIELDS:
+            value = nwShortcode.FIELD_VALUE.format(field)
+            action = self.mInsField.addAction(trConst(nwLabels.STATS_NAME[field]))
+            action.triggered.connect(qtLambda(self.requestDocInsertText.emit, value))
 
         # Insert > Breaks and Vertical Space
         self.mInsBreaks = self.insMenu.addMenu(self.tr("Breaks and Vertical Space"))
