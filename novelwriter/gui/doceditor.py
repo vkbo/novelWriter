@@ -2065,12 +2065,8 @@ class GuiDocEditor(QPlainTextEdit):
         feature for French, Spanish, etc, so it doesn't insert a
         space before colons in meta data lines. See issue #1090.
         """
-        if char == ":" and len(text) > 1:
-            if text[0] == "@":
-                return False
-            if text[0] == "%":
-                if text[1:].lstrip()[:9].lower() == "synopsis:":
-                    return False
+        if char == ":" and len(text) > 1 and text[0] == "@":
+            return False
         return True
 
     def _autoSelect(self) -> QTextCursor:

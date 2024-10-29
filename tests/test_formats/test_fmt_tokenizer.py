@@ -45,7 +45,7 @@ class BareTokenizer(Tokenizer):
         super().doConvert()  # type: ignore (deliberate check)
 
     def closeDocument(self):
-        super().doConvert()  # type: ignore (deliberate check)
+        super().closeDocument()  # type: ignore (deliberate check)
 
     def saveDocument(self, path) -> None:
         super().saveDocument(path)  # type: ignore (deliberate check)
@@ -59,6 +59,9 @@ def testFmtToken_Abstracts(mockGUI, tstPaths):
 
     with pytest.raises(NotImplementedError):
         tokens.doConvert()
+
+    with pytest.raises(NotImplementedError):
+        tokens.closeDocument()
 
     with pytest.raises(NotImplementedError):
         tokens.saveDocument(tstPaths)

@@ -1490,5 +1490,6 @@ def testCoreIndex_processComment():
     # Padding with term
     assert processComment("%note.term: Hi") == (nwComment.NOTE, "term", "Hi", 6, 11)
     assert processComment("% note.term: Hi") == (nwComment.NOTE, "term", "Hi", 7, 12)
+    assert processComment("% note.term : Hi") == (nwComment.NOTE, "term", "Hi", 7, 13)
     assert processComment("% note. term : Hi") == (nwComment.PLAIN, "", "note. term : Hi", 0, 0)
     assert processComment("% note . term : Hi") == (nwComment.PLAIN, "", "note . term : Hi", 0, 0)

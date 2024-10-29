@@ -903,7 +903,6 @@ class ToDocX(Tokenizer):
         """Populate document.xml."""
         rId = self._nextRelId()
         xRoot = xmlElement(_wTag("document"))
-        xRoot.set("xmlns:w14", "http://schemas.microsoft.com/office/word/2010/wordml")
         xBody = xmlSubElem(xRoot, _wTag("body"))
         self._rels["document.xml"] = DocXXmlRel(
             rId=rId,
