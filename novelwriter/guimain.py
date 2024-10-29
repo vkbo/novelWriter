@@ -289,9 +289,7 @@ class GuiMain(QMainWindow):
         self.asDocTimer = QTimer(self)
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
 
-        # Shortcuts and Actions
-        self._connectMenuActions()
-
+        # Shortcuts
         self.keyReturn = QShortcut(self)
         self.keyReturn.setKey("Return")
         self.keyReturn.activated.connect(self._keyPressReturn)
@@ -906,11 +904,6 @@ class GuiMain(QMainWindow):
 
         return not self.splitView.isVisible()
 
-    def toggleFullScreenMode(self) -> None:
-        """Toggle full screen mode"""
-        self.setWindowState(self.windowState() ^ Qt.WindowState.WindowFullScreen)
-        return
-
     ##
     #  Events
     ##
@@ -925,6 +918,12 @@ class GuiMain(QMainWindow):
     ##
     #  Public Slots
     ##
+
+    @pyqtSlot()
+    def toggleFullScreenMode(self) -> None:
+        """Toggle full screen mode"""
+        self.setWindowState(self.windowState() ^ Qt.WindowState.WindowFullScreen)
+        return
 
     @pyqtSlot()
     def closeDocEditor(self) -> None:
@@ -1298,99 +1297,6 @@ class GuiMain(QMainWindow):
     ##
     #  Internal Functions
     ##
-
-    def _connectMenuActions(self) -> None:
-        """Connect to the main window all menu actions that need to be
-        available also when the main menu is hidden.
-        """
-        # Project
-        self.addAction(self.mainMenu.aSaveProject)
-        self.addAction(self.mainMenu.aEditItem)
-        self.addAction(self.mainMenu.aExitNW)
-
-        # Document
-        self.addAction(self.mainMenu.aSaveDoc)
-        self.addAction(self.mainMenu.aCloseDoc)
-
-        # Edit
-        self.addAction(self.mainMenu.aEditUndo)
-        self.addAction(self.mainMenu.aEditRedo)
-        self.addAction(self.mainMenu.aEditCut)
-        self.addAction(self.mainMenu.aEditCopy)
-        self.addAction(self.mainMenu.aEditPaste)
-        self.addAction(self.mainMenu.aSelectAll)
-        self.addAction(self.mainMenu.aSelectPar)
-
-        # View
-        self.addAction(self.mainMenu.aFocusMode)
-        self.addAction(self.mainMenu.aFullScreen)
-
-        # Insert
-        self.addAction(self.mainMenu.aInsENDash)
-        self.addAction(self.mainMenu.aInsEMDash)
-        self.addAction(self.mainMenu.aInsHorBar)
-        self.addAction(self.mainMenu.aInsFigDash)
-        self.addAction(self.mainMenu.aInsQuoteLS)
-        self.addAction(self.mainMenu.aInsQuoteRS)
-        self.addAction(self.mainMenu.aInsQuoteLD)
-        self.addAction(self.mainMenu.aInsQuoteRD)
-        self.addAction(self.mainMenu.aInsMSApos)
-        self.addAction(self.mainMenu.aInsEllipsis)
-        self.addAction(self.mainMenu.aInsPrime)
-        self.addAction(self.mainMenu.aInsDPrime)
-        self.addAction(self.mainMenu.aInsNBSpace)
-        self.addAction(self.mainMenu.aInsThinSpace)
-        self.addAction(self.mainMenu.aInsThinNBSpace)
-        self.addAction(self.mainMenu.aInsBullet)
-        self.addAction(self.mainMenu.aInsHyBull)
-        self.addAction(self.mainMenu.aInsFlower)
-        self.addAction(self.mainMenu.aInsPerMille)
-        self.addAction(self.mainMenu.aInsDegree)
-        self.addAction(self.mainMenu.aInsMinus)
-        self.addAction(self.mainMenu.aInsTimes)
-        self.addAction(self.mainMenu.aInsDivide)
-        self.addAction(self.mainMenu.aInsSynopsis)
-        self.addAction(self.mainMenu.aInsShort)
-
-        for mAction, _ in self.mainMenu.mInsKWItems.values():
-            self.addAction(mAction)
-
-        # Search
-        self.addAction(self.mainMenu.aFind)
-        self.addAction(self.mainMenu.aReplace)
-        self.addAction(self.mainMenu.aFindNext)
-        self.addAction(self.mainMenu.aFindPrev)
-        self.addAction(self.mainMenu.aReplaceNext)
-
-        # Format
-        self.addAction(self.mainMenu.aFmtItalic)
-        self.addAction(self.mainMenu.aFmtBold)
-        self.addAction(self.mainMenu.aFmtStrike)
-        self.addAction(self.mainMenu.aFmtDQuote)
-        self.addAction(self.mainMenu.aFmtSQuote)
-        self.addAction(self.mainMenu.aFmtHead1)
-        self.addAction(self.mainMenu.aFmtHead2)
-        self.addAction(self.mainMenu.aFmtHead3)
-        self.addAction(self.mainMenu.aFmtHead4)
-        self.addAction(self.mainMenu.aFmtAlignLeft)
-        self.addAction(self.mainMenu.aFmtAlignCentre)
-        self.addAction(self.mainMenu.aFmtAlignRight)
-        self.addAction(self.mainMenu.aFmtIndentLeft)
-        self.addAction(self.mainMenu.aFmtIndentRight)
-        self.addAction(self.mainMenu.aFmtComment)
-        self.addAction(self.mainMenu.aFmtNoFormat)
-
-        # Tools
-        self.addAction(self.mainMenu.aSpellCheck)
-        self.addAction(self.mainMenu.aReRunSpell)
-        self.addAction(self.mainMenu.aPreferences)
-
-        # Help
-        self.addAction(self.mainMenu.aHelpDocs)
-        if isinstance(CONFIG.pdfDocs, Path):
-            self.addAction(self.mainMenu.aPdfDocs)
-
-        return
 
     def _updateWindowTitle(self, projName: str | None = None) -> None:
         """Set the window title and add the project's name."""
