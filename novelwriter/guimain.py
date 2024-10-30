@@ -249,11 +249,13 @@ class GuiMain(QMainWindow):
         self.projSearch.openDocumentSelectRequest.connect(self._openDocumentSelection)
         self.projSearch.selectedItemChanged.connect(self.itemDetails.updateViewBox)
 
-        self.docEditor.closeDocumentRequest.connect(self.closeDocEditor)
+        self.docEditor.closeEditorRequest.connect(self.closeDocEditor)
         self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
         self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
         self.docEditor.docTextChanged.connect(self.projSearch.textChanged)
         self.docEditor.editedStatusChanged.connect(self.mainStatus.updateDocumentStatus)
+        self.docEditor.itemHandleChanged.connect(self.novelView.setActiveHandle)
+        self.docEditor.itemHandleChanged.connect(self.projView.setActiveHandle)
         self.docEditor.loadDocumentTagRequest.connect(self._followTag)
         self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
         self.docEditor.novelStructureChanged.connect(self.novelView.refreshTree)
@@ -262,8 +264,8 @@ class GuiMain(QMainWindow):
         self.docEditor.requestProjectItemRenamed.connect(self.projView.renameTreeItem)
         self.docEditor.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
         self.docEditor.spellCheckStateChanged.connect(self.mainMenu.setSpellCheckState)
-        self.docEditor.statusMessage.connect(self.mainStatus.setStatusMessage)
         self.docEditor.toggleFocusModeRequest.connect(self.toggleFocusMode)
+        self.docEditor.updateStatusMessage.connect(self.mainStatus.setStatusMessage)
 
         self.docViewer.closeDocumentRequest.connect(self.closeDocViewer)
         self.docViewer.documentLoaded.connect(self.docViewerPanel.updateHandle)
@@ -518,8 +520,6 @@ class GuiMain(QMainWindow):
                 SHARED.setFocusMode(False)
             self.saveDocument()
             self.docEditor.clearEditor()
-            if not beforeOpen:
-                self.novelView.setActiveHandle(None)
         return
 
     def openDocument(
@@ -554,7 +554,6 @@ class GuiMain(QMainWindow):
         if self.docEditor.loadText(tHandle, tLine):
             SHARED.project.data.setLastHandle(tHandle, "editor")
             self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
-            self.novelView.setActiveHandle(tHandle, doScroll=doScroll)
             if changeFocus:
                 self.docEditor.setFocus()
         else:

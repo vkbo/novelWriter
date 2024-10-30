@@ -90,20 +90,21 @@ class GuiDocEditor(QPlainTextEdit):
     )
 
     # Custom Signals
-    statusMessage = pyqtSignal(str)
+    closeEditorRequest = pyqtSignal()
     docCountsChanged = pyqtSignal(str, int, int, int)
     docTextChanged = pyqtSignal(str, float)
     editedStatusChanged = pyqtSignal(bool)
+    itemHandleChanged = pyqtSignal(str)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
-    novelStructureChanged = pyqtSignal()
     novelItemMetaChanged = pyqtSignal(str)
-    spellCheckStateChanged = pyqtSignal(bool)
-    closeDocumentRequest = pyqtSignal()
-    toggleFocusModeRequest = pyqtSignal()
-    requestProjectItemSelected = pyqtSignal(str, bool)
-    requestProjectItemRenamed = pyqtSignal(str, str)
+    novelStructureChanged = pyqtSignal()
     requestNewNoteCreation = pyqtSignal(str, nwItemClass)
     requestNextDocument = pyqtSignal(str, bool)
+    requestProjectItemRenamed = pyqtSignal(str, str)
+    requestProjectItemSelected = pyqtSignal(str, bool)
+    spellCheckStateChanged = pyqtSignal(bool)
+    toggleFocusModeRequest = pyqtSignal()
+    updateStatusMessage = pyqtSignal(str)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -271,6 +272,8 @@ class GuiDocEditor(QPlainTextEdit):
         self.docFooter.setHandle(self._docHandle)
         self.docToolBar.setVisible(False)
 
+        self.itemHandleChanged.emit("")
+
         return
 
     def updateTheme(self) -> None:
@@ -430,12 +433,15 @@ class GuiDocEditor(QPlainTextEdit):
         self.setDocumentChanged(False)
         self._qDocument.clearUndoRedoStacks()
         self.docToolBar.setVisible(CONFIG.showEditToolBar)
+        self.itemHandleChanged.emit(tHandle)
 
         QApplication.restoreOverrideCursor()
 
         # Update the status bar
         if self._nwItem is not None:
-            self.statusMessage.emit(self.tr("Opened Document: {0}").format(self._nwItem.itemName))
+            self.updateStatusMessage.emit(
+                self.tr("Opened Document: {0}").format(self._nwItem.itemName)
+            )
 
         return True
 
@@ -506,7 +512,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.docFooter.updateInfo()
 
         # Update the status bar
-        self.statusMessage.emit(self.tr("Saved Document: {0}").format(self._nwItem.itemName))
+        self.updateStatusMessage.emit(self.tr("Saved Document: {0}").format(self._nwItem.itemName))
 
         return True
 
@@ -701,7 +707,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument.syntaxHighlighter.rehighlight()
         QApplication.restoreOverrideCursor()
         logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
-        self.statusMessage.emit(self.tr("Spell check complete"))
+        self.updateStatusMessage.emit(self.tr("Spell check complete"))
         return
 
     ##
@@ -1274,7 +1280,7 @@ class GuiDocEditor(QPlainTextEdit):
     @pyqtSlot()
     def _closeCurrentDocument(self) -> None:
         """Close the document. Forwarded to the main Gui."""
-        self.closeDocumentRequest.emit()
+        self.closeEditorRequest.emit()
         self.docToolBar.setVisible(False)
         return
 

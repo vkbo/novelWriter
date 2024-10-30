@@ -87,7 +87,6 @@ class GuiNovelView(QWidget):
 
         # Function Mappings
         self.getSelectedHandle = self.novelTree.getSelectedHandle
-        self.setActiveHandle = self.novelTree.setActiveHandle
 
         return
 
@@ -162,6 +161,12 @@ class GuiNovelView(QWidget):
     ##
     #  Public Slots
     ##
+
+    @pyqtSlot(str)
+    def setActiveHandle(self, tHandle: str) -> None:
+        """Highlight the rows associated with a given handle."""
+        self.novelTree.setActiveHandle(tHandle)
+        return
 
     @pyqtSlot()
     def refreshTree(self) -> None:
@@ -367,11 +372,11 @@ class GuiNovelTree(QTreeWidget):
         self.novelView = novelView
 
         # Internal Variables
-        self._treeMap     = {}
         self._lastBuild   = 0
         self._lastCol     = NovelTreeColumn.POV
         self._lastColSize = 0.25
         self._actHandle   = None
+        self._treeMap: dict[str, QTreeWidgetItem] = {}
 
         # Cached Strings
         self._povLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY])
@@ -540,25 +545,29 @@ class GuiNovelTree(QTreeWidget):
         self._lastColSize = minmax(colSize, 15, 75)/100.0
         return
 
-    def setActiveHandle(self, tHandle: str | None, doScroll: bool = False) -> None:
+    def setActiveHandle(self, tHandle: str | None) -> None:
         """Highlight the rows associated with a given handle."""
         didScroll = False
-        self._actHandle = tHandle
-        for i in range(self.topLevelItemCount()):
-            if tItem := self.topLevelItem(i):
-                if tItem.data(self.C_DATA, self.D_HANDLE) == tHandle:
-                    tItem.setBackground(self.C_TITLE, self.palette().alternateBase())
-                    tItem.setBackground(self.C_WORDS, self.palette().alternateBase())
-                    tItem.setBackground(self.C_EXTRA, self.palette().alternateBase())
-                    tItem.setBackground(self.C_MORE, self.palette().alternateBase())
-                    if doScroll and not didScroll:
-                        self.scrollToItem(tItem, QAbstractItemView.ScrollHint.PositionAtCenter)
+        brushOn = self.palette().alternateBase()
+        brushOff = self.palette().base()
+        if pHandle := self._actHandle:
+            for key, item in self._treeMap.items():
+                if key.startswith(pHandle):
+                    item.setBackground(self.C_TITLE, brushOff)
+                    item.setBackground(self.C_WORDS, brushOff)
+                    item.setBackground(self.C_EXTRA, brushOff)
+                    item.setBackground(self.C_MORE, brushOff)
+        if tHandle:
+            for key, item in self._treeMap.items():
+                if key.startswith(tHandle):
+                    item.setBackground(self.C_TITLE, brushOn)
+                    item.setBackground(self.C_WORDS, brushOn)
+                    item.setBackground(self.C_EXTRA, brushOn)
+                    item.setBackground(self.C_MORE, brushOn)
+                    if not didScroll:
+                        self.scrollToItem(item, QAbstractItemView.ScrollHint.PositionAtCenter)
                         didScroll = True
-                else:
-                    tItem.setBackground(self.C_TITLE, self.palette().base())
-                    tItem.setBackground(self.C_WORDS, self.palette().base())
-                    tItem.setBackground(self.C_EXTRA, self.palette().base())
-                    tItem.setBackground(self.C_MORE, self.palette().base())
+        self._actHandle = tHandle or None
         return
 
     ##
