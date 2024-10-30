@@ -20,8 +20,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+from unittest.mock import MagicMock
+
 import pytest
 
+from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
 
 from novelwriter.core.project import NWProject
@@ -61,6 +65,20 @@ def testBaseSharedData_Init():
     assert shared.hasProject is False
     assert shared.projectIdleTime == 0.0
     assert shared.projectLock is None
+
+
+@pytest.mark.base
+def testBaseSharedData_Functions(monkeypatch):
+    """Test SharedData class functions."""
+    shared = SharedData()
+
+    # Open URL
+    with monkeypatch.context() as mp:
+        openUrl = MagicMock()
+        mp.setattr(QDesktopServices, "openUrl", openUrl)
+        shared.openWebsite("http://www.example.com")
+        assert openUrl.called is True
+        assert openUrl.call_args[0][0] == QUrl("http://www.example.com")
 
 
 @pytest.mark.base

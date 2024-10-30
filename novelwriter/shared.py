@@ -30,8 +30,8 @@ from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING, TypeVar
 
-from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QTimer, pyqtSignal
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QTimer, QUrl, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QDesktopServices, QFont
 from PyQt5.QtWidgets import QFileDialog, QFontDialog, QMessageBox, QWidget
 
 from novelwriter.common import formatFileFilter
@@ -291,6 +291,16 @@ class SharedData(QObject):
             if isinstance(widget, kind):
                 return widget
         return None
+
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str)
+    def openWebsite(self, url: str) -> None:
+        """Open a URL in the system's default browser."""
+        QDesktopServices.openUrl(QUrl(url))
+        return
 
     ##
     #  Signal Proxy

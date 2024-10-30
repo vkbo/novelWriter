@@ -44,7 +44,7 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
@@ -481,8 +481,7 @@ class GuiMain(QMainWindow):
             QApplication.processEvents()
             self.openDocument(lastEdited, doScroll=True)
 
-        lastViewed = SHARED.project.data.getLastHandle("viewer")
-        if lastViewed is not None:
+        if lastViewed := SHARED.project.data.getLastHandle("viewer"):
             QApplication.processEvents()
             self.viewDocument(lastViewed)
 
@@ -512,7 +511,7 @@ class GuiMain(QMainWindow):
     #  Document Actions
     ##
 
-    def closeDocument(self, beforeOpen: bool = False) -> None:
+    def closeDocument(self) -> None:
         """Close the document and clear the editor and title field."""
         if SHARED.hasProject:
             # Disable focus mode if it is active
@@ -531,12 +530,8 @@ class GuiMain(QMainWindow):
         doScroll: bool = False
     ) -> bool:
         """Open a specific document, optionally at a given line."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-
-        if not tHandle or not SHARED.project.tree.checkType(tHandle, nwItemType.FILE):
-            logger.debug("Requested item '%s' is not a document", tHandle)
+        if not (SHARED.hasProject and tHandle):
+            logger.error("Nothing to open open")
             return False
 
         if sTitle and tLine is None:
@@ -546,18 +541,15 @@ class GuiMain(QMainWindow):
         self._changeView(nwView.EDITOR)
         if tHandle == self.docEditor.docHandle:
             self.docEditor.setCursorLine(tLine)
-            if changeFocus:
-                self.docEditor.setFocus()
-            return True
-
-        self.closeDocument(beforeOpen=True)
-        if self.docEditor.loadText(tHandle, tLine):
-            SHARED.project.data.setLastHandle(tHandle, "editor")
-            self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
-            if changeFocus:
-                self.docEditor.setFocus()
         else:
-            return False
+            self.closeDocument()
+            if self.docEditor.loadText(tHandle, tLine):
+                self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
+            else:
+                return False
+
+        if changeFocus:
+            self.docEditor.setFocus()
 
         return True
 
