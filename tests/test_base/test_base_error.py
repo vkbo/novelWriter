@@ -20,6 +20,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import sys
+
 import pytest
 
 from novelwriter.error import NWErrorMessage, exceptionHandler
@@ -29,8 +31,7 @@ from tests.mocked import causeException
 
 @pytest.mark.base
 def testBaseError_Dialog(qtbot, monkeypatch, nwGUI):
-    """Test the error dialog.
-    """
+    """Test the error dialog."""
     nwErr = NWErrorMessage(nwGUI)
     qtbot.addWidget(nwErr)
     nwErr.show()
@@ -56,6 +57,14 @@ def testBaseError_Dialog(qtbot, monkeypatch, nwGUI):
         message = nwErr.msgBody.toPlainText()
         assert message != ""
         assert "(Unknown)" in message
+
+    # No enchant version retrieved
+    with monkeypatch.context() as mp:
+        mp.setitem(sys.modules, "enchant", None)
+        nwErr.setMessage(Exception, "Almost Fine Error", None)  # type: ignore
+        message = nwErr.msgBody.toPlainText()
+        assert message != ""
+        assert "enchant: Unknown" in message
 
     nwErr._doClose()
     nwErr.close()
