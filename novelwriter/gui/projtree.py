@@ -212,6 +212,12 @@ class GuiProjectView(QWidget):
         return
 
     @pyqtSlot(str)
+    def setActiveHandle(self, tHandle: str | None) -> None:
+        """Highlight the active handle."""
+        self.projTree.setActiveHandle(tHandle)
+        return
+
+    @pyqtSlot(str)
     def updateItemValues(self, tHandle: str) -> None:
         """Update tree item."""
         if nwItem := SHARED.project.tree[tHandle]:
@@ -500,6 +506,7 @@ class GuiProjectTree(QTreeWidget):
         self._treeMap: dict[str, QTreeWidgetItem] = {}
         self._timeChanged = 0.0
         self._popAlert = None
+        self._actHandle = None
 
         # Cached Translations
         self.trActive = self.tr("Active")
@@ -1143,6 +1150,19 @@ class GuiProjectTree(QTreeWidget):
             self.scrollTo(indexes[0], QAbstractItemView.ScrollHint.PositionAtCenter)
 
         return True
+
+    def setActiveHandle(self, tHandle: str | None) -> None:
+        """Highlight the rows associated with a given handle."""
+        brushOn = self.palette().alternateBase()
+        brushOff = self.palette().base()
+        if (pHandle := self._actHandle) and (item := self._treeMap.get(pHandle)):
+            for i in range(self.columnCount()):
+                item.setBackground(i, brushOff)
+        if tHandle and (item := self._treeMap.get(tHandle)):
+            for i in range(self.columnCount()):
+                item.setBackground(i, brushOn)
+        self._actHandle = tHandle or None
+        return
 
     def setExpandedFromHandle(self, tHandle: str | None, isExpanded: bool) -> None:
         """Iterate through items below tHandle and change expanded

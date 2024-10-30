@@ -24,7 +24,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices, QTextBlock, QTextCursor
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
@@ -41,14 +40,6 @@ from tests.tools import C, buildTestProject, writeFile
 def testGuiMainMenu_Slots(qtbot, monkeypatch, nwGUI, projPath):
     """Test the main menu slots."""
     buildTestProject(nwGUI, projPath)
-
-    # Open URL
-    with monkeypatch.context() as mp:
-        openUrl = MagicMock()
-        mp.setattr(QDesktopServices, "openUrl", openUrl)
-        nwGUI.mainMenu._openWebsite("http://www.example.com")
-        assert openUrl.called is True
-        assert openUrl.call_args[0][0] == QUrl("http://www.example.com")
 
     # Open Manual
     with monkeypatch.context() as mp:

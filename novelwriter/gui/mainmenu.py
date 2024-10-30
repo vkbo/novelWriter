@@ -28,8 +28,7 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QAction, QMenuBar
 
 from novelwriter import CONFIG, SHARED
@@ -105,12 +104,6 @@ class GuiMainMenu(QMenuBar):
         decision, just pass a None to the function and let it decide.
         """
         self.mainGui.docEditor.toggleSpellCheck(None)
-        return
-
-    @pyqtSlot(str)
-    def _openWebsite(self, url: str) -> None:
-        """Open a URL in the system's default browser."""
-        QDesktopServices.openUrl(QUrl(url))
         return
 
     @pyqtSlot()
@@ -1033,7 +1026,7 @@ class GuiMainMenu(QMenuBar):
         # Help > User Manual (Online)
         self.aHelpDocs = self.helpMenu.addAction(self.tr("User Manual (Online)"))
         self.aHelpDocs.setShortcut("F1")
-        self.aHelpDocs.triggered.connect(qtLambda(self._openWebsite, nwConst.URL_DOCS))
+        self.aHelpDocs.triggered.connect(qtLambda(SHARED.openWebsite, nwConst.URL_DOCS))
         self.mainGui.addAction(self.aHelpDocs)
 
         # Help > User Manual (PDF)
@@ -1048,14 +1041,14 @@ class GuiMainMenu(QMenuBar):
 
         # Document > Report an Issue
         self.aIssue = self.helpMenu.addAction(self.tr("Report an Issue (GitHub)"))
-        self.aIssue.triggered.connect(qtLambda(self._openWebsite, nwConst.URL_REPORT))
+        self.aIssue.triggered.connect(qtLambda(SHARED.openWebsite, nwConst.URL_REPORT))
 
         # Document > Ask a Question
         self.aQuestion = self.helpMenu.addAction(self.tr("Ask a Question (GitHub)"))
-        self.aQuestion.triggered.connect(qtLambda(self._openWebsite, nwConst.URL_HELP))
+        self.aQuestion.triggered.connect(qtLambda(SHARED.openWebsite, nwConst.URL_HELP))
 
         # Document > Main Website
         self.aWebsite = self.helpMenu.addAction(self.tr("The novelWriter Website"))
-        self.aWebsite.triggered.connect(qtLambda(self._openWebsite, nwConst.URL_WEB))
+        self.aWebsite.triggered.connect(qtLambda(SHARED.openWebsite, nwConst.URL_WEB))
 
         return

@@ -44,7 +44,7 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
@@ -249,11 +249,13 @@ class GuiMain(QMainWindow):
         self.projSearch.openDocumentSelectRequest.connect(self._openDocumentSelection)
         self.projSearch.selectedItemChanged.connect(self.itemDetails.updateViewBox)
 
-        self.docEditor.closeDocumentRequest.connect(self.closeDocEditor)
+        self.docEditor.closeEditorRequest.connect(self.closeDocEditor)
         self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
         self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
         self.docEditor.docTextChanged.connect(self.projSearch.textChanged)
         self.docEditor.editedStatusChanged.connect(self.mainStatus.updateDocumentStatus)
+        self.docEditor.itemHandleChanged.connect(self.novelView.setActiveHandle)
+        self.docEditor.itemHandleChanged.connect(self.projView.setActiveHandle)
         self.docEditor.loadDocumentTagRequest.connect(self._followTag)
         self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
         self.docEditor.novelStructureChanged.connect(self.novelView.refreshTree)
@@ -262,8 +264,8 @@ class GuiMain(QMainWindow):
         self.docEditor.requestProjectItemRenamed.connect(self.projView.renameTreeItem)
         self.docEditor.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
         self.docEditor.spellCheckStateChanged.connect(self.mainMenu.setSpellCheckState)
-        self.docEditor.statusMessage.connect(self.mainStatus.setStatusMessage)
         self.docEditor.toggleFocusModeRequest.connect(self.toggleFocusMode)
+        self.docEditor.updateStatusMessage.connect(self.mainStatus.setStatusMessage)
 
         self.docViewer.closeDocumentRequest.connect(self.closeDocViewer)
         self.docViewer.documentLoaded.connect(self.docViewerPanel.updateHandle)
@@ -479,8 +481,7 @@ class GuiMain(QMainWindow):
             QApplication.processEvents()
             self.openDocument(lastEdited, doScroll=True)
 
-        lastViewed = SHARED.project.data.getLastHandle("viewer")
-        if lastViewed is not None:
+        if lastViewed := SHARED.project.data.getLastHandle("viewer"):
             QApplication.processEvents()
             self.viewDocument(lastViewed)
 
@@ -510,7 +511,7 @@ class GuiMain(QMainWindow):
     #  Document Actions
     ##
 
-    def closeDocument(self, beforeOpen: bool = False) -> None:
+    def closeDocument(self) -> None:
         """Close the document and clear the editor and title field."""
         if SHARED.hasProject:
             # Disable focus mode if it is active
@@ -518,8 +519,6 @@ class GuiMain(QMainWindow):
                 SHARED.setFocusMode(False)
             self.saveDocument()
             self.docEditor.clearEditor()
-            if not beforeOpen:
-                self.novelView.setActiveHandle(None)
         return
 
     def openDocument(
@@ -531,12 +530,8 @@ class GuiMain(QMainWindow):
         doScroll: bool = False
     ) -> bool:
         """Open a specific document, optionally at a given line."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-
-        if not tHandle or not SHARED.project.tree.checkType(tHandle, nwItemType.FILE):
-            logger.debug("Requested item '%s' is not a document", tHandle)
+        if not (SHARED.hasProject and tHandle):
+            logger.error("Nothing to open open")
             return False
 
         if sTitle and tLine is None:
@@ -546,19 +541,15 @@ class GuiMain(QMainWindow):
         self._changeView(nwView.EDITOR)
         if tHandle == self.docEditor.docHandle:
             self.docEditor.setCursorLine(tLine)
-            if changeFocus:
-                self.docEditor.setFocus()
-            return True
-
-        self.closeDocument(beforeOpen=True)
-        if self.docEditor.loadText(tHandle, tLine):
-            SHARED.project.data.setLastHandle(tHandle, "editor")
-            self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
-            self.novelView.setActiveHandle(tHandle, doScroll=doScroll)
-            if changeFocus:
-                self.docEditor.setFocus()
         else:
-            return False
+            self.closeDocument()
+            if self.docEditor.loadText(tHandle, tLine):
+                self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
+            else:
+                return False
+
+        if changeFocus:
+            self.docEditor.setFocus()
 
         return True
 
@@ -853,35 +844,33 @@ class GuiMain(QMainWindow):
 
     def closeMain(self) -> bool:
         """Save everything, and close novelWriter."""
-        if SHARED.hasProject:
-            msgYes = SHARED.question("%s<br>%s" % (
-                self.tr("Do you want to exit novelWriter?"),
-                self.tr("Changes are saved automatically.")
-            ))
-            if not msgYes:
-                return False
+        if SHARED.hasProject and SHARED.question("%s<br>%s" % (
+            self.tr("Do you want to exit novelWriter?"),
+            self.tr("Changes are saved automatically.")
+        )):
+            logger.info("Exiting novelWriter")
 
-        logger.info("Exiting novelWriter")
+            if not SHARED.focusMode:
+                CONFIG.setMainPanePos(self.splitMain.sizes())
+                CONFIG.setOutlinePanePos(self.outlineView.splitSizes())
+                if self.docViewerPanel.isVisible():
+                    CONFIG.setViewPanePos(self.splitView.sizes())
 
-        if not SHARED.focusMode:
-            CONFIG.setMainPanePos(self.splitMain.sizes())
-            CONFIG.setOutlinePanePos(self.outlineView.splitSizes())
-            if self.docViewerPanel.isVisible():
-                CONFIG.setViewPanePos(self.splitView.sizes())
+            CONFIG.showViewerPanel = self.docViewerPanel.isVisible()
+            wFull = Qt.WindowState.WindowFullScreen
+            if self.windowState() & wFull != wFull:
+                # Ignore window size if in full screen mode
+                CONFIG.setMainWinSize(self.width(), self.height())
 
-        CONFIG.showViewerPanel = self.docViewerPanel.isVisible()
-        wFull = Qt.WindowState.WindowFullScreen
-        if self.windowState() & wFull != wFull:
-            # Ignore window size if in full screen mode
-            CONFIG.setMainWinSize(self.width(), self.height())
+            if SHARED.hasProject:
+                self.closeProject(True)
+            CONFIG.saveConfig()
 
-        if SHARED.hasProject:
-            self.closeProject(True)
-        CONFIG.saveConfig()
+            QApplication.quit()
 
-        QApplication.quit()
+            return True
 
-        return True
+        return False
 
     def closeViewerPanel(self, byUser: bool = True) -> bool:
         """Close the document view panel."""
@@ -1110,8 +1099,16 @@ class GuiMain(QMainWindow):
     @pyqtSlot(str, nwDocMode)
     def _followTag(self, tag: str, mode: nwDocMode) -> None:
         """Follow a tag after user interaction with a link."""
-        tHandle, sTitle = self._getTagSource(tag)
-        if tHandle is not None:
+        tHandle, sTitle = SHARED.project.index.getTagSource(tag)
+        if tHandle is None:
+            SHARED.error(self.tr(
+                "Could not find the reference for tag '{0}'. It either doesn't "
+                "exist, or the index is out of date. The index can be updated "
+                "from the Tools menu, or by pressing {1}."
+            ).format(
+                tag, "F9"
+            ))
+        else:
             if mode == nwDocMode.EDIT:
                 self.openDocument(tHandle, sTitle=sTitle)
             elif mode == nwDocMode.VIEW:
@@ -1302,19 +1299,3 @@ class GuiMain(QMainWindow):
         """Set the window title and add the project's name."""
         self.setWindowTitle(" - ".join(filter(None, [projName, CONFIG.appName])))
         return
-
-    def _getTagSource(self, tag: str) -> tuple[str | None, str | None]:
-        """Handle the index lookup of a tag and display an alert if the
-        tag cannot be found.
-        """
-        tHandle, sTitle = SHARED.project.index.getTagSource(tag)
-        if tHandle is None:
-            SHARED.error(self.tr(
-                "Could not find the reference for tag '{0}'. It either doesn't "
-                "exist, or the index is out of date. The index can be updated "
-                "from the Tools menu, or by pressing {1}."
-            ).format(
-                tag, "F9"
-            ))
-            return None, None
-        return tHandle, sTitle

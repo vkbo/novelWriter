@@ -38,13 +38,12 @@ from enum import Enum
 from time import time
 
 from PyQt5.QtCore import (
-    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, QUrl,
-    pyqtSignal, pyqtSlot
+    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
+    pyqtSlot
 )
 from PyQt5.QtGui import (
-    QColor, QCursor, QDesktopServices, QKeyEvent, QKeySequence, QMouseEvent,
-    QPalette, QPixmap, QResizeEvent, QTextBlock, QTextCursor, QTextDocument,
-    QTextOption
+    QColor, QCursor, QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap,
+    QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
 )
 from PyQt5.QtWidgets import (
     QAction, QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
@@ -52,10 +51,13 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import minmax, transferCase
+from novelwriter.common import minmax, qtLambda, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
-from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
+from novelwriter.enum import (
+    nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwItemType,
+    nwTrinary
+)
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
@@ -90,20 +92,21 @@ class GuiDocEditor(QPlainTextEdit):
     )
 
     # Custom Signals
-    statusMessage = pyqtSignal(str)
+    closeEditorRequest = pyqtSignal()
     docCountsChanged = pyqtSignal(str, int, int, int)
     docTextChanged = pyqtSignal(str, float)
     editedStatusChanged = pyqtSignal(bool)
+    itemHandleChanged = pyqtSignal(str)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
-    novelStructureChanged = pyqtSignal()
     novelItemMetaChanged = pyqtSignal(str)
-    spellCheckStateChanged = pyqtSignal(bool)
-    closeDocumentRequest = pyqtSignal()
-    toggleFocusModeRequest = pyqtSignal()
-    requestProjectItemSelected = pyqtSignal(str, bool)
-    requestProjectItemRenamed = pyqtSignal(str, str)
+    novelStructureChanged = pyqtSignal()
     requestNewNoteCreation = pyqtSignal(str, nwItemClass)
     requestNextDocument = pyqtSignal(str, bool)
+    requestProjectItemRenamed = pyqtSignal(str, str)
+    requestProjectItemSelected = pyqtSignal(str, bool)
+    spellCheckStateChanged = pyqtSignal(bool)
+    toggleFocusModeRequest = pyqtSignal()
+    updateStatusMessage = pyqtSignal(str)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -271,6 +274,8 @@ class GuiDocEditor(QPlainTextEdit):
         self.docFooter.setHandle(self._docHandle)
         self.docToolBar.setVisible(False)
 
+        self.itemHandleChanged.emit("")
+
         return
 
     def updateTheme(self) -> None:
@@ -389,9 +394,12 @@ class GuiDocEditor(QPlainTextEdit):
         """
         self._nwDocument = SHARED.project.storage.getDocument(tHandle)
         self._nwItem = self._nwDocument.nwItem
+        if not ((nwItem := self._nwItem) and nwItem.itemType == nwItemType.FILE):
+            logger.debug("Requested item '%s' is not a document", tHandle)
+            self.clearEditor()
+            return False
 
-        docText = self._nwDocument.readDocument()
-        if docText is None:
+        if (docText := self._nwDocument.readDocument()) is None:
             # There was an I/O error
             self.clearEditor()
             return False
@@ -412,10 +420,10 @@ class GuiDocEditor(QPlainTextEdit):
         self.setReadOnly(False)
         self.updateDocMargins()
 
-        if tLine is None and self._nwItem is not None:
-            self.setCursorPosition(self._nwItem.cursorPos)
-        elif isinstance(tLine, int):
+        if isinstance(tLine, int):
             self.setCursorLine(tLine)
+        else:
+            self.setCursorPosition(nwItem.cursorPos)
 
         self.docHeader.setHandle(tHandle)
         self.docFooter.setHandle(tHandle)
@@ -431,11 +439,15 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument.clearUndoRedoStacks()
         self.docToolBar.setVisible(CONFIG.showEditToolBar)
 
-        QApplication.restoreOverrideCursor()
+        # Process State Changes
+        SHARED.project.data.setLastHandle(tHandle, "editor")
+        self.itemHandleChanged.emit(tHandle)
 
-        # Update the status bar
-        if self._nwItem is not None:
-            self.statusMessage.emit(self.tr("Opened Document: {0}").format(self._nwItem.itemName))
+        # Finalise
+        QApplication.restoreOverrideCursor()
+        self.updateStatusMessage.emit(
+            self.tr("Opened Document: {0}").format(nwItem.itemName)
+        )
 
         return True
 
@@ -506,7 +518,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.docFooter.updateInfo()
 
         # Update the status bar
-        self.statusMessage.emit(self.tr("Saved Document: {0}").format(self._nwItem.itemName))
+        self.updateStatusMessage.emit(self.tr("Saved Document: {0}").format(self._nwItem.itemName))
 
         return True
 
@@ -701,7 +713,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument.syntaxHighlighter.rehighlight()
         QApplication.restoreOverrideCursor()
         logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
-        self.statusMessage.emit(self.tr("Spell check complete"))
+        self.updateStatusMessage.emit(self.tr("Spell check complete"))
         return
 
     ##
@@ -989,7 +1001,7 @@ class GuiDocEditor(QPlainTextEdit):
             cursor = self.cursorForPosition(event.pos())
             mData, mType = self._qDocument.metaDataAtPos(cursor.position())
             if mData and mType == "url":
-                self._openWebsite(mData)
+                SHARED.openWebsite(mData)
             else:
                 self._processTag(cursor)
         super().mouseReleaseEvent(event)
@@ -1120,48 +1132,48 @@ class GuiDocEditor(QPlainTextEdit):
         ctxMenu.setObjectName("ContextMenu")
         if pBlock.userState() == BLOCK_TITLE:
             action = ctxMenu.addAction(self.tr("Set as Document Name"))
-            action.triggered.connect(lambda: self._emitRenameItem(pBlock))
+            action.triggered.connect(qtLambda(self._emitRenameItem, pBlock))
 
         # URL
         (mData, mType) = self._qDocument.metaDataAtPos(pCursor.position())
         if mData and mType == "url":
             action = ctxMenu.addAction(self.tr("Open URL"))
-            action.triggered.connect(lambda: self._openWebsite(mData))
+            action.triggered.connect(qtLambda(SHARED.openWebsite, mData))
             ctxMenu.addSeparator()
 
         # Follow
         status = self._processTag(cursor=pCursor, follow=False)
         if status == nwTrinary.POSITIVE:
             action = ctxMenu.addAction(self.tr("Follow Tag"))
-            action.triggered.connect(lambda: self._processTag(cursor=pCursor, follow=True))
+            action.triggered.connect(qtLambda(self._processTag, cursor=pCursor, follow=True))
             ctxMenu.addSeparator()
         elif status == nwTrinary.NEGATIVE:
             action = ctxMenu.addAction(self.tr("Create Note for Tag"))
-            action.triggered.connect(lambda: self._processTag(cursor=pCursor, create=True))
+            action.triggered.connect(qtLambda(self._processTag, cursor=pCursor, create=True))
             ctxMenu.addSeparator()
 
         # Cut, Copy and Paste
         if uCursor.hasSelection():
             action = ctxMenu.addAction(self.tr("Cut"))
-            action.triggered.connect(lambda: self.docAction(nwDocAction.CUT))
+            action.triggered.connect(qtLambda(self.docAction, nwDocAction.CUT))
             action = ctxMenu.addAction(self.tr("Copy"))
-            action.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
+            action.triggered.connect(qtLambda(self.docAction, nwDocAction.COPY))
 
         action = ctxMenu.addAction(self.tr("Paste"))
-        action.triggered.connect(lambda: self.docAction(nwDocAction.PASTE))
+        action.triggered.connect(qtLambda(self.docAction, nwDocAction.PASTE))
         ctxMenu.addSeparator()
 
         # Selections
         action = ctxMenu.addAction(self.tr("Select All"))
-        action.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
+        action.triggered.connect(qtLambda(self.docAction, nwDocAction.SEL_ALL))
         action = ctxMenu.addAction(self.tr("Select Word"))
-        action.triggered.connect(
-            lambda: self._makePosSelection(QTextCursor.SelectionType.WordUnderCursor, pos)
-        )
+        action.triggered.connect(qtLambda(
+            self._makePosSelection, QTextCursor.SelectionType.WordUnderCursor, pos,
+        ))
         action = ctxMenu.addAction(self.tr("Select Paragraph"))
-        action.triggered.connect(lambda: self._makePosSelection(
-            QTextCursor.SelectionType.BlockUnderCursor, pos)
-        )
+        action.triggered.connect(qtLambda(
+            self._makePosSelection, QTextCursor.SelectionType.BlockUnderCursor, pos
+        ))
 
         # Spell Checking
         if SHARED.project.data.spellCheck:
@@ -1177,29 +1189,21 @@ class GuiDocEditor(QPlainTextEdit):
                     ctxMenu.addAction(self.tr("Spelling Suggestion(s)"))
                     for option in suggest[:15]:
                         action = ctxMenu.addAction(f"{nwUnicode.U_ENDASH} {option}")
-                        action.triggered.connect(
-                            lambda _, option=option: self._correctWord(sCursor, option)
-                        )
+                        action.triggered.connect(qtLambda(self._correctWord, sCursor, option))
                 else:
                     trNone = self.tr("No Suggestions")
                     ctxMenu.addAction(f"{nwUnicode.U_ENDASH} {trNone}")
 
                 ctxMenu.addSeparator()
                 action = ctxMenu.addAction(self.tr("Ignore Word"))
-                action.triggered.connect(lambda: self._addWord(word, block, False))
+                action.triggered.connect(qtLambda(self._addWord, word, block, False))
                 action = ctxMenu.addAction(self.tr("Add Word to Dictionary"))
-                action.triggered.connect(lambda: self._addWord(word, block, True))
+                action.triggered.connect(qtLambda(self._addWord, word, block, True))
 
         # Execute the context menu
         ctxMenu.exec(self.viewport().mapToGlobal(pos))
         ctxMenu.deleteLater()
 
-        return
-
-    @pyqtSlot(str)
-    def _openWebsite(self, url: str) -> None:
-        """Open a URL in the system's default browser."""
-        QDesktopServices.openUrl(QUrl(url))
         return
 
     @pyqtSlot()
@@ -1274,7 +1278,7 @@ class GuiDocEditor(QPlainTextEdit):
     @pyqtSlot()
     def _closeCurrentDocument(self) -> None:
         """Close the document. Forwarded to the main Gui."""
-        self.closeDocumentRequest.emit()
+        self.closeEditorRequest.emit()
         self.docToolBar.setVisible(False)
         return
 
@@ -2201,7 +2205,7 @@ class MetaCompleter(QMenu):
         for value in sorted(options):
             rep = value + suffix
             action = self.addAction(value)
-            action.triggered.connect(lambda _, r=rep: self._emitComplete(offset, length, r))
+            action.triggered.connect(qtLambda(self._emitComplete, offset, length, rep))
 
         return True
 
@@ -2301,61 +2305,61 @@ class GuiDocToolBar(QWidget):
         self.tbBoldMD = NIconToolButton(self, iSz)
         self.tbBoldMD.setToolTip(self.tr("Markdown Bold"))
         self.tbBoldMD.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.MD_BOLD)
+            qtLambda(self.requestDocAction.emit, nwDocAction.MD_BOLD)
         )
 
         self.tbItalicMD = NIconToolButton(self, iSz)
         self.tbItalicMD.setToolTip(self.tr("Markdown Italic"))
         self.tbItalicMD.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.MD_ITALIC)
+            qtLambda(self.requestDocAction.emit, nwDocAction.MD_ITALIC)
         )
 
         self.tbStrikeMD = NIconToolButton(self, iSz)
         self.tbStrikeMD.setToolTip(self.tr("Markdown Strikethrough"))
         self.tbStrikeMD.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.MD_STRIKE)
+            qtLambda(self.requestDocAction.emit, nwDocAction.MD_STRIKE)
         )
 
         self.tbBold = NIconToolButton(self, iSz)
         self.tbBold.setToolTip(self.tr("Shortcode Bold"))
         self.tbBold.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_BOLD)
+            qtLambda(self.requestDocAction.emit, nwDocAction.SC_BOLD)
         )
 
         self.tbItalic = NIconToolButton(self, iSz)
         self.tbItalic.setToolTip(self.tr("Shortcode Italic"))
         self.tbItalic.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_ITALIC)
+            qtLambda(self.requestDocAction.emit, nwDocAction.SC_ITALIC)
         )
 
         self.tbStrike = NIconToolButton(self, iSz)
         self.tbStrike.setToolTip(self.tr("Shortcode Strikethrough"))
         self.tbStrike.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_STRIKE)
+            qtLambda(self.requestDocAction.emit, nwDocAction.SC_STRIKE)
         )
 
         self.tbUnderline = NIconToolButton(self, iSz)
         self.tbUnderline.setToolTip(self.tr("Shortcode Underline"))
         self.tbUnderline.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_ULINE)
+            qtLambda(self.requestDocAction.emit, nwDocAction.SC_ULINE)
         )
 
         self.tbMark = NIconToolButton(self, iSz)
         self.tbMark.setToolTip(self.tr("Shortcode Highlight"))
         self.tbMark.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_MARK)
+            qtLambda(self.requestDocAction.emit, nwDocAction.SC_MARK)
         )
 
         self.tbSuperscript = NIconToolButton(self, iSz)
         self.tbSuperscript.setToolTip(self.tr("Shortcode Superscript"))
         self.tbSuperscript.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_SUP)
+            qtLambda(self.requestDocAction.emit, nwDocAction.SC_SUP)
         )
 
         self.tbSubscript = NIconToolButton(self, iSz)
         self.tbSubscript.setToolTip(self.tr("Shortcode Subscript"))
         self.tbSubscript.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_SUB)
+            qtLambda(self.requestDocAction.emit, nwDocAction.SC_SUB)
         )
 
         # Assemble
@@ -2819,7 +2823,7 @@ class GuiDocEditHeader(QWidget):
         self.tbButton = NIconToolButton(self, iSz)
         self.tbButton.setVisible(False)
         self.tbButton.setToolTip(self.tr("Toggle Tool Bar"))
-        self.tbButton.clicked.connect(lambda: self.toggleToolBarRequest.emit())
+        self.tbButton.clicked.connect(qtLambda(self.toggleToolBarRequest.emit))
 
         self.outlineButton = NIconToolButton(self, iSz)
         self.outlineButton.setVisible(False)
@@ -2834,7 +2838,7 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton = NIconToolButton(self, iSz)
         self.minmaxButton.setVisible(False)
         self.minmaxButton.setToolTip(self.tr("Toggle Focus Mode"))
-        self.minmaxButton.clicked.connect(lambda: self.docEditor.toggleFocusModeRequest.emit())
+        self.minmaxButton.clicked.connect(qtLambda(self.docEditor.toggleFocusModeRequest.emit))
 
         self.closeButton = NIconToolButton(self, iSz)
         self.closeButton.setVisible(False)
@@ -2897,9 +2901,7 @@ class GuiDocEditHeader(QWidget):
             self.outlineMenu.clear()
             for number, text in data.items():
                 action = self.outlineMenu.addAction(text)
-                action.triggered.connect(
-                    lambda _, number=number: self._gotoBlock(number)
-                )
+                action.triggered.connect(qtLambda(self._gotoBlock, number))
             self._docOutline = data
             logger.debug("Document outline updated in %.3f ms", 1000*(time() - tStart))
         return
