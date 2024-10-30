@@ -20,19 +20,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import shutil
 import sys
 
+from pathlib import Path
 from shutil import copyfile
 
 import pytest
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette
-from PyQt5.QtWidgets import QInputDialog, QMenu
+from PyQt5.QtWidgets import QInputDialog, QMenu, QMessageBox
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.constants import nwFiles
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwDocAction, nwFocus, nwItemType, nwView
+from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemType, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.outline import GuiOutlineView
@@ -682,6 +685,12 @@ def testGuiMain_Viewing(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test various features of the main window."""
     buildTestProject(nwGUI, projPath)
+    cHandle = SHARED.project.newFile("Jane", C.hCharRoot)
+    newDoc = SHARED.project.storage.getDocument(cHandle)
+    newDoc.writeDocument("# Jane\n\n@tag: Jane\n\n")
+    nwGUI.projView.projTree.revealNewTreeItem(cHandle)
+    nwGUI.rebuildIndex(beQuiet=True)
+
     assert SHARED.focusMode is False
 
     # Focus Mode
@@ -721,6 +730,20 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert SHARED.focusMode is True
     nwGUI.closeDocument()
     assert SHARED.focusMode is False
+    nwGUI.openDocument(C.hSceneDoc)
+
+    # Pressing Escape turns off focus mode
+    nwGUI.toggleFocusMode()
+    assert SHARED.focusMode is True
+    qtbot.keyClick(nwGUI, Qt.Key.Key_Escape)
+    assert SHARED.focusMode is False
+
+    # If search is active, Escape is redirected to editor
+    nwGUI.toggleFocusMode()
+    assert SHARED.focusMode is True
+    nwGUI.docEditor.beginSearch()
+    qtbot.keyClick(nwGUI, Qt.Key.Key_Escape)
+    assert SHARED.focusMode is True
 
     # Full Screen Mode
     # ================
@@ -738,8 +761,25 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.sideBar.mSettings.show()
     nwGUI.sideBar.mSettings.hide()
 
-    # Document Open Errors
-    # ====================
+    # Redirect Tag Open
+    # =================
+
+    nwGUI.closeDocument()
+    nwGUI.closeDocViewer()
+    assert nwGUI.docEditor.docHandle is None
+    assert nwGUI.docViewer.docHandle is None
+    nwGUI._followTag("John", nwDocMode.EDIT)  # Doesn't exist
+    assert nwGUI.docEditor.docHandle is None
+    assert nwGUI.docViewer.docHandle is None
+    nwGUI._followTag("Jane", nwDocMode.EDIT)
+    assert nwGUI.docEditor.docHandle == cHandle
+    assert nwGUI.docViewer.docHandle is None
+    nwGUI._followTag("Jane", nwDocMode.VIEW)
+    assert nwGUI.docEditor.docHandle == cHandle
+    assert nwGUI.docViewer.docHandle == cHandle
+
+    # Errors Handling
+    # ===============
 
     # Cannot edit a folder
     assert nwGUI.openDocument(C.hChapterDir) is False
@@ -750,6 +790,57 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         assert nwGUI.openDocument(C.hChapterDoc) is False
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI, projPath, fncPath, mockRnd):
+    """Test various features of the main window."""
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openDocument(C.hSceneDoc)
+    nwGUI.viewDocument(C.hTitlePage)
+
+    # Handle broken index on project open
+    nwGUI.closeProject()
+    idxPath: Path = projPath / "meta" / nwFiles.INDEX_FILE
+    assert idxPath.read_text() != "{}"
+    idxPath.write_text("{}")
+    assert idxPath.read_text() == "{}"
+
+    nwGUI.openProject(projPath)
+    nwGUI.saveProject()
+    assert idxPath.read_text() != "{}"
+    assert nwGUI.docEditor.docHandle == C.hSceneDoc
+    assert nwGUI.docViewer.docHandle == C.hTitlePage
+
+    # Block closing
+    assert SHARED.hasProject is True
+    with monkeypatch.context() as mp:
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        assert nwGUI.openProject(projPath) is False
+        assert SHARED.hasProject is True
+
+    # Don't open on lockfile question: No
+    lockPath: Path = projPath / nwFiles.PROJ_LOCK
+    lockBack: Path = projPath / f"{nwFiles.PROJ_LOCK}.bak"
+
+    shutil.copyfile(lockPath, lockBack)
+    nwGUI.closeProject()
+    shutil.copyfile(lockBack, lockPath)
+
+    with monkeypatch.context() as mp:
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        assert nwGUI.openProject(projPath) is False
+
+    assert nwGUI.openProject(projPath) is True
+
+    # Backup on close
+    backDir = CONFIG.backupPath() / SHARED.project.data.name
+    assert not backDir.exists()
+
+    CONFIG.backupOnClose = True
+    assert nwGUI.openProject(projPath) is True
+    nwGUI.closeProject()
+    assert len(list(backDir.glob("*.zip"))) == 1
 
 
 @pytest.mark.gui

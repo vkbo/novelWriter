@@ -553,17 +553,13 @@ class GuiNovelTree(QTreeWidget):
         if pHandle := self._actHandle:
             for key, item in self._treeMap.items():
                 if key.startswith(pHandle):
-                    item.setBackground(self.C_TITLE, brushOff)
-                    item.setBackground(self.C_WORDS, brushOff)
-                    item.setBackground(self.C_EXTRA, brushOff)
-                    item.setBackground(self.C_MORE, brushOff)
+                    for i in range(self.columnCount()):
+                        item.setBackground(i, brushOff)
         if tHandle:
             for key, item in self._treeMap.items():
                 if key.startswith(tHandle):
-                    item.setBackground(self.C_TITLE, brushOn)
-                    item.setBackground(self.C_WORDS, brushOn)
-                    item.setBackground(self.C_EXTRA, brushOn)
-                    item.setBackground(self.C_MORE, brushOn)
+                    for i in range(self.columnCount()):
+                        item.setBackground(i, brushOn)
                     if not didScroll:
                         self.scrollToItem(item, QAbstractItemView.ScrollHint.PositionAtCenter)
                         didScroll = True

@@ -844,35 +844,33 @@ class GuiMain(QMainWindow):
 
     def closeMain(self) -> bool:
         """Save everything, and close novelWriter."""
-        if SHARED.hasProject:
-            msgYes = SHARED.question("%s<br>%s" % (
-                self.tr("Do you want to exit novelWriter?"),
-                self.tr("Changes are saved automatically.")
-            ))
-            if not msgYes:
-                return False
+        if SHARED.hasProject and SHARED.question("%s<br>%s" % (
+            self.tr("Do you want to exit novelWriter?"),
+            self.tr("Changes are saved automatically.")
+        )):
+            logger.info("Exiting novelWriter")
 
-        logger.info("Exiting novelWriter")
+            if not SHARED.focusMode:
+                CONFIG.setMainPanePos(self.splitMain.sizes())
+                CONFIG.setOutlinePanePos(self.outlineView.splitSizes())
+                if self.docViewerPanel.isVisible():
+                    CONFIG.setViewPanePos(self.splitView.sizes())
 
-        if not SHARED.focusMode:
-            CONFIG.setMainPanePos(self.splitMain.sizes())
-            CONFIG.setOutlinePanePos(self.outlineView.splitSizes())
-            if self.docViewerPanel.isVisible():
-                CONFIG.setViewPanePos(self.splitView.sizes())
+            CONFIG.showViewerPanel = self.docViewerPanel.isVisible()
+            wFull = Qt.WindowState.WindowFullScreen
+            if self.windowState() & wFull != wFull:
+                # Ignore window size if in full screen mode
+                CONFIG.setMainWinSize(self.width(), self.height())
 
-        CONFIG.showViewerPanel = self.docViewerPanel.isVisible()
-        wFull = Qt.WindowState.WindowFullScreen
-        if self.windowState() & wFull != wFull:
-            # Ignore window size if in full screen mode
-            CONFIG.setMainWinSize(self.width(), self.height())
+            if SHARED.hasProject:
+                self.closeProject(True)
+            CONFIG.saveConfig()
 
-        if SHARED.hasProject:
-            self.closeProject(True)
-        CONFIG.saveConfig()
+            QApplication.quit()
 
-        QApplication.quit()
+            return True
 
-        return True
+        return False
 
     def closeViewerPanel(self, byUser: bool = True) -> bool:
         """Close the document view panel."""
@@ -1101,8 +1099,16 @@ class GuiMain(QMainWindow):
     @pyqtSlot(str, nwDocMode)
     def _followTag(self, tag: str, mode: nwDocMode) -> None:
         """Follow a tag after user interaction with a link."""
-        tHandle, sTitle = self._getTagSource(tag)
-        if tHandle is not None:
+        tHandle, sTitle = SHARED.project.index.getTagSource(tag)
+        if tHandle is None:
+            SHARED.error(self.tr(
+                "Could not find the reference for tag '{0}'. It either doesn't "
+                "exist, or the index is out of date. The index can be updated "
+                "from the Tools menu, or by pressing {1}."
+            ).format(
+                tag, "F9"
+            ))
+        else:
             if mode == nwDocMode.EDIT:
                 self.openDocument(tHandle, sTitle=sTitle)
             elif mode == nwDocMode.VIEW:
@@ -1293,19 +1299,3 @@ class GuiMain(QMainWindow):
         """Set the window title and add the project's name."""
         self.setWindowTitle(" - ".join(filter(None, [projName, CONFIG.appName])))
         return
-
-    def _getTagSource(self, tag: str) -> tuple[str | None, str | None]:
-        """Handle the index lookup of a tag and display an alert if the
-        tag cannot be found.
-        """
-        tHandle, sTitle = SHARED.project.index.getTagSource(tag)
-        if tHandle is None:
-            SHARED.error(self.tr(
-                "Could not find the reference for tag '{0}'. It either doesn't "
-                "exist, or the index is out of date. The index can be updated "
-                "from the Tools menu, or by pressing {1}."
-            ).format(
-                tag, "F9"
-            ))
-            return None, None
-        return tHandle, sTitle
