@@ -29,7 +29,6 @@ from __future__ import annotations
 import logging
 
 from enum import Enum
-from time import time
 
 from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QIcon, QMouseEvent, QPalette
@@ -39,7 +38,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import minmax
+from novelwriter.common import minmax, qtLambda
 from novelwriter.constants import nwLabels, nwStyles, nwUnicode, trConst
 from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
 from novelwriter.core.item import NWItem
@@ -97,37 +96,37 @@ class GuiProjectView(QWidget):
         self.keyMoveUp = QShortcut(self.projTree)
         self.keyMoveUp.setKey("Ctrl+Up")
         self.keyMoveUp.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyMoveUp.activated.connect(lambda: self.projTree.moveTreeItem(-1))
+        self.keyMoveUp.activated.connect(qtLambda(self.projTree.moveTreeItem, -1))
 
         self.keyMoveDn = QShortcut(self.projTree)
         self.keyMoveDn.setKey("Ctrl+Down")
         self.keyMoveDn.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyMoveDn.activated.connect(lambda: self.projTree.moveTreeItem(1))
+        self.keyMoveDn.activated.connect(qtLambda(self.projTree.moveTreeItem, 1))
 
         self.keyGoPrev = QShortcut(self.projTree)
         self.keyGoPrev.setKey("Alt+Up")
         self.keyGoPrev.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyGoPrev.activated.connect(lambda: self.projTree.moveToNextItem(-1))
+        self.keyGoPrev.activated.connect(qtLambda(self.projTree.moveToNextItem, -1))
 
         self.keyGoNext = QShortcut(self.projTree)
         self.keyGoNext.setKey("Alt+Down")
         self.keyGoNext.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyGoNext.activated.connect(lambda: self.projTree.moveToNextItem(1))
+        self.keyGoNext.activated.connect(qtLambda(self.projTree.moveToNextItem, 1))
 
         self.keyGoUp = QShortcut(self.projTree)
         self.keyGoUp.setKey("Alt+Left")
         self.keyGoUp.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyGoUp.activated.connect(lambda: self.projTree.moveToLevel(-1))
+        self.keyGoUp.activated.connect(qtLambda(self.projTree.moveToLevel, -1))
 
         self.keyGoDown = QShortcut(self.projTree)
         self.keyGoDown.setKey("Alt+Right")
         self.keyGoDown.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyGoDown.activated.connect(lambda: self.projTree.moveToLevel(1))
+        self.keyGoDown.activated.connect(qtLambda(self.projTree.moveToLevel, 1))
 
         self.keyContext = QShortcut(self.projTree)
         self.keyContext.setKey("Ctrl+.")
         self.keyContext.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyContext.activated.connect(lambda: self.projTree.openContextOnSelected())
+        self.keyContext.activated.connect(self.projTree.openContextMenu)
 
         # Signals
         self.selectedItemChanged.connect(self.projBar.treeSelectionChanged)
@@ -138,7 +137,6 @@ class GuiProjectView(QWidget):
         self.emptyTrash = self.projTree.emptyTrash
         self.requestDeleteItem = self.projTree.requestDeleteItem
         self.getSelectedHandle = self.projTree.getSelectedHandle
-        self.changedSince = self.projTree.changedSince
 
         return
 
@@ -292,38 +290,38 @@ class GuiProjectToolBar(QWidget):
         # Move Buttons
         self.tbMoveU = NIconToolButton(self, iSz)
         self.tbMoveU.setToolTip("%s [Ctrl+Up]" % self.tr("Move Up"))
-        self.tbMoveU.clicked.connect(lambda: self.projTree.moveTreeItem(-1))
+        self.tbMoveU.clicked.connect(qtLambda(self.projTree.moveTreeItem, -1))
 
         self.tbMoveD = NIconToolButton(self, iSz)
         self.tbMoveD.setToolTip("%s [Ctrl+Down]" % self.tr("Move Down"))
-        self.tbMoveD.clicked.connect(lambda: self.projTree.moveTreeItem(1))
+        self.tbMoveD.clicked.connect(qtLambda(self.projTree.moveTreeItem, 1))
 
         # Add Item Menu
         self.mAdd = QMenu(self)
 
         self.aAddEmpty = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["document"]))
         self.aAddEmpty.triggered.connect(
-            lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=0, isNote=False)
+            qtLambda(self.projTree.newTreeItem, nwItemType.FILE, hLevel=0, isNote=False)
         )
 
         self.aAddChap = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["doc_h2"]))
         self.aAddChap.triggered.connect(
-            lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=2, isNote=False)
+            qtLambda(self.projTree.newTreeItem, nwItemType.FILE, hLevel=2, isNote=False)
         )
 
         self.aAddScene = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["doc_h3"]))
         self.aAddScene.triggered.connect(
-            lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=3, isNote=False)
+            qtLambda(self.projTree.newTreeItem, nwItemType.FILE, hLevel=3, isNote=False)
         )
 
         self.aAddNote = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["note"]))
         self.aAddNote.triggered.connect(
-            lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
+            qtLambda(self.projTree.newTreeItem, nwItemType.FILE, hLevel=1, isNote=True)
         )
 
         self.aAddFolder = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["folder"]))
         self.aAddFolder.triggered.connect(
-            lambda: self.projTree.newTreeItem(nwItemType.FOLDER)
+            qtLambda(self.projTree.newTreeItem, nwItemType.FOLDER)
         )
 
         self.mTemplates = _UpdatableMenu(self.mAdd)
@@ -343,13 +341,17 @@ class GuiProjectToolBar(QWidget):
         self.mMore = QMenu(self)
 
         self.aExpand = self.mMore.addAction(self.tr("Expand All"))
-        self.aExpand.triggered.connect(lambda: self.projTree.setExpandedFromHandle(None, True))
+        self.aExpand.triggered.connect(
+            qtLambda(self.projTree.setExpandedFromHandle, None, True)
+        )
 
         self.aCollapse = self.mMore.addAction(self.tr("Collapse All"))
-        self.aCollapse.triggered.connect(lambda: self.projTree.setExpandedFromHandle(None, False))
+        self.aCollapse.triggered.connect(
+            qtLambda(self.projTree.setExpandedFromHandle, None, False)
+        )
 
         self.aEmptyTrash = self.mMore.addAction(self.tr("Empty Trash"))
-        self.aEmptyTrash.triggered.connect(lambda: self.projTree.emptyTrash())
+        self.aEmptyTrash.triggered.connect(qtLambda(self.projTree.emptyTrash))
 
         self.tbMore = NIconToolButton(self, iSz)
         self.tbMore.setToolTip(self.tr("More Options"))
@@ -422,7 +424,7 @@ class GuiProjectToolBar(QWidget):
             action.setData(tHandle)
             action.setIcon(SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass]))
             action.triggered.connect(
-                lambda _, tHandle=tHandle: self.projView.setSelectedHandle(tHandle, doScroll=True)
+                qtLambda(self.projView.setSelectedHandle, tHandle, doScroll=True)
             )
         return
 
@@ -461,7 +463,9 @@ class GuiProjectToolBar(QWidget):
         def addClass(itemClass: nwItemClass) -> None:
             aNew = self.mAddRoot.addAction(trConst(nwLabels.CLASS_NAME[itemClass]))
             aNew.setIcon(SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass]))
-            aNew.triggered.connect(lambda: self.projTree.newTreeItem(nwItemType.ROOT, itemClass))
+            aNew.triggered.connect(
+                qtLambda(self.projTree.newTreeItem, nwItemType.ROOT, itemClass)
+            )
             self.mAddRoot.addAction(aNew)
             return
 
@@ -504,7 +508,6 @@ class GuiProjectTree(QTreeWidget):
 
         # Internal Variables
         self._treeMap: dict[str, QTreeWidgetItem] = {}
-        self._timeChanged = 0.0
         self._popAlert = None
         self._actHandle = None
 
@@ -518,7 +521,7 @@ class GuiProjectTree(QTreeWidget):
 
         # Context Menu
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.customContextMenuRequested.connect(self._openContextMenu)
+        self.customContextMenuRequested.connect(self.openContextMenu)
 
         # Tree Settings
         iPx = SHARED.theme.baseIconHeight
@@ -602,7 +605,6 @@ class GuiProjectTree(QTreeWidget):
         """Clear the GUI content and the related map."""
         self.clear()
         self._treeMap = {}
-        self._timeChanged = 0.0
         return
 
     def createNewNote(self, tag: str, itemClass: nwItemClass) -> None:
@@ -1121,12 +1123,10 @@ class GuiProjectTree(QTreeWidget):
         """
         logger.debug("Building the project tree ...")
         self.clearTree()
-        count = 0
         for nwItem in SHARED.project.iterProjectItems():
-            count += 1
             self._addTreeItem(nwItem)
-        if count > 0:
-            logger.info("%d item(s) added to the project tree", count)
+        self.setActiveHandle(self._actHandle)
+        logger.info("%d item(s) added to the project tree", len(self._treeMap))
         return
 
     def getSelectedHandle(self) -> str | None:
@@ -1137,19 +1137,13 @@ class GuiProjectTree(QTreeWidget):
             return items[0].data(self.C_DATA, self.D_HANDLE)
         return None
 
-    def setSelectedHandle(self, tHandle: str | None, doScroll: bool = False) -> bool:
+    def setSelectedHandle(self, tHandle: str | None, doScroll: bool = False) -> None:
         """Set a specific handle as the selected item."""
-        tItem = self._getTreeItem(tHandle)
-        if tItem is None:
-            return False
-
         if tHandle in self._treeMap:
             self.setCurrentItem(self._treeMap[tHandle])
-
-        if (indexes := self.selectedIndexes()) and doScroll:
-            self.scrollTo(indexes[0], QAbstractItemView.ScrollHint.PositionAtCenter)
-
-        return True
+            if (indexes := self.selectedIndexes()) and doScroll:
+                self.scrollTo(indexes[0], QAbstractItemView.ScrollHint.PositionAtCenter)
+        return
 
     def setActiveHandle(self, tHandle: str | None) -> None:
         """Highlight the rows associated with a given handle."""
@@ -1169,19 +1163,52 @@ class GuiProjectTree(QTreeWidget):
         status for all child items. If tHandle is None, it affects the
         entire tree.
         """
-        trItem = self._getTreeItem(tHandle) or self.invisibleRootItem()
-        self._recursiveSetExpanded(trItem, isExpanded)
+        item = self._getTreeItem(tHandle) or self.invisibleRootItem()
+        self._recursiveSetExpanded(item, isExpanded)
         return
 
-    def openContextOnSelected(self) -> bool:
-        """Open the context menu on the current selected item."""
-        if items := self.selectedItems():
-            return self._openContextMenu(self.visualItemRect(items[0]).center())
-        return False
+    ##
+    #  Public Slots
+    ##
 
-    def changedSince(self, checkTime: float) -> bool:
-        """Check if the tree has changed since a given time."""
-        return self._timeChanged > checkTime
+    @pyqtSlot()
+    @pyqtSlot("QPoint")
+    def openContextMenu(self, clickPos: QPoint | None = None) -> None:
+        """The user right clicked an element in the project tree, so we
+        open a context menu in-place.
+        """
+        if clickPos is None and (items := self.selectedItems()):
+            clickPos = self.visualItemRect(items[0]).center()
+
+        if clickPos is not None:
+            tItem = None
+            tHandle = None
+            hasChild = False
+            sItem = self.itemAt(clickPos)
+            sItems = self.selectedItems()
+            if isinstance(sItem, QTreeWidgetItem):
+                tHandle = sItem.data(self.C_DATA, self.D_HANDLE)
+                tItem = SHARED.project.tree[tHandle]
+                hasChild = sItem.childCount() > 0
+
+            if tItem is None or tHandle is None:
+                logger.debug("No item found")
+                return
+
+            ctxMenu = _TreeContextMenu(self, tItem)
+            trashHandle = SHARED.project.tree.trashRoot
+            if trashHandle and tHandle == trashHandle:
+                ctxMenu.buildTrashMenu()
+            elif len(sItems) > 1:
+                handles = [str(x.data(self.C_DATA, self.D_HANDLE)) for x in sItems]
+                ctxMenu.buildMultiSelectMenu(handles)
+            else:
+                ctxMenu.buildSingleSelectMenu(hasChild)
+
+            ctxMenu.exec(self.viewport().mapToGlobal(clickPos))
+            ctxMenu.deleteLater()
+
+        return
 
     ##
     #  Private Slots
@@ -1223,40 +1250,6 @@ class GuiProjectTree(QTreeWidget):
             trItem.setExpanded(not trItem.isExpanded())
 
         return
-
-    @pyqtSlot("QPoint")
-    def _openContextMenu(self, clickPos: QPoint) -> bool:
-        """The user right clicked an element in the project tree, so we
-        open a context menu in-place.
-        """
-        tItem = None
-        tHandle = None
-        hasChild = False
-        sItem = self.itemAt(clickPos)
-        sItems = self.selectedItems()
-        if isinstance(sItem, QTreeWidgetItem):
-            tHandle = sItem.data(self.C_DATA, self.D_HANDLE)
-            tItem = SHARED.project.tree[tHandle]
-            hasChild = sItem.childCount() > 0
-
-        if tItem is None or tHandle is None:
-            logger.debug("No item found")
-            return False
-
-        ctxMenu = _TreeContextMenu(self, tItem)
-        trashHandle = SHARED.project.tree.trashRoot
-        if trashHandle and tHandle == trashHandle:
-            ctxMenu.buildTrashMenu()
-        elif len(sItems) > 1:
-            handles = [str(x.data(self.C_DATA, self.D_HANDLE)) for x in sItems]
-            ctxMenu.buildMultiSelectMenu(handles)
-        else:
-            ctxMenu.buildSingleSelectMenu(hasChild)
-
-        ctxMenu.exec(self.viewport().mapToGlobal(clickPos))
-        ctxMenu.deleteLater()
-
-        return True
 
     @pyqtSlot()
     def _doAutoScroll(self) -> None:
@@ -1658,7 +1651,6 @@ class GuiProjectTree(QTreeWidget):
         signals. A flush is only needed if an item is moved, created or
         deleted.
         """
-        self._timeChanged = time()
         SHARED.project.setProjectChanged(True)
         if flush:
             self.saveTreeOrder()
@@ -1785,7 +1777,7 @@ class _TreeContextMenu(QMenu):
 
         # Edit Item Settings
         action = self.addAction(self.tr("Rename"))
-        action.triggered.connect(lambda: self.projTree.renameTreeItem(self._handle))
+        action.triggered.connect(qtLambda(self.projTree.renameTreeItem, self._handle))
         if isFile:
             self._itemHeader()
             self._itemActive(False)
@@ -1821,13 +1813,15 @@ class _TreeContextMenu(QMenu):
     def _docActions(self) -> None:
         """Add document actions."""
         action = self.addAction(self.tr("Open Document"))
-        action.triggered.connect(
-            lambda: self.projView.openDocumentRequest.emit(self._handle, nwDocMode.EDIT, "", True)
-        )
+        action.triggered.connect(qtLambda(
+            self.projView.openDocumentRequest.emit,
+            self._handle, nwDocMode.EDIT, "", True
+        ))
         action = self.addAction(self.tr("View Document"))
-        action.triggered.connect(
-            lambda: self.projView.openDocumentRequest.emit(self._handle, nwDocMode.VIEW, "", False)
-        )
+        action.triggered.connect(qtLambda(
+            self.projView.openDocumentRequest.emit,
+            self._handle, nwDocMode.VIEW, "", False
+        ))
         return
 
     def _itemCreation(self) -> None:
@@ -1846,7 +1840,7 @@ class _TreeContextMenu(QMenu):
         if hItem := SHARED.project.index.getItemHeading(self._handle, "T0001"):
             action = self.addAction(self.tr("Rename to Heading"))
             action.triggered.connect(
-                lambda: self.projTree.renameTreeItem(self._handle, hItem.title)
+                qtLambda(self.projTree.renameTreeItem, self._handle, hItem.title)
             )
         return
 
@@ -1855,9 +1849,9 @@ class _TreeContextMenu(QMenu):
         if multi:
             mSub = self.addMenu(self.tr("Set Active to ..."))
             aOne = mSub.addAction(SHARED.theme.getIcon("checked"), self.projTree.trActive)
-            aOne.triggered.connect(lambda: self._iterItemActive(True))
+            aOne.triggered.connect(qtLambda(self._iterItemActive, True))
             aTwo = mSub.addAction(SHARED.theme.getIcon("unchecked"), self.projTree.trInactive)
-            aTwo.triggered.connect(lambda: self._iterItemActive(False))
+            aTwo.triggered.connect(qtLambda(self._iterItemActive, False))
         else:
             action = self.addAction(self.tr("Toggle Active"))
             action.triggered.connect(self._toggleItemActive)
@@ -1868,37 +1862,39 @@ class _TreeContextMenu(QMenu):
         if self._item.isNovelLike():
             menu = self.addMenu(self.tr("Set Status to ..."))
             current = self._item.itemStatus
-            for n, (key, entry) in enumerate(SHARED.project.data.itemStatus.iterItems()):
+            for key, entry in SHARED.project.data.itemStatus.iterItems():
                 name = entry.name
                 if not multi and current == key:
                     name += f" ({nwUnicode.U_CHECK})"
                 action = menu.addAction(entry.icon, name)
                 if multi:
-                    action.triggered.connect(lambda n, key=key: self._iterSetItemStatus(key))
+                    action.triggered.connect(qtLambda(self._iterSetItemStatus, key))
                 else:
-                    action.triggered.connect(lambda n, key=key: self._changeItemStatus(key))
+                    action.triggered.connect(qtLambda(self._changeItemStatus, key))
             menu.addSeparator()
             action = menu.addAction(self.tr("Manage Labels ..."))
-            action.triggered.connect(
-                lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.PAGE_STATUS)
-            )
+            action.triggered.connect(qtLambda(
+                self.projView.projectSettingsRequest.emit,
+                GuiProjectSettings.PAGE_STATUS
+            ))
         else:
             menu = self.addMenu(self.tr("Set Importance to ..."))
             current = self._item.itemImport
-            for n, (key, entry) in enumerate(SHARED.project.data.itemImport.iterItems()):
+            for key, entry in SHARED.project.data.itemImport.iterItems():
                 name = entry.name
                 if not multi and current == key:
                     name += f" ({nwUnicode.U_CHECK})"
                 action = menu.addAction(entry.icon, name)
                 if multi:
-                    action.triggered.connect(lambda n, key=key: self._iterSetItemImport(key))
+                    action.triggered.connect(qtLambda(self._iterSetItemImport, key))
                 else:
-                    action.triggered.connect(lambda n, key=key: self._changeItemImport(key))
+                    action.triggered.connect(qtLambda(self._changeItemImport, key))
             menu.addSeparator()
             action = menu.addAction(self.tr("Manage Labels ..."))
-            action.triggered.connect(
-                lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.PAGE_IMPORT)
-            )
+            action.triggered.connect(qtLambda(
+                self.projView.projectSettingsRequest.emit,
+                GuiProjectSettings.PAGE_IMPORT
+            ))
         return
 
     def _itemTransform(self, isFile: bool, isFolder: bool, hasChild: bool) -> None:
@@ -1917,33 +1913,33 @@ class _TreeContextMenu(QMenu):
 
         if isNoteFile and self._item.documentAllowed():
             action = menu.addAction(self.tr("Convert to {0}").format(trDoc))
-            action.triggered.connect(lambda: self._changeItemLayout(loDoc))
+            action.triggered.connect(qtLambda(self._changeItemLayout, loDoc))
 
         if isDocFile:
             action = menu.addAction(self.tr("Convert to {0}").format(trNote))
-            action.triggered.connect(lambda: self._changeItemLayout(loNote))
+            action.triggered.connect(qtLambda(self._changeItemLayout, loNote))
 
         if isFolder and self._item.documentAllowed():
             action = menu.addAction(self.tr("Convert to {0}").format(trDoc))
-            action.triggered.connect(lambda: self._covertFolderToFile(loDoc))
+            action.triggered.connect(qtLambda(self._covertFolderToFile, loDoc))
 
         if isFolder:
             action = menu.addAction(self.tr("Convert to {0}").format(trNote))
-            action.triggered.connect(lambda: self._covertFolderToFile(loNote))
+            action.triggered.connect(qtLambda(self._covertFolderToFile, loNote))
 
         if hasChild and isFile:
             action = menu.addAction(self.tr("Merge Child Items into Self"))
-            action.triggered.connect(lambda: tree._mergeDocuments(tHandle, False))
+            action.triggered.connect(qtLambda(tree._mergeDocuments, tHandle, False))
             action = menu.addAction(self.tr("Merge Child Items into New"))
-            action.triggered.connect(lambda: tree._mergeDocuments(tHandle, True))
+            action.triggered.connect(qtLambda(tree._mergeDocuments, tHandle, True))
 
         if hasChild and isFolder:
             action = menu.addAction(self.tr("Merge Documents in Folder"))
-            action.triggered.connect(lambda: tree._mergeDocuments(tHandle, True))
+            action.triggered.connect(qtLambda(tree._mergeDocuments, tHandle, True))
 
         if isFile:
             action = menu.addAction(self.tr("Split Document by Headings"))
-            action.triggered.connect(lambda: tree._splitDocument(tHandle))
+            action.triggered.connect(qtLambda(tree._splitDocument, tHandle))
 
         return
 
@@ -1953,19 +1949,19 @@ class _TreeContextMenu(QMenu):
         tHandle = self._handle
         if hasChild:
             action = self.addAction(self.tr("Expand All"))
-            action.triggered.connect(lambda: tree.setExpandedFromHandle(tHandle, True))
+            action.triggered.connect(qtLambda(tree.setExpandedFromHandle, tHandle, True))
             action = self.addAction(self.tr("Collapse All"))
-            action.triggered.connect(lambda: tree.setExpandedFromHandle(tHandle, False))
+            action.triggered.connect(qtLambda(tree.setExpandedFromHandle, tHandle, False))
 
         action = self.addAction(self.tr("Duplicate"))
-        action.triggered.connect(lambda: tree._duplicateFromHandle(tHandle))
+        action.triggered.connect(qtLambda(tree._duplicateFromHandle, tHandle))
 
         if self._item.itemClass == nwItemClass.TRASH or isRoot or (isFolder and not hasChild):
             action = self.addAction(self.tr("Delete Permanently"))
-            action.triggered.connect(lambda: tree.permDeleteItem(tHandle))
+            action.triggered.connect(qtLambda(tree.permDeleteItem, tHandle))
         else:
             action = self.addAction(self.tr("Move to Trash"))
-            action.triggered.connect(lambda: tree.moveItemToTrash(tHandle))
+            action.triggered.connect(qtLambda(tree.moveItemToTrash, tHandle))
 
         return
 
