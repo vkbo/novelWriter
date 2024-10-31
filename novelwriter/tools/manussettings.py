@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import describeFont
+from novelwriter.common import describeFont, qtLambda
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.configlayout import (
@@ -329,16 +329,16 @@ class _FilterTab(NFixedPage):
         self.includedButton = NIconToolButton(self, iSz)
         self.includedButton.setToolTip(self.tr("Always included"))
         self.includedButton.setIcon(self._statusFlags[self.F_INCLUDED])
-        self.includedButton.clicked.connect(lambda: self._setSelectedMode(self.F_INCLUDED))
+        self.includedButton.clicked.connect(qtLambda(self._setSelectedMode, self.F_INCLUDED))
 
         self.excludedButton = NIconToolButton(self, iSz)
         self.excludedButton.setToolTip(self.tr("Always excluded"))
         self.excludedButton.setIcon(self._statusFlags[self.F_EXCLUDED])
-        self.excludedButton.clicked.connect(lambda: self._setSelectedMode(self.F_EXCLUDED))
+        self.excludedButton.clicked.connect(qtLambda(self._setSelectedMode, self.F_EXCLUDED))
 
         self.resetButton = NIconToolButton(self, iSz, "revert")
         self.resetButton.setToolTip(self.tr("Reset to default"))
-        self.resetButton.clicked.connect(lambda: self._setSelectedMode(self.F_FILTERED))
+        self.resetButton.clicked.connect(qtLambda(self._setSelectedMode, self.F_FILTERED))
 
         self.modeBox = QHBoxLayout()
         self.modeBox.addWidget(QLabel(self.tr("Mark selection as"), self))
@@ -589,7 +589,7 @@ class _HeadingsTab(NScrollablePage):
         self.fmtPart = QLineEdit("", self)
         self.fmtPart.setReadOnly(True)
         self.btnPart = NIconToolButton(self, iSz, "edit")
-        self.btnPart.clicked.connect(lambda: self._editHeading(self.EDIT_TITLE))
+        self.btnPart.clicked.connect(qtLambda(self._editHeading, self.EDIT_TITLE))
         self.hdePart = QLabel(trHide, self)
         self.hdePart.setIndent(bSp)
         self.swtPart = NSwitch(self, height=iPx)
@@ -605,7 +605,7 @@ class _HeadingsTab(NScrollablePage):
         self.fmtChapter = QLineEdit("", self)
         self.fmtChapter.setReadOnly(True)
         self.btnChapter = NIconToolButton(self, iSz, "edit")
-        self.btnChapter.clicked.connect(lambda: self._editHeading(self.EDIT_CHAPTER))
+        self.btnChapter.clicked.connect(qtLambda(self._editHeading, self.EDIT_CHAPTER))
         self.hdeChapter = QLabel(trHide, self)
         self.hdeChapter.setIndent(bSp)
         self.swtChapter = NSwitch(self, height=iPx)
@@ -621,7 +621,7 @@ class _HeadingsTab(NScrollablePage):
         self.fmtUnnumbered = QLineEdit("", self)
         self.fmtUnnumbered.setReadOnly(True)
         self.btnUnnumbered = NIconToolButton(self, iSz, "edit")
-        self.btnUnnumbered.clicked.connect(lambda: self._editHeading(self.EDIT_UNNUM))
+        self.btnUnnumbered.clicked.connect(qtLambda(self._editHeading, self.EDIT_UNNUM))
         self.hdeUnnumbered = QLabel(trHide, self)
         self.hdeUnnumbered.setIndent(bSp)
         self.swtUnnumbered = NSwitch(self, height=iPx)
@@ -637,7 +637,7 @@ class _HeadingsTab(NScrollablePage):
         self.fmtScene = QLineEdit("", self)
         self.fmtScene.setReadOnly(True)
         self.btnScene = NIconToolButton(self, iSz, "edit")
-        self.btnScene.clicked.connect(lambda: self._editHeading(self.EDIT_SCENE))
+        self.btnScene.clicked.connect(qtLambda(self._editHeading, self.EDIT_SCENE))
         self.hdeScene = QLabel(trHide, self)
         self.hdeScene.setIndent(bSp)
         self.swtScene = NSwitch(self, height=iPx)
@@ -653,7 +653,7 @@ class _HeadingsTab(NScrollablePage):
         self.fmtAScene = QLineEdit("", self)
         self.fmtAScene.setReadOnly(True)
         self.btnAScene = NIconToolButton(self, iSz, "edit")
-        self.btnAScene.clicked.connect(lambda: self._editHeading(self.EDIT_HSCENE))
+        self.btnAScene.clicked.connect(qtLambda(self._editHeading, self.EDIT_HSCENE))
         self.hdeAScene = QLabel(trHide, self)
         self.hdeAScene.setIndent(bSp)
         self.swtAScene = NSwitch(self, height=iPx)
@@ -669,7 +669,7 @@ class _HeadingsTab(NScrollablePage):
         self.fmtSection = QLineEdit("", self)
         self.fmtSection.setReadOnly(True)
         self.btnSection = NIconToolButton(self, iSz, "edit")
-        self.btnSection.clicked.connect(lambda: self._editHeading(self.EDIT_SECTION))
+        self.btnSection.clicked.connect(qtLambda(self._editHeading, self.EDIT_SECTION))
         self.hdeSection = QLabel(trHide, self)
         self.hdeSection.setIndent(bSp)
         self.swtSection = NSwitch(self, height=iPx)
@@ -702,15 +702,15 @@ class _HeadingsTab(NScrollablePage):
         self.aInsCharPOV = self.menuInsert.addAction(self.tr("Point of View Character"))
         self.aInsCharFocus = self.menuInsert.addAction(self.tr("Focus Character"))
 
-        self.aInsTitle.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.TITLE))
-        self.aInsChNum.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CH_NUM))
-        self.aInsChWord.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CH_WORD))
-        self.aInsChRomU.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CH_ROMU))
-        self.aInsChRomL.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CH_ROML))
-        self.aInsScNum.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.SC_NUM))
-        self.aInsScAbs.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.SC_ABS))
-        self.aInsCharPOV.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CHAR_POV))
-        self.aInsCharFocus.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CHAR_FOCUS))
+        self.aInsTitle.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.TITLE))
+        self.aInsChNum.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CH_NUM))
+        self.aInsChWord.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CH_WORD))
+        self.aInsChRomU.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CH_ROMU))
+        self.aInsChRomL.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CH_ROML))
+        self.aInsScNum.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.SC_NUM))
+        self.aInsScAbs.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.SC_ABS))
+        self.aInsCharPOV.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CHAR_POV))
+        self.aInsCharFocus.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CHAR_FOCUS))
 
         self.btnInsert = QPushButton(self.tr("Insert"), self)
         self.btnInsert.setMenu(self.menuInsert)

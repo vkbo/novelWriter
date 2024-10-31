@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import simplified
+from novelwriter.common import qtLambda, simplified
 from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.status import NWStatus, StatusEntry
 from novelwriter.enum import nwStatusShape
@@ -365,10 +365,10 @@ class _StatusPage(NFixedPage):
         self.delButton.clicked.connect(self._delItem)
 
         self.upButton = NIconToolButton(self, iSz, "up")
-        self.upButton.clicked.connect(lambda: self._moveItem(-1))
+        self.upButton.clicked.connect(qtLambda(self._moveItem, -1))
 
         self.dnButton = NIconToolButton(self, iSz, "down")
-        self.dnButton.clicked.connect(lambda: self._moveItem(1))
+        self.dnButton.clicked.connect(qtLambda(self._moveItem, 1))
 
         # Edit Form
         self.editName = QLineEdit(self)

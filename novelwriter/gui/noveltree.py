@@ -39,7 +39,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import minmax
+from novelwriter.common import minmax, qtLambda
 from novelwriter.constants import nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.core.index import IndexHeading
 from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
@@ -346,7 +346,7 @@ class GuiNovelToolBar(QWidget):
         aLast = self.mLastCol.addAction(actionLabel)
         aLast.setCheckable(True)
         aLast.setActionGroup(self.gLastCol)
-        aLast.triggered.connect(lambda: self.setLastColType(colType))
+        aLast.triggered.connect(qtLambda(self.setLastColType, colType))
         self.aLastCol[colType] = aLast
         return
 
