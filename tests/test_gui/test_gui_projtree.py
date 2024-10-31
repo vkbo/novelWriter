@@ -108,7 +108,6 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     assert project.tree["0000000000013"].itemClass == nwItemClass.NOVEL  # type: ignore
     assert nwGUI.openDocument("0000000000013")
     assert nwGUI.docEditor.getText() == "## New Chapter\n\n"
-    assert projTree._getItemWordCount("0000000000013") == 2
 
     # Add a new scene next to the other new file
     projView.setSelectedHandle("0000000000012")
@@ -118,7 +117,6 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     assert project.tree["0000000000014"].itemClass == nwItemClass.NOVEL  # type: ignore
     assert nwGUI.openDocument("0000000000014")
     assert nwGUI.docEditor.getText() == "### New Scene\n\n"
-    assert projTree._getItemWordCount("0000000000014") == 2
 
     # Add a new scene with the content copied from the previous
     assert nwGUI.openDocument("0000000000014")
@@ -131,7 +129,6 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     assert project.tree["0000000000015"].itemClass == nwItemClass.NOVEL  # type: ignore
     assert nwGUI.openDocument("0000000000015")
     assert nwGUI.docEditor.getText() == "### New Scene\n\nWith Stuff\n\n"
-    assert projTree._getItemWordCount("0000000000015") == 4
 
     # Add a new file to the characters folder
     projView.setSelectedHandle(C.hCharRoot)
@@ -141,7 +138,6 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     assert project.tree["0000000000016"].itemClass == nwItemClass.CHARACTER  # type: ignore
     assert nwGUI.openDocument("0000000000016")
     assert nwGUI.docEditor.getText() == "# New Note\n\n"
-    assert projTree._getItemWordCount("0000000000016") == 2
 
     # Make sure the sibling folder bug trap works
     projView.setSelectedHandle("0000000000013")

@@ -1390,11 +1390,6 @@ class GuiProjectTree(QTreeWidget):
 
         return
 
-    def _getItemWordCount(self, tHandle: str) -> int:
-        """Return the word count of a given item handle."""
-        tItem = self._getTreeItem(tHandle)
-        return int(tItem.data(self.C_DATA, self.D_WORDS)) if tItem else 0
-
     def _getTreeItem(self, tHandle: str | None) -> QTreeWidgetItem | None:
         """Return the QTreeWidgetItem of a given item handle."""
         return self._treeMap.get(tHandle, None) if tHandle else None
