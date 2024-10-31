@@ -55,7 +55,7 @@ class GuiSideBar(QWidget):
 
         self.mainGui = mainGui
 
-        iPx = int(1.2*SHARED.theme.baseButtonHeight)
+        iPx = int(1.25*SHARED.theme.baseButtonHeight)
         iSz = QSize(iPx, iPx)
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -114,7 +114,7 @@ class GuiSideBar(QWidget):
         self.outerBox.addWidget(self.tbStats)
         self.outerBox.addWidget(self.tbSettings)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setSpacing(CONFIG.pxInt(4))
+        self.outerBox.setSpacing(CONFIG.pxInt(6))
 
         self.setLayout(self.outerBox)
         self.updateTheme()

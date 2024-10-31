@@ -961,16 +961,16 @@ class GuiOutlineDetails(QScrollArea):
     def clearDetails(self) -> None:
         """Clear all the data labels."""
         self.titleLabel.setText(self.tr("Title"))
-        self.titleValue.setText("")
-        self.fileValue.setText("")
-        self.itemValue.setText("")
-        self.cCValue.setText("")
-        self.wCValue.setText("")
-        self.pCValue.setText("")
-        self.synopValue.setText("")
+        self.titleValue.clear()
+        self.fileValue.clear()
+        self.itemValue.clear()
+        self.cCValue.clear()
+        self.wCValue.clear()
+        self.pCValue.clear()
+        self.synopValue.clear()
 
         for _, value in self.tagValues.values():
-            value.setText("")
+            value.clear()
 
         self.updateClasses()
         return
