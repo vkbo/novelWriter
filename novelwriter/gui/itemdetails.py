@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import elide
-from novelwriter.constants import nwLabels, trConst
+from novelwriter.constants import nwLabels, nwStats, trConst
 from novelwriter.types import (
     QtAlignLeft, QtAlignLeftBase, QtAlignRight, QtAlignRightBase,
     QtAlignRightMiddle
@@ -61,6 +61,10 @@ class GuiItemDetails(QWidget):
 
         fntValue = self.font()
         fntValue.setPointSizeF(0.9*fPt)
+
+        trStats1 = trConst(nwLabels.STATS_NAME[nwStats.CHARS_ALL])
+        trStats2 = trConst(nwLabels.STATS_NAME[nwStats.WORDS_ALL])
+        trStats3 = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
 
         # Label
         self.labelName = QLabel(self.tr("Label"), self)
@@ -113,7 +117,7 @@ class GuiItemDetails(QWidget):
         self.usageData.setWordWrap(True)
 
         # Character Count
-        self.cCountName = QLabel("  "+self.tr("Characters"), self)
+        self.cCountName = QLabel(trStats1, self)
         self.cCountName.setFont(fntLabel)
         self.cCountName.setAlignment(QtAlignRight)
 
@@ -122,7 +126,7 @@ class GuiItemDetails(QWidget):
         self.cCountData.setAlignment(QtAlignRight)
 
         # Word Count
-        self.wCountName = QLabel("  "+self.tr("Words"), self)
+        self.wCountName = QLabel(trStats2, self)
         self.wCountName.setFont(fntLabel)
         self.wCountName.setAlignment(QtAlignRight)
 
@@ -131,7 +135,7 @@ class GuiItemDetails(QWidget):
         self.wCountData.setAlignment(QtAlignRight)
 
         # Paragraph Count
-        self.pCountName = QLabel("  "+self.tr("Paragraphs"), self)
+        self.pCountName = QLabel(trStats3, self)
         self.pCountName.setFont(fntLabel)
         self.pCountName.setAlignment(QtAlignRight)
 
