@@ -436,7 +436,7 @@ def describeFont(font: QFont) -> str:
 
 def qtLambda(func: Callable, *args: Any, **kwargs: Any) -> Callable:
     """A replacement for Python lambdas that works for Qt slots."""
-    def wrapper(*args_: Any, **kwargs_: Any) -> None:
+    def wrapper(*a_: Any) -> None:
         func(*args, **kwargs)
     return wrapper
 

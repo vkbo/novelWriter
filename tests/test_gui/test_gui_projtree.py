@@ -21,6 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -107,7 +108,6 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     assert project.tree["0000000000013"].itemClass == nwItemClass.NOVEL  # type: ignore
     assert nwGUI.openDocument("0000000000013")
     assert nwGUI.docEditor.getText() == "## New Chapter\n\n"
-    assert projTree._getItemWordCount("0000000000013") == 2
 
     # Add a new scene next to the other new file
     projView.setSelectedHandle("0000000000012")
@@ -117,7 +117,6 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     assert project.tree["0000000000014"].itemClass == nwItemClass.NOVEL  # type: ignore
     assert nwGUI.openDocument("0000000000014")
     assert nwGUI.docEditor.getText() == "### New Scene\n\n"
-    assert projTree._getItemWordCount("0000000000014") == 2
 
     # Add a new scene with the content copied from the previous
     assert nwGUI.openDocument("0000000000014")
@@ -130,7 +129,6 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     assert project.tree["0000000000015"].itemClass == nwItemClass.NOVEL  # type: ignore
     assert nwGUI.openDocument("0000000000015")
     assert nwGUI.docEditor.getText() == "### New Scene\n\nWith Stuff\n\n"
-    assert projTree._getItemWordCount("0000000000015") == 4
 
     # Add a new file to the characters folder
     projView.setSelectedHandle(C.hCharRoot)
@@ -140,7 +138,6 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     assert project.tree["0000000000016"].itemClass == nwItemClass.CHARACTER  # type: ignore
     assert nwGUI.openDocument("0000000000016")
     assert nwGUI.docEditor.getText() == "# New Note\n\n"
-    assert projTree._getItemWordCount("0000000000016") == 2
 
     # Make sure the sibling folder bug trap works
     projView.setSelectedHandle("0000000000013")
@@ -1146,30 +1143,37 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     def itemPos(tHandle):
         return projTree.visualItemRect(projTree._getTreeItem(tHandle)).center()
 
-    # Pop the menu
+    # Pop the menu in various positions and check for success
     with monkeypatch.context() as mp:
-        mp.setattr(QMenu, "exec", lambda *a: None)
+        mockMenu = MagicMock()
+        mp.setattr(QMenu, "exec", mockMenu)
         projTree.clearSelection()
 
         # No item under menu
-        assert projTree._openContextMenu(projTree.viewport().rect().bottomRight()) is False
+        projTree.openContextMenu(projTree.viewport().rect().bottomRight())
+        assert mockMenu.call_count == 0
 
         # Open Trash Menu
-        assert projTree._openContextMenu(itemPos(hTrashRoot)) is True
+        projTree.openContextMenu(itemPos(hTrashRoot))
+        assert mockMenu.call_count == 1
 
         # Open Single Select Menu
-        assert projTree._openContextMenu(itemPos(C.hNovelRoot)) is True
+        projTree.openContextMenu(itemPos(C.hNovelRoot))
+        assert mockMenu.call_count == 2
 
         # Open Multi-Select Menu
         projTree._getTreeItem(hNovelNote).setSelected(True)
         projTree._getTreeItem(hSubNote).setSelected(True)
-        assert projTree._openContextMenu(itemPos(hCharNote)) is True
+        projTree.openContextMenu(itemPos(hCharNote))
+        assert mockMenu.call_count == 3
 
         # Check the keyboard shortcut handler as well
         projTree.setSelectedHandle(C.hNovelRoot)
-        assert projTree.openContextOnSelected() is True
+        projTree.openContextMenu(None)
+        assert mockMenu.call_count == 4
         projTree.clearSelection()
-        assert projTree.openContextOnSelected() is False
+        projTree.openContextMenu(None)
+        assert mockMenu.call_count == 4
 
     # Menu Builders
     # =============

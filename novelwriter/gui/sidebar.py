@@ -32,6 +32,7 @@ from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QMenu, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import qtLambda
 from novelwriter.enum import nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
 from novelwriter.extensions.modified import NIconToolButton
@@ -54,7 +55,7 @@ class GuiSideBar(QWidget):
 
         self.mainGui = mainGui
 
-        iPx = int(1.2*SHARED.theme.baseButtonHeight)
+        iPx = int(1.25*SHARED.theme.baseButtonHeight)
         iSz = QSize(iPx, iPx)
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -63,19 +64,19 @@ class GuiSideBar(QWidget):
         # Buttons
         self.tbProject = NIconToolButton(self, iSz)
         self.tbProject.setToolTip("{0} [Ctrl+T]".format(self.tr("Project Tree View")))
-        self.tbProject.clicked.connect(lambda: self.requestViewChange.emit(nwView.PROJECT))
+        self.tbProject.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.PROJECT))
 
         self.tbNovel = NIconToolButton(self, iSz)
         self.tbNovel.setToolTip("{0} [Ctrl+T]".format(self.tr("Novel Tree View")))
-        self.tbNovel.clicked.connect(lambda: self.requestViewChange.emit(nwView.NOVEL))
+        self.tbNovel.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.NOVEL))
 
         self.tbSearch = NIconToolButton(self, iSz)
         self.tbSearch.setToolTip("{0} [Ctrl+Shift+F]".format(self.tr("Project Search")))
-        self.tbSearch.clicked.connect(lambda: self.requestViewChange.emit(nwView.SEARCH))
+        self.tbSearch.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.SEARCH))
 
         self.tbOutline = NIconToolButton(self, iSz)
         self.tbOutline.setToolTip("{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
-        self.tbOutline.clicked.connect(lambda: self.requestViewChange.emit(nwView.OUTLINE))
+        self.tbOutline.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.OUTLINE))
 
         self.tbBuild = NIconToolButton(self, iSz)
         self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Build Manuscript")))
@@ -113,7 +114,7 @@ class GuiSideBar(QWidget):
         self.outerBox.addWidget(self.tbStats)
         self.outerBox.addWidget(self.tbSettings)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setSpacing(CONFIG.pxInt(4))
+        self.outerBox.setSpacing(CONFIG.pxInt(6))
 
         self.setLayout(self.outerBox)
         self.updateTheme()

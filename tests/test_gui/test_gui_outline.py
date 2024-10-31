@@ -29,6 +29,7 @@ import pytest
 from PyQt5.QtWidgets import QAction, QFileDialog, QWidget
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.constants import nwKeyWords
 from novelwriter.enum import nwItemClass, nwOutline, nwView
 from novelwriter.types import QtScrollAlwaysOff, QtScrollAsNeeded
 
@@ -261,7 +262,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert outlineData.itemValue.text() == "Finished"
 
     # Click POV Link
-    assert outlineData.povKeyValue.text() == "<a href='Bod'>Bod</a>"
+    assert outlineData.tagValues[nwKeyWords.POV_KEY][1].text() == "<a href='Bod'>Bod</a>"
     outlineView._tagClicked("Bod")
     assert nwGUI.docViewer.docHandle == "4c4f28287af27"
 

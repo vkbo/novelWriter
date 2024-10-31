@@ -38,7 +38,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt, checkIntTuple, formatTime, minmax
+from novelwriter.common import checkInt, checkIntTuple, formatTime, minmax, qtLambda
 from novelwriter.constants import nwConst
 from novelwriter.error import formatException
 from novelwriter.extensions.modified import NToolDialog
@@ -277,11 +277,11 @@ class GuiWritingStats(NToolDialog):
         self.btnSave.setMenu(self.saveMenu)
 
         self.saveJSON = QAction(self.tr("JSON Data File (.json)"), self)
-        self.saveJSON.triggered.connect(lambda: self._saveData(self.FMT_JSON))
+        self.saveJSON.triggered.connect(qtLambda(self._saveData, self.FMT_JSON))
         self.saveMenu.addAction(self.saveJSON)
 
         self.saveCSV = QAction(self.tr("CSV Data File (.csv)"), self)
-        self.saveCSV.triggered.connect(lambda: self._saveData(self.FMT_CSV))
+        self.saveCSV.triggered.connect(qtLambda(self._saveData, self.FMT_CSV))
         self.saveMenu.addAction(self.saveCSV)
 
         # Assemble

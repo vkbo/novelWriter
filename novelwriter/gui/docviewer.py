@@ -38,6 +38,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import qtLambda
 from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
@@ -396,25 +397,25 @@ class GuiDocViewer(QTextBrowser):
 
         if userSelection:
             mnuCopy = QAction(self.tr("Copy"), ctxMenu)
-            mnuCopy.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
+            mnuCopy.triggered.connect(qtLambda(self.docAction, nwDocAction.COPY))
             ctxMenu.addAction(mnuCopy)
 
             ctxMenu.addSeparator()
 
         mnuSelAll = QAction(self.tr("Select All"), ctxMenu)
-        mnuSelAll.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
+        mnuSelAll.triggered.connect(qtLambda(self.docAction, nwDocAction.SEL_ALL))
         ctxMenu.addAction(mnuSelAll)
 
         mnuSelWord = QAction(self.tr("Select Word"), ctxMenu)
-        mnuSelWord.triggered.connect(
-            lambda: self._makePosSelection(QTextCursor.SelectionType.WordUnderCursor, point)
-        )
+        mnuSelWord.triggered.connect(qtLambda(
+            self._makePosSelection, QTextCursor.SelectionType.WordUnderCursor, point
+        ))
         ctxMenu.addAction(mnuSelWord)
 
         mnuSelPara = QAction(self.tr("Select Paragraph"), ctxMenu)
-        mnuSelPara.triggered.connect(
-            lambda: self._makePosSelection(QTextCursor.SelectionType.BlockUnderCursor, point)
-        )
+        mnuSelPara.triggered.connect(qtLambda(
+            self._makePosSelection, QTextCursor.SelectionType.BlockUnderCursor, point
+        ))
         ctxMenu.addAction(mnuSelPara)
 
         # Open the context menu

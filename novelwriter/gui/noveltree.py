@@ -39,7 +39,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import minmax
+from novelwriter.common import minmax, qtLambda
 from novelwriter.constants import nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.core.index import IndexHeading
 from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
@@ -346,7 +346,7 @@ class GuiNovelToolBar(QWidget):
         aLast = self.mLastCol.addAction(actionLabel)
         aLast.setCheckable(True)
         aLast.setActionGroup(self.gLastCol)
-        aLast.triggered.connect(lambda: self.setLastColType(colType))
+        aLast.triggered.connect(qtLambda(self.setLastColType, colType))
         self.aLastCol[colType] = aLast
         return
 
@@ -484,16 +484,9 @@ class GuiNovelTree(QTreeWidget):
         if rootHandle is None:
             rootHandle = SHARED.project.tree.findRoot(nwItemClass.NOVEL)
 
-        treeChanged = SHARED.mainGui.projView.changedSince(self._lastBuild)
-        indexChanged = SHARED.project.index.rootChangedSince(rootHandle, self._lastBuild)
-        if not (treeChanged or indexChanged or overRide):
-            logger.debug("No changes have been made to the novel index")
-            return
-
-        selItem = self.selectedItems()
         titleKey = None
-        if selItem:
-            titleKey = selItem[0].data(self.C_DATA, self.D_KEY)
+        if selItems := self.selectedItems():
+            titleKey = selItems[0].data(self.C_DATA, self.D_KEY)
 
         self._populateTree(rootHandle)
         SHARED.project.data.setLastHandle(rootHandle, "novelTree")
