@@ -143,7 +143,6 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     project = NWProject()
     html = ToHtml(project)
     html.initDocument()
-
     html._isNovel = True
     html._isFirst = True
 
@@ -279,20 +278,31 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
         "<span style='color: #4271ae'><a href='#tag_europe'>Europe</a></span></p>\n"
     )
 
-    # Dialogue
-    html.setDialogueHighlight(True)
+
+@pytest.mark.core
+def testFmtToHtml_Dialog(mockGUI):
+    """Test paragraph formats in the ToHtml class."""
+    CONFIG.altDialogOpen = "::"
+    CONFIG.altDialogClose = "::"
+
+    project = NWProject()
+    html = ToHtml(project)
+    html.initDocument()
+    html.setDialogHighlight(True)
+    html._isNovel = True
+    html._isFirst = True
+
+    # Dialog
+    html.setDialogHighlight(True)
     html._text = "## Chapter\n\nThis text \u201chas dialogue\u201d in it.\n\n"
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 style='page-break-before: always;'>Chapter</h1>\n"
+        "<h1>Chapter</h1>\n"
         "<p>This text <span style='color: #4271ae'>“has dialogue”</span> in it.</p>\n"
     )
 
-    # Alt. Dialogue
-    CONFIG.altDialogOpen = "::"
-    CONFIG.altDialogClose = "::"
-    html.setDialogueHighlight(True)
+    # Alt Dialog
     html._text = "## Chapter\n\nThis text ::has alt dialogue:: in it.\n\n"
     html.tokenizeText()
     html.doConvert()
@@ -301,8 +311,15 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
         "<p>This text <span style='color: #813709'>::has alt dialogue::</span> in it.</p>\n"
     )
 
-    # Footnotes
-    # =========
+
+@pytest.mark.core
+def testFmtToHtml_Footnotes(mockGUI):
+    """Test paragraph formats in the ToHtml class."""
+    project = NWProject()
+    html = ToHtml(project)
+    html.initDocument()
+    html._isNovel = True
+    html._isFirst = True
 
     html._text = (
         "Text with one[footnote:fa] or two[footnote:fb] footnotes.\n\n"

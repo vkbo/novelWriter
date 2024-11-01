@@ -442,7 +442,7 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
 
     # Convert before init
     doc._text = "Blabla"
-    doc.setDialogueHighlight(True)
+    doc.setDialogHighlight(True)
     doc.doConvert()
     doc.tokenizeText()
     assert doc.document.toPlainText() == ""
