@@ -26,6 +26,7 @@ from __future__ import annotations
 import re
 
 from novelwriter import CONFIG
+from novelwriter.common import compact, uniqueCompact
 from novelwriter.constants import nwRegEx
 
 
@@ -88,11 +89,11 @@ class RegExPatterns:
             symO = ""
             symC = ""
             if CONFIG.dialogStyle in (1, 3):
-                symO += CONFIG.fmtSQuoteOpen
-                symC += CONFIG.fmtSQuoteClose
+                symO += CONFIG.fmtSQuoteOpen.strip()[:1]
+                symC += CONFIG.fmtSQuoteClose.strip()[:1]
             if CONFIG.dialogStyle in (2, 3):
-                symO += CONFIG.fmtDQuoteOpen
-                symC += CONFIG.fmtDQuoteClose
+                symO += CONFIG.fmtDQuoteOpen.strip()[:1]
+                symC += CONFIG.fmtDQuoteClose.strip()[:1]
 
             rxEnd = "|$" if CONFIG.allowOpenDial else ""
             return re.compile(f"\\B[{symO}].*?(?:[{symC}]\\B{rxEnd})", re.UNICODE)
@@ -102,8 +103,8 @@ class RegExPatterns:
     def altDialogStyle(self) -> re.Pattern | None:
         """Dialogue alternative rule based on user settings."""
         if CONFIG.altDialogOpen and CONFIG.altDialogClose:
-            symO = re.escape(CONFIG.altDialogOpen)
-            symC = re.escape(CONFIG.altDialogClose)
+            symO = re.escape(compact(CONFIG.altDialogOpen))
+            symC = re.escape(compact(CONFIG.altDialogClose))
             return re.compile(f"\\B{symO}.*?{symC}\\B", re.UNICODE)
         return None
 
@@ -132,7 +133,7 @@ class DialogParser:
         """Init parser settings. Must be called when config changes."""
         punct = re.escape("!?.,:;")
         self._quotes = REGEX_PATTERNS.dialogStyle
-        self._dialog = CONFIG.dialogLine
+        self._dialog = uniqueCompact(CONFIG.dialogLine)
         self._narrator = CONFIG.narratorBreak.strip()[:1]
         self._break = re.compile(
             f"({self._narrator}\\s?.*?\\s?(?:{self._narrator}[{punct}]?|$))", re.UNICODE
