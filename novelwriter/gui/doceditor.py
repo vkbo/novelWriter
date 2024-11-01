@@ -1978,63 +1978,72 @@ class GuiDocEditor(QPlainTextEdit):
         if tLen < 1 or tPos-1 > tLen:
             return
 
-        tOne = text[tPos-1:tPos]
-        tTwo = text[tPos-2:tPos]
-        tThree = text[tPos-3:tPos]
+        t1 = text[tPos-1:tPos]
+        t2 = text[tPos-2:tPos]
+        t3 = text[tPos-3:tPos]
+        t4 = text[tPos-4:tPos]
 
-        if not tOne:
+        if not t1:
             return
 
         nDelete = 0
-        tInsert = tOne
+        tInsert = t1
 
-        if self._typRepDQuote and tTwo[:1].isspace() and tTwo.endswith('"'):
+        if self._typRepDQuote and t2[:1].isspace() and t2.endswith('"'):
             nDelete = 1
             tInsert = self._typDQuoteO
 
-        elif self._typRepDQuote and tOne == '"':
+        elif self._typRepDQuote and t1 == '"':
             nDelete = 1
             if tPos == 1:
                 tInsert = self._typDQuoteO
-            elif tPos == 2 and tTwo == '>"':
+            elif tPos == 2 and t2 == '>"':
                 tInsert = self._typDQuoteO
-            elif tPos == 3 and tThree == '>>"':
+            elif tPos == 3 and t3 == '>>"':
                 tInsert = self._typDQuoteO
             else:
                 tInsert = self._typDQuoteC
 
-        elif self._typRepSQuote and tTwo[:1].isspace() and tTwo.endswith("'"):
+        elif self._typRepSQuote and t2[:1].isspace() and t2.endswith("'"):
             nDelete = 1
             tInsert = self._typSQuoteO
 
-        elif self._typRepSQuote and tOne == "'":
+        elif self._typRepSQuote and t1 == "'":
             nDelete = 1
             if tPos == 1:
                 tInsert = self._typSQuoteO
-            elif tPos == 2 and tTwo == ">'":
+            elif tPos == 2 and t2 == ">'":
                 tInsert = self._typSQuoteO
-            elif tPos == 3 and tThree == ">>'":
+            elif tPos == 3 and t3 == ">>'":
                 tInsert = self._typSQuoteO
             else:
                 tInsert = self._typSQuoteC
 
-        elif self._typRepDash and tThree == "---":
+        elif self._typRepDash and t4 == "----":
+            nDelete = 4
+            tInsert = nwUnicode.U_HBAR
+
+        elif self._typRepDash and t3 == "---":
             nDelete = 3
             tInsert = nwUnicode.U_EMDASH
 
-        elif self._typRepDash and tTwo == "--":
+        elif self._typRepDash and t2 == "--":
             nDelete = 2
             tInsert = nwUnicode.U_ENDASH
 
-        elif self._typRepDash and tTwo == nwUnicode.U_ENDASH + "-":
+        elif self._typRepDash and t2 == nwUnicode.U_ENDASH + "-":
             nDelete = 2
             tInsert = nwUnicode.U_EMDASH
 
-        elif self._typRepDots and tThree == "...":
+        elif self._typRepDash and t2 == nwUnicode.U_EMDASH + "-":
+            nDelete = 2
+            tInsert = nwUnicode.U_HBAR
+
+        elif self._typRepDots and t3 == "...":
             nDelete = 3
             tInsert = nwUnicode.U_HELLIP
 
-        elif tOne == nwUnicode.U_LSEP:
+        elif t1 == nwUnicode.U_LSEP:
             # This resolves issue #1150
             nDelete = 1
             tInsert = nwUnicode.U_PSEP
