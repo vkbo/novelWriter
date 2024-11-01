@@ -36,6 +36,7 @@ import logging
 
 from enum import Enum
 from time import time
+from typing import NamedTuple
 
 from PyQt5.QtCore import (
     QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
@@ -83,6 +84,21 @@ class _SelectAction(Enum):
     MOVE_AFTER     = 3
 
 
+class AutoReplaceConfig(NamedTuple):
+
+    typPadChar: str
+    typSQuoteO: str
+    typSQuoteC: str
+    typDQuoteO: str
+    typDQuoteC: str
+    typRepDQuote: bool
+    typRepSQuote: bool
+    typRepDash: bool
+    typRepDots: bool
+    typPadBefore: str
+    typPadAfter: str
+
+
 class GuiDocEditor(QPlainTextEdit):
     """Gui Widget: Main Document Editor"""
 
@@ -128,17 +144,19 @@ class GuiDocEditor(QPlainTextEdit):
         self._doReplace  = False  # Switch to temporarily disable auto-replace
 
         # Typography Cache
-        self._typPadChar = " "
-        self._typDQuoteO = '"'
-        self._typDQuoteC = '"'
-        self._typSQuoteO = "'"
-        self._typSQuoteC = "'"
-        self._typRepDQuote = False
-        self._typRepSQuote = False
-        self._typRepDash = False
-        self._typRepDots = False
-        self._typPadBefore = ""
-        self._typPadAfter = ""
+        self._typConf = AutoReplaceConfig(
+            typPadChar=" ",
+            typSQuoteO="'",
+            typSQuoteC="'",
+            typDQuoteO='"',
+            typDQuoteC='"',
+            typRepSQuote=False,
+            typRepDQuote=False,
+            typRepDash=False,
+            typRepDots=False,
+            typPadBefore="",
+            typPadAfter="",
+        )
 
         # Completer
         self._completer = MetaCompleter(self)
@@ -310,21 +328,19 @@ class GuiDocEditor(QPlainTextEdit):
         created, and when the user changes the main editor preferences.
         """
         # Typography
-        if CONFIG.fmtPadThin:
-            self._typPadChar = nwUnicode.U_THNBSP
-        else:
-            self._typPadChar = nwUnicode.U_NBSP
-
-        self._typSQuoteO = CONFIG.fmtSQuoteOpen
-        self._typSQuoteC = CONFIG.fmtSQuoteClose
-        self._typDQuoteO = CONFIG.fmtDQuoteOpen
-        self._typDQuoteC = CONFIG.fmtDQuoteClose
-        self._typRepDQuote = CONFIG.doReplaceDQuote
-        self._typRepSQuote = CONFIG.doReplaceSQuote
-        self._typRepDash = CONFIG.doReplaceDash
-        self._typRepDots = CONFIG.doReplaceDots
-        self._typPadBefore = CONFIG.fmtPadBefore
-        self._typPadAfter = CONFIG.fmtPadAfter
+        self._typConf = AutoReplaceConfig(
+            typPadChar=nwUnicode.U_THNBSP if CONFIG.fmtPadThin else nwUnicode.U_NBSP,
+            typSQuoteO=CONFIG.fmtSQuoteOpen,
+            typSQuoteC=CONFIG.fmtSQuoteClose,
+            typDQuoteO=CONFIG.fmtDQuoteOpen,
+            typDQuoteC=CONFIG.fmtDQuoteClose,
+            typRepSQuote=CONFIG.doReplaceSQuote,
+            typRepDQuote=CONFIG.doReplaceDQuote,
+            typRepDash=CONFIG.doReplaceDash,
+            typRepDots=CONFIG.doReplaceDots,
+            typPadBefore=CONFIG.fmtPadBefore,
+            typPadAfter=CONFIG.fmtPadAfter,
+        )
 
         # Reload spell check and dictionaries
         SHARED.updateSpellCheckLanguage()
@@ -737,6 +753,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         logger.debug("Requesting action: %s", action.name)
 
+        tConf = self._typConf
         self._allowAutoReplace(False)
         if action == nwDocAction.UNDO:
             self.undo()
@@ -755,9 +772,9 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.MD_STRIKE:
             self._toggleFormat(2, "~")
         elif action == nwDocAction.S_QUOTE:
-            self._wrapSelection(self._typSQuoteO, self._typSQuoteC)
+            self._wrapSelection(tConf.typSQuoteO, tConf.typSQuoteC)
         elif action == nwDocAction.D_QUOTE:
-            self._wrapSelection(self._typDQuoteO, self._typDQuoteC)
+            self._wrapSelection(tConf.typDQuoteO, tConf.typDQuoteC)
         elif action == nwDocAction.SEL_ALL:
             self._makeSelection(QTextCursor.SelectionType.Document)
         elif action == nwDocAction.SEL_PARA:
@@ -783,9 +800,9 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.BLOCK_HSC:
             self._formatBlock(nwDocAction.BLOCK_HSC)
         elif action == nwDocAction.REPL_SNG:
-            self._replaceQuotes("'", self._typSQuoteO, self._typSQuoteC)
+            self._replaceQuotes("'", tConf.typSQuoteO, tConf.typSQuoteC)
         elif action == nwDocAction.REPL_DBL:
-            self._replaceQuotes("\"", self._typDQuoteO, self._typDQuoteC)
+            self._replaceQuotes("\"", tConf.typDQuoteO, tConf.typDQuoteC)
         elif action == nwDocAction.RM_BREAKS:
             self._removeInParLineBreaks()
         elif action == nwDocAction.ALIGN_L:
@@ -857,13 +874,13 @@ class GuiDocEditor(QPlainTextEdit):
             text = insert
         elif isinstance(insert, nwDocInsert):
             if insert == nwDocInsert.QUOTE_LS:
-                text = self._typSQuoteO
+                text = self._typConf.typSQuoteO
             elif insert == nwDocInsert.QUOTE_RS:
-                text = self._typSQuoteC
+                text = self._typConf.typSQuoteC
             elif insert == nwDocInsert.QUOTE_LD:
-                text = self._typDQuoteO
+                text = self._typConf.typDQuoteO
             elif insert == nwDocInsert.QUOTE_RD:
-                text = self._typDQuoteC
+                text = self._typConf.typDQuoteC
             elif insert == nwDocInsert.SYNOPSIS:
                 text = "%Synopsis: "
                 block = True
@@ -1986,89 +2003,90 @@ class GuiDocEditor(QPlainTextEdit):
         if not t1:
             return
 
-        nDelete = 0
-        tInsert = t1
+        delete = 0
+        insert = t1
+        tConf = self._typConf
 
-        if self._typRepDQuote and t2[:1].isspace() and t2.endswith('"'):
-            nDelete = 1
-            tInsert = self._typDQuoteO
+        if tConf.typRepDQuote and t2[:1].isspace() and t2.endswith('"'):
+            delete = 1
+            insert = tConf.typDQuoteO
 
-        elif self._typRepDQuote and t1 == '"':
-            nDelete = 1
+        elif tConf.typRepDQuote and t1 == '"':
+            delete = 1
             if tPos == 1:
-                tInsert = self._typDQuoteO
+                insert = tConf.typDQuoteO
             elif tPos == 2 and t2 == '>"':
-                tInsert = self._typDQuoteO
+                insert = tConf.typDQuoteO
             elif tPos == 3 and t3 == '>>"':
-                tInsert = self._typDQuoteO
+                insert = tConf.typDQuoteO
             else:
-                tInsert = self._typDQuoteC
+                insert = tConf.typDQuoteC
 
-        elif self._typRepSQuote and t2[:1].isspace() and t2.endswith("'"):
-            nDelete = 1
-            tInsert = self._typSQuoteO
+        elif tConf.typRepSQuote and t2[:1].isspace() and t2.endswith("'"):
+            delete = 1
+            insert = tConf.typSQuoteO
 
-        elif self._typRepSQuote and t1 == "'":
-            nDelete = 1
+        elif tConf.typRepSQuote and t1 == "'":
+            delete = 1
             if tPos == 1:
-                tInsert = self._typSQuoteO
+                insert = tConf.typSQuoteO
             elif tPos == 2 and t2 == ">'":
-                tInsert = self._typSQuoteO
+                insert = tConf.typSQuoteO
             elif tPos == 3 and t3 == ">>'":
-                tInsert = self._typSQuoteO
+                insert = tConf.typSQuoteO
             else:
-                tInsert = self._typSQuoteC
+                insert = tConf.typSQuoteC
 
-        elif self._typRepDash and t4 == "----":
-            nDelete = 4
-            tInsert = nwUnicode.U_HBAR
+        elif tConf.typRepDash and t4 == "----":
+            delete = 4
+            insert = nwUnicode.U_HBAR
 
-        elif self._typRepDash and t3 == "---":
-            nDelete = 3
-            tInsert = nwUnicode.U_EMDASH
+        elif tConf.typRepDash and t3 == "---":
+            delete = 3
+            insert = nwUnicode.U_EMDASH
 
-        elif self._typRepDash and t2 == "--":
-            nDelete = 2
-            tInsert = nwUnicode.U_ENDASH
+        elif tConf.typRepDash and t2 == "--":
+            delete = 2
+            insert = nwUnicode.U_ENDASH
 
-        elif self._typRepDash and t2 == nwUnicode.U_ENDASH + "-":
-            nDelete = 2
-            tInsert = nwUnicode.U_EMDASH
+        elif tConf.typRepDash and t2 == nwUnicode.U_ENDASH + "-":
+            delete = 2
+            insert = nwUnicode.U_EMDASH
 
-        elif self._typRepDash and t2 == nwUnicode.U_EMDASH + "-":
-            nDelete = 2
-            tInsert = nwUnicode.U_HBAR
+        elif tConf.typRepDash and t2 == nwUnicode.U_EMDASH + "-":
+            delete = 2
+            insert = nwUnicode.U_HBAR
 
-        elif self._typRepDots and t3 == "...":
-            nDelete = 3
-            tInsert = nwUnicode.U_HELLIP
+        elif tConf.typRepDots and t3 == "...":
+            delete = 3
+            insert = nwUnicode.U_HELLIP
 
         elif t1 == nwUnicode.U_LSEP:
             # This resolves issue #1150
-            nDelete = 1
-            tInsert = nwUnicode.U_PSEP
+            delete = 1
+            insert = nwUnicode.U_PSEP
 
-        tCheck = tInsert
-        if self._typPadBefore and tCheck in self._typPadBefore:
-            if self._allowSpaceBeforeColon(text, tCheck):
-                nDelete = max(nDelete, 1)
-                chkPos = tPos - nDelete - 1
+        check = insert
+        if tConf.typPadBefore and check in tConf.typPadBefore:
+            if self._allowSpaceBeforeColon(text, check):
+                delete = max(delete, 1)
+                chkPos = tPos - delete - 1
                 if chkPos >= 0 and text[chkPos].isspace():
                     # Strip existing space before inserting a new (#1061)
-                    nDelete += 1
-                tInsert = self._typPadChar + tInsert
+                    delete += 1
+                insert = tConf.typPadChar + insert
 
-        if self._typPadAfter and tCheck in self._typPadAfter:
-            if self._allowSpaceBeforeColon(text, tCheck):
-                nDelete = max(nDelete, 1)
-                tInsert = tInsert + self._typPadChar
+        if tConf.typPadAfter and check in tConf.typPadAfter:
+            if self._allowSpaceBeforeColon(text, check):
+                delete = max(delete, 1)
+                insert = insert + tConf.typPadChar
 
-        if nDelete > 0:
-            cursor.movePosition(QtMoveLeft, QtKeepAnchor, nDelete)
-            cursor.insertText(tInsert)
+        if delete > 0:
+            cursor.movePosition(QtMoveLeft, QtKeepAnchor, delete)
+            cursor.insertText(insert)
 
-        # Re-highlight, since the auto-replace sometimes interferes with it
-        self._qDocument.syntaxHighlighter.rehighlightBlock(cursor.block())
+            # Re-highlight, since the auto-replace sometimes interferes with it
+            self._qDocument.syntaxHighlighter.rehighlightBlock(cursor.block())
 
         return
 

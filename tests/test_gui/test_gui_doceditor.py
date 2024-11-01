@@ -80,7 +80,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert qDoc.defaultTextOption().alignment() == QtAlignLeft
     assert docEditor.verticalScrollBarPolicy() == QtScrollAsNeeded
     assert docEditor.horizontalScrollBarPolicy() == QtScrollAsNeeded
-    assert docEditor._typPadChar == nwUnicode.U_NBSP
+    assert docEditor._typConf.typPadChar == nwUnicode.U_NBSP
     assert docEditor.docHeader.itemTitle.text() == (
         "Novel  \u203a  New Chapter  \u203a  New Scene"
     )
@@ -105,7 +105,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert qDoc.defaultTextOption().flags() & QTextOption.ShowLineAndParagraphSeparators
     assert docEditor.verticalScrollBarPolicy() == QtScrollAlwaysOff
     assert docEditor.horizontalScrollBarPolicy() == QtScrollAlwaysOff
-    assert docEditor._typPadChar == nwUnicode.U_THNBSP
+    assert docEditor._typConf.typPadChar == nwUnicode.U_THNBSP
     assert docEditor.docHeader.itemTitle.text() == "New Scene"
 
     # Header
