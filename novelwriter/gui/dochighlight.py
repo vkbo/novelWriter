@@ -40,7 +40,7 @@ from novelwriter.common import checkInt
 from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.core.index import processComment
 from novelwriter.enum import nwComment
-from novelwriter.text.patterns import REGEX_PATTERNS
+from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +59,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
     __slots__ = (
         "_tHandle", "_isNovel", "_isInactive", "_spellCheck", "_spellErr",
-        "_hStyles", "_minRules", "_txtRules", "_cmnRules", "_dialogLine",
-        "_narratorBreak",
+        "_hStyles", "_minRules", "_txtRules", "_cmnRules", "_dialogParser",
     )
 
     def __init__(self, document: QTextDocument) -> None:
@@ -79,8 +78,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._txtRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
         self._cmnRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
 
-        self._dialogLine = ""
-        self._narratorBreak = ""
+        self._dialogParser = DialogParser()
 
         self.initHighlighter()
 
@@ -136,8 +134,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._txtRules.clear()
         self._cmnRules.clear()
 
-        self._dialogLine = CONFIG.dialogLine.strip()[:1]
-        self._narratorBreak = CONFIG.narratorBreak.strip()[:1]
+        self._dialogParser.initParser()
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
@@ -158,16 +155,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._txtRules.append((rxRule, hlRule))
         self._cmnRules.append((rxRule, hlRule))
 
-        # Dialogue
-        if CONFIG.dialogStyle > 0:
-            rxRule = REGEX_PATTERNS.dialogStyle
-            hlRule = {
-                0: self._hStyles["dialog"],
-            }
-            self._txtRules.append((rxRule, hlRule))
-
-        if CONFIG.altDialogOpen and CONFIG.altDialogClose:
-            rxRule = REGEX_PATTERNS.altDialogStyle
+        # Alt Dialogue
+        if rxRule := REGEX_PATTERNS.altDialogStyle:
             hlRule = {
                 0: self._hStyles["altdialog"],
             }
@@ -403,17 +392,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         else:  # Text Paragraph
             self.setCurrentBlockState(BLOCK_TEXT)
             hRules = self._txtRules if self._isNovel else self._minRules
-
-        if self._dialogLine and text.startswith(self._dialogLine):
-            if self._narratorBreak:
-                tPos = 0
-                for tNum, tBit in enumerate(text[1:].split(self._narratorBreak), 1):
-                    tLen = len(tBit) + 1
-                    if tNum%2:
-                        self.setFormat(tPos, tLen, self._hStyles["dialog"])
-                    tPos += tLen
-            else:
-                self.setFormat(0, len(text), self._hStyles["dialog"])
+            if self._dialogParser.enabled:
+                for pos, end in self._dialogParser(text):
+                    length = end - pos
+                    self.setFormat(pos, length, self._hStyles["dialog"])
 
         if hRules:
             for rX, hRule in hRules:

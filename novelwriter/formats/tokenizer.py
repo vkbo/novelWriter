@@ -46,7 +46,7 @@ from novelwriter.enum import nwComment, nwItemLayout
 from novelwriter.formats.shared import (
     BlockFmt, BlockTyp, T_Block, T_Formats, T_Note, TextDocumentTheme, TextFmt
 )
-from novelwriter.text.patterns import REGEX_PATTERNS
+from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 
 logger = logging.getLogger(__name__)
 
@@ -199,9 +199,10 @@ class Tokenizer(ABC):
         }
 
         # Dialogue
-        self._rxDialogue: list[tuple[re.Pattern, tuple[int, str], tuple[int, str]]] = []
-        self._dialogLine = ""
-        self._narratorBreak = ""
+        self._hlightDialog = False
+        self._rxAltDialog = REGEX_PATTERNS.altDialogStyle
+        self._dialogParser = DialogParser()
+        self._dialogParser.initParser()
 
         return
 
@@ -335,22 +336,9 @@ class Tokenizer(ABC):
         self._doJustify = state
         return
 
-    def setDialogueHighlight(self, state: bool) -> None:
+    def setDialogHighlight(self, state: bool) -> None:
         """Enable or disable dialogue highlighting."""
-        self._rxDialogue = []
-        if state:
-            if CONFIG.dialogStyle > 0:
-                self._rxDialogue.append((
-                    REGEX_PATTERNS.dialogStyle,
-                    (TextFmt.COL_B, "dialog"), (TextFmt.COL_E, ""),
-                ))
-            if CONFIG.altDialogOpen and CONFIG.altDialogClose:
-                self._rxDialogue.append((
-                    REGEX_PATTERNS.altDialogStyle,
-                    (TextFmt.COL_B, "altdialog"), (TextFmt.COL_E, ""),
-                ))
-            self._dialogLine = CONFIG.dialogLine.strip()[:1]
-            self._narratorBreak = CONFIG.narratorBreak.strip()[:1]
+        self._hlightDialog = state
         return
 
     def setTitleMargins(self, upper: float, lower: float) -> None:
@@ -1132,10 +1120,8 @@ class Tokenizer(ABC):
 
         # Match URLs
         for res in REGEX_PATTERNS.url.finditer(text):
-            s = res.start(0)
-            e = res.end(0)
-            temp.append((s, s, TextFmt.HRF_B, res.group(0)))
-            temp.append((e, e, TextFmt.HRF_E, ""))
+            temp.append((res.start(0), 0, TextFmt.HRF_B, res.group(0)))
+            temp.append((res.end(0), 0, TextFmt.HRF_E, ""))
 
         # Match Shortcodes
         for res in REGEX_PATTERNS.shortcodePlain.finditer(text):
@@ -1156,24 +1142,15 @@ class Tokenizer(ABC):
             ))
 
         # Match Dialogue
-        if self._rxDialogue and hDialog:
-            for regEx, (fmtB, clsB), (fmtE, clsE) in self._rxDialogue:
-                for res in regEx.finditer(text):
-                    temp.append((res.start(0), 0, fmtB, clsB))
-                    temp.append((res.end(0), 0, fmtE, clsE))
-
-        if self._dialogLine and text.startswith(self._dialogLine):
-            if self._narratorBreak:
-                pos = 0
-                for num, bit in enumerate(text[1:].split(self._narratorBreak), 1):
-                    length = len(bit) + 1
-                    if num%2:
-                        temp.append((pos, 0, TextFmt.COL_B, "dialog"))
-                        temp.append((pos + length, 0, TextFmt.COL_E, ""))
-                    pos += length
-            else:
-                temp.append((0, 0, TextFmt.COL_B, "dialog"))
-                temp.append((len(text), 0, TextFmt.COL_E, ""))
+        if self._hlightDialog and hDialog:
+            if self._dialogParser.enabled:
+                for pos, end in self._dialogParser(text):
+                    temp.append((pos, 0, TextFmt.COL_B, "dialog"))
+                    temp.append((end, 0, TextFmt.COL_E, ""))
+            if self._rxAltDialog:
+                for res in self._rxAltDialog.finditer(text):
+                    temp.append((res.start(0), 0, TextFmt.COL_B, "altdialog"))
+                    temp.append((res.end(0), 0, TextFmt.COL_E, ""))
 
         # Post-process text and format
         result = text

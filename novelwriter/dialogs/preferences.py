@@ -583,8 +583,8 @@ class GuiPreferences(NDialog):
         self.narratorBreak.setAlignment(QtAlignCenter)
         self.narratorBreak.setText(CONFIG.narratorBreak)
         self.mainForm.addRow(
-            self.tr("Dialogue narrator break symbol"), self.narratorBreak,
-            self.tr("Symbol to indicate injected narrator break.")
+            self.tr("Alternating dialogue/narration symbol"), self.narratorBreak,
+            self.tr("Alternates dialogue highlighting within a paragraph.")
         )
 
         self.highlightEmph = NSwitch(self)
