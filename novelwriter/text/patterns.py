@@ -182,9 +182,4 @@ class DialogParser:
                 result.append((start, pos))
                 start = None
 
-        # print("-"*80)
-        # print(f"'{text}'")
-        # print(temp)
-        # print(result)
-
         return result
