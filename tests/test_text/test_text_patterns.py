@@ -26,7 +26,7 @@ import pytest
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
-from novelwriter.text.patterns import REGEX_PATTERNS
+from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 
 
 def allMatches(regEx: re.Pattern, text: str) -> list[list[str]]:
@@ -267,6 +267,10 @@ def testTextPatterns_ShortcodesValue():
 @pytest.mark.core
 def testTextPatterns_DialogueStyle():
     """Test the dialogue style pattern regexes."""
+    # Before set, the regex is None
+    CONFIG.dialogStyle = 0
+    assert REGEX_PATTERNS.dialogStyle is None
+
     # Set the config
     CONFIG.fmtSQuoteOpen  = nwUnicode.U_LSQUO
     CONFIG.fmtSQuoteClose = nwUnicode.U_RSQUO
@@ -280,6 +284,7 @@ def testTextPatterns_DialogueStyle():
 
     CONFIG.allowOpenDial = False
     regEx = REGEX_PATTERNS.dialogStyle
+    assert regEx is not None
 
     # Defined single quotes are recognised
     assert allMatches(regEx, "one \u2018two\u2019 three") == [
@@ -305,6 +310,7 @@ def testTextPatterns_DialogueStyle():
 
     CONFIG.allowOpenDial = True
     regEx = REGEX_PATTERNS.dialogStyle
+    assert regEx is not None
 
     # Defined single quotes are recognised also when open
     assert allMatches(regEx, "one \u2018two three") == [
@@ -320,19 +326,19 @@ def testTextPatterns_DialogueStyle():
 @pytest.mark.core
 def testTextPatterns_DialogueSpecial():
     """Test the special dialogue style pattern regexes."""
-    # Set the config
-    CONFIG.fmtSQuoteOpen  = nwUnicode.U_LSQUO
-    CONFIG.fmtSQuoteClose = nwUnicode.U_RSQUO
-    CONFIG.fmtDQuoteOpen  = nwUnicode.U_LDQUO
-    CONFIG.fmtDQuoteClose = nwUnicode.U_RDQUO
+    # Before set, the regex is None
+    CONFIG.altDialogOpen = ""
+    CONFIG.altDialogClose = ""
+    assert REGEX_PATTERNS.altDialogStyle is None
 
-    CONFIG.dialogStyle = 3
+    # Set the config
     CONFIG.altDialogOpen = "::"
     CONFIG.altDialogClose = "::"
 
     # Alternative Dialogue
     # ====================
     regEx = REGEX_PATTERNS.altDialogStyle
+    assert regEx is not None
 
     # With no padding
     assert allMatches(regEx, "one ::two:: three") == [
@@ -342,4 +348,107 @@ def testTextPatterns_DialogueSpecial():
     # With padding
     assert allMatches(regEx, "one :: two :: three") == [
         [(":: two ::", 4, 13)]
+    ]
+
+
+@pytest.mark.core
+def testTextPatterns_DialogParserEnglish():
+    """Test the dialog parser with English settings."""
+    # Set the config
+    CONFIG.dialogStyle = 3
+    CONFIG.fmtSQuoteOpen  = nwUnicode.U_LSQUO
+    CONFIG.fmtSQuoteClose = nwUnicode.U_RSQUO
+    CONFIG.fmtDQuoteOpen  = nwUnicode.U_LDQUO
+    CONFIG.fmtDQuoteClose = nwUnicode.U_RDQUO
+
+    parser = DialogParser()
+    parser.initParser()
+
+    # Positions:   0                 18
+    assert parser("“Simple dialogue.”") == [
+        (0, 18),
+    ]
+
+    # Positions:   0                 18
+    assert parser("“Simple dialogue,” argued John.") == [
+        (0, 18),
+    ]
+
+    # Positions:   0                 18            32                      56
+    assert parser("“Simple dialogue,” argued John, “is not always so easy.”") == [
+        (0, 18), (32, 56),
+    ]
+
+    # With Narrator breaks
+    CONFIG.dialogLine = ""
+    CONFIG.narratorBreak = nwUnicode.U_EMDASH
+    parser.initParser()
+
+    # Positions:   0                 18              34                      58
+    assert parser("“Simple dialogue, — argued John, — is not always so easy.”") == [
+        (0, 18), (34, 58),
+    ]
+
+
+@pytest.mark.core
+def testTextPatterns_DialogParserSpanish():
+    """Test the dialog parser with Spanish settings."""
+    # Set the config
+    CONFIG.dialogStyle = 3
+    CONFIG.fmtSQuoteOpen  = nwUnicode.U_LSAQUO
+    CONFIG.fmtSQuoteClose = nwUnicode.U_RSAQUO
+    CONFIG.fmtDQuoteOpen  = nwUnicode.U_LAQUO
+    CONFIG.fmtDQuoteClose = nwUnicode.U_RAQUO
+    CONFIG.dialogLine = nwUnicode.U_EMDASH + nwUnicode.U_RAQUO
+    CONFIG.narratorBreak = nwUnicode.U_EMDASH
+
+    parser = DialogParser()
+    parser.initParser()
+
+    # Positions:   0                 18                                  54              70
+    assert parser("—No te preocupes. —Cerró la puerta y salió corriendo—. Volveré pronto.") == [
+        (0, 18), (54, 70),
+    ]
+
+    # Positions:   0             14
+    assert parser("«Tengo hambre», pensó Pedro.") == [
+        (0, 14),
+    ]
+
+    # Positions:   0               16
+    assert parser("—Puedes hacerlo —le dije y pensé «pero te costará mucho trabajo».") == [
+        (0, 16),
+    ]
+
+
+@pytest.mark.core
+def testTextPatterns_DialogParserAlternating():
+    """Test the dialog parser with alternating dialogue/narration like
+    for Portuguese and Polish.
+    """
+    # Set the config
+    CONFIG.dialogStyle = 0
+    CONFIG.fmtSQuoteOpen  = nwUnicode.U_LSAQUO
+    CONFIG.fmtSQuoteClose = nwUnicode.U_RSAQUO
+    CONFIG.fmtDQuoteOpen  = nwUnicode.U_LAQUO
+    CONFIG.fmtDQuoteClose = nwUnicode.U_RAQUO
+    CONFIG.dialogLine = ""
+    CONFIG.narratorBreak = nwUnicode.U_EMDASH
+
+    parser = DialogParser()
+    parser.initParser()
+
+    # Positions:   0                    21
+    assert parser("— Está ficando tarde.") == [
+        (0, 21),
+    ]
+
+    # Positions:   0           12
+    assert parser("— Ainda não — ela responde.") == [
+        (0, 12),
+    ]
+
+    # Positions:   0           12              28                   49
+    assert parser("— Tudo bem? — ele pergunta. — Você falou com ele?") == [
+        (0, 12), (28, 49),
     ]

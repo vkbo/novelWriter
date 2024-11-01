@@ -421,6 +421,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     for c in "We can hyphen-ate, make dashes -- and even longer dashes --- if we want. ":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
+    for c in "We can even go on to a ---- hotizontal bar. ":
+        qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     for c in "Ellipsis? Not a problem either ... ":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     for c in "How about three hyphens - -":
@@ -428,7 +430,17 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
-    for c in "- for long dash? It works too.":
+    for c in "- for long dash? It works too. ":
+        qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
+    for c in "Even four hyphens - - -":
+        qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
+    for c in "- for a horizontal works!":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
@@ -447,16 +459,18 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
 
     # Insert spaces before and after quotes
-    docEditor._typPadBefore = "\u201d"
-    docEditor._typPadAfter = "\u201c"
+    CONFIG.fmtPadBefore = "\u201d"
+    CONFIG.fmtPadAfter = "\u201c"
+    docEditor.initEditor()
 
     for c in "Some \"double quoted text with spaces padded\".":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
 
-    docEditor._typPadBefore = ""
-    docEditor._typPadAfter = ""
+    CONFIG.fmtPadBefore = ""
+    CONFIG.fmtPadAfter = ""
+    docEditor.initEditor()
 
     # Dialogue Line
     for c in "-- Hi, I am a character speaking.":
@@ -478,7 +492,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     # ==================
 
     # Insert spaces before colon, but ignore tags
-    docEditor._typPadBefore = ":"
+    CONFIG.fmtPadBefore = ":"
+    docEditor.initEditor()
 
     for c in "@object: NoSpaceAdded":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
@@ -505,7 +520,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
 
-    docEditor._typPadBefore = ""
+    CONFIG.fmtPadBefore = ""
+    docEditor.initEditor()
 
     # Indent and Align
     # ================

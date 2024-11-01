@@ -26,6 +26,7 @@ from __future__ import annotations
 import re
 
 from novelwriter import CONFIG
+from novelwriter.common import compact, uniqueCompact
 from novelwriter.constants import nwRegEx
 
 
@@ -82,26 +83,103 @@ class RegExPatterns:
         return self._rxSCValue
 
     @property
-    def dialogStyle(self) -> re.Pattern:
+    def dialogStyle(self) -> re.Pattern | None:
         """Dialogue detection rule based on user settings."""
-        symO = ""
-        symC = ""
-        if CONFIG.dialogStyle in (1, 3):
-            symO += CONFIG.fmtSQuoteOpen
-            symC += CONFIG.fmtSQuoteClose
-        if CONFIG.dialogStyle in (2, 3):
-            symO += CONFIG.fmtDQuoteOpen
-            symC += CONFIG.fmtDQuoteClose
+        if CONFIG.dialogStyle > 0:
+            symO = ""
+            symC = ""
+            if CONFIG.dialogStyle in (1, 3):
+                symO += CONFIG.fmtSQuoteOpen.strip()[:1]
+                symC += CONFIG.fmtSQuoteClose.strip()[:1]
+            if CONFIG.dialogStyle in (2, 3):
+                symO += CONFIG.fmtDQuoteOpen.strip()[:1]
+                symC += CONFIG.fmtDQuoteClose.strip()[:1]
 
-        rxEnd = "|$" if CONFIG.allowOpenDial else ""
-        return re.compile(f"\\B[{symO}].*?(?:[{symC}]\\B{rxEnd})", re.UNICODE)
+            rxEnd = "|$" if CONFIG.allowOpenDial else ""
+            return re.compile(f"\\B[{symO}].*?(?:[{symC}]\\B{rxEnd})", re.UNICODE)
+        return None
 
     @property
-    def altDialogStyle(self) -> re.Pattern:
+    def altDialogStyle(self) -> re.Pattern | None:
         """Dialogue alternative rule based on user settings."""
-        symO = re.escape(CONFIG.altDialogOpen)
-        symC = re.escape(CONFIG.altDialogClose)
-        return re.compile(f"\\B{symO}.*?{symC}\\B", re.UNICODE)
+        if CONFIG.altDialogOpen and CONFIG.altDialogClose:
+            symO = re.escape(compact(CONFIG.altDialogOpen))
+            symC = re.escape(compact(CONFIG.altDialogClose))
+            return re.compile(f"\\B{symO}.*?{symC}\\B", re.UNICODE)
+        return None
 
 
 REGEX_PATTERNS = RegExPatterns()
+
+
+class DialogParser:
+
+    __slots__ = ("_quotes", "_dialog", "_narrator", "_break", "_enabled")
+
+    def __init__(self) -> None:
+        self._quotes = None
+        self._dialog = ""
+        self._narrator = ""
+        self._break = re.compile("")
+        self._enabled = False
+        return
+
+    @property
+    def enabled(self) -> bool:
+        """Return True if there are any settings to parse."""
+        return self._enabled
+
+    def initParser(self) -> None:
+        """Init parser settings. Must be called when config changes."""
+        punct = re.escape("!?.,:;")
+        self._quotes = REGEX_PATTERNS.dialogStyle
+        self._dialog = uniqueCompact(CONFIG.dialogLine)
+        self._narrator = CONFIG.narratorBreak.strip()[:1]
+        self._break = re.compile(
+            f"({self._narrator}\\s?.*?\\s?(?:{self._narrator}[{punct}]?|$))", re.UNICODE
+        )
+        self._enabled = bool(self._quotes or self._dialog or self._narrator)
+        return
+
+    def __call__(self, text: str) -> list[tuple[int, int]]:
+        """Caller wrapper for dialogue processing."""
+        temp: list[int] = []
+        if text:
+            plain = True
+            if self._dialog and text[0] in self._dialog:
+                plain = False
+                temp.append(0)
+                temp.append(len(text))
+                if self._narrator:
+                    for res in self._break.finditer(text, 1):
+                        temp.append(res.start(0))
+                        temp.append(res.end(0))
+            elif self._quotes:
+                for res in self._quotes.finditer(text):
+                    plain = False
+                    temp.append(res.start(0))
+                    temp.append(res.end(0))
+                    if self._narrator:
+                        for sub in self._break.finditer(text, res.start(0), res.end(0)):
+                            temp.append(sub.start(0))
+                            temp.append(sub.end(0))
+
+            if plain and self._narrator:
+                pos = 0
+                for num, bit in enumerate(text.split(self._narrator)):
+                    length = len(bit) + int(num > 0)
+                    if num%2:
+                        temp.append(pos)
+                        temp.append(pos + length)
+                    pos += length
+
+        start = None
+        result = []
+        for pos in sorted(set(temp)):
+            if start is None:
+                start = pos
+            else:
+                result.append((start, pos))
+                start = None
+
+        return result

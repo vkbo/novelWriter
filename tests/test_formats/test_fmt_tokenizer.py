@@ -1286,7 +1286,7 @@ def testFmtToken_Dialogue(mockGUI):
 
     project = NWProject()
     tokens = BareTokenizer(project)
-    tokens.setDialogueHighlight(True)
+    tokens.setDialogHighlight(True)
     tokens._handle = TMH
     tokens._isNovel = True
 
@@ -1337,7 +1337,10 @@ def testFmtToken_Dialogue(mockGUI):
 
     # Dialogue line
     CONFIG.dialogLine = "\u2013"
-    tokens.setDialogueHighlight(True)
+    tokens = BareTokenizer(project)
+    tokens.setDialogHighlight(True)
+    tokens._handle = TMH
+    tokens._isNovel = True
     tokens._text = "\u2013 Dialogue line without narrator break.\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
@@ -1352,16 +1355,19 @@ def testFmtToken_Dialogue(mockGUI):
 
     # Dialogue line with narrator break
     CONFIG.narratorBreak = "\u2013"
-    tokens.setDialogueHighlight(True)
-    tokens._text = "\u2013 Dialogue with a narrator break, \u2013he said,\u2013 see?\n"
+    tokens = BareTokenizer(project)
+    tokens.setDialogHighlight(True)
+    tokens._handle = TMH
+    tokens._isNovel = True
+    tokens._text = "\u2013 Dialogue with a narrator break, \u2013he said\u2013, see?\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
         BlockTyp.TEXT, "",
-        "\u2013 Dialogue with a narrator break, \u2013he said,\u2013 see?",
+        "\u2013 Dialogue with a narrator break, \u2013he said\u2013, see?",
         [
             (0,  TextFmt.COL_B, "dialog"),
             (34, TextFmt.COL_E, ""),
-            (43, TextFmt.COL_B, "dialog"),
+            (44, TextFmt.COL_B, "dialog"),
             (49, TextFmt.COL_E, ""),
         ],
         BlockFmt.NONE

@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import describeFont, uniqueCompact
+from novelwriter.common import compact, describeFont, uniqueCompact
 from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
@@ -133,7 +133,7 @@ class GuiPreferences(NDialog):
         """Build the settings form."""
         section = 0
         iSz = SHARED.theme.baseIconSize
-        boxFixed = 5*SHARED.theme.textNWidth
+        boxFixed = 6*SHARED.theme.textNWidth
         minWidth = CONFIG.pxInt(200)
         fontWidth = CONFIG.pxInt(162)
 
@@ -568,13 +568,13 @@ class GuiPreferences(NDialog):
         )
 
         self.dialogLine = QLineEdit(self)
-        self.dialogLine.setMaxLength(1)
+        self.dialogLine.setMaxLength(4)
         self.dialogLine.setFixedWidth(boxFixed)
         self.dialogLine.setAlignment(QtAlignCenter)
         self.dialogLine.setText(CONFIG.dialogLine)
         self.mainForm.addRow(
-            self.tr("Dialogue line symbol"), self.dialogLine,
-            self.tr("Lines starting with this symbol are dialogue.")
+            self.tr("Dialogue line symbols"), self.dialogLine,
+            self.tr("Lines starting with these symbols are always dialogue.")
         )
 
         self.narratorBreak = QLineEdit(self)
@@ -583,8 +583,8 @@ class GuiPreferences(NDialog):
         self.narratorBreak.setAlignment(QtAlignCenter)
         self.narratorBreak.setText(CONFIG.narratorBreak)
         self.mainForm.addRow(
-            self.tr("Dialogue narrator break symbol"), self.narratorBreak,
-            self.tr("Symbol to indicate injected narrator break.")
+            self.tr("Alternating dialogue/narration symbol"), self.narratorBreak,
+            self.tr("Alternates dialogue highlighting within a paragraph.")
         )
 
         self.highlightEmph = NSwitch(self)
@@ -953,9 +953,9 @@ class GuiPreferences(NDialog):
         dialogueStyle   = self.dialogStyle.currentData()
         allowOpenDial   = self.allowOpenDial.isChecked()
         narratorBreak   = self.narratorBreak.text().strip()
-        dialogueLine    = self.dialogLine.text().strip()
-        altDialogOpen   = self.altDialogOpen.text()
-        altDialogClose  = self.altDialogClose.text()
+        dialogueLine    = uniqueCompact(self.dialogLine.text())
+        altDialogOpen   = compact(self.altDialogOpen.text())
+        altDialogClose  = compact(self.altDialogClose.text())
         highlightEmph   = self.highlightEmph.isChecked()
         showMultiSpaces = self.showMultiSpaces.isChecked()
 

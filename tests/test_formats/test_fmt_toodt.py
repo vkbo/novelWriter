@@ -263,7 +263,7 @@ def testFmtToOdt_DialogueFormatting(mockGUI):
     """Test formatting of dialogue."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
-    odt.setDialogueHighlight(True)
+    odt.setDialogHighlight(True)
     odt.initDocument()
     oStyle = ODTParagraphStyle("test")
 

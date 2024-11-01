@@ -272,7 +272,7 @@ class NWBuildDocument:
         bldObj.setJustify(self._build.getBool("format.justifyText"))
         bldObj.setLineHeight(self._build.getFloat("format.lineHeight"))
         bldObj.setKeepLineBreaks(self._build.getBool("format.keepBreaks"))
-        bldObj.setDialogueHighlight(self._build.getBool("format.showDialogue"))
+        bldObj.setDialogHighlight(self._build.getBool("format.showDialogue"))
         bldObj.setFirstLineIndent(
             self._build.getBool("format.firstLineIndent"),
             self._build.getFloat("format.firstIndentWidth"),
