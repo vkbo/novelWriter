@@ -247,8 +247,9 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     # Text Highlighting
     prefs.dialogStyle.setCurrentData(3, 0)
     prefs.allowOpenDial.setChecked(False)
-    prefs.narratorBreak.setText("–")
     prefs.dialogLine.setText("–")
+    prefs.narratorBreak.setText("–")
+    prefs.narratorDialog.setText("–")
     prefs.altDialogOpen.setText("<")
     prefs.altDialogClose.setText(">")
     prefs.highlightEmph.setChecked(False)
@@ -256,8 +257,9 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
 
     assert CONFIG.dialogStyle == 2
     assert CONFIG.allowOpenDial is True
-    assert CONFIG.narratorBreak == ""
     assert CONFIG.dialogLine == ""
+    assert CONFIG.narratorBreak == ""
+    assert CONFIG.narratorDialog == ""
     assert CONFIG.altDialogOpen == ""
     assert CONFIG.altDialogClose == ""
     assert CONFIG.highlightEmph is True
@@ -366,8 +368,9 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     # Text Highlighting
     assert CONFIG.dialogStyle == 3
     assert CONFIG.allowOpenDial is False
-    assert CONFIG.narratorBreak == "–"
     assert CONFIG.dialogLine == "–"
+    assert CONFIG.narratorBreak == "–"
+    assert CONFIG.narratorDialog == "–"
     assert CONFIG.altDialogOpen == "<"
     assert CONFIG.altDialogClose == ">"
     assert CONFIG.highlightEmph is False
