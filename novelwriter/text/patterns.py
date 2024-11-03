@@ -140,7 +140,7 @@ class DialogParser:
         self._break = re.compile(
             f"({self._narrator}\\s?.*?)(\\s?(?:{self._narrator}[{punct}]?|$))", re.UNICODE
         )
-        self._enabled = bool(self._quotes or self._dialog or self._narrator)
+        self._enabled = bool(self._quotes or self._dialog or self._narrator or self._alternate)
         return
 
     def __call__(self, text: str) -> list[tuple[int, int]]:
