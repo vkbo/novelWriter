@@ -91,11 +91,11 @@ class RegExPatterns:
             if CONFIG.dialogStyle in (1, 3):
                 qO = CONFIG.fmtSQuoteOpen.strip()[:1]
                 qC = CONFIG.fmtSQuoteClose.strip()[:1]
-                rx.append(f"(\\B{qO}.*?(?:{qC}\\B{end}))")
+                rx.append(f"(?:\\B{qO}.*?(?:{qC}\\B{end}))")
             if CONFIG.dialogStyle in (2, 3):
                 qO = CONFIG.fmtDQuoteOpen.strip()[:1]
                 qC = CONFIG.fmtDQuoteClose.strip()[:1]
-                rx.append(f"(\\B{qO}.*?(?:{qC}\\B{end}))")
+                rx.append(f"(?:\\B{qO}.*?(?:{qC}\\B{end}))")
             return re.compile("|".join(rx), re.UNICODE)
         return None
 

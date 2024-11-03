@@ -296,6 +296,16 @@ def testTextPatterns_DialogueStyle():
         [("\u201ctwo\u201d", 4, 9)]
     ]
 
+    # Both single and double quotes are recognised
+    assert allMatches(regEx, "one \u2018two\u2019 three \u201cfour\u201d five") == [
+        [("\u2018two\u2019", 4, 9)], [("\u201cfour\u201d", 16, 22)]
+    ]
+
+    # But not mixed
+    assert allMatches(regEx, "one \u2018two\u201d three \u201cfour\u2019 five") == [
+        [("\u2018two\u201d three \u201cfour\u2019", 4, 22)]
+    ]
+
     # Straight single quotes are ignored
     assert allMatches(regEx, "one 'two' three") == []
 
@@ -363,6 +373,7 @@ def testTextPatterns_DialogParserEnglish():
 
     parser = DialogParser()
     parser.initParser()
+    assert parser.enabled is True
 
     # Positions:   0                 18
     assert parser("“Simple dialogue.”") == [
@@ -384,9 +395,14 @@ def testTextPatterns_DialogParserEnglish():
     CONFIG.narratorBreak = nwUnicode.U_EMDASH
     parser.initParser()
 
-    # Positions:   0                 18              34                      58
+    # Positions:   0                 18            32                        58
     assert parser("“Simple dialogue, — argued John, — is not always so easy.”") == [
-        (0, 18), (34, 58),
+        (0, 18), (32, 58),
+    ]
+
+    # Positions:   0                 18            32                      56
+    assert parser("“Simple dialogue, —argued John—, is not always so easy.”") == [
+        (0, 18), (32, 56),
     ]
 
 
@@ -422,17 +438,15 @@ def testTextPatterns_DialogParserSpanish():
 
 
 @pytest.mark.core
-def testTextPatterns_DialogParserAlternating():
-    """Test the dialog parser with alternating dialogue/narration like
-    for Portuguese and Polish.
-    """
+def testTextPatterns_DialogParserPortuguese():
+    """Test the dialog parser with Portuguese settings."""
     # Set the config
     CONFIG.dialogStyle = 0
     CONFIG.fmtSQuoteOpen  = nwUnicode.U_LSAQUO
     CONFIG.fmtSQuoteClose = nwUnicode.U_RSAQUO
     CONFIG.fmtDQuoteOpen  = nwUnicode.U_LAQUO
     CONFIG.fmtDQuoteClose = nwUnicode.U_RAQUO
-    CONFIG.dialogLine = ""
+    CONFIG.dialogLine = nwUnicode.U_EMDASH
     CONFIG.narratorBreak = nwUnicode.U_EMDASH
 
     parser = DialogParser()
@@ -448,7 +462,53 @@ def testTextPatterns_DialogParserAlternating():
         (0, 12),
     ]
 
-    # Positions:   0           12              28                   49
+    # Positions:   0           12             27                    49
     assert parser("— Tudo bem? — ele pergunta. — Você falou com ele?") == [
-        (0, 12), (28, 49),
+        (0, 12), (27, 49),
     ]
+
+
+@pytest.mark.core
+def testTextPatterns_DialogParserPolish():
+    """Test the dialog parser with alternating Polish settings."""
+    # Set the config
+    CONFIG.dialogStyle = 0
+    CONFIG.fmtSQuoteOpen  = "'"
+    CONFIG.fmtSQuoteClose = "'"
+    CONFIG.fmtDQuoteOpen  = '"'
+    CONFIG.fmtDQuoteClose = '"'
+    CONFIG.dialogLine = ""
+    CONFIG.narratorBreak = ""
+    CONFIG.narratorDialog = nwUnicode.U_ENDASH
+
+    parser = DialogParser()
+    parser.initParser()
+
+    # This is what an example dialogue might look like using Polish punctuation rules
+    # See discussion #1976
+
+    assert parser(
+        "– Example statement – someone said. And he added: – Another example statement."
+    ) == [
+        (0, 20), (50, 78),
+    ]
+
+    assert parser(
+        "– Oh my! – It would be nice if only the statements were highlighted, without "
+        "any narration. In a paragraph where there is only a short statement and then "
+        "a lot happens, this would be especially justified."
+    ) == [
+        (0, 9),
+    ]
+
+    assert parser(
+        "There are also sometimes paragraphs that start with a narrative, and only then "
+        "someone shouts out the words: – Oooh! Look!"
+    ) == [
+        (109, 122),
+    ]
+
+    assert parser(
+        "And so on and so forth. However, \"text in quotation marks\" should not be "
+        "highlighted at all, and if so, it should be highlighted differently."
+    ) == []
