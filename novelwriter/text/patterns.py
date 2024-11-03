@@ -114,12 +114,13 @@ REGEX_PATTERNS = RegExPatterns()
 
 class DialogParser:
 
-    __slots__ = ("_quotes", "_dialog", "_narrator", "_break", "_enabled")
+    __slots__ = ("_quotes", "_dialog", "_narrator", "_alternate", "_break", "_enabled")
 
     def __init__(self) -> None:
         self._quotes = None
         self._dialog = ""
         self._narrator = ""
+        self._alternate = ""
         self._break = re.compile("")
         self._enabled = False
         return
@@ -135,6 +136,7 @@ class DialogParser:
         self._quotes = REGEX_PATTERNS.dialogStyle
         self._dialog = uniqueCompact(CONFIG.dialogLine)
         self._narrator = CONFIG.narratorBreak.strip()[:1]
+        self._alternate = CONFIG.narratorDialog.strip()[:1]
         self._break = re.compile(
             f"({self._narrator}\\s?.*?)(\\s?(?:{self._narrator}[{punct}]?|$))", re.UNICODE
         )
@@ -145,8 +147,10 @@ class DialogParser:
         """Caller wrapper for dialogue processing."""
         temp: list[int] = []
         if text:
+            plain = True
             if self._dialog and text[0] in self._dialog:
                 # The whole line is dialogue
+                plain = False
                 temp.append(0)
                 temp.append(len(text))
                 if self._narrator:
@@ -160,6 +164,7 @@ class DialogParser:
             elif self._quotes:
                 # The line contains quoted dialogue
                 for res in self._quotes.finditer(text):
+                    plain = False
                     temp.append(res.start(0))
                     temp.append(res.end(0))
                     if self._narrator:
@@ -169,9 +174,10 @@ class DialogParser:
                                 temp.append(res.start(2))
                             else:
                                 temp.append(res.end(0))
-            elif not self._dialog and self._narrator:
+
+            if plain and self._alternate:
                 pos = 0
-                for num, bit in enumerate(text.split(self._narrator)):
+                for num, bit in enumerate(text.split(self._alternate)):
                     length = len(bit) + int(num > 0)
                     if num%2:
                         temp.append(pos)

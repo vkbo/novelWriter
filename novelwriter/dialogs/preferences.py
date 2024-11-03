@@ -583,8 +583,18 @@ class GuiPreferences(NDialog):
         self.narratorBreak.setAlignment(QtAlignCenter)
         self.narratorBreak.setText(CONFIG.narratorBreak)
         self.mainForm.addRow(
-            self.tr("Alternating dialogue/narration symbol"), self.narratorBreak,
-            self.tr("Alternates dialogue highlighting within a paragraph.")
+            self.tr("Dialogue narrator break symbol"), self.narratorBreak,
+            self.tr("Symbol to indicate injected narrator break in dialogue")
+        )
+
+        self.narratorDialog = QLineEdit(self)
+        self.narratorDialog.setMaxLength(1)
+        self.narratorDialog.setFixedWidth(boxFixed)
+        self.narratorDialog.setAlignment(QtAlignCenter)
+        self.narratorDialog.setText(CONFIG.narratorDialog)
+        self.mainForm.addRow(
+            self.tr("Alternating dialogue/narration symbol"), self.narratorDialog,
+            self.tr("Alternates dialogue highlighting within any paragraph.")
         )
 
         self.highlightEmph = NSwitch(self)
@@ -952,8 +962,9 @@ class GuiPreferences(NDialog):
         # Text Highlighting
         dialogueStyle   = self.dialogStyle.currentData()
         allowOpenDial   = self.allowOpenDial.isChecked()
-        narratorBreak   = self.narratorBreak.text().strip()
         dialogueLine    = uniqueCompact(self.dialogLine.text())
+        narratorBreak   = self.narratorBreak.text().strip()
+        narratorDialog  = self.narratorDialog.text().strip()
         altDialogOpen   = compact(self.altDialogOpen.text())
         altDialogClose  = compact(self.altDialogClose.text())
         highlightEmph   = self.highlightEmph.isChecked()
@@ -961,8 +972,9 @@ class GuiPreferences(NDialog):
 
         updateSyntax |= CONFIG.dialogStyle != dialogueStyle
         updateSyntax |= CONFIG.allowOpenDial != allowOpenDial
-        updateSyntax |= CONFIG.narratorBreak != narratorBreak
         updateSyntax |= CONFIG.dialogLine != dialogueLine
+        updateSyntax |= CONFIG.narratorBreak != narratorBreak
+        updateSyntax |= CONFIG.narratorDialog != narratorDialog
         updateSyntax |= CONFIG.altDialogOpen != altDialogOpen
         updateSyntax |= CONFIG.altDialogClose != altDialogClose
         updateSyntax |= CONFIG.highlightEmph != highlightEmph
@@ -970,8 +982,9 @@ class GuiPreferences(NDialog):
 
         CONFIG.dialogStyle     = dialogueStyle
         CONFIG.allowOpenDial   = allowOpenDial
-        CONFIG.narratorBreak   = narratorBreak
         CONFIG.dialogLine      = dialogueLine
+        CONFIG.narratorBreak   = narratorBreak
+        CONFIG.narratorDialog  = narratorDialog
         CONFIG.altDialogOpen   = altDialogOpen
         CONFIG.altDialogClose  = altDialogClose
         CONFIG.highlightEmph   = highlightEmph
