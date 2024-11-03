@@ -136,7 +136,7 @@ class DialogParser:
         self._dialog = uniqueCompact(CONFIG.dialogLine)
         self._narrator = CONFIG.narratorBreak.strip()[:1]
         self._break = re.compile(
-            f"({self._narrator}\\s?.*?\\s?(?:{self._narrator}[{punct}]?|$))", re.UNICODE
+            f"({self._narrator}\\s?.*?)(\\s?(?:{self._narrator}[{punct}]?|$))", re.UNICODE
         )
         self._enabled = bool(self._quotes or self._dialog or self._narrator)
         return
@@ -145,26 +145,31 @@ class DialogParser:
         """Caller wrapper for dialogue processing."""
         temp: list[int] = []
         if text:
-            plain = True
             if self._dialog and text[0] in self._dialog:
-                plain = False
+                # The whole line is dialogue
                 temp.append(0)
                 temp.append(len(text))
                 if self._narrator:
+                    # Process narrator breaks in the dialogue
                     for res in self._break.finditer(text, 1):
                         temp.append(res.start(0))
-                        temp.append(res.end(0))
+                        if (two := res.group(2)) and two[0].isspace():
+                            temp.append(res.start(2))
+                        else:
+                            temp.append(res.end(0))
             elif self._quotes:
+                # The line contains quoted dialogue
                 for res in self._quotes.finditer(text):
-                    plain = False
                     temp.append(res.start(0))
                     temp.append(res.end(0))
                     if self._narrator:
-                        for sub in self._break.finditer(text, res.start(0), res.end(0)):
-                            temp.append(sub.start(0))
-                            temp.append(sub.end(0))
-
-            if plain and self._narrator:
+                        for res in self._break.finditer(text, 1):
+                            temp.append(res.start(0))
+                            if (two := res.group(2)) and two[0].isspace():
+                                temp.append(res.start(2))
+                            else:
+                                temp.append(res.end(0))
+            elif not self._dialog and self._narrator:
                 pos = 0
                 for num, bit in enumerate(text.split(self._narrator)):
                     length = len(bit) + int(num > 0)
