@@ -86,26 +86,26 @@ class RegExPatterns:
     def dialogStyle(self) -> re.Pattern | None:
         """Dialogue detection rule based on user settings."""
         if CONFIG.dialogStyle > 0:
-            symO = ""
-            symC = ""
+            end = "|$" if CONFIG.allowOpenDial else ""
+            rx = []
             if CONFIG.dialogStyle in (1, 3):
-                symO += CONFIG.fmtSQuoteOpen.strip()[:1]
-                symC += CONFIG.fmtSQuoteClose.strip()[:1]
+                qO = CONFIG.fmtSQuoteOpen.strip()[:1]
+                qC = CONFIG.fmtSQuoteClose.strip()[:1]
+                rx.append(f"(\\B{qO}.*?(?:{qC}\\B{end}))")
             if CONFIG.dialogStyle in (2, 3):
-                symO += CONFIG.fmtDQuoteOpen.strip()[:1]
-                symC += CONFIG.fmtDQuoteClose.strip()[:1]
-
-            rxEnd = "|$" if CONFIG.allowOpenDial else ""
-            return re.compile(f"\\B[{symO}].*?(?:[{symC}]\\B{rxEnd})", re.UNICODE)
+                qO = CONFIG.fmtDQuoteOpen.strip()[:1]
+                qC = CONFIG.fmtDQuoteClose.strip()[:1]
+                rx.append(f"(\\B{qO}.*?(?:{qC}\\B{end}))")
+            return re.compile("|".join(rx), re.UNICODE)
         return None
 
     @property
     def altDialogStyle(self) -> re.Pattern | None:
         """Dialogue alternative rule based on user settings."""
         if CONFIG.altDialogOpen and CONFIG.altDialogClose:
-            symO = re.escape(compact(CONFIG.altDialogOpen))
-            symC = re.escape(compact(CONFIG.altDialogClose))
-            return re.compile(f"\\B{symO}.*?{symC}\\B", re.UNICODE)
+            qO = re.escape(compact(CONFIG.altDialogOpen))
+            qC = re.escape(compact(CONFIG.altDialogClose))
+            return re.compile(f"\\B{qO}.*?{qC}\\B", re.UNICODE)
         return None
 
 
