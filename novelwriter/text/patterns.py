@@ -3,7 +3,8 @@ novelWriter – Text Pattern Functions
 ====================================
 
 File History:
-Created: 2024-06-01 [2.5ec1]
+Created: 2024-06-01 [2.5rc1] RegExPatterns
+Created: 2024-11-04 [2.6b1]  DialogParser
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -114,15 +115,20 @@ REGEX_PATTERNS = RegExPatterns()
 
 class DialogParser:
 
-    __slots__ = ("_quotes", "_dialog", "_narrator", "_alternate", "_break", "_enabled")
+    __slots__ = (
+        "_quotes", "_dialog", "_alternate", "_enabled",
+        "_narrator", "_breakD", "_breakQ", "_mode",
+    )
 
     def __init__(self) -> None:
         self._quotes = None
         self._dialog = ""
-        self._narrator = ""
         self._alternate = ""
-        self._break = re.compile("")
         self._enabled = False
+        self._narrator = ""
+        self._breakD = None
+        self._breakQ = None
+        self._mode = ""
         return
 
     @property
@@ -131,21 +137,31 @@ class DialogParser:
         return self._enabled
 
     def initParser(self) -> None:
-        """Init parser settings. Must be called when config changes."""
-        punct = re.escape("!?.,:;")
+        """Init parser settings. This method must also be called when
+        the config changes.
+        """
         self._quotes = REGEX_PATTERNS.dialogStyle
         self._dialog = uniqueCompact(CONFIG.dialogLine)
-        self._narrator = CONFIG.narratorBreak.strip()[:1]
         self._alternate = CONFIG.narratorDialog.strip()[:1]
-        self._break = re.compile(
-            f"({self._narrator}\\s?.*?)(\\s?(?:{self._narrator}[{punct}]?|$))", re.UNICODE
-        )
-        self._enabled = bool(self._quotes or self._dialog or self._narrator or self._alternate)
+
+        # One of the three modes are needed for the class to have
+        # anything to do
+        self._enabled = bool(self._quotes or self._dialog or self._alternate)
+
+        # Build narrator break RegExes
+        if narrator := CONFIG.narratorBreak.strip()[:1]:
+            punct = re.escape(".,:;!?")
+            self._breakD = re.compile(f"{narrator}.*?(?:{narrator}[{punct}]?|$)", re.UNICODE)
+            self._breakQ = re.compile(f"{narrator}.*?(?:{narrator}[{punct}]?)", re.UNICODE)
+            self._narrator = narrator
+            self._mode = f" {narrator}"
+
         return
 
     def __call__(self, text: str) -> list[tuple[int, int]]:
         """Caller wrapper for dialogue processing."""
         temp: list[int] = []
+        result: list[tuple[int, int]] = []
         if text:
             plain = True
             if self._dialog and text[0] in self._dialog:
@@ -153,44 +169,41 @@ class DialogParser:
                 plain = False
                 temp.append(0)
                 temp.append(len(text))
-                if self._narrator:
+                if self._breakD:
                     # Process narrator breaks in the dialogue
-                    for res in self._break.finditer(text, 1):
+                    for res in self._breakD.finditer(text, 1):
                         temp.append(res.start(0))
-                        if (two := res.group(2)) and two[0].isspace():
-                            temp.append(res.start(2))
-                        else:
-                            temp.append(res.end(0))
+                        temp.append(res.end(0))
             elif self._quotes:
-                # The line contains quoted dialogue
+                # Quoted dialogue is enabled, so we look for them
                 for res in self._quotes.finditer(text):
                     plain = False
                     temp.append(res.start(0))
                     temp.append(res.end(0))
-                    if self._narrator:
-                        for res in self._break.finditer(text, 1):
-                            temp.append(res.start(0))
-                            if (two := res.group(2)) and two[0].isspace():
-                                temp.append(res.start(2))
-                            else:
-                                temp.append(res.end(0))
+                    if self._breakQ:
+                        for sub in self._breakQ.finditer(text, res.start(0), res.end(0)):
+                            temp.append(sub.start(0))
+                            temp.append(sub.end(0))
 
             if plain and self._alternate:
+                # The main rules found no dialogue, so we check for
+                # alternating dialogue sections, if enabled
                 pos = 0
                 for num, bit in enumerate(text.split(self._alternate)):
-                    length = len(bit) + int(num > 0)
+                    length = len(bit) + (1 if num > 0 else 0)
                     if num%2:
                         temp.append(pos)
                         temp.append(pos + length)
                     pos += length
 
-        start = None
-        result = []
-        for pos in sorted(set(temp)):
-            if start is None:
-                start = pos
-            else:
-                result.append((start, pos))
+            if temp:
+                # Sort unique edges in increasing order, and add them in pairs
                 start = None
+                for pos in sorted(set(temp)):
+                    if start is None:
+                        start = pos
+                    else:
+                        result.append((start, pos))
+                        start = None
 
         return result

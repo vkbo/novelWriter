@@ -395,14 +395,19 @@ def testTextPatterns_DialogParserEnglish():
     CONFIG.narratorBreak = nwUnicode.U_EMDASH
     parser.initParser()
 
-    # Positions:   0                 18            32                        58
+    # Positions:   0                 18              34                      58
     assert parser("“Simple dialogue, — argued John, — is not always so easy.”") == [
-        (0, 18), (32, 58),
+        (0, 18), (34, 58),
     ]
 
     # Positions:   0                 18            32                      56
     assert parser("“Simple dialogue, —argued John—, is not always so easy.”") == [
         (0, 18), (32, 56),
+    ]
+
+    # Positions:   0                              31
+    assert parser("“Simple dialogue, —argued John”") == [
+        (0, 31),
     ]
 
 
@@ -462,9 +467,14 @@ def testTextPatterns_DialogParserPortuguese():
         (0, 12),
     ]
 
-    # Positions:   0           12             27                    49
+    # Positions:   0           12               29                  49
     assert parser("— Tudo bem? — ele pergunta. — Você falou com ele?") == [
-        (0, 12), (27, 49),
+        (0, 12), (29, 49),
+    ]
+
+    # Positions:   0           12               29                  49
+    assert parser("— Tudo bem? — ele pergunta —. Você falou com ele?") == [
+        (0, 12), (29, 49),
     ]
 
 

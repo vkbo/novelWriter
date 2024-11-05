@@ -493,9 +493,11 @@ class Tokenizer(ABC):
             xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
             self._text = xRep.sub(lambda x: repDict[x.group(0)], self._text)
 
-        # Process the character translation map
-        trDict = {nwUnicode.U_MAPOS: nwUnicode.U_RSQUO}
-        self._text = self._text.translate(str.maketrans(trDict))
+        # Process the translation map for placeholder characters
+        self._text = self._text.translate(str.maketrans({
+            nwUnicode.U_MAPOS: nwUnicode.U_RSQUO,
+            nwUnicode.U_HBAR: nwUnicode.U_EMDASH,
+        }))
 
         return
 
