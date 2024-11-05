@@ -116,6 +116,11 @@ class GuiManuscript(NToolDialog):
         self.tbDel.setStyleSheet(buttonStyle)
         self.tbDel.clicked.connect(self._deleteSelectedBuild)
 
+        self.tbCopy = NIconToolButton(self, iSz, "copy")
+        self.tbCopy.setToolTip(self.tr("Duplicate Selected Build"))
+        self.tbCopy.setStyleSheet(buttonStyle)
+        self.tbCopy.clicked.connect(self._copySelectedBuild)
+
         self.tbEdit = NIconToolButton(self, iSz, "edit")
         self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
         self.tbEdit.setStyleSheet(buttonStyle)
@@ -128,6 +133,7 @@ class GuiManuscript(NToolDialog):
         self.listToolBox.addStretch(1)
         self.listToolBox.addWidget(self.tbAdd)
         self.listToolBox.addWidget(self.tbDel)
+        self.listToolBox.addWidget(self.tbCopy)
         self.listToolBox.addWidget(self.tbEdit)
         self.listToolBox.setSpacing(0)
 
@@ -289,6 +295,17 @@ class GuiManuscript(NToolDialog):
         """Edit the currently selected build settings entry."""
         if build := self._getSelectedBuild():
             self._openSettingsDialog(build)
+        return
+
+    @pyqtSlot()
+    def _copySelectedBuild(self) -> None:
+        """Copy the currently selected build settings entry."""
+        if build := self._getSelectedBuild():
+            new = BuildSettings.duplicate(build)
+            self._builds.setBuild(new)
+            self._updateBuildsList()
+            if item := self._buildMap.get(new.buildID):
+                item.setSelected(True)
         return
 
     @pyqtSlot("QListWidgetItem*", "QListWidgetItem*")
@@ -460,9 +477,8 @@ class GuiManuscript(NToolDialog):
 
     def _updateBuildItem(self, build: BuildSettings) -> None:
         """Update the entry of a specific build item."""
-        bItem = self._buildMap.get(build.buildID, None)
-        if isinstance(bItem, QListWidgetItem):
-            bItem.setText(build.name)
+        if item := self._buildMap.get(build.buildID):
+            item.setText(build.name)
         else:  # Probably a new item
             self._updateBuildsList()
         return

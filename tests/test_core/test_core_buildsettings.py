@@ -465,3 +465,45 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
     ]
     assert another.lastBuild == buildIDOne
     assert another.defaultBuild == buildIDTwo
+
+
+@pytest.mark.core
+def testCoreBuildSettings_Duplicate(monkeypatch, mockGUI, fncPath: Path, mockRnd):
+    """Test duplicating builds."""
+    project = NWProject()
+    buildTestProject(project, fncPath)
+    buildsFile = project.storage.getMetaFile(nwFiles.BUILDS_FILE)
+    assert isinstance(buildsFile, Path)
+
+    # No initial builds in a fresh project
+    builds = BuildCollection(project)
+    assert len(builds) == 0
+    assert not buildsFile.exists()
+    assert builds.lastBuild == ""
+    assert builds.defaultBuild == ""
+
+    # Create a default build
+    buildOne = BuildSettings()
+    buildOne.setName("Test Build")
+    buildOne.setValue("headings.fmtScene", nwHeadFmt.TITLE)
+    buildOne.setValue("headings.fmtAltScene", nwHeadFmt.TITLE)
+    buildOne.setValue("headings.fmtSection", nwHeadFmt.TITLE)
+
+    # Copy it
+    buildTwo = BuildSettings().duplicate(buildOne)
+    assert buildTwo.name == "Test Build 2"
+
+    # Raw data
+    dataOne = buildOne.pack()
+    dataTwo = buildTwo.pack()
+
+    # Name and UUID should be different
+    assert dataOne["name"] != dataTwo["name"]
+    assert dataOne["uuid"] != dataTwo["uuid"]
+
+    # The rest should be equal
+    assert dataOne["path"] == dataTwo["path"]
+    assert dataOne["build"] == dataTwo["build"]
+    assert dataOne["format"] == dataTwo["format"]
+    assert dataOne["settings"] == dataTwo["settings"]
+    assert dataOne["content"] == dataTwo["content"]

@@ -138,6 +138,15 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
     assert build.name == "Test Build"
     assert manus.buildList.count() == 1
 
+    # Copy the build
+    manus._buildMap[build.buildID].setSelected(True)
+    manus._copySelectedBuild()
+    assert manus.buildList.count() == 2
+
+    new = manus._getSelectedBuild()
+    assert new is not None
+    assert new.name == "Test Build 2"
+
     # Close the dialog should also close the child dialogs
     manus.btnClose.click()
     if isinstance(bSettings, GuiBuildSettings):

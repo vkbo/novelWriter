@@ -502,6 +502,15 @@ class BuildSettings:
 
         return
 
+    @classmethod
+    def duplicate(cls, source: BuildSettings) -> BuildSettings:
+        """Make a copy of another build."""
+        cls = BuildSettings()
+        cls.unpack(source.pack())
+        cls._uuid = str(uuid.uuid4())
+        cls._name = f"{source.name} 2"
+        return cls
+
 
 class BuildCollection:
     """Core: Build Collection Class
