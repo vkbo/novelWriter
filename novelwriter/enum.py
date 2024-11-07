@@ -162,21 +162,22 @@ class nwOutline(Enum):
     LEVEL   = 1
     LABEL   = 2
     LINE    = 3
-    CCOUNT  = 4
-    WCOUNT  = 5
-    PCOUNT  = 6
-    POV     = 7
-    FOCUS   = 8
-    CHAR    = 9
-    PLOT    = 10
-    TIME    = 11
-    WORLD   = 12
-    OBJECT  = 13
-    ENTITY  = 14
-    CUSTOM  = 15
-    STORY   = 16
-    MENTION = 17
-    SYNOP   = 18
+    STATUS  = 4
+    CCOUNT  = 5
+    WCOUNT  = 6
+    PCOUNT  = 7
+    POV     = 8
+    FOCUS   = 9
+    CHAR    = 10
+    PLOT    = 11
+    TIME    = 12
+    WORLD   = 13
+    OBJECT  = 14
+    ENTITY  = 15
+    CUSTOM  = 16
+    STORY   = 17
+    MENTION = 18
+    SYNOP   = 19
 
 
 class nwBuildFmt(Enum):

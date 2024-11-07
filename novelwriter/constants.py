@@ -301,6 +301,7 @@ class nwLabels:
         nwOutline.LEVEL:   QT_TRANSLATE_NOOP("Constant", "Level"),
         nwOutline.LABEL:   QT_TRANSLATE_NOOP("Constant", "Document"),
         nwOutline.LINE:    QT_TRANSLATE_NOOP("Constant", "Line"),
+        nwOutline.STATUS:  QT_TRANSLATE_NOOP("Constant", "Status"),
         nwOutline.CCOUNT:  QT_TRANSLATE_NOOP("Constant", "Chars"),
         nwOutline.WCOUNT:  QT_TRANSLATE_NOOP("Constant", "Words"),
         nwOutline.PCOUNT:  QT_TRANSLATE_NOOP("Constant", "Pars"),
