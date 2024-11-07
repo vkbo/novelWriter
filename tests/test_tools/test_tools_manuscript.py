@@ -48,7 +48,7 @@ def testToolManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
     SHARED.project.storage.getDocument(C.hChapterDoc).writeDocument("## A Chapter\n\n\t\tHi")
-    allText = "New Novel\nBy Jane Doe\nA Chapter\n\t\tHi"
+    allText = "New Novel\nBy Jane Doe\n\nNew Page\nA Chapter\n\t\tHi"
 
     nwGUI.mainMenu.aBuildManuscript.activate(QAction.ActionEvent.Trigger)
     qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiManuscript) is not None, timeout=1000)

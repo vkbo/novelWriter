@@ -88,7 +88,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
     build.unpack(BUILD_CONF)
 
     docBuild = NWBuildDocument(project, build)
-    docBuild.setBuildOutline(True)
+    docBuild._outline = True
     docBuild.queueAll()
 
     assert docBuild._outline is True

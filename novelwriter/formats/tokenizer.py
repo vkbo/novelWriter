@@ -166,6 +166,7 @@ class Tokenizer(ABC):
         self._hFormatter = HeadingFormatter(self._project)
         self._noSep      = True   # Flag to indicate that we don't want a scene separator
         self._noIndent   = False  # Flag to disable text indent on next paragraph
+        self._breakNext  = False  # Add a page break on next token
 
         # This File
         self._isNovel = False  # Document is a novel document
@@ -444,6 +445,11 @@ class Tokenizer(ABC):
         self._classes["optional"] = self._theme.optional
         return
 
+    def setBreakNext(self) -> None:
+        """Set a page break for next block."""
+        self._breakNext = True
+        return
+
     def addRootHeading(self, tHandle: str) -> None:
         """Add a heading at the start of a new root folder."""
         self._text = ""
@@ -531,7 +537,6 @@ class Tokenizer(ABC):
         text = REGEX_PATTERNS.lineBreak.sub("\uffff", self._text)
 
         nHead = 0
-        breakNext = False
         rawText = []
         tHandle = self._handle or ""
         tBlocks: list[T_Block] = [B_EMPTY]
@@ -546,11 +551,11 @@ class Tokenizer(ABC):
                     rawText.append("\n")
                 continue
 
-            if breakNext:
-                sAlign = BlockFmt.PBB
-                breakNext = False
+            if self._breakNext:
+                tStyle = BlockFmt.PBB
+                self._breakNext = False
             else:
-                sAlign = BlockFmt.NONE
+                tStyle = BlockFmt.NONE
 
             # Check Line Format
             # =================
@@ -563,12 +568,12 @@ class Tokenizer(ABC):
                 # therefore proceed to check other formats.
 
                 if sLine in ("[newpage]", "[new page]"):
-                    breakNext = True
+                    self._breakNext = True
                     continue
 
                 elif sLine == "[vspace]":
                     tBlocks.append(
-                        (BlockTyp.SKIP, "", "", [], sAlign)
+                        (BlockTyp.SKIP, "", "", [], tStyle)
                     )
                     continue
 
@@ -576,7 +581,7 @@ class Tokenizer(ABC):
                     nSkip = checkInt(sLine[8:-1], 0)
                     if nSkip >= 1:
                         tBlocks.append(
-                            (BlockTyp.SKIP, "", "", [], sAlign)
+                            (BlockTyp.SKIP, "", "", [], tStyle)
                         )
                     if nSkip > 1:
                         tBlocks += (nSkip - 1) * [
@@ -599,14 +604,14 @@ class Tokenizer(ABC):
                 if cStyle == nwComment.PLAIN and not self._doComments:
                     continue
 
-                if doJustify and not sAlign & BlockFmt.ALIGNED:
-                    sAlign |= BlockFmt.JUSTIFY
+                if doJustify and not tStyle & BlockFmt.ALIGNED:
+                    tStyle |= BlockFmt.JUSTIFY
 
                 if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT, nwComment.PLAIN):
                     bStyle = COMMENT_STYLE[cStyle]
                     tLine, tFmt = self._formatComment(bStyle, cKey, cText)
                     tBlocks.append((
-                        BlockTyp.COMMENT, "", tLine, tFmt, sAlign
+                        BlockTyp.COMMENT, "", tLine, tFmt, tStyle
                     ))
                     if keepRaw:
                         rawText.append(f"{aLine}\n")
@@ -627,7 +632,7 @@ class Tokenizer(ABC):
                     tTag, tLine, tFmt = self._formatMeta(aLine)
                     if tLine:
                         tBlocks.append((
-                            BlockTyp.KEYWORD, tTag[1:], tLine, tFmt, sAlign
+                            BlockTyp.KEYWORD, tTag[1:], tLine, tFmt, tStyle
                         ))
                         if keepRaw:
                             rawText.append(f"{aLine}\n")
@@ -646,16 +651,16 @@ class Tokenizer(ABC):
                 nHead += 1
                 tText = aLine[2:].strip()
                 tType = BlockTyp.HEAD1 if isPlain else BlockTyp.TITLE
-                tStyle = BlockFmt.NONE if isPlain else self._titleStyle
                 sHide = self._hidePart if isPlain else False
+                if not (isPlain or isNovel and sHide):
+                    tStyle |= self._titleStyle
                 if isNovel:
                     if sHide:
                         tText = ""
                         tType = BlockTyp.EMPTY
-                        tStyle = BlockFmt.NONE
                     elif isPlain:
                         tText = self._hFormatter.apply(self._fmtPart, tText, nHead)
-                        tStyle = self._partStyle
+                        tStyle |= self._partStyle
                     if isPlain:
                         self._hFormatter.resetScene()
                     else:
@@ -682,7 +687,6 @@ class Tokenizer(ABC):
                 nHead += 1
                 tText = aLine[3:].strip()
                 tType = BlockTyp.HEAD2
-                tStyle = BlockFmt.NONE
                 sHide = self._hideChapter if isPlain else self._hideUnNum
                 tFormat = self._fmtChapter if isPlain else self._fmtUnNum
                 if isNovel:
@@ -693,7 +697,7 @@ class Tokenizer(ABC):
                         tType = BlockTyp.EMPTY
                     else:
                         tText = self._hFormatter.apply(tFormat, tText, nHead)
-                        tStyle = self._chapterStyle
+                        tStyle |= self._chapterStyle
                     self._hFormatter.resetScene()
                     self._noSep = True
 
@@ -719,7 +723,6 @@ class Tokenizer(ABC):
                 nHead += 1
                 tText = aLine[4:].strip()
                 tType = BlockTyp.HEAD3
-                tStyle = BlockFmt.NONE
                 sHide = self._hideScene if isPlain else self._hideHScene
                 tFormat = self._fmtScene if isPlain else self._fmtHScene
                 if isNovel:
@@ -729,13 +732,13 @@ class Tokenizer(ABC):
                         tType = BlockTyp.EMPTY
                     else:
                         tText = self._hFormatter.apply(tFormat, tText, nHead)
-                        tStyle = self._sceneStyle
+                        tStyle |= self._sceneStyle
                         if tText == "":  # Empty Format
                             tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SKIP
                         elif tText == tFormat:  # Static Format
                             tText = "" if self._noSep else tText
                             tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SEP
-                            tStyle = BlockFmt.NONE if self._noSep else BlockFmt.CENTRE
+                            tStyle |= BlockFmt.NONE if self._noSep else BlockFmt.CENTRE
                     self._noSep = False
 
                 tBlocks.append((
@@ -755,7 +758,6 @@ class Tokenizer(ABC):
                 nHead += 1
                 tText = aLine[5:].strip()
                 tType = BlockTyp.HEAD4
-                tStyle = BlockFmt.NONE
                 if isNovel:
                     if self._hideSection:
                         tText = ""
@@ -766,7 +768,7 @@ class Tokenizer(ABC):
                             tType = BlockTyp.SKIP
                         elif tText == self._fmtSection:  # Static Format
                             tType = BlockTyp.SEP
-                            tStyle = BlockFmt.CENTRE
+                            tStyle |= BlockFmt.CENTRE
 
                 tBlocks.append((
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
@@ -803,35 +805,38 @@ class Tokenizer(ABC):
                     bLine = bLine[:-1].rstrip(" ")
 
                 if alnLeft and alnRight:
-                    sAlign |= BlockFmt.CENTRE
+                    tStyle |= BlockFmt.CENTRE
                 elif alnLeft:
-                    sAlign |= BlockFmt.LEFT
+                    tStyle |= BlockFmt.LEFT
                 elif alnRight:
-                    sAlign |= BlockFmt.RIGHT
+                    tStyle |= BlockFmt.RIGHT
 
                 if indLeft:
-                    sAlign |= BlockFmt.IND_L
+                    tStyle |= BlockFmt.IND_L
                 if indRight:
-                    sAlign |= BlockFmt.IND_R
+                    tStyle |= BlockFmt.IND_R
 
                 # Process formats
                 tLine, tFmt = self._extractFormats(bLine, hDialog=isNovel)
                 tBlocks.append((
-                    BlockTyp.TEXT, "", tLine, tFmt, sAlign
+                    BlockTyp.TEXT, "", tLine, tFmt, tStyle
                 ))
                 if keepRaw:
                     rawText.append(f"{aLine}\n")
 
         # If we have content, turn off the first page flag
-        if self._isFirst and len(tBlocks) > 1:
+        if self._isFirst and tBlocks:
             self._isFirst = False  # First document has been processed
 
             # Make sure the blocks array doesn't start with a page break
-            # on the very first page, adding a blank first page.
-            if (cBlock := tBlocks[1])[4] & BlockFmt.PBB:
-                tBlocks[1] = (
-                    cBlock[0], cBlock[1], cBlock[2], cBlock[3], cBlock[4] & ~BlockFmt.PBB
-                )
+            # on the very first block, adding a blank first page.
+            for n, cBlock in enumerate(tBlocks):
+                if cBlock[0] != BlockTyp.EMPTY:
+                    if cBlock[4] & BlockFmt.PBB:
+                        tBlocks[n] = (
+                            cBlock[0], cBlock[1], cBlock[2], cBlock[3], cBlock[4] & ~BlockFmt.PBB
+                        )
+                    break
 
         # Always add an empty line at the end of the file
         tBlocks.append(B_EMPTY)

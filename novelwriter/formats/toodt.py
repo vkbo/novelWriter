@@ -408,30 +408,29 @@ class ToOdt(Tokenizer):
 
             # Styles
             oStyle = ODTParagraphStyle("New")
-            if tStyle is not None:
-                if tStyle & BlockFmt.LEFT:
-                    oStyle.setTextAlign("left")
-                elif tStyle & BlockFmt.RIGHT:
-                    oStyle.setTextAlign("right")
-                elif tStyle & BlockFmt.CENTRE:
-                    oStyle.setTextAlign("center")
-                elif tStyle & BlockFmt.JUSTIFY:
-                    oStyle.setTextAlign("justify")
+            if tStyle & BlockFmt.LEFT:
+                oStyle.setTextAlign("left")
+            elif tStyle & BlockFmt.RIGHT:
+                oStyle.setTextAlign("right")
+            elif tStyle & BlockFmt.CENTRE:
+                oStyle.setTextAlign("center")
+            elif tStyle & BlockFmt.JUSTIFY:
+                oStyle.setTextAlign("justify")
 
-                if tStyle & BlockFmt.PBB:
-                    oStyle.setBreakBefore("page")
-                if tStyle & BlockFmt.PBA:
-                    oStyle.setBreakAfter("page")
+            if tStyle & BlockFmt.PBB:
+                oStyle.setBreakBefore("page")
+            if tStyle & BlockFmt.PBA:
+                oStyle.setBreakAfter("page")
 
-                if tStyle & BlockFmt.Z_BTM:
-                    oStyle.setMarginBottom("0.000cm")
-                if tStyle & BlockFmt.Z_TOP:
-                    oStyle.setMarginTop("0.000cm")
+            if tStyle & BlockFmt.Z_BTM:
+                oStyle.setMarginBottom("0.000cm")
+            if tStyle & BlockFmt.Z_TOP:
+                oStyle.setMarginTop("0.000cm")
 
-                if tStyle & BlockFmt.IND_L:
-                    oStyle.setMarginLeft(self._fBlockIndent)
-                if tStyle & BlockFmt.IND_R:
-                    oStyle.setMarginRight(self._fBlockIndent)
+            if tStyle & BlockFmt.IND_L:
+                oStyle.setMarginLeft(self._fBlockIndent)
+            if tStyle & BlockFmt.IND_R:
+                oStyle.setMarginRight(self._fBlockIndent)
 
             # Process Text Types
             if tType == BlockTyp.TEXT:

@@ -171,7 +171,7 @@ class ToHtml(Tokenizer):
 
             # Styles
             aStyle = []
-            if tStyle is not None and self._cssStyles:
+            if self._cssStyles:
                 if tStyle & BlockFmt.LEFT:
                     aStyle.append("text-align: left;")
                 elif tStyle & BlockFmt.RIGHT:

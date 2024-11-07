@@ -48,6 +48,7 @@ from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
 from novelwriter.extensions.progressbars import NProgressCircle
+from novelwriter.extensions.switch import NSwitch
 from novelwriter.formats.tokenizer import HeadingFormatter
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
@@ -87,6 +88,7 @@ class GuiManuscript(NToolDialog):
         self.setMinimumWidth(CONFIG.pxInt(600))
         self.setMinimumHeight(CONFIG.pxInt(500))
 
+        iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
         wWin = CONFIG.pxInt(900)
         hWin = CONFIG.pxInt(600)
@@ -191,15 +193,31 @@ class GuiManuscript(NToolDialog):
         self.processBox.addWidget(self.btnBuild,   1, 0)
         self.processBox.addWidget(self.btnClose,   1, 1)
 
+        # Preview Options
+        # ===============
+
+        self.swtNewPage = NSwitch(self, height=iPx)
+        self.swtNewPage.setChecked(pOptions.getBool("GuiManuscript", "showNewPage", True))
+        self.swtNewPage.clicked.connect(self._generatePreview)
+
+        self.lblNewPage = QLabel(self.tr("Show Page Breaks"), self)
+        self.lblNewPage.setBuddy(self.swtNewPage)
+
         # Assemble GUI
         # ============
 
         self.docPreview = _PreviewWidget(self)
         self.docStats = _StatsWidget(self)
 
+        self.docBar = QHBoxLayout()
+        self.docBar.addWidget(self.docStats, 1, QtAlignTop)
+        self.docBar.addWidget(self.lblNewPage, 0, QtAlignTop)
+        self.docBar.addWidget(self.swtNewPage, 0, QtAlignTop)
+        self.docBar.setContentsMargins(0, 0, 0, 0)
+
         self.docBox = QVBoxLayout()
         self.docBox.addWidget(self.docPreview, 1)
-        self.docBox.addWidget(self.docStats, 0)
+        self.docBox.addLayout(self.docBar, 0)
         self.docBox.setContentsMargins(0, 0, 0, 0)
 
         self.docWdiget = QWidget(self)
@@ -344,6 +362,7 @@ class GuiManuscript(NToolDialog):
             return
 
         start = time()
+        showNewPage = self.swtNewPage.isChecked()
 
         # Make sure editor content is saved before we start
         SHARED.saveEditor()
@@ -352,7 +371,7 @@ class GuiManuscript(NToolDialog):
         docBuild.queueAll()
 
         self.docPreview.beginNewBuild(len(docBuild))
-        for step, _ in docBuild.iterBuildPreview():
+        for step, _ in docBuild.iterBuildPreview(showNewPage):
             self.docPreview.buildStep(step + 1)
             QApplication.processEvents()
 
@@ -434,6 +453,7 @@ class GuiManuscript(NToolDialog):
         detailsHeight = CONFIG.rpxInt(buildSplit[1])
         detailsWidth = CONFIG.rpxInt(self.buildDetails.getColumnWidth())
         detailsExpanded = self.buildDetails.getExpandedState()
+        showNewPage = self.swtNewPage.isChecked()
 
         logger.debug("Saving State: GuiManuscript")
         pOptions = SHARED.project.options
@@ -445,6 +465,7 @@ class GuiManuscript(NToolDialog):
         pOptions.setValue("GuiManuscript", "detailsHeight", detailsHeight)
         pOptions.setValue("GuiManuscript", "detailsWidth", detailsWidth)
         pOptions.setValue("GuiManuscript", "detailsExpanded", detailsExpanded)
+        pOptions.setValue("GuiManuscript", "showNewPage", showNewPage)
         pOptions.saveSettings()
 
         return
@@ -945,7 +966,7 @@ class _StatsWidget(QWidget):
         self.toggleButton = NIconToggleButton(self, SHARED.theme.baseIconSize, "unfold")
         self.toggleButton.toggled.connect(self._toggleView)
 
-        self._buildStatsPanel()
+        self._buildBottomPanel()
 
         self.mainStack = QStackedWidget(self)
         self.mainStack.addWidget(self.minWidget)
@@ -1010,8 +1031,8 @@ class _StatsWidget(QWidget):
     #  Internal Functions
     ##
 
-    def _buildStatsPanel(self) -> None:
-        """Build the minimal stats page."""
+    def _buildBottomPanel(self) -> None:
+        """Build the bottom page."""
         mPx = CONFIG.pxInt(8)
         hPx = CONFIG.pxInt(12)
         vPx = CONFIG.pxInt(4)

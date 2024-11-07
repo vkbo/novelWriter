@@ -236,32 +236,31 @@ class ToDocX(Tokenizer):
             self._pars.append(par)
 
             # Styles
-            if tStyle is not None:
-                if tStyle & BlockFmt.LEFT:
-                    par.setAlignment("left")
-                elif tStyle & BlockFmt.RIGHT:
-                    par.setAlignment("right")
-                elif tStyle & BlockFmt.CENTRE:
-                    par.setAlignment("center")
-                elif tStyle & BlockFmt.JUSTIFY:
-                    par.setAlignment("both")
+            if tStyle & BlockFmt.LEFT:
+                par.setAlignment("left")
+            elif tStyle & BlockFmt.RIGHT:
+                par.setAlignment("right")
+            elif tStyle & BlockFmt.CENTRE:
+                par.setAlignment("center")
+            elif tStyle & BlockFmt.JUSTIFY:
+                par.setAlignment("both")
 
-                if tStyle & BlockFmt.PBB:
-                    par.setPageBreakBefore(True)
-                if tStyle & BlockFmt.PBA:
-                    par.setPageBreakAfter(True)
+            if tStyle & BlockFmt.PBB:
+                par.setPageBreakBefore(True)
+            if tStyle & BlockFmt.PBA:
+                par.setPageBreakAfter(True)
 
-                if tStyle & BlockFmt.Z_BTM:
-                    par.setMarginBottom(0.0)
-                if tStyle & BlockFmt.Z_TOP:
-                    par.setMarginTop(0.0)
+            if tStyle & BlockFmt.Z_BTM:
+                par.setMarginBottom(0.0)
+            if tStyle & BlockFmt.Z_TOP:
+                par.setMarginTop(0.0)
 
-                if tStyle & BlockFmt.IND_T:
-                    par.setIndentFirst(True)
-                if tStyle & BlockFmt.IND_L:
-                    par.setMarginLeft(bIndent)
-                if tStyle & BlockFmt.IND_R:
-                    par.setMarginRight(bIndent)
+            if tStyle & BlockFmt.IND_T:
+                par.setIndentFirst(True)
+            if tStyle & BlockFmt.IND_L:
+                par.setMarginLeft(bIndent)
+            if tStyle & BlockFmt.IND_R:
+                par.setMarginRight(bIndent)
 
             # Process Text Types
             if tType == BlockTyp.TEXT:

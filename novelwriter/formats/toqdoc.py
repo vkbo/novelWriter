@@ -41,7 +41,7 @@ from novelwriter.formats.tokenizer import HEADINGS, Tokenizer
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
     QtKeepAnchor, QtMoveAnchor, QtPageBreakAfter, QtPageBreakBefore,
-    QtTransparent, QtVAlignNormal, QtVAlignSub, QtVAlignSuper
+    QtPropLineHeight, QtTransparent, QtVAlignNormal, QtVAlignSub, QtVAlignSuper
 )
 
 logger = logging.getLogger(__name__)
@@ -75,6 +75,7 @@ class ToQTextDocument(Tokenizer):
         self._init = False
         self._bold = QFont.Weight.Bold
         self._normal = QFont.Weight.Normal
+        self._newPage = False
 
         self._pageSize = QPageSize(QPageSize.PageSizeId.A4)
         self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
@@ -100,6 +101,11 @@ class ToQTextDocument(Tokenizer):
         """Set the document page size and margins in millimetres."""
         self._pageSize = QPageSize(QSizeF(width, height), QPageSize.Unit.Millimeter)
         self._pageMargins = QMarginsF(left, top, right, bottom)
+        return
+
+    def setShowNewPage(self, state: bool) -> None:
+        """Add markers for page breaks."""
+        self._newPage = state
         return
 
     ##
@@ -149,8 +155,6 @@ class ToQTextDocument(Tokenizer):
         # Text Formats
         # ============
 
-        QtPropLineHeight = QTextBlockFormat.LineHeightTypes.ProportionalHeight
-
         self._blockFmt = QTextBlockFormat()
         self._blockFmt.setTopMargin(self._mText[0])
         self._blockFmt.setBottomMargin(self._mText[1])
@@ -184,32 +188,32 @@ class ToQTextDocument(Tokenizer):
                 bFmt.setTopMargin(self._mSep[0])
                 bFmt.setBottomMargin(self._mSep[1])
 
-            if tStyle is not None:
-                if tStyle & BlockFmt.LEFT:
-                    bFmt.setAlignment(QtAlignLeft)
-                elif tStyle & BlockFmt.RIGHT:
-                    bFmt.setAlignment(QtAlignRight)
-                elif tStyle & BlockFmt.CENTRE:
-                    bFmt.setAlignment(QtAlignCenter)
-                elif tStyle & BlockFmt.JUSTIFY:
-                    bFmt.setAlignment(QtAlignJustify)
+            if tStyle & BlockFmt.LEFT:
+                bFmt.setAlignment(QtAlignLeft)
+            elif tStyle & BlockFmt.RIGHT:
+                bFmt.setAlignment(QtAlignRight)
+            elif tStyle & BlockFmt.CENTRE:
+                bFmt.setAlignment(QtAlignCenter)
+            elif tStyle & BlockFmt.JUSTIFY:
+                bFmt.setAlignment(QtAlignJustify)
 
-                if tStyle & BlockFmt.PBB:
-                    bFmt.setPageBreakPolicy(QtPageBreakBefore)
-                if tStyle & BlockFmt.PBA:
-                    bFmt.setPageBreakPolicy(QtPageBreakAfter)
+            if tStyle & BlockFmt.PBB:
+                self._insertNewPageMarker(cursor)
+                bFmt.setPageBreakPolicy(QtPageBreakBefore)
+            if tStyle & BlockFmt.PBA:
+                bFmt.setPageBreakPolicy(QtPageBreakAfter)
 
-                if tStyle & BlockFmt.Z_BTM:
-                    bFmt.setBottomMargin(0.0)
-                if tStyle & BlockFmt.Z_TOP:
-                    bFmt.setTopMargin(0.0)
+            if tStyle & BlockFmt.Z_BTM:
+                bFmt.setBottomMargin(0.0)
+            if tStyle & BlockFmt.Z_TOP:
+                bFmt.setTopMargin(0.0)
 
-                if tStyle & BlockFmt.IND_L:
-                    bFmt.setLeftMargin(self._mIndent)
-                if tStyle & BlockFmt.IND_R:
-                    bFmt.setRightMargin(self._mIndent)
-                if tStyle & BlockFmt.IND_T:
-                    bFmt.setTextIndent(self._tIndent)
+            if tStyle & BlockFmt.IND_L:
+                bFmt.setLeftMargin(self._mIndent)
+            if tStyle & BlockFmt.IND_R:
+                bFmt.setRightMargin(self._mIndent)
+            if tStyle & BlockFmt.IND_T:
+                bFmt.setTextIndent(self._tIndent)
 
             if tType in (BlockTyp.TEXT, BlockTyp.COMMENT, BlockTyp.KEYWORD):
                 newBlock(cursor, bFmt)
@@ -227,6 +231,9 @@ class ToQTextDocument(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 newBlock(cursor, bFmt)
                 cursor.insertText(nwUnicode.U_NBSP, self._charFmt)
+
+            if tStyle & BlockFmt.PBA:
+                self._insertNewPageMarker(cursor)
 
         self._document.blockSignals(False)
 
@@ -384,6 +391,29 @@ class ToQTextDocument(Tokenizer):
         # Insert whatever is left in the buffer
         cursor.insertText(temp[start:], cFmt)
 
+        return
+
+    def _insertNewPageMarker(self, cursor: QTextCursor) -> None:
+        """Insert a new page marker."""
+        if self._newPage:
+            cursor.insertHtml("<hr width='100%'>")
+
+            hFmt = cursor.blockFormat()
+            hFmt.setBottomMargin(0.0)
+            hFmt.setLineHeight(75.0, QtPropLineHeight)
+            cursor.setBlockFormat(hFmt)
+
+            bFmt = QTextBlockFormat(self._blockFmt)
+            bFmt.setAlignment(QtAlignCenter)
+            bFmt.setTopMargin(0.0)
+            bFmt.setLineHeight(75.0, QtPropLineHeight)
+
+            cFmt = QTextCharFormat(self._charFmt)
+            cFmt.setFontPointSize(0.75*self._textFont.pointSizeF())
+            cFmt.setForeground(self._theme.comment)
+
+            newBlock(cursor, bFmt)
+            cursor.insertText(self._project.localLookup("New Page"), cFmt)
         return
 
     def _genHeadStyle(self, hType: BlockTyp, hKey: str, rFmt: QTextBlockFormat) -> T_TextStyle:
