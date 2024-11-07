@@ -46,6 +46,7 @@ class ToRaw(Tokenizer):
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
         self._keepRaw = True
+        self._noTokens = True
         return
 
     def doConvert(self) -> None:
