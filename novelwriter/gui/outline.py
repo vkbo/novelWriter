@@ -318,6 +318,7 @@ class GuiOutlineTree(QTreeWidget):
         nwOutline.LEVEL:   40,
         nwOutline.LABEL:   150,
         nwOutline.LINE:    40,
+        nwOutline.STATUS:  100,
         nwOutline.CCOUNT:  50,
         nwOutline.WCOUNT:  50,
         nwOutline.PCOUNT:  50,
@@ -340,6 +341,7 @@ class GuiOutlineTree(QTreeWidget):
         nwOutline.LEVEL:   True,
         nwOutline.LABEL:   False,
         nwOutline.LINE:    True,
+        nwOutline.STATUS:  True,
         nwOutline.CCOUNT:  True,
         nwOutline.WCOUNT:  False,
         nwOutline.PCOUNT:  False,
@@ -471,8 +473,10 @@ class GuiOutlineTree(QTreeWidget):
 
         return
 
-    def refreshTree(self, rootHandle: str | None = None,
-                    overRide: bool = False, novelChanged: bool = False) -> None:
+    def refreshTree(
+        self, rootHandle: str | None = None,
+        overRide: bool = False, novelChanged: bool = False
+    ) -> None:
         """Called whenever the Outline tab is activated and controls
         what data to load, and if necessary, force a rebuild of the
         tree.
@@ -659,6 +663,7 @@ class GuiOutlineTree(QTreeWidget):
         is fast and doesn't require a rebuild of the tree.
         """
         logger.debug("Rebuilding Outline tree")
+        tStart = time()
         self.clear()
 
         if self._firstView:
@@ -691,6 +696,7 @@ class GuiOutlineTree(QTreeWidget):
             nwItem = SHARED.project.tree[tHandle]
             if iLevel == 0 or nwItem is None:
                 continue
+            sLabel, sIcon = nwItem.getImportStatus()
 
             item = QTreeWidgetItem()
             hDec = SHARED.theme.getHeaderDecoration(iLevel)
@@ -704,6 +710,8 @@ class GuiOutlineTree(QTreeWidget):
             item.setIcon(self._colIdx[nwOutline.LABEL], self._dIcon[nwItem.mainHeading])
             item.setText(self._colIdx[nwOutline.LABEL], nwItem.itemName)
             item.setText(self._colIdx[nwOutline.LINE], f"{novIdx.line:n}")
+            item.setText(self._colIdx[nwOutline.STATUS], sLabel)
+            item.setIcon(self._colIdx[nwOutline.STATUS], sIcon)
             item.setText(self._colIdx[nwOutline.SYNOP], novIdx.synopsis)
             item.setText(self._colIdx[nwOutline.CCOUNT], f"{novIdx.charCount:n}")
             item.setText(self._colIdx[nwOutline.WCOUNT], f"{novIdx.wordCount:n}")
@@ -728,6 +736,7 @@ class GuiOutlineTree(QTreeWidget):
             self.addTopLevelItem(item)
 
         self._lastBuild = time()
+        logger.debug("Project outline built in %.3f ms", 1000.0*(time() - tStart))
 
         return
 
