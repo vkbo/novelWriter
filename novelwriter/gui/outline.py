@@ -663,6 +663,7 @@ class GuiOutlineTree(QTreeWidget):
         is fast and doesn't require a rebuild of the tree.
         """
         logger.debug("Rebuilding Outline tree")
+        tStart = time()
         self.clear()
 
         if self._firstView:
@@ -735,6 +736,7 @@ class GuiOutlineTree(QTreeWidget):
             self.addTopLevelItem(item)
 
         self._lastBuild = time()
+        logger.debug("Project outline built in %.3f ms", 1000.0*(time() - tStart))
 
         return
 
