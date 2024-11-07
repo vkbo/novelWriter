@@ -467,8 +467,8 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
     assert docFile.read_text(encoding="utf-8") == (
         "#! New Novel\n\n"
         ">> By Jane Doe <<\n\n"
-        "## New Chapter\n\n\n"
-        "### New Scene\n\n\n"
+        "## New Chapter\n\n"
+        "### New Scene\n\n"
     )
     docFile.unlink()
 
@@ -497,8 +497,8 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
     assert docFile.read_text(encoding="utf-8") == (
         "#! New Novel\n\n"
         ">> By Jane Doe <<\n\n"
-        "## New Chapter\n\n\n"
-        "### New Scene\n\n\n"
+        "## New Chapter\n\n"
+        "### New Scene\n\n"
     )
     docFile.unlink()
 
@@ -621,8 +621,8 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert docFile.read_text(encoding="utf-8") == (
         "#! New Novel\n\n"
         ">> By Jane Doe <<\n\n"
-        "## New Chapter\n\n\n"
-        "### New Scene\n\n\n"
+        "## New Chapter\n\n"
+        "### New Scene\n\n"
         "#! Notes: Plot\n\n"
         "# Main Plot\n"
         "**Text**\n\n"

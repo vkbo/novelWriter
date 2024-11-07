@@ -90,9 +90,10 @@ class Tokenizer(ABC):
         self._project = project
 
         # Data Variables
-        self._text    = ""     # The raw text to be tokenized
-        self._handle  = None   # The item handle currently being processed
-        self._keepRaw = False  # Whether to keep the raw text, used by ToRaw
+        self._text     = ""     # The raw text to be tokenized
+        self._handle   = None   # The item handle currently being processed
+        self._keepRaw  = False  # Whether to keep the raw text, used by ToRaw
+        self._noTokens = False  # Disable tokenization if they're not needed
 
         # Blocks and Meta Data (Per Document)
         self._blocks: list[T_Block] = []
@@ -522,22 +523,24 @@ class Tokenizer(ABC):
           4: The internal formatting map of the text, TxtFmt.*
           5: The formats of the block, BlockFmt.*
         """
+        if self._keepRaw:
+            self._raw.append(f"{self._text.rstrip()}\n\n")
+        if self._noTokens:
+            return
+        if self._isNovel:
+            self._hFormatter.setHandle(self._handle)
+
         # Cache Flags
         isNovel = self._isNovel
-        keepRaw = self._keepRaw
         doJustify = self._doJustify
         keepBreaks = self._keepBreaks
         indentFirst = self._indentFirst
         firstIndent = self._firstIndent
 
-        if self._isNovel:
-            self._hFormatter.setHandle(self._handle)
-
         # Replace all instances of [br] with a placeholder character
         text = REGEX_PATTERNS.lineBreak.sub("\uffff", self._text)
 
         nHead = 0
-        rawText = []
         tHandle = self._handle or ""
         tBlocks: list[T_Block] = [B_EMPTY]
         for bLine in text.splitlines():
@@ -547,8 +550,6 @@ class Tokenizer(ABC):
             # Check for blank lines
             if not sLine:
                 tBlocks.append(B_EMPTY)
-                if keepRaw:
-                    rawText.append("\n")
                 continue
 
             if self._breakNext:
@@ -613,14 +614,10 @@ class Tokenizer(ABC):
                     tBlocks.append((
                         BlockTyp.COMMENT, "", tLine, tFmt, tStyle
                     ))
-                    if keepRaw:
-                        rawText.append(f"{aLine}\n")
 
                 elif cStyle == nwComment.FOOTNOTE:
                     tLine, tFmt = self._extractFormats(cText, skip=TextFmt.FNOTE)
                     self._footnotes[f"{tHandle}:{cKey}"] = (tLine, tFmt)
-                    if keepRaw:
-                        rawText.append(f"{aLine}\n")
 
             elif aLine.startswith("@"):
                 # Keywords
@@ -634,8 +631,6 @@ class Tokenizer(ABC):
                         tBlocks.append((
                             BlockTyp.KEYWORD, tTag[1:], tLine, tFmt, tStyle
                         ))
-                        if keepRaw:
-                            rawText.append(f"{aLine}\n")
 
             elif aLine.startswith(("# ", "#! ")):
                 # Title or Partition Headings
@@ -670,8 +665,6 @@ class Tokenizer(ABC):
                 tBlocks.append((
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
                 ))
-                if keepRaw:
-                    rawText.append(f"{aLine}\n")
 
             elif aLine.startswith(("## ", "##! ")):
                 # (Unnumbered) Chapter Headings
@@ -704,8 +697,6 @@ class Tokenizer(ABC):
                 tBlocks.append((
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
                 ))
-                if keepRaw:
-                    rawText.append(f"{aLine}\n")
 
             elif aLine.startswith(("### ", "###! ")):
                 # (Alternative) Scene Headings
@@ -744,8 +735,6 @@ class Tokenizer(ABC):
                 tBlocks.append((
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
                 ))
-                if keepRaw:
-                    rawText.append(f"{aLine}\n")
 
             elif aLine.startswith("#### "):
                 # Section Headings
@@ -773,8 +762,6 @@ class Tokenizer(ABC):
                 tBlocks.append((
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
                 ))
-                if keepRaw:
-                    rawText.append(f"{aLine}\n")
 
             else:
                 # Text Lines
@@ -821,8 +808,6 @@ class Tokenizer(ABC):
                 tBlocks.append((
                     BlockTyp.TEXT, "", tLine, tFmt, tStyle
                 ))
-                if keepRaw:
-                    rawText.append(f"{aLine}\n")
 
         # If we have content, turn off the first page flag
         if self._isFirst and tBlocks:
@@ -840,9 +825,6 @@ class Tokenizer(ABC):
 
         # Always add an empty line at the end of the file
         tBlocks.append(B_EMPTY)
-        if keepRaw:
-            rawText.append("\n")
-            self._raw.append("".join(rawText))
 
         # Second Pass
         # ===========
