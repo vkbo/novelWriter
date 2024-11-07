@@ -810,7 +810,7 @@ class Tokenizer(ABC):
                 ))
 
         # If we have content, turn off the first page flag
-        if self._isFirst and tBlocks:
+        if self._isFirst and len(tBlocks) > 1:
             self._isFirst = False  # First document has been processed
 
             # Make sure the blocks array doesn't start with a page break
