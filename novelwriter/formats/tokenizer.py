@@ -166,7 +166,7 @@ class Tokenizer(ABC):
         self._hFormatter = HeadingFormatter(self._project)
         self._noSep      = True   # Flag to indicate that we don't want a scene separator
         self._noIndent   = False  # Flag to disable text indent on next paragraph
-        self._forcePage  = False  # Force a page break on next token
+        self._breakNext  = False  # Add a page break on next token
 
         # This File
         self._isNovel = False  # Document is a novel document
@@ -447,7 +447,7 @@ class Tokenizer(ABC):
 
     def setBreakNext(self) -> None:
         """Set a page break for next block."""
-        self._forcePage = True
+        self._breakNext = True
         return
 
     def addRootHeading(self, tHandle: str) -> None:
@@ -551,9 +551,9 @@ class Tokenizer(ABC):
                     rawText.append("\n")
                 continue
 
-            if self._forcePage:
+            if self._breakNext:
                 tStyle = BlockFmt.PBB
-                self._forcePage = False
+                self._breakNext = False
             else:
                 tStyle = BlockFmt.NONE
 
@@ -568,7 +568,7 @@ class Tokenizer(ABC):
                 # therefore proceed to check other formats.
 
                 if sLine in ("[newpage]", "[new page]"):
-                    self._forcePage = True
+                    self._breakNext = True
                     continue
 
                 elif sLine == "[vspace]":
