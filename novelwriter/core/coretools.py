@@ -39,7 +39,7 @@ from PyQt5.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import isHandle, minmax, simplified
-from novelwriter.constants import nwConst, nwFiles, nwItemClass
+from novelwriter.constants import nwConst, nwFiles, nwItemClass, nwStats
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.core.storage import NWStorageCreate
@@ -428,7 +428,6 @@ class ProjectBuilder:
 
         lblNewProject = self.tr("New Project")
         lblTitlePage  = self.tr("Title Page")
-        lblByAuthors  = self.tr("By")
 
         # Settings
         project.data.setUuid(None)
@@ -441,14 +440,29 @@ class ProjectBuilder:
         # Add Root Folders
         hNovelRoot = project.newRoot(nwItemClass.NOVEL)
         hTitlePage = project.newFile(lblTitlePage, hNovelRoot)
-        novelTitle = project.data.name
 
-        titlePage = f"#! {novelTitle}\n\n"
-        if project.data.author:
-            titlePage += f">> {lblByAuthors} {project.data.author} <<\n\n"
-
+        # Generate Title Page
         aDoc = project.storage.getDocument(hTitlePage)
-        aDoc.writeDocument(titlePage)
+        aDoc.writeDocument((
+            "{author}[br]\n"
+            "{address} 1[br]\n"
+            "{address} 2 <<\n"
+            "\n"
+            "[vspace:5]\n"
+            "\n"
+            "#! {title}\n"
+            "\n"
+            ">> **{by} {author}** <<\n"
+            "\n"
+            ">> {count}: [field:{field}] <<\n"
+        ).format(
+            author=project.data.author or "None",
+            address=self.tr("Address"),
+            title=project.data.name or "None",
+            by=self.tr("By"),
+            count=self.tr("Word Count"),
+            field=nwStats.WORDS_TEXT,
+        ))
 
         # Create a project structure based on selected root folders
         # and a number of chapters and scenes selected in the

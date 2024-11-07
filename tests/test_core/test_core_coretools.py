@@ -31,10 +31,13 @@ import pytest
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwConst, nwFiles, nwItemClass
+from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.core.coretools import (
     DocDuplicator, DocMerger, DocSearch, DocSplitter, ProjectBuilder
 )
+from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
+from novelwriter.enum import nwBuildFmt
 
 from tests.mocked import causeOSError
 from tests.tools import NWD_IGNORE, XML_IGNORE, C, buildTestProject, cmpFiles
@@ -507,10 +510,6 @@ def testCoreTools_ProjectBuilderA(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     """Create a new project from a project dictionary, with chapters."""
     monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
 
-    projFile = fncPath / "nwProject.nwx"
-    testFile = tstPaths.outDir / "coreTools_ProjectBuilderA_nwProject.nwx"
-    compFile = tstPaths.refDir / "coreTools_ProjectBuilderA_nwProject.nwx"
-
     data = {
         "name": "Test Project A",
         "author": "Jane Doe",
@@ -531,7 +530,26 @@ def testCoreTools_ProjectBuilderA(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     builder = ProjectBuilder()
     assert builder.buildProject(data) is True
 
+    projFile = fncPath / "nwProject.nwx"
+    testFile = tstPaths.outDir / "coreTools_ProjectBuilderA_nwProject.nwx"
+    compFile = tstPaths.refDir / "coreTools_ProjectBuilderA_nwProject.nwx"
+
     copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+
+    # Check Content
+    project = NWProject()
+    project.openProject(fncPath)
+
+    build = BuildSettings()
+
+    docBuild = NWBuildDocument(project, build)
+    docBuild.queueAll()
+
+    testFile = tstPaths.outDir / "coreTools_ProjectBuilderA_Project.md"
+    compFile = tstPaths.refDir / "coreTools_ProjectBuilderA_Project.md"
+
+    assert list(docBuild.iterBuildDocument(testFile, nwBuildFmt.EXT_MD))
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
 
@@ -539,10 +557,6 @@ def testCoreTools_ProjectBuilderA(monkeypatch, fncPath, tstPaths, mockGUI, mockR
 def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     """Create a new project from a project dictionary, without chapters."""
     monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
-
-    projFile = fncPath / "nwProject.nwx"
-    testFile = tstPaths.outDir / "coreTools_ProjectBuilderB_nwProject.nwx"
-    compFile = tstPaths.refDir / "coreTools_ProjectBuilderB_nwProject.nwx"
 
     data = {
         "name": "Test Project B",
@@ -564,7 +578,26 @@ def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     builder = ProjectBuilder()
     assert builder.buildProject(data) is True
 
+    projFile = fncPath / "nwProject.nwx"
+    testFile = tstPaths.outDir / "coreTools_ProjectBuilderB_nwProject.nwx"
+    compFile = tstPaths.refDir / "coreTools_ProjectBuilderB_nwProject.nwx"
+
     copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+
+    # Check Content
+    project = NWProject()
+    project.openProject(fncPath)
+
+    build = BuildSettings()
+
+    docBuild = NWBuildDocument(project, build)
+    docBuild.queueAll()
+
+    testFile = tstPaths.outDir / "coreTools_ProjectBuilderB_Project.md"
+    compFile = tstPaths.refDir / "coreTools_ProjectBuilderB_Project.md"
+
+    assert list(docBuild.iterBuildDocument(testFile, nwBuildFmt.EXT_MD))
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
 
