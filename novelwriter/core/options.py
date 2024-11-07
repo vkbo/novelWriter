@@ -60,7 +60,7 @@ VALID_MAP: dict[str, set[str]] = {
     },
     "GuiManuscript": {
         "winWidth", "winHeight", "optsWidth", "viewWidth", "listHeight",
-        "detailsHeight", "detailsWidth", "detailsExpanded",
+        "detailsHeight", "detailsWidth", "detailsExpanded", "showNewPage",
     },
     "GuiManuscriptBuild": {
         "winWidth", "winHeight", "fmtWidth", "sumWidth",

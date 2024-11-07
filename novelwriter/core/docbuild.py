@@ -88,15 +88,6 @@ class NWBuildDocument:
         return self._cache
 
     ##
-    #  Setters
-    ##
-
-    def setBuildOutline(self, state: bool) -> None:
-        """Turn on/off outline for builds."""
-        self._outline = state
-        return
-
-    ##
     #  Special Methods
     ##
 
@@ -122,11 +113,12 @@ class NWBuildDocument:
                 self._queue.append(item.itemHandle)
         return
 
-    def iterBuildPreview(self) -> Iterable[tuple[int, bool]]:
+    def iterBuildPreview(self, newPage: bool) -> Iterable[tuple[int, bool]]:
         """Build a preview QTextDocument."""
         makeObj = ToQTextDocument(self._project)
         filtered = self._setupBuild(makeObj)
         makeObj.initDocument()
+        makeObj.setShowNewPage(newPage)
         self._outline = True
         yield from self._iterBuild(makeObj, filtered)
         makeObj.closeDocument()
@@ -352,14 +344,17 @@ class NWBuildDocument:
         tItem = self._project.tree[tHandle]
         if isinstance(tItem, NWItem):
             try:
-                if tItem.isRootType() and not tItem.isNovelLike():
-                    bldObj.addRootHeading(tHandle)
-                    if convert:
-                        bldObj.doConvert()
-                    if self._count:
-                        bldObj.countStats()
-                    if self._outline:
-                        bldObj.buildOutline()
+                if tItem.isRootType():
+                    if tItem.isNovelLike():
+                        bldObj.setBreakNext()
+                    else:
+                        bldObj.addRootHeading(tHandle)
+                        if convert:
+                            bldObj.doConvert()
+                        if self._count:
+                            bldObj.countStats()
+                        if self._outline:
+                            bldObj.buildOutline()
                 elif tItem.isFileType():
                     bldObj.setText(tHandle)
                     bldObj.doPreProcessing()
@@ -370,8 +365,6 @@ class NWBuildDocument:
                         bldObj.buildOutline()
                     if convert:
                         bldObj.doConvert()
-                else:
-                    logger.info(f"Build: Skipping '{tHandle}'")
 
             except Exception:
                 self._error = f"Build: Failed to build '{tHandle}'"
