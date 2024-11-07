@@ -473,8 +473,10 @@ class GuiOutlineTree(QTreeWidget):
 
         return
 
-    def refreshTree(self, rootHandle: str | None = None,
-                    overRide: bool = False, novelChanged: bool = False) -> None:
+    def refreshTree(
+        self, rootHandle: str | None = None,
+        overRide: bool = False, novelChanged: bool = False
+    ) -> None:
         """Called whenever the Outline tab is activated and controls
         what data to load, and if necessary, force a rebuild of the
         tree.
