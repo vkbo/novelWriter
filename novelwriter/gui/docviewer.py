@@ -58,12 +58,13 @@ logger = logging.getLogger(__name__)
 
 class GuiDocViewer(QTextBrowser):
 
+    closeDocumentRequest = pyqtSignal()
     documentLoaded = pyqtSignal(str)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
-    closeDocumentRequest = pyqtSignal()
+    openDocumentRequest = pyqtSignal(str, Enum, str, bool)
     reloadDocumentRequest = pyqtSignal()
-    togglePanelVisibility = pyqtSignal()
     requestProjectItemSelected = pyqtSignal(str, bool)
+    togglePanelVisibility = pyqtSignal()
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -640,6 +641,11 @@ class GuiDocViewHeader(QWidget):
         self.forwardButton.setToolTip(self.tr("Go Forward"))
         self.forwardButton.clicked.connect(self.docViewer.navForward)
 
+        self.editButton = NIconToolButton(self, iSz)
+        self.editButton.setVisible(False)
+        self.editButton.setToolTip(self.tr("Open in Editor"))
+        self.editButton.clicked.connect(self._editDocument)
+
         self.refreshButton = NIconToolButton(self, iSz)
         self.refreshButton.setVisible(False)
         self.refreshButton.setToolTip(self.tr("Reload"))
@@ -658,7 +664,7 @@ class GuiDocViewHeader(QWidget):
         self.outerBox.addSpacing(mPx)
         self.outerBox.addWidget(self.itemTitle, 1)
         self.outerBox.addSpacing(mPx)
-        self.outerBox.addSpacing(iPx)
+        self.outerBox.addWidget(self.editButton, 0)
         self.outerBox.addWidget(self.refreshButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
         self.outerBox.setSpacing(0)
@@ -692,8 +698,9 @@ class GuiDocViewHeader(QWidget):
         self.outlineButton.setVisible(False)
         self.backButton.setVisible(False)
         self.forwardButton.setVisible(False)
-        self.closeButton.setVisible(False)
+        self.editButton.setVisible(False)
         self.refreshButton.setVisible(False)
+        self.closeButton.setVisible(False)
         return
 
     def setOutline(self, data: dict[str, tuple[str, int]]) -> None:
@@ -727,6 +734,7 @@ class GuiDocViewHeader(QWidget):
         self.outlineButton.setThemeIcon("list")
         self.backButton.setThemeIcon("backward")
         self.forwardButton.setThemeIcon("forward")
+        self.editButton.setThemeIcon("edit")
         self.refreshButton.setThemeIcon("refresh")
         self.closeButton.setThemeIcon("close")
 
@@ -734,6 +742,7 @@ class GuiDocViewHeader(QWidget):
         self.outlineButton.setStyleSheet(buttonStyle)
         self.backButton.setStyleSheet(buttonStyle)
         self.forwardButton.setStyleSheet(buttonStyle)
+        self.editButton.setStyleSheet(buttonStyle)
         self.refreshButton.setStyleSheet(buttonStyle)
         self.closeButton.setStyleSheet(buttonStyle)
 
@@ -776,8 +785,9 @@ class GuiDocViewHeader(QWidget):
         self.backButton.setVisible(True)
         self.forwardButton.setVisible(True)
         self.outlineButton.setVisible(True)
-        self.closeButton.setVisible(True)
+        self.editButton.setVisible(True)
         self.refreshButton.setVisible(True)
+        self.closeButton.setVisible(True)
 
         return
 
@@ -802,6 +812,13 @@ class GuiDocViewHeader(QWidget):
     def _refreshDocument(self) -> None:
         """Reload the content of the document."""
         self.docViewer.reloadDocumentRequest.emit()
+        return
+
+    @pyqtSlot()
+    def _editDocument(self) -> None:
+        """Open the document in the editor."""
+        if tHandle := self._docHandle:
+            self.docViewer.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "", True)
         return
 
     ##

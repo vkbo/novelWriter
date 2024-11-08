@@ -141,8 +141,10 @@ class GuiOutlineView(QWidget):
 
     def closeProjectTasks(self) -> None:
         """Run closing project tasks."""
+        if self.outlineTree.wasRendered:
+            # If the panel hasn't been drawn yet, those values are incorrect
+            self.outlineData.saveGuiSettings()
         self.outlineTree.closeProjectTasks()
-        self.outlineData.saveGuiSettings()
         self.outlineData.updateClasses()
         self.clearOutline()
         return
@@ -433,6 +435,11 @@ class GuiOutlineTree(QTreeWidget):
     @property
     def hiddenColumns(self) -> dict[nwOutline, bool]:
         return self._colHidden
+
+    @property
+    def wasRendered(self) -> bool:
+        """Returns True after the Outline has been rendered once."""
+        return not self._firstView
 
     ##
     #  Methods
@@ -947,11 +954,12 @@ class GuiOutlineDetails(QScrollArea):
 
     def loadGuiSettings(self) -> None:
         """Run open project tasks."""
-        half = self.width() // 2
+        parent = self.outlineView.parent()  # This widget is rendered already
+        width = parent.width() if isinstance(parent, QWidget) else 1000
         pOptions = SHARED.project.options
         self.mainSplit.setSizes([
-            CONFIG.pxInt(pOptions.getInt("GuiOutlineDetails", "detailsWidth", half)),
-            CONFIG.pxInt(pOptions.getInt("GuiOutlineDetails", "tagsWidth", half))
+            CONFIG.pxInt(pOptions.getInt("GuiOutlineDetails", "detailsWidth", width//3)),
+            CONFIG.pxInt(pOptions.getInt("GuiOutlineDetails", "tagsWidth", 2*width//3))
         ])
         return
 
