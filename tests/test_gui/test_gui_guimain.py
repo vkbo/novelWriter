@@ -100,6 +100,13 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     assert nwGUI.openProject(projPath) is True
     nwGUI.closeProject()
 
+    # Check that closes can be blocked
+    with monkeypatch.context() as mp:
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        assert nwGUI.openProject(projPath) is True
+        assert nwGUI.closeMain() is False
+    nwGUI.closeProject()
+
     # Check that latest release info updated
     assert CONFIG.lastNotes != "0x0"
 

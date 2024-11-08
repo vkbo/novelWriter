@@ -85,6 +85,7 @@ def testBaseInit_Options(monkeypatch, fncPath):
 
     # Defaults w/None Args
     nwGUI = main()
+    assert nwGUI is not None
     assert logger.getEffectiveLevel() == logging.WARNING
     assert nwGUI.closeMain() == "closeMain"
 
@@ -92,6 +93,7 @@ def testBaseInit_Options(monkeypatch, fncPath):
     nwGUI = main(
         ["--testmode", f"--config={fncPath}", f"--data={fncPath}", "--style=Fusion"]
     )
+    assert nwGUI is not None
     assert logger.getEffectiveLevel() == logging.WARNING
     assert nwGUI.closeMain() == "closeMain"
 
@@ -99,12 +101,14 @@ def testBaseInit_Options(monkeypatch, fncPath):
     nwGUI = main(
         ["--testmode", "--info", f"--config={fncPath}", f"--data={fncPath}"]
     )
+    assert nwGUI is not None
     assert logger.getEffectiveLevel() == logging.INFO
     assert nwGUI.closeMain() == "closeMain"
 
     nwGUI = main(
         ["--testmode", "--debug", f"--config={fncPath}", f"--data={fncPath}"]
     )
+    assert nwGUI is not None
     assert logger.getEffectiveLevel() == logging.DEBUG
     assert nwGUI.closeMain() == "closeMain"
 
@@ -113,6 +117,7 @@ def testBaseInit_Options(monkeypatch, fncPath):
         nwGUI = main(
             ["--testmode", "--help", f"--config={fncPath}", f"--data={fncPath}"]
         )
+    assert nwGUI is not None
     assert nwGUI.closeMain() == "closeMain"
     assert ex.value.code == 0
 
@@ -120,6 +125,7 @@ def testBaseInit_Options(monkeypatch, fncPath):
         nwGUI = main(
             ["--testmode", "--version", f"--config={fncPath}", f"--data={fncPath}"]
         )
+    assert nwGUI is not None
     assert nwGUI.closeMain() == "closeMain"
     assert ex.value.code == 0
 
@@ -128,6 +134,7 @@ def testBaseInit_Options(monkeypatch, fncPath):
         nwGUI = main(
             ["--testmode", "--invalid", f"--config={fncPath}", f"--data={fncPath}"]
         )
+    assert nwGUI is not None
     assert nwGUI.closeMain() == "closeMain"
     assert ex.value.code == 2
 
@@ -135,6 +142,7 @@ def testBaseInit_Options(monkeypatch, fncPath):
     nwGUI = main(
         ["--testmode", f"--config={fncPath}", f"--data={fncPath}", "sample/"]
     )
+    assert nwGUI is not None
     assert nwGUI.closeMain() == "closeMain"
 
 

@@ -845,33 +845,33 @@ class GuiMain(QMainWindow):
 
     def closeMain(self) -> bool:
         """Save everything, and close novelWriter."""
-        if SHARED.hasProject and SHARED.question("%s<br>%s" % (
+        if SHARED.hasProject and not SHARED.question("%s<br>%s" % (
             self.tr("Do you want to exit novelWriter?"),
             self.tr("Changes are saved automatically.")
         )):
-            logger.info("Exiting novelWriter")
+            return False
 
-            if not SHARED.focusMode:
-                CONFIG.setMainPanePos(self.splitMain.sizes())
-                CONFIG.setOutlinePanePos(self.outlineView.splitSizes())
-                if self.docViewerPanel.isVisible():
-                    CONFIG.setViewPanePos(self.splitView.sizes())
+        logger.info("Exiting novelWriter")
 
-            CONFIG.showViewerPanel = self.docViewerPanel.isVisible()
-            wFull = Qt.WindowState.WindowFullScreen
-            if self.windowState() & wFull != wFull:
-                # Ignore window size if in full screen mode
-                CONFIG.setMainWinSize(self.width(), self.height())
+        if not SHARED.focusMode:
+            CONFIG.setMainPanePos(self.splitMain.sizes())
+            CONFIG.setOutlinePanePos(self.outlineView.splitSizes())
+            if self.docViewerPanel.isVisible():
+                CONFIG.setViewPanePos(self.splitView.sizes())
 
-            if SHARED.hasProject:
-                self.closeProject(True)
-            CONFIG.saveConfig()
+        CONFIG.showViewerPanel = self.docViewerPanel.isVisible()
+        wFull = Qt.WindowState.WindowFullScreen
+        if self.windowState() & wFull != wFull:
+            # Ignore window size if in full screen mode
+            CONFIG.setMainWinSize(self.width(), self.height())
 
-            QApplication.quit()
+        if SHARED.hasProject:
+            self.closeProject(True)
+        CONFIG.saveConfig()
 
-            return True
+        QApplication.quit()
 
-        return False
+        return True
 
     def closeViewerPanel(self, byUser: bool = True) -> bool:
         """Close the document view panel."""
