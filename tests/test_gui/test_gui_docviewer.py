@@ -31,7 +31,6 @@ from PyQt5.QtWidgets import QAction, QApplication, QMenu
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction
 from novelwriter.formats.toqdoc import ToQTextDocument
-from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.types import QtModNone, QtMouseLeft
 
 from tests.mocked import causeException
@@ -42,7 +41,8 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     """Test the document viewer."""
     # Open project
     assert nwGUI.openProject(prjLipsum)
-    docViewer: GuiDocViewer = nwGUI.docViewer
+    docEditor = nwGUI.docEditor
+    docViewer = nwGUI.docViewer
 
     # Select a document in the project tree
     nwGUI.projView.setSelectedHandle("88243afbe5ed8")
@@ -73,6 +73,12 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     docViewer.setPlainText("Oops, all gone!")
     docViewer.docHeader._refreshDocument()
     assert docViewer.toPlainText() == origText
+
+    # Open in editor
+    nwGUI.closeDocument()
+    assert docEditor.docHandle is None
+    docViewer.docHeader._editDocument()
+    assert docEditor.docHandle == docViewer.docHandle
 
     # Select word
     cursor = docViewer.textCursor()

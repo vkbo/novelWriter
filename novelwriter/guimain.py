@@ -270,6 +270,7 @@ class GuiMain(QMainWindow):
         self.docViewer.closeDocumentRequest.connect(self.closeDocViewer)
         self.docViewer.documentLoaded.connect(self.docViewerPanel.updateHandle)
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
+        self.docViewer.openDocumentRequest.connect(self._openDocument)
         self.docViewer.reloadDocumentRequest.connect(self._reloadViewer)
         self.docViewer.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
         self.docViewer.togglePanelVisibility.connect(self._toggleViewerPanelVisibility)
