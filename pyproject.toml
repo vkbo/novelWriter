@@ -65,3 +65,9 @@ exclude = ["docs/*"]
 [tool.autopep8]
 max_line_length = 99
 ignore = ["E133", "E221", "E226", "E228", "E241", "W503"]
+
+[tool.coverage.run]
+branch = false
+
+[tool.coverage.report]
+precision = 2
