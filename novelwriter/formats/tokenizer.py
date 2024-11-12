@@ -490,22 +490,14 @@ class Tokenizer(ABC):
         return
 
     def doPreProcessing(self) -> None:
-        """Run trough the various replace dictionaries."""
+        """Run pre-processing jobs before the text is tokenized."""
         # Process the user's auto-replace dictionary
-        autoReplace = self._project.data.autoReplace
-        if len(autoReplace) > 0:
+        if autoReplace := self._project.data.autoReplace:
             repDict = {}
             for aKey, aVal in autoReplace.items():
                 repDict[f"<{aKey}>"] = aVal
             xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
             self._text = xRep.sub(lambda x: repDict[x.group(0)], self._text)
-
-        # Process the translation map for placeholder characters
-        self._text = self._text.translate(str.maketrans({
-            nwUnicode.U_MAPOS: nwUnicode.U_RSQUO,
-            nwUnicode.U_HBAR: nwUnicode.U_EMDASH,
-        }))
-
         return
 
     def tokenizeText(self) -> None:
@@ -538,13 +530,25 @@ class Tokenizer(ABC):
         firstIndent = self._firstIndent
 
         # Replace all instances of [br] with a placeholder character
-        text = REGEX_PATTERNS.lineBreak.sub("\uffff", self._text)
+        text = REGEX_PATTERNS.lineBreak.sub(nwUnicode.U_NAC2, self._text)
+
+        # Translation Maps
+        transMapA = str.maketrans({
+            nwUnicode.U_NAC2:  "",  # Used when [br] is ignored
+            nwUnicode.U_MAPOS: nwUnicode.U_RSQUO,
+            nwUnicode.U_HBAR:  nwUnicode.U_EMDASH,
+        })
+        transMapB = str.maketrans({
+            nwUnicode.U_NAC2:  "\n",  # Used when [br] is not ignored
+            nwUnicode.U_MAPOS: nwUnicode.U_RSQUO,
+            nwUnicode.U_HBAR:  nwUnicode.U_EMDASH,
+        })
 
         nHead = 0
         tHandle = self._handle or ""
         tBlocks: list[T_Block] = [B_EMPTY]
         for bLine in text.splitlines():
-            aLine = bLine.replace("\uffff", "")  # Remove placeholder characters
+            aLine = bLine.translate(transMapA)
             sLine = aLine.strip().lower()
 
             # Check for blank lines
@@ -884,7 +888,7 @@ class Tokenizer(ABC):
                         if doJustify and not cStyle & BlockFmt.ALIGNED:
                             cStyle |= BlockFmt.JUSTIFY
 
-                        pTxt = pLines[0][2].replace("\uffff", "\n")
+                        pTxt = pLines[0][2].translate(transMapB)
                         sBlocks.append((
                             BlockTyp.TEXT, pLines[0][1], pTxt, pLines[0][3], cStyle
                         ))
@@ -901,7 +905,7 @@ class Tokenizer(ABC):
                             tFmt.extend((p+tLen, fmt, key) for p, fmt, key in aBlock[3])
                             cStyle |= aBlock[4]
 
-                        pTxt = tTxt[:-1].replace("\uffff", "\n")
+                        pTxt = tTxt[:-1].translate(transMapB)
                         sBlocks.append((
                             BlockTyp.TEXT, pLines[0][1], pTxt, tFmt, cStyle
                         ))
