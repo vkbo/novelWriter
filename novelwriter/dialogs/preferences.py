@@ -574,7 +574,7 @@ class GuiPreferences(NDialog):
         self.dialogLine.setText(CONFIG.dialogLine)
         self.mainForm.addRow(
             self.tr("Dialogue line symbols"), self.dialogLine,
-            self.tr("Lines starting with these symbols are always dialogue.")
+            self.tr("Lines starting with any of these symbols are dialogue.")
         )
 
         self.narratorBreak = QLineEdit(self)
@@ -583,8 +583,8 @@ class GuiPreferences(NDialog):
         self.narratorBreak.setAlignment(QtAlignCenter)
         self.narratorBreak.setText(CONFIG.narratorBreak)
         self.mainForm.addRow(
-            self.tr("Dialogue narrator break symbol"), self.narratorBreak,
-            self.tr("Symbol to indicate injected narrator break in dialogue")
+            self.tr("Narrator break symbol"), self.narratorBreak,
+            self.tr("Symbol to indicate a narrator break in dialogue")
         )
 
         self.narratorDialog = QLineEdit(self)
