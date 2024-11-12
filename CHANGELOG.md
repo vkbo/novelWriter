@@ -45,7 +45,7 @@ careful when using this version on live writing projects, and make sure you take
   layout as in Preferences. The heading and filtering pages are still separate forms, as they are
   of a more complex nature. PR #2031.
 * The currently open document in the editor is now highlighted in the project tree, just like it is
-  in the novel view. Issue 1981. PR #2077.
+  in the novel view. Issue #1981. PR #2077.
 * The details panel in the Outline view is now resizable. PR #2078.
 
 **Improvements**
@@ -57,7 +57,7 @@ careful when using this version on live writing projects, and make sure you take
 
 **Code Improvements**
 
-* Added Python 3.13 coverage to ensure the new Python release is supported. PRs #2044 and #2044.
+* Added Python 3.13 coverage to ensure the new Python release is supported. Issue #2040. PR #2044.
 * Preparation for Qt6: Clean up Qt enums. PR #2025.
 * Preparation for Qt6: Replace Qt regular expression tools with the internal Python re module for
   markup processing and syntax highlighting. It is both slightly faster, and there are issues with
