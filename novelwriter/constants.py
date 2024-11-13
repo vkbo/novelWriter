@@ -542,6 +542,11 @@ class nwUnicode:
     U_LTRI   = "\u25c0"  # Left-pointing triangle
     U_LTRIS  = "\u25c2"  # Left-pointing triangle, small
 
+    # Special
+    U_UNKN   = "\ufffd"  # Unknown character
+    U_NAC1   = "\ufffe"  # Not a character
+    U_NAC2   = "\uffff"  # Not a character
+
     # HTML Equivalents
     # ================
 
