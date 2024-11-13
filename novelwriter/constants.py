@@ -105,6 +105,9 @@ class nwStyles:
     H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
     H_SIZES = {0: 2.50, 1: 2.00, 2: 1.75, 3: 1.50, 4: 1.25}
 
+    T_NORMAL = 1.0
+    T_SMALL  = 0.8
+
     T_LABEL = {
         "H0": QT_TRANSLATE_NOOP("Constant", "Title"),
         "H1": QT_TRANSLATE_NOOP("Constant", "Heading 1 (Partition)"),
