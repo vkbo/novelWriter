@@ -339,26 +339,25 @@ class ToHtml(Tokenizer):
         if not self._cssStyles:
             return []
 
-        mScale = self._lineHeight/1.15
         tColor = self._theme.text.name(QtHexRgb)
         hColor = self._theme.head.name(QtHexRgb) if self._colorHeads else tColor
         lColor = self._theme.head.name(QtHexRgb)
         mColor = self._theme.highlight.name(QtHexRgb)
 
-        mtH0 = mScale * self._marginTitle[0]
-        mbH0 = mScale * self._marginTitle[1]
-        mtH1 = mScale * self._marginHead1[0]
-        mbH1 = mScale * self._marginHead1[1]
-        mtH2 = mScale * self._marginHead2[0]
-        mbH2 = mScale * self._marginHead2[1]
-        mtH3 = mScale * self._marginHead3[0]
-        mbH3 = mScale * self._marginHead3[1]
-        mtH4 = mScale * self._marginHead4[0]
-        mbH4 = mScale * self._marginHead4[1]
-        mtTT = mScale * self._marginText[0]
-        mbTT = mScale * self._marginText[1]
-        mtSP = mScale * self._marginSep[0]
-        mbSP = mScale * self._marginSep[1]
+        mtH0 = self._marginTitle[0]
+        mbH0 = self._marginTitle[1]
+        mtH1 = self._marginHead1[0]
+        mbH1 = self._marginHead1[1]
+        mtH2 = self._marginHead2[0]
+        mbH2 = self._marginHead2[1]
+        mtH3 = self._marginHead3[0]
+        mbH3 = self._marginHead3[1]
+        mtH4 = self._marginHead4[0]
+        mbH4 = self._marginHead4[1]
+        mtTT = self._marginText[0]
+        mbTT = self._marginText[1]
+        mtSP = self._marginSep[0]
+        mbSP = self._marginSep[1]
 
         font = self._textFont
         fFam = font.family()
