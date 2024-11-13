@@ -855,11 +855,9 @@ class ToDocX(Tokenizer):
             xR = xmlSubElem(xP, _wTag("r"))
             xmlSubElem(xR, _wTag("fldChar"), attrib={wFldCT: "begin"})
             xR = xmlSubElem(xP, _wTag("r"))
-            _wText(xR, " PAGE ")
+            xmlSubElem(xR, _wTag("instrText"), "PAGE", attrib={_mkTag("xml", "space"): "preserve"})
             xR = xmlSubElem(xP, _wTag("r"))
             xmlSubElem(xR, _wTag("fldChar"), attrib={wFldCT: "separate"})
-            xR = xmlSubElem(xP, _wTag("r"))
-            _wText(xR, "0")
             xR = xmlSubElem(xP, _wTag("r"))
             xmlSubElem(xR, _wTag("fldChar"), attrib={wFldCT: "end"})
         if post:
