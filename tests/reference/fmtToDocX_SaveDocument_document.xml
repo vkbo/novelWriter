@@ -231,7 +231,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -254,7 +254,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -277,7 +277,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="139" w:line="276" />
+        <w:spacing w:before="0" w:after="144" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -331,7 +331,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -354,7 +354,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -377,7 +377,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="139" w:line="276" />
+        <w:spacing w:before="0" w:after="144" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -472,7 +472,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -495,7 +495,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -518,7 +518,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="139" w:line="276" />
+        <w:spacing w:before="0" w:after="144" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -634,7 +634,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -657,7 +657,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -680,7 +680,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="139" w:line="276" />
+        <w:spacing w:before="0" w:after="144" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -734,7 +734,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -757,7 +757,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -780,7 +780,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="139" w:line="276" />
+        <w:spacing w:before="0" w:after="144" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -875,7 +875,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -898,7 +898,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -921,7 +921,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="139" w:line="276" />
+        <w:spacing w:before="0" w:after="144" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -1035,7 +1035,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -1058,7 +1058,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -1081,7 +1081,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="139" w:line="276" />
+        <w:spacing w:before="0" w:after="144" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -1197,7 +1197,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="0" w:line="276" />
+        <w:spacing w:before="0" w:after="0" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -1230,7 +1230,7 @@
     <w:p>
       <w:pPr>
         <w:pStyle w:val="MetaText" />
-        <w:spacing w:before="0" w:after="139" w:line="276" />
+        <w:spacing w:before="0" w:after="144" w:line="276" w:lineRule="auto" />
       </w:pPr>
       <w:r>
         <w:rPr>

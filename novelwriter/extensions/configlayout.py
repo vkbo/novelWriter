@@ -27,7 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtGui import QColor, QFont, QPalette
+from PyQt5.QtGui import QColor, QFont, QPalette, QPixmap
 from PyQt5.QtWidgets import (
     QAbstractButton, QFrame, QHBoxLayout, QLabel, QLayout, QScrollArea,
     QVBoxLayout, QWidget
@@ -183,7 +183,7 @@ class NScrollableForm(QScrollArea):
     def addRow(
         self,
         label: str | None,
-        widget: QWidget | list[QWidget | str | int],
+        widget: QWidget | list[QWidget | QPixmap | str | int],
         helpText: str = "",
         unit: str | None = None,
         button: QWidget | None = None,
@@ -200,6 +200,10 @@ class NScrollableForm(QScrollArea):
             for item in widget:
                 if isinstance(item, QWidget):
                     wBox.addWidget(item)
+                elif isinstance(item, QPixmap):
+                    icon = QLabel(self)
+                    icon.setPixmap(item)
+                    wBox.addWidget(icon)
                 elif isinstance(item, str):
                     wBox.addWidget(QLabel(item, self))
                 elif isinstance(item, int):

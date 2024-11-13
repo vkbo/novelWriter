@@ -964,15 +964,6 @@ class _FormattingTab(NScrollableForm):
         spW = 6*SHARED.theme.textNWidth
         dbW = 8*SHARED.theme.textNWidth
 
-        # Common Translations
-
-        trW = self.tr("W:")  # Width
-        trH = self.tr("H:")  # Height
-        trT = self.tr("T:")  # Top
-        trB = self.tr("B:")  # Bottom
-        trL = self.tr("L:")  # Left
-        trR = self.tr("R:")  # Right
-
         # Text Content
         # ============
 
@@ -1084,6 +1075,13 @@ class _FormattingTab(NScrollableForm):
         self._sidebar.addButton(title, section)
         self.addGroupLabel(title, section)
 
+        pixT = SHARED.theme.getPixmap("margin_top", (iPx, iPx))
+        pixB = SHARED.theme.getPixmap("margin_bottom", (iPx, iPx))
+        pixL = SHARED.theme.getPixmap("margin_left", (iPx, iPx))
+        pixR = SHARED.theme.getPixmap("margin_right", (iPx, iPx))
+        pixH = SHARED.theme.getPixmap("size_height", (iPx, iPx))
+        pixW = SHARED.theme.getPixmap("size_width", (iPx, iPx))
+
         # Title
         self.titleMarginT = NDoubleSpinBox(self)
         self.titleMarginT.setFixedWidth(dbW)
@@ -1093,7 +1091,8 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             trConst(nwStyles.T_LABEL["H0"]),
-            [trT, self.titleMarginT, 6, trB, self.titleMarginB],
+            [pixT, self.titleMarginT, 6, pixB, self.titleMarginB],
+            unit="em",
         )
 
         # Heading 1
@@ -1105,7 +1104,8 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             trConst(nwStyles.T_LABEL["H1"]),
-            [trT, self.h1MarginT, 6, trB, self.h1MarginB],
+            [pixT, self.h1MarginT, 6, pixB, self.h1MarginB],
+            unit="em",
         )
 
         # Heading 2
@@ -1117,7 +1117,8 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             trConst(nwStyles.T_LABEL["H2"]),
-            [trT, self.h2MarginT, 6, trB, self.h2MarginB],
+            [pixT, self.h2MarginT, 6, pixB, self.h2MarginB],
+            unit="em",
         )
 
         # Heading 3
@@ -1129,7 +1130,8 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             trConst(nwStyles.T_LABEL["H3"]),
-            [trT, self.h3MarginT, 6, trB, self.h3MarginB],
+            [pixT, self.h3MarginT, 6, pixB, self.h3MarginB],
+            unit="em",
         )
 
         # Heading 4
@@ -1141,7 +1143,8 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             trConst(nwStyles.T_LABEL["H4"]),
-            [trT, self.h4MarginT, 6, trB, self.h4MarginB],
+            [pixT, self.h4MarginT, 6, pixB, self.h4MarginB],
+            unit="em",
         )
 
         # Text
@@ -1153,7 +1156,8 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             trConst(nwStyles.T_LABEL["TT"]),
-            [trT, self.textMarginT, 6, trB, self.textMarginB],
+            [pixT, self.textMarginT, 6, pixB, self.textMarginB],
+            unit="em",
         )
 
         # Separator
@@ -1165,7 +1169,8 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             trConst(nwStyles.T_LABEL["SP"]),
-            [trT, self.sepMarginT, 6, trB, self.sepMarginB],
+            [pixT, self.sepMarginT, 6, pixB, self.sepMarginB],
+            unit="em",
         )
 
         # Page Layout
@@ -1198,7 +1203,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.pageSize"),
-            [self.pageSize, 6, trW, self.pageWidth, 6, trH, self.pageHeight],
+            [self.pageSize, 6, pixW, self.pageWidth, 6, pixH, self.pageHeight],
         )
 
         # Page Margins
@@ -1216,11 +1221,11 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.pageMargins"),
-            [trT, self.topMargin, 6, trB, self.bottomMargin],
+            [pixT, self.topMargin, 6, pixB, self.bottomMargin],
         )
         self.addRow(
             "",
-            [trL, self.leftMargin, 6, trR, self.rightMargin],
+            [pixL, self.leftMargin, 6, pixR, self.rightMargin],
         )
 
         # Open Document

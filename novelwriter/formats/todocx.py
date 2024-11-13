@@ -521,12 +521,6 @@ class ToDocX(Tokenizer):
         hScale = self._scaleHeads
         hColor = _docXCol(self._theme.head) if self._colorHeads else None
         fSz = self._fontSize
-        fnSz = 0.8 * self._fontSize
-        fSz0 = (nwStyles.H_SIZES[0] * fSz) if hScale else fSz
-        fSz1 = (nwStyles.H_SIZES[1] * fSz) if hScale else fSz
-        fSz2 = (nwStyles.H_SIZES[2] * fSz) if hScale else fSz
-        fSz3 = (nwStyles.H_SIZES[3] * fSz) if hScale else fSz
-        fSz4 = (nwStyles.H_SIZES[4] * fSz) if hScale else fSz
 
         # Add Normal Style
         styles.append(DocXParStyle(
@@ -545,12 +539,12 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Title",
             styleId=S_TITLE,
-            size=fSz0,
+            size=(nwStyles.H_SIZES[0] * fSz) if hScale else fSz,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginTitle[0],
             after=fSz * self._marginTitle[1],
-            line=fSz0 * self._lineHeight,
+            line=fSz * self._lineHeight,
             level=0,
             bold=self._boldHeads,
         ))
@@ -559,12 +553,12 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Heading 1",
             styleId=S_HEAD1,
-            size=fSz1,
+            size=(nwStyles.H_SIZES[1] * fSz) if hScale else fSz,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginHead1[0],
             after=fSz * self._marginHead1[1],
-            line=fSz1 * self._lineHeight,
+            line=fSz * self._lineHeight,
             level=0,
             color=hColor,
             bold=self._boldHeads,
@@ -574,12 +568,12 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Heading 2",
             styleId=S_HEAD2,
-            size=fSz2,
+            size=(nwStyles.H_SIZES[2] * fSz) if hScale else fSz,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginHead2[0],
             after=fSz * self._marginHead2[1],
-            line=fSz2 * self._lineHeight,
+            line=fSz * self._lineHeight,
             level=1,
             color=hColor,
             bold=self._boldHeads,
@@ -589,12 +583,12 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Heading 3",
             styleId=S_HEAD3,
-            size=fSz3,
+            size=(nwStyles.H_SIZES[3] * fSz) if hScale else fSz,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginHead3[0],
             after=fSz * self._marginHead3[1],
-            line=fSz3 * self._lineHeight,
+            line=fSz * self._lineHeight,
             level=1,
             color=hColor,
             bold=self._boldHeads,
@@ -604,12 +598,12 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Heading 4",
             styleId=S_HEAD4,
-            size=fSz4,
+            size=(nwStyles.H_SIZES[4] * fSz) if hScale else fSz,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginHead4[0],
             after=fSz * self._marginHead4[1],
-            line=fSz4 * self._lineHeight,
+            line=fSz * self._lineHeight,
             level=1,
             color=hColor,
             bold=self._boldHeads,
@@ -653,12 +647,12 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Footnote Text",
             styleId=S_FNOTE,
-            size=fnSz,
+            size=nwStyles.T_SMALL * fSz,
             basedOn=S_NORM,
             before=0.0,
-            after=fnSz * self._marginFoot[1],
-            left=fnSz * self._marginFoot[0],
-            line=fnSz * self._lineHeight,
+            after=fSz * self._marginFoot[1],
+            left=fSz * self._marginFoot[0],
+            line=fSz * self._lineHeight,
         ))
 
         # Add to Cache
@@ -795,6 +789,7 @@ class ToDocX(Tokenizer):
                 _wTag("before"): str(int(20.0 * firstFloat(style.before))),
                 _wTag("after"): str(int(20.0 * firstFloat(style.after))),
                 _wTag("line"): str(int(20.0 * firstFloat(style.line, size))),
+                _wTag("lineRule"): "auto",
             })
             if style.left is not None:
                 xmlSubElem(pPr, _wTag("ind"), attrib={
@@ -860,11 +855,9 @@ class ToDocX(Tokenizer):
             xR = xmlSubElem(xP, _wTag("r"))
             xmlSubElem(xR, _wTag("fldChar"), attrib={wFldCT: "begin"})
             xR = xmlSubElem(xP, _wTag("r"))
-            _wText(xR, " PAGE ")
+            xmlSubElem(xR, _wTag("instrText"), "PAGE", attrib={_mkTag("xml", "space"): "preserve"})
             xR = xmlSubElem(xP, _wTag("r"))
             xmlSubElem(xR, _wTag("fldChar"), attrib={wFldCT: "separate"})
-            xR = xmlSubElem(xP, _wTag("r"))
-            _wText(xR, "0")
             xR = xmlSubElem(xP, _wTag("r"))
             xmlSubElem(xR, _wTag("fldChar"), attrib={wFldCT: "end"})
         if post:
@@ -1171,6 +1164,7 @@ class DocXParagraph:
                     _wTag("before"): str(int(20.0 * firstFloat(self._topMargin, style.before))),
                     _wTag("after"): str(int(20.0 * firstFloat(self._bottomMargin, style.after))),
                     _wTag("line"): str(int(20.0 * firstFloat(style.line, style.size))),
+                    _wTag("lineRule"): "auto",
                 })
             if indent:
                 xmlSubElem(pPr, _wTag("ind"), attrib=indent)

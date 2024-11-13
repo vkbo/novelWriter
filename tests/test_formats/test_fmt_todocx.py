@@ -395,7 +395,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" />'
-        '<w:spacing w:before="0" w:after="0" w:line="252" /></w:pPr>'
+        '<w:spacing w:before="0" w:after="0" w:line="252" w:lineRule="auto" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 

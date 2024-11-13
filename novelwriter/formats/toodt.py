@@ -173,43 +173,9 @@ class ToOdt(Tokenizer):
         self._fontStyle    = "normal"
         self._fontPitch    = "variable"
         self._fontBold     = "bold"
-        self._fSizeTitle   = "30pt"
-        self._fSizeHead1   = "24pt"
-        self._fSizeHead2   = "20pt"
-        self._fSizeHead3   = "16pt"
-        self._fSizeHead4   = "14pt"
-        self._fSizeHead    = "14pt"
-        self._fSizeText    = "12pt"
-        self._fSizeFoot    = "10pt"
-        self._fLineHeight  = "115%"
         self._fBlockIndent = "1.693cm"
-        self._fTextIndent  = "0.499cm"
         self._dLanguage    = "en"
         self._dCountry     = "GB"
-
-        # Text Margins
-        self._mTopTitle = "0.423cm"
-        self._mTopHead1 = "0.423cm"
-        self._mTopHead2 = "0.353cm"
-        self._mTopHead3 = "0.247cm"
-        self._mTopHead4 = "0.247cm"
-        self._mTopHead  = "0.423cm"
-        self._mTopText  = "0.000cm"
-        self._mTopMeta  = "0.000cm"
-        self._mTopSep   = "0.247cm"
-
-        self._mBotTitle = "0.212cm"
-        self._mBotHead1 = "0.212cm"
-        self._mBotHead2 = "0.212cm"
-        self._mBotHead3 = "0.212cm"
-        self._mBotHead4 = "0.212cm"
-        self._mBotHead  = "0.212cm"
-        self._mBotText  = "0.247cm"
-        self._mBotMeta  = "0.106cm"
-        self._mBotSep   = "0.247cm"
-
-        self._mBotFoot  = "0.106cm"
-        self._mLeftFoot = "0.600cm"
 
         # Document Size and Margins
         self._mDocWidth  = "21.0cm"
@@ -262,52 +228,14 @@ class ToOdt(Tokenizer):
         self._dLanguage = lang or self._dLanguage
         self._dCountry = country or self._dCountry
 
-        self._fontFamily = self._textFont.family()
-        self._fontSize   = self._textFont.pointSize()
-        self._fontWeight = FONT_WEIGHT_MAP.get(fontWeight, fontWeight)
-        self._fontStyle  = FONT_STYLE.get(self._textFont.style(), "normal")
-        self._fontPitch  = "fixed" if self._textFont.fixedPitch() else "variable"
-        self._fontBold   = FONT_WEIGHT_MAP.get(fontBold, fontBold)
-        self._headWeight = self._fontBold if self._boldHeads else None
-
-        hScale = self._scaleHeads
-        self._fSizeTitle = self._emToPt(nwStyles.H_SIZES[0] if hScale else 1.0)  # Was 2.50
-        self._fSizeHead1 = self._emToPt(nwStyles.H_SIZES[1] if hScale else 1.0)  # Was 2.00
-        self._fSizeHead2 = self._emToPt(nwStyles.H_SIZES[2] if hScale else 1.0)  # Was 1.60
-        self._fSizeHead3 = self._emToPt(nwStyles.H_SIZES[3] if hScale else 1.0)  # Was 1.30
-        self._fSizeHead4 = self._emToPt(nwStyles.H_SIZES[4] if hScale else 1.0)  # Was 1.15
-        self._fSizeHead  = self._emToPt(nwStyles.H_SIZES[4] if hScale else 1.0)  # Was 1.15
-        self._fSizeText  = self._emToPt(1.0)
-        self._fSizeFoot  = self._emToPt(0.8)
-
-        mScale = self._lineHeight/1.15
-
-        self._mTopTitle = self._emToCm(mScale * self._marginTitle[0])
-        self._mTopHead1 = self._emToCm(mScale * self._marginHead1[0])
-        self._mTopHead2 = self._emToCm(mScale * self._marginHead2[0])
-        self._mTopHead3 = self._emToCm(mScale * self._marginHead3[0])
-        self._mTopHead4 = self._emToCm(mScale * self._marginHead4[0])
-        self._mTopHead  = self._emToCm(mScale * self._marginHead4[0])
-        self._mTopText  = self._emToCm(mScale * self._marginText[0])
-        self._mTopMeta  = self._emToCm(mScale * self._marginMeta[0])
-        self._mTopSep   = self._emToCm(mScale * self._marginSep[0])
-
-        self._mBotTitle = self._emToCm(mScale * self._marginTitle[1])
-        self._mBotHead1 = self._emToCm(mScale * self._marginHead1[1])
-        self._mBotHead2 = self._emToCm(mScale * self._marginHead2[1])
-        self._mBotHead3 = self._emToCm(mScale * self._marginHead3[1])
-        self._mBotHead4 = self._emToCm(mScale * self._marginHead4[1])
-        self._mBotHead  = self._emToCm(mScale * self._marginHead4[1])
-        self._mBotText  = self._emToCm(mScale * self._marginText[1])
-        self._mBotMeta  = self._emToCm(mScale * self._marginMeta[1])
-        self._mBotSep   = self._emToCm(mScale * self._marginSep[1])
-
-        self._mLeftFoot = self._emToCm(self._marginFoot[0])
-        self._mBotFoot  = self._emToCm(self._marginFoot[1])
-
-        self._fLineHeight  = f"{round(100 * self._lineHeight):d}%"
+        self._fontFamily   = self._textFont.family()
+        self._fontSize     = self._textFont.pointSize()
+        self._fontWeight   = FONT_WEIGHT_MAP.get(fontWeight, fontWeight)
+        self._fontStyle    = FONT_STYLE.get(self._textFont.style(), "normal")
+        self._fontPitch    = "fixed" if self._textFont.fixedPitch() else "variable"
+        self._fontBold     = FONT_WEIGHT_MAP.get(fontBold, fontBold)
+        self._headWeight   = self._fontBold if self._boldHeads else None
         self._fBlockIndent = self._emToCm(self._blockIndent)
-        self._fTextIndent  = self._emToCm(self._firstWidth)
 
         # Clear Errors
         self._errData = []
@@ -782,6 +710,9 @@ class ToOdt(Tokenizer):
 
     def _defaultStyles(self) -> None:
         """Set the default styles."""
+        hScale = self._scaleHeads
+        textSize = self._emToPt(nwStyles.T_NORMAL)
+
         # Add Paragraph Family Style
         xStyl = ET.SubElement(self._xStyl, _mkTag("style", "default-style"), attrib={
             _mkTag("style", "family"): "paragraph",
@@ -796,7 +727,7 @@ class ToOdt(Tokenizer):
             _mkTag("fo", "font-family"): self._fontFamily,
             _mkTag("fo", "font-weight"): self._fontWeight,
             _mkTag("fo", "font-style"): self._fontStyle,
-            _mkTag("fo", "font-size"): self._fSizeText,
+            _mkTag("fo", "font-size"): textSize,
             _mkTag("fo", "language"): self._dLanguage,
             _mkTag("fo", "country"): self._dCountry,
         })
@@ -812,7 +743,7 @@ class ToOdt(Tokenizer):
             _mkTag("fo", "font-family"): self._fontFamily,
             _mkTag("fo", "font-weight"): self._fontWeight,
             _mkTag("fo", "font-style"): self._fontStyle,
-            _mkTag("fo", "font-size"): self._fSizeText,
+            _mkTag("fo", "font-size"): textSize,
         })
 
         # Add Default Heading Style
@@ -824,8 +755,8 @@ class ToOdt(Tokenizer):
             _mkTag("style", "class"): "text",
         })
         ET.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib={
-            _mkTag("fo", "margin-top"): self._mTopHead,
-            _mkTag("fo", "margin-bottom"): self._mBotHead,
+            _mkTag("fo", "margin-top"): self._emToCm(self._marginHead4[0]),
+            _mkTag("fo", "margin-bottom"): self._emToCm(self._marginHead4[1]),
             _mkTag("fo", "keep-with-next"): "always",
         })
         ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib={
@@ -833,7 +764,7 @@ class ToOdt(Tokenizer):
             _mkTag("fo", "font-family"): self._fontFamily,
             _mkTag("fo", "font-weight"): self._fontWeight,
             _mkTag("fo", "font-style"): self._fontStyle,
-            _mkTag("fo", "font-size"): self._fSizeHead,
+            _mkTag("fo", "font-size"): self._emToPt(nwStyles.H_SIZES[4] if hScale else 1.0),
         })
 
         # Add Header and Footer Styles
@@ -857,20 +788,24 @@ class ToOdt(Tokenizer):
 
     def _useableStyles(self) -> None:
         """Set the usable styles."""
+        hScale = self._scaleHeads
         hColor = self._theme.head if self._colorHeads else None
+
+        textSize = self._emToPt(nwStyles.T_NORMAL)
+        lineHeight = f"{round(100 * self._lineHeight):d}%"
 
         # Add Text Body Style
         style = ODTParagraphStyle(S_TEXT)
         style.setDisplayName("Text body")
         style.setParentStyleName("Standard")
         style.setClass("text")
-        style.setMarginTop(self._mTopText)
-        style.setMarginBottom(self._mBotText)
-        style.setLineHeight(self._fLineHeight)
+        style.setMarginTop(self._emToCm(self._marginText[0]))
+        style.setMarginBottom(self._emToCm(self._marginText[1]))
+        style.setLineHeight(lineHeight)
         style.setTextAlign(self._defaultAlign)
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._fSizeText)
+        style.setFontSize(textSize)
         style.setFontWeight(self._fontWeight)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
@@ -880,7 +815,7 @@ class ToOdt(Tokenizer):
         style.setDisplayName("First line indent")
         style.setParentStyleName(S_TEXT)
         style.setClass("text")
-        style.setTextIndent(self._fTextIndent)
+        style.setTextIndent(self._emToCm(self._firstWidth))
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -889,12 +824,12 @@ class ToOdt(Tokenizer):
         style.setDisplayName("Text Meta")
         style.setParentStyleName("Standard")
         style.setClass("text")
-        style.setMarginTop(self._mTopMeta)
-        style.setMarginBottom(self._mBotMeta)
-        style.setLineHeight(self._fLineHeight)
+        style.setMarginTop(self._emToCm(self._marginMeta[0]))
+        style.setMarginBottom(self._emToCm(self._marginMeta[1]))
+        style.setLineHeight(lineHeight)
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._fSizeText)
+        style.setFontSize(textSize)
         style.setFontWeight(self._fontWeight)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
@@ -905,12 +840,12 @@ class ToOdt(Tokenizer):
         style.setParentStyleName("Heading")
         style.setNextStyleName(S_TEXT)
         style.setClass("chapter")
-        style.setMarginTop(self._mTopTitle)
-        style.setMarginBottom(self._mBotTitle)
+        style.setMarginTop(self._emToCm(self._marginTitle[0]))
+        style.setMarginBottom(self._emToCm(self._marginTitle[1]))
         style.setTextAlign("center")
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._fSizeTitle)
+        style.setFontSize(self._emToPt(nwStyles.H_SIZES[0] if hScale else 1.0))
         style.setFontWeight(self._headWeight)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
@@ -921,13 +856,13 @@ class ToOdt(Tokenizer):
         style.setParentStyleName("Standard")
         style.setNextStyleName(S_TEXT)
         style.setClass("text")
-        style.setMarginTop(self._mTopSep)
-        style.setMarginBottom(self._mBotSep)
-        style.setLineHeight(self._fLineHeight)
+        style.setMarginTop(self._emToCm(self._marginSep[0]))
+        style.setMarginBottom(self._emToCm(self._marginSep[1]))
+        style.setLineHeight(lineHeight)
         style.setTextAlign("center")
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._fSizeText)
+        style.setFontSize(textSize)
         style.setFontWeight(self._fontWeight)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
@@ -939,11 +874,11 @@ class ToOdt(Tokenizer):
         style.setNextStyleName(S_TEXT)
         style.setOutlineLevel("1")
         style.setClass("text")
-        style.setMarginTop(self._mTopHead1)
-        style.setMarginBottom(self._mBotHead1)
+        style.setMarginTop(self._emToCm(self._marginHead1[0]))
+        style.setMarginBottom(self._emToCm(self._marginHead1[1]))
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._fSizeHead1)
+        style.setFontSize(self._emToPt(nwStyles.H_SIZES[1] if hScale else 1.0))
         style.setFontWeight(self._headWeight)
         style.setColor(hColor)
         style.packXML(self._xStyl)
@@ -956,11 +891,11 @@ class ToOdt(Tokenizer):
         style.setNextStyleName(S_TEXT)
         style.setOutlineLevel("2")
         style.setClass("text")
-        style.setMarginTop(self._mTopHead2)
-        style.setMarginBottom(self._mBotHead2)
+        style.setMarginTop(self._emToCm(self._marginHead2[0]))
+        style.setMarginBottom(self._emToCm(self._marginHead2[1]))
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._fSizeHead2)
+        style.setFontSize(self._emToPt(nwStyles.H_SIZES[2] if hScale else 1.0))
         style.setFontWeight(self._headWeight)
         style.setColor(hColor)
         style.packXML(self._xStyl)
@@ -973,11 +908,11 @@ class ToOdt(Tokenizer):
         style.setNextStyleName(S_TEXT)
         style.setOutlineLevel("3")
         style.setClass("text")
-        style.setMarginTop(self._mTopHead3)
-        style.setMarginBottom(self._mBotHead3)
+        style.setMarginTop(self._emToCm(self._marginHead3[0]))
+        style.setMarginBottom(self._emToCm(self._marginHead3[1]))
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._fSizeHead3)
+        style.setFontSize(self._emToPt(nwStyles.H_SIZES[3] if hScale else 1.0))
         style.setFontWeight(self._headWeight)
         style.setColor(hColor)
         style.packXML(self._xStyl)
@@ -990,11 +925,11 @@ class ToOdt(Tokenizer):
         style.setNextStyleName(S_TEXT)
         style.setOutlineLevel("4")
         style.setClass("text")
-        style.setMarginTop(self._mTopHead4)
-        style.setMarginBottom(self._mBotHead4)
+        style.setMarginTop(self._emToCm(self._marginHead4[0]))
+        style.setMarginBottom(self._emToCm(self._marginHead4[1]))
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._fSizeHead4)
+        style.setFontSize(self._emToPt(nwStyles.H_SIZES[4] if hScale else 1.0))
         style.setFontWeight(self._headWeight)
         style.setColor(hColor)
         style.packXML(self._xStyl)
@@ -1013,10 +948,10 @@ class ToOdt(Tokenizer):
         style.setDisplayName("Footnote")
         style.setParentStyleName("Standard")
         style.setClass("extra")
-        style.setMarginLeft(self._mLeftFoot)
-        style.setMarginBottom(self._mBotFoot)
-        style.setTextIndent("-"+self._mLeftFoot)
-        style.setFontSize(self._fSizeFoot)
+        style.setMarginLeft(self._emToCm(self._marginFoot[0]))
+        style.setMarginBottom(self._emToCm(self._marginFoot[1]))
+        style.setTextIndent("-"+self._emToCm(self._marginFoot[0]))
+        style.setFontSize(self._emToPt(nwStyles.T_SMALL))
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
