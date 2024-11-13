@@ -126,7 +126,7 @@ class nwStyles:
         "TT": (0.00, 0.60),  # Text margins (top, bottom)
         "SP": (1.20, 1.20),  # Separator margins (top, bottom)
         "MT": (0.00, 0.60),  # Meta margins (top, bottom)
-        "FT": (1.20, 0.40),  # Footnote margins (left, bottom)
+        "FT": (1.40, 0.40),  # Footnote margins (left, bottom)
     }
 
 

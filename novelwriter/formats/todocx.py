@@ -1166,6 +1166,7 @@ class DocXParagraph:
                     _wTag("before"): str(int(20.0 * firstFloat(self._topMargin, style.before))),
                     _wTag("after"): str(int(20.0 * firstFloat(self._bottomMargin, style.after))),
                     _wTag("line"): str(int(20.0 * firstFloat(style.line, style.size))),
+                    _wTag("lineRule"): "auto",
                 })
             if indent:
                 xmlSubElem(pPr, _wTag("ind"), attrib=indent)

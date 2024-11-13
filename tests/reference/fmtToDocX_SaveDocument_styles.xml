@@ -18,7 +18,7 @@
   <w:style w:type="paragraph" w:styleId="Normal" w:default="1">
     <w:name w:val="Normal" />
     <w:pPr>
-      <w:spacing w:before="0" w:after="139" w:line="276" />
+      <w:spacing w:before="0" w:after="144" w:line="276" w:lineRule="auto" />
       <w:jc w:val="left" />
     </w:pPr>
     <w:rPr>
@@ -31,7 +31,7 @@
     <w:basedOn w:val="Normal" />
     <w:next w:val="Normal" />
     <w:pPr>
-      <w:spacing w:before="340" w:after="120" w:line="690" />
+      <w:spacing w:before="360" w:after="144" w:line="276" w:lineRule="auto" />
       <w:outlineLvl w:val="0" />
     </w:pPr>
     <w:rPr>
@@ -45,7 +45,7 @@
     <w:basedOn w:val="Normal" />
     <w:next w:val="Normal" />
     <w:pPr>
-      <w:spacing w:before="340" w:after="120" w:line="552" />
+      <w:spacing w:before="360" w:after="144" w:line="276" w:lineRule="auto" />
       <w:outlineLvl w:val="0" />
     </w:pPr>
     <w:rPr>
@@ -60,7 +60,7 @@
     <w:basedOn w:val="Normal" />
     <w:next w:val="Normal" />
     <w:pPr>
-      <w:spacing w:before="400" w:after="120" w:line="483" />
+      <w:spacing w:before="360" w:after="144" w:line="276" w:lineRule="auto" />
       <w:outlineLvl w:val="1" />
     </w:pPr>
     <w:rPr>
@@ -75,7 +75,7 @@
     <w:basedOn w:val="Normal" />
     <w:next w:val="Normal" />
     <w:pPr>
-      <w:spacing w:before="280" w:after="120" w:line="414" />
+      <w:spacing w:before="288" w:after="144" w:line="276" w:lineRule="auto" />
       <w:outlineLvl w:val="1" />
     </w:pPr>
     <w:rPr>
@@ -90,7 +90,7 @@
     <w:basedOn w:val="Normal" />
     <w:next w:val="Normal" />
     <w:pPr>
-      <w:spacing w:before="280" w:after="120" w:line="345" />
+      <w:spacing w:before="288" w:after="144" w:line="276" w:lineRule="auto" />
       <w:outlineLvl w:val="1" />
     </w:pPr>
     <w:rPr>
@@ -105,7 +105,7 @@
     <w:basedOn w:val="Normal" />
     <w:next w:val="Normal" />
     <w:pPr>
-      <w:spacing w:before="280" w:after="280" w:line="276" />
+      <w:spacing w:before="288" w:after="288" w:line="276" w:lineRule="auto" />
       <w:jc w:val="center" />
     </w:pPr>
     <w:rPr>
@@ -118,7 +118,7 @@
     <w:basedOn w:val="Normal" />
     <w:next w:val="Normal" />
     <w:pPr>
-      <w:spacing w:before="0" w:after="139" w:line="276" />
+      <w:spacing w:before="0" w:after="144" w:line="276" w:lineRule="auto" />
     </w:pPr>
     <w:rPr>
       <w:sz w:val="24" />
@@ -129,7 +129,7 @@
     <w:name w:val="Header" />
     <w:basedOn w:val="Normal" />
     <w:pPr>
-      <w:spacing w:before="0" w:after="0" w:line="240" />
+      <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto" />
       <w:jc w:val="right" />
     </w:pPr>
     <w:rPr>
@@ -141,8 +141,8 @@
     <w:name w:val="Footnote Text" />
     <w:basedOn w:val="Normal" />
     <w:pPr>
-      <w:spacing w:before="0" w:after="90" w:line="220" />
-      <w:ind w:left="272" />
+      <w:spacing w:before="0" w:after="96" w:line="276" w:lineRule="auto" />
+      <w:ind w:left="335" />
     </w:pPr>
     <w:rPr>
       <w:sz w:val="19" />

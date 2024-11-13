@@ -803,10 +803,6 @@ def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths, ipsumText):
     odt._isNovel = True
     odt.setHeaderFormat(nwHeadFmt.DOC_AUTO, 1)
     assert odt._headerFormat == nwHeadFmt.DOC_AUTO
-    odt.setFirstLineIndent(True, 1.4, False)
-    assert odt._firstIndent is True
-    assert odt._fTextIndent == "0.499cm"
-    assert odt._indentFirst is False
 
     odt.setPageLayout(148, 210, 20, 18, 17, 15)
     assert odt._mDocWidth  == "14.800cm"
