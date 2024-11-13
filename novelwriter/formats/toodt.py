@@ -874,7 +874,7 @@ class ToOdt(Tokenizer):
         style.setNextStyleName(S_TEXT)
         style.setOutlineLevel("1")
         style.setClass("text")
-        style.setMarginTop(self._emToCm(self._marginTitle[1]))
+        style.setMarginTop(self._emToCm(self._marginHead1[0]))
         style.setMarginBottom(self._emToCm(self._marginHead1[1]))
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)

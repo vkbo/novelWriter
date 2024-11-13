@@ -118,15 +118,15 @@ class nwStyles:
         "SP": QT_TRANSLATE_NOOP("Constant", "Scene Separator"),
     }
     T_MARGIN = {
-        "H0": (1.42, 0.50),  # Title margins
-        "H1": (1.42, 0.50),  # Heading 1 margins
-        "H2": (1.67, 0.50),  # Heading 2 margins
-        "H3": (1.17, 0.50),  # Heading 3 margins
-        "H4": (1.17, 0.50),  # Heading 4 margins
-        "TT": (0.00, 0.58),  # Text margins
-        "SP": (1.17, 1.17),  # Separator margins
-        "MT": (0.00, 0.58),  # Meta margins
-        "FT": (1.42, 0.47),  # Footnote margins
+        "H0": (1.50, 0.60),  # Title margins (top, bottom)
+        "H1": (1.50, 0.60),  # Heading 1 margins (top, bottom)
+        "H2": (1.50, 0.60),  # Heading 2 margins (top, bottom)
+        "H3": (1.20, 0.60),  # Heading 3 margins (top, bottom)
+        "H4": (1.20, 0.60),  # Heading 4 margins (top, bottom)
+        "TT": (0.00, 0.60),  # Text margins (top, bottom)
+        "SP": (1.20, 1.20),  # Separator margins (top, bottom)
+        "MT": (0.00, 0.60),  # Meta margins (top, bottom)
+        "FT": (1.20, 0.40),  # Footnote margins (left, bottom)
     }
 
 
