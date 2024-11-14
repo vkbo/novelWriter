@@ -507,8 +507,8 @@ class GuiIcons:
         "add", "add_document", "backward", "bookmark", "browse", "checked", "close", "copy",
         "cross", "document", "down", "edit", "export", "font", "forward", "import", "list",
         "maximise", "menu", "minimise", "more", "noncheckable", "open", "panel", "quote",
-        "refresh", "remove", "revert", "search_replace", "search", "settings", "star", "unchecked",
-        "up", "view",
+        "refresh", "remove", "revert", "search_replace", "search", "settings", "star", "toolbar",
+        "unchecked", "up", "view",
 
         # Switches
         "sticky-on", "sticky-off",
