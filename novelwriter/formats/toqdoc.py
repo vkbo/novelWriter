@@ -29,8 +29,8 @@ from pathlib import Path
 
 from PyQt5.QtCore import QMarginsF, QSizeF
 from PyQt5.QtGui import (
-    QColor, QFont, QFontMetricsF, QPageLayout, QPageSize, QPdfWriter,
-    QTextBlockFormat, QTextCharFormat, QTextCursor, QTextDocument
+    QColor, QFont, QPageLayout, QPageSize, QPdfWriter, QTextBlockFormat,
+    QTextCharFormat, QTextCursor, QTextDocument
 )
 
 from novelwriter.constants import nwStyles, nwUnicode
@@ -120,9 +120,8 @@ class ToQTextDocument(Tokenizer):
         self._document.clear()
         self._document.setDefaultFont(self._textFont)
 
-        qMetric = QFontMetricsF(self._textFont)
-        mPx = qMetric.ascent()  # 1 em in pixels
         fPt = self._textFont.pointSizeF()
+        mPx = fPt*90.0/72.0  # 1 em in pixels
 
         # Scaled Sizes
         # ============
