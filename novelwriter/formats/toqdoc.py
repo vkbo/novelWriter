@@ -29,10 +29,9 @@ from pathlib import Path
 
 from PyQt5.QtCore import QMarginsF, QSizeF
 from PyQt5.QtGui import (
-    QColor, QFont, QFontMetricsF, QPageSize, QTextBlockFormat, QTextCharFormat,
-    QTextCursor, QTextDocument
+    QColor, QFont, QFontMetricsF, QPageLayout, QPageSize, QPdfWriter,
+    QTextBlockFormat, QTextCharFormat, QTextCursor, QTextDocument
 )
-from PyQt5.QtPrintSupport import QPrinter
 
 from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.core.project import NWProject
@@ -67,7 +66,7 @@ class ToQTextDocument(Tokenizer):
         super().__init__(project)
         self._document = QTextDocument()
         self._document.setUndoRedoEnabled(False)
-        self._document.setDocumentMargin(0)
+        self._document.setDocumentMargin(0.0)
 
         self._usedNotes: dict[str, int] = {}
         self._usedFields: list[tuple[int, str]] = []
@@ -241,17 +240,14 @@ class ToQTextDocument(Tokenizer):
 
     def saveDocument(self, path: Path) -> None:
         """Save the document as a PDF file."""
-        m = self._pageMargins
-
-        printer = QPrinter(QPrinter.PrinterMode.PrinterResolution)
-        printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
-        printer.setPageSize(self._pageSize)
-        printer.setPageMargins(m.left(), m.top(), m.right(), m.bottom(), QPrinter.Unit.Millimeter)
-        printer.setOutputFileName(str(path))
-
-        self._document.setPageSize(self._pageSize.size(QPageSize.Unit.Point))
-        self._document.print(printer)
-
+        writer = QPdfWriter(str(path))
+        writer.setTitle(self._project.data.name)
+        writer.setPageSize(self._pageSize)
+        writer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
+        writer.setResolution(1200)
+        self._document.setDocumentMargin(0.0)
+        self._document.setPageSize(QSizeF(writer.pageLayout().paintRectPoints().size())*16/12)
+        self._document.print(writer)
         return
 
     def closeDocument(self) -> None:
