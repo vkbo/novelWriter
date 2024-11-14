@@ -2941,7 +2941,7 @@ class GuiDocEditHeader(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self.tbButton.setThemeIcon("menu")
+        self.tbButton.setThemeIcon("toolbar")
         self.outlineButton.setThemeIcon("list")
         self.searchButton.setThemeIcon("search")
         self.minmaxButton.setThemeIcon("maximise")
