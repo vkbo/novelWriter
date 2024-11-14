@@ -244,9 +244,15 @@ class ToQTextDocument(Tokenizer):
         writer.setPageSize(self._pageSize)
         writer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
         writer.setResolution(1200)
+
+        # We need to correct for a discrepancy between screen resolution
+        # (96 DPI) and the one used for font size (72 DPI). See #2100.
+        adjustedSize = writer.pageLayout().paintRect(QPageLayout.Unit.Point).size()*96.0/72.0
+
         self._document.setDocumentMargin(0.0)
-        self._document.setPageSize(QSizeF(writer.pageLayout().paintRectPoints().size())*16/12)
+        self._document.setPageSize(adjustedSize)
         self._document.print(writer)
+
         return
 
     def closeDocument(self) -> None:
