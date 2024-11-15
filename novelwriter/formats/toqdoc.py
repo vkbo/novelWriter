@@ -121,17 +121,17 @@ class ToQTextDocument(Tokenizer):
         self._document.setDefaultFont(self._textFont)
 
         fPt = self._textFont.pointSizeF()
-        mPx = fPt*90.0/72.0  # 1 em in pixels
+        fPx = fPt*96.0/72.0  # 1 em in pixels
 
         # Scaled Sizes
         # ============
 
         self._mHead = {
-            BlockTyp.TITLE: (mPx * self._marginTitle[0], mPx * self._marginTitle[1]),
-            BlockTyp.HEAD1: (mPx * self._marginHead1[0], mPx * self._marginHead1[1]),
-            BlockTyp.HEAD2: (mPx * self._marginHead2[0], mPx * self._marginHead2[1]),
-            BlockTyp.HEAD3: (mPx * self._marginHead3[0], mPx * self._marginHead3[1]),
-            BlockTyp.HEAD4: (mPx * self._marginHead4[0], mPx * self._marginHead4[1]),
+            BlockTyp.TITLE: (fPx * self._marginTitle[0], fPx * self._marginTitle[1]),
+            BlockTyp.HEAD1: (fPx * self._marginHead1[0], fPx * self._marginHead1[1]),
+            BlockTyp.HEAD2: (fPx * self._marginHead2[0], fPx * self._marginHead2[1]),
+            BlockTyp.HEAD3: (fPx * self._marginHead3[0], fPx * self._marginHead3[1]),
+            BlockTyp.HEAD4: (fPx * self._marginHead4[0], fPx * self._marginHead4[1]),
         }
 
         hScale = self._scaleHeads
@@ -143,12 +143,12 @@ class ToQTextDocument(Tokenizer):
             BlockTyp.HEAD4: (nwStyles.H_SIZES.get(4, 1.0) * fPt) if hScale else fPt,
         }
 
-        self._mText = (mPx * self._marginText[0], mPx * self._marginText[1])
-        self._mMeta = (mPx * self._marginMeta[0], mPx * self._marginMeta[1])
-        self._mSep  = (mPx * self._marginSep[0], mPx * self._marginSep[1])
+        self._mText = (fPx * self._marginText[0], fPx * self._marginText[1])
+        self._mMeta = (fPx * self._marginMeta[0], fPx * self._marginMeta[1])
+        self._mSep  = (fPx * self._marginSep[0], fPx * self._marginSep[1])
 
-        self._mIndent = mPx * 2.0
-        self._tIndent = mPx * self._firstWidth
+        self._mIndent = fPx * 2.0
+        self._tIndent = fPx * self._firstWidth
 
         # Text Formats
         # ============
@@ -245,12 +245,8 @@ class ToQTextDocument(Tokenizer):
         writer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
         writer.setResolution(1200)
 
-        # We need to correct for a discrepancy between screen resolution
-        # (96 DPI) and the one used for font size (72 DPI). See #2100.
-        adjustedSize = writer.pageLayout().paintRect(QPageLayout.Unit.Point).size()*96.0/72.0
-
-        self._document.setDocumentMargin(0.0)
-        self._document.setPageSize(adjustedSize)
+        # The document needs size in pixels. See #2100.
+        self._document.setPageSize(QSizeF(writer.pageLayout().paintRectPixels(96).size()))
         self._document.print(writer)
 
         return
