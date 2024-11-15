@@ -29,10 +29,12 @@ from pathlib import Path
 
 from PyQt5.QtCore import QMarginsF, QSizeF
 from PyQt5.QtGui import (
-    QColor, QFont, QPageLayout, QPageSize, QPdfWriter, QTextBlockFormat,
-    QTextCharFormat, QTextCursor, QTextDocument
+    QColor, QFont, QPageSize, QTextBlockFormat, QTextCharFormat, QTextCursor,
+    QTextDocument
 )
+from PyQt5.QtPrintSupport import QPrinter
 
+from novelwriter import __version__
 from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
@@ -245,15 +247,19 @@ class ToQTextDocument(Tokenizer):
 
     def saveDocument(self, path: Path) -> None:
         """Save the document as a PDF file."""
-        writer = QPdfWriter(str(path))
-        writer.setTitle(self._project.data.name)
-        writer.setPageSize(self._pageSize)
-        writer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
-        writer.setResolution(1200)
+        m = self._pageMargins
 
-        # The document needs size in pixels. See #2100.
-        self._document.setPageSize(QSizeF(writer.pageLayout().paintRectPixels(96).size()))
-        self._document.print(writer)
+        printer = QPrinter(QPrinter.PrinterMode.HighResolution)
+        printer.setDocName(self._project.data.name)
+        printer.setCreator(f"novelWriter/{__version__}")
+        printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
+        printer.setPageSize(self._pageSize)
+        printer.setPageMargins(m.left(), m.top(), m.right(), m.bottom(), QPrinter.Unit.Millimeter)
+        printer.setOutputFileName(str(path))
+
+        self._document.documentLayout().setPaintDevice(printer)
+        self._document.setPageSize(QSizeF(printer.pageRect().size()))
+        self._document.print(printer)
 
         return
 
