@@ -29,11 +29,12 @@ from pathlib import Path
 
 from PyQt5.QtCore import QMarginsF, QSizeF
 from PyQt5.QtGui import (
-    QColor, QFont, QFontMetricsF, QPageSize, QTextBlockFormat, QTextCharFormat,
-    QTextCursor, QTextDocument
+    QColor, QFont, QPageSize, QTextBlockFormat, QTextCharFormat, QTextCursor,
+    QTextDocument
 )
 from PyQt5.QtPrintSupport import QPrinter
 
+from novelwriter import __version__
 from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
@@ -67,7 +68,7 @@ class ToQTextDocument(Tokenizer):
         super().__init__(project)
         self._document = QTextDocument()
         self._document.setUndoRedoEnabled(False)
-        self._document.setDocumentMargin(0)
+        self._document.setDocumentMargin(0.0)
 
         self._usedNotes: dict[str, int] = {}
         self._usedFields: list[tuple[int, str]] = []
@@ -76,6 +77,7 @@ class ToQTextDocument(Tokenizer):
         self._bold = QFont.Weight.Bold
         self._normal = QFont.Weight.Normal
         self._newPage = False
+        self._anchors = True
 
         self._pageSize = QPageSize(QPageSize.PageSizeId.A4)
         self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
@@ -108,6 +110,11 @@ class ToQTextDocument(Tokenizer):
         self._newPage = state
         return
 
+    def disableAnchors(self) -> None:
+        """Disable anchors for when writing to file."""
+        self._anchors = False
+        return
+
     ##
     #  Class Methods
     ##
@@ -121,19 +128,18 @@ class ToQTextDocument(Tokenizer):
         self._document.clear()
         self._document.setDefaultFont(self._textFont)
 
-        qMetric = QFontMetricsF(self._textFont)
-        mPx = qMetric.ascent()  # 1 em in pixels
         fPt = self._textFont.pointSizeF()
+        fPx = fPt*96.0/72.0  # 1 em in pixels
 
         # Scaled Sizes
         # ============
 
         self._mHead = {
-            BlockTyp.TITLE: (mPx * self._marginTitle[0], mPx * self._marginTitle[1]),
-            BlockTyp.HEAD1: (mPx * self._marginHead1[0], mPx * self._marginHead1[1]),
-            BlockTyp.HEAD2: (mPx * self._marginHead2[0], mPx * self._marginHead2[1]),
-            BlockTyp.HEAD3: (mPx * self._marginHead3[0], mPx * self._marginHead3[1]),
-            BlockTyp.HEAD4: (mPx * self._marginHead4[0], mPx * self._marginHead4[1]),
+            BlockTyp.TITLE: (fPx * self._marginTitle[0], fPx * self._marginTitle[1]),
+            BlockTyp.HEAD1: (fPx * self._marginHead1[0], fPx * self._marginHead1[1]),
+            BlockTyp.HEAD2: (fPx * self._marginHead2[0], fPx * self._marginHead2[1]),
+            BlockTyp.HEAD3: (fPx * self._marginHead3[0], fPx * self._marginHead3[1]),
+            BlockTyp.HEAD4: (fPx * self._marginHead4[0], fPx * self._marginHead4[1]),
         }
 
         hScale = self._scaleHeads
@@ -145,12 +151,12 @@ class ToQTextDocument(Tokenizer):
             BlockTyp.HEAD4: (nwStyles.H_SIZES.get(4, 1.0) * fPt) if hScale else fPt,
         }
 
-        self._mText = (mPx * self._marginText[0], mPx * self._marginText[1])
-        self._mMeta = (mPx * self._marginMeta[0], mPx * self._marginMeta[1])
-        self._mSep  = (mPx * self._marginSep[0], mPx * self._marginSep[1])
+        self._mText = (fPx * self._marginText[0], fPx * self._marginText[1])
+        self._mMeta = (fPx * self._marginMeta[0], fPx * self._marginMeta[1])
+        self._mSep  = (fPx * self._marginSep[0], fPx * self._marginSep[1])
 
-        self._mIndent = mPx * 2.0
-        self._tIndent = mPx * self._firstWidth
+        self._mIndent = fPx * 2.0
+        self._tIndent = fPx * self._firstWidth
 
         # Text Formats
         # ============
@@ -243,13 +249,16 @@ class ToQTextDocument(Tokenizer):
         """Save the document as a PDF file."""
         m = self._pageMargins
 
-        printer = QPrinter(QPrinter.PrinterMode.PrinterResolution)
+        printer = QPrinter(QPrinter.PrinterMode.HighResolution)
+        printer.setDocName(self._project.data.name)
+        printer.setCreator(f"novelWriter/{__version__}")
         printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
         printer.setPageSize(self._pageSize)
         printer.setPageMargins(m.left(), m.top(), m.right(), m.bottom(), QPrinter.Unit.Millimeter)
         printer.setOutputFileName(str(path))
 
-        self._document.setPageSize(self._pageSize.size(QPageSize.Unit.Point))
+        self._document.documentLayout().setPaintDevice(printer)
+        self._document.setPageSize(QSizeF(printer.pageRect().size()))
         self._document.print(printer)
 
         return
@@ -344,18 +353,22 @@ class ToQTextDocument(Tokenizer):
                 cFmt.setForeground(self._theme.text)
                 primary = None
             elif fmt == TextFmt.ANM_B:
-                cFmt.setAnchor(True)
-                cFmt.setAnchorNames([data])
+                if self._anchors:
+                    cFmt.setAnchor(True)
+                    cFmt.setAnchorNames([data])
             elif fmt == TextFmt.ANM_E:
-                cFmt.setAnchor(False)
+                if self._anchors:
+                    cFmt.setAnchor(False)
             elif fmt == TextFmt.ARF_B:
-                cFmt.setFontUnderline(True)
-                cFmt.setAnchor(True)
-                cFmt.setAnchorHref(data)
+                if self._anchors:
+                    cFmt.setFontUnderline(True)
+                    cFmt.setAnchor(True)
+                    cFmt.setAnchorHref(data)
             elif fmt == TextFmt.ARF_E:
-                cFmt.setFontUnderline(False)
-                cFmt.setAnchor(False)
-                cFmt.setAnchorHref("")
+                if self._anchors:
+                    cFmt.setFontUnderline(False)
+                    cFmt.setAnchor(False)
+                    cFmt.setAnchorHref("")
             elif fmt == TextFmt.HRF_B:
                 cFmt.setForeground(self._theme.link)
                 cFmt.setFontUnderline(True)
@@ -429,7 +442,7 @@ class ToQTextDocument(Tokenizer):
         cFmt.setForeground(self._theme.head if hCol else self._theme.text)
         cFmt.setFontWeight(self._bold if self._boldHeads else self._normal)
         cFmt.setFontPointSize(self._sHead.get(hType, 1.0))
-        if hKey:
+        if hKey and self._anchors:
             cFmt.setAnchorNames([hKey])
             cFmt.setAnchor(True)
 

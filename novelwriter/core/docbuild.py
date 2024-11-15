@@ -176,6 +176,7 @@ class NWBuildDocument:
 
         elif bFormat == nwBuildFmt.PDF:
             makeObj = ToQTextDocument(self._project)
+            makeObj.disableAnchors()
             filtered = self._setupBuild(makeObj)
             makeObj.initDocument()
             yield from self._iterBuild(makeObj, filtered)
