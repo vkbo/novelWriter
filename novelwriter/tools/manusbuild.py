@@ -179,14 +179,20 @@ class GuiManuscriptBuild(NDialog):
         self.buildBox.setVerticalSpacing(sp4)
 
         # Dialog Buttons
+        self.buttonBox = QDialogButtonBox(self)
+
         self.btnOpen = QPushButton(SHARED.theme.getIcon("browse"), self.tr("Open Folder"), self)
         self.btnOpen.setIconSize(bSz)
+        self.btnOpen.setAutoDefault(False)
+        self.buttonBox.addButton(self.btnOpen, QtRoleAction)
+
         self.btnBuild = QPushButton(SHARED.theme.getIcon("export"), self.tr("&Build"), self)
         self.btnBuild.setIconSize(bSz)
+        self.btnBuild.setAutoDefault(True)
+        self.buttonBox.addButton(self.btnBuild, QtRoleAction)
 
-        self.dlgButtons = QDialogButtonBox(QtDialogClose, self)
-        self.dlgButtons.addButton(self.btnOpen, QtRoleAction)
-        self.dlgButtons.addButton(self.btnBuild, QtRoleAction)
+        self.btnClose = self.buttonBox.addButton(QtDialogClose)
+        self.btnClose.setAutoDefault(False)
 
         # Assemble GUI
         # ============
@@ -213,7 +219,7 @@ class GuiManuscriptBuild(NDialog):
         self.outerBox.addSpacing(sp4)
         self.outerBox.addLayout(self.buildBox, 0)
         self.outerBox.addSpacing(sp16)
-        self.outerBox.addWidget(self.dlgButtons, 0)
+        self.outerBox.addWidget(self.buttonBox, 0)
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
@@ -229,7 +235,7 @@ class GuiManuscriptBuild(NDialog):
         # Signals
         self.btnReset.clicked.connect(self._doResetBuildName)
         self.btnBrowse.clicked.connect(self._doSelectPath)
-        self.dlgButtons.clicked.connect(self._dialogButtonClicked)
+        self.buttonBox.clicked.connect(self._dialogButtonClicked)
         self.listFormats.itemSelectionChanged.connect(self._resetProgress)
 
         logger.debug("Ready: GuiManuscriptBuild")
@@ -260,7 +266,7 @@ class GuiManuscriptBuild(NDialog):
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
-        role = self.dlgButtons.buttonRole(button)
+        role = self.buttonBox.buttonRole(button)
         if role == QtRoleAction:
             if button == self.btnBuild:
                 self._runBuild()
