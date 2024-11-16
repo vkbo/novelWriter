@@ -1000,7 +1000,9 @@ class GuiProjectTree(QTreeWidget):
 
             self.propagateCount(tHandle, 0)
 
-            trItemP = trItemS.parent()
+            # If a non-root item ends up on root due to a bug, allow it
+            # to still be deleted from invisible root (see #2108)
+            trItemP = trItemS.parent() or self.invisibleRootItem()
             tIndex = trItemP.indexOfChild(trItemS)
             trItemP.takeChild(tIndex)
 
@@ -1315,9 +1317,11 @@ class GuiProjectTree(QTreeWidget):
         action is allowed, and update relevant data.
         """
         tItem = self.itemAt(event.pos())
-        dropOn = self.dropIndicatorPosition() == QAbstractItemView.DropIndicatorPosition.OnItem
+        onItem = self.dropIndicatorPosition() == QAbstractItemView.DropIndicatorPosition.OnItem
+        onView = self.dropIndicatorPosition() == QAbstractItemView.DropIndicatorPosition.OnViewport
         # Make sure nothing can be dropped on invisible root (see #1569)
-        if not tItem or tItem.parent() is None and not dropOn:
+        # Make sure nothing can be dropped on the viewport (see #2108)
+        if tItem is None or (tItem.parent() is None and not onItem) or onView:
             logger.error("Invalid drop location")
             event.ignore()
             return
