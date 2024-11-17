@@ -67,9 +67,17 @@ class ProjectNode:
         self.refresh()
         return
 
+    ##
+    #  Properties
+    ##
+
     @property
     def item(self) -> NWItem:
         return self._item
+
+    @property
+    def children(self) -> list[ProjectNode]:
+        return self._children
 
     def refresh(self) -> None:
         cache: dict[int, str | QIcon | Qt.AlignmentFlag] = {}
