@@ -30,6 +30,7 @@ from collections.abc import Iterable, Iterator
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, overload
 
+from novelwriter import SHARED
 from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
 from novelwriter.core.itemmodel import ProjectModel, ProjectNode
@@ -68,20 +69,12 @@ class NWTree:
     )
 
     def __init__(self, project: NWProject) -> None:
-
         self._project = project
-
-        # self._tree: dict[str, NWItem] = {}   # Holds all the items of the project
-        # self._order: list[str] = []          # The order of the tree items in the tree view
-        # self._roots: dict[str, NWItem] = {}  # The root items of the tree
-
         self._model = ProjectModel(self)
         self._items: dict[str, NWItem] = {}
         self._nodes: dict[str, ProjectNode] = {}
-
         self._trash = None     # The handle of the trash root folder
         self._changed = False  # True if tree structure has changed
-
         return
 
     ##
@@ -107,15 +100,10 @@ class NWTree:
 
     def clear(self) -> None:
         """Clear the item tree entirely."""
-        # self._tree    = {}
-        # self._order   = []
-        # self._roots   = {}
-
-        self._model   = ProjectModel(self)
-        self._items   = {}
-        self._nodes   = {}
-
-        self._trash   = None
+        self._model = ProjectModel(self)
+        self._items = {}
+        self._nodes = {}
+        self._trash = None
         self._changed = False
         return
 
@@ -235,6 +223,15 @@ class NWTree:
         self._model.endInsertRows()
         self._model.layoutChanged.emit()
 
+        return
+
+    def refreshNode(self, tHandle: str) -> None:
+        """Refresh node data on item change."""
+        if node := self._nodes.get(tHandle):
+            node.refresh()
+            index = self._model.indexFromNode(node)
+            SHARED.projectSignalProxy({"event": "projectItem", "handle": tHandle})
+            self._model.dataChanged.emit(index, index)
         return
 
     def _buildTree(self, items: dict[str, NWItem]) -> dict[str, NWItem]:

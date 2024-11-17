@@ -55,15 +55,16 @@ class SharedData(QObject):
         "_idleTime", "_idleRefTime",
     )
 
+    focusModeChanged = pyqtSignal(bool)
+    indexAvailable = pyqtSignal()
+    indexChangedTags = pyqtSignal(list, list)
+    indexCleared = pyqtSignal()
+    indexScannedText = pyqtSignal(str)
+    mainClockTick = pyqtSignal()
+    projectItemChanged = pyqtSignal(str)
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
     spellLanguageChanged = pyqtSignal(str, str)
-    focusModeChanged = pyqtSignal(bool)
-    indexScannedText = pyqtSignal(str)
-    indexChangedTags = pyqtSignal(list, list)
-    indexCleared = pyqtSignal()
-    indexAvailable = pyqtSignal()
-    mainClockTick = pyqtSignal()
     statusLabelsChanged = pyqtSignal(str)
 
     def __init__(self) -> None:
@@ -320,12 +321,14 @@ class SharedData(QObject):
             self.indexAvailable.emit()
         return
 
-    def projectSingalProxy(self, data: dict) -> None:
+    def projectSignalProxy(self, data: dict) -> None:
         """Emit signals on project data change."""
         event = data.get("event")
         logger.debug("Received '%s' event from project data", event)
         if event == "statusLabels":
             self.statusLabelsChanged.emit(data.get("kind", ""))
+        elif event == "projectItem":
+            self.projectItemChanged.emit(data.get("handle", ""))
         return
 
     ##

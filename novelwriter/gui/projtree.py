@@ -42,6 +42,7 @@ from novelwriter.common import qtLambda
 from novelwriter.constants import nwLabels, nwUnicode, trConst
 from novelwriter.core.item import NWItem
 from novelwriter.core.itemmodel import ProjectModel, ProjectNode
+from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.extensions.modified import NIconToolButton
@@ -58,7 +59,7 @@ class GuiProjectView(QWidget):
     """
 
     # Signals triggered when the meta data values of items change
-    treeItemChanged = pyqtSignal(str)
+    # treeItemChanged = pyqtSignal(str)
     rootFolderChanged = pyqtSignal(str)
     wordCountsChanged = pyqtSignal()
 
@@ -193,8 +194,10 @@ class GuiProjectView(QWidget):
         """
         if tHandle is None:
             tHandle = self.projTree.getSelectedHandle()
-        if tHandle:
-            self.projTree.renameTreeItem(tHandle, name=name)
+        if nwItem := SHARED.project.tree[tHandle]:
+            newLabel, dlgOk = GuiEditLabel.getLabel(self, text=name or nwItem.itemName)
+            if dlgOk:
+                nwItem.setName(newLabel)
         return
 
     @pyqtSlot(str, bool)
@@ -891,16 +894,6 @@ class GuiProjectTree(QTreeView):
         #         self.setCurrentItem(tItem.parent())
         #     elif step > 0 and tItem.childCount() > 0:
         #         self.setCurrentItem(tItem.child(0))
-        return
-
-    def renameTreeItem(self, tHandle: str, name: str = "") -> None:
-        """Open a dialog to edit the label of an item."""
-        # if nwItem := SHARED.project.tree[tHandle]:
-        #     newLabel, dlgOk = GuiEditLabel.getLabel(self, text=name or nwItem.itemName)
-        #     if dlgOk:
-        #         nwItem.setName(newLabel)
-        #         self.setTreeItemValues(nwItem)
-        #         self._alertTreeChange(tHandle, flush=False)
         return
 
     # def saveTreeOrder(self) -> None:
@@ -1848,7 +1841,7 @@ class _TreeContextMenu(QMenu):
 
         # Edit Item Settings
         action = self.addAction(self.tr("Rename"))
-        action.triggered.connect(qtLambda(self.projTree.renameTreeItem, self._handle))
+        action.triggered.connect(qtLambda(self.projView.renameTreeItem, self._handle))
         if isFile:
             self._itemHeader()
             self._itemActive(False)
@@ -1911,7 +1904,7 @@ class _TreeContextMenu(QMenu):
         if hItem := SHARED.project.index.getItemHeading(self._handle, "T0001"):
             action = self.addAction(self.tr("Rename to Heading"))
             action.triggered.connect(
-                qtLambda(self.projTree.renameTreeItem, self._handle, hItem.title)
+                qtLambda(self.projView.renameTreeItem, self._handle, hItem.title)
             )
         return
 

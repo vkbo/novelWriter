@@ -131,7 +131,7 @@ class NWStatus:
             self._default = next(iter(self._store)) if self._store else None
 
         # Emit the change signal
-        SHARED.projectSingalProxy({"event": "statusLabels", "kind": self._prefix})
+        SHARED.projectSignalProxy({"event": "statusLabels", "kind": self._prefix})
 
         return
 
