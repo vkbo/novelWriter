@@ -41,7 +41,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import qtLambda
 from novelwriter.constants import nwLabels, nwUnicode, trConst
 from novelwriter.core.item import NWItem
-from novelwriter.core.itemmodel import ProjectModel
+from novelwriter.core.itemmodel import ProjectModel, ProjectNode
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.extensions.modified import NIconToolButton
@@ -165,13 +165,12 @@ class GuiProjectView(QWidget):
 
     def saveProjectTasks(self) -> None:
         """Run save project tasks."""
-        self.projTree.saveTreeOrder()
+        # self.projTree.saveTreeOrder()
         return
 
     def populateTree(self) -> None:
         """Build the tree structure from project data."""
         self.projTree.loadModel()
-        # self.projTree.buildTree()
         return
 
     def setTreeFocus(self) -> None:
@@ -562,8 +561,6 @@ class GuiProjectTree(QTreeView):
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
 
         # Connect signals
-        # self.itemDoubleClicked.connect(self._treeDoubleClick)
-        # self.itemSelectionChanged.connect(self._treeSelectionChange)
         self.clicked.connect(self._treeSingleClick)
         self.doubleClicked.connect(self._treeDoubleClick)
 
@@ -595,10 +592,26 @@ class GuiProjectTree(QTreeView):
         return
 
     ##
-    #  Class Methods
+    #  External Methods
     ##
 
+    def getSelectedHandle(self) -> str | None:
+        """Get the currently selected handle."""
+        if (indexes := self.selectedIndexes()) and (node := self._getNode(indexes[0])):
+            return node.item.itemHandle
+        return None
+
+    ##
+    #  Module Internal Methods
+    ##
+
+    def clearTree(self) -> None:
+        """Clear the tree view."""
+        self.setModel(None)
+        return
+
     def loadModel(self) -> None:
+        """Load and prepare a new project model."""
         self.setModel(SHARED.project.tree.model)
 
         # Lock the column sizes
@@ -622,11 +635,63 @@ class GuiProjectTree(QTreeView):
 
         return
 
-    def clearTree(self) -> None:
-        """Clear the GUI content and the related map."""
-        # self.clear()
-        # self._treeMap = {}
+    def setSelectedHandle(self, tHandle: str | None, doScroll: bool = False) -> None:
+        """Set a specific handle as the selected item."""
+        if (model := self._getModel()) and (index := model.indexFromHandle(tHandle)).isValid():
+            self.setCurrentIndex(index)
+            if doScroll:
+                self.scrollTo(index, QAbstractItemView.ScrollHint.PositionAtCenter)
+            self.projView.selectedItemChanged.emit(tHandle)
         return
+
+    ##
+    #  Private Slots
+    ##
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(QModelIndex)
+    def _treeSingleClick(self, index: QModelIndex) -> None:
+        """The user changed which item is selected."""
+        if node := self._getNode(index):
+            self.projView.selectedItemChanged.emit(node.item.itemHandle)
+        return
+
+    @pyqtSlot(QModelIndex)
+    def _treeDoubleClick(self, index: QModelIndex) -> None:
+        """Capture a double-click event and either request the document
+        for editing if it is a file, or expand/close the node if not.
+        """
+        if node := self._getNode(index):
+            if node.item.isFileType():
+                self.projView.openDocumentRequest.emit(
+                    node.item.itemHandle, nwDocMode.EDIT, "", True
+                )
+            else:
+                self.setExpanded(index, not self.isExpanded(index))
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _getModel(self) -> ProjectModel | None:
+        """Return a project node corresponding to a model index."""
+        if isinstance(model := self.model(), ProjectModel):
+            return model
+        return None
+
+    def _getNode(self, index: QModelIndex) -> ProjectNode | None:
+        """Return a project node corresponding to a model index."""
+        if isinstance(model := self.model(), ProjectModel) and (node := model.node(index)):
+            return node
+        return None
+
+    # =========================================================================================== #
+    #  Old Code
+    # =========================================================================================== #
 
     def createNewNote(self, tag: str, itemClass: nwItemClass) -> None:
         """Create a new note. This function is used by the document
@@ -838,20 +903,20 @@ class GuiProjectTree(QTreeView):
         #         self._alertTreeChange(tHandle, flush=False)
         return
 
-    def saveTreeOrder(self) -> None:
-        """Build a list of the items in the project tree and send them
-        to the project class. This syncs up the two versions of the
-        project structure, and must be called before any code that
-        depends on this order to be up to date.
-        """
-        # items = []
-        # for i in range(self.topLevelItemCount()):
-        #     item = self.topLevelItem(i)
-        #     if isinstance(item, QTreeWidgetItem):
-        #         items = self._scanChildren(items, item, i)
-        # logger.debug("Saving project tree item order")
-        # SHARED.project.setTreeOrder(items)
-        return
+    # def saveTreeOrder(self) -> None:
+    #     """Build a list of the items in the project tree and send them
+    #     to the project class. This syncs up the two versions of the
+    #     project structure, and must be called before any code that
+    #     depends on this order to be up to date.
+    #     """
+    #     # items = []
+    #     # for i in range(self.topLevelItemCount()):
+    #     #     item = self.topLevelItem(i)
+    #     #     if isinstance(item, QTreeWidgetItem):
+    #     #         items = self._scanChildren(items, item, i)
+    #     # logger.debug("Saving project tree item order")
+    #     # SHARED.project.setTreeOrder(items)
+    #     return
 
     def getTreeFromHandle(self, tHandle: str) -> list[str]:
         """Recursively return all the child items starting from a given
@@ -1140,35 +1205,21 @@ class GuiProjectTree(QTreeView):
 
         return
 
-    def buildTree(self) -> None:
-        """Build the entire project tree from scratch. This depends on
-        the save project item iterator in the project class which will
-        always make sure items with a parent have had their parent item
-        sent first.
-        """
-        # logger.debug("Building the project tree ...")
-        # self.clearTree()
-        # for nwItem in SHARED.project.iterProjectItems():
-        #     self._addTreeItem(nwItem)
-        # self.setActiveHandle(self._actHandle)
-        # logger.info("%d item(s) added to the project tree", len(self._treeMap))
-        return
+    # def getSelectedHandle(self) -> str | None:
+    #     """Get the currently selected handle. If multiple items are
+    #     selected, return the first.
+    #     """
+    #     # if items := self.selectedItems():
+    #     #     return items[0].data(self.C_DATA, self.D_HANDLE)
+    #     return None
 
-    def getSelectedHandle(self) -> str | None:
-        """Get the currently selected handle. If multiple items are
-        selected, return the first.
-        """
-        # if items := self.selectedItems():
-        #     return items[0].data(self.C_DATA, self.D_HANDLE)
-        return None
-
-    def setSelectedHandle(self, tHandle: str | None, doScroll: bool = False) -> None:
-        """Set a specific handle as the selected item."""
-        # if tHandle in self._treeMap:
-        #     self.setCurrentItem(self._treeMap[tHandle])
-        #     if (indexes := self.selectedIndexes()) and doScroll:
-        #         self.scrollTo(indexes[0], QAbstractItemView.ScrollHint.PositionAtCenter)
-        return
+    # def setSelectedHandle(self, tHandle: str | None, doScroll: bool = False) -> None:
+    #     """Set a specific handle as the selected item."""
+    #     # if tHandle in self._treeMap:
+    #     #     self.setCurrentItem(self._treeMap[tHandle])
+    #     #     if (indexes := self.selectedIndexes()) and doScroll:
+    #     #         self.scrollTo(indexes[0], QAbstractItemView.ScrollHint.PositionAtCenter)
+    #     return
 
     def setActiveHandle(self, tHandle: str | None) -> None:
         """Highlight the rows associated with a given handle."""
@@ -1239,35 +1290,35 @@ class GuiProjectTree(QTreeView):
     #  Private Slots
     ##
 
-    @pyqtSlot(QModelIndex)
-    def _treeSingleClick(self, index: QModelIndex) -> None:
-        """The user changed which item is selected."""
-        if isinstance(model := self.model(), ProjectModel) and (node := model.node(index)):
-            self.projView.selectedItemChanged.emit(node.item.itemHandle)
+    # @pyqtSlot(QModelIndex)
+    # def _treeSingleClick(self, index: QModelIndex) -> None:
+    #     """The user changed which item is selected."""
+    #     if isinstance(model := self.model(), ProjectModel) and (node := model.node(index)):
+    #         self.projView.selectedItemChanged.emit(node.item.itemHandle)
 
-        # # When selecting multiple items, don't allow including root
-        # # items in the selection and instead deselect them
-        # items = self.selectedItems()
-        # if items and len(items) > 1:
-        #     for item in items:
-        #         if item.parent() is None:
-        #             item.setSelected(False)
+    #     # # When selecting multiple items, don't allow including root
+    #     # # items in the selection and instead deselect them
+    #     # items = self.selectedItems()
+    #     # if items and len(items) > 1:
+    #     #     for item in items:
+    #     #         if item.parent() is None:
+    #     #             item.setSelected(False)
 
-        return
+    #     return
 
-    @pyqtSlot(QModelIndex)
-    def _treeDoubleClick(self, index: QModelIndex) -> None:
-        """Capture a double-click event and either request the document
-        for editing if it is a file, or expand/close the node if not.
-        """
-        if isinstance(model := self.model(), ProjectModel) and (node := model.node(index)):
-            if node.item.isFileType():
-                self.projView.openDocumentRequest.emit(
-                    node.item.itemHandle, nwDocMode.EDIT, "", True
-                )
-            else:
-                self.setExpanded(index, not self.isExpanded(index))
-        return
+    # @pyqtSlot(QModelIndex)
+    # def _treeDoubleClick(self, index: QModelIndex) -> None:
+    #     """Capture a double-click event and either request the document
+    #     for editing if it is a file, or expand/close the node if not.
+    #     """
+    #     if isinstance(model := self.model(), ProjectModel) and (node := model.node(index)):
+    #         if node.item.isFileType():
+    #             self.projView.openDocumentRequest.emit(
+    #                 node.item.itemHandle, nwDocMode.EDIT, "", True
+    #             )
+    #         else:
+    #             self.setExpanded(index, not self.isExpanded(index))
+    #     return
 
     @pyqtSlot()
     def _doAutoScroll(self) -> None:
@@ -2007,7 +2058,7 @@ class _TreeContextMenu(QMenu):
             for tItem in self._items:
                 if tItem.isFileType() and tItem.itemClass != nwItemClass.TRASH:
                     self.projTree.moveItemToTrash(tItem.itemHandle, askFirst=False, flush=False)
-                self.projTree.saveTreeOrder()
+                # self.projTree.saveTreeOrder()
         return
 
     @pyqtSlot()
@@ -2017,7 +2068,7 @@ class _TreeContextMenu(QMenu):
             for tItem in self._items:
                 if tItem.isFileType() and tItem.itemClass == nwItemClass.TRASH:
                     self.projTree.permDeleteItem(tItem.itemHandle, askFirst=False, flush=False)
-                self.projTree.saveTreeOrder()
+                # self.projTree.saveTreeOrder()
         return
 
     @pyqtSlot()

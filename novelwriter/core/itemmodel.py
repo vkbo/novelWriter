@@ -154,11 +154,17 @@ class ProjectNode:
 
 class ProjectModel(QAbstractItemModel):
 
-    __slots__ = ("_root", "_map")
+    __slots__ = ("_tree", "_root")
 
     def __init__(self, tree: NWTree) -> None:
         super().__init__(None)
+        logger.debug("Create: ProjectModel")
+        self._tree = tree
         self._root = ProjectNode(NWItem(tree._project, ""))
+        return
+
+    def __del__(self) -> None:
+        logger.debug("Delete: ProjectModel")
         return
 
     @property
@@ -219,6 +225,16 @@ class ProjectModel(QAbstractItemModel):
         if index.isValid():
             return index.internalPointer()
         return None
+
+    def indexFromHandle(self, handle: str | None) -> QModelIndex:
+        """Get the index representing a node in the model."""
+        if handle and (node := self._tree.nodes.get(handle)):
+            return self.createIndex(node.row(), 0, node)
+        return QModelIndex()
+
+    def indexFromNode(self, node: ProjectNode) -> QModelIndex:
+        """Get the index representing a node in the model."""
+        return self.createIndex(node.row(), 0, node)
 
     ##
     #  Methods

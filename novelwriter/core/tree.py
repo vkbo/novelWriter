@@ -98,6 +98,10 @@ class NWTree:
     def model(self) -> ProjectModel:
         return self._model
 
+    @property
+    def nodes(self) -> dict[str, ProjectNode]:
+        return self._nodes
+
     ##
     #  Class Methods
     ##
