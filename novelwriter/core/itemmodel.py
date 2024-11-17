@@ -166,7 +166,7 @@ class ProjectModel(QAbstractItemModel):
         return self._root
 
     ##
-    #  Model Access
+    #  Model Interface
     ##
 
     def rowCount(self, index: QModelIndex) -> int:
@@ -210,6 +210,15 @@ class ProjectModel(QAbstractItemModel):
     #         item = self._root
     #     item.addChild(node)
     #     return
+
+    ##
+    #  Data Access
+    ##
+
+    def node(self, index: QModelIndex) -> ProjectNode | None:
+        if index.isValid():
+            return index.internalPointer()
+        return None
 
     ##
     #  Methods
