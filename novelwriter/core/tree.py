@@ -33,6 +33,7 @@ from typing import TYPE_CHECKING, Literal, overload
 from novelwriter.common import isHandle
 from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
+from novelwriter.core.itemmodel import ProjectModel, ProjectNode
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 
@@ -62,7 +63,7 @@ class NWTree:
     also used for file names.
     """
 
-    __slots__ = ("_project", "_tree", "_order", "_roots", "_trash", "_changed")
+    __slots__ = ("_project", "_tree", "_order", "_roots", "_model", "_nodes", "_trash", "_changed")
 
     def __init__(self, project: NWProject) -> None:
 
@@ -71,6 +72,9 @@ class NWTree:
         self._tree: dict[str, NWItem] = {}   # Holds all the items of the project
         self._order: list[str] = []          # The order of the tree items in the tree view
         self._roots: dict[str, NWItem] = {}  # The root items of the tree
+
+        self._model = ProjectModel(self)
+        self._nodes: dict[str, ProjectNode] = {}
 
         self._trash = None     # The handle of the trash root folder
         self._changed = False  # True if tree structure has changed
@@ -85,6 +89,10 @@ class NWTree:
     def trashRoot(self) -> str | None:
         """Return the handle of the trash folder, or None."""
         return self._trash
+
+    @property
+    def model(self) -> ProjectModel:
+        return self._model
 
     ##
     #  Class Methods
@@ -194,6 +202,27 @@ class NWTree:
             if nwItem.unpack(item):
                 self.append(nwItem)
                 nwItem.saveInitialCount()
+        return
+
+    def buildModel(self) -> None:
+        """"""
+        root = ProjectNode(NWItem(self._project, ""))
+        for item in self._tree.values():
+            node = ProjectNode(item)
+            self._nodes[item.itemHandle] = node
+            if pHandle := item.itemParent:
+                if parent := self._nodes.get(pHandle):
+                    parent.addChild(node)
+                else:
+                    logger.error("Could not add item '%s'", item.itemHandle)
+            else:
+                root.addChild(node)
+
+        self._model.beginInsertRows(self._model.index(0, 0), 0, 0)
+        self._model.setRoot(root)
+        self._model.endInsertRows()
+        self._model.layoutChanged.emit()
+
         return
 
     def checkConsistency(self, prefix: str) -> tuple[int, int]:

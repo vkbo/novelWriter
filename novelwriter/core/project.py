@@ -329,6 +329,7 @@ class NWProject:
         # ============
 
         self._tree.unpack(projContent)
+        self._tree.buildModel()
         self._options.loadSettings()
         self._loadProjectLocalisation()
 

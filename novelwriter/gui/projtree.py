@@ -34,7 +34,8 @@ from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QIcon, QMouseEvent, QPalette
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QFrame, QHBoxLayout, QHeaderView, QLabel,
-    QMenu, QShortcut, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QMenu, QShortcut, QTreeView, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -80,12 +81,14 @@ class GuiProjectView(QWidget):
 
         # Build GUI
         self.projTree = GuiProjectTree(self)
+        self.projTree2 = GuiProjectTree2(self)
         self.projBar = GuiProjectToolBar(self)
         self.projBar.setEnabled(False)
 
         # Assemble
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.projBar, 0)
+        self.outerBox.addWidget(self.projTree2, 3)
         self.outerBox.addWidget(self.projTree, 1)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setSpacing(0)
@@ -177,6 +180,7 @@ class GuiProjectView(QWidget):
     def populateTree(self) -> None:
         """Build the tree structure from project data."""
         self.projTree.buildTree()
+        self.projTree2.loadModel()
         return
 
     def setTreeFocus(self) -> None:
@@ -482,6 +486,54 @@ class GuiProjectToolBar(QWidget):
         self.mAddRoot.addSeparator()
         addClass(nwItemClass.ARCHIVE)
         addClass(nwItemClass.TEMPLATE)
+
+        return
+
+
+class GuiProjectTree2(QTreeView):
+
+    C_NAME   = 0
+    C_COUNT  = 1
+    C_ACTIVE = 2
+    C_STATUS = 3
+
+    def __init__(self, projView: GuiProjectView) -> None:
+        super().__init__(parent=projView)
+
+        logger.debug("Create: GuiProjectTree")
+
+        # Tree Settings
+        iPx = SHARED.theme.baseIconHeight
+
+        self.setIconSize(SHARED.theme.baseIconSize)
+        self.setFrameStyle(QFrame.Shape.NoFrame)
+        self.setUniformRowHeights(True)
+        self.setAllColumnsShowFocus(True)
+        self.setExpandsOnDoubleClick(False)
+        self.setAutoExpandDelay(1000)
+        self.setHeaderHidden(True)
+        self.setIndentation(iPx)
+
+        logger.debug("Ready: GuiProjectTree")
+
+        return
+
+    def loadModel(self) -> None:
+        self.setModel(SHARED.project.tree.model)
+
+        # Lock the column sizes
+        iPx = SHARED.theme.baseIconHeight
+        cMg = CONFIG.pxInt(6)
+
+        treeHeader = self.header()
+        treeHeader.setStretchLastSection(False)
+        treeHeader.setMinimumSectionSize(iPx + cMg)
+        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.Stretch)
+        treeHeader.setSectionResizeMode(self.C_COUNT, QHeaderView.ResizeMode.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_ACTIVE, QHeaderView.ResizeMode.Fixed)
+        treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.ResizeMode.Fixed)
+        treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
+        treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
 
         return
 
