@@ -535,6 +535,11 @@ class GuiProjectTree2(QTreeView):
         treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
         treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
 
+        self.blockSignals(True)
+        for index in SHARED.project.tree.model.allExpanded():
+            self.setExpanded(index, True)
+        self.blockSignals(False)
+
         return
 
 

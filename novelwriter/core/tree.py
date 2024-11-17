@@ -63,7 +63,10 @@ class NWTree:
     also used for file names.
     """
 
-    __slots__ = ("_project", "_tree", "_order", "_roots", "_model", "_nodes", "_trash", "_changed")
+    __slots__ = (
+        "_project", "_tree", "_order", "_roots",
+        "_model", "_items", "_nodes", "_trash", "_changed",
+    )
 
     def __init__(self, project: NWProject) -> None:
 
@@ -74,6 +77,7 @@ class NWTree:
         self._roots: dict[str, NWItem] = {}  # The root items of the tree
 
         self._model = ProjectModel(self)
+        self._items: dict[str, NWItem] = {}
         self._nodes: dict[str, ProjectNode] = {}
 
         self._trash = None     # The handle of the trash root folder
@@ -103,6 +107,11 @@ class NWTree:
         self._tree    = {}
         self._order   = []
         self._roots   = {}
+
+        self._model   = ProjectModel(self)
+        self._items   = {}
+        self._nodes   = {}
+
         self._trash   = None
         self._changed = False
         return
@@ -185,12 +194,20 @@ class NWTree:
         """Pack the content of the tree into a list of dictionaries of
         items. In the order defined by the _treeOrder list.
         """
-        tree = []
-        for tHandle in self._order:
-            tItem = self.__getitem__(tHandle)
-            if tItem:
-                tree.append(tItem.pack())
-        return tree
+        nodes = self._model.root.allChildren()
+        if len(nodes) != len(self._nodes):
+            logger.warning(
+                "Model tree is inconsitent with nodes map, %d != %d",
+                len(nodes), len(self._nodes)
+            )
+
+        # tree = []
+        # for tHandle in self._order:
+        #     tItem = self.__getitem__(tHandle)
+        #     if tItem:
+        #         tree.append(tItem.pack())
+
+        return [node.item.pack() for node in nodes]
 
     def unpack(self, data: list[dict]) -> None:
         """Iterate through all items of a list and add them to the
@@ -200,30 +217,50 @@ class NWTree:
         for item in data:
             nwItem = NWItem(self._project, "")  # Handle is set by unpack()
             if nwItem.unpack(item):
+                self._items[nwItem.itemHandle] = nwItem
                 self.append(nwItem)
-                nwItem.saveInitialCount()
+
         return
 
     def buildModel(self) -> None:
         """"""
-        root = ProjectNode(NWItem(self._project, ""))
-        for item in self._tree.values():
-            node = ProjectNode(item)
-            self._nodes[item.itemHandle] = node
-            if pHandle := item.itemParent:
-                if parent := self._nodes.get(pHandle):
-                    parent.addChild(node)
-                else:
-                    logger.error("Could not add item '%s'", item.itemHandle)
-            else:
-                root.addChild(node)
-
         self._model.beginInsertRows(self._model.index(0, 0), 0, 0)
-        self._model.setRoot(root)
+        later: dict[str, NWItem] = self._items.copy()
+        for _ in range(999):
+            later = self._buildTree(later)
+            if len(later) == 0:
+                break
+        else:
+            logger.error("Not all items could be added to project tree")
+            for item in later.values():
+                item.setParent(None)
+
         self._model.endInsertRows()
         self._model.layoutChanged.emit()
 
         return
+
+    def _buildTree(self, items: dict[str, NWItem]) -> dict[str, NWItem]:
+        """"""
+        remains: dict[str, NWItem] = {}
+        for handle, item in items.items():
+            if pHandle := item.itemParent:
+                if parent := self._nodes.get(pHandle):
+                    node = ProjectNode(item)
+                    parent.addChild(node)
+                    self._nodes[handle] = node
+                elif pHandle in items:
+                    remains[handle] = item
+                    logger.warning("Item '%s' found before its parent", handle)
+                else:
+                    item.setParent(None)
+                    logger.error("Item '%s' has no parent in current tree", handle)
+            elif item.isRootType():
+                node = ProjectNode(item)
+                self._model.root.addChild(node)
+                self._nodes[handle] = node
+
+        return remains
 
     def checkConsistency(self, prefix: str) -> tuple[int, int]:
         """Check the project tree consistency. Also check the content

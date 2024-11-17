@@ -256,6 +256,8 @@ class NWItem:
             self._paraCount = 0
             self._cursorPos = 0
 
+        self._initCount = self._wordCount
+
         return True
 
     @classmethod

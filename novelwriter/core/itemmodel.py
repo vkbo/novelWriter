@@ -60,12 +60,16 @@ class ProjectNode:
 
     def __init__(self, item: NWItem) -> None:
         self._item = item
-        self._children = []
+        self._children: list[ProjectNode] = []
         self._parent: ProjectNode | None = None
         self._row = 0
         self._cache: dict[int, str | QIcon | Qt.AlignmentFlag] = {}
         self.refresh()
         return
+
+    @property
+    def item(self) -> NWItem:
+        return self._item
 
     def refresh(self) -> None:
         cache: dict[int, str | QIcon | Qt.AlignmentFlag] = {}
@@ -132,17 +136,38 @@ class ProjectNode:
         self.refresh()
         return
 
+    def allChildren(self) -> list[ProjectNode]:
+        nodes: list[ProjectNode] = []
+        self._recursiveAppendChildren(nodes)
+        return nodes
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _recursiveAppendChildren(self, children: list[ProjectNode]) -> None:
+        for node in self._children:
+            children.append(node)
+            node._recursiveAppendChildren(children)
+        return
+
 
 class ProjectModel(QAbstractItemModel):
+
+    __slots__ = ("_root", "_map")
 
     def __init__(self, tree: NWTree) -> None:
         super().__init__(None)
         self._root = ProjectNode(NWItem(tree._project, ""))
         return
 
-    def setRoot(self, root: ProjectNode) -> None:
-        self._root = root
-        return
+    @property
+    def root(self) -> ProjectNode:
+        return self._root
+
+    ##
+    #  Model Access
+    ##
 
     def rowCount(self, index: QModelIndex) -> int:
         if index.isValid():
@@ -159,7 +184,7 @@ class ProjectModel(QAbstractItemModel):
         return QModelIndex()
 
     def index(self, row: int, column: int, parent: QModelIndex = QModelIndex()) -> QModelIndex:
-        if parent and parent.isValid():
+        if parent.isValid():
             item = parent.internalPointer()
         else:
             item = self._root
@@ -178,10 +203,22 @@ class ProjectModel(QAbstractItemModel):
         node = index.internalPointer()
         return node.data(index.column(), role)
 
-    def addChild(self, node: ProjectNode, parent: QModelIndex) -> None:
-        if parent and parent.isValid():
-            item = parent.internalPointer()
-        else:
-            item = self._root
-        item.addChild(node)
-        return
+    # def addChild(self, node: ProjectNode, parent: QModelIndex) -> None:
+    #     if parent.isValid():
+    #         item = parent.internalPointer()
+    #     else:
+    #         item = self._root
+    #     item.addChild(node)
+    #     return
+
+    ##
+    #  Methods
+    ##
+
+    def allExpanded(self) -> list[QModelIndex]:
+        """Return a list of all expanded items."""
+        expanded = []
+        for node in self._root.allChildren():
+            if node._item.isExpanded:
+                expanded.append(self.createIndex(node.row(), 0, node))
+        return expanded
