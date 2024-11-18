@@ -39,7 +39,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import qtLambda
-from novelwriter.constants import nwLabels, nwUnicode, trConst
+from novelwriter.constants import nwLabels, nwStyles, nwUnicode, trConst
 from novelwriter.core.item import NWItem
 from novelwriter.core.itemmodel import ProjectModel, ProjectNode
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -568,8 +568,8 @@ class GuiProjectTree(QTreeView):
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
 
         # Connect signals
-        self.clicked.connect(self._treeSingleClick)
-        self.doubleClicked.connect(self._treeDoubleClick)
+        self.clicked.connect(self._onSingleClick)
+        self.doubleClicked.connect(self._onDoubleClick)
 
         # Auto Scroll
         # self._scrollMargin = SHARED.theme.baseIconHeight
@@ -639,11 +639,17 @@ class GuiProjectTree(QTreeView):
         treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
         treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
 
-        self.blockSignals(True)
-        for index in SHARED.project.tree.model.allExpanded():
-            self.setExpanded(index, True)
-        self.blockSignals(False)
+        self.restoreExpandedState()
 
+        return
+
+    def restoreExpandedState(self) -> None:
+        """Expand all nodes that were previously expanded."""
+        if model := self._getModel():
+            self.blockSignals(True)
+            for index in model.allExpanded():
+                self.setExpanded(index, True)
+            self.blockSignals(False)
         return
 
     def setSelectedHandle(self, tHandle: str | None, doScroll: bool = False) -> None:
@@ -653,6 +659,87 @@ class GuiProjectTree(QTreeView):
             if doScroll:
                 self.scrollTo(index, QAbstractItemView.ScrollHint.PositionAtCenter)
             self.projView.selectedItemChanged.emit(tHandle)
+        return
+
+    def newTreeItem(
+        self, itemType: nwItemType, itemClass: nwItemClass | None = None,
+        hLevel: int = 1, isNote: bool = False, copyDoc: str | None = None,
+    ) -> None:
+        """Add new item to the tree, with a given itemType (and
+        itemClass if Root), and attach it to the selected handle. Also
+        make sure the item is added in a place it can be added, and that
+        other meta data is set correctly to ensure a valid project tree.
+        """
+        if not SHARED.hasProject:
+            logger.error("No project open")
+            return
+
+        tHandle = None
+        if itemType == nwItemType.ROOT and isinstance(itemClass, nwItemClass):
+
+            pos = -1
+            if (node := self._getNode(self.currentIndex())) and (itemRoot := node.item.itemRoot):
+                if root := SHARED.project.tree.nodes.get(itemRoot):
+                    pos = root.row() + 1
+
+            SHARED.project.newRoot(itemClass, pos)
+            self.restoreExpandedState()
+
+        elif itemType in (nwItemType.FILE, nwItemType.FOLDER):
+
+            if not ((model := self._getModel()) and (node := model.node(self.currentIndex()))):
+                SHARED.error(self.tr("Did not find anywhere to add the file or folder!"))
+                return
+
+            if node.item.itemClass == nwItemClass.TRASH:
+                SHARED.error(self.tr("Cannot add new files or folders to the Trash folder."))
+                return
+
+            # Collect some information about the selected item
+            sLevel = nwStyles.H_LEVEL.get(node.item.mainHeading, 0)
+            sIsParent = node.childCount() > 0
+
+            # Set default label and determine if new item is to be added
+            # as child or sibling to the selected item
+            if itemType == nwItemType.FILE:
+                if copyDoc and (cItem := SHARED.project.tree[copyDoc]):
+                    newLabel = cItem.itemName
+                    asChild = sIsParent and node.item.isDocumentLayout()
+                elif isNote:
+                    newLabel = self.tr("New Note")
+                    asChild = sIsParent
+                elif hLevel == 2:
+                    newLabel = self.tr("New Chapter")
+                    asChild = sIsParent and node.item.isDocumentLayout() and sLevel < 2
+                elif hLevel == 3:
+                    newLabel = self.tr("New Scene")
+                    asChild = sIsParent and node.item.isDocumentLayout() and sLevel < 3
+                else:
+                    newLabel = self.tr("New Document")
+                    asChild = sIsParent and node.item.isDocumentLayout()
+            else:
+                newLabel = self.tr("New Folder")
+                asChild = False
+
+            pos = -1
+            sHandle = None
+            if not (asChild or node.item.isFolderType() or node.item.isRootType()):
+                pos = node.row() + 1
+                sHandle = node.item.itemParent
+
+            sHandle = sHandle or node.item.itemHandle
+            newLabel, dlgOk = GuiEditLabel.getLabel(self, text=newLabel)
+            if dlgOk:
+                # Add the file or folder
+                if itemType == nwItemType.FILE:
+                    tHandle = SHARED.project.newFile(newLabel, sHandle, pos)
+                    if tHandle and copyDoc:
+                        SHARED.project.copyFileContent(tHandle, copyDoc)
+                    elif tHandle and hLevel > 0:
+                        SHARED.project.writeNewFile(tHandle, hLevel, not isNote)
+                else:
+                    tHandle = SHARED.project.newFolder(newLabel, sHandle, pos)
+
         return
 
     ##
@@ -736,14 +823,14 @@ class GuiProjectTree(QTreeView):
     ##
 
     @pyqtSlot(QModelIndex)
-    def _treeSingleClick(self, index: QModelIndex) -> None:
+    def _onSingleClick(self, index: QModelIndex) -> None:
         """The user changed which item is selected."""
         if node := self._getNode(index):
             self.projView.selectedItemChanged.emit(node.item.itemHandle)
         return
 
     @pyqtSlot(QModelIndex)
-    def _treeDoubleClick(self, index: QModelIndex) -> None:
+    def _onDoubleClick(self, index: QModelIndex) -> None:
         """Capture a double-click event and either request the document
         for editing if it is a file, or expand/close the node if not.
         """
@@ -788,109 +875,6 @@ class GuiProjectTree(QTreeView):
         #         SHARED.project.writeNewFile(tHandle, 1, False, f"@tag: {tag}\n\n")
         #         self.revealNewTreeItem(tHandle, wordCount=True)
         return
-
-    def newTreeItem(self, itemType: nwItemType, itemClass: nwItemClass | None = None,
-                    hLevel: int = 1, isNote: bool = False, copyDoc: str | None = None) -> bool:
-        """Add new item to the tree, with a given itemType (and
-        itemClass if Root), and attach it to the selected handle. Also
-        make sure the item is added in a place it can be added, and that
-        other meta data is set correctly to ensure a valid project tree.
-        """
-        # if not SHARED.hasProject:
-        #     logger.error("No project open")
-        #     return False
-
-        # nHandle = None
-        # tHandle = None
-
-        # if itemType == nwItemType.ROOT and isinstance(itemClass, nwItemClass):
-
-        #     tHandle = SHARED.project.newRoot(itemClass)
-        #     sHandle = self.getSelectedHandle()
-        #     pItem = SHARED.project.tree[sHandle] if sHandle else None
-        #     nHandle = pItem.itemRoot if pItem else None
-
-        # elif itemType in (nwItemType.FILE, nwItemType.FOLDER):
-
-        #     sHandle = self.getSelectedHandle()
-        #     pItem = SHARED.project.tree[sHandle] if sHandle else None
-        #     if sHandle is None or pItem is None:
-        #         SHARED.error(self.tr("Did not find anywhere to add the file or folder!"))
-        #         return False
-
-        #     # Collect some information about the selected item
-        #     qItem = self._getTreeItem(sHandle)
-        #     sLevel = nwStyles.H_LEVEL.get(pItem.mainHeading, 0)
-        #     sIsParent = False if qItem is None else qItem.childCount() > 0
-
-        #     if SHARED.project.tree.isTrash(sHandle):
-        #         SHARED.error(self.tr("Cannot add new files or folders to the Trash folder."))
-        #         return False
-
-        #     # Set default label and determine if new item is to be added
-        #     # as child or sibling to the selected item
-        #     if itemType == nwItemType.FILE:
-        #         if copyDoc and (cItem := SHARED.project.tree[copyDoc]):
-        #             newLabel = cItem.itemName
-        #             asChild = sIsParent and pItem.isDocumentLayout()
-        #         elif isNote:
-        #             newLabel = self.tr("New Note")
-        #             asChild = sIsParent
-        #         elif hLevel == 2:
-        #             newLabel = self.tr("New Chapter")
-        #             asChild = sIsParent and pItem.isDocumentLayout() and sLevel < 2
-        #         elif hLevel == 3:
-        #             newLabel = self.tr("New Scene")
-        #             asChild = sIsParent and pItem.isDocumentLayout() and sLevel < 3
-        #         else:
-        #             newLabel = self.tr("New Document")
-        #             asChild = sIsParent and pItem.isDocumentLayout()
-        #     else:
-        #         newLabel = self.tr("New Folder")
-        #         asChild = False
-
-        #     if not (asChild or pItem.isFolderType() or pItem.isRootType()):
-        #         # Move to the parent item so that the new item is added
-        #         # as a sibling instead
-        #         nHandle = sHandle
-        #         sHandle = pItem.itemParent
-        #         if sHandle is None:
-        #             # Bug: We have a condition that is unhandled
-        #             logger.error("Internal error")
-        #             return False
-
-        #     # Ask for label
-        #     newLabel, dlgOk = GuiEditLabel.getLabel(self, text=newLabel)
-        #     if not dlgOk:
-        #         logger.info("New item creation cancelled by user")
-        #         return False
-
-        #     # Add the file or folder
-        #     if itemType == nwItemType.FILE:
-        #         tHandle = SHARED.project.newFile(newLabel, sHandle)
-        #     else:
-        #         tHandle = SHARED.project.newFolder(newLabel, sHandle)
-
-        # else:
-        #     logger.error("Failed to add new item")
-        #     return False
-
-        # # If there is no handle set, return here. This is a bug.
-        # if tHandle is None:  # pragma: no cover
-        #     logger.error("Internal error")
-        #     return True
-
-        # # Handle new file creation
-        # if itemType == nwItemType.FILE and copyDoc:
-        #     SHARED.project.copyFileContent(tHandle, copyDoc)
-        # elif itemType == nwItemType.FILE and hLevel > 0:
-        #     SHARED.project.writeNewFile(tHandle, hLevel, not isNote)
-
-        # # Add the new item to the project tree
-        # self.revealNewTreeItem(tHandle, nHandle=nHandle, wordCount=True)
-        # self.projView.setTreeFocus()  # See issue #1376
-
-        return True
 
     def revealNewTreeItem(self, tHandle: str | None, nHandle: str | None = None,
                           wordCount: bool = False) -> bool:

@@ -32,6 +32,7 @@ from PyQt5.QtCore import QAbstractItemModel, QModelIndex, Qt
 from PyQt5.QtGui import QIcon
 
 from novelwriter import SHARED
+from novelwriter.common import minmax
 from novelwriter.core.item import NWItem
 from novelwriter.types import QtAlignRight
 
@@ -164,34 +165,42 @@ class ProjectNode:
     #  Data Edit
     ##
 
-    def addChild(self, child: ProjectNode) -> None:
+    def addChild(self, child: ProjectNode, pos: int = -1) -> None:
+        """Add a child item to this item."""
         child._parent = self
-        child._row = len(self._children)
-        self._children.append(child)
+        if 0 <= pos < len(self._children):
+            self._children.insert(pos, child)
+            self._refreshChildrenPos()
+        else:
+            child._row = len(self._children)
+            self._children.append(child)
         self.refresh()
         return
 
-    def moveChild(self, source: int, step: int) -> int:
+    def moveChild(self, source: int, target: int) -> None:
         """Move a child internally."""
         count = len(self._children)
-        if 0 <= source < count:
-            target = max(min(source + step, count - 1), 0)
-            if source != target:
-                node = self._children.pop(source)
-                self._children.insert(target, node)
-                for n, child in enumerate(self._children):
-                    child._row = n
-                return target + 1 if target > source else target
-        return -1
+        if (source != target) and (0 <= source < count) and (0 <= target <= count):
+            node = self._children.pop(source)
+            self._children.insert(target, node)
+            self._refreshChildrenPos()
+        return
 
     ##
     #  Internal Functions
     ##
 
     def _recursiveAppendChildren(self, children: list[ProjectNode]) -> None:
+        """Recursively add all nodes to a list."""
         for node in self._children:
             children.append(node)
             node._recursiveAppendChildren(children)
+        return
+
+    def _refreshChildrenPos(self) -> None:
+        """Update the row value on all children."""
+        for n, child in enumerate(self._children):
+            child._row = n
         return
 
 
@@ -258,17 +267,16 @@ class ProjectModel(QAbstractItemModel):
         node: ProjectNode = index.internalPointer()
         return node.data(index.column(), role)
 
-    # def addChild(self, node: ProjectNode, parent: QModelIndex) -> None:
-    #     if parent.isValid():
-    #         item = parent.internalPointer()
-    #     else:
-    #         item = self._root
-    #     item.addChild(node)
-    #     return
-
     ##
     #  Data Access
     ##
+
+    def row(self, index: QModelIndex) -> int:
+        """Return the row number of the  index."""
+        if index.isValid():
+            node: ProjectNode = index.internalPointer()
+            return node.row()
+        return -1
 
     def node(self, index: QModelIndex) -> ProjectNode | None:
         """Return the node for a given model index."""
@@ -286,9 +294,26 @@ class ProjectModel(QAbstractItemModel):
         """Get the index representing a node in the model."""
         return self.createIndex(node.row(), 0, node)
 
+    def rootIndex(self) -> QModelIndex:
+        """Get the index representing the root."""
+        return self.createIndex(0, 0, self._root)
+
     ##
     #  Model Edit
     ##
+
+    def insertChild(self, child: ProjectNode, parent: QModelIndex, pos: int) -> None:
+        """Insert a node into the model at a given position."""
+        if parent.isValid():
+            node: ProjectNode = parent.internalPointer()
+        else:
+            node = self._root
+        count = node.childCount()
+        row = minmax(pos, 0, count) if pos >= 0 else count
+        self.beginInsertRows(parent, row, row)
+        node.addChild(child, row)
+        self.endInsertRows()
+        return
 
     def internalMove(self, index: QModelIndex, step: int) -> None:
         """Move an item internally among its siblings."""
@@ -296,14 +321,13 @@ class ProjectModel(QAbstractItemModel):
             node: ProjectNode = index.internalPointer()
             if parent := node.parent():
                 pos = index.row()
-                if (new := parent.moveChild(index.row(), step)) > -1:
-                    self.beginMoveRows(index.parent(), pos, pos, index.parent(), new)
+                new = minmax(pos + step, 0, parent.childCount() - 1)
+                if new != pos:
+                    end = new if new < pos else new + 1
+                    self.beginMoveRows(index.parent(), pos, pos, index.parent(), end)
+                    parent.moveChild(pos, new)
                     self.endMoveRows()
         return
-
-    def moveRows(self, indices: list[QModelIndex], destination: QModelIndex, row: int) -> bool:
-        """Move indices to destination."""
-        return False
 
     ##
     #  Other Methods

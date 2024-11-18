@@ -154,20 +154,20 @@ class NWProject:
     #  Item Methods
     ##
 
-    def newRoot(self, itemClass: nwItemClass, label: str | None = None) -> str:
+    def newRoot(self, itemClass: nwItemClass, pos: int = -1) -> str | None:
         """Add a new root folder to the project. If label is not set,
         use the class label.
         """
-        label = label or trConst(nwLabels.CLASS_NAME[itemClass])
-        return self._tree.create(label, None, nwItemType.ROOT, itemClass)
+        label = trConst(nwLabels.CLASS_NAME[itemClass])
+        return self._tree.create(label, None, nwItemType.ROOT, itemClass=itemClass, pos=pos)
 
-    def newFolder(self, label: str, parent: str) -> str | None:
+    def newFolder(self, label: str, parent: str, pos: int = -1) -> str | None:
         """Add a new folder with a given label and parent item."""
-        return self._tree.create(label, parent, nwItemType.FOLDER)
+        return self._tree.create(label, parent, nwItemType.FOLDER, pos=pos)
 
-    def newFile(self, label: str, parent: str) -> str | None:
+    def newFile(self, label: str, parent: str, pos: int = -1) -> str | None:
         """Add a new file with a given label and parent item."""
-        return self._tree.create(label, parent, nwItemType.FILE)
+        return self._tree.create(label, parent, nwItemType.FILE, pos=pos)
 
     def writeNewFile(self, tHandle: str, hLevel: int, isDocument: bool, text: str = "") -> bool:
         """Write content to a new document after it is created. This
@@ -233,11 +233,11 @@ class NWProject:
 
     def trashFolder(self) -> str:
         """Add the special trash root folder to the project."""
-        trashHandle = self._tree.trashRoot
-        if trashHandle is None:
-            label = trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH])
-            return self._tree.create(label, None, nwItemType.ROOT, nwItemClass.TRASH)
-        return trashHandle
+        # trashHandle = self._tree.trashRoot
+        # if trashHandle is None:
+        #     label = trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH])
+        #     return self._tree.create(label, None, nwItemType.ROOT, nwItemClass.TRASH)
+        return ""
 
     ##
     #  Project Methods
@@ -329,7 +329,6 @@ class NWProject:
         # ============
 
         self._tree.unpack(projContent)
-        self._tree.buildModel()
         self._options.loadSettings()
         self._loadProjectLocalisation()
 
@@ -488,17 +487,6 @@ class NWProject:
             self._data.setLanguage(language)
             self._loadProjectLocalisation()
             self.setProjectChanged(True)
-        return
-
-    def setTreeOrder(self, order: list[str]) -> None:
-        """A list representing the linear/flattened order of project
-        items in the GUI project tree. The user can rearrange the order
-        by drag-and-drop. Forwarded to the NWTree class.
-        """
-        if len(self._tree) != len(order):
-            logger.warning("Sizes of new and old tree order do not match")
-        self._tree.setOrder(order)
-        self.setProjectChanged(True)
         return
 
     def setProjectChanged(self, status: bool) -> bool:
