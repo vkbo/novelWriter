@@ -31,7 +31,7 @@ import logging
 from enum import Enum
 
 from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QIcon, QPalette
+from PyQt5.QtGui import QIcon, QMouseEvent, QPalette
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QFrame, QHBoxLayout, QHeaderView, QLabel,
     QMenu, QShortcut, QTreeView, QTreeWidgetItem, QVBoxLayout, QWidget
@@ -47,7 +47,10 @@ from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.types import QtScrollAlwaysOff, QtScrollAsNeeded, QtSizeExpanding
+from novelwriter.types import (
+    QtMouseLeft, QtMouseMiddle, QtScrollAlwaysOff, QtScrollAsNeeded,
+    QtSizeExpanding
+)
 
 logger = logging.getLogger(__name__)
 
@@ -91,32 +94,32 @@ class GuiProjectView(QWidget):
         self.keyMoveUp = QShortcut(self.projTree)
         self.keyMoveUp.setKey("Ctrl+Up")
         self.keyMoveUp.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyMoveUp.activated.connect(qtLambda(self.projTree.moveTreeItem, -1))
+        self.keyMoveUp.activated.connect(self.projTree.moveItemUp)
 
         self.keyMoveDn = QShortcut(self.projTree)
         self.keyMoveDn.setKey("Ctrl+Down")
         self.keyMoveDn.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyMoveDn.activated.connect(qtLambda(self.projTree.moveTreeItem, 1))
+        self.keyMoveDn.activated.connect(self.projTree.moveItemDown)
 
         self.keyGoPrev = QShortcut(self.projTree)
         self.keyGoPrev.setKey("Alt+Up")
         self.keyGoPrev.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyGoPrev.activated.connect(qtLambda(self.projTree.moveToNextItem, -1))
+        self.keyGoPrev.activated.connect(self.projTree.moveSiblingUp)
 
         self.keyGoNext = QShortcut(self.projTree)
         self.keyGoNext.setKey("Alt+Down")
         self.keyGoNext.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyGoNext.activated.connect(qtLambda(self.projTree.moveToNextItem, 1))
+        self.keyGoNext.activated.connect(self.projTree.moveSiblingDown)
 
         self.keyGoUp = QShortcut(self.projTree)
         self.keyGoUp.setKey("Alt+Left")
         self.keyGoUp.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyGoUp.activated.connect(qtLambda(self.projTree.moveToLevel, -1))
+        self.keyGoUp.activated.connect(self.projTree.moveToParent)
 
         self.keyGoDown = QShortcut(self.projTree)
         self.keyGoDown.setKey("Alt+Right")
         self.keyGoDown.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyGoDown.activated.connect(qtLambda(self.projTree.moveToLevel, 1))
+        self.keyGoDown.activated.connect(self.projTree.moveToFirstChild)
 
         self.keyContext = QShortcut(self.projTree)
         self.keyContext.setKey("Ctrl+.")
@@ -288,11 +291,11 @@ class GuiProjectToolBar(QWidget):
         # Move Buttons
         self.tbMoveU = NIconToolButton(self, iSz)
         self.tbMoveU.setToolTip("%s [Ctrl+Up]" % self.tr("Move Up"))
-        self.tbMoveU.clicked.connect(qtLambda(self.projTree.moveTreeItem, -1))
+        self.tbMoveU.clicked.connect(self.projTree.moveItemUp)
 
         self.tbMoveD = NIconToolButton(self, iSz)
         self.tbMoveD.setToolTip("%s [Ctrl+Down]" % self.tr("Move Down"))
-        self.tbMoveD.clicked.connect(qtLambda(self.projTree.moveTreeItem, 1))
+        self.tbMoveD.clicked.connect(self.projTree.moveItemDown)
 
         # Add Item Menu
         self.mAdd = QMenu(self)
@@ -616,7 +619,11 @@ class GuiProjectTree(QTreeView):
 
     def loadModel(self) -> None:
         """Load and prepare a new project model."""
+        selModel = self.selectionModel()
         self.setModel(SHARED.project.tree.model)
+        if selModel:
+            selModel.deleteLater()
+            del selModel
 
         # Lock the column sizes
         iPx = SHARED.theme.baseIconHeight
@@ -649,8 +656,80 @@ class GuiProjectTree(QTreeView):
         return
 
     ##
-    #  Private Slots
+    #  Events
     ##
+
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        """Overload mousePressEvent to clear selection if clicking the
+        mouse in a blank area of the tree view, and to load a document
+        for viewing if the user middle-clicked.
+        """
+        super().mousePressEvent(event)
+        if event.button() == QtMouseLeft:
+            if not self.indexAt(event.pos()).isValid():
+                self.selectionModel().clearCurrentIndex()
+        elif event.button() == QtMouseMiddle:
+            if (node := self._getNode(self.indexAt(event.pos()))) and node.item.isFileType():
+                self.projView.openDocumentRequest.emit(
+                    node.item.itemHandle, nwDocMode.VIEW, "", False
+                )
+        return
+
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot()
+    def moveItemUp(self) -> None:
+        """Move an item up in the tree."""
+        if model := self._getModel():
+            model.internalMove(self.currentIndex(), -1)
+        return
+
+    @pyqtSlot()
+    def moveItemDown(self) -> None:
+        """Move an item down in the tree."""
+        if model := self._getModel():
+            model.internalMove(self.currentIndex(), 1)
+        return
+
+    @pyqtSlot()
+    def moveSiblingUp(self) -> None:
+        """Skip to the previous sibling."""
+        if (node := self._getNode(self.currentIndex())) and (parent := node.parent()):
+            if (move := parent.child(node.row() - 1)) and (model := self._getModel()):
+                self.setCurrentIndex(model.indexFromNode(move))
+        return
+
+    @pyqtSlot()
+    def moveSiblingDown(self) -> None:
+        """Skip to the next sibling."""
+        if (node := self._getNode(self.currentIndex())) and (parent := node.parent()):
+            if (move := parent.child(node.row() + 1)) and (model := self._getModel()):
+                self.setCurrentIndex(model.indexFromNode(move))
+        return
+
+    @pyqtSlot()
+    def moveToParent(self) -> None:
+        """Move to parent item."""
+        if (
+            (model := self._getModel())
+            and (node := model.node(self.currentIndex()))
+            and (parent := node.parent())
+        ):
+            self.setCurrentIndex(model.indexFromNode(parent))
+        return
+
+    @pyqtSlot()
+    def moveToFirstChild(self) -> None:
+        """Move to first child item."""
+        if (
+            (model := self._getModel())
+            and (node := model.node(self.currentIndex()))
+            and (child := node.child(0))
+        ):
+            self.setCurrentIndex(model.indexFromNode(child))
+        return
 
     ##
     #  Private Slots
@@ -837,80 +916,6 @@ class GuiProjectTree(QTreeView):
         # self.setCurrentItem(trItem)
 
         return True
-
-    def moveTreeItem(self, step: int) -> bool:
-        """Move an item up or down in the tree."""
-        # tHandle = self.getSelectedHandle()
-        # tItem = self._getTreeItem(tHandle)
-        # if tItem is None:
-        #     logger.debug("No item selected")
-        #     return False
-
-        # pItem = tItem.parent()
-        # isExp = tItem.isExpanded()
-        # if pItem is None:
-        #     tIndex = self.indexOfTopLevelItem(tItem)
-        #     nChild = self.topLevelItemCount()
-
-        #     nIndex = tIndex + step
-        #     if nIndex < 0 or nIndex >= nChild:
-        #         return False
-
-        #     cItem = self.takeTopLevelItem(tIndex)
-        #     self.insertTopLevelItem(nIndex, cItem)
-
-        # else:
-        #     tIndex = pItem.indexOfChild(tItem)
-        #     nChild = pItem.childCount()
-
-        #     nIndex = tIndex + step
-        #     if nIndex < 0 or nIndex >= nChild:
-        #         return False
-
-        #     cItem = pItem.takeChild(tIndex)
-        #     pItem.insertChild(nIndex, cItem)
-
-        # self._alertTreeChange(tHandle, flush=True)
-        # self.setCurrentItem(tItem)
-        # tItem.setExpanded(isExp)
-
-        return True
-
-    def moveToNextItem(self, step: int) -> None:
-        """Move to the next item of the same tree level."""
-        # tHandle = self.getSelectedHandle()
-        # tItem = self._getTreeItem(tHandle) if tHandle else None
-        # if tItem:
-        #     pItem = tItem.parent() or self.invisibleRootItem()
-        #     next = minmax(pItem.indexOfChild(tItem) + step, 0, pItem.childCount() - 1)
-        #     self.setCurrentItem(pItem.child(next))
-        return
-
-    def moveToLevel(self, step: int) -> None:
-        """Move to the next item in the parent/child chain."""
-        # tHandle = self.getSelectedHandle()
-        # tItem = self._getTreeItem(tHandle) if tHandle else None
-        # if tItem:
-        #     if step < 0 and tItem.parent():
-        #         self.setCurrentItem(tItem.parent())
-        #     elif step > 0 and tItem.childCount() > 0:
-        #         self.setCurrentItem(tItem.child(0))
-        return
-
-    # def saveTreeOrder(self) -> None:
-    #     """Build a list of the items in the project tree and send them
-    #     to the project class. This syncs up the two versions of the
-    #     project structure, and must be called before any code that
-    #     depends on this order to be up to date.
-    #     """
-    #     # items = []
-    #     # for i in range(self.topLevelItemCount()):
-    #     #     item = self.topLevelItem(i)
-    #     #     if isinstance(item, QTreeWidgetItem):
-    #     #         items = self._scanChildren(items, item, i)
-    #     # logger.debug("Saving project tree item order")
-    #     # SHARED.project.setTreeOrder(items)
-    #     return
 
     def getTreeFromHandle(self, tHandle: str) -> list[str]:
         """Recursively return all the child items starting from a given
@@ -1453,22 +1458,6 @@ class GuiProjectTree(QTreeView):
         # # Update word count
         # self.propagateCount(tHandle, nwItemS.wordCount, countChildren=True)
 
-        return
-
-    def _getTreeItem(self, tHandle: str | None) -> QTreeWidgetItem | None:
-        """Return the QTreeWidgetItem of a given item handle."""
-        # return self._treeMap.get(tHandle, None) if tHandle else None
-        return None
-
-    def _recursiveSetExpanded(self, trItem: QTreeWidgetItem, isExpanded: bool) -> None:
-        """Recursive function to set expanded status starting from (and
-        not including) a given item.
-        """
-        # if isinstance(trItem, QTreeWidgetItem):
-        #     for i in range(trItem.childCount()):
-        #         chItem = trItem.child(i)
-        #         chItem.setExpanded(isExpanded)
-        #         self._recursiveSetExpanded(chItem, isExpanded)
         return
 
     def _mergeDocuments(self, tHandle: str, newFile: bool) -> bool:

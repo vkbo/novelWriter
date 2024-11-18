@@ -75,6 +75,11 @@ class NWTree:
         self._nodes: dict[str, ProjectNode] = {}
         self._trash = None     # The handle of the trash root folder
         self._changed = False  # True if tree structure has changed
+        logger.debug("Ready: NWTree")
+        return
+
+    def __del__(self) -> None:
+        logger.debug("Delete: NWTree")
         return
 
     ##
@@ -100,11 +105,14 @@ class NWTree:
 
     def clear(self) -> None:
         """Clear the item tree entirely."""
+        oldModel = self._model
         self._model = ProjectModel(self)
         self._items = {}
         self._nodes = {}
         self._trash = None
         self._changed = False
+        oldModel.deleteLater()
+        del oldModel
         return
 
     def handles(self) -> list[str]:

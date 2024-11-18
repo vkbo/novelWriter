@@ -69,6 +69,14 @@ class ProjectNode:
         self.refresh()
         return
 
+    def __repr__(self) -> str:
+        return (
+            f"<ProjectNode handle={self._item.itemHandle} "
+            f"parent={self._parent.item.itemHandle if self._parent else None} "
+            f"row={self._row} "
+            f"children={len(self._children)}>"
+        )
+
     ##
     #  Properties
     ##
@@ -80,6 +88,10 @@ class ProjectNode:
     @property
     def children(self) -> list[ProjectNode]:
         return self._children
+
+    ##
+    #  Data Maintenance
+    ##
 
     def refresh(self) -> None:
         cache: dict[int, str | QIcon | Qt.AlignmentFlag] = {}
@@ -121,6 +133,10 @@ class ProjectNode:
             parent.updateCount()
         return
 
+    ##
+    #  Data Access
+    ##
+
     def row(self) -> int:
         return self._row
 
@@ -139,6 +155,15 @@ class ProjectNode:
             return self._children[row]
         return None
 
+    def allChildren(self) -> list[ProjectNode]:
+        nodes: list[ProjectNode] = []
+        self._recursiveAppendChildren(nodes)
+        return nodes
+
+    ##
+    #  Data Edit
+    ##
+
     def addChild(self, child: ProjectNode) -> None:
         child._parent = self
         child._row = len(self._children)
@@ -146,10 +171,18 @@ class ProjectNode:
         self.refresh()
         return
 
-    def allChildren(self) -> list[ProjectNode]:
-        nodes: list[ProjectNode] = []
-        self._recursiveAppendChildren(nodes)
-        return nodes
+    def moveChild(self, source: int, step: int) -> int:
+        """Move a child internally."""
+        count = len(self._children)
+        if 0 <= source < count:
+            target = max(min(source + step, count - 1), 0)
+            if source != target:
+                node = self._children.pop(source)
+                self._children.insert(target, node)
+                for n, child in enumerate(self._children):
+                    child._row = n
+                return target + 1 if target > source else target
+        return -1
 
     ##
     #  Internal Functions
@@ -167,10 +200,10 @@ class ProjectModel(QAbstractItemModel):
     __slots__ = ("_tree", "_root")
 
     def __init__(self, tree: NWTree) -> None:
-        super().__init__(None)
-        logger.debug("Create: ProjectModel")
+        super().__init__()
         self._tree = tree
         self._root = ProjectNode(NWItem(tree._project, "invisibleRoot"))
+        logger.debug("Ready: ProjectModel")
         return
 
     def __del__(self) -> None:
@@ -254,7 +287,26 @@ class ProjectModel(QAbstractItemModel):
         return self.createIndex(node.row(), 0, node)
 
     ##
-    #  Methods
+    #  Model Edit
+    ##
+
+    def internalMove(self, index: QModelIndex, step: int) -> None:
+        """Move an item internally among its siblings."""
+        if index.isValid():
+            node: ProjectNode = index.internalPointer()
+            if parent := node.parent():
+                pos = index.row()
+                if (new := parent.moveChild(index.row(), step)) > -1:
+                    self.beginMoveRows(index.parent(), pos, pos, index.parent(), new)
+                    self.endMoveRows()
+        return
+
+    def moveRows(self, indices: list[QModelIndex], destination: QModelIndex, row: int) -> bool:
+        """Move indices to destination."""
+        return False
+
+    ##
+    #  Other Methods
     ##
 
     def allExpanded(self) -> list[QModelIndex]:

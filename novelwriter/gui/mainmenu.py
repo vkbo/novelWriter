@@ -28,7 +28,7 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QAction, QMenuBar
 
 from novelwriter import CONFIG, SHARED
@@ -337,12 +337,16 @@ class GuiMainMenu(QMenuBar):
         # View > Go Backward
         self.aViewPrev = self.viewMenu.addAction(self.tr("Navigate Backward"))
         self.aViewPrev.setShortcut("Alt+Left")
+        self.aViewPrev.setShortcutContext(Qt.ShortcutContext.WidgetShortcut)
         self.aViewPrev.triggered.connect(self.mainGui.docViewer.navBackward)
+        self.mainGui.docViewer.addAction(self.aViewPrev)
 
         # View > Go Forward
         self.aViewNext = self.viewMenu.addAction(self.tr("Navigate Forward"))
         self.aViewNext.setShortcut("Alt+Right")
+        self.aViewNext.setShortcutContext(Qt.ShortcutContext.WidgetShortcut)
         self.aViewNext.triggered.connect(self.mainGui.docViewer.navForward)
+        self.mainGui.docViewer.addAction(self.aViewNext)
 
         # View > Separator
         self.viewMenu.addSeparator()
