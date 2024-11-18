@@ -225,13 +225,21 @@ class NWTree:
 
         return
 
-    def refreshNode(self, tHandle: str) -> None:
-        """Refresh node data on item change."""
-        if node := self._nodes.get(tHandle):
-            node.refresh()
-            index = self._model.indexFromNode(node)
-            SHARED.projectSignalProxy({"event": "projectItem", "handle": tHandle})
-            self._model.dataChanged.emit(index, index)
+    def refreshItems(self, items: list[str], isRange: bool = False) -> None:
+        """Refresh these items on the GUI. If they are an ordered range,
+        also set the isRange flag to True.
+        """
+        indices = []
+        for tHandle in items:
+            if node := self._nodes.get(tHandle):
+                node.refresh()
+                SHARED.projectSignalProxy({"event": "projectItem", "handle": tHandle})
+                indices.append(self._model.indexFromNode(node))
+        if isRange and len(indices) >= 2:
+            self._model.dataChanged.emit(indices[0], indices[-1])
+        else:
+            for index in indices:
+                self._model.dataChanged.emit(index, index)
         return
 
     def _buildTree(self, items: dict[str, NWItem]) -> dict[str, NWItem]:

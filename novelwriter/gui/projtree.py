@@ -198,6 +198,7 @@ class GuiProjectView(QWidget):
             newLabel, dlgOk = GuiEditLabel.getLabel(self, text=name or nwItem.itemName)
             if dlgOk:
                 nwItem.setName(newLabel)
+                nwItem.notifyToRefresh()
         return
 
     @pyqtSlot(str, bool)

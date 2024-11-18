@@ -176,11 +176,6 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
     item.setCursorPos(1)
     assert item.cursorPos == 1
 
-    # Initial Count
-    item.setWordCount(234)
-    item.saveInitialCount()
-    assert item.initCount == 234
-
 
 @pytest.mark.core
 def testCoreItem_Methods(mockGUI, mockRnd, fncPath):

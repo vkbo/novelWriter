@@ -55,7 +55,7 @@ class NWItem:
         "_project", "_name", "_handle", "_parent", "_root", "_order",
         "_type", "_class", "_layout", "_status", "_import", "_active",
         "_expanded", "_heading", "_charCount", "_wordCount",
-        "_paraCount", "_cursorPos", "_initCount", "_blocked",
+        "_paraCount", "_cursorPos", "_initCount",
     )
 
     def __init__(self, project: NWProject, handle: str) -> None:
@@ -81,8 +81,6 @@ class NWItem:
         self._paraCount = 0     # Current paragraph count
         self._cursorPos = 0     # Last cursor position
         self._initCount = 0     # Initial word count
-
-        self._blocked = True
 
         return
 
@@ -259,7 +257,6 @@ class NWItem:
             self._cursorPos = 0
 
         self._initCount = self._wordCount
-        self._blocked = False
 
         return True
 
@@ -284,8 +281,16 @@ class NWItem:
         cls._paraCount = source._paraCount
         cls._cursorPos = source._cursorPos
         cls._initCount = source._initCount
-        cls._blocked   = source._blocked
         return cls
+
+    ##
+    #  Action Methods
+    ##
+
+    def notifyToRefresh(self) -> None:
+        """Notify GUI that item info needs to be refreshed."""
+        self._project.tree.refreshItems([self._handle])
+        return
 
     ##
     #  Lookup Methods
@@ -419,7 +424,6 @@ class NWItem:
             self._name = simplified(name)
         else:
             self._name = ""
-        self._notifyChange()
         return
 
     def setParent(self, handle: Any) -> None:
@@ -559,19 +563,4 @@ class NWItem:
             self._cursorPos = max(0, position)
         else:
             self._cursorPos = 0
-        return
-
-    def saveInitialCount(self) -> None:
-        """Save the initial word count."""
-        self._initCount = self._wordCount
-        return
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _notifyChange(self) -> None:
-        """Notify project tree on user changes to the item."""
-        if not self._blocked:
-            self._project.tree.refreshNode(self._handle)
         return

@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import QAbstractItemModel, QModelIndex, Qt
 from PyQt5.QtGui import QIcon
@@ -52,6 +52,8 @@ C_ACTIVE_ICON = 0x0200 | Qt.ItemDataRole.DecorationRole
 C_ACTIVE_TIP  = 0x0200 | Qt.ItemDataRole.ToolTipRole
 C_STATUS_ICON = 0x0300 | Qt.ItemDataRole.DecorationRole
 C_STATUS_TIP  = 0x0300 | Qt.ItemDataRole.ToolTipRole
+
+T_NodeData = str | QIcon | Qt.AlignmentFlag | None
 
 
 class ProjectNode:
@@ -125,7 +127,7 @@ class ProjectNode:
     def childCount(self) -> int:
         return len(self._children)
 
-    def data(self, column: int, role: Qt.ItemDataRole) -> str | QIcon | Qt.AlignmentFlag | None:
+    def data(self, column: int, role: Qt.ItemDataRole) -> T_NodeData:
         """"""
         return self._cache.get(COL_MASK*column | role)
 
@@ -168,7 +170,7 @@ class ProjectModel(QAbstractItemModel):
         super().__init__(None)
         logger.debug("Create: ProjectModel")
         self._tree = tree
-        self._root = ProjectNode(NWItem(tree._project, ""))
+        self._root = ProjectNode(NWItem(tree._project, "invisibleRoot"))
         return
 
     def __del__(self) -> None:
@@ -177,6 +179,7 @@ class ProjectModel(QAbstractItemModel):
 
     @property
     def root(self) -> ProjectNode:
+        """Return the model root item."""
         return self._root
 
     ##
@@ -184,22 +187,26 @@ class ProjectModel(QAbstractItemModel):
     ##
 
     def rowCount(self, index: QModelIndex) -> int:
+        """Return the number of rows for an entry."""
         if index.isValid():
             return index.internalPointer().childCount()
         return self._root.childCount()
 
     def columnCount(self, index: QModelIndex) -> int:
+        """Return the number of columns for an entry."""
         return 4
 
     def parent(self, index: QModelIndex) -> QModelIndex:
+        """Get the parent model index of another index."""
         if index.isValid():
             if parent := index.internalPointer().parent():
                 return self.createIndex(parent.row(), 0, parent)
         return QModelIndex()
 
     def index(self, row: int, column: int, parent: QModelIndex = QModelIndex()) -> QModelIndex:
+        """get the index of a child item of a parent."""
         if parent.isValid():
-            item = parent.internalPointer()
+            item: ProjectNode = parent.internalPointer()
         else:
             item = self._root
 
@@ -211,10 +218,11 @@ class ProjectModel(QAbstractItemModel):
 
         return QModelIndex()
 
-    def data(self, index: QModelIndex, role: Qt.ItemDataRole) -> Any:
+    def data(self, index: QModelIndex, role: Qt.ItemDataRole) -> T_NodeData:
+        """Return display data for a project node."""
         if not index.isValid():
             return None
-        node = index.internalPointer()
+        node: ProjectNode = index.internalPointer()
         return node.data(index.column(), role)
 
     # def addChild(self, node: ProjectNode, parent: QModelIndex) -> None:
@@ -230,6 +238,7 @@ class ProjectModel(QAbstractItemModel):
     ##
 
     def node(self, index: QModelIndex) -> ProjectNode | None:
+        """Return the node for a given model index."""
         if index.isValid():
             return index.internalPointer()
         return None
