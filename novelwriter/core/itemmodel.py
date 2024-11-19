@@ -178,7 +178,7 @@ class ProjectNode:
     def takeChild(self, pos: int) -> ProjectNode | None:
         """Remove a child item and return it."""
         if 0 <= pos < len(self._children):
-            node = self._children.pop()
+            node = self._children.pop(pos)
             self._refreshChildrenPos()
             return node
         return None
@@ -256,32 +256,23 @@ class ProjectModel(QAbstractItemModel):
 
     def parent(self, index: QModelIndex) -> QModelIndex:
         """Get the parent model index of another index."""
-        if index.isValid():
-            if parent := index.internalPointer().parent():
-                return self.createIndex(parent.row(), 0, parent)
+        if index.isValid() and (parent := index.internalPointer().parent()):
+            return self.createIndex(parent.row(), 0, parent)
         return QModelIndex()
 
     def index(self, row: int, column: int, parent: QModelIndex = QModelIndex()) -> QModelIndex:
         """get the index of a child item of a parent."""
-        if parent.isValid():
-            item: ProjectNode = parent.internalPointer()
-        else:
-            item = self._root
-
-        if not self.hasIndex(row, column, parent):
-            return QModelIndex()
-
-        if child := item.child(row):
-            return self.createIndex(row, column, child)
-
+        if self.hasIndex(row, column, parent):
+            node: ProjectNode = parent.internalPointer() if parent.isValid() else self._root
+            if child := node.child(row):
+                return self.createIndex(row, column, child)
         return QModelIndex()
 
     def data(self, index: QModelIndex, role: Qt.ItemDataRole) -> T_NodeData:
         """Return display data for a project node."""
-        if not index.isValid():
-            return None
-        node: ProjectNode = index.internalPointer()
-        return node.data(index.column(), role)
+        if index.isValid():
+            return index.internalPointer().data(index.column(), role)
+        return None
 
     ##
     #  Data Access
@@ -290,8 +281,7 @@ class ProjectModel(QAbstractItemModel):
     def row(self, index: QModelIndex) -> int:
         """Return the row number of the  index."""
         if index.isValid():
-            node: ProjectNode = index.internalPointer()
-            return node.row()
+            return index.internalPointer().row()
         return -1
 
     def node(self, index: QModelIndex) -> ProjectNode | None:
@@ -320,16 +310,23 @@ class ProjectModel(QAbstractItemModel):
 
     def insertChild(self, child: ProjectNode, parent: QModelIndex, pos: int) -> None:
         """Insert a node into the model at a given position."""
-        if parent.isValid():
-            node: ProjectNode = parent.internalPointer()
-        else:
-            node = self._root
+        node: ProjectNode = parent.internalPointer() if parent.isValid() else self._root
         count = node.childCount()
         row = minmax(pos, 0, count) if pos >= 0 else count
         self.beginInsertRows(parent, row, row)
         node.addChild(child, row)
         self.endInsertRows()
         return
+
+    def removeChild(self, parent: QModelIndex, pos: int) -> ProjectNode | None:
+        """Remove a node from the model and return it."""
+        node: ProjectNode = parent.internalPointer() if parent.isValid() else self._root
+        if 0 <= pos < node.childCount():
+            self.beginRemoveRows(parent, pos, pos)
+            child = node.takeChild(pos)
+            self.endRemoveRows()
+            return child
+        return None
 
     def internalMove(self, index: QModelIndex, step: int) -> None:
         """Move an item internally among its siblings."""
@@ -343,6 +340,30 @@ class ProjectModel(QAbstractItemModel):
                     self.beginMoveRows(index.parent(), pos, pos, index.parent(), end)
                     parent.moveChild(pos, new)
                     self.endMoveRows()
+        return
+
+    def multiMove(self, indices: list[QModelIndex], target: QModelIndex) -> None:
+        """Move multiple items to a new location."""
+        if target.isValid():
+            # This is a two pass process. First we only select unique
+            # non-root items for move, then we do a second pass and only
+            # move those items that don't have a parent also scheduled
+            # for moving or have already been moved. Child items are
+            # moved with the parent.
+            pruned = []
+            handles = set()
+            for index in indices:
+                if index.isValid():
+                    node: ProjectNode = index.internalPointer()
+                    handle = node.item.itemHandle
+                    if node.item.isRootType() is False and handle not in handles:
+                        pruned.append(node)
+                        handles.add(handle)
+            for node in pruned:
+                if node.item.itemParent not in handles:
+                    index = self.indexFromNode(node)
+                    if child := self.removeChild(index.parent(), index.row()):
+                        self.insertChild(child, target, -1)
         return
 
     ##

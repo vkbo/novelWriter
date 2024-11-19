@@ -131,8 +131,6 @@ class GuiProjectView(QWidget):
         self.projBar.newDocumentFromTemplate.connect(self.createFileFromTemplate)
 
         # Function Mappings
-        self.emptyTrash = self.projTree.emptyTrash
-        self.requestDeleteItem = self.projTree.requestDeleteItem
         self.getSelectedHandle = self.projTree.getSelectedHandle
 
         return
@@ -185,10 +183,20 @@ class GuiProjectView(QWidget):
         """Check if the project tree has focus."""
         return self.projTree.hasFocus()
 
+    def connectMenuActions(self, rename: QAction, delete: QAction, trash: QAction) -> None:
+        """Main menu actions passed to the project tree."""
+        self.projTree.addAction(rename)
+        self.projTree.addAction(delete)
+        self.projTree.addAction(trash)
+        rename.triggered.connect(self.renameTreeItem)
+        delete.triggered.connect(self.projTree.moveItemsToTrash)
+        return
+
     ##
     #  Public Slots
     ##
 
+    @pyqtSlot()
     @pyqtSlot(str, str)
     def renameTreeItem(self, tHandle: str | None = None, name: str = "") -> None:
         """External request to rename an item or the currently selected
@@ -806,6 +814,20 @@ class GuiProjectTree(QTreeView):
             self.setCurrentIndex(model.indexFromNode(child))
         return
 
+    @pyqtSlot()
+    def moveItemsToTrash(self, askFirst: bool = True) -> None:
+        """Move selected items to Trash."""
+        if (
+            (items := self._selectedRows())
+            and (model := self._getModel())
+            and (trashNode := SHARED.project.tree.trash)
+        ):
+            if askFirst and not SHARED.question(self.tr("Move selected items to Trash?")):
+                logger.info("Action cancelled by user")
+                return
+            model.multiMove(items, model.indexFromNode(trashNode))
+        return
+
     ##
     #  Private Slots
     ##
@@ -834,6 +856,10 @@ class GuiProjectTree(QTreeView):
     ##
     #  Internal Functions
     ##
+
+    def _selectedRows(self) -> list[QModelIndex]:
+        """Return all column 0 indexes."""
+        return [i for i in self.selectedIndexes() if i.column() == 0]
 
     def _getModel(self) -> ProjectModel | None:
         """Return a project node corresponding to a model index."""
@@ -940,54 +966,6 @@ class GuiProjectTree(QTreeView):
 
         # if nTrash > 0:
         #     self._alertTreeChange(trashHandle, flush=True)
-
-        return True
-
-    def moveItemToTrash(self, tHandle: str, askFirst: bool = True, flush: bool = True) -> bool:
-        """Move an item to Trash. Root folders cannot be moved to Trash,
-        so such a request is cancelled.
-        """
-        # trItemS = self._getTreeItem(tHandle)
-        # nwItemS = SHARED.project.tree[tHandle]
-
-        # if trItemS is None or nwItemS is None:
-        #     logger.error("Could not find tree item for deletion")
-        #     return False
-
-        # if SHARED.project.tree.isTrash(tHandle):
-        #     logger.error("Item is already in the Trash folder")
-        #     return False
-
-        # if nwItemS.isRootType():
-        #     logger.error("Root folders cannot be moved to Trash")
-        #     return False
-
-        # logger.debug("User requested file or folder '%s' move to Trash", tHandle)
-
-        # trItemP = trItemS.parent()
-        # trItemT = self._addTrashRoot()
-        # if trItemP is None or trItemT is None:
-        #     logger.error("Could not delete item")
-        #     return False
-
-        # if askFirst:
-        #     msgYes = SHARED.question(
-        #         self.tr("Move '{0}' to Trash?").format(nwItemS.itemName)
-        #     )
-        #     if not msgYes:
-        #         logger.info("Action cancelled by user")
-        #         return False
-
-        # self.propagateCount(tHandle, 0)
-
-        # tIndex = trItemP.indexOfChild(trItemS)
-        # trItemC = trItemP.takeChild(tIndex)
-        # trItemT.addChild(trItemC)
-
-        # self._postItemMove(tHandle)
-        # self._alertTreeChange(tHandle, flush=flush)
-
-        # logger.debug("Moved item '%s' to Trash", tHandle)
 
         return True
 

@@ -162,19 +162,20 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addSeparator()
 
         # Project > Edit
-        self.aEditItem = self.projMenu.addAction(self.tr("Rename Item"))
-        self.aEditItem.setShortcut("F2")
-        self.aEditItem.triggered.connect(qtLambda(self.mainGui.projView.renameTreeItem, None))
-        self.mainGui.addAction(self.aEditItem)
+        self.aRenameItem = self.projMenu.addAction(self.tr("Rename Item"))
+        self.aRenameItem.setShortcut("F2")
 
         # Project > Delete
         self.aDeleteItem = self.projMenu.addAction(self.tr("Delete Item"))
-        self.aDeleteItem.setShortcut("Ctrl+Shift+Del")  # Cannot be Ctrl+Del, see #629
-        self.aDeleteItem.triggered.connect(qtLambda(self.mainGui.projView.requestDeleteItem, None))
+        self.aDeleteItem.setShortcut("Del")
+        self.aDeleteItem.setShortcutContext(Qt.ShortcutContext.WidgetShortcut)
 
         # Project > Empty Trash
         self.aEmptyTrash = self.projMenu.addAction(self.tr("Empty Trash"))
-        self.aEmptyTrash.triggered.connect(qtLambda(self.mainGui.projView.emptyTrash))
+
+        self.mainGui.projView.connectMenuActions(
+            self.aRenameItem, self.aDeleteItem, self.aEmptyTrash
+        )
 
         # Project > Separator
         self.projMenu.addSeparator()
