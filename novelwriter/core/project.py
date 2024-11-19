@@ -154,7 +154,7 @@ class NWProject:
     #  Item Methods
     ##
 
-    def newRoot(self, itemClass: nwItemClass, pos: int = -1) -> str | None:
+    def newRoot(self, itemClass: nwItemClass, pos: int = -1) -> str:
         """Add a new root folder to the project. If label is not set,
         use the class label.
         """
@@ -218,26 +218,18 @@ class NWProject:
         project entry and a document file if it exists.
         """
         if self._tree.checkType(tHandle, nwItemType.FILE):
-            delDoc = self._storage.getDocument(tHandle)
-            if not delDoc.deleteDocument():
+            doc = self._storage.getDocument(tHandle)
+            if not doc.deleteDocument():
                 SHARED.error(
                     self.tr("Could not delete document file."),
-                    info=delDoc.getError()
+                    info=doc.getError()
                 )
                 return False
 
         self._index.deleteHandle(tHandle)
-        del self._tree[tHandle]
+        self._tree.remove(tHandle)
 
         return True
-
-    def trashFolder(self) -> str:
-        """Add the special trash root folder to the project."""
-        # trashHandle = self._tree.trashRoot
-        # if trashHandle is None:
-        #     label = trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH])
-        #     return self._tree.create(label, None, nwItemType.ROOT, nwItemClass.TRASH)
-        return ""
 
     ##
     #  Project Methods

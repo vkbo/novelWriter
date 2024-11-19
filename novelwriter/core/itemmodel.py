@@ -34,6 +34,7 @@ from PyQt5.QtGui import QIcon
 from novelwriter import SHARED
 from novelwriter.common import minmax
 from novelwriter.core.item import NWItem
+from novelwriter.enum import nwItemClass
 from novelwriter.types import QtAlignRight
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -214,6 +215,7 @@ class ProjectNode:
         if self._parent:
             child.item.setParent(self.item.itemHandle)
             child.item.setRoot(self.item.itemRoot)
+            child.item.setClassDefaults(self.item.itemClass)
         else:
             child.item.setParent(None)
             child.item.setRoot(child.item.itemHandle)
@@ -290,6 +292,10 @@ class ProjectModel(QAbstractItemModel):
             return index.internalPointer()
         return None
 
+    def nodes(self, indices: list[QModelIndex]) -> list[ProjectNode]:
+        """Return the nodes for a list of model indices."""
+        return [i.internalPointer() for i in indices if i.isValid() and i.column() == 0]
+
     def indexFromHandle(self, handle: str | None) -> QModelIndex:
         """Get the index representing a node in the model."""
         if handle and (node := self._tree.nodes.get(handle)):
@@ -341,6 +347,16 @@ class ProjectModel(QAbstractItemModel):
                     parent.moveChild(pos, new)
                     self.endMoveRows()
         return
+
+    def trashSelection(self, indices: list[QModelIndex]) -> bool:
+        """Check if a selection of indices are all in trash or not."""
+        for index in indices:
+            if index.isValid():
+                node: ProjectNode = index.internalPointer()
+                print(node)
+                if node.item.itemClass != nwItemClass.TRASH:
+                    return False
+        return True
 
     def multiMove(self, indices: list[QModelIndex], target: QModelIndex) -> None:
         """Move multiple items to a new location."""

@@ -28,7 +28,7 @@ import random
 
 from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal, overload
 
 from PyQt5.QtCore import QModelIndex
 
@@ -140,6 +140,29 @@ class NWTree:
             logger.error("Invalid project item '%s'", item.itemHandle)
             return False
         return True
+
+    def remove(self, tHandle: str) -> bool:
+        """Remove an item from the project tree."""
+        if (node := self._nodes.get(tHandle)) and tHandle in self._items:
+            index = self._model.indexFromNode(node)
+            if index.isValid() and self._model.removeChild(index.parent(), index.row()):
+                del self._nodes[tHandle]
+                del self._items[tHandle]
+        return True
+
+    @overload  # pragma: no cover
+    def create(
+        self, label: str, parent: None, itemType: Literal[nwItemType.ROOT],
+        itemClass: nwItemClass, pos: int = -1
+    ) -> str:
+        pass
+
+    @overload  # pragma: no cover
+    def create(
+        self, label: str, parent: str | None, itemType: nwItemType,
+        itemClass: nwItemClass = nwItemClass.NO_CLASS, pos: int = -1
+    ) -> str | None:
+        pass
 
     def create(
         self, label: str, parent: str | None, itemType: nwItemType,
@@ -430,22 +453,6 @@ class NWTree:
             return self._items[tHandle]
         logger.error("No tree item with handle '%s'", str(tHandle))
         return None
-
-    def __delitem__(self, tHandle: str) -> None:
-        """Remove an item from the internal lists and dictionaries."""
-        # if tHandle in self._order and tHandle in self._tree:
-        #     self._order.remove(tHandle)
-        #     del self._tree[tHandle]
-        # else:
-        #     logger.warning("Failed to delete item '%s': item not found", tHandle)
-        #     return
-
-        # if tHandle in self._roots:
-        #     del self._roots[tHandle]
-        # if tHandle == self._trash:
-        #     self._trash = None
-
-        return
 
     def __contains__(self, tHandle: str) -> bool:
         """Checks if a handle exists in the tree."""

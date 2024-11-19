@@ -34,7 +34,7 @@ from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon, QMouseEvent, QPalette
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QFrame, QHBoxLayout, QHeaderView, QLabel,
-    QMenu, QShortcut, QTreeView, QTreeWidgetItem, QVBoxLayout, QWidget
+    QMenu, QShortcut, QTreeView, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -61,7 +61,6 @@ class GuiProjectView(QWidget):
     """
 
     # Signals triggered when the meta data values of items change
-    # treeItemChanged = pyqtSignal(str)
     rootFolderChanged = pyqtSignal(str)
     wordCountsChanged = pyqtSignal()
 
@@ -189,7 +188,7 @@ class GuiProjectView(QWidget):
         self.projTree.addAction(delete)
         self.projTree.addAction(trash)
         rename.triggered.connect(self.renameTreeItem)
-        delete.triggered.connect(self.projTree.moveItemsToTrash)
+        delete.triggered.connect(self.projTree.processDeleteRequest)
         return
 
     ##
@@ -815,17 +814,29 @@ class GuiProjectTree(QTreeView):
         return
 
     @pyqtSlot()
-    def moveItemsToTrash(self, askFirst: bool = True) -> None:
+    def processDeleteRequest(self, askFirst: bool = True) -> None:
         """Move selected items to Trash."""
-        if (
-            (items := self._selectedRows())
-            and (model := self._getModel())
-            and (trashNode := SHARED.project.tree.trash)
-        ):
-            if askFirst and not SHARED.question(self.tr("Move selected items to Trash?")):
-                logger.info("Action cancelled by user")
+        if (items := self._selectedRows()) and (model := self._getModel()):
+            if len(items) == 1 and (node := model.node(items[0])) and node.item.isRootType():
+                if node.childCount() == 0:
+                    SHARED.project.removeItem(node.item.itemHandle)
+                else:
+                    SHARED.error(self.tr("Root folders can only be deleted when they are empty."))
                 return
-            model.multiMove(items, model.indexFromNode(trashNode))
+
+            if model.trashSelection(items):
+                if askFirst:
+                    if not SHARED.question(self.tr("Permanently delete selected item(s)?")):
+                        logger.info("Action cancelled by user")
+                        return
+                for node in model.nodes(items):
+                    SHARED.project.removeItem(node.item.itemHandle)
+
+            elif trashNode := SHARED.project.tree.trash:
+                if askFirst and not SHARED.question(self.tr("Move selected item(s) to Trash?")):
+                    logger.info("Action cancelled by user")
+                    return
+                model.multiMove(items, model.indexFromNode(trashNode))
         return
 
     ##
@@ -890,44 +901,6 @@ class GuiProjectTree(QTreeView):
         #         self.revealNewTreeItem(tHandle, wordCount=True)
         return
 
-    def requestDeleteItem(self, tHandle: str | None = None) -> bool:
-        """Request an item deleted from the project tree. This function
-        can be called on any item, and will check whether to attempt a
-        permanent deletion or moving the item to Trash.
-        """
-        # if not SHARED.hasProject:
-        #     logger.error("No project open")
-        #     return False
-
-        # if not self.hasFocus():
-        #     logger.info("Delete action blocked due to no widget focus")
-        #     return False
-
-        # if tHandle is None:
-        #     tHandle = self.getSelectedHandle()
-
-        # if tHandle is None:
-        #     logger.error("There is no item to delete")
-        #     return False
-
-        # trashHandle = SHARED.project.tree.trashRoot
-        # if tHandle == trashHandle:
-        #     logger.error("Cannot delete the Trash folder")
-        #     return False
-
-        # nwItem = SHARED.project.tree[tHandle]
-        # if nwItem is None:
-        #     return False
-
-        # if SHARED.project.tree.isTrash(tHandle) or nwItem.isRootType():
-        #     status = self.permDeleteItem(tHandle)
-        # else:
-        #     status = self.moveItemToTrash(tHandle)
-
-        # return status
-
-        return False
-
     @pyqtSlot()
     def emptyTrash(self) -> bool:
         """Permanently delete all documents in the Trash folder. This
@@ -966,68 +939,6 @@ class GuiProjectTree(QTreeView):
 
         # if nTrash > 0:
         #     self._alertTreeChange(trashHandle, flush=True)
-
-        return True
-
-    def permDeleteItem(self, tHandle: str, askFirst: bool = True, flush: bool = True) -> bool:
-        """Permanently delete a tree item from the project and the map.
-        Root items are handled a little different than other items.
-        """
-        # trItemS = self._getTreeItem(tHandle)
-        # nwItemS = SHARED.project.tree[tHandle]
-        # if trItemS is None or nwItemS is None:
-        #     logger.error("Could not find tree item for deletion")
-        #     return False
-
-        # if nwItemS.isRootType():
-        #     # Only an empty ROOT folder can be deleted
-        #     if trItemS.childCount() > 0:
-        #         SHARED.error(self.tr("Root folders can only be deleted when they are empty."))
-        #         return False
-
-        #     logger.debug("Permanently deleting root folder '%s'", tHandle)
-
-        #     tIndex = self.indexOfTopLevelItem(trItemS)
-        #     self.takeTopLevelItem(tIndex)
-        #     SHARED.project.removeItem(tHandle)
-        #     self._treeMap.pop(tHandle, None)
-        #     self._alertTreeChange(tHandle, flush=True)
-
-        #     # These are not emitted by the alert function because the
-        #     # item has already been deleted
-        #     self.projView.rootFolderChanged.emit(tHandle)
-        #     self.projView.treeItemChanged.emit(tHandle)
-
-        # else:
-        #     if askFirst:
-        #         msgYes = SHARED.question(
-        #             self.tr("Permanently delete '{0}'?").format(nwItemS.itemName)
-        #         )
-        #         if not msgYes:
-        #             logger.info("Action cancelled by user")
-        #             return False
-
-        #     logger.debug("Permanently deleting item '%s'", tHandle)
-
-        #     self.propagateCount(tHandle, 0)
-
-        #     # If a non-root item ends up on root due to a bug, allow it
-        #     # to still be deleted from invisible root (see #2108)
-        #     trItemP = trItemS.parent() or self.invisibleRootItem()
-        #     tIndex = trItemP.indexOfChild(trItemS)
-        #     trItemP.takeChild(tIndex)
-
-        #     for dHandle in reversed(self.getTreeFromHandle(tHandle)):
-        #         SHARED.closeEditor(dHandle)
-        #         SHARED.project.removeItem(dHandle)
-        #         self._treeMap.pop(dHandle, None)
-
-        #     self._alertTreeChange(tHandle, flush=flush)
-        #     self.projView.wordCountsChanged.emit()
-
-        #     # This is not emitted by the alert function because the item
-        #     # has already been deleted
-        #     self.projView.treeItemChanged.emit(tHandle)
 
         return True
 
@@ -1119,22 +1030,6 @@ class GuiProjectTree(QTreeView):
 
         return
 
-    # def getSelectedHandle(self) -> str | None:
-    #     """Get the currently selected handle. If multiple items are
-    #     selected, return the first.
-    #     """
-    #     # if items := self.selectedItems():
-    #     #     return items[0].data(self.C_DATA, self.D_HANDLE)
-    #     return None
-
-    # def setSelectedHandle(self, tHandle: str | None, doScroll: bool = False) -> None:
-    #     """Set a specific handle as the selected item."""
-    #     # if tHandle in self._treeMap:
-    #     #     self.setCurrentItem(self._treeMap[tHandle])
-    #     #     if (indexes := self.selectedIndexes()) and doScroll:
-    #     #         self.scrollTo(indexes[0], QAbstractItemView.ScrollHint.PositionAtCenter)
-    #     return
-
     def setActiveHandle(self, tHandle: str | None) -> None:
         """Highlight the rows associated with a given handle."""
         # brushOn = self.palette().alternateBase()
@@ -1204,36 +1099,6 @@ class GuiProjectTree(QTreeView):
     #  Private Slots
     ##
 
-    # @pyqtSlot(QModelIndex)
-    # def _treeSingleClick(self, index: QModelIndex) -> None:
-    #     """The user changed which item is selected."""
-    #     if isinstance(model := self.model(), ProjectModel) and (node := model.node(index)):
-    #         self.projView.selectedItemChanged.emit(node.item.itemHandle)
-
-    #     # # When selecting multiple items, don't allow including root
-    #     # # items in the selection and instead deselect them
-    #     # items = self.selectedItems()
-    #     # if items and len(items) > 1:
-    #     #     for item in items:
-    #     #         if item.parent() is None:
-    #     #             item.setSelected(False)
-
-    #     return
-
-    # @pyqtSlot(QModelIndex)
-    # def _treeDoubleClick(self, index: QModelIndex) -> None:
-    #     """Capture a double-click event and either request the document
-    #     for editing if it is a file, or expand/close the node if not.
-    #     """
-    #     if isinstance(model := self.model(), ProjectModel) and (node := model.node(index)):
-    #         if node.item.isFileType():
-    #             self.projView.openDocumentRequest.emit(
-    #                 node.item.itemHandle, nwDocMode.EDIT, "", True
-    #             )
-    #         else:
-    #             self.setExpanded(index, not self.isExpanded(index))
-    #     return
-
     @pyqtSlot()
     def _doAutoScroll(self) -> None:
         """Scroll one item up or down based on direction value."""
@@ -1248,24 +1113,6 @@ class GuiProjectTree(QTreeView):
     ##
     #  Events
     ##
-
-    # def mousePressEvent(self, event: QMouseEvent) -> None:
-    #     """Overload mousePressEvent to clear selection if clicking the
-    #     mouse in a blank area of the tree view, and to load a document
-    #     for viewing if the user middle-clicked.
-    #     """
-    #     super().mousePressEvent(event)
-    #     if event.button() == QtMouseLeft:
-    #         selItem = self.indexAt(event.pos())
-    #         if not selItem.isValid():
-    #             self.clearSelection()
-    #     elif event.button() == QtMouseMiddle:
-    #         selItem = self.itemAt(event.pos())
-    #         if selItem:
-    #             tHandle = selItem.data(self.C_DATA, self.D_HANDLE)
-    #             if (tItem := SHARED.project.tree[tHandle]) and tItem.isFileType():
-    #                 self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", False)
-    #     return
 
     # def startDrag(self, dropAction: Qt.DropAction) -> None:
     #     """Capture the drag and drop handling to pop alerts."""
@@ -1342,38 +1189,6 @@ class GuiProjectTree(QTreeView):
     ##
     #  Internal Functions
     ##
-
-    def _postItemMove(self, tHandle: str) -> None:
-        """Run various maintenance tasks for a moved item."""
-        # trItemS = self._getTreeItem(tHandle)
-        # nwItemS = SHARED.project.tree[tHandle]
-        # trItemP = trItemS.parent() if trItemS else None
-        # if trItemP is None or nwItemS is None:
-        #     logger.error("Failed to find new parent item of '%s'", tHandle)
-        #     return
-
-        # # Update item parent handle in the project
-        # pHandle = trItemP.data(self.C_DATA, self.D_HANDLE)
-        # nwItemS.setParent(pHandle)
-        # trItemP.setExpanded(True)
-        # logger.debug("The parent of item '%s' has been changed to '%s'", tHandle, pHandle)
-
-        # mHandles = self.getTreeFromHandle(tHandle)
-        # logger.debug("A total of %d item(s) were moved", len(mHandles))
-        # for mHandle in mHandles:
-        #     logger.debug("Updating item '%s'", mHandle)
-        #     SHARED.project.tree.updateItemData(mHandle)
-        #     if nwItemS.isInactiveClass():
-        #         SHARED.project.index.deleteHandle(mHandle)
-        #     else:
-        #         SHARED.project.index.reIndexHandle(mHandle)
-        #     if mItem := SHARED.project.tree[mHandle]:
-        #         self.setTreeItemValues(mItem)
-
-        # # Update word count
-        # self.propagateCount(tHandle, nwItemS.wordCount, countChildren=True)
-
-        return
 
     def _mergeDocuments(self, tHandle: str, newFile: bool) -> bool:
         """Merge an item's child documents into a single document."""
@@ -1522,118 +1337,6 @@ class GuiProjectTree(QTreeView):
         # self.saveTreeOrder()
 
         return True
-
-    def _scanChildren(self, itemList: list, tItem: QTreeWidgetItem, tIndex: int) -> list[str]:
-        """This is a recursive function returning all items in a tree
-        starting at a given QTreeWidgetItem.
-        """
-        # tHandle = tItem.data(self.C_DATA, self.D_HANDLE)
-        # cCount = tItem.childCount()
-
-        # # Update tree-related meta data
-        # nwItem = SHARED.project.tree[tHandle]
-        # if nwItem is not None:
-        #     nwItem.setExpanded(tItem.isExpanded() and cCount > 0)
-        #     nwItem.setOrder(tIndex)
-
-        # itemList.append(tHandle)
-        # for i in range(cCount):
-        #     self._scanChildren(itemList, tItem.child(i), i)
-
-        return itemList
-
-    def _addTreeItem(self, nwItem: NWItem | None,
-                     nHandle: str | None = None) -> QTreeWidgetItem | None:
-        """Create a QTreeWidgetItem from an NWItem and add it to the
-        project tree. Returns the widget if the item is valid, otherwise
-        a None is returned.
-        """
-        # if not nwItem:
-        #     logger.error("Invalid item cannot be added to project tree")
-        #     return None
-
-        # tHandle = nwItem.itemHandle
-        # pHandle = nwItem.itemParent
-        # newItem = QTreeWidgetItem()
-
-        # newItem.setText(self.C_NAME, "")
-        # newItem.setText(self.C_COUNT, "0")
-        # newItem.setText(self.C_ACTIVE, "")
-        # newItem.setText(self.C_STATUS, "")
-
-        # newItem.setTextAlignment(self.C_NAME, QtAlignLeft)
-        # newItem.setTextAlignment(self.C_COUNT, QtAlignRight)
-        # newItem.setTextAlignment(self.C_ACTIVE, QtAlignLeft)
-        # newItem.setTextAlignment(self.C_STATUS, QtAlignLeft)
-
-        # newItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
-        # newItem.setData(self.C_DATA, self.D_WORDS, 0)
-
-        # if pHandle is None and nwItem.isRootType():
-        #     pItem = self.invisibleRootItem()
-        # elif pHandle and pHandle in self._treeMap:
-        #     pItem = self._treeMap[pHandle]
-        # else:
-        #     SHARED.error(self.tr(
-        #         "There is nowhere to add item with name '{0}'."
-        #     ).format(nwItem.itemName))
-        #     return None
-
-        # byIndex = -1
-        # if nHandle is not None and nHandle in self._treeMap:
-        #     byIndex = pItem.indexOfChild(self._treeMap[nHandle])
-        # if byIndex >= 0:
-        #     pItem.insertChild(byIndex + 1, newItem)
-        # else:
-        #     pItem.addChild(newItem)
-
-        # self._treeMap[tHandle] = newItem
-        # self.propagateCount(tHandle, nwItem.wordCount, countChildren=True)
-        # self.setTreeItemValues(nwItem)
-        # newItem.setExpanded(nwItem.isExpanded)
-
-        # return newItem
-
-        return None
-
-    def _addTrashRoot(self) -> QTreeWidgetItem | None:
-        """Adds the trash root folder if it doesn't already exist in the
-        project tree.
-        """
-        # trashHandle = SHARED.project.trashFolder()
-        # if trashHandle is None:
-        #     return None
-
-        # trItem = self._getTreeItem(trashHandle)
-        # if trItem is None:
-        #     trItem = self._addTreeItem(SHARED.project.tree[trashHandle])
-        #     if trItem is not None:
-        #         trItem.setExpanded(True)
-        #         self._alertTreeChange(trashHandle, flush=True)
-
-        # return trItem
-
-        return None
-
-    def _alertTreeChange(self, tHandle: str | None, flush: bool = False) -> None:
-        """Update information on tree change state, and emit necessary
-        signals. A flush is only needed if an item is moved, created or
-        deleted.
-        """
-        # SHARED.project.setProjectChanged(True)
-        # if flush:
-        #     self.saveTreeOrder()
-
-        # if tHandle is None or tHandle not in SHARED.project.tree:
-        #     return
-
-        # tItem = SHARED.project.tree[tHandle]
-        # if tItem and tItem.isRootType():
-        #     self.projView.rootFolderChanged.emit(tHandle)
-
-        # self.projView.treeItemChanged.emit(tHandle)
-
-        return
 
 
 class _UpdatableMenu(QMenu):

@@ -521,10 +521,8 @@ class ProjectBuilder:
                         f"%Short: {bfNote}\n\n"
                     )
 
-        # Also add the archive and trash folders
+        # Also add the archive folder
         project.newRoot(nwItemClass.ARCHIVE)
-        project.trashFolder()
-
         project.saveProject()
         project.closeProject()
 
