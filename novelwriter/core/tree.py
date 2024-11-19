@@ -87,10 +87,10 @@ class NWTree:
     #  Properties
     ##
 
-    # @property
-    # def trashRoot(self) -> str | None:
-    #     """Return the handle of the trash folder, or None."""
-    #     return self._trash
+    @property
+    def trash(self) -> ProjectNode | None:
+        """Return trash node, if it exists."""
+        return self._getTrashNode()
 
     @property
     def model(self) -> ProjectModel:
@@ -158,7 +158,6 @@ class NWTree:
             nwItem.setType(itemType)
             nwItem.setClass(itemClass)
             if self.add(nwItem, pos):
-                self.updateItemData(tHandle)
                 self._project.setProjectChanged(True)
                 return tHandle
         return None
@@ -238,23 +237,15 @@ class NWTree:
         mark recovered files.
         """
         storage = self._project.storage
-        files = set(storage.scanContent())
-        for tHandle in self._nodes:
-            if self.updateItemData(tHandle):
-                logger.debug("Checking item '%s' ... OK", tHandle)
-                files.discard(tHandle)  # Remove it from the record
-            else:
-                logger.error("Checking item '%s' ... ERROR", tHandle)
-                self.__delitem__(tHandle)  # The file will be re-added as orphaned
-
-        orphans = len(files)
+        remains = set(storage.scanContent()).difference(set(self._nodes.keys()))
+        orphans = len(remains)
         if orphans == 0:
             logger.info("Checked project files: OK")
             return 0, 0
 
         logger.warning("Found %d file(s) not tracked in project", orphans)
         recovered = 0
-        for cHandle in files:
+        for cHandle in remains:
             aDoc = storage.getDocument(cHandle)
             aDoc.readDocument(isOrphan=True)
             oName, oParent, oClass, oLayout = aDoc.getMeta()
@@ -282,7 +273,6 @@ class NWTree:
             newItem.setClass(oClass)
             newItem.setLayout(oLayout)
             if self.add(newItem):
-                self.updateItemData(cHandle)
                 recovered += 1
 
         return orphans, recovered
@@ -345,25 +335,6 @@ class NWTree:
     ##
     #  Tree Item Methods
     ##
-
-    def updateItemData(self, tHandle: str) -> bool:
-        """Update the root item handle of a given item. Returns True if
-        a root was found and data updated, otherwise False.
-        """
-        if tItem := self._items.get(tHandle):
-            iItem = tItem
-            for _ in range(MAX_DEPTH):
-                if iItem.itemParent is None:
-                    tItem.setRoot(iItem.itemHandle)
-                    tItem.setClassDefaults(iItem.itemClass)
-                    return True
-                else:
-                    iItem = self.__getitem__(iItem.itemParent)
-                    if iItem is None:
-                        return False
-            else:
-                raise RecursionError("Critical internal error")
-        return False
 
     def checkType(self, tHandle: str, itemType: nwItemType) -> bool:
         """Check if item exists and is of the specified item type."""
@@ -515,8 +486,6 @@ class NWTree:
                 elif pHandle in items:
                     remains[handle] = item
                     logger.warning("Item '%s' found before its parent", handle)
-                else:
-                    logger.error("Item '%s' has no parent in current tree", handle)
             elif item.isRootType():
                 node = ProjectNode(item)
                 self._model.root.addChild(node)

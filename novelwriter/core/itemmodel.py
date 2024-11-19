@@ -45,7 +45,6 @@ COL_MASK = 0x0100
 
 C_LABEL_TEXT  = 0x0000 | Qt.ItemDataRole.DisplayRole
 C_LABEL_ICON  = 0x0000 | Qt.ItemDataRole.DecorationRole
-C_LABEL_TIP   = 0x0000 | Qt.ItemDataRole.ToolTipRole
 C_COUNT_TEXT  = 0x0100 | Qt.ItemDataRole.DisplayRole
 C_COUNT_ICON  = 0x0100 | Qt.ItemDataRole.DecorationRole
 C_COUNT_ALIGN = 0x0100 | Qt.ItemDataRole.TextAlignmentRole
@@ -95,34 +94,31 @@ class ProjectNode:
     ##
 
     def refresh(self) -> None:
-        cache: dict[int, str | QIcon | Qt.AlignmentFlag] = {}
-
+        """Refresh data values."""
         # Label
-        cache[C_LABEL_ICON] = SHARED.theme.getItemIcon(
+        self._cache[C_LABEL_ICON] = SHARED.theme.getItemIcon(
             self._item.itemType, self._item.itemClass,
             self._item.itemLayout, self._item.mainHeading
         )
-        cache[C_LABEL_TEXT] = self._item.itemName
-        cache[C_LABEL_TIP] = self._item.itemName
+        self._cache[C_LABEL_TEXT] = self._item.itemName
 
         # Count
-        cache[C_COUNT_ALIGN] = QtAlignRight
+        self._cache[C_COUNT_ALIGN] = QtAlignRight
 
         # Active
         if self._item.isFileType():
             if self._item.isActive:
-                cache[C_ACTIVE_ICON] = SHARED.theme.getIcon("checked")
+                self._cache[C_ACTIVE_ICON] = SHARED.theme.getIcon("checked")
             else:
-                cache[C_ACTIVE_ICON] = SHARED.theme.getIcon("unchecked")
+                self._cache[C_ACTIVE_ICON] = SHARED.theme.getIcon("unchecked")
         else:
-            cache[C_ACTIVE_ICON] = SHARED.theme.getIcon("noncheckable")
+            self._cache[C_ACTIVE_ICON] = SHARED.theme.getIcon("noncheckable")
 
         # Status
         sText, sIcon = self._item.getImportStatus()
-        cache[C_STATUS_ICON] = sIcon
-        cache[C_STATUS_TIP] = sText
+        self._cache[C_STATUS_ICON] = sIcon
+        self._cache[C_STATUS_TIP] = sText
 
-        self._cache = cache
         self.updateCount()
 
         return
@@ -145,7 +141,7 @@ class ProjectNode:
         return len(self._children)
 
     def data(self, column: int, role: Qt.ItemDataRole) -> T_NodeData:
-        """"""
+        """Return cached node data."""
         return self._cache.get(COL_MASK*column | role)
 
     def parent(self) -> ProjectNode | None:
@@ -157,6 +153,7 @@ class ProjectNode:
         return None
 
     def allChildren(self) -> list[ProjectNode]:
+        """Return a recursive list of all children."""
         nodes: list[ProjectNode] = []
         self._recursiveAppendChildren(nodes)
         return nodes
@@ -168,14 +165,23 @@ class ProjectNode:
     def addChild(self, child: ProjectNode, pos: int = -1) -> None:
         """Add a child item to this item."""
         child._parent = self
+        self._updateRelationships(child)
         if 0 <= pos < len(self._children):
             self._children.insert(pos, child)
             self._refreshChildrenPos()
         else:
             child._row = len(self._children)
             self._children.append(child)
-        self.refresh()
+        self.updateCount()
         return
+
+    def takeChild(self, pos: int) -> ProjectNode | None:
+        """Remove a child item and return it."""
+        if 0 <= pos < len(self._children):
+            node = self._children.pop()
+            self._refreshChildrenPos()
+            return node
+        return None
 
     def moveChild(self, source: int, target: int) -> None:
         """Move a child internally."""
@@ -201,6 +207,16 @@ class ProjectNode:
         """Update the row value on all children."""
         for n, child in enumerate(self._children):
             child._row = n
+        return
+
+    def _updateRelationships(self, child: ProjectNode) -> None:
+        """Update a child item's relationships."""
+        if self._parent:
+            child.item.setParent(self.item.itemHandle)
+            child.item.setRoot(self.item.itemRoot)
+        else:
+            child.item.setParent(None)
+            child.item.setRoot(child.item.itemHandle)
         return
 
 

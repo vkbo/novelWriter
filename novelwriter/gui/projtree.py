@@ -39,12 +39,11 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import qtLambda
-from novelwriter.constants import nwLabels, nwStyles, nwUnicode, trConst
+from novelwriter.constants import nwLabels, nwStyles, trConst
 from novelwriter.core.item import NWItem
 from novelwriter.core.itemmodel import ProjectModel, ProjectNode
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.dialogs.projectsettings import GuiProjectSettings
-from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType
+from novelwriter.enum import nwDocMode, nwItemClass, nwItemType
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
@@ -526,7 +525,6 @@ class GuiProjectTree(QTreeView):
 
         # Tree Settings
         iPx = SHARED.theme.baseIconHeight
-        # cMg = CONFIG.pxInt(6)
 
         self.setIconSize(SHARED.theme.baseIconSize)
         self.setFrameStyle(QFrame.Shape.NoFrame)
@@ -536,18 +534,6 @@ class GuiProjectTree(QTreeView):
         self.setAutoExpandDelay(1000)
         self.setHeaderHidden(True)
         self.setIndentation(iPx)
-        # self.setColumnCount(4)
-
-        # Lock the column sizes
-        # treeHeader = self.header()
-        # treeHeader.setStretchLastSection(False)
-        # treeHeader.setMinimumSectionSize(iPx + cMg)
-        # treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.Stretch)
-        # treeHeader.setSectionResizeMode(self.C_COUNT, QHeaderView.ResizeMode.ResizeToContents)
-        # treeHeader.setSectionResizeMode(self.C_ACTIVE, QHeaderView.ResizeMode.Fixed)
-        # treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.ResizeMode.Fixed)
-        # treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
-        # treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
 
         # Allow Move by Drag & Drop
         # self.setDragEnabled(True)
@@ -732,13 +718,15 @@ class GuiProjectTree(QTreeView):
             if dlgOk:
                 # Add the file or folder
                 if itemType == nwItemType.FILE:
-                    tHandle = SHARED.project.newFile(newLabel, sHandle, pos)
-                    if tHandle and copyDoc:
-                        SHARED.project.copyFileContent(tHandle, copyDoc)
-                    elif tHandle and hLevel > 0:
-                        SHARED.project.writeNewFile(tHandle, hLevel, not isNote)
+                    if tHandle := SHARED.project.newFile(newLabel, sHandle, pos):
+                        if copyDoc:
+                            SHARED.project.copyFileContent(tHandle, copyDoc)
+                        elif hLevel > 0:
+                            SHARED.project.writeNewFile(tHandle, hLevel, not isNote)
+                        SHARED.project.index.reIndexHandle(tHandle)
+                        SHARED.project.tree.refreshItems([tHandle])
                 else:
-                    tHandle = SHARED.project.newFolder(newLabel, sHandle, pos)
+                    SHARED.project.newFolder(newLabel, sHandle, pos)
 
         return
 
@@ -875,41 +863,6 @@ class GuiProjectTree(QTreeView):
         #         SHARED.project.writeNewFile(tHandle, 1, False, f"@tag: {tag}\n\n")
         #         self.revealNewTreeItem(tHandle, wordCount=True)
         return
-
-    def revealNewTreeItem(self, tHandle: str | None, nHandle: str | None = None,
-                          wordCount: bool = False) -> bool:
-        """Reveal a newly added project item in the project tree."""
-        # nwItem = SHARED.project.tree[tHandle] if tHandle else None
-        # if tHandle is None or nwItem is None:
-        #     return False
-
-        # trItem = self._addTreeItem(nwItem, nHandle)
-        # if trItem is None:
-        #     return False
-
-        # if nwItem.isFileType() and wordCount:
-        #     wC = SHARED.project.index.getCounts(tHandle)[1]
-        #     self.propagateCount(tHandle, wC)
-        #     self.projView.wordCountsChanged.emit()
-
-        # pHandle = nwItem.itemParent
-        # if pHandle is not None and pHandle in self._treeMap:
-        #     self._treeMap[pHandle].setExpanded(True)
-
-        # self._alertTreeChange(tHandle, flush=True)
-        # self.setCurrentItem(trItem)
-
-        return True
-
-    def getTreeFromHandle(self, tHandle: str) -> list[str]:
-        """Recursively return all the child items starting from a given
-        item handle.
-        """
-        result = []
-        # tIten = self._getTreeItem(tHandle)
-        # if tIten is not None:
-        #     result = self._scanChildren(result, tIten, 0)
-        return result
 
     def requestDeleteItem(self, tHandle: str | None = None) -> bool:
         """Request an item deleted from the project tree. This function
@@ -1768,358 +1721,358 @@ class _UpdatableMenu(QMenu):
         return
 
 
-class _TreeContextMenu(QMenu):
+# class _TreeContextMenu(QMenu):
 
-    def __init__(self, projTree: GuiProjectTree, nwItem: NWItem) -> None:
-        super().__init__(parent=projTree)
+#     def __init__(self, projTree: GuiProjectTree, nwItem: NWItem) -> None:
+#         super().__init__(parent=projTree)
 
-        self.projTree = projTree
-        self.projView = projTree.projView
+#         self.projTree = projTree
+#         self.projView = projTree.projView
 
-        self._item = nwItem
-        self._handle = nwItem.itemHandle
-        self._items: list[NWItem] = []
+#         self._item = nwItem
+#         self._handle = nwItem.itemHandle
+#         self._items: list[NWItem] = []
 
-        logger.debug("Ready: _TreeContextMenu")
+#         logger.debug("Ready: _TreeContextMenu")
 
-        return
+#         return
 
-    def __del__(self) -> None:  # pragma: no cover
-        logger.debug("Delete: _TreeContextMenu")
-        return
+#     def __del__(self) -> None:  # pragma: no cover
+#         logger.debug("Delete: _TreeContextMenu")
+#         return
 
-    ##
-    #  Methods
-    ##
+#     ##
+#     #  Methods
+#     ##
 
-    def buildTrashMenu(self) -> None:
-        """Build the special menu for the Trash folder."""
-        action = self.addAction(self.tr("Empty Trash"))
-        action.triggered.connect(self.projTree.emptyTrash)
-        return
+#     def buildTrashMenu(self) -> None:
+#         """Build the special menu for the Trash folder."""
+#         action = self.addAction(self.tr("Empty Trash"))
+#         action.triggered.connect(self.projTree.emptyTrash)
+#         return
 
-    def buildSingleSelectMenu(self, hasChild: bool) -> None:
-        """Build the single-select menu."""
-        isFile = self._item.isFileType()
-        isFolder = self._item.isFolderType()
-        isRoot = self._item.isRootType()
+#     def buildSingleSelectMenu(self, hasChild: bool) -> None:
+#         """Build the single-select menu."""
+#         isFile = self._item.isFileType()
+#         isFolder = self._item.isFolderType()
+#         isRoot = self._item.isRootType()
 
-        # Document Actions
-        if isFile:
-            self._docActions()
-            self.addSeparator()
+#         # Document Actions
+#         if isFile:
+#             self._docActions()
+#             self.addSeparator()
 
-        # Create New Items
-        self._itemCreation()
-        self.addSeparator()
+#         # Create New Items
+#         self._itemCreation()
+#         self.addSeparator()
 
-        # Edit Item Settings
-        action = self.addAction(self.tr("Rename"))
-        action.triggered.connect(qtLambda(self.projView.renameTreeItem, self._handle))
-        if isFile:
-            self._itemHeader()
-            self._itemActive(False)
-        self._itemStatusImport(False)
+#         # Edit Item Settings
+#         action = self.addAction(self.tr("Rename"))
+#         action.triggered.connect(qtLambda(self.projView.renameTreeItem, self._handle))
+#         if isFile:
+#             self._itemHeader()
+#             self._itemActive(False)
+#         self._itemStatusImport(False)
 
-        # Transform Item
-        if isFile or isFolder:
-            self._itemTransform(isFile, isFolder, hasChild)
-        self.addSeparator()
+#         # Transform Item
+#         if isFile or isFolder:
+#             self._itemTransform(isFile, isFolder, hasChild)
+#         self.addSeparator()
 
-        # Process Item
-        self._itemProcess(isFile, isFolder, isRoot, hasChild)
+#         # Process Item
+#         self._itemProcess(isFile, isFolder, isRoot, hasChild)
 
-        return
+#         return
 
-    def buildMultiSelectMenu(self, handles: list[str]) -> None:
-        """Build the multi-select menu."""
-        self._items = []
-        for tHandle in handles:
-            if (tItem := SHARED.project.tree[tHandle]):
-                self._items.append(tItem)
+#     def buildMultiSelectMenu(self, handles: list[str]) -> None:
+#         """Build the multi-select menu."""
+#         self._items = []
+#         for tHandle in handles:
+#             if (tItem := SHARED.project.tree[tHandle]):
+#                 self._items.append(tItem)
 
-        self._itemActive(True)
-        self._itemStatusImport(True)
-        self.addSeparator()
-        self._multiMoveToTrash()
-        return
+#         self._itemActive(True)
+#         self._itemStatusImport(True)
+#         self.addSeparator()
+#         self._multiMoveToTrash()
+#         return
 
-    ##
-    #  Menu Builders
-    ##
+#     ##
+#     #  Menu Builders
+#     ##
 
-    def _docActions(self) -> None:
-        """Add document actions."""
-        action = self.addAction(self.tr("Open Document"))
-        action.triggered.connect(qtLambda(
-            self.projView.openDocumentRequest.emit,
-            self._handle, nwDocMode.EDIT, "", True
-        ))
-        action = self.addAction(self.tr("View Document"))
-        action.triggered.connect(qtLambda(
-            self.projView.openDocumentRequest.emit,
-            self._handle, nwDocMode.VIEW, "", False
-        ))
-        return
+#     def _docActions(self) -> None:
+#         """Add document actions."""
+#         action = self.addAction(self.tr("Open Document"))
+#         action.triggered.connect(qtLambda(
+#             self.projView.openDocumentRequest.emit,
+#             self._handle, nwDocMode.EDIT, "", True
+#         ))
+#         action = self.addAction(self.tr("View Document"))
+#         action.triggered.connect(qtLambda(
+#             self.projView.openDocumentRequest.emit,
+#             self._handle, nwDocMode.VIEW, "", False
+#         ))
+#         return
 
-    def _itemCreation(self) -> None:
-        """Add create item actions."""
-        menu = self.addMenu(self.tr("Create New ..."))
-        menu.addAction(self.projView.projBar.aAddEmpty)
-        menu.addAction(self.projView.projBar.aAddChap)
-        menu.addAction(self.projView.projBar.aAddScene)
-        menu.addAction(self.projView.projBar.aAddNote)
-        menu.addAction(self.projView.projBar.aAddFolder)
-        return
+#     def _itemCreation(self) -> None:
+#         """Add create item actions."""
+#         menu = self.addMenu(self.tr("Create New ..."))
+#         menu.addAction(self.projView.projBar.aAddEmpty)
+#         menu.addAction(self.projView.projBar.aAddChap)
+#         menu.addAction(self.projView.projBar.aAddScene)
+#         menu.addAction(self.projView.projBar.aAddNote)
+#         menu.addAction(self.projView.projBar.aAddFolder)
+#         return
 
-    def _itemHeader(self) -> None:
-        """Check if there is a header that can be used for rename."""
-        SHARED.saveEditor()
-        if hItem := SHARED.project.index.getItemHeading(self._handle, "T0001"):
-            action = self.addAction(self.tr("Rename to Heading"))
-            action.triggered.connect(
-                qtLambda(self.projView.renameTreeItem, self._handle, hItem.title)
-            )
-        return
+#     def _itemHeader(self) -> None:
+#         """Check if there is a header that can be used for rename."""
+#         SHARED.saveEditor()
+#         if hItem := SHARED.project.index.getItemHeading(self._handle, "T0001"):
+#             action = self.addAction(self.tr("Rename to Heading"))
+#             action.triggered.connect(
+#                 qtLambda(self.projView.renameTreeItem, self._handle, hItem.title)
+#             )
+#         return
 
-    def _itemActive(self, multi: bool) -> None:
-        """Add Active/Inactive actions."""
-        if multi:
-            mSub = self.addMenu(self.tr("Set Active to ..."))
-            aOne = mSub.addAction(SHARED.theme.getIcon("checked"), self.projTree.trActive)
-            aOne.triggered.connect(qtLambda(self._iterItemActive, True))
-            aTwo = mSub.addAction(SHARED.theme.getIcon("unchecked"), self.projTree.trInactive)
-            aTwo.triggered.connect(qtLambda(self._iterItemActive, False))
-        else:
-            action = self.addAction(self.tr("Toggle Active"))
-            action.triggered.connect(self._toggleItemActive)
-        return
+#     def _itemActive(self, multi: bool) -> None:
+#         """Add Active/Inactive actions."""
+#         if multi:
+#             mSub = self.addMenu(self.tr("Set Active to ..."))
+#             aOne = mSub.addAction(SHARED.theme.getIcon("checked"), self.projTree.trActive)
+#             aOne.triggered.connect(qtLambda(self._iterItemActive, True))
+#             aTwo = mSub.addAction(SHARED.theme.getIcon("unchecked"), self.projTree.trInactive)
+#             aTwo.triggered.connect(qtLambda(self._iterItemActive, False))
+#         else:
+#             action = self.addAction(self.tr("Toggle Active"))
+#             action.triggered.connect(self._toggleItemActive)
+#         return
 
-    def _itemStatusImport(self, multi: bool) -> None:
-        """Add actions for changing status or importance."""
-        if self._item.isNovelLike():
-            menu = self.addMenu(self.tr("Set Status to ..."))
-            current = self._item.itemStatus
-            for key, entry in SHARED.project.data.itemStatus.iterItems():
-                name = entry.name
-                if not multi and current == key:
-                    name += f" ({nwUnicode.U_CHECK})"
-                action = menu.addAction(entry.icon, name)
-                if multi:
-                    action.triggered.connect(qtLambda(self._iterSetItemStatus, key))
-                else:
-                    action.triggered.connect(qtLambda(self._changeItemStatus, key))
-            menu.addSeparator()
-            action = menu.addAction(self.tr("Manage Labels ..."))
-            action.triggered.connect(qtLambda(
-                self.projView.projectSettingsRequest.emit,
-                GuiProjectSettings.PAGE_STATUS
-            ))
-        else:
-            menu = self.addMenu(self.tr("Set Importance to ..."))
-            current = self._item.itemImport
-            for key, entry in SHARED.project.data.itemImport.iterItems():
-                name = entry.name
-                if not multi and current == key:
-                    name += f" ({nwUnicode.U_CHECK})"
-                action = menu.addAction(entry.icon, name)
-                if multi:
-                    action.triggered.connect(qtLambda(self._iterSetItemImport, key))
-                else:
-                    action.triggered.connect(qtLambda(self._changeItemImport, key))
-            menu.addSeparator()
-            action = menu.addAction(self.tr("Manage Labels ..."))
-            action.triggered.connect(qtLambda(
-                self.projView.projectSettingsRequest.emit,
-                GuiProjectSettings.PAGE_IMPORT
-            ))
-        return
+#     def _itemStatusImport(self, multi: bool) -> None:
+#         """Add actions for changing status or importance."""
+#         if self._item.isNovelLike():
+#             menu = self.addMenu(self.tr("Set Status to ..."))
+#             current = self._item.itemStatus
+#             for key, entry in SHARED.project.data.itemStatus.iterItems():
+#                 name = entry.name
+#                 if not multi and current == key:
+#                     name += f" ({nwUnicode.U_CHECK})"
+#                 action = menu.addAction(entry.icon, name)
+#                 if multi:
+#                     action.triggered.connect(qtLambda(self._iterSetItemStatus, key))
+#                 else:
+#                     action.triggered.connect(qtLambda(self._changeItemStatus, key))
+#             menu.addSeparator()
+#             action = menu.addAction(self.tr("Manage Labels ..."))
+#             action.triggered.connect(qtLambda(
+#                 self.projView.projectSettingsRequest.emit,
+#                 GuiProjectSettings.PAGE_STATUS
+#             ))
+#         else:
+#             menu = self.addMenu(self.tr("Set Importance to ..."))
+#             current = self._item.itemImport
+#             for key, entry in SHARED.project.data.itemImport.iterItems():
+#                 name = entry.name
+#                 if not multi and current == key:
+#                     name += f" ({nwUnicode.U_CHECK})"
+#                 action = menu.addAction(entry.icon, name)
+#                 if multi:
+#                     action.triggered.connect(qtLambda(self._iterSetItemImport, key))
+#                 else:
+#                     action.triggered.connect(qtLambda(self._changeItemImport, key))
+#             menu.addSeparator()
+#             action = menu.addAction(self.tr("Manage Labels ..."))
+#             action.triggered.connect(qtLambda(
+#                 self.projView.projectSettingsRequest.emit,
+#                 GuiProjectSettings.PAGE_IMPORT
+#             ))
+#         return
 
-    def _itemTransform(self, isFile: bool, isFolder: bool, hasChild: bool) -> None:
-        """Add actions for the Transform menu."""
-        menu = self.addMenu(self.tr("Transform ..."))
+#     def _itemTransform(self, isFile: bool, isFolder: bool, hasChild: bool) -> None:
+#         """Add actions for the Transform menu."""
+#         menu = self.addMenu(self.tr("Transform ..."))
 
-        tree = self.projTree
-        tHandle = self._handle
+#         tree = self.projTree
+#         tHandle = self._handle
 
-        trDoc = trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
-        trNote = trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
-        loDoc = nwItemLayout.DOCUMENT
-        loNote = nwItemLayout.NOTE
-        isDocFile = isFile and self._item.isDocumentLayout()
-        isNoteFile = isFile and self._item.isNoteLayout()
+#         trDoc = trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
+#         trNote = trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
+#         loDoc = nwItemLayout.DOCUMENT
+#         loNote = nwItemLayout.NOTE
+#         isDocFile = isFile and self._item.isDocumentLayout()
+#         isNoteFile = isFile and self._item.isNoteLayout()
 
-        if isNoteFile and self._item.documentAllowed():
-            action = menu.addAction(self.tr("Convert to {0}").format(trDoc))
-            action.triggered.connect(qtLambda(self._changeItemLayout, loDoc))
+#         if isNoteFile and self._item.documentAllowed():
+#             action = menu.addAction(self.tr("Convert to {0}").format(trDoc))
+#             action.triggered.connect(qtLambda(self._changeItemLayout, loDoc))
 
-        if isDocFile:
-            action = menu.addAction(self.tr("Convert to {0}").format(trNote))
-            action.triggered.connect(qtLambda(self._changeItemLayout, loNote))
+#         if isDocFile:
+#             action = menu.addAction(self.tr("Convert to {0}").format(trNote))
+#             action.triggered.connect(qtLambda(self._changeItemLayout, loNote))
 
-        if isFolder and self._item.documentAllowed():
-            action = menu.addAction(self.tr("Convert to {0}").format(trDoc))
-            action.triggered.connect(qtLambda(self._covertFolderToFile, loDoc))
+#         if isFolder and self._item.documentAllowed():
+#             action = menu.addAction(self.tr("Convert to {0}").format(trDoc))
+#             action.triggered.connect(qtLambda(self._covertFolderToFile, loDoc))
 
-        if isFolder:
-            action = menu.addAction(self.tr("Convert to {0}").format(trNote))
-            action.triggered.connect(qtLambda(self._covertFolderToFile, loNote))
+#         if isFolder:
+#             action = menu.addAction(self.tr("Convert to {0}").format(trNote))
+#             action.triggered.connect(qtLambda(self._covertFolderToFile, loNote))
 
-        if hasChild and isFile:
-            action = menu.addAction(self.tr("Merge Child Items into Self"))
-            action.triggered.connect(qtLambda(tree._mergeDocuments, tHandle, False))
-            action = menu.addAction(self.tr("Merge Child Items into New"))
-            action.triggered.connect(qtLambda(tree._mergeDocuments, tHandle, True))
+#         if hasChild and isFile:
+#             action = menu.addAction(self.tr("Merge Child Items into Self"))
+#             action.triggered.connect(qtLambda(tree._mergeDocuments, tHandle, False))
+#             action = menu.addAction(self.tr("Merge Child Items into New"))
+#             action.triggered.connect(qtLambda(tree._mergeDocuments, tHandle, True))
 
-        if hasChild and isFolder:
-            action = menu.addAction(self.tr("Merge Documents in Folder"))
-            action.triggered.connect(qtLambda(tree._mergeDocuments, tHandle, True))
+#         if hasChild and isFolder:
+#             action = menu.addAction(self.tr("Merge Documents in Folder"))
+#             action.triggered.connect(qtLambda(tree._mergeDocuments, tHandle, True))
 
-        if isFile:
-            action = menu.addAction(self.tr("Split Document by Headings"))
-            action.triggered.connect(qtLambda(tree._splitDocument, tHandle))
+#         if isFile:
+#             action = menu.addAction(self.tr("Split Document by Headings"))
+#             action.triggered.connect(qtLambda(tree._splitDocument, tHandle))
 
-        return
+#         return
 
-    def _itemProcess(self, isFile: bool, isFolder: bool, isRoot: bool, hasChild: bool) -> None:
-        """Add actions for item processing."""
-        tree = self.projTree
-        tHandle = self._handle
-        if hasChild:
-            action = self.addAction(self.tr("Expand All"))
-            action.triggered.connect(qtLambda(tree.setExpandedFromHandle, tHandle, True))
-            action = self.addAction(self.tr("Collapse All"))
-            action.triggered.connect(qtLambda(tree.setExpandedFromHandle, tHandle, False))
+#     def _itemProcess(self, isFile: bool, isFolder: bool, isRoot: bool, hasChild: bool) -> None:
+#         """Add actions for item processing."""
+#         tree = self.projTree
+#         tHandle = self._handle
+#         if hasChild:
+#             action = self.addAction(self.tr("Expand All"))
+#             action.triggered.connect(qtLambda(tree.setExpandedFromHandle, tHandle, True))
+#             action = self.addAction(self.tr("Collapse All"))
+#             action.triggered.connect(qtLambda(tree.setExpandedFromHandle, tHandle, False))
 
-        action = self.addAction(self.tr("Duplicate"))
-        action.triggered.connect(qtLambda(tree._duplicateFromHandle, tHandle))
+#         action = self.addAction(self.tr("Duplicate"))
+#         action.triggered.connect(qtLambda(tree._duplicateFromHandle, tHandle))
 
-        if self._item.itemClass == nwItemClass.TRASH or isRoot or (isFolder and not hasChild):
-            action = self.addAction(self.tr("Delete Permanently"))
-            action.triggered.connect(qtLambda(tree.permDeleteItem, tHandle))
-        else:
-            action = self.addAction(self.tr("Move to Trash"))
-            action.triggered.connect(qtLambda(tree.moveItemToTrash, tHandle))
+#         if self._item.itemClass == nwItemClass.TRASH or isRoot or (isFolder and not hasChild):
+#             action = self.addAction(self.tr("Delete Permanently"))
+#             action.triggered.connect(qtLambda(tree.permDeleteItem, tHandle))
+#         else:
+#             action = self.addAction(self.tr("Move to Trash"))
+#             action.triggered.connect(qtLambda(tree.moveItemToTrash, tHandle))
 
-        return
+#         return
 
-    def _multiMoveToTrash(self) -> None:
-        """Add move to Trash action."""
-        areTrash = [i.itemClass == nwItemClass.TRASH for i in self._items]
-        if all(areTrash):
-            action = self.addAction(self.tr("Delete Permanently"))
-            action.triggered.connect(self._iterPermDelete)
-        elif not any(areTrash):
-            action = self.addAction(self.tr("Move to Trash"))
-            action.triggered.connect(self._iterMoveToTrash)
-        return
+#     def _multiMoveToTrash(self) -> None:
+#         """Add move to Trash action."""
+#         areTrash = [i.itemClass == nwItemClass.TRASH for i in self._items]
+#         if all(areTrash):
+#             action = self.addAction(self.tr("Delete Permanently"))
+#             action.triggered.connect(self._iterPermDelete)
+#         elif not any(areTrash):
+#             action = self.addAction(self.tr("Move to Trash"))
+#             action.triggered.connect(self._iterMoveToTrash)
+#         return
 
-    ##
-    #  Private Slots
-    ##
+#     ##
+#     #  Private Slots
+#     ##
 
-    @pyqtSlot()
-    def _iterMoveToTrash(self) -> None:
-        """Iterate through files and move them to Trash."""
-        if SHARED.question(self.tr("Move {0} items to Trash?").format(len(self._items))):
-            for tItem in self._items:
-                if tItem.isFileType() and tItem.itemClass != nwItemClass.TRASH:
-                    self.projTree.moveItemToTrash(tItem.itemHandle, askFirst=False, flush=False)
-                # self.projTree.saveTreeOrder()
-        return
+#     @pyqtSlot()
+#     def _iterMoveToTrash(self) -> None:
+#         """Iterate through files and move them to Trash."""
+#         if SHARED.question(self.tr("Move {0} items to Trash?").format(len(self._items))):
+#             for tItem in self._items:
+#                 if tItem.isFileType() and tItem.itemClass != nwItemClass.TRASH:
+#                     self.projTree.moveItemToTrash(tItem.itemHandle, askFirst=False, flush=False)
+#                 # self.projTree.saveTreeOrder()
+#         return
 
-    @pyqtSlot()
-    def _iterPermDelete(self) -> None:
-        """Iterate through files and delete them."""
-        if SHARED.question(self.projTree.trPermDelete.format(len(self._items))):
-            for tItem in self._items:
-                if tItem.isFileType() and tItem.itemClass == nwItemClass.TRASH:
-                    self.projTree.permDeleteItem(tItem.itemHandle, askFirst=False, flush=False)
-                # self.projTree.saveTreeOrder()
-        return
+#     @pyqtSlot()
+#     def _iterPermDelete(self) -> None:
+#         """Iterate through files and delete them."""
+#         if SHARED.question(self.projTree.trPermDelete.format(len(self._items))):
+#             for tItem in self._items:
+#                 if tItem.isFileType() and tItem.itemClass == nwItemClass.TRASH:
+#                     self.projTree.permDeleteItem(tItem.itemHandle, askFirst=False, flush=False)
+#                 # self.projTree.saveTreeOrder()
+#         return
 
-    @pyqtSlot()
-    def _toggleItemActive(self) -> None:
-        """Toggle the active status of an item."""
-        self._item.setActive(not self._item.isActive)
-        self.projTree.setTreeItemValues(self._item)
-        self.projTree._alertTreeChange(self._handle, flush=False)
-        return
+#     @pyqtSlot()
+#     def _toggleItemActive(self) -> None:
+#         """Toggle the active status of an item."""
+#         self._item.setActive(not self._item.isActive)
+#         self.projTree.setTreeItemValues(self._item)
+#         self.projTree._alertTreeChange(self._handle, flush=False)
+#         return
 
-    ##
-    #  Internal Functions
-    ##
+#     ##
+#     #  Internal Functions
+#     ##
 
-    def _iterItemActive(self, isActive: bool) -> None:
-        """Set the active status of multiple items."""
-        for tItem in self._items:
-            if tItem and tItem.isFileType():
-                tItem.setActive(isActive)
-                self.projTree.setTreeItemValues(tItem)
-                self.projTree._alertTreeChange(tItem.itemHandle, flush=False)
-        return
+#     def _iterItemActive(self, isActive: bool) -> None:
+#         """Set the active status of multiple items."""
+#         for tItem in self._items:
+#             if tItem and tItem.isFileType():
+#                 tItem.setActive(isActive)
+#                 self.projTree.setTreeItemValues(tItem)
+#                 self.projTree._alertTreeChange(tItem.itemHandle, flush=False)
+#         return
 
-    def _changeItemStatus(self, key: str) -> None:
-        """Set a new status value of an item."""
-        self._item.setStatus(key)
-        self.projTree.setTreeItemValues(self._item)
-        self.projTree._alertTreeChange(self._handle, flush=False)
-        return
+#     def _changeItemStatus(self, key: str) -> None:
+#         """Set a new status value of an item."""
+#         self._item.setStatus(key)
+#         self.projTree.setTreeItemValues(self._item)
+#         self.projTree._alertTreeChange(self._handle, flush=False)
+#         return
 
-    def _iterSetItemStatus(self, key: str) -> None:
-        """Change the status value for multiple items."""
-        for tItem in self._items:
-            if tItem and tItem.isNovelLike():
-                tItem.setStatus(key)
-                self.projTree.setTreeItemValues(tItem)
-                self.projTree._alertTreeChange(tItem.itemHandle, flush=False)
-        return
+#     def _iterSetItemStatus(self, key: str) -> None:
+#         """Change the status value for multiple items."""
+#         for tItem in self._items:
+#             if tItem and tItem.isNovelLike():
+#                 tItem.setStatus(key)
+#                 self.projTree.setTreeItemValues(tItem)
+#                 self.projTree._alertTreeChange(tItem.itemHandle, flush=False)
+#         return
 
-    def _changeItemImport(self, key: str) -> None:
-        """Set a new importance value of an item."""
-        self._item.setImport(key)
-        self.projTree.setTreeItemValues(self._item)
-        self.projTree._alertTreeChange(self._handle, flush=False)
-        return
+#     def _changeItemImport(self, key: str) -> None:
+#         """Set a new importance value of an item."""
+#         self._item.setImport(key)
+#         self.projTree.setTreeItemValues(self._item)
+#         self.projTree._alertTreeChange(self._handle, flush=False)
+#         return
 
-    def _iterSetItemImport(self, key: str) -> None:
-        """Change the status value for multiple items."""
-        for tItem in self._items:
-            if tItem and not tItem.isNovelLike():
-                tItem.setImport(key)
-                self.projTree.setTreeItemValues(tItem)
-                self.projTree._alertTreeChange(tItem.itemHandle, flush=False)
-        return
+#     def _iterSetItemImport(self, key: str) -> None:
+#         """Change the status value for multiple items."""
+#         for tItem in self._items:
+#             if tItem and not tItem.isNovelLike():
+#                 tItem.setImport(key)
+#                 self.projTree.setTreeItemValues(tItem)
+#                 self.projTree._alertTreeChange(tItem.itemHandle, flush=False)
+#         return
 
-    def _changeItemLayout(self, itemLayout: nwItemLayout) -> None:
-        """Set a new item layout value of an item."""
-        if itemLayout == nwItemLayout.DOCUMENT and self._item.documentAllowed():
-            self._item.setLayout(nwItemLayout.DOCUMENT)
-            self.projTree.setTreeItemValues(self._item)
-            self.projTree._alertTreeChange(self._handle, flush=False)
-        elif itemLayout == nwItemLayout.NOTE:
-            self._item.setLayout(nwItemLayout.NOTE)
-            self.projTree.setTreeItemValues(self._item)
-            self.projTree._alertTreeChange(self._handle, flush=False)
-        return
+#     def _changeItemLayout(self, itemLayout: nwItemLayout) -> None:
+#         """Set a new item layout value of an item."""
+#         if itemLayout == nwItemLayout.DOCUMENT and self._item.documentAllowed():
+#             self._item.setLayout(nwItemLayout.DOCUMENT)
+#             self.projTree.setTreeItemValues(self._item)
+#             self.projTree._alertTreeChange(self._handle, flush=False)
+#         elif itemLayout == nwItemLayout.NOTE:
+#             self._item.setLayout(nwItemLayout.NOTE)
+#             self.projTree.setTreeItemValues(self._item)
+#             self.projTree._alertTreeChange(self._handle, flush=False)
+#         return
 
-    def _covertFolderToFile(self, itemLayout: nwItemLayout) -> None:
-        """Convert a folder to a note or document."""
-        if self._item.isFolderType():
-            msgYes = SHARED.question(self.tr(
-                "Do you want to convert the folder to a {0}? "
-                "This action cannot be reversed."
-            ).format(trConst(nwLabels.LAYOUT_NAME[itemLayout])))
-            if msgYes and itemLayout == nwItemLayout.DOCUMENT and self._item.documentAllowed():
-                self._item.setType(nwItemType.FILE)
-                self._item.setLayout(nwItemLayout.DOCUMENT)
-                self.projTree.setTreeItemValues(self._item)
-                self.projTree._alertTreeChange(self._handle, flush=False)
-            elif msgYes and itemLayout == nwItemLayout.NOTE:
-                self._item.setType(nwItemType.FILE)
-                self._item.setLayout(nwItemLayout.NOTE)
-                self.projTree.setTreeItemValues(self._item)
-                self.projTree._alertTreeChange(self._handle, flush=False)
-            else:
-                logger.info("Folder conversion cancelled")
-        return
+#     def _covertFolderToFile(self, itemLayout: nwItemLayout) -> None:
+#         """Convert a folder to a note or document."""
+#         if self._item.isFolderType():
+#             msgYes = SHARED.question(self.tr(
+#                 "Do you want to convert the folder to a {0}? "
+#                 "This action cannot be reversed."
+#             ).format(trConst(nwLabels.LAYOUT_NAME[itemLayout])))
+#             if msgYes and itemLayout == nwItemLayout.DOCUMENT and self._item.documentAllowed():
+#                 self._item.setType(nwItemType.FILE)
+#                 self._item.setLayout(nwItemLayout.DOCUMENT)
+#                 self.projTree.setTreeItemValues(self._item)
+#                 self.projTree._alertTreeChange(self._handle, flush=False)
+#             elif msgYes and itemLayout == nwItemLayout.NOTE:
+#                 self._item.setType(nwItemType.FILE)
+#                 self._item.setLayout(nwItemLayout.NOTE)
+#                 self.projTree.setTreeItemValues(self._item)
+#                 self.projTree._alertTreeChange(self._handle, flush=False)
+#             else:
+#                 logger.info("Folder conversion cancelled")
+#         return
