@@ -528,10 +528,6 @@ class GuiProjectTree(QTreeView):
         self.setDragEnabled(True)
         self.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
 
-        # Disable built-in auto scroll as it isn't working in some Qt
-        # releases (see #1561) and instead use our own implementation
-        # self.setAutoScroll(False)
-
         # Set selection options
         self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -545,13 +541,6 @@ class GuiProjectTree(QTreeView):
         self.doubleClicked.connect(self._onDoubleClick)
         self.collapsed.connect(self._onNodeCollapsed)
         self.expanded.connect(self._onNodeExpanded)
-
-        # Auto Scroll
-        # self._scrollMargin = SHARED.theme.baseIconHeight
-        # self._scrollDirection = 0
-        # self._scrollTimer = QTimer(self)
-        # self._scrollTimer.timeout.connect(self._doAutoScroll)
-        # self._scrollTimer.setInterval(250)
 
         # Set custom settings
         self.initSettings()
@@ -1158,21 +1147,6 @@ class GuiProjectTree(QTreeView):
         #     for i in range(self.columnCount()):
         #         item.setBackground(i, brushOn)
         # self._actHandle = tHandle or None
-        return
-
-    ##
-    #  Private Slots
-    ##
-
-    @pyqtSlot()
-    def _doAutoScroll(self) -> None:
-        """Scroll one item up or down based on direction value."""
-        # if self._scrollDirection == -1:
-        #     self.scrollToItem(self.itemAbove(self.itemAt(1, 1)))
-        # elif self._scrollDirection == 1:
-        #     self.scrollToItem(self.itemBelow(self.itemAt(1, self.height() - 1)))
-        # self._scrollDirection = 0
-        # self._scrollTimer.stop()
         return
 
 

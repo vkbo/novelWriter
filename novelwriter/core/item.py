@@ -335,8 +335,14 @@ class NWItem:
         """Return the relevant active status label and icon for
         the current item based on its type.
         """
-        key = ("checked" if self._active else "unchecked") if self.isFileType() else "noncheckable"
-        return trConst(nwLabels.ACTIVE_NAME[key]), SHARED.theme.getIcon(key)
+        if self.isFileType():
+            key = "checked" if self._active else "unchecked"
+            text = trConst(nwLabels.ACTIVE_NAME[key])
+            icon = SHARED.theme.getIcon(key)
+        else:
+            text = ""
+            icon = SHARED.theme.getIcon("noncheckable")
+        return text, icon
 
     ##
     #  Checker Methods

@@ -275,9 +275,8 @@ class nwLabels:
         "note":     QT_TRANSLATE_NOOP("Constant", "Project Note"),
     }
     ACTIVE_NAME = {
-        "checked":      QT_TRANSLATE_NOOP("Constant", "Active"),
-        "unchecked":    QT_TRANSLATE_NOOP("Constant", "Inactive"),
-        "noncheckable": QT_TRANSLATE_NOOP("Constant", "Not Available"),
+        "checked":   QT_TRANSLATE_NOOP("Constant", "Active"),
+        "unchecked": QT_TRANSLATE_NOOP("Constant", "Inactive"),
     }
     KEY_NAME = {
         nwKeyWords.TAG_KEY:     QT_TRANSLATE_NOOP("Constant", "Tag"),
