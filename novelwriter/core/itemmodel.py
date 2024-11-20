@@ -64,6 +64,11 @@ T_NodeData = str | QIcon | Qt.AlignmentFlag | None
 
 class ProjectNode:
 
+    C_NAME   = 0
+    C_COUNT  = 1
+    C_ACTIVE = 2
+    C_STATUS = 3
+
     __slots__ = ("_item", "_children", "_parent", "_row", "_cache", "_flags", "_count")
 
     def __init__(self, item: NWItem) -> None:
@@ -126,10 +131,10 @@ class ProjectNode:
 
         return
 
-    def updateCount(self) -> None:
+    def updateCount(self, propagate: bool = True) -> None:
         self._count = self._item.wordCount + sum(c._count for c in self._children)
         self._cache[C_COUNT_TEXT] = f"{self._count:n}"
-        if parent := self._parent:
+        if propagate and (parent := self._parent):
             parent.updateCount()
         return
 

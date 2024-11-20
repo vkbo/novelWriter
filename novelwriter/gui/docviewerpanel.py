@@ -29,8 +29,8 @@ from enum import Enum
 
 from PyQt5.QtCore import QModelIndex, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QFrame, QHeaderView, QMenu, QTabWidget, QToolButton,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView, QFrame, QMenu, QTabWidget, QToolButton, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -40,7 +40,7 @@ from novelwriter.core.index import IndexHeading, IndexItem
 from novelwriter.enum import nwDocMode, nwItemClass
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
-from novelwriter.types import QtDecoration, QtUserRole
+from novelwriter.types import QtDecoration, QtHeaderFixed, QtHeaderToContents, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -259,10 +259,10 @@ class _ViewPanelBackRefs(QTreeWidget):
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
         treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
-        treeHeader.setSectionResizeMode(self.C_DOC, QHeaderView.ResizeMode.ResizeToContents)
-        treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
-        treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
-        treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.ResizeMode.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_DOC, QtHeaderToContents)
+        treeHeader.setSectionResizeMode(self.C_EDIT, QtHeaderFixed)
+        treeHeader.setSectionResizeMode(self.C_VIEW, QtHeaderFixed)
+        treeHeader.setSectionResizeMode(self.C_TITLE, QtHeaderToContents)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
         treeHeader.setSectionsMovable(False)
@@ -407,8 +407,8 @@ class _ViewPanelKeyWords(QTreeWidget):
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
         treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
-        treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
-        treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
+        treeHeader.setSectionResizeMode(self.C_EDIT, QtHeaderFixed)
+        treeHeader.setSectionResizeMode(self.C_VIEW, QtHeaderFixed)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
         treeHeader.setSectionsMovable(False)

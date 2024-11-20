@@ -28,7 +28,7 @@ from PyQt5.QtGui import (
     QColor, QFont, QPainter, QTextBlockFormat, QTextCharFormat, QTextCursor,
     QTextFormat
 )
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QSizePolicy, QStyle
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QHeaderView, QSizePolicy, QStyle
 
 # Qt Alignment Flags
 
@@ -118,6 +118,12 @@ QtSizeFixed = QSizePolicy.Policy.Fixed
 QtSizeIgnored = QSizePolicy.Policy.Ignored
 QtSizeMinimum = QSizePolicy.Policy.Minimum
 QtSizeMinimumExpanding = QSizePolicy.Policy.MinimumExpanding
+
+# Resize Mode
+
+QtHeaderStretch = QHeaderView.ResizeMode.Stretch
+QtHeaderToContents = QHeaderView.ResizeMode.ResizeToContents
+QtHeaderFixed = QHeaderView.ResizeMode.Fixed
 
 # Scroll Bar Policy
 

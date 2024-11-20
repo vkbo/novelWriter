@@ -34,8 +34,8 @@ from enum import Enum
 from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon, QMouseEvent, QPalette
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QAction, QFrame, QHBoxLayout, QHeaderView, QLabel,
-    QMenu, QShortcut, QTreeView, QVBoxLayout, QWidget
+    QAbstractItemView, QAction, QFrame, QHBoxLayout, QLabel, QMenu, QShortcut,
+    QTreeView, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -48,8 +48,8 @@ from novelwriter.enum import nwDocMode, nwItemClass, nwItemType
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
-    QtMouseLeft, QtMouseMiddle, QtScrollAlwaysOff, QtScrollAsNeeded,
-    QtSizeExpanding
+    QtHeaderFixed, QtHeaderStretch, QtHeaderToContents, QtMouseLeft,
+    QtMouseMiddle, QtScrollAlwaysOff, QtScrollAsNeeded, QtSizeExpanding
 )
 
 logger = logging.getLogger(__name__)
@@ -226,8 +226,8 @@ class GuiProjectView(QWidget):
     @pyqtSlot(str)
     def updateItemValues(self, tHandle: str) -> None:
         """Update tree item."""
-        if nwItem := SHARED.project.tree[tHandle]:
-            self.projTree.setTreeItemValues(nwItem)
+        # if nwItem := SHARED.project.tree[tHandle]:
+        #     self.projTree.setTreeItemValues(nwItem)
         return
 
     @pyqtSlot(str)
@@ -496,15 +496,6 @@ class GuiProjectToolBar(QWidget):
 
 class GuiProjectTree(QTreeView):
 
-    # C_DATA   = 0
-    C_NAME   = 0
-    C_COUNT  = 1
-    C_ACTIVE = 2
-    C_STATUS = 3
-
-    # D_HANDLE = QtUserRole
-    # D_WORDS  = QtUserRole + 1
-
     itemRefreshed = pyqtSignal(str, NWItem, QIcon)
 
     def __init__(self, projView: GuiProjectView) -> None:
@@ -612,12 +603,12 @@ class GuiProjectTree(QTreeView):
         treeHeader = self.header()
         treeHeader.setStretchLastSection(False)
         treeHeader.setMinimumSectionSize(iPx + cMg)
-        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.Stretch)
-        treeHeader.setSectionResizeMode(self.C_COUNT, QHeaderView.ResizeMode.ResizeToContents)
-        treeHeader.setSectionResizeMode(self.C_ACTIVE, QHeaderView.ResizeMode.Fixed)
-        treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.ResizeMode.Fixed)
-        treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
-        treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
+        treeHeader.setSectionResizeMode(ProjectNode.C_NAME, QtHeaderStretch)
+        treeHeader.setSectionResizeMode(ProjectNode.C_COUNT, QtHeaderToContents)
+        treeHeader.setSectionResizeMode(ProjectNode.C_ACTIVE, QtHeaderFixed)
+        treeHeader.setSectionResizeMode(ProjectNode.C_STATUS, QtHeaderFixed)
+        treeHeader.resizeSection(ProjectNode.C_ACTIVE, iPx + cMg)
+        treeHeader.resizeSection(ProjectNode.C_STATUS, iPx + cMg)
 
         self.restoreExpandedState()
 
@@ -953,43 +944,6 @@ class GuiProjectTree(QTreeView):
         #     for nwItem in SHARED.project.tree:
         #         if not nwItem.isNovelLike():
         #             self.setTreeItemValues(nwItem)
-        return
-
-    def setTreeItemValues(self, nwItem: NWItem | None) -> None:
-        """Set the name and flag values for a tree item in the project
-        tree. Does not trigger a tree change as the data is already
-        coming from project data.
-        """
-        # if isinstance(nwItem, NWItem) and (trItem := self._getTreeItem(nwItem.itemHandle)):
-        #     itemStatus, statusIcon = nwItem.getImportStatus()
-        #     hLevel = nwItem.mainHeading
-        #     itemIcon = SHARED.theme.getItemIcon(
-        #         nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
-        #     )
-
-        #     trItem.setIcon(self.C_NAME, itemIcon)
-        #     trItem.setText(self.C_NAME, nwItem.itemName)
-        #     trItem.setIcon(self.C_STATUS, statusIcon)
-        #     trItem.setToolTip(self.C_STATUS, itemStatus)
-
-        #     if nwItem.isFileType():
-        #         iconName = "checked" if nwItem.isActive else "unchecked"
-        #         toolTip = self.trActive if nwItem.isActive else self.trInactive
-        #         trItem.setToolTip(self.C_ACTIVE, toolTip)
-        #     else:
-        #         iconName = "noncheckable"
-
-        #     trItem.setIcon(self.C_ACTIVE, SHARED.theme.getIcon(iconName))
-
-        #     if CONFIG.emphLabels and nwItem.isDocumentLayout():
-        #         trFont = trItem.font(self.C_NAME)
-        #         trFont.setBold(hLevel == "H1" or hLevel == "H2")
-        #         trFont.setUnderline(hLevel == "H1")
-        #         trItem.setFont(self.C_NAME, trFont)
-
-        #     # Emit Refresh Signal
-        #     self.itemRefreshed.emit(nwItem.itemHandle, nwItem, itemIcon)
-
         return
 
     def propagateCount(self, tHandle: str, newCount: int, countChildren: bool = False) -> None:

@@ -33,9 +33,8 @@ from time import time
 from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QFocusEvent, QFont, QMouseEvent, QPalette, QResizeEvent
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView,
-    QInputDialog, QMenu, QToolTip, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget
+    QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QInputDialog, QMenu,
+    QToolTip, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -47,8 +46,9 @@ from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
-    QtAlignRight, QtDecoration, QtMouseLeft, QtMouseMiddle, QtScrollAlwaysOff,
-    QtScrollAsNeeded, QtSizeExpanding, QtUserRole
+    QtAlignRight, QtDecoration, QtHeaderStretch, QtHeaderToContents,
+    QtMouseLeft, QtMouseMiddle, QtScrollAlwaysOff, QtScrollAsNeeded,
+    QtSizeExpanding, QtUserRole
 )
 
 logger = logging.getLogger(__name__)
@@ -406,10 +406,10 @@ class GuiNovelTree(QTreeWidget):
         treeHeader = self.header()
         treeHeader.setStretchLastSection(False)
         treeHeader.setMinimumSectionSize(iPx + cMg)
-        treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.ResizeMode.Stretch)
-        treeHeader.setSectionResizeMode(self.C_WORDS, QHeaderView.ResizeMode.ResizeToContents)
-        treeHeader.setSectionResizeMode(self.C_EXTRA, QHeaderView.ResizeMode.ResizeToContents)
-        treeHeader.setSectionResizeMode(self.C_MORE, QHeaderView.ResizeMode.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_TITLE, QtHeaderStretch)
+        treeHeader.setSectionResizeMode(self.C_WORDS, QtHeaderToContents)
+        treeHeader.setSectionResizeMode(self.C_EXTRA, QtHeaderToContents)
+        treeHeader.setSectionResizeMode(self.C_MORE, QtHeaderToContents)
 
         # Pre-Generate Tree Formatting
         fH1 = self.font()

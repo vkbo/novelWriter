@@ -31,9 +31,9 @@ from PyQt5.QtCore import QEvent, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialogButtonBox, QFrame, QGridLayout,
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QPlainTextEdit,
-    QPushButton, QSplitter, QStackedWidget, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget
+    QHBoxLayout, QLabel, QLineEdit, QMenu, QPlainTextEdit, QPushButton,
+    QSplitter, QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -51,7 +51,8 @@ from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.types import (
     QtAlignCenter, QtAlignLeft, QtDialogApply, QtDialogClose, QtDialogSave,
-    QtRoleAccept, QtRoleApply, QtRoleReject, QtUserRole
+    QtHeaderFixed, QtHeaderStretch, QtRoleAccept, QtRoleApply, QtRoleReject,
+    QtUserRole
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -313,9 +314,9 @@ class _FilterTab(NFixedPage):
         treeHeader = self.optTree.header()
         treeHeader.setStretchLastSection(False)
         treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1551
-        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.Stretch)
-        treeHeader.setSectionResizeMode(self.C_ACTIVE, QHeaderView.ResizeMode.Fixed)
-        treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.ResizeMode.Fixed)
+        treeHeader.setSectionResizeMode(self.C_NAME, QtHeaderStretch)
+        treeHeader.setSectionResizeMode(self.C_ACTIVE, QtHeaderFixed)
+        treeHeader.setSectionResizeMode(self.C_STATUS, QtHeaderFixed)
         treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
         treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
 

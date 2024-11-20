@@ -30,15 +30,18 @@ from time import time
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCursor, QKeyEvent
 from PyQt5.QtWidgets import (
-    QApplication, QFrame, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-    QToolBar, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QApplication, QFrame, QHBoxLayout, QLabel, QLineEdit, QToolBar,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, cssCol
 from novelwriter.core.coretools import DocSearch
 from novelwriter.core.item import NWItem
-from novelwriter.types import QtAlignMiddle, QtAlignRight, QtUserRole
+from novelwriter.types import (
+    QtAlignMiddle, QtAlignRight, QtHeaderStretch, QtHeaderToContents,
+    QtUserRole
+)
 
 logger = logging.getLogger(__name__)
 
@@ -120,8 +123,8 @@ class GuiProjectSearch(QWidget):
 
         treeHeader = self.searchResult.header()
         treeHeader.setStretchLastSection(False)
-        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.Stretch)
-        treeHeader.setSectionResizeMode(self.C_COUNT, QHeaderView.ResizeMode.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_NAME, QtHeaderStretch)
+        treeHeader.setSectionResizeMode(self.C_COUNT, QtHeaderToContents)
 
         # Assemble
         self.headerBox = QHBoxLayout()
