@@ -53,6 +53,9 @@ class nwConst:
     # Requests
     USER_AGENT = "Mozilla/5.0 (compatible; novelWriter (Python))"
 
+    # Mime Types
+    MIME_HANDLE = "text/vnd.novelwriter.handle"
+
     # Gui Settings
     STATUS_MSG_TIMEOUT = 15000  # milliseconds
     MAX_SEARCH_RESULT = 1000

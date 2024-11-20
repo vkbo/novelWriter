@@ -28,11 +28,12 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QAbstractItemModel, QModelIndex, Qt
+from PyQt5.QtCore import QAbstractItemModel, QMimeData, QModelIndex, Qt
 from PyQt5.QtGui import QIcon
 
 from novelwriter import SHARED
 from novelwriter.common import minmax
+from novelwriter.constants import nwConst
 from novelwriter.core.item import NWItem
 from novelwriter.enum import nwItemClass
 from novelwriter.types import QtAlignRight
@@ -54,12 +55,16 @@ C_ACTIVE_TIP  = 0x0200 | Qt.ItemDataRole.ToolTipRole
 C_STATUS_ICON = 0x0300 | Qt.ItemDataRole.DecorationRole
 C_STATUS_TIP  = 0x0300 | Qt.ItemDataRole.ToolTipRole
 
+NODE_FLAGS = Qt.ItemFlag.ItemIsEnabled
+NODE_FLAGS |= Qt.ItemFlag.ItemIsSelectable
+NODE_FLAGS |= Qt.ItemFlag.ItemIsDropEnabled
+
 T_NodeData = str | QIcon | Qt.AlignmentFlag | None
 
 
 class ProjectNode:
 
-    __slots__ = ("_item", "_children", "_parent", "_row", "_cache", "_count")
+    __slots__ = ("_item", "_children", "_parent", "_row", "_cache", "_flags", "_count")
 
     def __init__(self, item: NWItem) -> None:
         self._item = item
@@ -67,6 +72,7 @@ class ProjectNode:
         self._parent: ProjectNode | None = None
         self._row = 0
         self._cache: dict[int, str | QIcon | Qt.AlignmentFlag] = {}
+        self._flags = NODE_FLAGS
         self.refresh()
         return
 
@@ -145,6 +151,10 @@ class ProjectNode:
         """Return cached node data."""
         return self._cache.get(COL_MASK*column | role)
 
+    def flags(self) -> Qt.ItemFlag:
+        """Return cached node flags."""
+        return self._flags
+
     def parent(self) -> ProjectNode | None:
         return self._parent
 
@@ -213,9 +223,10 @@ class ProjectNode:
     def _updateRelationships(self, child: ProjectNode) -> None:
         """Update a child item's relationships."""
         if self._parent:
-            child.item.setParent(self.item.itemHandle)
-            child.item.setRoot(self.item.itemRoot)
-            child.item.setClassDefaults(self.item.itemClass)
+            child.item.setParent(self._item.itemHandle)
+            child.item.setRoot(self._item.itemRoot)
+            child.item.setClassDefaults(self._item.itemClass)
+            child._flags |= Qt.ItemFlag.ItemIsDragEnabled
         else:
             child.item.setParent(None)
             child.item.setRoot(child.item.itemHandle)
@@ -230,6 +241,7 @@ class ProjectModel(QAbstractItemModel):
         super().__init__()
         self._tree = tree
         self._root = ProjectNode(NWItem(tree._project, "invisibleRoot"))
+        self._root.item.setName("Invisible Root")
         logger.debug("Ready: ProjectModel")
         return
 
@@ -275,6 +287,55 @@ class ProjectModel(QAbstractItemModel):
         if index.isValid():
             return index.internalPointer().data(index.column(), role)
         return None
+
+    def flags(self, index: QModelIndex) -> Qt.ItemFlag:
+        """Return flags for a project node."""
+        if index.isValid():
+            return index.internalPointer().flags()
+        return Qt.ItemFlag.NoItemFlags
+
+    ##
+    #  Drag and Drop
+    ##
+
+    def supportedDropActions(self) -> Qt.DropAction:
+        """Return supported drop actions"""
+        return Qt.DropAction.MoveAction
+
+    def mimeTypes(self) -> list[str]:
+        """Return the supported mime types of the model."""
+        return [nwConst.MIME_HANDLE]
+
+    def mimeData(self, indices: list[QModelIndex]) -> QMimeData:
+        """Encode mime data about a selection."""
+        handles = [
+            i.internalPointer().item.itemHandle.encode()
+            for i in indices if i.isValid() and i.column() == 0
+        ]
+        mime = QMimeData()
+        mime.setData(nwConst.MIME_HANDLE, b"|".join(handles))
+        return mime
+
+    def canDropMimeData(
+        self, data: QMimeData, action: Qt.DropAction,
+        row: int, column: int, parent: QModelIndex
+    ) -> bool:
+        """Check if mime data can be dropped on the current location."""
+        return data.hasFormat(nwConst.MIME_HANDLE) and action == Qt.DropAction.MoveAction
+
+    def dropMimeData(
+        self, data: QMimeData, action: Qt.DropAction,
+        row: int, column: int, parent: QModelIndex
+    ) -> bool:
+        """Process mime data drop."""
+        if self.canDropMimeData(data, action, row, column, parent):
+            items = []
+            for handle in data.data(nwConst.MIME_HANDLE).data().decode().split("|"):
+                if (index := self.indexFromHandle(handle)).isValid():
+                    items.append(index)
+            self.multiMove(items, parent, row)
+            return True
+        return False
 
     ##
     #  Data Access
@@ -353,12 +414,11 @@ class ProjectModel(QAbstractItemModel):
         for index in indices:
             if index.isValid():
                 node: ProjectNode = index.internalPointer()
-                print(node)
                 if node.item.itemClass != nwItemClass.TRASH:
                     return False
         return True
 
-    def multiMove(self, indices: list[QModelIndex], target: QModelIndex) -> None:
+    def multiMove(self, indices: list[QModelIndex], target: QModelIndex, pos: int = -1) -> None:
         """Move multiple items to a new location."""
         if target.isValid():
             # This is a two pass process. First we only select unique
@@ -379,7 +439,7 @@ class ProjectModel(QAbstractItemModel):
                 if node.item.itemParent not in handles:
                     index = self.indexFromNode(node)
                     if child := self.removeChild(index.parent(), index.row()):
-                        self.insertChild(child, target, -1)
+                        self.insertChild(child, target, pos)
         return
 
     ##

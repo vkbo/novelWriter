@@ -3,10 +3,11 @@ novelWriter – GUI Project Tree
 ==============================
 
 File History:
-Created: 2018-09-29 [0.0.1]  GuiProjectTree
-Created: 2022-06-06 [2.0rc1] GuiProjectView
-Created: 2022-06-06 [2.0rc1] GuiProjectToolBar
-Created: 2023-11-22 [2.2rc1] _TreeContextMenu
+Created:   2018-09-29 [0.0.1]  GuiProjectTree
+Created:   2022-06-06 [2.0rc1] GuiProjectView
+Created:   2022-06-06 [2.0rc1] GuiProjectToolBar
+Created:   2023-11-22 [2.2rc1] _TreeContextMenu
+Rewritten: 2024-11-17 [2.7b1]  GuiProjectTree
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -543,8 +544,8 @@ class GuiProjectTree(QTreeView):
         self.setIndentation(iPx)
 
         # Allow Move by Drag & Drop
-        # self.setDragEnabled(True)
-        # self.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
+        self.setDragEnabled(True)
+        self.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
 
         # Disable built-in auto scroll as it isn't working in some Qt
         # releases (see #1561) and instead use our own implementation
