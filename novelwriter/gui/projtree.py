@@ -67,7 +67,6 @@ class GuiProjectView(QWidget):
 
     # Signals triggered when the meta data values of items change
     rootFolderChanged = pyqtSignal(str)
-    wordCountsChanged = pyqtSignal()
 
     # Signals for user interaction with the project tree
     selectedItemChanged = pyqtSignal(str)
@@ -239,13 +238,6 @@ class GuiProjectView(QWidget):
         """Create a new document from a template."""
         logger.debug("Template selected: '%s'", tHandle)
         self.projTree.newTreeItem(nwItemType.FILE, copyDoc=tHandle)
-        return
-
-    @pyqtSlot(str, int, int, int)
-    def updateCounts(self, tHandle: str, cCount: int, wCount: int, pCount: int) -> None:
-        """Slot for updating the word count of a specific item."""
-        self.projTree.propagateCount(tHandle, wCount, countChildren=True)
-        self.wordCountsChanged.emit()
         return
 
     @pyqtSlot(str)
@@ -1065,45 +1057,6 @@ class GuiProjectTree(QTreeView):
         #     for nwItem in SHARED.project.tree:
         #         if not nwItem.isNovelLike():
         #             self.setTreeItemValues(nwItem)
-        return
-
-    def propagateCount(self, tHandle: str, newCount: int, countChildren: bool = False) -> None:
-        """Recursive function setting the word count for a given item,
-        and propagating that count upwards in the tree until reaching a
-        root item. This function is more efficient than recalculating
-        everything each time the word count is updated, but is also
-        prone to diverging from the true values if the counts are not
-        properly reported to the function.
-        """
-        # tItem = self._getTreeItem(tHandle)
-        # if tItem is None:
-        #     return
-
-        # if countChildren:
-        #     for i in range(tItem.childCount()):
-        #         newCount += int(tItem.child(i).data(self.C_DATA, self.D_WORDS))
-
-        # tItem.setText(self.C_COUNT, f"{newCount:n}")
-        # tItem.setData(self.C_DATA, self.D_WORDS, int(newCount))
-
-        # pItem = tItem.parent()
-        # if pItem is None:
-        #     return
-
-        # pCount = 0
-        # pHandle = None
-        # for i in range(pItem.childCount()):
-        #     pCount += int(pItem.child(i).data(self.C_DATA, self.D_WORDS))
-        #     pHandle = pItem.data(self.C_DATA, self.D_HANDLE)
-
-        # if pHandle:
-        #     if SHARED.project.tree.checkType(pHandle, nwItemType.FILE):
-        #         # A file has an internal word count we need to account
-        #         # for, but a folder always has 0 words on its own.
-        #         pCount += SHARED.project.index.getCounts(pHandle)[1]
-
-        #     self.propagateCount(pHandle, pCount, countChildren=False)
-
         return
 
 

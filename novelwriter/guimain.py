@@ -242,7 +242,6 @@ class GuiMain(QMainWindow):
         self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
         self.projView.rootFolderChanged.connect(self.projView.updateRootItem)
         self.projView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
-        self.projView.wordCountsChanged.connect(self._updateStatusWordCount)
 
         self.novelView.openDocumentRequest.connect(self._openDocument)
         self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
@@ -251,8 +250,6 @@ class GuiMain(QMainWindow):
         self.projSearch.selectedItemChanged.connect(self.itemDetails.updateViewBox)
 
         self.docEditor.closeEditorRequest.connect(self.closeDocEditor)
-        self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
-        self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
         self.docEditor.docTextChanged.connect(self.projSearch.textChanged)
         self.docEditor.editedStatusChanged.connect(self.mainStatus.updateDocumentStatus)
         self.docEditor.itemHandleChanged.connect(self.novelView.setActiveHandle)
@@ -314,6 +311,9 @@ class GuiMain(QMainWindow):
         self.keyEscape = QShortcut(self)
         self.keyEscape.setKey("Esc")
         self.keyEscape.activated.connect(self._keyPressEscape)
+
+        # Internal Variables
+        self._lastTotalCount = 0
 
         # Initialise Main GUI
         self.initMain()
@@ -1226,8 +1226,10 @@ class GuiMain(QMainWindow):
             self.mainStatus.setUserIdle(editIdle or userIdle)
             SHARED.updateIdleTime(currTime, editIdle or userIdle)
             self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)
-            if CONFIG.memInfo and int(currTime) % 5 == 0:  # pragma: no cover
-                self.mainStatus.memInfo()
+            if int(currTime) % 5 == 0:
+                self._updateStatusWordCount()
+                if CONFIG.memInfo:  # pragma: no cover
+                    self.mainStatus.memInfo()
         return
 
     @pyqtSlot()
@@ -1255,15 +1257,19 @@ class GuiMain(QMainWindow):
         if not SHARED.hasProject:
             self.mainStatus.setProjectStats(0, 0)
 
-        SHARED.project.updateWordCounts()
-        if CONFIG.incNotesWCount:
-            iTotal = sum(SHARED.project.data.initCounts)
-            cTotal = sum(SHARED.project.data.currCounts)
-            self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
-        else:
-            iNovel, _ = SHARED.project.data.initCounts
-            cNovel, _ = SHARED.project.data.currCounts
-            self.mainStatus.setProjectStats(cNovel, cNovel - iNovel)
+        currentTotalCount = SHARED.project.currentTotalCount
+        if self._lastTotalCount != currentTotalCount:
+            self._lastTotalCount = currentTotalCount
+
+            SHARED.project.updateWordCounts()
+            if CONFIG.incNotesWCount:
+                iTotal = sum(SHARED.project.data.initCounts)
+                cTotal = sum(SHARED.project.data.currCounts)
+                self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
+            else:
+                iNovel, _ = SHARED.project.data.initCounts
+                cNovel, _ = SHARED.project.data.currCounts
+                self.mainStatus.setProjectStats(cNovel, cNovel - iNovel)
 
         return
 

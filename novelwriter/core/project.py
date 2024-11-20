@@ -145,6 +145,11 @@ class NWProject:
         """Return total edit time, including the current session."""
         return self._data.editTime + round(time() - self._session.start)
 
+    @property
+    def currentTotalCount(self) -> int:
+        """Return the current total word count from the tree."""
+        return self._tree.model.root.count
+
     ##
     #  Item Methods
     ##

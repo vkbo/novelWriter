@@ -79,6 +79,7 @@ class ProjectNode:
         self._cache: dict[int, str | QIcon | Qt.AlignmentFlag] = {}
         self._flags = NODE_FLAGS
         self.refresh()
+        self.updateCount()
         return
 
     def __repr__(self) -> str:
@@ -95,11 +96,18 @@ class ProjectNode:
 
     @property
     def item(self) -> NWItem:
+        """The project item of the node."""
         return self._item
 
     @property
     def children(self) -> list[ProjectNode]:
+        """All children of the node."""
         return self._children
+
+    @property
+    def count(self) -> int:
+        """The count of the node."""
+        return self._count
 
     ##
     #  Data Maintenance
@@ -127,11 +135,10 @@ class ProjectNode:
         self._cache[C_STATUS_TIP] = sText
         self._cache[C_STATUS_ICON] = sIcon
 
-        self.updateCount()
-
         return
 
     def updateCount(self, propagate: bool = True) -> None:
+        """Update counts, and propagate upwards in the tree."""
         self._count = self._item.wordCount + sum(c._count for c in self._children)
         self._cache[C_COUNT_TEXT] = f"{self._count:n}"
         if propagate and (parent := self._parent):
@@ -143,9 +150,11 @@ class ProjectNode:
     ##
 
     def row(self) -> int:
+        """Return the node's row number."""
         return self._row
 
     def childCount(self) -> int:
+        """Return the number of children of the node."""
         return len(self._children)
 
     def data(self, column: int, role: Qt.ItemDataRole) -> T_NodeData:
@@ -157,9 +166,11 @@ class ProjectNode:
         return self._flags
 
     def parent(self) -> ProjectNode | None:
+        """Return the parent of the node."""
         return self._parent
 
     def child(self, row: int) -> ProjectNode | None:
+        """Return a child ofg the node."""
         if 0 <= row < len(self._children):
             return self._children[row]
         return None
@@ -366,9 +377,9 @@ class ProjectModel(QAbstractItemModel):
             return self.createIndex(node.row(), 0, node)
         return QModelIndex()
 
-    def indexFromNode(self, node: ProjectNode) -> QModelIndex:
+    def indexFromNode(self, node: ProjectNode, column: int = 0) -> QModelIndex:
         """Get the index representing a node in the model."""
-        return self.createIndex(node.row(), 0, node)
+        return self.createIndex(node.row(), column, node)
 
     def rootIndex(self) -> QModelIndex:
         """Get the index representing the root."""

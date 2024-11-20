@@ -230,22 +230,22 @@ class NWTree:
 
         return
 
-    def refreshItems(self, items: list[str], isRange: bool = False) -> None:
+    def refreshItems(self, items: list[str]) -> None:
         """Refresh these items on the GUI. If they are an ordered range,
         also set the isRange flag to True.
         """
-        indices = []
+        change = False
         for tHandle in items:
             if node := self._nodes.get(tHandle):
                 node.refresh()
+                node.updateCount()
                 SHARED.projectSignalProxy({"event": "projectItem", "handle": tHandle})
-                indices.append(self._model.indexFromNode(node))
-        if isRange and len(indices) >= 2:
-            self._model.dataChanged.emit(indices[0], indices[-1])
-        else:
-            for index in indices:
-                self._model.dataChanged.emit(index, index)
-        self._project.setProjectChanged(len(indices) > 0)
+                indexS = self._model.indexFromNode(node, 0)
+                indexE = self._model.indexFromNode(node, 3)
+                self._model.dataChanged.emit(indexS, indexE)
+                change = True
+        if change:
+            self._project.setProjectChanged(True)
         return
 
     def checkConsistency(self, prefix: str) -> tuple[int, int]:

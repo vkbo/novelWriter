@@ -110,7 +110,6 @@ class GuiDocEditor(QPlainTextEdit):
 
     # Custom Signals
     closeEditorRequest = pyqtSignal()
-    docCountsChanged = pyqtSignal(str, int, int, int)
     docTextChanged = pyqtSignal(str, float)
     editedStatusChanged = pyqtSignal(bool)
     itemHandleChanged = pyqtSignal(str)
@@ -1281,7 +1280,7 @@ class GuiDocEditor(QPlainTextEdit):
             self._nwItem.setCharCount(cCount)
             self._nwItem.setWordCount(wCount)
             self._nwItem.setParaCount(pCount)
-            self.docCountsChanged.emit(self._docHandle, cCount, wCount, pCount)
+            self._nwItem.notifyToRefresh()
             self.docFooter.updateWordCount(wCount, False)
         return
 
