@@ -37,7 +37,7 @@ from typing import TYPE_CHECKING, Any, Literal, TypeVar
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 
-from PyQt5.QtCore import QCoreApplication, QUrl
+from PyQt5.QtCore import QCoreApplication, QMimeData, QUrl
 from PyQt5.QtGui import QColor, QDesktopServices, QFont, QFontInfo
 
 from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
@@ -439,6 +439,11 @@ def qtLambda(func: Callable, *args: Any, **kwargs: Any) -> Callable:
     def wrapper(*a_: Any) -> None:
         func(*args, **kwargs)
     return wrapper
+
+
+def decodeMimeHandles(mimeData: QMimeData) -> list[str]:
+    """Decode and split a mime data object with handles."""
+    return mimeData.data(nwConst.MIME_HANDLE).data().decode().split("|")
 
 
 ##

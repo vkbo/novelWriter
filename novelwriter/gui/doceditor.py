@@ -43,8 +43,9 @@ from PyQt5.QtCore import (
     pyqtSlot
 )
 from PyQt5.QtGui import (
-    QColor, QCursor, QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap,
-    QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QColor, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
+    QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent, QTextBlock,
+    QTextCursor, QTextDocument, QTextOption
 )
 from PyQt5.QtWidgets import (
     QAction, QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
@@ -52,7 +53,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import minmax, qtLambda, transferCase
+from novelwriter.common import decodeMimeHandles, minmax, qtLambda, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
@@ -116,6 +117,7 @@ class GuiDocEditor(QPlainTextEdit):
     loadDocumentTagRequest = pyqtSignal(str, Enum)
     novelItemMetaChanged = pyqtSignal(str)
     novelStructureChanged = pyqtSignal()
+    openDocumentRequest = pyqtSignal(str, Enum, str, bool)
     requestNewNoteCreation = pyqtSignal(str, nwItemClass)
     requestNextDocument = pyqtSignal(str, bool)
     requestProjectItemRenamed = pyqtSignal(str, str)
@@ -191,6 +193,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.setMinimumWidth(CONFIG.pxInt(300))
         self.setAutoFillBackground(True)
         self.setFrameStyle(QFrame.Shape.NoFrame)
+        self.setAcceptDrops(True)
 
         # Custom Shortcuts
         self.keyContext = QShortcut(self)
@@ -995,6 +998,32 @@ class GuiDocEditor(QPlainTextEdit):
         else:
             super().keyPressEvent(event)
 
+        return
+
+    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
+        """Overload drag enter event to handle dragged items."""
+        if event.mimeData().hasFormat(nwConst.MIME_HANDLE):
+            event.acceptProposedAction()
+        else:
+            super().dragEnterEvent(event)
+        return
+
+    def dragMoveEvent(self, event: QDragMoveEvent) -> None:
+        """Overload drag move event to handle dragged items."""
+        if event.mimeData().hasFormat(nwConst.MIME_HANDLE):
+            event.acceptProposedAction()
+        else:
+            super().dragMoveEvent(event)
+        return
+
+    def dropEvent(self, event: QDropEvent) -> None:
+        """Overload drop event to handle dragged items."""
+        if event.mimeData().hasFormat(nwConst.MIME_HANDLE):
+            if handles := decodeMimeHandles(event.mimeData()):
+                if SHARED.project.tree.checkType(handles[0], nwItemType.FILE):
+                    self.openDocumentRequest.emit(handles[0], nwDocMode.EDIT, "", True)
+        else:
+            super().dropEvent(event)
         return
 
     def focusNextPrevChild(self, next: bool) -> bool:

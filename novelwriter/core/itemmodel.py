@@ -32,7 +32,7 @@ from PyQt5.QtCore import QAbstractItemModel, QMimeData, QModelIndex, Qt
 from PyQt5.QtGui import QIcon
 
 from novelwriter import SHARED
-from novelwriter.common import minmax
+from novelwriter.common import decodeMimeHandles, minmax
 from novelwriter.constants import nwConst
 from novelwriter.core.item import NWItem
 from novelwriter.enum import nwItemClass
@@ -191,6 +191,7 @@ class ProjectNode:
         if 0 <= pos < len(self._children):
             node = self._children.pop(pos)
             self._refreshChildrenPos()
+            self.updateCount()
             return node
         return None
 
@@ -330,7 +331,7 @@ class ProjectModel(QAbstractItemModel):
         """Process mime data drop."""
         if self.canDropMimeData(data, action, row, column, parent):
             items = []
-            for handle in data.data(nwConst.MIME_HANDLE).data().decode().split("|"):
+            for handle in decodeMimeHandles(data):
                 if (index := self.indexFromHandle(handle)).isValid():
                     items.append(index)
             self.multiMove(items, parent, row)

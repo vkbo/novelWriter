@@ -31,15 +31,18 @@ import logging
 from enum import Enum
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCursor, QDesktopServices, QMouseEvent, QPalette, QResizeEvent, QTextCursor
+from PyQt5.QtGui import (
+    QCursor, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent,
+    QMouseEvent, QPalette, QResizeEvent, QTextCursor
+)
 from PyQt5.QtWidgets import (
     QAction, QApplication, QFrame, QHBoxLayout, QMenu, QTextBrowser,
     QToolButton, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import qtLambda
-from novelwriter.constants import nwStyles, nwUnicode
+from novelwriter.common import decodeMimeHandles, qtLambda
+from novelwriter.constants import nwConst, nwStyles, nwUnicode
 from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
 from novelwriter.extensions.configlayout import NColourLabel
@@ -443,6 +446,32 @@ class GuiDocViewer(QTextBrowser):
             self.navForward()
         else:
             super().mouseReleaseEvent(event)
+        return
+
+    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
+        """Overload drag enter event to handle dragged items."""
+        if event.mimeData().hasFormat(nwConst.MIME_HANDLE):
+            event.acceptProposedAction()
+        else:
+            super().dragEnterEvent(event)
+        return
+
+    def dragMoveEvent(self, event: QDragMoveEvent) -> None:
+        """Overload drag move event to handle dragged items."""
+        if event.mimeData().hasFormat(nwConst.MIME_HANDLE):
+            event.acceptProposedAction()
+        else:
+            super().dragMoveEvent(event)
+        return
+
+    def dropEvent(self, event: QDropEvent) -> None:
+        """Overload drop event to handle dragged items."""
+        if event.mimeData().hasFormat(nwConst.MIME_HANDLE):
+            if handles := decodeMimeHandles(event.mimeData()):
+                if SHARED.project.tree.checkType(handles[0], nwItemType.FILE):
+                    self.openDocumentRequest.emit(handles[0], nwDocMode.VIEW, "", True)
+        else:
+            super().dropEvent(event)
         return
 
     ##
