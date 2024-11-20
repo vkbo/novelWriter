@@ -144,7 +144,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle is None
-        nwGUI.projView.projTree._getTreeItem(sHandle).setSelected(True)
+        nwGUI.projView.projTree.setSelectedHandle(sHandle)
         nwGUI._keyPressReturn()
         assert nwGUI.docEditor.docHandle == sHandle
         nwGUI.closeDocument()
@@ -711,7 +711,6 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     cHandle = SHARED.project.newFile("Jane", C.hCharRoot)
     newDoc = SHARED.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# Jane\n\n@tag: Jane\n\n")
-    nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.rebuildIndex(beQuiet=True)
 
     assert SHARED.focusMode is False

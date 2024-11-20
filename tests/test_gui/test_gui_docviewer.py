@@ -52,8 +52,8 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert docViewer.loadText("b3643d0f92e32") is False
 
     # Middle-click the selected item
-    item = nwGUI.projView.projTree._getTreeItem("88243afbe5ed8")
-    rect = nwGUI.projView.projTree.visualItemRect(item)
+    index = SHARED.project.tree.model.indexFromHandle("88243afbe5ed8")
+    rect = nwGUI.projView.projTree.visualRect(index)
     qtbot.mouseClick(nwGUI.projView.projTree.viewport(), Qt.MidButton, pos=rect.center())
     assert docViewer.docHandle == "88243afbe5ed8"
 

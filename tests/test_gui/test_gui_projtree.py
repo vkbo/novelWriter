@@ -742,29 +742,28 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
     assert len(SHARED.project.tree) == 8
 
     projTree = nwGUI.projView.projTree
-    projTree._getTreeItem(C.hNovelRoot).setExpanded(True)  # type: ignore
-    projTree._getTreeItem(C.hChapterDir).setExpanded(True)  # type: ignore
+    projTree.expandAll()
 
     # Nothing to do
-    assert projTree._duplicateFromHandle(C.hInvalid) is False
+    assert projTree.duplicateFromHandle(C.hInvalid) is False
     assert len(SHARED.project.tree) == 8
 
     # Duplicate title page, but select no
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
-        assert projTree._duplicateFromHandle(C.hTitlePage) is False
+        assert projTree.duplicateFromHandle(C.hTitlePage) is False
         assert len(SHARED.project.tree) == 8
 
     # Duplicate title page
-    assert projTree._duplicateFromHandle(C.hTitlePage) is True
+    assert projTree.duplicateFromHandle(C.hTitlePage) is True
     assert len(SHARED.project.tree) == 9
 
     # Duplicate folder
-    assert projTree._duplicateFromHandle(C.hChapterDir) is True
+    assert projTree.duplicateFromHandle(C.hChapterDir) is True
     assert len(SHARED.project.tree) == 12
 
     # Duplicate novel root
-    assert projTree._duplicateFromHandle(C.hNovelRoot) is True
+    assert projTree.duplicateFromHandle(C.hNovelRoot) is True
     assert len(SHARED.project.tree) == 21
 
     # Check tree order that all items are next to each other
@@ -783,7 +782,7 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
 
     # Should only create the folder, and skip the two files because the
     # next handle is already a file
-    assert projTree._duplicateFromHandle(C.hChapterDir) is True
+    assert projTree.duplicateFromHandle(C.hChapterDir) is True
     assert len(SHARED.project.tree) == 22
 
     # qtbot.stop()
@@ -801,7 +800,7 @@ def testGuiProjTree_AutoScroll(qtbot, monkeypatch, nwGUI: GuiMain, projPath, moc
     monkeypatch.setattr(QTimer, "start", lambda *a: None)
 
     projTree.setSelectedHandle(C.hChapterDir, True)
-    projTree._getTreeItem(C.hChapterDir).setExpanded(True)  # type: ignore
+    projTree.expandAll()
     for i in range(100):
         projTree.newTreeItem(nwItemType.FILE, None, 3, False)
 

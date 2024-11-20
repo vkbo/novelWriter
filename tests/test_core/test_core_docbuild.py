@@ -93,7 +93,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
 
     assert docBuild._outline is True
 
-    assert len(docBuild) == 21
+    assert len(docBuild) == 22
 
     # Check FODT Build
     # ================
@@ -151,7 +151,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.formats.toodt.ToOdt.doConvert", causeException)
-        assert len(docBuild) == 21
+        assert len(docBuild) == 22
 
         count = 0
         error = []
@@ -196,7 +196,7 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert len(docBuild) == 21
+    assert len(docBuild) == 22
 
     # Check HTML5 Build
     # =================
@@ -264,7 +264,7 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert len(docBuild) == 21
+    assert len(docBuild) == 22
 
     # Check Standard Markdown Build
     # =============================
@@ -332,7 +332,7 @@ def testCoreDocBuild_DocX(mockGUI, prjLipsum, fncPath):
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert len(docBuild) == 21
+    assert len(docBuild) == 22
 
     # Check Build
     # ===========
@@ -365,7 +365,7 @@ def testCoreDocBuild_PDF(mockGUI, prjLipsum, fncPath):
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert len(docBuild) == 21
+    assert len(docBuild) == 22
 
     # Check Build
     # ===========
@@ -397,7 +397,7 @@ def testCoreDocBuild_NWD(mockGUI, prjLipsum, fncPath, tstPaths):
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert len(docBuild) == 21
+    assert len(docBuild) == 22
 
     # Check NWD Build
     # ===============
@@ -474,8 +474,8 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
 
     # Add an invalid item to the project
     nHandle = "0123456789def"
-    project.tree._order.append(nHandle)
-    project.tree._tree[nHandle] = None  # type: ignore
+    project.tree._items[nHandle] = None  # type: ignore
+    project.tree._nodes[nHandle] = None  # type: ignore
 
     docBuild.queueAll()
     assert len(docBuild) == 8
@@ -516,12 +516,6 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     hCharDoc = project.newFile("Jane Doe", C.hCharRoot)
     project.storage.getDocument(hPlotDoc).writeDocument("# Main Plot\n**Text**")
     project.storage.getDocument(hCharDoc).writeDocument("# Jane Doe\n~~Text~~")
-
-    # Fix project order as this has never been opened in a GUI
-    project.tree.setOrder([  # type: ignore
-        C.hNovelRoot, C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
-        C.hPlotRoot, hPlotDoc, C.hCharRoot, hCharDoc, C.hWorldRoot
-    ])
 
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()

@@ -33,18 +33,6 @@
       <meta expanded="no" />
       <name status="s000000" import="i000004">Novel</name>
     </item>
-    <item handle="0000000000009" parent="None" root="0000000000009" order="0" type="ROOT" class="PLOT">
-      <meta expanded="no" />
-      <name status="s000000" import="i000004">Plot</name>
-    </item>
-    <item handle="000000000000a" parent="None" root="000000000000a" order="0" type="ROOT" class="CHARACTER">
-      <meta expanded="no" />
-      <name status="s000000" import="i000004">Characters</name>
-    </item>
-    <item handle="000000000000b" parent="None" root="000000000000b" order="0" type="ROOT" class="WORLD">
-      <meta expanded="no" />
-      <name status="s000000" import="i000004">World</name>
-    </item>
     <item handle="000000000000c" parent="0000000000008" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H1" charCount="20" wordCount="5" paraCount="1" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Title Page</name>
@@ -69,6 +57,14 @@
       <meta expanded="no" heading="H2" charCount="5" wordCount="1" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Hello</name>
     </item>
+    <item handle="0000000000009" parent="None" root="0000000000009" order="0" type="ROOT" class="PLOT">
+      <meta expanded="no" />
+      <name status="s000000" import="i000004">Plot</name>
+    </item>
+    <item handle="000000000000a" parent="None" root="000000000000a" order="0" type="ROOT" class="CHARACTER">
+      <meta expanded="no" />
+      <name status="s000000" import="i000004">Characters</name>
+    </item>
     <item handle="0000000000012" parent="000000000000a" root="000000000000a" order="0" type="FILE" class="CHARACTER" layout="NOTE">
       <meta expanded="no" heading="H1" charCount="11" wordCount="3" paraCount="1" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Jane</name>
@@ -76,6 +72,10 @@
     <item handle="0000000000013" parent="000000000000a" root="000000000000a" order="0" type="FILE" class="CHARACTER" layout="NOTE">
       <meta expanded="no" heading="H1" charCount="11" wordCount="3" paraCount="1" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">John</name>
+    </item>
+    <item handle="000000000000b" parent="None" root="000000000000b" order="0" type="ROOT" class="WORLD">
+      <meta expanded="no" />
+      <name status="s000000" import="i000004">Locations</name>
     </item>
   </content>
 </novelWriterXML>

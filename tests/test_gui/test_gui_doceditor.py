@@ -1615,7 +1615,6 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.openDocument(cHandle) is True
     docEditor.replaceText(text)
     nwGUI.saveDocument()
-    assert nwGUI.projView.projTree.revealNewTreeItem(cHandle)
 
     # Follow Tag
     # ==========
@@ -1715,7 +1714,6 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.openDocument(cHandle) is True
     docEditor.replaceText(text)
     nwGUI.saveDocument()
-    assert nwGUI.projView.projTree.revealNewTreeItem(cHandle)
 
     docEditor.replaceText("")
     completer = docEditor._completer

@@ -37,7 +37,6 @@ def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
     cHandle = SHARED.project.newFile("A Note", C.hCharRoot)
     newDoc = SHARED.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# A Note\n\n")
-    nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.rebuildIndex(beQuiet=True)
 
     # Reference Time

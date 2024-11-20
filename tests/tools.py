@@ -52,6 +52,7 @@ class C:
     hInvalid    = "0000000000000"
     hNovelRoot  = "0000000000008"
     hPlotRoot   = "0000000000009"
+    hTrashRoot  = "0000000000010"
     hCharRoot   = "000000000000a"
     hWorldRoot  = "000000000000b"
     hTitlePage  = "000000000000c"

@@ -29,12 +29,8 @@ from PyQt5.QtWidgets import QMessageBox
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwFiles
-from novelwriter.core.index import NWIndex
-from novelwriter.core.item import NWItem
-from novelwriter.core.options import OptionState
 from novelwriter.core.project import NWProject, NWProjectState
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
-from novelwriter.core.tree import NWTree
 from novelwriter.enum import nwItemClass
 
 from tests.mocked import causeOSError
@@ -284,7 +280,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
 
     # Fail checking items should still pass
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.tree.NWTree.updateItemData", lambda *a: False)
+        mp.setattr("novelwriter.core.tree.NWTree.checkConsistency", lambda *a: (1, 0))
         assert project.openProject(fncPath, clearLock=True) is True
 
     # Trigger an index rebuild
@@ -327,70 +323,6 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
-    """Test helper functions for the project folder."""
-    project = NWProject()
-    buildTestProject(project, fncPath)
-
-    # Storage Objects
-    assert isinstance(project.index, NWIndex)
-    assert isinstance(project.tree, NWTree)
-    assert isinstance(project.options, OptionState)
-
-    # Move Novel ROOT to after its files
-    oldOrder = [
-        C.hNovelRoot,
-        C.hPlotRoot,
-        C.hCharRoot,
-        C.hWorldRoot,
-        C.hTitlePage,
-        C.hChapterDir,
-        C.hChapterDoc,
-        C.hSceneDoc,
-    ]
-    newOrder = [
-        C.hTitlePage,
-        C.hChapterDoc,
-        C.hSceneDoc,
-        C.hChapterDir,
-        C.hNovelRoot,
-        C.hPlotRoot,
-        C.hCharRoot,
-        C.hWorldRoot,
-    ]
-    assert project.tree.handles() == oldOrder
-    project.setTreeOrder(newOrder)
-    assert project.tree.handles() == newOrder
-
-    # Add a non-existing item
-    project.tree._order.append(C.hInvalid)
-
-    # Add an item with a non-existent parent
-    nHandle = project.newFile("Test File", C.hChapterDir)
-    nItem = project.tree[nHandle]
-    assert isinstance(nItem, NWItem)
-    nItem.setParent("cba9876543210")
-    assert nItem.itemParent == "cba9876543210"
-
-    retOrder = []
-    for tItem in project.iterProjectItems():
-        retOrder.append(tItem.itemHandle)
-
-    assert retOrder == [
-        C.hNovelRoot,
-        C.hPlotRoot,
-        C.hCharRoot,
-        C.hWorldRoot,
-        nHandle,
-        C.hTitlePage,
-        C.hChapterDir,
-        C.hChapterDoc,
-        C.hSceneDoc,
-    ]
-    assert nItem.itemParent is None
-
-
-@pytest.mark.core
 def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     """Test other project class methods and functions."""
     project = NWProject()
@@ -410,13 +342,6 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.project.time", lambda: 1600005600)
         assert project.currentEditTime == 6834
-
-    # Trash folder
-    # Should create on first call, and just returned on later calls
-    hTrash = "0000000000010"
-    assert project.tree[hTrash] is None
-    assert project.trashFolder() == hTrash
-    assert project.trashFolder() == hTrash
 
     # Spell check
     project.setProjectChanged(False)
@@ -479,23 +404,6 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     project.data.setAutoReplace({"A": "B", "C": "D"})
     assert project.data.autoReplace == {"A": "B", "C": "D"}
     assert project.projChanged
-
-    # Change project tree order
-    oldOrder = [
-        "0000000000008", "0000000000009", "000000000000a",
-        "000000000000b", "000000000000c", "000000000000d",
-        "000000000000e", "000000000000f", "0000000000010",
-    ]
-    newOrder = [
-        "000000000000b", "000000000000c", "000000000000d",
-        "0000000000008", "0000000000009", "000000000000a",
-        "000000000000e", "000000000000f",
-    ]
-    assert project.tree.handles() == oldOrder
-    project.setTreeOrder(newOrder)
-    assert project.tree.handles() == newOrder
-    project.setTreeOrder(oldOrder)
-    assert project.tree.handles() == oldOrder
 
 
 @pytest.mark.core

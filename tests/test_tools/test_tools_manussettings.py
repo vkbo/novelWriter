@@ -167,6 +167,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
         C.hCharRoot:   (False, FilterMode.SKIPPED),
         hCharDoc:      (False, FilterMode.FILTERED),
         C.hWorldRoot:  (False, FilterMode.SKIPPED),
+        C.hTrashRoot:  (False, FilterMode.SKIPPED),
     }
 
     # Switch on note docs
@@ -182,6 +183,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
         C.hCharRoot:   (False, FilterMode.SKIPPED),
         hCharDoc:      (True,  FilterMode.FILTERED),  # Now enabled
         C.hWorldRoot:  (False, FilterMode.SKIPPED),
+        C.hTrashRoot:  (False, FilterMode.SKIPPED),
     }
 
     # Switch on inactive docs
@@ -197,6 +199,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
         C.hCharRoot:   (False, FilterMode.SKIPPED),
         hCharDoc:      (True,  FilterMode.FILTERED),
         C.hWorldRoot:  (False, FilterMode.SKIPPED),
+        C.hTrashRoot:  (False, FilterMode.SKIPPED),
     }
 
     # Set chapter and scene docs to included
@@ -214,6 +217,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
         C.hCharRoot:   (False, FilterMode.SKIPPED),
         hCharDoc:      (True,  FilterMode.FILTERED),
         C.hWorldRoot:  (False, FilterMode.SKIPPED),
+        C.hTrashRoot:  (False, FilterMode.SKIPPED),
     }
 
     # Set char and plot docs to excluded
@@ -232,6 +236,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
         C.hCharRoot:   (False, FilterMode.SKIPPED),
         hCharDoc:      (False, FilterMode.EXCLUDED),  # Now excluded
         C.hWorldRoot:  (False, FilterMode.SKIPPED),
+        C.hTrashRoot:  (False, FilterMode.SKIPPED),
     }
 
     # Switch on novel docs
@@ -247,6 +252,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
         C.hCharRoot:   (False, FilterMode.SKIPPED),
         hCharDoc:      (False, FilterMode.EXCLUDED),
         C.hWorldRoot:  (False, FilterMode.SKIPPED),
+        C.hTrashRoot:  (False, FilterMode.SKIPPED),
     }
 
     # Selecting only novel root should iterate through all children
@@ -264,6 +270,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
         C.hCharRoot:   (False, FilterMode.SKIPPED),
         hCharDoc:      (False, FilterMode.EXCLUDED),
         C.hWorldRoot:  (False, FilterMode.SKIPPED),
+        C.hTrashRoot:  (False, FilterMode.SKIPPED),
     }
 
     # Set everything back to filtered
@@ -284,6 +291,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
         C.hCharRoot:   (False, FilterMode.SKIPPED),
         hCharDoc:      (True,  FilterMode.FILTERED),
         C.hWorldRoot:  (False, FilterMode.SKIPPED),
+        C.hTrashRoot:  (False, FilterMode.SKIPPED),
     }
 
     # Check handling of invalid project items

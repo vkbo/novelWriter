@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.6a3" hexVersion="0x020600a3" fileVersion="1.5" fileRevision="4" timeStamp="2024-10-28 18:19:29">
-  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="50" autoCount="29" editTime="2448">
+<novelWriterXML appVersion="2.6b1" hexVersion="0x020600b1" fileVersion="1.5" fileRevision="4" timeStamp="2024-11-20 19:22:22">
+  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="51" autoCount="29" editTime="2456">
     <name>Lorem Ipsum</name>
     <author>lipsum.com</author>
   </project>
@@ -25,13 +25,13 @@
       <entry key="sedd043" count="7" red="50" green="200" blue="0" shape="SQUARE">Finished</entry>
     </status>
     <importance>
-      <entry key="i613591" count="6" red="100" green="100" blue="100" shape="SQUARE">New</entry>
+      <entry key="i613591" count="7" red="100" green="100" blue="100" shape="SQUARE">New</entry>
       <entry key="i560cbf" count="0" red="200" green="50" blue="0" shape="SQUARE">Minor</entry>
       <entry key="i37861c" count="0" red="200" green="150" blue="0" shape="SQUARE">Major</entry>
       <entry key="id6b1d0" count="0" red="50" green="200" blue="0" shape="SQUARE">Main</entry>
     </importance>
   </settings>
-  <content items="21" novelWords="3115" notesWords="738">
+  <content items="22" novelWords="3115" notesWords="738">
     <item handle="b3643d0f92e32" parent="None" root="b3643d0f92e32" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="sbaa94f" import="i613591">Novel</name>
@@ -115,6 +115,10 @@
     <item handle="04468803b92e1" parent="60bdf227455cc" root="60bdf227455cc" order="0" type="FILE" class="WORLD" layout="NOTE">
       <meta expanded="no" heading="H1" charCount="1770" wordCount="259" paraCount="3" cursorPos="47" />
       <name status="sbaa94f" import="i613591" active="yes">Ancient Europe</name>
+    </item>
+    <item handle="1ace7ab1a0fc6" parent="None" root="1ace7ab1a0fc6" order="0" type="ROOT" class="TRASH">
+      <meta expanded="no" />
+      <name status="sbaa94f" import="i613591">Trash</name>
     </item>
   </content>
 </novelWriterXML>

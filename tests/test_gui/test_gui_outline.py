@@ -198,7 +198,6 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
 
     # Add a second novel folder
     newHandle = SHARED.project.newRoot(nwItemClass.NOVEL)
-    nwGUI.projView.projTree.revealNewTreeItem(newHandle)
 
     # Check new values in dropdown list
     assert outlineBar.novelValue.itemData(0) == lipHandle
@@ -217,7 +216,6 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
         aHandle = SHARED.project.newFile(dTitle, newHandle)
         hHash = "#"*hLevel
         writeFile(prjLipsum / "content" / f"{aHandle}.nwd", f"{hHash} {dTitle}\n\n")
-        nwGUI.projView.projTree.revealNewTreeItem(aHandle)
 
     nwGUI.rebuildIndex()
 

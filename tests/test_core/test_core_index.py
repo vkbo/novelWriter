@@ -59,6 +59,7 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
         "67a8707f2f249": False,  # Character ROOT
         "6c6afb1247750": False,  # Plot ROOT
         "60bdf227455cc": False,  # World ROOT
+        "1ace7ab1a0fc6": False,  # Trash ROOT
     }
     for tItem in project.tree:
         index.reIndexHandle(tItem.itemHandle)
@@ -346,6 +347,7 @@ def testCoreIndex_ScanText(monkeypatch, mockGUI, fncPath, mockRnd):
     # Some items for fail to scan tests
     dHandle = project.newFolder("Folder", C.hNovelRoot)
     xHandle = project.newFile("No Layout", C.hNovelRoot)
+    xIndex = project.tree.model.indexFromHandle(xHandle)
     assert isinstance(dHandle, str)
     assert isinstance(xHandle, str)
 
@@ -363,10 +365,13 @@ def testCoreIndex_ScanText(monkeypatch, mockGUI, fncPath, mockRnd):
     assert index.scanText(xHandle, "Hello World!") is False
 
     # Create the trash folder
-    tHandle = project.trashFolder()
+    tNode = project.tree.trash
+    assert tNode is not None
+    tIndex = project.tree.model.indexFromNode(tNode)
+    tHandle = tNode.item.itemHandle
     assert project.tree[tHandle] is not None
-    xItem.setParent(tHandle)
-    project.tree.updateItemData(xItem.itemHandle)
+
+    project.tree.model.multiMove([xIndex], tIndex)
     assert xItem.itemRoot == tHandle
     assert xItem.itemClass == nwItemClass.TRASH
     assert index.scanText(xHandle, "## Hello World!") is True
@@ -374,9 +379,10 @@ def testCoreIndex_ScanText(monkeypatch, mockGUI, fncPath, mockRnd):
 
     # Create the archive root
     aHandle = project.newRoot(nwItemClass.ARCHIVE)
+    aIndex = project.tree.model.indexFromHandle(aHandle)
     assert project.tree[aHandle] is not None
-    xItem.setParent(aHandle)
-    project.tree.updateItemData(xItem.itemHandle)
+
+    project.tree.model.multiMove([xIndex], aIndex)
     assert index.scanText(xHandle, "### Hello World!") is True
     assert xItem.mainHeading == "H3"
 
@@ -901,7 +907,8 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     ]
 
     # Add a fake handle to the tree and check that it's ignored
-    project.tree._order.append("0000000000000")
+    project.tree._items["0000000000000"] = None  # type: ignore
+    project.tree._nodes["0000000000000"] = None  # type: ignore
     assert [(h, t) for h, t, _ in index._itemIndex.iterNovelStructure(activeOnly=False)] == [
         (C.hTitlePage, "T0001"),
         (C.hChapterDoc, "T0001"),
@@ -912,7 +919,8 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         (sHandle, "T0001"),
         (tHandle, "T0001"),
     ]
-    project.tree._order.remove("0000000000000")
+    del project.tree._items["0000000000000"]
+    del project.tree._nodes["0000000000000"]
 
     # Extract stats
     assert index.getNovelWordCount(activeOnly=False) == 43
@@ -1281,7 +1289,8 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     assert nStruct[0][0] == uHandle
 
     # Inject garbage into tree
-    project.tree._order.append("stuff")
+    project.tree._items["stuff"] = None  # type: ignore
+    project.tree._nodes["stuff"] = None  # type: ignore
     nStruct = list(itemIndex.iterNovelStructure())
     assert len(nStruct) == 4
     assert nStruct[0][0] == nHandle

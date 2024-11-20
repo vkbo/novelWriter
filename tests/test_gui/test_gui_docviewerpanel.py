@@ -39,7 +39,7 @@ def testGuiViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     buildTestProject(nwGUI, projPath)
     projTree = nwGUI.projView.projTree
-    projTree._getTreeItem(C.hChapterDir).setExpanded(True)
+    projTree.expandAll()
     viewPanel = nwGUI.docViewerPanel
     tabBackRefs = viewPanel.tabBackRefs
 
@@ -128,7 +128,7 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
 
     buildTestProject(nwGUI, projPath)
     projTree = nwGUI.projView.projTree
-    projTree._getTreeItem(C.hChapterDir).setExpanded(True)
+    projTree.expandAll()
     viewPanel = nwGUI.docViewerPanel
 
     nwGUI.openDocument(C.hSceneDoc)

@@ -661,7 +661,7 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
         (0, True), (1, True), (2, True), (3, True), (4, True), (5, False),
         (6, True), (7, True), (8, True), (9, False), (10, False), (11, True),
         (12, True), (13, True), (14, True), (15, True), (16, True), (17, True),
-        (18, True), (19, True), (20, True),
+        (18, True), (19, True), (20, True), (21, False),
     ]
 
     assert docPath.exists()
