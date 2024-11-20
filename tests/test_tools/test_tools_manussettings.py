@@ -121,8 +121,6 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
 
     hPlotDoc = SHARED.project.newFile("Main Plot", C.hPlotRoot)
     hCharDoc = SHARED.project.newFile("Jane Doe", C.hCharRoot)
-    nwGUI.projView.projTree.revealNewTreeItem(hPlotDoc)
-    nwGUI.projView.projTree.revealNewTreeItem(hCharDoc)
     SHARED.project.tree[hPlotDoc].setActive(False)  # type: ignore
 
     # Create the dialog and populate it

@@ -38,12 +38,13 @@ def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
     # Add a second Novel folder
     project = SHARED.project
     secondText = "#! Second\n\n" + "\n\n".join(ipsumText)
-    sHandle = project.newRoot(nwItemClass.NOVEL, "Second")
+    sHandle = project.newRoot(nwItemClass.NOVEL)
     dHandle = project.newFile("Document", sHandle)
+    if item := project.tree[sHandle]:
+        item.setName("Second")
+
     project.storage.getDocument(dHandle).writeDocument(secondText)
     project.index.reIndexHandle(dHandle)
-    nwGUI.projView.projTree.revealNewTreeItem(sHandle)
-    nwGUI.projView.projTree.revealNewTreeItem(dHandle)
 
     # Create the dialog
     nwGUI.mainMenu.aNovelDetails.activate(QAction.ActionEvent.Trigger)
