@@ -1321,11 +1321,11 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Click no on the dialog
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
-        ctxMenu._covertFolderToFile(nwItemLayout.DOCUMENT)
+        ctxMenu._convertFolderToFile(nwItemLayout.DOCUMENT)
         assert SHARED.project.tree[hNewFolderOne].isFolderType()  # type: ignore
 
     # Convert the first folder to a document
-    ctxMenu._covertFolderToFile(nwItemLayout.DOCUMENT)
+    ctxMenu._convertFolderToFile(nwItemLayout.DOCUMENT)
     assert SHARED.project.tree[hNewFolderOne].isFileType()  # type: ignore
     assert SHARED.project.tree[hNewFolderOne].isDocumentLayout()  # type: ignore
 
@@ -1335,7 +1335,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     ctxMenu.buildSingleSelectMenu(False)
 
     # Convert the second folder to a note
-    ctxMenu._covertFolderToFile(nwItemLayout.NOTE)
+    ctxMenu._convertFolderToFile(nwItemLayout.NOTE)
     assert SHARED.project.tree[hNewFolderTwo].isFileType()  # type: ignore
     assert SHARED.project.tree[hNewFolderTwo].isNoteLayout()  # type: ignore
 

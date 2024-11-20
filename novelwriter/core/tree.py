@@ -391,6 +391,12 @@ class NWTree:
 
         return tTree
 
+    def subTree(self, tHandle: str) -> list[str]:
+        """Get the subtree from a given handle."""
+        if node := self._nodes.get(tHandle):
+            return [child.item.itemHandle for child in node.allChildren()]
+        return []
+
     ##
     #  Tree Root Methods
     ##
