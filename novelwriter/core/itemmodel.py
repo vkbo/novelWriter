@@ -113,18 +113,14 @@ class ProjectNode:
         self._cache[C_COUNT_ALIGN] = QtAlignRight
 
         # Active
-        if self._item.isFileType():
-            if self._item.isActive:
-                self._cache[C_ACTIVE_ICON] = SHARED.theme.getIcon("checked")
-            else:
-                self._cache[C_ACTIVE_ICON] = SHARED.theme.getIcon("unchecked")
-        else:
-            self._cache[C_ACTIVE_ICON] = SHARED.theme.getIcon("noncheckable")
+        aText, aIcon = self._item.getActiveStatus()
+        self._cache[C_ACTIVE_TIP] = aText
+        self._cache[C_ACTIVE_ICON] = aIcon
 
         # Status
         sText, sIcon = self._item.getImportStatus()
-        self._cache[C_STATUS_ICON] = sIcon
         self._cache[C_STATUS_TIP] = sText
+        self._cache[C_STATUS_ICON] = sIcon
 
         self.updateCount()
 

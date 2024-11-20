@@ -515,21 +515,7 @@ class GuiProjectTree(QTreeView):
         self.projView = projView
 
         # Internal Variables
-        # self._treeMap: dict[str, QTreeWidgetItem] = {}
-        # self._popAlert = None
         # self._actHandle = None
-
-        # Cached Translations
-        self.trActive = self.tr("Active")
-        self.trInactive = self.tr("Inactive")
-        self.trPermDelete = self.tr("Permanently delete {0} file(s) from Trash?")
-
-        # Build GUI
-        # =========
-
-        # Context Menu
-        # self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        # self.customContextMenuRequested.connect(self.openContextMenu)
 
         # Tree Settings
         iPx = SHARED.theme.baseIconHeight
@@ -551,19 +537,19 @@ class GuiProjectTree(QTreeView):
         # releases (see #1561) and instead use our own implementation
         # self.setAutoScroll(False)
 
-        # But don't allow drop on root level
-        # Due to a bug, this stops working somewhere between Qt 5.15.3
-        # and 5.15.8, so this is also blocked in dropEvent (see #1569)
-        # trRoot = self.invisibleRootItem()
-        # trRoot.setFlags(trRoot.flags() ^ Qt.ItemFlag.ItemIsDropEnabled)
-
         # Set selection options
         self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
 
+        # Context Menu
+        # self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        # self.customContextMenuRequested.connect(self.openContextMenu)
+
         # Connect signals
         self.clicked.connect(self._onSingleClick)
         self.doubleClicked.connect(self._onDoubleClick)
+        self.collapsed.connect(self._onNodeCollapsed)
+        self.expanded.connect(self._onNodeExpanded)
 
         # Auto Scroll
         # self._scrollMargin = SHARED.theme.baseIconHeight
@@ -863,6 +849,20 @@ class GuiProjectTree(QTreeView):
                 )
             else:
                 self.setExpanded(index, not self.isExpanded(index))
+        return
+
+    @pyqtSlot(QModelIndex)
+    def _onNodeCollapsed(self, index: QModelIndex) -> None:
+        """Capture a node collapse, and pass it to the model."""
+        if node := self._getNode(index):
+            node.item.setExpanded(False)
+        return
+
+    @pyqtSlot(QModelIndex)
+    def _onNodeExpanded(self, index: QModelIndex) -> None:
+        """Capture a node expand, and pass it to the model."""
+        if node := self._getNode(index):
+            node.item.setExpanded(True)
         return
 
     ##

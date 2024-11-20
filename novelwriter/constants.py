@@ -274,6 +274,11 @@ class nwLabels:
         "doc_h4":   QT_TRANSLATE_NOOP("Constant", "Novel Section"),
         "note":     QT_TRANSLATE_NOOP("Constant", "Project Note"),
     }
+    ACTIVE_NAME = {
+        "checked":      QT_TRANSLATE_NOOP("Constant", "Active"),
+        "unchecked":    QT_TRANSLATE_NOOP("Constant", "Inactive"),
+        "noncheckable": QT_TRANSLATE_NOOP("Constant", "Not Available"),
+    }
     KEY_NAME = {
         nwKeyWords.TAG_KEY:     QT_TRANSLATE_NOOP("Constant", "Tag"),
         nwKeyWords.POV_KEY:     QT_TRANSLATE_NOOP("Constant", "Point of View"),

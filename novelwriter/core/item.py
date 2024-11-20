@@ -29,6 +29,7 @@ from typing import TYPE_CHECKING, Any
 
 from PyQt5.QtGui import QIcon
 
+from novelwriter import SHARED
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified,
     yesNo
@@ -329,6 +330,13 @@ class NWItem:
         else:
             entry = self._project.data.itemImport[self._import]
         return entry.name, entry.icon
+
+    def getActiveStatus(self) -> tuple[str, QIcon]:
+        """Return the relevant active status label and icon for
+        the current item based on its type.
+        """
+        key = ("checked" if self._active else "unchecked") if self.isFileType() else "noncheckable"
+        return trConst(nwLabels.ACTIVE_NAME[key]), SHARED.theme.getIcon(key)
 
     ##
     #  Checker Methods

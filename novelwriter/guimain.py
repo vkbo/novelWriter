@@ -44,7 +44,7 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwView
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
@@ -62,6 +62,7 @@ from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.noveldetails import GuiNovelDetails
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.writingstats import GuiWritingStats
+from novelwriter.types import QtModShift
 
 logger = logging.getLogger(__name__)
 
@@ -298,9 +299,17 @@ class GuiMain(QMainWindow):
         self.keyReturn.setKey("Return")
         self.keyReturn.activated.connect(self._keyPressReturn)
 
+        self.keyShiftReturn = QShortcut(self)
+        self.keyShiftReturn.setKey("Shift+Return")
+        self.keyShiftReturn.activated.connect(self._keyPressReturn)
+
         self.keyEnter = QShortcut(self)
         self.keyEnter.setKey("Enter")
         self.keyEnter.activated.connect(self._keyPressReturn)
+
+        self.keyShiftEnter = QShortcut(self)
+        self.keyShiftEnter.setKey("Shift+Enter")
+        self.keyShiftEnter.activated.connect(self._keyPressReturn)
 
         self.keyEscape = QShortcut(self)
         self.keyEscape.setKey("Esc")
@@ -719,8 +728,11 @@ class GuiMain(QMainWindow):
                 logger.warning("No item selected")
                 return
 
-            if tHandle:
-                self.openDocument(tHandle, sTitle=sTitle, changeFocus=False, doScroll=False)
+            if tHandle and SHARED.project.tree.checkType(tHandle, nwItemType.FILE):
+                if QApplication.keyboardModifiers() == QtModShift:
+                    self.viewDocument(tHandle)
+                else:
+                    self.openDocument(tHandle, sTitle=sTitle, changeFocus=False, doScroll=False)
 
         return
 
