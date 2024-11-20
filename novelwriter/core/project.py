@@ -164,6 +164,22 @@ class NWProject:
         """Add a new file with a given label and parent item."""
         return self._tree.create(label, parent, nwItemType.FILE, pos=pos)
 
+    def removeItem(self, tHandle: str) -> bool:
+        """Remove an item from the project. This will delete both the
+        project entry and a document file if it exists.
+        """
+        if self._tree.checkType(tHandle, nwItemType.FILE):
+            doc = self._storage.getDocument(tHandle)
+            if not doc.deleteDocument():
+                SHARED.error(
+                    self.tr("Could not delete document file."),
+                    info=doc.getError()
+                )
+                return False
+        self._index.deleteHandle(tHandle)
+        self._tree.remove(tHandle)
+        return True
+
     def writeNewFile(self, tHandle: str, hLevel: int, isDocument: bool, text: str = "") -> bool:
         """Write content to a new document after it is created. This
         will not run if the file exists and is not empty.
@@ -208,23 +224,17 @@ class NWProject:
 
         return True
 
-    def removeItem(self, tHandle: str) -> bool:
-        """Remove an item from the project. This will delete both the
-        project entry and a document file if it exists.
+    def createNewNote(self, tag: str, itemClass: nwItemClass) -> None:
+        """Create a new note. This function is used by the document
+        editor to create note files for unknown tags.
         """
-        if self._tree.checkType(tHandle, nwItemType.FILE):
-            doc = self._storage.getDocument(tHandle)
-            if not doc.deleteDocument():
-                SHARED.error(
-                    self.tr("Could not delete document file."),
-                    info=doc.getError()
-                )
-                return False
-
-        self._index.deleteHandle(tHandle)
-        self._tree.remove(tHandle)
-
-        return True
+        if itemClass != nwItemClass.NO_CLASS:
+            if not (rHandle := self._tree.findRoot(itemClass)):
+                rHandle = self.newRoot(itemClass)
+            if rHandle and (tHandle := SHARED.project.newFile(tag.title(), rHandle)):
+                self.writeNewFile(tHandle, 1, False, f"@tag: {tag}\n\n")
+                self._tree.refreshItems([tHandle])
+        return
 
     ##
     #  Project Methods

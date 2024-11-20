@@ -261,7 +261,7 @@ class GuiMain(QMainWindow):
         self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
         self.docEditor.novelStructureChanged.connect(self.novelView.refreshTree)
         self.docEditor.openDocumentRequest.connect(self._openDocument)
-        self.docEditor.requestNewNoteCreation.connect(self.projView.createNewNote)
+        self.docEditor.requestNewNoteCreation.connect(SHARED.createNewNote)
         self.docEditor.requestNextDocument.connect(self.openNextDocument)
         self.docEditor.requestProjectItemRenamed.connect(self.projView.renameTreeItem)
         self.docEditor.requestProjectItemSelected.connect(self.projView.setSelectedHandle)

@@ -32,10 +32,10 @@ import logging
 from enum import Enum
 
 from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QIcon, QMouseEvent, QPalette
+from PyQt5.QtGui import QIcon, QMouseEvent, QPainter, QPalette
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QFrame, QHBoxLayout, QLabel, QMenu, QShortcut,
-    QTreeView, QVBoxLayout, QWidget
+    QStyleOptionViewItem, QTreeView, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -254,12 +254,6 @@ class GuiProjectView(QWidget):
         self.projBar.buildQuickLinksMenu()
         return
 
-    @pyqtSlot(str, nwItemClass)
-    def createNewNote(self, tag: str, itemClass: nwItemClass) -> None:
-        """Process new not request."""
-        self.projTree.createNewNote(tag, itemClass)
-        return
-
     @pyqtSlot(str)
     def refreshUserLabels(self, kind: str) -> None:
         """Refresh status or importance labels."""
@@ -359,7 +353,7 @@ class GuiProjectToolBar(QWidget):
         self.aCollapse.triggered.connect(self.projTree.collapseAll)
 
         self.aEmptyTrash = self.mMore.addAction(self.tr("Empty Trash"))
-        self.aEmptyTrash.triggered.connect(qtLambda(self.projTree.emptyTrash))
+        self.aEmptyTrash.triggered.connect(self.projTree.emptyTrash)
 
         self.tbMore = NIconToolButton(self, iSz)
         self.tbMore.setToolTip(self.tr("More Options"))
@@ -506,7 +500,7 @@ class GuiProjectTree(QTreeView):
         self.projView = projView
 
         # Internal Variables
-        # self._actHandle = None
+        self._actHandle = None
 
         # Cached Translations
         self.trActive = trConst(nwLabels.ACTIVE_NAME["checked"])
@@ -566,6 +560,11 @@ class GuiProjectTree(QTreeView):
     #  External Methods
     ##
 
+    def setActiveHandle(self, tHandle: str | None) -> None:
+        """Set the handle to be highlighted."""
+        self._actHandle = tHandle
+        return
+
     def getSelectedHandle(self) -> str | None:
         """Get the currently selected handle."""
         if (indexes := self.selectedIndexes()) and (node := self._getNode(indexes[0])):
@@ -583,11 +582,7 @@ class GuiProjectTree(QTreeView):
 
     def loadModel(self) -> None:
         """Load and prepare a new project model."""
-        # selModel = self.selectionModel()
         self.setModel(SHARED.project.tree.model)
-        # if selModel:
-        #     selModel.deleteLater()
-        #     del selModel
 
         # Lock the column sizes
         iPx = SHARED.theme.baseIconHeight
@@ -820,7 +815,7 @@ class GuiProjectTree(QTreeView):
         return
 
     ##
-    #  Events
+    #  Events and Overloads
     ##
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
@@ -837,6 +832,13 @@ class GuiProjectTree(QTreeView):
                 self.projView.openDocumentRequest.emit(
                     node.item.itemHandle, nwDocMode.VIEW, "", False
                 )
+        return
+
+    def drawRow(self, painter: QPainter, opt: QStyleOptionViewItem, index: QModelIndex) -> None:
+        """Draw a box on the active row."""
+        if (node := self._getNode(index)) and node.item.itemHandle == self._actHandle:
+            painter.fillRect(opt.rect, self.palette().alternateBase())
+        super().drawRow(painter, opt, index)
         return
 
     ##
@@ -913,31 +915,53 @@ class GuiProjectTree(QTreeView):
     def processDeleteRequest(self, handles: list[str] = [], askFirst: bool = True) -> None:
         """Move selected items to Trash."""
         if handles and (model := self._getModel()):
-            items = [model.indexFromHandle(handle) for handle in handles]
+            indices = [model.indexFromHandle(handle) for handle in handles]
         else:
-            items = self._selectedRows()
+            indices = self._selectedRows()
 
-        if items and (model := self._getModel()):
-            if len(items) == 1 and (node := model.node(items[0])) and node.item.isRootType():
+        if indices and (model := self._getModel()):
+            if len(indices) == 1 and (node := model.node(indices[0])) and node.item.isRootType():
                 if node.childCount() == 0:
                     SHARED.project.removeItem(node.item.itemHandle)
                 else:
                     SHARED.error(self.tr("Root folders can only be deleted when they are empty."))
                 return
 
-            if model.trashSelection(items):
+            if model.trashSelection(indices):
                 if not SHARED.question(self.tr("Permanently delete selected item(s)?")):
                     logger.info("Action cancelled by user")
                     return
-                for node in model.nodes(items):
-                    SHARED.project.removeItem(node.item.itemHandle)
+                for index in indices:
+                    if node := model.node(index):
+                        for child in reversed(node.allChildren()):
+                            SHARED.project.removeItem(child.item.itemHandle)
+                        SHARED.project.removeItem(node.item.itemHandle)
 
             elif trashNode := SHARED.project.tree.trash:
                 if askFirst and not SHARED.question(self.tr("Move selected item(s) to Trash?")):
                     logger.info("Action cancelled by user")
                     return
-                model.multiMove(items, model.indexFromNode(trashNode))
+                model.multiMove(indices, model.indexFromNode(trashNode))
 
+        return
+
+    @pyqtSlot()
+    def emptyTrash(self) -> None:
+        """Permanently delete all documents in the Trash folder. This
+        function only asks for confirmation once, and calls the regular
+        deleteItem function for each document in the Trash folder.
+        """
+        if trash := SHARED.project.tree.trash:
+            if not (nodes := trash.allChildren()):
+                SHARED.info(self.tr("The Trash folder is already empty."))
+                return
+            if not SHARED.question(
+                self.tr("Permanently delete {0} file(s) from Trash?").format(len(nodes))
+            ):
+                logger.info("Action cancelled by user")
+                return
+            for node in reversed(nodes):
+                SHARED.project.removeItem(node.item.itemHandle)
         return
 
     @pyqtSlot()
@@ -1031,60 +1055,6 @@ class GuiProjectTree(QTreeView):
     #  Old Code
     # =========================================================================================== #
 
-    def createNewNote(self, tag: str, itemClass: nwItemClass) -> None:
-        """Create a new note. This function is used by the document
-        editor to create note files for unknown tags.
-        """
-        # if itemClass != nwItemClass.NO_CLASS:
-        #     if not (rHandle := SHARED.project.tree.findRoot(itemClass)):
-        #         self.newTreeItem(nwItemType.ROOT, itemClass)
-        #         rHandle = SHARED.project.tree.findRoot(itemClass)
-        #     if rHandle and (tHandle := SHARED.project.newFile(tag, rHandle)):
-        #         SHARED.project.writeNewFile(tHandle, 1, False, f"@tag: {tag}\n\n")
-        #         self.revealNewTreeItem(tHandle, wordCount=True)
-        return
-
-    @pyqtSlot()
-    def emptyTrash(self) -> bool:
-        """Permanently delete all documents in the Trash folder. This
-        function only asks for confirmation once, and calls the regular
-        deleteItem function for each document in the Trash folder.
-        """
-        # if not SHARED.hasProject:
-        #     logger.error("No project open")
-        #     return False
-
-        # trashHandle = SHARED.project.tree.trashRoot
-
-        # logger.debug("Emptying Trash folder")
-        # if trashHandle is None:
-        #     SHARED.info(self.tr("There is currently no Trash folder in this project."))
-        #     return False
-
-        # trashItems = self.getTreeFromHandle(trashHandle)
-        # if trashHandle in trashItems:
-        #     trashItems.remove(trashHandle)
-
-        # nTrash = len(trashItems)
-        # if nTrash == 0:
-        #     SHARED.info(self.tr("The Trash folder is already empty."))
-        #     return False
-
-        # if not SHARED.question(self.trPermDelete.format(nTrash)):
-        #     logger.info("Action cancelled by user")
-        #     return False
-
-        # logger.debug("Deleting %d file(s) from Trash", nTrash)
-        # for tHandle in reversed(self.getTreeFromHandle(trashHandle)):
-        #     if tHandle == trashHandle:
-        #         continue
-        #     self.permDeleteItem(tHandle, askFirst=False, flush=False)
-
-        # if nTrash > 0:
-        #     self._alertTreeChange(trashHandle, flush=True)
-
-        return True
-
     def refreshUserLabels(self, kind: str) -> None:
         """Refresh status or importance labels."""
         # if kind == "s":
@@ -1134,19 +1104,6 @@ class GuiProjectTree(QTreeView):
 
         #     self.propagateCount(pHandle, pCount, countChildren=False)
 
-        return
-
-    def setActiveHandle(self, tHandle: str | None) -> None:
-        """Highlight the rows associated with a given handle."""
-        # brushOn = self.palette().alternateBase()
-        # brushOff = self.palette().base()
-        # if (pHandle := self._actHandle) and (item := self._treeMap.get(pHandle)):
-        #     for i in range(self.columnCount()):
-        #         item.setBackground(i, brushOff)
-        # if tHandle and (item := self._treeMap.get(tHandle)):
-        #     for i in range(self.columnCount()):
-        #         item.setBackground(i, brushOn)
-        # self._actHandle = tHandle or None
         return
 
 

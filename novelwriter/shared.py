@@ -37,6 +37,7 @@ from PyQt5.QtWidgets import QFileDialog, QFontDialog, QMessageBox, QWidget
 from novelwriter.common import formatFileFilter
 from novelwriter.constants import nwFiles
 from novelwriter.core.spellcheck import NWSpellEnchant
+from novelwriter.enum import nwItemClass
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
@@ -301,6 +302,12 @@ class SharedData(QObject):
     def openWebsite(self, url: str) -> None:
         """Open a URL in the system's default browser."""
         QDesktopServices.openUrl(QUrl(url))
+        return
+
+    @pyqtSlot(str, nwItemClass)
+    def createNewNote(self, tag: str, itemClass: nwItemClass) -> None:
+        """Process new note request."""
+        self.project.createNewNote(tag, itemClass)
         return
 
     ##
