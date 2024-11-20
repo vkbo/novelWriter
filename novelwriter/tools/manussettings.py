@@ -419,8 +419,8 @@ class _FilterTab(NFixedPage):
         logger.debug("Building project tree")
         self._treeMap = {}
         self.optTree.clear()
-        for nwItem in SHARED.project.iterProjectItems():
-
+        for node in SHARED.project.tree.model.root.allChildren():
+            nwItem = node.item
             tHandle = nwItem.itemHandle
             pHandle = nwItem.itemParent
             rHandle = nwItem.itemRoot
@@ -429,8 +429,6 @@ class _FilterTab(NFixedPage):
                 continue
 
             isFile = nwItem.isFileType()
-            isActive = nwItem.isActive
-
             if nwItem.isInactiveClass() or not self._build.isRootAllowed(rHandle):
                 continue
 
@@ -439,18 +437,12 @@ class _FilterTab(NFixedPage):
                 nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
             )
 
-            if isFile:
-                iconName = "checked" if isActive else "unchecked"
-            else:
-                iconName = "noncheckable"
-
             trItem = QTreeWidgetItem()
             trItem.setIcon(self.C_NAME, itemIcon)
             trItem.setText(self.C_NAME, nwItem.itemName)
             trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
             trItem.setData(self.C_DATA, self.D_FILE, isFile)
-            trItem.setIcon(self.C_ACTIVE, SHARED.theme.getIcon(iconName))
-
+            trItem.setIcon(self.C_ACTIVE, nwItem.getActiveStatus()[1])
             trItem.setTextAlignment(self.C_NAME, QtAlignLeft)
 
             if pHandle is None and nwItem.isRootType():

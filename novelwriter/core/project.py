@@ -26,12 +26,10 @@ from __future__ import annotations
 import json
 import logging
 
-from collections.abc import Iterable
 from enum import Enum
 from functools import partial
 from pathlib import Path
 from time import time
-from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import QCoreApplication
 
@@ -50,9 +48,6 @@ from novelwriter.core.storage import NWStorage, NWStorageOpen
 from novelwriter.core.tree import NWTree
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
-
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.core.item import NWItem
 
 logger = logging.getLogger(__name__)
 
@@ -209,7 +204,7 @@ class NWProject:
         text = self._storage.getDocumentText(sHandle)
         self._storage.getDocument(tHandle).writeDocument(text)
         sItem.setLayout(tItem.itemLayout)
-        self._index.scanText(tHandle, text)
+        self._index.reIndexHandle(tHandle)
 
         return True
 
@@ -493,47 +488,6 @@ class NWProject:
     ##
     #  Class Methods
     ##
-
-    def iterProjectItems(self) -> Iterable[NWItem]:
-        """This function ensures that the item tree loaded is sent to
-        the GUI tree view in such a way that the tree can be built. That
-        is, the parent item must be sent before its child. In principle,
-        a proper XML file will already ensure that, but in the event the
-        order has been altered, or a file is orphaned, this function is
-        capable of handling it.
-        """
-        sentItems = set()
-        iterItems = self._tree.handles()
-        n = 0
-        nMax = min(len(iterItems), 10000)
-        while n < nMax:
-            tHandle = iterItems[n]
-            tItem = self._tree[tHandle]
-            n += 1
-            if tItem is None:
-                # Technically a bug
-                continue
-            elif tItem.itemParent is None:
-                # Item is a root, or already been identified as orphaned
-                sentItems.add(tHandle)
-                yield tItem
-            elif tItem.itemParent in sentItems:
-                # Item's parent has been sent, so all is fine
-                sentItems.add(tHandle)
-                yield tItem
-            elif tItem.itemParent in iterItems:
-                # Item's parent exists, but hasn't been sent yet, so add
-                # it again to the end, but make sure this doesn't get
-                # out hand, so we cap at 10000 items
-                logger.warning("Item '%s' found before its parent", tHandle)
-                iterItems.append(tHandle)
-                nMax = min(len(iterItems), 10000)
-            else:
-                # Item is orphaned
-                logger.error("Item '%s' has no parent in current tree", tHandle)
-                tItem.setParent(None)
-                yield tItem
-        return
 
     def updateWordCounts(self) -> None:
         """Update the total word count values."""

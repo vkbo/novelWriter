@@ -258,29 +258,27 @@ class DocDuplicator:
     #  Methods
     ##
 
-    def duplicate(self, items: list[str]) -> Iterable[tuple[str, str | None]]:
+    def duplicate(self, items: list[str]) -> list[str]:
         """Run through a list of items, duplicate them, and copy the
         text content if they are documents.
         """
+        result = []
+        after = True
         if items:
-            nHandle = items[0]
             hMap: dict[str, str | None] = {t: None for t in items}
             for tHandle in items:
-                newItem = self._project.tree.duplicate(tHandle)
-                if newItem is None:
-                    return
-                hMap[tHandle] = newItem.itemHandle
-                if newItem.itemParent in hMap:
-                    newItem.setParent(hMap[newItem.itemParent])
-                    self._project.tree.updateItemData(newItem.itemHandle)
-                if newItem.isFileType():
-                    newDoc = self._project.storage.getDocument(newItem.itemHandle)
-                    if newDoc.fileExists():
-                        return
-                    newDoc.writeDocument(self._project.storage.getDocumentText(tHandle))
-                yield newItem.itemHandle, nHandle
-                nHandle = None
-        return
+                if oldItem := self._project.tree[tHandle]:
+                    pHandle = hMap.get(oldItem.itemParent or "") or oldItem.itemParent
+                    if newItem := self._project.tree.duplicate(tHandle, pHandle, after):
+                        hMap[tHandle] = newItem.itemHandle
+                        if newItem.isFileType():
+                            self._project.copyFileContent(newItem.itemHandle, tHandle)
+                        newItem.notifyToRefresh()
+                        result.append(newItem.itemHandle)
+                    after = False
+                else:
+                    break
+        return result
 
 
 class DocSearch:
@@ -509,8 +507,10 @@ class ProjectBuilder:
                         f"%Short: {bfNote}\n\n"
                     )
 
-        # Also add the archive folder
+        # Also add the archive and trash folders
         project.newRoot(nwItemClass.ARCHIVE)
+        project.tree.trash  # Triggers the creation of Trash
+
         project.saveProject()
         project.closeProject()
 

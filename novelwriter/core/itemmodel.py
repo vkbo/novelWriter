@@ -232,6 +232,7 @@ class ProjectNode:
         else:
             child.item.setParent(None)
             child.item.setRoot(child.item.itemHandle)
+            child.item.setClassDefaults(child.item.itemClass)
         return
 
 

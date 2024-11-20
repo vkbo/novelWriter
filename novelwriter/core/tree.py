@@ -115,10 +115,6 @@ class NWTree:
         del oldModel
         return
 
-    def handles(self) -> list[str]:
-        """Returns a copy of the list of all the active handles."""
-        return list(self._items.keys())
-
     def add(self, item: NWItem, pos: int = -1) -> bool:
         """Add a project item into the project tree."""
         if pHandle := item.itemParent:
@@ -128,6 +124,7 @@ class NWTree:
                 self._model.insertChild(node, index, pos)
                 self._nodes[item.itemHandle] = node
                 self._items[item.itemHandle] = item
+                self._project.setProjectChanged(True)
             else:
                 logger.error("Could not locate parent of '%s'", item.itemHandle)
                 return False
@@ -136,6 +133,7 @@ class NWTree:
             self._model.insertChild(node, QModelIndex(), pos)
             self._nodes[item.itemHandle] = node
             self._items[item.itemHandle] = item
+            self._project.setProjectChanged(True)
         else:
             logger.error("Invalid project item '%s'", item.itemHandle)
             return False
@@ -181,18 +179,17 @@ class NWTree:
             nwItem.setType(itemType)
             nwItem.setClass(itemClass)
             if self.add(nwItem, pos):
-                self._project.setProjectChanged(True)
                 return tHandle
         return None
 
-    def duplicate(self, sHandle: str) -> NWItem | None:
+    def duplicate(self, sHandle: str, pHandle: str | None, putAfter: bool) -> NWItem | None:
         """Duplicate an item and set a new handle."""
-        # sItem = self.__getitem__(sHandle)
-        # if isinstance(sItem, NWItem):
-        #     nItem = NWItem.duplicate(sItem, self._makeHandle())
-        #     if self.append(nItem):
-        #         logger.info("Duplicated item '%s' -> '%s'", sHandle, nItem.itemHandle)
-        #         return nItem
+        if sNode := self._nodes.get(sHandle):
+            nItem = NWItem.duplicate(sNode.item, self._makeHandle())
+            nItem.setParent(pHandle)
+            if self.add(nItem, (sNode.row() + 1) if putAfter else -1):
+                logger.info("Duplicated item '%s' -> '%s'", sHandle, nItem.itemHandle)
+                return nItem
         return None
 
     def pack(self) -> list[dict]:
@@ -415,22 +412,6 @@ class NWTree:
                 if itemClass is None or node.item.itemClass == itemClass:
                     yield node.item.itemHandle, node.item
         return
-
-    def isTrash(self, tHandle: str) -> bool:
-        """Check if an item is in or is the trash folder."""
-        # tItem = self.__getitem__(tHandle)
-        # if tItem is None:
-        #     return True
-        # if tItem.itemClass == nwItemClass.TRASH:
-        #     return True
-        # if self._trash is not None:
-        #     if tHandle == self._trash:
-        #         return True
-        #     elif tItem.itemParent == self._trash:
-        #         return True
-        #     elif tItem.itemRoot == self._trash:
-        #         return True
-        return False
 
     def findRoot(self, itemClass: nwItemClass | None) -> str | None:
         """Find the first root item for a given class."""

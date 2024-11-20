@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import qtLambda
 from novelwriter.constants import nwLabels, nwStyles, nwUnicode, trConst
-from novelwriter.core.coretools import DocMerger, DocSplitter
+from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
 from novelwriter.core.item import NWItem
 from novelwriter.core.itemmodel import ProjectModel, ProjectNode
 from novelwriter.dialogs.docmerge import GuiDocMerge
@@ -594,11 +594,11 @@ class GuiProjectTree(QTreeView):
 
     def loadModel(self) -> None:
         """Load and prepare a new project model."""
-        selModel = self.selectionModel()
+        # selModel = self.selectionModel()
         self.setModel(SHARED.project.tree.model)
-        if selModel:
-            selModel.deleteLater()
-            del selModel
+        # if selModel:
+        #     selModel.deleteLater()
+        #     del selModel
 
         # Lock the column sizes
         iPx = SHARED.theme.baseIconHeight
@@ -813,6 +813,22 @@ class GuiProjectTree(QTreeView):
             self.processDeleteRequest([tHandle], False)
 
         return True
+
+    def duplicateFromHandle(self, tHandle: str) -> None:
+        """Duplicate the item hierarchy from a given item."""
+        itemTree = [tHandle]
+        itemTree.extend(SHARED.project.tree.subTree(tHandle))
+        if itemTree:
+            if len(itemTree) == 1:
+                question = self.tr("Do you want to duplicate this document?")
+            else:
+                question = self.tr("Do you want to duplicate this item and all child items?")
+            if SHARED.question(question):
+                docDup = DocDuplicator(SHARED.project)
+                dHandles = docDup.duplicate(itemTree)
+                if len(dHandles) != len(itemTree):
+                    SHARED.warn(self.tr("Could not duplicate all items."))
+        return
 
     ##
     #  Events
@@ -1159,39 +1175,6 @@ class GuiProjectTree(QTreeView):
         # self._scrollTimer.stop()
         return
 
-    ##
-    #  Internal Functions
-    ##
-
-    def _duplicateFromHandle(self, tHandle: str) -> bool:
-        """Duplicate the item hierarchy from a given item."""
-        # itemTree = self.getTreeFromHandle(tHandle)
-        # nItems = len(itemTree)
-        # if nItems == 0:
-        #     return False
-        # elif nItems == 1:
-        #     question = self.tr("Do you want to duplicate this document?")
-        # else:
-        #     question = self.tr("Do you want to duplicate this item and all child items?")
-
-        # if not SHARED.question(question):
-        #     return False
-
-        # docDup = DocDuplicator(SHARED.project)
-        # dupCount = 0
-        # for dHandle, nHandle in docDup.duplicate(itemTree):
-        #     SHARED.project.index.reIndexHandle(dHandle)
-        #     self.revealNewTreeItem(dHandle, nHandle=nHandle, wordCount=True)
-        #     self._alertTreeChange(dHandle, flush=False)
-        #     dupCount += 1
-
-        # if dupCount != nItems:
-        #     SHARED.warn(self.tr("Could not duplicate all items."))
-
-        # self.saveTreeOrder()
-
-        return True
-
 
 class _UpdatableMenu(QMenu):
 
@@ -1324,7 +1307,7 @@ class _TreeContextMenu(QMenu):
             self._expandCollapse()
         if isFile:
             action = self.addAction(self.tr("Duplicate"))
-            action.triggered.connect(qtLambda(self._tree._duplicateFromHandle, self._handle))
+            action.triggered.connect(qtLambda(self._tree.duplicateFromHandle, self._handle))
         self._deleteOrTrash()
 
         return

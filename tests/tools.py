@@ -181,10 +181,10 @@ def buildTestProject(obj: object, projPath: Path) -> None:
 
     # Creating a minimal project with a few root folders and a
     # single chapter folder with a single file.
-    nrHandle = project.newRoot(nwItemClass.NOVEL, "Novel")
-    project.newRoot(nwItemClass.PLOT, "Plot")
-    project.newRoot(nwItemClass.CHARACTER, "Characters")
-    project.newRoot(nwItemClass.WORLD, "World")
+    nrHandle = project.newRoot(nwItemClass.NOVEL)
+    project.newRoot(nwItemClass.PLOT)
+    project.newRoot(nwItemClass.CHARACTER)
+    project.newRoot(nwItemClass.WORLD)
 
     tdHandle = project.newFile("Title Page", nrHandle)
     cfHandle = project.newFolder("New Chapter", nrHandle) or ""
