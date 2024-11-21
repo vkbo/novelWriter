@@ -175,10 +175,12 @@ class SharedData(QObject):
         logger.debug("Thread Pool Max Count: %d", QThreadPool.globalInstance().maxThreadCount())
         return
 
-    def closeEditor(self, tHandle: str | None = None) -> None:
+    def closeDocument(self, tHandle: str | None = None) -> None:
         """Close the document editor, optionally a specific document."""
         if tHandle is None or tHandle == self.mainGui.docEditor.docHandle:
             self.mainGui.closeDocument()
+        if tHandle is None or tHandle == self.mainGui.docViewer.docHandle:
+            self.mainGui.closeViewerPanel()
         return
 
     def saveEditor(self, tHandle: str | None = None) -> None:

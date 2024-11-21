@@ -20,7 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget
 
 
@@ -68,6 +68,9 @@ class MockTheme:
 
     def __init__(self):
         self.baseIconHeight = 20
+        self.guiFont = QFont()
+        self.guiFontB = QFont()
+        self.guiFontBU = QFont()
         return
 
     def getPixmap(self, *a):

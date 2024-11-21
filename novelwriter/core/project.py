@@ -174,6 +174,7 @@ class NWProject:
         project entry and a document file if it exists.
         """
         if self._tree.checkType(tHandle, nwItemType.FILE):
+            SHARED.closeDocument(tHandle)
             doc = self._storage.getDocument(tHandle)
             if not doc.deleteDocument():
                 SHARED.error(
