@@ -432,13 +432,8 @@ class _FilterTab(NFixedPage):
             if nwItem.isInactiveClass() or not self._build.isRootAllowed(rHandle):
                 continue
 
-            hLevel = nwItem.mainHeading
-            itemIcon = SHARED.theme.getItemIcon(
-                nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
-            )
-
             trItem = QTreeWidgetItem()
-            trItem.setIcon(self.C_NAME, itemIcon)
+            trItem.setIcon(self.C_NAME, nwItem.getMainIcon())
             trItem.setText(self.C_NAME, nwItem.itemName)
             trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
             trItem.setData(self.C_DATA, self.D_FILE, isFile)
@@ -489,11 +484,8 @@ class _FilterTab(NFixedPage):
         self.filterOpt.addLabel(self.tr("Select Root Folders"))
         for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
             if not nwItem.isInactiveClass():
-                itemIcon = SHARED.theme.getItemIcon(
-                    nwItem.itemType, nwItem.itemClass, nwItem.itemLayout
-                )
                 self.filterOpt.addItem(
-                    itemIcon, nwItem.itemName, f"root:{tHandle}",
+                    nwItem.getMainIcon(), nwItem.itemName, f"root:{tHandle}",
                     default=self._build.isRootAllowed(tHandle)
                 )
 

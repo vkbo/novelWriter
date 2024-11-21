@@ -334,15 +334,11 @@ class GuiProjectSearch(QWidget):
         """Populate the result tree."""
         if results and nwItem:
             tHandle = nwItem.itemHandle
-            docIcon = SHARED.theme.getItemIcon(
-                nwItem.itemType, nwItem.itemClass,
-                nwItem.itemLayout, nwItem.mainHeading
-            )
             ext = "+" if capped else ""
 
             tItem = QTreeWidgetItem()
             tItem.setText(self.C_NAME, nwItem.itemName)
-            tItem.setIcon(self.C_NAME, docIcon)
+            tItem.setIcon(self.C_NAME, nwItem.getMainIcon())
             tItem.setData(self.C_NAME, self.D_HANDLE, tHandle)
             tItem.setText(self.C_COUNT, f"({len(results):n}{ext})")
             tItem.setTextAlignment(self.C_COUNT, QtAlignRight)

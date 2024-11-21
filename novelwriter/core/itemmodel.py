@@ -31,7 +31,6 @@ from typing import TYPE_CHECKING
 from PyQt5.QtCore import QAbstractItemModel, QMimeData, QModelIndex, Qt
 from PyQt5.QtGui import QIcon
 
-from novelwriter import SHARED
 from novelwriter.common import decodeMimeHandles, minmax
 from novelwriter.constants import nwConst
 from novelwriter.core.item import NWItem
@@ -116,10 +115,7 @@ class ProjectNode:
     def refresh(self) -> None:
         """Refresh data values."""
         # Label
-        self._cache[C_LABEL_ICON] = SHARED.theme.getItemIcon(
-            self._item.itemType, self._item.itemClass,
-            self._item.itemLayout, self._item.mainHeading
-        )
+        self._cache[C_LABEL_ICON] = self._item.getMainIcon()
         self._cache[C_LABEL_TEXT] = self._item.itemName
 
         # Count

@@ -339,17 +339,13 @@ class _ViewPanelBackRefs(QTreeWidget):
     def _setTreeItemValues(self, tHandle: str, sTitle: str, hItem: IndexHeading) -> None:
         """Add or update a tree item."""
         if nwItem := SHARED.project.tree[tHandle]:
-            docIcon = SHARED.theme.getItemIcon(
-                nwItem.itemType, nwItem.itemClass,
-                nwItem.itemLayout, nwItem.mainHeading
-            )
             iLevel = nwStyles.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
             hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
 
             tKey = f"{tHandle}:{sTitle}"
             trItem = self._treeMap[tKey] if tKey in self._treeMap else QTreeWidgetItem()
 
-            trItem.setIcon(self.C_DOC, docIcon)
+            trItem.setIcon(self.C_DOC, nwItem.getMainIcon())
             trItem.setText(self.C_DOC, nwItem.itemName)
             trItem.setToolTip(self.C_DOC, nwItem.itemName)
             trItem.setIcon(self.C_EDIT, self._editIcon)
@@ -448,10 +444,6 @@ class _ViewPanelKeyWords(QTreeWidget):
     def addUpdateEntry(self, tag: str, name: str, iItem: IndexItem, hItem: IndexHeading) -> None:
         """Add a new entry, or update an existing one."""
         nwItem = iItem.item
-        docIcon = SHARED.theme.getItemIcon(
-            nwItem.itemType, nwItem.itemClass,
-            nwItem.itemLayout, nwItem.mainHeading
-        )
         impLabel, impIcon = nwItem.getImportStatus()
         iLevel = nwStyles.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
         hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
@@ -468,7 +460,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         trItem.setIcon(self.C_IMPORT, impIcon)
         trItem.setText(self.C_IMPORT, impLabel)
         trItem.setToolTip(self.C_IMPORT, impLabel)
-        trItem.setIcon(self.C_DOC, docIcon)
+        trItem.setIcon(self.C_DOC, nwItem.getMainIcon())
         trItem.setText(self.C_DOC, nwItem.itemName)
         trItem.setToolTip(self.C_DOC, nwItem.itemName)
         trItem.setData(self.C_TITLE, QtDecoration, hDec)

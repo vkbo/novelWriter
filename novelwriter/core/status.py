@@ -130,8 +130,9 @@ class NWStatus:
         if self._default not in self._store:
             self._default = next(iter(self._store)) if self._store else None
 
-        # Emit the change signal
+        # Emit the change signal and refresh tree
         SHARED.projectSignalProxy({"event": "statusLabels", "kind": self._prefix})
+        SHARED.project.tree.refreshAllItems()
 
         return
 

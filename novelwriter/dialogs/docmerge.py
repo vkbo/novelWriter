@@ -162,23 +162,13 @@ class GuiDocMerge(NDialog):
         self._data = {}
         self._data["sHandle"] = sHandle
         self._data["origItems"] = itemList
-
         self.listBox.clear()
         for tHandle in itemList:
-            nwItem = SHARED.project.tree[tHandle]
-            if nwItem is None or not nwItem.isFileType():
-                continue
-
-            itemIcon = SHARED.theme.getItemIcon(
-                nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, nwItem.mainHeading
-            )
-
-            newItem = QListWidgetItem()
-            newItem.setIcon(itemIcon)
-            newItem.setText(nwItem.itemName)
-            newItem.setData(self.D_HANDLE, tHandle)
-            newItem.setCheckState(Qt.CheckState.Checked)
-
-            self.listBox.addItem(newItem)
-
+            if (nwItem := SHARED.project.tree[tHandle]) and nwItem.isFileType():
+                item = QListWidgetItem()
+                item.setIcon(nwItem.getMainIcon())
+                item.setText(nwItem.itemName)
+                item.setData(self.D_HANDLE, tHandle)
+                item.setCheckState(Qt.CheckState.Checked)
+                self.listBox.addItem(item)
         return

@@ -321,6 +321,10 @@ class NWItem:
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
+    def getMainIcon(self) -> QIcon:
+        """Get the main item icon."""
+        return SHARED.theme.getItemIcon(self._type, self._class, self._layout, self._heading)
+
     def getImportStatus(self) -> tuple[str, QIcon]:
         """Return the relevant importance or status label and icon for
         the current item based on its class.

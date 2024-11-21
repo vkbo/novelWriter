@@ -248,6 +248,14 @@ class NWTree:
             self._project.setProjectChanged(True)
         return
 
+    def refreshAllItems(self) -> None:
+        """Refresh all items in the tree."""
+        for node in reversed(self._model.root.allChildren()):
+            node.refresh()
+            node.updateCount(propagate=False)
+        self._model.layoutChanged.emit()
+        return
+
     def checkConsistency(self, prefix: str) -> tuple[int, int]:
         """Check the project tree consistency. Also check the content
         folder and add back files that were discovered but were not

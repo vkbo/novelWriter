@@ -269,10 +269,7 @@ class GuiItemDetails(QWidget):
         # Layout
         # ======
 
-        usageIcon = SHARED.theme.getItemIcon(
-            nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, nwItem.mainHeading
-        )
-        self.usageIcon.setPixmap(usageIcon.pixmap(iPx, iPx))
+        self.usageIcon.setPixmap(nwItem.getMainIcon().pixmap(iPx, iPx))
         self.usageData.setText(nwItem.describeMe())
 
         # Counts

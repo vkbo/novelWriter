@@ -215,8 +215,8 @@ class GuiMain(QMainWindow):
         SHARED.indexCleared.connect(self.docViewerPanel.indexWasCleared)
         SHARED.indexScannedText.connect(self.docViewerPanel.projectItemChanged)
         SHARED.indexScannedText.connect(self.itemDetails.updateViewBox)
-        SHARED.indexScannedText.connect(self.projView.updateItemValues)
         SHARED.mainClockTick.connect(self._timeTick)
+        SHARED.projectItemChanged.connect(self.projView.projectItemChanged)
         SHARED.projectItemChanged.connect(self.docEditor.updateDocInfo)
         SHARED.projectItemChanged.connect(self.docViewer.updateDocInfo)
         SHARED.projectItemChanged.connect(self.docViewerPanel.projectItemChanged)
@@ -225,7 +225,6 @@ class GuiMain(QMainWindow):
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
         SHARED.statusLabelsChanged.connect(self.docViewerPanel.updateStatusLabels)
-        SHARED.statusLabelsChanged.connect(self.projView.refreshUserLabels)
 
         self.mainMenu.requestDocAction.connect(self._passDocumentAction)
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
@@ -512,11 +511,9 @@ class GuiMain(QMainWindow):
 
     def saveProject(self, autoSave: bool = False) -> bool:
         """Save the current project."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-        self.projView.saveProjectTasks()
-        return SHARED.saveProject(autoSave=autoSave)
+        if SHARED.hasProject:
+            return SHARED.saveProject(autoSave=autoSave)
+        return False
 
     ##
     #  Document Actions
@@ -743,9 +740,8 @@ class GuiMain(QMainWindow):
             QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             tStart = time()
 
-            self.projView.saveProjectTasks()
             SHARED.project.index.rebuildIndex()
-            self.projView.populateTree()
+            SHARED.project.tree.refreshAllItems()
             self.novelView.refreshTree()
 
             tEnd = time()
@@ -1063,7 +1059,7 @@ class GuiMain(QMainWindow):
             ))
 
         if tree:
-            self.projView.populateTree()
+            SHARED.project.tree.refreshAllItems()
 
         if theme:
             # We are doing this manually instead of connecting to

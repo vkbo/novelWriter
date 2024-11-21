@@ -130,7 +130,6 @@ class GuiProjectView(QWidget):
 
         # Signals
         self.selectedItemChanged.connect(self.projBar.treeSelectionChanged)
-        self.projTree.itemRefreshed.connect(self.projBar.treeItemRefreshed)
         self.projBar.newDocumentFromTemplate.connect(self.createFileFromTemplate)
 
         # Function Mappings
@@ -145,7 +144,6 @@ class GuiProjectView(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         self.projBar.updateTheme()
-        self.populateTree()
         return
 
     def initSettings(self) -> None:
@@ -162,19 +160,10 @@ class GuiProjectView(QWidget):
 
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
-        self.populateTree()
+        self.projTree.loadModel()
+        self.projBar.buildTemplatesMenu()
         self.projBar.buildQuickLinksMenu()
         self.projBar.setEnabled(True)
-        return
-
-    def saveProjectTasks(self) -> None:
-        """Run save project tasks."""
-        # self.projTree.saveTreeOrder()
-        return
-
-    def populateTree(self) -> None:
-        """Build the tree structure from project data."""
-        self.projTree.loadModel()
         return
 
     def setTreeFocus(self) -> None:
@@ -227,10 +216,9 @@ class GuiProjectView(QWidget):
         return
 
     @pyqtSlot(str)
-    def updateItemValues(self, tHandle: str) -> None:
-        """Update tree item."""
-        # if nwItem := SHARED.project.tree[tHandle]:
-        #     self.projTree.setTreeItemValues(nwItem)
+    def projectItemChanged(self, tHandle: str) -> None:
+        """Refresh other content when project item changed."""
+        self.projBar.processTemplateDocuments(tHandle)
         return
 
     @pyqtSlot(str)
@@ -244,12 +232,6 @@ class GuiProjectView(QWidget):
     def updateRootItem(self, tHandle: str) -> None:
         """Process root item changes."""
         self.projBar.buildQuickLinksMenu()
-        return
-
-    @pyqtSlot(str)
-    def refreshUserLabels(self, kind: str) -> None:
-        """Refresh status or importance labels."""
-        self.projTree.refreshUserLabels(kind)
         return
 
 
@@ -398,6 +380,7 @@ class GuiProjectToolBar(QWidget):
         self.aAddNote.setIcon(SHARED.theme.getIcon("proj_note"))
         self.aAddFolder.setIcon(SHARED.theme.getIcon("proj_folder"))
 
+        self.buildTemplatesMenu()
         self.buildQuickLinksMenu()
         self._buildRootMenu()
 
@@ -422,18 +405,25 @@ class GuiProjectToolBar(QWidget):
             )
         return
 
+    def buildTemplatesMenu(self) -> None:
+        """Build the templates menu."""
+        for tHandle, _ in SHARED.project.tree.iterRoots(nwItemClass.TEMPLATE):
+            for dHandle in SHARED.project.tree.subTree(tHandle):
+                self.processTemplateDocuments(dHandle)
+        return
+
+    def processTemplateDocuments(self, tHandle: str) -> None:
+        """Process change in tree items to update menu content."""
+        if item := SHARED.project.tree[tHandle]:
+            if item.isTemplateFile() and item.isActive:
+                self.mTemplates.addUpdate(tHandle, item.itemName, item.getMainIcon())
+            elif tHandle in self.mTemplates:
+                self.mTemplates.remove(tHandle)
+        return
+
     ##
     #  Public Slots
     ##
-
-    @pyqtSlot(str, NWItem, QIcon)
-    def treeItemRefreshed(self, tHandle: str, nwItem: NWItem, icon: QIcon) -> None:
-        """Process change in tree items to update menu content."""
-        if nwItem.isTemplateFile() and nwItem.isActive:
-            self.mTemplates.addUpdate(tHandle, nwItem.itemName, icon)
-        elif tHandle in self.mTemplates:
-            self.mTemplates.remove(tHandle)
-        return
 
     @pyqtSlot(str)
     def treeSelectionChanged(self, tHandle: str) -> None:
@@ -481,8 +471,6 @@ class GuiProjectToolBar(QWidget):
 
 
 class GuiProjectTree(QTreeView):
-
-    itemRefreshed = pyqtSignal(str, NWItem, QIcon)
 
     def __init__(self, projView: GuiProjectView) -> None:
         super().__init__(parent=projView)
@@ -635,6 +623,7 @@ class GuiProjectTree(QTreeView):
 
             SHARED.project.newRoot(itemClass, pos)
             self.restoreExpandedState()
+            self.projView.rootFolderChanged.emit(tHandle)
 
         elif itemType in (nwItemType.FILE, nwItemType.FOLDER):
 
@@ -927,7 +916,9 @@ class GuiProjectTree(QTreeView):
                     if node := model.node(index):
                         for child in reversed(node.allChildren()):
                             SHARED.project.removeItem(child.item.itemHandle)
+                            self.projView.projBar.processTemplateDocuments(child.item.itemHandle)
                         SHARED.project.removeItem(node.item.itemHandle)
+                        self.projView.projBar.processTemplateDocuments(node.item.itemHandle)
 
             elif trashNode := SHARED.project.tree.trash:
                 if askFirst and not SHARED.question(self.tr("Move selected item(s) to Trash?")):
@@ -1042,22 +1033,6 @@ class GuiProjectTree(QTreeView):
         if isinstance(model := self.model(), ProjectModel) and (node := model.node(index)):
             return node
         return None
-
-    # =========================================================================================== #
-    #  Old Code
-    # =========================================================================================== #
-
-    def refreshUserLabels(self, kind: str) -> None:
-        """Refresh status or importance labels."""
-        # if kind == "s":
-        #     for nwItem in SHARED.project.tree:
-        #         if nwItem.isNovelLike():
-        #             self.setTreeItemValues(nwItem)
-        # elif kind == "i":
-        #     for nwItem in SHARED.project.tree:
-        #         if not nwItem.isNovelLike():
-        #             self.setTreeItemValues(nwItem)
-        return
 
 
 class _UpdatableMenu(QMenu):
@@ -1349,6 +1324,8 @@ class _TreeContextMenu(QMenu):
     def _deleteOrTrash(self) -> None:
         """Add move to Trash action."""
         if self._model.trashSelection(self._indices):
+            text = self.tr("Delete Permanently")
+        elif len(self._indices) == 1 and self._item.isRootType():
             text = self.tr("Delete Permanently")
         else:
             text = self.tr("Move to Trash")
