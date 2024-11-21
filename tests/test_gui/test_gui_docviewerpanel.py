@@ -87,11 +87,11 @@ def testGuiViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert item.text(tabBackRefs.C_TITLE) == "Scene One"
 
     # Clear Index
-    SHARED.project.index.clearIndex()
+    SHARED.project.index.clear()
     assert tabBackRefs.topLevelItemCount() == 0
 
     # Rebuild Index
-    SHARED.project.index.rebuildIndex()
+    SHARED.project.index.rebuild()
     assert tabBackRefs.topLevelItemCount() == 1
 
     # Test Update Theme
@@ -182,11 +182,11 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     assert item.text(charTab.C_TITLE) == "Jane Smith"
 
     # Clear Index
-    SHARED.project.index.clearIndex()
+    SHARED.project.index.clear()
     assert charTab.topLevelItemCount() == 0
 
     # Rebuild Index
-    SHARED.project.index.rebuildIndex()
+    SHARED.project.index.rebuild()
     assert charTab.topLevelItemCount() == 2
 
     # Test Update Theme

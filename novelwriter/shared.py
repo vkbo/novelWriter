@@ -398,6 +398,7 @@ class SharedData(QObject):
         """Create a new project and spell checking instance."""
         from novelwriter.core.project import NWProject
         if isinstance(self._project, NWProject):
+            self._project.clear()
             del self._project
             del self._spelling
         self._project = NWProject()

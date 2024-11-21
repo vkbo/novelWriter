@@ -90,7 +90,7 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
     assert index._itemIndex["4c4f28287af27"] is None
 
     # Clear the index
-    index.clearIndex()
+    index.clear()
     assert index._tagsIndex._tags == {}
     assert index._itemIndex._items == {}
 
@@ -113,8 +113,8 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
     assert str(index._itemIndex.packData()) == itemsIndex
 
     # Rebuild index
-    index.clearIndex()
-    index.rebuildIndex()
+    index.clear()
+    index.rebuild()
 
     assert str(index._tagsIndex.packData()) == tagIndex
     assert str(index._itemIndex.packData()) == itemsIndex
@@ -221,7 +221,7 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     mockRnd.reset()
     buildTestProject(project, fncPath)
     index = project.index
-    index.clearIndex()
+    index.clear()
 
     nHandle = project.newFile("Hello", C.hNovelRoot)
     cHandle = project.newFile("Jane",  C.hCharRoot)
@@ -1155,7 +1155,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     project = NWProject()
     mockRnd.reset()
     buildTestProject(project, fncPath)
-    project.index.clearIndex()
+    project.index.clear()
 
     nHandle = C.hTitlePage
     cHandle = C.hChapterDoc

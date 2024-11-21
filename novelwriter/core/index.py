@@ -116,7 +116,7 @@ class NWIndex:
     #  Public Methods
     ##
 
-    def clearIndex(self) -> None:
+    def clear(self) -> None:
         """Clear the index dictionaries and time stamps."""
         self._tagsIndex.clear()
         self._itemIndex.clear()
@@ -125,9 +125,9 @@ class NWIndex:
         SHARED.indexSignalProxy({"event": "clearIndex"})
         return
 
-    def rebuildIndex(self) -> None:
+    def rebuild(self) -> None:
         """Rebuild the entire index from scratch."""
-        self.clearIndex()
+        self.clear()
         for nwItem in self._project.tree:
             if nwItem.isFileType():
                 text = self._project.storage.getDocumentText(nwItem.itemHandle)

@@ -89,6 +89,12 @@ class NWProject:
         logger.debug("Delete: NWProject")
         return
 
+    def clear(self) -> None:
+        """Clear the project."""
+        self._tree.clear()
+        self._index.clear()
+        return
+
     ##
     #  Properties
     ##
@@ -352,7 +358,7 @@ class NWProject:
         self._index.loadIndex()
         if xmlReader.state == XMLReadState.WAS_LEGACY:
             # Often, the index needs to be rebuilt when updating format
-            self._index.rebuildIndex()
+            self._index.rebuild()
 
         self.updateWordCounts()
         self._session.startSession()
@@ -417,7 +423,7 @@ class NWProject:
     def closeProject(self, idleTime: float = 0.0) -> None:
         """Close the project."""
         logger.info("Closing project")
-        self._index.clearIndex()  # Triggers clear signal, see #1718
+        self._index.clear()  # Triggers clear signal, see #1718
         self._options.saveSettings()
         self._tree.writeToCFile()
         self._session.appendSession(idleTime)

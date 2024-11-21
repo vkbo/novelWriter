@@ -138,6 +138,7 @@ class ProjectNode:
 
     def updateCount(self, propagate: bool = True) -> None:
         """Update counts, and propagate upwards in the tree."""
+        # print("Counting", self._item.itemHandle)
         self._count = self._item.wordCount + sum(c._count for c in self._children)
         self._cache[C_COUNT_TEXT] = f"{self._count:n}"
         if propagate and (parent := self._parent):
@@ -461,6 +462,11 @@ class ProjectModel(QAbstractItemModel):
     ##
     #  Other Methods
     ##
+
+    def clear(self) -> None:
+        """Clear the project model."""
+        self._root._children.clear()
+        return
 
     def allExpanded(self) -> list[QModelIndex]:
         """Return a list of all expanded items."""

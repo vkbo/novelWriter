@@ -738,7 +738,7 @@ class GuiMain(QMainWindow):
             QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             tStart = time()
 
-            SHARED.project.index.rebuildIndex()
+            SHARED.project.index.rebuild()
             SHARED.project.tree.refreshAllItems()
             self.novelView.refreshTree()
 

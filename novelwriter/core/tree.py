@@ -109,6 +109,7 @@ class NWTree:
     def clear(self) -> None:
         """Clear the item tree entirely."""
         oldModel = self._model
+        oldModel.clear()
         self._model = ProjectModel(self)
         self._items.clear()
         self._nodes.clear()
