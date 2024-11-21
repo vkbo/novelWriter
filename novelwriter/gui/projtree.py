@@ -48,7 +48,7 @@ from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
-from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType
+from novelwriter.enum import nwChange, nwDocMode, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
@@ -215,10 +215,10 @@ class GuiProjectView(QWidget):
         self.projTree.setActiveHandle(tHandle)
         return
 
-    @pyqtSlot(str)
-    def projectItemChanged(self, tHandle: str) -> None:
+    @pyqtSlot(str, Enum)
+    def onProjectItemChanged(self, tHandle: str, change: nwChange) -> None:
         """Refresh other content when project item changed."""
-        self.projBar.processTemplateDocuments(tHandle)
+        self.projBar.processTemplateDocuments(tHandle, change)
         return
 
     @pyqtSlot(str)
@@ -409,16 +409,19 @@ class GuiProjectToolBar(QWidget):
         """Build the templates menu."""
         for tHandle, _ in SHARED.project.tree.iterRoots(nwItemClass.TEMPLATE):
             for dHandle in SHARED.project.tree.subTree(tHandle):
-                self.processTemplateDocuments(dHandle)
+                self.processTemplateDocuments(dHandle, nwChange.CREATE)
         return
 
-    def processTemplateDocuments(self, tHandle: str) -> None:
+    def processTemplateDocuments(self, tHandle: str, change: nwChange) -> None:
         """Process change in tree items to update menu content."""
-        if item := SHARED.project.tree[tHandle]:
-            if item.isTemplateFile() and item.isActive:
-                self.mTemplates.addUpdate(tHandle, item.itemName, item.getMainIcon())
-            elif tHandle in self.mTemplates:
-                self.mTemplates.remove(tHandle)
+        if change in (nwChange.CREATE, nwChange.UPDATE):
+            if item := SHARED.project.tree[tHandle]:
+                if item.isTemplateFile() and item.isActive:
+                    self.mTemplates.addUpdate(tHandle, item.itemName, item.getMainIcon())
+                elif tHandle in self.mTemplates:
+                    self.mTemplates.remove(tHandle)
+        elif change == nwChange.DELETE and tHandle in self.mTemplates:
+            self.mTemplates.remove(tHandle)
         return
 
     ##
@@ -916,9 +919,7 @@ class GuiProjectTree(QTreeView):
                     if node := model.node(index):
                         for child in reversed(node.allChildren()):
                             SHARED.project.removeItem(child.item.itemHandle)
-                            self.projView.projBar.processTemplateDocuments(child.item.itemHandle)
                         SHARED.project.removeItem(node.item.itemHandle)
-                        self.projView.projBar.processTemplateDocuments(node.item.itemHandle)
 
             elif trashNode := SHARED.project.tree.trash:
                 if askFirst and not SHARED.question(self.tr("Move selected item(s) to Trash?")):

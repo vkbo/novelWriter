@@ -43,7 +43,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles, qtLambda
 from novelwriter.constants import nwConst, nwStyles, nwUnicode
-from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
+from novelwriter.enum import nwChange, nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -346,10 +346,10 @@ class GuiDocViewer(QTextBrowser):
     #  Public Slots
     ##
 
-    @pyqtSlot(str)
-    def updateDocInfo(self, tHandle: str) -> None:
+    @pyqtSlot(str, Enum)
+    def onProjectItemChanged(self, tHandle: str, change: nwChange) -> None:
         """Update the header title bar if needed."""
-        if tHandle and tHandle == self._docHandle:
+        if tHandle == self._docHandle and change == nwChange.UPDATE:
             self.docHeader.setHandle(tHandle)
             self.updateDocMargins()
         return

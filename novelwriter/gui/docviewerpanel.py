@@ -37,7 +37,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt
 from novelwriter.constants import nwLabels, nwLists, nwStyles, trConst
 from novelwriter.core.index import IndexHeading, IndexItem
-from novelwriter.enum import nwDocMode, nwItemClass
+from novelwriter.enum import nwChange, nwDocMode, nwItemClass
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.types import QtDecoration, QtHeaderFixed, QtHeaderToContents, QtUserRole
@@ -151,8 +151,8 @@ class GuiDocViewerPanel(QWidget):
         self.updateHandle(self._lastHandle)
         return
 
-    @pyqtSlot(str)
-    def projectItemChanged(self, tHandle: str) -> None:
+    @pyqtSlot(str, Enum)
+    def onProjectItemChanged(self, tHandle: str, change: nwChange) -> None:
         """Update meta data for project item."""
         self.tabBackRefs.refreshDocument(tHandle)
         activeOnly = self.aInactive.isChecked()

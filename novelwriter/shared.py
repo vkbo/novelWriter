@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import logging
 
+from enum import Enum
 from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING, TypeVar
@@ -37,7 +38,7 @@ from PyQt5.QtWidgets import QFileDialog, QFontDialog, QMessageBox, QWidget
 from novelwriter.common import formatFileFilter
 from novelwriter.constants import nwFiles
 from novelwriter.core.spellcheck import NWSpellEnchant
-from novelwriter.enum import nwItemClass
+from novelwriter.enum import nwChange, nwItemClass
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
@@ -60,9 +61,8 @@ class SharedData(QObject):
     indexAvailable = pyqtSignal()
     indexChangedTags = pyqtSignal(list, list)
     indexCleared = pyqtSignal()
-    indexScannedText = pyqtSignal(str)
     mainClockTick = pyqtSignal()
-    projectItemChanged = pyqtSignal(str)
+    projectItemChanged = pyqtSignal(str, Enum)
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
     spellLanguageChanged = pyqtSignal(str, str)
@@ -319,11 +319,9 @@ class SharedData(QObject):
     def indexSignalProxy(self, data: dict) -> None:
         """Emit signals on behalf of the index."""
         event = data.get("event")
-        logger.debug("Received '%s' event from the index", event)
+        logger.debug("Signal Proxy: %s", event)
         if event == "updateTags":
             self.indexChangedTags.emit(data.get("updated", []), data.get("deleted", []))
-        elif event == "scanText":
-            self.indexScannedText.emit(data.get("handle", ""))
         elif event == "clearIndex":
             self.indexCleared.emit()
         elif event == "buildIndex":
@@ -333,11 +331,13 @@ class SharedData(QObject):
     def projectSignalProxy(self, data: dict) -> None:
         """Emit signals on project data change."""
         event = data.get("event")
-        logger.debug("Received '%s' event from project data", event)
+        logger.debug("Signal Proxy: %s", event)
         if event == "statusLabels":
             self.statusLabelsChanged.emit(data.get("kind", ""))
-        elif event == "projectItem":
-            self.projectItemChanged.emit(data.get("handle", ""))
+        elif event == "itemChanged":
+            self.projectItemChanged.emit(
+                data.get("handle", ""), data.get("change", nwChange.UPDATE)
+            )
         return
 
     ##

@@ -78,6 +78,7 @@ class ProjectNode:
         self._row = 0
         self._cache: dict[int, T_NodeData] = {}
         self._flags = NODE_FLAGS
+        self._count = 0
         self.refresh()
         self.updateCount()
         return
@@ -193,7 +194,6 @@ class ProjectNode:
         else:
             child._row = len(self._children)
             self._children.append(child)
-        self.updateCount()
         return
 
     def takeChild(self, pos: int) -> ProjectNode | None:
@@ -450,8 +450,12 @@ class ProjectModel(QAbstractItemModel):
             for node in pruned:
                 if node.item.itemParent not in handles:
                     index = self.indexFromNode(node)
-                    if child := self.removeChild(index.parent(), index.row()):
-                        self.insertChild(child, target, pos)
+                    if temp := self.removeChild(index.parent(), index.row()):
+                        self.insertChild(temp, target, pos)
+                        for child in reversed(node.allChildren()):
+                            node._updateRelationships(child)
+                            child.item.notifyToRefresh()
+                        node.item.notifyToRefresh()
         return
 
     ##

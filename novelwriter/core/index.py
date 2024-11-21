@@ -297,10 +297,6 @@ class NWIndex:
         self._rootChange[tItem.itemRoot] = nowTime
         if not blockSignal:
             tItem.notifyToRefresh()
-            SHARED.indexSignalProxy({
-                "event": "scanText",
-                "handle": tHandle,
-            })
 
         return True
 

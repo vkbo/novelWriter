@@ -36,7 +36,7 @@ from novelwriter import SHARED
 from novelwriter.constants import nwFiles, nwLabels, trConst
 from novelwriter.core.item import NWItem
 from novelwriter.core.itemmodel import ProjectModel, ProjectNode
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
+from novelwriter.enum import nwChange, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -90,6 +90,8 @@ class NWTree:
     @property
     def trash(self) -> ProjectNode | None:
         """Return trash node, if it exists."""
+        if self._trash:
+            return self._trash
         return self._getTrashNode()
 
     @property
@@ -108,8 +110,8 @@ class NWTree:
         """Clear the item tree entirely."""
         oldModel = self._model
         self._model = ProjectModel(self)
-        self._items = {}
-        self._nodes = {}
+        self._items.clear()
+        self._nodes.clear()
         self._trash = None
         oldModel.deleteLater()
         del oldModel
@@ -124,7 +126,7 @@ class NWTree:
                 self._model.insertChild(node, index, pos)
                 self._nodes[item.itemHandle] = node
                 self._items[item.itemHandle] = item
-                self._project.setProjectChanged(True)
+                self._itemChange(item.itemHandle, nwChange.CREATE)
             else:
                 logger.error("Could not locate parent of '%s'", item.itemHandle)
                 return False
@@ -133,7 +135,7 @@ class NWTree:
             self._model.insertChild(node, QModelIndex(), pos)
             self._nodes[item.itemHandle] = node
             self._items[item.itemHandle] = item
-            self._project.setProjectChanged(True)
+            self._itemChange(item.itemHandle, nwChange.CREATE)
         else:
             logger.error("Invalid project item '%s'", item.itemHandle)
             return False
@@ -144,6 +146,7 @@ class NWTree:
         if (node := self._nodes.get(tHandle)) and tHandle in self._items:
             index = self._model.indexFromNode(node)
             if index.isValid() and self._model.removeChild(index.parent(), index.row()):
+                self._itemChange(tHandle, nwChange.DELETE)
                 del self._nodes[tHandle]
                 del self._items[tHandle]
         return True
@@ -234,18 +237,14 @@ class NWTree:
         """Refresh these items on the GUI. If they are an ordered range,
         also set the isRange flag to True.
         """
-        change = False
         for tHandle in items:
             if node := self._nodes.get(tHandle):
                 node.refresh()
                 node.updateCount()
-                SHARED.projectSignalProxy({"event": "projectItem", "handle": tHandle})
                 indexS = self._model.indexFromNode(node, 0)
                 indexE = self._model.indexFromNode(node, 3)
                 self._model.dataChanged.emit(indexS, indexE)
-                change = True
-        if change:
-            self._project.setProjectChanged(True)
+                self._itemChange(tHandle, nwChange.UPDATE)
         return
 
     def refreshAllItems(self) -> None:
@@ -463,6 +462,13 @@ class NWTree:
     #  Internal Functions
     ##
 
+    def _itemChange(self, tHandle: str, change: nwChange) -> None:
+        """Signal item change and notify project."""
+        logger.debug("Item change: %s -> %s", tHandle, change.name)
+        self._project.setProjectChanged(True)
+        SHARED.projectSignalProxy({"event": "itemChanged", "handle": tHandle, "change": change})
+        return
+
     def _getTrashNode(self) -> ProjectNode | None:
         """Get the trash node. If it doesn't exist, create it."""
         for node in self._model.root.children:
@@ -483,6 +489,7 @@ class NWTree:
                 if parent := self._nodes.get(pHandle):
                     node = ProjectNode(item)
                     parent.addChild(node)
+                    parent.updateCount()
                     self._items[handle] = item
                     self._nodes[handle] = node
                 elif pHandle in items:
@@ -491,6 +498,7 @@ class NWTree:
             elif item.isRootType():
                 node = ProjectNode(item)
                 self._model.root.addChild(node)
+                self._model.root.updateCount()
                 self._items[handle] = item
                 self._nodes[handle] = node
         return remains

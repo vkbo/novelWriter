@@ -57,8 +57,8 @@ from novelwriter.common import decodeMimeHandles, minmax, qtLambda, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
-    nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwItemType,
-    nwTrinary
+    nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
+    nwItemType, nwTrinary
 )
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -1064,12 +1064,12 @@ class GuiDocEditor(QPlainTextEdit):
     #  Public Slots
     ##
 
-    @pyqtSlot(str)
-    def updateDocInfo(self, tHandle: str) -> None:
+    @pyqtSlot(str, Enum)
+    def onProjectItemChanged(self, tHandle: str, change: nwChange) -> None:
         """Called when an item label is changed to check if the document
         title bar needs updating,
         """
-        if tHandle and tHandle == self._docHandle:
+        if tHandle == self._docHandle and change == nwChange.UPDATE:
             self.docHeader.setHandle(tHandle)
             self.docFooter.updateInfo()
             self.updateDocMargins()

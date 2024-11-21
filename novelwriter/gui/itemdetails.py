@@ -25,12 +25,15 @@ from __future__ import annotations
 
 import logging
 
+from enum import Enum
+
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import elide
 from novelwriter.constants import nwLabels, nwStats, trConst
+from novelwriter.enum import nwChange
 from novelwriter.types import (
     QtAlignLeft, QtAlignLeftBase, QtAlignRight, QtAlignRightBase,
     QtAlignRightMiddle
@@ -220,12 +223,7 @@ class GuiItemDetails(QWidget):
         self.updateViewBox(self._handle)
         return
 
-    ##
-    #  Public Slots
-    ##
-
-    @pyqtSlot(str)
-    def updateViewBox(self, tHandle: str) -> None:
+    def updateViewBox(self, tHandle: str | None) -> None:
         """Populate the details box from a given handle."""
         if tHandle is None:
             self.clearDetails()
@@ -284,6 +282,20 @@ class GuiItemDetails(QWidget):
             self.wCountData.setText("–")
             self.pCountData.setText("–")
 
+        return
+
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str, Enum)
+    def onProjectItemChanged(self, tHandle: str, change: nwChange) -> None:
+        """Process project item change."""
+        if tHandle == self._handle:
+            if change == nwChange.UPDATE:
+                self.updateViewBox(tHandle)
+            elif change == nwChange.DELETE:
+                self.updateViewBox(None)
         return
 
     @pyqtSlot(str, int, int, int)
