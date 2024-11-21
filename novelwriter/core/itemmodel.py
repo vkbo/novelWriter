@@ -3,8 +3,8 @@ novelWriter – Project Item Model
 ================================
 
 File History:
-Created: 2024-11-16 [2.7b1] ProjectNode
-Created: 2024-11-16 [2.7b1] ProjectModel
+Created: 2024-11-16 [2.6b2] ProjectNode
+Created: 2024-11-16 [2.6b2] ProjectModel
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -42,7 +42,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 logger = logging.getLogger(__name__)
 
-COL_MASK = 0x0100
+C_FACTOR = 0x0100
 
 C_LABEL_TEXT  = 0x0000 | Qt.ItemDataRole.DisplayRole
 C_LABEL_ICON  = 0x0000 | Qt.ItemDataRole.DecorationRole
@@ -138,7 +138,6 @@ class ProjectNode:
 
     def updateCount(self, propagate: bool = True) -> None:
         """Update counts, and propagate upwards in the tree."""
-        # print("Counting", self._item.itemHandle)
         self._count = self._item.wordCount + sum(c._count for c in self._children)
         self._cache[C_COUNT_TEXT] = f"{self._count:n}"
         if propagate and (parent := self._parent):
@@ -159,7 +158,7 @@ class ProjectNode:
 
     def data(self, column: int, role: Qt.ItemDataRole) -> T_NodeData:
         """Return cached node data."""
-        return self._cache.get(COL_MASK*column | role)
+        return self._cache.get(C_FACTOR*column | role)
 
     def flags(self) -> Qt.ItemFlag:
         """Return cached node flags."""
@@ -261,6 +260,10 @@ class ProjectModel(QAbstractItemModel):
     def __del__(self) -> None:
         logger.debug("Delete: ProjectModel")
         return
+
+    ##
+    #  Properties
+    ##
 
     @property
     def root(self) -> ProjectNode:
