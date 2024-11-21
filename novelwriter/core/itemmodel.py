@@ -29,7 +29,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import QAbstractItemModel, QMimeData, QModelIndex, Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QFont, QIcon
 
 from novelwriter.common import decodeMimeHandles, minmax
 from novelwriter.constants import nwConst
@@ -46,6 +46,7 @@ COL_MASK = 0x0100
 
 C_LABEL_TEXT  = 0x0000 | Qt.ItemDataRole.DisplayRole
 C_LABEL_ICON  = 0x0000 | Qt.ItemDataRole.DecorationRole
+C_LABEL_FONT  = 0x0000 | Qt.ItemDataRole.FontRole
 C_COUNT_TEXT  = 0x0100 | Qt.ItemDataRole.DisplayRole
 C_COUNT_ICON  = 0x0100 | Qt.ItemDataRole.DecorationRole
 C_COUNT_ALIGN = 0x0100 | Qt.ItemDataRole.TextAlignmentRole
@@ -58,7 +59,7 @@ NODE_FLAGS = Qt.ItemFlag.ItemIsEnabled
 NODE_FLAGS |= Qt.ItemFlag.ItemIsSelectable
 NODE_FLAGS |= Qt.ItemFlag.ItemIsDropEnabled
 
-T_NodeData = str | QIcon | Qt.AlignmentFlag | None
+T_NodeData = str | QIcon | QFont | Qt.AlignmentFlag | None
 
 
 class ProjectNode:
@@ -75,7 +76,7 @@ class ProjectNode:
         self._children: list[ProjectNode] = []
         self._parent: ProjectNode | None = None
         self._row = 0
-        self._cache: dict[int, str | QIcon | Qt.AlignmentFlag] = {}
+        self._cache: dict[int, T_NodeData] = {}
         self._flags = NODE_FLAGS
         self.refresh()
         self.updateCount()
@@ -117,6 +118,7 @@ class ProjectNode:
         # Label
         self._cache[C_LABEL_ICON] = self._item.getMainIcon()
         self._cache[C_LABEL_TEXT] = self._item.itemName
+        self._cache[C_LABEL_FONT] = self._item.getMainFont()
 
         # Count
         self._cache[C_COUNT_ALIGN] = QtAlignRight

@@ -210,7 +210,7 @@ def buildTestProject(obj: object, projPath: Path) -> None:
     project._valid = True
 
     if nwGUI is not None:
-        nwGUI.projView.populateTree()
+        nwGUI.projView.openProjectTasks()
 
     return
 

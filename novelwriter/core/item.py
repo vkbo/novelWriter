@@ -27,9 +27,9 @@ import logging
 
 from typing import TYPE_CHECKING, Any
 
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QFont, QIcon
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified,
     yesNo
@@ -324,6 +324,15 @@ class NWItem:
     def getMainIcon(self) -> QIcon:
         """Get the main item icon."""
         return SHARED.theme.getItemIcon(self._type, self._class, self._layout, self._heading)
+
+    def getMainFont(self) -> QFont:
+        """Get the main item icon."""
+        if CONFIG.emphLabels and self._layout == nwItemLayout.DOCUMENT:
+            if self._heading == "H1":
+                return SHARED.theme.guiFontBU
+            elif self._heading == "H2":
+                return SHARED.theme.guiFontB
+        return SHARED.theme.guiFont
 
     def getImportStatus(self) -> tuple[str, QIcon]:
         """Return the relevant importance or status label and icon for
