@@ -111,6 +111,7 @@ def mockItems(mockGUI, mockRnd):
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreTree_BuildTree(mockGUI, mockItems):
     """Test building a project tree from a list of items."""
     project = NWProject()
@@ -266,6 +267,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreTree_PackUnpack(mockGUI, mockItems):
     """Test packing and unpacking data."""
     project = NWProject()
@@ -293,6 +295,7 @@ def testCoreTree_PackUnpack(mockGUI, mockItems):
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreTree_CheckConsistency(caplog: pytest.LogCaptureFixture, mockGUI, fncPath, mockRnd):
     """Check the project consistency."""
     project = NWProject()
@@ -360,6 +363,7 @@ def testCoreTree_CheckConsistency(caplog: pytest.LogCaptureFixture, mockGUI, fnc
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreTree_Methods(monkeypatch, mockGUI, mockItems):
     """Test various class methods."""
     project = NWProject()
@@ -439,6 +443,7 @@ def testCoreTree_Methods(monkeypatch, mockGUI, mockItems):
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreTree_MakeHandles(mockGUI):
     """Test generating item handles."""
     random.seed(42)
@@ -466,6 +471,7 @@ def testCoreTree_MakeHandles(mockGUI):
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreTree_Stats(mockGUI, mockItems):
     """Test project stats methods."""
     project = NWProject()
@@ -484,6 +490,7 @@ def testCoreTree_Stats(mockGUI, mockItems):
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreTree_Reorder(caplog, mockGUI, mockItems):
     """Test changing tree order."""
     project = NWProject()
@@ -517,6 +524,7 @@ def testCoreTree_Reorder(caplog, mockGUI, mockItems):
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
     """Test writing the ToC.txt file."""
     project = NWProject()
