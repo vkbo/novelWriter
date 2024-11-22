@@ -25,7 +25,7 @@ import sys
 
 import pytest
 
-from novelwriter import CONFIG, ColorFormatter, logger, main
+from novelwriter import CONFIG, logger, main
 
 from tests.mocked import MockGuiMain
 
@@ -97,7 +97,7 @@ def testBaseInit_Options(monkeypatch, fncPath):
     assert logger.getEffectiveLevel() == logging.WARNING
     assert nwGUI.closeMain() == "closeMain"
 
-    # Log Levels
+    # Log Levels w/Color
     nwGUI = main(
         ["--testmode", "--info", "--color", f"--config={fncPath}", f"--data={fncPath}"]
     )
@@ -107,6 +107,21 @@ def testBaseInit_Options(monkeypatch, fncPath):
 
     nwGUI = main(
         ["--testmode", "--debug", "--color", f"--config={fncPath}", f"--data={fncPath}"]
+    )
+    assert nwGUI is not None
+    assert logger.getEffectiveLevel() == logging.DEBUG
+    assert nwGUI.closeMain() == "closeMain"
+
+    # Log Levels wo/Color
+    nwGUI = main(
+        ["--testmode", "--info", f"--config={fncPath}", f"--data={fncPath}"]
+    )
+    assert nwGUI is not None
+    assert logger.getEffectiveLevel() == logging.INFO
+    assert nwGUI.closeMain() == "closeMain"
+
+    nwGUI = main(
+        ["--testmode", "--debug", f"--config={fncPath}", f"--data={fncPath}"]
     )
     assert nwGUI is not None
     assert logger.getEffectiveLevel() == logging.DEBUG
@@ -171,24 +186,3 @@ def testBaseInit_Imports(caplog, monkeypatch, fncPath):
     assert "At least Python" in caplog.messages[0]
     assert "At least Qt5" in caplog.messages[1]
     assert "At least PyQt5" in caplog.messages[2]
-
-
-@pytest.mark.base
-def testBaseInit_ColorFormatter(qtbot, monkeypatch, fncPath, tstPaths):
-    """Check launching the main GUI."""
-    formatter = ColorFormatter(fmt="<{message:}>", style="{")
-
-    record = logging.LogRecord("", logging.INFO, "", 1, "Info", None, None)
-    assert formatter.format(record) == "\x1b[1;32m<Info>\x1b[0m"
-
-    record = logging.LogRecord("", logging.DEBUG, "", 1, "Debug", None, None)
-    assert formatter.format(record) == "\x1b[1;34m<Debug>\x1b[0m"
-
-    record = logging.LogRecord("", logging.WARNING, "", 1, "Warning", None, None)
-    assert formatter.format(record) == "\x1b[1;33m<Warning>\x1b[0m"
-
-    record = logging.LogRecord("", logging.ERROR, "", 1, "Error", None, None)
-    assert formatter.format(record) == "\x1b[1;31m<Error>\x1b[0m"
-
-    record = logging.LogRecord("", logging.CRITICAL, "", 1, "Critical", None, None)
-    assert formatter.format(record) == "\x1b[1;31m<Critical>\x1b[0m"
