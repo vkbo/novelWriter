@@ -4,7 +4,6 @@ novelWriter – Init File
 
 File History:
 Created: 2018-09-22 [0.0.1]  main
-Created: 2024-11-22 [2.6b2]  ColorFormatter
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -61,9 +60,25 @@ logger = logging.getLogger(__name__)
 #  Main Program
 ##
 
-# Global config and data singletons
+# Globals Singletons
 CONFIG = Config()
 SHARED = SharedData()
+
+# ANSI Colours
+C_RED    = "\033[91m"
+C_GREEN  = "\033[92m"
+C_YELLOW = "\033[93m"
+C_BLUE   = "\033[94m"
+C_WHITE  = "\033[97m"
+C_END    = "\033[0m"
+
+# Log Formats
+L_TIME = "[{asctime:}]"
+L_FILE = "{filename:>18}"
+L_LINE = "{lineno:<4d}"
+L_LVLP = "{levelname:8}"
+L_LVLC = "{levelname:17}"
+L_TEXT = "{message:}"
 
 
 def main(sysArgs: list | None = None) -> GuiMain | None:
@@ -109,13 +124,12 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
 
     # Defaults
     logLevel = logging.WARN
-    logFormat = "{levelname:8}  {message:}"
-    logFormatter = logging.Formatter
+    fmtFlags = 0b00
     confPath = None
     dataPath = None
     testMode = False
-    qtStyle = "Fusion"
-    cmdOpen = None
+    qtStyle  = "Fusion"
+    cmdOpen  = None
 
     # Parse Options
     try:
@@ -139,10 +153,10 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             logLevel = logging.INFO
         elif inOpt == "--debug":
             CONFIG.isDebug = True
+            fmtFlags = fmtFlags | 0b10
             logLevel = logging.DEBUG
-            logFormat  = "[{asctime:}]  {filename:>18}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--color":
-            logFormatter = ColorFormatter
+            fmtFlags = fmtFlags | 0b01
         elif inOpt == "--style":
             qtStyle = inArg
         elif inOpt == "--config":
@@ -154,13 +168,32 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         elif inOpt == "--meminfo":
             CONFIG.memInfo = True
 
+    if fmtFlags & 0b01:
+        # This will overwrite the default level names, and also ensure that
+        # they can be converted back to integer levels
+        logging.addLevelName(logging.DEBUG,    f"{C_BLUE}DEBUG{C_END}")
+        logging.addLevelName(logging.INFO,     f"{C_GREEN}INFO{C_END}")
+        logging.addLevelName(logging.WARNING,  f"{C_YELLOW}WARNING{C_END}")
+        logging.addLevelName(logging.ERROR,    f"{C_RED}ERROR{C_END}")
+        logging.addLevelName(logging.CRITICAL, f"{C_RED}CRITICAL{C_END}")
+
+    # Determine Log Format
+    if fmtFlags == 0b00:
+        logFmt = f"{L_LVLP}  {L_TEXT}"
+    elif fmtFlags == 0b01:
+        logFmt = f"{L_LVLC}  {L_TEXT}"
+    elif fmtFlags == 0b10:
+        logFmt = f"{L_TIME}  {L_FILE}:{L_LINE}  {L_LVLP}  {L_TEXT}"
+    elif fmtFlags == 0b11:
+        logFmt = f"{L_TIME}  {C_BLUE}{L_FILE}{C_END}:{C_WHITE}{L_LINE}{C_END}  {L_LVLC}  {L_TEXT}"
+
     # Setup Logging
     pkgLogger = logging.getLogger(__package__)
     pkgLogger.setLevel(logLevel)
     if len(pkgLogger.handlers) == 0:
         # Make sure we only create one logger (mostly an issue with tests)
         cHandle = logging.StreamHandler()
-        cHandle.setFormatter(logFormatter(fmt=logFormat, style="{"))
+        cHandle.setFormatter(logging.Formatter(fmt=logFmt, style="{"))
         pkgLogger.addHandler(cHandle)
 
     logger.info("Starting novelWriter %s (%s) %s", __version__, __hexversion__, __date__)
@@ -247,22 +280,3 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     nwGUI.postLaunchTasks(cmdOpen)
 
     sys.exit(app.exec())
-
-
-class ColorFormatter(logging.Formatter):
-
-    def __init__(self, fmt: str, style: str) -> None:
-        super().__init__(fmt, style="{")
-        self._formats = {
-            logging.DEBUG:    f"\033[1;34m{fmt}\033[0m",
-            logging.INFO:     f"\033[1;32m{fmt}\033[0m",
-            logging.WARNING:  f"\033[1;33m{fmt}\033[0m",
-            logging.ERROR:    f"\033[1;31m{fmt}\033[0m",
-            logging.CRITICAL: f"\033[1;31m{fmt}\033[0m",
-        }
-        return
-
-    def format(self, record: logging.LogRecord) -> str:
-        """Overload the format string for each record."""
-        self._style._fmt = self._formats.get(record.levelno, "ERR")
-        return super().format(record)
