@@ -3,7 +3,8 @@ novelWriter – Init File
 =======================
 
 File History:
-Created: 2018-09-22 [0.0.1]
+Created: 2018-09-22 [0.0.1]  main
+Created: 2024-11-22 [2.6b2]  ColorFormatter
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -77,6 +78,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         "version",
         "info",
         "debug",
+        "color",
         "style=",
         "config=",
         "data=",
@@ -98,6 +100,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         " -v, --version  Print program version and exit.\n"
         "     --info     Print additional runtime information.\n"
         "     --debug    Print debug output. Includes --info.\n"
+        "     --color    Add ANSI colors to log output.\n"
         "     --meminfo  Show memory usage information in the status bar.\n"
         "     --style=   Sets Qt5 style flag. Defaults to 'Fusion'.\n"
         "     --config=  Alternative config file.\n"
@@ -107,6 +110,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     # Defaults
     logLevel = logging.WARN
     logFormat = "{levelname:8}  {message:}"
+    logFormatter = logging.Formatter
     confPath = None
     dataPath = None
     testMode = False
@@ -137,6 +141,8 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             CONFIG.isDebug = True
             logLevel = logging.DEBUG
             logFormat  = "[{asctime:}]  {filename:>18}:{lineno:<4d}  {levelname:8}  {message:}"
+        elif inOpt == "--color":
+            logFormatter = ColorFormatter
         elif inOpt == "--style":
             qtStyle = inArg
         elif inOpt == "--config":
@@ -154,7 +160,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     if len(pkgLogger.handlers) == 0:
         # Make sure we only create one logger (mostly an issue with tests)
         cHandle = logging.StreamHandler()
-        cHandle.setFormatter(logging.Formatter(fmt=logFormat, style="{"))
+        cHandle.setFormatter(logFormatter(fmt=logFormat, style="{"))
         pkgLogger.addHandler(cHandle)
 
     logger.info("Starting novelWriter %s (%s) %s", __version__, __hexversion__, __date__)
@@ -241,3 +247,22 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     nwGUI.postLaunchTasks(cmdOpen)
 
     sys.exit(app.exec())
+
+
+class ColorFormatter(logging.Formatter):
+
+    def __init__(self, fmt: str, style: str) -> None:
+        super().__init__(fmt, style="{")
+        self._formats = {
+            logging.DEBUG:    f"\033[1;34m{fmt}\033[0m",
+            logging.INFO:     f"\033[1;32m{fmt}\033[0m",
+            logging.WARNING:  f"\033[1;33m{fmt}\033[0m",
+            logging.ERROR:    f"\033[1;31m{fmt}\033[0m",
+            logging.CRITICAL: f"\033[1;31m{fmt}\033[0m",
+        }
+        return
+
+    def format(self, record: logging.LogRecord) -> str:
+        """Overload the format string for each record."""
+        self._style._fmt = self._formats.get(record.levelno, "ERR")
+        return super().format(record)
