@@ -66,10 +66,7 @@ class NWTree:
     also used for file names.
     """
 
-    __slots__ = (
-        "_project", "_tree", "_order", "_roots",
-        "_model", "_items", "_nodes", "_trash", "_changed",
-    )
+    __slots__ = ("_project", "_model", "_items", "_nodes", "_trash")
 
     def __init__(self, project: NWProject) -> None:
         self._project = project

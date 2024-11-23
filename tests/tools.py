@@ -188,7 +188,7 @@ def buildTestProject(obj: object, projPath: Path) -> None:
     project.newRoot(nwItemClass.WORLD)
 
     tdHandle = project.newFile("Title Page", nrHandle)
-    cfHandle = project.newFolder("New Chapter", nrHandle) or ""
+    cfHandle = project.newFolder("New Folder", nrHandle) or ""
     cdHandle = project.newFile("New Chapter", cfHandle)
     sdHandle = project.newFile("New Scene", cfHandle)
 

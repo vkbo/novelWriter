@@ -39,7 +39,7 @@
     </item>
     <item handle="000000000000d" parent="0000000000008" root="0000000000008" order="1" type="FOLDER" class="NOVEL">
       <meta expanded="no" />
-      <name status="s000000" import="i000004">New Chapter</name>
+      <name status="s000000" import="i000004">New Folder</name>
     </item>
     <item handle="000000000000e" parent="000000000000d" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H2" charCount="11" wordCount="2" paraCount="0" cursorPos="0" />

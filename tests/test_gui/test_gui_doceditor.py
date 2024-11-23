@@ -82,7 +82,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.horizontalScrollBarPolicy() == QtScrollAsNeeded
     assert docEditor._typConf.typPadChar == nwUnicode.U_NBSP
     assert docEditor.docHeader.itemTitle.text() == (
-        "Novel  \u203a  New Chapter  \u203a  New Scene"
+        "Novel  \u203a  New Folder  \u203a  New Scene"
     )
     assert docEditor.docHeader._docOutline == {0: "### New Scene"}
 

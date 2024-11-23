@@ -42,6 +42,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 logger = logging.getLogger(__name__)
 
+INV_ROOT = "invisibleRoot"
 C_FACTOR = 0x0100
 
 C_LABEL_TEXT  = 0x0000 | Qt.ItemDataRole.DisplayRole
@@ -244,7 +245,7 @@ class ProjectNode:
             child.item.setParent(self._item.itemHandle)
             child.item.setRoot(self._item.itemRoot)
             child.item.setClassDefaults(self._item.itemClass)
-            child._flags |= Qt.ItemFlag.ItemIsDragEnabled
+            child._flags = NODE_FLAGS | Qt.ItemFlag.ItemIsDragEnabled
         else:
             child.item.setParent(None)
             child.item.setRoot(child.item.itemHandle)
@@ -259,12 +260,12 @@ class ProjectModel(QAbstractItemModel):
     def __init__(self, tree: NWTree) -> None:
         super().__init__()
         self._tree = tree
-        self._root = ProjectNode(NWItem(tree._project, "invisibleRoot"))
+        self._root = ProjectNode(NWItem(tree._project, INV_ROOT))
         self._root.item.setName("Invisible Root")
         logger.debug("Ready: ProjectModel")
         return
 
-    def __del__(self) -> None:
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: ProjectModel")
         return
 
@@ -390,10 +391,6 @@ class ProjectModel(QAbstractItemModel):
         """Get the index representing a node in the model."""
         return self.createIndex(node.row(), column, node)
 
-    def rootIndex(self) -> QModelIndex:
-        """Get the index representing the root."""
-        return self.createIndex(0, 0, self._root)
-
     ##
     #  Model Edit
     ##
@@ -432,15 +429,6 @@ class ProjectModel(QAbstractItemModel):
                     self.endMoveRows()
         return
 
-    def trashSelection(self, indices: list[QModelIndex]) -> bool:
-        """Check if a selection of indices are all in trash or not."""
-        for index in indices:
-            if index.isValid():
-                node: ProjectNode = index.internalPointer()
-                if node.item.itemClass != nwItemClass.TRASH:
-                    return False
-        return True
-
     def multiMove(self, indices: list[QModelIndex], target: QModelIndex, pos: int = -1) -> None:
         """Move multiple items to a new location."""
         if target.isValid():
@@ -458,7 +446,7 @@ class ProjectModel(QAbstractItemModel):
                     if node.item.isRootType() is False and handle not in handles:
                         pruned.append(node)
                         handles.add(handle)
-            for node in pruned:
+            for node in (reversed(pruned) if pos >= 0 else pruned):
                 if node.item.itemParent not in handles:
                     index = self.indexFromNode(node)
                     if temp := self.removeChild(index.parent(), index.row()):
@@ -485,3 +473,12 @@ class ProjectModel(QAbstractItemModel):
             if node._item.isExpanded:
                 expanded.append(self.createIndex(node.row(), 0, node))
         return expanded
+
+    def trashSelection(self, indices: list[QModelIndex]) -> bool:
+        """Check if a selection of indices are all in trash or not."""
+        for index in indices:
+            if index.isValid():
+                node: ProjectNode = index.internalPointer()
+                if node.item.itemClass != nwItemClass.TRASH:
+                    return False
+        return True

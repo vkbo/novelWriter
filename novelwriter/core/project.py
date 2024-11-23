@@ -67,6 +67,11 @@ class NWProjectState(Enum):
 
 class NWProject:
 
+    __slots__ = (
+        "_options", "_storage", "_data", "_tree", "_index", "_session",
+        "_langData", "_changed", "_valid", "_state", "tr",
+    )
+
     def __init__(self) -> None:
 
         # Core Elements
@@ -433,7 +438,6 @@ class NWProject:
         self._tree.writeToCFile()
         self._session.appendSession(idleTime)
         self._storage.closeSession()
-        self._lockedBy = None
         return
 
     def backupProject(self, doNotify: bool) -> bool:
