@@ -153,6 +153,7 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
     assert "7a992350f3eb6" in index._itemIndex
 
     # Close Project
+    SHARED._project = project  # Otherwise the signal is not emitted
     with qtbot.waitSignal(SHARED.indexCleared, timeout=1000):
         # Regression test for issue #1718
         project.closeProject()

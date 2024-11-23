@@ -469,13 +469,9 @@ class NWTree:
         tHandle = item.itemHandle
         logger.debug("Item change: %s -> %s", tHandle, change.name)
         self._project.setProjectChanged(True)
-        SHARED.projectSignalProxy(
-            {"event": "itemChanged", "handle": tHandle, "change": change}
-        )
+        SHARED.emitProjectItemChanged(self._project, tHandle, change)
         if item.isRootType():
-            SHARED.projectSignalProxy(
-                {"event": "rootChanged", "handle": tHandle, "change": change}
-            )
+            SHARED.emitRootFolderChanged(self._project, tHandle, change)
         return
 
     def _getTrashNode(self) -> ProjectNode | None:

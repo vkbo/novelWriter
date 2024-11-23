@@ -44,7 +44,7 @@ from novelwriter.core.options import OptionState
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.sessions import NWSessionLog
-from novelwriter.core.status import T_StatusKinds, T_UpdateEntry
+from novelwriter.core.status import T_StatusKind, T_UpdateEntry
 from novelwriter.core.storage import NWStorage, NWStorageOpen
 from novelwriter.core.tree import NWTree
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
@@ -532,15 +532,15 @@ class NWProject:
                 self._data.itemImport.increment(nwItem.itemImport)
         return
 
-    def updateStatus(self, kind: T_StatusKinds, update: T_UpdateEntry) -> None:
+    def updateStatus(self, kind: T_StatusKind, update: T_UpdateEntry) -> None:
         """Update status or import entries."""
         if kind == "s":
             self._data.itemStatus.update(update)
-            SHARED.projectSignalProxy({"event": "statusLabels", "kind": kind})
+            SHARED.emitStatusLabelsChanged(self, kind)
             self._tree.refreshAllItems()
         elif kind == "i":
             self._data.itemImport.update(update)
-            SHARED.projectSignalProxy({"event": "statusLabels", "kind": kind})
+            SHARED.emitStatusLabelsChanged(self, kind)
             self._tree.refreshAllItems()
         return
 

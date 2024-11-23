@@ -42,6 +42,7 @@ from novelwriter.enum import nwChange, nwItemClass
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
+    from novelwriter.core.status import T_StatusKind
     from novelwriter.gui.theme import GuiTheme
     from novelwriter.guimain import GuiMain
 
@@ -314,35 +315,45 @@ class SharedData(QObject):
         return
 
     ##
-    #  Signal Proxy
+    #  Signal Proxies
     ##
 
-    def indexSignalProxy(self, data: dict) -> None:
-        """Emit signals on behalf of the index."""
-        event = data.get("event")
-        logger.debug("Signal Proxy: %s", event)
-        if event == "updateTags":
-            self.indexChangedTags.emit(data.get("updated", []), data.get("deleted", []))
-        elif event == "clearIndex":
+    def emitIndexChangedTags(
+        self, project: NWProject, updated: list[str], deleted: list[str]
+    ) -> None:
+        """Emit the indexChangedTags signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
+            self.indexChangedTags.emit(updated, deleted)
+        return
+
+    def emitIndexCleared(self, project: NWProject) -> None:
+        """Emit the indexCleared signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
             self.indexCleared.emit()
-        elif event == "buildIndex":
+        return
+
+    def emitIndexAvailable(self, project: NWProject) -> None:
+        """Emit the indexAvailable signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
             self.indexAvailable.emit()
         return
 
-    def projectSignalProxy(self, data: dict) -> None:
-        """Emit signals on project data change."""
-        event = data.get("event")
-        logger.debug("Signal Proxy: %s", event)
-        if event == "statusLabels":
-            self.statusLabelsChanged.emit(data.get("kind", ""))
-        elif event == "itemChanged":
-            self.projectItemChanged.emit(
-                data.get("handle", ""), data.get("change", nwChange.UPDATE)
-            )
-        elif event == "rootChanged":
-            self.rootFolderChanged.emit(
-                data.get("handle", ""), data.get("change", nwChange.UPDATE)
-            )
+    def emitStatusLabelsChanged(self, project: NWProject, kind: T_StatusKind) -> None:
+        """Emit the statusLabelsChanged signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
+            self.statusLabelsChanged.emit(kind)
+        return
+
+    def emitProjectItemChanged(self, project: NWProject, handle: str, change: nwChange) -> None:
+        """Emit the projectItemChanged signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
+            self.projectItemChanged.emit(handle, change)
+        return
+
+    def emitRootFolderChanged(self, project: NWProject, handle: str, change: nwChange) -> None:
+        """Emit the rootFolderChanged signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
+            self.rootFolderChanged.emit(handle, change)
         return
 
     ##

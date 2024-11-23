@@ -66,7 +66,7 @@ class StatusEntry:
 NO_ENTRY = StatusEntry("", QColor(0, 0, 0), nwStatusShape.SQUARE, QIcon(), 0)
 
 T_UpdateEntry = list[tuple[str | None, StatusEntry]]
-T_StatusKinds = Literal["s", "i"]
+T_StatusKind = Literal["s", "i"]
 
 
 class NWStatus:
@@ -76,7 +76,7 @@ class NWStatus:
 
     __slots__ = ("_store", "_default", "_prefix", "_height")
 
-    def __init__(self, prefix: T_StatusKinds) -> None:
+    def __init__(self, prefix: T_StatusKind) -> None:
         self._store: dict[str, StatusEntry] = {}
         self._default = None
         self._prefix = prefix[:1]
