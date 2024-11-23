@@ -29,7 +29,7 @@ from PyQt5.QtGui import QDesktopServices, QMouseEvent, QTextCursor
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocAction
+from novelwriter.enum import nwChange, nwDocAction
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.types import QtModNone, QtMouseLeft
 
@@ -206,12 +206,12 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwItem = SHARED.project.tree["4c4f28287af27"]
     nwItem.setName("Test Title")  # type: ignore
     assert nwItem.itemName == "Test Title"  # type: ignore
-    docViewer.updateDocInfo("4c4f28287af27")
+    docViewer.onProjectItemChanged("4c4f28287af27", nwChange.UPDATE)
     assert docViewer.docHeader.itemTitle.text() == "Characters  \u203a  Test Title"
 
     # Title without full path
     CONFIG.showFullPath = False
-    docViewer.updateDocInfo("4c4f28287af27")
+    docViewer.onProjectItemChanged("4c4f28287af27", nwChange.UPDATE)
     assert docViewer.docHeader.itemTitle.text() == "Test Title"
     CONFIG.showFullPath = True
 

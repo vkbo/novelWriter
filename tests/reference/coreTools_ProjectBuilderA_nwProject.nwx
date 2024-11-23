@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.4rc1" hexVersion="0x020400c1" fileVersion="1.5" fileRevision="4" timeStamp="2024-04-09 22:34:16">
+<novelWriterXML appVersion="2.6b1" hexVersion="0x020600b1" fileVersion="1.5" fileRevision="4" timeStamp="2024-11-23 19:07:52">
   <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="1" autoCount="0" editTime="0">
     <name>Test Project A</name>
     <author>Jane Doe</author>
@@ -37,7 +37,7 @@
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Title Page</name>
     </item>
-    <item handle="000000000000a" parent="0000000000008" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+    <item handle="000000000000a" parent="0000000000008" root="0000000000008" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Chapter 1</name>
     </item>
@@ -45,15 +45,15 @@
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Scene 1.1</name>
     </item>
-    <item handle="000000000000c" parent="000000000000a" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+    <item handle="000000000000c" parent="000000000000a" root="0000000000008" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Scene 1.2</name>
     </item>
-    <item handle="000000000000d" parent="000000000000a" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+    <item handle="000000000000d" parent="000000000000a" root="0000000000008" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Scene 1.3</name>
     </item>
-    <item handle="000000000000e" parent="0000000000008" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+    <item handle="000000000000e" parent="0000000000008" root="0000000000008" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Chapter 2</name>
     </item>
@@ -61,15 +61,15 @@
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Scene 2.1</name>
     </item>
-    <item handle="0000000000010" parent="000000000000e" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+    <item handle="0000000000010" parent="000000000000e" root="0000000000008" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Scene 2.2</name>
     </item>
-    <item handle="0000000000011" parent="000000000000e" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+    <item handle="0000000000011" parent="000000000000e" root="0000000000008" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Scene 2.3</name>
     </item>
-    <item handle="0000000000012" parent="0000000000008" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+    <item handle="0000000000012" parent="0000000000008" root="0000000000008" order="3" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Chapter 3</name>
     </item>
@@ -77,15 +77,15 @@
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Scene 3.1</name>
     </item>
-    <item handle="0000000000014" parent="0000000000012" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+    <item handle="0000000000014" parent="0000000000012" root="0000000000008" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Scene 3.2</name>
     </item>
-    <item handle="0000000000015" parent="0000000000012" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+    <item handle="0000000000015" parent="0000000000012" root="0000000000008" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Scene 3.3</name>
     </item>
-    <item handle="0000000000016" parent="None" root="0000000000016" order="0" type="ROOT" class="PLOT">
+    <item handle="0000000000016" parent="None" root="0000000000016" order="1" type="ROOT" class="PLOT">
       <meta expanded="no" />
       <name status="s000000" import="i000004">Plot</name>
     </item>
@@ -93,7 +93,7 @@
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Main Plot</name>
     </item>
-    <item handle="0000000000018" parent="None" root="0000000000018" order="0" type="ROOT" class="CHARACTER">
+    <item handle="0000000000018" parent="None" root="0000000000018" order="2" type="ROOT" class="CHARACTER">
       <meta expanded="no" />
       <name status="s000000" import="i000004">Characters</name>
     </item>
@@ -101,7 +101,7 @@
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Protagonist</name>
     </item>
-    <item handle="000000000001a" parent="None" root="000000000001a" order="0" type="ROOT" class="WORLD">
+    <item handle="000000000001a" parent="None" root="000000000001a" order="3" type="ROOT" class="WORLD">
       <meta expanded="no" />
       <name status="s000000" import="i000004">Locations</name>
     </item>
@@ -109,11 +109,11 @@
       <meta expanded="no" heading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Main Location</name>
     </item>
-    <item handle="000000000001c" parent="None" root="000000000001c" order="0" type="ROOT" class="ARCHIVE">
+    <item handle="000000000001c" parent="None" root="000000000001c" order="4" type="ROOT" class="ARCHIVE">
       <meta expanded="no" />
       <name status="s000000" import="i000004">Archive</name>
     </item>
-    <item handle="000000000001d" parent="None" root="000000000001d" order="0" type="ROOT" class="TRASH">
+    <item handle="000000000001d" parent="None" root="000000000001d" order="5" type="ROOT" class="TRASH">
       <meta expanded="no" />
       <name status="s000000" import="i000004">Trash</name>
     </item>

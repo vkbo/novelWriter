@@ -275,7 +275,7 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
             "handle": "000000000000f",
             "parent": "000000000000d",
             "root": "0000000000008",
-            "order": "0",
+            "order": "1",
             "type": "FILE",
             "class": "NOVEL",
             "layout": "DOCUMENT"

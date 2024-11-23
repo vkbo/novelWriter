@@ -66,15 +66,9 @@ class GuiProjectView(QWidget):
     available are mapped through to the project tree class.
     """
 
-    # Signals triggered when the meta data values of items change
-    rootFolderChanged = pyqtSignal(str)
-
-    # Signals for user interaction with the project tree
-    selectedItemChanged = pyqtSignal(str)
     openDocumentRequest = pyqtSignal(str, Enum, str, bool)
-
-    # Requests for the main GUI
     projectSettingsRequest = pyqtSignal(int)
+    selectedItemChanged = pyqtSignal(str)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -229,8 +223,8 @@ class GuiProjectView(QWidget):
         self.projTree.newTreeItem(nwItemType.FILE, copyDoc=tHandle)
         return
 
-    @pyqtSlot(str)
-    def updateRootItem(self, tHandle: str) -> None:
+    @pyqtSlot(str, Enum)
+    def updateRootItem(self, tHandle: str, change: nwChange) -> None:
         """Process root item changes."""
         self.projBar.buildQuickLinksMenu()
         return
@@ -625,9 +619,8 @@ class GuiProjectTree(QTreeView):
                 if root := SHARED.project.tree.nodes.get(itemRoot):
                     pos = root.row() + 1
 
-            SHARED.project.newRoot(itemClass, pos)
+            tHandle = SHARED.project.newRoot(itemClass, pos)
             self.restoreExpandedState()
-            self.projView.rootFolderChanged.emit(tHandle)
 
         elif itemType in (nwItemType.FILE, nwItemType.FOLDER):
 
@@ -684,7 +677,10 @@ class GuiProjectTree(QTreeView):
                         SHARED.project.index.reIndexHandle(tHandle)
                         SHARED.project.tree.refreshItems([tHandle])
                 else:
-                    SHARED.project.newFolder(newLabel, sHandle, pos)
+                    tHandle = SHARED.project.newFolder(newLabel, sHandle, pos)
+
+        # Select the new item automatically
+        self.setSelectedHandle(tHandle)
 
         return
 

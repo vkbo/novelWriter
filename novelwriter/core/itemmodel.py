@@ -91,6 +91,10 @@ class ProjectNode:
             f"children={len(self._children)}>"
         )
 
+    def __bool__(self) -> bool:
+        """A node should always evaluate to True."""
+        return True
+
     ##
     #  Properties
     ##
@@ -190,10 +194,10 @@ class ProjectNode:
         self._updateRelationships(child)
         if 0 <= pos < len(self._children):
             self._children.insert(pos, child)
-            self._refreshChildrenPos()
         else:
             child._row = len(self._children)
             self._children.append(child)
+        self._refreshChildrenPos()
         return
 
     def takeChild(self, pos: int) -> ProjectNode | None:
@@ -229,6 +233,7 @@ class ProjectNode:
         """Update the row value on all children."""
         for n, child in enumerate(self._children):
             child._row = n
+            child.item.setOrder(n)
         return
 
     def _updateRelationships(self, child: ProjectNode) -> None:

@@ -128,7 +128,7 @@ class NWTree:
                 self._model.insertChild(node, index, pos)
                 self._nodes[item.itemHandle] = node
                 self._items[item.itemHandle] = item
-                self._itemChange(item.itemHandle, nwChange.CREATE)
+                self._itemChange(item, nwChange.CREATE)
             else:
                 logger.error("Could not locate parent of '%s'", item.itemHandle)
                 return False
@@ -137,7 +137,7 @@ class NWTree:
             self._model.insertChild(node, QModelIndex(), pos)
             self._nodes[item.itemHandle] = node
             self._items[item.itemHandle] = item
-            self._itemChange(item.itemHandle, nwChange.CREATE)
+            self._itemChange(item, nwChange.CREATE)
         else:
             logger.error("Invalid project item '%s'", item.itemHandle)
             return False
@@ -148,7 +148,7 @@ class NWTree:
         if (node := self._nodes.get(tHandle)) and tHandle in self._items:
             index = self._model.indexFromNode(node)
             if index.isValid() and self._model.removeChild(index.parent(), index.row()):
-                self._itemChange(tHandle, nwChange.DELETE)
+                self._itemChange(node.item, nwChange.DELETE)
                 del self._nodes[tHandle]
                 del self._items[tHandle]
         return True
@@ -246,7 +246,7 @@ class NWTree:
                 indexS = self._model.indexFromNode(node, 0)
                 indexE = self._model.indexFromNode(node, 3)
                 self._model.dataChanged.emit(indexS, indexE)
-                self._itemChange(tHandle, nwChange.UPDATE)
+                self._itemChange(node.item, nwChange.UPDATE)
         return
 
     def refreshAllItems(self) -> None:
@@ -464,11 +464,18 @@ class NWTree:
     #  Internal Functions
     ##
 
-    def _itemChange(self, tHandle: str, change: nwChange) -> None:
+    def _itemChange(self, item: NWItem, change: nwChange) -> None:
         """Signal item change and notify project."""
+        tHandle = item.itemHandle
         logger.debug("Item change: %s -> %s", tHandle, change.name)
         self._project.setProjectChanged(True)
-        SHARED.projectSignalProxy({"event": "itemChanged", "handle": tHandle, "change": change})
+        SHARED.projectSignalProxy(
+            {"event": "itemChanged", "handle": tHandle, "change": change}
+        )
+        if item.isRootType():
+            SHARED.projectSignalProxy(
+                {"event": "rootChanged", "handle": tHandle, "change": change}
+            )
         return
 
     def _getTrashNode(self) -> ProjectNode | None:

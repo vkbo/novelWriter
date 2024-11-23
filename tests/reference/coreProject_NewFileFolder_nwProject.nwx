@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.4rc1" hexVersion="0x020400c1" fileVersion="1.5" fileRevision="4" timeStamp="2024-04-09 22:34:16">
+<novelWriterXML appVersion="2.6b1" hexVersion="0x020600b1" fileVersion="1.5" fileRevision="4" timeStamp="2024-11-23 18:40:02">
   <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="1" autoCount="1" editTime="0">
     <name>New Project</name>
     <author>Jane Doe</author>
@@ -37,7 +37,7 @@
       <meta expanded="no" heading="H1" charCount="20" wordCount="5" paraCount="1" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Title Page</name>
     </item>
-    <item handle="000000000000d" parent="0000000000008" root="0000000000008" order="0" type="FOLDER" class="NOVEL">
+    <item handle="000000000000d" parent="0000000000008" root="0000000000008" order="1" type="FOLDER" class="NOVEL">
       <meta expanded="no" />
       <name status="s000000" import="i000004">New Chapter</name>
     </item>
@@ -45,11 +45,11 @@
       <meta expanded="no" heading="H2" charCount="11" wordCount="2" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">New Chapter</name>
     </item>
-    <item handle="000000000000f" parent="000000000000d" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+    <item handle="000000000000f" parent="000000000000d" root="0000000000008" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H3" charCount="9" wordCount="2" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">New Scene</name>
     </item>
-    <item handle="0000000000010" parent="0000000000008" root="0000000000008" order="0" type="FOLDER" class="NOVEL">
+    <item handle="0000000000010" parent="0000000000008" root="0000000000008" order="2" type="FOLDER" class="NOVEL">
       <meta expanded="no" />
       <name status="s000000" import="i000004">Stuff</name>
     </item>
@@ -57,11 +57,11 @@
       <meta expanded="no" heading="H2" charCount="5" wordCount="1" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Hello</name>
     </item>
-    <item handle="0000000000009" parent="None" root="0000000000009" order="0" type="ROOT" class="PLOT">
+    <item handle="0000000000009" parent="None" root="0000000000009" order="1" type="ROOT" class="PLOT">
       <meta expanded="no" />
       <name status="s000000" import="i000004">Plot</name>
     </item>
-    <item handle="000000000000a" parent="None" root="000000000000a" order="0" type="ROOT" class="CHARACTER">
+    <item handle="000000000000a" parent="None" root="000000000000a" order="2" type="ROOT" class="CHARACTER">
       <meta expanded="no" />
       <name status="s000000" import="i000004">Characters</name>
     </item>
@@ -69,11 +69,11 @@
       <meta expanded="no" heading="H1" charCount="11" wordCount="3" paraCount="1" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Jane</name>
     </item>
-    <item handle="0000000000013" parent="000000000000a" root="000000000000a" order="0" type="FILE" class="CHARACTER" layout="NOTE">
+    <item handle="0000000000013" parent="000000000000a" root="000000000000a" order="1" type="FILE" class="CHARACTER" layout="NOTE">
       <meta expanded="no" heading="H1" charCount="11" wordCount="3" paraCount="1" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">John</name>
     </item>
-    <item handle="000000000000b" parent="None" root="000000000000b" order="0" type="ROOT" class="WORLD">
+    <item handle="000000000000b" parent="None" root="000000000000b" order="3" type="ROOT" class="WORLD">
       <meta expanded="no" />
       <name status="s000000" import="i000004">Locations</name>
     </item>

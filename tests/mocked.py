@@ -20,6 +20,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+from unittest.mock import MagicMock
+
 from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget
 
@@ -28,7 +30,9 @@ class MockGuiMain(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.mainStatus = MockStatusBar()
+        self.mainStatus = MagicMock()
+        self.docEditor = MagicMock()
+        self.docViewer = MagicMock()
         self.projPath = ""
         return
 
@@ -50,18 +54,6 @@ class MockGuiMain(QWidget):
 
     def close(self):
         return "close"
-
-
-class MockStatusBar:
-
-    def __init__(self):
-        return
-
-    def setStatus(self, text):
-        return
-
-    def updateProjectStatus(self, status):
-        return
 
 
 class MockTheme:

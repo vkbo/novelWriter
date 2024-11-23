@@ -221,6 +221,9 @@ class GuiMain(QMainWindow):
         SHARED.projectItemChanged.connect(self.projView.onProjectItemChanged)
         SHARED.projectStatusChanged.connect(self.mainStatus.updateProjectStatus)
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
+        SHARED.rootFolderChanged.connect(self.novelView.updateRootItem)
+        SHARED.rootFolderChanged.connect(self.outlineView.updateRootItem)
+        SHARED.rootFolderChanged.connect(self.projView.updateRootItem)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
         SHARED.statusLabelsChanged.connect(self.docViewerPanel.updateStatusLabels)
 
@@ -235,9 +238,6 @@ class GuiMain(QMainWindow):
 
         self.projView.openDocumentRequest.connect(self._openDocument)
         self.projView.projectSettingsRequest.connect(self.showProjectSettingsDialog)
-        self.projView.rootFolderChanged.connect(self.novelView.updateRootItem)
-        self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
-        self.projView.rootFolderChanged.connect(self.projView.updateRootItem)
         self.projView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
 
         self.novelView.openDocumentRequest.connect(self._openDocument)
@@ -1083,6 +1083,9 @@ class GuiMain(QMainWindow):
         self.projView.initSettings()
         self.novelView.initSettings()
         self.outlineView.initSettings()
+
+        # Force update of word count
+        self._lastTotalCount = 0
         self._updateStatusWordCount()
 
         return

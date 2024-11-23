@@ -86,9 +86,11 @@ def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
 
     # Project Stats
     CONFIG.incNotesWCount = False
+    nwGUI._lastTotalCount = 0
     nwGUI._updateStatusWordCount()
     assert nwGUI.mainStatus.statsText.text() == "Words: 9 (+9)"
     CONFIG.incNotesWCount = True
+    nwGUI._lastTotalCount = 0
     nwGUI._updateStatusWordCount()
     assert nwGUI.mainStatus.statsText.text() == "Words: 11 (+11)"
 

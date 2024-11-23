@@ -41,7 +41,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax, qtLambda
 from novelwriter.constants import nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.core.index import IndexHeading
-from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
+from novelwriter.enum import nwChange, nwDocMode, nwItemClass, nwOutline
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
@@ -174,8 +174,8 @@ class GuiNovelView(QWidget):
         self.novelTree.refreshTree(rootHandle=SHARED.project.data.getLastHandle("novelTree"))
         return
 
-    @pyqtSlot(str)
-    def updateRootItem(self, tHandle: str) -> None:
+    @pyqtSlot(str, Enum)
+    def updateRootItem(self, tHandle: str, change: nwChange) -> None:
         """If any root item changes, rebuild the novel root menu."""
         self.novelBar.buildNovelRootMenu()
         return

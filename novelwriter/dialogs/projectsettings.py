@@ -185,11 +185,11 @@ class GuiProjectSettings(NDialog):
 
         if self.statusPage.changed:
             logger.debug("Updating status labels")
-            project.data.itemStatus.update(self.statusPage.getNewList())
+            project.updateStatus("s", self.statusPage.getNewList())
 
         if self.importPage.changed:
             logger.debug("Updating importance labels")
-            project.data.itemImport.update(self.importPage.getNewList())
+            project.updateStatus("i", self.importPage.getNewList())
 
         if self.replacePage.changed:
             logger.debug("Updating auto-replace settings")

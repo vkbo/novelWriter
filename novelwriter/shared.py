@@ -63,6 +63,7 @@ class SharedData(QObject):
     indexCleared = pyqtSignal()
     mainClockTick = pyqtSignal()
     projectItemChanged = pyqtSignal(str, Enum)
+    rootFolderChanged = pyqtSignal(str, Enum)
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
     spellLanguageChanged = pyqtSignal(str, str)
@@ -336,6 +337,10 @@ class SharedData(QObject):
             self.statusLabelsChanged.emit(data.get("kind", ""))
         elif event == "itemChanged":
             self.projectItemChanged.emit(
+                data.get("handle", ""), data.get("change", nwChange.UPDATE)
+            )
+        elif event == "rootChanged":
+            self.rootFolderChanged.emit(
                 data.get("handle", ""), data.get("change", nwChange.UPDATE)
             )
         return
