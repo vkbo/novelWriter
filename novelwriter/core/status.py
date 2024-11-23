@@ -65,8 +65,10 @@ class StatusEntry:
 
 NO_ENTRY = StatusEntry("", QColor(0, 0, 0), nwStatusShape.SQUARE, QIcon(), 0)
 
-T_UpdateEntry = list[tuple[str | None, StatusEntry]]
-T_StatusKind = Literal["s", "i"]
+if TYPE_CHECKING:  # pragma: no cover
+    # Requires Python 3.10
+    T_UpdateEntry = list[tuple[str | None, StatusEntry]]
+    T_StatusKind = Literal["s", "i"]
 
 
 class NWStatus:

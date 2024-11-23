@@ -59,7 +59,9 @@ NODE_FLAGS = Qt.ItemFlag.ItemIsEnabled
 NODE_FLAGS |= Qt.ItemFlag.ItemIsSelectable
 NODE_FLAGS |= Qt.ItemFlag.ItemIsDropEnabled
 
-T_NodeData = str | QIcon | QFont | Qt.AlignmentFlag | None
+if TYPE_CHECKING:  # pragma: no cover
+    # Requires Python 3.10
+    T_NodeData = str | QIcon | QFont | Qt.AlignmentFlag | None
 
 
 class ProjectNode:

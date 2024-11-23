@@ -30,6 +30,7 @@ from enum import Enum
 from functools import partial
 from pathlib import Path
 from time import time
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import QCoreApplication
 
@@ -44,11 +45,14 @@ from novelwriter.core.options import OptionState
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.sessions import NWSessionLog
-from novelwriter.core.status import T_StatusKind, T_UpdateEntry
 from novelwriter.core.storage import NWStorage, NWStorageOpen
 from novelwriter.core.tree import NWTree
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
+
+if TYPE_CHECKING:  # pragma: no cover
+    # Requires Python 3.10
+    from novelwriter.core.status import T_StatusKind, T_UpdateEntry
 
 logger = logging.getLogger(__name__)
 
