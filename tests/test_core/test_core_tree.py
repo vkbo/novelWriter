@@ -22,282 +22,311 @@ from __future__ import annotations
 
 import random
 
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
 
-from novelwriter.common import isHandle
 from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.core.tree import NWTree
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
+from novelwriter.enum import nwItemClass, nwItemType
 
 from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
 
 
 @pytest.fixture(scope="function")
-def mockItems(mockGUI, mockRnd):
+def mockItems(mockGUI, mockRnd, fncPath):
     """Create a list of mock items."""
     project = NWProject()
-
-    itemA = NWItem(project, "a000000000001")
-    itemA._name = "Novel"
-    itemA._parent = None
-    itemA._type = nwItemType.ROOT
-    itemA._class = nwItemClass.NOVEL
-    itemA._expanded = True
-
-    itemB = NWItem(project, "b000000000001")
-    itemB._name = "Act One"
-    itemB._parent = "a000000000001"
-    itemB._type = nwItemType.FOLDER
-    itemB._class = nwItemClass.NOVEL
-    itemB._expanded = True
-
-    itemC = NWItem(project, "c000000000001")
-    itemC._name = "Chapter One"
-    itemC._parent = "b000000000001"
-    itemC._type = nwItemType.FILE
-    itemC._class = nwItemClass.NOVEL
-    itemC._layout = nwItemLayout.DOCUMENT
-    itemC._charCount = 300
-    itemC._wordCount = 50
-    itemC._paraCount = 2
-
-    itemD = NWItem(project, "c000000000002")
-    itemD._name = "Scene One"
-    itemD._parent = "b000000000001"
-    itemD._type = nwItemType.FILE
-    itemD._class = nwItemClass.NOVEL
-    itemD._layout = nwItemLayout.DOCUMENT
-    itemD._charCount = 3000
-    itemD._wordCount = 500
-    itemD._paraCount = 20
-
-    itemE = NWItem(project, "a000000000002")
-    itemE._name = "Outtakes"
-    itemE._parent = None
-    itemE._type = nwItemType.ROOT
-    itemE._class = nwItemClass.ARCHIVE
-    itemE._expanded = False
-
-    itemF = NWItem(project, "a000000000003")
-    itemF._name = "Trash"
-    itemF._parent = None
-    itemF._type = nwItemType.ROOT
-    itemF._class = nwItemClass.TRASH
-    itemF._expanded = False
-
-    itemG = NWItem(project, "a000000000004")
-    itemG._name = "Characters"
-    itemG._parent = None
-    itemG._type = nwItemType.ROOT
-    itemG._class = nwItemClass.CHARACTER
-    itemG._expanded = True
-
-    itemH = NWItem(project, "b000000000002")
-    itemH._name = "Jane Doe"
-    itemH._parent = "a000000000004"
-    itemH._type = nwItemType.FILE
-    itemH._class = nwItemClass.CHARACTER
-    itemH._layout = nwItemLayout.NOTE
-    itemH._charCount = 2000
-    itemH._wordCount = 400
-    itemH._paraCount = 16
-
-    return [itemA, itemB, itemC, itemD, itemE, itemF, itemG, itemH]
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+    return project.tree.pack()
 
 
 @pytest.mark.core
-@pytest.mark.skip
-def testCoreTree_BuildTree(mockGUI, mockItems):
-    """Test building a project tree from a list of items."""
+def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
+    """Test populating the project tree."""
     project = NWProject()
     tree = NWTree(project)
 
-    # Check that tree is empty (calls NWTree.__bool__)
+    # Check that tree is empty
     assert bool(tree) is False
+    assert len(tree) == 0
 
-    # Check for archive and trash folders
-    assert tree.trashRoot is None
-
-    aHandles = []
-    for nwItem in mockItems:
-        aHandles.append(nwItem.itemHandle)
-        assert tree.append(nwItem) is True
-        assert tree.updateItemData(nwItem.itemHandle) is True
-
-    assert tree._changed is True
-
-    # Check that tree is not empty (calls __bool__)
+    # Trash should be added on request
+    assert tree.trash is not None
+    assert tree.nodes[tree.trash.item.itemHandle].item.itemName == "Trash"
     assert bool(tree) is True
+    assert len(tree) == 1
+    tree.clear()
 
-    # Check the number of elements (calls __len__)
-    assert len(tree) == len(mockItems)
+    # Load Items
+    tree.unpack(mockItems)
+    assert len(tree) == 9
+    assert tree.trash is not None
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Trash",
+    ]
 
-    # Check that we have the correct handles
-    assert tree.handles() == aHandles
+    # Pack the data again
+    assert [n["name"] for n in tree.pack()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Trash",
+    ]
 
-    # Check by iterator (calls __iter__, __next__ and __getitem__)
-    for item, handle in zip(tree, aHandles):
-        assert item.itemHandle == handle
+    # Inject a node in the map, but not in the tree (inconsistent tree)
+    # This should be ignored
+    tree._nodes["123456789abc"] = tree.model.root
+    assert [n["name"] for n in tree.pack()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Trash",
+    ]
 
-    # Trash Folder
-    # ============
+    # Clear, and populate in reverse order
+    tree.clear()
+    assert bool(tree) is False
+    assert len(tree) == 0
+    tree.unpack(list(reversed(mockItems)))
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Locations", "Characters", "Plot", "Novel", "New Folder",
+        "New Scene", "New Chapter", "Title Page", "Trash",
+    ]
 
-    # Check that we have the correct archive and trash folders
-    assert tree.trashRoot == "a000000000003"
-    assert tree.findRoot(nwItemClass.ARCHIVE) == "a000000000002"
-    assert tree.isTrash("a000000000003") is True
+    # Clear, and populate with one item being its own parent
+    tree.clear()
+    assert bool(tree) is False
+    assert len(tree) == 0
+    modItems = deepcopy(mockItems)
+    assert modItems[1]["name"] == "Title Page"
+    modItems[1]["itemAttr"]["parent"] = modItems[1]["itemAttr"]["handle"]
+    tree.unpack(mockItems)
+    assert len(tree) == 9
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Trash",
+    ]
 
-    # Check that we have the root classes
-    assert tree.rootClasses() == {
-        nwItemClass.NOVEL, nwItemClass.CHARACTER, nwItemClass.ARCHIVE, nwItemClass.TRASH
-    }
-
-    # Check the isTrash function
-    assert tree.isTrash("0000000000000") is True  # Doesn't exist
-    assert tree.isTrash("a000000000003") is True  # This the trash folder
-
-    tree["a000000000003"].setClass(nwItemClass.NO_CLASS)  # type: ignore
-    assert tree.isTrash("a000000000003") is True  # This is still trash
-    tree["a000000000003"].setClass(nwItemClass.TRASH)  # type: ignore
-
-    assert tree.isTrash("b000000000002") is False  # This is not trash
-
-    value = tree["b000000000002"].itemParent  # type: ignore
-    tree["b000000000002"].setParent("a000000000003")  # type: ignore
-    assert tree.isTrash("b000000000002") is True  # This is in trash
-    tree["b000000000002"].setParent(value)  # type: ignore
-
-    value = tree["b000000000002"].itemRoot  # type: ignore
-    tree["b000000000002"].setRoot("a000000000003")  # type: ignore
-    assert tree.isTrash("b000000000002") is True  # This is in trash
-    tree["b000000000002"].setRoot(value)  # type: ignore
-
-    # Try to add another trash folder
-    itemT = NWItem(project, "1111111111111")
-    itemT._name = "Trash"
-    itemT._type = nwItemType.ROOT
-    itemT._class = nwItemClass.TRASH
-    itemT._expanded = False
-
-    assert tree.append(itemT) is False
-    assert len(tree) == len(mockItems)
-
-    # Create or Add Items
-    # ===================
-
-    # Create a new item, but with invalid parent
-    assert tree.create("New File", "blabla", nwItemType.FILE, nwItemClass.NO_CLASS) is None
-
-    # Create a new, valid item
-    nHandle = tree.create("New File", "b000000000001", nwItemType.FILE, nwItemClass.NO_CLASS)
-    assert isHandle(nHandle)
-    assert nHandle == "0000000000000"
-
-    # The new item should be the last item in the tree
-    handles = tree.handles()
-    assert handles[-1] == nHandle
-
-    # Retrieve the item
-    itemT = tree[nHandle]
-    assert isinstance(itemT, NWItem)
-    assert len(tree) == len(mockItems) + 1
-
-    # We should not be allowed to add the item again
-    assert tree.append(itemT) is False
-    assert len(tree) == len(mockItems) + 1
-
-    # Create an invalid item to add, which will be rejected
-    itemU = NWItem.duplicate(itemT, "blabla")
-    assert tree.append(itemU) is False
-    assert len(tree) == len(mockItems) + 1
-
-    # Create a new root, but with a parent set anyway (the parent should be ignored)
-    zHandle = tree.create("Custom", "a000000000001", nwItemType.ROOT, nwItemClass.CUSTOM)
-    assert isinstance(zHandle, str)
-    itemZ = tree[zHandle]
-    assert isinstance(itemZ, NWItem)
-    assert itemZ.itemParent is None
-    del tree[zHandle]
-
-    # Duplicate Items
-    # ===============
-
-    # Duplicate a non-existing item
-    assert tree.duplicate("blabla") is None
-
-    # Duplicate the new item
-    itemV = tree.duplicate(nHandle)
-    assert isinstance(itemV, NWItem)
-    assert len(tree) == len(mockItems) + 2
-
-    dHandle = itemV.itemHandle
-    assert dHandle == "0000000000002"
-
-    # Delete Items
-    # ============
-
-    # Delete a non-existing item
-    del tree["stuff"]
-    assert len(tree) == len(mockItems) + 2
-
-    # Delete the last items
-    del tree[nHandle]
-    del tree[dHandle]
-    assert len(tree) == len(mockItems)
-    assert nHandle not in tree
-
-    # Delete the Novel, Archive and Trash folders
-    del tree["a000000000001"]
-    assert len(tree) == len(mockItems) - 1
-    assert "a000000000001" not in tree
-
-    del tree["a000000000002"]
-    assert len(tree) == len(mockItems) - 2
-    assert "a000000000002" not in tree
-
-    del tree["a000000000003"]
-    assert len(tree) == len(mockItems) - 3
-    assert "a000000000003" not in tree
-    assert tree.trashRoot is None
+    # Clear and populate reversed with max depth limit very low
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.tree.MAX_DEPTH", 1)
+        tree.clear()
+        assert bool(tree) is False
+        assert len(tree) == 0
+        tree.unpack(list(reversed(mockItems)))
+        assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+            "Locations", "Characters", "Plot", "Novel", "Trash",
+        ]
 
 
 @pytest.mark.core
-@pytest.mark.skip
-def testCoreTree_PackUnpack(mockGUI, mockItems):
-    """Test packing and unpacking data."""
+def testCoreTree_ManipulateTree(mockGUI, mockItems):
+    """Check create, add, remove and duplicate items."""
     project = NWProject()
     tree = NWTree(project)
+    tree.unpack(mockItems)
+    assert len(tree) == 9
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Trash",
+    ]
 
-    aHandles = []
-    for nwItem in mockItems:
-        aHandles.append(nwItem.itemHandle)
-        tree.append(nwItem)
-        tree.updateItemData(nwItem.itemHandle)
+    # Create Root
+    oHandle = tree.create("Objects", None, nwItemType.ROOT, nwItemClass.OBJECT, pos=4)
+    assert oHandle is not None
+    assert oHandle in tree
 
-    assert len(tree) == len(mockItems)
+    # Create Folder
+    fHandle = tree.create("Foo", oHandle, nwItemType.FOLDER, pos=0)
+    assert fHandle is not None
+    assert fHandle in tree
 
-    # Pack
-    packed = tree.pack()
-    for i, nwItem in enumerate(mockItems):
-        assert packed[i]["itemAttr"]["handle"] == nwItem.itemHandle
+    # Create File
+    bHandle = tree.create("Bar", fHandle, nwItemType.FILE, pos=0)
+    assert bHandle is not None
+    assert bHandle in tree
 
-    # Unpack
-    tree.clear()
-    assert len(tree) == 0
-    assert tree.handles() == []
-    tree.unpack(packed)
-    assert tree.handles() == aHandles
+    # Check Tree
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Trash",
+    ]
+
+    # Cannot add a folder or file with no parent
+    assert tree.create("Foo", None, nwItemType.FOLDER, pos=0) is None
+    assert tree.create("Bar", None, nwItemType.FILE, pos=0) is None
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Trash",
+    ]
+
+    # Duplicate Bar -> Baz
+    baz = tree.duplicate(bHandle, fHandle, True)
+    assert baz is not None
+    baz.setName("Baz")
+    zHandle = baz.itemHandle
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Baz", "Trash",
+    ]
+
+    # Duplicate non-existent
+    assert tree.duplicate("bob", fHandle, True) is None
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Baz", "Trash",
+    ]
+
+    # Remove Baz
+    assert tree.remove(zHandle) is True
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Trash",
+    ]
+    assert len(tree._items) == len(tree.model.root.allChildren())
+    assert len(tree._items) == len(tree._nodes)
+
+    # Remove non-existing
+    assert tree.remove("bob") is False
+
+    # Add item with non-existing parent
+    item = NWItem(project, tree._makeHandle())
+    item.setParent(tree._makeHandle())
+    assert tree.add(item) is False
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Trash",
+    ]
+
+    # Add item with non parent, that isn't a root
+    item = NWItem(project, tree._makeHandle())
+    item.setType(nwItemType.FOLDER)
+    assert tree.add(item) is False
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Trash",
+    ]
 
 
 @pytest.mark.core
-@pytest.mark.skip
-def testCoreTree_CheckConsistency(caplog: pytest.LogCaptureFixture, mockGUI, fncPath, mockRnd):
-    """Check the project consistency."""
+def testCoreTree_ItemMethods(monkeypatch, mockGUI, mockItems):
+    """Check the item methods of the tree."""
+    project = NWProject()
+    tree = NWTree(project)
+    tree.unpack(mockItems)
+    assert len(tree) == 9
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Trash",
+    ]
+
+    # Check Type
+    assert tree.checkType(C.hNovelRoot, nwItemType.ROOT) is True
+    assert tree.checkType(C.hNovelRoot, nwItemType.FOLDER) is False
+    assert tree.checkType(C.hNovelRoot, nwItemType.FILE) is False
+
+    assert tree.checkType(C.hChapterDir, nwItemType.ROOT) is False
+    assert tree.checkType(C.hChapterDir, nwItemType.FOLDER) is True
+    assert tree.checkType(C.hChapterDir, nwItemType.FILE) is False
+
+    assert tree.checkType(C.hChapterDoc, nwItemType.ROOT) is False
+    assert tree.checkType(C.hChapterDoc, nwItemType.FOLDER) is False
+    assert tree.checkType(C.hChapterDoc, nwItemType.FILE) is True
+
+    assert tree.checkType(C.hInvalid, nwItemType.ROOT) is False
+    assert tree.checkType(C.hInvalid, nwItemType.FOLDER) is False
+    assert tree.checkType(C.hInvalid, nwItemType.FILE) is False
+
+    # Item Path
+    assert tree.itemPath(C.hSceneDoc, asName=True) == ["New Scene", "New Folder", "Novel"]
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.tree.MAX_DEPTH", 1)
+        assert tree.itemPath(C.hSceneDoc, asName=True) == ["New Scene"]
+
+    # Sub Tree
+    assert tree.subTree(C.hInvalid) == []
+    assert tree.subTree(C.hNovelRoot) == [
+        C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
+    ]
+
+    # Root Classes
+    classes = tree.rootClasses()
+    assert len(classes) == 5
+    assert nwItemClass.NOVEL in classes
+    assert nwItemClass.PLOT in classes
+    assert nwItemClass.CHARACTER in classes
+    assert nwItemClass.WORLD in classes
+    assert nwItemClass.TIMELINE not in classes
+    assert nwItemClass.OBJECT not in classes
+    assert nwItemClass.ENTITY not in classes
+    assert nwItemClass.CUSTOM not in classes
+    assert nwItemClass.ARCHIVE not in classes
+    assert nwItemClass.TEMPLATE not in classes
+    assert nwItemClass.TRASH in classes
+
+    # Iter Roots
+    assert list(tree.iterRoots(nwItemClass.NOVEL)) == [(C.hNovelRoot, tree[C.hNovelRoot])]
+    assert list(tree.iterRoots(nwItemClass.PLOT)) == [(C.hPlotRoot, tree[C.hPlotRoot])]
+    assert list(tree.iterRoots(nwItemClass.CHARACTER)) == [(C.hCharRoot, tree[C.hCharRoot])]
+    assert list(tree.iterRoots(nwItemClass.WORLD)) == [(C.hWorldRoot, tree[C.hWorldRoot])]
+    assert list(tree.iterRoots(nwItemClass.OBJECT)) == []
+
+    # Find Root
+    assert tree.findRoot(nwItemClass.NOVEL) == C.hNovelRoot
+    assert tree.findRoot(nwItemClass.PLOT) == C.hPlotRoot
+    assert tree.findRoot(nwItemClass.CHARACTER) == C.hCharRoot
+    assert tree.findRoot(nwItemClass.WORLD) == C.hWorldRoot
+    assert tree.findRoot(nwItemClass.OBJECT) is None
+
+
+@pytest.mark.core
+def testCoreTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
+    """Check other methods in the tree."""
+    project = NWProject()
+    buildTestProject(project, fncPath)
+    tree = project.tree
+    trash = tree.trash
+
+    assert len(tree) == 9
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Trash",
+    ]
+
+    # Refresh All
+    assert tree.sumWords() == (9, 0)
+    assert tree.model.root.count == 9
+
+    for node in tree.nodes.values():
+        if node.item.isFileType():
+            node.item.setWordCount(5)
+
+    with qtbot.waitSignal(tree._model.layoutChanged):
+        tree.refreshAllItems()
+    assert tree.model.root.count == 15
+
+    project.index.rebuild()
+    tree.refreshAllItems()
+    assert tree.model.root.count == 9
+
+    # Trash can't be created
+    assert trash is not None
+    assert tree._getTrashNode() is trash
+    tree._trash = None
+    assert tree._getTrashNode() is trash
+    tree.remove(trash.item.itemHandle)
+
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.tree.NWTree.create", lambda *a, **k: None)
+        assert tree._getTrashNode() is None
+
+
+@pytest.mark.core
+def testCoreTree_CheckConsistency(caplog, mockGUI, fncPath, mockRnd):
+    """Check the project tree's consistency."""
     project = NWProject()
     buildTestProject(project, fncPath)
 
@@ -305,17 +334,6 @@ def testCoreTree_CheckConsistency(caplog: pytest.LogCaptureFixture, mockGUI, fnc
     caplog.clear()
     assert project.tree.checkConsistency("Recovered") == (0, 0)
     assert all(m.endswith("OK") for m in caplog.messages)
-
-    # Give the scene file an unknown parent
-    caplog.clear()
-    project.tree[C.hSceneDoc].setParent(C.hInvalid)  # type: ignore
-    assert project.tree.checkConsistency("Recovered") == (1, 1)
-    assert f"'{C.hSceneDoc}' ... ERROR" in caplog.text
-
-    # The scene file should have been added back to its home
-    itemS = project.tree[C.hSceneDoc]
-    assert isinstance(itemS, NWItem)
-    assert itemS.itemParent == C.hChapterDir
 
     # Create a new file with no meta data, and let the function handle it as orphaned
     xHandle = "0123456789abc"
@@ -342,7 +360,7 @@ def testCoreTree_CheckConsistency(caplog: pytest.LogCaptureFixture, mockGUI, fnc
     project.storage.getDocument(xHandle).writeDocument("### Stuff")  # This adds meta data
 
     # Remove the item in the project, and re-run the consistency check
-    del project.tree[xHandle]
+    project.tree.remove(xHandle)
     assert project.tree.checkConsistency("Recovered") == (1, 1)
     assert xHandle in project.tree
     itemX = project.tree[xHandle]
@@ -363,87 +381,6 @@ def testCoreTree_CheckConsistency(caplog: pytest.LogCaptureFixture, mockGUI, fnc
 
 
 @pytest.mark.core
-@pytest.mark.skip
-def testCoreTree_Methods(monkeypatch, mockGUI, mockItems):
-    """Test various class methods."""
-    project = NWProject()
-    tree = NWTree(project)
-
-    for nwItem in mockItems:
-        tree.append(nwItem)
-        tree.updateItemData(nwItem.itemHandle)
-
-    assert len(tree) == len(mockItems)
-
-    # Update item data, nonsense handle
-    assert tree.updateItemData("stuff") is False
-
-    # Update item data, invalid item parent
-    corrParent = tree["b000000000001"].itemParent  # type: ignore
-    tree["b000000000001"].setParent("0000000000000")  # type: ignore
-    assert tree.updateItemData("b000000000001") is False
-
-    # Update item data, valid item parent
-    tree["b000000000001"].setParent(corrParent)  # type: ignore
-    assert tree.updateItemData("b000000000001") is True
-
-    # Update item data, root is unreachable
-    with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.tree.MAX_DEPTH", 0)
-        with pytest.raises(RecursionError):
-            tree.updateItemData("b000000000001")
-
-    # Check type
-    assert tree.checkType("blabla", nwItemType.FILE) is False
-    assert tree.checkType("b000000000001", nwItemType.FILE) is False
-    assert tree.checkType("c000000000001", nwItemType.FILE) is True
-
-    # Root item lookup
-    assert tree.findRoot(nwItemClass.WORLD) is None
-    assert tree.findRoot(nwItemClass.NOVEL) == "a000000000001"
-    assert tree.findRoot(nwItemClass.CHARACTER) == "a000000000004"
-
-    # Iter roots
-    roots = list(tree.iterRoots(None))
-    assert roots[0][0] == "a000000000001"
-    assert roots[1][0] == "a000000000002"
-    assert roots[2][0] == "a000000000003"
-    assert roots[3][0] == "a000000000004"
-
-    # Add a fake item to root and check that it can handle it
-    tree._roots["0000000000000"] = NWItem(project, "0000000000000")
-    assert tree.findRoot(nwItemClass.WORLD) is None
-    del tree._roots["0000000000000"]
-
-    # Get item path
-    assert tree.getItemPath("stuff") == []
-    assert tree.getItemPath("c000000000001") == [
-        "c000000000001", "b000000000001", "a000000000001"
-    ]
-    assert tree.getItemPath("c000000000001", asName=True) == [
-        "Chapter One", "Act One", "Novel"
-    ]
-
-    # Cause recursion error
-    with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.tree.MAX_DEPTH", 0)
-        with pytest.raises(RecursionError):
-            tree.getItemPath("c000000000001")
-
-    # Break the folder parent handle
-    tree["b000000000001"]._parent = "stuff"  # type: ignore
-    assert tree.getItemPath("c000000000001") == [
-        "c000000000001", "b000000000001"
-    ]
-
-    tree["b000000000001"]._parent = "a000000000001"  # type: ignore
-    assert tree.getItemPath("c000000000001") == [
-        "c000000000001", "b000000000001", "a000000000001"
-    ]
-
-
-@pytest.mark.core
-@pytest.mark.skip
 def testCoreTree_MakeHandles(mockGUI):
     """Test generating item handles."""
     random.seed(42)
@@ -455,15 +392,15 @@ def testCoreTree_MakeHandles(mockGUI):
     random.seed(42)
     tHandle = tree._makeHandle()
     assert tHandle == handles[0]
-    tree._tree[handles[0]] = None  # type: ignore
+    tree._items[handles[0]] = None  # type: ignore
 
     # Add the next in line to the project to force duplicate
-    tree._tree[handles[1]] = None  # type: ignore
+    tree._items[handles[1]] = None  # type: ignore
     tHandle = tree._makeHandle()
     assert tHandle == handles[2]
-    tree._tree[handles[2]] = None  # type: ignore
+    tree._items[handles[2]] = None  # type: ignore
 
-    # Reset the seed to force collissions, which should still end up
+    # Reset the seed to force collisions, which should still end up
     # returning the next handle in the sequence
     random.seed(42)
     tHandle = tree._makeHandle()
@@ -471,71 +408,11 @@ def testCoreTree_MakeHandles(mockGUI):
 
 
 @pytest.mark.core
-@pytest.mark.skip
-def testCoreTree_Stats(mockGUI, mockItems):
-    """Test project stats methods."""
-    project = NWProject()
-    tree = NWTree(project)
-
-    for nwItem in mockItems:
-        tree.append(nwItem)
-
-    assert len(tree) == len(mockItems)
-    tree._order.append("stuff")
-
-    # Count Words
-    novelWords, noteWords = tree.sumWords()
-    assert novelWords == 550
-    assert noteWords == 400
-
-
-@pytest.mark.core
-@pytest.mark.skip
-def testCoreTree_Reorder(caplog, mockGUI, mockItems):
-    """Test changing tree order."""
-    project = NWProject()
-    tree = NWTree(project)
-
-    aHandle = []
-    for nwItem in mockItems:
-        aHandle.append(nwItem.itemHandle)
-        tree.append(nwItem)
-
-    assert len(tree) == len(mockItems)
-
-    bHandle = aHandle.copy()
-    bHandle[2], bHandle[3] = bHandle[3], bHandle[2]
-    assert aHandle != bHandle
-
-    assert tree.handles() == aHandle
-    tree.setOrder(bHandle)
-    assert tree.handles() == bHandle
-
-    caplog.clear()
-    tree.setOrder(bHandle + ["stuff"])
-    assert tree.handles() == bHandle
-    assert "Handle 'stuff' in new tree order is not in old order" in caplog.text
-
-    caplog.clear()
-    tree._order.append("stuff")
-    tree.setOrder(bHandle)
-    assert tree.handles() == bHandle
-    assert "Handle 'stuff' in old tree order is not in new order" in caplog.text
-
-
-@pytest.mark.core
-@pytest.mark.skip
 def testCoreTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
     """Test writing the ToC.txt file."""
     project = NWProject()
     tree = NWTree(project)
-
-    for nwItem in mockItems:
-        tree.append(nwItem)
-        tree.updateItemData(nwItem.itemHandle)
-
-    assert len(tree) == len(mockItems)
-    tree._order.append("stuff")
+    tree.unpack(mockItems)
 
     def mockIsFile(fileName):
         """Return True for items that are files in novelWriter and
@@ -547,7 +424,7 @@ def testCoreTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
 
     monkeypatch.setattr("pathlib.Path.is_file", mockIsFile)
     project._storage._runtimePath = fncPath
-    (fncPath / "content").mkdir()
+    # (fncPath / "content").mkdir()
 
     # Block extraction of the path
     with monkeypatch.context() as mp:
@@ -561,11 +438,6 @@ def testCoreTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
 
     # Allow writing
     assert tree.writeToCFile() is True
-
-    pathA = str(Path("content") / "c000000000001.nwd")
-    pathB = str(Path("content") / "c000000000002.nwd")
-    pathC = str(Path("content") / "b000000000002.nwd")
-
     assert (fncPath / nwFiles.TOC_TXT).read_text() == (
         "\n"
         "Table of Contents\n"
@@ -573,7 +445,7 @@ def testCoreTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
         "\n"
         "File Name                  Class      Layout    Document Label\n"
         "--------------------------------------------------------------\n"
-        f"{pathA}  NOVEL      DOCUMENT  Chapter One\n"
-        f"{pathB}  NOVEL      DOCUMENT  Scene One\n"
-        f"{pathC}  CHARACTER  NOTE      Jane Doe\n"
+        "content/000000000000c.nwd  NOVEL      DOCUMENT  Title Page\n"
+        "content/000000000000e.nwd  NOVEL      DOCUMENT  New Chapter\n"
+        "content/000000000000f.nwd  NOVEL      DOCUMENT  New Scene\n"
     )

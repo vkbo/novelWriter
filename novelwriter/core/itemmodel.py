@@ -66,6 +66,25 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class ProjectNode:
+    """Core: Project Model Node Class
+
+    The project tree structure is saved as nodes in a tree, starting
+    from a root node. This class makes up these nodes.
+
+    Each node is a wrapper around an NWItem object. The NWItem is the
+    object representing a single item in the project, and it only
+    contains a reference to its parent as well as it top level root, but
+    is itself not structured in a hierarchy in memory.
+
+    This class provides the necessary hierarchical structure, as well as
+    the data entries needed for populating the GUI project tree. It also
+    handles pushing and pulling information from its NWItem when
+    necessary.
+
+    The data to be displayed could in principle be pulled from the
+    NWItem whenever it is needed, but for performance reason it is
+    cached, as the GUI will pull this information often.
+    """
 
     C_NAME   = 0
     C_COUNT  = 1
@@ -254,6 +273,13 @@ class ProjectNode:
 
 
 class ProjectModel(QAbstractItemModel):
+    """Core: Project Model Class
+
+    This class provides the interface for the tree widget used on the
+    GUI. It implements the QModelIndex based interface required, adds
+    support for drag and drop, and a few other novelWriter-specific
+    methods needed primarily by the project tree GUI component.
+    """
 
     __slots__ = ("_tree", "_root")
 

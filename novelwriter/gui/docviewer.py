@@ -806,7 +806,7 @@ class GuiDocViewHeader(QWidget):
 
         if CONFIG.showFullPath:
             self.itemTitle.setText(f"  {nwUnicode.U_RSAQUO}  ".join(reversed(
-                [name for name in SHARED.project.tree.getItemPath(tHandle, asName=True)]
+                [name for name in SHARED.project.tree.itemPath(tHandle, asName=True)]
             )))
         else:
             self.itemTitle.setText(i.itemName if (i := SHARED.project.tree[tHandle]) else "")

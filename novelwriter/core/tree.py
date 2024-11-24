@@ -45,7 +45,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 logger = logging.getLogger(__name__)
 
-MAX_DEPTH = 1000  # Cap of tree traversing for loops (recursion limit)
+MAX_DEPTH = 999  # Cap of tree traversing for loops (recursion limit)
 
 
 class NWTree:
@@ -54,12 +54,6 @@ class NWTree:
     Only one instance of this class should exist in the project class.
     This class holds all the project items of the project as instances
     of NWItem.
-
-    For historical reasons, the order of the items is saved in a
-    separate list from the items themselves, which are stored in a
-    dictionary. This is somewhat redundant with the newer versions of
-    Python, but is still practical as it's easier to update the item
-    order as a list.
 
     Each item has a handle, which is a random hex string of length 13.
     The handle is the name of the item everywhere in novelWriter, and is
@@ -77,8 +71,35 @@ class NWTree:
         logger.debug("Ready: NWTree")
         return
 
-    def __del__(self) -> None:
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: NWTree")
+        return
+
+    def __len__(self) -> int:
+        """The number of items in the project."""
+        return len(self._items)
+
+    def __bool__(self) -> bool:
+        """True if there are any items in the project."""
+        return bool(self._items)
+
+    def __getitem__(self, tHandle: str | None) -> NWItem | None:
+        """Return a project item based on its handle. Returns None if
+        the handle doesn't exist in the project.
+        """
+        if tHandle and tHandle in self._items:
+            return self._items[tHandle]
+        logger.error("No tree item with handle '%s'", str(tHandle))
+        return None
+
+    def __contains__(self, tHandle: str) -> bool:
+        """Checks if a handle exists in the tree."""
+        return tHandle in self._items
+
+    def __iter__(self) -> Iterator[NWItem]:
+        """Iterate through project items."""
+        for node in self._model.root.allChildren():
+            yield node.item
         return
 
     ##
@@ -148,7 +169,8 @@ class NWTree:
                 self._itemChange(node.item, nwChange.DELETE)
                 del self._nodes[tHandle]
                 del self._items[tHandle]
-        return True
+                return True
+        return False
 
     @overload  # pragma: no cover
     def create(
@@ -219,7 +241,7 @@ class NWTree:
 
         later = items
         self._model.beginInsertRows(self._model.index(0, 0), 0, 0)
-        for _ in range(999):
+        for _ in range(MAX_DEPTH):
             later = self._addItems(later)
             if len(later) == 0:
                 break
@@ -251,6 +273,8 @@ class NWTree:
         for node in reversed(self._model.root.allChildren()):
             node.refresh()
             node.updateCount(propagate=False)
+        self._model.root.refresh()
+        self._model.root.updateCount(propagate=False)
         self._model.layoutChanged.emit()
         return
 
@@ -364,35 +388,27 @@ class NWTree:
 
     def checkType(self, tHandle: str, itemType: nwItemType) -> bool:
         """Check if item exists and is of the specified item type."""
-        tItem = self.__getitem__(tHandle)
-        if not tItem:
-            return False
-        return tItem.itemType == itemType
+        if tItem := self.__getitem__(tHandle):
+            return tItem.itemType == itemType
+        return False
 
-    def getItemPath(self, tHandle: str, asName: bool = False) -> list[str]:
+    def itemPath(self, tHandle: str, asName: bool = False) -> list[str]:
         """Iterate upwards in the tree until we find the item with
         parent None, the root item, and return the list of handles, or
         alternatively item names. We do this with a for loop with a
         maximum depth to make infinite loops impossible.
         """
-        tTree = []
-        tItem = self.__getitem__(tHandle)
-        if tItem is not None:
-            tTree.append(tItem.itemName if asName else tHandle)
+        path = []
+        if node := self._nodes.get(tHandle):
             for _ in range(MAX_DEPTH):
-                if tItem.itemParent is None:
-                    return tTree
+                if parent := node.parent():
+                    path.append(node.item.itemName if asName else tHandle)
+                    node = parent
                 else:
-                    tHandle = tItem.itemParent
-                    tItem = self.__getitem__(tHandle)
-                    if tItem is None:
-                        return tTree
-                    else:
-                        tTree.append(tItem.itemName if asName else tHandle)
+                    return path
             else:
-                raise RecursionError("Critical internal error")
-
-        return tTree
+                logger.error("Max project tree depth reached")
+        return path
 
     def subTree(self, tHandle: str) -> list[str]:
         """Get the subtree from a given handle."""
@@ -425,37 +441,6 @@ class NWTree:
             if node.item.itemClass == itemClass:
                 return node.item.itemHandle
         return None
-
-    ##
-    #  Special Methods
-    ##
-
-    def __len__(self) -> int:
-        """The number of items in the project."""
-        return len(self._items)
-
-    def __bool__(self) -> bool:
-        """True if there are any items in the project."""
-        return bool(self._items)
-
-    def __getitem__(self, tHandle: str | None) -> NWItem | None:
-        """Return a project item based on its handle. Returns None if
-        the handle doesn't exist in the project.
-        """
-        if tHandle and tHandle in self._items:
-            return self._items[tHandle]
-        logger.error("No tree item with handle '%s'", str(tHandle))
-        return None
-
-    def __contains__(self, tHandle: str) -> bool:
-        """Checks if a handle exists in the tree."""
-        return tHandle in self._items
-
-    def __iter__(self) -> Iterator[NWItem]:
-        """Iterate through project items."""
-        for node in self._model.root.allChildren():
-            yield node.item
-        return
 
     ##
     #  Internal Functions
