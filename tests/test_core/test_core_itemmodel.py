@@ -116,6 +116,16 @@ def testCoreItemModel_ProjectNode_Children(mockGUI, mockRnd, fncPath):
     assert child010.parent() is child01
     assert child011.parent() is child01
 
+    # Expand
+    child0.setExpanded(True)
+    child1.setExpanded(True)
+    child2.setExpanded(True)
+    child3.setExpanded(True)
+    assert child0.item.isExpanded is True  # Only one with children
+    assert child1.item.isExpanded is False
+    assert child2.item.isExpanded is False
+    assert child3.item.isExpanded is False
+
 
 @pytest.mark.core
 def testCoreItemModel_ProjectNode_Modify(mockGUI, mockRnd, fncPath):

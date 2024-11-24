@@ -34,7 +34,7 @@
       <name status="s000000" import="i000004">Novel</name>
     </item>
     <item handle="000000000000c" parent="0000000000008" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="yes" heading="H1" charCount="20" wordCount="5" paraCount="1" cursorPos="0" />
+      <meta expanded="no" heading="H1" charCount="20" wordCount="5" paraCount="1" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Title Page</name>
     </item>
     <item handle="000000000000d" parent="0000000000008" root="0000000000008" order="1" type="FOLDER" class="NOVEL">
@@ -42,39 +42,39 @@
       <name status="s000000" import="i000004">New Folder</name>
     </item>
     <item handle="000000000000e" parent="000000000000d" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="yes" heading="H2" charCount="11" wordCount="2" paraCount="0" cursorPos="0" />
+      <meta expanded="no" heading="H2" charCount="11" wordCount="2" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">New Chapter</name>
     </item>
     <item handle="000000000000f" parent="000000000000d" root="0000000000008" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="yes" heading="H1" charCount="1003" wordCount="172" paraCount="17" cursorPos="1259" />
+      <meta expanded="no" heading="H1" charCount="1003" wordCount="172" paraCount="17" cursorPos="1259" />
       <name status="s000000" import="i000004" active="yes">New Scene</name>
     </item>
     <item handle="0000000000009" parent="None" root="0000000000009" order="1" type="ROOT" class="PLOT">
-      <meta expanded="yes" />
+      <meta expanded="no" />
       <name status="s000000" import="i000004">Plot</name>
     </item>
     <item handle="0000000000012" parent="0000000000009" root="0000000000009" order="0" type="FILE" class="PLOT" layout="NOTE">
-      <meta expanded="yes" heading="H1" charCount="48" wordCount="10" paraCount="1" cursorPos="76" />
+      <meta expanded="no" heading="H1" charCount="48" wordCount="10" paraCount="1" cursorPos="76" />
       <name status="s000000" import="i000004" active="yes">New Note</name>
     </item>
     <item handle="000000000000a" parent="None" root="000000000000a" order="2" type="ROOT" class="CHARACTER">
-      <meta expanded="yes" />
+      <meta expanded="no" />
       <name status="s000000" import="i000004">Characters</name>
     </item>
     <item handle="0000000000011" parent="000000000000a" root="000000000000a" order="0" type="FILE" class="CHARACTER" layout="NOTE">
-      <meta expanded="yes" heading="H1" charCount="34" wordCount="8" paraCount="1" cursorPos="51" />
+      <meta expanded="no" heading="H1" charCount="34" wordCount="8" paraCount="1" cursorPos="51" />
       <name status="s000000" import="i000004" active="yes">New Note</name>
     </item>
     <item handle="000000000000b" parent="None" root="000000000000b" order="3" type="ROOT" class="WORLD">
-      <meta expanded="yes" />
+      <meta expanded="no" />
       <name status="s000000" import="i000004">Locations</name>
     </item>
     <item handle="0000000000013" parent="000000000000b" root="000000000000b" order="0" type="FILE" class="WORLD" layout="NOTE">
-      <meta expanded="yes" heading="H1" charCount="51" wordCount="9" paraCount="1" cursorPos="68" />
+      <meta expanded="no" heading="H1" charCount="51" wordCount="9" paraCount="1" cursorPos="68" />
       <name status="s000000" import="i000004" active="yes">New Note</name>
     </item>
     <item handle="0000000000010" parent="None" root="0000000000010" order="4" type="ROOT" class="TRASH">
-      <meta expanded="yes" />
+      <meta expanded="no" />
       <name status="s000000" import="i000004">Trash</name>
     </item>
   </content>

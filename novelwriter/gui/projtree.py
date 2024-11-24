@@ -101,22 +101,22 @@ class GuiProjectView(QWidget):
         self.keyGoPrev = QShortcut(self.projTree)
         self.keyGoPrev.setKey("Alt+Up")
         self.keyGoPrev.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyGoPrev.activated.connect(self.projTree.moveSiblingUp)
+        self.keyGoPrev.activated.connect(self.projTree.goToSiblingUp)
 
         self.keyGoNext = QShortcut(self.projTree)
         self.keyGoNext.setKey("Alt+Down")
         self.keyGoNext.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyGoNext.activated.connect(self.projTree.moveSiblingDown)
+        self.keyGoNext.activated.connect(self.projTree.goToSiblingDown)
 
         self.keyGoUp = QShortcut(self.projTree)
         self.keyGoUp.setKey("Alt+Left")
         self.keyGoUp.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyGoUp.activated.connect(self.projTree.moveToParent)
+        self.keyGoUp.activated.connect(self.projTree.goToParent)
 
         self.keyGoDown = QShortcut(self.projTree)
         self.keyGoDown.setKey("Alt+Right")
         self.keyGoDown.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyGoDown.activated.connect(self.projTree.moveToFirstChild)
+        self.keyGoDown.activated.connect(self.projTree.goToFirstChild)
 
         self.keyContext = QShortcut(self.projTree)
         self.keyContext.setKey("Ctrl+.")
@@ -415,8 +415,6 @@ class GuiProjectToolBar(QWidget):
                     self.mTemplates.addUpdate(tHandle, item.itemName, item.getMainIcon())
                 elif tHandle in self.mTemplates:
                     self.mTemplates.remove(tHandle)
-        elif change == nwChange.DELETE and tHandle in self.mTemplates:
-            self.mTemplates.remove(tHandle)
         return
 
     ##
@@ -680,7 +678,8 @@ class GuiProjectTree(QTreeView):
                     tHandle = SHARED.project.newFolder(newLabel, sHandle, pos)
 
         # Select the new item automatically
-        self.setSelectedHandle(tHandle)
+        if tHandle:
+            self.setSelectedHandle(tHandle)
 
         return
 
@@ -793,6 +792,7 @@ class GuiProjectTree(QTreeView):
                 dHandles = docDup.duplicate(itemTree)
                 if len(dHandles) != len(itemTree):
                     SHARED.warn(self.tr("Could not duplicate all items."))
+        self.restoreExpandedState()
         return
 
     ##
@@ -807,7 +807,7 @@ class GuiProjectTree(QTreeView):
         super().mousePressEvent(event)
         if event.button() == QtMouseLeft:
             if not self.indexAt(event.pos()).isValid():
-                self.selectionModel().clearCurrentIndex()
+                self._clearSelection()
         elif event.button() == QtMouseMiddle:
             if (node := self._getNode(self.indexAt(event.pos()))) and node.item.isFileType():
                 self.projView.openDocumentRequest.emit(
@@ -841,7 +841,7 @@ class GuiProjectTree(QTreeView):
         return
 
     @pyqtSlot()
-    def moveSiblingUp(self) -> None:
+    def goToSiblingUp(self) -> None:
         """Skip to the previous sibling."""
         if (node := self._getNode(self.currentIndex())) and (parent := node.parent()):
             if (move := parent.child(node.row() - 1)) and (model := self._getModel()):
@@ -849,7 +849,7 @@ class GuiProjectTree(QTreeView):
         return
 
     @pyqtSlot()
-    def moveSiblingDown(self) -> None:
+    def goToSiblingDown(self) -> None:
         """Skip to the next sibling."""
         if (node := self._getNode(self.currentIndex())) and (parent := node.parent()):
             if (move := parent.child(node.row() + 1)) and (model := self._getModel()):
@@ -857,7 +857,7 @@ class GuiProjectTree(QTreeView):
         return
 
     @pyqtSlot()
-    def moveToParent(self) -> None:
+    def goToParent(self) -> None:
         """Move to parent item."""
         if (
             (model := self._getModel())
@@ -868,7 +868,7 @@ class GuiProjectTree(QTreeView):
         return
 
     @pyqtSlot()
-    def moveToFirstChild(self) -> None:
+    def goToFirstChild(self) -> None:
         """Move to first child item."""
         if (
             (model := self._getModel())
@@ -893,7 +893,9 @@ class GuiProjectTree(QTreeView):
         return
 
     @pyqtSlot()
-    def processDeleteRequest(self, handles: list[str] = [], askFirst: bool = True) -> None:
+    def processDeleteRequest(
+        self, handles: list[str] | None = None, askFirst: bool = True
+    ) -> None:
         """Move selected items to Trash."""
         if handles and (model := self._getModel()):
             indices = [model.indexFromHandle(handle) for handle in handles]
@@ -1002,19 +1004,25 @@ class GuiProjectTree(QTreeView):
     def _onNodeCollapsed(self, index: QModelIndex) -> None:
         """Capture a node collapse, and pass it to the model."""
         if node := self._getNode(index):
-            node.item.setExpanded(False)
+            node.setExpanded(False)
         return
 
     @pyqtSlot(QModelIndex)
     def _onNodeExpanded(self, index: QModelIndex) -> None:
         """Capture a node expand, and pass it to the model."""
         if node := self._getNode(index):
-            node.item.setExpanded(True)
+            node.setExpanded(True)
         return
 
     ##
     #  Internal Functions
     ##
+
+    def _clearSelection(self) -> None:
+        """Clear the currently selected items."""
+        self.clearSelection()
+        self.selectionModel().clearCurrentIndex()
+        return
 
     def _selectedRows(self) -> list[QModelIndex]:
         """Return all column 0 indexes."""
@@ -1162,9 +1170,8 @@ class _TreeContextMenu(QMenu):
         # Process Item
         if self._children:
             self._expandCollapse()
-        if isFile:
-            action = self.addAction(self.tr("Duplicate"))
-            action.triggered.connect(qtLambda(self._tree.duplicateFromHandle, self._handle))
+        action = self.addAction(self.tr("Duplicate"))
+        action.triggered.connect(qtLambda(self._tree.duplicateFromHandle, self._handle))
         self._deleteOrTrash()
 
         return
@@ -1321,9 +1328,10 @@ class _TreeContextMenu(QMenu):
 
     def _deleteOrTrash(self) -> None:
         """Add move to Trash action."""
-        if self._model.trashSelection(self._indices):
-            text = self.tr("Delete Permanently")
-        elif len(self._indices) == 1 and self._item.isRootType():
+        if (
+            self._model.trashSelection(self._indices)
+            or len(self._indices) == 1 and self._item.isRootType()
+        ):
             text = self.tr("Delete Permanently")
         else:
             text = self.tr("Move to Trash")

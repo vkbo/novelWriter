@@ -419,8 +419,7 @@ class _FilterTab(NFixedPage):
         logger.debug("Building project tree")
         self._treeMap = {}
         self.optTree.clear()
-        for node in SHARED.project.tree.model.root.allChildren():
-            nwItem = node.item
+        for nwItem in SHARED.project.tree:
             tHandle = nwItem.itemHandle
             pHandle = nwItem.itemParent
             rHandle = nwItem.itemRoot

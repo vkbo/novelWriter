@@ -240,6 +240,14 @@ class ProjectNode:
             self._refreshChildrenPos()
         return
 
+    def setExpanded(self, state: bool) -> None:
+        """Set the node's expanded state."""
+        if state and self._children:
+            self._item.setExpanded(True)
+        else:
+            self._item.setExpanded(False)
+        return
+
     ##
     #  Internal Functions
     ##
