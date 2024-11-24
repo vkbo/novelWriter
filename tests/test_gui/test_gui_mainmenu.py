@@ -374,7 +374,6 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
     """Test the Insert menu."""
     buildTestProject(nwGUI, projPath)
 
-    assert nwGUI.projView.projTree._getTreeItem(C.hSceneDoc) is not None
     assert nwGUI.openDocument(C.hSceneDoc) is True
     mainMenu = nwGUI.mainMenu
     docEditor = nwGUI.docEditor

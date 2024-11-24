@@ -144,7 +144,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle is None
-        nwGUI.projView.projTree._getTreeItem(sHandle).setSelected(True)
+        nwGUI.projView.projTree.setSelectedHandle(sHandle)
         nwGUI._keyPressReturn()
         assert nwGUI.docEditor.docHandle == sHandle
         nwGUI.closeDocument()
@@ -210,9 +210,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.closeProject()
 
     assert len(SHARED.project.tree) == 0
-    assert len(SHARED.project.tree._order) == 0
-    assert len(SHARED.project.tree._roots) == 0
-    assert SHARED.project.tree.trashRoot is None
+    assert len(SHARED.project.tree._items) == 0
+    assert len(SHARED.project.tree._nodes) == 0
     assert SHARED.project.data.name == ""
     assert SHARED.project.data.author == ""
     assert SHARED.project.data.spellCheck is False
@@ -228,23 +227,22 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.openProject(projPath)
 
     # Check that we loaded the data
-    assert len(SHARED.project.tree) == 8
-    assert len(SHARED.project.tree._order) == 8
-    assert len(SHARED.project.tree._roots) == 4
-    assert SHARED.project.tree.trashRoot is None
+    assert len(SHARED.project.tree) == 9
+    assert SHARED.project.tree.model.root.childCount() == 5
+    assert SHARED.project.tree.trash is not None  # Created automatically
     assert SHARED.project.data.name == "New Project"
     assert SHARED.project.data.author == "Jane Doe"
     assert SHARED.project.data.spellCheck is False
 
     # Check that tree items have been created
-    assert nwGUI.projView.projTree._getTreeItem(C.hNovelRoot) is not None
-    assert nwGUI.projView.projTree._getTreeItem(C.hPlotRoot) is not None
-    assert nwGUI.projView.projTree._getTreeItem(C.hCharRoot) is not None
-    assert nwGUI.projView.projTree._getTreeItem(C.hWorldRoot) is not None
-    assert nwGUI.projView.projTree._getTreeItem(C.hTitlePage) is not None
-    assert nwGUI.projView.projTree._getTreeItem(C.hChapterDir) is not None
-    assert nwGUI.projView.projTree._getTreeItem(C.hChapterDoc) is not None
-    assert nwGUI.projView.projTree._getTreeItem(C.hSceneDoc) is not None
+    assert SHARED.project.tree[C.hNovelRoot] is not None
+    assert SHARED.project.tree[C.hPlotRoot] is not None
+    assert SHARED.project.tree[C.hCharRoot] is not None
+    assert SHARED.project.tree[C.hWorldRoot] is not None
+    assert SHARED.project.tree[C.hTitlePage] is not None
+    assert SHARED.project.tree[C.hChapterDir] is not None
+    assert SHARED.project.tree[C.hChapterDoc] is not None
+    assert SHARED.project.tree[C.hSceneDoc] is not None
 
     nwGUI.mainMenu.aSpellCheck.setChecked(True)
     nwGUI.mainMenu._toggleSpellCheck()
@@ -256,10 +254,12 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     CONFIG.autoScroll = True
 
     # Add a Character File
-    nwGUI._switchFocus(nwFocus.TREE)
+    nwGUI._changeView(nwView.PROJECT)
+    nwGUI.projView.projTree.expandAll()
     nwGUI.projView.projTree.clearSelection()
-    nwGUI.projView.projTree._getTreeItem(C.hCharRoot).setSelected(True)
+    nwGUI.projView.projTree.setSelectedHandle(C.hCharRoot)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
+    nwGUI.projView.projTree.expandAll()
     nwGUI.openSelectedItem()
 
     # Text Editor
@@ -290,10 +290,11 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
 
     # Add a Plot File
-    nwGUI._switchFocus(nwFocus.TREE)
+    nwGUI.projView.projTree.expandAll()
     nwGUI.projView.projTree.clearSelection()
-    nwGUI.projView.projTree._getTreeItem(C.hPlotRoot).setSelected(True)
+    nwGUI.projView.projTree.setSelectedHandle(C.hPlotRoot)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
+    nwGUI.projView.projTree.expandAll()
     nwGUI.openSelectedItem()
 
     # Type something into the document
@@ -312,10 +313,11 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
 
     # Add a World File
-    nwGUI._switchFocus(nwFocus.TREE)
+    nwGUI.projView.projTree.expandAll()
     nwGUI.projView.projTree.clearSelection()
-    nwGUI.projView.projTree._getTreeItem(C.hWorldRoot).setSelected(True)
+    nwGUI.projView.projTree.setSelectedHandle(C.hWorldRoot)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
+    nwGUI.projView.projTree.expandAll()
     nwGUI.openSelectedItem()
 
     # Add Some Text
@@ -343,11 +345,9 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI._autoSaveProject()
 
     # Select the 'New Scene' file
-    nwGUI._switchFocus(nwFocus.TREE)
+    nwGUI.projView.projTree.expandAll()
     nwGUI.projView.projTree.clearSelection()
-    nwGUI.projView.projTree._getTreeItem(C.hNovelRoot).setExpanded(True)
-    nwGUI.projView.projTree._getTreeItem(C.hChapterDir).setExpanded(True)
-    nwGUI.projView.projTree._getTreeItem(C.hSceneDoc).setSelected(True)
+    nwGUI.projView.projTree.setSelectedHandle(C.hSceneDoc)
     nwGUI.openSelectedItem()
 
     # Type something into the document
@@ -533,6 +533,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     # Indent and Align
     # ================
 
+    nwGUI._switchFocus(nwView.EDITOR)
     for c in "\t\"Tab-indented text\"":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
@@ -622,12 +623,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
 
-    projFile = projPath / "content" / "0000000000010.nwd"
-    testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000010.nwd"
-    compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000010.nwd"
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
-
     projFile = projPath / "content" / "0000000000011.nwd"
     testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000011.nwd"
     compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000011.nwd"
@@ -637,6 +632,12 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     projFile = projPath / "content" / "0000000000012.nwd"
     testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000012.nwd"
     compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000012.nwd"
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
+
+    projFile = projPath / "content" / "0000000000013.nwd"
+    testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000013.nwd"
+    compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000013.nwd"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
 
@@ -701,6 +702,17 @@ def testGuiMain_Viewing(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.viewDocument(C.hSceneDoc)
     assert nwGUI.docViewer.toPlainText() == "New Scene\nWith some stuff in it!"
 
+    # Open with keypress
+    nwGUI.closeDocViewer()
+    assert nwGUI.docViewer.docHandle is None
+    nwGUI.projView.setSelectedHandle(C.hSceneDoc)
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.projView.projTree, "hasFocus", lambda *a: True)
+        qtbot.keyClick(
+            nwGUI.projView.projTree, Qt.Key.Key_Return, modifier=QtModShift, delay=KEY_DELAY
+        )
+    assert nwGUI.docViewer.docHandle == C.hSceneDoc
+
     # qtbot.stop()
 
 
@@ -711,7 +723,6 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     cHandle = SHARED.project.newFile("Jane", C.hCharRoot)
     newDoc = SHARED.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# Jane\n\n@tag: Jane\n\n")
-    nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.rebuildIndex(beQuiet=True)
 
     assert SHARED.focusMode is False

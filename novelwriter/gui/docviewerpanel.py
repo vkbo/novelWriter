@@ -29,18 +29,18 @@ from enum import Enum
 
 from PyQt5.QtCore import QModelIndex, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QFrame, QHeaderView, QMenu, QTabWidget, QToolButton,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView, QFrame, QMenu, QTabWidget, QToolButton, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt
 from novelwriter.constants import nwLabels, nwLists, nwStyles, trConst
 from novelwriter.core.index import IndexHeading, IndexItem
-from novelwriter.enum import nwDocMode, nwItemClass
+from novelwriter.enum import nwChange, nwDocMode, nwItemClass
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
-from novelwriter.types import QtDecoration, QtUserRole
+from novelwriter.types import QtDecoration, QtHeaderFixed, QtHeaderToContents, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -151,8 +151,8 @@ class GuiDocViewerPanel(QWidget):
         self.updateHandle(self._lastHandle)
         return
 
-    @pyqtSlot(str)
-    def projectItemChanged(self, tHandle: str) -> None:
+    @pyqtSlot(str, Enum)
+    def onProjectItemChanged(self, tHandle: str, change: nwChange) -> None:
         """Update meta data for project item."""
         self.tabBackRefs.refreshDocument(tHandle)
         activeOnly = self.aInactive.isChecked()
@@ -259,10 +259,10 @@ class _ViewPanelBackRefs(QTreeWidget):
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
         treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
-        treeHeader.setSectionResizeMode(self.C_DOC, QHeaderView.ResizeMode.ResizeToContents)
-        treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
-        treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
-        treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.ResizeMode.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_DOC, QtHeaderToContents)
+        treeHeader.setSectionResizeMode(self.C_EDIT, QtHeaderFixed)
+        treeHeader.setSectionResizeMode(self.C_VIEW, QtHeaderFixed)
+        treeHeader.setSectionResizeMode(self.C_TITLE, QtHeaderToContents)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
         treeHeader.setSectionsMovable(False)
@@ -339,17 +339,13 @@ class _ViewPanelBackRefs(QTreeWidget):
     def _setTreeItemValues(self, tHandle: str, sTitle: str, hItem: IndexHeading) -> None:
         """Add or update a tree item."""
         if nwItem := SHARED.project.tree[tHandle]:
-            docIcon = SHARED.theme.getItemIcon(
-                nwItem.itemType, nwItem.itemClass,
-                nwItem.itemLayout, nwItem.mainHeading
-            )
             iLevel = nwStyles.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
             hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
 
             tKey = f"{tHandle}:{sTitle}"
             trItem = self._treeMap[tKey] if tKey in self._treeMap else QTreeWidgetItem()
 
-            trItem.setIcon(self.C_DOC, docIcon)
+            trItem.setIcon(self.C_DOC, nwItem.getMainIcon())
             trItem.setText(self.C_DOC, nwItem.itemName)
             trItem.setToolTip(self.C_DOC, nwItem.itemName)
             trItem.setIcon(self.C_EDIT, self._editIcon)
@@ -407,8 +403,8 @@ class _ViewPanelKeyWords(QTreeWidget):
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
         treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
-        treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
-        treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
+        treeHeader.setSectionResizeMode(self.C_EDIT, QtHeaderFixed)
+        treeHeader.setSectionResizeMode(self.C_VIEW, QtHeaderFixed)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
         treeHeader.setSectionsMovable(False)
@@ -448,10 +444,6 @@ class _ViewPanelKeyWords(QTreeWidget):
     def addUpdateEntry(self, tag: str, name: str, iItem: IndexItem, hItem: IndexHeading) -> None:
         """Add a new entry, or update an existing one."""
         nwItem = iItem.item
-        docIcon = SHARED.theme.getItemIcon(
-            nwItem.itemType, nwItem.itemClass,
-            nwItem.itemLayout, nwItem.mainHeading
-        )
         impLabel, impIcon = nwItem.getImportStatus()
         iLevel = nwStyles.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
         hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
@@ -468,7 +460,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         trItem.setIcon(self.C_IMPORT, impIcon)
         trItem.setText(self.C_IMPORT, impLabel)
         trItem.setToolTip(self.C_IMPORT, impLabel)
-        trItem.setIcon(self.C_DOC, docIcon)
+        trItem.setIcon(self.C_DOC, nwItem.getMainIcon())
         trItem.setText(self.C_DOC, nwItem.itemName)
         trItem.setToolTip(self.C_DOC, nwItem.itemName)
         trItem.setData(self.C_TITLE, QtDecoration, hDec)

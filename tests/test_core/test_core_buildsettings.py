@@ -223,7 +223,7 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     build = BuildSettings()
 
     # Add some more items
-    hArchRoot = project.newRoot(nwItemClass.ARCHIVE, "Archive")
+    hArchRoot = project.newRoot(nwItemClass.ARCHIVE)
     hPlotDoc  = project.newFile("Main Plot", C.hPlotRoot)
     hCharDoc  = project.newFile("Jane Doe", C.hCharRoot)
 

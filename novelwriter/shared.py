@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import logging
 
+from enum import Enum
 from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING, TypeVar
@@ -37,9 +38,11 @@ from PyQt5.QtWidgets import QFileDialog, QFontDialog, QMessageBox, QWidget
 from novelwriter.common import formatFileFilter
 from novelwriter.constants import nwFiles
 from novelwriter.core.spellcheck import NWSpellEnchant
+from novelwriter.enum import nwChange, nwItemClass
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
+    from novelwriter.core.status import T_StatusKind
     from novelwriter.gui.theme import GuiTheme
     from novelwriter.guimain import GuiMain
 
@@ -55,15 +58,16 @@ class SharedData(QObject):
         "_idleTime", "_idleRefTime",
     )
 
+    focusModeChanged = pyqtSignal(bool)
+    indexAvailable = pyqtSignal()
+    indexChangedTags = pyqtSignal(list, list)
+    indexCleared = pyqtSignal()
+    mainClockTick = pyqtSignal()
+    projectItemChanged = pyqtSignal(str, Enum)
+    rootFolderChanged = pyqtSignal(str, Enum)
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
     spellLanguageChanged = pyqtSignal(str, str)
-    focusModeChanged = pyqtSignal(bool)
-    indexScannedText = pyqtSignal(str)
-    indexChangedTags = pyqtSignal(list, list)
-    indexCleared = pyqtSignal()
-    indexAvailable = pyqtSignal()
-    mainClockTick = pyqtSignal()
     statusLabelsChanged = pyqtSignal(str)
 
     def __init__(self) -> None:
@@ -173,10 +177,12 @@ class SharedData(QObject):
         logger.debug("Thread Pool Max Count: %d", QThreadPool.globalInstance().maxThreadCount())
         return
 
-    def closeEditor(self, tHandle: str | None = None) -> None:
+    def closeDocument(self, tHandle: str | None = None) -> None:
         """Close the document editor, optionally a specific document."""
         if tHandle is None or tHandle == self.mainGui.docEditor.docHandle:
             self.mainGui.closeDocument()
+        if tHandle is None or tHandle == self.mainGui.docViewer.docHandle:
+            self.mainGui.closeViewerPanel()
         return
 
     def saveEditor(self, tHandle: str | None = None) -> None:
@@ -302,30 +308,52 @@ class SharedData(QObject):
         QDesktopServices.openUrl(QUrl(url))
         return
 
+    @pyqtSlot(str, nwItemClass)
+    def createNewNote(self, tag: str, itemClass: nwItemClass) -> None:
+        """Process new note request."""
+        self.project.createNewNote(tag, itemClass)
+        return
+
     ##
-    #  Signal Proxy
+    #  Signal Proxies
     ##
 
-    def indexSignalProxy(self, data: dict) -> None:
-        """Emit signals on behalf of the index."""
-        event = data.get("event")
-        logger.debug("Received '%s' event from the index", event)
-        if event == "updateTags":
-            self.indexChangedTags.emit(data.get("updated", []), data.get("deleted", []))
-        elif event == "scanText":
-            self.indexScannedText.emit(data.get("handle", ""))
-        elif event == "clearIndex":
+    def emitIndexChangedTags(
+        self, project: NWProject, updated: list[str], deleted: list[str]
+    ) -> None:
+        """Emit the indexChangedTags signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
+            self.indexChangedTags.emit(updated, deleted)
+        return
+
+    def emitIndexCleared(self, project: NWProject) -> None:
+        """Emit the indexCleared signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
             self.indexCleared.emit()
-        elif event == "buildIndex":
+        return
+
+    def emitIndexAvailable(self, project: NWProject) -> None:
+        """Emit the indexAvailable signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
             self.indexAvailable.emit()
         return
 
-    def projectSingalProxy(self, data: dict) -> None:
-        """Emit signals on project data change."""
-        event = data.get("event")
-        logger.debug("Received '%s' event from project data", event)
-        if event == "statusLabels":
-            self.statusLabelsChanged.emit(data.get("kind", ""))
+    def emitStatusLabelsChanged(self, project: NWProject, kind: T_StatusKind) -> None:
+        """Emit the statusLabelsChanged signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
+            self.statusLabelsChanged.emit(kind)
+        return
+
+    def emitProjectItemChanged(self, project: NWProject, handle: str, change: nwChange) -> None:
+        """Emit the projectItemChanged signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
+            self.projectItemChanged.emit(handle, change)
+        return
+
+    def emitRootFolderChanged(self, project: NWProject, handle: str, change: nwChange) -> None:
+        """Emit the rootFolderChanged signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
+            self.rootFolderChanged.emit(handle, change)
         return
 
     ##
@@ -386,6 +414,7 @@ class SharedData(QObject):
         """Create a new project and spell checking instance."""
         from novelwriter.core.project import NWProject
         if isinstance(self._project, NWProject):
+            self._project.clear()
             del self._project
             del self._spelling
         self._project = NWProject()

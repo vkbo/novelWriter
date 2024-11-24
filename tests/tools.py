@@ -52,6 +52,7 @@ class C:
     hInvalid    = "0000000000000"
     hNovelRoot  = "0000000000008"
     hPlotRoot   = "0000000000009"
+    hTrashRoot  = "0000000000010"
     hCharRoot   = "000000000000a"
     hWorldRoot  = "000000000000b"
     hTitlePage  = "000000000000c"
@@ -181,13 +182,13 @@ def buildTestProject(obj: object, projPath: Path) -> None:
 
     # Creating a minimal project with a few root folders and a
     # single chapter folder with a single file.
-    nrHandle = project.newRoot(nwItemClass.NOVEL, "Novel")
-    project.newRoot(nwItemClass.PLOT, "Plot")
-    project.newRoot(nwItemClass.CHARACTER, "Characters")
-    project.newRoot(nwItemClass.WORLD, "World")
+    nrHandle = project.newRoot(nwItemClass.NOVEL)
+    project.newRoot(nwItemClass.PLOT)
+    project.newRoot(nwItemClass.CHARACTER)
+    project.newRoot(nwItemClass.WORLD)
 
     tdHandle = project.newFile("Title Page", nrHandle)
-    cfHandle = project.newFolder("New Chapter", nrHandle) or ""
+    cfHandle = project.newFolder("New Folder", nrHandle) or ""
     cdHandle = project.newFile("New Chapter", cfHandle)
     sdHandle = project.newFile("New Scene", cfHandle)
 
@@ -209,7 +210,7 @@ def buildTestProject(obj: object, projPath: Path) -> None:
     project._valid = True
 
     if nwGUI is not None:
-        nwGUI.projView.populateTree()
+        nwGUI.projView.openProjectTasks()
 
     return
 

@@ -31,13 +31,12 @@ from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
-def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
+def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the the various features of the status bar."""
     buildTestProject(nwGUI, projPath)
     cHandle = SHARED.project.newFile("A Note", C.hCharRoot)
     newDoc = SHARED.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# A Note\n\n")
-    nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.rebuildIndex(beQuiet=True)
 
     # Reference Time
@@ -87,10 +86,16 @@ def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
 
     # Project Stats
     CONFIG.incNotesWCount = False
+    nwGUI._lastTotalCount = 0
     nwGUI._updateStatusWordCount()
     assert nwGUI.mainStatus.statsText.text() == "Words: 9 (+9)"
-    CONFIG.incNotesWCount = True
-    nwGUI._updateStatusWordCount()
-    assert nwGUI.mainStatus.statsText.text() == "Words: 11 (+11)"
+
+    # Update again, but through time tick
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.guimain.time", lambda *a: 50.0)
+        CONFIG.incNotesWCount = True
+        nwGUI._lastTotalCount = 0
+        nwGUI._timeTick()
+        assert nwGUI.mainStatus.statsText.text() == "Words: 11 (+11)"
 
     # qtbot.stop()

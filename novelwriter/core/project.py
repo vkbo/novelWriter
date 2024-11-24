@@ -26,7 +26,6 @@ from __future__ import annotations
 import json
 import logging
 
-from collections.abc import Iterable
 from enum import Enum
 from functools import partial
 from pathlib import Path
@@ -52,7 +51,8 @@ from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 
 if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.core.item import NWItem
+    # Requires Python 3.10
+    from novelwriter.core.status import T_StatusKind, T_UpdateEntry
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +66,11 @@ class NWProjectState(Enum):
 
 
 class NWProject:
+
+    __slots__ = (
+        "_options", "_storage", "_data", "_tree", "_index", "_session",
+        "_langData", "_changed", "_valid", "_state", "tr",
+    )
 
     def __init__(self) -> None:
 
@@ -92,6 +97,12 @@ class NWProject:
 
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: NWProject")
+        return
+
+    def clear(self) -> None:
+        """Clear the project."""
+        self._tree.clear()
+        self._index.clear()
         return
 
     ##
@@ -150,24 +161,46 @@ class NWProject:
         """Return total edit time, including the current session."""
         return self._data.editTime + round(time() - self._session.start)
 
+    @property
+    def currentTotalCount(self) -> int:
+        """Return the current total word count from the tree."""
+        return self._tree.model.root.count
+
     ##
     #  Item Methods
     ##
 
-    def newRoot(self, itemClass: nwItemClass, label: str | None = None) -> str:
+    def newRoot(self, itemClass: nwItemClass, pos: int = -1) -> str:
         """Add a new root folder to the project. If label is not set,
         use the class label.
         """
-        label = label or trConst(nwLabels.CLASS_NAME[itemClass])
-        return self._tree.create(label, None, nwItemType.ROOT, itemClass)
+        label = trConst(nwLabels.CLASS_NAME[itemClass])
+        return self._tree.create(label, None, nwItemType.ROOT, itemClass=itemClass, pos=pos)
 
-    def newFolder(self, label: str, parent: str) -> str | None:
+    def newFolder(self, label: str, parent: str, pos: int = -1) -> str | None:
         """Add a new folder with a given label and parent item."""
-        return self._tree.create(label, parent, nwItemType.FOLDER)
+        return self._tree.create(label, parent, nwItemType.FOLDER, pos=pos)
 
-    def newFile(self, label: str, parent: str) -> str | None:
+    def newFile(self, label: str, parent: str, pos: int = -1) -> str | None:
         """Add a new file with a given label and parent item."""
-        return self._tree.create(label, parent, nwItemType.FILE)
+        return self._tree.create(label, parent, nwItemType.FILE, pos=pos)
+
+    def removeItem(self, tHandle: str) -> bool:
+        """Remove an item from the project. This will delete both the
+        project entry and a document file if it exists.
+        """
+        if self._tree.checkType(tHandle, nwItemType.FILE):
+            SHARED.closeDocument(tHandle)
+            doc = self._storage.getDocument(tHandle)
+            if not doc.deleteDocument():
+                SHARED.error(
+                    self.tr("Could not delete document file."),
+                    info=doc.getError()
+                )
+                return False
+        self._index.deleteHandle(tHandle)
+        self._tree.remove(tHandle)
+        return True
 
     def writeNewFile(self, tHandle: str, hLevel: int, isDocument: bool, text: str = "") -> bool:
         """Write content to a new document after it is created. This
@@ -209,35 +242,21 @@ class NWProject:
         text = self._storage.getDocumentText(sHandle)
         self._storage.getDocument(tHandle).writeDocument(text)
         sItem.setLayout(tItem.itemLayout)
-        self._index.scanText(tHandle, text)
+        self._index.reIndexHandle(tHandle)
 
         return True
 
-    def removeItem(self, tHandle: str) -> bool:
-        """Remove an item from the project. This will delete both the
-        project entry and a document file if it exists.
+    def createNewNote(self, tag: str, itemClass: nwItemClass) -> None:
+        """Create a new note. This function is used by the document
+        editor to create note files for unknown tags.
         """
-        if self._tree.checkType(tHandle, nwItemType.FILE):
-            delDoc = self._storage.getDocument(tHandle)
-            if not delDoc.deleteDocument():
-                SHARED.error(
-                    self.tr("Could not delete document file."),
-                    info=delDoc.getError()
-                )
-                return False
-
-        self._index.deleteHandle(tHandle)
-        del self._tree[tHandle]
-
-        return True
-
-    def trashFolder(self) -> str:
-        """Add the special trash root folder to the project."""
-        trashHandle = self._tree.trashRoot
-        if trashHandle is None:
-            label = trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH])
-            return self._tree.create(label, None, nwItemType.ROOT, nwItemClass.TRASH)
-        return trashHandle
+        if itemClass != nwItemClass.NO_CLASS:
+            if not (rHandle := self._tree.findRoot(itemClass)):
+                rHandle = self.newRoot(itemClass)
+            if rHandle and (tHandle := SHARED.project.newFile(tag.title(), rHandle)):
+                self.writeNewFile(tHandle, 1, False, f"@tag: {tag}\n\n")
+                self._tree.refreshItems([tHandle])
+        return
 
     ##
     #  Project Methods
@@ -349,7 +368,7 @@ class NWProject:
         self._index.loadIndex()
         if xmlReader.state == XMLReadState.WAS_LEGACY:
             # Often, the index needs to be rebuilt when updating format
-            self._index.rebuildIndex()
+            self._index.rebuild()
 
         self.updateWordCounts()
         self._session.startSession()
@@ -414,12 +433,11 @@ class NWProject:
     def closeProject(self, idleTime: float = 0.0) -> None:
         """Close the project."""
         logger.info("Closing project")
-        self._index.clearIndex()  # Triggers clear signal, see #1718
+        self._index.clear()  # Triggers clear signal, see #1718
         self._options.saveSettings()
         self._tree.writeToCFile()
         self._session.appendSession(idleTime)
         self._storage.closeSession()
-        self._lockedBy = None
         return
 
     def backupProject(self, doNotify: bool) -> bool:
@@ -489,17 +507,6 @@ class NWProject:
             self.setProjectChanged(True)
         return
 
-    def setTreeOrder(self, order: list[str]) -> None:
-        """A list representing the linear/flattened order of project
-        items in the GUI project tree. The user can rearrange the order
-        by drag-and-drop. Forwarded to the NWTree class.
-        """
-        if len(self._tree) != len(order):
-            logger.warning("Sizes of new and old tree order do not match")
-        self._tree.setOrder(order)
-        self.setProjectChanged(True)
-        return
-
     def setProjectChanged(self, status: bool) -> bool:
         """Toggle the project changed flag, and propagate the
         information to the GUI statusbar.
@@ -512,47 +519,6 @@ class NWProject:
     ##
     #  Class Methods
     ##
-
-    def iterProjectItems(self) -> Iterable[NWItem]:
-        """This function ensures that the item tree loaded is sent to
-        the GUI tree view in such a way that the tree can be built. That
-        is, the parent item must be sent before its child. In principle,
-        a proper XML file will already ensure that, but in the event the
-        order has been altered, or a file is orphaned, this function is
-        capable of handling it.
-        """
-        sentItems = set()
-        iterItems = self._tree.handles()
-        n = 0
-        nMax = min(len(iterItems), 10000)
-        while n < nMax:
-            tHandle = iterItems[n]
-            tItem = self._tree[tHandle]
-            n += 1
-            if tItem is None:
-                # Technically a bug
-                continue
-            elif tItem.itemParent is None:
-                # Item is a root, or already been identified as orphaned
-                sentItems.add(tHandle)
-                yield tItem
-            elif tItem.itemParent in sentItems:
-                # Item's parent has been sent, so all is fine
-                sentItems.add(tHandle)
-                yield tItem
-            elif tItem.itemParent in iterItems:
-                # Item's parent exists, but hasn't been sent yet, so add
-                # it again to the end, but make sure this doesn't get
-                # out hand, so we cap at 10000 items
-                logger.warning("Item '%s' found before its parent", tHandle)
-                iterItems.append(tHandle)
-                nMax = min(len(iterItems), 10000)
-            else:
-                # Item is orphaned
-                logger.error("Item '%s' has no parent in current tree", tHandle)
-                tItem.setParent(None)
-                yield tItem
-        return
 
     def updateWordCounts(self) -> None:
         """Update the total word count values."""
@@ -572,6 +538,18 @@ class NWProject:
                 self._data.itemStatus.increment(nwItem.itemStatus)
             else:
                 self._data.itemImport.increment(nwItem.itemImport)
+        return
+
+    def updateStatus(self, kind: T_StatusKind, update: T_UpdateEntry) -> None:
+        """Update status or import entries."""
+        if kind == "s":
+            self._data.itemStatus.update(update)
+            SHARED.emitStatusLabelsChanged(self, kind)
+            self._tree.refreshAllItems()
+        elif kind == "i":
+            self._data.itemImport.update(update)
+            SHARED.emitStatusLabelsChanged(self, kind)
+            self._tree.refreshAllItems()
         return
 
     def localLookup(self, word: str | int) -> str:

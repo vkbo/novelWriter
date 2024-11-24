@@ -38,8 +38,7 @@ def testGuiViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     buildTestProject(nwGUI, projPath)
-    projTree = nwGUI.projView.projTree
-    projTree._getTreeItem(C.hChapterDir).setExpanded(True)
+    nwGUI.projView.projTree.expandAll()
     viewPanel = nwGUI.docViewerPanel
     tabBackRefs = viewPanel.tabBackRefs
 
@@ -81,17 +80,17 @@ def testGuiViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Update Label
     SHARED.project.tree[C.hSceneDoc].setName("First Scene")  # type: ignore
-    projTree.renameTreeItem(C.hSceneDoc)
+    nwGUI.projView.renameTreeItem(C.hSceneDoc)
     item = tabBackRefs.topLevelItem(0)
     assert item.text(tabBackRefs.C_DOC) == "First Scene"
     assert item.text(tabBackRefs.C_TITLE) == "Scene One"
 
     # Clear Index
-    SHARED.project.index.clearIndex()
+    SHARED.project.index.clear()
     assert tabBackRefs.topLevelItemCount() == 0
 
     # Rebuild Index
-    SHARED.project.index.rebuildIndex()
+    SHARED.project.index.rebuild()
     assert tabBackRefs.topLevelItemCount() == 1
 
     # Test Update Theme
@@ -127,8 +126,7 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     buildTestProject(nwGUI, projPath)
-    projTree = nwGUI.projView.projTree
-    projTree._getTreeItem(C.hChapterDir).setExpanded(True)
+    nwGUI.projView.projTree.expandAll()
     viewPanel = nwGUI.docViewerPanel
 
     nwGUI.openDocument(C.hSceneDoc)
@@ -175,18 +173,18 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     nwGUI.docEditor.setPlainText("# Jane Smith\n\n@tag: Janey\n\n")
     nwGUI.saveDocument()
     SHARED.project.tree[hJane].setName("Awesome Jane")  # type: ignore
-    projTree.renameTreeItem(hJane)
+    nwGUI.projView.renameTreeItem(hJane)
     item = charTab.topLevelItem(0)
     assert item.text(charTab.C_NAME) == "Janey"
     assert item.text(charTab.C_DOC) == "Awesome Jane"
     assert item.text(charTab.C_TITLE) == "Jane Smith"
 
     # Clear Index
-    SHARED.project.index.clearIndex()
+    SHARED.project.index.clear()
     assert charTab.topLevelItemCount() == 0
 
     # Rebuild Index
-    SHARED.project.index.rebuildIndex()
+    SHARED.project.index.rebuild()
     assert charTab.topLevelItemCount() == 2
 
     # Test Update Theme
@@ -221,8 +219,7 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     nwJohn = SHARED.project.tree[hJohn]
     assert isinstance(nwJohn, NWItem)
     nwJohn.setActive(False)
-    projTree.setTreeItemValues(nwJohn)
-    projTree._alertTreeChange(hJohn, flush=False)
+    nwJohn.notifyToRefresh()
     assert charTab.topLevelItemCount() == 1
 
     # Update Labels

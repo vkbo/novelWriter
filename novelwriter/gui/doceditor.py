@@ -43,8 +43,9 @@ from PyQt5.QtCore import (
     pyqtSlot
 )
 from PyQt5.QtGui import (
-    QColor, QCursor, QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap,
-    QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QColor, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
+    QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent, QTextBlock,
+    QTextCursor, QTextDocument, QTextOption
 )
 from PyQt5.QtWidgets import (
     QAction, QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
@@ -52,12 +53,12 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import minmax, qtLambda, transferCase
+from novelwriter.common import decodeMimeHandles, minmax, qtLambda, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
-    nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwItemType,
-    nwTrinary
+    nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
+    nwItemType, nwTrinary
 )
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -109,13 +110,13 @@ class GuiDocEditor(QPlainTextEdit):
 
     # Custom Signals
     closeEditorRequest = pyqtSignal()
-    docCountsChanged = pyqtSignal(str, int, int, int)
     docTextChanged = pyqtSignal(str, float)
     editedStatusChanged = pyqtSignal(bool)
     itemHandleChanged = pyqtSignal(str)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
     novelItemMetaChanged = pyqtSignal(str)
     novelStructureChanged = pyqtSignal()
+    openDocumentRequest = pyqtSignal(str, Enum, str, bool)
     requestNewNoteCreation = pyqtSignal(str, nwItemClass)
     requestNextDocument = pyqtSignal(str, bool)
     requestProjectItemRenamed = pyqtSignal(str, str)
@@ -191,6 +192,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.setMinimumWidth(CONFIG.pxInt(300))
         self.setAutoFillBackground(True)
         self.setFrameStyle(QFrame.Shape.NoFrame)
+        self.setAcceptDrops(True)
 
         # Custom Shortcuts
         self.keyContext = QShortcut(self)
@@ -997,6 +999,32 @@ class GuiDocEditor(QPlainTextEdit):
 
         return
 
+    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
+        """Overload drag enter event to handle dragged items."""
+        if event.mimeData().hasFormat(nwConst.MIME_HANDLE):
+            event.acceptProposedAction()
+        else:
+            super().dragEnterEvent(event)
+        return
+
+    def dragMoveEvent(self, event: QDragMoveEvent) -> None:
+        """Overload drag move event to handle dragged items."""
+        if event.mimeData().hasFormat(nwConst.MIME_HANDLE):
+            event.acceptProposedAction()
+        else:
+            super().dragMoveEvent(event)
+        return
+
+    def dropEvent(self, event: QDropEvent) -> None:
+        """Overload drop event to handle dragged items."""
+        if event.mimeData().hasFormat(nwConst.MIME_HANDLE):
+            if handles := decodeMimeHandles(event.mimeData()):
+                if SHARED.project.tree.checkType(handles[0], nwItemType.FILE):
+                    self.openDocumentRequest.emit(handles[0], nwDocMode.EDIT, "", True)
+        else:
+            super().dropEvent(event)
+        return
+
     def focusNextPrevChild(self, next: bool) -> bool:
         """Capture the focus request from the tab key on the text
         editor. If the editor has focus, we do not change focus and
@@ -1036,12 +1064,12 @@ class GuiDocEditor(QPlainTextEdit):
     #  Public Slots
     ##
 
-    @pyqtSlot(str)
-    def updateDocInfo(self, tHandle: str) -> None:
+    @pyqtSlot(str, Enum)
+    def onProjectItemChanged(self, tHandle: str, change: nwChange) -> None:
         """Called when an item label is changed to check if the document
         title bar needs updating,
         """
-        if tHandle and tHandle == self._docHandle:
+        if tHandle == self._docHandle and change == nwChange.UPDATE:
             self.docHeader.setHandle(tHandle)
             self.docFooter.updateInfo()
             self.updateDocMargins()
@@ -1252,7 +1280,7 @@ class GuiDocEditor(QPlainTextEdit):
             self._nwItem.setCharCount(cCount)
             self._nwItem.setWordCount(wCount)
             self._nwItem.setParaCount(pCount)
-            self.docCountsChanged.emit(self._docHandle, cCount, wCount, pCount)
+            self._nwItem.notifyToRefresh()
             self.docFooter.updateWordCount(wCount, False)
         return
 
@@ -2985,7 +3013,7 @@ class GuiDocEditHeader(QWidget):
 
         if CONFIG.showFullPath:
             self.itemTitle.setText(f"  {nwUnicode.U_RSAQUO}  ".join(reversed(
-                [name for name in SHARED.project.tree.getItemPath(tHandle, asName=True)]
+                [name for name in SHARED.project.tree.itemPath(tHandle, asName=True)]
             )))
         else:
             self.itemTitle.setText(i.itemName if (i := SHARED.project.tree[tHandle]) else "")

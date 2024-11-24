@@ -151,6 +151,9 @@ class GuiTheme:
         self.guiFont = QApplication.font()
         self.guiFontB = QApplication.font()
         self.guiFontB.setBold(True)
+        self.guiFontBU = QApplication.font()
+        self.guiFontBU.setBold(True)
+        self.guiFontBU.setUnderline(True)
         self.guiFontSmall = QApplication.font()
         self.guiFontSmall.setPointSizeF(0.9*self.guiFont.pointSizeF())
 

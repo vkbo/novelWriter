@@ -44,7 +44,7 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwView
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
@@ -62,6 +62,7 @@ from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.noveldetails import GuiNovelDetails
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.writingstats import GuiWritingStats
+from novelwriter.types import QtModShift
 
 logger = logging.getLogger(__name__)
 
@@ -212,15 +213,19 @@ class GuiMain(QMainWindow):
         SHARED.indexChangedTags.connect(self.docEditor.updateChangedTags)
         SHARED.indexChangedTags.connect(self.docViewerPanel.updateChangedTags)
         SHARED.indexCleared.connect(self.docViewerPanel.indexWasCleared)
-        SHARED.indexScannedText.connect(self.docViewerPanel.projectItemChanged)
-        SHARED.indexScannedText.connect(self.itemDetails.updateViewBox)
-        SHARED.indexScannedText.connect(self.projView.updateItemValues)
         SHARED.mainClockTick.connect(self._timeTick)
+        SHARED.projectItemChanged.connect(self.docEditor.onProjectItemChanged)
+        SHARED.projectItemChanged.connect(self.docViewer.onProjectItemChanged)
+        SHARED.projectItemChanged.connect(self.docViewerPanel.onProjectItemChanged)
+        SHARED.projectItemChanged.connect(self.itemDetails.onProjectItemChanged)
+        SHARED.projectItemChanged.connect(self.projView.onProjectItemChanged)
         SHARED.projectStatusChanged.connect(self.mainStatus.updateProjectStatus)
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
+        SHARED.rootFolderChanged.connect(self.novelView.updateRootItem)
+        SHARED.rootFolderChanged.connect(self.outlineView.updateRootItem)
+        SHARED.rootFolderChanged.connect(self.projView.updateRootItem)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
         SHARED.statusLabelsChanged.connect(self.docViewerPanel.updateStatusLabels)
-        SHARED.statusLabelsChanged.connect(self.projView.refreshUserLabels)
 
         self.mainMenu.requestDocAction.connect(self._passDocumentAction)
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
@@ -233,15 +238,7 @@ class GuiMain(QMainWindow):
 
         self.projView.openDocumentRequest.connect(self._openDocument)
         self.projView.projectSettingsRequest.connect(self.showProjectSettingsDialog)
-        self.projView.rootFolderChanged.connect(self.novelView.updateRootItem)
-        self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
-        self.projView.rootFolderChanged.connect(self.projView.updateRootItem)
         self.projView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
-        self.projView.treeItemChanged.connect(self.docEditor.updateDocInfo)
-        self.projView.treeItemChanged.connect(self.docViewer.updateDocInfo)
-        self.projView.treeItemChanged.connect(self.docViewerPanel.projectItemChanged)
-        self.projView.treeItemChanged.connect(self.itemDetails.updateViewBox)
-        self.projView.wordCountsChanged.connect(self._updateStatusWordCount)
 
         self.novelView.openDocumentRequest.connect(self._openDocument)
         self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
@@ -250,8 +247,6 @@ class GuiMain(QMainWindow):
         self.projSearch.selectedItemChanged.connect(self.itemDetails.updateViewBox)
 
         self.docEditor.closeEditorRequest.connect(self.closeDocEditor)
-        self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
-        self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
         self.docEditor.docTextChanged.connect(self.projSearch.textChanged)
         self.docEditor.editedStatusChanged.connect(self.mainStatus.updateDocumentStatus)
         self.docEditor.itemHandleChanged.connect(self.novelView.setActiveHandle)
@@ -259,7 +254,8 @@ class GuiMain(QMainWindow):
         self.docEditor.loadDocumentTagRequest.connect(self._followTag)
         self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
         self.docEditor.novelStructureChanged.connect(self.novelView.refreshTree)
-        self.docEditor.requestNewNoteCreation.connect(self.projView.createNewNote)
+        self.docEditor.openDocumentRequest.connect(self._openDocument)
+        self.docEditor.requestNewNoteCreation.connect(SHARED.createNewNote)
         self.docEditor.requestNextDocument.connect(self.openNextDocument)
         self.docEditor.requestProjectItemRenamed.connect(self.projView.renameTreeItem)
         self.docEditor.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
@@ -297,13 +293,24 @@ class GuiMain(QMainWindow):
         self.keyReturn.setKey("Return")
         self.keyReturn.activated.connect(self._keyPressReturn)
 
+        self.keyShiftReturn = QShortcut(self)
+        self.keyShiftReturn.setKey("Shift+Return")
+        self.keyShiftReturn.activated.connect(self._keyPressReturn)
+
         self.keyEnter = QShortcut(self)
         self.keyEnter.setKey("Enter")
         self.keyEnter.activated.connect(self._keyPressReturn)
 
+        self.keyShiftEnter = QShortcut(self)
+        self.keyShiftEnter.setKey("Shift+Enter")
+        self.keyShiftEnter.activated.connect(self._keyPressReturn)
+
         self.keyEscape = QShortcut(self)
         self.keyEscape.setKey("Esc")
         self.keyEscape.activated.connect(self._keyPressEscape)
+
+        # Internal Variables
+        self._lastTotalCount = 0
 
         # Initialise Main GUI
         self.initMain()
@@ -502,11 +509,9 @@ class GuiMain(QMainWindow):
 
     def saveProject(self, autoSave: bool = False) -> bool:
         """Save the current project."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-        self.projView.saveProjectTasks()
-        return SHARED.saveProject(autoSave=autoSave)
+        if SHARED.hasProject:
+            return SHARED.saveProject(autoSave=autoSave)
+        return False
 
     ##
     #  Document Actions
@@ -718,8 +723,11 @@ class GuiMain(QMainWindow):
                 logger.warning("No item selected")
                 return
 
-            if tHandle:
-                self.openDocument(tHandle, sTitle=sTitle, changeFocus=False, doScroll=False)
+            if tHandle and SHARED.project.tree.checkType(tHandle, nwItemType.FILE):
+                if QApplication.keyboardModifiers() == QtModShift:
+                    self.viewDocument(tHandle)
+                else:
+                    self.openDocument(tHandle, sTitle=sTitle, changeFocus=False, doScroll=False)
 
         return
 
@@ -730,9 +738,8 @@ class GuiMain(QMainWindow):
             QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             tStart = time()
 
-            self.projView.saveProjectTasks()
-            SHARED.project.index.rebuildIndex()
-            self.projView.populateTree()
+            SHARED.project.index.rebuild()
+            SHARED.project.tree.refreshAllItems()
             self.novelView.refreshTree()
 
             tEnd = time()
@@ -1050,7 +1057,7 @@ class GuiMain(QMainWindow):
             ))
 
         if tree:
-            self.projView.populateTree()
+            SHARED.project.tree.refreshAllItems()
 
         if theme:
             # We are doing this manually instead of connecting to
@@ -1076,6 +1083,9 @@ class GuiMain(QMainWindow):
         self.projView.initSettings()
         self.novelView.initSettings()
         self.outlineView.initSettings()
+
+        # Force update of word count
+        self._lastTotalCount = 0
         self._updateStatusWordCount()
 
         return
@@ -1213,8 +1223,10 @@ class GuiMain(QMainWindow):
             self.mainStatus.setUserIdle(editIdle or userIdle)
             SHARED.updateIdleTime(currTime, editIdle or userIdle)
             self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)
-            if CONFIG.memInfo and int(currTime) % 5 == 0:  # pragma: no cover
-                self.mainStatus.memInfo()
+            if int(currTime) % 5 == 0:
+                self._updateStatusWordCount()
+                if CONFIG.memInfo:  # pragma: no cover
+                    self.mainStatus.memInfo()
         return
 
     @pyqtSlot()
@@ -1242,15 +1254,19 @@ class GuiMain(QMainWindow):
         if not SHARED.hasProject:
             self.mainStatus.setProjectStats(0, 0)
 
-        SHARED.project.updateWordCounts()
-        if CONFIG.incNotesWCount:
-            iTotal = sum(SHARED.project.data.initCounts)
-            cTotal = sum(SHARED.project.data.currCounts)
-            self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
-        else:
-            iNovel, _ = SHARED.project.data.initCounts
-            cNovel, _ = SHARED.project.data.currCounts
-            self.mainStatus.setProjectStats(cNovel, cNovel - iNovel)
+        currentTotalCount = SHARED.project.currentTotalCount
+        if self._lastTotalCount != currentTotalCount:
+            self._lastTotalCount = currentTotalCount
+
+            SHARED.project.updateWordCounts()
+            if CONFIG.incNotesWCount:
+                iTotal = sum(SHARED.project.data.initCounts)
+                cTotal = sum(SHARED.project.data.currCounts)
+                self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
+            else:
+                iNovel, _ = SHARED.project.data.initCounts
+                cNovel, _ = SHARED.project.data.currCounts
+                self.mainStatus.setProjectStats(cNovel, cNovel - iNovel)
 
         return
 

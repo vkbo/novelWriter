@@ -197,8 +197,8 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert outlineBar.novelValue.itemData(2) == ""    # All novels
 
     # Add a second novel folder
-    newHandle = SHARED.project.newRoot(nwItemClass.NOVEL)
-    nwGUI.projView.projTree.revealNewTreeItem(newHandle)
+    with qtbot.waitSignal(SHARED.rootFolderChanged):
+        newHandle = SHARED.project.newRoot(nwItemClass.NOVEL)
 
     # Check new values in dropdown list
     assert outlineBar.novelValue.itemData(0) == lipHandle
@@ -217,7 +217,6 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
         aHandle = SHARED.project.newFile(dTitle, newHandle)
         hHash = "#"*hLevel
         writeFile(prjLipsum / "content" / f"{aHandle}.nwd", f"{hHash} {dTitle}\n\n")
-        nwGUI.projView.projTree.revealNewTreeItem(aHandle)
 
     nwGUI.rebuildIndex()
 
@@ -279,7 +278,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert outlineData.fileValue.text() == "Scene One"
     assert outlineData.itemValue.text() == "Finished"
 
-    outlineTree._treeDoubleClick(selItem, 0)
+    outlineTree._onItemDoubleClicked(selItem, 0)
     assert nwGUI.docEditor.docHandle == "88243afbe5ed8"
 
     # Dump to CSV

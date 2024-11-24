@@ -27,8 +27,9 @@ import logging
 
 from typing import TYPE_CHECKING, Any
 
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QFont, QIcon
 
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified,
     yesNo
@@ -256,6 +257,8 @@ class NWItem:
             self._paraCount = 0
             self._cursorPos = 0
 
+        self._initCount = self._wordCount
+
         return True
 
     @classmethod
@@ -280,6 +283,15 @@ class NWItem:
         cls._cursorPos = source._cursorPos
         cls._initCount = source._initCount
         return cls
+
+    ##
+    #  Action Methods
+    ##
+
+    def notifyToRefresh(self) -> None:
+        """Notify GUI that item info needs to be refreshed."""
+        self._project.tree.refreshItems([self._handle])
+        return
 
     ##
     #  Lookup Methods
@@ -309,6 +321,19 @@ class NWItem:
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
+    def getMainIcon(self) -> QIcon:
+        """Get the main item icon."""
+        return SHARED.theme.getItemIcon(self._type, self._class, self._layout, self._heading)
+
+    def getMainFont(self) -> QFont:
+        """Get the main item icon."""
+        if CONFIG.emphLabels and self._layout == nwItemLayout.DOCUMENT:
+            if self._heading == "H1":
+                return SHARED.theme.guiFontBU
+            elif self._heading == "H2":
+                return SHARED.theme.guiFontB
+        return SHARED.theme.guiFont
+
     def getImportStatus(self) -> tuple[str, QIcon]:
         """Return the relevant importance or status label and icon for
         the current item based on its class.
@@ -318,6 +343,19 @@ class NWItem:
         else:
             entry = self._project.data.itemImport[self._import]
         return entry.name, entry.icon
+
+    def getActiveStatus(self) -> tuple[str, QIcon]:
+        """Return the relevant active status label and icon for
+        the current item based on its type.
+        """
+        if self.isFileType():
+            key = "checked" if self._active else "unchecked"
+            text = trConst(nwLabels.ACTIVE_NAME[key])
+            icon = SHARED.theme.getIcon(key)
+        else:
+            text = ""
+            icon = SHARED.theme.getIcon("noncheckable")
+        return text, icon
 
     ##
     #  Checker Methods
@@ -552,9 +590,4 @@ class NWItem:
             self._cursorPos = max(0, position)
         else:
             self._cursorPos = 0
-        return
-
-    def saveInitialCount(self) -> None:
-        """Save the initial word count."""
-        self._initCount = self._wordCount
         return

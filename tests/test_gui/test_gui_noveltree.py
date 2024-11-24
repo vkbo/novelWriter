@@ -46,7 +46,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     nwGUI._switchFocus(nwFocus.TREE)
     nwGUI.projView.projTree.clearSelection()
-    nwGUI.projView.projTree._getTreeItem(C.hCharRoot).setSelected(True)
+    nwGUI.projView.projTree.setSelectedHandle(C.hCharRoot)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
 
     contentPath = SHARED.project.storage.contentPath

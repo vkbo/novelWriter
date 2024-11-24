@@ -28,7 +28,7 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QAction, QMenuBar
 
 from novelwriter import CONFIG, SHARED
@@ -162,19 +162,20 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addSeparator()
 
         # Project > Edit
-        self.aEditItem = self.projMenu.addAction(self.tr("Rename Item"))
-        self.aEditItem.setShortcut("F2")
-        self.aEditItem.triggered.connect(qtLambda(self.mainGui.projView.renameTreeItem, None))
-        self.mainGui.addAction(self.aEditItem)
+        self.aRenameItem = self.projMenu.addAction(self.tr("Rename Item"))
+        self.aRenameItem.setShortcut("F2")
 
         # Project > Delete
         self.aDeleteItem = self.projMenu.addAction(self.tr("Delete Item"))
-        self.aDeleteItem.setShortcut("Ctrl+Shift+Del")  # Cannot be Ctrl+Del, see #629
-        self.aDeleteItem.triggered.connect(qtLambda(self.mainGui.projView.requestDeleteItem, None))
+        self.aDeleteItem.setShortcut("Del")
+        self.aDeleteItem.setShortcutContext(Qt.ShortcutContext.WidgetShortcut)
 
         # Project > Empty Trash
         self.aEmptyTrash = self.projMenu.addAction(self.tr("Empty Trash"))
-        self.aEmptyTrash.triggered.connect(qtLambda(self.mainGui.projView.emptyTrash))
+
+        self.mainGui.projView.connectMenuActions(
+            self.aRenameItem, self.aDeleteItem, self.aEmptyTrash
+        )
 
         # Project > Separator
         self.projMenu.addSeparator()
@@ -337,12 +338,16 @@ class GuiMainMenu(QMenuBar):
         # View > Go Backward
         self.aViewPrev = self.viewMenu.addAction(self.tr("Navigate Backward"))
         self.aViewPrev.setShortcut("Alt+Left")
+        self.aViewPrev.setShortcutContext(Qt.ShortcutContext.WidgetShortcut)
         self.aViewPrev.triggered.connect(self.mainGui.docViewer.navBackward)
+        self.mainGui.docViewer.addAction(self.aViewPrev)
 
         # View > Go Forward
         self.aViewNext = self.viewMenu.addAction(self.tr("Navigate Forward"))
         self.aViewNext.setShortcut("Alt+Right")
+        self.aViewNext.setShortcutContext(Qt.ShortcutContext.WidgetShortcut)
         self.aViewNext.triggered.connect(self.mainGui.docViewer.navForward)
+        self.mainGui.docViewer.addAction(self.aViewNext)
 
         # View > Separator
         self.viewMenu.addSeparator()

@@ -394,13 +394,9 @@ class GuiManuscriptBuild(NDialog):
                     if isinstance(rItem, NWItem):
                         rootMap[rHandle] = rItem.itemName
 
-                itemIcon = SHARED.theme.getItemIcon(
-                    nwItem.itemType, nwItem.itemClass,
-                    nwItem.itemLayout, nwItem.mainHeading
-                )
                 rootName = rootMap.get(rHandle, "??????")
                 item = QListWidgetItem(f"{rootName}: {nwItem.itemName}")
-                item.setIcon(itemIcon)
+                item.setIcon(nwItem.getMainIcon())
                 self.listContent.addItem(item)
 
         return

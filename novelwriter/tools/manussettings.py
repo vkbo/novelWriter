@@ -31,9 +31,9 @@ from PyQt5.QtCore import QEvent, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialogButtonBox, QFrame, QGridLayout,
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QPlainTextEdit,
-    QPushButton, QSplitter, QStackedWidget, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget
+    QHBoxLayout, QLabel, QLineEdit, QMenu, QPlainTextEdit, QPushButton,
+    QSplitter, QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -51,7 +51,8 @@ from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.types import (
     QtAlignCenter, QtAlignLeft, QtDialogApply, QtDialogClose, QtDialogSave,
-    QtRoleAccept, QtRoleApply, QtRoleReject, QtUserRole
+    QtHeaderFixed, QtHeaderStretch, QtRoleAccept, QtRoleApply, QtRoleReject,
+    QtUserRole
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -313,9 +314,9 @@ class _FilterTab(NFixedPage):
         treeHeader = self.optTree.header()
         treeHeader.setStretchLastSection(False)
         treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1551
-        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.Stretch)
-        treeHeader.setSectionResizeMode(self.C_ACTIVE, QHeaderView.ResizeMode.Fixed)
-        treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.ResizeMode.Fixed)
+        treeHeader.setSectionResizeMode(self.C_NAME, QtHeaderStretch)
+        treeHeader.setSectionResizeMode(self.C_ACTIVE, QtHeaderFixed)
+        treeHeader.setSectionResizeMode(self.C_STATUS, QtHeaderFixed)
         treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
         treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
 
@@ -418,8 +419,7 @@ class _FilterTab(NFixedPage):
         logger.debug("Building project tree")
         self._treeMap = {}
         self.optTree.clear()
-        for nwItem in SHARED.project.iterProjectItems():
-
+        for nwItem in SHARED.project.tree:
             tHandle = nwItem.itemHandle
             pHandle = nwItem.itemParent
             rHandle = nwItem.itemRoot
@@ -428,28 +428,15 @@ class _FilterTab(NFixedPage):
                 continue
 
             isFile = nwItem.isFileType()
-            isActive = nwItem.isActive
-
             if nwItem.isInactiveClass() or not self._build.isRootAllowed(rHandle):
                 continue
 
-            hLevel = nwItem.mainHeading
-            itemIcon = SHARED.theme.getItemIcon(
-                nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
-            )
-
-            if isFile:
-                iconName = "checked" if isActive else "unchecked"
-            else:
-                iconName = "noncheckable"
-
             trItem = QTreeWidgetItem()
-            trItem.setIcon(self.C_NAME, itemIcon)
+            trItem.setIcon(self.C_NAME, nwItem.getMainIcon())
             trItem.setText(self.C_NAME, nwItem.itemName)
             trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
             trItem.setData(self.C_DATA, self.D_FILE, isFile)
-            trItem.setIcon(self.C_ACTIVE, SHARED.theme.getIcon(iconName))
-
+            trItem.setIcon(self.C_ACTIVE, nwItem.getActiveStatus()[1])
             trItem.setTextAlignment(self.C_NAME, QtAlignLeft)
 
             if pHandle is None and nwItem.isRootType():
@@ -496,11 +483,8 @@ class _FilterTab(NFixedPage):
         self.filterOpt.addLabel(self.tr("Select Root Folders"))
         for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
             if not nwItem.isInactiveClass():
-                itemIcon = SHARED.theme.getItemIcon(
-                    nwItem.itemType, nwItem.itemClass, nwItem.itemLayout
-                )
                 self.filterOpt.addItem(
-                    itemIcon, nwItem.itemName, f"root:{tHandle}",
+                    nwItem.getMainIcon(), nwItem.itemName, f"root:{tHandle}",
                     default=self._build.isRootAllowed(tHandle)
                 )
 

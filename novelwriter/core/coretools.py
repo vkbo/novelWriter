@@ -56,9 +56,16 @@ class DocMerger:
     def __init__(self, project: NWProject) -> None:
         self._project = project
         self._error = ""
-        self._targetDoc = None
-        self._targetText = []
+        self._target = None
+        self._text = []
         return
+
+    @property
+    def targetHandle(self) -> str | None:
+        """Get the handle of the target document."""
+        if self._target:
+            return self._target.itemHandle
+        return None
 
     ##
     #  Methods
@@ -72,63 +79,56 @@ class DocMerger:
         """Set the target document for the merging. Calling this
         function resets the class.
         """
-        self._targetDoc = tHandle
-        self._targetText = []
+        self._target = self._project.tree[tHandle]
+        self._text = []
         return
 
-    def newTargetDoc(self, srcHandle: str, docLabel: str) -> str | None:
+    def newTargetDoc(self, sHandle: str, label: str) -> None:
         """Create a brand new target document based on a source handle
         and a new doc label. Calling this function resets the class.
         """
-        srcItem = self._project.tree[srcHandle]
-        if srcItem is None or srcItem.itemParent is None:
-            return None
+        sItem = self._project.tree[sHandle]
+        if sItem and sItem.itemParent:
+            tHandle = self._project.newFile(label, sItem.itemParent)
+            if nwItem := self._project.tree[tHandle]:
+                nwItem.setLayout(sItem.itemLayout)
+                nwItem.setStatus(sItem.itemStatus)
+                nwItem.setImport(sItem.itemImport)
+                nwItem.notifyToRefresh()
+                self._target = nwItem
+                self._text = []
+        return
 
-        newHandle = self._project.newFile(docLabel, srcItem.itemParent)
-        newItem = self._project.tree[newHandle]
-        if isinstance(newItem, NWItem):
-            newItem.setLayout(srcItem.itemLayout)
-            newItem.setStatus(srcItem.itemStatus)
-            newItem.setImport(srcItem.itemImport)
-
-        self._targetDoc = newHandle
-        self._targetText = []
-
-        return newHandle
-
-    def appendText(self, srcHandle: str, addComment: bool, cmtPrefix: str) -> bool:
+    def appendText(self, sHandle: str, addComment: bool, cmtPrefix: str) -> None:
         """Append text from an existing document to the text buffer."""
-        srcItem = self._project.tree[srcHandle]
-        if srcItem is None:
-            return False
-
-        docText = self._project.storage.getDocumentText(srcHandle).rstrip("\n")
-        if addComment:
-            docInfo = srcItem.describeMe()
-            docSt, _ = srcItem.getImportStatus()
-            cmtLine = f"% {cmtPrefix} {docInfo}: {srcItem.itemName} [{docSt}]\n\n"
-            docText = cmtLine + docText
-
-        self._targetText.append(docText)
-
-        return True
+        if item := self._project.tree[sHandle]:
+            text = self._project.storage.getDocumentText(sHandle).rstrip("\n")
+            if addComment:
+                info = item.describeMe()
+                status, _ = item.getImportStatus()
+                text = f"% {cmtPrefix} {info}: {item.itemName} [{status}]\n\n{text}"
+            self._text.append(text)
+        return
 
     def writeTargetDoc(self) -> bool:
         """Write the accumulated text into the designated target
         document, appending any existing text.
         """
-        if self._targetDoc is None:
-            return False
+        if self._target:
+            outDoc = self._project.storage.getDocument(self._target.itemHandle)
+            if text := (outDoc.readDocument() or "").rstrip("\n"):
+                self._text.insert(0, text)
 
-        outDoc = self._project.storage.getDocument(self._targetDoc)
-        if text := (outDoc.readDocument() or "").rstrip("\n"):
-            self._targetText.insert(0, text)
+            status = outDoc.writeDocument("\n\n".join(self._text) + "\n\n")
+            if not status:
+                self._error = outDoc.getError()
 
-        status = outDoc.writeDocument("\n\n".join(self._targetText) + "\n\n")
-        if not status:
-            self._error = outDoc.getError()
+            self._project.index.reIndexHandle(self._target.itemHandle)
+            self._target.notifyToRefresh()
 
-        return status
+            return status
+
+        return False
 
 
 class DocSplitter:
@@ -172,23 +172,19 @@ class DocSplitter:
         self._inFolder = False
         return
 
-    def newParentFolder(self, pHandle: str, folderLabel: str) -> str | None:
+    def newParentFolder(self, pHandle: str, folderLabel: str) -> None:
         """Create a new folder that will be the top level parent item
         for the new documents.
         """
-        if self._srcItem is None:
-            return None
-
-        newHandle = self._project.newFolder(folderLabel, pHandle)
-        newItem = self._project.tree[newHandle]
-        if isinstance(newItem, NWItem):
-            newItem.setStatus(self._srcItem.itemStatus)
-            newItem.setImport(self._srcItem.itemImport)
-
-        self._parHandle = newHandle
-        self._inFolder = True
-
-        return newHandle
+        if self._srcItem:
+            nHandle = self._project.newFolder(folderLabel, pHandle)
+            if nwItem := self._project.tree[nHandle]:
+                nwItem.setStatus(self._srcItem.itemStatus)
+                nwItem.setImport(self._srcItem.itemImport)
+                nwItem.notifyToRefresh()
+            self._parHandle = nHandle
+            self._inFolder = True
+        return
 
     def splitDocument(self, splitData: list, splitText: list[str]) -> None:
         """Loop through the split data record and perform the split job
@@ -202,58 +198,50 @@ class DocSplitter:
             self._rawData.insert(0, (chunk, hLevel, hLabel))
         return
 
-    def writeDocuments(self, docHierarchy: bool) -> Iterable[tuple[bool, str | None, str | None]]:
+    def writeDocuments(self, docHierarchy: bool) -> Iterable[bool]:
         """An iterator that will write each document in the buffer, and
         return its new handle, parent handle, and sibling handle.
         """
-        if self._srcHandle is None or self._srcItem is None or self._parHandle is None:
-            return
+        if self._srcHandle and self._srcItem and self._parHandle:
+            pHandle = self._parHandle
+            hHandle = [self._parHandle, None, None, None, None]
+            pLevel = 0
+            for docText, hLevel, docLabel in self._rawData:
 
-        pHandle = self._parHandle
-        nHandle = self._parHandle if self._inFolder else self._srcHandle
-        hHandle = [self._parHandle, None, None, None, None]
+                hLevel = minmax(hLevel, 1, 4)
+                if pLevel == 0:
+                    pLevel = hLevel
 
-        pLevel = 0
-        for docText, hLevel, docLabel in self._rawData:
+                if docHierarchy:
+                    if hLevel == 1:
+                        pHandle = self._parHandle
+                    elif hLevel == 2:
+                        pHandle = hHandle[1] or hHandle[0]
+                    elif hLevel == 3:
+                        pHandle = hHandle[2] or hHandle[1] or hHandle[0]
+                    elif hLevel == 4:
+                        pHandle = hHandle[3] or hHandle[2] or hHandle[1] or hHandle[0]
 
-            hLevel = minmax(hLevel, 1, 4)
-            if pLevel == 0:
-                pLevel = hLevel
+                if (
+                    (dHandle := self._project.newFile(docLabel, pHandle))
+                    and (nwItem := self._project.tree[dHandle])
+                ):
+                    hHandle[hLevel] = dHandle
+                    nwItem.setStatus(self._srcItem.itemStatus)
+                    nwItem.setImport(self._srcItem.itemImport)
 
-            if docHierarchy:
-                if hLevel == 1:
-                    pHandle = self._parHandle
-                elif hLevel == 2:
-                    pHandle = hHandle[1] or hHandle[0]
-                elif hLevel == 3:
-                    pHandle = hHandle[2] or hHandle[1] or hHandle[0]
-                elif hLevel == 4:
-                    pHandle = hHandle[3] or hHandle[2] or hHandle[1] or hHandle[0]
+                    outDoc = self._project.storage.getDocument(dHandle)
+                    status = outDoc.writeDocument("\n".join(docText))
+                    if not status:
+                        self._error = outDoc.getError()
 
-                if hLevel < pLevel:
-                    nHandle = hHandle[hLevel] or hHandle[0]
-                elif hLevel > pLevel:
-                    nHandle = pHandle
+                    self._project.index.reIndexHandle(dHandle)
+                    nwItem.notifyToRefresh()
 
-            dHandle = self._project.newFile(docLabel, pHandle)
-            hHandle[hLevel] = dHandle
+                    yield status
 
-            newItem = self._project.tree[dHandle]
-            if isinstance(newItem, NWItem):
-                newItem.setStatus(self._srcItem.itemStatus)
-                newItem.setImport(self._srcItem.itemImport)
-
-            outDoc = self._project.storage.getDocument(dHandle)
-            status = outDoc.writeDocument("\n".join(docText))
-            if not status:
-                self._error = outDoc.getError()
-
-            yield status, dHandle, nHandle
-
-            hHandle[hLevel] = dHandle
-            nHandle = dHandle
-            pLevel = hLevel
-
+                    hHandle[hLevel] = dHandle
+                    pLevel = hLevel
         return
 
 
@@ -270,29 +258,27 @@ class DocDuplicator:
     #  Methods
     ##
 
-    def duplicate(self, items: list[str]) -> Iterable[tuple[str, str | None]]:
+    def duplicate(self, items: list[str]) -> list[str]:
         """Run through a list of items, duplicate them, and copy the
         text content if they are documents.
         """
+        result = []
+        after = True
         if items:
-            nHandle = items[0]
             hMap: dict[str, str | None] = {t: None for t in items}
             for tHandle in items:
-                newItem = self._project.tree.duplicate(tHandle)
-                if newItem is None:
-                    return
-                hMap[tHandle] = newItem.itemHandle
-                if newItem.itemParent in hMap:
-                    newItem.setParent(hMap[newItem.itemParent])
-                    self._project.tree.updateItemData(newItem.itemHandle)
-                if newItem.isFileType():
-                    newDoc = self._project.storage.getDocument(newItem.itemHandle)
-                    if newDoc.fileExists():
-                        return
-                    newDoc.writeDocument(self._project.storage.getDocumentText(tHandle))
-                yield newItem.itemHandle, nHandle
-                nHandle = None
-        return
+                if oldItem := self._project.tree[tHandle]:
+                    pHandle = hMap.get(oldItem.itemParent or "") or oldItem.itemParent
+                    if newItem := self._project.tree.duplicate(tHandle, pHandle, after):
+                        hMap[tHandle] = newItem.itemHandle
+                        if newItem.isFileType():
+                            self._project.copyFileContent(newItem.itemHandle, tHandle)
+                        newItem.notifyToRefresh()
+                        result.append(newItem.itemHandle)
+                    after = False
+                else:
+                    break
+        return result
 
 
 class DocSearch:
@@ -523,7 +509,7 @@ class ProjectBuilder:
 
         # Also add the archive and trash folders
         project.newRoot(nwItemClass.ARCHIVE)
-        project.trashFolder()
+        project.tree.trash  # Triggers the creation of Trash
 
         project.saveProject()
         project.closeProject()

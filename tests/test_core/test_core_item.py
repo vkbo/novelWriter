@@ -176,11 +176,6 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
     item.setCursorPos(1)
     assert item.cursorPos == 1
 
-    # Initial Count
-    item.setWordCount(234)
-    item.saveInitialCount()
-    assert item.initCount == 234
-
 
 @pytest.mark.core
 def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
@@ -280,7 +275,7 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
             "handle": "000000000000f",
             "parent": "000000000000d",
             "root": "0000000000008",
-            "order": "0",
+            "order": "1",
             "type": "FILE",
             "class": "NOVEL",
             "layout": "DOCUMENT"

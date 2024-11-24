@@ -53,6 +53,9 @@ class nwConst:
     # Requests
     USER_AGENT = "Mozilla/5.0 (compatible; novelWriter (Python))"
 
+    # Mime Types
+    MIME_HANDLE = "text/vnd.novelwriter.handle"
+
     # Gui Settings
     STATUS_MSG_TIMEOUT = 15000  # milliseconds
     MAX_SEARCH_RESULT = 1000
@@ -270,6 +273,10 @@ class nwLabels:
         "doc_h3":   QT_TRANSLATE_NOOP("Constant", "Novel Scene"),
         "doc_h4":   QT_TRANSLATE_NOOP("Constant", "Novel Section"),
         "note":     QT_TRANSLATE_NOOP("Constant", "Project Note"),
+    }
+    ACTIVE_NAME = {
+        "checked":   QT_TRANSLATE_NOOP("Constant", "Active"),
+        "unchecked": QT_TRANSLATE_NOOP("Constant", "Inactive"),
     }
     KEY_NAME = {
         nwKeyWords.TAG_KEY:     QT_TRANSLATE_NOOP("Constant", "Tag"),

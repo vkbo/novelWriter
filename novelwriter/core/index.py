@@ -116,24 +116,24 @@ class NWIndex:
     #  Public Methods
     ##
 
-    def clearIndex(self) -> None:
+    def clear(self) -> None:
         """Clear the index dictionaries and time stamps."""
         self._tagsIndex.clear()
         self._itemIndex.clear()
         self._indexChange = 0.0
         self._rootChange = {}
-        SHARED.indexSignalProxy({"event": "clearIndex"})
+        SHARED.emitIndexCleared(self._project)
         return
 
-    def rebuildIndex(self) -> None:
+    def rebuild(self) -> None:
         """Rebuild the entire index from scratch."""
-        self.clearIndex()
+        self.clear()
         for nwItem in self._project.tree:
             if nwItem.isFileType():
                 text = self._project.storage.getDocumentText(nwItem.itemHandle)
                 self.scanText(nwItem.itemHandle, text, blockSignal=True)
         self._indexBroken = False
-        SHARED.indexSignalProxy({"event": "buildIndex"})
+        SHARED.emitIndexAvailable(self._project)
         return
 
     def deleteHandle(self, tHandle: str) -> None:
@@ -143,10 +143,7 @@ class NWIndex:
         for tTag in delTags:
             del self._tagsIndex[tTag]
         del self._itemIndex[tHandle]
-        SHARED.indexSignalProxy({
-            "event": "updateTags",
-            "deleted": delTags,
-        })
+        SHARED.emitIndexChangedTags(self._project, [], delTags)
         return
 
     def reIndexHandle(self, tHandle: str | None) -> None:
@@ -212,7 +209,7 @@ class NWIndex:
                 self.reIndexHandle(fHandle)
 
         self._indexChange = time()
-        SHARED.indexSignalProxy({"event": "buildIndex"})
+        SHARED.emitIndexAvailable(self._project)
 
         logger.debug("Index loaded in %.3f ms", (time() - tStart)*1000)
 
@@ -296,10 +293,7 @@ class NWIndex:
         self._indexChange = nowTime
         self._rootChange[tItem.itemRoot] = nowTime
         if not blockSignal:
-            SHARED.indexSignalProxy({
-                "event": "scanText",
-                "handle": tHandle,
-            })
+            tItem.notifyToRefresh()
 
         return True
 
@@ -370,11 +364,7 @@ class NWIndex:
                 del self._tagsIndex[tTag]
                 deleted.append(tTag)
             if updated or deleted:
-                SHARED.indexSignalProxy({
-                    "event": "updateTags",
-                    "updated": updated,
-                    "deleted": deleted,
-                })
+                SHARED.emitIndexChangedTags(self._project, updated, deleted)
 
         return
 

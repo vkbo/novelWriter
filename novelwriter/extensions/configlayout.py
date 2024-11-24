@@ -183,7 +183,7 @@ class NScrollableForm(QScrollArea):
     def addRow(
         self,
         label: str | None,
-        widget: QWidget | list[QWidget | QPixmap | str | int],
+        widget: QWidget | list[QWidget | QPixmap | int],
         helpText: str = "",
         unit: str | None = None,
         button: QWidget | None = None,
@@ -204,8 +204,6 @@ class NScrollableForm(QScrollArea):
                     icon = QLabel(self)
                     icon.setPixmap(item)
                     wBox.addWidget(icon)
-                elif isinstance(item, str):
-                    wBox.addWidget(QLabel(item, self))
                 elif isinstance(item, int):
                     wBox.addSpacing(CONFIG.pxInt(item))
             qWidget = QWidget(self)

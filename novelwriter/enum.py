@@ -75,6 +75,13 @@ class nwTrinary(Enum):
     POSITIVE = 1
 
 
+class nwChange(Enum):
+
+    CREATE = 0
+    UPDATE = 1
+    DELETE = 2
+
+
 class nwDocMode(Enum):
 
     VIEW = 0

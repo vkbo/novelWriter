@@ -54,33 +54,42 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
     # =====================
 
     hChapter1 = project.newFile("Chapter 1", C.hNovelRoot)
-    hSceneOne11 = project.newFile("Scene 1.1", hChapter1)  # type: ignore
-    hSceneOne12 = project.newFile("Scene 1.2", hChapter1)  # type: ignore
-    hSceneOne13 = project.newFile("Scene 1.3", hChapter1)  # type: ignore
+    assert hChapter1 is not None
+
+    hSceneOne11 = project.newFile("Scene 1.1", hChapter1)
+    hSceneOne12 = project.newFile("Scene 1.2", hChapter1)
+    hSceneOne13 = project.newFile("Scene 1.3", hChapter1)
+    assert hSceneOne11 is not None
+    assert hSceneOne12 is not None
+    assert hSceneOne13 is not None
 
     docText1 = "\n\n".join(ipsumText[0:2]) + "\n\n"
     docText2 = "\n\n".join(ipsumText[1:3]) + "\n\n"
     docText3 = "\n\n".join(ipsumText[2:4]) + "\n\n"
     docText4 = "\n\n".join(ipsumText[3:5]) + "\n\n"
 
-    project.writeNewFile(hChapter1, 2, True, docText1)  # type: ignore
-    project.writeNewFile(hSceneOne11, 3, True, docText2)  # type: ignore
-    project.writeNewFile(hSceneOne12, 3, True, docText3)  # type: ignore
-    project.writeNewFile(hSceneOne13, 3, True, docText4)  # type: ignore
+    project.writeNewFile(hChapter1, 2, True, docText1)
+    project.writeNewFile(hSceneOne11, 3, True, docText2)
+    project.writeNewFile(hSceneOne12, 3, True, docText3)
+    project.writeNewFile(hSceneOne13, 3, True, docText4)
 
     # Basic Checks
     # ============
 
     docMerger = DocMerger(project)
+    assert docMerger.targetHandle is None
 
     # No writing without a target set
     assert docMerger.writeTargetDoc() is False
+    assert docMerger.targetHandle is None
 
     # Cannot append invalid handle
-    assert docMerger.appendText(C.hInvalid, True, "Merge") is False
+    docMerger.appendText(C.hInvalid, True, "Merge")
+    assert docMerger._text == []
 
     # Cannot create new target from invalid handle
-    assert docMerger.newTargetDoc(C.hInvalid, "Test") is None
+    docMerger.newTargetDoc(C.hInvalid, "Test")
+    assert docMerger.targetHandle is None
 
     # Merge to New
     # ============
@@ -89,12 +98,17 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
     testFile = tstPaths.outDir / "coreDocTools_DocMerger_0000000000014.nwd"
     compFile = tstPaths.refDir / "coreDocTools_DocMerger_0000000000014.nwd"
 
-    assert docMerger.newTargetDoc(hChapter1, "All of Chapter 1") == "0000000000014"  # type: ignore
+    docMerger.newTargetDoc(hChapter1, "All of Chapter 1")
+    assert docMerger.targetHandle == "0000000000014"
 
-    assert docMerger.appendText(hChapter1, True, "Merge") is True  # type: ignore
-    assert docMerger.appendText(hSceneOne11, True, "Merge") is True  # type: ignore
-    assert docMerger.appendText(hSceneOne12, True, "Merge") is True  # type: ignore
-    assert docMerger.appendText(hSceneOne13, True, "Merge") is True  # type: ignore
+    docMerger.appendText(hChapter1, True, "Merge")
+    assert len(docMerger._text) == 1
+    docMerger.appendText(hSceneOne11, True, "Merge")
+    assert len(docMerger._text) == 2
+    docMerger.appendText(hSceneOne12, True, "Merge")
+    assert len(docMerger._text) == 3
+    docMerger.appendText(hSceneOne13, True, "Merge")
+    assert len(docMerger._text) == 4
 
     # Block writing and check error handling
     with monkeypatch.context() as mp:
@@ -115,11 +129,14 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
     testFile = tstPaths.outDir / "coreDocTools_DocMerger_0000000000010.nwd"
     compFile = tstPaths.refDir / "coreDocTools_DocMerger_0000000000010.nwd"
 
-    docMerger.setTargetDoc(hChapter1)  # type: ignore
+    docMerger.setTargetDoc(hChapter1)
 
-    assert docMerger.appendText(hSceneOne11, True, "Merge") is True  # type: ignore
-    assert docMerger.appendText(hSceneOne12, True, "Merge") is True  # type: ignore
-    assert docMerger.appendText(hSceneOne13, True, "Merge") is True  # type: ignore
+    docMerger.appendText(hSceneOne11, True, "Merge")
+    assert len(docMerger._text) == 1
+    docMerger.appendText(hSceneOne12, True, "Merge")
+    assert len(docMerger._text) == 2
+    docMerger.appendText(hSceneOne13, True, "Merge")
+    assert len(docMerger._text) == 3
 
     assert docMerger.writeTargetDoc() is True
     copyfile(saveFile, testFile)
@@ -180,50 +197,46 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
     docSplitter.splitDocument(splitData, docRaw)  # type: ignore
     for i, (lineNo, hLevel, hLabel) in enumerate(splitData):
         assert docSplitter._rawData[i] == (docRaw[lineNo:lineNo+4], hLevel, hLabel)
+    assert project.tree.subTree(C.hNovelRoot) == [
+        "000000000000c", "000000000000d", "000000000000e", "000000000000f", "0000000000010",
+    ]
 
     # Test flat split into same parent
     docSplitter.setParentItem(C.hNovelRoot)
     assert docSplitter._inFolder is False
+    assert docSplitter._parHandle is not None
 
     # Cause write error on all chunks
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        resStatus = []
-        for status, _, _ in docSplitter.writeDocuments(False):
-            resStatus.append(status)
-        assert not any(resStatus)
+        assert not any(docSplitter.writeDocuments(False))
         assert docSplitter.getError() == "OSError: Mock OSError"
+    assert project.tree.subTree(C.hNovelRoot) == [
+        "000000000000c", "000000000000d", "000000000000e", "000000000000f", "0000000000010",
+        "0000000000011", "0000000000012", "0000000000013", "0000000000014", "0000000000015",
+        "0000000000016", "0000000000017", "0000000000018", "0000000000019", "000000000001a",
+    ]
 
     # Generate as flat structure in root folder
-    resStatus = []
-    resDocHandle = []
-    resNearHandle = []
-    for status, dHandle, nHandle in docSplitter.writeDocuments(False):
-        resStatus.append(status)
-        resDocHandle.append(dHandle)
-        resNearHandle.append(nHandle)
+    resStatus = list(docSplitter.writeDocuments(False))
+    resDocHandle = project.tree.subTree(C.hNovelRoot)
 
     assert all(resStatus)
     assert resDocHandle == [
+        "000000000000c", "000000000000d", "000000000000e", "000000000000f", "0000000000010",
+        "0000000000011", "0000000000012", "0000000000013", "0000000000014", "0000000000015",
+        "0000000000016", "0000000000017", "0000000000018", "0000000000019", "000000000001a",
         "000000000001b", "000000000001c", "000000000001d", "000000000001e", "000000000001f",
         "0000000000020", "0000000000021", "0000000000022", "0000000000023", "0000000000024",
     ]
-    assert resNearHandle == [  # Each document should be next to the previous one
-        hSplitDoc,       "000000000001b", "000000000001c", "000000000001d", "000000000001e",
-        "000000000001f", "0000000000020", "0000000000021", "0000000000022", "0000000000023",
-    ]
 
     # Generate as hierarchy in new folder
-    hSplitFolder = docSplitter.newParentFolder(C.hNovelRoot, "Split Folder")
+    docSplitter.newParentFolder(C.hNovelRoot, "Split Folder")
     assert docSplitter._inFolder is True
+    assert docSplitter._parHandle is not None
 
-    resStatus = []
-    resDocHandle = []
-    resNearHandle = []
-    for status, dHandle, nHandle in docSplitter.writeDocuments(True):
-        resStatus.append(status)
-        resDocHandle.append(dHandle)
-        resNearHandle.append(nHandle)
+    resStatus = list(docSplitter.writeDocuments(True))
+    resDocHandle = project.tree.subTree(docSplitter._parHandle)
 
     assert all(resStatus)
     assert resDocHandle == [
@@ -237,18 +250,6 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
         "000000000002d",  # Scene Three
         "000000000002e",  # Scene Four
         "000000000002f",  # Scene Five
-    ]
-    assert resNearHandle == [
-        hSplitFolder,     # Part One is after Split Folder
-        "0000000000026",  # Chapter One is after Part One
-        "0000000000027",  # Scene One is after Chapter One
-        "0000000000028",  # Section One is after Scene One
-        "0000000000029",  # Section Two is after Section One
-        "0000000000028",  # Scene Two is after Scene One
-        "0000000000027",  # Chapter Two is after Chapter One
-        "000000000002c",  # Scene Three is after Chapter Two
-        "000000000002d",  # Scene Four is after Scene Three
-        "000000000002e",  # Scene Five is after Scene Four
     ]
 
     # Check that status and importance has been preserved
@@ -292,9 +293,9 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
 
     # A new copy is created
     assert list(dup.duplicate([C.hSceneDoc])) == [
-        ("0000000000010", C.hSceneDoc),  # The Scene
+        "0000000000010"  # The Scene
     ]
-    assert project.tree._order == [
+    assert list(project.tree._items.keys()) == [
         C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
         C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010",
@@ -311,11 +312,11 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
 
     # The folder is copied, with two docs
     assert list(dup.duplicate([C.hChapterDir, C.hChapterDoc, C.hSceneDoc])) == [
-        ("0000000000011", C.hChapterDir),  # The Folder
-        ("0000000000012", None),           # The Chapter
-        ("0000000000013", None),           # The Scene
+        "0000000000011",  # The Folder
+        "0000000000012",  # The Chapter
+        "0000000000013",  # The Scene
     ]
-    assert project.tree._order == [
+    assert list(project.tree._items.keys()) == [
         C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
         C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010",
@@ -340,13 +341,13 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     assert list(dup.duplicate(
         [C.hNovelRoot, C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
     )) == [
-        ("0000000000014", C.hNovelRoot),  # The Root
-        ("0000000000015", None),          # The Title Page
-        ("0000000000016", None),          # The Folder
-        ("0000000000017", None),          # The Chapter
-        ("0000000000018", None),          # The Scene
+        "0000000000014",  # The Root
+        "0000000000015",  # The Title Page
+        "0000000000016",  # The Folder
+        "0000000000017",  # The Chapter
+        "0000000000018",  # The Scene
     ]
-    assert project.tree._order == [
+    assert list(project.tree._items.keys()) == [
         C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
         C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010",
@@ -388,7 +389,7 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     assert isinstance(content, Path)
     (content / "0000000000019.nwd").touch()
     assert (content / "0000000000019.nwd").exists()
-    assert list(dup.duplicate([C.hChapterDoc, C.hSceneDoc])) == []
+    assert list(dup.duplicate([C.hChapterDoc, C.hSceneDoc])) == ["0000000000019", "000000000001a"]
 
     # Save and Close
     project.saveProject()

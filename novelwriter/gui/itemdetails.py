@@ -25,12 +25,15 @@ from __future__ import annotations
 
 import logging
 
+from enum import Enum
+
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import elide
 from novelwriter.constants import nwLabels, nwStats, trConst
+from novelwriter.enum import nwChange
 from novelwriter.types import (
     QtAlignLeft, QtAlignLeftBase, QtAlignRight, QtAlignRightBase,
     QtAlignRightMiddle
@@ -220,19 +223,9 @@ class GuiItemDetails(QWidget):
         self.updateViewBox(self._handle)
         return
 
-    ##
-    #  Public Slots
-    ##
-
-    @pyqtSlot(str)
-    def updateViewBox(self, tHandle: str) -> None:
+    def updateViewBox(self, tHandle: str | None) -> None:
         """Populate the details box from a given handle."""
-        if tHandle is None:
-            self.clearDetails()
-            return
-
-        nwItem = SHARED.project.tree[tHandle]
-        if nwItem is None:
+        if not (tHandle and (nwItem := SHARED.project.tree[tHandle])):
             self.clearDetails()
             return
 
@@ -269,10 +262,7 @@ class GuiItemDetails(QWidget):
         # Layout
         # ======
 
-        usageIcon = SHARED.theme.getItemIcon(
-            nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, nwItem.mainHeading
-        )
-        self.usageIcon.setPixmap(usageIcon.pixmap(iPx, iPx))
+        self.usageIcon.setPixmap(nwItem.getMainIcon().pixmap(iPx, iPx))
         self.usageData.setText(nwItem.describeMe())
 
         # Counts
@@ -289,13 +279,16 @@ class GuiItemDetails(QWidget):
 
         return
 
-    @pyqtSlot(str, int, int, int)
-    def updateCounts(self, tHandle: str, cC: int, wC: int, pC: int) -> None:
-        """Update the counts if the handle is the same as the one we're
-        already showing. Otherwise, do nothing.
-        """
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str, Enum)
+    def onProjectItemChanged(self, tHandle: str, change: nwChange) -> None:
+        """Process project item change."""
         if tHandle == self._handle:
-            self.cCountData.setText(f"{cC:n}")
-            self.wCountData.setText(f"{wC:n}")
-            self.pCountData.setText(f"{pC:n}")
+            if change == nwChange.UPDATE:
+                self.updateViewBox(tHandle)
+            elif change == nwChange.DELETE:
+                self.updateViewBox(None)
         return
