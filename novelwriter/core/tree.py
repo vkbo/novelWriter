@@ -343,7 +343,7 @@ class NWTree:
             file = f"{item.itemHandle}.nwd"
             if (contentPath / file).is_file():
                 tocLine = "{0:<25s}  {1:<9s}  {2:<8s}  {3:s}".format(
-                    str(Path("content") / file),
+                    f"content/{file}",
                     item.itemClass.name,
                     item.itemLayout.name,
                     item.itemName,

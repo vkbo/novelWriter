@@ -436,10 +436,6 @@ def testCoreTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
         mp.setattr("builtins.open", causeOSError)
         assert tree.writeToCFile() is False
 
-    pathA = str(Path("content") / "000000000000c.nwd")
-    pathB = str(Path("content") / "000000000000e.nwd")
-    pathC = str(Path("content") / "000000000000f.nwd")
-
     # Allow writing
     assert tree.writeToCFile() is True
     assert (fncPath / nwFiles.TOC_TXT).read_text() == (
@@ -449,7 +445,7 @@ def testCoreTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
         "\n"
         "File Name                  Class      Layout    Document Label\n"
         "--------------------------------------------------------------\n"
-        f"{pathA}  NOVEL      DOCUMENT  Title Page\n"
-        f"{pathB}  NOVEL      DOCUMENT  New Chapter\n"
-        f"{pathC}  NOVEL      DOCUMENT  New Scene\n"
+        "content/000000000000c.nwd  NOVEL      DOCUMENT  Title Page\n"
+        "content/000000000000e.nwd  NOVEL      DOCUMENT  New Chapter\n"
+        "content/000000000000f.nwd  NOVEL      DOCUMENT  New Scene\n"
     )
