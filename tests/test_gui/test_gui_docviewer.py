@@ -24,16 +24,21 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt5.QtCore import QEvent, QPoint, Qt, QUrl
-from PyQt5.QtGui import QDesktopServices, QMouseEvent, QTextCursor
-from PyQt5.QtWidgets import QAction, QApplication, QMenu
+from PyQt5.QtCore import QEvent, QMimeData, QPoint, Qt, QUrl
+from PyQt5.QtGui import (
+    QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent, QMouseEvent,
+    QTextCursor
+)
+from PyQt5.QtWidgets import QAction, QApplication, QMenu, QTextBrowser
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import decodeMimeHandles
 from novelwriter.enum import nwChange, nwDocAction
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.types import QtModNone, QtMouseLeft
 
 from tests.mocked import causeException
+from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
@@ -238,3 +243,72 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     docViewer.updateTheme()
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiViewer_DragAndDrop(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test drag and drop in the viewer."""
+    docViewer = nwGUI.docViewer
+
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hTitlePage) is True
+    assert nwGUI.viewDocument(C.hTitlePage) is True
+    assert docViewer.docHandle == C.hTitlePage
+
+    middle = docViewer.viewport().rect().center()
+    action = Qt.DropAction.MoveAction
+    mouse = Qt.MouseButton.NoButton
+
+    model = SHARED.project.tree.model
+    docMime = model.mimeData([model.indexFromHandle(C.hSceneDoc)])
+    noneMime = QMimeData()
+    noneMime.setData("plain/text", b"")
+    assert decodeMimeHandles(docMime) == [C.hSceneDoc]
+
+    # Drag Enter
+    mockEnter = MagicMock()
+    docEvent = QDragEnterEvent(middle, action, docMime, mouse, QtModNone)
+    noneEvent = QDragEnterEvent(middle, action, noneMime, mouse, QtModNone)
+    with monkeypatch.context() as mp:
+        mp.setattr(QTextBrowser, "dragEnterEvent", mockEnter)
+
+        # Document Enter
+        docViewer.dragEnterEvent(docEvent)
+        assert docEvent.isAccepted() is True
+        assert mockEnter.call_count == 0
+
+        # Regular Enter
+        docViewer.dragEnterEvent(noneEvent)
+        assert mockEnter.call_count == 1
+
+    # Drag Move
+    mockMove = MagicMock()
+    docEvent = QDragMoveEvent(middle, action, docMime, mouse, QtModNone)
+    noneEvent = QDragMoveEvent(middle, action, noneMime, mouse, QtModNone)
+    with monkeypatch.context() as mp:
+        mp.setattr(QTextBrowser, "dragMoveEvent", mockMove)
+
+        # Document Move
+        docViewer.dragMoveEvent(docEvent)
+        assert docEvent.isAccepted() is True
+        assert mockMove.call_count == 0
+
+        # Regular Move
+        docViewer.dragMoveEvent(noneEvent)
+        assert mockMove.call_count == 1
+
+    # Drop
+    mockDrop = MagicMock()
+    docEvent = QDropEvent(middle, action, docMime, mouse, QtModNone)
+    noneEvent = QDropEvent(middle, action, noneMime, mouse, QtModNone)
+    with monkeypatch.context() as mp:
+        mp.setattr(QTextBrowser, "dropEvent", mockDrop)
+
+        # Document Drop
+        docViewer.dropEvent(docEvent)
+        assert mockDrop.call_count == 0
+        assert docViewer.docHandle == C.hSceneDoc
+
+        # Regular Move
+        docViewer.dropEvent(noneEvent)
+        assert mockDrop.call_count == 1

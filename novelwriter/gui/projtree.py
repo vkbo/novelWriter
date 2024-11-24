@@ -213,7 +213,7 @@ class GuiProjectView(QWidget):
     @pyqtSlot(str, Enum)
     def onProjectItemChanged(self, tHandle: str, change: nwChange) -> None:
         """Refresh other content when project item changed."""
-        self.projBar.processTemplateDocuments(tHandle, change)
+        self.projBar.processTemplateDocuments(tHandle)
         return
 
     @pyqtSlot(str)
@@ -404,17 +404,16 @@ class GuiProjectToolBar(QWidget):
         """Build the templates menu."""
         for tHandle, _ in SHARED.project.tree.iterRoots(nwItemClass.TEMPLATE):
             for dHandle in SHARED.project.tree.subTree(tHandle):
-                self.processTemplateDocuments(dHandle, nwChange.CREATE)
+                self.processTemplateDocuments(dHandle)
         return
 
-    def processTemplateDocuments(self, tHandle: str, change: nwChange) -> None:
+    def processTemplateDocuments(self, tHandle: str) -> None:
         """Process change in tree items to update menu content."""
-        if change in (nwChange.CREATE, nwChange.UPDATE):
-            if item := SHARED.project.tree[tHandle]:
-                if item.isTemplateFile() and item.isActive:
-                    self.mTemplates.addUpdate(tHandle, item.itemName, item.getMainIcon())
-                elif tHandle in self.mTemplates:
-                    self.mTemplates.remove(tHandle)
+        if item := SHARED.project.tree[tHandle]:
+            if item.isTemplateFile() and item.isActive:
+                self.mTemplates.addUpdate(tHandle, item.itemName, item.getMainIcon())
+            elif tHandle in self.mTemplates:
+                self.mTemplates.remove(tHandle)
         return
 
     ##

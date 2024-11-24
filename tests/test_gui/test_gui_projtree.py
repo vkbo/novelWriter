@@ -663,11 +663,21 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
         "Scene 3", "Scene 4",
     ]
 
+    # Opening documents before delete, will close them
+    nwGUI.openDocument(hScenes[2])
+    nwGUI.viewDocument(hScenes[3])
+
+    assert nwGUI.docEditor.docHandle == hScenes[2]
+    assert nwGUI.docViewer.docHandle == hScenes[3]
+
     # Trash can be completely emptied
     projTree.emptyTrash()
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "Chapter Folder", "Plot", "Characters", "Trash",
     ]
+
+    assert nwGUI.docEditor.docHandle is None
+    assert nwGUI.docViewer.docHandle is None
 
     # Emptying empty trash pops an alert
     projTree.emptyTrash()
@@ -1423,7 +1433,13 @@ def testGuiProjTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert nwNewCharacter.itemName == "Note"
     assert project.storage.getDocument(hNewCharacter).readDocument() == "# Jane\n\n@tag: Jane\n\n"
 
-    # Remove the templates
+    # Clearing the menu and rebuilding it should work
+    projBar.mTemplates.clearMenu()
+    assert len(projBar.mTemplates.actions()) == 0
+    projBar.buildTemplatesMenu()
+    assert len(projBar.mTemplates.actions()) == 2
+
+    # Remove the note template
     assert projBar.mTemplates.menuAction().isVisible() is True
     assert len(projBar.mTemplates.actions()) == 2
     assert trash.childCount() == 0

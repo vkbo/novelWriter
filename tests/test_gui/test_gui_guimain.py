@@ -702,6 +702,17 @@ def testGuiMain_Viewing(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.viewDocument(C.hSceneDoc)
     assert nwGUI.docViewer.toPlainText() == "New Scene\nWith some stuff in it!"
 
+    # Open with keypress
+    nwGUI.closeDocViewer()
+    assert nwGUI.docViewer.docHandle is None
+    nwGUI.projView.setSelectedHandle(C.hSceneDoc)
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.projView.projTree, "hasFocus", lambda *a: True)
+        qtbot.keyClick(
+            nwGUI.projView.projTree, Qt.Key.Key_Return, modifier=QtModShift, delay=KEY_DELAY
+        )
+    assert nwGUI.docViewer.docHandle == C.hSceneDoc
+
     # qtbot.stop()
 
 

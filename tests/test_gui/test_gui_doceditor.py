@@ -24,22 +24,23 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt5.QtCore import QEvent, Qt, QThreadPool, QUrl
+from PyQt5.QtCore import QEvent, QMimeData, Qt, QThreadPool, QUrl
 from PyQt5.QtGui import (
-    QClipboard, QDesktopServices, QFont, QMouseEvent, QTextBlock, QTextCursor,
-    QTextOption
+    QClipboard, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent,
+    QFont, QMouseEvent, QTextBlock, QTextCursor, QTextOption
 )
-from PyQt5.QtWidgets import QAction, QApplication, QMenu
+from PyQt5.QtWidgets import QAction, QApplication, QMenu, QPlainTextEdit
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import decodeMimeHandles
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwTrinary
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
-    QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtMouseLeft,
-    QtMoveAnchor, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
+    QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtModNone,
+    QtMouseLeft, QtMoveAnchor, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
 )
 
 from tests.mocked import causeOSError
@@ -207,6 +208,74 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
     assert docEditor.saveText() is True
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiEditor_DragAndDrop(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test drag and drop in the editor."""
+    docEditor = nwGUI.docEditor
+
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hTitlePage) is True
+    assert docEditor.docHandle == C.hTitlePage
+
+    middle = docEditor.viewport().rect().center()
+    action = Qt.DropAction.MoveAction
+    mouse = Qt.MouseButton.NoButton
+
+    model = SHARED.project.tree.model
+    docMime = model.mimeData([model.indexFromHandle(C.hSceneDoc)])
+    noneMime = QMimeData()
+    noneMime.setData("plain/text", b"")
+    assert decodeMimeHandles(docMime) == [C.hSceneDoc]
+
+    # Drag Enter
+    mockEnter = MagicMock()
+    docEvent = QDragEnterEvent(middle, action, docMime, mouse, QtModNone)
+    noneEvent = QDragEnterEvent(middle, action, noneMime, mouse, QtModNone)
+    with monkeypatch.context() as mp:
+        mp.setattr(QPlainTextEdit, "dragEnterEvent", mockEnter)
+
+        # Document Enter
+        docEditor.dragEnterEvent(docEvent)
+        assert docEvent.isAccepted() is True
+        assert mockEnter.call_count == 0
+
+        # Regular Enter
+        docEditor.dragEnterEvent(noneEvent)
+        assert mockEnter.call_count == 1
+
+    # Drag Move
+    mockMove = MagicMock()
+    docEvent = QDragMoveEvent(middle, action, docMime, mouse, QtModNone)
+    noneEvent = QDragMoveEvent(middle, action, noneMime, mouse, QtModNone)
+    with monkeypatch.context() as mp:
+        mp.setattr(QPlainTextEdit, "dragMoveEvent", mockMove)
+
+        # Document Move
+        docEditor.dragMoveEvent(docEvent)
+        assert docEvent.isAccepted() is True
+        assert mockMove.call_count == 0
+
+        # Regular Move
+        docEditor.dragMoveEvent(noneEvent)
+        assert mockMove.call_count == 1
+
+    # Drop
+    mockDrop = MagicMock()
+    docEvent = QDropEvent(middle, action, docMime, mouse, QtModNone)
+    noneEvent = QDropEvent(middle, action, noneMime, mouse, QtModNone)
+    with monkeypatch.context() as mp:
+        mp.setattr(QPlainTextEdit, "dropEvent", mockDrop)
+
+        # Document Drop
+        docEditor.dropEvent(docEvent)
+        assert mockDrop.call_count == 0
+        assert docEditor.docHandle == C.hSceneDoc
+
+        # Regular Move
+        docEditor.dropEvent(noneEvent)
+        assert mockDrop.call_count == 1
 
 
 @pytest.mark.gui

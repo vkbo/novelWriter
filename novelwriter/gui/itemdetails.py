@@ -225,12 +225,7 @@ class GuiItemDetails(QWidget):
 
     def updateViewBox(self, tHandle: str | None) -> None:
         """Populate the details box from a given handle."""
-        if tHandle is None:
-            self.clearDetails()
-            return
-
-        nwItem = SHARED.project.tree[tHandle]
-        if nwItem is None:
+        if not (tHandle and (nwItem := SHARED.project.tree[tHandle])):
             self.clearDetails()
             return
 
@@ -296,15 +291,4 @@ class GuiItemDetails(QWidget):
                 self.updateViewBox(tHandle)
             elif change == nwChange.DELETE:
                 self.updateViewBox(None)
-        return
-
-    @pyqtSlot(str, int, int, int)
-    def updateCounts(self, tHandle: str, cC: int, wC: int, pC: int) -> None:
-        """Update the counts if the handle is the same as the one we're
-        already showing. Otherwise, do nothing.
-        """
-        if tHandle == self._handle:
-            self.cCountData.setText(f"{cC:n}")
-            self.wCountData.setText(f"{wC:n}")
-            self.pCountData.setText(f"{pC:n}")
         return
