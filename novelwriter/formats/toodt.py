@@ -43,7 +43,7 @@ from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import Tokenizer
-from novelwriter.types import FONT_STYLE, FONT_WEIGHTS, QtHexRgb
+from novelwriter.types import FONT_STYLE, QtHexRgb
 
 logger = logging.getLogger(__name__)
 
@@ -220,20 +220,14 @@ class ToOdt(Tokenizer):
         # Initialise Variables
         # ====================
 
-        intWeight = FONT_WEIGHTS.get(self._textFont.weight(), 400)
-        fontWeight = str(intWeight)
-        fontBold = str(min(intWeight + 300, 900))
-
         lang, _, country = self._dLocale.name().partition("_")
         self._dLanguage = lang or self._dLanguage
         self._dCountry = country or self._dCountry
 
         self._fontFamily   = self._textFont.family()
         self._fontSize     = self._textFont.pointSize()
-        self._fontWeight   = FONT_WEIGHT_MAP.get(fontWeight, fontWeight)
         self._fontStyle    = FONT_STYLE.get(self._textFont.style(), "normal")
         self._fontPitch    = "fixed" if self._textFont.fixedPitch() else "variable"
-        self._fontBold     = FONT_WEIGHT_MAP.get(fontBold, fontBold)
         self._headWeight   = self._fontBold if self._boldHeads else None
         self._fBlockIndent = self._emToCm(self._blockIndent)
 
