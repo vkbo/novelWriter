@@ -302,7 +302,7 @@ class Tokenizer(ABC):
         self._sceneStyle |= BlockFmt.PBB if pageBreak else BlockFmt.NONE
         return
 
-    def setFont(self, font: QFont) -> None:
+    def setTextFont(self, font: QFont) -> None:
         """Set the build font."""
         self._textFont = font
         return

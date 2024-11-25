@@ -218,7 +218,7 @@ class NWBuildDocument:
         textFont = QFont(CONFIG.textFont)
         textFont.fromString(self._build.getStr("format.textFont"))
 
-        bldObj.setFont(textFont)
+        bldObj.setTextFont(textFont)
         bldObj.setLanguage(self._project.data.language)
 
         bldObj.setPartitionFormat(
