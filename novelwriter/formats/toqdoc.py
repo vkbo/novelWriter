@@ -74,10 +74,14 @@ class ToQTextDocument(Tokenizer):
         self._usedFields: list[tuple[int, str]] = []
 
         self._init = False
-        self._bold = QFont.Weight.Bold
-        self._normal = QFont.Weight.Normal
         self._newPage = False
         self._anchors = True
+
+        self._hWeight = QFont.Weight.Bold
+        self._dWeight = QFont.Weight.Normal
+        self._dItalic = False
+        self._dStrike = False
+        self._dUnderline = False
 
         self._pageSize = QPageSize(QPageSize.PageSizeId.A4)
         self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
@@ -128,11 +132,20 @@ class ToQTextDocument(Tokenizer):
         self._document.clear()
         self._document.setDefaultFont(self._textFont)
 
-        fPt = self._textFont.pointSizeF()
-        fPx = fPt*96.0/72.0  # 1 em in pixels
+        # Default Styles
+        self._dWeight = self._textFont.weight()
+        self._dItalic = self._textFont.italic()
+        self._dStrike = self._textFont.strikeOut()
+        self._dUnderline = self._textFont.underline()
+
+        # Header Weight
+        self._hWeight = QFont.Weight.Bold if self._boldHeads else self._dWeight
 
         # Scaled Sizes
         # ============
+
+        fPt = self._textFont.pointSizeF()
+        fPx = fPt*4.0/3.0  # 1 em in pixels
 
         self._mHead = {
             BlockTyp.TITLE: (fPx * self._marginTitle[0], fPx * self._marginTitle[1]),
@@ -318,21 +331,21 @@ class ToQTextDocument(Tokenizer):
 
             # Construct next format
             if fmt == TextFmt.B_B:
-                cFmt.setFontWeight(self._bold)
+                cFmt.setFontWeight(QFont.Weight.Bold)
             elif fmt == TextFmt.B_E:
-                cFmt.setFontWeight(self._normal)
+                cFmt.setFontWeight(self._dWeight)
             elif fmt == TextFmt.I_B:
                 cFmt.setFontItalic(True)
             elif fmt == TextFmt.I_E:
-                cFmt.setFontItalic(False)
+                cFmt.setFontItalic(self._dItalic)
             elif fmt == TextFmt.D_B:
                 cFmt.setFontStrikeOut(True)
             elif fmt == TextFmt.D_E:
-                cFmt.setFontStrikeOut(False)
+                cFmt.setFontStrikeOut(self._dStrike)
             elif fmt == TextFmt.U_B:
                 cFmt.setFontUnderline(True)
             elif fmt == TextFmt.U_E:
-                cFmt.setFontUnderline(False)
+                cFmt.setFontUnderline(self._dUnderline)
             elif fmt == TextFmt.M_B:
                 cFmt.setBackground(self._theme.highlight)
             elif fmt == TextFmt.M_E:
@@ -376,7 +389,7 @@ class ToQTextDocument(Tokenizer):
                 cFmt.setAnchorHref(data)
             elif fmt == TextFmt.HRF_E:
                 cFmt.setForeground(primary or self._theme.text)
-                cFmt.setFontUnderline(False)
+                cFmt.setFontUnderline(self._dUnderline)
                 cFmt.setAnchor(False)
                 cFmt.setAnchorHref("")
             elif fmt == TextFmt.FNOTE:
@@ -422,6 +435,10 @@ class ToQTextDocument(Tokenizer):
             bFmt.setLineHeight(75.0, QtPropLineHeight)
 
             cFmt = QTextCharFormat(self._charFmt)
+            cFmt.setFontItalic(False)
+            cFmt.setFontUnderline(False)
+            cFmt.setFontStrikeOut(False)
+            cFmt.setFontWeight(QFont.Weight.Normal)
             cFmt.setFontPointSize(0.75*self._textFont.pointSizeF())
             cFmt.setForeground(self._theme.comment)
 
@@ -440,7 +457,7 @@ class ToQTextDocument(Tokenizer):
         hCol = self._colorHeads and hType != BlockTyp.TITLE
         cFmt = QTextCharFormat(self._charFmt)
         cFmt.setForeground(self._theme.head if hCol else self._theme.text)
-        cFmt.setFontWeight(self._bold if self._boldHeads else self._normal)
+        cFmt.setFontWeight(self._hWeight)
         cFmt.setFontPointSize(self._sHead.get(hType, 1.0))
         if hKey and self._anchors:
             cFmt.setAnchorNames([hKey])
