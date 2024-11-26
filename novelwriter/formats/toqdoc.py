@@ -30,7 +30,7 @@ from pathlib import Path
 from PyQt5.QtCore import QMarginsF, QSizeF
 from PyQt5.QtGui import (
     QColor, QFont, QFontDatabase, QPageSize, QTextBlockFormat, QTextCharFormat,
-    QTextCursor, QTextDocument
+    QTextCursor, QTextDocument, QTextFrameFormat
 )
 from PyQt5.QtPrintSupport import QPrinter
 
@@ -432,17 +432,22 @@ class ToQTextDocument(Tokenizer):
     def _insertNewPageMarker(self, cursor: QTextCursor) -> None:
         """Insert a new page marker."""
         if self._newPage:
-            cursor.insertHtml("<hr width='100%'>")
+            bgCol = QColor(self._theme.text)
+            bgCol.setAlphaF(0.1)
+            fgCol = QColor(self._theme.text)
+            fgCol.setAlphaF(0.8)
 
-            hFmt = cursor.blockFormat()
-            hFmt.setBottomMargin(0.0)
-            hFmt.setLineHeight(75.0, QtPropLineHeight)
-            cursor.setBlockFormat(hFmt)
+            fFmt = QTextFrameFormat()
+            fFmt.setBorderStyle(QTextFrameFormat.BorderStyle.BorderStyle_None)
+            fFmt.setBackground(bgCol)
+            fFmt.setTopMargin(self._mSep[0])
+            fFmt.setBottomMargin(self._mSep[1])
 
             bFmt = QTextBlockFormat(self._blockFmt)
             bFmt.setAlignment(QtAlignCenter)
             bFmt.setTopMargin(0.0)
-            bFmt.setLineHeight(75.0, QtPropLineHeight)
+            bFmt.setBottomMargin(0.0)
+            bFmt.setLineHeight(100.0, QtPropLineHeight)
 
             cFmt = QTextCharFormat(self._charFmt)
             cFmt.setFontItalic(False)
@@ -450,10 +455,13 @@ class ToQTextDocument(Tokenizer):
             cFmt.setFontStrikeOut(False)
             cFmt.setFontWeight(QFont.Weight.Normal)
             cFmt.setFontPointSize(0.75*self._textFont.pointSizeF())
-            cFmt.setForeground(self._theme.comment)
+            cFmt.setForeground(fgCol)
 
-            newBlock(cursor, bFmt)
+            cursor.insertFrame(fFmt)
+            cursor.setBlockFormat(bFmt)
             cursor.insertText(self._project.localLookup("New Page"), cFmt)
+            cursor.swap(self._document.rootFrame().lastCursorPosition())
+
         return
 
     def _genHeadStyle(self, hType: BlockTyp, hKey: str, rFmt: QTextBlockFormat) -> T_TextStyle:
