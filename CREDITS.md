@@ -30,6 +30,7 @@ translators for the languages currently available:
 * **Norwegian:** Veronica Berglyd Olsen (vkbo)
 * **Polish:** Anna Maria Polak (Nauthiz)
 * **Portuguese:** Bruno Meneguello (bkmeneguello)
+* **Russian:** Konstantin Tan (k1kimosha)
 * **Simplified Chinese:** Qianzhi Long (longqzh)
 
 Additional larger translation contributions:
