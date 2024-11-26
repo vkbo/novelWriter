@@ -53,7 +53,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import decodeMimeHandles, minmax, qtLambda, transferCase
+from novelwriter.common import decodeMimeHandles, fontMatcher, minmax, qtLambda, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
@@ -348,8 +348,9 @@ class GuiDocEditor(QPlainTextEdit):
         SHARED.updateSpellCheckLanguage()
 
         # Set the font. See issues #1862 and #1875.
-        self.setFont(CONFIG.textFont)
-        self._qDocument.setDefaultFont(CONFIG.textFont)
+        font = fontMatcher(CONFIG.textFont)
+        self.setFont(font)
+        self._qDocument.setDefaultFont(font)
         self.docHeader.updateFont()
         self.docFooter.updateFont()
         self.docSearch.updateFont()

@@ -35,7 +35,7 @@ from PyQt5.QtCore import QLocale
 from PyQt5.QtGui import QColor, QFont
 
 from novelwriter import CONFIG
-from novelwriter.common import checkInt, numberToRoman
+from novelwriter.common import checkInt, fontMatcher, numberToRoman
 from novelwriter.constants import (
     nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwStats, nwStyles, nwUnicode,
     trConst
@@ -304,7 +304,7 @@ class Tokenizer(ABC):
 
     def setTextFont(self, font: QFont) -> None:
         """Set the build font."""
-        self._textFont = font
+        self._textFont = fontMatcher(font)
         return
 
     def setLineHeight(self, height: float) -> None:

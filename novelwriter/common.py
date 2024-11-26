@@ -38,7 +38,7 @@ from urllib.parse import urljoin
 from urllib.request import pathname2url
 
 from PyQt5.QtCore import QCoreApplication, QMimeData, QUrl
-from PyQt5.QtGui import QColor, QDesktopServices, QFont, QFontInfo
+from PyQt5.QtGui import QColor, QDesktopServices, QFont, QFontDatabase, QFontInfo
 
 from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
@@ -432,6 +432,27 @@ def describeFont(font: QFont) -> str:
         styles = [v for v in info.styleName().split() if v not in family]
         return " ".join([f"{info.pointSize()} pt", family] + styles)
     return "Error"
+
+
+def fontMatcher(font: QFont) -> QFont:
+    """Make sure the font is the correct family, if possible. This
+    ensures that Qt doesn't use the GUI or document font instead.
+    """
+    info = QFontInfo(font)
+    if (famRequest := font.family()) != (famActual := info.family()):
+        logger.warning("Font mismatch: %s != %s", famRequest, famActual)
+        db = QFontDatabase()
+        if famRequest in db.families():
+            styleRequest, sizeRequest = font.styleName(), font.pointSize()
+            logger.info("Lookup: %s, %s, %d pt", famRequest, styleRequest, sizeRequest)
+            temp = db.font(famRequest, styleRequest, sizeRequest)
+            famFound, styleFound, sizeFound = temp.family(), temp.styleName(), temp.pointSize()
+            if famFound == famRequest:
+                logger.info("Found: %s, %s, %d pt", famFound, styleFound, sizeFound)
+                return temp
+        logger.warning("Could not find a font match")
+        logger.warning("You may need to restart the application")
+    return font
 
 
 def qtLambda(func: Callable, *args: Any, **kwargs: Any) -> Callable:
