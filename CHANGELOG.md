@@ -4,8 +4,8 @@
 
 ### Release Notes
 
-This is a patch release that fixes a a few minor bugs in the user interface, and with the HTML
-manuscript format. This patch also adds a new Russian translation, and updated the German and
+This is a patch release that fixes a few minor bugs in the user interface, and with the HTML
+manuscript format. This patch also adds a Russian translation, and updated the German and
 Portuguese translations.
 
 ### Detailed Changelog
@@ -13,7 +13,7 @@ Portuguese translations.
 **Bugfixes**
 
 * Fixed the red/green LEDs on the statusbar for the Default Light theme. The colours were swapped.
-  Issue 2057. PR #2059.
+  Issue #2057. PR #2059.
 * Moved the styles tag into the head tag for HTML manuscript output, which is the correct placement
   for them. Issue #2080. PR #2085.
 * Fixed a bug in the project tree where it was possible to drag content to root level on some Qt
@@ -22,7 +22,7 @@ Portuguese translations.
 
 **Documentation**
 
-* Updated dead link to the spell check library. Issue #2042. PR #2059.
+* Updated a dead link to the spell check library with the new one. Issue #2042. PR #2059.
 
 **Internationalisation**
 
