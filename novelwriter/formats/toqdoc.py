@@ -85,6 +85,7 @@ class ToQTextDocument(Tokenizer):
 
         self._pageSize = QPageSize(QPageSize.PageSizeId.A4)
         self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
+        self._resolution = 96
 
         return
 
@@ -123,9 +124,10 @@ class ToQTextDocument(Tokenizer):
     #  Class Methods
     ##
 
-    def initDocument(self) -> None:
+    def initDocument(self, resolution: int = 96) -> None:
         """Initialise all computed values of the document."""
         super().initDocument()
+        self._resolution = resolution
 
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
@@ -168,8 +170,8 @@ class ToQTextDocument(Tokenizer):
         self._mMeta = (fPx * self._marginMeta[0], fPx * self._marginMeta[1])
         self._mSep  = (fPx * self._marginSep[0], fPx * self._marginSep[1])
 
-        self._mIndent = fPx * 2.0
-        self._tIndent = fPx * self._firstWidth
+        self._mIndent = fPx * self._resolution/96 * 2.0
+        self._tIndent = fPx * self._resolution/96 * self._firstWidth
 
         # Text Formats
         # ============
@@ -265,6 +267,7 @@ class ToQTextDocument(Tokenizer):
         printer = QPrinter(QPrinter.PrinterMode.HighResolution)
         printer.setDocName(self._project.data.name)
         printer.setCreator(f"novelWriter/{__version__}")
+        printer.setResolution(self._resolution)
         printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
         printer.setPageSize(self._pageSize)
         printer.setPageMargins(m.left(), m.top(), m.right(), m.bottom(), QPrinter.Unit.Millimeter)

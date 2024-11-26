@@ -178,7 +178,7 @@ class NWBuildDocument:
             makeObj = ToQTextDocument(self._project)
             makeObj.disableAnchors()
             filtered = self._setupBuild(makeObj)
-            makeObj.initDocument()
+            makeObj.initDocument(resolution=1200)
             yield from self._iterBuild(makeObj, filtered)
             makeObj.closeDocument()
 
