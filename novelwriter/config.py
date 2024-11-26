@@ -40,7 +40,10 @@ from PyQt5.QtCore import (
 from PyQt5.QtGui import QFont, QFontDatabase
 from PyQt5.QtWidgets import QApplication
 
-from novelwriter.common import NWConfigParser, checkInt, checkPath, describeFont, formatTimeStamp
+from novelwriter.common import (
+    NWConfigParser, checkInt, checkPath, describeFont, fontMatcher,
+    formatTimeStamp
+)
 from novelwriter.constants import nwFiles, nwUnicode
 from novelwriter.error import formatException, logException
 
@@ -369,10 +372,11 @@ class Config:
     def setGuiFont(self, value: QFont | str | None) -> None:
         """Update the GUI's font style from settings."""
         if isinstance(value, QFont):
-            self.guiFont = value
+            self.guiFont = fontMatcher(value)
         elif value and isinstance(value, str):
-            self.guiFont = QFont()
-            self.guiFont.fromString(value)
+            font = QFont()
+            font.fromString(value)
+            self.guiFont = fontMatcher(font)
         else:
             font = QFont()
             fontDB = QFontDatabase()
@@ -382,11 +386,9 @@ class Config:
                 font.setPointSize(10)
             else:
                 font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
-            self.guiFont = font
+            self.guiFont = fontMatcher(font)
             logger.debug("GUI font set to: %s", describeFont(font))
-
         QApplication.setFont(self.guiFont)
-
         return
 
     def setTextFont(self, value: QFont | str | None) -> None:
@@ -394,10 +396,11 @@ class Config:
         set to default font.
         """
         if isinstance(value, QFont):
-            self.textFont = value
+            self.textFont = fontMatcher(value)
         elif value and isinstance(value, str):
-            self.textFont = QFont()
-            self.textFont.fromString(value)
+            font = QFont()
+            font.fromString(value)
+            self.textFont = fontMatcher(font)
         else:
             fontDB = QFontDatabase()
             fontFam = fontDB.families()
@@ -411,8 +414,8 @@ class Config:
                 font.setPointSize(12)
             else:
                 font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
-            self.textFont = font
-            logger.debug("Text font set to: %s", describeFont(font))
+            self.textFont = fontMatcher(font)
+            logger.debug("Text font set to: %s", describeFont(self.textFont))
         return
 
     ##

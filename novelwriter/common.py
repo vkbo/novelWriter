@@ -436,11 +436,13 @@ def describeFont(font: QFont) -> str:
 
 def fontMatcher(font: QFont) -> QFont:
     """Make sure the font is the correct family, if possible. This
-    ensures that Qt doesn't use the GUI or document font instead.
+    ensures that Qt doesn't reuse another font under the hood. The
+    default Qt5 font matching algorithm doesn't handle well changing
+    fonts at runtime.
     """
     info = QFontInfo(font)
     if (famRequest := font.family()) != (famActual := info.family()):
-        logger.warning("Font mismatch: %s != %s", famRequest, famActual)
+        logger.warning("Font mismatch: Requested '%s', but got '%s'", famRequest, famActual)
         db = QFontDatabase()
         if famRequest in db.families():
             styleRequest, sizeRequest = font.styleName(), font.pointSize()
@@ -450,8 +452,8 @@ def fontMatcher(font: QFont) -> QFont:
             if famFound == famRequest:
                 logger.info("Found: %s, %s, %d pt", famFound, styleFound, sizeFound)
                 return temp
-        logger.warning("Could not find a font match")
-        logger.warning("You may need to restart the application")
+        logger.warning("Could not find a font match in the font database")
+        logger.warning("If you just changed font, you may need to restart the application")
     return font
 
 

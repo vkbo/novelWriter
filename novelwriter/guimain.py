@@ -1051,11 +1051,6 @@ class GuiMain(QMainWindow):
         self.initMain()
         self.saveDocument()
 
-        if restart:
-            SHARED.info(self.tr(
-                "Some changes will not be applied until novelWriter has been restarted."
-            ))
-
         if tree:
             SHARED.project.tree.refreshAllItems()
 
@@ -1087,6 +1082,11 @@ class GuiMain(QMainWindow):
         # Force update of word count
         self._lastTotalCount = 0
         self._updateStatusWordCount()
+
+        if restart:
+            SHARED.info(self.tr(
+                "Some changes will not be applied until novelWriter has been restarted."
+            ))
 
         return
 

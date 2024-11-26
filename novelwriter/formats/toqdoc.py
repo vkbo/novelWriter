@@ -148,6 +148,7 @@ class ToQTextDocument(Tokenizer):
 
         fPt = self._textFont.pointSizeF()
         fPx = fPt*4.0/3.0  # 1 em in pixels
+        fDt = fPx * self._resolution/96.0  # In dots for a given resolution
 
         self._mHead = {
             BlockTyp.TITLE: (fPx * self._marginTitle[0], fPx * self._marginTitle[1]),
@@ -170,8 +171,8 @@ class ToQTextDocument(Tokenizer):
         self._mMeta = (fPx * self._marginMeta[0], fPx * self._marginMeta[1])
         self._mSep  = (fPx * self._marginSep[0], fPx * self._marginSep[1])
 
-        self._mIndent = fPx * self._resolution/96 * 2.0
-        self._tIndent = fPx * self._resolution/96 * self._firstWidth
+        self._mIndent = fDt * 2.0
+        self._tIndent = fDt * self._firstWidth
 
         # Text Formats
         # ============
