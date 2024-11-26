@@ -83,9 +83,9 @@ class ToQTextDocument(Tokenizer):
         self._dStrike = False
         self._dUnderline = False
 
+        self._dpi = 96
         self._pageSize = QPageSize(QPageSize.PageSizeId.A4)
         self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
-        self._resolution = 96
 
         return
 
@@ -124,11 +124,11 @@ class ToQTextDocument(Tokenizer):
     #  Class Methods
     ##
 
-    def initDocument(self, resolution: int = 96) -> None:
+    def initDocument(self, pdf: bool = False) -> None:
         """Initialise all computed values of the document."""
         super().initDocument()
-        self._resolution = resolution
 
+        self._dpi = 72 if pdf else 96
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
         self._document.clear()
@@ -147,15 +147,14 @@ class ToQTextDocument(Tokenizer):
         # ============
 
         fPt = self._textFont.pointSizeF()
-        fPx = fPt*4.0/3.0  # 1 em in pixels
-        fDt = fPx * self._resolution/96.0  # In dots for a given resolution
+        mSc = fPt * self._dpi/72.0
 
         self._mHead = {
-            BlockTyp.TITLE: (fPx * self._marginTitle[0], fPx * self._marginTitle[1]),
-            BlockTyp.HEAD1: (fPx * self._marginHead1[0], fPx * self._marginHead1[1]),
-            BlockTyp.HEAD2: (fPx * self._marginHead2[0], fPx * self._marginHead2[1]),
-            BlockTyp.HEAD3: (fPx * self._marginHead3[0], fPx * self._marginHead3[1]),
-            BlockTyp.HEAD4: (fPx * self._marginHead4[0], fPx * self._marginHead4[1]),
+            BlockTyp.TITLE: (mSc * self._marginTitle[0], mSc * self._marginTitle[1]),
+            BlockTyp.HEAD1: (mSc * self._marginHead1[0], mSc * self._marginHead1[1]),
+            BlockTyp.HEAD2: (mSc * self._marginHead2[0], mSc * self._marginHead2[1]),
+            BlockTyp.HEAD3: (mSc * self._marginHead3[0], mSc * self._marginHead3[1]),
+            BlockTyp.HEAD4: (mSc * self._marginHead4[0], mSc * self._marginHead4[1]),
         }
 
         hScale = self._scaleHeads
@@ -167,12 +166,12 @@ class ToQTextDocument(Tokenizer):
             BlockTyp.HEAD4: (nwStyles.H_SIZES.get(4, 1.0) * fPt) if hScale else fPt,
         }
 
-        self._mText = (fPx * self._marginText[0], fPx * self._marginText[1])
-        self._mMeta = (fPx * self._marginMeta[0], fPx * self._marginMeta[1])
-        self._mSep  = (fPx * self._marginSep[0], fPx * self._marginSep[1])
+        self._mText = (mSc * self._marginText[0], mSc * self._marginText[1])
+        self._mMeta = (mSc * self._marginMeta[0], mSc * self._marginMeta[1])
+        self._mSep  = (mSc * self._marginSep[0], mSc * self._marginSep[1])
 
-        self._mIndent = fDt * 2.0
-        self._tIndent = fDt * self._firstWidth
+        self._mIndent = mSc * 2.0
+        self._tIndent = mSc * self._firstWidth
 
         # Text Formats
         # ============
@@ -268,7 +267,7 @@ class ToQTextDocument(Tokenizer):
         printer = QPrinter(QPrinter.PrinterMode.HighResolution)
         printer.setDocName(self._project.data.name)
         printer.setCreator(f"novelWriter/{__version__}")
-        printer.setResolution(self._resolution)
+        printer.setResolution(self._dpi)
         printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
         printer.setPageSize(self._pageSize)
         printer.setPageMargins(m.left(), m.top(), m.right(), m.bottom(), QPrinter.Unit.Millimeter)
