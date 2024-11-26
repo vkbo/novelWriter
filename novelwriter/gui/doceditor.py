@@ -349,6 +349,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Set the font. See issues #1862 and #1875.
         self.setFont(CONFIG.textFont)
+        self._qDocument.setDefaultFont(CONFIG.textFont)
         self.docHeader.updateFont()
         self.docFooter.updateFont()
         self.docSearch.updateFont()
