@@ -1279,11 +1279,13 @@ class GuiDocEditor(QPlainTextEdit):
         """Process the word counter's finished signal."""
         if self._docHandle and self._nwItem:
             logger.debug("Updating word count")
+            needsRefresh = wCount != self._nwItem.wordCount
             self._nwItem.setCharCount(cCount)
             self._nwItem.setWordCount(wCount)
             self._nwItem.setParaCount(pCount)
-            self._nwItem.notifyToRefresh()
-            self.docFooter.updateWordCount(wCount, False)
+            if needsRefresh:
+                self._nwItem.notifyToRefresh()
+                self.docFooter.updateWordCount(wCount, False)
         return
 
     @pyqtSlot()

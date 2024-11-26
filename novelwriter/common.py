@@ -436,9 +436,9 @@ def describeFont(font: QFont) -> str:
 
 def fontMatcher(font: QFont) -> QFont:
     """Make sure the font is the correct family, if possible. This
-    ensures that Qt doesn't reuse another font under the hood. The
+    ensures that Qt doesn't re-use another font under the hood. The
     default Qt5 font matching algorithm doesn't handle well changing
-    fonts at runtime.
+    application fonts at runtime.
     """
     info = QFontInfo(font)
     if (famRequest := font.family()) != (famActual := info.family()):
@@ -448,6 +448,7 @@ def fontMatcher(font: QFont) -> QFont:
             styleRequest, sizeRequest = font.styleName(), font.pointSize()
             logger.info("Lookup: %s, %s, %d pt", famRequest, styleRequest, sizeRequest)
             temp = db.font(famRequest, styleRequest, sizeRequest)
+            temp.setPointSize(sizeRequest)  # Make sure it isn't changed
             famFound, styleFound, sizeFound = temp.family(), temp.styleName(), temp.pointSize()
             if famFound == famRequest:
                 logger.info("Found: %s, %s, %d pt", famFound, styleFound, sizeFound)
@@ -462,6 +463,12 @@ def qtLambda(func: Callable, *args: Any, **kwargs: Any) -> Callable:
     def wrapper(*a_: Any) -> None:
         func(*args, **kwargs)
     return wrapper
+
+
+def encodeMimeHandles(mimeData: QMimeData, handles: list[str]) -> None:
+    """Encode handles into a mime data object."""
+    mimeData.setData(nwConst.MIME_HANDLE, b"|".join(h.encode() for h in handles))
+    return
 
 
 def decodeMimeHandles(mimeData: QMimeData) -> list[str]:
