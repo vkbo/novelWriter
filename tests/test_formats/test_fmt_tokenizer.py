@@ -110,7 +110,7 @@ def testFmtToken_Setters(mockGUI):
     tokens.setSceneFormat(f"S: {nwHeadFmt.TITLE}", True)
     tokens.setHardSceneFormat(f"H: {nwHeadFmt.TITLE}", True)
     tokens.setSectionFormat(f"X: {nwHeadFmt.TITLE}", True)
-    tokens.setFont(QFont("Monospace", 10))
+    tokens.setTextFont(QFont("Monospace", 10))
     tokens.setLineHeight(2.0)
     tokens.setBlockIndent(6.0)
     tokens.setJustify(True)

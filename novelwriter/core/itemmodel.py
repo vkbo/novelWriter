@@ -31,7 +31,7 @@ from typing import TYPE_CHECKING
 from PyQt5.QtCore import QAbstractItemModel, QMimeData, QModelIndex, Qt
 from PyQt5.QtGui import QFont, QIcon
 
-from novelwriter.common import decodeMimeHandles, minmax
+from novelwriter.common import decodeMimeHandles, encodeMimeHandles, minmax
 from novelwriter.constants import nwConst
 from novelwriter.core.item import NWItem
 from novelwriter.enum import nwItemClass
@@ -367,11 +367,11 @@ class ProjectModel(QAbstractItemModel):
     def mimeData(self, indices: list[QModelIndex]) -> QMimeData:
         """Encode mime data about a selection."""
         handles = [
-            i.internalPointer().item.itemHandle.encode()
+            i.internalPointer().item.itemHandle
             for i in indices if i.isValid() and i.column() == 0
         ]
         mime = QMimeData()
-        mime.setData(nwConst.MIME_HANDLE, b"|".join(handles))
+        encodeMimeHandles(mime, handles)
         return mime
 
     def canDropMimeData(

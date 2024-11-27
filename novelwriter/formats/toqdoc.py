@@ -29,8 +29,8 @@ from pathlib import Path
 
 from PyQt5.QtCore import QMarginsF, QSizeF
 from PyQt5.QtGui import (
-    QColor, QFont, QPageSize, QTextBlockFormat, QTextCharFormat, QTextCursor,
-    QTextDocument
+    QColor, QFont, QFontDatabase, QPageSize, QTextBlockFormat, QTextCharFormat,
+    QTextCursor, QTextDocument, QTextFrameFormat
 )
 from PyQt5.QtPrintSupport import QPrinter
 
@@ -74,11 +74,16 @@ class ToQTextDocument(Tokenizer):
         self._usedFields: list[tuple[int, str]] = []
 
         self._init = False
-        self._bold = QFont.Weight.Bold
-        self._normal = QFont.Weight.Normal
         self._newPage = False
         self._anchors = True
 
+        self._hWeight = QFont.Weight.Bold
+        self._dWeight = QFont.Weight.Normal
+        self._dItalic = False
+        self._dStrike = False
+        self._dUnderline = False
+
+        self._dpi = 96
         self._pageSize = QPageSize(QPageSize.PageSizeId.A4)
         self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
 
@@ -119,20 +124,36 @@ class ToQTextDocument(Tokenizer):
     #  Class Methods
     ##
 
-    def initDocument(self) -> None:
+    def initDocument(self, pdf: bool = False) -> None:
         """Initialise all computed values of the document."""
         super().initDocument()
+
+        if pdf:
+            fontDB = QFontDatabase()
+            family = self._textFont.family()
+            style = self._textFont.styleName()
+            self._dpi = 1200 if fontDB.isScalable(family, style) else 72
 
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
         self._document.clear()
         self._document.setDefaultFont(self._textFont)
 
-        fPt = self._textFont.pointSizeF()
-        fPx = fPt*96.0/72.0  # 1 em in pixels
+        # Default Styles
+        self._dWeight = self._textFont.weight()
+        self._dItalic = self._textFont.italic()
+        self._dStrike = self._textFont.strikeOut()
+        self._dUnderline = self._textFont.underline()
+
+        # Header Weight
+        self._hWeight = QFont.Weight.Bold if self._boldHeads else self._dWeight
 
         # Scaled Sizes
         # ============
+
+        fPt = self._textFont.pointSizeF()
+        fPx = fPt*96.0/72.0  # 1 em in pixels
+        mPx = fPx * self._dpi/96.0
 
         self._mHead = {
             BlockTyp.TITLE: (fPx * self._marginTitle[0], fPx * self._marginTitle[1]),
@@ -155,8 +176,8 @@ class ToQTextDocument(Tokenizer):
         self._mMeta = (fPx * self._marginMeta[0], fPx * self._marginMeta[1])
         self._mSep  = (fPx * self._marginSep[0], fPx * self._marginSep[1])
 
-        self._mIndent = fPx * 2.0
-        self._tIndent = fPx * self._firstWidth
+        self._mIndent = mPx * 2.0
+        self._tIndent = mPx * self._firstWidth
 
         # Text Formats
         # ============
@@ -248,10 +269,12 @@ class ToQTextDocument(Tokenizer):
     def saveDocument(self, path: Path) -> None:
         """Save the document as a PDF file."""
         m = self._pageMargins
+        logger.info("Writing PDF at %d DPI", self._dpi)
 
         printer = QPrinter(QPrinter.PrinterMode.HighResolution)
         printer.setDocName(self._project.data.name)
         printer.setCreator(f"novelWriter/{__version__}")
+        printer.setResolution(self._dpi)
         printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
         printer.setPageSize(self._pageSize)
         printer.setPageMargins(m.left(), m.top(), m.right(), m.bottom(), QPrinter.Unit.Millimeter)
@@ -318,21 +341,21 @@ class ToQTextDocument(Tokenizer):
 
             # Construct next format
             if fmt == TextFmt.B_B:
-                cFmt.setFontWeight(self._bold)
+                cFmt.setFontWeight(QFont.Weight.Bold)
             elif fmt == TextFmt.B_E:
-                cFmt.setFontWeight(self._normal)
+                cFmt.setFontWeight(self._dWeight)
             elif fmt == TextFmt.I_B:
                 cFmt.setFontItalic(True)
             elif fmt == TextFmt.I_E:
-                cFmt.setFontItalic(False)
+                cFmt.setFontItalic(self._dItalic)
             elif fmt == TextFmt.D_B:
                 cFmt.setFontStrikeOut(True)
             elif fmt == TextFmt.D_E:
-                cFmt.setFontStrikeOut(False)
+                cFmt.setFontStrikeOut(self._dStrike)
             elif fmt == TextFmt.U_B:
                 cFmt.setFontUnderline(True)
             elif fmt == TextFmt.U_E:
-                cFmt.setFontUnderline(False)
+                cFmt.setFontUnderline(self._dUnderline)
             elif fmt == TextFmt.M_B:
                 cFmt.setBackground(self._theme.highlight)
             elif fmt == TextFmt.M_E:
@@ -376,7 +399,7 @@ class ToQTextDocument(Tokenizer):
                 cFmt.setAnchorHref(data)
             elif fmt == TextFmt.HRF_E:
                 cFmt.setForeground(primary or self._theme.text)
-                cFmt.setFontUnderline(False)
+                cFmt.setFontUnderline(self._dUnderline)
                 cFmt.setAnchor(False)
                 cFmt.setAnchorHref("")
             elif fmt == TextFmt.FNOTE:
@@ -409,24 +432,36 @@ class ToQTextDocument(Tokenizer):
     def _insertNewPageMarker(self, cursor: QTextCursor) -> None:
         """Insert a new page marker."""
         if self._newPage:
-            cursor.insertHtml("<hr width='100%'>")
+            bgCol = QColor(self._theme.text)
+            bgCol.setAlphaF(0.1)
+            fgCol = QColor(self._theme.text)
+            fgCol.setAlphaF(0.8)
 
-            hFmt = cursor.blockFormat()
-            hFmt.setBottomMargin(0.0)
-            hFmt.setLineHeight(75.0, QtPropLineHeight)
-            cursor.setBlockFormat(hFmt)
+            fFmt = QTextFrameFormat()
+            fFmt.setBorderStyle(QTextFrameFormat.BorderStyle.BorderStyle_None)
+            fFmt.setBackground(bgCol)
+            fFmt.setTopMargin(self._mSep[0])
+            fFmt.setBottomMargin(self._mSep[1])
 
             bFmt = QTextBlockFormat(self._blockFmt)
             bFmt.setAlignment(QtAlignCenter)
             bFmt.setTopMargin(0.0)
-            bFmt.setLineHeight(75.0, QtPropLineHeight)
+            bFmt.setBottomMargin(0.0)
+            bFmt.setLineHeight(100.0, QtPropLineHeight)
 
             cFmt = QTextCharFormat(self._charFmt)
+            cFmt.setFontItalic(False)
+            cFmt.setFontUnderline(False)
+            cFmt.setFontStrikeOut(False)
+            cFmt.setFontWeight(QFont.Weight.Normal)
             cFmt.setFontPointSize(0.75*self._textFont.pointSizeF())
-            cFmt.setForeground(self._theme.comment)
+            cFmt.setForeground(fgCol)
 
-            newBlock(cursor, bFmt)
+            cursor.insertFrame(fFmt)
+            cursor.setBlockFormat(bFmt)
             cursor.insertText(self._project.localLookup("New Page"), cFmt)
+            cursor.swap(self._document.rootFrame().lastCursorPosition())
+
         return
 
     def _genHeadStyle(self, hType: BlockTyp, hKey: str, rFmt: QTextBlockFormat) -> T_TextStyle:
@@ -440,7 +475,7 @@ class ToQTextDocument(Tokenizer):
         hCol = self._colorHeads and hType != BlockTyp.TITLE
         cFmt = QTextCharFormat(self._charFmt)
         cFmt.setForeground(self._theme.head if hCol else self._theme.text)
-        cFmt.setFontWeight(self._bold if self._boldHeads else self._normal)
+        cFmt.setFontWeight(self._hWeight)
         cFmt.setFontPointSize(self._sHead.get(hType, 1.0))
         if hKey and self._anchors:
             cFmt.setAnchorNames([hKey])

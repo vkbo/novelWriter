@@ -219,7 +219,7 @@ class GuiDocViewer(QTextBrowser):
         qDoc = ToQTextDocument(SHARED.project)
         qDoc.setJustify(CONFIG.doJustify)
         qDoc.setDialogHighlight(True)
-        qDoc.setFont(CONFIG.textFont)
+        qDoc.setTextFont(CONFIG.textFont)
         qDoc.setTheme(self._docTheme)
         qDoc.initDocument()
         qDoc.setKeywords(True)

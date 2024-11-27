@@ -101,7 +101,7 @@ def testBaseError_Handler(qtbot, monkeypatch, nwGUI):
     with monkeypatch.context() as mp:
         mp.setattr(NWErrorMessage, "exec", lambda *a: None)
         mp.setattr("PyQt5.QtWidgets.QApplication.exit", lambda *a: None)
-        mp.setattr(nwGUI, "closeMain", causeException)
+        mp.setattr("novelwriter.guimain.GuiMain.closeMain", causeException)
         exceptionHandler(Exception, "Error Message", None)  # type: ignore
 
     nwGUI.closeMain()

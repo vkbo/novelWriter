@@ -178,7 +178,7 @@ class NWBuildDocument:
             makeObj = ToQTextDocument(self._project)
             makeObj.disableAnchors()
             filtered = self._setupBuild(makeObj)
-            makeObj.initDocument()
+            makeObj.initDocument(pdf=True)
             yield from self._iterBuild(makeObj, filtered)
             makeObj.closeDocument()
 
@@ -218,7 +218,7 @@ class NWBuildDocument:
         textFont = QFont(CONFIG.textFont)
         textFont.fromString(self._build.getStr("format.textFont"))
 
-        bldObj.setFont(textFont)
+        bldObj.setTextFont(textFont)
         bldObj.setLanguage(self._project.data.language)
 
         bldObj.setPartitionFormat(

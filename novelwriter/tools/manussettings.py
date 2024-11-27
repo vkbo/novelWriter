@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import describeFont, qtLambda
+from novelwriter.common import describeFont, fontMatcher, qtLambda
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.configlayout import (
@@ -1281,8 +1281,9 @@ class _FormattingTab(NScrollableForm):
         # Text Format
         # ===========
 
-        self._textFont = QFont()
-        self._textFont.fromString(self._build.getStr("format.textFont"))
+        font = QFont()
+        font.fromString(self._build.getStr("format.textFont"))
+        self._textFont = fontMatcher(font)
 
         self.textFont.setText(describeFont(self._textFont))
         self.textFont.setCursorPosition(0)
@@ -1437,9 +1438,9 @@ class _FormattingTab(NScrollableForm):
         """Open the QFontDialog and set a font for the font style."""
         font, status = SHARED.getFont(self._textFont, CONFIG.nativeFont)
         if status:
-            self.textFont.setText(describeFont(font))
+            self._textFont = fontMatcher(font)
+            self.textFont.setText(describeFont(self._textFont))
             self.textFont.setCursorPosition(0)
-            self._textFont = font
         return
 
     @pyqtSlot(int)
