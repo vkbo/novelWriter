@@ -628,7 +628,7 @@ def testFmtToDocX_Fields(mockGUI):
         '<w:footnotePr><w:numFmt w:val="decimal" /></w:footnotePr>'
         '<w:pgSz w:w="11905" w:h="16837" w:orient="portrait" />'
         '<w:pgMar w:top="1133" w:right="1133" w:bottom="1133" w:left="1133" '
-        'w:header="566" w:footer="0" w:gutter="0" />'
+        'w:header="748" w:footer="0" w:gutter="0" />'
         '<w:pgNumType w:start="1" w:fmt="decimal" /><w:titlePg />'
         '</w:sectPr></w:body></w:document>'
     )
