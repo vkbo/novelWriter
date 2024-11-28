@@ -666,7 +666,7 @@ class ToOdt(Tokenizer):
 
     def _emToCm(self, value: float) -> str:
         """Converts an em value to centimetres."""
-        return f"{value*2.54/72*self._fontSize:.3f}cm"
+        return f"{value*self._fontSize*2.54/72.0:.3f}cm"
 
     def _emToPt(self, scale: float) -> str:
         """Compute relative font size in points."""
@@ -694,10 +694,10 @@ class ToOdt(Tokenizer):
 
         xHead = ET.SubElement(xPage, _mkTag("style", "header-style"))
         ET.SubElement(xHead, _mkTag("style", "header-footer-properties"), attrib={
-            _mkTag("fo", "min-height"): "0.600cm",
+            _mkTag("fo", "min-height"): self._emToCm(1.5),
             _mkTag("fo", "margin-left"): "0.000cm",
             _mkTag("fo", "margin-right"): "0.000cm",
-            _mkTag("fo", "margin-bottom"): "0.500cm",
+            _mkTag("fo", "margin-bottom"): self._emToCm(0.5),
         })
 
         return
