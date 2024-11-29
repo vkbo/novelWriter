@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import NamedTuple
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from PyQt5.QtCore import QMarginsF, QSizeF
+from PyQt5.QtCore import QMargins, QSize
 from PyQt5.QtGui import QColor
 
 from novelwriter import __version__
@@ -93,6 +93,11 @@ def _wText(parent: ET.Element, text: str) -> ET.Element:
     if len(text) > len(text.strip()):
         attrib[_mkTag("xml", "space")] = "preserve"
     return xmlSubElem(parent, _wTag("t"), text, attrib=attrib)
+
+
+def _mmToSz(value: float) -> int:
+    """Convert millimetres to internal margin size units"""
+    return int(value*20.0*72.0/25.4)
 
 
 # Cached
@@ -182,8 +187,8 @@ class ToDocX(Tokenizer):
         # Internal
         self._fontFamily  = "Liberation Serif"
         self._fontSize    = 12.0
-        self._pageSize    = QSizeF(210.0, 297.0)
-        self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
+        self._pageSize    = QSize(_mmToSz(210.0), _mmToSz(297.0))
+        self._pageMargins = QMargins(_mmToSz(20.0), _mmToSz(20.0), _mmToSz(20.0), _mmToSz(20.0))
 
         # Data Variables
         self._pars: list[DocXParagraph] = []
@@ -203,8 +208,8 @@ class ToDocX(Tokenizer):
         self, width: float, height: float, top: float, bottom: float, left: float, right: float
     ) -> None:
         """Set the document page size and margins in millimetres."""
-        self._pageSize = QSizeF(width, height)
-        self._pageMargins = QMarginsF(left, top, right, bottom)
+        self._pageSize = QSize(_mmToSz(width), _mmToSz(height))
+        self._pageMargins = QMargins(_mmToSz(left), _mmToSz(top), _mmToSz(right), _mmToSz(bottom))
         return
 
     def setHeaderFormat(self, format: str, offset: int) -> None:
@@ -926,9 +931,6 @@ class ToDocX(Tokenizer):
         for par in pars:
             par.toXml(xBody)
 
-        def szScale(value: float) -> str:
-            return str(int(value*2.0*72.0/2.54))
-
         # Write Settings
         xSect = xmlSubElem(xBody, _wTag("sectPr"))
         if hFirst and hDefault:
@@ -945,16 +947,16 @@ class ToDocX(Tokenizer):
         })
 
         xmlSubElem(xSect, _wTag("pgSz"), attrib={
-            _wTag("w"): szScale(self._pageSize.width()),
-            _wTag("h"): szScale(self._pageSize.height()),
+            _wTag("w"): str(self._pageSize.width()),
+            _wTag("h"): str(self._pageSize.height()),
             _wTag("orient"): "portrait",
         })
         xmlSubElem(xSect, _wTag("pgMar"), attrib={
-            _wTag("top"): szScale(self._pageMargins.top()),
-            _wTag("right"): szScale(self._pageMargins.right()),
-            _wTag("bottom"): szScale(self._pageMargins.bottom()),
-            _wTag("left"): szScale(self._pageMargins.left()),
-            _wTag("header"): szScale(self._pageMargins.top()/2.0),
+            _wTag("top"): str(self._pageMargins.top()),
+            _wTag("right"): str(self._pageMargins.right()),
+            _wTag("bottom"): str(self._pageMargins.bottom()),
+            _wTag("left"): str(self._pageMargins.left()),
+            _wTag("header"): str(self._pageMargins.top() - int(35.0*self._fontSize)),
             _wTag("footer"): "0",
             _wTag("gutter"): "0",
         })
