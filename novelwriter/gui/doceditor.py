@@ -308,7 +308,6 @@ class GuiDocEditor(QPlainTextEdit):
         settings. This function is both called when the editor is
         created, and when the user changes the main editor preferences.
         """
-        print(len(self.__dict__), self.__dict__)
         # Auto-Replace
         self._autoReplace.initSettings()
 
