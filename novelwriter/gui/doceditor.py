@@ -1098,11 +1098,9 @@ class GuiDocEditor(QPlainTextEdit):
                 self._completer.setVisible(False)
 
         if self._doReplace and added == 1:
-            tStart = time()
             cursor = self.textCursor()
             if self._autoReplace.process(text, cursor):
                 self._qDocument.syntaxHighlighter.rehighlightBlock(cursor.block())
-            logger.debug("Auto-replace processed in %.3f µs", 1.0e6*(time() - tStart))
 
         return
 
@@ -2192,9 +2190,9 @@ class BackgroundWordCounterSignals(QObject):
 class TextAutoReplace:
 
     __slots__ = (
-        "_typPadChar", "_typSQuoteO", "_typSQuoteC", "_typDQuoteO", "_typDQuoteC",
-        "_typRepSQuote", "_typRepDQuote", "_typRepDash", "_typRepDots",
-        "_typPadBefore", "_typPadAfter",
+        "_quoteSO", "_quoteSC", "_quoteDO", "_quoteDC",
+        "_replaceSQuote", "_replaceDQuote", "_replaceDash", "_replaceDots",
+        "_padChar", "_padBefore", "_padAfter", "_doPadBefore", "_doPadAfter",
     )
 
     def __init__(self) -> None:
@@ -2203,111 +2201,50 @@ class TextAutoReplace:
 
     def initSettings(self) -> None:
         """Initialise the auto-replace settings from config."""
-        self._typPadChar   = nwUnicode.U_THNBSP if CONFIG.fmtPadThin else nwUnicode.U_NBSP
-        self._typSQuoteO   = CONFIG.fmtSQuoteOpen
-        self._typSQuoteC   = CONFIG.fmtSQuoteClose
-        self._typDQuoteO   = CONFIG.fmtDQuoteOpen
-        self._typDQuoteC   = CONFIG.fmtDQuoteClose
-        self._typRepSQuote = CONFIG.doReplaceSQuote
-        self._typRepDQuote = CONFIG.doReplaceDQuote
-        self._typRepDash   = CONFIG.doReplaceDash
-        self._typRepDots   = CONFIG.doReplaceDots
-        self._typPadBefore = CONFIG.fmtPadBefore
-        self._typPadAfter  = CONFIG.fmtPadAfter
+        self._quoteSO = CONFIG.fmtSQuoteOpen
+        self._quoteSC = CONFIG.fmtSQuoteClose
+        self._quoteDO = CONFIG.fmtDQuoteOpen
+        self._quoteDC = CONFIG.fmtDQuoteClose
+
+        self._replaceSQuote = CONFIG.doReplaceSQuote
+        self._replaceDQuote = CONFIG.doReplaceDQuote
+        self._replaceDash   = CONFIG.doReplaceDash
+        self._replaceDots   = CONFIG.doReplaceDots
+
+        self._padChar     = nwUnicode.U_THNBSP if CONFIG.fmtPadThin else nwUnicode.U_NBSP
+        self._padBefore   = CONFIG.fmtPadBefore
+        self._padAfter    = CONFIG.fmtPadAfter
+        self._doPadBefore = bool(CONFIG.fmtPadBefore)
+        self._doPadAfter  = bool(CONFIG.fmtPadAfter)
         return
 
     def process(self, text: str, cursor: QTextCursor) -> bool:
-        """Auto-replace text elements based on main configuration."""
-        tPos = cursor.positionInBlock()
-        tLen = len(text)
-
-        if tLen < 1 or tPos-1 > tLen:
+        """Auto-replace text elements based on main configuration.
+        Returns True if anything was changed.
+        """
+        pos = cursor.positionInBlock()
+        length = len(text)
+        if length < 1 or pos-1 > length:
             return False
 
-        t1 = text[tPos-1:tPos]
-        t2 = text[tPos-2:tPos]
-        t3 = text[tPos-3:tPos]
-        t4 = text[tPos-4:tPos]
-
-        if not t1:
+        delete, insert = self._determine(text, pos)
+        if insert == "":
             return False
-
-        delete = 0
-        insert = t1
-
-        if self._typRepDQuote and t2[:1].isspace() and t2.endswith('"'):
-            delete = 1
-            insert = self._typDQuoteO
-
-        elif self._typRepDQuote and t1 == '"':
-            delete = 1
-            if tPos == 1:
-                insert = self._typDQuoteO
-            elif tPos == 2 and t2 == '>"':
-                insert = self._typDQuoteO
-            elif tPos == 3 and t3 == '>>"':
-                insert = self._typDQuoteO
-            else:
-                insert = self._typDQuoteC
-
-        elif self._typRepSQuote and t2[:1].isspace() and t2.endswith("'"):
-            delete = 1
-            insert = self._typSQuoteO
-
-        elif self._typRepSQuote and t1 == "'":
-            delete = 1
-            if tPos == 1:
-                insert = self._typSQuoteO
-            elif tPos == 2 and t2 == ">'":
-                insert = self._typSQuoteO
-            elif tPos == 3 and t3 == ">>'":
-                insert = self._typSQuoteO
-            else:
-                insert = self._typSQuoteC
-
-        elif self._typRepDash and t4 == "----":
-            delete = 4
-            insert = nwUnicode.U_HBAR
-
-        elif self._typRepDash and t3 == "---":
-            delete = 3
-            insert = nwUnicode.U_EMDASH
-
-        elif self._typRepDash and t2 == "--":
-            delete = 2
-            insert = nwUnicode.U_ENDASH
-
-        elif self._typRepDash and t2 == nwUnicode.U_ENDASH + "-":
-            delete = 2
-            insert = nwUnicode.U_EMDASH
-
-        elif self._typRepDash and t2 == nwUnicode.U_EMDASH + "-":
-            delete = 2
-            insert = nwUnicode.U_HBAR
-
-        elif self._typRepDots and t3 == "...":
-            delete = 3
-            insert = nwUnicode.U_HELLIP
-
-        elif t1 == nwUnicode.U_LSEP:
-            # This resolves issue #1150
-            delete = 1
-            insert = nwUnicode.U_PSEP
 
         check = insert
-        if self._typPadBefore and check in self._typPadBefore:
-            if self._allowSpaceBeforeColon(text, check):
+        if self._doPadBefore and check in self._padBefore:
+            if not (check == ":" and length > 1 and text[0] == "@"):
                 delete = max(delete, 1)
-                chkPos = tPos - delete - 1
+                chkPos = pos - delete - 1
                 if chkPos >= 0 and text[chkPos].isspace():
                     # Strip existing space before inserting a new (#1061)
                     delete += 1
-                insert = self._typPadChar + insert
+                insert = self._padChar + insert
 
-        if self._typPadAfter and check in self._typPadAfter:
-            if self._allowSpaceBeforeColon(text, check):
+        if self._doPadAfter and check in self._padAfter:
+            if not (check == ":" and length > 1 and text[0] == "@"):
                 delete = max(delete, 1)
-                insert = insert + self._typPadChar
+                insert = insert + self._padChar
 
         if delete > 0:
             cursor.movePosition(QtMoveLeft, QtKeepAnchor, delete)
@@ -2316,15 +2253,63 @@ class TextAutoReplace:
 
         return False
 
-    @staticmethod
-    def _allowSpaceBeforeColon(text: str, char: str) -> bool:
-        """Special checker function only used by the insert space
-        feature for French, Spanish, etc, so it doesn't insert a
-        space before colons in meta data lines. See issue #1090.
-        """
-        if char == ":" and len(text) > 1 and text[0] == "@":
-            return False
-        return True
+    def _determine(self, text: str, pos: int) -> tuple[int, str]:
+        """Determine what to replace, if anything."""
+        t1 = text[pos-1:pos]
+        t2 = text[pos-2:pos]
+        t3 = text[pos-3:pos]
+        t4 = text[pos-4:pos]
+        if t1 == "":
+            # Return early if there is nothing to check
+            return 0, ""
+
+        leading = t2[:1].isspace()
+        if self._replaceDQuote:
+            if leading and t2.endswith('"'):
+                return 1, self._quoteDO
+            elif t1 == '"':
+                if pos == 1:
+                    return 1, self._quoteDO
+                elif pos == 2 and t2 == '>"':
+                    return 1, self._quoteDO
+                elif pos == 3 and t3 == '>>"':
+                    return 1, self._quoteDO
+                else:
+                    return 1, self._quoteDC
+
+        if self._replaceSQuote:
+            if leading and t2.endswith("'"):
+                return 1, self._quoteSO
+            elif t1 == "'":
+                if pos == 1:
+                    return 1, self._quoteSO
+                elif pos == 2 and t2 == ">'":
+                    return 1, self._quoteSO
+                elif pos == 3 and t3 == ">>'":
+                    return 1, self._quoteSO
+                else:
+                    return 1, self._quoteSC
+
+        if self._replaceDash:
+            if t4 == "----":
+                return 4, "\u2015"  # Horizontal bar
+            elif t3 == "---":
+                return 3, "\u2014"  # Long dash
+            elif t2 == "--":
+                return 2, "\u2013"  # Short dash
+            elif t2 == "\u2013-":
+                return 2, "\u2014"  # Long dash
+            elif t2 == "\u2014-":
+                return 2, "\u2015"  # Horizontal bar
+
+        if self._replaceDots and t3 == "...":
+            return 3, "\u2026"  # Ellipsis
+
+        if t1 == "\u2028":  # Line separator
+            # This resolves issue #1150
+            return 1, "\u2029"  # Paragraph separator
+
+        return 0, t1
 
 
 class GuiDocToolBar(QWidget):
