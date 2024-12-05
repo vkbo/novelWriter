@@ -36,7 +36,6 @@ import logging
 
 from enum import Enum
 from time import time
-from typing import NamedTuple
 
 from PyQt5.QtCore import (
     QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
@@ -85,23 +84,15 @@ class _SelectAction(Enum):
     MOVE_AFTER     = 3
 
 
-class AutoReplaceConfig(NamedTuple):
-
-    typPadChar: str
-    typSQuoteO: str
-    typSQuoteC: str
-    typDQuoteO: str
-    typDQuoteC: str
-    typRepDQuote: bool
-    typRepSQuote: bool
-    typRepDash: bool
-    typRepDots: bool
-    typPadBefore: str
-    typPadAfter: str
-
-
 class GuiDocEditor(QPlainTextEdit):
     """Gui Widget: Main Document Editor"""
+
+    __slots__ = (
+        "_nwDocument", "_nwItem", "_docChanged", "_docHandle", "_vpMargin",
+        "_lastEdit", "_lastActive", "_lastFind", "_doReplace", "_autoReplace",
+        "_completer", "_qDocument", "_keyContext", "_followTag1", "_followTag2",
+        "_timerDoc", "_wCounterDoc", "_timerSel", "_wCounterSel",
+    )
 
     MOVE_KEYS = (
         Qt.Key.Key_Left, Qt.Key.Key_Right, Qt.Key.Key_Up, Qt.Key.Key_Down,
@@ -144,20 +135,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._lastFind   = None   # Position of the last found search word
         self._doReplace  = False  # Switch to temporarily disable auto-replace
 
-        # Typography Cache
-        self._typConf = AutoReplaceConfig(
-            typPadChar=" ",
-            typSQuoteO="'",
-            typSQuoteC="'",
-            typDQuoteO='"',
-            typDQuoteC='"',
-            typRepSQuote=False,
-            typRepDQuote=False,
-            typRepDash=False,
-            typRepDots=False,
-            typPadBefore="",
-            typPadAfter="",
-        )
+        # Auto-Replace
+        self._autoReplace = TextAutoReplace()
 
         # Completer
         self._completer = MetaCompleter(self)
@@ -195,38 +174,38 @@ class GuiDocEditor(QPlainTextEdit):
         self.setAcceptDrops(True)
 
         # Custom Shortcuts
-        self.keyContext = QShortcut(self)
-        self.keyContext.setKey("Ctrl+.")
-        self.keyContext.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyContext.activated.connect(self._openContextFromCursor)
+        self._keyContext = QShortcut(self)
+        self._keyContext.setKey("Ctrl+.")
+        self._keyContext.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._keyContext.activated.connect(self._openContextFromCursor)
 
-        self.followTag1 = QShortcut(self)
-        self.followTag1.setKey("Ctrl+Return")
-        self.followTag1.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.followTag1.activated.connect(self._processTag)
+        self._followTag1 = QShortcut(self)
+        self._followTag1.setKey("Ctrl+Return")
+        self._followTag1.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._followTag1.activated.connect(self._processTag)
 
-        self.followTag2 = QShortcut(self)
-        self.followTag2.setKey("Ctrl+Enter")
-        self.followTag2.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.followTag2.activated.connect(self._processTag)
+        self._followTag2 = QShortcut(self)
+        self._followTag2.setKey("Ctrl+Enter")
+        self._followTag2.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._followTag2.activated.connect(self._processTag)
 
         # Set Up Document Word Counter
-        self.timerDoc = QTimer(self)
-        self.timerDoc.timeout.connect(self._runDocumentTasks)
-        self.timerDoc.setInterval(5000)
+        self._timerDoc = QTimer(self)
+        self._timerDoc.timeout.connect(self._runDocumentTasks)
+        self._timerDoc.setInterval(5000)
 
-        self.wCounterDoc = BackgroundWordCounter(self)
-        self.wCounterDoc.setAutoDelete(False)
-        self.wCounterDoc.signals.countsReady.connect(self._updateDocCounts)
+        self._wCounterDoc = BackgroundWordCounter(self)
+        self._wCounterDoc.setAutoDelete(False)
+        self._wCounterDoc.signals.countsReady.connect(self._updateDocCounts)
 
         # Set Up Selection Word Counter
-        self.timerSel = QTimer(self)
-        self.timerSel.timeout.connect(self._runSelCounter)
-        self.timerSel.setInterval(500)
+        self._timerSel = QTimer(self)
+        self._timerSel.timeout.connect(self._runSelCounter)
+        self._timerSel.setInterval(500)
 
-        self.wCounterSel = BackgroundWordCounter(self, forSelection=True)
-        self.wCounterSel.setAutoDelete(False)
-        self.wCounterSel.signals.countsReady.connect(self._updateSelCounts)
+        self._wCounterSel = BackgroundWordCounter(self, forSelection=True)
+        self._wCounterSel.setAutoDelete(False)
+        self._wCounterSel.signals.countsReady.connect(self._updateSelCounts)
 
         # Install Event Filter for Mouse Wheel
         self.wheelEventFilter = WheelEventFilter(self)
@@ -280,8 +259,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._nwDocument = None
         self.setReadOnly(True)
         self.clear()
-        self.timerDoc.stop()
-        self.timerSel.stop()
+        self._timerDoc.stop()
+        self._timerSel.stop()
 
         self._docHandle  = None
         self._lastEdit   = 0.0
@@ -329,20 +308,8 @@ class GuiDocEditor(QPlainTextEdit):
         settings. This function is both called when the editor is
         created, and when the user changes the main editor preferences.
         """
-        # Typography
-        self._typConf = AutoReplaceConfig(
-            typPadChar=nwUnicode.U_THNBSP if CONFIG.fmtPadThin else nwUnicode.U_NBSP,
-            typSQuoteO=CONFIG.fmtSQuoteOpen,
-            typSQuoteC=CONFIG.fmtSQuoteClose,
-            typDQuoteO=CONFIG.fmtDQuoteOpen,
-            typDQuoteC=CONFIG.fmtDQuoteClose,
-            typRepSQuote=CONFIG.doReplaceSQuote,
-            typRepDQuote=CONFIG.doReplaceDQuote,
-            typRepDash=CONFIG.doReplaceDash,
-            typRepDots=CONFIG.doReplaceDots,
-            typPadBefore=CONFIG.fmtPadBefore,
-            typPadAfter=CONFIG.fmtPadAfter,
-        )
+        # Auto-Replace
+        self._autoReplace.initSettings()
 
         # Reload spell check and dictionaries
         SHARED.updateSpellCheckLanguage()
@@ -435,7 +402,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._lastEdit = time()
         self._lastActive = time()
         self._runDocumentTasks()
-        self.timerDoc.start()
+        self._timerDoc.start()
 
         self.setReadOnly(False)
         self.updateDocMargins()
@@ -757,7 +724,6 @@ class GuiDocEditor(QPlainTextEdit):
 
         logger.debug("Requesting action: %s", action.name)
 
-        tConf = self._typConf
         self._allowAutoReplace(False)
         if action == nwDocAction.UNDO:
             self.undo()
@@ -776,9 +742,9 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.MD_STRIKE:
             self._toggleFormat(2, "~")
         elif action == nwDocAction.S_QUOTE:
-            self._wrapSelection(tConf.typSQuoteO, tConf.typSQuoteC)
+            self._wrapSelection(CONFIG.fmtSQuoteOpen, CONFIG.fmtSQuoteClose)
         elif action == nwDocAction.D_QUOTE:
-            self._wrapSelection(tConf.typDQuoteO, tConf.typDQuoteC)
+            self._wrapSelection(CONFIG.fmtDQuoteOpen, CONFIG.fmtDQuoteClose)
         elif action == nwDocAction.SEL_ALL:
             self._makeSelection(QTextCursor.SelectionType.Document)
         elif action == nwDocAction.SEL_PARA:
@@ -804,9 +770,9 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.BLOCK_HSC:
             self._formatBlock(nwDocAction.BLOCK_HSC)
         elif action == nwDocAction.REPL_SNG:
-            self._replaceQuotes("'", tConf.typSQuoteO, tConf.typSQuoteC)
+            self._replaceQuotes("'", CONFIG.fmtSQuoteOpen, CONFIG.fmtSQuoteClose)
         elif action == nwDocAction.REPL_DBL:
-            self._replaceQuotes("\"", tConf.typDQuoteO, tConf.typDQuoteC)
+            self._replaceQuotes("\"", CONFIG.fmtDQuoteOpen, CONFIG.fmtDQuoteClose)
         elif action == nwDocAction.RM_BREAKS:
             self._removeInParLineBreaks()
         elif action == nwDocAction.ALIGN_L:
@@ -878,13 +844,13 @@ class GuiDocEditor(QPlainTextEdit):
             text = insert
         elif isinstance(insert, nwDocInsert):
             if insert == nwDocInsert.QUOTE_LS:
-                text = self._typConf.typSQuoteO
+                text = CONFIG.fmtSQuoteOpen
             elif insert == nwDocInsert.QUOTE_RS:
-                text = self._typConf.typSQuoteC
+                text = CONFIG.fmtSQuoteClose
             elif insert == nwDocInsert.QUOTE_LD:
-                text = self._typConf.typDQuoteO
+                text = CONFIG.fmtDQuoteOpen
             elif insert == nwDocInsert.QUOTE_RD:
-                text = self._typConf.typDQuoteC
+                text = CONFIG.fmtDQuoteClose
             elif insert == nwDocInsert.SYNOPSIS:
                 text = "%Synopsis: "
                 block = True
@@ -1120,8 +1086,8 @@ class GuiDocEditor(QPlainTextEdit):
         if not self._docChanged:
             self.setDocumentChanged(removed != 0 or added != 0)
 
-        if not self.timerDoc.isActive():
-            self.timerDoc.start()
+        if not self._timerDoc.isActive():
+            self._timerDoc.start()
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
@@ -1139,7 +1105,9 @@ class GuiDocEditor(QPlainTextEdit):
                 self._completer.setVisible(False)
 
         if self._doReplace and added == 1:
-            self._docAutoReplace(text)
+            cursor = self.textCursor()
+            if self._autoReplace.process(text, cursor):
+                self._qDocument.syntaxHighlighter.rehighlightBlock(cursor.block())
 
         return
 
@@ -1261,8 +1229,8 @@ class GuiDocEditor(QPlainTextEdit):
 
         if time() - self._lastEdit < 25.0:
             logger.debug("Running document tasks")
-            if not self.wCounterDoc.isRunning():
-                SHARED.runInThreadPool(self.wCounterDoc)
+            if not self._wCounterDoc.isRunning():
+                SHARED.runInThreadPool(self._wCounterDoc)
 
             self.docHeader.setOutline({
                 block.blockNumber(): block.text()
@@ -1294,10 +1262,10 @@ class GuiDocEditor(QPlainTextEdit):
         information to the footer, and start the selection word counter.
         """
         if self.textCursor().hasSelection():
-            if not self.timerSel.isActive():
-                self.timerSel.start()
+            if not self._timerSel.isActive():
+                self._timerSel.start()
         else:
-            self.timerSel.stop()
+            self._timerSel.stop()
             self.docFooter.updateWordCount(0, False)
         return
 
@@ -1307,11 +1275,11 @@ class GuiDocEditor(QPlainTextEdit):
         if self._docHandle is None:
             return
 
-        if self.wCounterSel.isRunning():
+        if self._wCounterSel.isRunning():
             logger.debug("Selection word counter is busy")
             return
 
-        SHARED.runInThreadPool(self.wCounterSel)
+        SHARED.runInThreadPool(self._wCounterSel)
 
         return
 
@@ -1321,7 +1289,7 @@ class GuiDocEditor(QPlainTextEdit):
         if self._docHandle and self._nwItem:
             logger.debug("User selected %d words", wCount)
             self.docFooter.updateWordCount(wCount, True)
-            self.timerSel.stop()
+            self._timerSel.stop()
         return
 
     @pyqtSlot()
@@ -2018,120 +1986,6 @@ class GuiDocEditor(QPlainTextEdit):
             self.requestProjectItemRenamed.emit(self._docHandle, text)
         return
 
-    def _docAutoReplace(self, text: str) -> None:
-        """Auto-replace text elements based on main configuration."""
-        cursor = self.textCursor()
-        tPos = cursor.positionInBlock()
-        tLen = len(text)
-
-        if tLen < 1 or tPos-1 > tLen:
-            return
-
-        t1 = text[tPos-1:tPos]
-        t2 = text[tPos-2:tPos]
-        t3 = text[tPos-3:tPos]
-        t4 = text[tPos-4:tPos]
-
-        if not t1:
-            return
-
-        delete = 0
-        insert = t1
-        tConf = self._typConf
-
-        if tConf.typRepDQuote and t2[:1].isspace() and t2.endswith('"'):
-            delete = 1
-            insert = tConf.typDQuoteO
-
-        elif tConf.typRepDQuote and t1 == '"':
-            delete = 1
-            if tPos == 1:
-                insert = tConf.typDQuoteO
-            elif tPos == 2 and t2 == '>"':
-                insert = tConf.typDQuoteO
-            elif tPos == 3 and t3 == '>>"':
-                insert = tConf.typDQuoteO
-            else:
-                insert = tConf.typDQuoteC
-
-        elif tConf.typRepSQuote and t2[:1].isspace() and t2.endswith("'"):
-            delete = 1
-            insert = tConf.typSQuoteO
-
-        elif tConf.typRepSQuote and t1 == "'":
-            delete = 1
-            if tPos == 1:
-                insert = tConf.typSQuoteO
-            elif tPos == 2 and t2 == ">'":
-                insert = tConf.typSQuoteO
-            elif tPos == 3 and t3 == ">>'":
-                insert = tConf.typSQuoteO
-            else:
-                insert = tConf.typSQuoteC
-
-        elif tConf.typRepDash and t4 == "----":
-            delete = 4
-            insert = nwUnicode.U_HBAR
-
-        elif tConf.typRepDash and t3 == "---":
-            delete = 3
-            insert = nwUnicode.U_EMDASH
-
-        elif tConf.typRepDash and t2 == "--":
-            delete = 2
-            insert = nwUnicode.U_ENDASH
-
-        elif tConf.typRepDash and t2 == nwUnicode.U_ENDASH + "-":
-            delete = 2
-            insert = nwUnicode.U_EMDASH
-
-        elif tConf.typRepDash and t2 == nwUnicode.U_EMDASH + "-":
-            delete = 2
-            insert = nwUnicode.U_HBAR
-
-        elif tConf.typRepDots and t3 == "...":
-            delete = 3
-            insert = nwUnicode.U_HELLIP
-
-        elif t1 == nwUnicode.U_LSEP:
-            # This resolves issue #1150
-            delete = 1
-            insert = nwUnicode.U_PSEP
-
-        check = insert
-        if tConf.typPadBefore and check in tConf.typPadBefore:
-            if self._allowSpaceBeforeColon(text, check):
-                delete = max(delete, 1)
-                chkPos = tPos - delete - 1
-                if chkPos >= 0 and text[chkPos].isspace():
-                    # Strip existing space before inserting a new (#1061)
-                    delete += 1
-                insert = tConf.typPadChar + insert
-
-        if tConf.typPadAfter and check in tConf.typPadAfter:
-            if self._allowSpaceBeforeColon(text, check):
-                delete = max(delete, 1)
-                insert = insert + tConf.typPadChar
-
-        if delete > 0:
-            cursor.movePosition(QtMoveLeft, QtKeepAnchor, delete)
-            cursor.insertText(insert)
-
-            # Re-highlight, since the auto-replace sometimes interferes with it
-            self._qDocument.syntaxHighlighter.rehighlightBlock(cursor.block())
-
-        return
-
-    @staticmethod
-    def _allowSpaceBeforeColon(text: str, char: str) -> bool:
-        """Special checker function only used by the insert space
-        feature for French, Spanish, etc, so it doesn't insert a
-        space before colons in meta data lines. See issue #1090.
-        """
-        if char == ":" and len(text) > 1 and text[0] == "@":
-            return False
-        return True
-
     def _autoSelect(self) -> QTextCursor:
         """Return a cursor which may or may not have a selection based
         on user settings and document action. The selection will be the
@@ -2338,6 +2192,131 @@ class BackgroundWordCounterSignals(QObject):
     to hold the word counter signal.
     """
     countsReady = pyqtSignal(int, int, int)
+
+
+class TextAutoReplace:
+
+    __slots__ = (
+        "_quoteSO", "_quoteSC", "_quoteDO", "_quoteDC",
+        "_replaceSQuote", "_replaceDQuote", "_replaceDash", "_replaceDots",
+        "_padChar", "_padBefore", "_padAfter", "_doPadBefore", "_doPadAfter",
+    )
+
+    def __init__(self) -> None:
+        self.initSettings()
+        return
+
+    def initSettings(self) -> None:
+        """Initialise the auto-replace settings from config."""
+        self._quoteSO = CONFIG.fmtSQuoteOpen
+        self._quoteSC = CONFIG.fmtSQuoteClose
+        self._quoteDO = CONFIG.fmtDQuoteOpen
+        self._quoteDC = CONFIG.fmtDQuoteClose
+
+        self._replaceSQuote = CONFIG.doReplaceSQuote
+        self._replaceDQuote = CONFIG.doReplaceDQuote
+        self._replaceDash   = CONFIG.doReplaceDash
+        self._replaceDots   = CONFIG.doReplaceDots
+
+        self._padChar     = nwUnicode.U_THNBSP if CONFIG.fmtPadThin else nwUnicode.U_NBSP
+        self._padBefore   = CONFIG.fmtPadBefore
+        self._padAfter    = CONFIG.fmtPadAfter
+        self._doPadBefore = bool(CONFIG.fmtPadBefore)
+        self._doPadAfter  = bool(CONFIG.fmtPadAfter)
+        return
+
+    def process(self, text: str, cursor: QTextCursor) -> bool:
+        """Auto-replace text elements based on main configuration.
+        Returns True if anything was changed.
+        """
+        pos = cursor.positionInBlock()
+        length = len(text)
+        if length < 1 or pos-1 > length:
+            return False
+
+        delete, insert = self._determine(text, pos)
+        if insert == "":
+            return False
+
+        check = insert
+        if self._doPadBefore and check in self._padBefore:
+            if not (check == ":" and length > 1 and text[0] == "@"):
+                delete = max(delete, 1)
+                chkPos = pos - delete - 1
+                if chkPos >= 0 and text[chkPos].isspace():
+                    # Strip existing space before inserting a new (#1061)
+                    delete += 1
+                insert = self._padChar + insert
+
+        if self._doPadAfter and check in self._padAfter:
+            if not (check == ":" and length > 1 and text[0] == "@"):
+                delete = max(delete, 1)
+                insert = insert + self._padChar
+
+        if delete > 0:
+            cursor.movePosition(QtMoveLeft, QtKeepAnchor, delete)
+            cursor.insertText(insert)
+            return True
+
+        return False
+
+    def _determine(self, text: str, pos: int) -> tuple[int, str]:
+        """Determine what to replace, if anything."""
+        t1 = text[pos-1:pos]
+        t2 = text[pos-2:pos]
+        t3 = text[pos-3:pos]
+        t4 = text[pos-4:pos]
+        if t1 == "":
+            # Return early if there is nothing to check
+            return 0, ""
+
+        leading = t2[:1].isspace()
+        if self._replaceDQuote:
+            if leading and t2.endswith('"'):
+                return 1, self._quoteDO
+            elif t1 == '"':
+                if pos == 1:
+                    return 1, self._quoteDO
+                elif pos == 2 and t2 == '>"':
+                    return 1, self._quoteDO
+                elif pos == 3 and t3 == '>>"':
+                    return 1, self._quoteDO
+                else:
+                    return 1, self._quoteDC
+
+        if self._replaceSQuote:
+            if leading and t2.endswith("'"):
+                return 1, self._quoteSO
+            elif t1 == "'":
+                if pos == 1:
+                    return 1, self._quoteSO
+                elif pos == 2 and t2 == ">'":
+                    return 1, self._quoteSO
+                elif pos == 3 and t3 == ">>'":
+                    return 1, self._quoteSO
+                else:
+                    return 1, self._quoteSC
+
+        if self._replaceDash:
+            if t4 == "----":
+                return 4, "\u2015"  # Horizontal bar
+            elif t3 == "---":
+                return 3, "\u2014"  # Long dash
+            elif t2 == "--":
+                return 2, "\u2013"  # Short dash
+            elif t2 == "\u2013-":
+                return 2, "\u2014"  # Long dash
+            elif t2 == "\u2014-":
+                return 2, "\u2015"  # Horizontal bar
+
+        if self._replaceDots and t3 == "...":
+            return 3, "\u2026"  # Ellipsis
+
+        if t1 == "\u2028":  # Line separator
+            # This resolves issue #1150
+            return 1, "\u2029"  # Paragraph separator
+
+        return 0, t1
 
 
 class GuiDocToolBar(QWidget):

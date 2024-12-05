@@ -564,7 +564,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
 
-    docEditor.wCounterDoc.run()
+    docEditor._wCounterDoc.run()
 
     # Spell Checking
     # ==============

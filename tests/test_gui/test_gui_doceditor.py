@@ -81,7 +81,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert qDoc.defaultTextOption().alignment() == QtAlignLeft
     assert docEditor.verticalScrollBarPolicy() == QtScrollAsNeeded
     assert docEditor.horizontalScrollBarPolicy() == QtScrollAsNeeded
-    assert docEditor._typConf.typPadChar == nwUnicode.U_NBSP
+    assert docEditor._autoReplace._padChar == nwUnicode.U_NBSP
     assert docEditor.docHeader.itemTitle.text() == (
         "Novel  \u203a  New Folder  \u203a  New Scene"
     )
@@ -106,7 +106,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert qDoc.defaultTextOption().flags() & QTextOption.ShowLineAndParagraphSeparators
     assert docEditor.verticalScrollBarPolicy() == QtScrollAlwaysOff
     assert docEditor.horizontalScrollBarPolicy() == QtScrollAlwaysOff
-    assert docEditor._typConf.typPadChar == nwUnicode.U_THNBSP
+    assert docEditor._autoReplace._padChar == nwUnicode.U_THNBSP
     assert docEditor.docHeader.itemTitle.text() == "New Scene"
 
     # Header
@@ -1917,8 +1917,8 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
     threadPool = MockThreadPool()
     monkeypatch.setattr(QThreadPool, "globalInstance", lambda *a: threadPool)
-    docEditor.timerDoc.blockSignals(True)
-    docEditor.timerSel.blockSignals(True)
+    docEditor._timerDoc.blockSignals(True)
+    docEditor._timerSel.blockSignals(True)
 
     buildTestProject(nwGUI, projPath)
 
@@ -1944,20 +1944,20 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
     # Check that a busy counter is blocked
     with monkeypatch.context() as mp:
-        mp.setattr(docEditor.wCounterDoc, "isRunning", lambda *a: True)
+        mp.setattr(docEditor._wCounterDoc, "isRunning", lambda *a: True)
         docEditor._runDocumentTasks()
         assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     with monkeypatch.context() as mp:
-        mp.setattr(docEditor.wCounterSel, "isRunning", lambda *a: True)
+        mp.setattr(docEditor._wCounterSel, "isRunning", lambda *a: True)
         docEditor._runSelCounter()
         assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     # Run the full word counter
     docEditor._runDocumentTasks()
-    assert threadPool.objectID() == id(docEditor.wCounterDoc)
+    assert threadPool.objectID() == id(docEditor._wCounterDoc)
 
-    docEditor.wCounterDoc.run()
+    docEditor._wCounterDoc.run()
     # docEditor._updateDocCounts(cC, wC, pC)
     assert SHARED.project.tree[C.hSceneDoc]._charCount == cC  # type: ignore
     assert SHARED.project.tree[C.hSceneDoc]._wordCount == wC  # type: ignore
@@ -1967,9 +1967,9 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     # Select all text and run the selection word counter
     docEditor.docAction(nwDocAction.SEL_ALL)
     docEditor._runSelCounter()
-    assert threadPool.objectID() == id(docEditor.wCounterSel)
+    assert threadPool.objectID() == id(docEditor._wCounterSel)
 
-    docEditor.wCounterSel.run()
+    docEditor._wCounterSel.run()
     assert docEditor.docFooter.wordsText.text() == f"Words: {wC} selected"
 
     # qtbot.stop()
