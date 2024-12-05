@@ -87,6 +87,13 @@ class _SelectAction(Enum):
 class GuiDocEditor(QPlainTextEdit):
     """Gui Widget: Main Document Editor"""
 
+    __slots__ = (
+        "_nwDocument", "_nwItem", "_docChanged", "_docHandle", "_vpMargin",
+        "_lastEdit", "_lastActive", "_lastFind", "_doReplace", "_autoReplace",
+        "_completer", "_qDocument", "_keyContext", "_followTag1", "_followTag2",
+        "_timerDoc", "_wCounterDoc", "_timerSel", "_wCounterSel",
+    )
+
     MOVE_KEYS = (
         Qt.Key.Key_Left, Qt.Key.Key_Right, Qt.Key.Key_Up, Qt.Key.Key_Down,
         Qt.Key.Key_PageUp, Qt.Key.Key_PageDown
@@ -167,38 +174,38 @@ class GuiDocEditor(QPlainTextEdit):
         self.setAcceptDrops(True)
 
         # Custom Shortcuts
-        self.keyContext = QShortcut(self)
-        self.keyContext.setKey("Ctrl+.")
-        self.keyContext.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyContext.activated.connect(self._openContextFromCursor)
+        self._keyContext = QShortcut(self)
+        self._keyContext.setKey("Ctrl+.")
+        self._keyContext.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._keyContext.activated.connect(self._openContextFromCursor)
 
-        self.followTag1 = QShortcut(self)
-        self.followTag1.setKey("Ctrl+Return")
-        self.followTag1.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.followTag1.activated.connect(self._processTag)
+        self._followTag1 = QShortcut(self)
+        self._followTag1.setKey("Ctrl+Return")
+        self._followTag1.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._followTag1.activated.connect(self._processTag)
 
-        self.followTag2 = QShortcut(self)
-        self.followTag2.setKey("Ctrl+Enter")
-        self.followTag2.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.followTag2.activated.connect(self._processTag)
+        self._followTag2 = QShortcut(self)
+        self._followTag2.setKey("Ctrl+Enter")
+        self._followTag2.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._followTag2.activated.connect(self._processTag)
 
         # Set Up Document Word Counter
-        self.timerDoc = QTimer(self)
-        self.timerDoc.timeout.connect(self._runDocumentTasks)
-        self.timerDoc.setInterval(5000)
+        self._timerDoc = QTimer(self)
+        self._timerDoc.timeout.connect(self._runDocumentTasks)
+        self._timerDoc.setInterval(5000)
 
-        self.wCounterDoc = BackgroundWordCounter(self)
-        self.wCounterDoc.setAutoDelete(False)
-        self.wCounterDoc.signals.countsReady.connect(self._updateDocCounts)
+        self._wCounterDoc = BackgroundWordCounter(self)
+        self._wCounterDoc.setAutoDelete(False)
+        self._wCounterDoc.signals.countsReady.connect(self._updateDocCounts)
 
         # Set Up Selection Word Counter
-        self.timerSel = QTimer(self)
-        self.timerSel.timeout.connect(self._runSelCounter)
-        self.timerSel.setInterval(500)
+        self._timerSel = QTimer(self)
+        self._timerSel.timeout.connect(self._runSelCounter)
+        self._timerSel.setInterval(500)
 
-        self.wCounterSel = BackgroundWordCounter(self, forSelection=True)
-        self.wCounterSel.setAutoDelete(False)
-        self.wCounterSel.signals.countsReady.connect(self._updateSelCounts)
+        self._wCounterSel = BackgroundWordCounter(self, forSelection=True)
+        self._wCounterSel.setAutoDelete(False)
+        self._wCounterSel.signals.countsReady.connect(self._updateSelCounts)
 
         # Install Event Filter for Mouse Wheel
         self.wheelEventFilter = WheelEventFilter(self)
@@ -252,8 +259,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._nwDocument = None
         self.setReadOnly(True)
         self.clear()
-        self.timerDoc.stop()
-        self.timerSel.stop()
+        self._timerDoc.stop()
+        self._timerSel.stop()
 
         self._docHandle  = None
         self._lastEdit   = 0.0
@@ -301,6 +308,7 @@ class GuiDocEditor(QPlainTextEdit):
         settings. This function is both called when the editor is
         created, and when the user changes the main editor preferences.
         """
+        print(len(self.__dict__), self.__dict__)
         # Auto-Replace
         self._autoReplace.initSettings()
 
@@ -395,7 +403,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._lastEdit = time()
         self._lastActive = time()
         self._runDocumentTasks()
-        self.timerDoc.start()
+        self._timerDoc.start()
 
         self.setReadOnly(False)
         self.updateDocMargins()
@@ -1079,8 +1087,8 @@ class GuiDocEditor(QPlainTextEdit):
         if not self._docChanged:
             self.setDocumentChanged(removed != 0 or added != 0)
 
-        if not self.timerDoc.isActive():
-            self.timerDoc.start()
+        if not self._timerDoc.isActive():
+            self._timerDoc.start()
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
@@ -1222,8 +1230,8 @@ class GuiDocEditor(QPlainTextEdit):
 
         if time() - self._lastEdit < 25.0:
             logger.debug("Running document tasks")
-            if not self.wCounterDoc.isRunning():
-                SHARED.runInThreadPool(self.wCounterDoc)
+            if not self._wCounterDoc.isRunning():
+                SHARED.runInThreadPool(self._wCounterDoc)
 
             self.docHeader.setOutline({
                 block.blockNumber(): block.text()
@@ -1255,10 +1263,10 @@ class GuiDocEditor(QPlainTextEdit):
         information to the footer, and start the selection word counter.
         """
         if self.textCursor().hasSelection():
-            if not self.timerSel.isActive():
-                self.timerSel.start()
+            if not self._timerSel.isActive():
+                self._timerSel.start()
         else:
-            self.timerSel.stop()
+            self._timerSel.stop()
             self.docFooter.updateWordCount(0, False)
         return
 
@@ -1268,11 +1276,11 @@ class GuiDocEditor(QPlainTextEdit):
         if self._docHandle is None:
             return
 
-        if self.wCounterSel.isRunning():
+        if self._wCounterSel.isRunning():
             logger.debug("Selection word counter is busy")
             return
 
-        SHARED.runInThreadPool(self.wCounterSel)
+        SHARED.runInThreadPool(self._wCounterSel)
 
         return
 
@@ -1282,7 +1290,7 @@ class GuiDocEditor(QPlainTextEdit):
         if self._docHandle and self._nwItem:
             logger.debug("User selected %d words", wCount)
             self.docFooter.updateWordCount(wCount, True)
-            self.timerSel.stop()
+            self._timerSel.stop()
         return
 
     @pyqtSlot()
