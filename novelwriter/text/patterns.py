@@ -28,7 +28,9 @@ import re
 
 from novelwriter import CONFIG
 from novelwriter.common import compact, uniqueCompact
-from novelwriter.constants import nwRegEx
+from novelwriter.constants import nwRegEx, nwUnicode
+
+AMBIGUOUS = (nwUnicode.U_APOS, nwUnicode.U_RSQUO)
 
 
 class RegExPatterns:
@@ -92,11 +94,13 @@ class RegExPatterns:
             if CONFIG.dialogStyle in (1, 3):
                 qO = CONFIG.fmtSQuoteOpen.strip()[:1]
                 qC = CONFIG.fmtSQuoteClose.strip()[:1]
-                rx.append(f"(?:\\B{qO}.*?(?:{qC}\\B{end}))")
+                qB = r"\B" if (qO == qC or qC in AMBIGUOUS) else ""
+                rx.append(f"(?:{qO}.*?(?:{qC}{qB}{end}))")
             if CONFIG.dialogStyle in (2, 3):
                 qO = CONFIG.fmtDQuoteOpen.strip()[:1]
                 qC = CONFIG.fmtDQuoteClose.strip()[:1]
-                rx.append(f"(?:\\B{qO}.*?(?:{qC}\\B{end}))")
+                qB = r"\B" if (qO == qC or qC in AMBIGUOUS) else ""
+                rx.append(f"(?:{qO}.*?(?:{qC}{qB}{end}))")
             return re.compile("|".join(rx), re.UNICODE)
         return None
 
@@ -106,7 +110,8 @@ class RegExPatterns:
         if CONFIG.altDialogOpen and CONFIG.altDialogClose:
             qO = re.escape(compact(CONFIG.altDialogOpen))
             qC = re.escape(compact(CONFIG.altDialogClose))
-            return re.compile(f"\\B{qO}.*?{qC}\\B", re.UNICODE)
+            qB = r"\B" if (qO == qC or qC in AMBIGUOUS) else ""
+            return re.compile(f"{qO}.*?{qC}{qB}", re.UNICODE)
         return None
 
 
