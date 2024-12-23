@@ -30,10 +30,10 @@ from novelwriter import CONFIG
 from novelwriter.common import compact, uniqueCompact
 from novelwriter.constants import nwRegEx, nwUnicode
 
-AMBIGUOUS = (nwUnicode.U_APOS, nwUnicode.U_RSQUO)
-
 
 class RegExPatterns:
+
+    AMBIGUOUS = (nwUnicode.U_APOS, nwUnicode.U_RSQUO)
 
     # Static RegExes
     _rxUrl     = re.compile(nwRegEx.URL, re.ASCII)
@@ -89,18 +89,25 @@ class RegExPatterns:
     def dialogStyle(self) -> re.Pattern | None:
         """Dialogue detection rule based on user settings."""
         if CONFIG.dialogStyle > 0:
-            end = "|$" if CONFIG.allowOpenDial else ""
             rx = []
             if CONFIG.dialogStyle in (1, 3):
                 qO = CONFIG.fmtSQuoteOpen.strip()[:1]
                 qC = CONFIG.fmtSQuoteClose.strip()[:1]
-                qB = r"\B" if (qO == qC or qC in AMBIGUOUS) else ""
-                rx.append(f"(?:{qO}.*?(?:{qC}{qB}{end}))")
+                if qO == qC:
+                    rx.append(f"(?:\\B{qO}.+?{qC}\\B)")
+                else:
+                    rx.append(f"(?:{qO}[^{qO}]+{qC})")
+                if CONFIG.allowOpenDial:
+                    rx.append(f"(?:{qO}.+?$)")
             if CONFIG.dialogStyle in (2, 3):
                 qO = CONFIG.fmtDQuoteOpen.strip()[:1]
                 qC = CONFIG.fmtDQuoteClose.strip()[:1]
-                qB = r"\B" if (qO == qC or qC in AMBIGUOUS) else ""
-                rx.append(f"(?:{qO}.*?(?:{qC}{qB}{end}))")
+                if qO == qC:
+                    rx.append(f"(?:\\B{qO}.+?{qC}\\B)")
+                else:
+                    rx.append(f"(?:{qO}[^{qO}]+{qC})")
+                if CONFIG.allowOpenDial:
+                    rx.append(f"(?:{qO}.+?$)")
             return re.compile("|".join(rx), re.UNICODE)
         return None
 
@@ -110,7 +117,7 @@ class RegExPatterns:
         if CONFIG.altDialogOpen and CONFIG.altDialogClose:
             qO = re.escape(compact(CONFIG.altDialogOpen))
             qC = re.escape(compact(CONFIG.altDialogClose))
-            qB = r"\B" if (qO == qC or qC in AMBIGUOUS) else ""
+            qB = r"\B" if (qO == qC or qC in self.AMBIGUOUS) else ""
             return re.compile(f"{qO}.*?{qC}{qB}", re.UNICODE)
         return None
 
