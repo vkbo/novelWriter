@@ -1,5 +1,59 @@
 # novelWriter Changelog
 
+## Version 2.6 Beta 2 [2024-12-23]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+### Detailed Changelog
+
+**New Features**
+
+* The project tree has been completely rewritten under the hood. The main difference in the GUI is
+  a lifting of restrictions on drag and drop. You can now select multiple items in multiple places
+  in the tree, and drag them to a new location. It is still not allowed to drag root level items,
+  or drop items on the root level. PR #2119.
+* You can now drag and drop items from the project tree onto the editor and viewer to load the
+  documents there. PR #2119.
+
+**Bugfixes**
+
+* Make line height in DocX scale correctly. Issue #2099. PR #2102.
+* Make margins scale with font size in ODT and HTML output. PR #2102.
+* Fix DocX page count to work with Office 365. PR #2102.
+* Fix font scaling issues for PDF output. Issue #2100. PR #2104.
+* Fix an issue that cleared the editor when the return key was used on a folder item. PR #2113.
+* Fix an issue where the viewer and preview would not reset text emphasis when selecting a default
+  font style with emphasis features. Issue #2121. PR #2122.
+* Change how custom fonts are loaded to ensure that the Qt framework don't take shortcuts by using
+  a similar font instead of the chosen font. This is a side effect of the Qt font matching feature.
+  Issue #2118. PR #2122.
+
+**Improvements**
+
+* Move processing of alternative apostrophe and dash to a later point in the tokenization process.
+  It needs to happen after dialogue is processed to work as intended. PR #2095.
+* Use icons for text margin settings in Build Settings. Issue #2098. PR #2102.
+* Replace the toolbar icon in the editor. PR #2103.
+* Turn off auto-default button on the Build dialog. Issue #2101. PR #2105.
+* Add ANSI colours to log output for easier debugging. PRs #2114 and #2117.
+* Document header is now aligned to the bottom of the top page margin in the same way for ODT and
+  DocX output. Issue #2120. PR #2128.
+* Dialogue detection for quoted dialogue has been improved to better support Chinese, and other
+  languages that don't use whitespaces to separate words. Some improvements have also been made to
+  how single quoted dialogues are processed when apostrophes are present. Issue #2131. PR #2138.
+
+**Code Improvements**
+
+* Completely rewrite the project tree into a model/view set with one single definition if the
+  project structure. PR #2109.
+* The auto-replace feature in the editor has been refactored. It is now better separated from the
+  editor code, and may have some minor performance improvements. Issue #2129. PR #2132.
+
+----
+
 ## Version 2.6 Beta 1 [2024-11-12]
 
 ### Release Notes
