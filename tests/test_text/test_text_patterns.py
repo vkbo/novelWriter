@@ -312,8 +312,27 @@ def testTextPatterns_DialogueStyle():
     # Straight double quotes are ignored
     assert allMatches(regEx, "one \"two\" three") == []
 
-    # Skipping whitespace is not allowed
-    assert allMatches(regEx, "one\u2018two\u2019three") == []
+    # Check with no whitespace, single quote
+    assert allMatches(regEx, "one\u2018two\u2019three") == [
+        [("\u2018two\u2019", 3, 8)]
+    ]
+    assert allMatches(regEx, "one\u2018two\u2019 three") == [
+        [("\u2018two\u2019", 3, 8)]
+    ]
+
+    # Check with no whitespace, double quote
+    assert allMatches(regEx, "one\u201ctwo\u201dthree") == [
+        [("\u201ctwo\u201d", 3, 8)]
+    ]
+    assert allMatches(regEx, "one\u201ctwo\u201d three") == [
+        [("\u201ctwo\u201d", 3, 8)]
+    ]
+
+    # Check with apostrophe
+    assert allMatches(regEx, "one \u2018two\u2019s three\u2019, \u2018four\u2019 five") == [
+        [("\u2018two\u2019s three\u2019", 4, 17)],
+        [("\u2018four\u2019", 19, 25)],
+    ]
 
     # Open
     # ====
@@ -330,6 +349,63 @@ def testTextPatterns_DialogueStyle():
     # Defined double quotes are recognised also when open
     assert allMatches(regEx, "one \u201ctwo three") == [
         [("\u201ctwo three", 4, 14)]
+    ]
+
+
+@pytest.mark.core
+def testTextPatterns_DialoguePlain():
+    """Test the dialogue style pattern regexes for plain quotes."""
+    # Set the config
+    CONFIG.fmtSQuoteOpen  = "'"
+    CONFIG.fmtSQuoteClose = "'"
+    CONFIG.fmtDQuoteOpen  = '"'
+    CONFIG.fmtDQuoteClose = '"'
+
+    CONFIG.dialogStyle = 3
+    CONFIG.allowOpenDial = False
+    regEx = REGEX_PATTERNS.dialogStyle
+    assert regEx is not None
+
+    # Double
+    # ======
+
+    # One double quoted string
+    assert allMatches(regEx, "one \"two\" three") == [
+        [("\"two\"", 4, 9)]
+    ]
+
+    # Two double quoted strings
+    assert allMatches(regEx, "one \"two\" three \"four\" five") == [
+        [("\"two\"", 4, 9)], [("\"four\"", 16, 22)],
+    ]
+
+    # No space
+    assert allMatches(regEx, "one\"two\" three") == []
+    assert allMatches(regEx, "one \"two\"three") == []
+    assert allMatches(regEx, "one\"two\"three") == []
+
+    # Single
+    # ======
+
+    # One single quoted string
+    assert allMatches(regEx, "one 'two' three") == [
+        [("'two'", 4, 9)]
+    ]
+
+    # Two single quoted strings
+    assert allMatches(regEx, "one 'two' three 'four' five") == [
+        [("'two'", 4, 9)], [("'four'", 16, 22)],
+    ]
+
+    # No space
+    assert allMatches(regEx, "one'two' three") == []
+    assert allMatches(regEx, "one 'two'three") == []
+    assert allMatches(regEx, "one'two'three") == []
+
+    # Check with apostrophe
+    assert allMatches(regEx, "one 'two's three', 'four' five") == [
+        [("'two's three'", 4, 17)],
+        [("'four'", 19, 25)],
     ]
 
 
