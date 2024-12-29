@@ -39,56 +39,68 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     newDoc.writeDocument("# A Note\n\n")
     nwGUI.rebuildIndex(beQuiet=True)
 
+    status = nwGUI.mainStatus
+
     # Reference Time
     refTime = time.time()
-    nwGUI.mainStatus.setRefTime(refTime)
-    assert nwGUI.mainStatus._refTime == refTime
+    status.setRefTime(refTime)
+    assert status._refTime == refTime
 
     # Project Status
-    nwGUI.mainStatus.setProjectStatus(nwTrinary.NEUTRAL)
-    assert nwGUI.mainStatus.projIcon.state == nwTrinary.NEUTRAL
-    nwGUI.mainStatus.setProjectStatus(nwTrinary.NEGATIVE)
-    assert nwGUI.mainStatus.projIcon.state == nwTrinary.NEGATIVE
-    nwGUI.mainStatus.setProjectStatus(nwTrinary.POSITIVE)
-    assert nwGUI.mainStatus.projIcon.state == nwTrinary.POSITIVE
+    status.setProjectStatus(nwTrinary.NEUTRAL)
+    assert status.projIcon.state == nwTrinary.NEUTRAL
+    status.setProjectStatus(nwTrinary.NEGATIVE)
+    assert status.projIcon.state == nwTrinary.NEGATIVE
+    status.setProjectStatus(nwTrinary.POSITIVE)
+    assert status.projIcon.state == nwTrinary.POSITIVE
 
     # Document Status
-    nwGUI.mainStatus.setDocumentStatus(nwTrinary.NEUTRAL)
-    assert nwGUI.mainStatus.docIcon.state == nwTrinary.NEUTRAL
-    nwGUI.mainStatus.setDocumentStatus(nwTrinary.NEGATIVE)
-    assert nwGUI.mainStatus.docIcon.state == nwTrinary.NEGATIVE
-    nwGUI.mainStatus.setDocumentStatus(nwTrinary.POSITIVE)
-    assert nwGUI.mainStatus.docIcon.state == nwTrinary.POSITIVE
+    status.setDocumentStatus(nwTrinary.NEUTRAL)
+    assert status.docIcon.state == nwTrinary.NEUTRAL
+    status.setDocumentStatus(nwTrinary.NEGATIVE)
+    assert status.docIcon.state == nwTrinary.NEGATIVE
+    status.setDocumentStatus(nwTrinary.POSITIVE)
+    assert status.docIcon.state == nwTrinary.POSITIVE
 
     # Idle Status
     CONFIG.stopWhenIdle = False
-    nwGUI.mainStatus.setUserIdle(True)
-    nwGUI.mainStatus.updateTime()
-    assert nwGUI.mainStatus._userIdle is False
-    assert nwGUI.mainStatus.timeText.text() == "00:00:00"
+    status.setUserIdle(True)
+    status.updateTime()
+    assert status._userIdle is False
+    assert status.timeText.text() == "00:00:00"
 
     CONFIG.stopWhenIdle = True
-    nwGUI.mainStatus.setUserIdle(True)
-    nwGUI.mainStatus.updateTime(5)
-    assert nwGUI.mainStatus._userIdle is True
-    assert nwGUI.mainStatus.timeText.text() != "00:00:00"
+    status.setUserIdle(True)
+    status.updateTime(5)
+    assert status._userIdle is True
+    assert status.timeText.text() != "00:00:00"
 
-    nwGUI.mainStatus.setUserIdle(False)
-    nwGUI.mainStatus.updateTime(5)
-    assert nwGUI.mainStatus._userIdle is False
-    assert nwGUI.mainStatus.timeText.text() != "00:00:00"
+    status.setUserIdle(False)
+    status.updateTime(5)
+    assert status._userIdle is False
+    assert status.timeText.text() != "00:00:00"
+
+    # Show/Hide Timer
+    assert status.timeText.isVisible() is True
+    assert CONFIG.showSessionTime is True
+    status._onClickTimerLabel()
+    assert status.timeText.isVisible() is False
+    assert CONFIG.showSessionTime is False
+    status._onClickTimerLabel()
+    assert status.timeText.isVisible() is True
+    assert CONFIG.showSessionTime is True
 
     # Language
-    nwGUI.mainStatus.setLanguage("None", "None")
-    assert nwGUI.mainStatus.langText.text() == "None"
-    nwGUI.mainStatus.setLanguage("en", "None")
-    assert nwGUI.mainStatus.langText.text() == "American English"
+    status.setLanguage("None", "None")
+    assert status.langText.text() == "None"
+    status.setLanguage("en", "None")
+    assert status.langText.text() == "American English"
 
     # Project Stats
     CONFIG.incNotesWCount = False
     nwGUI._lastTotalCount = 0
     nwGUI._updateStatusWordCount()
-    assert nwGUI.mainStatus.statsText.text() == "Words: 9 (+9)"
+    assert status.statsText.text() == "Words: 9 (+9)"
 
     # Update again, but through time tick
     with monkeypatch.context() as mp:
@@ -96,6 +108,6 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         CONFIG.incNotesWCount = True
         nwGUI._lastTotalCount = 0
         nwGUI._timeTick()
-        assert nwGUI.mainStatus.statsText.text() == "Words: 11 (+11)"
+        assert status.statsText.text() == "Words: 11 (+11)"
 
     # qtbot.stop()
