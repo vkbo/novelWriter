@@ -1366,9 +1366,8 @@ class _TreeContextMenu(QMenu):
 
     def _changeItemStatus(self, key: str) -> None:
         """Set a new status value of an item."""
-        if self._item.isFileType():
-            self._item.setStatus(key)
-            self._item.notifyToRefresh()
+        self._item.setStatus(key)
+        self._item.notifyToRefresh()
         return
 
     def _iterSetItemStatus(self, key: str) -> None:
@@ -1383,9 +1382,8 @@ class _TreeContextMenu(QMenu):
 
     def _changeItemImport(self, key: str) -> None:
         """Set a new importance value of an item."""
-        if self._item.isFileType():
-            self._item.setImport(key)
-            self._item.notifyToRefresh()
+        self._item.setImport(key)
+        self._item.notifyToRefresh()
         return
 
     def _iterSetItemImport(self, key: str) -> None:
