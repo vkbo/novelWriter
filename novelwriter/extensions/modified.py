@@ -30,14 +30,15 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QSize, Qt, pyqtSlot
-from PyQt5.QtGui import QWheelEvent
+from PyQt5.QtCore import QSize, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QMouseEvent, QWheelEvent
 from PyQt5.QtWidgets import (
-    QApplication, QComboBox, QDialog, QDoubleSpinBox, QSpinBox, QToolButton,
-    QWidget
+    QApplication, QComboBox, QDialog, QDoubleSpinBox, QLabel, QSpinBox,
+    QToolButton, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.types import QtMouseLeft
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -196,3 +197,14 @@ class NIconToggleButton(QToolButton):
         iconSize = self.iconSize()
         self.setIcon(SHARED.theme.getToggleIcon(iconKey, (iconSize.width(), iconSize.height())))
         return
+
+
+class NClickableLabel(QLabel):
+
+    mouseClick = pyqtSignal()
+
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        """Capture a left mouse click and emit its signal."""
+        if event.button() == QtMouseLeft:
+            self.mouseClick.emit()
+        return super().mousePressEvent(event)
