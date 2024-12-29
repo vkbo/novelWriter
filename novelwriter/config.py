@@ -194,6 +194,7 @@ class Config:
         # State
         self.showViewerPanel = True   # The panel for the viewer is visible
         self.showEditToolBar = False  # The document editor toolbar visibility
+        self.showSessionTime = True   # Show the session time in the status bar
         self.viewComments    = True   # Comments are shown in the viewer
         self.viewSynopsis    = True   # Synopsis is shown in the viewer
 
@@ -674,6 +675,7 @@ class Config:
         sec = "State"
         self.showViewerPanel = conf.rdBool(sec, "showviewerpanel", self.showViewerPanel)
         self.showEditToolBar = conf.rdBool(sec, "showedittoolbar", self.showEditToolBar)
+        self.showSessionTime = conf.rdBool(sec, "showsessiontime", self.showSessionTime)
         self.viewComments    = conf.rdBool(sec, "viewcomments", self.viewComments)
         self.viewSynopsis    = conf.rdBool(sec, "viewsynopsis", self.viewSynopsis)
         self.searchCase      = conf.rdBool(sec, "searchcase", self.searchCase)
@@ -784,6 +786,7 @@ class Config:
         conf["State"] = {
             "showviewerpanel": str(self.showViewerPanel),
             "showedittoolbar": str(self.showEditToolBar),
+            "showsessiontime": str(self.showSessionTime),
             "viewcomments":    str(self.viewComments),
             "viewsynopsis":    str(self.viewSynopsis),
             "searchcase":      str(self.searchCase),

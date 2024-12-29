@@ -35,6 +35,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime
 from novelwriter.constants import nwConst
 from novelwriter.enum import nwTrinary
+from novelwriter.extensions.modified import NClickableLabel
 from novelwriter.extensions.statusled import StatusLED
 
 logger = logging.getLogger(__name__)
@@ -92,12 +93,16 @@ class GuiMainStatus(QStatusBar):
 
         # The Session Clock
         # Set the minimum width so the label doesn't rescale every second
-        self.timeIcon = QLabel(self)
-        self.timeText = QLabel("", self)
+        self.timeIcon = NClickableLabel(self)
+        self.timeIcon.mouseClick.connect(self._onClickTimerLabel)
+
+        self.timeText = NClickableLabel("", self)
         self.timeText.setToolTip(self.tr("Session Time"))
         self.timeText.setMinimumWidth(SHARED.theme.getTextWidth("00:00:00:"))
         self.timeIcon.setContentsMargins(0, 0, 0, 0)
         self.timeText.setContentsMargins(0, 0, 0, 0)
+        self.timeText.setVisible(CONFIG.showSessionTime)
+        self.timeText.mouseClick.connect(self._onClickTimerLabel)
         self.addPermanentWidget(self.timeIcon)
         self.addPermanentWidget(self.timeText)
 
@@ -222,6 +227,18 @@ class GuiMainStatus(QStatusBar):
     def updateDocumentStatus(self, status: bool) -> None:
         """Update the document status."""
         self.setDocumentStatus(nwTrinary.NEGATIVE if status else nwTrinary.POSITIVE)
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _onClickTimerLabel(self) -> None:
+        """Process mouse click on timer label."""
+        state = not CONFIG.showSessionTime
+        self.timeText.setVisible(state)
+        CONFIG.showSessionTime = state
         return
 
     ##
