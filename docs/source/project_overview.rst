@@ -388,3 +388,16 @@ application like for instance Libre Office Calc or Excel.
    definition of idle here is that the novelWriter main window loses focus, or the user hasn't made
    any changes to the currently open document in five minutes. The number of minutes can be altered
    in **Preferences**.
+
+
+Session Timer
+-------------
+
+A session timer is by default visible in the status bar. The icon will show you a clock icon when
+you are active, and a pause icon when you are considered "idle" per the criteria mentioned above.
+
+If you do not wish to see the timer, you can click on it once to hide it. The icon will still be
+visible. Click the icon once more to display the timer again.
+
+.. versionadded:: 2.6
+   As of version 2.6, clicking the timer text or icon in the status bar will toggle its visibility.
