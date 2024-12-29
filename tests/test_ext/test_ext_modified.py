@@ -23,11 +23,13 @@ from __future__ import annotations
 import pytest
 
 from PyQt5.QtCore import QEvent, QPoint, QPointF, Qt
-from PyQt5.QtGui import QKeyEvent, QWheelEvent
+from PyQt5.QtGui import QKeyEvent, QMouseEvent, QWheelEvent
 from PyQt5.QtWidgets import QWidget
 
-from novelwriter.extensions.modified import NComboBox, NDialog, NDoubleSpinBox, NSpinBox
-from novelwriter.types import QtModNone, QtRejected
+from novelwriter.extensions.modified import (
+    NClickableLabel, NComboBox, NDialog, NDoubleSpinBox, NSpinBox
+)
+from novelwriter.types import QtModNone, QtMouseLeft, QtRejected
 
 from tests.tools import SimpleDialog
 
@@ -139,3 +141,19 @@ def testExtModified_NDoubleSpinBox(qtbot, monkeypatch):
         assert event.ignored is True
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testExtModified_NClickableLabel(qtbot, monkeypatch):
+    """Test the NClickableLabel class."""
+    widget = NClickableLabel()
+    dialog = SimpleDialog(widget)
+    dialog.show()
+
+    position = widget.rect().center()
+    event = QMouseEvent(
+        QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModNone
+    )
+
+    with qtbot.waitSignal(widget.mouseClicked):
+        widget.mousePressEvent(event)
