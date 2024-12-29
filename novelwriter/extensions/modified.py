@@ -201,10 +201,10 @@ class NIconToggleButton(QToolButton):
 
 class NClickableLabel(QLabel):
 
-    mouseClick = pyqtSignal()
+    mouseClicked = pyqtSignal()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         """Capture a left mouse click and emit its signal."""
         if event.button() == QtMouseLeft:
-            self.mouseClick.emit()
+            self.mouseClicked.emit()
         return super().mousePressEvent(event)

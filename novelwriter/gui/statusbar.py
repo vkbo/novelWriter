@@ -94,7 +94,7 @@ class GuiMainStatus(QStatusBar):
         # The Session Clock
         # Set the minimum width so the label doesn't rescale every second
         self.timeIcon = NClickableLabel(self)
-        self.timeIcon.mouseClick.connect(self._onClickTimerLabel)
+        self.timeIcon.mouseClicked.connect(self._onClickTimerLabel)
 
         self.timeText = NClickableLabel("", self)
         self.timeText.setToolTip(self.tr("Session Time"))
@@ -102,7 +102,7 @@ class GuiMainStatus(QStatusBar):
         self.timeIcon.setContentsMargins(0, 0, 0, 0)
         self.timeText.setContentsMargins(0, 0, 0, 0)
         self.timeText.setVisible(CONFIG.showSessionTime)
-        self.timeText.mouseClick.connect(self._onClickTimerLabel)
+        self.timeText.mouseClicked.connect(self._onClickTimerLabel)
         self.addPermanentWidget(self.timeIcon)
         self.addPermanentWidget(self.timeText)
 
