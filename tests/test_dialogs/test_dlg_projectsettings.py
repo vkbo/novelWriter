@@ -198,10 +198,9 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
         mp.setattr(QColorDialog, "getColor", lambda *a: QColor(20, 30, 40))
         status.addButton.click()
         status.listBox.setCurrentItem(status.listBox.topLevelItem(3))
-        status.editName.setText("Final")
+        status._onNameEdit("Final")
         status.colorButton.click()
         status._selectShape(nwStatusShape.CIRCLE)
-        status.applyButton.click()
         assert status.listBox.topLevelItemCount() == 4
 
     assert status.changed is True
@@ -274,10 +273,9 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
         importance.addButton.click()
         importance.listBox.clearSelection()
         importance.listBox.setCurrentItem(importance.listBox.topLevelItem(3))
-        importance.editName.setText("Final")
+        importance._onNameEdit("Final")
         importance.colorButton.click()
         importance._selectShape(nwStatusShape.TRIANGLE)
-        importance.applyButton.click()
         assert importance.listBox.topLevelItemCount() == 4
 
     assert importance.changed is True
