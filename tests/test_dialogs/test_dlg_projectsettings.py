@@ -362,6 +362,7 @@ def testDlgProjSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPath, 
         status._importLabels()
 
     assert status.listBox.topLevelItemCount() == 4
+    assert status.changed is False
 
     # Import File
     with monkeypatch.context() as mp:
@@ -369,6 +370,7 @@ def testDlgProjSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPath, 
         status._importLabels()
 
     assert status.listBox.topLevelItemCount() == 8
+    assert status.changed is True
 
     item4 = status.listBox.topLevelItem(4)
     assert item4 is not None
