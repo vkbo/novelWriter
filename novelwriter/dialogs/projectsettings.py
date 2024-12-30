@@ -352,17 +352,17 @@ class _StatusPage(NFixedPage):
         self.listBox.setIndentation(0)
         self.listBox.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
-        self.listBox.itemSelectionChanged.connect(self._selectionChanged)
+        self.listBox.itemSelectionChanged.connect(self._onSelectionChanged)
 
         for key, entry in status.iterItems():
             self._addItem(key, StatusEntry.duplicate(entry))
 
         # List Controls
         self.addButton = NIconToolButton(self, iSz, "add")
-        self.addButton.clicked.connect(self._newItem)
+        self.addButton.clicked.connect(self._onItemCreate)
 
         self.delButton = NIconToolButton(self, iSz, "remove")
-        self.delButton.clicked.connect(self._delItem)
+        self.delButton.clicked.connect(self._onItemDelete)
 
         self.upButton = NIconToolButton(self, iSz, "up")
         self.upButton.clicked.connect(qtLambda(self._moveItem, -1))
@@ -375,6 +375,7 @@ class _StatusPage(NFixedPage):
         self.editName.setMaxLength(40)
         self.editName.setPlaceholderText(self.tr("Select item to edit"))
         self.editName.setEnabled(False)
+        self.editName.textEdited.connect(self._onNameEdit)
 
         buttonStyle = (
             f"QToolButton {{padding: 0 {bPd}px;}} "
@@ -386,13 +387,13 @@ class _StatusPage(NFixedPage):
         self.colorButton.setSizePolicy(QtSizeMinimum, QtSizeMinimumExpanding)
         self.colorButton.setStyleSheet(buttonStyle)
         self.colorButton.setEnabled(False)
-        self.colorButton.clicked.connect(self._selectColour)
+        self.colorButton.clicked.connect(self._onColourSelect)
 
         def buildMenu(menu: QMenu, items: dict[nwStatusShape, str]) -> None:
             for shape, label in items.items():
                 icon = NWStatus.createIcon(self._iPx, iColor, shape)
                 action = menu.addAction(icon, trConst(label))
-                action.triggered.connect(lambda _, shape=shape: self._selectShape(shape))
+                action.triggered.connect(qtLambda(self._selectShape, shape))
                 self._icons[shape] = icon
 
         self.shapeMenu = QMenu(self)
@@ -408,12 +409,6 @@ class _StatusPage(NFixedPage):
         self.shapeButton.setStyleSheet(buttonStyle)
         self.shapeButton.setEnabled(False)
 
-        self.applyButton = QToolButton(self)
-        self.applyButton.setText(self.tr("Apply"))
-        self.applyButton.setSizePolicy(QtSizeMinimum, QtSizeMinimumExpanding)
-        self.applyButton.setEnabled(False)
-        self.applyButton.clicked.connect(self._applyChanges)
-
         # Assemble
         self.listControls = QVBoxLayout()
         self.listControls.addWidget(self.addButton)
@@ -426,7 +421,6 @@ class _StatusPage(NFixedPage):
         self.editBox.addWidget(self.editName, 1)
         self.editBox.addWidget(self.colorButton, 0)
         self.editBox.addWidget(self.shapeButton, 0)
-        self.editBox.addWidget(self.applyButton, 0)
 
         self.mainBox = QVBoxLayout()
         self.mainBox.addWidget(self.listBox, 1)
@@ -474,16 +468,28 @@ class _StatusPage(NFixedPage):
     #  Private Slots
     ##
 
+    @pyqtSlot(str)
+    def _onNameEdit(self, text: str) -> None:
+        """Update the status label text."""
+        if item := self._getSelectedItem():
+            name = simplified(text)
+            entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
+            entry.name = name
+            item.setText(self.C_LABEL, name)
+            self._changed = True
+        return
+
     @pyqtSlot()
-    def _selectColour(self) -> None:
+    def _onColourSelect(self) -> None:
         """Open a dialog to select the status icon colour."""
         if (color := QColorDialog.getColor(self._color, self, self.trSelColor)).isValid():
             self._color = color
             self._setButtonIcons()
+            self._updateIcon()
         return
 
     @pyqtSlot()
-    def _newItem(self) -> None:
+    def _onItemCreate(self) -> None:
         """Create a new status item."""
         color = QColor(100, 100, 100)
         shape = nwStatusShape.SQUARE
@@ -493,7 +499,7 @@ class _StatusPage(NFixedPage):
         return
 
     @pyqtSlot()
-    def _delItem(self) -> None:
+    def _onItemDelete(self) -> None:
         """Delete a status item."""
         if item := self._getSelectedItem():
             iRow = self.listBox.indexOfTopLevelItem(item)
@@ -506,28 +512,7 @@ class _StatusPage(NFixedPage):
         return
 
     @pyqtSlot()
-    def _applyChanges(self) -> None:
-        """Save changes made to a status item."""
-        if item := self._getSelectedItem():
-            entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
-
-            name = simplified(self.editName.text())
-            icon = NWStatus.createIcon(self._iPx, self._color, self._shape)
-
-            entry.name = name
-            entry.color = self._color
-            entry.shape = self._shape
-            entry.icon = icon
-
-            item.setText(self.C_LABEL, name)
-            item.setIcon(self.C_LABEL, icon)
-
-            self._changed = True
-
-        return
-
-    @pyqtSlot()
-    def _selectionChanged(self) -> None:
+    def _onSelectionChanged(self) -> None:
         """Extract the info of a selected item and populate the settings
         boxes and button. If no item is selected, clear the form.
         """
@@ -544,8 +529,6 @@ class _StatusPage(NFixedPage):
             self.editName.setEnabled(True)
             self.colorButton.setEnabled(True)
             self.shapeButton.setEnabled(True)
-            self.applyButton.setEnabled(True)
-
         else:
             self._color = QColor(100, 100, 100)
             self._shape = nwStatusShape.SQUARE
@@ -555,7 +538,6 @@ class _StatusPage(NFixedPage):
             self.editName.setEnabled(False)
             self.colorButton.setEnabled(False)
             self.shapeButton.setEnabled(False)
-            self.applyButton.setEnabled(False)
         return
 
     ##
@@ -566,6 +548,19 @@ class _StatusPage(NFixedPage):
         """Set the current shape."""
         self._shape = shape
         self._setButtonIcons()
+        self._updateIcon()
+        return
+
+    def _updateIcon(self) -> None:
+        """Apply changes made to a status icon."""
+        if item := self._getSelectedItem():
+            icon = NWStatus.createIcon(self._iPx, self._color, self._shape)
+            entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
+            entry.color = self._color
+            entry.shape = self._shape
+            entry.icon = icon
+            item.setIcon(self.C_LABEL, icon)
+            self._changed = True
         return
 
     def _addItem(self, key: str | None, entry: StatusEntry) -> None:
