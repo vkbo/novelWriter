@@ -446,7 +446,7 @@ class _StatusPage(NFixedPage):
         self.innerBox.addLayout(self.listControls, 0, 1)
         self.innerBox.addLayout(self.editBox, 1, 0)
         self.innerBox.setRowStretch(0, 1)
-        self.innerBox.setColumnStretch(1, 0)
+        self.innerBox.setColumnStretch(0, 1)
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.pageTitle, 0)
