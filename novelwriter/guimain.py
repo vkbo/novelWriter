@@ -957,12 +957,8 @@ class GuiMain(QMainWindow):
                 docEditor = True
             elif self.docViewer.isAncestorOf(new):
                 docViewer = True
-
             self.docEditor.changeFocusState(docEditor)
             self.docViewer.changeFocusState(docViewer)
-
-            logger.debug("Main focus switched to: %s", type(new).__name__)
-
         return
 
     @pyqtSlot(bool)

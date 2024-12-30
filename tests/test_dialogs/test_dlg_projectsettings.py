@@ -198,10 +198,9 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
         mp.setattr(QColorDialog, "getColor", lambda *a: QColor(20, 30, 40))
         status.addButton.click()
         status.listBox.setCurrentItem(status.listBox.topLevelItem(3))
-        status.editName.setText("Final")
+        status._onNameEdit("Final")
         status.colorButton.click()
         status._selectShape(nwStatusShape.CIRCLE)
-        status.applyButton.click()
         assert status.listBox.topLevelItemCount() == 4
 
     assert status.changed is True
@@ -274,10 +273,9 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
         importance.addButton.click()
         importance.listBox.clearSelection()
         importance.listBox.setCurrentItem(importance.listBox.topLevelItem(3))
-        importance.editName.setText("Final")
+        importance._onNameEdit("Final")
         importance.colorButton.click()
         importance._selectShape(nwStatusShape.TRIANGLE)
-        importance.applyButton.click()
         assert importance.listBox.topLevelItemCount() == 4
 
     assert importance.changed is True
@@ -351,8 +349,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Nothing to save or delete
     replace.listBox.clearSelection()
-    replace._applyChanges()
-    replace._delEntry()
+    replace._onEntryDeleted()
     assert replace.listBox.topLevelItemCount() == 2
 
     # Create a new entry
@@ -363,13 +360,8 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Edit the entry
     replace.listBox.setCurrentItem(replace.listBox.topLevelItem(2))
-    replace.editKey.setText("")
-    for c in "Th is ":
-        qtbot.keyClick(replace.editKey, c, delay=KEY_DELAY)
-    replace.editValue.setText("")
-    for c in "With This Stuff ":
-        qtbot.keyClick(replace.editValue, c, delay=KEY_DELAY)
-    qtbot.mouseClick(replace.applyButton, QtMouseLeft)
+    replace._onKeyEdit("Th is ")
+    replace._onValueEdit("With This Stuff ")
     assert replace.listBox.topLevelItem(2).text(0) == "<This>"  # type: ignore
     assert replace.listBox.topLevelItem(2).text(1) == "With This Stuff "  # type: ignore
 
