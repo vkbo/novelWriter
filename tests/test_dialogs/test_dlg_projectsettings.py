@@ -348,12 +348,12 @@ def testDlgProjSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPath, 
         status._exportLabels()
 
     assert expFile.is_file() is True
-    assert expFile.read_text() == (
-        "SQUARE,#646464,New\n"
-        "SQUARE,#c83200,Note\n"
-        "SQUARE,#c89600,Draft\n"
-        "SQUARE,#32c800,Finished\n"
-    )
+    assert expFile.read_text().split() == [
+        "SQUARE,#646464,New",
+        "SQUARE,#c83200,Note",
+        "SQUARE,#c89600,Draft",
+        "SQUARE,#32c800,Finished",
+    ]
 
     # Import Error
     with monkeypatch.context() as mp:
