@@ -174,6 +174,20 @@ class NWStatus:
         """Yield entries from the status icons."""
         yield from self._store.items()
 
+    def fromRaw(self, data: list[str]) -> StatusEntry | None:
+        """Create a StatusEntry from a list of three strings consisting
+        of shape, colour, and name. This entry is not automatically
+        added to the list of entries.
+        """
+        try:
+            shape = nwStatusShape[str(data[0])]
+            color = QColor(str(data[1]))
+            icon = NWStatus.createIcon(self._height, color, shape)
+            return StatusEntry(simplified(data[2]), color, shape, icon)
+        except Exception:
+            logger.error("Could not parse entry %s", str(data))
+        return None
+
     @staticmethod
     def createIcon(height: int, color: QColor, shape: nwStatusShape) -> QIcon:
         """Generate an icon for a status label."""

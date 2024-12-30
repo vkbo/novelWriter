@@ -24,18 +24,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import csv
 import logging
+
+from pathlib import Path
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QColor
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QColorDialog, QDialogButtonBox,
-    QHBoxLayout, QLineEdit, QMenu, QStackedWidget, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget
+    QFileDialog, QGridLayout, QHBoxLayout, QLineEdit, QMenu, QStackedWidget,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import qtLambda, simplified
+from novelwriter.common import formatFileFilter, qtLambda, simplified
 from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.status import NWStatus, StatusEntry
 from novelwriter.enum import nwStatusShape
@@ -310,11 +313,13 @@ class _StatusPage(NFixedPage):
         super().__init__(parent=parent)
 
         if isStatus:
-            status = SHARED.project.data.itemStatus
+            self._kind = self.tr("Status")
+            self._store = SHARED.project.data.itemStatus
             pageLabel = self.tr("Novel Document Status Levels")
             colSetting = "statusColW"
         else:
-            status = SHARED.project.data.itemImport
+            self._kind = self.tr("Importance")
+            self._store = SHARED.project.data.itemImport
             pageLabel = self.tr("Project Note Importance Levels")
             colSetting = "importColW"
 
@@ -354,21 +359,33 @@ class _StatusPage(NFixedPage):
         self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.listBox.itemSelectionChanged.connect(self._onSelectionChanged)
 
-        for key, entry in status.iterItems():
+        for key, entry in self._store.iterItems():
             self._addItem(key, StatusEntry.duplicate(entry))
 
         # List Controls
         self.addButton = NIconToolButton(self, iSz, "add")
+        self.addButton.setToolTip(self.tr("Add Label"))
         self.addButton.clicked.connect(self._onItemCreate)
 
         self.delButton = NIconToolButton(self, iSz, "remove")
+        self.delButton.setToolTip(self.tr("Delete Label"))
         self.delButton.clicked.connect(self._onItemDelete)
 
         self.upButton = NIconToolButton(self, iSz, "up")
+        self.upButton.setToolTip(self.tr("Move Up"))
         self.upButton.clicked.connect(qtLambda(self._moveItem, -1))
 
-        self.dnButton = NIconToolButton(self, iSz, "down")
-        self.dnButton.clicked.connect(qtLambda(self._moveItem, 1))
+        self.downButton = NIconToolButton(self, iSz, "down")
+        self.downButton.setToolTip(self.tr("Move Down"))
+        self.downButton.clicked.connect(qtLambda(self._moveItem, 1))
+
+        self.importButton = NIconToolButton(self, iSz, "import")
+        self.importButton.setToolTip(self.tr("Import Labels"))
+        self.importButton.clicked.connect(self._importLabels)
+
+        self.exportButton = NIconToolButton(self, iSz, "export")
+        self.exportButton.setToolTip(self.tr("Export Labels"))
+        self.exportButton.clicked.connect(self._exportLabels)
 
         # Edit Form
         self.labelText = QLineEdit(self)
@@ -414,21 +431,22 @@ class _StatusPage(NFixedPage):
         self.listControls.addWidget(self.addButton)
         self.listControls.addWidget(self.delButton)
         self.listControls.addWidget(self.upButton)
-        self.listControls.addWidget(self.dnButton)
+        self.listControls.addWidget(self.downButton)
         self.listControls.addStretch(1)
+        self.listControls.addWidget(self.importButton)
+        self.listControls.addWidget(self.exportButton)
 
         self.editBox = QHBoxLayout()
         self.editBox.addWidget(self.labelText, 1)
         self.editBox.addWidget(self.colorButton, 0)
         self.editBox.addWidget(self.shapeButton, 0)
 
-        self.mainBox = QVBoxLayout()
-        self.mainBox.addWidget(self.listBox, 1)
-        self.mainBox.addLayout(self.editBox, 0)
-
-        self.innerBox = QHBoxLayout()
-        self.innerBox.addLayout(self.mainBox, 1)
-        self.innerBox.addLayout(self.listControls, 0)
+        self.innerBox = QGridLayout()
+        self.innerBox.addWidget(self.listBox, 0, 0)
+        self.innerBox.addLayout(self.listControls, 0, 1)
+        self.innerBox.addLayout(self.editBox, 1, 0)
+        self.innerBox.setRowStretch(0, 1)
+        self.innerBox.setColumnStretch(1, 0)
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.pageTitle, 0)
@@ -538,6 +556,42 @@ class _StatusPage(NFixedPage):
             self.labelText.setEnabled(False)
             self.colorButton.setEnabled(False)
             self.shapeButton.setEnabled(False)
+        return
+
+    @pyqtSlot()
+    def _importLabels(self) -> None:
+        """Import labels from file."""
+        if path := QFileDialog.getOpenFileName(
+            self, self.tr("Import File"),
+            str(CONFIG.homePath()), filter=formatFileFilter(["*.csv", "*"]),
+        )[0]:
+            try:
+                with open(path, mode="r", encoding="utf-8") as fo:
+                    for row in csv.reader(fo):
+                        if entry := self._store.fromRaw(row):
+                            self._addItem(None, entry)
+            except Exception as exc:
+                SHARED.error("Could not read file.", exc=exc)
+                return
+        return
+
+    @pyqtSlot()
+    def _exportLabels(self) -> None:
+        """Export labels to file."""
+        name = f"{SHARED.project.data.fileSafeName} - {self._kind}.csv"
+        if path := QFileDialog.getSaveFileName(
+            self, self.tr("Export File"), str(CONFIG.homePath() / name),
+        )[0]:
+            try:
+                path = Path(path).with_suffix(".csv")
+                with open(path, mode="w", encoding="utf-8") as fo:
+                    writer = csv.writer(fo)
+                    for n in range(self.listBox.topLevelItemCount()):
+                        if item := self.listBox.topLevelItem(n):
+                            entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
+                            writer.writerow([entry.shape.name, entry.color.name(), entry.name])
+            except Exception as exc:
+                SHARED.error("Could not write file.", exc=exc)
         return
 
     ##
