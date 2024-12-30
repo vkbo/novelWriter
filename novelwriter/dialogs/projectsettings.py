@@ -30,7 +30,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QColor
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QColorDialog, QDialogButtonBox,
-    QHBoxLayout, QLineEdit, QMenu, QStackedWidget, QToolButton, QTreeWidget,
+    QHBoxLayout, QLineEdit, QMenu, QStackedWidget, QTreeWidget,
     QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
@@ -660,15 +660,12 @@ class _ReplacePage(NFixedPage):
         self.editKey.setPlaceholderText(self.tr("Select item to edit"))
         self.editKey.setEnabled(False)
         self.editKey.setMaxLength(40)
+        self.editKey.textEdited.connect(self._onKeyEdit)
 
         self.editValue = QLineEdit(self)
         self.editValue.setEnabled(False)
-        self.editValue.setMaxLength(80)
-
-        self.applyButton = QToolButton(self)
-        self.applyButton.setText(self.tr("Apply"))
-        self.applyButton.setSizePolicy(QtSizeMinimum, QtSizeMinimumExpanding)
-        self.applyButton.clicked.connect(self._applyChanges)
+        self.editValue.setMaxLength(250)
+        self.editValue.textEdited.connect(self._onValueEdit)
 
         # Assemble
         self.listControls = QVBoxLayout()
@@ -679,7 +676,6 @@ class _ReplacePage(NFixedPage):
         self.editBox = QHBoxLayout()
         self.editBox.addWidget(self.editKey, 4)
         self.editBox.addWidget(self.editValue, 5)
-        self.editBox.addWidget(self.applyButton, 0)
 
         self.mainBox = QVBoxLayout()
         self.mainBox.addWidget(self.listBox, 1)
@@ -711,7 +707,7 @@ class _ReplacePage(NFixedPage):
         new = {}
         for n in range(self.listBox.topLevelItemCount()):
             if item := self.listBox.topLevelItem(n):
-                if key := self._stripNotAllowed(item.text(self.C_KEY)):
+                if key := self._stripKey(item.text(self.C_KEY)):
                     new[key] = item.text(self.C_REPL)
         return new
 
@@ -723,13 +719,29 @@ class _ReplacePage(NFixedPage):
     #  Private Slots
     ##
 
+    @pyqtSlot(str)
+    def _onKeyEdit(self, text: str) -> None:
+        """Update the key text."""
+        if (item := self._getSelectedItem()) and (key := self._stripKey(text)):
+            item.setText(self.C_KEY, f"<{key}>")
+            self._changed = True
+        return
+
+    @pyqtSlot(str)
+    def _onValueEdit(self, text: str) -> None:
+        """Update the value text."""
+        if item := self._getSelectedItem():
+            item.setText(self.C_REPL, text)
+            self._changed = True
+        return
+
     @pyqtSlot()
     def _selectionChanged(self) -> None:
         """Extract the details from the selected item and populate the
         edit form.
         """
         if item := self._getSelectedItem():
-            self.editKey.setText(self._stripNotAllowed(item.text(self.C_KEY)))
+            self.editKey.setText(self._stripKey(item.text(self.C_KEY)))
             self.editValue.setText(item.text(self.C_REPL))
             self.editKey.setEnabled(True)
             self.editValue.setEnabled(True)
@@ -740,18 +752,6 @@ class _ReplacePage(NFixedPage):
             self.editValue.setText("")
             self.editKey.setEnabled(False)
             self.editValue.setEnabled(False)
-        return
-
-    @pyqtSlot()
-    def _applyChanges(self) -> None:
-        """Save the form data into the list widget."""
-        if item := self._getSelectedItem():
-            key = self._stripNotAllowed(self.editKey.text())
-            value = self.editValue.text()
-            if key and value:
-                item.setText(self.C_KEY, f"<{key}>")
-                item.setText(self.C_REPL, value)
-                self._changed = True
         return
 
     @pyqtSlot()
@@ -779,6 +779,6 @@ class _ReplacePage(NFixedPage):
             return items[0]
         return None
 
-    def _stripNotAllowed(self, key: str) -> str:
+    def _stripKey(self, key: str) -> str:
         """Clean up the replace key string."""
         return "".join(c for c in key if c.isalnum())

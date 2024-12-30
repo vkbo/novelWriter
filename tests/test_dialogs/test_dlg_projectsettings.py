@@ -349,7 +349,6 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Nothing to save or delete
     replace.listBox.clearSelection()
-    replace._applyChanges()
     replace._delEntry()
     assert replace.listBox.topLevelItemCount() == 2
 
@@ -361,13 +360,8 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Edit the entry
     replace.listBox.setCurrentItem(replace.listBox.topLevelItem(2))
-    replace.editKey.setText("")
-    for c in "Th is ":
-        qtbot.keyClick(replace.editKey, c, delay=KEY_DELAY)
-    replace.editValue.setText("")
-    for c in "With This Stuff ":
-        qtbot.keyClick(replace.editValue, c, delay=KEY_DELAY)
-    qtbot.mouseClick(replace.applyButton, QtMouseLeft)
+    replace._onKeyEdit("Th is ")
+    replace._onValueEdit("With This Stuff ")
     assert replace.listBox.topLevelItem(2).text(0) == "<This>"  # type: ignore
     assert replace.listBox.topLevelItem(2).text(1) == "With This Stuff "  # type: ignore
 
