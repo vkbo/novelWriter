@@ -96,9 +96,11 @@ class GuiWordList(NDialog):
         self.newEntry = QLineEdit(self)
 
         self.addButton = NIconToolButton(self, iSz, "add")
+        self.addButton.setToolTip(self.tr("Add Word"))
         self.addButton.clicked.connect(self._doAdd)
 
         self.delButton = NIconToolButton(self, iSz, "remove")
+        self.delButton.setToolTip(self.tr("Remove Word"))
         self.delButton.clicked.connect(self._doDelete)
 
         self.editBox = QHBoxLayout()
@@ -184,11 +186,10 @@ class GuiWordList(NDialog):
         SHARED.info(self.tr(
             "Note: The import file must be a plain text file with UTF-8 or ASCII encoding."
         ))
-        ffilter = formatFileFilter(["*.txt", "*"])
-        path, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Import File"), str(CONFIG.homePath()), filter=ffilter
-        )
-        if path:
+        if path := QFileDialog.getOpenFileName(
+            self, self.tr("Import File"), str(CONFIG.homePath()),
+            filter=formatFileFilter(["*.txt", "*"]),
+        )[0]:
             try:
                 with open(path, mode="r", encoding="utf-8") as fo:
                     words = set(w.strip() for w in fo.read().split())
@@ -202,10 +203,10 @@ class GuiWordList(NDialog):
     @pyqtSlot()
     def _exportWords(self) -> None:
         """Export words to file."""
-        path, _ = QFileDialog.getSaveFileName(
-            self, self.tr("Export File"), str(CONFIG.homePath())
-        )
-        if path:
+        name = f"{SHARED.project.data.fileSafeName} - {self.windowTitle()}.txt"
+        if path := QFileDialog.getSaveFileName(
+            self, self.tr("Export File"), str(CONFIG.homePath() / name),
+        )[0]:
             try:
                 path = Path(path).with_suffix(".txt")
                 with open(path, mode="w", encoding="utf-8") as fo:

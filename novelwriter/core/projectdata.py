@@ -29,7 +29,8 @@ import uuid
 from typing import TYPE_CHECKING, Any
 
 from novelwriter.common import (
-    checkBool, checkInt, checkStringNone, checkUuid, isHandle, simplified
+    checkBool, checkInt, checkStringNone, checkUuid, isHandle,
+    makeFileNameSafe, simplified
 )
 from novelwriter.core.status import NWStatus
 
@@ -100,6 +101,11 @@ class NWProjectData:
     def name(self) -> str:
         """Return the project name."""
         return self._name
+
+    @property
+    def fileSafeName(self) -> str:
+        """Return the project name in a file name safe format."""
+        return makeFileNameSafe(self._name)
 
     @property
     def author(self) -> str:
