@@ -371,11 +371,11 @@ class _StatusPage(NFixedPage):
         self.dnButton.clicked.connect(qtLambda(self._moveItem, 1))
 
         # Edit Form
-        self.editName = QLineEdit(self)
-        self.editName.setMaxLength(40)
-        self.editName.setPlaceholderText(self.tr("Select item to edit"))
-        self.editName.setEnabled(False)
-        self.editName.textEdited.connect(self._onNameEdit)
+        self.labelText = QLineEdit(self)
+        self.labelText.setMaxLength(40)
+        self.labelText.setPlaceholderText(self.tr("Select item to edit"))
+        self.labelText.setEnabled(False)
+        self.labelText.textEdited.connect(self._onNameEdit)
 
         buttonStyle = (
             f"QToolButton {{padding: 0 {bPd}px;}} "
@@ -418,7 +418,7 @@ class _StatusPage(NFixedPage):
         self.listControls.addStretch(1)
 
         self.editBox = QHBoxLayout()
-        self.editBox.addWidget(self.editName, 1)
+        self.editBox.addWidget(self.labelText, 1)
         self.editBox.addWidget(self.colorButton, 0)
         self.editBox.addWidget(self.shapeButton, 0)
 
@@ -522,20 +522,20 @@ class _StatusPage(NFixedPage):
             self._shape = entry.shape
             self._setButtonIcons()
 
-            self.editName.setText(entry.name)
-            self.editName.selectAll()
-            self.editName.setFocus()
+            self.labelText.setText(entry.name)
+            self.labelText.selectAll()
+            self.labelText.setFocus()
 
-            self.editName.setEnabled(True)
+            self.labelText.setEnabled(True)
             self.colorButton.setEnabled(True)
             self.shapeButton.setEnabled(True)
         else:
             self._color = QColor(100, 100, 100)
             self._shape = nwStatusShape.SQUARE
             self._setButtonIcons()
-            self.editName.setText("")
+            self.labelText.setText("")
 
-            self.editName.setEnabled(False)
+            self.labelText.setEnabled(False)
             self.colorButton.setEnabled(False)
             self.shapeButton.setEnabled(False)
         return
@@ -639,7 +639,7 @@ class _ReplacePage(NFixedPage):
         self.listBox.setIndentation(0)
         self.listBox.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
-        self.listBox.itemSelectionChanged.connect(self._selectionChanged)
+        self.listBox.itemSelectionChanged.connect(self._onSelectionChanged)
 
         for aKey, aVal in SHARED.project.data.autoReplace.items():
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
@@ -650,10 +650,10 @@ class _ReplacePage(NFixedPage):
 
         # List Controls
         self.addButton = NIconToolButton(self, iSz, "add")
-        self.addButton.clicked.connect(self._addEntry)
+        self.addButton.clicked.connect(self._onEntryCreated)
 
         self.delButton = NIconToolButton(self, iSz, "remove")
-        self.delButton.clicked.connect(self._delEntry)
+        self.delButton.clicked.connect(self._onEntryDeleted)
 
         # Edit Form
         self.editKey = QLineEdit(self)
@@ -736,7 +736,7 @@ class _ReplacePage(NFixedPage):
         return
 
     @pyqtSlot()
-    def _selectionChanged(self) -> None:
+    def _onSelectionChanged(self) -> None:
         """Extract the details from the selected item and populate the
         edit form.
         """
@@ -755,14 +755,14 @@ class _ReplacePage(NFixedPage):
         return
 
     @pyqtSlot()
-    def _addEntry(self) -> None:
+    def _onEntryCreated(self) -> None:
         """Add a new list entry."""
         key = f"<keyword{self.listBox.topLevelItemCount() + 1:d}>"
         self.listBox.addTopLevelItem(QTreeWidgetItem([key, ""]))
         return
 
     @pyqtSlot()
-    def _delEntry(self) -> None:
+    def _onEntryDeleted(self) -> None:
         """Delete the selected entry."""
         if item := self._getSelectedItem():
             self.listBox.takeTopLevelItem(self.listBox.indexOfTopLevelItem(item))
