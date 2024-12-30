@@ -23,7 +23,7 @@ from __future__ import annotations
 import pytest
 
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QAction, QColorDialog
+from PyQt5.QtWidgets import QAction, QColorDialog, QFileDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -31,6 +31,7 @@ from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import nwItemType, nwStatusShape
 from novelwriter.types import QtAccepted, QtMouseLeft
 
+from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
 
 KEY_DELAY = 1
@@ -317,6 +318,73 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     assert importItems["i000014"].name == "Final"
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testDlgProjSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the status and importance import/export."""
+    buildTestProject(nwGUI, projPath)
+
+    # Create Dialog
+    projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.PAGE_STATUS)
+    projSettings.show()
+    qtbot.addWidget(projSettings)
+
+    status = projSettings.statusPage
+    assert status.listBox.topLevelItemCount() == 4
+    expFile = projPath / "status.csv"
+
+    # Export Error
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: (str(expFile), ""))
+        mp.setattr("builtins.open", causeOSError)
+        status._exportLabels()
+
+    assert expFile.is_file() is False
+
+    # Export File
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: (str(expFile), ""))
+        status._exportLabels()
+
+    assert expFile.is_file() is True
+    assert expFile.read_text() == (
+        "SQUARE,#646464,New\n"
+        "SQUARE,#c83200,Note\n"
+        "SQUARE,#c89600,Draft\n"
+        "SQUARE,#32c800,Finished\n"
+    )
+
+    # Import Error
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (str(expFile), ""))
+        mp.setattr("builtins.open", causeOSError)
+        status._importLabels()
+
+    assert status.listBox.topLevelItemCount() == 4
+
+    # Import File
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (str(expFile), ""))
+        status._importLabels()
+
+    assert status.listBox.topLevelItemCount() == 8
+
+    item4 = status.listBox.topLevelItem(4)
+    assert item4 is not None
+    assert item4.text(0) == "New"
+
+    item5 = status.listBox.topLevelItem(5)
+    assert item5 is not None
+    assert item5.text(0) == "Note"
+
+    item6 = status.listBox.topLevelItem(6)
+    assert item6 is not None
+    assert item6.text(0) == "Draft"
+
+    item7 = status.listBox.topLevelItem(7)
+    assert item7 is not None
+    assert item7.text(0) == "Finished"
 
 
 @pytest.mark.gui
