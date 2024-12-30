@@ -303,6 +303,20 @@ def testCoreStatus_Entries(mockGUI, mockRnd):
     assert list(nStatus._store.keys()) == [statusKeys[3], statusKeys[2]]
     assert nStatus._default == statusKeys[3]
 
+    # Create
+    # ======
+
+    # A valid entry
+    entry = nStatus.fromRaw(["STAR", "#ff7f00", "Test"])
+    assert entry is not None
+    assert entry.shape == nwStatusShape.STAR
+    assert entry.color == QColor(255, 127, 0)
+    assert entry.name == "Test"
+
+    # Invalid entries
+    assert nStatus.fromRaw(["STAR", "#ff7f00"]) is None
+    assert nStatus.fromRaw(["STUFF", "#ff7f00", "Test"]) is None
+
 
 @pytest.mark.core
 def testCoreStatus_Pack(mockGUI, mockRnd):
