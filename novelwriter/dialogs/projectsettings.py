@@ -570,6 +570,7 @@ class _StatusPage(NFixedPage):
                     for row in csv.reader(fo):
                         if entry := self._store.fromRaw(row):
                             self._addItem(None, entry)
+                            self._changed = True
             except Exception as exc:
                 SHARED.error("Could not read file.", exc=exc)
                 return
