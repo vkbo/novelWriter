@@ -1251,7 +1251,8 @@ class GuiDocEditor(QPlainTextEdit):
             self._nwItem.setCharCount(cCount)
             self._nwItem.setWordCount(wCount)
             self._nwItem.setParaCount(pCount)
-            if needsRefresh:
+            if needsRefresh and not self.textCursor().hasSelection():
+                # Selection counter should take precedence (#2155)
                 self._nwItem.notifyToRefresh()
                 self.docFooter.updateWordCount(wCount, False)
         return
