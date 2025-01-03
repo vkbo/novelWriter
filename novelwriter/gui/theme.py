@@ -7,7 +7,7 @@ Created: 2019-05-18 [0.1.3] GuiTheme
 Created: 2019-11-08 [0.4]   GuiIcons
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

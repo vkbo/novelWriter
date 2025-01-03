@@ -10,7 +10,7 @@ Created: 2022-05-29 [2.0rc1] TagsIndex
 Created: 2022-05-29 [2.0rc1] ItemIndex
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

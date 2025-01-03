@@ -10,7 +10,7 @@ Created: 2019-11-16 [0.4.1]  GuiOutlineHeaderMenu
 Created: 2020-06-02 [0.7]    GuiOutlineDetails
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

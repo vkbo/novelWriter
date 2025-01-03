@@ -11,7 +11,7 @@ Rewritten: 2024-11-17 [2.6b2]  GuiProjectTree
 Rewritten: 2024-11-20 [2.6b2]  _TreeContextMenu
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
