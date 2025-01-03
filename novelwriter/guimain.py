@@ -6,8 +6,7 @@ File History:
 Created: 2018-09-22 [0.0.1] GuiMain
 
 This file is a part of novelWriter
-Copyright (C) 2018 Veronica Berglyd Olsen
-Copyright (C) 2021 Bruno Meneguello
+Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

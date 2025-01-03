@@ -9,7 +9,7 @@ Created: 2021-01-27 [1.2b1] ODTTextStyle
 Created: 2021-08-14 [1.5b1] XMLParagraph
 
 This file is a part of novelWriter
-Copyright (C) 2021 Veronica Berglyd Olsen
+Copyright (C) 2021 Veronica Berglyd Olsen and novelWriter contributors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

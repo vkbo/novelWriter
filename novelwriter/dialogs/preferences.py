@@ -7,8 +7,7 @@ Created:   2019-06-10 [0.1.5] GuiPreferences
 Rewritten: 2024-01-08 [2.3b1] GuiPreferences
 
 This file is a part of novelWriter
-Copyright (C) 2019 Veronica Berglyd Olsen
-Copyright (C) 2021 Bruno Meneguello
+Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

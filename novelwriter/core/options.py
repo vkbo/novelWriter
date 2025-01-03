@@ -7,7 +7,7 @@ Created:   2019-10-21 [0.3.1] OptionState
 Rewritten: 2020-02-19 [0.4.5] OptionState
 
 This file is a part of novelWriter
-Copyright (C) 2019 Veronica Berglyd Olsen
+Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
