@@ -6,7 +6,7 @@ File History:
 Created: 2020-06-18 [0.9.0] GuiQuoteSelect
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2021 Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

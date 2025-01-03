@@ -14,7 +14,8 @@ Created:   2023-11-06 [2.2b1] MetaCompleter
 Created:   2023-11-07 [2.2b1] GuiDocToolBar
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2018 Veronica Berglyd Olsen
+Copyright (C) 2021 Bruno Meneguello
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

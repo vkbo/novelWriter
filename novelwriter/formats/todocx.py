@@ -7,7 +7,7 @@ Created: 2024-10-18 [2.6b1] ToDocX
 Created: 2024-10-18 [2.6b1] DocXParagraph
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2024 Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

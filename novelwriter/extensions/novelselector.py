@@ -6,7 +6,7 @@ File History:
 Created: 2022-11-17 [2.0] NovelSelector
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2022 Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

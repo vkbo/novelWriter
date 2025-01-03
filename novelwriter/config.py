@@ -8,7 +8,7 @@ Created: 2022-11-09 [2.0rc2] RecentProjects
 Created: 2024-06-16 [2.5rc1] RecentPaths
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2018 Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -7,7 +7,7 @@ Created: 2019-06-11 [0.1.5] NWSpellEnchant
 Created: 2023-06-13 [2.1b1] UserDictionary
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2019 Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

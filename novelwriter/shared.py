@@ -7,7 +7,7 @@ Created: 2023-08-10 [2.1rc1] SharedData
 Created: 2023-08-14 [2.1rc1] _GuiAlert
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2023 Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

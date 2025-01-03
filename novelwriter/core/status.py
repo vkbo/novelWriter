@@ -7,7 +7,7 @@ Created:   2019-05-19 [0.1.3] NWStatus
 Rewritten: 2022-04-05 [2.0b1] NWStatus
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2019 Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
