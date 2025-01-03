@@ -8,7 +8,9 @@ Created: 2019-05-16 [0.5.1]
 Renamed: 2023-07-26 [2.1b1]
 
 This file is a part of novelWriter
-Copyright 2018–2024, Veronica Berglyd Olsen
+Copyright (C) 2019 Veronica Berglyd Olsen
+Copyright (C) 2021 Bruno Meneguello
+Copyright (C) 2023 Rachel Powers
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
