@@ -114,6 +114,7 @@ class Config:
         self.guiLocale    = self._qLocale.name()
         self.guiTheme     = "default"        # GUI theme
         self.guiSyntax    = "default_light"  # Syntax theme
+        self.guiIcons     = "material_rounded_normal"  # Icons theme
         self.guiFont      = QFont()          # Main GUI font
         self.guiScale     = 1.0              # Set automatically by Theme class
         self.hideVScroll  = False            # Hide vertical scroll bars on main widgets
@@ -605,6 +606,7 @@ class Config:
         self.setGuiFont(conf.rdStr(sec, "font", ""))
         self.guiTheme    = conf.rdStr(sec, "theme", self.guiTheme)
         self.guiSyntax   = conf.rdStr(sec, "syntax", self.guiSyntax)
+        self.guiIcons    = conf.rdStr(sec, "icons", self.guiIcons)
         self.guiLocale   = conf.rdStr(sec, "localisation", self.guiLocale)
         self.hideVScroll = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
         self.hideHScroll = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
@@ -716,6 +718,7 @@ class Config:
             "font":         self.guiFont.toString(),
             "theme":        str(self.guiTheme),
             "syntax":       str(self.guiSyntax),
+            "icons":        str(self.guiIcons),
             "localisation": str(self.guiLocale),
             "hidevscroll":  str(self.hideVScroll),
             "hidehscroll":  str(self.hideHScroll),

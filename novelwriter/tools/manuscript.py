@@ -113,7 +113,7 @@ class GuiManuscript(NToolDialog):
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbAdd.clicked.connect(self._createNewBuild)
 
-        self.tbDel = NIconToolButton(self, iSz, "remove")
+        self.tbDel = NIconToolButton(self, iSz, "remove", "red")
         self.tbDel.setToolTip(self.tr("Delete Selected Build"))
         self.tbDel.setStyleSheet(buttonStyle)
         self.tbDel.clicked.connect(self._deleteSelectedBuild)

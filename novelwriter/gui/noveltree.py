@@ -267,7 +267,7 @@ class GuiNovelToolBar(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         # Icons
-        self.tbNovel.setThemeIcon("cls_novel")
+        self.tbNovel.setThemeIcon("cls_novel", "red")
         self.tbRefresh.setThemeIcon("refresh", "green")
         self.tbMore.setThemeIcon("more_vertical")
 

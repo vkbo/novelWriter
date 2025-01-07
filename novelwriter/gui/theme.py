@@ -307,7 +307,7 @@ class GuiTheme:
         # Icons
         defaultIcons = "typicons_light" if backLNess >= 0.5 else "typicons_dark"
         self.iconCache.loadTheme(self.themeIcons or defaultIcons)
-        self.iconCache.loadNewTheme("")
+        self.iconCache.loadNewTheme(CONFIG.guiIcons)
 
         # Apply Styles
         QApplication.setPalette(self._guiPalette)
@@ -627,15 +627,20 @@ class GuiIcons:
 
     def loadNewTheme(self, iconTheme: str) -> bool:
         """Load new style theme."""
-        themePath = self._iconPath / "material_rounded_normal.icons"
-        with open(themePath, mode="r", encoding="utf-8") as icons:
-            for icon in icons:
-                bits = icon.partition("=")
-                key = bits[0].strip()
-                value = bits[2].strip()
-                if key and value:
-                    if key.startswith("icon:"):
-                        self._svgData[key[5:]] = value.encode("utf-8")
+        themePath = self._iconPath / f"{iconTheme}.icons"
+        try:
+            with open(themePath, mode="r", encoding="utf-8") as icons:
+                for icon in icons:
+                    bits = icon.partition("=")
+                    key = bits[0].strip()
+                    value = bits[2].strip()
+                    if key and value:
+                        if key.startswith("icon:"):
+                            self._svgData[key[5:]] = value.encode("utf-8")
+        except Exception:
+            logger.error("Could not load icon theme settings from: %s", themePath)
+            logException()
+            return False
 
         return True
 
