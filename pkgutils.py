@@ -35,6 +35,8 @@ import zipfile
 
 from pathlib import Path
 
+from utils.material_icons import processMaterialIcons
+
 CURR_DIR = Path(__file__).parent
 SETUP_DIR = CURR_DIR / "setup"
 SIGN_KEY = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
@@ -318,6 +320,44 @@ def buildSampleZip(args: argparse.Namespace | None = None) -> None:
 
     print("")
     print("Built file: %s" % dstSample)
+    print("")
+
+    return
+
+
+##
+#  Import Translations (import-i18n)
+##
+
+def buildIconTheme(args: argparse.Namespace) -> None:
+    """Build an icon theme."""
+    print("")
+    print("Build Icon Theme")
+    print("================")
+    print("")
+
+    workDir = Path(args.sources).absolute()
+    if not workDir.is_dir():
+        print(f"Source directory not found: {workDir}")
+        sys.exit(1)
+
+    iconsDir = CURR_DIR / "novelwriter" / "assets" / "icons"
+
+    style = args.style
+    if style == "material":
+        processMaterialIcons(
+            workDir, iconsDir / "material_outline_normal.icons", "outlined", False, 400
+        )
+        processMaterialIcons(
+            workDir, iconsDir / "material_filled_normal.icons", "outlined", True, 400
+        )
+        processMaterialIcons(
+            workDir, iconsDir / "material_outline_bold.icons", "outlined", False, 700
+        )
+        processMaterialIcons(
+            workDir, iconsDir / "material_filled_bold.icons", "outlined", True, 700
+        )
+
     print("")
 
     return
@@ -1413,6 +1453,14 @@ if __name__ == "__main__":
 
     # Additional Builds
     # =================
+
+    # Build Icons
+    cmdIcons = parsers.add_parser(
+        "icons", help="Build icon theme files from source."
+    )
+    cmdIcons.add_argument("sources", help="Working directory for sources.")
+    cmdIcons.add_argument("style", help="What icon style to build.")
+    cmdIcons.set_defaults(func=buildIconTheme)
 
     # Import Translations
     cmdImportTS = parsers.add_parser(
