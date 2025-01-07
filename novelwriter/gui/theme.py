@@ -38,6 +38,7 @@ from novelwriter.common import NWConfigParser, cssCol, minmax
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
+from novelwriter.types import QtTransparent
 
 logger = logging.getLogger(__name__)
 
@@ -245,6 +246,18 @@ class GuiTheme:
             self.themeLicenseUrl  = parser.rdStr(sec, "licenseurl", "")
             self.themeIcons       = parser.rdStr(sec, "icontheme", "")
 
+        # Icons
+        sec = "Icons"
+        if parser.has_section(sec):
+            self.iconCache.setIconColor("default", self._parseColour(parser, sec, "default"))
+            self.iconCache.setIconColor("red",     self._parseColour(parser, sec, "red"))
+            self.iconCache.setIconColor("orange",  self._parseColour(parser, sec, "orange"))
+            self.iconCache.setIconColor("yellow",  self._parseColour(parser, sec, "yellow"))
+            self.iconCache.setIconColor("green",   self._parseColour(parser, sec, "green"))
+            self.iconCache.setIconColor("aqua",    self._parseColour(parser, sec, "aqua"))
+            self.iconCache.setIconColor("blue",    self._parseColour(parser, sec, "blue"))
+            self.iconCache.setIconColor("purple",  self._parseColour(parser, sec, "purple"))
+
         # Palette
         sec = "Palette"
         if parser.has_section(sec):
@@ -294,6 +307,7 @@ class GuiTheme:
         # Icons
         defaultIcons = "typicons_light" if backLNess >= 0.5 else "typicons_dark"
         self.iconCache.loadTheme(self.themeIcons or defaultIcons)
+        self.iconCache.loadNewTheme("")
 
         # Apply Styles
         QApplication.setPalette(self._guiPalette)
@@ -540,6 +554,9 @@ class GuiIcons:
         self.mainTheme = mainTheme
 
         # Storage
+        self._svgData: dict[str, bytes] = {}
+        self._svgColours: dict[str, bytes] = {}
+
         self._qIcons: dict[str, QIcon] = {}
         self._themeMap: dict[str, Path] = {}
         self._headerDec: list[QPixmap] = []
@@ -638,6 +655,22 @@ class GuiIcons:
 
         return True
 
+    def loadNewTheme(self, iconTheme: str) -> bool:
+        """Load new style theme."""
+        themePath = self._iconPath / "material_outline_normal.icons"
+        with open(themePath, mode="r", encoding="utf-8") as icons:
+            for icon in icons:
+                key, _, svg = icon.partition(" = ")
+                if key and svg:
+                    self._svgData[key.strip()] = svg.strip().encode("utf-8")
+
+        return True
+
+    def setIconColor(self, key: str, color: QColor) -> None:
+        """Set an icon colour for a named colour."""
+        self._svgColours[key] = color.name(QColor.NameFormat.HexRgb).encode("utf-8")
+        return
+
     ##
     #  Access Functions
     ##
@@ -670,13 +703,14 @@ class GuiIcons:
 
         return pixmap
 
-    def getIcon(self, name: str) -> QIcon:
+    def getIcon(self, name: str, color: str | None = None) -> QIcon:
         """Return an icon from the icon buffer, or load it."""
-        if name in self._qIcons:
+        key = f"{name}_{color}" if color else name
+        if key in self._qIcons:
             return self._qIcons[name]
         else:
-            icon = self._loadIcon(name)
-            self._qIcons[name] = icon
+            icon = self._loadIcon(name, color)
+            self._qIcons[key] = icon
             return icon
 
     def getToggleIcon(self, name: str, size: tuple[int, int]) -> QIcon:
@@ -755,19 +789,27 @@ class GuiIcons:
     #  Internal Functions
     ##
 
-    def _loadIcon(self, name: str) -> QIcon:
+    def _loadIcon(self, name: str, color: str | None = None) -> QIcon:
         """Load an icon from the assets themes folder. Is guaranteed to
         return a QIcon.
         """
-        if name not in self.ICON_KEYS:
-            logger.error("Requested unknown icon name '%s'", name)
-            return self._noIcon
+        # if name not in self.ICON_KEYS:
+        #     logger.error("Requested unknown icon name '%s'", name)
+        #     return self._noIcon
 
         # If we just want the app icons, return right away
         if name == "novelwriter":
             return QIcon(str(self._iconPath / "novelwriter.svg"))
         elif name == "proj_nwx":
             return QIcon(str(self._iconPath / "x-novelwriter-project.svg"))
+
+        if svg := self._svgData.get(name, b""):
+            if fill := self._svgColours.get(color or "default"):
+                svg = svg.replace(b"#000000", fill)
+            pixmap = QPixmap(24, 24)
+            pixmap.fill(QtTransparent)
+            pixmap.loadFromData(svg, "svg")
+            return QIcon(pixmap)
 
         # Otherwise, we load from the theme folder
         if name in self._themeMap:
