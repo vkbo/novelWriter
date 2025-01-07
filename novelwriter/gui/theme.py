@@ -627,12 +627,15 @@ class GuiIcons:
 
     def loadNewTheme(self, iconTheme: str) -> bool:
         """Load new style theme."""
-        themePath = self._iconPath / "material_outline_bold.icons"
+        themePath = self._iconPath / "material_rounded_normal.icons"
         with open(themePath, mode="r", encoding="utf-8") as icons:
             for icon in icons:
-                key, _, svg = icon.partition(" = ")
-                if key and svg:
-                    self._svgData[key.strip()] = svg.strip().encode("utf-8")
+                bits = icon.partition("=")
+                key = bits[0].strip()
+                value = bits[2].strip()
+                if key and value:
+                    if key.startswith("icon:"):
+                        self._svgData[key[5:]] = value.encode("utf-8")
 
         return True
 
@@ -811,3 +814,19 @@ def _loadInternalName(confParser: NWConfigParser, confFile: str | Path) -> str:
         return ""
 
     return confParser.rdStr("Main", "name", "")
+
+
+def _loadIconName(path: Path) -> str:
+    """Open an icons file and read the 'name' setting."""
+    try:
+        with open(path, mode="r", encoding="utf-8") as icons:
+            for icon in icons:
+                key, _, value = icon.partition("=")
+                if key.strip() == "meta:name":
+                    return value.strip()
+    except Exception:
+        logger.error("Could not load file: %s", path)
+        logException()
+        return ""
+
+    return ""

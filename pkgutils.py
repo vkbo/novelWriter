@@ -345,18 +345,44 @@ def buildIconTheme(args: argparse.Namespace) -> None:
 
     style = args.style
     if style == "material":
-        processMaterialIcons(
-            workDir, iconsDir / "material_outline_normal.icons", "outlined", False, 400
-        )
-        processMaterialIcons(
-            workDir, iconsDir / "material_filled_normal.icons", "outlined", True, 400
-        )
-        processMaterialIcons(
-            workDir, iconsDir / "material_outline_bold.icons", "outlined", False, 700
-        )
-        processMaterialIcons(
-            workDir, iconsDir / "material_filled_bold.icons", "outlined", True, 700
-        )
+        processMaterialIcons(workDir, iconsDir, {
+            "material_outline_normal": {
+                "name": "Material Symbols - Outlined",
+                "style": "outlined",
+                "filled": False,
+                "weight": 400,
+            },
+            "material_outline_bold": {
+                "name": "Material Symbols - Outlined Bold",
+                "style": "outlined",
+                "filled": False,
+                "weight": 700,
+            },
+            "material_rounded_normal": {
+                "name": "Material Symbols - Rounded",
+                "style": "rounded",
+                "filled": False,
+                "weight": 400,
+            },
+            "material_rounded_bold": {
+                "name": "Material Symbols - Rounded Bold",
+                "style": "rounded",
+                "filled": False,
+                "weight": 700,
+            },
+            "material_filled_normal": {
+                "name": "Material Symbols - Filled",
+                "style": "rounded",
+                "filled": True,
+                "weight": 400,
+            },
+            "material_filled_bold": {
+                "name": "Material Symbols - Filled Bold",
+                "style": "rounded",
+                "filled": True,
+                "weight": 700,
+            },
+        })
 
     print("")
 
