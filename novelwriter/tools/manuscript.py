@@ -108,7 +108,7 @@ class GuiManuscript(NToolDialog):
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
 
-        self.tbAdd = NIconToolButton(self, iSz, "add")
+        self.tbAdd = NIconToolButton(self, iSz, "add", "green")
         self.tbAdd.setToolTip(self.tr("Add New Build"))
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbAdd.clicked.connect(self._createNewBuild)
@@ -118,12 +118,12 @@ class GuiManuscript(NToolDialog):
         self.tbDel.setStyleSheet(buttonStyle)
         self.tbDel.clicked.connect(self._deleteSelectedBuild)
 
-        self.tbCopy = NIconToolButton(self, iSz, "copy")
+        self.tbCopy = NIconToolButton(self, iSz, "copy", "blue")
         self.tbCopy.setToolTip(self.tr("Duplicate Selected Build"))
         self.tbCopy.setStyleSheet(buttonStyle)
         self.tbCopy.clicked.connect(self._copySelectedBuild)
 
-        self.tbEdit = NIconToolButton(self, iSz, "edit")
+        self.tbEdit = NIconToolButton(self, iSz, "edit", "green")
         self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
         self.tbEdit.setStyleSheet(buttonStyle)
         self.tbEdit.clicked.connect(self._editSelectedBuild)
@@ -490,7 +490,7 @@ class GuiManuscript(NToolDialog):
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
-            bItem.setIcon(SHARED.theme.getIcon("export"))
+            bItem.setIcon(SHARED.theme.getIcon("manuscript", "blue"))
             bItem.setData(self.D_KEY, key)
             self.buildList.addItem(bItem)
             self._buildMap[key] = bItem
@@ -585,8 +585,8 @@ class _DetailsWidget(QWidget):
 
         self.listView.clear()
 
-        on = SHARED.theme.getIcon("bullet-on")
-        off = SHARED.theme.getIcon("bullet-off")
+        on = SHARED.theme.getIcon("bullet-on", "blue")
+        off = SHARED.theme.getIcon("bullet-off", "blue")
 
         # Name
         item = QTreeWidgetItem()

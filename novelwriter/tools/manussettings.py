@@ -287,9 +287,9 @@ class _FilterTab(NFixedPage):
 
         self._statusFlags: dict[int, QIcon] = {
             self.F_NONE:     QIcon(),
-            self.F_FILTERED: SHARED.theme.getIcon("build_filtered"),
-            self.F_INCLUDED: SHARED.theme.getIcon("build_included"),
-            self.F_EXCLUDED: SHARED.theme.getIcon("build_excluded"),
+            self.F_FILTERED: SHARED.theme.getIcon("filter", "orange"),
+            self.F_INCLUDED: SHARED.theme.getIcon("pin", "blue"),
+            self.F_EXCLUDED: SHARED.theme.getIcon("exclude", "red"),
         }
 
         self._trIncluded = self.tr("Included in manuscript")
@@ -337,7 +337,7 @@ class _FilterTab(NFixedPage):
         self.excludedButton.setIcon(self._statusFlags[self.F_EXCLUDED])
         self.excludedButton.clicked.connect(qtLambda(self._setSelectedMode, self.F_EXCLUDED))
 
-        self.resetButton = NIconToolButton(self, iSz, "revert")
+        self.resetButton = NIconToolButton(self, iSz, "revert", "green")
         self.resetButton.setToolTip(self.tr("Reset to default"))
         self.resetButton.clicked.connect(qtLambda(self._setSelectedMode, self.F_FILTERED))
 
@@ -459,19 +459,19 @@ class _FilterTab(NFixedPage):
         self.filterOpt.clear()
         self.filterOpt.addLabel(self._build.getLabel("filter"))
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("proj_scene"),
+            SHARED.theme.getIcon("document", "blue"),
             self._build.getLabel("filter.includeNovel"),
             "doc:filter.includeNovel",
             default=self._build.getBool("filter.includeNovel")
         )
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("proj_note"),
+            SHARED.theme.getIcon("document", "yellow"),
             self._build.getLabel("filter.includeNotes"),
             "doc:filter.includeNotes",
             default=self._build.getBool("filter.includeNotes")
         )
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("unchecked"),
+            SHARED.theme.getIcon("unchecked", "red"),
             self._build.getLabel("filter.includeInactive"),
             "doc:filter.includeInactive",
             default=self._build.getBool("filter.includeInactive")
@@ -572,7 +572,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblPart = QLabel(self._build.getLabel("headings.fmtPart"), self)
         self.fmtPart = QLineEdit("", self)
         self.fmtPart.setReadOnly(True)
-        self.btnPart = NIconToolButton(self, iSz, "edit")
+        self.btnPart = NIconToolButton(self, iSz, "edit", "green")
         self.btnPart.clicked.connect(qtLambda(self._editHeading, self.EDIT_TITLE))
         self.hdePart = QLabel(trHide, self)
         self.hdePart.setIndent(bSp)
@@ -588,7 +588,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblChapter = QLabel(self._build.getLabel("headings.fmtChapter"), self)
         self.fmtChapter = QLineEdit("", self)
         self.fmtChapter.setReadOnly(True)
-        self.btnChapter = NIconToolButton(self, iSz, "edit")
+        self.btnChapter = NIconToolButton(self, iSz, "edit", "green")
         self.btnChapter.clicked.connect(qtLambda(self._editHeading, self.EDIT_CHAPTER))
         self.hdeChapter = QLabel(trHide, self)
         self.hdeChapter.setIndent(bSp)
@@ -604,7 +604,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblUnnumbered = QLabel(self._build.getLabel("headings.fmtUnnumbered"), self)
         self.fmtUnnumbered = QLineEdit("", self)
         self.fmtUnnumbered.setReadOnly(True)
-        self.btnUnnumbered = NIconToolButton(self, iSz, "edit")
+        self.btnUnnumbered = NIconToolButton(self, iSz, "edit", "green")
         self.btnUnnumbered.clicked.connect(qtLambda(self._editHeading, self.EDIT_UNNUM))
         self.hdeUnnumbered = QLabel(trHide, self)
         self.hdeUnnumbered.setIndent(bSp)
@@ -620,7 +620,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblScene = QLabel(self._build.getLabel("headings.fmtScene"), self)
         self.fmtScene = QLineEdit("", self)
         self.fmtScene.setReadOnly(True)
-        self.btnScene = NIconToolButton(self, iSz, "edit")
+        self.btnScene = NIconToolButton(self, iSz, "edit", "green")
         self.btnScene.clicked.connect(qtLambda(self._editHeading, self.EDIT_SCENE))
         self.hdeScene = QLabel(trHide, self)
         self.hdeScene.setIndent(bSp)
@@ -636,7 +636,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblAScene = QLabel(self._build.getLabel("headings.fmtAltScene"), self)
         self.fmtAScene = QLineEdit("", self)
         self.fmtAScene.setReadOnly(True)
-        self.btnAScene = NIconToolButton(self, iSz, "edit")
+        self.btnAScene = NIconToolButton(self, iSz, "edit", "green")
         self.btnAScene.clicked.connect(qtLambda(self._editHeading, self.EDIT_HSCENE))
         self.hdeAScene = QLabel(trHide, self)
         self.hdeAScene.setIndent(bSp)
@@ -652,7 +652,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblSection = QLabel(self._build.getLabel("headings.fmtSection"), self)
         self.fmtSection = QLineEdit("", self)
         self.fmtSection.setReadOnly(True)
-        self.btnSection = NIconToolButton(self, iSz, "edit")
+        self.btnSection = NIconToolButton(self, iSz, "edit", "green")
         self.btnSection.clicked.connect(qtLambda(self._editHeading, self.EDIT_SECTION))
         self.hdeSection = QLabel(trHide, self)
         self.hdeSection.setIndent(bSp)
@@ -977,7 +977,7 @@ class _FormattingTab(NScrollableForm):
                 lambda keyword=keyword: self._updateIgnoredKeywords(keyword)
             )
 
-        self.ignoredKeywordsButton = NIconToolButton(self, iSz, "add")
+        self.ignoredKeywordsButton = NIconToolButton(self, iSz, "add", "green")
         self.ignoredKeywordsButton.setMenu(self.mnKeywords)
         self.addRow(
             self._build.getLabel("text.ignoredKeywords"), self.ignoredKeywords,
@@ -1063,8 +1063,8 @@ class _FormattingTab(NScrollableForm):
         pixB = SHARED.theme.getPixmap("margin_bottom", (iPx, iPx))
         pixL = SHARED.theme.getPixmap("margin_left", (iPx, iPx))
         pixR = SHARED.theme.getPixmap("margin_right", (iPx, iPx))
-        pixH = SHARED.theme.getPixmap("size_height", (iPx, iPx))
-        pixW = SHARED.theme.getPixmap("size_width", (iPx, iPx))
+        pixH = SHARED.theme.getPixmap("fit_height", (iPx, iPx))
+        pixW = SHARED.theme.getPixmap("fit_width", (iPx, iPx))
 
         # Title
         self.titleMarginT = NDoubleSpinBox(self)
@@ -1223,7 +1223,7 @@ class _FormattingTab(NScrollableForm):
         # Header
         self.odtPageHeader = QLineEdit(self)
         self.odtPageHeader.setMinimumWidth(CONFIG.pxInt(200))
-        self.btnPageHeader = NIconToolButton(self, iSz, "revert")
+        self.btnPageHeader = NIconToolButton(self, iSz, "revert", "green")
         self.btnPageHeader.clicked.connect(self._resetPageHeader)
         self.addRow(
             self._build.getLabel("doc.pageHeader"), self.odtPageHeader,

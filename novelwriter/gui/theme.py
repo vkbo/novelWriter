@@ -501,36 +501,7 @@ class GuiIcons:
 
     ICON_KEYS: set[str] = {
         # Project and GUI Icons
-        "novelwriter", "alert_error", "alert_info", "alert_question", "alert_warn",
-        "build_excluded", "build_filtered", "build_included", "proj_chapter", "proj_details",
-        "proj_document", "proj_folder", "proj_note", "proj_nwx", "proj_section", "proj_scene",
-        "proj_stats", "proj_title", "status_idle", "status_lang", "status_lines", "status_stats",
-        "status_time", "view_build", "view_editor", "view_novel", "view_outline", "view_search",
-
-        # Class Icons
-        "cls_archive", "cls_character", "cls_custom", "cls_entity", "cls_none", "cls_novel",
-        "cls_object", "cls_plot", "cls_template", "cls_timeline", "cls_trash", "cls_world",
-
-        # Search Icons
-        "search_cancel", "search_case", "search_loop", "search_preserve", "search_project",
-        "search_regex", "search_word",
-
-        # Format Icons
-        "fmt_bold", "fmt_bold-md", "fmt_italic", "fmt_italic-md", "fmt_mark", "fmt_strike",
-        "fmt_strike-md", "fmt_subscript", "fmt_superscript", "fmt_underline", "margin_bottom",
-        "margin_left", "margin_right", "margin_top", "size_height", "size_width",
-
-        # General Button Icons
-        "add", "add_document", "backward", "bookmark", "browse", "checked", "close", "copy",
-        "cross", "document", "down", "edit", "export", "font", "forward", "import", "list",
-        "maximise", "menu", "minimise", "more", "noncheckable", "open", "panel", "quote",
-        "refresh", "remove", "revert", "search_replace", "search", "settings", "star", "toolbar",
-        "unchecked", "up", "view",
-
-        # Switches
-        "sticky-on", "sticky-off",
-        "bullet-on", "bullet-off",
-        "unfold-show", "unfold-hide",
+        "novelwriter", "proj_nwx"
 
         # Decorations
         "deco_doc_h0", "deco_doc_h1", "deco_doc_h2", "deco_doc_h3", "deco_doc_h4", "deco_doc_more",
@@ -539,7 +510,6 @@ class GuiIcons:
     }
 
     TOGGLE_ICON_KEYS: dict[str, tuple[str, str]] = {
-        "sticky": ("sticky-on", "sticky-off"),
         "bullet": ("bullet-on", "bullet-off"),
         "unfold": ("unfold-show", "unfold-hide"),
     }
@@ -631,7 +601,7 @@ class GuiIcons:
                     iconPath = themePath / iconFile
                     if iconPath.is_file():
                         self._themeMap[iconName] = iconPath
-                        logger.debug("Icon slot '%s' using file '%s'", iconName, iconFile)
+                        # logger.debug("Icon slot '%s' using file '%s'", iconName, iconFile)
                     else:
                         logger.error("Icon file '%s' not in theme folder", iconFile)
 
@@ -657,7 +627,7 @@ class GuiIcons:
 
     def loadNewTheme(self, iconTheme: str) -> bool:
         """Load new style theme."""
-        themePath = self._iconPath / "material_outline_normal.icons"
+        themePath = self._iconPath / "material_outline_bold.icons"
         with open(themePath, mode="r", encoding="utf-8") as icons:
             for icon in icons:
                 key, _, svg = icon.partition(" = ")
@@ -703,60 +673,62 @@ class GuiIcons:
 
         return pixmap
 
-    def getIcon(self, name: str, color: str | None = None) -> QIcon:
+    def getIcon(self, name: str, color: str | None = None, w: int = 24, h: int = 24) -> QIcon:
         """Return an icon from the icon buffer, or load it."""
-        key = f"{name}_{color}" if color else name
-        if key in self._qIcons:
-            return self._qIcons[name]
+        variant = f"{name}-{color}" if color else name
+        if (key := f"{variant}-{w}x{h}") in self._qIcons:
+            return self._qIcons[key]
         else:
-            icon = self._loadIcon(name, color)
+            icon = self._loadIcon(name, color, w, h)
             self._qIcons[key] = icon
+            logger.info("Icon: %s", key)
             return icon
 
-    def getToggleIcon(self, name: str, size: tuple[int, int]) -> QIcon:
+    def getToggleIcon(self, name: str, size: tuple[int, int], color: str | None = None) -> QIcon:
         """Return a toggle icon from the icon buffer. or load it."""
         if name in self.TOGGLE_ICON_KEYS:
-            pOne = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], size)
-            pTwo = self.getPixmap(self.TOGGLE_ICON_KEYS[name][1], size)
+            pOne = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], size, color)
+            pTwo = self.getPixmap(self.TOGGLE_ICON_KEYS[name][1], size, color)
             icon = QIcon()
             icon.addPixmap(pOne, QIcon.Mode.Normal, QIcon.State.On)
             icon.addPixmap(pTwo, QIcon.Mode.Normal, QIcon.State.Off)
             return icon
         return self._noIcon
 
-    def getPixmap(self, name: str, size: tuple[int, int]) -> QPixmap:
+    def getPixmap(self, name: str, size: tuple[int, int], color: str | None = None) -> QPixmap:
         """Return an icon from the icon buffer as a QPixmap. If it
         doesn't exist, return an empty QPixmap.
         """
-        return self.getIcon(name).pixmap(size[0], size[1], QIcon.Mode.Normal)
+        w, h = size
+        return self.getIcon(name, color, w, h).pixmap(w, h, QIcon.Mode.Normal)
 
     def getItemIcon(self, tType: nwItemType, tClass: nwItemClass,
                     tLayout: nwItemLayout, hLevel: str = "H0") -> QIcon:
         """Get the correct icon for a project item based on type, class
         and heading level
         """
-        iconName = None
+        name = None
+        color = "default"
         if tType == nwItemType.ROOT:
-            iconName = nwLabels.CLASS_ICON[tClass]
+            name = nwLabels.CLASS_ICON[tClass]
+            color = nwLabels.CLASS_COLOR[tClass]
         elif tType == nwItemType.FOLDER:
-            iconName = "proj_folder"
+            name = "folder"
         elif tType == nwItemType.FILE:
-            iconName = "proj_document"
+            name = "document"
             if tLayout == nwItemLayout.DOCUMENT:
                 if hLevel == "H1":
-                    iconName = "proj_title"
+                    color = "green"
                 elif hLevel == "H2":
-                    iconName = "proj_chapter"
+                    color = "red"
                 elif hLevel == "H3":
-                    iconName = "proj_scene"
-                elif hLevel == "H4":
-                    iconName = "proj_section"
+                    color = "blue"
             elif tLayout == nwItemLayout.NOTE:
-                iconName = "proj_note"
-        if iconName is None:
+                color = "yellow"
+        if name is None:
             return self._noIcon
 
-        return self.getIcon(iconName)
+        return self.getIcon(name, color)
 
     def getHeaderDecoration(self, hLevel: int) -> QPixmap:
         """Get the decoration for a specific heading level."""
@@ -789,14 +761,10 @@ class GuiIcons:
     #  Internal Functions
     ##
 
-    def _loadIcon(self, name: str, color: str | None = None) -> QIcon:
+    def _loadIcon(self, name: str, color: str | None = None, w: int = 24, h: int = 24) -> QIcon:
         """Load an icon from the assets themes folder. Is guaranteed to
         return a QIcon.
         """
-        # if name not in self.ICON_KEYS:
-        #     logger.error("Requested unknown icon name '%s'", name)
-        #     return self._noIcon
-
         # If we just want the app icons, return right away
         if name == "novelwriter":
             return QIcon(str(self._iconPath / "novelwriter.svg"))
@@ -806,7 +774,7 @@ class GuiIcons:
         if svg := self._svgData.get(name, b""):
             if fill := self._svgColours.get(color or "default"):
                 svg = svg.replace(b"#000000", fill)
-            pixmap = QPixmap(24, 24)
+            pixmap = QPixmap(w, h)
             pixmap.fill(QtTransparent)
             pixmap.loadFromData(svg, "svg")
             return QIcon(pixmap)

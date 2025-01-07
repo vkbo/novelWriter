@@ -94,7 +94,9 @@ class NovelSelector(QComboBox):
         self._firstHandle = None
         self.clear()
 
-        icon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
+        icon = SHARED.theme.getIcon(
+            nwLabels.CLASS_ICON[nwItemClass.NOVEL], nwLabels.CLASS_COLOR[nwItemClass.NOVEL]
+        )
         handle = self.currentData()
         for tHandle, nwItem in SHARED.project.tree.iterRoots(nwItemClass.NOVEL):
             if self._listFormat:

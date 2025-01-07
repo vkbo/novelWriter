@@ -140,13 +140,13 @@ class GuiSideBar(QWidget):
         self.tbStats.setStyleSheet(buttonStyle)
         self.tbSettings.setStyleSheet(buttonStyle)
 
-        self.tbProject.setThemeIcon("view_editor")
-        self.tbNovel.setThemeIcon("view_novel")
-        self.tbSearch.setThemeIcon("view_search")
-        self.tbOutline.setThemeIcon("view_outline")
-        self.tbBuild.setThemeIcon("view_build")
-        self.tbDetails.setThemeIcon("proj_details")
-        self.tbStats.setThemeIcon("proj_stats")
+        self.tbProject.setThemeIcon("project_view")
+        self.tbNovel.setThemeIcon("novel_view")
+        self.tbSearch.setThemeIcon("search")
+        self.tbOutline.setThemeIcon("outline")
+        self.tbBuild.setThemeIcon("manuscript")
+        self.tbDetails.setThemeIcon("list")
+        self.tbStats.setThemeIcon("stats")
         self.tbSettings.setThemeIcon("settings")
 
         return

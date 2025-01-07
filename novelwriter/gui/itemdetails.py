@@ -237,11 +237,11 @@ class GuiItemDetails(QWidget):
 
         if nwItem.isFileType():
             if nwItem.isActive:
-                self.labelIcon.setPixmap(SHARED.theme.getPixmap("checked", (iPx, iPx)))
+                self.labelIcon.setPixmap(SHARED.theme.getPixmap("checked", (iPx, iPx), "green"))
             else:
-                self.labelIcon.setPixmap(SHARED.theme.getPixmap("unchecked", (iPx, iPx)))
+                self.labelIcon.setPixmap(SHARED.theme.getPixmap("unchecked", (iPx, iPx), "red"))
         else:
-            self.labelIcon.setPixmap(SHARED.theme.getPixmap("noncheckable", (iPx, iPx)))
+            self.labelIcon.setPixmap(SHARED.theme.getPixmap("noncheckable", (iPx, iPx), "orange"))
 
         self.labelData.setText(elide(nwItem.itemName, 100))
 
@@ -255,7 +255,9 @@ class GuiItemDetails(QWidget):
         # Class
         # =====
 
-        classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass])
+        classIcon = SHARED.theme.getIcon(
+            nwLabels.CLASS_ICON[nwItem.itemClass], nwLabels.CLASS_COLOR[nwItem.itemClass]
+        )
         self.classIcon.setPixmap(classIcon.pixmap(iPx, iPx))
         self.classData.setText(trConst(nwLabels.CLASS_NAME[nwItem.itemClass]))
 

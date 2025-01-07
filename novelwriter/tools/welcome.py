@@ -110,32 +110,32 @@ class GuiWelcome(NDialog):
         # =======
 
         self.btnList = QPushButton(self.tr("List"), self)
-        self.btnList.setIcon(SHARED.theme.getIcon("list"))
+        self.btnList.setIcon(SHARED.theme.getIcon("list", "blue"))
         self.btnList.setIconSize(btnIconSize)
         self.btnList.clicked.connect(self._showOpenProjectPage)
 
         self.btnNew = QPushButton(self.tr("New"), self)
-        self.btnNew.setIcon(SHARED.theme.getIcon("add"))
+        self.btnNew.setIcon(SHARED.theme.getIcon("add", "green"))
         self.btnNew.setIconSize(btnIconSize)
         self.btnNew.clicked.connect(self._showNewProjectPage)
 
         self.btnBrowse = QPushButton(self.tr("Browse"), self)
-        self.btnBrowse.setIcon(SHARED.theme.getIcon("browse"))
+        self.btnBrowse.setIcon(SHARED.theme.getIcon("browse", "yellow"))
         self.btnBrowse.setIconSize(btnIconSize)
         self.btnBrowse.clicked.connect(self._browseForProject)
 
         self.btnCancel = QPushButton(self.tr("Cancel"), self)
-        self.btnCancel.setIcon(SHARED.theme.getIcon("cross"))
+        self.btnCancel.setIcon(SHARED.theme.getIcon("cancel", "red"))
         self.btnCancel.setIconSize(btnIconSize)
         self.btnCancel.clicked.connect(self.close)
 
         self.btnCreate = QPushButton(self.tr("Create"), self)
-        self.btnCreate.setIcon(SHARED.theme.getIcon("star"))
+        self.btnCreate.setIcon(SHARED.theme.getIcon("star", "yellow"))
         self.btnCreate.setIconSize(btnIconSize)
         self.btnCreate.clicked.connect(self.tabNew.createNewProject)
 
         self.btnOpen = QPushButton(self.tr("Open"), self)
-        self.btnOpen.setIcon(SHARED.theme.getIcon("open"))
+        self.btnOpen.setIcon(SHARED.theme.getIcon("open", "blue"))
         self.btnOpen.setIconSize(btnIconSize)
         self.btnOpen.clicked.connect(self._openSelectedItem)
 
@@ -289,7 +289,7 @@ class _OpenProjectPage(QWidget):
 
         # Info / Tool
         self.aMissing = QAction(self)
-        self.aMissing.setIcon(SHARED.theme.getIcon("alert_warn"))
+        self.aMissing.setIcon(SHARED.theme.getIcon("alert_warn", "orange"))
         self.aMissing.setToolTip(self.tr("The project path is not reachable."))
 
         self.selectedPath = QLineEdit(self)
@@ -589,7 +589,7 @@ class _NewProjectForm(QWidget):
         self.projFill = QLineEdit(self)
         self.projFill.setReadOnly(True)
 
-        self.browseFill = NIconToolButton(self, iSz, "add_document")
+        self.browseFill = NIconToolButton(self, iSz, "document_add", "blue")
 
         self.fillMenu = _PopLeftDirectionMenu(self.browseFill)
 
@@ -598,11 +598,11 @@ class _NewProjectForm(QWidget):
         self.fillBlank.triggered.connect(self._setFillBlank)
 
         self.fillSample = self.fillMenu.addAction(self.tr("Create an example project"))
-        self.fillSample.setIcon(SHARED.theme.getIcon("add_document"))
+        self.fillSample.setIcon(SHARED.theme.getIcon("document_add", "blue"))
         self.fillSample.triggered.connect(self._setFillSample)
 
         self.fillCopy = self.fillMenu.addAction(self.tr("Copy an existing project"))
-        self.fillCopy.setIcon(SHARED.theme.getIcon("browse"))
+        self.fillCopy.setIcon(SHARED.theme.getIcon("project_copy", "green"))
         self.fillCopy.triggered.connect(self._setFillCopy)
 
         self.browseFill.setMenu(self.fillMenu)

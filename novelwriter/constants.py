@@ -258,6 +258,20 @@ class nwLabels:
         nwItemClass.TEMPLATE:  "cls_template",
         nwItemClass.TRASH:     "cls_trash",
     }
+    CLASS_COLOR = {
+        nwItemClass.NO_CLASS:  "default",
+        nwItemClass.NOVEL:     "red",
+        nwItemClass.PLOT:      "blue",
+        nwItemClass.CHARACTER: "blue",
+        nwItemClass.WORLD:     "blue",
+        nwItemClass.TIMELINE:  "blue",
+        nwItemClass.OBJECT:    "blue",
+        nwItemClass.ENTITY:    "blue",
+        nwItemClass.CUSTOM:    "blue",
+        nwItemClass.ARCHIVE:   "red",
+        nwItemClass.TEMPLATE:  "yellow",
+        nwItemClass.TRASH:     "red",
+    }
     LAYOUT_NAME = {
         nwItemLayout.NO_LAYOUT: QT_TRANSLATE_NOOP("Constant", "None"),
         nwItemLayout.DOCUMENT:  QT_TRANSLATE_NOOP("Constant", "Novel Document"),

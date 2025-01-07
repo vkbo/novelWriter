@@ -2438,9 +2438,9 @@ class GuiDocToolBar(QWidget):
         palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.setPalette(palette)
 
-        self.tbBoldMD.setThemeIcon("fmt_bold-md")
-        self.tbItalicMD.setThemeIcon("fmt_italic-md")
-        self.tbStrikeMD.setThemeIcon("fmt_strike-md")
+        self.tbBoldMD.setThemeIcon("fmt_bold", "orange")
+        self.tbItalicMD.setThemeIcon("fmt_italic", "orange")
+        self.tbStrikeMD.setThemeIcon("fmt_strike", "orange")
         self.tbBold.setThemeIcon("fmt_bold")
         self.tbItalic.setThemeIcon("fmt_italic")
         self.tbStrike.setThemeIcon("fmt_strike")
@@ -2690,8 +2690,8 @@ class GuiDocEditSearch(QFrame):
         self.toggleProject.setIcon(SHARED.theme.getIcon("search_project"))
         self.toggleMatchCap.setIcon(SHARED.theme.getIcon("search_preserve"))
         self.cancelSearch.setIcon(SHARED.theme.getIcon("search_cancel"))
-        self.searchButton.setThemeIcon("search")
-        self.replaceButton.setThemeIcon("search_replace")
+        self.searchButton.setThemeIcon("search", "green")
+        self.replaceButton.setThemeIcon("search_replace", "green")
 
         # Set stylesheets
         self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
@@ -2954,11 +2954,11 @@ class GuiDocEditHeader(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self.tbButton.setThemeIcon("toolbar")
-        self.outlineButton.setThemeIcon("list")
-        self.searchButton.setThemeIcon("search")
-        self.minmaxButton.setThemeIcon("maximise")
-        self.closeButton.setThemeIcon("close")
+        self.tbButton.setThemeIcon("fmt_toolbar", "blue")
+        self.outlineButton.setThemeIcon("list", "blue")
+        self.searchButton.setThemeIcon("search", "blue")
+        self.minmaxButton.setThemeIcon("maximise", "blue")
+        self.closeButton.setThemeIcon("close", "red")
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbButton.setStyleSheet(buttonStyle)
@@ -3031,7 +3031,7 @@ class GuiDocEditHeader(QWidget):
     @pyqtSlot(bool)
     def _focusModeChanged(self, focusMode: bool) -> None:
         """Update minimise/maximise icon of the Focus Mode button."""
-        self.minmaxButton.setThemeIcon("minimise" if focusMode else "maximise")
+        self.minmaxButton.setThemeIcon("minimise" if focusMode else "maximise", "blue")
         return
 
     ##
@@ -3165,8 +3165,8 @@ class GuiDocEditFooter(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         iPx = round(0.9*SHARED.theme.baseIconHeight)
-        self.linesIcon.setPixmap(SHARED.theme.getPixmap("status_lines", (iPx, iPx)))
-        self.wordsIcon.setPixmap(SHARED.theme.getPixmap("status_stats", (iPx, iPx)))
+        self.linesIcon.setPixmap(SHARED.theme.getPixmap("lines", (iPx, iPx)))
+        self.wordsIcon.setPixmap(SHARED.theme.getPixmap("stats", (iPx, iPx)))
         self.matchColours()
         return
 

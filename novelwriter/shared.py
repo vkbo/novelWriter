@@ -485,15 +485,15 @@ class _GuiAlert(QMessageBox):
             self.setStandardButtons(QMessageBox.StandardButton.Ok)
         pSz = 2*self._theme.baseIconHeight
         if level == self.INFO:
-            self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz)))
+            self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz), "blue"))
             self.setWindowTitle(self.tr("Information"))
         elif level == self.WARN:
-            self.setIconPixmap(self._theme.getPixmap("alert_warn", (pSz, pSz)))
+            self.setIconPixmap(self._theme.getPixmap("alert_warn", (pSz, pSz), "orange"))
             self.setWindowTitle(self.tr("Warning"))
         elif level == self.ERROR:
-            self.setIconPixmap(self._theme.getPixmap("alert_error", (pSz, pSz)))
+            self.setIconPixmap(self._theme.getPixmap("alert_error", (pSz, pSz), "red"))
             self.setWindowTitle(self.tr("Error"))
         elif level == self.ASK:
-            self.setIconPixmap(self._theme.getPixmap("alert_question", (pSz, pSz)))
+            self.setIconPixmap(self._theme.getPixmap("alert_question", (pSz, pSz), "blue"))
             self.setWindowTitle(self.tr("Question"))
         return

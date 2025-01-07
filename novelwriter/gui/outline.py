@@ -268,9 +268,9 @@ class GuiOutlineToolBar(QToolBar):
         """Update theme elements."""
         self.setStyleSheet("QToolBar {border: 0px;}")
         self.novelValue.refreshNovelList()
-        self.aRefresh.setIcon(SHARED.theme.getIcon("refresh"))
-        self.aExport.setIcon(SHARED.theme.getIcon("export"))
-        self.tbColumns.setIcon(SHARED.theme.getIcon("menu"))
+        self.aRefresh.setIcon(SHARED.theme.getIcon("refresh", "green"))
+        self.aExport.setIcon(SHARED.theme.getIcon("export", "blue"))
+        self.tbColumns.setIcon(SHARED.theme.getIcon("more_vertical"))
         self.tbColumns.setStyleSheet("QToolButton::menu-indicator {image: none;}")
         self.novelLabel.setTextColors(color=self.palette().windowText().color())
         return
