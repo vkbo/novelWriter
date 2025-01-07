@@ -30,7 +30,10 @@ from math import ceil
 from pathlib import Path
 
 from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QColor, QFont, QFontDatabase, QFontMetrics, QIcon, QPalette, QPixmap
+from PyQt5.QtGui import (
+    QColor, QFont, QFontDatabase, QFontMetrics, QIcon, QPainter, QPainterPath,
+    QPalette, QPixmap
+)
 from PyQt5.QtWidgets import QApplication
 
 from novelwriter import CONFIG
@@ -38,7 +41,7 @@ from novelwriter.common import NWConfigParser, cssCol, minmax
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
-from novelwriter.types import QtTransparent
+from novelwriter.types import QtPaintAntiAlias, QtTransparent
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +71,6 @@ class GuiTheme:
         self.themeUrl         = ""
         self.themeLicense     = ""
         self.themeLicenseUrl  = ""
-        self.themeIcons       = ""
         self.isLightTheme     = True
 
         # GUI
@@ -244,7 +246,6 @@ class GuiTheme:
             self.themeUrl         = parser.rdStr(sec, "url", "")
             self.themeLicense     = parser.rdStr(sec, "license", "N/A")
             self.themeLicenseUrl  = parser.rdStr(sec, "licenseurl", "")
-            self.themeIcons       = parser.rdStr(sec, "icontheme", "")
 
         # Icons
         sec = "Icons"
@@ -304,12 +305,10 @@ class GuiTheme:
                 self.helpText.red(), self.helpText.green(), self.helpText.blue()
             )
 
-        # Icons
-        defaultIcons = "typicons_light" if backLNess >= 0.5 else "typicons_dark"
-        self.iconCache.loadTheme(self.themeIcons or defaultIcons)
-        self.iconCache.loadNewTheme(CONFIG.guiIcons)
+        # Load icons after theme is parsed
+        self.iconCache.loadTheme(CONFIG.guiIcons)
 
-        # Apply Styles
+        # Apply styles
         QApplication.setPalette(self._guiPalette)
 
         # Reset stylesheets so that they are regenerated
@@ -526,27 +525,20 @@ class GuiIcons:
         # Storage
         self._svgData: dict[str, bytes] = {}
         self._svgColours: dict[str, bytes] = {}
-
         self._qIcons: dict[str, QIcon] = {}
-        self._themeMap: dict[str, Path] = {}
         self._headerDec: list[QPixmap] = []
         self._headerDecNarrow: list[QPixmap] = []
 
         # Icon Theme Path
-        self._confName = "icons.conf"
         self._iconPath = CONFIG.assetPath("icons")
 
         # None Icon
         self._noIcon = QIcon(str(self._iconPath / "none.svg"))
 
         # Icon Theme Meta
-        self.themeName        = ""
-        self.themeDescription = ""
-        self.themeAuthor      = ""
-        self.themeCredit      = ""
-        self.themeUrl         = ""
-        self.themeLicense     = ""
-        self.themeLicenseUrl  = ""
+        self.themeName    = ""
+        self.themeAuthor  = ""
+        self.themeLicense = ""
 
         return
 
@@ -559,74 +551,7 @@ class GuiIcons:
         the GUI icons cannot really be replaced without writing specific
         update functions for the classes where they're used.
         """
-        self._themeMap = {}
-        themePath = self._iconPath / iconTheme
-        if not themePath.is_dir():
-            themePath = CONFIG.dataPath("icons") / iconTheme
-            if not themePath.is_dir():
-                logger.warning("No icons loaded for '%s'", iconTheme)
-                return False
-
-        themeConf = themePath / self._confName
         logger.info("Loading icon theme '%s'", iconTheme)
-
-        # Config File
-        confParser = NWConfigParser()
-        try:
-            with open(themeConf, mode="r", encoding="utf-8") as inFile:
-                confParser.read_file(inFile)
-        except Exception:
-            logger.error("Could not load icon theme settings from: %s", themeConf)
-            logException()
-            return False
-
-        # Main
-        cnfSec = "Main"
-        if confParser.has_section(cnfSec):
-            self.themeName        = confParser.rdStr(cnfSec, "name", "")
-            self.themeDescription = confParser.rdStr(cnfSec, "description", "")
-            self.themeAuthor      = confParser.rdStr(cnfSec, "author", "N/A")
-            self.themeCredit      = confParser.rdStr(cnfSec, "credit", "N/A")
-            self.themeUrl         = confParser.rdStr(cnfSec, "url", "")
-            self.themeLicense     = confParser.rdStr(cnfSec, "license", "N/A")
-            self.themeLicenseUrl  = confParser.rdStr(cnfSec, "licenseurl", "")
-
-        # Populate Icon Map
-        cnfSec = "Map"
-        if confParser.has_section(cnfSec):
-            for iconName, iconFile in confParser.items(cnfSec):
-                if iconName not in self.ICON_KEYS:
-                    logger.error("Unknown icon name '%s' in config file", iconName)
-                else:
-                    iconPath = themePath / iconFile
-                    if iconPath.is_file():
-                        self._themeMap[iconName] = iconPath
-                        # logger.debug("Icon slot '%s' using file '%s'", iconName, iconFile)
-                    else:
-                        logger.error("Icon file '%s' not in theme folder", iconFile)
-
-        # Check that icons have been defined
-        logger.debug("Scanning theme icons")
-        for iconKey in self.ICON_KEYS:
-            if iconKey in ("novelwriter", "proj_nwx"):
-                # These are not part of the theme itself
-                continue
-            if iconKey not in self._themeMap:
-                logger.error("No icon file specified for '%s'", iconKey)
-
-        # Refresh icons
-        for iconKey in self._qIcons:
-            logger.debug("Reloading icon: '%s'", iconKey)
-            qIcon = self._loadIcon(iconKey)
-            self._qIcons[iconKey] = qIcon
-
-        self._headerDec = []
-        self._headerDecNarrow = []
-
-        return True
-
-    def loadNewTheme(self, iconTheme: str) -> bool:
-        """Load new style theme."""
         themePath = self._iconPath / f"{iconTheme}.icons"
         try:
             with open(themePath, mode="r", encoding="utf-8") as icons:
@@ -637,10 +562,25 @@ class GuiIcons:
                     if key and value:
                         if key.startswith("icon:"):
                             self._svgData[key[5:]] = value.encode("utf-8")
+                        elif key == "meta:name":
+                            self.themeName = value
+                        elif key == "meta:author":
+                            self.themeAuthor = value
+                        elif key == "meta:license":
+                            self.themeLicense = value
         except Exception:
             logger.error("Could not load icon theme settings from: %s", themePath)
             logException()
             return False
+
+        # Refresh icons
+        for iconKey in self._qIcons:
+            logger.debug("Reloading icon: '%s'", iconKey)
+            qIcon = self._loadIcon(iconKey)
+            self._qIcons[iconKey] = qIcon
+
+        self._headerDec = []
+        self._headerDecNarrow = []
 
         return True
 
@@ -657,9 +597,7 @@ class GuiIcons:
         """Load graphical decoration element based on the decoration
         map or the icon map. This function always returns a QPixmap.
         """
-        if name in self._themeMap:
-            imgPath = self._themeMap[name]
-        elif name in self.IMAGE_MAP:
+        if name in self.IMAGE_MAP:
             idx = 0 if self.mainTheme.isLightTheme else 1
             imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[name][idx]
         else:
@@ -743,11 +681,11 @@ class GuiIcons:
         if not self._headerDec:
             iPx = self.mainTheme.baseIconHeight
             self._headerDec = [
-                self.loadDecoration("deco_doc_h0", h=iPx),
-                self.loadDecoration("deco_doc_h1", h=iPx),
-                self.loadDecoration("deco_doc_h2", h=iPx),
-                self.loadDecoration("deco_doc_h3", h=iPx),
-                self.loadDecoration("deco_doc_h4", h=iPx),
+                self._generateDecoration("default", iPx, 0),
+                self._generateDecoration("green", iPx, 0),
+                self._generateDecoration("red", iPx, 1),
+                self._generateDecoration("blue", iPx, 2),
+                self._generateDecoration("default", iPx, 3),
             ]
         return self._headerDec[minmax(hLevel, 0, 4)]
 
@@ -756,12 +694,12 @@ class GuiIcons:
         if not self._headerDecNarrow:
             iPx = self.mainTheme.baseIconHeight
             self._headerDecNarrow = [
-                self.loadDecoration("deco_doc_h0_n", h=iPx),
-                self.loadDecoration("deco_doc_h1_n", h=iPx),
-                self.loadDecoration("deco_doc_h2_n", h=iPx),
-                self.loadDecoration("deco_doc_h3_n", h=iPx),
-                self.loadDecoration("deco_doc_h4_n", h=iPx),
-                self.loadDecoration("deco_doc_nt_n", h=iPx),
+                self._generateDecoration("default", iPx, 0),
+                self._generateDecoration("green", iPx, 0),
+                self._generateDecoration("red", iPx, 0),
+                self._generateDecoration("blue", iPx, 0),
+                self._generateDecoration("default", iPx, 0),
+                self._generateDecoration("yellow", iPx, 0),
             ]
         return self._headerDecNarrow[minmax(hLevel, 0, 5)]
 
@@ -787,15 +725,27 @@ class GuiIcons:
             pixmap.loadFromData(svg, "svg")
             return QIcon(pixmap)
 
-        # Otherwise, we load from the theme folder
-        if name in self._themeMap:
-            logger.debug("Loading: %s", self._themeMap[name].name)
-            return QIcon(str(self._themeMap[name]))
-
         # If we didn't find one, give up and return an empty icon
         logger.warning("Did not load an icon for '%s'", name)
 
         return self._noIcon
+
+    def _generateDecoration(self, color: str, height: int, indent: int = 0) -> QPixmap:
+        """Generate a decoration pixmap for novel headers."""
+        pixmap = QPixmap(48*indent + 12, 48)
+        pixmap.fill(QtTransparent)
+
+        path = QPainterPath()
+        path.addRoundedRect(48.0*indent, 2.0, 12.0, 44.0, 4.0, 4.0)
+
+        painter = QPainter(pixmap)
+        painter.setRenderHint(QtPaintAntiAlias)
+        if fill := self._svgColours.get(color or "default"):
+            painter.fillPath(path, QColor(fill.decode(encoding="utf-8")))
+        painter.end()
+
+        tMode = Qt.TransformationMode.SmoothTransformation
+        return pixmap.scaledToHeight(height, tMode)
 
 
 # Module Functions

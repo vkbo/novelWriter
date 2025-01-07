@@ -104,6 +104,7 @@ ICON_MAP = {
     "margin_top": "vertical_align_top",
     "maximise": "fullscreen",
     "minimise": "fullscreen_exit",
+    "more_arrow": "arrow_right",
     "more_vertical": "more_vert",
     "noncheckable": "indeterminate_check_box",
     "novel_view": "book_4_spark",
@@ -161,7 +162,7 @@ def processMaterialIcons(workDir: Path, iconsDir: Path, jobs: dict) -> None:
             icons.write("# Meta\n")
             icons.write(f"meta:name    = {name}\n")
             icons.write("meta:author  = Google\n")
-            icons.write("meta:licence = Apache License Version 2.0\n")
+            icons.write("meta:license = Apache License Version 2.0\n")
             icons.write("\n")
             icons.write("# Icons\n")
             iconSrc = srcRepo / "symbols" / "web"

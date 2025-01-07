@@ -66,7 +66,7 @@ QtNoBrush = Qt.BrushStyle.NoBrush
 QtNoPen = Qt.PenStyle.NoPen
 QtRoundCap = Qt.PenCapStyle.RoundCap
 QtSolidLine = Qt.PenStyle.SolidLine
-QtPaintAnitAlias = QPainter.RenderHint.Antialiasing
+QtPaintAntiAlias = QPainter.RenderHint.Antialiasing
 QtMouseOver = QStyle.StateFlag.State_MouseOver
 QtSelected = QStyle.StateFlag.State_Selected
 

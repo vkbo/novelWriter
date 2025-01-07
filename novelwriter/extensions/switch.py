@@ -28,7 +28,7 @@ from PyQt5.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent
 from PyQt5.QtWidgets import QAbstractButton, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.types import QtMouseLeft, QtNoPen, QtPaintAnitAlias, QtSizeFixed
+from novelwriter.types import QtMouseLeft, QtNoPen, QtPaintAntiAlias, QtSizeFixed
 
 
 class NSwitch(QAbstractButton):
@@ -90,7 +90,7 @@ class NSwitch(QAbstractButton):
     def paintEvent(self, event: QPaintEvent) -> None:
         """Drawing the switch itself."""
         painter = QPainter(self)
-        painter.setRenderHint(QtPaintAnitAlias, True)
+        painter.setRenderHint(QtPaintAntiAlias, True)
         painter.setPen(QtNoPen)
 
         palette = self.palette()
