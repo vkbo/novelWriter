@@ -346,20 +346,14 @@ def buildIconTheme(args: argparse.Namespace) -> None:
     style = args.style
     if style == "material":
         processMaterialIcons(workDir, iconsDir, {
-            "material_outline_normal": {
-                "name": "Material Symbols - Outlined",
-                "style": "outlined",
+            "material_rounded_thin": {
+                "name": "Material Symbols - Rounded Thin",
+                "style": "rounded",
                 "filled": False,
-                "weight": 400,
-            },
-            "material_outline_bold": {
-                "name": "Material Symbols - Outlined Bold",
-                "style": "outlined",
-                "filled": False,
-                "weight": 700,
+                "weight": 200,
             },
             "material_rounded_normal": {
-                "name": "Material Symbols - Rounded",
+                "name": "Material Symbols - Rounded Medium",
                 "style": "rounded",
                 "filled": False,
                 "weight": 400,
@@ -368,10 +362,16 @@ def buildIconTheme(args: argparse.Namespace) -> None:
                 "name": "Material Symbols - Rounded Bold",
                 "style": "rounded",
                 "filled": False,
-                "weight": 700,
+                "weight": 600,
+            },
+            "material_filled_thin": {
+                "name": "Material Symbols - Filled Thin",
+                "style": "rounded",
+                "filled": True,
+                "weight": 200,
             },
             "material_filled_normal": {
-                "name": "Material Symbols - Filled",
+                "name": "Material Symbols - Filled Medium",
                 "style": "rounded",
                 "filled": True,
                 "weight": 400,
@@ -380,7 +380,7 @@ def buildIconTheme(args: argparse.Namespace) -> None:
                 "name": "Material Symbols - Filled Bold",
                 "style": "rounded",
                 "filled": True,
-                "weight": 700,
+                "weight": 600,
             },
         })
 
