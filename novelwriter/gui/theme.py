@@ -443,8 +443,9 @@ class GuiTheme:
         """Parse a colour value from a config string."""
         return QColor(*parser.rdIntList(section, name, [0, 0, 0, 255]))
 
-    def _setPalette(self, parser: NWConfigParser, section: str,
-                    name: str, value: QPalette.ColorRole) -> None:
+    def _setPalette(
+        self, parser: NWConfigParser, section: str, name: str, value: QPalette.ColorRole
+    ) -> None:
         """Set a palette colour value from a config string."""
         self._guiPalette.setColor(value, self._parseColour(parser, section, name))
         return
@@ -515,6 +516,7 @@ class GuiIcons:
         self._headerDecNarrow: list[QPixmap] = []
 
         # Icon Theme Path
+        self._themeList: list[tuple[str, str]] = []
         self._iconPath = CONFIG.assetPath("icons")
 
         # None Icon
@@ -691,6 +693,20 @@ class GuiIcons:
                 self._generateDecoration("yellow", iPx, 0),
             ]
         return self._headerDecNarrow[minmax(hLevel, 0, 5)]
+
+    def listThemes(self) -> list[tuple[str, str]]:
+        """Scan the GUI icons folder and list all themes."""
+        if self._themeList:
+            return self._themeList
+
+        for item in self._iconPath.iterdir():
+            if item.is_file() and item.suffix == ".icons":
+                if name := _loadIconName(item):
+                    self._themeList.append((item.stem, name))
+
+        self._themeList = sorted(self._themeList, key=_sortTheme)
+
+        return self._themeList
 
     ##
     #  Internal Functions

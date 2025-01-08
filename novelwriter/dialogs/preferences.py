@@ -173,7 +173,19 @@ class GuiPreferences(NDialog):
 
         self.mainForm.addRow(
             self.tr("Colour theme"), self.guiTheme,
-            self.tr("General colour theme and icons."), stretch=(3, 2)
+            self.tr("User interface colour theme."), stretch=(3, 2)
+        )
+
+        # Icon Theme
+        self.guiIcons = NComboBox(self)
+        self.guiIcons.setMinimumWidth(minWidth)
+        for theme, name in SHARED.theme.iconCache.listThemes():
+            self.guiIcons.addItem(name, theme)
+        self.guiIcons.setCurrentData(CONFIG.guiIcons, "material_rounded_bold")
+
+        self.mainForm.addRow(
+            self.tr("Icon theme"), self.guiIcons,
+            self.tr("User interface icon theme."), stretch=(3, 2)
         )
 
         # Application Font Family
@@ -902,13 +914,16 @@ class GuiPreferences(NDialog):
         # Appearance
         guiLocale = self.guiLocale.currentData()
         guiTheme  = self.guiTheme.currentData()
+        guiIcons  = self.guiIcons.currentData()
 
         updateTheme  |= CONFIG.guiTheme != guiTheme
+        updateTheme  |= CONFIG.guiIcons != guiIcons
         needsRestart |= CONFIG.guiLocale != guiLocale
         needsRestart |= CONFIG.guiFont != self._guiFont
 
         CONFIG.guiLocale   = guiLocale
         CONFIG.guiTheme    = guiTheme
+        CONFIG.guiIcons    = guiIcons
         CONFIG.hideVScroll = self.hideVScroll.isChecked()
         CONFIG.hideHScroll = self.hideHScroll.isChecked()
         CONFIG.nativeFont  = self.nativeFont.isChecked()
