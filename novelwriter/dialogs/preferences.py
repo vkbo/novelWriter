@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import compact, describeFont, uniqueCompact
-from novelwriter.constants import nwUnicode
+from novelwriter.constants import nwLabels, nwUnicode, trConst
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
 from novelwriter.extensions.modified import (
@@ -177,15 +177,27 @@ class GuiPreferences(NDialog):
         )
 
         # Icon Theme
-        self.guiIcons = NComboBox(self)
-        self.guiIcons.setMinimumWidth(minWidth)
+        self.iconTheme = NComboBox(self)
+        self.iconTheme.setMinimumWidth(minWidth)
         for theme, name in SHARED.theme.iconCache.listThemes():
-            self.guiIcons.addItem(name, theme)
-        self.guiIcons.setCurrentData(CONFIG.guiIcons, "material_rounded_bold")
+            self.iconTheme.addItem(name, theme)
+        self.iconTheme.setCurrentData(CONFIG.iconTheme, "material_rounded_bold")
 
         self.mainForm.addRow(
-            self.tr("Icon theme"), self.guiIcons,
+            self.tr("Icon theme"), self.iconTheme,
             self.tr("User interface icon theme."), stretch=(3, 2)
+        )
+
+        # Tree Icon Colours
+        self.iconColTree = NComboBox(self)
+        self.iconColTree.setMinimumWidth(minWidth)
+        for key, label in nwLabels.THEME_COLORS.items():
+            self.iconColTree.addItem(trConst(label), key)
+        self.iconColTree.setCurrentData(CONFIG.iconColTree, "theme")
+
+        self.mainForm.addRow(
+            self.tr("Project tree icon colours"), self.iconColTree,
+            self.tr("Override colours for project icons."), stretch=(3, 2)
         )
 
         # Application Font Family
@@ -912,18 +924,21 @@ class GuiPreferences(NDialog):
         refreshTree  = False
 
         # Appearance
-        guiLocale = self.guiLocale.currentData()
-        guiTheme  = self.guiTheme.currentData()
-        guiIcons  = self.guiIcons.currentData()
+        guiLocale   = self.guiLocale.currentData()
+        guiTheme    = self.guiTheme.currentData()
+        iconTheme   = self.iconTheme.currentData()
+        iconColTree = self.iconColTree.currentData()
 
         updateTheme  |= CONFIG.guiTheme != guiTheme
-        updateTheme  |= CONFIG.guiIcons != guiIcons
+        updateTheme  |= CONFIG.iconTheme != iconTheme
+        updateTheme  |= CONFIG.iconColTree != iconColTree
         needsRestart |= CONFIG.guiLocale != guiLocale
         needsRestart |= CONFIG.guiFont != self._guiFont
 
         CONFIG.guiLocale   = guiLocale
         CONFIG.guiTheme    = guiTheme
-        CONFIG.guiIcons    = guiIcons
+        CONFIG.iconTheme   = iconTheme
+        CONFIG.iconColTree = iconColTree
         CONFIG.hideVScroll = self.hideVScroll.isChecked()
         CONFIG.hideHScroll = self.hideHScroll.isChecked()
         CONFIG.nativeFont  = self.nativeFont.isChecked()

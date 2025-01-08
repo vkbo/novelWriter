@@ -318,7 +318,7 @@ class GuiTheme:
             )
 
         # Load icons after theme is parsed
-        self.iconCache.loadTheme(CONFIG.guiIcons)
+        self.iconCache.loadTheme(CONFIG.iconTheme)
 
         # Apply styles
         QApplication.setPalette(self._guiPalette)
@@ -542,8 +542,27 @@ class GuiIcons:
 
     def clear(self) -> None:
         """Clear the icon cache."""
+        text = QApplication.palette().windowText().color()
+        default = text.name(QColor.NameFormat.HexRgb).encode("utf-8")
+
         self._svgData = {}
-        self._svgColours = {}
+        self._svgColours = {
+            "default": default,
+            "red":     b"#ff0000",
+            "orange":  b"#ff7f00",
+            "yellow":  b"#ffff00",
+            "green":   b"#00ff00",
+            "aqua":    b"#00ffff",
+            "blue":    b"#0000ff",
+            "purple":  b"#ff00ff",
+            "root":    b"#0000ff",
+            "folder":  b"#ffff00",
+            "file":    default,
+            "title":   b"#00ff00",
+            "chapter": b"#ff0000",
+            "scene":   b"#0000ff",
+            "note":    b"#ffff00",
+        }
         self._qIcons = {}
         self._headerDec = []
         self._headerDecNarrow = []
@@ -582,6 +601,17 @@ class GuiIcons:
             logger.error("Could not load icon theme from: %s", themePath)
             logException()
             return False
+
+        # Set colour overrides for project item icons
+        if (override := CONFIG.iconColTree) != "theme":
+            color = self._svgColours.get(override, b"#000000")
+            self._svgColours["root"] = color
+            self._svgColours["folder"] = color
+            self._svgColours["file"] = color
+            self._svgColours["title"] = color
+            self._svgColours["chapter"] = color
+            self._svgColours["scene"] = color
+            self._svgColours["note"] = color
 
         return True
 
