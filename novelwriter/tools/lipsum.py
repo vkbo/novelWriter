@@ -60,7 +60,7 @@ class GuiLipsum(NDialog):
 
         # Icon
         self.docIcon = QLabel(self)
-        self.docIcon.setPixmap(SHARED.theme.getPixmap("document", (nPx, nPx), "blue"))
+        self.docIcon.setPixmap(SHARED.theme.getPixmap("text", (nPx, nPx), "blue"))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.setSpacing(vSp)

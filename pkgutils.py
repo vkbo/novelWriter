@@ -344,7 +344,7 @@ def buildIconTheme(args: argparse.Namespace) -> None:
     iconsDir = CURR_DIR / "novelwriter" / "assets" / "icons"
 
     style = args.style
-    if style == "material":
+    if style in ("all", "material"):
         processMaterialIcons(workDir, iconsDir, {
             "material_rounded_thin": {
                 "name": "Material Symbols - Rounded Thin",

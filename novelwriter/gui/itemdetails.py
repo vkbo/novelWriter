@@ -255,9 +255,7 @@ class GuiItemDetails(QWidget):
         # Class
         # =====
 
-        classIcon = SHARED.theme.getIcon(
-            nwLabels.CLASS_ICON[nwItem.itemClass], nwLabels.CLASS_COLOR[nwItem.itemClass]
-        )
+        classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass], "root")
         self.classIcon.setPixmap(classIcon.pixmap(iPx, iPx))
         self.classData.setText(trConst(nwLabels.CLASS_NAME[nwItem.itemClass]))
 

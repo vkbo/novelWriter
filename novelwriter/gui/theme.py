@@ -260,6 +260,17 @@ class GuiTheme:
             self.iconCache.setIconColor("blue",    self._parseColour(parser, sec, "blue"))
             self.iconCache.setIconColor("purple",  self._parseColour(parser, sec, "purple"))
 
+        # Project
+        sec = "Project"
+        if parser.has_section(sec):
+            self.iconCache.setIconColor("root",    self._parseColour(parser, sec, "root"))
+            self.iconCache.setIconColor("folder",  self._parseColour(parser, sec, "folder"))
+            self.iconCache.setIconColor("file",    self._parseColour(parser, sec, "file"))
+            self.iconCache.setIconColor("title",   self._parseColour(parser, sec, "title"))
+            self.iconCache.setIconColor("chapter", self._parseColour(parser, sec, "chapter"))
+            self.iconCache.setIconColor("scene",   self._parseColour(parser, sec, "scene"))
+            self.iconCache.setIconColor("note",    self._parseColour(parser, sec, "note"))
+
         # Palette
         sec = "Palette"
         if parser.has_section(sec):
@@ -648,20 +659,27 @@ class GuiIcons:
         color = "default"
         if tType == nwItemType.ROOT:
             name = nwLabels.CLASS_ICON[tClass]
-            color = nwLabels.CLASS_COLOR[tClass]
+            color = "root"
         elif tType == nwItemType.FOLDER:
-            name = "folder"
+            name = "prj_folder"
+            color = "folder"
         elif tType == nwItemType.FILE:
-            name = "document"
             if tLayout == nwItemLayout.DOCUMENT:
                 if hLevel == "H1":
-                    color = "green"
+                    name = "prj_title"
+                    color = "title"
                 elif hLevel == "H2":
-                    color = "red"
+                    name = "prj_chapter"
+                    color = "chapter"
                 elif hLevel == "H3":
-                    color = "blue"
+                    name = "prj_scene"
+                    color = "scene"
+                else:
+                    name = "prj_document"
+                    color = "file"
             elif tLayout == nwItemLayout.NOTE:
-                color = "yellow"
+                name = "prj_note"
+                color = "note"
         if name is None:
             return self._noIcon
 
@@ -672,11 +690,11 @@ class GuiIcons:
         if not self._headerDec:
             iPx = self.mainTheme.baseIconHeight
             self._headerDec = [
-                self._generateDecoration("default", iPx, 0),
-                self._generateDecoration("green", iPx, 0),
-                self._generateDecoration("red", iPx, 1),
-                self._generateDecoration("blue", iPx, 2),
-                self._generateDecoration("default", iPx, 3),
+                self._generateDecoration("file", iPx, 0),
+                self._generateDecoration("title", iPx, 0),
+                self._generateDecoration("chapter", iPx, 1),
+                self._generateDecoration("scene", iPx, 2),
+                self._generateDecoration("file", iPx, 3),
             ]
         return self._headerDec[minmax(hLevel, 0, 4)]
 
@@ -685,12 +703,12 @@ class GuiIcons:
         if not self._headerDecNarrow:
             iPx = self.mainTheme.baseIconHeight
             self._headerDecNarrow = [
-                self._generateDecoration("default", iPx, 0),
-                self._generateDecoration("green", iPx, 0),
-                self._generateDecoration("red", iPx, 0),
-                self._generateDecoration("blue", iPx, 0),
-                self._generateDecoration("default", iPx, 0),
-                self._generateDecoration("yellow", iPx, 0),
+                self._generateDecoration("file", iPx, 0),
+                self._generateDecoration("title", iPx, 0),
+                self._generateDecoration("chapter", iPx, 0),
+                self._generateDecoration("scene", iPx, 0),
+                self._generateDecoration("file", iPx, 0),
+                self._generateDecoration("note", iPx, 0),
             ]
         return self._headerDecNarrow[minmax(hLevel, 0, 5)]
 

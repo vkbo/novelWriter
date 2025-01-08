@@ -369,11 +369,11 @@ class GuiProjectToolBar(QWidget):
         self.tbAdd.setThemeIcon("add", "green")
         self.tbMore.setThemeIcon("more_vertical")
 
-        self.aAddEmpty.setIcon(SHARED.theme.getIcon("document"))
-        self.aAddChap.setIcon(SHARED.theme.getIcon("document", "red"))
-        self.aAddScene.setIcon(SHARED.theme.getIcon("document", "blue"))
-        self.aAddNote.setIcon(SHARED.theme.getIcon("document", "yellow"))
-        self.aAddFolder.setIcon(SHARED.theme.getIcon("folder"))
+        self.aAddEmpty.setIcon(SHARED.theme.getIcon("prj_document", "file"))
+        self.aAddChap.setIcon(SHARED.theme.getIcon("prj_chapter", "chapter"))
+        self.aAddScene.setIcon(SHARED.theme.getIcon("prj_scene", "scene"))
+        self.aAddNote.setIcon(SHARED.theme.getIcon("prj_note", "note"))
+        self.aAddFolder.setIcon(SHARED.theme.getIcon("prj_folder", "folder"))
 
         self.buildTemplatesMenu()
         self.buildQuickLinksMenu()
@@ -394,9 +394,7 @@ class GuiProjectToolBar(QWidget):
         for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
             action = self.mQuick.addAction(nwItem.itemName)
             action.setData(tHandle)
-            action.setIcon(SHARED.theme.getIcon(
-                nwLabels.CLASS_ICON[nwItem.itemClass], nwLabels.CLASS_COLOR[nwItem.itemClass]
-            ))
+            action.setIcon(SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass], "root"))
             action.triggered.connect(
                 qtLambda(self.projView.setSelectedHandle, tHandle, doScroll=True)
             )
@@ -443,9 +441,7 @@ class GuiProjectToolBar(QWidget):
         """Build the rood folder menu."""
         def addClass(itemClass: nwItemClass) -> None:
             aNew = self.mAddRoot.addAction(trConst(nwLabels.CLASS_NAME[itemClass]))
-            aNew.setIcon(SHARED.theme.getIcon(
-                nwLabels.CLASS_ICON[itemClass], nwLabels.CLASS_COLOR[itemClass]
-            ))
+            aNew.setIcon(SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass], "root"))
             aNew.triggered.connect(
                 qtLambda(self.projTree.newTreeItem, nwItemType.ROOT, itemClass)
             )

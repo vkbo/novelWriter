@@ -459,13 +459,13 @@ class _FilterTab(NFixedPage):
         self.filterOpt.clear()
         self.filterOpt.addLabel(self._build.getLabel("filter"))
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("document", "blue"),
+            SHARED.theme.getIcon("prj_scene", "scene"),
             self._build.getLabel("filter.includeNovel"),
             "doc:filter.includeNovel",
             default=self._build.getBool("filter.includeNovel")
         )
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("document", "yellow"),
+            SHARED.theme.getIcon("prj_note", "note"),
             self._build.getLabel("filter.includeNotes"),
             "doc:filter.includeNotes",
             default=self._build.getBool("filter.includeNotes")

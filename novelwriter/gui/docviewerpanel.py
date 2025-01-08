@@ -410,9 +410,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         treeHeader.setSectionsMovable(False)
 
         # Cache Icons Locally
-        self._classIcon = SHARED.theme.getIcon(
-            nwLabels.CLASS_ICON[itemClass], nwLabels.CLASS_COLOR[itemClass]
-        )
+        self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass], "root")
         self._editIcon = SHARED.theme.getIcon("edit", "green")
         self._viewIcon = SHARED.theme.getIcon("view", "blue")
 
@@ -424,9 +422,7 @@ class _ViewPanelKeyWords(QTreeWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self._classIcon = SHARED.theme.getIcon(
-            nwLabels.CLASS_ICON[self._class], nwLabels.CLASS_COLOR[self._class]
-        )
+        self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[self._class], "root")
         self._editIcon = SHARED.theme.getIcon("edit", "green")
         self._viewIcon = SHARED.theme.getIcon("view", "blue")
         for i in range(self.topLevelItemCount()):
