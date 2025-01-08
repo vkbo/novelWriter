@@ -235,6 +235,7 @@ class GuiTheme:
         # Reset Palette
         self._guiPalette = QApplication.style().standardPalette()
         self._resetGuiColors()
+        self.iconCache.clear()
 
         # Main
         sec = "Main"
@@ -486,33 +487,17 @@ class GuiTheme:
 
 class GuiIcons:
     """The icon class manages the content of the assets/icons folder,
-    and provides a simple interface for requesting icons. Only icons
-    listed in the ICON_KEYS are handled.
+    and provides a simple interface for requesting icons.
 
-    Icons are loaded on first request, and then cached for further
-    requests. Each icon key in the ICON_KEYS set has standard icon set
-    in the icon theme conf file. The existence of the file, and the
-    definition of all keys are checked when the theme is loaded.
-
-    When an icon is requested, the icon is loaded and cached. If it is
-    missing, a blank icon is returned and a warning issued.
+    Icons are generated from SVG on first request, and then cached for
+    further requests. If the icon is not defined, a placeholder icon is
+    returned instead.
     """
-
-    ICON_KEYS: set[str] = {
-        # Project and GUI Icons
-        "novelwriter", "proj_nwx"
-
-        # Decorations
-        "deco_doc_h0", "deco_doc_h1", "deco_doc_h2", "deco_doc_h3", "deco_doc_h4", "deco_doc_more",
-        "deco_doc_h0_n", "deco_doc_h1_n", "deco_doc_h2_n", "deco_doc_h3_n", "deco_doc_h4_n",
-        "deco_doc_nt_n",
-    }
 
     TOGGLE_ICON_KEYS: dict[str, tuple[str, str]] = {
         "bullet": ("bullet-on", "bullet-off"),
         "unfold": ("unfold-show", "unfold-hide"),
     }
-
     IMAGE_MAP: dict[str, tuple[str, str]] = {
         "welcome":  ("welcome-light.jpg", "welcome-dark.jpg"),
         "nw-text":  ("novelwriter-text-light.svg", "novelwriter-text-dark.svg"),
@@ -542,6 +527,18 @@ class GuiIcons:
 
         return
 
+    def clear(self) -> None:
+        """Clear the icon cache."""
+        self._svgData = {}
+        self._svgColours = {}
+        self._qIcons = {}
+        self._headerDec = []
+        self._headerDecNarrow = []
+        self.themeName    = ""
+        self.themeAuthor  = ""
+        self.themeLicense = ""
+        return
+
     ##
     #  Actions
     ##
@@ -569,18 +566,9 @@ class GuiIcons:
                         elif key == "meta:license":
                             self.themeLicense = value
         except Exception:
-            logger.error("Could not load icon theme settings from: %s", themePath)
+            logger.error("Could not load icon theme from: %s", themePath)
             logException()
             return False
-
-        # Refresh icons
-        for iconKey in self._qIcons:
-            logger.debug("Reloading icon: '%s'", iconKey)
-            qIcon = self._loadIcon(iconKey)
-            self._qIcons[iconKey] = qIcon
-
-        self._headerDec = []
-        self._headerDecNarrow = []
 
         return True
 
@@ -631,7 +619,7 @@ class GuiIcons:
             return icon
 
     def getToggleIcon(self, name: str, size: tuple[int, int], color: str | None = None) -> QIcon:
-        """Return a toggle icon from the icon buffer. or load it."""
+        """Return a toggle icon from the icon buffer, or load it."""
         if name in self.TOGGLE_ICON_KEYS:
             pOne = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], size, color)
             pTwo = self.getPixmap(self.TOGGLE_ICON_KEYS[name][1], size, color)
@@ -648,8 +636,9 @@ class GuiIcons:
         w, h = size
         return self.getIcon(name, color, w, h).pixmap(w, h, QIcon.Mode.Normal)
 
-    def getItemIcon(self, tType: nwItemType, tClass: nwItemClass,
-                    tLayout: nwItemLayout, hLevel: str = "H0") -> QIcon:
+    def getItemIcon(
+        self, tType: nwItemType, tClass: nwItemClass, tLayout: nwItemLayout, hLevel: str = "H0"
+    ) -> QIcon:
         """Get the correct icon for a project item based on type, class
         and heading level
         """
@@ -772,7 +761,7 @@ def _loadInternalName(confParser: NWConfigParser, confFile: str | Path) -> str:
 
 
 def _loadIconName(path: Path) -> str:
-    """Open an icons file and read the 'name' setting."""
+    """Open an icons file and read the name setting."""
     try:
         with open(path, mode="r", encoding="utf-8") as icons:
             for icon in icons:
