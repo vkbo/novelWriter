@@ -37,7 +37,7 @@ from PyQt5.QtGui import QColor, QIcon, QPainter, QPainterPath, QPixmap, QPolygon
 from novelwriter import SHARED
 from novelwriter.common import simplified
 from novelwriter.enum import nwStatusShape
-from novelwriter.types import QtPaintAnitAlias, QtTransparent
+from novelwriter.types import QtPaintAntiAlias, QtTransparent
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import TypeGuard  # Requires Python 3.10
@@ -195,7 +195,7 @@ class NWStatus:
         pixmap.fill(QtTransparent)
 
         painter = QPainter(pixmap)
-        painter.setRenderHint(QtPaintAnitAlias)
+        painter.setRenderHint(QtPaintAntiAlias)
         painter.fillPath(_SHAPES.getShape(shape), color)
         painter.end()
 
