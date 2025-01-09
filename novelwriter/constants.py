@@ -207,7 +207,7 @@ class nwLists:
 
 class nwStats:
 
-    CHARS_ALL    = "allChars"
+    CHARS        = "allChars"
     CHARS_TEXT   = "textChars"
     CHARS_TITLE  = "titleChars"
     PARAGRAPHS   = "paragraphCount"
@@ -215,14 +215,14 @@ class nwStats:
     WCHARS_ALL   = "allWordChars"
     WCHARS_TEXT  = "textWordChars"
     WCHARS_TITLE = "titleWordChars"
-    WORDS_ALL    = "allWords"
+    WORDS        = "allWords"
     WORDS_TEXT   = "textWords"
     WORDS_TITLE  = "titleWords"
 
     # Note: The order here affects the order of menu entries
     ALL_FIELDS = [
-        WORDS_ALL, WORDS_TEXT, WORDS_TITLE,
-        CHARS_ALL, CHARS_TEXT, CHARS_TITLE,
+        WORDS, WORDS_TEXT, WORDS_TITLE,
+        CHARS, CHARS_TEXT, CHARS_TITLE,
         WCHARS_ALL, WCHARS_TEXT, WCHARS_TITLE,
         PARAGRAPHS, TITLES,
     ]
@@ -329,7 +329,7 @@ class nwLabels:
         nwOutline.SYNOP:   QT_TRANSLATE_NOOP("Constant", "Synopsis"),
     }
     STATS_NAME = {
-        nwStats.CHARS_ALL:    QT_TRANSLATE_NOOP("Stats", "Characters"),
+        nwStats.CHARS:        QT_TRANSLATE_NOOP("Stats", "Characters"),
         nwStats.CHARS_TEXT:   QT_TRANSLATE_NOOP("Stats", "Characters in Text"),
         nwStats.CHARS_TITLE:  QT_TRANSLATE_NOOP("Stats", "Characters in Headings"),
         nwStats.PARAGRAPHS:   QT_TRANSLATE_NOOP("Stats", "Paragraphs"),
@@ -337,7 +337,7 @@ class nwLabels:
         nwStats.WCHARS_ALL:   QT_TRANSLATE_NOOP("Stats", "Characters, No Spaces"),
         nwStats.WCHARS_TEXT:  QT_TRANSLATE_NOOP("Stats", "Characters in Text, No Spaces"),
         nwStats.WCHARS_TITLE: QT_TRANSLATE_NOOP("Stats", "Characters in Headings, No Spaces"),
-        nwStats.WORDS_ALL:    QT_TRANSLATE_NOOP("Stats", "Words"),
+        nwStats.WORDS:        QT_TRANSLATE_NOOP("Stats", "Words"),
         nwStats.WORDS_TEXT:   QT_TRANSLATE_NOOP("Stats", "Words in Text"),
         nwStats.WORDS_TITLE:  QT_TRANSLATE_NOOP("Stats", "Words in Headings"),
     }

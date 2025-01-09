@@ -986,17 +986,17 @@ class _StatsWidget(QWidget):
     def updateStats(self, data: dict[str, int]) -> None:
         """Update the stats values from a Tokenizer stats dict."""
         # Minimal
-        self.minWordCount.setText("{0:n}".format(data.get(nwStats.WORDS_ALL, 0)))
-        self.minCharCount.setText("{0:n}".format(data.get(nwStats.CHARS_ALL, 0)))
+        self.minWordCount.setText("{0:n}".format(data.get(nwStats.WORDS, 0)))
+        self.minCharCount.setText("{0:n}".format(data.get(nwStats.CHARS, 0)))
 
         # Maximal
-        self.maxTotalWords.setText("{0:n}".format(data.get(nwStats.WORDS_ALL, 0)))
+        self.maxTotalWords.setText("{0:n}".format(data.get(nwStats.WORDS, 0)))
         self.maxHeadWords.setText("{0:n}".format(data.get(nwStats.WORDS_TITLE, 0)))
         self.maxTextWords.setText("{0:n}".format(data.get(nwStats.WORDS_TEXT, 0)))
         self.maxTitleCount.setText("{0:n}".format(data.get(nwStats.TITLES, 0)))
         self.maxParCount.setText("{0:n}".format(data.get(nwStats.PARAGRAPHS, 0)))
 
-        self.maxTotalChars.setText("{0:n}".format(data.get(nwStats.CHARS_ALL, 0)))
+        self.maxTotalChars.setText("{0:n}".format(data.get(nwStats.CHARS, 0)))
         self.maxHeaderChars.setText("{0:n}".format(data.get(nwStats.CHARS_TITLE, 0)))
         self.maxTextChars.setText("{0:n}".format(data.get(nwStats.CHARS_TEXT, 0)))
 
@@ -1037,7 +1037,7 @@ class _StatsWidget(QWidget):
         hPx = CONFIG.pxInt(12)
         vPx = CONFIG.pxInt(4)
 
-        trAllChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_ALL])
+        trAllChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS])
         trTextChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_TEXT])
         trTitleChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_TITLE])
         trParagraphCount = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
@@ -1045,7 +1045,7 @@ class _StatsWidget(QWidget):
         trAllWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_ALL])
         trTextWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_TEXT])
         trTitleWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_TITLE])
-        trAllWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS_ALL])
+        trAllWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS])
         trTextWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS_TEXT])
         trTitleWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS_TITLE])
 
