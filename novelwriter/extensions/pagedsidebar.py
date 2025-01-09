@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.types import (
-    QtAlignLeft, QtMouseOver, QtNoBrush, QtNoPen, QtPaintAnitAlias,
+    QtAlignLeft, QtMouseOver, QtNoBrush, QtNoPen, QtPaintAntiAlias,
     QtSizeExpanding, QtSizeFixed
 )
 
@@ -146,7 +146,7 @@ class _PagedToolButton(QToolButton):
         opt.initFrom(self)
 
         paint = QPainter(self)
-        paint.setRenderHint(QtPaintAnitAlias, True)
+        paint.setRenderHint(QtPaintAntiAlias, True)
         paint.setPen(QtNoPen)
         paint.setBrush(QtNoBrush)
 
@@ -213,7 +213,7 @@ class _NPagedToolLabel(QLabel):
         label that matches the button style.
         """
         paint = QPainter(self)
-        paint.setRenderHint(QtPaintAnitAlias, True)
+        paint.setRenderHint(QtPaintAntiAlias, True)
         paint.setPen(QtNoPen)
 
         width = self.width()

@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import QAbstractButton, QWidget
 
 from novelwriter import CONFIG
 from novelwriter.enum import nwTrinary
-from novelwriter.types import QtBlack, QtPaintAnitAlias
+from novelwriter.types import QtBlack, QtPaintAntiAlias
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ class StatusLED(QAbstractButton):
     def paintEvent(self, event: QPaintEvent) -> None:
         """Draw the LED."""
         painter = QPainter(self)
-        painter.setRenderHint(QtPaintAnitAlias, True)
+        painter.setRenderHint(QtPaintAntiAlias, True)
         painter.setPen(self.palette().windowText().color())
         painter.setBrush(self._color)
         painter.setOpacity(1.0)
