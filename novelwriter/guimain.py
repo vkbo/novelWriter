@@ -1064,6 +1064,7 @@ class GuiMain(QMainWindow):
             self.outlineView.updateTheme()
             self.itemDetails.updateTheme()
             self.mainStatus.updateTheme()
+            SHARED.project.tree.refreshAllItems()
 
         if syntax:
             SHARED.theme.loadSyntax()

@@ -121,6 +121,10 @@ class Config:
         self.lastNotes    = "0x0"            # The latest release notes that have been shown
         self.nativeFont   = True             # Use native font dialog
 
+        # Icons
+        self.iconTheme   = "material_rounded_normal"  # Icons theme
+        self.iconColTree = "theme"                    # Project tree icon colours
+
         # Size Settings
         self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
         self._welcomeSize  = [800, 550]      # Last size of the welcome window
@@ -605,6 +609,8 @@ class Config:
         self.setGuiFont(conf.rdStr(sec, "font", ""))
         self.guiTheme    = conf.rdStr(sec, "theme", self.guiTheme)
         self.guiSyntax   = conf.rdStr(sec, "syntax", self.guiSyntax)
+        self.iconTheme   = conf.rdStr(sec, "icons", self.iconTheme)
+        self.iconColTree = conf.rdStr(sec, "iconcoltree", self.iconColTree)
         self.guiLocale   = conf.rdStr(sec, "localisation", self.guiLocale)
         self.hideVScroll = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
         self.hideHScroll = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
@@ -716,6 +722,8 @@ class Config:
             "font":         self.guiFont.toString(),
             "theme":        str(self.guiTheme),
             "syntax":       str(self.guiSyntax),
+            "icons":        str(self.iconTheme),
+            "iconcoltree":  str(self.iconColTree),
             "localisation": str(self.guiLocale),
             "hidevscroll":  str(self.hideVScroll),
             "hidehscroll":  str(self.hideHScroll),

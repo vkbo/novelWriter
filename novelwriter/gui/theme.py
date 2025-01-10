@@ -30,7 +30,10 @@ from math import ceil
 from pathlib import Path
 
 from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QColor, QFont, QFontDatabase, QFontMetrics, QIcon, QPalette, QPixmap
+from PyQt5.QtGui import (
+    QColor, QFont, QFontDatabase, QFontMetrics, QIcon, QPainter, QPainterPath,
+    QPalette, QPixmap
+)
 from PyQt5.QtWidgets import QApplication
 
 from novelwriter import CONFIG
@@ -38,6 +41,7 @@ from novelwriter.common import NWConfigParser, cssCol, minmax
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
+from novelwriter.types import QtPaintAntiAlias, QtTransparent
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +71,6 @@ class GuiTheme:
         self.themeUrl         = ""
         self.themeLicense     = ""
         self.themeLicenseUrl  = ""
-        self.themeIcons       = ""
         self.isLightTheme     = True
 
         # GUI
@@ -232,6 +235,7 @@ class GuiTheme:
         # Reset Palette
         self._guiPalette = QApplication.style().standardPalette()
         self._resetGuiColors()
+        self.iconCache.clear()
 
         # Main
         sec = "Main"
@@ -243,7 +247,29 @@ class GuiTheme:
             self.themeUrl         = parser.rdStr(sec, "url", "")
             self.themeLicense     = parser.rdStr(sec, "license", "N/A")
             self.themeLicenseUrl  = parser.rdStr(sec, "licenseurl", "")
-            self.themeIcons       = parser.rdStr(sec, "icontheme", "")
+
+        # Icons
+        sec = "Icons"
+        if parser.has_section(sec):
+            self.iconCache.setIconColor("default", self._parseColour(parser, sec, "default"))
+            self.iconCache.setIconColor("red",     self._parseColour(parser, sec, "red"))
+            self.iconCache.setIconColor("orange",  self._parseColour(parser, sec, "orange"))
+            self.iconCache.setIconColor("yellow",  self._parseColour(parser, sec, "yellow"))
+            self.iconCache.setIconColor("green",   self._parseColour(parser, sec, "green"))
+            self.iconCache.setIconColor("aqua",    self._parseColour(parser, sec, "aqua"))
+            self.iconCache.setIconColor("blue",    self._parseColour(parser, sec, "blue"))
+            self.iconCache.setIconColor("purple",  self._parseColour(parser, sec, "purple"))
+
+        # Project
+        sec = "Project"
+        if parser.has_section(sec):
+            self.iconCache.setIconColor("root",    self._parseColour(parser, sec, "root"))
+            self.iconCache.setIconColor("folder",  self._parseColour(parser, sec, "folder"))
+            self.iconCache.setIconColor("file",    self._parseColour(parser, sec, "file"))
+            self.iconCache.setIconColor("title",   self._parseColour(parser, sec, "title"))
+            self.iconCache.setIconColor("chapter", self._parseColour(parser, sec, "chapter"))
+            self.iconCache.setIconColor("scene",   self._parseColour(parser, sec, "scene"))
+            self.iconCache.setIconColor("note",    self._parseColour(parser, sec, "note"))
 
         # Palette
         sec = "Palette"
@@ -291,11 +317,10 @@ class GuiTheme:
                 self.helpText.red(), self.helpText.green(), self.helpText.blue()
             )
 
-        # Icons
-        defaultIcons = "typicons_light" if backLNess >= 0.5 else "typicons_dark"
-        self.iconCache.loadTheme(self.themeIcons or defaultIcons)
+        # Load icons after theme is parsed
+        self.iconCache.loadTheme(CONFIG.iconTheme)
 
-        # Apply Styles
+        # Apply styles
         QApplication.setPalette(self._guiPalette)
 
         # Reset stylesheets so that they are regenerated
@@ -429,8 +454,9 @@ class GuiTheme:
         """Parse a colour value from a config string."""
         return QColor(*parser.rdIntList(section, name, [0, 0, 0, 255]))
 
-    def _setPalette(self, parser: NWConfigParser, section: str,
-                    name: str, value: QPalette.ColorRole) -> None:
+    def _setPalette(
+        self, parser: NWConfigParser, section: str, name: str, value: QPalette.ColorRole
+    ) -> None:
         """Set a palette colour value from a config string."""
         self._guiPalette.setColor(value, self._parseColour(parser, section, name))
         return
@@ -473,63 +499,17 @@ class GuiTheme:
 
 class GuiIcons:
     """The icon class manages the content of the assets/icons folder,
-    and provides a simple interface for requesting icons. Only icons
-    listed in the ICON_KEYS are handled.
+    and provides a simple interface for requesting icons.
 
-    Icons are loaded on first request, and then cached for further
-    requests. Each icon key in the ICON_KEYS set has standard icon set
-    in the icon theme conf file. The existence of the file, and the
-    definition of all keys are checked when the theme is loaded.
-
-    When an icon is requested, the icon is loaded and cached. If it is
-    missing, a blank icon is returned and a warning issued.
+    Icons are generated from SVG on first request, and then cached for
+    further requests. If the icon is not defined, a placeholder icon is
+    returned instead.
     """
 
-    ICON_KEYS: set[str] = {
-        # Project and GUI Icons
-        "novelwriter", "alert_error", "alert_info", "alert_question", "alert_warn",
-        "build_excluded", "build_filtered", "build_included", "proj_chapter", "proj_details",
-        "proj_document", "proj_folder", "proj_note", "proj_nwx", "proj_section", "proj_scene",
-        "proj_stats", "proj_title", "status_idle", "status_lang", "status_lines", "status_stats",
-        "status_time", "view_build", "view_editor", "view_novel", "view_outline", "view_search",
-
-        # Class Icons
-        "cls_archive", "cls_character", "cls_custom", "cls_entity", "cls_none", "cls_novel",
-        "cls_object", "cls_plot", "cls_template", "cls_timeline", "cls_trash", "cls_world",
-
-        # Search Icons
-        "search_cancel", "search_case", "search_loop", "search_preserve", "search_project",
-        "search_regex", "search_word",
-
-        # Format Icons
-        "fmt_bold", "fmt_bold-md", "fmt_italic", "fmt_italic-md", "fmt_mark", "fmt_strike",
-        "fmt_strike-md", "fmt_subscript", "fmt_superscript", "fmt_underline", "margin_bottom",
-        "margin_left", "margin_right", "margin_top", "size_height", "size_width",
-
-        # General Button Icons
-        "add", "add_document", "backward", "bookmark", "browse", "checked", "close", "copy",
-        "cross", "document", "down", "edit", "export", "font", "forward", "import", "list",
-        "maximise", "menu", "minimise", "more", "noncheckable", "open", "panel", "quote",
-        "refresh", "remove", "revert", "search_replace", "search", "settings", "star", "toolbar",
-        "unchecked", "up", "view",
-
-        # Switches
-        "sticky-on", "sticky-off",
-        "bullet-on", "bullet-off",
-        "unfold-show", "unfold-hide",
-
-        # Decorations
-        "deco_doc_h0", "deco_doc_h1", "deco_doc_h2", "deco_doc_h3", "deco_doc_h4", "deco_doc_more",
-        "deco_doc_h0_n", "deco_doc_h1_n", "deco_doc_h2_n", "deco_doc_h3_n", "deco_doc_h4_n",
-        "deco_doc_nt_n",
-    }
-
     TOGGLE_ICON_KEYS: dict[str, tuple[str, str]] = {
-        "sticky": ("sticky-on", "sticky-off"),
         "bullet": ("bullet-on", "bullet-off"),
         "unfold": ("unfold-show", "unfold-hide"),
     }
-
     IMAGE_MAP: dict[str, tuple[str, str]] = {
         "welcome":  ("welcome-light.jpg", "welcome-dark.jpg"),
         "nw-text":  ("novelwriter-text-light.svg", "novelwriter-text-dark.svg"),
@@ -540,27 +520,55 @@ class GuiIcons:
         self.mainTheme = mainTheme
 
         # Storage
+        self._svgData: dict[str, bytes] = {}
+        self._svgColours: dict[str, bytes] = {}
         self._qIcons: dict[str, QIcon] = {}
-        self._themeMap: dict[str, Path] = {}
         self._headerDec: list[QPixmap] = []
         self._headerDecNarrow: list[QPixmap] = []
 
         # Icon Theme Path
-        self._confName = "icons.conf"
+        self._themeList: list[tuple[str, str]] = []
         self._iconPath = CONFIG.assetPath("icons")
 
         # None Icon
         self._noIcon = QIcon(str(self._iconPath / "none.svg"))
 
         # Icon Theme Meta
-        self.themeName        = ""
-        self.themeDescription = ""
-        self.themeAuthor      = ""
-        self.themeCredit      = ""
-        self.themeUrl         = ""
-        self.themeLicense     = ""
-        self.themeLicenseUrl  = ""
+        self.themeName    = ""
+        self.themeAuthor  = ""
+        self.themeLicense = ""
 
+        return
+
+    def clear(self) -> None:
+        """Clear the icon cache."""
+        text = QApplication.palette().windowText().color()
+        default = text.name(QColor.NameFormat.HexRgb).encode("utf-8")
+
+        self._svgData = {}
+        self._svgColours = {
+            "default": default,
+            "red":     b"#ff0000",
+            "orange":  b"#ff7f00",
+            "yellow":  b"#ffff00",
+            "green":   b"#00ff00",
+            "aqua":    b"#00ffff",
+            "blue":    b"#0000ff",
+            "purple":  b"#ff00ff",
+            "root":    b"#0000ff",
+            "folder":  b"#ffff00",
+            "file":    default,
+            "title":   b"#00ff00",
+            "chapter": b"#ff0000",
+            "scene":   b"#0000ff",
+            "note":    b"#ffff00",
+        }
+        self._qIcons = {}
+        self._headerDec = []
+        self._headerDecNarrow = []
+        self.themeName    = ""
+        self.themeAuthor  = ""
+        self.themeLicense = ""
         return
 
     ##
@@ -572,71 +580,45 @@ class GuiIcons:
         the GUI icons cannot really be replaced without writing specific
         update functions for the classes where they're used.
         """
-        self._themeMap = {}
-        themePath = self._iconPath / iconTheme
-        if not themePath.is_dir():
-            themePath = CONFIG.dataPath("icons") / iconTheme
-            if not themePath.is_dir():
-                logger.warning("No icons loaded for '%s'", iconTheme)
-                return False
-
-        themeConf = themePath / self._confName
         logger.info("Loading icon theme '%s'", iconTheme)
-
-        # Config File
-        confParser = NWConfigParser()
+        themePath = self._iconPath / f"{iconTheme}.icons"
         try:
-            with open(themeConf, mode="r", encoding="utf-8") as inFile:
-                confParser.read_file(inFile)
+            with open(themePath, mode="r", encoding="utf-8") as icons:
+                for icon in icons:
+                    bits = icon.partition("=")
+                    key = bits[0].strip()
+                    value = bits[2].strip()
+                    if key and value:
+                        if key.startswith("icon:"):
+                            self._svgData[key[5:]] = value.encode("utf-8")
+                        elif key == "meta:name":
+                            self.themeName = value
+                        elif key == "meta:author":
+                            self.themeAuthor = value
+                        elif key == "meta:license":
+                            self.themeLicense = value
         except Exception:
-            logger.error("Could not load icon theme settings from: %s", themeConf)
+            logger.error("Could not load icon theme from: %s", themePath)
             logException()
             return False
 
-        # Main
-        cnfSec = "Main"
-        if confParser.has_section(cnfSec):
-            self.themeName        = confParser.rdStr(cnfSec, "name", "")
-            self.themeDescription = confParser.rdStr(cnfSec, "description", "")
-            self.themeAuthor      = confParser.rdStr(cnfSec, "author", "N/A")
-            self.themeCredit      = confParser.rdStr(cnfSec, "credit", "N/A")
-            self.themeUrl         = confParser.rdStr(cnfSec, "url", "")
-            self.themeLicense     = confParser.rdStr(cnfSec, "license", "N/A")
-            self.themeLicenseUrl  = confParser.rdStr(cnfSec, "licenseurl", "")
-
-        # Populate Icon Map
-        cnfSec = "Map"
-        if confParser.has_section(cnfSec):
-            for iconName, iconFile in confParser.items(cnfSec):
-                if iconName not in self.ICON_KEYS:
-                    logger.error("Unknown icon name '%s' in config file", iconName)
-                else:
-                    iconPath = themePath / iconFile
-                    if iconPath.is_file():
-                        self._themeMap[iconName] = iconPath
-                        logger.debug("Icon slot '%s' using file '%s'", iconName, iconFile)
-                    else:
-                        logger.error("Icon file '%s' not in theme folder", iconFile)
-
-        # Check that icons have been defined
-        logger.debug("Scanning theme icons")
-        for iconKey in self.ICON_KEYS:
-            if iconKey in ("novelwriter", "proj_nwx"):
-                # These are not part of the theme itself
-                continue
-            if iconKey not in self._themeMap:
-                logger.error("No icon file specified for '%s'", iconKey)
-
-        # Refresh icons
-        for iconKey in self._qIcons:
-            logger.debug("Reloading icon: '%s'", iconKey)
-            qIcon = self._loadIcon(iconKey)
-            self._qIcons[iconKey] = qIcon
-
-        self._headerDec = []
-        self._headerDecNarrow = []
+        # Set colour overrides for project item icons
+        if (override := CONFIG.iconColTree) != "theme":
+            color = self._svgColours.get(override, b"#000000")
+            self._svgColours["root"] = color
+            self._svgColours["folder"] = color
+            self._svgColours["file"] = color
+            self._svgColours["title"] = color
+            self._svgColours["chapter"] = color
+            self._svgColours["scene"] = color
+            self._svgColours["note"] = color
 
         return True
+
+    def setIconColor(self, key: str, color: QColor) -> None:
+        """Set an icon colour for a named colour."""
+        self._svgColours[key] = color.name(QColor.NameFormat.HexRgb).encode("utf-8")
+        return
 
     ##
     #  Access Functions
@@ -646,9 +628,7 @@ class GuiIcons:
         """Load graphical decoration element based on the decoration
         map or the icon map. This function always returns a QPixmap.
         """
-        if name in self._themeMap:
-            imgPath = self._themeMap[name]
-        elif name in self.IMAGE_MAP:
+        if name in self.IMAGE_MAP:
             idx = 0 if self.mainTheme.isLightTheme else 1
             imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[name][idx]
         else:
@@ -670,70 +650,81 @@ class GuiIcons:
 
         return pixmap
 
-    def getIcon(self, name: str) -> QIcon:
+    def getIcon(self, name: str, color: str | None = None, w: int = 24, h: int = 24) -> QIcon:
         """Return an icon from the icon buffer, or load it."""
-        if name in self._qIcons:
-            return self._qIcons[name]
+        variant = f"{name}-{color}" if color else name
+        if (key := f"{variant}-{w}x{h}") in self._qIcons:
+            return self._qIcons[key]
         else:
-            icon = self._loadIcon(name)
-            self._qIcons[name] = icon
+            icon = self._loadIcon(name, color, w, h)
+            self._qIcons[key] = icon
+            logger.info("Icon: %s", key)
             return icon
 
-    def getToggleIcon(self, name: str, size: tuple[int, int]) -> QIcon:
-        """Return a toggle icon from the icon buffer. or load it."""
+    def getToggleIcon(self, name: str, size: tuple[int, int], color: str | None = None) -> QIcon:
+        """Return a toggle icon from the icon buffer, or load it."""
         if name in self.TOGGLE_ICON_KEYS:
-            pOne = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], size)
-            pTwo = self.getPixmap(self.TOGGLE_ICON_KEYS[name][1], size)
+            pOne = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], size, color)
+            pTwo = self.getPixmap(self.TOGGLE_ICON_KEYS[name][1], size, color)
             icon = QIcon()
             icon.addPixmap(pOne, QIcon.Mode.Normal, QIcon.State.On)
             icon.addPixmap(pTwo, QIcon.Mode.Normal, QIcon.State.Off)
             return icon
         return self._noIcon
 
-    def getPixmap(self, name: str, size: tuple[int, int]) -> QPixmap:
+    def getPixmap(self, name: str, size: tuple[int, int], color: str | None = None) -> QPixmap:
         """Return an icon from the icon buffer as a QPixmap. If it
         doesn't exist, return an empty QPixmap.
         """
-        return self.getIcon(name).pixmap(size[0], size[1], QIcon.Mode.Normal)
+        w, h = size
+        return self.getIcon(name, color, w, h).pixmap(w, h, QIcon.Mode.Normal)
 
-    def getItemIcon(self, tType: nwItemType, tClass: nwItemClass,
-                    tLayout: nwItemLayout, hLevel: str = "H0") -> QIcon:
+    def getItemIcon(
+        self, tType: nwItemType, tClass: nwItemClass, tLayout: nwItemLayout, hLevel: str = "H0"
+    ) -> QIcon:
         """Get the correct icon for a project item based on type, class
         and heading level
         """
-        iconName = None
+        name = None
+        color = "default"
         if tType == nwItemType.ROOT:
-            iconName = nwLabels.CLASS_ICON[tClass]
+            name = nwLabels.CLASS_ICON[tClass]
+            color = "root"
         elif tType == nwItemType.FOLDER:
-            iconName = "proj_folder"
+            name = "prj_folder"
+            color = "folder"
         elif tType == nwItemType.FILE:
-            iconName = "proj_document"
             if tLayout == nwItemLayout.DOCUMENT:
                 if hLevel == "H1":
-                    iconName = "proj_title"
+                    name = "prj_title"
+                    color = "title"
                 elif hLevel == "H2":
-                    iconName = "proj_chapter"
+                    name = "prj_chapter"
+                    color = "chapter"
                 elif hLevel == "H3":
-                    iconName = "proj_scene"
-                elif hLevel == "H4":
-                    iconName = "proj_section"
+                    name = "prj_scene"
+                    color = "scene"
+                else:
+                    name = "prj_document"
+                    color = "file"
             elif tLayout == nwItemLayout.NOTE:
-                iconName = "proj_note"
-        if iconName is None:
+                name = "prj_note"
+                color = "note"
+        if name is None:
             return self._noIcon
 
-        return self.getIcon(iconName)
+        return self.getIcon(name, color)
 
     def getHeaderDecoration(self, hLevel: int) -> QPixmap:
         """Get the decoration for a specific heading level."""
         if not self._headerDec:
             iPx = self.mainTheme.baseIconHeight
             self._headerDec = [
-                self.loadDecoration("deco_doc_h0", h=iPx),
-                self.loadDecoration("deco_doc_h1", h=iPx),
-                self.loadDecoration("deco_doc_h2", h=iPx),
-                self.loadDecoration("deco_doc_h3", h=iPx),
-                self.loadDecoration("deco_doc_h4", h=iPx),
+                self._generateDecoration("file", iPx, 0),
+                self._generateDecoration("title", iPx, 0),
+                self._generateDecoration("chapter", iPx, 1),
+                self._generateDecoration("scene", iPx, 2),
+                self._generateDecoration("file", iPx, 3),
             ]
         return self._headerDec[minmax(hLevel, 0, 4)]
 
@@ -742,42 +733,72 @@ class GuiIcons:
         if not self._headerDecNarrow:
             iPx = self.mainTheme.baseIconHeight
             self._headerDecNarrow = [
-                self.loadDecoration("deco_doc_h0_n", h=iPx),
-                self.loadDecoration("deco_doc_h1_n", h=iPx),
-                self.loadDecoration("deco_doc_h2_n", h=iPx),
-                self.loadDecoration("deco_doc_h3_n", h=iPx),
-                self.loadDecoration("deco_doc_h4_n", h=iPx),
-                self.loadDecoration("deco_doc_nt_n", h=iPx),
+                self._generateDecoration("file", iPx, 0),
+                self._generateDecoration("title", iPx, 0),
+                self._generateDecoration("chapter", iPx, 0),
+                self._generateDecoration("scene", iPx, 0),
+                self._generateDecoration("file", iPx, 0),
+                self._generateDecoration("note", iPx, 0),
             ]
         return self._headerDecNarrow[minmax(hLevel, 0, 5)]
+
+    def listThemes(self) -> list[tuple[str, str]]:
+        """Scan the GUI icons folder and list all themes."""
+        if self._themeList:
+            return self._themeList
+
+        for item in self._iconPath.iterdir():
+            if item.is_file() and item.suffix == ".icons":
+                if name := _loadIconName(item):
+                    self._themeList.append((item.stem, name))
+
+        self._themeList = sorted(self._themeList, key=_sortTheme)
+
+        return self._themeList
 
     ##
     #  Internal Functions
     ##
 
-    def _loadIcon(self, name: str) -> QIcon:
+    def _loadIcon(self, name: str, color: str | None = None, w: int = 24, h: int = 24) -> QIcon:
         """Load an icon from the assets themes folder. Is guaranteed to
         return a QIcon.
         """
-        if name not in self.ICON_KEYS:
-            logger.error("Requested unknown icon name '%s'", name)
-            return self._noIcon
-
         # If we just want the app icons, return right away
         if name == "novelwriter":
             return QIcon(str(self._iconPath / "novelwriter.svg"))
         elif name == "proj_nwx":
             return QIcon(str(self._iconPath / "x-novelwriter-project.svg"))
 
-        # Otherwise, we load from the theme folder
-        if name in self._themeMap:
-            logger.debug("Loading: %s", self._themeMap[name].name)
-            return QIcon(str(self._themeMap[name]))
+        if svg := self._svgData.get(name, b""):
+            if fill := self._svgColours.get(color or "default"):
+                svg = svg.replace(b"#000000", fill)
+            pixmap = QPixmap(w, h)
+            pixmap.fill(QtTransparent)
+            pixmap.loadFromData(svg, "svg")
+            return QIcon(pixmap)
 
         # If we didn't find one, give up and return an empty icon
         logger.warning("Did not load an icon for '%s'", name)
 
         return self._noIcon
+
+    def _generateDecoration(self, color: str, height: int, indent: int = 0) -> QPixmap:
+        """Generate a decoration pixmap for novel headers."""
+        pixmap = QPixmap(48*indent + 12, 48)
+        pixmap.fill(QtTransparent)
+
+        path = QPainterPath()
+        path.addRoundedRect(48.0*indent, 2.0, 12.0, 44.0, 4.0, 4.0)
+
+        painter = QPainter(pixmap)
+        painter.setRenderHint(QtPaintAntiAlias)
+        if fill := self._svgColours.get(color or "default"):
+            painter.fillPath(path, QColor(fill.decode(encoding="utf-8")))
+        painter.end()
+
+        tMode = Qt.TransformationMode.SmoothTransformation
+        return pixmap.scaledToHeight(height, tMode)
 
 
 # Module Functions
@@ -801,3 +822,18 @@ def _loadInternalName(confParser: NWConfigParser, confFile: str | Path) -> str:
         return ""
 
     return confParser.rdStr("Main", "name", "")
+
+
+def _loadIconName(path: Path) -> str:
+    """Open an icons file and read the name setting."""
+    try:
+        with open(path, mode="r", encoding="utf-8") as icons:
+            for icon in icons:
+                key, _, value = icon.partition("=")
+                if key.strip() == "meta:name":
+                    return value.strip()
+    except Exception:
+        logger.error("Could not load file: %s", path)
+        logException()
+
+    return ""

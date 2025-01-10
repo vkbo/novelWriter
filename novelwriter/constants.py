@@ -426,6 +426,17 @@ class nwLabels:
         "Letter": (215.9, 279.4),
         "Custom": (-1.0, -1.0),
     }
+    THEME_COLORS = {
+        "theme":   QT_TRANSLATE_NOOP("Constant", "Theme Colours"),
+        "default": QT_TRANSLATE_NOOP("Constant", "No Colours"),
+        "red":     QT_TRANSLATE_NOOP("Constant", "Red"),
+        "orange":  QT_TRANSLATE_NOOP("Constant", "Orange"),
+        "yellow":  QT_TRANSLATE_NOOP("Constant", "Yellow"),
+        "green":   QT_TRANSLATE_NOOP("Constant", "Green"),
+        "aqua":    QT_TRANSLATE_NOOP("Constant", "Aqua"),
+        "blue":    QT_TRANSLATE_NOOP("Constant", "Blue"),
+        "purple":  QT_TRANSLATE_NOOP("Constant", "Purple"),
+    }
 
 
 class nwHeadFmt:

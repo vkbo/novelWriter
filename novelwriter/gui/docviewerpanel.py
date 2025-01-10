@@ -101,14 +101,15 @@ class GuiDocViewerPanel(QWidget):
 
     def updateTheme(self, updateTabs: bool = True) -> None:
         """Update theme elements."""
-        self.optsButton.setThemeIcon("menu")
+        self.optsButton.setThemeIcon("more_vertical")
         self.optsButton.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON))
         self.mainTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
-        self.updateHandle(self._lastHandle)
         if updateTabs:
             self.tabBackRefs.updateTheme()
+            self.tabBackRefs.refreshContent(self._lastHandle)
             for tab in self.kwTabs.values():
                 tab.updateTheme()
+            self._loadAllTags()
         return
 
     def openProjectTasks(self) -> None:
@@ -268,8 +269,8 @@ class _ViewPanelBackRefs(QTreeWidget):
         treeHeader.setSectionsMovable(False)
 
         # Cache Icons Locally
-        self._editIcon = SHARED.theme.getIcon("edit")
-        self._viewIcon = SHARED.theme.getIcon("view")
+        self._editIcon = SHARED.theme.getIcon("edit", "green")
+        self._viewIcon = SHARED.theme.getIcon("view", "blue")
 
         # Signals
         self.clicked.connect(self._treeItemClicked)
@@ -279,8 +280,8 @@ class _ViewPanelBackRefs(QTreeWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self._editIcon = SHARED.theme.getIcon("edit")
-        self._viewIcon = SHARED.theme.getIcon("view")
+        self._editIcon = SHARED.theme.getIcon("edit", "green")
+        self._viewIcon = SHARED.theme.getIcon("view", "blue")
         for i in range(self.topLevelItemCount()):
             if item := self.topLevelItem(i):
                 item.setIcon(self.C_EDIT, self._editIcon)
@@ -410,9 +411,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         treeHeader.setSectionsMovable(False)
 
         # Cache Icons Locally
-        self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass])
-        self._editIcon = SHARED.theme.getIcon("edit")
-        self._viewIcon = SHARED.theme.getIcon("view")
+        self.updateTheme()
 
         # Signals
         self.clicked.connect(self._treeItemClicked)
@@ -422,13 +421,9 @@ class _ViewPanelKeyWords(QTreeWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[self._class])
-        self._editIcon = SHARED.theme.getIcon("edit")
-        self._viewIcon = SHARED.theme.getIcon("view")
-        for i in range(self.topLevelItemCount()):
-            if item := self.topLevelItem(i):
-                item.setIcon(self.C_EDIT, self._editIcon)
-                item.setIcon(self.C_VIEW, self._viewIcon)
+        self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[self._class], "root")
+        self._editIcon = SHARED.theme.getIcon("edit", "green")
+        self._viewIcon = SHARED.theme.getIcon("view", "blue")
         return
 
     def countEntries(self) -> int:

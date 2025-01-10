@@ -363,27 +363,27 @@ class _StatusPage(NFixedPage):
             self._addItem(key, StatusEntry.duplicate(entry))
 
         # List Controls
-        self.addButton = NIconToolButton(self, iSz, "add")
+        self.addButton = NIconToolButton(self, iSz, "add", "green")
         self.addButton.setToolTip(self.tr("Add Label"))
         self.addButton.clicked.connect(self._onItemCreate)
 
-        self.delButton = NIconToolButton(self, iSz, "remove")
+        self.delButton = NIconToolButton(self, iSz, "remove", "red")
         self.delButton.setToolTip(self.tr("Delete Label"))
         self.delButton.clicked.connect(self._onItemDelete)
 
-        self.upButton = NIconToolButton(self, iSz, "up")
+        self.upButton = NIconToolButton(self, iSz, "chevron_up", "blue")
         self.upButton.setToolTip(self.tr("Move Up"))
         self.upButton.clicked.connect(qtLambda(self._moveItem, -1))
 
-        self.downButton = NIconToolButton(self, iSz, "down")
+        self.downButton = NIconToolButton(self, iSz, "chevron_down", "blue")
         self.downButton.setToolTip(self.tr("Move Down"))
         self.downButton.clicked.connect(qtLambda(self._moveItem, 1))
 
-        self.importButton = NIconToolButton(self, iSz, "import")
+        self.importButton = NIconToolButton(self, iSz, "import", "green")
         self.importButton.setToolTip(self.tr("Import Labels"))
         self.importButton.clicked.connect(self._importLabels)
 
-        self.exportButton = NIconToolButton(self, iSz, "export")
+        self.exportButton = NIconToolButton(self, iSz, "export", "blue")
         self.exportButton.setToolTip(self.tr("Export Labels"))
         self.exportButton.clicked.connect(self._exportLabels)
 
@@ -704,10 +704,10 @@ class _ReplacePage(NFixedPage):
         self.listBox.setSortingEnabled(True)
 
         # List Controls
-        self.addButton = NIconToolButton(self, iSz, "add")
+        self.addButton = NIconToolButton(self, iSz, "add", "green")
         self.addButton.clicked.connect(self._onEntryCreated)
 
-        self.delButton = NIconToolButton(self, iSz, "remove")
+        self.delButton = NIconToolButton(self, iSz, "remove", "red")
         self.delButton.clicked.connect(self._onEntryDeleted)
 
         # Edit Form

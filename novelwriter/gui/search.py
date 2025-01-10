@@ -105,7 +105,7 @@ class GuiProjectSearch(QWidget):
         self.searchText.setClearButtonEnabled(True)
 
         self.searchAction = self.searchText.addAction(
-            SHARED.theme.getIcon("search"), QLineEdit.ActionPosition.TrailingPosition
+            SHARED.theme.getIcon("search", "blue"), QLineEdit.ActionPosition.TrailingPosition
         )
         self.searchAction.triggered.connect(self._processSearch)
 
@@ -166,7 +166,7 @@ class GuiProjectSearch(QWidget):
             f"QLineEdit:focus {{border: {bPx}px solid {colFocus};}} "
         )
 
-        self.searchAction.setIcon(SHARED.theme.getIcon("search"))
+        self.searchAction.setIcon(SHARED.theme.getIcon("search", "blue"))
         self.toggleCase.setIcon(SHARED.theme.getIcon("search_case"))
         self.toggleWord.setIcon(SHARED.theme.getIcon("search_word"))
         self.toggleRegEx.setIcon(SHARED.theme.getIcon("search_regex"))

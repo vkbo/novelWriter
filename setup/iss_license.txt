@@ -38,7 +38,7 @@ Copyright: Dimitri Merejkowsky
 Website: <https://pyenchant.github.io/pyenchant/>
 License: LGPL v2.1 <https://www.gnu.org/licenses/lgpl-2.1.html>
 
-Typicons
-Copyright: Stephen Hutchings
-Website: <https://www.s-ings.com/typicons/>
-License: CC BY-SA 4.0 <http://creativecommons.org/licenses/by-sa/4.0/>
+Material Symbols
+Copyright: Google Inc
+Website: <https://fonts.google.com/icons>
+License: Apache 2.0 <https://www.apache.org/licenses/LICENSE-2.0.txt>

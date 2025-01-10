@@ -78,7 +78,7 @@ class GuiDictionaries(NNonBlockingDialog):
         self.huBrowse = NIconToolButton(self, iSz, "browse")
         self.huBrowse.clicked.connect(self._doBrowseHunspell)
         self.huImport = QPushButton(self.tr("Add Dictionary"), self)
-        self.huImport.setIcon(SHARED.theme.getIcon("add"))
+        self.huImport.setIcon(SHARED.theme.getIcon("add", "green"))
         self.huImport.clicked.connect(self._doImportHunspell)
 
         self.huPathBox = QHBoxLayout()
