@@ -946,11 +946,11 @@ class Tokenizer(ABC):
         titleCount = self._counts.get(nwStats.TITLES, 0)
         paragraphCount = self._counts.get(nwStats.PARAGRAPHS, 0)
 
-        allWords = self._counts.get(nwStats.WORDS_ALL, 0)
+        allWords = self._counts.get(nwStats.WORDS, 0)
         textWords = self._counts.get(nwStats.WORDS_TEXT, 0)
         titleWords = self._counts.get(nwStats.WORDS_TITLE, 0)
 
-        allChars = self._counts.get(nwStats.CHARS_ALL, 0)
+        allChars = self._counts.get(nwStats.CHARS, 0)
         textChars = self._counts.get(nwStats.CHARS_TEXT, 0)
         titleChars = self._counts.get(nwStats.CHARS_TITLE, 0)
 
@@ -1004,11 +1004,11 @@ class Tokenizer(ABC):
         self._counts[nwStats.TITLES] = titleCount
         self._counts[nwStats.PARAGRAPHS] = paragraphCount
 
-        self._counts[nwStats.WORDS_ALL] = allWords
+        self._counts[nwStats.WORDS] = allWords
         self._counts[nwStats.WORDS_TEXT] = textWords
         self._counts[nwStats.WORDS_TITLE] = titleWords
 
-        self._counts[nwStats.CHARS_ALL] = allChars
+        self._counts[nwStats.CHARS] = allChars
         self._counts[nwStats.CHARS_TEXT] = textChars
         self._counts[nwStats.CHARS_TITLE] = titleChars
 

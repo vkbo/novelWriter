@@ -207,7 +207,7 @@ class nwLists:
 
 class nwStats:
 
-    CHARS_ALL    = "allChars"
+    CHARS        = "allChars"
     CHARS_TEXT   = "textChars"
     CHARS_TITLE  = "titleChars"
     PARAGRAPHS   = "paragraphCount"
@@ -215,14 +215,14 @@ class nwStats:
     WCHARS_ALL   = "allWordChars"
     WCHARS_TEXT  = "textWordChars"
     WCHARS_TITLE = "titleWordChars"
-    WORDS_ALL    = "allWords"
+    WORDS        = "allWords"
     WORDS_TEXT   = "textWords"
     WORDS_TITLE  = "titleWords"
 
     # Note: The order here affects the order of menu entries
     ALL_FIELDS = [
-        WORDS_ALL, WORDS_TEXT, WORDS_TITLE,
-        CHARS_ALL, CHARS_TEXT, CHARS_TITLE,
+        WORDS, WORDS_TEXT, WORDS_TITLE,
+        CHARS, CHARS_TEXT, CHARS_TITLE,
         WCHARS_ALL, WCHARS_TEXT, WCHARS_TITLE,
         PARAGRAPHS, TITLES,
     ]
@@ -329,17 +329,17 @@ class nwLabels:
         nwOutline.SYNOP:   QT_TRANSLATE_NOOP("Constant", "Synopsis"),
     }
     STATS_NAME = {
-        nwStats.CHARS_ALL:    QT_TRANSLATE_NOOP("Constant", "Characters"),
-        nwStats.CHARS_TEXT:   QT_TRANSLATE_NOOP("Constant", "Characters in Text"),
-        nwStats.CHARS_TITLE:  QT_TRANSLATE_NOOP("Constant", "Characters in Headings"),
-        nwStats.PARAGRAPHS:   QT_TRANSLATE_NOOP("Constant", "Paragraphs"),
-        nwStats.TITLES:       QT_TRANSLATE_NOOP("Constant", "Headings"),
-        nwStats.WCHARS_ALL:   QT_TRANSLATE_NOOP("Constant", "Characters, No Spaces"),
-        nwStats.WCHARS_TEXT:  QT_TRANSLATE_NOOP("Constant", "Characters in Text, No Spaces"),
-        nwStats.WCHARS_TITLE: QT_TRANSLATE_NOOP("Constant", "Characters in Headings, No Spaces"),
-        nwStats.WORDS_ALL:    QT_TRANSLATE_NOOP("Constant", "Words"),
-        nwStats.WORDS_TEXT:   QT_TRANSLATE_NOOP("Constant", "Words in Text"),
-        nwStats.WORDS_TITLE:  QT_TRANSLATE_NOOP("Constant", "Words in Headings"),
+        nwStats.CHARS:        QT_TRANSLATE_NOOP("Stats", "Characters"),
+        nwStats.CHARS_TEXT:   QT_TRANSLATE_NOOP("Stats", "Characters in Text"),
+        nwStats.CHARS_TITLE:  QT_TRANSLATE_NOOP("Stats", "Characters in Headings"),
+        nwStats.PARAGRAPHS:   QT_TRANSLATE_NOOP("Stats", "Paragraphs"),
+        nwStats.TITLES:       QT_TRANSLATE_NOOP("Stats", "Headings"),
+        nwStats.WCHARS_ALL:   QT_TRANSLATE_NOOP("Stats", "Characters, No Spaces"),
+        nwStats.WCHARS_TEXT:  QT_TRANSLATE_NOOP("Stats", "Characters in Text, No Spaces"),
+        nwStats.WCHARS_TITLE: QT_TRANSLATE_NOOP("Stats", "Characters in Headings, No Spaces"),
+        nwStats.WORDS:        QT_TRANSLATE_NOOP("Stats", "Words"),
+        nwStats.WORDS_TEXT:   QT_TRANSLATE_NOOP("Stats", "Words in Text"),
+        nwStats.WORDS_TITLE:  QT_TRANSLATE_NOOP("Stats", "Words in Headings"),
     }
     BUILD_FMT = {
         nwBuildFmt.ODT:    QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)"),
@@ -366,32 +366,32 @@ class nwLabels:
         nwBuildFmt.J_NWD:  ".json",
     }
     SHAPES_PLAIN = {
-        nwStatusShape.SQUARE:   QT_TRANSLATE_NOOP("Constant", "Square"),
-        nwStatusShape.TRIANGLE: QT_TRANSLATE_NOOP("Constant", "Triangle"),
-        nwStatusShape.NABLA:    QT_TRANSLATE_NOOP("Constant", "Nabla"),
-        nwStatusShape.DIAMOND:  QT_TRANSLATE_NOOP("Constant", "Diamond"),
-        nwStatusShape.PENTAGON: QT_TRANSLATE_NOOP("Constant", "Pentagon"),
-        nwStatusShape.HEXAGON:  QT_TRANSLATE_NOOP("Constant", "Hexagon"),
-        nwStatusShape.STAR:     QT_TRANSLATE_NOOP("Constant", "Star"),
-        nwStatusShape.PACMAN:   QT_TRANSLATE_NOOP("Constant", "Pacman"),
+        nwStatusShape.SQUARE:   QT_TRANSLATE_NOOP("Shape", "Square"),
+        nwStatusShape.TRIANGLE: QT_TRANSLATE_NOOP("Shape", "Triangle"),
+        nwStatusShape.NABLA:    QT_TRANSLATE_NOOP("Shape", "Nabla"),
+        nwStatusShape.DIAMOND:  QT_TRANSLATE_NOOP("Shape", "Diamond"),
+        nwStatusShape.PENTAGON: QT_TRANSLATE_NOOP("Shape", "Pentagon"),
+        nwStatusShape.HEXAGON:  QT_TRANSLATE_NOOP("Shape", "Hexagon"),
+        nwStatusShape.STAR:     QT_TRANSLATE_NOOP("Shape", "Star"),
+        nwStatusShape.PACMAN:   QT_TRANSLATE_NOOP("Shape", "Pacman"),
     }
     SHAPES_CIRCLE = {
-        nwStatusShape.CIRCLE_Q: QT_TRANSLATE_NOOP("Constant", "1/4 Circle"),
-        nwStatusShape.CIRCLE_H: QT_TRANSLATE_NOOP("Constant", "Half Circle"),
-        nwStatusShape.CIRCLE_T: QT_TRANSLATE_NOOP("Constant", "3/4 Circle"),
-        nwStatusShape.CIRCLE:   QT_TRANSLATE_NOOP("Constant", "Full Circle"),
+        nwStatusShape.CIRCLE_Q: QT_TRANSLATE_NOOP("Shape", "1/4 Circle"),
+        nwStatusShape.CIRCLE_H: QT_TRANSLATE_NOOP("Shape", "Half Circle"),
+        nwStatusShape.CIRCLE_T: QT_TRANSLATE_NOOP("Shape", "3/4 Circle"),
+        nwStatusShape.CIRCLE:   QT_TRANSLATE_NOOP("Shape", "Full Circle"),
     }
     SHAPES_BARS = {
-        nwStatusShape.BARS_1: QT_TRANSLATE_NOOP("Constant", "1 Bar"),
-        nwStatusShape.BARS_2: QT_TRANSLATE_NOOP("Constant", "2 Bars"),
-        nwStatusShape.BARS_3: QT_TRANSLATE_NOOP("Constant", "3 Bars"),
-        nwStatusShape.BARS_4: QT_TRANSLATE_NOOP("Constant", "4 Bars"),
+        nwStatusShape.BARS_1: QT_TRANSLATE_NOOP("Shape", "1 Bar"),
+        nwStatusShape.BARS_2: QT_TRANSLATE_NOOP("Shape", "2 Bars"),
+        nwStatusShape.BARS_3: QT_TRANSLATE_NOOP("Shape", "3 Bars"),
+        nwStatusShape.BARS_4: QT_TRANSLATE_NOOP("Shape", "4 Bars"),
     }
     SHAPES_BLOCKS = {
-        nwStatusShape.BLOCK_1: QT_TRANSLATE_NOOP("Constant", "1 Block"),
-        nwStatusShape.BLOCK_2: QT_TRANSLATE_NOOP("Constant", "2 Blocks"),
-        nwStatusShape.BLOCK_3: QT_TRANSLATE_NOOP("Constant", "3 Blocks"),
-        nwStatusShape.BLOCK_4: QT_TRANSLATE_NOOP("Constant", "4 Blocks"),
+        nwStatusShape.BLOCK_1: QT_TRANSLATE_NOOP("Shape", "1 Block"),
+        nwStatusShape.BLOCK_2: QT_TRANSLATE_NOOP("Shape", "2 Blocks"),
+        nwStatusShape.BLOCK_3: QT_TRANSLATE_NOOP("Shape", "3 Blocks"),
+        nwStatusShape.BLOCK_4: QT_TRANSLATE_NOOP("Shape", "4 Blocks"),
     }
     FILE_FILTERS = {
         "*.txt": QT_TRANSLATE_NOOP("Constant", "Text files"),
