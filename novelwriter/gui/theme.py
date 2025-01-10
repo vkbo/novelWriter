@@ -835,6 +835,5 @@ def _loadIconName(path: Path) -> str:
     except Exception:
         logger.error("Could not load file: %s", path)
         logException()
-        return ""
 
     return ""

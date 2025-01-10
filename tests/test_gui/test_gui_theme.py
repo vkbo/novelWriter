@@ -276,7 +276,7 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
 
 
 @pytest.mark.gui
-def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, tstPaths):
+def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
     """Test the icon cache class."""
     iconCache = SHARED.theme.iconCache
 
@@ -289,43 +289,64 @@ def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, tstPaths):
     # Check handling of unreadable file
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert iconCache.loadTheme("typicons_dark") is False
-
-    # Load a broken theme file
-    iconsDir = tstPaths.cnfDir / "icons"
-    testIcons = iconsDir / "testicons"
-    testIcons.mkdir()
-    writeFile(testIcons / "icons.conf", (
-        "[Main]\n"
-        "name = Test Icons\n"
-        "\n"
-        "[Map]\n"
-        "add = add.svg\n"
-        "stuff = stuff.svg\n"
-    ))
-
-    iconPath = iconCache._iconPath
-    iconCache._iconPath = tstPaths.cnfDir / "icons"
-
-    caplog.clear()
-    assert iconCache.loadTheme("testicons") is True
-    assert "Unknown icon name 'stuff' in config file" in caplog.text
-    assert "Icon file 'add.svg' not in theme folder" in caplog.text
-
-    iconCache._iconPath = iconPath
+        assert iconCache.loadTheme("material_rounded_normal") is False
 
     # Load working theme file
-    assert iconCache.loadTheme("typicons_dark") is True
-    assert "add" in iconCache._themeMap
+    assert iconCache.loadTheme("material_rounded_normal") is True
+    assert iconCache.themeName == "Material Symbols - Rounded Medium"
+
+    # Load with project colour override
+    purple = iconCache._svgColours["purple"]
+    assert iconCache._svgColours["root"] != purple
+    assert iconCache._svgColours["folder"] != purple
+    assert iconCache._svgColours["file"] != purple
+    assert iconCache._svgColours["title"] != purple
+    assert iconCache._svgColours["chapter"] != purple
+    assert iconCache._svgColours["scene"] != purple
+    assert iconCache._svgColours["note"] != purple
+
+    CONFIG.iconColTree = "purple"
+    assert iconCache.loadTheme("material_rounded_normal") is True
+    assert iconCache._svgColours["root"] == purple
+    assert iconCache._svgColours["folder"] == purple
+    assert iconCache._svgColours["file"] == purple
+    assert iconCache._svgColours["title"] == purple
+    assert iconCache._svgColours["chapter"] == purple
+    assert iconCache._svgColours["scene"] == purple
+    assert iconCache._svgColours["note"] == purple
+
+    # Change some colours
+    iconCache.setIconColor("root", QColor(255, 255, 255))
+    assert iconCache._svgColours["root"] != purple
+    assert iconCache._svgColours["root"] == b"#ffffff"
+
+    # List Themes
+    # ===========
+
+    # Load error returns empty list
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        themes = iconCache.listThemes()
+        assert themes == []
+
+    # Successful read
+    themes = iconCache.listThemes()
+    assert len(themes) > 1
+    assert "material_rounded_normal" in dict(themes)
+
+    # Load error doesn't matter on second read since list is cached
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert iconCache.listThemes() == themes
 
     # qtbot.stop()
 
 
 @pytest.mark.gui
-def testGuiTheme_LoadIcons(qtbot):
+def testGuiTheme_LoadIcons(qtbot, nwGUI):
     """Test the icon cache class."""
     iconCache = SHARED.theme.iconCache
-    assert iconCache.loadTheme("typicons_dark") is True
+    assert iconCache.loadTheme("material_rounded_normal") is True
 
     # Load Icons
     # ==========
@@ -376,47 +397,47 @@ def testGuiTheme_LoadIcons(qtbot):
     # Root -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.ROOT, nwItemClass.NOVEL, nwItemLayout.NO_LAYOUT, hLevel="H0"
-    ) == iconCache.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
+    ) == iconCache.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL], "root")
 
     # Folder -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FOLDER, nwItemClass.NOVEL, nwItemLayout.NO_LAYOUT, hLevel="H0"
-    ) == iconCache.getIcon("proj_folder")
+    ) == iconCache.getIcon("prj_folder", "folder")
 
     # Document H0 -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.NO_LAYOUT, hLevel="H0"
-    ) == iconCache.getIcon("proj_document")
+    ) == iconCache._noIcon
 
     # Document H1 -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H1"
-    ) == iconCache.getIcon("proj_title")
+    ) == iconCache.getIcon("prj_title", "title")
 
     # Document H2 -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H2"
-    ) == iconCache.getIcon("proj_chapter")
+    ) == iconCache.getIcon("prj_chapter", "chapter")
 
     # Document H3 -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H3"
-    ) == iconCache.getIcon("proj_scene")
+    ) == iconCache.getIcon("prj_scene", "scene")
 
     # Document H4 -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H4"
-    ) == iconCache.getIcon("proj_section")
+    ) == iconCache.getIcon("prj_document", "file")
 
     # Document H5 -> Not Null
     assert iconCache.getItemIcon(
-        nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.NO_LAYOUT, hLevel="H4"
-    ) == iconCache.getIcon("proj_document")
+        nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H5"
+    ) == iconCache.getIcon("prj_document", "file")
 
     # Note -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.NOTE, hLevel="H5"
-    ) == iconCache.getIcon("proj_note")
+    ) == iconCache.getIcon("prj_note", "note")
 
     # No Type -> Null
     assert iconCache.getItemIcon(
@@ -427,10 +448,10 @@ def testGuiTheme_LoadIcons(qtbot):
 
 
 @pytest.mark.gui
-def testGuiTheme_LoadDecorations(qtbot, monkeypatch):
+def testGuiTheme_LoadDecorations(qtbot, monkeypatch, nwGUI):
     """Test the icon cache class."""
     iconCache = SHARED.theme.iconCache
-    assert iconCache.loadTheme("typicons_dark") is True
+    assert iconCache.loadTheme("material_rounded_normal") is True
 
     # Load Decorations
     # ================
