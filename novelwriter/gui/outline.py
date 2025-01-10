@@ -815,8 +815,8 @@ class GuiOutlineDetails(QScrollArea):
 
         bFont = SHARED.theme.guiFontB
 
-        trStats1 = trConst(nwLabels.STATS_NAME[nwStats.CHARS_ALL])
-        trStats2 = trConst(nwLabels.STATS_NAME[nwStats.WORDS_ALL])
+        trStats1 = trConst(nwLabels.STATS_NAME[nwStats.CHARS])
+        trStats2 = trConst(nwLabels.STATS_NAME[nwStats.WORDS])
         trStats3 = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
 
         # Details Area

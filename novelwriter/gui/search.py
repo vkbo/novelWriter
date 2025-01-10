@@ -133,12 +133,8 @@ class GuiProjectSearch(QWidget):
         self.headerBox.setContentsMargins(0, 0, 0, 0)
         self.headerBox.setSpacing(0)
 
-        self.headerWidget = QWidget(self)
-        self.headerWidget.setLayout(self.headerBox)
-        self.headerWidget.setContentsMargins(0, 0, 0, 0)
-
         self.outerBox = QVBoxLayout()
-        self.outerBox.addWidget(self.headerWidget, 0)
+        self.outerBox.addLayout(self.headerBox, 0)
         self.outerBox.addWidget(self.searchText, 0)
         self.outerBox.addWidget(self.searchResult, 1)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
@@ -163,9 +159,6 @@ class GuiProjectSearch(QWidget):
         qPalette = self.palette()
         colBase = cssCol(qPalette.base().color())
         colFocus = cssCol(qPalette.highlight().color())
-
-        self.headerWidget.setStyleSheet(f"QWidget {{background: {colBase};}}")
-        self.headerWidget.setAutoFillBackground(True)
 
         self.setStyleSheet(
             "QToolBar {padding: 0; background: none;} "

@@ -1,5 +1,45 @@
 # novelWriter Changelog
 
+## Version 2.6 RC 1 [2025-01-09]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+### Detailed Changelog
+
+**New Features**
+
+* The session timer in the status bar can now be hidden by clicking on it. Issue #1029. PR #2149.
+* Status and importance labels can now be exported and imported. Issue #1847. PRs #2152 and #2153.
+
+**Bugfixes**
+
+* Fix a beta release bug where it was not possible to change the status or importance flag on
+  folders in the project tree. Issue #2145. PR #2147.
+* Fix an issue where the word counter would override the selection counter in the editor. This was
+  caused by the selection counter being on a much shorter timer than the word counter, so in some
+  cases the latter result came in after the former even if the user actions where the other way
+  around. The selection counter now takes precedence, always. Issue #2155. PRs #2156 and #2157.
+* Fix a minor issue where the search panel header background would not update colour when the theme
+  was changed. Issue #2162. PR #2167.
+
+**Improvements**
+
+* It is no longer necessary to click the "Apply" button when making changes to status and
+  importance labels, or auto-replace settings, in Project Settings. The changes are applied
+  directly to the listed items. They are not applied to the project until the Project Settings are
+  accepted. This is a more intuitive approach. Issue #2150. PR #2151.
+
+**Packaging and Installation**
+
+* MacOS packages are now built on the latest MacOS image available on GitHub. The x86_64 build was
+  previously locked to MacOS 12, which is no loner available. PR #2141.
+
+----
+
 ## Version 2.6 Beta 2 [2024-12-23]
 
 ### Release Notes

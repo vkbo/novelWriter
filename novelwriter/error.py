@@ -76,7 +76,7 @@ class NWErrorMessage(QDialog):
 
         font = QFont()
         font.setPointSize(round(0.9*self.font().pointSize()))
-        font.setFamily(QFontDatabase.systemFont(QFontDatabase.FixedFont).family())
+        font.setFamily(QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont).family())
 
         self.msgBody = QPlainTextEdit()
         self.msgBody.setFont(font)

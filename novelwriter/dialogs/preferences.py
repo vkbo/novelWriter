@@ -608,7 +608,7 @@ class GuiPreferences(NDialog):
         self.narratorBreak.setText(CONFIG.narratorBreak)
         self.mainForm.addRow(
             self.tr("Narrator break symbol"), self.narratorBreak,
-            self.tr("Symbol to indicate a narrator break in dialogue")
+            self.tr("Symbol to indicate a narrator break in dialogue.")
         )
 
         self.narratorDialog = QLineEdit(self)
