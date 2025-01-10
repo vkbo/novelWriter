@@ -55,6 +55,8 @@ The following libraries are dependencies of novelWriter:
 Some of the assets bundled with novelWriter were adapted from the following sources:
 
 * **Material Symbols** icons by Google Inc (Apache 2.0)
+* **Remix** icons by RemixIcon (Apache 2.0)
+* **Font Awesome** icons by Fonticons Inc (CC BY 4.0)
 * **Tomorrow** syntax themes by Chris Kempson (MIT License)
 * **Owl** syntax themes by Sarah Drasner (MIT License)
 * **Solarized** themes by Ethan Schoonover (MIT License)
