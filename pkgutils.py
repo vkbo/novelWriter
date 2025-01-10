@@ -35,7 +35,7 @@ import zipfile
 
 from pathlib import Path
 
-from utils.icon_themes import processFontAwesome, processMaterialIcons
+from utils.icon_themes import processFontAwesome, processMaterialIcons, processRemix
 
 CURR_DIR = Path(__file__).parent
 SETUP_DIR = CURR_DIR / "setup"
@@ -388,6 +388,18 @@ def buildIconTheme(args: argparse.Namespace) -> None:
         processFontAwesome(workDir, iconsDir, {
             "font_awesome": {
                 "name": "Font Awesome 6",
+            },
+        })
+
+    if style in ("all", "remix"):
+        processRemix(workDir, iconsDir, {
+            "remix_outline": {
+                "name": "Remix Icon - Outline",
+                "filled": False,
+            },
+            "remix_filled": {
+                "name": "Remix Icon - Filled",
+                "filled": True,
             },
         })
 

@@ -27,10 +27,7 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 
 UTILS = Path(__file__).parent
-
 ET.register_namespace("", "http://www.w3.org/2000/svg")
-MATERIAL_REPO = "https://github.com/google/material-design-icons.git"
-FONT_AWESOME_REPO = "https://github.com/FortAwesome/Font-Awesome.git"
 ICONS = [
     "alert_error",
     "alert_info",
@@ -81,15 +78,16 @@ ICONS = [
     "unfold-hide",
     "unfold-show",
 
-    "sb_project",
-    "sb_novel",
-    "sb_search",
-    "sb_outline",
     "sb_build",
+    "sb_novel",
+    "sb_outline",
+    "sb_project",
+    "sb_search",
 
     "add",
     "bookmarks",
     "browse",
+    "build_settings",
     "cancel",
     "checked",
     "chevron_down",
@@ -112,7 +110,6 @@ ICONS = [
     "language",
     "lines",
     "list",
-    "manuscript",
     "margin_bottom",
     "margin_left",
     "margin_right",
@@ -194,7 +191,7 @@ def _cloneRepo(repoPath: Path, repoUrl: str) -> None:
 def processMaterialIcons(workDir: Path, iconsDir: Path, jobs: dict) -> None:
     """Process material icons of a given spec and write output file."""
     srcRepo = workDir / "material-design-icons"
-    _cloneRepo(srcRepo, MATERIAL_REPO)
+    _cloneRepo(srcRepo, "https://github.com/google/material-design-icons.git")
 
     for file, job in jobs.items():
         name: str    = job["name"]
@@ -211,10 +208,10 @@ def processMaterialIcons(workDir: Path, iconsDir: Path, jobs: dict) -> None:
         iconSrc = srcRepo / "symbols" / "web"
         for key, icon in _loadMap("material_symbols").items():
             if kind:
-                fileNmae = f"{icon}_{kind}_24px.svg"
+                fileName = f"{icon}_{kind}_24px.svg"
             else:
-                fileNmae = f"{icon}_24px.svg"
-            iconFile = iconSrc / icon / f"materialsymbols{style}" / fileNmae
+                fileName = f"{icon}_24px.svg"
+            iconFile = iconSrc / icon / f"materialsymbols{style}" / fileName
             if iconFile.is_file():
                 icons[key] = ET.fromstring(iconFile.read_text(encoding="utf-8"))
             else:
@@ -231,7 +228,7 @@ def processMaterialIcons(workDir: Path, iconsDir: Path, jobs: dict) -> None:
 def processFontAwesome(workDir: Path, iconsDir: Path, jobs: dict) -> None:
     """Process Font Awesome icons of a given spec and write output file."""
     srcRepo = workDir / "Font-Awesome"
-    _cloneRepo(srcRepo, FONT_AWESOME_REPO)
+    _cloneRepo(srcRepo, "https://github.com/FortAwesome/Font-Awesome.git")
 
     for file, job in jobs.items():
         name: str = job["name"]
@@ -267,6 +264,49 @@ def processFontAwesome(workDir: Path, iconsDir: Path, jobs: dict) -> None:
 
         target = iconsDir / f"{file}.icons"
         _writeThemeFile(target, name, "Fonticons Inc", "Font Awesome Free License", icons)
+
+    print("")
+
+    return
+
+
+def processRemix(workDir: Path, iconsDir: Path, jobs: dict) -> None:
+    """Process Remix icons of a given spec and write output file."""
+    srcRepo = workDir / "RemixIcon"
+    _cloneRepo(srcRepo, "https://github.com/Remix-Design/RemixIcon.git")
+
+    for file, job in jobs.items():
+        name: str = job["name"]
+        style = "fill" if job["filled"] else "line"
+
+        print(f"Processing: {name}")
+
+        icons: dict[str, ET.Element] = {}
+        iconSrc = srcRepo / "icons"
+        iconGroups = [x for x in iconSrc.iterdir() if x.is_dir()]
+        for key, icon in _loadMap("remix").items():
+            if icon.endswith(("-line", "-fill")):
+                fileName = f"{icon}.svg"
+            else:
+                fileName = f"{icon}-{style}.svg"
+            for group in iconGroups:
+                iconFile = group / fileName
+                if iconFile.is_file():
+                    break
+            else:
+                fileName = f"{icon}.svg"
+                for group in iconGroups:
+                    iconFile = group / fileName
+                    if iconFile.is_file():
+                        break
+                else:
+                    print(f"Not Found: {fileName}")
+                    continue
+
+            icons[key] = ET.fromstring(iconFile.read_text(encoding="utf-8"))
+
+        target = iconsDir / f"{file}.icons"
+        _writeThemeFile(target, name, "Remix Icon", "Apache 2.0", icons)
 
     print("")
 

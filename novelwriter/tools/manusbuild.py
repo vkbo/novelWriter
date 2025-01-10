@@ -189,7 +189,7 @@ class GuiManuscriptBuild(NDialog):
         self.buttonBox.addButton(self.btnOpen, QtRoleAction)
 
         self.btnBuild = QPushButton(
-            SHARED.theme.getIcon("manuscript", "blue"), self.tr("&Build"), self
+            SHARED.theme.getIcon("sb_build", "blue"), self.tr("&Build"), self
         )
         self.btnBuild.setIconSize(bSz)
         self.btnBuild.setAutoDefault(True)

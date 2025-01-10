@@ -490,7 +490,7 @@ class GuiManuscript(NToolDialog):
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
-            bItem.setIcon(SHARED.theme.getIcon("manuscript", "blue"))
+            bItem.setIcon(SHARED.theme.getIcon("build_settings", "blue"))
             bItem.setData(self.D_KEY, key)
             self.buildList.addItem(bItem)
             self._buildMap[key] = bItem
