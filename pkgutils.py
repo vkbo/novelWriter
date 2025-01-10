@@ -35,7 +35,7 @@ import zipfile
 
 from pathlib import Path
 
-from utils.material_icons import processMaterialIcons
+from utils.icon_themes import processFontAwesome, processMaterialIcons
 
 CURR_DIR = Path(__file__).parent
 SETUP_DIR = CURR_DIR / "setup"
@@ -330,10 +330,10 @@ def buildSampleZip(args: argparse.Namespace | None = None) -> None:
 ##
 
 def buildIconTheme(args: argparse.Namespace) -> None:
-    """Build an icon theme."""
+    """Build icon themes."""
     print("")
-    print("Build Icon Theme")
-    print("================")
+    print("Build Icon Themes")
+    print("=================")
     print("")
 
     workDir = Path(args.sources).absolute()
@@ -384,6 +384,14 @@ def buildIconTheme(args: argparse.Namespace) -> None:
             },
         })
 
+    if style in ("all", "fa"):
+        processFontAwesome(workDir, iconsDir, {
+            "font_awesome": {
+                "name": "Font Awesome 6",
+            },
+        })
+
+    print("Done")
     print("")
 
     return
