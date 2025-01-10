@@ -365,44 +365,43 @@
     <message>
       <location filename="../novelwriter/constants.py" line="235" />
       <source>Novel</source>
-      <translation>Powieść</translation>
+      <translation type="unfinished">Powieść</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="286" />
       <location filename="../novelwriter/constants.py" line="236" />
       <source>Plot</source>
-      <translation>Fabuła</translation>
+      <translation type="unfinished">Fabuła</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="332" />
       <location filename="../novelwriter/constants.py" line="285" />
       <location filename="../novelwriter/constants.py" line="237" />
       <source>Characters</source>
-      <translation>Postacie</translation>
+      <translation type="unfinished">Postacie</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="288" />
       <location filename="../novelwriter/constants.py" line="238" />
       <source>Locations</source>
-      <translation>Miejsca</translation>
+      <translation type="unfinished">Miejsca</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="287" />
       <location filename="../novelwriter/constants.py" line="239" />
       <source>Timeline</source>
-      <translation>Linia czasu</translation>
+      <translation type="unfinished">Linia czasu</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="289" />
       <location filename="../novelwriter/constants.py" line="240" />
       <source>Objects</source>
-      <translation>Obiekty</translation>
+      <translation type="unfinished">Obiekty</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="290" />
       <location filename="../novelwriter/constants.py" line="241" />
       <source>Entities</source>
-      <translation>Podmioty</translation>
+      <translation type="unfinished">Podmioty</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="419" />
@@ -414,17 +413,17 @@
     <message>
       <location filename="../novelwriter/constants.py" line="243" />
       <source>Archive</source>
-      <translation>Archiwum</translation>
+      <translation type="unfinished">Archiwum</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="244" />
       <source>Templates</source>
-      <translation>Szablony</translation>
+      <translation type="unfinished">Szablony</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="245" />
       <source>Trash</source>
-      <translation>Kosz</translation>
+      <translation type="unfinished">Kosz</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="270" />
@@ -481,12 +480,12 @@
     <message>
       <location filename="../novelwriter/constants.py" line="282" />
       <source>Tag</source>
-      <translation>Znacznik</translation>
+      <translation type="unfinished">Znacznik</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="283" />
       <source>Point of View</source>
-      <translation>Punkt widzenia</translation>
+      <translation type="unfinished">Punkt widzenia</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="319" />
@@ -530,7 +529,6 @@
       <translation>Znaki</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="340" />
       <location filename="../novelwriter/constants.py" line="316" />
       <source>Words</source>
       <translation>Słowa</translation>
@@ -549,51 +547,6 @@
       <location filename="../novelwriter/constants.py" line="329" />
       <source>Synopsis</source>
       <translation>Streszczenie</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="333" />
-      <source>Characters in Text</source>
-      <translation type="unfinished">Znaki w tekście</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="334" />
-      <source>Characters in Headings</source>
-      <translation type="unfinished">Znaki w nagłówkach</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="335" />
-      <source>Paragraphs</source>
-      <translation type="unfinished">Akapity</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="336" />
-      <source>Headings</source>
-      <translation type="unfinished">Nagłówki</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="337" />
-      <source>Characters, No Spaces</source>
-      <translation type="unfinished">Znaki bez spacji</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="338" />
-      <source>Characters in Text, No Spaces</source>
-      <translation type="unfinished">Znaki w tekście bez spacji</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="339" />
-      <source>Characters in Headings, No Spaces</source>
-      <translation type="unfinished">Znaki w nagłówkach bez spacji</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="341" />
-      <source>Words in Text</source>
-      <translation type="unfinished">Słowa w tekście</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="342" />
-      <source>Words in Headings</source>
-      <translation type="unfinished">Słowa w nagłówkach</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="345" />
@@ -644,106 +597,6 @@
       <location filename="../novelwriter/constants.py" line="354" />
       <source>JSON + novelWriter Markup (.json)</source>
       <translation>JSON + novelWriter Markup (.json)</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="369" />
-      <source>Square</source>
-      <translation>Kwadrat</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="370" />
-      <source>Triangle</source>
-      <translation>Trójkąt</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="371" />
-      <source>Nabla</source>
-      <translation>Nabla</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="372" />
-      <source>Diamond</source>
-      <translation>Diament</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="373" />
-      <source>Pentagon</source>
-      <translation>Pentagon</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="374" />
-      <source>Hexagon</source>
-      <translation>Heksagon</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="375" />
-      <source>Star</source>
-      <translation>Gwiazda</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="376" />
-      <source>Pacman</source>
-      <translation>Pacman</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="379" />
-      <source>1/4 Circle</source>
-      <translation>Ćwierć koła</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="380" />
-      <source>Half Circle</source>
-      <translation>Pół koła</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="381" />
-      <source>3/4 Circle</source>
-      <translation>3/4 koła</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="382" />
-      <source>Full Circle</source>
-      <translation>Pełne koło</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="385" />
-      <source>1 Bar</source>
-      <translation>1 pasek</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="386" />
-      <source>2 Bars</source>
-      <translation>2 paski</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="387" />
-      <source>3 Bars</source>
-      <translation>3 paski</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="388" />
-      <source>4 Bars</source>
-      <translation>4 paski</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="391" />
-      <source>1 Block</source>
-      <translation>1 bloczek</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="392" />
-      <source>2 Blocks</source>
-      <translation>2 bloczki</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="393" />
-      <source>3 Blocks</source>
-      <translation>3 bloczki</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/constants.py" line="394" />
-      <source>4 Blocks</source>
-      <translation>4 bloczki</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="397" />
@@ -3085,7 +2938,7 @@
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="587" />
-      <source>Symbol to indicate a narrator break in dialogue</source>
+      <source>Symbol to indicate a narrator break in dialogue.</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -4121,6 +3974,109 @@
     </message>
   </context>
   <context>
+    <name>Shape</name>
+    <message>
+      <location filename="../novelwriter/constants.py" line="369" />
+      <source>Square</source>
+      <translation type="unfinished">Kwadrat</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="370" />
+      <source>Triangle</source>
+      <translation type="unfinished">Trójkąt</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="371" />
+      <source>Nabla</source>
+      <translation type="unfinished">Nabla</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="372" />
+      <source>Diamond</source>
+      <translation type="unfinished">Diament</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="373" />
+      <source>Pentagon</source>
+      <translation type="unfinished">Pentagon</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="374" />
+      <source>Hexagon</source>
+      <translation type="unfinished">Heksagon</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="375" />
+      <source>Star</source>
+      <translation type="unfinished">Gwiazda</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="376" />
+      <source>Pacman</source>
+      <translation type="unfinished">Pacman</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="379" />
+      <source>1/4 Circle</source>
+      <translation type="unfinished">Ćwierć koła</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="380" />
+      <source>Half Circle</source>
+      <translation type="unfinished">Pół koła</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="381" />
+      <source>3/4 Circle</source>
+      <translation type="unfinished">3/4 koła</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="382" />
+      <source>Full Circle</source>
+      <translation type="unfinished">Pełne koło</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="385" />
+      <source>1 Bar</source>
+      <translation type="unfinished">1 pasek</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="386" />
+      <source>2 Bars</source>
+      <translation type="unfinished">2 paski</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="387" />
+      <source>3 Bars</source>
+      <translation type="unfinished">3 paski</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="388" />
+      <source>4 Bars</source>
+      <translation type="unfinished">4 paski</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="391" />
+      <source>1 Block</source>
+      <translation type="unfinished">1 bloczek</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="392" />
+      <source>2 Blocks</source>
+      <translation type="unfinished">2 bloczki</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="393" />
+      <source>3 Blocks</source>
+      <translation type="unfinished">3 bloczki</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="394" />
+      <source>4 Blocks</source>
+      <translation type="unfinished">4 bloczki</translation>
+    </message>
+  </context>
+  <context>
     <name>SharedData</name>
     <message>
       <location filename="../novelwriter/shared.py" line="278" />
@@ -4141,6 +4097,64 @@
       <location filename="../novelwriter/shared.py" line="292" />
       <source>Select Font</source>
       <translation>Wybierz czcionkę</translation>
+    </message>
+  </context>
+  <context>
+    <name>Stats</name>
+    <message>
+      <location filename="../novelwriter/constants.py" line="332" />
+      <source>Characters</source>
+      <translation type="unfinished">Postacie</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="333" />
+      <source>Characters in Text</source>
+      <translation type="unfinished">Znaki w tekście</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="334" />
+      <source>Characters in Headings</source>
+      <translation type="unfinished">Znaki w nagłówkach</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="335" />
+      <source>Paragraphs</source>
+      <translation type="unfinished">Akapity</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="336" />
+      <source>Headings</source>
+      <translation type="unfinished">Nagłówki</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="337" />
+      <source>Characters, No Spaces</source>
+      <translation type="unfinished">Znaki bez spacji</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="338" />
+      <source>Characters in Text, No Spaces</source>
+      <translation type="unfinished">Znaki w tekście bez spacji</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="339" />
+      <source>Characters in Headings, No Spaces</source>
+      <translation type="unfinished">Znaki w nagłówkach bez spacji</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="340" />
+      <source>Words</source>
+      <translation type="unfinished">Słowa</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="341" />
+      <source>Words in Text</source>
+      <translation type="unfinished">Słowa w tekście</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/constants.py" line="342" />
+      <source>Words in Headings</source>
+      <translation type="unfinished">Słowa w nagłówkach</translation>
     </message>
   </context>
   <context>
