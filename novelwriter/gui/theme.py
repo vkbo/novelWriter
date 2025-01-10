@@ -607,11 +607,12 @@ class GuiIcons:
             color = self._svgColours.get(override, b"#000000")
             self._svgColours["root"] = color
             self._svgColours["folder"] = color
-            self._svgColours["file"] = color
-            self._svgColours["title"] = color
-            self._svgColours["chapter"] = color
-            self._svgColours["scene"] = color
-            self._svgColours["note"] = color
+            if not CONFIG.iconColDocs:
+                self._svgColours["file"] = color
+                self._svgColours["title"] = color
+                self._svgColours["chapter"] = color
+                self._svgColours["scene"] = color
+                self._svgColours["note"] = color
 
         return True
 

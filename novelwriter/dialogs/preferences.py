@@ -200,6 +200,14 @@ class GuiPreferences(NDialog):
             self.tr("Override colours for project icons."), stretch=(3, 2)
         )
 
+        # Keep Theme Colours on Documents
+        self.iconColDocs = NSwitch(self)
+        self.iconColDocs.setChecked(CONFIG.iconColDocs)
+        self.mainForm.addRow(
+            self.tr("Keep theme colours on documents"), self.iconColDocs,
+            self.tr("Only override icon colours for folders.")
+        )
+
         # Application Font Family
         self.guiFont = QLineEdit(self)
         self.guiFont.setReadOnly(True)
@@ -928,10 +936,12 @@ class GuiPreferences(NDialog):
         guiTheme    = self.guiTheme.currentData()
         iconTheme   = self.iconTheme.currentData()
         iconColTree = self.iconColTree.currentData()
+        iconColDocs = self.iconColDocs.isChecked()
 
         updateTheme  |= CONFIG.guiTheme != guiTheme
         updateTheme  |= CONFIG.iconTheme != iconTheme
         updateTheme  |= CONFIG.iconColTree != iconColTree
+        updateTheme  |= CONFIG.iconColDocs != iconColDocs
         needsRestart |= CONFIG.guiLocale != guiLocale
         needsRestart |= CONFIG.guiFont != self._guiFont
 
@@ -939,6 +949,7 @@ class GuiPreferences(NDialog):
         CONFIG.guiTheme    = guiTheme
         CONFIG.iconTheme   = iconTheme
         CONFIG.iconColTree = iconColTree
+        CONFIG.iconColDocs = iconColDocs
         CONFIG.hideVScroll = self.hideVScroll.isChecked()
         CONFIG.hideHScroll = self.hideHScroll.isChecked()
         CONFIG.nativeFont  = self.nativeFont.isChecked()
