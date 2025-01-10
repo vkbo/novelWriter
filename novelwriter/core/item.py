@@ -355,7 +355,7 @@ class NWItem:
             icon = SHARED.theme.getIcon(key, color)
         else:
             text = ""
-            icon = SHARED.theme.getIcon("noncheckable", "orange")
+            icon = SHARED.theme.getIcon("noncheckable")
         return text, icon
 
     ##

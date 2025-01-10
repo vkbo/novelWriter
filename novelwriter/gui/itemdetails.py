@@ -241,7 +241,7 @@ class GuiItemDetails(QWidget):
             else:
                 self.labelIcon.setPixmap(SHARED.theme.getPixmap("unchecked", (iPx, iPx), "red"))
         else:
-            self.labelIcon.setPixmap(SHARED.theme.getPixmap("noncheckable", (iPx, iPx), "orange"))
+            self.labelIcon.setPixmap(SHARED.theme.getPixmap("noncheckable", (iPx, iPx)))
 
         self.labelData.setText(elide(nwItem.itemName, 100))
 
