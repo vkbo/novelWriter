@@ -263,7 +263,7 @@ def processFontAwesome(workDir: Path, iconsDir: Path, jobs: dict) -> None:
                 continue
 
         target = iconsDir / f"{file}.icons"
-        _writeThemeFile(target, name, "Fonticons Inc", "Font Awesome Free License", icons)
+        _writeThemeFile(target, name, "Fonticons Inc", "CC BY 4.0", icons)
 
     print("")
 
