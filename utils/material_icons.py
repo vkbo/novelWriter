@@ -23,9 +23,9 @@ from __future__ import annotations
 import subprocess
 
 from pathlib import Path
+from xml.etree import ElementTree as ET
 
-from lxml import etree
-
+ET.register_namespace("", "http://www.w3.org/2000/svg")
 MATERIAL_REPO = "https://github.com/google/material-design-icons.git"
 ICON_MAP = {
     "alert_error": "error",
@@ -136,11 +136,11 @@ ICON_MAP = {
 
 def _fixXml(svg: str) -> str:
     """Clean up the SVG XML and add needed fields."""
-    xSvg = etree.fromstring(svg)  # type: ignore
+    xSvg = ET.fromstring(svg)
     xSvg.set("fill", "#000000")
     xSvg.set("height", "128")
     xSvg.set("width", "128")
-    return etree.tostring(xSvg).decode()
+    return ET.tostring(xSvg).decode()
 
 
 def processMaterialIcons(workDir: Path, iconsDir: Path, jobs: dict) -> None:
