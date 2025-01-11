@@ -29,7 +29,7 @@ import logging
 import random
 
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Literal, TypeGuard
+from typing import Literal, TypeGuard
 
 from PyQt5.QtCore import QPointF, Qt
 from PyQt5.QtGui import QColor, QIcon, QPainter, QPainterPath, QPixmap, QPolygonF
@@ -62,10 +62,8 @@ class StatusEntry:
 
 NO_ENTRY = StatusEntry("", QColor(0, 0, 0), nwStatusShape.SQUARE, QIcon(), 0)
 
-if TYPE_CHECKING:  # pragma: no cover
-    # Requires Python 3.10
-    T_UpdateEntry = list[tuple[str | None, StatusEntry]]
-    T_StatusKind = Literal["s", "i"]
+T_UpdateEntry = list[tuple[str | None, StatusEntry]]
+T_StatusKind = Literal["s", "i"]
 
 
 class NWStatus:
