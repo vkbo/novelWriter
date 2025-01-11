@@ -124,6 +124,7 @@ class Config:
         # Icons
         self.iconTheme   = "material_rounded_normal"  # Icons theme
         self.iconColTree = "theme"                    # Project tree icon colours
+        self.iconColDocs = False                      # Keep theme colours on documents
 
         # Size Settings
         self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
@@ -611,6 +612,7 @@ class Config:
         self.guiSyntax   = conf.rdStr(sec, "syntax", self.guiSyntax)
         self.iconTheme   = conf.rdStr(sec, "icons", self.iconTheme)
         self.iconColTree = conf.rdStr(sec, "iconcoltree", self.iconColTree)
+        self.iconColDocs = conf.rdBool(sec, "iconcoldocs", self.iconColDocs)
         self.guiLocale   = conf.rdStr(sec, "localisation", self.guiLocale)
         self.hideVScroll = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
         self.hideHScroll = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
@@ -724,6 +726,7 @@ class Config:
             "syntax":       str(self.guiSyntax),
             "icons":        str(self.iconTheme),
             "iconcoltree":  str(self.iconColTree),
+            "iconcoldocs":  str(self.iconColDocs),
             "localisation": str(self.guiLocale),
             "hidevscroll":  str(self.hideVScroll),
             "hidehscroll":  str(self.hideHScroll),

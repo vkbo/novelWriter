@@ -252,6 +252,7 @@ class GuiTheme:
         sec = "Icons"
         if parser.has_section(sec):
             self.iconCache.setIconColor("default", self._parseColour(parser, sec, "default"))
+            self.iconCache.setIconColor("faded",   self._parseColour(parser, sec, "faded"))
             self.iconCache.setIconColor("red",     self._parseColour(parser, sec, "red"))
             self.iconCache.setIconColor("orange",  self._parseColour(parser, sec, "orange"))
             self.iconCache.setIconColor("yellow",  self._parseColour(parser, sec, "yellow"))
@@ -544,10 +545,12 @@ class GuiIcons:
         """Clear the icon cache."""
         text = QApplication.palette().windowText().color()
         default = text.name(QColor.NameFormat.HexRgb).encode("utf-8")
+        faded = self.mainTheme.fadedText.name(QColor.NameFormat.HexRgb).encode("utf-8")
 
         self._svgData = {}
         self._svgColours = {
             "default": default,
+            "faded":   faded,
             "red":     b"#ff0000",
             "orange":  b"#ff7f00",
             "yellow":  b"#ffff00",
@@ -607,11 +610,12 @@ class GuiIcons:
             color = self._svgColours.get(override, b"#000000")
             self._svgColours["root"] = color
             self._svgColours["folder"] = color
-            self._svgColours["file"] = color
-            self._svgColours["title"] = color
-            self._svgColours["chapter"] = color
-            self._svgColours["scene"] = color
-            self._svgColours["note"] = color
+            if not CONFIG.iconColDocs:
+                self._svgColours["file"] = color
+                self._svgColours["title"] = color
+                self._svgColours["chapter"] = color
+                self._svgColours["scene"] = color
+                self._svgColours["note"] = color
 
         return True
 
