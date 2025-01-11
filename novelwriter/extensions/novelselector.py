@@ -90,12 +90,13 @@ class NovelSelector(QComboBox):
     @pyqtSlot()
     def refreshNovelList(self) -> None:
         """Rebuild the list of novel items."""
+        cHandle = self.currentData()
+
         self._blockSignal = True
         self._firstHandle = None
         self.clear()
 
         icon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL], "blue")
-        handle = self.currentData()
         for tHandle, nwItem in SHARED.project.tree.iterRoots(nwItemClass.NOVEL):
             if self._listFormat:
                 name = self._listFormat.format(nwItem.itemName)
@@ -110,7 +111,7 @@ class NovelSelector(QComboBox):
             self.insertSeparator(self.count())
             self.addItem(icon, self.tr("All Novel Folders"), "")
 
-        self.setHandle(handle)
+        self.setHandle(cHandle)
         self.setEnabled(self.count() > 1)
         self._blockSignal = False
 
