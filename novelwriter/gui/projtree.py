@@ -1020,7 +1020,9 @@ class GuiProjectTree(QTreeView):
     def _clearSelection(self) -> None:
         """Clear the currently selected items."""
         self.clearSelection()
-        self.selectionModel().clearCurrentIndex()
+        if model := self.selectionModel():
+            # Selection model can be None (#2173)
+            model.clearCurrentIndex()
         return
 
     def _selectedRows(self) -> list[QModelIndex]:
