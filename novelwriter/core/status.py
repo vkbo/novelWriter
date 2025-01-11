@@ -29,7 +29,7 @@ import logging
 import random
 
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, TypeGuard
 
 from PyQt5.QtCore import QPointF, Qt
 from PyQt5.QtGui import QColor, QIcon, QPainter, QPainterPath, QPixmap, QPolygonF
@@ -38,9 +38,6 @@ from novelwriter import SHARED
 from novelwriter.common import simplified
 from novelwriter.enum import nwStatusShape
 from novelwriter.types import QtPaintAntiAlias, QtTransparent
-
-if TYPE_CHECKING:  # pragma: no cover
-    from typing import TypeGuard  # Requires Python 3.10
 
 logger = logging.getLogger(__name__)
 
