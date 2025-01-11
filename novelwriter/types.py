@@ -24,10 +24,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import (
-    QColor, QFont, QPainter, QTextBlockFormat, QTextCharFormat, QTextCursor,
-    QTextFormat
-)
+from PyQt6.QtGui import QColor, QFont, QPainter, QTextCharFormat, QTextCursor, QTextFormat
 from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QHeaderView, QSizePolicy, QStyle
 
 # Qt Alignment Flags

@@ -172,13 +172,7 @@ def nwGUI(qtbot, monkeypatch, functionFixture):
     nwGUI.show()
     qtbot.wait(20)
 
-    yield nwGUI
-
-    qtbot.wait(20)
-    nwGUI.closeMain()
-    qtbot.wait(20)
-
-    return
+    return nwGUI
 
 
 ##
