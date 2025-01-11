@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtCore import QMimeData, QModelIndex, Qt
+from PyQt6.QtCore import QMimeData, QModelIndex, Qt
 
 from novelwriter.common import decodeMimeHandles
 from novelwriter.constants import nwConst

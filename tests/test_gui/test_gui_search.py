@@ -24,8 +24,8 @@ from time import time
 
 import pytest
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QAction
 
 from novelwriter.enum import nwView
 from novelwriter.gui.search import GuiProjectSearch

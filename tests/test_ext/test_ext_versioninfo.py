@@ -24,7 +24,7 @@ from urllib.error import HTTPError
 
 import pytest
 
-from PyQt5.QtCore import QUrl
+from PyQt6.QtCore import QUrl
 
 from novelwriter import SHARED
 from novelwriter.constants import nwConst

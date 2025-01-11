@@ -26,7 +26,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from pathlib import Path
 
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QWidget
 
 XML_IGNORE = ("<novelWriterXML", "<project")
 ODT_IGNORE = ("<meta:generator", "<meta:creation-date", "<dc:date", "<meta:editing")

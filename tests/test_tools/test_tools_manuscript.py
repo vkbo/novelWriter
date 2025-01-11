@@ -26,10 +26,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt5.QtCore import QUrl, pyqtSlot
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtPrintSupport import QPrintPreviewDialog
-from PyQt5.QtWidgets import QAction, QListWidgetItem
+from PyQt6.QtCore import QUrl, pyqtSlot
+from PyQt6.QtGui import QAction, QDesktopServices
+from PyQt6.QtPrintSupport import QPrintPreviewDialog
+from PyQt6.QtWidgets import QListWidgetItem
 
 from novelwriter import SHARED
 from novelwriter.constants import nwHeadFmt

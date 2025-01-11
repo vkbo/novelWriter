@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.types import QtAccepted, QtRejected, QtUserRole

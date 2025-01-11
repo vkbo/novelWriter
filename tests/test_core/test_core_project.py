@@ -25,7 +25,7 @@ from zipfile import ZipFile
 
 import pytest
 
-from PyQt5.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwFiles

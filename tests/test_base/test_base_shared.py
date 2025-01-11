@@ -24,9 +24,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
+from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtWidgets import QFileDialog, QMessageBox, QWidget
 
 from novelwriter.core.project import NWProject
 from novelwriter.shared import SharedData

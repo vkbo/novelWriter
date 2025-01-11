@@ -63,13 +63,12 @@ def testBaseInit_Launch(caplog, monkeypatch, fncPath):
 
     # Normal Launch
     with monkeypatch.context() as mp:
-        mp.setattr("PyQt5.QtWidgets.QApplication.__init__", lambda *a: None)
-        mp.setattr("PyQt5.QtWidgets.QApplication.setApplicationName", lambda *a: None)
-        mp.setattr("PyQt5.QtWidgets.QApplication.setApplicationVersion", lambda *a: None)
-        mp.setattr("PyQt5.QtWidgets.QApplication.setWindowIcon", lambda *a: None)
-        mp.setattr("PyQt5.QtWidgets.QApplication.setOrganizationDomain", lambda *a: None)
-        mp.setattr("PyQt5.QtWidgets.QApplication.exec", lambda *a: 0)
-        # mp.setattr("PyQt5.QtWidgets.QApplication.focusChange.connect", lambda *a: None)
+        mp.setattr("PyQt6.QtWidgets.QApplication.__init__", lambda *a: None)
+        mp.setattr("PyQt6.QtWidgets.QApplication.setApplicationName", lambda *a: None)
+        mp.setattr("PyQt6.QtWidgets.QApplication.setApplicationVersion", lambda *a: None)
+        mp.setattr("PyQt6.QtWidgets.QApplication.setWindowIcon", lambda *a: None)
+        mp.setattr("PyQt6.QtWidgets.QApplication.setOrganizationDomain", lambda *a: None)
+        mp.setattr("PyQt6.QtWidgets.QApplication.exec", lambda *a: 0)
         with pytest.raises(SystemExit) as ex:
             main([f"--config={fncPath}", f"--data={fncPath}"])
             assert ex.value.code == 0
@@ -165,11 +164,11 @@ def testBaseInit_Options(monkeypatch, fncPath):
 def testBaseInit_Imports(caplog, monkeypatch, fncPath):
     """Check import error handling."""
     monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.__init__", lambda *a: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.exec", lambda *a: 0)
-    monkeypatch.setattr("PyQt5.QtWidgets.QErrorMessage.__init__", lambda *a: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QErrorMessage.resize", lambda *a: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QErrorMessage.showMessage", lambda *a: None)
+    monkeypatch.setattr("PyQt6.QtWidgets.QApplication.__init__", lambda *a: None)
+    monkeypatch.setattr("PyQt6.QtWidgets.QApplication.exec", lambda *a: 0)
+    monkeypatch.setattr("PyQt6.QtWidgets.QErrorMessage.__init__", lambda *a: None)
+    monkeypatch.setattr("PyQt6.QtWidgets.QErrorMessage.resize", lambda *a: None)
+    monkeypatch.setattr("PyQt6.QtWidgets.QErrorMessage.showMessage", lambda *a: None)
     monkeypatch.setattr("sys.hexversion", 0x0)
     monkeypatch.setattr("novelwriter.CONFIG.verQtValue", 0x050000)
     monkeypatch.setattr("novelwriter.CONFIG.verPyQtValue", 0x050000)
@@ -184,5 +183,5 @@ def testBaseInit_Imports(caplog, monkeypatch, fncPath):
     assert ex.value.code & 16 == 16  # PyQt version not satisfied  # type: ignore
 
     assert "At least Python" in caplog.messages[0]
-    assert "At least Qt5" in caplog.messages[1]
-    assert "At least PyQt5" in caplog.messages[2]
+    assert "At least Qt6" in caplog.messages[1]
+    assert "At least PyQt6" in caplog.messages[2]

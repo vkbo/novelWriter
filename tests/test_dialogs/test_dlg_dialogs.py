@@ -22,8 +22,8 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtCore import QItemSelectionModel
-from PyQt5.QtWidgets import QListWidgetItem
+from PyQt6.QtCore import QItemSelectionModel
+from PyQt6.QtWidgets import QListWidgetItem
 
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.quotes import GuiQuoteSelect

@@ -24,7 +24,9 @@ import json
 
 import pytest
 
-from PyQt5.QtWidgets import QAction, QFileDialog
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QFileDialog
 
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
@@ -117,7 +119,7 @@ def testToolWritingStats_Export(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
         assert not sessLog._saveData(None)  # type: ignore
 
     # Sort by time
-    sessLog.listBox.sortByColumn(sessLog.C_TIME, 0)  # type: ignore
+    sessLog.listBox.sortByColumn(sessLog.C_TIME, Qt.SortOrder.AscendingOrder)
 
     assert sessLog.novelWords.text() == "{:n}".format(600)
     assert sessLog.notesWords.text() == "{:n}".format(275)
@@ -201,7 +203,7 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     ]
     sessFile.write_text("".join(data), encoding="utf-8")
     sessLog.populateGUI()
-    sessLog.listBox.sortByColumn(sessLog.C_TIME, 0)  # type: ignore
+    sessLog.listBox.sortByColumn(sessLog.C_TIME, Qt.SortOrder.AscendingOrder)
 
     assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
     assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(-200)

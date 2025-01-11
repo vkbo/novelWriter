@@ -24,7 +24,7 @@ import sys
 
 import pytest
 
-from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox
+from PyQt6.QtWidgets import QApplication, QDialog, QMessageBox
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.about import GuiAbout

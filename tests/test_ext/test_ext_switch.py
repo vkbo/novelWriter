@@ -22,8 +22,8 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtCore import QEvent, QPoint
-from PyQt5.QtGui import QMouseEvent
+from PyQt6.QtCore import QEvent, QPointF
+from PyQt6.QtGui import QEnterEvent, QMouseEvent
 
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import QtModNone, QtMouseLeft
@@ -65,10 +65,10 @@ def testExtSwitch_Main(qtbot):
 
     button = QtMouseLeft
     modifier = QtModNone
-    event = QMouseEvent(QEvent.Type.MouseButtonRelease, QPoint(), button, button, modifier)
+    event = QMouseEvent(QEvent.Type.MouseButtonRelease, QPointF(), button, button, modifier)
     switch.mouseReleaseEvent(event)
 
-    event = QEvent(QEvent.Type.Enter)
+    event = QEnterEvent(QPointF(), QPointF(), QPointF())
     switch.enterEvent(event)
 
     # qtbot.stop()

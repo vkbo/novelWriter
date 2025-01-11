@@ -24,7 +24,8 @@ from pathlib import Path
 
 import pytest
 
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QMessageBox
 
 from novelwriter import SHARED
 from novelwriter.dialogs.about import GuiAbout

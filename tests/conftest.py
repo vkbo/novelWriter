@@ -28,8 +28,8 @@ from pathlib import Path
 
 import pytest
 
-from PyQt5.QtCore import QLocale
-from PyQt5.QtWidgets import QMessageBox
+from PyQt6.QtCore import QLocale
+from PyQt6.QtWidgets import QMessageBox
 
 sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 

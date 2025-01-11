@@ -24,8 +24,8 @@ from pathlib import Path
 
 import pytest
 
-from PyQt5.QtGui import QColor, QIcon, QPalette, QPixmap
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtGui import QColor, QIcon, QPalette, QPixmap
+from PyQt6.QtWidgets import QApplication
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import NWConfigParser

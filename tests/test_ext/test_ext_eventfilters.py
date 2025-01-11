@@ -22,9 +22,9 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtCore import QEvent, QObject, QPoint, Qt
-from PyQt5.QtGui import QKeyEvent, QWheelEvent
-from PyQt5.QtWidgets import QWidget
+from PyQt6.QtCore import QEvent, QObject, QPoint, QPointF, Qt
+from PyQt6.QtGui import QKeyEvent, QWheelEvent
+from PyQt6.QtWidgets import QWidget
 
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.types import QtModNone, QtModShift
@@ -57,8 +57,9 @@ def testExtEventFilters_WheelEventFilter():
 
     # Sending a mouse wheel event forwards it
     pos = QPoint(0, 0)
+    posF = QPointF(0.0, 0.0)
     event = QWheelEvent(
-        pos, pos, pos, pos,
+        posF, posF, pos, pos,
         Qt.MouseButton.NoButton, QtModNone,
         Qt.ScrollPhase.NoScrollPhase, False,
     )

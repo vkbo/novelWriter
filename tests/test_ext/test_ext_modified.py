@@ -22,9 +22,9 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtCore import QEvent, QPoint, QPointF, Qt
-from PyQt5.QtGui import QKeyEvent, QMouseEvent, QWheelEvent
-from PyQt5.QtWidgets import QWidget
+from PyQt6.QtCore import QEvent, QPoint, QPointF, Qt
+from PyQt6.QtGui import QKeyEvent, QMouseEvent, QWheelEvent
+from PyQt6.QtWidgets import QWidget
 
 from novelwriter.extensions.modified import (
     NClickableLabel, NComboBox, NDialog, NDoubleSpinBox, NSpinBox
@@ -150,7 +150,7 @@ def testExtModified_NClickableLabel(qtbot, monkeypatch):
     dialog = SimpleDialog(widget)
     dialog.show()
 
-    position = widget.rect().center()
+    position = QPointF(widget.rect().center())
     event = QMouseEvent(
         QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModNone
     )

@@ -24,18 +24,18 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt5.QtCore import QEvent, QMimeData, QPoint, Qt, QUrl
-from PyQt5.QtGui import (
-    QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent, QMouseEvent,
-    QTextCursor
+from PyQt6.QtCore import QEvent, QMimeData, QPointF, Qt, QUrl
+from PyQt6.QtGui import (
+    QAction, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent,
+    QMouseEvent, QTextCursor
 )
-from PyQt5.QtWidgets import QAction, QApplication, QMenu, QTextBrowser
+from PyQt6.QtWidgets import QApplication, QMenu, QTextBrowser
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
 from novelwriter.enum import nwChange, nwDocAction
 from novelwriter.formats.toqdoc import ToQTextDocument
-from novelwriter.types import QtModNone, QtMouseLeft
+from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle
 
 from tests.mocked import causeException
 from tests.tools import C, buildTestProject
@@ -59,7 +59,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Middle-click the selected item
     index = SHARED.project.tree.model.indexFromHandle("88243afbe5ed8")
     rect = nwGUI.projView.projTree.visualRect(index)
-    qtbot.mouseClick(nwGUI.projView.projTree.viewport(), Qt.MidButton, pos=rect.center())
+    qtbot.mouseClick(nwGUI.projView.projTree.viewport(), QtMouseMiddle, pos=rect.center())
     assert docViewer.docHandle == "88243afbe5ed8"
 
     # Clear selection
@@ -69,7 +69,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Re-select via header click
     button = QtMouseLeft
     modifier = QtModNone
-    event = QMouseEvent(QEvent.Type.MouseButtonPress, QPoint(), button, button, modifier)
+    event = QMouseEvent(QEvent.Type.MouseButtonPress, QPointF(), button, button, modifier)
     docViewer.docHeader.mousePressEvent(event)
     assert nwGUI.projView.projTree.getSelectedHandle() == "88243afbe5ed8"
 
@@ -89,7 +89,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     cursor = docViewer.textCursor()
     cursor.setPosition(100)
     docViewer.setTextCursor(cursor)
-    docViewer._makeSelection(QTextCursor.WordUnderCursor)
+    docViewer._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
 
     qClip = QApplication.clipboard()
     qClip.clear()
@@ -158,7 +158,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     cursor = docViewer.textCursor()
     cursor.setPosition(27)
     docViewer.setTextCursor(cursor)
-    docViewer._makeSelection(QTextCursor.WordUnderCursor)
+    docViewer._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
     with monkeypatch.context() as mp:
         mp.setattr(QMenu, "exec", mockExec)
         docViewer._openContextMenu(docViewer.cursorRect().center())
@@ -168,7 +168,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     cursor = docViewer.textCursor()
     cursor.setPosition(27)
     docViewer.setTextCursor(cursor)
-    docViewer._makeSelection(QTextCursor.WordUnderCursor)
+    docViewer._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
     rect = docViewer.cursorRect()
     docViewer._linkClicked(QUrl("#tag_bod"))
     assert docViewer.docHandle == "4c4f28287af27"
@@ -187,11 +187,12 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
         assert openUrl.call_args[0][0] == QUrl("http://www.example.com")
 
     # Click mouse nav buttons
-    qtbot.mouseClick(docViewer.viewport(), Qt.BackButton, pos=rect.center(), delay=100)
+    viewport = docViewer.viewport()
+    qtbot.mouseClick(viewport, Qt.MouseButton.BackButton, pos=rect.center(), delay=100)
     assert docViewer.docHandle == "88243afbe5ed8"
-    qtbot.mouseClick(docViewer.viewport(), Qt.ForwardButton, pos=rect.center(), delay=100)
+    qtbot.mouseClick(viewport, Qt.MouseButton.ForwardButton, pos=rect.center(), delay=100)
     assert docViewer.docHandle == "4c4f28287af27"
-    qtbot.mouseClick(docViewer.viewport(), QtMouseLeft, pos=rect.center(), delay=100)
+    qtbot.mouseClick(viewport, QtMouseLeft, pos=rect.center(), delay=100)
     assert docViewer.docHandle == "4c4f28287af27"
 
     # Scroll bar default on empty document
@@ -299,6 +300,7 @@ def testGuiViewer_DragAndDrop(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Drop
     mockDrop = MagicMock()
+    middle = QPointF(docViewer.viewport().rect().center())
     docEvent = QDropEvent(middle, action, docMime, mouse, QtModNone)
     noneEvent = QDropEvent(middle, action, noneMime, mouse, QtModNone)
     with monkeypatch.context() as mp:
