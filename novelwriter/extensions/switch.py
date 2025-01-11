@@ -23,14 +23,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt6.QtCore import QByteArray, QPropertyAnimation, Qt
+from PyQt6.QtCore import QPropertyAnimation, Qt, pyqtProperty
 from PyQt6.QtGui import QEnterEvent, QMouseEvent, QPainter, QPaintEvent, QResizeEvent
 from PyQt6.QtWidgets import QAbstractButton, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.types import QtMouseLeft, QtNoPen, QtPaintAntiAlias, QtSizeFixed
-
-OFFSET = QByteArray(b"offset")  # type: ignore
 
 
 class NSwitch(QAbstractButton):
@@ -59,11 +57,11 @@ class NSwitch(QAbstractButton):
     #  Properties
     ##
 
-    @property
+    @pyqtProperty(int)
     def offset(self) -> int:  # type: ignore
         return self._offset
 
-    @offset.setter  # type: ignore
+    @offset.setter
     def offset(self, offset: int) -> None:
         self._offset = offset
         self.update()
@@ -123,7 +121,7 @@ class NSwitch(QAbstractButton):
         """Animate the switch on mouse release."""
         super().mouseReleaseEvent(event)
         if event.button() == QtMouseLeft:
-            anim = QPropertyAnimation(self, OFFSET, self)
+            anim = QPropertyAnimation(self, b"offset", self)
             anim.setDuration(120)
             anim.setStartValue(self._offset)
             anim.setEndValue((self._xW - self._xR) if self.isChecked() else self._xR)

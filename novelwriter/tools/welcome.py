@@ -29,8 +29,8 @@ from datetime import datetime
 from pathlib import Path
 
 from PyQt6.QtCore import (
-    QAbstractListModel, QEvent, QModelIndex, QObject, QPoint, QSize, Qt,
-    pyqtSignal, pyqtSlot
+    QAbstractListModel, QModelIndex, QObject, QPoint, QSize, Qt, pyqtSignal,
+    pyqtSlot
 )
 from PyQt6.QtGui import QAction, QCloseEvent, QColor, QFont, QPainter, QPaintEvent, QPen, QShortcut
 from PyQt6.QtWidgets import (
@@ -590,7 +590,7 @@ class _NewProjectForm(QWidget):
 
         self.browseFill = NIconToolButton(self, iSz, "document_add", "blue")
 
-        self.fillMenu = _PopLeftDirectionMenu(self.browseFill)
+        self.fillMenu = QMenu(self.browseFill)
 
         self.fillBlank = self.fillMenu.addAction(self.tr("Create a fresh project"))
         self.fillBlank.setIcon(SHARED.theme.getIcon("document"))
@@ -802,14 +802,3 @@ class _NewProjectForm(QWidget):
         self.extraWidget.setVisible(self._fillMode == self.FILL_BLANK)
 
         return
-
-
-class _PopLeftDirectionMenu(QMenu):
-
-    def event(self, event: QEvent) -> bool:
-        """Overload the show event and move the menu popup location."""
-        if event.type() == QEvent.Type.Show:
-            if isinstance(parent := self.parent(), QWidget):
-                offset = QPoint(parent.width() - self.width(), parent.height())
-                self.move(parent.mapToGlobal(offset))
-        return super(_PopLeftDirectionMenu, self).event(event)
