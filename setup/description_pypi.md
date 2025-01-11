@@ -10,7 +10,7 @@ synchronisation tools. All text is saved as plain text files with a meta data he
 project structure is stored in a single project XML file, and other meta data is primarily saved as
 JSON files.
 
-The application is written with Python 3 (3.9+) using Qt5 and PyQt5 (5.10+). It is developed on
+The application is written with Python 3 (3.10+) using Qt5 and PyQt5 (5.10+). It is developed on
 Linux, but should in principle work fine on other operating systems as well as long as dependencies
 are met. It is regularly tested on Debian and Ubuntu Linux, Windows, and MacOS.
 

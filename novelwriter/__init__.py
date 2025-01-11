@@ -201,9 +201,9 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     # Check Packages and Versions
     errorData = []
     errorCode = 0
-    if sys.hexversion < 0x030900f0:
+    if sys.hexversion < 0x030a00f0:
         errorData.append(
-            "At least Python 3.9 is required, found %s" % CONFIG.verPyString
+            "At least Python 3.10 is required, found %s" % CONFIG.verPyString
         )
         errorCode |= 0x04
     if CONFIG.verQtValue < 0x050f00:
