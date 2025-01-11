@@ -31,7 +31,7 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QLocale
+from PyQt6.QtCore import QLocale
 
 from novelwriter.constants import nwFiles
 from novelwriter.error import logException

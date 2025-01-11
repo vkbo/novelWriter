@@ -27,9 +27,9 @@ import logging
 
 from time import time
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCursor, QKeyEvent
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QCursor, QKeyEvent
+from PyQt6.QtWidgets import (
     QApplication, QFrame, QHBoxLayout, QLabel, QLineEdit, QToolBar,
     QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )

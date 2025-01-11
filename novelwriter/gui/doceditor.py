@@ -37,18 +37,18 @@ import logging
 from enum import Enum
 from time import time
 
-from PyQt5.QtCore import (
+from PyQt6.QtCore import (
     QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
     pyqtSlot
 )
-from PyQt5.QtGui import (
-    QColor, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
-    QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent, QTextBlock,
-    QTextCursor, QTextDocument, QTextOption
+from PyQt6.QtGui import (
+    QAction, QColor, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent,
+    QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent,
+    QShortcut, QTextBlock, QTextCursor, QTextDocument, QTextOption
 )
-from PyQt5.QtWidgets import (
-    QAction, QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
-    QMenu, QPlainTextEdit, QShortcut, QToolBar, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import (
+    QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
+    QPlainTextEdit, QToolBar, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED

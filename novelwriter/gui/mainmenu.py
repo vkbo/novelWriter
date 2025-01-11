@@ -28,8 +28,9 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QAction, QMenuBar
+from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QMenuBar
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import openExternalPath, qtLambda

@@ -33,10 +33,10 @@ import logging
 from enum import Enum
 from time import time
 
-from PyQt5.QtCore import QT_TRANSLATE_NOOP, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (
-    QAbstractItemView, QAction, QFileDialog, QFrame, QGridLayout, QGroupBox,
+from PyQt6.QtCore import QT_TRANSLATE_NOOP, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtWidgets import (
+    QAbstractItemView, QFileDialog, QFrame, QGridLayout, QGroupBox,
     QHBoxLayout, QLabel, QMenu, QScrollArea, QSplitter, QToolBar, QToolButton,
     QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )

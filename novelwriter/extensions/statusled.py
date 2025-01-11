@@ -25,8 +25,8 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QColor, QPainter, QPaintEvent
-from PyQt5.QtWidgets import QAbstractButton, QWidget
+from PyQt6.QtGui import QColor, QPainter, QPaintEvent
+from PyQt6.QtWidgets import QAbstractButton, QWidget
 
 from novelwriter import CONFIG
 from novelwriter.enum import nwTrinary

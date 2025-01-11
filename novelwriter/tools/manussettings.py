@@ -27,9 +27,9 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QEvent, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import QEvent, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
+from PyQt6.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialogButtonBox, QFrame, QGridLayout,
     QHBoxLayout, QLabel, QLineEdit, QMenu, QPlainTextEdit, QPushButton,
     QSplitter, QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,

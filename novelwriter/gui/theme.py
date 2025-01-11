@@ -29,12 +29,12 @@ import logging
 from math import ceil
 from pathlib import Path
 
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import (
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import (
     QColor, QFont, QFontDatabase, QFontMetrics, QIcon, QPainter, QPainterPath,
     QPalette, QPixmap
 )
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 
 from novelwriter import CONFIG
 from novelwriter.common import NWConfigParser, cssCol, minmax

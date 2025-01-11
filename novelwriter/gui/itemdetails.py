@@ -27,8 +27,8 @@ import logging
 
 from enum import Enum
 
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
+from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtWidgets import QGridLayout, QLabel, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import elide

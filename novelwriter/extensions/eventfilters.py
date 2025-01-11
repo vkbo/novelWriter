@@ -24,9 +24,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtCore import QEvent, QObject
-from PyQt5.QtGui import QStatusTipEvent, QWheelEvent
-from PyQt5.QtWidgets import QWidget
+from PyQt6.QtCore import QEvent, QObject
+from PyQt6.QtGui import QStatusTipEvent, QWheelEvent
+from PyQt6.QtWidgets import QWidget
 
 
 class WheelEventFilter(QObject):

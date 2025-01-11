@@ -30,11 +30,11 @@ from datetime import datetime
 from pathlib import Path
 from time import time
 
-from PyQt5.QtCore import Qt, QTimer, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor, QIcon
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import Qt, QTimer, pyqtSlot
+from PyQt6.QtGui import QCloseEvent, QCursor, QIcon, QShortcut
+from PyQt6.QtWidgets import (
     QApplication, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox,
-    QShortcut, QSplitter, QStackedWidget, QVBoxLayout, QWidget
+    QSplitter, QStackedWidget, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__

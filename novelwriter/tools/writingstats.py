@@ -29,12 +29,11 @@ import logging
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor, QPixmap
-from PyQt5.QtWidgets import (
-    QAction, QApplication, QDialogButtonBox, QFileDialog, QGridLayout,
-    QGroupBox, QHBoxLayout, QLabel, QMenu, QSpinBox, QTreeWidget,
-    QTreeWidgetItem
+from PyQt6.QtCore import Qt, pyqtSlot
+from PyQt6.QtGui import QAction, QCloseEvent, QCursor, QPixmap
+from PyQt6.QtWidgets import (
+    QApplication, QDialogButtonBox, QFileDialog, QGridLayout, QGroupBox,
+    QHBoxLayout, QLabel, QMenu, QSpinBox, QTreeWidget, QTreeWidgetItem
 )
 
 from novelwriter import CONFIG, SHARED
@@ -124,13 +123,12 @@ class GuiWritingStats(NToolDialog):
             hHeader.setTextAlignment(self.C_IDLE, QtAlignRight)
             hHeader.setTextAlignment(self.C_COUNT, QtAlignRight)
 
-        sDec = Qt.SortOrder.DescendingOrder
-        sAsc = Qt.SortOrder.AscendingOrder
         sortCol = minmax(pOptions.getInt("GuiWritingStats", "sortCol", 0), 0, 2)
         sortOrder = checkIntTuple(
-            pOptions.getInt("GuiWritingStats", "sortOrder", sDec), (sAsc, sDec), sDec
+            pOptions.getInt("GuiWritingStats", "sortOrder", 1), (0, 1), 1
         )
-        self.listBox.sortByColumn(sortCol, sortOrder)  # type: ignore
+        sortOrders = (Qt.SortOrder.AscendingOrder, Qt.SortOrder.DescendingOrder)
+        self.listBox.sortByColumn(sortCol, sortOrders[sortOrder])
         self.listBox.setSortingEnabled(True)
 
         # Word Bar

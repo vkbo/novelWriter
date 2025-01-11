@@ -29,8 +29,8 @@ import re
 
 from time import time
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import (
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import (
     QBrush, QColor, QFont, QSyntaxHighlighter, QTextBlockUserData,
     QTextCharFormat, QTextDocument
 )

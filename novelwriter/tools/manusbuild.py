@@ -27,9 +27,9 @@ import logging
 
 from pathlib import Path
 
-from PyQt5.QtCore import QTimer, pyqtSlot
-from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import QTimer, pyqtSlot
+from PyQt6.QtGui import QCloseEvent
+from PyQt6.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialogButtonBox, QFileDialog,
     QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
     QPushButton, QSplitter, QVBoxLayout, QWidget

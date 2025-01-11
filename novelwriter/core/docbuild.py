@@ -28,7 +28,7 @@ import logging
 from collections.abc import Iterable
 from pathlib import Path
 
-from PyQt5.QtGui import QFont
+from PyQt6.QtGui import QFont
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwLabels

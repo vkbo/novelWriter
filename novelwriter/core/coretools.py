@@ -35,7 +35,7 @@ from functools import partial
 from pathlib import Path
 from zipfile import ZipFile, is_zipfile
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import isHandle, minmax, simplified

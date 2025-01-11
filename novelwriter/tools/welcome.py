@@ -28,20 +28,19 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from PyQt5.QtCore import (
+from PyQt6.QtCore import (
     QAbstractListModel, QEvent, QModelIndex, QObject, QPoint, QSize, Qt,
     pyqtSignal, pyqtSlot
 )
-from PyQt5.QtGui import QCloseEvent, QColor, QFont, QPainter, QPaintEvent, QPen
-from PyQt5.QtWidgets import (
-    QAction, QApplication, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-    QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
-    QStackedWidget, QStyledItemDelegate, QStyleOptionViewItem, QVBoxLayout,
-    QWidget
+from PyQt6.QtGui import QAction, QCloseEvent, QColor, QFont, QPainter, QPaintEvent, QPen, QShortcut
+from PyQt6.QtWidgets import (
+    QApplication, QFileDialog, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
+    QListView, QMenu, QPushButton, QScrollArea, QStackedWidget,
+    QStyledItemDelegate, QStyleOptionViewItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import cssCol, formatInt, makeFileNameSafe
+from novelwriter.common import cssCol, formatInt, makeFileNameSafe, qtLambda
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.enum import nwItemClass
@@ -127,7 +126,7 @@ class GuiWelcome(NDialog):
         self.btnCancel = QPushButton(self.tr("Cancel"), self)
         self.btnCancel.setIcon(SHARED.theme.getIcon("cancel", "red"))
         self.btnCancel.setIconSize(btnIconSize)
-        self.btnCancel.clicked.connect(self.close)
+        self.btnCancel.clicked.connect(qtLambda(self.close))
 
         self.btnCreate = QPushButton(self.tr("Create"), self)
         self.btnCreate.setIcon(SHARED.theme.getIcon("star", "yellow"))

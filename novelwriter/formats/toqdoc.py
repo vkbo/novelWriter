@@ -27,12 +27,12 @@ import logging
 
 from pathlib import Path
 
-from PyQt5.QtCore import QMarginsF, QSizeF
-from PyQt5.QtGui import (
-    QColor, QFont, QFontDatabase, QPageSize, QTextBlockFormat, QTextCharFormat,
-    QTextCursor, QTextDocument, QTextFrameFormat
+from PyQt6.QtCore import QMarginsF, QSizeF
+from PyQt6.QtGui import (
+    QColor, QFont, QFontDatabase, QPageLayout, QPageSize, QTextBlockFormat,
+    QTextCharFormat, QTextCursor, QTextDocument, QTextFrameFormat
 )
-from PyQt5.QtPrintSupport import QPrinter
+from PyQt6.QtPrintSupport import QPrinter
 
 from novelwriter import __version__
 from novelwriter.constants import nwStyles, nwUnicode
@@ -129,10 +129,9 @@ class ToQTextDocument(Tokenizer):
         super().initDocument()
 
         if pdf:
-            fontDB = QFontDatabase()
             family = self._textFont.family()
             style = self._textFont.styleName()
-            self._dpi = 1200 if fontDB.isScalable(family, style) else 72
+            self._dpi = 1200 if QFontDatabase.isScalable(family, style) else 72
 
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
@@ -268,7 +267,6 @@ class ToQTextDocument(Tokenizer):
 
     def saveDocument(self, path: Path) -> None:
         """Save the document as a PDF file."""
-        m = self._pageMargins
         logger.info("Writing PDF at %d DPI", self._dpi)
 
         printer = QPrinter(QPrinter.PrinterMode.HighResolution)
@@ -277,11 +275,11 @@ class ToQTextDocument(Tokenizer):
         printer.setResolution(self._dpi)
         printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
         printer.setPageSize(self._pageSize)
-        printer.setPageMargins(m.left(), m.top(), m.right(), m.bottom(), QPrinter.Unit.Millimeter)
+        printer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
         printer.setOutputFileName(str(path))
 
         self._document.documentLayout().setPaintDevice(printer)
-        self._document.setPageSize(QSizeF(printer.pageRect().size()))
+        self._document.setPageSize(printer.pageRect(QPrinter.Unit.Millimeter).size())
         self._document.print(printer)
 
         return

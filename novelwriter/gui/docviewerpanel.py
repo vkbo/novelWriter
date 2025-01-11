@@ -27,8 +27,8 @@ import logging
 
 from enum import Enum
 
-from PyQt5.QtCore import QModelIndex, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import QModelIndex, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtWidgets import (
     QAbstractItemView, QFrame, QMenu, QTabWidget, QToolButton, QTreeWidget,
     QTreeWidgetItem, QVBoxLayout, QWidget
 )

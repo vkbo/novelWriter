@@ -28,8 +28,8 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QAbstractItemModel, QMimeData, QModelIndex, Qt
-from PyQt5.QtGui import QFont, QIcon
+from PyQt6.QtCore import QAbstractItemModel, QMimeData, QModelIndex, Qt
+from PyQt6.QtGui import QFont, QIcon
 
 from novelwriter.common import decodeMimeHandles, encodeMimeHandles, minmax
 from novelwriter.constants import nwConst

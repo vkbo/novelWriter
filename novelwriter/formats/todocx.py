@@ -33,8 +33,8 @@ from pathlib import Path
 from typing import NamedTuple
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from PyQt5.QtCore import QMargins, QSize
-from PyQt5.QtGui import QColor
+from PyQt6.QtCore import QMargins, QSize
+from PyQt6.QtGui import QColor
 
 from novelwriter import __version__
 from novelwriter.common import firstFloat, xmlElement, xmlSubElem

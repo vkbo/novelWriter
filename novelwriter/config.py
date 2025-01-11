@@ -33,12 +33,12 @@ from datetime import datetime
 from pathlib import Path
 from time import time
 
-from PyQt5.QtCore import (
+from PyQt6.QtCore import (
     PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QLibraryInfo,
     QLocale, QStandardPaths, QSysInfo, QTranslator
 )
-from PyQt5.QtGui import QFont, QFontDatabase
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtGui import QFont, QFontDatabase
+from PyQt6.QtWidgets import QApplication
 
 from novelwriter.common import (
     NWConfigParser, checkInt, checkPath, describeFont, fontMatcher,
@@ -91,7 +91,7 @@ class Config:
         # Localisation
         # Note that these paths must be strings
         self._nwLangPath = self._appPath / "assets" / "i18n"
-        self._qtLangPath = QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath)
+        self._qtLangPath = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
 
         hasLocale = (self._nwLangPath / f"nw_{QLocale.system().name()}.qm").exists()
         self._qLocale = QLocale.system() if hasLocale else QLocale("en_GB")
@@ -385,13 +385,12 @@ class Config:
             self.guiFont = fontMatcher(font)
         else:
             font = QFont()
-            fontDB = QFontDatabase()
-            if self.osWindows and "Arial" in fontDB.families():
+            if self.osWindows and "Arial" in QFontDatabase.families():
                 # On Windows we default to Arial if possible
                 font.setFamily("Arial")
                 font.setPointSize(10)
             else:
-                font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
+                font = QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont)
             self.guiFont = fontMatcher(font)
             logger.debug("GUI font set to: %s", describeFont(font))
         QApplication.setFont(self.guiFont)
@@ -408,8 +407,7 @@ class Config:
             font.fromString(value)
             self.textFont = fontMatcher(font)
         else:
-            fontDB = QFontDatabase()
-            fontFam = fontDB.families()
+            fontFam = QFontDatabase.families()
             if self.osWindows and "Arial" in fontFam:
                 font = QFont()
                 font.setFamily("Arial")
@@ -419,7 +417,7 @@ class Config:
                 font.setFamily("Helvetica")
                 font.setPointSize(12)
             else:
-                font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
+                font = QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont)
             self.textFont = fontMatcher(font)
             logger.debug("Text font set to: %s", describeFont(self.textFont))
         return

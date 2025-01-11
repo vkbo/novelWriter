@@ -28,8 +28,8 @@ import logging
 from datetime import datetime
 from time import time
 
-from PyQt5.QtCore import QLocale, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QLabel, QStatusBar, QWidget
+from PyQt6.QtCore import QLocale, pyqtSlot
+from PyQt6.QtWidgets import QApplication, QLabel, QStatusBar, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime

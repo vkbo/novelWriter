@@ -30,14 +30,14 @@ import logging
 
 from enum import Enum
 
-from PyQt5.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import (
-    QCursor, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent,
-    QMouseEvent, QPalette, QResizeEvent, QTextCursor
+from PyQt6.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import (
+    QAction, QCursor, QDesktopServices, QDragEnterEvent, QDragMoveEvent,
+    QDropEvent, QMouseEvent, QPalette, QResizeEvent, QTextCursor
 )
-from PyQt5.QtWidgets import (
-    QAction, QApplication, QFrame, QHBoxLayout, QMenu, QTextBrowser,
-    QToolButton, QWidget
+from PyQt6.QtWidgets import (
+    QApplication, QFrame, QHBoxLayout, QMenu, QTextBrowser, QToolButton,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED

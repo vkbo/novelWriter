@@ -26,9 +26,9 @@ from __future__ import annotations
 
 from math import ceil
 
-from PyQt5.QtCore import QRect
-from PyQt5.QtGui import QBrush, QColor, QPainter, QPaintEvent, QPen
-from PyQt5.QtWidgets import QProgressBar, QWidget
+from PyQt6.QtCore import QRect
+from PyQt6.QtGui import QBrush, QColor, QPainter, QPaintEvent, QPen
+from PyQt6.QtWidgets import QProgressBar, QWidget
 
 from novelwriter.types import (
     QtAlignCenter, QtPaintAntiAlias, QtRoundCap, QtSizeFixed, QtSolidLine,

@@ -31,9 +31,9 @@ from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING, TypeVar
 
-from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QTimer, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QDesktopServices, QFont
-from PyQt5.QtWidgets import QFileDialog, QFontDialog, QMessageBox, QWidget
+from PyQt6.QtCore import QObject, QRunnable, QThreadPool, QTimer, QUrl, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QDesktopServices, QFont
+from PyQt6.QtWidgets import QFileDialog, QFontDialog, QMessageBox, QWidget
 
 from novelwriter.common import formatFileFilter
 from novelwriter.constants import nwFiles

@@ -25,8 +25,8 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QCloseEvent, QColor
-from PyQt5.QtWidgets import (
+from PyQt6.QtGui import QCloseEvent, QColor
+from PyQt6.QtWidgets import (
     QDialogButtonBox, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout, QWidget
 )
 

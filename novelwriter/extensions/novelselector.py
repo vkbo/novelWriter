@@ -25,8 +25,8 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QComboBox, QWidget
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
+from PyQt6.QtWidgets import QComboBox, QWidget
 
 from novelwriter import SHARED
 from novelwriter.constants import nwLabels

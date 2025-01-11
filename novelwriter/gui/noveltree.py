@@ -30,11 +30,11 @@ import logging
 from enum import Enum
 from time import time
 
-from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QFocusEvent, QFont, QMouseEvent, QPalette, QResizeEvent
-from PyQt5.QtWidgets import (
-    QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QInputDialog, QMenu,
-    QToolTip, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+from PyQt6.QtCore import QModelIndex, QPoint, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QActionGroup, QFocusEvent, QFont, QMouseEvent, QPalette, QResizeEvent
+from PyQt6.QtWidgets import (
+    QAbstractItemView, QFrame, QHBoxLayout, QInputDialog, QMenu, QToolTip,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED

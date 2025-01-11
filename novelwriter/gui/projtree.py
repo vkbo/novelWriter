@@ -32,10 +32,10 @@ import logging
 
 from enum import Enum
 
-from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QIcon, QMouseEvent, QPainter, QPalette
-from PyQt5.QtWidgets import (
-    QAbstractItemView, QAction, QFrame, QHBoxLayout, QLabel, QMenu, QShortcut,
+from PyQt6.QtCore import QModelIndex, QPoint, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QAction, QIcon, QMouseEvent, QPainter, QPalette, QShortcut
+from PyQt6.QtWidgets import (
+    QAbstractItemView, QFrame, QHBoxLayout, QLabel, QMenu,
     QStyleOptionViewItem, QTreeView, QVBoxLayout, QWidget
 )
 

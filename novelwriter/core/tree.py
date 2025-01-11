@@ -31,7 +31,7 @@ from collections.abc import Iterable, Iterator
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, overload
 
-from PyQt5.QtCore import QModelIndex
+from PyQt6.QtCore import QModelIndex
 
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles, nwLabels, trConst

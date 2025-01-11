@@ -23,12 +23,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtCore import QEvent, QPropertyAnimation, Qt, pyqtProperty
-from PyQt5.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent
-from PyQt5.QtWidgets import QAbstractButton, QWidget
+from PyQt6.QtCore import QByteArray, QPropertyAnimation, Qt
+from PyQt6.QtGui import QEnterEvent, QMouseEvent, QPainter, QPaintEvent, QResizeEvent
+from PyQt6.QtWidgets import QAbstractButton, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.types import QtMouseLeft, QtNoPen, QtPaintAntiAlias, QtSizeFixed
+
+OFFSET = QByteArray(b"offset")  # type: ignore
 
 
 class NSwitch(QAbstractButton):
@@ -57,7 +59,7 @@ class NSwitch(QAbstractButton):
     #  Properties
     ##
 
-    @pyqtProperty(int)  # type: ignore
+    @property
     def offset(self) -> int:  # type: ignore
         return self._offset
 
@@ -121,14 +123,14 @@ class NSwitch(QAbstractButton):
         """Animate the switch on mouse release."""
         super().mouseReleaseEvent(event)
         if event.button() == QtMouseLeft:
-            anim = QPropertyAnimation(self, b"offset", self)
+            anim = QPropertyAnimation(self, OFFSET, self)
             anim.setDuration(120)
             anim.setStartValue(self._offset)
             anim.setEndValue((self._xW - self._xR) if self.isChecked() else self._xR)
             anim.start()
         return
 
-    def enterEvent(self, event: QEvent) -> None:
+    def enterEvent(self, event: QEnterEvent) -> None:
         """Change the cursor when hovering the button."""
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         super().enterEvent(event)

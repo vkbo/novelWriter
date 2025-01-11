@@ -37,8 +37,8 @@ from typing import Any, Literal, TypeGuard, TypeVar
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 
-from PyQt5.QtCore import QCoreApplication, QMimeData, QUrl
-from PyQt5.QtGui import QColor, QDesktopServices, QFont, QFontDatabase, QFontInfo
+from PyQt6.QtCore import QCoreApplication, QMimeData, QUrl
+from PyQt6.QtGui import QColor, QDesktopServices, QFont, QFontDatabase, QFontInfo
 
 from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
@@ -440,11 +440,10 @@ def fontMatcher(font: QFont) -> QFont:
     info = QFontInfo(font)
     if (famRequest := font.family()) != (famActual := info.family()):
         logger.warning("Font mismatch: Requested '%s', but got '%s'", famRequest, famActual)
-        db = QFontDatabase()
-        if famRequest in db.families():
+        if famRequest in QFontDatabase.families():
             styleRequest, sizeRequest = font.styleName(), font.pointSize()
             logger.info("Lookup: %s, %s, %d pt", famRequest, styleRequest, sizeRequest)
-            temp = db.font(famRequest, styleRequest, sizeRequest)
+            temp = QFontDatabase.font(famRequest, styleRequest, sizeRequest)
             temp.setPointSize(sizeRequest)  # Make sure it isn't changed
             famFound, styleFound, sizeFound = temp.family(), temp.styleName(), temp.pointSize()
             if famFound == famRequest:
