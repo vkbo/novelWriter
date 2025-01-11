@@ -34,6 +34,7 @@ from enum import Enum
 from time import time
 
 from PyQt5.QtCore import QT_TRANSLATE_NOOP, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QFileDialog, QFrame, QGridLayout, QGroupBox,
     QHBoxLayout, QLabel, QMenu, QScrollArea, QSplitter, QToolBar, QToolButton,
@@ -103,7 +104,10 @@ class GuiOutlineView(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         self.outlineBar.updateTheme()
-        self.refreshTree()
+        self.outlineTree.updateTheme()
+        self.outlineTree.refreshTree(
+            rootHandle=SHARED.project.data.getLastHandle("outline"), overRide=True
+        )
         return
 
     def initSettings(self) -> None:
@@ -397,18 +401,8 @@ class GuiOutlineTree(QTreeWidget):
         fH2 = self.font()
         fH2.setBold(True)
 
-        iType = nwItemType.FILE
-        iClass = nwItemClass.NO_CLASS
-        iLayout = nwItemLayout.DOCUMENT
-
         self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
-        self._dIcon = {
-            "H0": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H0"),
-            "H1": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H1"),
-            "H2": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H2"),
-            "H3": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H3"),
-            "H4": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H4"),
-        }
+        self._dIcon: dict[str, QIcon] = {}
 
         # Internals
         self._treeOrder = []
@@ -419,6 +413,7 @@ class GuiOutlineTree(QTreeWidget):
         self._firstView = True
         self._lastBuild = 0
 
+        self.updateTheme()
         self.initSettings()
         self.clearContent()
 
@@ -478,6 +473,20 @@ class GuiOutlineTree(QTreeWidget):
 
         self._treeNCols = len(self._treeOrder)
 
+        return
+
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        iType = nwItemType.FILE
+        iClass = nwItemClass.NO_CLASS
+        iLayout = nwItemLayout.DOCUMENT
+        self._dIcon = {
+            "H0": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H0"),
+            "H1": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H1"),
+            "H2": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H2"),
+            "H3": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H3"),
+            "H4": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H4"),
+        }
         return
 
     def refreshTree(
