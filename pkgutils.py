@@ -543,8 +543,8 @@ def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
     try:
         subprocess.call(["lrelease", "-verbose", *srcList])
     except Exception as exc:
-        print("Qt5 Linguist tools seem to be missing")
-        print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
+        print("Qt Linguist tools seem to be missing")
+        print("On Debian/Ubuntu, install: qttools5-dev-tools")
         print(str(exc))
         sys.exit(1)
 

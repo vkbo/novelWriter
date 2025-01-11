@@ -1021,8 +1021,8 @@ class GuiMainMenu(QMenuBar):
         self.aAboutNW.setMenuRole(QAction.MenuRole.AboutRole)
         self.aAboutNW.triggered.connect(self.mainGui.showAboutNWDialog)
 
-        # Help > About Qt5
-        self.aAboutQt = self.helpMenu.addAction(self.tr("About Qt5"))
+        # Help > About Qt
+        self.aAboutQt = self.helpMenu.addAction(self.tr("About Qt"))
         self.aAboutQt.setMenuRole(QAction.MenuRole.AboutQtRole)
         self.aAboutQt.triggered.connect(self.mainGui.showAboutQtDialog)
 

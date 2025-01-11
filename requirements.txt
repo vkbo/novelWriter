@@ -1,2 +1,2 @@
-pyqt5>=5.15
+pyqt6>=6.0
 pyenchant>=3.0.0

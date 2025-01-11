@@ -92,8 +92,8 @@ class GuiMain(QMainWindow):
         logger.info("OS: %s", CONFIG.osType)
         logger.info("Kernel: %s", CONFIG.kernelVer)
         logger.info("Host: %s", CONFIG.hostName)
-        logger.info("Qt5: %s (0x%06x)", CONFIG.verQtString, CONFIG.verQtValue)
-        logger.info("PyQt5: %s (0x%06x)", CONFIG.verPyQtString, CONFIG.verPyQtValue)
+        logger.info("Qt: %s (0x%06x)", CONFIG.verQtString, CONFIG.verQtValue)
+        logger.info("PyQt: %s (0x%06x)", CONFIG.verPyQtString, CONFIG.verPyQtValue)
         logger.info("Python: %s (0x%08x)", CONFIG.verPyString, sys.hexversion)
         logger.info("GUI Language: %s", CONFIG.guiLocale)
 

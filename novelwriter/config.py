@@ -217,7 +217,7 @@ class Config:
         # System and App Information
         # ==========================
 
-        # Check Qt5 Versions
+        # Check Qt Versions
         self.verQtString   = QT_VERSION_STR
         self.verQtValue    = QT_VERSION
         self.verPyQtString = PYQT_VERSION_STR

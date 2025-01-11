@@ -434,7 +434,7 @@ def describeFont(font: QFont) -> str:
 def fontMatcher(font: QFont) -> QFont:
     """Make sure the font is the correct family, if possible. This
     ensures that Qt doesn't re-use another font under the hood. The
-    default Qt5 font matching algorithm doesn't handle well changing
+    default Qt font matching algorithm doesn't handle well changing
     application fonts at runtime.
     """
     info = QFontInfo(font)

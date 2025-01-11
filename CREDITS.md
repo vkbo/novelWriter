@@ -45,8 +45,8 @@ contributions are listed on the project's Members page.
 
 The following libraries are dependencies of novelWriter:
 
-* **Qt5** by Qt Company
-* **PyQt5** by Riverbank Computing
+* **Qt6** by Qt Company
+* **PyQt6** by Riverbank Computing
 * **Enchant** by Dom Lachowicz
 * **PyEnchant** by Dimitri Merejkowsky
 

@@ -117,7 +117,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         "     --debug    Print debug output. Includes --info.\n"
         "     --color    Add ANSI colors to log output.\n"
         "     --meminfo  Show memory usage information in the status bar.\n"
-        "     --style=   Sets Qt5 style flag. Defaults to 'Fusion'.\n"
+        "     --style=   Sets Qt style flag. Defaults to 'Fusion'.\n"
         "     --config=  Alternative config file.\n"
         "     --data=    Alternative user data path.\n"
     )

@@ -18,12 +18,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Dependencies
 
-Qt5
+Qt6
 Copyright: Qt Company
 Website: <https://www.qt.io/>
 License: LGPL v3 <https://www.gnu.org/licenses/lgpl-3.0.html>
 
-PyQt5 / PyQt5-sip
+PyQt6 / PyQt6-sip
 Copyright: Riverbank Computing
 Website: <https://www.riverbankcomputing.com/software/pyqt/>
 License: GPL v3 <https://www.gnu.org/licenses/gpl-3.0.html>

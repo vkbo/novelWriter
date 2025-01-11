@@ -18,7 +18,7 @@ When contributing translations, keep the following things in mind.
 
 * For descriptive labels and dialog boxes, make sure you do _not_ change the meaning of the text
   when you translate it from English. The user must receive the same instructions or information
-  regardless of language. This is improtant, otherwise the documentation will be inconsistent with
+  regardless of language. This is important, otherwise the documentation will be inconsistent with
   the user interface and it will become a lot more difficult to handle user issues and questions.
 * If you think a label or description is misleading or incomplete, please file an issue report. The
   correct way to handle such changes is to change the text in the code first, which will then be
@@ -35,7 +35,7 @@ Linguist, or updating the translations for an already existing supported languag
 
 There are two areas relevant to localisation:
 
-* The Qt5 GUI translation files, which consists of `nw_XX.ts` files. This is the bulk of the
+* The Qt GUI translation files, which consists of `nw_XX.ts` files. This is the bulk of the
   translation work.
 * The `project_XX.json` files. See [Project Localisation](#project-localisation) below.
 
@@ -43,7 +43,7 @@ The `XX` in the file name corresponds to the language and country code for the t
 instance `en_GB` for British English.
 
 
-## Qt5 GUI Localisation
+## Qt GUI Localisation
 
 You will need the translation tool Qt 5 Linguist on your system.
 
@@ -89,8 +89,7 @@ For instance, the French translation uses the language code `fr_FR`, so its tran
 be `nw_fr_FR.ts`
 
 Note: The `qtlupdate` command needs the `lupdate` tool provided by PyQt6, which uses the latest
-TS file format. The tool in PyQt5 generates an older file format. On Debian/Ubuntu it is provided
-by the package `pyqt6-dev-tools`.
+TS file format. On Debian/Ubuntu it is provided by the package `pyqt6-dev-tools`.
 
 
 ### Edit the Translation File in Qt Linguist

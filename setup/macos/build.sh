@@ -165,13 +165,13 @@ rm -rf share/{gtk-,}doc
 rm -rf lib/python3.1
 
 # Remove web engine
-rm lib/python3.*/site-packages/PyQt5/QtWebEngine* || true
-rm -r lib/python3.*/site-packages/PyQt5/Qt/translations/qtwebengine* || true
-rm lib/python3.*/site-packages/PyQt5/Qt/resources/qtwebengine* || true
-rm -r lib/python3.*/site-packages/PyQt5/Qt/qml/QtWebEngine* || true
-rm -r lib/python3.*/site-packages/PyQt5/Qt/plugins/webview/libqtwebview* || true
-rm lib/python3.*/site-packages/PyQt5/Qt/libexec/QtWebEngineProcess* || true
-rm lib/python3.*/site-packages/PyQt5/Qt/lib/libQt5WebEngine* || true
+rm lib/python3.*/site-packages/PyQt6/QtWebEngine* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt/translations/qtwebengine* || true
+rm lib/python3.*/site-packages/PyQt6/Qt/resources/qtwebengine* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt/qml/QtWebEngine* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt/plugins/webview/libqtwebview* || true
+rm lib/python3.*/site-packages/PyQt6/Qt/libexec/QtWebEngineProcess* || true
+rm lib/python3.*/site-packages/PyQt6/Qt/lib/libQt5WebEngine* || true
 
 popd || exit 1
 popd || exit 1
