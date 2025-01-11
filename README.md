@@ -40,7 +40,7 @@ documentation.
 
 ## Implementation
 
-novelWriter is written with Python 3 (3.9+) using Qt5 and PyQt5 (5.15 only), and is released on
+novelWriter is written with Python 3 (3.10+) using Qt5 and PyQt5 (5.15 only), and is released on
 Linux, Windows and macOS. It can in principle run on any Operating System that also supports Qt,
 PyQt and Python.
 

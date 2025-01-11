@@ -33,7 +33,7 @@ from collections.abc import Callable
 from configparser import ConfigParser
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, TypeVar
+from typing import Any, Literal, TypeGuard, TypeVar
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 
@@ -43,9 +43,6 @@ from PyQt5.QtGui import QColor, QDesktopServices, QFont, QFontDatabase, QFontInf
 from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
-
-if TYPE_CHECKING:  # pragma: no cover
-    from typing import TypeGuard  # Requires Python 3.10
 
 logger = logging.getLogger(__name__)
 
