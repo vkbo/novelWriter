@@ -56,7 +56,6 @@ from novelwriter.gui.projtree import GuiProjectView
 from novelwriter.gui.search import GuiProjectSearch
 from novelwriter.gui.sidebar import GuiSideBar
 from novelwriter.gui.statusbar import GuiMainStatus
-from novelwriter.gui.theme import GuiTheme
 from novelwriter.tools.dictionaries import GuiDictionaries
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.noveldetails import GuiNovelDetails
@@ -101,7 +100,7 @@ class GuiMain(QMainWindow):
         # ============
 
         # Initialise UserData Instance
-        SHARED.initSharedData(self, GuiTheme())
+        SHARED.initSharedData(self)
 
         # Prepare Main Window
         self.resize(*CONFIG.mainWinSize)
@@ -1054,6 +1053,7 @@ class GuiMain(QMainWindow):
             # We are doing this manually instead of connecting to
             # paletteChanged since the processing order matters
             SHARED.theme.loadTheme()
+            self.setPalette(QApplication.palette())
             self.docEditor.updateTheme()
             self.docViewer.updateTheme()
             self.docViewerPanel.updateTheme()

@@ -164,17 +164,24 @@ class SharedData(QObject):
     #  Methods
     ##
 
-    def initSharedData(self, gui: GuiMain, theme: GuiTheme) -> None:
+    def initTheme(self, theme: GuiTheme) -> None:
+        """Initialise the GUI theme. This must be called before the GUI
+        is created.
+        """
+        self._theme = theme
+        return
+
+    def initSharedData(self, gui: GuiMain) -> None:
         """Initialise the SharedData instance. This must be called as
         soon as the Main GUI is created to ensure the SHARED singleton
         has the properties needed for operation.
         """
         self._clock.start()
         self._gui = gui
-        self._theme = theme
         self._resetProject()
         logger.debug("Ready: SharedData")
-        logger.debug("Thread Pool Max Count: %d", QThreadPool.globalInstance().maxThreadCount())
+        if pool := QThreadPool.globalInstance():
+            logger.debug("Thread Pool Max Count: %d", pool.maxThreadCount())
         return
 
     def closeDocument(self, tHandle: str | None = None) -> None:
@@ -266,7 +273,8 @@ class SharedData(QObject):
 
     def runInThreadPool(self, runnable: QRunnable, priority: int = 0) -> None:
         """Queue a runnable in the application thread pool."""
-        QThreadPool.globalInstance().start(runnable, priority=priority)
+        if pool := QThreadPool.globalInstance():
+            pool.start(runnable, priority=priority)
         return
 
     def getProjectPath(
@@ -278,13 +286,13 @@ class SharedData(QObject):
         label = (self.tr("novelWriter Project File or Zip File")
                  if allowZip else self.tr("novelWriter Project File"))
         ext = f"{nwFiles.PROJ_FILE} *.zip" if allowZip else nwFiles.PROJ_FILE
-        ffilter = formatFileFilter([(label, ext), "*"])
+        fFilter = formatFileFilter([(label, ext), "*"])
         selected, _ = QFileDialog.getOpenFileName(
-            parent, self.tr("Open Project"), str(path or ""), filter=ffilter
+            parent, self.tr("Open Project"), str(path or ""), filter=fFilter
         )
         return Path(selected) if selected else None
 
-    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool]:
+    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool | None]:
         """Open the font dialog and select a font."""
         kwargs = {}
         if not native:

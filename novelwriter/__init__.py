@@ -254,11 +254,13 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             pass  # Quietly ignore error
 
     # Import GUI (after dependency checks), and launch
+    from novelwriter.gui.theme import GuiTheme
     from novelwriter.guimain import GuiMain
 
     if testMode:
         # Only used for testing where the test framework creates the app
         CONFIG.loadConfig()
+        SHARED.initTheme(GuiTheme())
         return GuiMain()
 
     app = QApplication([CONFIG.appName, (f"-style={qtStyle}")])
@@ -274,6 +276,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     # Run Config steps that require the QApplication
     CONFIG.loadConfig()
     CONFIG.initLocalisation(app)
+    SHARED.initTheme(GuiTheme())
 
     # Launch main GUI
     nwGUI = GuiMain()

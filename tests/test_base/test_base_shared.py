@@ -56,7 +56,8 @@ def testBaseSharedData_Init():
     assert mockGui is not mockTheme
 
     # Properly initialise the class
-    shared.initSharedData(mockGui, mockTheme)  # type: ignore
+    shared.initTheme(mockTheme)  # type: ignore
+    shared.initSharedData(mockGui)  # type: ignore
 
     assert shared.mainGui is mockGui
     assert shared.theme is mockTheme
@@ -94,7 +95,8 @@ def testBaseSharedData_Projects(monkeypatch, caplog, fncPath):
     # Initialise the instance, should create an empty project
     mockGui = MockGuiMain()
     mockTheme = MockTheme()
-    shared.initSharedData(mockGui, mockTheme)  # type: ignore
+    shared.initTheme(mockTheme)  # type: ignore
+    shared.initSharedData(mockGui)  # type: ignore
     assert isinstance(shared.project, NWProject)
     assert shared.hasProject is False
 
@@ -150,7 +152,8 @@ def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog):
 
     mockGui = MockGuiMain()
     mockTheme = MockTheme()
-    shared.initSharedData(mockGui, mockTheme)  # type: ignore
+    shared.initTheme(mockTheme)  # type: ignore
+    shared.initSharedData(mockGui)  # type: ignore
 
     assert shared.lastAlert == ""
 

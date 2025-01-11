@@ -304,6 +304,20 @@ class GuiTheme:
         backCol = self._guiPalette.window().color()
         textCol = self._guiPalette.windowText().color()
 
+        # Calculate Based on Qt Fusion
+        light    = backCol.lighter(150)
+        mid      = backCol.darker(130)
+        midLight = mid.lighter(110)
+        dark     = backCol.darker(150)
+        shadow   = dark.darker(135)
+
+        self._guiPalette.setColor(QPalette.ColorRole.Light,    light)
+        self._guiPalette.setColor(QPalette.ColorRole.Mid,      mid)
+        self._guiPalette.setColor(QPalette.ColorRole.Midlight, midLight)
+        self._guiPalette.setColor(QPalette.ColorRole.Dark,     dark)
+        self._guiPalette.setColor(QPalette.ColorRole.Shadow,   shadow)
+
+        # Calculate Help Text
         backLNess = backCol.lightnessF()
         textLNess = textCol.lightnessF()
         self.isLightTheme = backLNess > textLNess

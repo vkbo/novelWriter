@@ -98,14 +98,14 @@ class NSwitch(QAbstractButton):
             trackBrush = palette.highlight()
             thumbBrush = palette.highlightedText()
         else:
-            trackBrush = palette.dark()
+            trackBrush = palette.mid()
             thumbBrush = palette.light()
 
         if self.isEnabled():
             trackOpacity = 1.0
         else:
             trackOpacity = 0.6
-            trackBrush = palette.shadow()
+            trackBrush = palette.dark()
             thumbBrush = palette.mid()
 
         painter.setBrush(trackBrush)
@@ -114,6 +114,7 @@ class NSwitch(QAbstractButton):
 
         painter.setBrush(thumbBrush)
         painter.drawEllipse(self._offset - self._rR, self._rB, self._rH, self._rH)
+        painter.end()
 
         return
 
