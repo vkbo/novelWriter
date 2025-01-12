@@ -91,44 +91,45 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         rules and building the RegExes.
         """
         logger.debug("Setting up highlighting rules")
+        syntax = SHARED.theme.syntaxTheme
 
-        colEmph = SHARED.theme.colEmph if CONFIG.highlightEmph else None
-        colBreak = QColor(SHARED.theme.colEmph)
+        colEmph = syntax.emph if CONFIG.highlightEmph else None
+        colBreak = QColor(syntax.emph)
         colBreak.setAlpha(64)
 
         # Create Character Formats
-        self._addCharFormat("text",      SHARED.theme.colText)
-        self._addCharFormat("header1",   SHARED.theme.colHead, "b", nwStyles.H_SIZES[1])
-        self._addCharFormat("header2",   SHARED.theme.colHead, "b", nwStyles.H_SIZES[2])
-        self._addCharFormat("header3",   SHARED.theme.colHead, "b", nwStyles.H_SIZES[3])
-        self._addCharFormat("header4",   SHARED.theme.colHead, "b", nwStyles.H_SIZES[4])
-        self._addCharFormat("head1h",    SHARED.theme.colHeadH, "b", nwStyles.H_SIZES[1])
-        self._addCharFormat("head2h",    SHARED.theme.colHeadH, "b", nwStyles.H_SIZES[2])
-        self._addCharFormat("head3h",    SHARED.theme.colHeadH, "b", nwStyles.H_SIZES[3])
-        self._addCharFormat("head4h",    SHARED.theme.colHeadH, "b", nwStyles.H_SIZES[4])
+        self._addCharFormat("text",      syntax.text)
+        self._addCharFormat("header1",   syntax.head, "b", nwStyles.H_SIZES[1])
+        self._addCharFormat("header2",   syntax.head, "b", nwStyles.H_SIZES[2])
+        self._addCharFormat("header3",   syntax.head, "b", nwStyles.H_SIZES[3])
+        self._addCharFormat("header4",   syntax.head, "b", nwStyles.H_SIZES[4])
+        self._addCharFormat("head1h",    syntax.headH, "b", nwStyles.H_SIZES[1])
+        self._addCharFormat("head2h",    syntax.headH, "b", nwStyles.H_SIZES[2])
+        self._addCharFormat("head3h",    syntax.headH, "b", nwStyles.H_SIZES[3])
+        self._addCharFormat("head4h",    syntax.headH, "b", nwStyles.H_SIZES[4])
         self._addCharFormat("bold",      colEmph, "b")
         self._addCharFormat("italic",    colEmph, "i")
-        self._addCharFormat("strike",    SHARED.theme.colHidden, "s")
-        self._addCharFormat("mspaces",   SHARED.theme.colError, "err")
+        self._addCharFormat("strike",    syntax.hidden, "s")
+        self._addCharFormat("mspaces",   syntax.error, "err")
         self._addCharFormat("nobreak",   colBreak, "bg")
-        self._addCharFormat("altdialog", SHARED.theme.colDialA)
-        self._addCharFormat("dialog",    SHARED.theme.colDialN)
-        self._addCharFormat("replace",   SHARED.theme.colRepTag)
-        self._addCharFormat("hidden",    SHARED.theme.colHidden)
-        self._addCharFormat("markup",    SHARED.theme.colHidden)
-        self._addCharFormat("link",      SHARED.theme.colLink, "u")
-        self._addCharFormat("note",      SHARED.theme.colNote)
-        self._addCharFormat("code",      SHARED.theme.colCode)
-        self._addCharFormat("keyword",   SHARED.theme.colKey)
-        self._addCharFormat("tag",       SHARED.theme.colTag, "u")
-        self._addCharFormat("modifier",  SHARED.theme.colMod)
-        self._addCharFormat("value",     SHARED.theme.colVal)
-        self._addCharFormat("optional",  SHARED.theme.colOpt)
+        self._addCharFormat("altdialog", syntax.dialA)
+        self._addCharFormat("dialog",    syntax.dialN)
+        self._addCharFormat("replace",   syntax.repTag)
+        self._addCharFormat("hidden",    syntax.hidden)
+        self._addCharFormat("markup",    syntax.hidden)
+        self._addCharFormat("link",      syntax.link, "u")
+        self._addCharFormat("note",      syntax.note)
+        self._addCharFormat("code",      syntax.code)
+        self._addCharFormat("keyword",   syntax.key)
+        self._addCharFormat("tag",       syntax.tag, "u")
+        self._addCharFormat("modifier",  syntax.mod)
+        self._addCharFormat("value",     syntax.val)
+        self._addCharFormat("optional",  syntax.opt)
         self._addCharFormat("invalid",   None, "err")
 
         # Cache Spell Error Format
         self._spellErr = QTextCharFormat()
-        self._spellErr.setUnderlineColor(SHARED.theme.colSpell)
+        self._spellErr.setUnderlineColor(syntax.spell)
         self._spellErr.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
 
         self._txtRules.clear()
@@ -450,7 +451,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             if "s" in styles:
                 charFormat.setFontStrikeOut(True)
             if "err" in styles:
-                charFormat.setUnderlineColor(SHARED.theme.colError)
+                charFormat.setUnderlineColor(SHARED.theme.syntaxTheme.error)
                 charFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
             if "bg" in styles and color is not None:
                 charFormat.setBackground(QBrush(color, Qt.BrushStyle.SolidPattern))

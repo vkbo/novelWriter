@@ -186,12 +186,12 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
     mainTheme.loadSyntax()
     nwGUI._processConfigChanges(True, True, True, True)
 
-    syntaxBack = SHARED.theme.colBack
+    syntax = SHARED.theme.syntaxTheme
 
-    assert nwGUI.docEditor.palette().color(QPalette.ColorRole.Window) == syntaxBack
-    assert nwGUI.docEditor.docHeader.palette().color(QPalette.ColorRole.Window) == syntaxBack
-    assert nwGUI.docViewer.palette().color(QPalette.ColorRole.Window) == syntaxBack
-    assert nwGUI.docViewer.docHeader.palette().color(QPalette.ColorRole.Window) == syntaxBack
+    assert nwGUI.docEditor.palette().color(QPalette.ColorRole.Window) == syntax.back
+    assert nwGUI.docEditor.docHeader.palette().color(QPalette.ColorRole.Window) == syntax.back
+    assert nwGUI.docViewer.palette().color(QPalette.ColorRole.Window) == syntax.back
+    assert nwGUI.docViewer.docHeader.palette().color(QPalette.ColorRole.Window) == syntax.back
 
     # qtbot.stop()
 

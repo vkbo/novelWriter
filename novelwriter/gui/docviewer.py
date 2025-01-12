@@ -155,33 +155,35 @@ class GuiDocViewer(QTextBrowser):
         self.docFooter.updateFont()
 
         # Set the widget colours to match syntax theme
-        mainPalette = self.palette()
-        mainPalette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
-        mainPalette.setColor(QPalette.ColorRole.Base, SHARED.theme.colBack)
-        mainPalette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
-        self.setPalette(mainPalette)
+        syntax = SHARED.theme.syntaxTheme
 
-        docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.ColorRole.Base, SHARED.theme.colBack)
-        docPalette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
-        self.viewport().setPalette(docPalette)
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, syntax.back)
+        palette.setColor(QPalette.ColorRole.Base, syntax.back)
+        palette.setColor(QPalette.ColorRole.Text, syntax.text)
+        self.setPalette(palette)
+
+        palette = self.viewport().palette()
+        palette.setColor(QPalette.ColorRole.Base, syntax.back)
+        palette.setColor(QPalette.ColorRole.Text, syntax.text)
+        self.viewport().setPalette(palette)
         self.docHeader.matchColours()
         self.docFooter.matchColours()
 
         # Update theme colours
-        self._docTheme.text      = SHARED.theme.colText
-        self._docTheme.highlight = SHARED.theme.colMark
-        self._docTheme.head      = SHARED.theme.colHead
-        self._docTheme.link      = SHARED.theme.colLink
-        self._docTheme.comment   = SHARED.theme.colHidden
-        self._docTheme.note      = SHARED.theme.colNote
-        self._docTheme.code      = SHARED.theme.colCode
-        self._docTheme.modifier  = SHARED.theme.colMod
-        self._docTheme.keyword   = SHARED.theme.colKey
-        self._docTheme.tag       = SHARED.theme.colTag
-        self._docTheme.optional  = SHARED.theme.colOpt
-        self._docTheme.dialog    = SHARED.theme.colDialN
-        self._docTheme.altdialog = SHARED.theme.colDialA
+        self._docTheme.text      = syntax.text
+        self._docTheme.highlight = syntax.mark
+        self._docTheme.head      = syntax.head
+        self._docTheme.link      = syntax.link
+        self._docTheme.comment   = syntax.hidden
+        self._docTheme.note      = syntax.note
+        self._docTheme.code      = syntax.code
+        self._docTheme.modifier  = syntax.mod
+        self._docTheme.keyword   = syntax.key
+        self._docTheme.tag       = syntax.tag
+        self._docTheme.optional  = syntax.opt
+        self._docTheme.dialog    = syntax.dialN
+        self._docTheme.altdialog = syntax.dialA
 
         # Set default text margins
         self.document().setDocumentMargin(0)
@@ -783,10 +785,11 @@ class GuiDocViewHeader(QWidget):
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
-        palette = QPalette()
-        palette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
-        palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
-        palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
+        syntax = SHARED.theme.syntaxTheme
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, syntax.back)
+        palette.setColor(QPalette.ColorRole.WindowText, syntax.text)
+        palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
         self.itemTitle.setTextColors(
             color=palette.windowText().color(), faded=SHARED.theme.fadedText
@@ -970,10 +973,11 @@ class GuiDocViewFooter(QWidget):
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
-        palette = QPalette()
-        palette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
-        palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
-        palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
+        syntax = SHARED.theme.syntaxTheme
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, syntax.back)
+        palette.setColor(QPalette.ColorRole.WindowText, syntax.text)
+        palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
         return
 

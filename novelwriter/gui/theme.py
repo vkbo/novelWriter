@@ -41,7 +41,7 @@ from novelwriter.common import NWConfigParser, cssCol, minmax
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
-from novelwriter.types import QtPaintAntiAlias, QtTransparent
+from novelwriter.types import QtPaintAntiAlias, QtTransparent, nwDataClass
 
 logger = logging.getLogger(__name__)
 
@@ -50,15 +50,41 @@ STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
 
 
+@nwDataClass
 class ThemeMeta:
 
-    name        = ""
-    description = ""
-    author      = ""
-    credit      = ""
-    url         = ""
-    license     = ""
-    licenseUrl  = ""
+    name:        str = ""
+    description: str = ""
+    author:      str = ""
+    credit:      str = ""
+    url:         str = ""
+    license:     str = ""
+    licenseUrl:  str = ""
+
+
+@nwDataClass
+class SyntaxColors:
+
+    back:   QColor = QColor(255, 255, 255)
+    text:   QColor = QColor(0, 0, 0)
+    link:   QColor = QColor(0, 0, 0)
+    head:   QColor = QColor(0, 0, 0)
+    headH:  QColor = QColor(0, 0, 0)
+    emph:   QColor = QColor(0, 0, 0)
+    dialN:  QColor = QColor(0, 0, 0)
+    dialA:  QColor = QColor(0, 0, 0)
+    hidden: QColor = QColor(0, 0, 0)
+    note:   QColor = QColor(0, 0, 0)
+    code:   QColor = QColor(0, 0, 0)
+    key:    QColor = QColor(0, 0, 0)
+    tag:    QColor = QColor(0, 0, 0)
+    val:    QColor = QColor(0, 0, 0)
+    opt:    QColor = QColor(0, 0, 0)
+    spell:  QColor = QColor(0, 0, 0)
+    error:  QColor = QColor(0, 0, 0)
+    repTag: QColor = QColor(0, 0, 0)
+    mod:    QColor = QColor(0, 0, 0)
+    mark:   QColor = QColor(255, 255, 255, 128)
 
 
 class GuiTheme:
@@ -67,13 +93,29 @@ class GuiTheme:
     Handles the look and feel of novelWriter.
     """
 
+    __slots__ = (
+        # Attributes
+        "iconCache", "themeMeta", "isDarkTheme", "statNone", "statUnsaved",
+        "statSaved", "helpText", "fadedText", "errorText", "syntaxMeta",
+        "syntaxTheme", "guiFont", "guiFontB", "guiFontBU", "guiFontSmall",
+        "fontPointSize", "fontPixelSize", "baseIconHeight", "baseButtonHeight",
+        "textNHeight", "textNWidth", "baseIconSize", "buttonIconSize",
+        "guiFontFixed",
+
+        # Functions
+        "getIcon", "getPixmap", "getItemIcon", "getToggleIcon",
+        "loadDecoration", "getHeaderDecoration", "getHeaderDecorationNarrow",
+
+        # Internal
+        "_guiPalette", "_themeList", "_syntaxList", "_availThemes",
+        "_availSyntax", "_styleSheets",
+    )
+
     def __init__(self) -> None:
 
         self.iconCache = GuiIcons(self)
 
-        # Loaded Theme Settings
-        # =====================
-
+        # GUI Theme
         self.themeMeta   = ThemeMeta()
         self.isDarkTheme = False
 
@@ -84,34 +126,9 @@ class GuiTheme:
         self.fadedText   = QColor(0, 0, 0)
         self.errorText   = QColor(255, 0, 0)
 
-        # Loaded Syntax Settings
-        # ======================
-
+        # Syntax Theme
         self.syntaxMeta = ThemeMeta()
-
-        self.colBack   = QColor(255, 255, 255)
-        self.colText   = QColor(0, 0, 0)
-        self.colLink   = QColor(0, 0, 0)
-        self.colHead   = QColor(0, 0, 0)
-        self.colHeadH  = QColor(0, 0, 0)
-        self.colEmph   = QColor(0, 0, 0)
-        self.colDialN  = QColor(0, 0, 0)
-        self.colDialA  = QColor(0, 0, 0)
-        self.colHidden = QColor(0, 0, 0)
-        self.colNote   = QColor(0, 0, 0)
-        self.colCode   = QColor(0, 0, 0)
-        self.colKey    = QColor(0, 0, 0)
-        self.colTag    = QColor(0, 0, 0)
-        self.colVal    = QColor(0, 0, 0)
-        self.colOpt    = QColor(0, 0, 0)
-        self.colSpell  = QColor(0, 0, 0)
-        self.colError  = QColor(0, 0, 0)
-        self.colRepTag = QColor(0, 0, 0)
-        self.colMod    = QColor(0, 0, 0)
-        self.colMark   = QColor(255, 255, 255, 128)
-
-        # Class Setup
-        # ===========
+        self.syntaxTheme = SyntaxColors()
 
         # Load Themes
         self._guiPalette = QPalette()
@@ -384,31 +401,33 @@ class GuiTheme:
             meta.license     = parser.rdStr(sec, "license", "N/A")
             meta.licenseUrl  = parser.rdStr(sec, "licenseurl", "")
 
-        self.syntaxMeta = meta
-
         # Syntax
         sec = "Syntax"
+        syntax = SyntaxColors()
         if parser.has_section(sec):
-            self.colBack   = self._parseColour(parser, sec, "background")
-            self.colText   = self._parseColour(parser, sec, "text")
-            self.colLink   = self._parseColour(parser, sec, "link")
-            self.colHead   = self._parseColour(parser, sec, "headertext")
-            self.colHeadH  = self._parseColour(parser, sec, "headertag")
-            self.colEmph   = self._parseColour(parser, sec, "emphasis")
-            self.colDialN  = self._parseColour(parser, sec, "dialog")
-            self.colDialA  = self._parseColour(parser, sec, "altdialog")
-            self.colHidden = self._parseColour(parser, sec, "hidden")
-            self.colNote   = self._parseColour(parser, sec, "note")
-            self.colCode   = self._parseColour(parser, sec, "shortcode")
-            self.colKey    = self._parseColour(parser, sec, "keyword")
-            self.colTag    = self._parseColour(parser, sec, "tag")
-            self.colVal    = self._parseColour(parser, sec, "value")
-            self.colOpt    = self._parseColour(parser, sec, "optional")
-            self.colSpell  = self._parseColour(parser, sec, "spellcheckline")
-            self.colError  = self._parseColour(parser, sec, "errorline")
-            self.colRepTag = self._parseColour(parser, sec, "replacetag")
-            self.colMod    = self._parseColour(parser, sec, "modifier")
-            self.colMark   = self._parseColour(parser, sec, "texthighlight")
+            syntax.back   = self._parseColour(parser, sec, "background")
+            syntax.text   = self._parseColour(parser, sec, "text")
+            syntax.link   = self._parseColour(parser, sec, "link")
+            syntax.head   = self._parseColour(parser, sec, "headertext")
+            syntax.headH  = self._parseColour(parser, sec, "headertag")
+            syntax.emph   = self._parseColour(parser, sec, "emphasis")
+            syntax.dialN  = self._parseColour(parser, sec, "dialog")
+            syntax.dialA  = self._parseColour(parser, sec, "altdialog")
+            syntax.hidden = self._parseColour(parser, sec, "hidden")
+            syntax.note   = self._parseColour(parser, sec, "note")
+            syntax.code   = self._parseColour(parser, sec, "shortcode")
+            syntax.key    = self._parseColour(parser, sec, "keyword")
+            syntax.tag    = self._parseColour(parser, sec, "tag")
+            syntax.val    = self._parseColour(parser, sec, "value")
+            syntax.opt    = self._parseColour(parser, sec, "optional")
+            syntax.spell  = self._parseColour(parser, sec, "spellcheckline")
+            syntax.error  = self._parseColour(parser, sec, "errorline")
+            syntax.repTag = self._parseColour(parser, sec, "replacetag")
+            syntax.mod    = self._parseColour(parser, sec, "modifier")
+            syntax.mark   = self._parseColour(parser, sec, "texthighlight")
+
+        self.syntaxMeta = meta
+        self.syntaxTheme = syntax
 
         return True
 
@@ -568,6 +587,11 @@ class GuiIcons:
     returned instead.
     """
 
+    __slots__ = (
+        "mainTheme", "themeMeta", "_svgData", "_svgColours", "_qIcons",
+        "_headerDec", "_headerDecNarrow", "_themeList", "_iconPath", "_noIcon",
+    )
+
     TOGGLE_ICON_KEYS: dict[str, tuple[str, str]] = {
         "bullet": ("bullet-on", "bullet-off"),
         "unfold": ("unfold-show", "unfold-hide"),
@@ -580,6 +604,7 @@ class GuiIcons:
     def __init__(self, mainTheme: GuiTheme) -> None:
 
         self.mainTheme = mainTheme
+        self.themeMeta = ThemeMeta()
 
         # Storage
         self._svgData: dict[str, bytes] = {}
@@ -594,9 +619,6 @@ class GuiIcons:
 
         # None Icon
         self._noIcon = QIcon(str(self._iconPath / "none.svg"))
-
-        # Icon Theme Meta
-        self.themeMeta = ThemeMeta()
 
         return
 

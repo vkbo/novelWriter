@@ -252,9 +252,9 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
 
     # Check some values
     assert mainTheme.syntaxMeta.name == "Default Light"
-    assert mainTheme.colBack == QColor(255, 255, 255)
-    assert mainTheme.colText == QColor(0, 0, 0)
-    assert mainTheme.colLink == QColor(0, 0, 200)
+    assert mainTheme.syntaxTheme.back == QColor(255, 255, 255)
+    assert mainTheme.syntaxTheme.text == QColor(0, 0, 0)
+    assert mainTheme.syntaxTheme.link == QColor(0, 0, 200)
 
     # Load Default Dark Theme
     # =======================
@@ -265,9 +265,9 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
 
     # Check some values
     assert mainTheme.syntaxMeta.name == "Default Dark"
-    assert mainTheme.colBack == QColor(42, 42, 42)
-    assert mainTheme.colText == QColor(204, 204, 204)
-    assert mainTheme.colLink == QColor(102, 153, 204)
+    assert mainTheme.syntaxTheme.back == QColor(42, 42, 42)
+    assert mainTheme.syntaxTheme.text == QColor(204, 204, 204)
+    assert mainTheme.syntaxTheme.link == QColor(102, 153, 204)
 
     # qtbot.stop()
 
