@@ -70,7 +70,7 @@ class VersionInfoWidget(QWidget):
         self._layout = QVBoxLayout()
         self._layout.addWidget(self._lblInfo)
         self._layout.addWidget(self._lblRelease)
-        self._layout.setSpacing(CONFIG.pxInt(2))
+        self._layout.setSpacing(2)
         self._layout.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self._layout)

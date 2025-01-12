@@ -278,8 +278,10 @@ class ToQTextDocument(Tokenizer):
         printer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
         printer.setOutputFileName(str(path))
 
-        self._document.documentLayout().setPaintDevice(printer)
-        self._document.setPageSize(printer.pageRect(QPrinter.Unit.Millimeter).size())
+        if layout := self._document.documentLayout():
+            layout.setPaintDevice(printer)
+
+        self._document.setPageSize(printer.pageRect(QPrinter.Unit.DevicePixel).size())
         self._document.print(printer)
 
         return
@@ -458,7 +460,8 @@ class ToQTextDocument(Tokenizer):
             cursor.insertFrame(fFmt)
             cursor.setBlockFormat(bFmt)
             cursor.insertText(self._project.localLookup("New Page"), cFmt)
-            cursor.swap(self._document.rootFrame().lastCursorPosition())
+            if root := self._document.rootFrame():
+                cursor.swap(root.lastCursorPosition())
 
         return
 

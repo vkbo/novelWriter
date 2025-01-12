@@ -33,7 +33,6 @@ from PyQt6.QtWidgets import (
     QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG
 from novelwriter.types import QtScrollAsNeeded
 
 DEFAULT_SCALE = 0.9
@@ -99,14 +98,14 @@ class NScrollableForm(QScrollArea):
         self._helpCol = QColor(0, 0, 0)
         self._fontScale = DEFAULT_SCALE
         self._first = True
-        self._indent = CONFIG.pxInt(12)
+        self._indent = 12
 
         self._sections: dict[int, QLabel] = {}
         self._editable: dict[str, NColourLabel] = {}
         self._index: dict[str, QWidget] = {}
 
         self._layout = QVBoxLayout()
-        self._layout.setSpacing(CONFIG.pxInt(12))
+        self._layout.setSpacing(12)
 
         self._widget = QWidget(self)
         self._widget.setLayout(self._layout)
@@ -156,24 +155,25 @@ class NScrollableForm(QScrollArea):
     def scrollToSection(self, identifier: int) -> None:
         """Scroll to the requested section identifier."""
         if identifier in self._sections:
-            yPos = self._sections[identifier].pos().y() - CONFIG.pxInt(8)
-            self.verticalScrollBar().setValue(yPos)
+            yPos = self._sections[identifier].pos().y() - 8
+            if vBar := self.verticalScrollBar():
+                vBar.setValue(yPos)
         return
 
     def scrollToLabel(self, label: str) -> None:
         """Scroll to the requested label."""
         if label in self._index:
-            yPos = self._index[label].pos().y() - CONFIG.pxInt(8)
-            self.verticalScrollBar().setValue(yPos)
+            yPos = self._index[label].pos().y() - 8
+            if vBar := self.verticalScrollBar():
+                vBar.setValue(yPos)
         return
 
     def addGroupLabel(self, label: str, identifier: int | None = None) -> None:
         """Add a text label to separate groups of settings."""
-        hM = CONFIG.pxInt(4)
         qLabel = QLabel(f"<b>{label}</b>", self)
-        qLabel.setContentsMargins(0, hM, 0, hM)
+        qLabel.setContentsMargins(0, 4, 0, 4)
         if not self._first:
-            self._layout.addSpacing(5*hM)
+            self._layout.addSpacing(20)
         self._layout.addWidget(qLabel)
         self._first = False
         if identifier is not None:
@@ -192,7 +192,7 @@ class NScrollableForm(QScrollArea):
     ) -> None:
         """Add a label and a widget as a new row of the form."""
         row = QHBoxLayout()
-        row.setSpacing(CONFIG.pxInt(12))
+        row.setSpacing(12)
 
         if isinstance(widget, list):
             wBox = QHBoxLayout()
@@ -205,7 +205,7 @@ class NScrollableForm(QScrollArea):
                     icon.setPixmap(item)
                     wBox.addWidget(icon)
                 elif isinstance(item, int):
-                    wBox.addSpacing(CONFIG.pxInt(item))
+                    wBox.addSpacing(item)
             qWidget = QWidget(self)
             qWidget.setLayout(wBox)
         else:
@@ -252,7 +252,7 @@ class NScrollableForm(QScrollArea):
 
     def finalise(self) -> None:
         """Finalise the layout when the form is built."""
-        self._layout.addSpacing(CONFIG.pxInt(20))
+        self._layout.addSpacing(20)
         self._layout.addStretch(1)
         return
 
