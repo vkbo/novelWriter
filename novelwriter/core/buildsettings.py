@@ -32,7 +32,7 @@ from collections.abc import Iterable
 from enum import Enum
 from pathlib import Path
 
-from PyQt5.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
+from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
 from novelwriter import CONFIG
 from novelwriter.common import checkUuid, isHandle, jsonEncode

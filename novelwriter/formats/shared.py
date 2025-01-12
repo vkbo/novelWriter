@@ -27,7 +27,9 @@ import re
 
 from enum import Flag, IntEnum
 
-from PyQt5.QtGui import QColor
+from PyQt6.QtGui import QColor
+
+from novelwriter.types import nwDataClass
 
 ESCAPES = {r"\*": "*", r"\~": "~", r"\_": "_", r"\[": "[", r"\]": "]", r"\ ": ""}
 RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
@@ -40,6 +42,7 @@ def stripEscape(text: str) -> str:
     return text
 
 
+@nwDataClass
 class TextDocumentTheme:
     """Default document theme."""
 

@@ -22,8 +22,8 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QAction, QColorDialog, QFileDialog
+from PyQt6.QtGui import QAction, QColor
+from PyQt6.QtWidgets import QColorDialog, QFileDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.editlabel import GuiEditLabel

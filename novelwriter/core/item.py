@@ -27,7 +27,7 @@ import logging
 
 from typing import TYPE_CHECKING, Any
 
-from PyQt5.QtGui import QFont, QIcon
+from PyQt6.QtGui import QFont, QIcon
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import (

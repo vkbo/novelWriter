@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtWidgets import QAction
+from PyQt6.QtGui import QAction
 
 from novelwriter import SHARED
 from novelwriter.enum import nwDocInsert

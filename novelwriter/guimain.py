@@ -30,11 +30,11 @@ from datetime import datetime
 from pathlib import Path
 from time import time
 
-from PyQt5.QtCore import Qt, QTimer, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor, QIcon
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import Qt, QTimer, pyqtSlot
+from PyQt6.QtGui import QCloseEvent, QCursor, QIcon, QShortcut
+from PyQt6.QtWidgets import (
     QApplication, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox,
-    QShortcut, QSplitter, QStackedWidget, QVBoxLayout, QWidget
+    QSplitter, QStackedWidget, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__
@@ -56,7 +56,6 @@ from novelwriter.gui.projtree import GuiProjectView
 from novelwriter.gui.search import GuiProjectSearch
 from novelwriter.gui.sidebar import GuiSideBar
 from novelwriter.gui.statusbar import GuiMainStatus
-from novelwriter.gui.theme import GuiTheme
 from novelwriter.tools.dictionaries import GuiDictionaries
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.noveldetails import GuiNovelDetails
@@ -92,8 +91,8 @@ class GuiMain(QMainWindow):
         logger.info("OS: %s", CONFIG.osType)
         logger.info("Kernel: %s", CONFIG.kernelVer)
         logger.info("Host: %s", CONFIG.hostName)
-        logger.info("Qt5: %s (0x%06x)", CONFIG.verQtString, CONFIG.verQtValue)
-        logger.info("PyQt5: %s (0x%06x)", CONFIG.verPyQtString, CONFIG.verPyQtValue)
+        logger.info("Qt: %s (0x%06x)", CONFIG.verQtString, CONFIG.verQtValue)
+        logger.info("PyQt: %s (0x%06x)", CONFIG.verPyQtString, CONFIG.verPyQtValue)
         logger.info("Python: %s (0x%08x)", CONFIG.verPyString, sys.hexversion)
         logger.info("GUI Language: %s", CONFIG.guiLocale)
 
@@ -101,7 +100,7 @@ class GuiMain(QMainWindow):
         # ============
 
         # Initialise UserData Instance
-        SHARED.initSharedData(self, GuiTheme())
+        SHARED.initSharedData(self)
 
         # Prepare Main Window
         self.resize(*CONFIG.mainWinSize)
@@ -1054,6 +1053,7 @@ class GuiMain(QMainWindow):
             # We are doing this manually instead of connecting to
             # paletteChanged since the processing order matters
             SHARED.theme.loadTheme()
+            self.setPalette(QApplication.palette())
             self.docEditor.updateTheme()
             self.docViewer.updateTheme()
             self.docViewerPanel.updateTheme()

@@ -23,12 +23,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import (
-    QColor, QFont, QPainter, QTextBlockFormat, QTextCharFormat, QTextCursor,
-    QTextFormat
-)
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QHeaderView, QSizePolicy, QStyle
+from typing import Any, TypeVar
+
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor, QFont, QPainter, QTextCharFormat, QTextCursor, QTextFormat
+from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QHeaderView, QSizePolicy, QStyle
 
 # Qt Alignment Flags
 
@@ -56,7 +55,7 @@ QtVAlignSuper = QTextCharFormat.VerticalAlignment.AlignSuperScript
 QtPageBreakBefore = QTextFormat.PageBreakFlag.PageBreak_AlwaysBefore
 QtPageBreakAfter = QTextFormat.PageBreakFlag.PageBreak_AlwaysAfter
 
-QtPropLineHeight = QTextBlockFormat.LineHeightTypes.ProportionalHeight
+QtPropLineHeight = 1  # QTextBlockFormat.LineHeightTypes.ProportionalHeight
 
 # Qt Painter Types
 
@@ -149,3 +148,30 @@ FONT_STYLE: dict[QFont.Style, str] = {
     QFont.Style.StyleItalic:  "italic",
     QFont.Style.StyleOblique: "oblique",
 }
+
+##
+#  Decorators and MetaClasses
+##
+
+T_ = TypeVar("T_", bound=object)
+
+
+def nwDataClass(cls: T_) -> T_:
+    """A simple data class decorator that generates slots automatically
+    and creates an init function to match.
+    """
+
+    def wrap(cls: T_) -> T_:
+        fields = tuple(a for a in dir(cls) if not a.startswith("__"))
+        values = {a: getattr(cls, a) for a in fields}
+
+        def init(self: Any) -> None:
+            nonlocal values
+            for a, v in values.items():
+                self.__setattr__(a, v)
+
+        return type(cls.__class__.__name__, (object,), {  # type: ignore
+            "__slots__": fields, "__init__": init
+        })
+
+    return wrap(cls)

@@ -24,7 +24,7 @@ import copy
 
 import pytest
 
-from PyQt5.QtGui import QIcon
+from PyQt6.QtGui import QIcon
 
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject

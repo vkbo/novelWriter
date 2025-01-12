@@ -24,8 +24,7 @@ from pathlib import Path
 
 import pytest
 
-from PyQt5.QtGui import QColor, QIcon, QPalette, QPixmap
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtGui import QColor, QIcon, QPalette, QPixmap
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import NWConfigParser
@@ -152,7 +151,7 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
     assert mainTheme.loadTheme() is True
 
     # This should load a standard palette
-    wCol = QApplication.style().standardPalette().color(QPalette.ColorRole.Window).getRgb()
+    wCol = QPalette().color(QPalette.ColorRole.Window).getRgb()
     assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == wCol
 
     # Mock Dark Theme
@@ -166,16 +165,13 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
         "[Palette]\n"
         "window = 0, 0, 0\n"
         "windowtext = 255, 255, 255\n"
-        "\n"
-        "[GUI]\n"
-        "helptext = 0, 0, 0\n"
     )
     mainTheme._availThemes["test"] = mockTheme
 
     CONFIG.guiTheme = "test"
     assert mainTheme.loadTheme() is True
-    assert mainTheme.isLightTheme is False
-    assert mainTheme.helpText.getRgb() == (165, 165, 165, 255)
+    assert mainTheme.isDarkTheme is False
+    assert mainTheme.helpText.getRgb() == (190, 190, 190, 255)
 
     # Load Default Light Theme
     # ========================
@@ -254,10 +250,10 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
     assert mainTheme.loadSyntax() is True
 
     # Check some values
-    assert mainTheme.syntaxName == "Default Light"
-    assert mainTheme.colBack == QColor(255, 255, 255)
-    assert mainTheme.colText == QColor(0, 0, 0)
-    assert mainTheme.colLink == QColor(0, 0, 200)
+    assert mainTheme.syntaxMeta.name == "Default Light"
+    assert mainTheme.syntaxTheme.back == QColor(255, 255, 255)
+    assert mainTheme.syntaxTheme.text == QColor(0, 0, 0)
+    assert mainTheme.syntaxTheme.link == QColor(0, 0, 200)
 
     # Load Default Dark Theme
     # =======================
@@ -267,10 +263,10 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
     assert mainTheme.loadSyntax() is True
 
     # Check some values
-    assert mainTheme.syntaxName == "Default Dark"
-    assert mainTheme.colBack == QColor(42, 42, 42)
-    assert mainTheme.colText == QColor(204, 204, 204)
-    assert mainTheme.colLink == QColor(102, 153, 204)
+    assert mainTheme.syntaxMeta.name == "Default Dark"
+    assert mainTheme.syntaxTheme.back == QColor(42, 42, 42)
+    assert mainTheme.syntaxTheme.text == QColor(204, 204, 204)
+    assert mainTheme.syntaxTheme.link == QColor(102, 153, 204)
 
     # qtbot.stop()
 
@@ -293,7 +289,7 @@ def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
 
     # Load working theme file
     assert iconCache.loadTheme("material_rounded_normal") is True
-    assert iconCache.themeName == "Material Symbols - Rounded Medium"
+    assert iconCache.themeMeta.name == "Material Symbols - Rounded Medium"
 
     # Load with project colour override
     purple = iconCache._svgColours["purple"]

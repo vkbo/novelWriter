@@ -24,7 +24,7 @@ from time import sleep
 
 import pytest
 
-from PyQt5.QtGui import QColor
+from PyQt6.QtGui import QColor
 
 from novelwriter.extensions.progressbars import NProgressCircle, NProgressSimple
 

@@ -31,8 +31,8 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import NamedTuple
 
-from PyQt5.QtCore import QLocale
-from PyQt5.QtGui import QColor, QFont
+from PyQt6.QtCore import QLocale
+from PyQt6.QtGui import QColor, QFont
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, fontMatcher, numberToRoman

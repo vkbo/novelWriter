@@ -27,7 +27,7 @@ from shutil import copyfile
 
 import pytest
 
-from PyQt5.QtGui import QColor
+from PyQt6.QtGui import QColor
 
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt

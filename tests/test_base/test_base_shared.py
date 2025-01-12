@@ -24,9 +24,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
+from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtWidgets import QFileDialog, QMessageBox, QWidget
 
 from novelwriter.core.project import NWProject
 from novelwriter.shared import SharedData
@@ -56,7 +56,8 @@ def testBaseSharedData_Init():
     assert mockGui is not mockTheme
 
     # Properly initialise the class
-    shared.initSharedData(mockGui, mockTheme)  # type: ignore
+    shared.initTheme(mockTheme)  # type: ignore
+    shared.initSharedData(mockGui)  # type: ignore
 
     assert shared.mainGui is mockGui
     assert shared.theme is mockTheme
@@ -94,7 +95,8 @@ def testBaseSharedData_Projects(monkeypatch, caplog, fncPath):
     # Initialise the instance, should create an empty project
     mockGui = MockGuiMain()
     mockTheme = MockTheme()
-    shared.initSharedData(mockGui, mockTheme)  # type: ignore
+    shared.initTheme(mockTheme)  # type: ignore
+    shared.initSharedData(mockGui)  # type: ignore
     assert isinstance(shared.project, NWProject)
     assert shared.hasProject is False
 
@@ -150,7 +152,8 @@ def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog):
 
     mockGui = MockGuiMain()
     mockTheme = MockTheme()
-    shared.initSharedData(mockGui, mockTheme)  # type: ignore
+    shared.initTheme(mockTheme)  # type: ignore
+    shared.initSharedData(mockGui)  # type: ignore
 
     assert shared.lastAlert == ""
 

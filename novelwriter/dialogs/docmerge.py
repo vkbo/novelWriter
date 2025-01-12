@@ -26,8 +26,8 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import Qt, pyqtSlot
+from PyQt6.QtWidgets import (
     QAbstractItemView, QDialogButtonBox, QGridLayout, QLabel, QListWidget,
     QListWidgetItem, QVBoxLayout, QWidget
 )

@@ -23,9 +23,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtCore import QEvent, QPropertyAnimation, Qt, pyqtProperty
-from PyQt5.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent
-from PyQt5.QtWidgets import QAbstractButton, QWidget
+from PyQt6.QtCore import QPropertyAnimation, Qt, pyqtProperty
+from PyQt6.QtGui import QEnterEvent, QMouseEvent, QPainter, QPaintEvent, QResizeEvent
+from PyQt6.QtWidgets import QAbstractButton, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.types import QtMouseLeft, QtNoPen, QtPaintAntiAlias, QtSizeFixed
@@ -57,11 +57,11 @@ class NSwitch(QAbstractButton):
     #  Properties
     ##
 
-    @pyqtProperty(int)  # type: ignore
+    @pyqtProperty(int)
     def offset(self) -> int:  # type: ignore
         return self._offset
 
-    @offset.setter  # type: ignore
+    @offset.setter
     def offset(self, offset: int) -> None:
         self._offset = offset
         self.update()
@@ -98,14 +98,14 @@ class NSwitch(QAbstractButton):
             trackBrush = palette.highlight()
             thumbBrush = palette.highlightedText()
         else:
-            trackBrush = palette.dark()
+            trackBrush = palette.mid()
             thumbBrush = palette.light()
 
         if self.isEnabled():
             trackOpacity = 1.0
         else:
             trackOpacity = 0.6
-            trackBrush = palette.shadow()
+            trackBrush = palette.dark()
             thumbBrush = palette.mid()
 
         painter.setBrush(trackBrush)
@@ -114,6 +114,7 @@ class NSwitch(QAbstractButton):
 
         painter.setBrush(thumbBrush)
         painter.drawEllipse(self._offset - self._rR, self._rB, self._rH, self._rH)
+        painter.end()
 
         return
 
@@ -128,7 +129,7 @@ class NSwitch(QAbstractButton):
             anim.start()
         return
 
-    def enterEvent(self, event: QEvent) -> None:
+    def enterEvent(self, event: QEnterEvent) -> None:
         """Change the cursor when hovering the button."""
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         super().enterEvent(event)

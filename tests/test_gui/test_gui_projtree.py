@@ -24,9 +24,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt5.QtCore import QEvent, QItemSelectionModel, QModelIndex, QPoint
-from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtWidgets import QMenu, QMessageBox
+from PyQt6.QtCore import QEvent, QItemSelectionModel, QModelIndex, QPointF
+from PyQt6.QtGui import QMouseEvent
+from PyQt6.QtWidgets import QMenu, QMessageBox
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.docmerge import GuiDocMerge
@@ -516,14 +516,14 @@ def testGuiProjTree_MouseClicks(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     modifier = QtModNone
 
     # Trigger the viewer
-    pos = projTree.visualRect(model.indexFromHandle(C.hChapterDoc)).center()
+    pos = QPointF(projTree.visualRect(model.indexFromHandle(C.hChapterDoc)).center())
     button = QtMouseMiddle
     event = QMouseEvent(eType, pos, button, button, modifier)
     projTree.mousePressEvent(event)
     assert nwGUI.docViewer.docHandle == C.hChapterDoc
 
     # Trigger the left click clear
-    pos = QPoint(5000, 5000)
+    pos = QPointF(5000.0, 5000.0)
     button = QtMouseLeft
     event = QMouseEvent(eType, pos, button, button, modifier)
 

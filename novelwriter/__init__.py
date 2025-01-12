@@ -29,7 +29,7 @@ import sys
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtWidgets import QApplication, QErrorMessage
+from PyQt6.QtWidgets import QApplication, QErrorMessage
 
 from novelwriter.config import Config
 from novelwriter.error import exceptionHandler
@@ -97,7 +97,6 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         "style=",
         "config=",
         "data=",
-        "testmode",
         "meminfo"
     ]
 
@@ -117,7 +116,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         "     --debug    Print debug output. Includes --info.\n"
         "     --color    Add ANSI colors to log output.\n"
         "     --meminfo  Show memory usage information in the status bar.\n"
-        "     --style=   Sets Qt5 style flag. Defaults to 'Fusion'.\n"
+        "     --style=   Sets Qt style flag. Defaults to 'Fusion'.\n"
         "     --config=  Alternative config file.\n"
         "     --data=    Alternative user data path.\n"
     )
@@ -127,7 +126,6 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     fmtFlags = 0b00
     confPath = None
     dataPath = None
-    testMode = False
     qtStyle  = "Fusion"
     cmdOpen  = None
 
@@ -163,8 +161,6 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             confPath = inArg
         elif inOpt == "--data":
             dataPath = inArg
-        elif inOpt == "--testmode":
-            testMode = True
         elif inOpt == "--meminfo":
             CONFIG.memInfo = True
 
@@ -206,14 +202,14 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             "At least Python 3.10 is required, found %s" % CONFIG.verPyString
         )
         errorCode |= 0x04
-    if CONFIG.verQtValue < 0x050f00:
+    if CONFIG.verQtValue < 0x060000:
         errorData.append(
-            "At least Qt5 version 5.15.0 is required, found %s" % CONFIG.verQtString
+            "At least Qt6 version 6.0 is required, found %s" % CONFIG.verQtString
         )
         errorCode |= 0x08
-    if CONFIG.verPyQtValue < 0x050f00:
+    if CONFIG.verPyQtValue < 0x060000:
         errorData.append(
-            "At least PyQt5 version 5.15.0 is required, found %s" % CONFIG.verPyQtString
+            "At least PyQt6 version 6.0 is required, found %s" % CONFIG.verPyQtString
         )
         errorCode |= 0x10
 
@@ -254,19 +250,11 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             pass  # Quietly ignore error
 
     # Import GUI (after dependency checks), and launch
+    from novelwriter.gui.theme import GuiTheme
     from novelwriter.guimain import GuiMain
 
-    if testMode:
-        # Only used for testing where the test framework creates the app
-        CONFIG.loadConfig()
-        return GuiMain()
-
-    app = QApplication([CONFIG.appName, (f"-style={qtStyle}")])
-    app.setApplicationName(CONFIG.appName)
-    app.setApplicationVersion(__version__)
-    app.setOrganizationDomain(__domain__)
-    app.setOrganizationName(__domain__)
-    app.setDesktopFileName(CONFIG.appName)
+    # Create App
+    app = _createApp(qtStyle)
 
     # Connect the exception handler before making the main GUI
     sys.excepthook = exceptionHandler
@@ -274,9 +262,21 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     # Run Config steps that require the QApplication
     CONFIG.loadConfig()
     CONFIG.initLocalisation(app)
+    SHARED.initTheme(GuiTheme())
 
     # Launch main GUI
     nwGUI = GuiMain()
     nwGUI.postLaunchTasks(cmdOpen)
 
     sys.exit(app.exec())
+
+
+def _createApp(style: str) -> QApplication:
+    """Create the app."""
+    app = QApplication([CONFIG.appName, (f"-style={style}")])
+    app.setApplicationName(CONFIG.appName)
+    app.setApplicationVersion(__version__)
+    app.setOrganizationDomain(__domain__)
+    app.setOrganizationName(__domain__)
+    app.setDesktopFileName(CONFIG.appName)
+    return app

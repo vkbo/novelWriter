@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtGui import QColor, QIcon
+from PyQt6.QtGui import QColor, QIcon
 
 from novelwriter.core.status import NWStatus, StatusEntry, _ShapeCache
 from novelwriter.enum import nwStatusShape

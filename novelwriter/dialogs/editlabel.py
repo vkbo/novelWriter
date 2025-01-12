@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtWidgets import QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG
 from novelwriter.extensions.modified import NDialog

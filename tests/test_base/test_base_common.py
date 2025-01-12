@@ -27,8 +27,8 @@ from xml.etree import ElementTree as ET
 
 import pytest
 
-from PyQt5.QtCore import QMimeData, QUrl
-from PyQt5.QtGui import QColor, QDesktopServices, QFont, QFontDatabase, QFontInfo
+from PyQt6.QtCore import QMimeData, QUrl
+from PyQt6.QtGui import QColor, QDesktopServices, QFont, QFontDatabase, QFontInfo
 
 from novelwriter.common import (
     NWConfigParser, checkBool, checkFloat, checkInt, checkIntTuple, checkPath,
@@ -522,8 +522,7 @@ def testBaseCommon_cssCol():
 @pytest.mark.base
 def testBaseCommon_describeFont():
     """Test the describeFont function."""
-    fontDB = QFontDatabase()
-    font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
+    font = QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont)
     font.setPointSize(12)
     assert describeFont(font).startswith("12 pt")
     assert describeFont(None) == "Error"  # type: ignore
@@ -537,10 +536,9 @@ def testBaseCommon_fontMatcher(monkeypatch):
     assert fontMatcher(nonsense) is nonsense
 
     # General font
-    fontDB = QFontDatabase()
-    if len(fontDB.families()) > 1:
-        fontOne = QFont(fontDB.families()[0])
-        fontTwo = QFont(fontDB.families()[1])
+    if len(QFontDatabase.families()) > 1:
+        fontOne = QFont(QFontDatabase.families()[0])
+        fontTwo = QFont(QFontDatabase.families()[1])
         check = QFont(fontOne)
         check.setFamily(fontTwo.family())
         with monkeypatch.context() as mp:

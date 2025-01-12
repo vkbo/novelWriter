@@ -25,8 +25,8 @@ from zipfile import ZipFile
 import enchant
 import pytest
 
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QFileDialog
+from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtWidgets import QFileDialog
 
 from novelwriter import SHARED
 from novelwriter.tools.dictionaries import GuiDictionaries

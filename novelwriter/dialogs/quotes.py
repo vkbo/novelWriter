@@ -25,9 +25,9 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtCore import QSize, pyqtSlot
-from PyQt5.QtGui import QFontMetrics
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import QSize, pyqtSlot
+from PyQt6.QtGui import QFontMetrics
+from PyQt6.QtWidgets import (
     QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget,
     QListWidgetItem, QVBoxLayout, QWidget
 )

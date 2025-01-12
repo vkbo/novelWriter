@@ -24,9 +24,9 @@ from pathlib import Path
 
 import pytest
 
-from PyQt5.QtCore import QEvent, QPoint, Qt
-from PyQt5.QtGui import QFocusEvent
-from PyQt5.QtWidgets import QInputDialog, QToolTip
+from PyQt6.QtCore import QEvent, QPoint, Qt
+from PyQt6.QtGui import QFocusEvent
+from PyQt6.QtWidgets import QInputDialog, QToolTip
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -225,7 +225,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     scItem = novelTree.topLevelItem(2)
     scItem.setSelected(True)
     assert scItem.isSelected()
-    novelTree.focusOutEvent(QFocusEvent(QEvent.Type.None_, Qt.MouseFocusReason))
+    novelTree.focusOutEvent(QFocusEvent(QEvent.Type.None_, Qt.FocusReason.MouseFocusReason))
     assert not scItem.isSelected()
 
     # Close

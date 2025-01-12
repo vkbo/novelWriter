@@ -10,7 +10,7 @@ If a qtbase_xx.qm file already exists, do not add a translation for the
 entries generated from this file.
 """
 
-from PyQt5.QtCore import QT_TRANSLATE_NOOP
+from PyQt6.QtCore import QT_TRANSLATE_NOOP
 
 # QDialogButtonBox
 # ================

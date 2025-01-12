@@ -37,18 +37,18 @@ import logging
 from enum import Enum
 from time import time
 
-from PyQt5.QtCore import (
+from PyQt6.QtCore import (
     QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
     pyqtSlot
 )
-from PyQt5.QtGui import (
-    QColor, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
-    QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent, QTextBlock,
-    QTextCursor, QTextDocument, QTextOption
+from PyQt6.QtGui import (
+    QAction, QColor, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent,
+    QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent,
+    QShortcut, QTextBlock, QTextCursor, QTextDocument, QTextOption
 )
-from PyQt5.QtWidgets import (
-    QAction, QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
-    QMenu, QPlainTextEdit, QShortcut, QToolBar, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import (
+    QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
+    QPlainTextEdit, QToolBar, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -287,16 +287,18 @@ class GuiDocEditor(QPlainTextEdit):
 
     def updateSyntaxColours(self) -> None:
         """Update the syntax highlighting theme."""
-        mainPalette = self.palette()
-        mainPalette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
-        mainPalette.setColor(QPalette.ColorRole.Base, SHARED.theme.colBack)
-        mainPalette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
-        self.setPalette(mainPalette)
+        syntax = SHARED.theme.syntaxTheme
 
-        docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.ColorRole.Base, SHARED.theme.colBack)
-        docPalette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
-        self.viewport().setPalette(docPalette)
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, syntax.back)
+        palette.setColor(QPalette.ColorRole.Base, syntax.back)
+        palette.setColor(QPalette.ColorRole.Text, syntax.text)
+        self.setPalette(palette)
+
+        palette = self.viewport().palette()
+        palette.setColor(QPalette.ColorRole.Base, syntax.back)
+        palette.setColor(QPalette.ColorRole.Text, syntax.text)
+        self.viewport().setPalette(palette)
 
         self.docHeader.matchColours()
         self.docFooter.matchColours()
@@ -2032,8 +2034,9 @@ class GuiDocEditor(QPlainTextEdit):
 
         return cursor
 
-    def _makeSelection(self, mode: QTextCursor.SelectionType,
-                       cursor: QTextCursor | None = None) -> None:
+    def _makeSelection(
+        self, mode: QTextCursor.SelectionType, cursor: QTextCursor | None = None
+    ) -> None:
         """Select text based on selection mode."""
         if cursor is None:
             cursor = self.textCursor()
@@ -2432,10 +2435,12 @@ class GuiDocToolBar(QWidget):
 
     def updateTheme(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
-        palette = QPalette()
-        palette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
-        palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
-        palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
+        syntax = SHARED.theme.syntaxTheme
+
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, syntax.back)
+        palette.setColor(QPalette.ColorRole.WindowText, syntax.text)
+        palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
 
         self.tbBoldMD.setThemeIcon("fmt_bold", "orange")
@@ -2975,10 +2980,11 @@ class GuiDocEditHeader(QWidget):
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
-        palette = QPalette()
-        palette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
-        palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
-        palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
+        syntax = SHARED.theme.syntaxTheme
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, syntax.back)
+        palette.setColor(QPalette.ColorRole.WindowText, syntax.text)
+        palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
         self.itemTitle.setTextColors(
             color=palette.windowText().color(), faded=SHARED.theme.fadedText
@@ -3174,10 +3180,12 @@ class GuiDocEditFooter(QWidget):
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
-        palette = QPalette()
-        palette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
-        palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
-        palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
+        syntax = SHARED.theme.syntaxTheme
+
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, syntax.back)
+        palette.setColor(QPalette.ColorRole.WindowText, syntax.text)
+        palette.setColor(QPalette.ColorRole.Text, syntax.text)
 
         self.setPalette(palette)
         self.statusText.setPalette(palette)

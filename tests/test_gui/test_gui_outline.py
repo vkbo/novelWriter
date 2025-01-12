@@ -26,7 +26,8 @@ from shutil import copyfile
 
 import pytest
 
-from PyQt5.QtWidgets import QAction, QFileDialog, QWidget
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QFileDialog, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords

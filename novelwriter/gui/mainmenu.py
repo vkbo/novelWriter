@@ -28,8 +28,9 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QAction, QMenuBar
+from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QMenuBar
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import openExternalPath, qtLambda
@@ -1020,8 +1021,8 @@ class GuiMainMenu(QMenuBar):
         self.aAboutNW.setMenuRole(QAction.MenuRole.AboutRole)
         self.aAboutNW.triggered.connect(self.mainGui.showAboutNWDialog)
 
-        # Help > About Qt5
-        self.aAboutQt = self.helpMenu.addAction(self.tr("About Qt5"))
+        # Help > About Qt
+        self.aAboutQt = self.helpMenu.addAction(self.tr("About Qt"))
         self.aAboutQt.setMenuRole(QAction.MenuRole.AboutQtRole)
         self.aAboutQt.triggered.connect(self.mainGui.showAboutQtDialog)
 

@@ -31,7 +31,7 @@ from functools import partial
 from pathlib import Path
 from time import time
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__
 from novelwriter.common import (

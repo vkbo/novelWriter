@@ -28,12 +28,12 @@ from pathlib import Path
 
 import pytest
 
-from PyQt5.QtCore import QLocale
-from PyQt5.QtWidgets import QMessageBox
+from PyQt6.QtCore import QLocale
+from PyQt6.QtWidgets import QMessageBox
 
 sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
-from novelwriter import CONFIG, SHARED, main  # noqa: E402
+from novelwriter import CONFIG, SHARED  # noqa: E402
 
 from tests.mocked import MockGuiMain, MockTheme  # noqa: E402
 from tests.tools import cleanProject  # noqa: E402
@@ -160,11 +160,15 @@ def mockGUI(qtbot, monkeypatch):
 @pytest.fixture(scope="function")
 def nwGUI(qtbot, monkeypatch, functionFixture):
     """Create an instance of the novelWriter GUI."""
+    from novelwriter.gui.theme import GuiTheme
+    from novelwriter.guimain import GuiMain
+
     monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
 
-    nwGUI = main(["--testmode", f"--config={_TMP_CONF}", f"--data={_TMP_CONF}"])
-    assert nwGUI is not None
+    CONFIG.loadConfig()
+    SHARED.initTheme(GuiTheme())
+    nwGUI = GuiMain()
     qtbot.addWidget(nwGUI)
     resetConfigVars()
     nwGUI.docEditor.initEditor()
@@ -172,13 +176,7 @@ def nwGUI(qtbot, monkeypatch, functionFixture):
     nwGUI.show()
     qtbot.wait(20)
 
-    yield nwGUI
-
-    qtbot.wait(20)
-    nwGUI.closeMain()
-    qtbot.wait(20)
-
-    return
+    return nwGUI
 
 
 ##

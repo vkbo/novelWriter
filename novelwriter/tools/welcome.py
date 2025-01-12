@@ -28,20 +28,19 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from PyQt5.QtCore import (
-    QAbstractListModel, QEvent, QModelIndex, QObject, QPoint, QSize, Qt,
-    pyqtSignal, pyqtSlot
+from PyQt6.QtCore import (
+    QAbstractListModel, QModelIndex, QObject, QPoint, QSize, Qt, pyqtSignal,
+    pyqtSlot
 )
-from PyQt5.QtGui import QCloseEvent, QColor, QFont, QPainter, QPaintEvent, QPen
-from PyQt5.QtWidgets import (
-    QAction, QApplication, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-    QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
-    QStackedWidget, QStyledItemDelegate, QStyleOptionViewItem, QVBoxLayout,
-    QWidget
+from PyQt6.QtGui import QAction, QCloseEvent, QColor, QFont, QPainter, QPaintEvent, QPen, QShortcut
+from PyQt6.QtWidgets import (
+    QApplication, QFileDialog, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
+    QListView, QMenu, QPushButton, QScrollArea, QStackedWidget,
+    QStyledItemDelegate, QStyleOptionViewItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import cssCol, formatInt, makeFileNameSafe
+from novelwriter.common import cssCol, formatInt, makeFileNameSafe, qtLambda
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.enum import nwItemClass
@@ -86,7 +85,7 @@ class GuiWelcome(NDialog):
 
         self.bgImage = SHARED.theme.loadDecoration("welcome")
         self.nwImage = SHARED.theme.loadDecoration("nw-text", h=hD)
-        self.bgColor = QColor(255, 255, 255) if SHARED.theme.isLightTheme else QColor(54, 54, 54)
+        self.bgColor = QColor(54, 54, 54) if SHARED.theme.isDarkTheme else QColor(255, 255, 255)
 
         self.nwLogo = QLabel(self)
         self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (hF, hF)))
@@ -127,7 +126,7 @@ class GuiWelcome(NDialog):
         self.btnCancel = QPushButton(self.tr("Cancel"), self)
         self.btnCancel.setIcon(SHARED.theme.getIcon("cancel", "red"))
         self.btnCancel.setIconSize(btnIconSize)
-        self.btnCancel.clicked.connect(self.close)
+        self.btnCancel.clicked.connect(qtLambda(self.close))
 
         self.btnCreate = QPushButton(self.tr("Create"), self)
         self.btnCreate.setIcon(SHARED.theme.getIcon("star", "yellow"))
@@ -591,7 +590,7 @@ class _NewProjectForm(QWidget):
 
         self.browseFill = NIconToolButton(self, iSz, "document_add", "blue")
 
-        self.fillMenu = _PopLeftDirectionMenu(self.browseFill)
+        self.fillMenu = QMenu(self.browseFill)
 
         self.fillBlank = self.fillMenu.addAction(self.tr("Create a fresh project"))
         self.fillBlank.setIcon(SHARED.theme.getIcon("document"))
@@ -803,14 +802,3 @@ class _NewProjectForm(QWidget):
         self.extraWidget.setVisible(self._fillMode == self.FILL_BLANK)
 
         return
-
-
-class _PopLeftDirectionMenu(QMenu):
-
-    def event(self, event: QEvent) -> bool:
-        """Overload the show event and move the menu popup location."""
-        if event.type() == QEvent.Type.Show:
-            if isinstance(parent := self.parent(), QWidget):
-                offset = QPoint(parent.width() - self.width(), parent.height())
-                self.move(parent.mapToGlobal(offset))
-        return super(_PopLeftDirectionMenu, self).event(event)

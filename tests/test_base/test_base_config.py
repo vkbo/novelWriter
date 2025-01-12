@@ -245,35 +245,13 @@ def testBaseConfig_SettersGetters(fncPath):
     tstConf = Config()
     tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
 
-    # GUI Scaling
-    # ===========
-
-    tstConf.guiScale = 1.0
-    assert tstConf.pxInt(10) == 10
-    assert tstConf.pxInt(13) == 13
-    assert tstConf.rpxInt(10) == 10
-    assert tstConf.rpxInt(13) == 13
-
-    tstConf.guiScale = 2.0
-    assert tstConf.pxInt(10) == 20
-    assert tstConf.pxInt(13) == 26
-    assert tstConf.rpxInt(10) == 5
-    assert tstConf.rpxInt(13) == 6
-
     # Setter + Getter Combos
     # ======================
 
     # Window Size
-    tstConf.guiScale = 1.0
     tstConf.setMainWinSize(1205, 655)
     assert tstConf.mainWinSize == [1200, 650]
 
-    tstConf.guiScale = 2.0
-    tstConf.setMainWinSize(70, 70)
-    assert tstConf.mainWinSize == [70, 70]
-    assert tstConf._mainWinSize == [35, 35]
-
-    tstConf.guiScale = 1.0
     tstConf.setMainWinSize(70, 70)
     assert tstConf.mainWinSize == [70, 70]
     assert tstConf._mainWinSize == [70, 70]
@@ -281,12 +259,6 @@ def testBaseConfig_SettersGetters(fncPath):
     tstConf.setMainWinSize(1200, 650)
 
     # Welcome Window Size
-    tstConf.guiScale = 2.0
-    tstConf.setWelcomeWinSize(70, 70)
-    assert tstConf.welcomeWinSize == [70, 70]
-    assert tstConf._welcomeSize == [35, 35]
-
-    tstConf.guiScale = 1.0
     tstConf.setWelcomeWinSize(70, 70)
     assert tstConf.welcomeWinSize == [70, 70]
     assert tstConf._welcomeSize == [70, 70]
@@ -294,12 +266,6 @@ def testBaseConfig_SettersGetters(fncPath):
     tstConf.setWelcomeWinSize(800, 500)
 
     # Preferences Size
-    tstConf.guiScale = 2.0
-    tstConf.setPreferencesWinSize(70, 70)
-    assert tstConf.preferencesWinSize == [70, 70]
-    assert tstConf._prefsWinSize == [35, 35]
-
-    tstConf.guiScale = 1.0
     tstConf.setPreferencesWinSize(70, 70)
     assert tstConf.preferencesWinSize == [70, 70]
     assert tstConf._prefsWinSize == [70, 70]
@@ -307,12 +273,6 @@ def testBaseConfig_SettersGetters(fncPath):
     tstConf.setPreferencesWinSize(700, 615)
 
     # Main Pane Splitter
-    tstConf.guiScale = 2.0
-    tstConf.setMainPanePos([200, 700])
-    assert tstConf.mainPanePos == [200, 700]
-    assert tstConf._mainPanePos == [100, 350]
-
-    tstConf.guiScale = 1.0
     tstConf.setMainPanePos([200, 700])
     assert tstConf.mainPanePos == [200, 700]
     assert tstConf._mainPanePos == [200, 700]
@@ -320,12 +280,6 @@ def testBaseConfig_SettersGetters(fncPath):
     tstConf.setMainPanePos([300, 800])
 
     # View Pane Splitter
-    tstConf.guiScale = 2.0
-    tstConf.setViewPanePos([400, 250])
-    assert tstConf.viewPanePos == [400, 250]
-    assert tstConf._viewPanePos == [200, 125]
-
-    tstConf.guiScale = 1.0
     tstConf.setViewPanePos([400, 250])
     assert tstConf.viewPanePos == [400, 250]
     assert tstConf._viewPanePos == [400, 250]
@@ -333,12 +287,6 @@ def testBaseConfig_SettersGetters(fncPath):
     tstConf.setViewPanePos([500, 150])
 
     # Outline Pane Splitter
-    tstConf.guiScale = 2.0
-    tstConf.setOutlinePanePos([400, 250])
-    assert tstConf.outlinePanePos == [400, 250]
-    assert tstConf._outlnPanePos == [200, 125]
-
-    tstConf.guiScale = 1.0
     tstConf.setOutlinePanePos([400, 250])
     assert tstConf.outlinePanePos == [400, 250]
     assert tstConf._outlnPanePos == [400, 250]
@@ -348,17 +296,10 @@ def testBaseConfig_SettersGetters(fncPath):
     # Getters Only
     # ============
 
-    tstConf.guiScale = 1.0
     assert tstConf.getTextWidth(False) == 700
     assert tstConf.getTextWidth(True) == 800
     assert tstConf.getTextMargin() == 40
     assert tstConf.getTabWidth() == 40
-
-    tstConf.guiScale = 2.0
-    assert tstConf.getTextWidth(False) == 1400
-    assert tstConf.getTextWidth(True) == 1600
-    assert tstConf.getTextMargin() == 80
-    assert tstConf.getTabWidth() == 80
 
 
 @pytest.mark.base

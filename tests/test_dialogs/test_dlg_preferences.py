@@ -22,9 +22,9 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtGui import QFont, QFontDatabase, QKeyEvent
-from PyQt5.QtWidgets import QAction, QFileDialog, QFontDialog
+from PyQt6.QtCore import QEvent, Qt
+from PyQt6.QtGui import QAction, QFont, QFontDatabase, QKeyEvent
+from PyQt6.QtWidgets import QFileDialog, QFontDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwUnicode

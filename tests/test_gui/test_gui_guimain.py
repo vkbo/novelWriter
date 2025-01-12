@@ -28,9 +28,9 @@ from shutil import copyfile
 
 import pytest
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPalette
-from PyQt5.QtWidgets import QInputDialog, QMenu, QMessageBox
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPalette
+from PyQt6.QtWidgets import QInputDialog, QMenu, QMessageBox
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwFiles
@@ -186,12 +186,12 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
     mainTheme.loadSyntax()
     nwGUI._processConfigChanges(True, True, True, True)
 
-    syntaxBack = SHARED.theme.colBack
+    syntax = SHARED.theme.syntaxTheme
 
-    assert nwGUI.docEditor.palette().color(QPalette.ColorRole.Window) == syntaxBack
-    assert nwGUI.docEditor.docHeader.palette().color(QPalette.ColorRole.Window) == syntaxBack
-    assert nwGUI.docViewer.palette().color(QPalette.ColorRole.Window) == syntaxBack
-    assert nwGUI.docViewer.docHeader.palette().color(QPalette.ColorRole.Window) == syntaxBack
+    assert nwGUI.docEditor.palette().color(QPalette.ColorRole.Window) == syntax.back
+    assert nwGUI.docEditor.docHeader.palette().color(QPalette.ColorRole.Window) == syntax.back
+    assert nwGUI.docViewer.palette().color(QPalette.ColorRole.Window) == syntax.back
+    assert nwGUI.docViewer.docHeader.palette().color(QPalette.ColorRole.Window) == syntax.back
 
     # qtbot.stop()
 
@@ -782,11 +782,12 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Full Screen Mode
     # ================
 
-    assert nwGUI.windowState() & Qt.WindowFullScreen != Qt.WindowFullScreen
+    fullScreen = Qt.WindowState.WindowFullScreen
+    assert nwGUI.windowState() & fullScreen != fullScreen
     nwGUI.toggleFullScreenMode()
-    assert nwGUI.windowState() & Qt.WindowFullScreen == Qt.WindowFullScreen
+    assert nwGUI.windowState() & fullScreen == fullScreen
     nwGUI.toggleFullScreenMode()
-    assert nwGUI.windowState() & Qt.WindowFullScreen != Qt.WindowFullScreen
+    assert nwGUI.windowState() & fullScreen != fullScreen
 
     # SideBar Menu
     # ============

@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtGui import QIcon
+from PyQt6.QtGui import QIcon
 
 from novelwriter import SHARED
 from novelwriter.constants import nwLists

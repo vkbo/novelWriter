@@ -31,8 +31,8 @@ import random
 from collections.abc import Iterable
 from typing import Literal, TypeGuard
 
-from PyQt5.QtCore import QPointF, Qt
-from PyQt5.QtGui import QColor, QIcon, QPainter, QPainterPath, QPixmap, QPolygonF
+from PyQt6.QtCore import QPointF, Qt
+from PyQt6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPixmap, QPolygonF
 
 from novelwriter import SHARED
 from novelwriter.common import simplified

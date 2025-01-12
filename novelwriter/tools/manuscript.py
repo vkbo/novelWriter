@@ -28,13 +28,13 @@ import logging
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import (
-    QCloseEvent, QColor, QCursor, QDesktopServices, QFont, QPalette,
-    QResizeEvent, QTextDocument
+from PyQt6.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import (
+    QCloseEvent, QColor, QCursor, QDesktopServices, QFont, QPageLayout,
+    QPalette, QResizeEvent, QTextDocument
 )
-from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
-from PyQt5.QtWidgets import (
+from PyQt6.QtPrintSupport import QPrinter, QPrintPreviewDialog
+from PyQt6.QtWidgets import (
     QAbstractItemView, QApplication, QFormLayout, QGridLayout, QHBoxLayout,
     QLabel, QListWidget, QListWidgetItem, QPushButton, QSplitter,
     QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem,
@@ -42,7 +42,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import fuzzyTime
+from novelwriter.common import fuzzyTime, qtLambda
 from novelwriter.constants import nwLabels, nwStats, trConst
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
@@ -185,7 +185,7 @@ class GuiManuscript(NToolDialog):
         self.btnBuild.clicked.connect(self._buildManuscript)
 
         self.btnClose = QPushButton(self.tr("Close"), self)
-        self.btnClose.clicked.connect(self.close)
+        self.btnClose.clicked.connect(qtLambda(self.close))
 
         self.processBox = QGridLayout()
         self.processBox.addWidget(self.btnPreview, 0, 0)
@@ -884,7 +884,7 @@ class _PreviewWidget(QTextBrowser):
     def printPreview(self, printer: QPrinter) -> None:
         """Connect the print preview painter to the document viewer."""
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        printer.setOrientation(QPrinter.Orientation.Portrait)
+        printer.setPageOrientation(QPageLayout.Orientation.Portrait)
         self.document().print(printer)
         QApplication.restoreOverrideCursor()
         return

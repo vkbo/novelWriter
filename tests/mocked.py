@@ -22,8 +22,8 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtWidgets import QWidget
+from PyQt6.QtGui import QFont, QIcon, QPixmap
+from PyQt6.QtWidgets import QWidget
 
 
 class MockGuiMain(QWidget):

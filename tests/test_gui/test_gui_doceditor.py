@@ -24,12 +24,12 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt5.QtCore import QEvent, QMimeData, Qt, QThreadPool, QUrl
-from PyQt5.QtGui import (
-    QClipboard, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent,
-    QFont, QMouseEvent, QTextBlock, QTextCursor, QTextOption
+from PyQt6.QtCore import QEvent, QMimeData, QPointF, Qt, QThreadPool, QUrl
+from PyQt6.QtGui import (
+    QAction, QClipboard, QDesktopServices, QDragEnterEvent, QDragMoveEvent,
+    QDropEvent, QFont, QMouseEvent, QTextBlock, QTextCursor, QTextOption
 )
-from PyQt5.QtWidgets import QAction, QApplication, QMenu, QPlainTextEdit
+from PyQt6.QtWidgets import QApplication, QMenu, QPlainTextEdit
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
@@ -102,8 +102,8 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     qDoc = docEditor.document()
     assert CONFIG.textFont == qDoc.defaultFont()
     assert qDoc.defaultTextOption().alignment() == QtAlignJustify
-    assert qDoc.defaultTextOption().flags() & QTextOption.ShowTabsAndSpaces
-    assert qDoc.defaultTextOption().flags() & QTextOption.ShowLineAndParagraphSeparators
+    assert qDoc.defaultTextOption().flags() & QTextOption.Flag.ShowTabsAndSpaces
+    assert qDoc.defaultTextOption().flags() & QTextOption.Flag.ShowLineAndParagraphSeparators
     assert docEditor.verticalScrollBarPolicy() == QtScrollAlwaysOff
     assert docEditor.horizontalScrollBarPolicy() == QtScrollAlwaysOff
     assert docEditor._autoReplace._padChar == nwUnicode.U_THNBSP
@@ -262,6 +262,7 @@ def testGuiEditor_DragAndDrop(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         assert mockMove.call_count == 1
 
     # Drop
+    middle = QPointF(docEditor.viewport().rect().center())
     mockDrop = MagicMock()
     docEvent = QDropEvent(middle, action, docMime, mouse, QtModNone)
     noneEvent = QDropEvent(middle, action, noneMime, mouse, QtModNone)
@@ -1708,7 +1709,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # On Known Tag, Follow
     docEditor.setCursorPosition(22)
-    position = docEditor.cursorRect().center()
+    position = QPointF(docEditor.cursorRect().center())
     event = QMouseEvent(
         QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModCtrl
     )
@@ -1750,7 +1751,7 @@ def testGuiEditor_Links(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd)
     docEditor.replaceText("### Scene\n\nFoo http://www.example.com bar.\n\n")
 
     docEditor.setCursorPosition(20)
-    position = docEditor.cursorRect().center()
+    position = QPointF(docEditor.cursorRect().center())
     event = QMouseEvent(
         QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModCtrl
     )
@@ -1988,7 +1989,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Select the Word "est"
     docEditor.setCursorPosition(645)
-    docEditor._makeSelection(QTextCursor.WordUnderCursor)
+    docEditor._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
     cursor = docEditor.textCursor()
     assert cursor.selectedText() == "est"
 
@@ -2118,7 +2119,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Close search and select "est" again
     docSearch.cancelSearch.activate(QAction.ActionEvent.Trigger)
     docEditor.setCursorPosition(645)
-    docEditor._makeSelection(QTextCursor.WordUnderCursor)
+    docEditor._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
     cursor = docEditor.textCursor()
     assert cursor.selectedText() == "est"
 

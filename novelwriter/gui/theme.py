@@ -29,19 +29,19 @@ import logging
 from math import ceil
 from pathlib import Path
 
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import (
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import (
     QColor, QFont, QFontDatabase, QFontMetrics, QIcon, QPainter, QPainterPath,
     QPalette, QPixmap
 )
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 
 from novelwriter import CONFIG
 from novelwriter.common import NWConfigParser, cssCol, minmax
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
-from novelwriter.types import QtPaintAntiAlias, QtTransparent
+from novelwriter.types import QtPaintAntiAlias, QtTransparent, nwDataClass
 
 logger = logging.getLogger(__name__)
 
@@ -50,30 +50,75 @@ STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
 
 
+@nwDataClass
+class ThemeMeta:
+
+    name:        str = ""
+    description: str = ""
+    author:      str = ""
+    credit:      str = ""
+    url:         str = ""
+    license:     str = ""
+    licenseUrl:  str = ""
+
+
+@nwDataClass
+class SyntaxColors:
+
+    back:   QColor = QColor(255, 255, 255)
+    text:   QColor = QColor(0, 0, 0)
+    link:   QColor = QColor(0, 0, 0)
+    head:   QColor = QColor(0, 0, 0)
+    headH:  QColor = QColor(0, 0, 0)
+    emph:   QColor = QColor(0, 0, 0)
+    dialN:  QColor = QColor(0, 0, 0)
+    dialA:  QColor = QColor(0, 0, 0)
+    hidden: QColor = QColor(0, 0, 0)
+    note:   QColor = QColor(0, 0, 0)
+    code:   QColor = QColor(0, 0, 0)
+    key:    QColor = QColor(0, 0, 0)
+    tag:    QColor = QColor(0, 0, 0)
+    val:    QColor = QColor(0, 0, 0)
+    opt:    QColor = QColor(0, 0, 0)
+    spell:  QColor = QColor(0, 0, 0)
+    error:  QColor = QColor(0, 0, 0)
+    repTag: QColor = QColor(0, 0, 0)
+    mod:    QColor = QColor(0, 0, 0)
+    mark:   QColor = QColor(255, 255, 255, 128)
+
+
 class GuiTheme:
     """Gui Theme Class
 
     Handles the look and feel of novelWriter.
     """
 
+    __slots__ = (
+        # Attributes
+        "iconCache", "themeMeta", "isDarkTheme", "statNone", "statUnsaved",
+        "statSaved", "helpText", "fadedText", "errorText", "syntaxMeta",
+        "syntaxTheme", "guiFont", "guiFontB", "guiFontBU", "guiFontSmall",
+        "fontPointSize", "fontPixelSize", "baseIconHeight", "baseButtonHeight",
+        "textNHeight", "textNWidth", "baseIconSize", "buttonIconSize",
+        "guiFontFixed",
+
+        # Functions
+        "getIcon", "getPixmap", "getItemIcon", "getToggleIcon",
+        "loadDecoration", "getHeaderDecoration", "getHeaderDecorationNarrow",
+
+        # Internal
+        "_guiPalette", "_themeList", "_syntaxList", "_availThemes",
+        "_availSyntax", "_styleSheets",
+    )
+
     def __init__(self) -> None:
 
         self.iconCache = GuiIcons(self)
 
-        # Loaded Theme Settings
-        # =====================
+        # GUI Theme
+        self.themeMeta   = ThemeMeta()
+        self.isDarkTheme = False
 
-        # Theme
-        self.themeName        = ""
-        self.themeDescription = ""
-        self.themeAuthor      = ""
-        self.themeCredit      = ""
-        self.themeUrl         = ""
-        self.themeLicense     = ""
-        self.themeLicenseUrl  = ""
-        self.isLightTheme     = True
-
-        # GUI
         self.statNone    = QColor(0, 0, 0)
         self.statUnsaved = QColor(0, 0, 0)
         self.statSaved   = QColor(0, 0, 0)
@@ -81,42 +126,9 @@ class GuiTheme:
         self.fadedText   = QColor(0, 0, 0)
         self.errorText   = QColor(255, 0, 0)
 
-        # Loaded Syntax Settings
-        # ======================
-
-        # Main
-        self.syntaxName        = ""
-        self.syntaxDescription = ""
-        self.syntaxAuthor      = ""
-        self.syntaxCredit      = ""
-        self.syntaxUrl         = ""
-        self.syntaxLicense     = ""
-        self.syntaxLicenseUrl  = ""
-
-        # Colours
-        self.colBack   = QColor(255, 255, 255)
-        self.colText   = QColor(0, 0, 0)
-        self.colLink   = QColor(0, 0, 0)
-        self.colHead   = QColor(0, 0, 0)
-        self.colHeadH  = QColor(0, 0, 0)
-        self.colEmph   = QColor(0, 0, 0)
-        self.colDialN  = QColor(0, 0, 0)
-        self.colDialA  = QColor(0, 0, 0)
-        self.colHidden = QColor(0, 0, 0)
-        self.colNote   = QColor(0, 0, 0)
-        self.colCode   = QColor(0, 0, 0)
-        self.colKey    = QColor(0, 0, 0)
-        self.colTag    = QColor(0, 0, 0)
-        self.colVal    = QColor(0, 0, 0)
-        self.colOpt    = QColor(0, 0, 0)
-        self.colSpell  = QColor(0, 0, 0)
-        self.colError  = QColor(0, 0, 0)
-        self.colRepTag = QColor(0, 0, 0)
-        self.colMod    = QColor(0, 0, 0)
-        self.colMark   = QColor(255, 255, 255, 128)
-
-        # Class Setup
-        # ===========
+        # Syntax Theme
+        self.syntaxMeta = ThemeMeta()
+        self.syntaxTheme = SyntaxColors()
 
         # Load Themes
         self._guiPalette = QPalette()
@@ -142,13 +154,6 @@ class GuiTheme:
         self.loadDecoration = self.iconCache.loadDecoration
         self.getHeaderDecoration = self.iconCache.getHeaderDecoration
         self.getHeaderDecorationNarrow = self.iconCache.getHeaderDecorationNarrow
-
-        # Extract Other Info
-        self.guiDPI = QApplication.primaryScreen().logicalDotsPerInchX()
-        self.guiScale = QApplication.primaryScreen().logicalDotsPerInchX()/96.0
-        CONFIG.guiScale = self.guiScale
-        logger.debug("GUI DPI: %.1f", self.guiDPI)
-        logger.debug("GUI Scale: %.2f", self.guiScale)
 
         # Fonts
         self.guiFont = QApplication.font()
@@ -233,20 +238,21 @@ class GuiTheme:
             return False
 
         # Reset Palette
-        self._guiPalette = QApplication.style().standardPalette()
-        self._resetGuiColors()
-        self.iconCache.clear()
+        self._resetTheme()
 
         # Main
         sec = "Main"
+        meta = ThemeMeta()
         if parser.has_section(sec):
-            self.themeName        = parser.rdStr(sec, "name", "")
-            self.themeDescription = parser.rdStr(sec, "description", "N/A")
-            self.themeAuthor      = parser.rdStr(sec, "author", "N/A")
-            self.themeCredit      = parser.rdStr(sec, "credit", "N/A")
-            self.themeUrl         = parser.rdStr(sec, "url", "")
-            self.themeLicense     = parser.rdStr(sec, "license", "N/A")
-            self.themeLicenseUrl  = parser.rdStr(sec, "licenseurl", "")
+            meta.name        = parser.rdStr(sec, "name", "")
+            meta.description = parser.rdStr(sec, "description", "N/A")
+            meta.author      = parser.rdStr(sec, "author", "N/A")
+            meta.credit      = parser.rdStr(sec, "credit", "N/A")
+            meta.url         = parser.rdStr(sec, "url", "")
+            meta.license     = parser.rdStr(sec, "license", "N/A")
+            meta.licenseUrl  = parser.rdStr(sec, "licenseurl", "")
+
+        self.themeMeta = meta
 
         # Icons
         sec = "Icons"
@@ -301,30 +307,60 @@ class GuiTheme:
             self.statSaved   = self._parseColour(parser, sec, "statussaved")
 
         # Update Dependant Colours
-        backCol = self._guiPalette.window().color()
-        textCol = self._guiPalette.windowText().color()
+        # Based on: https://github.com/qt/qtbase/blob/dev/src/gui/kernel/qplatformtheme.cpp
+        text = self._guiPalette.text().color()
+        window = self._guiPalette.window().color()
+        highlight = self._guiPalette.highlight().color()
+        isDark = text.lightnessF() > window.lightnessF()
 
-        backLNess = backCol.lightnessF()
-        textLNess = textCol.lightnessF()
-        self.isLightTheme = backLNess > textLNess
-        if self.helpText == QColor(0, 0, 0):
-            if self.isLightTheme:
-                helpLCol = textLNess + 0.35*(backLNess - textLNess)
-            else:
-                helpLCol = backLNess + 0.65*(textLNess - backLNess)
-            self.helpText = QColor.fromHsl(0, 0, int(255*helpLCol))
-            logger.debug(
-                "Computed help text colour: rgb(%d, %d, %d)",
-                self.helpText.red(), self.helpText.green(), self.helpText.blue()
-            )
+        QtColActive = QPalette.ColorGroup.Active
+        QtColInactive = QPalette.ColorGroup.Inactive
+        QtColDisabled = QPalette.ColorGroup.Disabled
+
+        light     = window.lighter(150)
+        mid       = window.darker(130)
+        midLight  = mid.lighter(110)
+        dark      = window.darker(150)
+        shadow    = dark.darker(135)
+        darkOff   = dark.darker(150)
+        shadowOff = shadow.darker(150)
+
+        grey   = QColor(120, 120, 120) if isDark else QColor(140, 140, 140)
+        dimmed = QColor(130, 130, 130) if isDark else QColor(190, 190, 190)
+
+        placeholder = text
+        placeholder.setAlpha(128)
+
+        self._guiPalette.setBrush(QPalette.ColorRole.Light, light)
+        self._guiPalette.setBrush(QPalette.ColorRole.Mid, mid)
+        self._guiPalette.setBrush(QPalette.ColorRole.Midlight, midLight)
+        self._guiPalette.setBrush(QPalette.ColorRole.Dark, dark)
+        self._guiPalette.setBrush(QPalette.ColorRole.Shadow, shadow)
+
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Text, dimmed)
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.WindowText, dimmed)
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.ButtonText, dimmed)
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Base, window)
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Dark, darkOff)
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Shadow, shadowOff)
+
+        self._guiPalette.setBrush(QPalette.ColorRole.PlaceholderText, placeholder)
+
+        self._guiPalette.setBrush(QtColActive, QPalette.ColorRole.Highlight, highlight)
+        self._guiPalette.setBrush(QtColInactive, QPalette.ColorRole.Highlight, highlight)
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Highlight, grey)
+
+        if CONFIG.verQtValue >= 0x060600:
+            self._guiPalette.setBrush(QtColActive, QPalette.ColorRole.Accent, highlight)
+            self._guiPalette.setBrush(QtColInactive, QPalette.ColorRole.Accent, highlight)
+            self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Accent, grey)
 
         # Load icons after theme is parsed
         self.iconCache.loadTheme(CONFIG.iconTheme)
 
-        # Apply styles
+        # Finalise
+        self.isDarkTheme = isDark
         QApplication.setPalette(self._guiPalette)
-
-        # Reset stylesheets so that they are regenerated
         self._buildStyleSheets(self._guiPalette)
 
         return True
@@ -344,49 +380,54 @@ class GuiTheme:
 
         logger.info("Loading syntax theme '%s'", guiSyntax)
 
-        confParser = NWConfigParser()
+        parser = NWConfigParser()
         try:
             with open(syntaxFile, mode="r", encoding="utf-8") as inFile:
-                confParser.read_file(inFile)
+                parser.read_file(inFile)
         except Exception:
             logger.error("Could not load syntax colours from: %s", syntaxFile)
             logException()
             return False
 
         # Main
-        cnfSec = "Main"
-        if confParser.has_section(cnfSec):
-            self.syntaxName        = confParser.rdStr(cnfSec, "name", "")
-            self.syntaxDescription = confParser.rdStr(cnfSec, "description", "N/A")
-            self.syntaxAuthor      = confParser.rdStr(cnfSec, "author", "N/A")
-            self.syntaxCredit      = confParser.rdStr(cnfSec, "credit", "N/A")
-            self.syntaxUrl         = confParser.rdStr(cnfSec, "url", "")
-            self.syntaxLicense     = confParser.rdStr(cnfSec, "license", "N/A")
-            self.syntaxLicenseUrl  = confParser.rdStr(cnfSec, "licenseurl", "")
+        sec = "Main"
+        meta = ThemeMeta()
+        if parser.has_section(sec):
+            meta.name        = parser.rdStr(sec, "name", "")
+            meta.description = parser.rdStr(sec, "description", "N/A")
+            meta.author      = parser.rdStr(sec, "author", "N/A")
+            meta.credit      = parser.rdStr(sec, "credit", "N/A")
+            meta.url         = parser.rdStr(sec, "url", "")
+            meta.license     = parser.rdStr(sec, "license", "N/A")
+            meta.licenseUrl  = parser.rdStr(sec, "licenseurl", "")
 
         # Syntax
-        cnfSec = "Syntax"
-        if confParser.has_section(cnfSec):
-            self.colBack   = self._parseColour(confParser, cnfSec, "background")
-            self.colText   = self._parseColour(confParser, cnfSec, "text")
-            self.colLink   = self._parseColour(confParser, cnfSec, "link")
-            self.colHead   = self._parseColour(confParser, cnfSec, "headertext")
-            self.colHeadH  = self._parseColour(confParser, cnfSec, "headertag")
-            self.colEmph   = self._parseColour(confParser, cnfSec, "emphasis")
-            self.colDialN  = self._parseColour(confParser, cnfSec, "dialog")
-            self.colDialA  = self._parseColour(confParser, cnfSec, "altdialog")
-            self.colHidden = self._parseColour(confParser, cnfSec, "hidden")
-            self.colNote   = self._parseColour(confParser, cnfSec, "note")
-            self.colCode   = self._parseColour(confParser, cnfSec, "shortcode")
-            self.colKey    = self._parseColour(confParser, cnfSec, "keyword")
-            self.colTag    = self._parseColour(confParser, cnfSec, "tag")
-            self.colVal    = self._parseColour(confParser, cnfSec, "value")
-            self.colOpt    = self._parseColour(confParser, cnfSec, "optional")
-            self.colSpell  = self._parseColour(confParser, cnfSec, "spellcheckline")
-            self.colError  = self._parseColour(confParser, cnfSec, "errorline")
-            self.colRepTag = self._parseColour(confParser, cnfSec, "replacetag")
-            self.colMod    = self._parseColour(confParser, cnfSec, "modifier")
-            self.colMark   = self._parseColour(confParser, cnfSec, "texthighlight")
+        sec = "Syntax"
+        syntax = SyntaxColors()
+        if parser.has_section(sec):
+            syntax.back   = self._parseColour(parser, sec, "background")
+            syntax.text   = self._parseColour(parser, sec, "text")
+            syntax.link   = self._parseColour(parser, sec, "link")
+            syntax.head   = self._parseColour(parser, sec, "headertext")
+            syntax.headH  = self._parseColour(parser, sec, "headertag")
+            syntax.emph   = self._parseColour(parser, sec, "emphasis")
+            syntax.dialN  = self._parseColour(parser, sec, "dialog")
+            syntax.dialA  = self._parseColour(parser, sec, "altdialog")
+            syntax.hidden = self._parseColour(parser, sec, "hidden")
+            syntax.note   = self._parseColour(parser, sec, "note")
+            syntax.code   = self._parseColour(parser, sec, "shortcode")
+            syntax.key    = self._parseColour(parser, sec, "keyword")
+            syntax.tag    = self._parseColour(parser, sec, "tag")
+            syntax.val    = self._parseColour(parser, sec, "value")
+            syntax.opt    = self._parseColour(parser, sec, "optional")
+            syntax.spell  = self._parseColour(parser, sec, "spellcheckline")
+            syntax.error  = self._parseColour(parser, sec, "errorline")
+            syntax.repTag = self._parseColour(parser, sec, "replacetag")
+            syntax.mod    = self._parseColour(parser, sec, "modifier")
+            syntax.mark   = self._parseColour(parser, sec, "texthighlight")
+
+        self.syntaxMeta = meta
+        self.syntaxTheme = syntax
 
         return True
 
@@ -395,12 +436,11 @@ class GuiTheme:
         if self._themeList:
             return self._themeList
 
-        confParser = NWConfigParser()
-        for themeKey, themePath in self._availThemes.items():
-            logger.debug("Checking theme config for '%s'", themeKey)
-            themeName = _loadInternalName(confParser, themePath)
-            if themeName:
-                self._themeList.append((themeKey, themeName))
+        parser = NWConfigParser()
+        for key, path in self._availThemes.items():
+            logger.debug("Checking theme config for '%s'", key)
+            if name := _loadInternalName(parser, path):
+                self._themeList.append((key, name))
 
         self._themeList = sorted(self._themeList, key=_sortTheme)
 
@@ -411,12 +451,11 @@ class GuiTheme:
         if self._syntaxList:
             return self._syntaxList
 
-        confParser = NWConfigParser()
-        for syntaxKey, syntaxPath in self._availSyntax.items():
-            logger.debug("Checking theme syntax for '%s'", syntaxKey)
-            syntaxName = _loadInternalName(confParser, syntaxPath)
-            if syntaxName:
-                self._syntaxList.append((syntaxKey, syntaxName))
+        parser = NWConfigParser()
+        for key, path in self._availSyntax.items():
+            logger.debug("Checking theme syntax for '%s'", key)
+            if name := _loadInternalName(parser, path):
+                self._syntaxList.append((key, name))
 
         self._syntaxList = sorted(self._syntaxList, key=_sortTheme)
 
@@ -430,14 +469,55 @@ class GuiTheme:
     #  Internal Functions
     ##
 
-    def _resetGuiColors(self) -> None:
+    def _resetTheme(self) -> None:
         """Reset GUI colours to default values."""
-        self.statNone    = QColor(120, 120, 120)
-        self.statUnsaved = QColor(200, 15, 39)
-        self.statSaved   = QColor(2, 133, 37)
-        self.helpText    = QColor(0, 0, 0)
-        self.fadedText   = QColor(128, 128, 128)
-        self.errorText   = QColor(255, 0, 0)
+        palette = QPalette()
+
+        text = palette.color(QPalette.ColorRole.Text)
+        window = palette.color(QPalette.ColorRole.Window)
+        isDark = text.lightnessF() > window.lightnessF()
+
+        # Reset GUI Palette
+        faded   = QColor(128, 128, 128)
+        dimmed  = QColor(130, 130, 130) if isDark else QColor(190, 190, 190)
+        grey    = QColor(120, 120, 120) if isDark else QColor(140, 140, 140)
+        red     = QColor(242, 119, 122) if isDark else QColor(240, 40, 41)
+        orange  = QColor(249, 145,  57) if isDark else QColor(245, 135, 31)
+        yellow  = QColor(255, 204, 102) if isDark else QColor(234, 183, 0)
+        green   = QColor(153, 204, 153) if isDark else QColor(113, 140, 0)
+        aqua    = QColor(102, 204, 204) if isDark else QColor(62, 153, 159)
+        blue    = QColor(102, 153, 204) if isDark else QColor(66, 113, 174)
+        purple  = QColor(204, 153, 204) if isDark else QColor(137, 89, 168)
+
+        self.statNone    = grey
+        self.statUnsaved = red
+        self.statSaved   = green
+        self.helpText    = dimmed
+        self.fadedText   = faded
+        self.errorText   = red
+
+        self._guiPalette = palette
+
+        # Reset Icons
+        icons = self.iconCache
+        icons.clear()
+        icons.setIconColor("default", text)
+        icons.setIconColor("faded",   faded)
+        icons.setIconColor("red",     red)
+        icons.setIconColor("orange",  orange)
+        icons.setIconColor("yellow",  yellow)
+        icons.setIconColor("green",   green)
+        icons.setIconColor("aqua",    aqua)
+        icons.setIconColor("blue",    blue)
+        icons.setIconColor("purple",  purple)
+        icons.setIconColor("root",    blue)
+        icons.setIconColor("folder",  yellow)
+        icons.setIconColor("file",    text)
+        icons.setIconColor("title",   green)
+        icons.setIconColor("chapter", red)
+        icons.setIconColor("scene",   blue)
+        icons.setIconColor("note",    yellow)
+
         return
 
     def _listConf(self, targetDict: dict, checkDir: Path) -> bool:
@@ -459,7 +539,7 @@ class GuiTheme:
         self, parser: NWConfigParser, section: str, name: str, value: QPalette.ColorRole
     ) -> None:
         """Set a palette colour value from a config string."""
-        self._guiPalette.setColor(value, self._parseColour(parser, section, name))
+        self._guiPalette.setBrush(value, self._parseColour(parser, section, name))
         return
 
     def _buildStyleSheets(self, palette: QPalette) -> None:
@@ -507,6 +587,11 @@ class GuiIcons:
     returned instead.
     """
 
+    __slots__ = (
+        "mainTheme", "themeMeta", "_svgData", "_svgColours", "_qIcons",
+        "_headerDec", "_headerDecNarrow", "_themeList", "_iconPath", "_noIcon",
+    )
+
     TOGGLE_ICON_KEYS: dict[str, tuple[str, str]] = {
         "bullet": ("bullet-on", "bullet-off"),
         "unfold": ("unfold-show", "unfold-hide"),
@@ -519,6 +604,7 @@ class GuiIcons:
     def __init__(self, mainTheme: GuiTheme) -> None:
 
         self.mainTheme = mainTheme
+        self.themeMeta = ThemeMeta()
 
         # Storage
         self._svgData: dict[str, bytes] = {}
@@ -534,44 +620,16 @@ class GuiIcons:
         # None Icon
         self._noIcon = QIcon(str(self._iconPath / "none.svg"))
 
-        # Icon Theme Meta
-        self.themeName    = ""
-        self.themeAuthor  = ""
-        self.themeLicense = ""
-
         return
 
     def clear(self) -> None:
         """Clear the icon cache."""
-        text = QApplication.palette().windowText().color()
-        default = text.name(QColor.NameFormat.HexRgb).encode("utf-8")
-        faded = self.mainTheme.fadedText.name(QColor.NameFormat.HexRgb).encode("utf-8")
-
         self._svgData = {}
-        self._svgColours = {
-            "default": default,
-            "faded":   faded,
-            "red":     b"#ff0000",
-            "orange":  b"#ff7f00",
-            "yellow":  b"#ffff00",
-            "green":   b"#00ff00",
-            "aqua":    b"#00ffff",
-            "blue":    b"#0000ff",
-            "purple":  b"#ff00ff",
-            "root":    b"#0000ff",
-            "folder":  b"#ffff00",
-            "file":    default,
-            "title":   b"#00ff00",
-            "chapter": b"#ff0000",
-            "scene":   b"#0000ff",
-            "note":    b"#ffff00",
-        }
+        self._svgColours = {}
         self._qIcons = {}
         self._headerDec = []
         self._headerDecNarrow = []
-        self.themeName    = ""
-        self.themeAuthor  = ""
-        self.themeLicense = ""
+        self.themeMeta = ThemeMeta()
         return
 
     ##
@@ -586,6 +644,7 @@ class GuiIcons:
         logger.info("Loading icon theme '%s'", iconTheme)
         themePath = self._iconPath / f"{iconTheme}.icons"
         try:
+            meta = ThemeMeta()
             with open(themePath, mode="r", encoding="utf-8") as icons:
                 for icon in icons:
                     bits = icon.partition("=")
@@ -595,11 +654,12 @@ class GuiIcons:
                         if key.startswith("icon:"):
                             self._svgData[key[5:]] = value.encode("utf-8")
                         elif key == "meta:name":
-                            self.themeName = value
+                            meta.name = value
                         elif key == "meta:author":
-                            self.themeAuthor = value
+                            meta.author = value
                         elif key == "meta:license":
-                            self.themeLicense = value
+                            meta.license = value
+            self.themeMeta = meta
         except Exception:
             logger.error("Could not load icon theme from: %s", themePath)
             logException()
@@ -633,7 +693,7 @@ class GuiIcons:
         map or the icon map. This function always returns a QPixmap.
         """
         if name in self.IMAGE_MAP:
-            idx = 0 if self.mainTheme.isLightTheme else 1
+            idx = int(self.mainTheme.isDarkTheme)
             imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[name][idx]
         else:
             logger.error("Decoration with name '%s' does not exist", name)

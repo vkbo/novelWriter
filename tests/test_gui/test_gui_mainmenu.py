@@ -24,8 +24,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt5.QtGui import QDesktopServices, QTextBlock, QTextCursor
-from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
+from PyQt6.QtGui import QAction, QDesktopServices, QTextBlock, QTextCursor
+from PyQt6.QtWidgets import QFileDialog, QMessageBox
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwShortcode, nwStats, nwUnicode
@@ -187,7 +187,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Cut, Copy and Paste
     docEditor.setCursorPosition(54)
-    docEditor._makeSelection(QTextCursor.WordUnderCursor)
+    docEditor._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
 
     mainMenu.aEditCut.activate(QAction.ActionEvent.Trigger)
     assert docEditor.getText()[54:104] == (
@@ -200,7 +200,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     )
 
     docEditor.setCursorPosition(54)
-    docEditor._makeSelection(QTextCursor.WordUnderCursor)
+    docEditor._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
 
     mainMenu.aEditCopy.activate(QAction.ActionEvent.Trigger)
     assert docEditor.getText()[54:104] == (

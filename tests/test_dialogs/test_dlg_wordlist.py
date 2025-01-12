@@ -22,8 +22,9 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction, QFileDialog
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QFileDialog
 
 from novelwriter import SHARED
 from novelwriter.core.spellcheck import UserDictionary
@@ -104,11 +105,11 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     wList._doAdd()
     assert wList.listBox.item(0).text() == "delete_me"  # type: ignore
 
-    delItem = wList.listBox.findItems("delete_me", Qt.MatchExactly)[0]
+    delItem = wList.listBox.findItems("delete_me", Qt.MatchFlag.MatchExactly)[0]
     assert delItem.text() == "delete_me"
     delItem.setSelected(True)
     wList._doDelete()
-    assert wList.listBox.findItems("delete_me", Qt.MatchExactly) == []
+    assert wList.listBox.findItems("delete_me", Qt.MatchFlag.MatchExactly) == []
     assert wList.listBox.item(0).text() == "word_a"  # type: ignore
 
     # Import/Export

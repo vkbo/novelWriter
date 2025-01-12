@@ -35,7 +35,7 @@ from hashlib import sha256
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from PyQt5.QtGui import QColor, QFont
+from PyQt6.QtGui import QColor, QFont
 
 from novelwriter import __version__
 from novelwriter.common import xmlElement, xmlIndent, xmlSubElem

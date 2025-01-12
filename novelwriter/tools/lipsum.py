@@ -26,8 +26,8 @@ from __future__ import annotations
 import logging
 import random
 
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtWidgets import (
     QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel, QSpinBox, QVBoxLayout,
     QWidget
 )

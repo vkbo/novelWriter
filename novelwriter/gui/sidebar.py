@@ -27,9 +27,9 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QEvent, QPoint, QSize, pyqtSignal
-from PyQt5.QtGui import QPalette
-from PyQt5.QtWidgets import QMenu, QVBoxLayout, QWidget
+from PyQt6.QtCore import QEvent, QPoint, QSize, pyqtSignal
+from PyQt6.QtGui import QPalette
+from PyQt6.QtWidgets import QMenu, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import qtLambda

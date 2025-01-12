@@ -31,9 +31,9 @@ from time import sleep
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-from PyQt5.QtCore import QObject, QRunnable, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
+from PyQt6.QtCore import QObject, QRunnable, QUrl, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED, __date__, __domain__, __version__
 from novelwriter.common import formatVersion
