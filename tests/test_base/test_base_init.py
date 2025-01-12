@@ -23,147 +23,153 @@ from __future__ import annotations
 import logging
 import sys
 
+from unittest.mock import Mock
+
 import pytest
 
-from novelwriter import CONFIG, logger, main
+from PyQt6.QtWidgets import QApplication
 
-from tests.mocked import MockGuiMain
+from novelwriter import (
+    C_BLUE, C_END, C_WHITE, CONFIG, L_FILE, L_LINE, L_LVLC, L_LVLP, L_TEXT,
+    L_TIME, _createApp, logger, main
+)
+
+from tests.tools import clearLogHandlers
 
 
 @pytest.mark.base
 def testBaseInit_Launch(caplog, monkeypatch, fncPath):
-    """Check launching the main GUI."""
-    monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
+    """Check launching the main GUI. This test """
+    monkeypatch.setattr("novelwriter._createApp", lambda *a: Mock())
+    monkeypatch.setattr("novelwriter.guimain.GuiMain", Mock())
+    monkeypatch.setattr(sys, "exit", Mock())
 
-    # TestMode Launch
-    nwGUI = main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
-    assert isinstance(nwGUI, MockGuiMain)
+    # Default Launch
+    main([f"--config={fncPath}", f"--data={fncPath}"])
+    assert CONFIG._confPath == fncPath
+    assert CONFIG._dataPath == fncPath
 
-    # Darwin Launch
-    caplog.clear()
-    osDarwin = CONFIG.osDarwin
-    CONFIG.osDarwin = True
+    # Darwin Launch Error Handling
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "Foundation", None)
-        nwGUI = main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
-        assert isinstance(nwGUI, MockGuiMain)
+        main([f"--config={fncPath}", f"--data={fncPath}"])
 
-    CONFIG.osDarwin = osDarwin
-
-    # Windows Launch
-    caplog.clear()
-    osWindows = CONFIG.osWindows
-    CONFIG.osWindows = True
+    # Windows Launch Error Handling
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "ctypes", None)
-        nwGUI = main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
-        assert isinstance(nwGUI, MockGuiMain)
+        main([f"--config={fncPath}", f"--data={fncPath}"])
 
-    CONFIG.osWindows = osWindows
 
-    # Normal Launch
-    with monkeypatch.context() as mp:
-        mp.setattr("PyQt6.QtWidgets.QApplication.__init__", lambda *a: None)
-        mp.setattr("PyQt6.QtWidgets.QApplication.setApplicationName", lambda *a: None)
-        mp.setattr("PyQt6.QtWidgets.QApplication.setApplicationVersion", lambda *a: None)
-        mp.setattr("PyQt6.QtWidgets.QApplication.setWindowIcon", lambda *a: None)
-        mp.setattr("PyQt6.QtWidgets.QApplication.setOrganizationDomain", lambda *a: None)
-        mp.setattr("PyQt6.QtWidgets.QApplication.exec", lambda *a: 0)
-        with pytest.raises(SystemExit) as ex:
-            main([f"--config={fncPath}", f"--data={fncPath}"])
-            assert ex.value.code == 0
+@pytest.mark.base
+def testBaseInit_CreateApp(caplog, monkeypatch, fncPath):
+    """Check creating the Qt app."""
+    monkeypatch.setattr("PyQt6.QtWidgets.QApplication.__init__", lambda *a: None)
+    monkeypatch.setattr("PyQt6.QtWidgets.QApplication.setApplicationName", lambda *a: None)
+    monkeypatch.setattr("PyQt6.QtWidgets.QApplication.setApplicationVersion", lambda *a: None)
+    monkeypatch.setattr("PyQt6.QtWidgets.QApplication.setWindowIcon", lambda *a: None)
+    monkeypatch.setattr("PyQt6.QtWidgets.QApplication.setOrganizationDomain", lambda *a: None)
+    monkeypatch.setattr("PyQt6.QtWidgets.QApplication.exec", lambda *a: 0)
+
+    app = _createApp("Fusion")
+    assert isinstance(app, QApplication)
 
 
 @pytest.mark.base
 def testBaseInit_Options(monkeypatch, fncPath):
     """Test command line options for logging level."""
-    monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
+    gui = Mock()
+    app = Mock()
+    app.exec = Mock(return_value=0)
+
+    monkeypatch.setattr("novelwriter._createApp", lambda *a: app)
+    monkeypatch.setattr("novelwriter.guimain.GuiMain", lambda *a: gui)
     monkeypatch.setattr(sys, "argv", [
-        "novelWriter.py", "--testmode", "--meminfo", f"--config={fncPath}", f"--data={fncPath}"
+        "novelWriter.py", f"--config={fncPath}", f"--data={fncPath}"
     ])
 
-    # Defaults w/None Args
-    nwGUI = main()
-    assert nwGUI is not None
+    # Defaults wo/Args
+    gui.reset_mock()
+    with pytest.raises(SystemExit) as ex:
+        main()
+    assert ex.value.code == 0
     assert logger.getEffectiveLevel() == logging.WARNING
-    assert nwGUI.closeMain() == "closeMain"
+    gui.postLaunchTasks.assert_called_once()
+    gui.postLaunchTasks.assert_called_with(None)
 
     # Defaults
-    nwGUI = main(
-        ["--testmode", f"--config={fncPath}", f"--data={fncPath}", "--style=Fusion"]
-    )
-    assert nwGUI is not None
-    assert logger.getEffectiveLevel() == logging.WARNING
-    assert nwGUI.closeMain() == "closeMain"
+    with pytest.raises(SystemExit) as ex:
+        main([f"--config={fncPath}", f"--data={fncPath}", "--style=Fusion", "--meminfo"])
+    assert ex.value.code == 0
+    assert CONFIG.memInfo is True
+
+    def getFormat() -> str:
+        formatter = logger.handlers[0].formatter
+        assert formatter is not None
+        fmt = formatter._fmt
+        assert fmt is not None
+        return fmt
 
     # Log Levels w/Color
-    nwGUI = main(
-        ["--testmode", "--info", "--color", f"--config={fncPath}", f"--data={fncPath}"]
-    )
-    assert nwGUI is not None
+    clearLogHandlers()
+    with pytest.raises(SystemExit) as ex:
+        main(["--info", "--color", f"--config={fncPath}", f"--data={fncPath}"])
+    assert ex.value.code == 0
     assert logger.getEffectiveLevel() == logging.INFO
-    assert nwGUI.closeMain() == "closeMain"
+    assert getFormat() == f"{L_LVLC}  {L_TEXT}"
 
-    nwGUI = main(
-        ["--testmode", "--debug", "--color", f"--config={fncPath}", f"--data={fncPath}"]
-    )
-    assert nwGUI is not None
+    clearLogHandlers()
+    with pytest.raises(SystemExit) as ex:
+        main(["--debug", "--color", f"--config={fncPath}", f"--data={fncPath}"])
+    assert ex.value.code == 0
     assert logger.getEffectiveLevel() == logging.DEBUG
-    assert nwGUI.closeMain() == "closeMain"
+    assert getFormat() == (
+        f"{L_TIME}  {C_BLUE}{L_FILE}{C_END}:{C_WHITE}{L_LINE}{C_END}  {L_LVLC}  {L_TEXT}"
+    )
 
     # Log Levels wo/Color
-    nwGUI = main(
-        ["--testmode", "--info", f"--config={fncPath}", f"--data={fncPath}"]
-    )
-    assert nwGUI is not None
+    clearLogHandlers()
+    with pytest.raises(SystemExit) as ex:
+        main(["--info", f"--config={fncPath}", f"--data={fncPath}"])
+    assert ex.value.code == 0
     assert logger.getEffectiveLevel() == logging.INFO
-    assert nwGUI.closeMain() == "closeMain"
+    assert getFormat() == f"{L_LVLP}  {L_TEXT}"
 
-    nwGUI = main(
-        ["--testmode", "--debug", f"--config={fncPath}", f"--data={fncPath}"]
-    )
-    assert nwGUI is not None
+    clearLogHandlers()
+    with pytest.raises(SystemExit) as ex:
+        main(["--debug", f"--config={fncPath}", f"--data={fncPath}"])
+    assert ex.value.code == 0
     assert logger.getEffectiveLevel() == logging.DEBUG
-    assert nwGUI.closeMain() == "closeMain"
+    assert getFormat() == f"{L_TIME}  {L_FILE}:{L_LINE}  {L_LVLP}  {L_TEXT}"
 
     # Help and Version
     with pytest.raises(SystemExit) as ex:
-        nwGUI = main(
-            ["--testmode", "--help", f"--config={fncPath}", f"--data={fncPath}"]
-        )
-    assert nwGUI is not None
-    assert nwGUI.closeMain() == "closeMain"
+        main(["--help", f"--config={fncPath}", f"--data={fncPath}"])
     assert ex.value.code == 0
 
     with pytest.raises(SystemExit) as ex:
-        nwGUI = main(
-            ["--testmode", "--version", f"--config={fncPath}", f"--data={fncPath}"]
-        )
-    assert nwGUI is not None
-    assert nwGUI.closeMain() == "closeMain"
+        main(["--version", f"--config={fncPath}", f"--data={fncPath}"])
     assert ex.value.code == 0
 
     # Invalid options
     with pytest.raises(SystemExit) as ex:
-        nwGUI = main(
-            ["--testmode", "--invalid", f"--config={fncPath}", f"--data={fncPath}"]
-        )
-    assert nwGUI is not None
-    assert nwGUI.closeMain() == "closeMain"
+        main(["--invalid", f"--config={fncPath}", f"--data={fncPath}"])
     assert ex.value.code == 2
 
     # Project Path
-    nwGUI = main(
-        ["--testmode", f"--config={fncPath}", f"--data={fncPath}", "sample/"]
-    )
-    assert nwGUI is not None
-    assert nwGUI.closeMain() == "closeMain"
+    gui.reset_mock()
+    with pytest.raises(SystemExit) as ex:
+        main([f"--config={fncPath}", f"--data={fncPath}", "sample/"])
+    assert ex.value.code == 0
+    gui.postLaunchTasks.assert_called_once()
+    gui.postLaunchTasks.assert_called_with("sample/")
 
 
 @pytest.mark.base
 def testBaseInit_Imports(caplog, monkeypatch, fncPath):
     """Check import error handling."""
-    monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
+    monkeypatch.setattr("novelwriter._createApp", lambda *a: Mock())
+    monkeypatch.setattr("novelwriter.guimain.GuiMain", lambda *a: Mock())
+
     monkeypatch.setattr("PyQt6.QtWidgets.QApplication.__init__", lambda *a: None)
     monkeypatch.setattr("PyQt6.QtWidgets.QApplication.exec", lambda *a: 0)
     monkeypatch.setattr("PyQt6.QtWidgets.QErrorMessage.__init__", lambda *a: None)
@@ -174,9 +180,7 @@ def testBaseInit_Imports(caplog, monkeypatch, fncPath):
     monkeypatch.setattr("novelwriter.CONFIG.verPyQtValue", 0x050000)
 
     with pytest.raises(SystemExit) as ex:
-        _ = main(
-            ["--testmode", f"--config={fncPath}", f"--data={fncPath}"]
-        )
+        main([f"--config={fncPath}", f"--data={fncPath}"])
 
     assert ex.value.code & 4 == 4    # Python version not satisfied  # type: ignore
     assert ex.value.code & 8 == 8    # Qt version not satisfied  # type: ignore

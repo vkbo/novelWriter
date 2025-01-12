@@ -97,7 +97,6 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         "style=",
         "config=",
         "data=",
-        "testmode",
         "meminfo"
     ]
 
@@ -127,7 +126,6 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     fmtFlags = 0b00
     confPath = None
     dataPath = None
-    testMode = False
     qtStyle  = "Fusion"
     cmdOpen  = None
 
@@ -163,8 +161,6 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             confPath = inArg
         elif inOpt == "--data":
             dataPath = inArg
-        elif inOpt == "--testmode":
-            testMode = True
         elif inOpt == "--meminfo":
             CONFIG.memInfo = True
 
@@ -257,18 +253,8 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     from novelwriter.gui.theme import GuiTheme
     from novelwriter.guimain import GuiMain
 
-    if testMode:
-        # Only used for testing where the test framework creates the app
-        CONFIG.loadConfig()
-        SHARED.initTheme(GuiTheme())
-        return GuiMain()
-
-    app = QApplication([CONFIG.appName, (f"-style={qtStyle}")])
-    app.setApplicationName(CONFIG.appName)
-    app.setApplicationVersion(__version__)
-    app.setOrganizationDomain(__domain__)
-    app.setOrganizationName(__domain__)
-    app.setDesktopFileName(CONFIG.appName)
+    # Create App
+    app = _createApp(qtStyle)
 
     # Connect the exception handler before making the main GUI
     sys.excepthook = exceptionHandler
@@ -283,3 +269,14 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     nwGUI.postLaunchTasks(cmdOpen)
 
     sys.exit(app.exec())
+
+
+def _createApp(style: str) -> QApplication:
+    """Create the app."""
+    app = QApplication([CONFIG.appName, (f"-style={style}")])
+    app.setApplicationName(CONFIG.appName)
+    app.setApplicationVersion(__version__)
+    app.setOrganizationDomain(__domain__)
+    app.setOrganizationName(__domain__)
+    app.setDesktopFileName(CONFIG.appName)
+    return app
