@@ -25,7 +25,6 @@ from pathlib import Path
 import pytest
 
 from PyQt6.QtGui import QColor, QIcon, QPalette, QPixmap
-from PyQt6.QtWidgets import QApplication
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import NWConfigParser
@@ -152,7 +151,7 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
     assert mainTheme.loadTheme() is True
 
     # This should load a standard palette
-    wCol = QApplication.style().standardPalette().color(QPalette.ColorRole.Window).getRgb()
+    wCol = QPalette().color(QPalette.ColorRole.Window).getRgb()
     assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == wCol
 
     # Mock Dark Theme
