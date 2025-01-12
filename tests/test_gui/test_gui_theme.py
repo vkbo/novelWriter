@@ -251,7 +251,7 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
     assert mainTheme.loadSyntax() is True
 
     # Check some values
-    assert mainTheme.syntaxName == "Default Light"
+    assert mainTheme.syntaxMeta.name == "Default Light"
     assert mainTheme.colBack == QColor(255, 255, 255)
     assert mainTheme.colText == QColor(0, 0, 0)
     assert mainTheme.colLink == QColor(0, 0, 200)
@@ -264,7 +264,7 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
     assert mainTheme.loadSyntax() is True
 
     # Check some values
-    assert mainTheme.syntaxName == "Default Dark"
+    assert mainTheme.syntaxMeta.name == "Default Dark"
     assert mainTheme.colBack == QColor(42, 42, 42)
     assert mainTheme.colText == QColor(204, 204, 204)
     assert mainTheme.colLink == QColor(102, 153, 204)
@@ -290,7 +290,7 @@ def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
 
     # Load working theme file
     assert iconCache.loadTheme("material_rounded_normal") is True
-    assert iconCache.themeName == "Material Symbols - Rounded Medium"
+    assert iconCache.themeMeta.name == "Material Symbols - Rounded Medium"
 
     # Load with project colour override
     purple = iconCache._svgColours["purple"]

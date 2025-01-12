@@ -50,6 +50,17 @@ STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
 
 
+class ThemeMeta:
+
+    name        = ""
+    description = ""
+    author      = ""
+    credit      = ""
+    url         = ""
+    license     = ""
+    licenseUrl  = ""
+
+
 class GuiTheme:
     """Gui Theme Class
 
@@ -63,37 +74,21 @@ class GuiTheme:
         # Loaded Theme Settings
         # =====================
 
-        # Theme
-        self.themeName        = ""
-        self.themeDescription = ""
-        self.themeAuthor      = ""
-        self.themeCredit      = ""
-        self.themeUrl         = ""
-        self.themeLicense     = ""
-        self.themeLicenseUrl  = ""
+        self.themeMeta   = ThemeMeta()
+        self.isDarkTheme = False
 
-        # GUI
         self.statNone    = QColor(0, 0, 0)
         self.statUnsaved = QColor(0, 0, 0)
         self.statSaved   = QColor(0, 0, 0)
         self.helpText    = QColor(0, 0, 0)
         self.fadedText   = QColor(0, 0, 0)
         self.errorText   = QColor(255, 0, 0)
-        self.isDarkTheme = False
 
         # Loaded Syntax Settings
         # ======================
 
-        # Main
-        self.syntaxName        = ""
-        self.syntaxDescription = ""
-        self.syntaxAuthor      = ""
-        self.syntaxCredit      = ""
-        self.syntaxUrl         = ""
-        self.syntaxLicense     = ""
-        self.syntaxLicenseUrl  = ""
+        self.syntaxMeta = ThemeMeta()
 
-        # Colours
         self.colBack   = QColor(255, 255, 255)
         self.colText   = QColor(0, 0, 0)
         self.colLink   = QColor(0, 0, 0)
@@ -230,14 +225,17 @@ class GuiTheme:
 
         # Main
         sec = "Main"
+        meta = ThemeMeta()
         if parser.has_section(sec):
-            self.themeName        = parser.rdStr(sec, "name", "")
-            self.themeDescription = parser.rdStr(sec, "description", "N/A")
-            self.themeAuthor      = parser.rdStr(sec, "author", "N/A")
-            self.themeCredit      = parser.rdStr(sec, "credit", "N/A")
-            self.themeUrl         = parser.rdStr(sec, "url", "")
-            self.themeLicense     = parser.rdStr(sec, "license", "N/A")
-            self.themeLicenseUrl  = parser.rdStr(sec, "licenseurl", "")
+            meta.name        = parser.rdStr(sec, "name", "")
+            meta.description = parser.rdStr(sec, "description", "N/A")
+            meta.author      = parser.rdStr(sec, "author", "N/A")
+            meta.credit      = parser.rdStr(sec, "credit", "N/A")
+            meta.url         = parser.rdStr(sec, "url", "")
+            meta.license     = parser.rdStr(sec, "license", "N/A")
+            meta.licenseUrl  = parser.rdStr(sec, "licenseurl", "")
+
+        self.themeMeta = meta
 
         # Icons
         sec = "Icons"
@@ -365,49 +363,52 @@ class GuiTheme:
 
         logger.info("Loading syntax theme '%s'", guiSyntax)
 
-        confParser = NWConfigParser()
+        parser = NWConfigParser()
         try:
             with open(syntaxFile, mode="r", encoding="utf-8") as inFile:
-                confParser.read_file(inFile)
+                parser.read_file(inFile)
         except Exception:
             logger.error("Could not load syntax colours from: %s", syntaxFile)
             logException()
             return False
 
         # Main
-        cnfSec = "Main"
-        if confParser.has_section(cnfSec):
-            self.syntaxName        = confParser.rdStr(cnfSec, "name", "")
-            self.syntaxDescription = confParser.rdStr(cnfSec, "description", "N/A")
-            self.syntaxAuthor      = confParser.rdStr(cnfSec, "author", "N/A")
-            self.syntaxCredit      = confParser.rdStr(cnfSec, "credit", "N/A")
-            self.syntaxUrl         = confParser.rdStr(cnfSec, "url", "")
-            self.syntaxLicense     = confParser.rdStr(cnfSec, "license", "N/A")
-            self.syntaxLicenseUrl  = confParser.rdStr(cnfSec, "licenseurl", "")
+        sec = "Main"
+        meta = ThemeMeta()
+        if parser.has_section(sec):
+            meta.name        = parser.rdStr(sec, "name", "")
+            meta.description = parser.rdStr(sec, "description", "N/A")
+            meta.author      = parser.rdStr(sec, "author", "N/A")
+            meta.credit      = parser.rdStr(sec, "credit", "N/A")
+            meta.url         = parser.rdStr(sec, "url", "")
+            meta.license     = parser.rdStr(sec, "license", "N/A")
+            meta.licenseUrl  = parser.rdStr(sec, "licenseurl", "")
+
+        self.syntaxMeta = meta
 
         # Syntax
-        cnfSec = "Syntax"
-        if confParser.has_section(cnfSec):
-            self.colBack   = self._parseColour(confParser, cnfSec, "background")
-            self.colText   = self._parseColour(confParser, cnfSec, "text")
-            self.colLink   = self._parseColour(confParser, cnfSec, "link")
-            self.colHead   = self._parseColour(confParser, cnfSec, "headertext")
-            self.colHeadH  = self._parseColour(confParser, cnfSec, "headertag")
-            self.colEmph   = self._parseColour(confParser, cnfSec, "emphasis")
-            self.colDialN  = self._parseColour(confParser, cnfSec, "dialog")
-            self.colDialA  = self._parseColour(confParser, cnfSec, "altdialog")
-            self.colHidden = self._parseColour(confParser, cnfSec, "hidden")
-            self.colNote   = self._parseColour(confParser, cnfSec, "note")
-            self.colCode   = self._parseColour(confParser, cnfSec, "shortcode")
-            self.colKey    = self._parseColour(confParser, cnfSec, "keyword")
-            self.colTag    = self._parseColour(confParser, cnfSec, "tag")
-            self.colVal    = self._parseColour(confParser, cnfSec, "value")
-            self.colOpt    = self._parseColour(confParser, cnfSec, "optional")
-            self.colSpell  = self._parseColour(confParser, cnfSec, "spellcheckline")
-            self.colError  = self._parseColour(confParser, cnfSec, "errorline")
-            self.colRepTag = self._parseColour(confParser, cnfSec, "replacetag")
-            self.colMod    = self._parseColour(confParser, cnfSec, "modifier")
-            self.colMark   = self._parseColour(confParser, cnfSec, "texthighlight")
+        sec = "Syntax"
+        if parser.has_section(sec):
+            self.colBack   = self._parseColour(parser, sec, "background")
+            self.colText   = self._parseColour(parser, sec, "text")
+            self.colLink   = self._parseColour(parser, sec, "link")
+            self.colHead   = self._parseColour(parser, sec, "headertext")
+            self.colHeadH  = self._parseColour(parser, sec, "headertag")
+            self.colEmph   = self._parseColour(parser, sec, "emphasis")
+            self.colDialN  = self._parseColour(parser, sec, "dialog")
+            self.colDialA  = self._parseColour(parser, sec, "altdialog")
+            self.colHidden = self._parseColour(parser, sec, "hidden")
+            self.colNote   = self._parseColour(parser, sec, "note")
+            self.colCode   = self._parseColour(parser, sec, "shortcode")
+            self.colKey    = self._parseColour(parser, sec, "keyword")
+            self.colTag    = self._parseColour(parser, sec, "tag")
+            self.colVal    = self._parseColour(parser, sec, "value")
+            self.colOpt    = self._parseColour(parser, sec, "optional")
+            self.colSpell  = self._parseColour(parser, sec, "spellcheckline")
+            self.colError  = self._parseColour(parser, sec, "errorline")
+            self.colRepTag = self._parseColour(parser, sec, "replacetag")
+            self.colMod    = self._parseColour(parser, sec, "modifier")
+            self.colMark   = self._parseColour(parser, sec, "texthighlight")
 
         return True
 
@@ -416,12 +417,11 @@ class GuiTheme:
         if self._themeList:
             return self._themeList
 
-        confParser = NWConfigParser()
-        for themeKey, themePath in self._availThemes.items():
-            logger.debug("Checking theme config for '%s'", themeKey)
-            themeName = _loadInternalName(confParser, themePath)
-            if themeName:
-                self._themeList.append((themeKey, themeName))
+        parser = NWConfigParser()
+        for key, path in self._availThemes.items():
+            logger.debug("Checking theme config for '%s'", key)
+            if name := _loadInternalName(parser, path):
+                self._themeList.append((key, name))
 
         self._themeList = sorted(self._themeList, key=_sortTheme)
 
@@ -432,12 +432,11 @@ class GuiTheme:
         if self._syntaxList:
             return self._syntaxList
 
-        confParser = NWConfigParser()
-        for syntaxKey, syntaxPath in self._availSyntax.items():
-            logger.debug("Checking theme syntax for '%s'", syntaxKey)
-            syntaxName = _loadInternalName(confParser, syntaxPath)
-            if syntaxName:
-                self._syntaxList.append((syntaxKey, syntaxName))
+        parser = NWConfigParser()
+        for key, path in self._availSyntax.items():
+            logger.debug("Checking theme syntax for '%s'", key)
+            if name := _loadInternalName(parser, path):
+                self._syntaxList.append((key, name))
 
         self._syntaxList = sorted(self._syntaxList, key=_sortTheme)
 
@@ -597,9 +596,7 @@ class GuiIcons:
         self._noIcon = QIcon(str(self._iconPath / "none.svg"))
 
         # Icon Theme Meta
-        self.themeName    = ""
-        self.themeAuthor  = ""
-        self.themeLicense = ""
+        self.themeMeta = ThemeMeta()
 
         return
 
@@ -610,9 +607,7 @@ class GuiIcons:
         self._qIcons = {}
         self._headerDec = []
         self._headerDecNarrow = []
-        self.themeName    = ""
-        self.themeAuthor  = ""
-        self.themeLicense = ""
+        self.themeMeta = ThemeMeta()
         return
 
     ##
@@ -627,6 +622,7 @@ class GuiIcons:
         logger.info("Loading icon theme '%s'", iconTheme)
         themePath = self._iconPath / f"{iconTheme}.icons"
         try:
+            meta = ThemeMeta()
             with open(themePath, mode="r", encoding="utf-8") as icons:
                 for icon in icons:
                     bits = icon.partition("=")
@@ -636,11 +632,12 @@ class GuiIcons:
                         if key.startswith("icon:"):
                             self._svgData[key[5:]] = value.encode("utf-8")
                         elif key == "meta:name":
-                            self.themeName = value
+                            meta.name = value
                         elif key == "meta:author":
-                            self.themeAuthor = value
+                            meta.author = value
                         elif key == "meta:license":
-                            self.themeLicense = value
+                            meta.license = value
+            self.themeMeta = meta
         except Exception:
             logger.error("Could not load icon theme from: %s", themePath)
             logException()
