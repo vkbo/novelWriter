@@ -143,13 +143,6 @@ class GuiTheme:
         self.getHeaderDecoration = self.iconCache.getHeaderDecoration
         self.getHeaderDecorationNarrow = self.iconCache.getHeaderDecorationNarrow
 
-        # Extract Other Info
-        self.guiDPI = QApplication.primaryScreen().logicalDotsPerInchX()
-        self.guiScale = QApplication.primaryScreen().logicalDotsPerInchX()/96.0
-        CONFIG.guiScale = self.guiScale
-        logger.debug("GUI DPI: %.1f", self.guiDPI)
-        logger.debug("GUI Scale: %.2f", self.guiScale)
-
         # Fonts
         self.guiFont = QApplication.font()
         self.guiFontB = QApplication.font()

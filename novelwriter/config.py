@@ -115,7 +115,6 @@ class Config:
         self.guiTheme     = "default"        # GUI theme
         self.guiSyntax    = "default_light"  # Syntax theme
         self.guiFont      = QFont()          # Main GUI font
-        self.guiScale     = 1.0              # Set automatically by Theme class
         self.hideVScroll  = False            # Hide vertical scroll bars on main widgets
         self.hideHScroll  = False            # Hide horizontal scroll bars on main widgets
         self.lastNotes    = "0x0"            # The latest release notes that have been shown
@@ -272,27 +271,27 @@ class Config:
 
     @property
     def mainWinSize(self) -> list[int]:
-        return [int(x*self.guiScale) for x in self._mainWinSize]
+        return self._mainWinSize
 
     @property
     def welcomeWinSize(self) -> list[int]:
-        return [int(x*self.guiScale) for x in self._welcomeSize]
+        return self._welcomeSize
 
     @property
     def preferencesWinSize(self) -> list[int]:
-        return [int(x*self.guiScale) for x in self._prefsWinSize]
+        return self._prefsWinSize
 
     @property
     def mainPanePos(self) -> list[int]:
-        return [int(x*self.guiScale) for x in self._mainPanePos]
+        return self._mainPanePos
 
     @property
     def viewPanePos(self) -> list[int]:
-        return [int(x*self.guiScale) for x in self._viewPanePos]
+        return self._viewPanePos
 
     @property
     def outlinePanePos(self) -> list[int]:
-        return [int(x*self.guiScale) for x in self._outlnPanePos]
+        return self._outlnPanePos
 
     ##
     #  Getters
@@ -323,8 +322,6 @@ class Config:
         adjust it a bit, and we don't want the main window to shrink or
         grow each time the app is opened.
         """
-        width = int(width/self.guiScale)
-        height = int(height/self.guiScale)
         if abs(self._mainWinSize[0] - width) > 5:
             self._mainWinSize[0] = width
         if abs(self._mainWinSize[1] - height) > 5:
@@ -333,29 +330,27 @@ class Config:
 
     def setWelcomeWinSize(self, width: int, height: int) -> None:
         """Set the size of the Preferences dialog window."""
-        self._welcomeSize[0] = int(width/self.guiScale)
-        self._welcomeSize[1] = int(height/self.guiScale)
+        self._welcomeSize = [width, height]
         return
 
     def setPreferencesWinSize(self, width: int, height: int) -> None:
         """Set the size of the Preferences dialog window."""
-        self._prefsWinSize[0] = int(width/self.guiScale)
-        self._prefsWinSize[1] = int(height/self.guiScale)
+        self._prefsWinSize = [width, height]
         return
 
     def setMainPanePos(self, pos: list[int]) -> None:
         """Set the position of the main GUI splitter."""
-        self._mainPanePos = [int(x/self.guiScale) for x in pos]
+        self._mainPanePos = pos
         return
 
     def setViewPanePos(self, pos: list[int]) -> None:
         """Set the position of the viewer meta data splitter."""
-        self._viewPanePos = [int(x/self.guiScale) for x in pos]
+        self._viewPanePos = pos
         return
 
     def setOutlinePanePos(self, pos: list[int]) -> None:
         """Set the position of the outline details splitter."""
-        self._outlnPanePos = [int(x/self.guiScale) for x in pos]
+        self._outlnPanePos = pos
         return
 
     def setLastPath(self, key: str, path: str | Path) -> None:
@@ -427,12 +422,12 @@ class Config:
     ##
 
     def pxInt(self, value: int) -> int:
-        """Scale fixed gui sizes by the screen scale factor."""
-        return int(value*self.guiScale)
+        """Deprecated. Do not use."""
+        return value
 
     def rpxInt(self, value: int) -> int:
-        """Un-scale fixed gui sizes by the screen scale factor."""
-        return int(value/self.guiScale)
+        """Deprecated. Do not use."""
+        return value
 
     def homePath(self) -> Path:
         """The user's home folder."""
