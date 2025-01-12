@@ -41,7 +41,7 @@ from novelwriter.common import NWConfigParser, cssCol, minmax
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
-from novelwriter.types import QtPaintAntiAlias, QtTransparent, nwDataClass
+from novelwriter.types import QtPaintAntiAlias, QtTransparent
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,6 @@ STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
 
 
-@nwDataClass
 class ThemeMeta:
 
     name:        str = ""
@@ -62,7 +61,6 @@ class ThemeMeta:
     licenseUrl:  str = ""
 
 
-@nwDataClass
 class SyntaxColors:
 
     back:   QColor = QColor(255, 255, 255)
