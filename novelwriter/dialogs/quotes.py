@@ -32,7 +32,6 @@ from PyQt6.QtWidgets import (
     QListWidgetItem, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG
 from novelwriter.constants import nwQuotes, trConst
 from novelwriter.extensions.modified import NDialog
 from novelwriter.types import (
@@ -62,18 +61,14 @@ class GuiQuoteSelect(NDialog):
 
         self._selected = current
 
-        qMetrics = QFontMetrics(self.font())
-        pxW = 7*qMetrics.boundingRectChar("M").width()
-        pxH = 7*qMetrics.boundingRectChar("M").height()
-        pxH = 7*qMetrics.boundingRectChar("M").height()
-
         lblFont = self.font()
         lblFont.setPointSizeF(4*lblFont.pointSizeF())
+        metrics = QFontMetrics(self.font())
 
         # Preview Label
         self.previewLabel = QLabel(current, self)
         self.previewLabel.setFont(lblFont)
-        self.previewLabel.setFixedSize(QSize(pxW, pxH))
+        self.previewLabel.setFixedSize(QSize(4*metrics.maxWidth(), 5*metrics.height()))
         self.previewLabel.setAlignment(QtAlignCenter)
         self.previewLabel.setFrameStyle(QFrame.Shape.Box | QFrame.Shadow.Plain)
 
@@ -84,15 +79,15 @@ class GuiQuoteSelect(NDialog):
         minSize = 100
         for sKey, sLabel in nwQuotes.SYMBOLS.items():
             text = "[ %s ] %s" % (sKey, trConst(sLabel))
-            minSize = max(minSize, qMetrics.boundingRect(text).width())
+            minSize = max(minSize, metrics.boundingRect(text).width())
             qtItem = QListWidgetItem(text)
             qtItem.setData(self.D_KEY, sKey)
             self.listBox.addItem(qtItem)
             if sKey == current:
                 self.listBox.setCurrentItem(qtItem)
 
-        self.listBox.setMinimumWidth(minSize + CONFIG.pxInt(40))
-        self.listBox.setMinimumHeight(CONFIG.pxInt(150))
+        self.listBox.setMinimumWidth(minSize + 40)
+        self.listBox.setMinimumHeight(150)
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)

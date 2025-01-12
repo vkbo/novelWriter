@@ -56,15 +56,12 @@ class GuiWordList(NDialog):
         self.setWindowTitle(self.tr("Project Word List"))
 
         iSz = SHARED.theme.baseIconSize
-        mS = CONFIG.pxInt(250)
-        wW = CONFIG.pxInt(320)
-        wH = CONFIG.pxInt(340)
 
-        self.setMinimumWidth(mS)
-        self.setMinimumHeight(mS)
+        self.setMinimumWidth(250)
+        self.setMinimumHeight(250)
         self.resize(
-            CONFIG.pxInt(SHARED.project.options.getInt("GuiWordList", "winWidth",  wW)),
-            CONFIG.pxInt(SHARED.project.options.getInt("GuiWordList", "winHeight", wH))
+            SHARED.project.options.getInt("GuiWordList", "winWidth",  320),
+            SHARED.project.options.getInt("GuiWordList", "winHeight", 340),
         )
 
         # Header
@@ -118,9 +115,9 @@ class GuiWordList(NDialog):
         self.outerBox.addLayout(self.headerBox, 0)
         self.outerBox.addWidget(self.listBox, 1)
         self.outerBox.addLayout(self.editBox, 0)
-        self.outerBox.addSpacing(CONFIG.pxInt(12))
+        self.outerBox.addSpacing(12)
         self.outerBox.addWidget(self.buttonBox, 0)
-        self.outerBox.setSpacing(CONFIG.pxInt(4))
+        self.outerBox.setSpacing(4)
 
         self.setLayout(self.outerBox)
 
@@ -230,14 +227,10 @@ class GuiWordList(NDialog):
 
     def _saveGuiSettings(self) -> None:
         """Save GUI settings."""
-        winWidth  = CONFIG.rpxInt(self.width())
-        winHeight = CONFIG.rpxInt(self.height())
-
         logger.debug("Saving State: GuiWordList")
         pOptions = SHARED.project.options
-        pOptions.setValue("GuiWordList", "winWidth",  winWidth)
-        pOptions.setValue("GuiWordList", "winHeight", winHeight)
-
+        pOptions.setValue("GuiWordList", "winWidth",  self.width())
+        pOptions.setValue("GuiWordList", "winHeight", self.height())
         return
 
     def _addWord(self, word: str) -> None:

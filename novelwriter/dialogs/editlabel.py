@@ -27,7 +27,6 @@ import logging
 
 from PyQt6.QtWidgets import QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit, QVBoxLayout, QWidget
 
-from novelwriter import CONFIG
 from novelwriter.extensions.modified import NDialog
 from novelwriter.types import QtAccepted, QtDialogCancel, QtDialogOk
 
@@ -43,12 +42,9 @@ class GuiEditLabel(NDialog):
         self.setObjectName("GuiEditLabel")
         self.setWindowTitle(self.tr("Item Label"))
 
-        mVd = CONFIG.pxInt(220)
-        mSp = CONFIG.pxInt(12)
-
         # Item Label
         self.labelValue = QLineEdit(self)
-        self.labelValue.setMinimumWidth(mVd)
+        self.labelValue.setMinimumWidth(220)
         self.labelValue.setMaxLength(200)
         self.labelValue.setText(text)
         self.labelValue.selectAll()
@@ -62,10 +58,10 @@ class GuiEditLabel(NDialog):
         self.innerBox = QHBoxLayout()
         self.innerBox.addWidget(QLabel(self.tr("Label"), self), 0)
         self.innerBox.addWidget(self.labelValue, 1)
-        self.innerBox.setSpacing(mSp)
+        self.innerBox.setSpacing(12)
 
         self.outerBox = QVBoxLayout()
-        self.outerBox.setSpacing(mSp)
+        self.outerBox.setSpacing(12)
         self.outerBox.addLayout(self.innerBox, 1)
         self.outerBox.addWidget(self.buttonBox, 0)
 
