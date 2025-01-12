@@ -200,7 +200,7 @@ class GuiDocViewer(QTextBrowser):
             self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
 
         # Refresh the tab stops
-        self.setTabStopDistance(CONFIG.getTabWidth())
+        self.setTabStopDistance(CONFIG.tabWidth)
 
         # If we have a document open, we should reload it in case the font changed
         self.reloadText()
@@ -250,7 +250,7 @@ class GuiDocViewer(QTextBrowser):
 
         self.setDocumentTitle(tHandle)
         self.setDocument(qDoc.document)
-        self.setTabStopDistance(CONFIG.getTabWidth())
+        self.setTabStopDistance(CONFIG.tabWidth)
 
         if self._docHandle == tHandle:
             # This is a refresh, so we set the scrollbar back to where it was
@@ -308,7 +308,7 @@ class GuiDocViewer(QTextBrowser):
         """Automatically adjust the margins so the text is centred."""
         wW = self.width()
         wH = self.height()
-        cM = CONFIG.getTextMargin()
+        cM = CONFIG.textMargin
 
         vBar = self.verticalScrollBar()
         sW = vBar.width() if vBar.isVisible() else 0

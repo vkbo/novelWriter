@@ -88,7 +88,12 @@ def testDlgProjSettings_SettingsPage(qtbot, monkeypatch, nwGUI, fncPath, projPat
     """Test the settings page of the dialog."""
     languages = [("en", "English"), ("de", "German")]
     monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda *a: languages)
-    monkeypatch.setattr(CONFIG, "listLanguages", lambda *a: languages)
+
+    (fncPath / "nw_en.qm").touch()
+    (fncPath / "nw_de.qm").touch()
+    (fncPath / "project_en.json").touch()
+    (fncPath / "project_de.json").touch()
+    CONFIG._nwLangPath = fncPath
 
     # Create new project
     buildTestProject(nwGUI, projPath)

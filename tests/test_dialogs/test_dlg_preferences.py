@@ -72,17 +72,16 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     prefs.close()
 
     # Check Fallback Values
-    with monkeypatch.context() as mp:
-        mp.setattr(CONFIG, "hasEnchant", False)
-        prefs = GuiPreferences(nwGUI)
-        prefs.show()
+    CONFIG.hasEnchant = False
+    prefs = GuiPreferences(nwGUI)
+    prefs.show()
 
-        # Check Spell Checking
-        spelling = [prefs.spellLanguage.itemData(i) for i in range(prefs.spellLanguage.count())]
-        assert len(spelling) == 1
-        assert spelling == [""]
+    # Check Spell Checking
+    spelling = [prefs.spellLanguage.itemData(i) for i in range(prefs.spellLanguage.count())]
+    assert len(spelling) == 1
+    assert spelling == [""]
 
-        prefs.close()
+    prefs.close()
 
     # qtbot.stop()
 
@@ -138,13 +137,14 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
 
 
 @pytest.mark.gui
-def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
+def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     """Test the preferences dialog settings."""
     spelling = [("en", "English [en]"), ("de", "Deutch [de]")]
-    languages = [("en_GB", "British English"), ("en_US", "US English")]
-
     monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: spelling)
-    monkeypatch.setattr(CONFIG, "listLanguages", lambda *a: languages)
+
+    (fncPath / "nw_en_US.qm").touch()
+    (fncPath / "project_en_US.json").touch()
+    CONFIG._nwLangPath = fncPath
 
     prefs = GuiPreferences(nwGUI)
     with qtbot.waitExposed(prefs):

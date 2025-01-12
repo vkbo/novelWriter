@@ -860,10 +860,10 @@ class GuiMain(QMainWindow):
         logger.info("Exiting novelWriter")
 
         if not SHARED.focusMode:
-            CONFIG.setMainPanePos(self.splitMain.sizes())
-            CONFIG.setOutlinePanePos(self.outlineView.splitSizes())
+            CONFIG.mainPanePos = self.splitMain.sizes()
+            CONFIG.outlinePanePos = self.outlineView.splitSizes()
             if self.docViewerPanel.isVisible():
-                CONFIG.setViewPanePos(self.splitView.sizes())
+                CONFIG.viewPanePos = self.splitView.sizes()
 
         CONFIG.showViewerPanel = self.docViewerPanel.isVisible()
         wFull = Qt.WindowState.WindowFullScreen

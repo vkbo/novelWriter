@@ -59,7 +59,7 @@ class GuiPreferences(NDialog):
         self.setObjectName("GuiPreferences")
         self.setWindowTitle(self.tr("Preferences"))
         self.setMinimumSize(CONFIG.pxInt(600), CONFIG.pxInt(500))
-        self.resize(*CONFIG.preferencesWinSize)
+        self.resize(*CONFIG.prefsWinSize)
 
         # Title
         self.titleLabel = NColourLabel(

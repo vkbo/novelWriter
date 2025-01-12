@@ -331,7 +331,7 @@ class GuiDocEditor(QPlainTextEdit):
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
         self._qDocument.setDocumentMargin(4)
-        self._vpMargin = max(CONFIG.getTextMargin() - 4, 0)
+        self._vpMargin = max(CONFIG.textMargin - 4, 0)
         self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
 
         # Also set the document text options for the document text flow
@@ -359,7 +359,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
 
         # Refresh the tab stops
-        self.setTabStopDistance(CONFIG.getTabWidth())
+        self.setTabStopDistance(CONFIG.tabWidth)
 
         # If we have a document open, we should refresh it in case the
         # font changed, otherwise we just clear the editor entirely,

@@ -750,11 +750,11 @@ class _PreviewWidget(QTextBrowser):
         self.setPalette(dPalette)
 
         self.setMinimumWidth(40*SHARED.theme.textNWidth)
-        self.setTabStopDistance(CONFIG.getTabWidth())
+        self.setTabStopDistance(CONFIG.tabWidth)
         self.setOpenExternalLinks(False)
         self.setOpenLinks(False)
 
-        self.document().setDocumentMargin(CONFIG.getTextMargin())
+        self.document().setDocumentMargin(CONFIG.textMargin)
         self.setPlaceholderText(self.tr(
             "Press the \"Preview\" button to generate ..."
         ))
@@ -852,9 +852,9 @@ class _PreviewWidget(QTextBrowser):
         self.buildProgress.setCentreText(self.tr("Processing ..."))
         QApplication.processEvents()
 
-        document.setDocumentMargin(CONFIG.getTextMargin())
+        document.setDocumentMargin(CONFIG.textMargin)
         self.setDocument(document)
-        self.setTabStopDistance(CONFIG.getTabWidth())
+        self.setTabStopDistance(CONFIG.tabWidth)
 
         self._docTime = int(time())
         self._updateBuildAge()
