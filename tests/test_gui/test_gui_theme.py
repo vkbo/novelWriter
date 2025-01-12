@@ -166,16 +166,13 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
         "[Palette]\n"
         "window = 0, 0, 0\n"
         "windowtext = 255, 255, 255\n"
-        "\n"
-        "[GUI]\n"
-        "helptext = 0, 0, 0\n"
     )
     mainTheme._availThemes["test"] = mockTheme
 
     CONFIG.guiTheme = "test"
     assert mainTheme.loadTheme() is True
-    assert mainTheme.isLightTheme is False
-    assert mainTheme.helpText.getRgb() == (165, 165, 165, 255)
+    assert mainTheme.isDarkTheme is False
+    assert mainTheme.helpText.getRgb() == (190, 190, 190, 255)
 
     # Load Default Light Theme
     # ========================

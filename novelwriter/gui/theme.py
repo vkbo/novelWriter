@@ -71,7 +71,6 @@ class GuiTheme:
         self.themeUrl         = ""
         self.themeLicense     = ""
         self.themeLicenseUrl  = ""
-        self.isLightTheme     = True
 
         # GUI
         self.statNone    = QColor(0, 0, 0)
@@ -80,6 +79,7 @@ class GuiTheme:
         self.helpText    = QColor(0, 0, 0)
         self.fadedText   = QColor(0, 0, 0)
         self.errorText   = QColor(255, 0, 0)
+        self.isDarkTheme = False
 
         # Loaded Syntax Settings
         # ======================
@@ -226,9 +226,7 @@ class GuiTheme:
             return False
 
         # Reset Palette
-        self._guiPalette = QApplication.style().standardPalette()
-        self._resetGuiColors()
-        self.iconCache.clear()
+        self._resetTheme()
 
         # Main
         sec = "Main"
@@ -294,44 +292,60 @@ class GuiTheme:
             self.statSaved   = self._parseColour(parser, sec, "statussaved")
 
         # Update Dependant Colours
-        backCol = self._guiPalette.window().color()
-        textCol = self._guiPalette.windowText().color()
+        # Based on: https://github.com/qt/qtbase/blob/dev/src/gui/kernel/qplatformtheme.cpp
+        text = self._guiPalette.text().color()
+        window = self._guiPalette.window().color()
+        highlight = self._guiPalette.highlight().color()
+        isDark = text.lightnessF() > window.lightnessF()
 
-        # Calculate Based on Qt Fusion
-        light    = backCol.lighter(150)
-        mid      = backCol.darker(130)
-        midLight = mid.lighter(110)
-        dark     = backCol.darker(150)
-        shadow   = dark.darker(135)
+        QtColActive = QPalette.ColorGroup.Active
+        QtColInactive = QPalette.ColorGroup.Inactive
+        QtColDisabled = QPalette.ColorGroup.Disabled
 
-        self._guiPalette.setColor(QPalette.ColorRole.Light,    light)
-        self._guiPalette.setColor(QPalette.ColorRole.Mid,      mid)
-        self._guiPalette.setColor(QPalette.ColorRole.Midlight, midLight)
-        self._guiPalette.setColor(QPalette.ColorRole.Dark,     dark)
-        self._guiPalette.setColor(QPalette.ColorRole.Shadow,   shadow)
+        light     = window.lighter(150)
+        mid       = window.darker(130)
+        midLight  = mid.lighter(110)
+        dark      = window.darker(150)
+        shadow    = dark.darker(135)
+        darkOff   = dark.darker(150)
+        shadowOff = shadow.darker(150)
 
-        # Calculate Help Text
-        backLNess = backCol.lightnessF()
-        textLNess = textCol.lightnessF()
-        self.isLightTheme = backLNess > textLNess
-        if self.helpText == QColor(0, 0, 0):
-            if self.isLightTheme:
-                helpLCol = textLNess + 0.35*(backLNess - textLNess)
-            else:
-                helpLCol = backLNess + 0.65*(textLNess - backLNess)
-            self.helpText = QColor.fromHsl(0, 0, int(255*helpLCol))
-            logger.debug(
-                "Computed help text colour: rgb(%d, %d, %d)",
-                self.helpText.red(), self.helpText.green(), self.helpText.blue()
-            )
+        grey   = QColor(120, 120, 120) if isDark else QColor(140, 140, 140)
+        dimmed = QColor(130, 130, 130) if isDark else QColor(190, 190, 190)
+
+        placeholder = text
+        placeholder.setAlpha(128)
+
+        self._guiPalette.setBrush(QPalette.ColorRole.Light, light)
+        self._guiPalette.setBrush(QPalette.ColorRole.Mid, mid)
+        self._guiPalette.setBrush(QPalette.ColorRole.Midlight, midLight)
+        self._guiPalette.setBrush(QPalette.ColorRole.Dark, dark)
+        self._guiPalette.setBrush(QPalette.ColorRole.Shadow, shadow)
+
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Text, dimmed)
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.WindowText, dimmed)
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.ButtonText, dimmed)
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Base, window)
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Dark, darkOff)
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Shadow, shadowOff)
+
+        self._guiPalette.setBrush(QPalette.ColorRole.PlaceholderText, placeholder)
+
+        self._guiPalette.setBrush(QtColActive, QPalette.ColorRole.Highlight, highlight)
+        self._guiPalette.setBrush(QtColInactive, QPalette.ColorRole.Highlight, highlight)
+        self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Highlight, grey)
+
+        if CONFIG.verQtValue >= 0x060600:
+            self._guiPalette.setBrush(QtColActive, QPalette.ColorRole.Accent, highlight)
+            self._guiPalette.setBrush(QtColInactive, QPalette.ColorRole.Accent, highlight)
+            self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Accent, grey)
 
         # Load icons after theme is parsed
         self.iconCache.loadTheme(CONFIG.iconTheme)
 
-        # Apply styles
+        # Finalise
+        self.isDarkTheme = isDark
         QApplication.setPalette(self._guiPalette)
-
-        # Reset stylesheets so that they are regenerated
         self._buildStyleSheets(self._guiPalette)
 
         return True
@@ -437,14 +451,55 @@ class GuiTheme:
     #  Internal Functions
     ##
 
-    def _resetGuiColors(self) -> None:
+    def _resetTheme(self) -> None:
         """Reset GUI colours to default values."""
-        self.statNone    = QColor(120, 120, 120)
-        self.statUnsaved = QColor(200, 15, 39)
-        self.statSaved   = QColor(2, 133, 37)
-        self.helpText    = QColor(0, 0, 0)
-        self.fadedText   = QColor(128, 128, 128)
-        self.errorText   = QColor(255, 0, 0)
+        palette = QPalette()
+
+        text = palette.color(QPalette.ColorRole.Text)
+        window = palette.color(QPalette.ColorRole.Window)
+        isDark = text.lightnessF() > window.lightnessF()
+
+        # Reset GUI Palette
+        faded   = QColor(128, 128, 128)
+        dimmed  = QColor(130, 130, 130) if isDark else QColor(190, 190, 190)
+        grey    = QColor(120, 120, 120) if isDark else QColor(140, 140, 140)
+        red     = QColor(242, 119, 122) if isDark else QColor(240, 40, 41)
+        orange  = QColor(249, 145,  57) if isDark else QColor(245, 135, 31)
+        yellow  = QColor(255, 204, 102) if isDark else QColor(234, 183, 0)
+        green   = QColor(153, 204, 153) if isDark else QColor(113, 140, 0)
+        aqua    = QColor(102, 204, 204) if isDark else QColor(62, 153, 159)
+        blue    = QColor(102, 153, 204) if isDark else QColor(66, 113, 174)
+        purple  = QColor(204, 153, 204) if isDark else QColor(137, 89, 168)
+
+        self.statNone    = grey
+        self.statUnsaved = red
+        self.statSaved   = green
+        self.helpText    = dimmed
+        self.fadedText   = faded
+        self.errorText   = red
+
+        self._guiPalette = palette
+
+        # Reset Icons
+        icons = self.iconCache
+        icons.clear()
+        icons.setIconColor("default", text)
+        icons.setIconColor("faded",   faded)
+        icons.setIconColor("red",     red)
+        icons.setIconColor("orange",  orange)
+        icons.setIconColor("yellow",  yellow)
+        icons.setIconColor("green",   green)
+        icons.setIconColor("aqua",    aqua)
+        icons.setIconColor("blue",    blue)
+        icons.setIconColor("purple",  purple)
+        icons.setIconColor("root",    blue)
+        icons.setIconColor("folder",  yellow)
+        icons.setIconColor("file",    text)
+        icons.setIconColor("title",   green)
+        icons.setIconColor("chapter", red)
+        icons.setIconColor("scene",   blue)
+        icons.setIconColor("note",    yellow)
+
         return
 
     def _listConf(self, targetDict: dict, checkDir: Path) -> bool:
@@ -466,7 +521,7 @@ class GuiTheme:
         self, parser: NWConfigParser, section: str, name: str, value: QPalette.ColorRole
     ) -> None:
         """Set a palette colour value from a config string."""
-        self._guiPalette.setColor(value, self._parseColour(parser, section, name))
+        self._guiPalette.setBrush(value, self._parseColour(parser, section, name))
         return
 
     def _buildStyleSheets(self, palette: QPalette) -> None:
@@ -550,29 +605,8 @@ class GuiIcons:
 
     def clear(self) -> None:
         """Clear the icon cache."""
-        text = QApplication.palette().windowText().color()
-        default = text.name(QColor.NameFormat.HexRgb).encode("utf-8")
-        faded = self.mainTheme.fadedText.name(QColor.NameFormat.HexRgb).encode("utf-8")
-
         self._svgData = {}
-        self._svgColours = {
-            "default": default,
-            "faded":   faded,
-            "red":     b"#ff0000",
-            "orange":  b"#ff7f00",
-            "yellow":  b"#ffff00",
-            "green":   b"#00ff00",
-            "aqua":    b"#00ffff",
-            "blue":    b"#0000ff",
-            "purple":  b"#ff00ff",
-            "root":    b"#0000ff",
-            "folder":  b"#ffff00",
-            "file":    default,
-            "title":   b"#00ff00",
-            "chapter": b"#ff0000",
-            "scene":   b"#0000ff",
-            "note":    b"#ffff00",
-        }
+        self._svgColours = {}
         self._qIcons = {}
         self._headerDec = []
         self._headerDecNarrow = []
@@ -640,7 +674,7 @@ class GuiIcons:
         map or the icon map. This function always returns a QPixmap.
         """
         if name in self.IMAGE_MAP:
-            idx = 0 if self.mainTheme.isLightTheme else 1
+            idx = int(self.mainTheme.isDarkTheme)
             imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[name][idx]
         else:
             logger.error("Decoration with name '%s' does not exist", name)

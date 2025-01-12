@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import logging
 
-from PyQt6.QtGui import QCloseEvent, QColor
+from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import (
     QDialogButtonBox, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout, QWidget
 )
@@ -58,7 +58,6 @@ class GuiAbout(NDialog):
 
         # Logo and Banner
         self.nwImage = SHARED.theme.loadDecoration("nw-text", h=nwH)
-        self.bgColor = QColor(255, 255, 255) if SHARED.theme.isLightTheme else QColor(54, 54, 54)
 
         self.nwLogo = QLabel(self)
         self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (nwPx, nwPx)))
