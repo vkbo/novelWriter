@@ -78,7 +78,7 @@ class GuiOutlineView(QWidget):
 
         # Assemble
         self.outerBox = QVBoxLayout()
-        self.outerBox.setContentsMargins(0, 0, CONFIG.pxInt(4), 0)
+        self.outerBox.setContentsMargins(0, 0, 4, 0)
         self.outerBox.addWidget(self.outlineBar)
         self.outerBox.addWidget(self.splitOutline)
 
@@ -225,11 +225,11 @@ class GuiOutlineToolBar(QToolBar):
         self.novelLabel = NColourLabel(
             self.tr("Outline of"), self, scale=NColourLabel.HEADER_SCALE, bold=True
         )
-        self.novelLabel.setContentsMargins(0, 0, CONFIG.pxInt(12), 0)
+        self.novelLabel.setContentsMargins(0, 0, 12, 0)
 
         self.novelValue = NovelSelector(self)
         self.novelValue.setIncludeAll(True)
-        self.novelValue.setMinimumWidth(CONFIG.pxInt(200))
+        self.novelValue.setMinimumWidth(200)
         self.novelValue.novelSelectionChanged.connect(self._novelValueChanged)
 
         # Actions
@@ -390,8 +390,8 @@ class GuiOutlineTree(QTreeWidget):
         self.setIconSize(SHARED.theme.baseIconSize)
         self.setIndentation(0)
 
-        self.treeHead = self.header()
-        self.treeHead.sectionMoved.connect(self._columnMoved)
+        if header := self.header():
+            header.sectionMoved.connect(self._columnMoved)
 
         # Pre-Generate Tree Formatting
         fH1 = self.font()
@@ -623,7 +623,7 @@ class GuiOutlineTree(QTreeWidget):
                     continue
                 tmpOrder.append(nwOutline[name])
                 tmpHidden[nwOutline[name]] = hidden
-                tmpWidth[nwOutline[name]] = CONFIG.pxInt(width)
+                tmpWidth[nwOutline[name]] = width
         except Exception:
             logger.error("Invalid column state")
             logException()
@@ -647,26 +647,22 @@ class GuiOutlineTree(QTreeWidget):
         save the current width of hidden columns though. This preserves
         the last known width in case they're unhidden again.
         """
-        # If we haven't built the tree, there is nothing to save.
-        if self._lastBuild == 0:
-            return
+        if self._lastBuild > 0 and (header := self.header()):
+            colState = {}
+            for iCol in range(self.columnCount()):
+                hItem = self._treeOrder[iCol]
+                iLog = header.logicalIndex(iCol)
+                logHidden = self.isColumnHidden(iLog)
+                orgWidth = self._colWidth[hItem]
+                logWidth = self.columnWidth(iLog)
+                colState[hItem.name] = [
+                    logHidden, orgWidth if logHidden and logWidth == 0 else logWidth
+                ]
 
-        colState = {}
-        for iCol in range(self.columnCount()):
-            hItem = self._treeOrder[iCol]
-            iLog = self.treeHead.logicalIndex(iCol)
-            logHidden = self.isColumnHidden(iLog)
-            orgWidth = CONFIG.rpxInt(self._colWidth[hItem])
-            logWidth = CONFIG.rpxInt(self.columnWidth(iLog))
-            colState[hItem.name] = [
-                logHidden, orgWidth if logHidden and logWidth == 0 else logWidth
-            ]
-
-        logger.debug("Saving State: GuiOutline")
-        pOptions = SHARED.project.options
-        pOptions.setValue("GuiOutline", "columnState", colState)
-        pOptions.saveSettings()
-
+            logger.debug("Saving State: GuiOutline")
+            pOptions = SHARED.project.options
+            pOptions.setValue("GuiOutline", "columnState", colState)
+            pOptions.saveSettings()
         return
 
     def _populateTree(self, rootHandle: str | None) -> None:
@@ -819,8 +815,6 @@ class GuiOutlineDetails(QScrollArea):
         minTitle = 30*SHARED.theme.textNWidth
         maxTitle = 40*SHARED.theme.textNWidth
         wCount = SHARED.theme.getTextWidth("999,999")
-        hSpace = int(CONFIG.pxInt(10))
-        vSpace = int(CONFIG.pxInt(4))
 
         bFont = SHARED.theme.guiFontB
 
@@ -899,8 +893,8 @@ class GuiOutlineDetails(QScrollArea):
 
         self.mainForm.setColumnStretch(1, 1)
         self.mainForm.setRowStretch(4, 1)
-        self.mainForm.setHorizontalSpacing(hSpace)
-        self.mainForm.setVerticalSpacing(vSpace)
+        self.mainForm.setHorizontalSpacing(10)
+        self.mainForm.setVerticalSpacing(4)
 
         # Selected Item Tags
         self.tagsForm = QGridLayout()
@@ -923,8 +917,8 @@ class GuiOutlineDetails(QScrollArea):
 
         self.tagsForm.setColumnStretch(1, 1)
         self.tagsForm.setRowStretch(len(self.tagValues), 1)
-        self.tagsForm.setHorizontalSpacing(hSpace)
-        self.tagsForm.setVerticalSpacing(vSpace)
+        self.tagsForm.setHorizontalSpacing(10)
+        self.tagsForm.setVerticalSpacing(4)
 
         # Assemble
         self.mainSplit = QSplitter(Qt.Orientation.Horizontal)
@@ -965,21 +959,18 @@ class GuiOutlineDetails(QScrollArea):
         width = parent.width() if isinstance(parent, QWidget) else 1000
         pOptions = SHARED.project.options
         self.mainSplit.setSizes([
-            CONFIG.pxInt(pOptions.getInt("GuiOutlineDetails", "detailsWidth", width//3)),
-            CONFIG.pxInt(pOptions.getInt("GuiOutlineDetails", "tagsWidth", 2*width//3))
+            pOptions.getInt("GuiOutlineDetails", "detailsWidth", width//3),
+            pOptions.getInt("GuiOutlineDetails", "tagsWidth", 2*width//3),
         ])
         return
 
     def saveGuiSettings(self) -> None:
         """Run close project tasks."""
-        mainSplit = self.mainSplit.sizes()
-        detailsWidth = CONFIG.rpxInt(mainSplit[0])
-        tagsWidth = CONFIG.rpxInt(mainSplit[1])
-
         logger.debug("Saving State: GuiOutlineDetails")
+        mainSplit = self.mainSplit.sizes()
         pOptions = SHARED.project.options
-        pOptions.setValue("GuiOutlineDetails", "detailsWidth", detailsWidth)
-        pOptions.setValue("GuiOutlineDetails", "tagsWidth", tagsWidth)
+        pOptions.setValue("GuiOutlineDetails", "detailsWidth", mainSplit[0])
+        pOptions.setValue("GuiOutlineDetails", "tagsWidth", mainSplit[1])
         return
 
     def clearDetails(self) -> None:

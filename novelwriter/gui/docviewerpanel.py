@@ -33,8 +33,8 @@ from PyQt6.QtWidgets import (
     QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt
+from novelwriter import SHARED
+from novelwriter.common import checkInt, qtAddAction
 from novelwriter.constants import nwLabels, nwLists, nwStyles, trConst
 from novelwriter.core.index import IndexHeading, IndexItem
 from novelwriter.enum import nwChange, nwDocMode, nwItemClass
@@ -63,7 +63,7 @@ class GuiDocViewerPanel(QWidget):
 
         self.optsMenu = QMenu(self)
 
-        self.aInactive = self.optsMenu.addAction(self.tr("Hide Inactive Tags"))
+        self.aInactive = qtAddAction(self.optsMenu, self.tr("Hide Inactive Tags"))
         self.aInactive.setCheckable(True)
         self.aInactive.toggled.connect(self._toggleHideInactive)
 
@@ -248,7 +248,6 @@ class _ViewPanelBackRefs(QTreeWidget):
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
-        cMg = CONFIG.pxInt(6)
 
         self.setHeaderLabels([self.tr("Document"), "", "", self.tr("First Heading")])
         self.setIndentation(0)
@@ -257,16 +256,16 @@ class _ViewPanelBackRefs(QTreeWidget):
         self.setFrameStyle(QFrame.Shape.NoFrame)
 
         # Set Header Sizes
-        treeHeader = self.header()
-        treeHeader.setStretchLastSection(True)
-        treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
-        treeHeader.setSectionResizeMode(self.C_DOC, QtHeaderToContents)
-        treeHeader.setSectionResizeMode(self.C_EDIT, QtHeaderFixed)
-        treeHeader.setSectionResizeMode(self.C_VIEW, QtHeaderFixed)
-        treeHeader.setSectionResizeMode(self.C_TITLE, QtHeaderToContents)
-        treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
-        treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
-        treeHeader.setSectionsMovable(False)
+        if header := self.header():
+            header.setStretchLastSection(True)
+            header.setMinimumSectionSize(iPx + 6)  # See Issue #1627
+            header.setSectionResizeMode(self.C_DOC, QtHeaderToContents)
+            header.setSectionResizeMode(self.C_EDIT, QtHeaderFixed)
+            header.setSectionResizeMode(self.C_VIEW, QtHeaderFixed)
+            header.setSectionResizeMode(self.C_TITLE, QtHeaderToContents)
+            header.resizeSection(self.C_EDIT, iPx + 6)
+            header.resizeSection(self.C_VIEW, iPx + 6)
+            header.setSectionsMovable(False)
 
         # Cache Icons Locally
         self._editIcon = SHARED.theme.getIcon("edit", "green")
@@ -385,7 +384,6 @@ class _ViewPanelKeyWords(QTreeWidget):
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
-        cMg = CONFIG.pxInt(6)
 
         self.setHeaderLabels([
             self.tr("Tag"), "", "", self.tr("Importance"), self.tr("Document"),
@@ -401,14 +399,14 @@ class _ViewPanelKeyWords(QTreeWidget):
         self.sortByColumn(self.C_NAME, Qt.SortOrder.AscendingOrder)
 
         # Set Header Sizes
-        treeHeader = self.header()
-        treeHeader.setStretchLastSection(True)
-        treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
-        treeHeader.setSectionResizeMode(self.C_EDIT, QtHeaderFixed)
-        treeHeader.setSectionResizeMode(self.C_VIEW, QtHeaderFixed)
-        treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
-        treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
-        treeHeader.setSectionsMovable(False)
+        if header := self.header():
+            header.setStretchLastSection(True)
+            header.setMinimumSectionSize(iPx + 6)  # See Issue #1627
+            header.setSectionResizeMode(self.C_EDIT, QtHeaderFixed)
+            header.setSectionResizeMode(self.C_VIEW, QtHeaderFixed)
+            header.resizeSection(self.C_EDIT, iPx + 6)
+            header.resizeSection(self.C_VIEW, iPx + 6)
+            header.setSectionsMovable(False)
 
         # Cache Icons Locally
         self.updateTheme()
@@ -482,19 +480,19 @@ class _ViewPanelKeyWords(QTreeWidget):
     def setColumnWidths(self, widths: list[int]) -> None:
         """Set the column widths."""
         if isinstance(widths, list) and len(widths) >= 4:
-            self.setColumnWidth(self.C_NAME, CONFIG.pxInt(checkInt(widths[0], 100)))
-            self.setColumnWidth(self.C_IMPORT, CONFIG.pxInt(checkInt(widths[1], 100)))
-            self.setColumnWidth(self.C_DOC, CONFIG.pxInt(checkInt(widths[2], 100)))
-            self.setColumnWidth(self.C_TITLE, CONFIG.pxInt(checkInt(widths[3], 100)))
+            self.setColumnWidth(self.C_NAME,   checkInt(widths[0], 100))
+            self.setColumnWidth(self.C_IMPORT, checkInt(widths[1], 100))
+            self.setColumnWidth(self.C_DOC,    checkInt(widths[2], 100))
+            self.setColumnWidth(self.C_TITLE,  checkInt(widths[3], 100))
         return
 
     def getColumnWidths(self) -> list[int]:
         """Get the widths of the user-adjustable columns."""
         return [
-            CONFIG.rpxInt(self.columnWidth(self.C_NAME)),
-            CONFIG.rpxInt(self.columnWidth(self.C_IMPORT)),
-            CONFIG.rpxInt(self.columnWidth(self.C_DOC)),
-            CONFIG.rpxInt(self.columnWidth(self.C_TITLE)),
+            self.columnWidth(self.C_NAME),
+            self.columnWidth(self.C_IMPORT),
+            self.columnWidth(self.C_DOC),
+            self.columnWidth(self.C_TITLE),
         ]
 
     ##

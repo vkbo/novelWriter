@@ -38,7 +38,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import minmax, qtLambda
+from novelwriter.common import minmax, qtAddAction, qtAddMenu, qtLambda
 from novelwriter.constants import nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.core.index import IndexHeading
 from novelwriter.enum import nwChange, nwDocMode, nwItemClass, nwOutline
@@ -199,7 +199,6 @@ class GuiNovelToolBar(QWidget):
         self.novelView = novelView
 
         iSz = SHARED.theme.baseIconSize
-        mPx = CONFIG.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -211,7 +210,7 @@ class GuiNovelToolBar(QWidget):
         self.novelValue = NovelSelector(self)
         self.novelValue.setFont(selFont)
         self.novelValue.setListFormat(self.tr("Outline of {0}"))
-        self.novelValue.setMinimumWidth(CONFIG.pxInt(150))
+        self.novelValue.setMinimumWidth(150)
         self.novelValue.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
         self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
 
@@ -227,7 +226,7 @@ class GuiNovelToolBar(QWidget):
         # More Options Menu
         self.mMore = QMenu(self)
 
-        self.mLastCol = self.mMore.addMenu(self.tr("Last Column"))
+        self.mLastCol = qtAddMenu(self.mMore, self.tr("Last Column"))
         self.gLastCol = QActionGroup(self.mMore)
         self.aLastCol = {}
         self._addLastColAction(NovelTreeColumn.HIDDEN, self.tr("Hidden"))
@@ -236,7 +235,7 @@ class GuiNovelToolBar(QWidget):
         self._addLastColAction(NovelTreeColumn.PLOT,   self.tr("Novel Plot"))
 
         self.mLastCol.addSeparator()
-        self.aLastColSize = self.mLastCol.addAction(self.tr("Column Size"))
+        self.aLastColSize = qtAddAction(self.mLastCol, self.tr("Column Size"))
         self.aLastColSize.triggered.connect(self._selectLastColumnSize)
 
         self.tbMore = NIconToolButton(self, iSz)
@@ -249,7 +248,7 @@ class GuiNovelToolBar(QWidget):
         self.outerBox.addWidget(self.tbNovel)
         self.outerBox.addWidget(self.tbRefresh)
         self.outerBox.addWidget(self.tbMore)
-        self.outerBox.setContentsMargins(mPx, mPx, 0, mPx)
+        self.outerBox.setContentsMargins(2, 2, 0, 2)
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
@@ -343,7 +342,7 @@ class GuiNovelToolBar(QWidget):
 
     def _addLastColAction(self, colType: NovelTreeColumn, actionLabel: str) -> None:
         """Add a column selection entry to the last column menu."""
-        aLast = self.mLastCol.addAction(actionLabel)
+        aLast = qtAddAction(self.mLastCol, actionLabel)
         aLast.setCheckable(True)
         aLast.setActionGroup(self.gLastCol)
         aLast.triggered.connect(qtLambda(self.setLastColType, colType))
@@ -388,7 +387,6 @@ class GuiNovelTree(QTreeWidget):
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
-        cMg = CONFIG.pxInt(6)
 
         self.setIconSize(iSz)
         self.setFrameStyle(QFrame.Shape.NoFrame)
@@ -403,13 +401,13 @@ class GuiNovelTree(QTreeWidget):
         self.setDragEnabled(False)
 
         # Lock the column sizes
-        treeHeader = self.header()
-        treeHeader.setStretchLastSection(False)
-        treeHeader.setMinimumSectionSize(iPx + cMg)
-        treeHeader.setSectionResizeMode(self.C_TITLE, QtHeaderStretch)
-        treeHeader.setSectionResizeMode(self.C_WORDS, QtHeaderToContents)
-        treeHeader.setSectionResizeMode(self.C_EXTRA, QtHeaderToContents)
-        treeHeader.setSectionResizeMode(self.C_MORE, QtHeaderToContents)
+        if header := self.header():
+            header.setStretchLastSection(False)
+            header.setMinimumSectionSize(iPx + 6)
+            header.setSectionResizeMode(self.C_TITLE, QtHeaderStretch)
+            header.setSectionResizeMode(self.C_WORDS, QtHeaderToContents)
+            header.setSectionResizeMode(self.C_EXTRA, QtHeaderToContents)
+            header.setSectionResizeMode(self.C_MORE, QtHeaderToContents)
 
         # Pre-Generate Tree Formatting
         fH1 = self.font()
@@ -678,8 +676,9 @@ class GuiNovelTree(QTreeWidget):
 
         return
 
-    def _updateTreeItemValues(self, trItem: QTreeWidgetItem, idxItem: IndexHeading,
-                              tHandle: str, sTitle: str) -> None:
+    def _updateTreeItemValues(
+        self, trItem: QTreeWidgetItem, idxItem: IndexHeading, tHandle: str, sTitle: str
+    ) -> None:
         """Set the tree item values from the index entry."""
         iLevel = nwStyles.H_LEVEL.get(idxItem.level, 0)
         hDec = SHARED.theme.getHeaderDecoration(iLevel)
@@ -691,7 +690,8 @@ class GuiNovelTree(QTreeWidget):
         trItem.setData(self.C_MORE, QtDecoration, self._pMore)
 
         # Custom column
-        mW = int(self._lastColSize * self.viewport().width())
+        viewport = self.viewport()
+        mW = int(self._lastColSize * (viewport.width() if viewport else 100))
         lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
         elideText = self.fontMetrics().elidedText(lastText, Qt.TextElideMode.ElideRight, mW)
         trItem.setText(self.C_EXTRA, elideText)

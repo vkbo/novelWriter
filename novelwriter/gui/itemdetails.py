@@ -30,7 +30,7 @@ from enum import Enum
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QGridLayout, QLabel, QWidget
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import SHARED
 from novelwriter.common import elide
 from novelwriter.constants import nwLabels, nwStats, trConst
 from novelwriter.enum import nwChange
@@ -53,9 +53,6 @@ class GuiItemDetails(QWidget):
         self._handle = None
 
         # Sizes
-        hSp = CONFIG.pxInt(6)
-        vSp = CONFIG.pxInt(1)
-        mPx = CONFIG.pxInt(6)
         fPt = SHARED.theme.fontPointSize
 
         fntLabel = self.font()
@@ -176,9 +173,9 @@ class GuiItemDetails(QWidget):
         self.mainBox.setColumnStretch(3, 0)
         self.mainBox.setColumnStretch(4, 0)
 
-        self.mainBox.setHorizontalSpacing(hSp)
-        self.mainBox.setVerticalSpacing(vSp)
-        self.mainBox.setContentsMargins(mPx, mPx, mPx, mPx)
+        self.mainBox.setHorizontalSpacing(6)
+        self.mainBox.setVerticalSpacing(1)
+        self.mainBox.setContentsMargins(6, 6, 6, 6)
 
         self.setLayout(self.mainBox)
 

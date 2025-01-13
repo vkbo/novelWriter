@@ -32,8 +32,8 @@ from enum import Enum
 
 from PyQt6.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import (
-    QAction, QCursor, QDesktopServices, QDragEnterEvent, QDragMoveEvent,
-    QDropEvent, QMouseEvent, QPalette, QResizeEvent, QTextCursor
+    QCursor, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent,
+    QMouseEvent, QPalette, QResizeEvent, QTextCursor
 )
 from PyQt6.QtWidgets import (
     QApplication, QFrame, QHBoxLayout, QMenu, QTextBrowser, QToolButton,
@@ -41,7 +41,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import decodeMimeHandles, qtLambda
+from novelwriter.common import decodeMimeHandles, qtAddAction, qtLambda
 from novelwriter.constants import nwConst, nwStyles, nwUnicode
 from novelwriter.enum import nwChange, nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
@@ -79,7 +79,7 @@ class GuiDocViewer(QTextBrowser):
         self._docTheme = TextDocumentTheme()
 
         # Settings
-        self.setMinimumWidth(CONFIG.pxInt(300))
+        self.setMinimumWidth(300)
         self.setAutoFillBackground(True)
         self.setOpenLinks(False)
         self.setOpenExternalLinks(False)
@@ -124,8 +124,7 @@ class GuiDocViewer(QTextBrowser):
     @property
     def scrollPosition(self) -> int:
         """Return the scrollbar position."""
-        vBar = self.verticalScrollBar()
-        if vBar.isVisible():
+        if (vBar := self.verticalScrollBar()) and vBar.isVisible():
             return vBar.value()
         return 0
 
@@ -163,12 +162,13 @@ class GuiDocViewer(QTextBrowser):
         palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
 
-        palette = self.viewport().palette()
-        palette.setColor(QPalette.ColorRole.Base, syntax.back)
-        palette.setColor(QPalette.ColorRole.Text, syntax.text)
-        self.viewport().setPalette(palette)
-        self.docHeader.matchColours()
-        self.docFooter.matchColours()
+        if viewport := self.viewport():
+            palette = viewport.palette()
+            palette.setColor(QPalette.ColorRole.Base, syntax.back)
+            palette.setColor(QPalette.ColorRole.Text, syntax.text)
+            viewport.setPalette(palette)
+            self.docHeader.matchColours()
+            self.docFooter.matchColours()
 
         # Update theme colours
         self._docTheme.text      = syntax.text
@@ -186,7 +186,8 @@ class GuiDocViewer(QTextBrowser):
         self._docTheme.altdialog = syntax.dialA
 
         # Set default text margins
-        self.document().setDocumentMargin(0)
+        if document := self.document():
+            document.setDocumentMargin(0)
 
         # Scroll bars
         if CONFIG.hideVScroll:
@@ -217,7 +218,9 @@ class GuiDocViewer(QTextBrowser):
         logger.debug("Generating preview for item '%s'", tHandle)
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
-        sPos = self.verticalScrollBar().value()
+        vBar = self.verticalScrollBar()
+        sPos = vBar.value() if vBar else 0
+
         qDoc = ToQTextDocument(SHARED.project)
         qDoc.setJustify(CONFIG.doJustify)
         qDoc.setDialogHighlight(True)
@@ -252,9 +255,9 @@ class GuiDocViewer(QTextBrowser):
         self.setDocument(qDoc.document)
         self.setTabStopDistance(CONFIG.tabWidth)
 
-        if self._docHandle == tHandle:
+        if self._docHandle == tHandle and vBar:
             # This is a refresh, so we set the scrollbar back to where it was
-            self.verticalScrollBar().setValue(sPos)
+            vBar.setValue(sPos)
 
         self._docHandle = tHandle
         SHARED.project.data.setLastHandle(tHandle, "viewer")
@@ -311,10 +314,10 @@ class GuiDocViewer(QTextBrowser):
         cM = CONFIG.textMargin
 
         vBar = self.verticalScrollBar()
-        sW = vBar.width() if vBar.isVisible() else 0
+        sW = vBar.width() if vBar and vBar.isVisible() else 0
 
         hBar = self.horizontalScrollBar()
-        sH = hBar.height() if hBar.isVisible() else 0
+        sH = hBar.height() if hBar and hBar.isVisible() else 0
 
         tM = cM
         if CONFIG.textWidth > 0:
@@ -339,8 +342,7 @@ class GuiDocViewer(QTextBrowser):
 
     def setScrollPosition(self, pos: int) -> None:
         """Set the scrollbar position."""
-        vBar = self.verticalScrollBar()
-        if vBar.isVisible():
+        if (vBar := self.verticalScrollBar()) and vBar.isVisible():
             vBar.setValue(pos)
         return
 
@@ -402,31 +404,27 @@ class GuiDocViewer(QTextBrowser):
         ctxMenu = QMenu(self)
 
         if userSelection:
-            mnuCopy = QAction(self.tr("Copy"), ctxMenu)
-            mnuCopy.triggered.connect(qtLambda(self.docAction, nwDocAction.COPY))
-            ctxMenu.addAction(mnuCopy)
-
+            action = qtAddAction(ctxMenu, self.tr("Copy"))
+            action.triggered.connect(qtLambda(self.docAction, nwDocAction.COPY))
             ctxMenu.addSeparator()
 
-        mnuSelAll = QAction(self.tr("Select All"), ctxMenu)
-        mnuSelAll.triggered.connect(qtLambda(self.docAction, nwDocAction.SEL_ALL))
-        ctxMenu.addAction(mnuSelAll)
+        action = qtAddAction(ctxMenu, self.tr("Select All"))
+        action.triggered.connect(qtLambda(self.docAction, nwDocAction.SEL_ALL))
 
-        mnuSelWord = QAction(self.tr("Select Word"), ctxMenu)
-        mnuSelWord.triggered.connect(qtLambda(
+        action = qtAddAction(ctxMenu, self.tr("Select Word"))
+        action.triggered.connect(qtLambda(
             self._makePosSelection, QTextCursor.SelectionType.WordUnderCursor, point
         ))
-        ctxMenu.addAction(mnuSelWord)
 
-        mnuSelPara = QAction(self.tr("Select Paragraph"), ctxMenu)
-        mnuSelPara.triggered.connect(qtLambda(
+        action = qtAddAction(ctxMenu, self.tr("Select Paragraph"))
+        action.triggered.connect(qtLambda(
             self._makePosSelection, QTextCursor.SelectionType.BlockUnderCursor, point
         ))
-        ctxMenu.addAction(mnuSelPara)
 
         # Open the context menu
-        ctxMenu.exec(self.viewport().mapToGlobal(point))
-        ctxMenu.deleteLater()
+        if viewport := self.viewport():
+            ctxMenu.exec(viewport.mapToGlobal(point))
+            ctxMenu.deleteLater()
 
         return
 
@@ -452,7 +450,7 @@ class GuiDocViewer(QTextBrowser):
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         """Overload drag enter event to handle dragged items."""
-        if event.mimeData().hasFormat(nwConst.MIME_HANDLE):
+        if (data := event.mimeData()) and data.hasFormat(nwConst.MIME_HANDLE):
             event.acceptProposedAction()
         else:
             super().dragEnterEvent(event)
@@ -460,7 +458,7 @@ class GuiDocViewer(QTextBrowser):
 
     def dragMoveEvent(self, event: QDragMoveEvent) -> None:
         """Overload drag move event to handle dragged items."""
-        if event.mimeData().hasFormat(nwConst.MIME_HANDLE):
+        if (data := event.mimeData()) and data.hasFormat(nwConst.MIME_HANDLE):
             event.acceptProposedAction()
         else:
             super().dragMoveEvent(event)
@@ -468,8 +466,8 @@ class GuiDocViewer(QTextBrowser):
 
     def dropEvent(self, event: QDropEvent) -> None:
         """Overload drop event to handle dragged items."""
-        if event.mimeData().hasFormat(nwConst.MIME_HANDLE):
-            if handles := decodeMimeHandles(event.mimeData()):
+        if (data := event.mimeData()) and data.hasFormat(nwConst.MIME_HANDLE):
+            if handles := decodeMimeHandles(data):
                 if SHARED.project.tree.checkType(handles[0], nwItemType.FILE):
                     self.openDocumentRequest.emit(handles[0], nwDocMode.VIEW, "", True)
         else:
@@ -640,7 +638,6 @@ class GuiDocViewHeader(QWidget):
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
-        mPx = CONFIG.pxInt(4)
 
         # Main Widget Settings
         self.setAutoFillBackground(True)
@@ -692,9 +689,9 @@ class GuiDocViewHeader(QWidget):
         self.outerBox.addWidget(self.outlineButton, 0)
         self.outerBox.addWidget(self.backButton, 0)
         self.outerBox.addWidget(self.forwardButton, 0)
-        self.outerBox.addSpacing(mPx)
+        self.outerBox.addSpacing(4)
         self.outerBox.addWidget(self.itemTitle, 1)
-        self.outerBox.addSpacing(mPx)
+        self.outerBox.addSpacing(4)
         self.outerBox.addWidget(self.editButton, 0)
         self.outerBox.addWidget(self.refreshButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
@@ -705,8 +702,8 @@ class GuiDocViewHeader(QWidget):
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
         self.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
-        self.setMinimumHeight(iPx + 2*mPx)
+        self.outerBox.setContentsMargins(4, 4, 4, 4)
+        self.setMinimumHeight(iPx + 8)
 
         self.updateFont()
         self.updateTheme()
@@ -747,7 +744,7 @@ class GuiDocViewHeader(QWidget):
                     minLevel = min(minLevel, level)
             for title, text, level in entries[:30]:
                 indent = "    "*(level - minLevel)
-                action = self.outlineMenu.addAction(f"{indent}{text}")
+                action = qtAddAction(self.outlineMenu, f"{indent}{text}")
                 action.triggered.connect(
                     lambda _, title=title: self.docViewer.navigateTo(f"#{tHandle}:{title}")
                 )
@@ -885,8 +882,6 @@ class GuiDocViewFooter(QWidget):
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
-        hSp = CONFIG.pxInt(4)
-        mPx = CONFIG.pxInt(4)
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
@@ -923,14 +918,14 @@ class GuiDocViewFooter(QWidget):
         self.outerBox.addStretch(1)
         self.outerBox.addWidget(self.showComments, 0)
         self.outerBox.addWidget(self.showSynopsis, 0)
-        self.outerBox.setSpacing(hSp)
+        self.outerBox.setSpacing(4)
         self.setLayout(self.outerBox)
 
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
         self.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
-        self.setMinimumHeight(iPx + 2*mPx)
+        self.outerBox.setContentsMargins(4, 4, 4, 4)
+        self.setMinimumHeight(iPx + 8)
 
         self.updateFont()
         self.updateTheme()
