@@ -1228,10 +1228,10 @@ class _TreeContextMenu(QMenu):
         if len(self._indices) > 1:
             mSub = qtAddMenu(self, self.tr("Set Active to ..."))
             aOne = qtAddAction(mSub, self._tree.trActive)
-            aOne.setIcon(SHARED.theme.getIcon("checked"))
+            aOne.setIcon(SHARED.theme.getIcon("checked", "green"))
             aOne.triggered.connect(qtLambda(self._iterItemActive, True))
             aTwo = qtAddAction(mSub, self._tree.trInactive)
-            aTwo.setIcon(SHARED.theme.getIcon("unchecked"))
+            aTwo.setIcon(SHARED.theme.getIcon("unchecked", "red"))
             aTwo.triggered.connect(qtLambda(self._iterItemActive, False))
         else:
             action = qtAddAction(self, self.tr("Toggle Active"))

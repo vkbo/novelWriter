@@ -88,7 +88,7 @@ class GuiDocMerge(NDialog):
         self.buttonBox.rejected.connect(self.reject)
 
         self.resetButton = self.buttonBox.addButton(QtDialogReset)
-        if self.resetButton is not None:
+        if self.resetButton:
             self.resetButton.clicked.connect(self._resetList)
 
         # Assemble

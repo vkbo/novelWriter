@@ -210,16 +210,14 @@ class GuiProjectSettings(NDialog):
 
     def _saveSettings(self) -> None:
         """Save GUI settings."""
-        winWidth    = self.width()
-        winHeight   = self.height()
         statusColW  = self.statusPage.columnWidth()
         importColW  = self.importPage.columnWidth()
         replaceColW = self.replacePage.columnWidth()
 
         logger.debug("Saving State: GuiProjectSettings")
         options = SHARED.project.options
-        options.setValue("GuiProjectSettings", "winWidth", winWidth)
-        options.setValue("GuiProjectSettings", "winHeight", winHeight)
+        options.setValue("GuiProjectSettings", "winWidth", self.width())
+        options.setValue("GuiProjectSettings", "winHeight", self.height())
         options.setValue("GuiProjectSettings", "statusColW", statusColW)
         options.setValue("GuiProjectSettings", "importColW", importColW)
         options.setValue("GuiProjectSettings", "replaceColW", replaceColW)
@@ -391,7 +389,7 @@ class _StatusPage(NFixedPage):
         self.labelText.textEdited.connect(self._onNameEdit)
 
         buttonStyle = (
-            f"QToolButton {{padding: 0 {4}px;}} "
+            "QToolButton {padding: 0 4px;} "
             "QToolButton::menu-indicator {image: none;}"
         )
 
