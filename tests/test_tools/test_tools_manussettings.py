@@ -51,13 +51,19 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     bSettings.loadContent()
 
     # Flip through pages
-    bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 1).click()
+    button = bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 1)
+    assert button is not None
+    button.click()
     assert isinstance(bSettings.toolStack.currentWidget(), _FormattingTab)
 
-    bSettings.sidebar._group.button(bSettings.OPT_HEADINGS).click()
+    button = bSettings.sidebar._group.button(bSettings.OPT_HEADINGS)
+    assert button is not None
+    button.click()
     assert isinstance(bSettings.toolStack.currentWidget(), _HeadingsTab)
 
-    bSettings.sidebar._group.button(bSettings.OPT_FILTERS).click()
+    button = bSettings.sidebar._group.button(bSettings.OPT_FILTERS)
+    assert button is not None
+    button.click()
     assert isinstance(bSettings.toolStack.currentWidget(), _FilterTab)
 
     # Check dialog buttons
@@ -72,7 +78,9 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     # Capture Apply button
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogApply))
+        button = bSettings.buttonBox.button(QtDialogApply)
+        assert button is not None
+        bSettings._dialogButtonClicked(button)
 
     assert triggered
 
@@ -81,7 +89,9 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogSave))
+        button = bSettings.buttonBox.button(QtDialogSave)
+        assert button is not None
+        bSettings._dialogButtonClicked(button)
 
     assert triggered
 
@@ -98,7 +108,9 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     assert triggered
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
+    button = bSettings.buttonBox.button(QtDialogClose)
+    assert button is not None
+    bSettings._dialogButtonClicked(button)
     # qtbot.stop()
 
 
@@ -129,7 +141,9 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     bSettings.loadContent()
 
     filterTab = bSettings.optTabSelect
-    bSettings.sidebar._group.button(bSettings.OPT_FILTERS).click()
+    button = bSettings.sidebar._group.button(bSettings.OPT_FILTERS)
+    assert button is not None
+    button.click()
     assert bSettings.toolStack.currentWidget() is filterTab
 
     # Check content
@@ -308,7 +322,9 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     ]
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
+    button = bSettings.buttonBox.button(QtDialogClose)
+    assert button is not None
+    bSettings._dialogButtonClicked(button)
     # qtbot.stop()
 
 
@@ -339,7 +355,9 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     bSettings.loadContent()
 
     headTab = bSettings.optTabHeadings
-    bSettings.sidebar._group.button(bSettings.OPT_HEADINGS).click()
+    button = bSettings.sidebar._group.button(bSettings.OPT_HEADINGS)
+    assert button is not None
+    button.click()
     assert bSettings.toolStack.currentWidget() is headTab
 
     # Check initial values
@@ -478,7 +496,9 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     assert build.getBool("headings.hideSection") is True
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
+    button = bSettings.buttonBox.button(QtDialogClose)
+    assert button is not None
+    bSettings._dialogButtonClicked(button)
     # qtbot.stop()
 
 
@@ -501,7 +521,9 @@ def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
     bSettings.loadContent()
 
     fmtTab = bSettings.optTabFormatting
-    bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 1).click()
+    button = bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 1)
+    assert button is not None
+    button.click()
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
@@ -538,7 +560,9 @@ def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
     assert build.getBool("text.addNoteHeadings") is True
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
+    button = bSettings.buttonBox.button(QtDialogClose)
+    assert button is not None
+    bSettings._dialogButtonClicked(button)
     # qtbot.stop()
 
 
@@ -563,7 +587,9 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
     bSettings.loadContent()
 
     fmtTab = bSettings.optTabFormatting
-    bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 2).click()
+    button = bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 2)
+    assert button is not None
+    button.click()
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
@@ -610,7 +636,9 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
         assert fmtTab._textFont == font
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
+    button = bSettings.buttonBox.button(QtDialogClose)
+    assert button is not None
+    bSettings._dialogButtonClicked(button)
     # qtbot.stop()
 
 
@@ -629,7 +657,9 @@ def testToolBuildSettings_FormatFirstLineIndent(monkeypatch, qtbot, nwGUI):
     bSettings.loadContent()
 
     fmtTab = bSettings.optTabFormatting
-    bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 3).click()
+    button = bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 3)
+    assert button is not None
+    button.click()
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
@@ -650,7 +680,9 @@ def testToolBuildSettings_FormatFirstLineIndent(monkeypatch, qtbot, nwGUI):
     assert build.getBool("format.indentFirstPar") is True
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
+    button = bSettings.buttonBox.button(QtDialogClose)
+    assert button is not None
+    bSettings._dialogButtonClicked(button)
     # qtbot.stop()
 
 
@@ -674,7 +706,9 @@ def testToolBuildSettings_FormatPageLayout(monkeypatch, qtbot, nwGUI):
     bSettings.loadContent()
 
     fmtTab = bSettings.optTabFormatting
-    bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 4).click()
+    button = bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 4)
+    assert button is not None
+    button.click()
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
@@ -704,7 +738,9 @@ def testToolBuildSettings_FormatPageLayout(monkeypatch, qtbot, nwGUI):
     assert fmtTab.rightMargin.value() == 1.5
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
+    button = bSettings.buttonBox.button(QtDialogClose)
+    assert button is not None
+    bSettings._dialogButtonClicked(button)
     # qtbot.stop()
 
 
@@ -728,7 +764,9 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     bSettings.loadContent()
 
     fmtTab = bSettings.optTabFormatting
-    bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 5).click()
+    button = bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 5)
+    assert button is not None
+    button.click()
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
@@ -769,5 +807,7 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert fmtTab.odtPageHeader.text() == nwHeadFmt.DOC_AUTO
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
+    button = bSettings.buttonBox.button(QtDialogClose)
+    assert button is not None
+    bSettings._dialogButtonClicked(button)
     # qtbot.stop()

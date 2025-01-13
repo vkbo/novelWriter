@@ -96,6 +96,7 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
 
     # Check Navigation
     vBar = prefs.mainForm.verticalScrollBar()
+    assert vBar is not None
     old = -1
     with qtbot.waitSignal(vBar.valueChanged) as value:
         prefs.sidebar.button(1).click()
@@ -119,12 +120,16 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     # Check Save Button
     prefs.show()
     with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-        prefs.buttonBox.button(QtDialogSave).click()
+        button = prefs.buttonBox.button(QtDialogSave)
+        assert button is not None
+        button.click()
         assert signal.args == [False, False, False, False]
 
     # Check Close Button
     prefs.show()
-    prefs.buttonBox.button(QtDialogCancel).click()
+    button = prefs.buttonBox.button(QtDialogCancel)
+    assert button is not None
+    button.click()
     assert prefs.isHidden() is True
 
     # Close Using Escape Key
@@ -313,7 +318,9 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     with monkeypatch.context() as mp:
         mp.setattr(QFontDatabase, "families", lambda *a: ["TestFont"])
         with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-            prefs.buttonBox.button(QtDialogSave).click()
+            button = prefs.buttonBox.button(QtDialogSave)
+            assert button is not None
+            button.click()
             assert signal.args == [True, True, True, True]
 
     # Check Settings

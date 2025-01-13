@@ -41,7 +41,9 @@ def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
     msgAbout = SHARED.findTopLevelWidget(GuiAbout)
     assert isinstance(msgAbout, GuiAbout)
 
-    assert msgAbout.txtCredits.document().characterCount() > 100
+    document = msgAbout.txtCredits.document()
+    assert document is not None
+    assert document.characterCount() > 100
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.config.Config.assetPath", lambda *a: Path("whatever"))

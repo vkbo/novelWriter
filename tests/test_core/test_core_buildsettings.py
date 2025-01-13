@@ -398,7 +398,7 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
     buildTwo.setName("Build Two")
     buildIDTwo = buildTwo.buildID
 
-    # Check that we can extract infor about the builds
+    # Check that we can extract info about the builds
     builds.setBuild(buildTwo)
     assert len(builds) == 2
     assert buildsFile.exists()
