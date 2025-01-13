@@ -40,7 +40,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import cssCol, formatInt, makeFileNameSafe, qtLambda
+from novelwriter.common import cssCol, formatInt, makeFileNameSafe, qtAddAction, qtLambda
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.enum import nwItemClass
@@ -66,29 +66,21 @@ class GuiWelcome(NDialog):
         self.setObjectName("GuiWelcome")
 
         self.setWindowTitle(self.tr("Welcome"))
-        self.setMinimumWidth(CONFIG.pxInt(650))
-        self.setMinimumHeight(CONFIG.pxInt(450))
-
-        hA = CONFIG.pxInt(8)
-        hB = CONFIG.pxInt(16)
-        hC = CONFIG.pxInt(24)
-        hD = CONFIG.pxInt(36)
-        hE = CONFIG.pxInt(48)
-        hF = CONFIG.pxInt(128)
-        btnIconSize = SHARED.theme.buttonIconSize
-
-        self._hPx = CONFIG.pxInt(600)
+        self.setMinimumWidth(650)
+        self.setMinimumHeight(450)
         self.resize(*CONFIG.welcomeWinSize)
+
+        btnIconSize = SHARED.theme.buttonIconSize
 
         # Elements
         # ========
 
         self.bgImage = SHARED.theme.loadDecoration("welcome")
-        self.nwImage = SHARED.theme.loadDecoration("nw-text", h=hD)
+        self.nwImage = SHARED.theme.loadDecoration("nw-text", h=36)
         self.bgColor = QColor(54, 54, 54) if SHARED.theme.isDarkTheme else QColor(255, 255, 255)
 
         self.nwLogo = QLabel(self)
-        self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (hF, hF)))
+        self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (128, 128)))
 
         self.nwLabel = QLabel(self)
         self.nwLabel.setPixmap(self.nwImage)
@@ -152,18 +144,18 @@ class GuiWelcome(NDialog):
         # ========
 
         self.innerBox = QVBoxLayout()
-        self.innerBox.addSpacing(hB)
+        self.innerBox.addSpacing(16)
         self.innerBox.addWidget(self.nwLabel)
         self.innerBox.addWidget(self.nwInfo)
-        self.innerBox.addSpacing(hA)
+        self.innerBox.addSpacing(8)
         self.innerBox.addWidget(self.mainStack)
-        self.innerBox.addSpacing(hB)
+        self.innerBox.addSpacing(16)
         self.innerBox.addLayout(self.btnBox)
 
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.nwLogo, 3, QtAlignRightTop)
         self.outerBox.addLayout(self.innerBox, 9)
-        self.outerBox.setContentsMargins(hF, hE, hC, hE)
+        self.outerBox.setContentsMargins(128, 48, 24, 48)
 
         self.setLayout(self.outerBox)
         self.setSizeGripEnabled(True)
@@ -183,7 +175,7 @@ class GuiWelcome(NDialog):
     def paintEvent(self, event: QPaintEvent) -> None:
         """Overload the paint event to draw the background image."""
         hWin = self.height()
-        hPix = min(hWin, self._hPx)
+        hPix = min(hWin, 600)
         tMode = Qt.TransformationMode.SmoothTransformation
         painter = QPainter(self)
         painter.fillRect(self.rect(), self.bgColor)
@@ -309,11 +301,10 @@ class _OpenProjectPage(QWidget):
 
         self._selectFirstItem()
 
-        mPx = CONFIG.pxInt(4)
         baseCol = cssCol(self.palette().base().color(), PANEL_ALPHA)
         self.setStyleSheet(
             f"QListView {{border: none; background: {baseCol};}} "
-            f"QLineEdit {{border: none; background: {baseCol}; padding: {mPx}px;}} "
+            f"QLineEdit {{border: none; background: {baseCol}; padding: 4px;}} "
         )
 
         return
@@ -370,9 +361,9 @@ class _OpenProjectPage(QWidget):
         """Open the custom context menu."""
         ctxMenu = QMenu(self)
         ctxMenu.setObjectName("ContextMenu")  # Used for testing
-        action = ctxMenu.addAction(self.tr("Open Project"))
+        action = qtAddAction(ctxMenu, self.tr("Open Project"))
         action.triggered.connect(self.openSelectedItem)
-        action = ctxMenu.addAction(self.tr("Remove Project"))
+        action = qtAddAction(ctxMenu, self.tr("Remove Project"))
         action.triggered.connect(self._deleteSelectedItem)
         ctxMenu.exec(self.mapToGlobal(pos))
         ctxMenu.deleteLater()
@@ -400,11 +391,10 @@ class _ProjectListItem(QStyledItemDelegate):
         fPx = SHARED.theme.fontPixelSize
         fPt = SHARED.theme.fontPointSize
         tPx = round(1.2 * fPx)
-        mPx = CONFIG.pxInt(4)
         iPx = tPx + fPx
 
-        self._pPx = (mPx//2, 3*mPx//2, iPx + mPx, mPx, mPx + tPx)  # Painter coordinates
-        self._hPx = 2*mPx + tPx + fPx  # Fixed height
+        self._pPx = (iPx + 4, tPx + 4)  # Painter coordinates
+        self._hPx = 8 + tPx + fPx  # Fixed height
 
         self._tFont = QApplication.font()
         self._tFont.setPointSizeF(1.2*fPt)
@@ -423,7 +413,7 @@ class _ProjectListItem(QStyledItemDelegate):
         rect = opt.rect
         title, _, details = index.data()
         tFlag = Qt.TextFlag.TextSingleLine
-        ix, iy, x, y1, y2 = self._pPx
+        x, y = self._pPx
 
         painter.save()
         if opt.state & QtSelected == QtSelected:
@@ -431,12 +421,12 @@ class _ProjectListItem(QStyledItemDelegate):
             painter.fillRect(rect, QApplication.palette().highlight())
             painter.setOpacity(1.0)
 
-        painter.drawPixmap(ix, rect.top() + iy, self._icon)
+        painter.drawPixmap(2, rect.top() + 6, self._icon)
         painter.setFont(self._tFont)
-        painter.drawText(rect.adjusted(x, y1, 0, 0), tFlag, title)
+        painter.drawText(rect.adjusted(x, 4, 0, 0), tFlag, title)
         painter.setFont(self._dFont)
         painter.setPen(self._dPen)
-        painter.drawText(rect.adjusted(x, y2, 0, 0), tFlag, details)
+        painter.drawText(rect.adjusted(x, y, 0, 0), tFlag, details)
         painter.restore()
 
         return
@@ -557,7 +547,6 @@ class _NewProjectForm(QWidget):
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
-        sPx = CONFIG.pxInt(16)
 
         # Project Settings
         # ================
@@ -592,15 +581,15 @@ class _NewProjectForm(QWidget):
 
         self.fillMenu = QMenu(self.browseFill)
 
-        self.fillBlank = self.fillMenu.addAction(self.tr("Create a fresh project"))
+        self.fillBlank = qtAddAction(self.fillMenu, self.tr("Create a fresh project"))
         self.fillBlank.setIcon(SHARED.theme.getIcon("document"))
         self.fillBlank.triggered.connect(self._setFillBlank)
 
-        self.fillSample = self.fillMenu.addAction(self.tr("Create an example project"))
+        self.fillSample = qtAddAction(self.fillMenu, self.tr("Create an example project"))
         self.fillSample.setIcon(SHARED.theme.getIcon("document_add", "blue"))
         self.fillSample.triggered.connect(self._setFillSample)
 
-        self.fillCopy = self.fillMenu.addAction(self.tr("Copy an existing project"))
+        self.fillCopy = qtAddAction(self.fillMenu, self.tr("Copy an existing project"))
         self.fillCopy.setIcon(SHARED.theme.getIcon("project_copy", "green"))
         self.fillCopy.triggered.connect(self._setFillCopy)
 
@@ -675,7 +664,7 @@ class _NewProjectForm(QWidget):
         self.extraBox = QVBoxLayout()
         self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Chapters and Scenes")), self))
         self.extraBox.addLayout(self.novelForm)
-        self.extraBox.addSpacing(sPx)
+        self.extraBox.addSpacing(16)
         self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Project Notes")), self))
         self.extraBox.addLayout(self.notesForm)
         self.extraBox.setContentsMargins(0, 0, 0, 0)
@@ -687,7 +676,7 @@ class _NewProjectForm(QWidget):
         self.formBox = QVBoxLayout()
         self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Create New Project")), self))
         self.formBox.addLayout(self.projectForm)
-        self.formBox.addSpacing(sPx)
+        self.formBox.addSpacing(16)
         self.formBox.addWidget(self.extraWidget)
         self.formBox.addStretch(1)
 

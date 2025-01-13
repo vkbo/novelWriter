@@ -57,12 +57,9 @@ class GuiDictionaries(NNonBlockingDialog):
         self._currDicts = set()
 
         iSz = SHARED.theme.baseIconSize
-        iPx = CONFIG.pxInt(4)
-        mPx = CONFIG.pxInt(8)
-        sPx = CONFIG.pxInt(16)
 
-        self.setMinimumWidth(CONFIG.pxInt(500))
-        self.setMinimumHeight(CONFIG.pxInt(300))
+        self.setMinimumWidth(500)
+        self.setMinimumHeight(300)
 
         # Hunspell Dictionaries
         foUrl = "https://www.freeoffice.com/en/download/dictionaries"
@@ -84,7 +81,7 @@ class GuiDictionaries(NNonBlockingDialog):
         self.huPathBox = QHBoxLayout()
         self.huPathBox.addWidget(self.huInput)
         self.huPathBox.addWidget(self.huBrowse)
-        self.huPathBox.setSpacing(iPx)
+        self.huPathBox.setSpacing(4)
         self.huAddBox = QHBoxLayout()
         self.huAddBox.addStretch(1)
         self.huAddBox.addWidget(self.huImport)
@@ -99,7 +96,7 @@ class GuiDictionaries(NNonBlockingDialog):
         self.inBox = QHBoxLayout()
         self.inBox.addWidget(self.inPath)
         self.inBox.addWidget(self.inBrowse)
-        self.inBox.setSpacing(iPx)
+        self.inBox.setSpacing(4)
 
         # Info Box
         self.infoBox = QPlainTextEdit(self)
@@ -116,17 +113,17 @@ class GuiDictionaries(NNonBlockingDialog):
         self.innerBox.addWidget(self.huInfo)
         self.innerBox.addLayout(self.huPathBox)
         self.innerBox.addLayout(self.huAddBox)
-        self.innerBox.addSpacing(mPx)
+        self.innerBox.addSpacing(8)
         self.innerBox.addWidget(self.inInfo)
         self.innerBox.addLayout(self.inBox)
         self.innerBox.addWidget(self.infoBox)
-        self.innerBox.setSpacing(iPx)
+        self.innerBox.setSpacing(4)
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.innerBox, 0)
         self.outerBox.addStretch(1)
         self.outerBox.addWidget(self.buttonBox, 0)
-        self.outerBox.setSpacing(sPx)
+        self.outerBox.setSpacing(16)
 
         self.setLayout(self.outerBox)
 

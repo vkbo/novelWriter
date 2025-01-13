@@ -82,26 +82,18 @@ class GuiWritingStats(NToolDialog):
         pOptions = SHARED.project.options
 
         self.setWindowTitle(self.tr("Writing Statistics"))
-        self.setMinimumWidth(CONFIG.pxInt(420))
-        self.setMinimumHeight(CONFIG.pxInt(400))
+        self.setMinimumWidth(420)
+        self.setMinimumHeight(400)
         self.resize(
-            CONFIG.pxInt(pOptions.getInt("GuiWritingStats", "winWidth",  550)),
-            CONFIG.pxInt(pOptions.getInt("GuiWritingStats", "winHeight", 500))
+            pOptions.getInt("GuiWritingStats", "winWidth", 550),
+            pOptions.getInt("GuiWritingStats", "winHeight", 500),
         )
 
         # List Box
-        wCol0 = CONFIG.pxInt(
-            pOptions.getInt("GuiWritingStats", "widthCol0", 180)
-        )
-        wCol1 = CONFIG.pxInt(
-            pOptions.getInt("GuiWritingStats", "widthCol1", 80)
-        )
-        wCol2 = CONFIG.pxInt(
-            pOptions.getInt("GuiWritingStats", "widthCol2", 80)
-        )
-        wCol3 = CONFIG.pxInt(
-            pOptions.getInt("GuiWritingStats", "widthCol3", 80)
-        )
+        wCol0 = pOptions.getInt("GuiWritingStats", "widthCol0", 180)
+        wCol1 = pOptions.getInt("GuiWritingStats", "widthCol1", 80)
+        wCol2 = pOptions.getInt("GuiWritingStats", "widthCol2", 80)
+        wCol3 = pOptions.getInt("GuiWritingStats", "widthCol3", 80)
 
         self.listBox = QTreeWidget(self)
         self.listBox.setHeaderLabels([
@@ -133,7 +125,6 @@ class GuiWritingStats(NToolDialog):
 
         # Word Bar
         self.barHeight = int(round(0.5*SHARED.theme.fontPixelSize))
-        self.barWidth = CONFIG.pxInt(200)
         self.barImage = QPixmap(self.barHeight, self.barHeight)
         self.barImage.fill(self.palette().highlight().color())
 
@@ -262,25 +253,27 @@ class GuiWritingStats(NToolDialog):
         self.optsBox.addWidget(self.histMax, 0)
 
         # Buttons
+        self.saveJSON = QAction(self.tr("JSON Data File (.json)"), self)
+        self.saveJSON.triggered.connect(qtLambda(self._saveData, self.FMT_JSON))
+
+        self.saveCSV = QAction(self.tr("CSV Data File (.csv)"), self)
+        self.saveCSV.triggered.connect(qtLambda(self._saveData, self.FMT_CSV))
+
+        self.saveMenu = QMenu(self)
+        self.saveMenu.addAction(self.saveJSON)
+        self.saveMenu.addAction(self.saveCSV)
+
         self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.rejected.connect(self._doClose)
 
         self.btnClose = self.buttonBox.addButton(QtDialogClose)
-        self.btnClose.setAutoDefault(False)
+        if self.btnClose:
+            self.btnClose.setAutoDefault(False)
 
         self.btnSave = self.buttonBox.addButton(self.tr("Save As"), QtRoleAction)
-        self.btnSave.setAutoDefault(False)
-
-        self.saveMenu = QMenu(self)
-        self.btnSave.setMenu(self.saveMenu)
-
-        self.saveJSON = QAction(self.tr("JSON Data File (.json)"), self)
-        self.saveJSON.triggered.connect(qtLambda(self._saveData, self.FMT_JSON))
-        self.saveMenu.addAction(self.saveJSON)
-
-        self.saveCSV = QAction(self.tr("CSV Data File (.csv)"), self)
-        self.saveCSV.triggered.connect(qtLambda(self._saveData, self.FMT_CSV))
-        self.saveMenu.addAction(self.saveCSV)
+        if self.btnSave:
+            self.btnSave.setAutoDefault(False)
+            self.btnSave.setMenu(self.saveMenu)
 
         # Assemble
         self.outerBox = QGridLayout()
@@ -328,14 +321,10 @@ class GuiWritingStats(NToolDialog):
         """Save the state of the window, clear cache, end close."""
         self.logData = []
 
-        winWidth     = CONFIG.rpxInt(self.width())
-        winHeight    = CONFIG.rpxInt(self.height())
-        widthCol0    = CONFIG.rpxInt(self.listBox.columnWidth(0))
-        widthCol1    = CONFIG.rpxInt(self.listBox.columnWidth(1))
-        widthCol2    = CONFIG.rpxInt(self.listBox.columnWidth(2))
-        widthCol3    = CONFIG.rpxInt(self.listBox.columnWidth(3))
+        header = self.listBox.header()
+
         sortCol      = self.listBox.sortColumn()
-        sortOrder    = self.listBox.header().sortIndicatorOrder()
+        sortOrder    = header.sortIndicatorOrder() if header else 0
         incNovel     = self.incNovel.isChecked()
         incNotes     = self.incNotes.isChecked()
         hideZeros    = self.hideZeros.isChecked()
@@ -346,12 +335,12 @@ class GuiWritingStats(NToolDialog):
 
         logger.debug("Saving State: GuiWritingStats")
         pOptions = SHARED.project.options
-        pOptions.setValue("GuiWritingStats", "winWidth",     winWidth)
-        pOptions.setValue("GuiWritingStats", "winHeight",    winHeight)
-        pOptions.setValue("GuiWritingStats", "widthCol0",    widthCol0)
-        pOptions.setValue("GuiWritingStats", "widthCol1",    widthCol1)
-        pOptions.setValue("GuiWritingStats", "widthCol2",    widthCol2)
-        pOptions.setValue("GuiWritingStats", "widthCol3",    widthCol3)
+        pOptions.setValue("GuiWritingStats", "winWidth",     self.width())
+        pOptions.setValue("GuiWritingStats", "winHeight",    self.height())
+        pOptions.setValue("GuiWritingStats", "widthCol0",    self.listBox.columnWidth(0))
+        pOptions.setValue("GuiWritingStats", "widthCol1",    self.listBox.columnWidth(1))
+        pOptions.setValue("GuiWritingStats", "widthCol2",    self.listBox.columnWidth(2))
+        pOptions.setValue("GuiWritingStats", "widthCol3",    self.listBox.columnWidth(3))
         pOptions.setValue("GuiWritingStats", "sortCol",      sortCol)
         pOptions.setValue("GuiWritingStats", "sortOrder",    sortOrder)
         pOptions.setValue("GuiWritingStats", "incNovel",     incNovel)

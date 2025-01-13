@@ -35,7 +35,7 @@ from PyQt6.QtWidgets import (
     QPushButton, QSplitter, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import SHARED
 from novelwriter.common import makeFileNameSafe, openExternalPath
 from novelwriter.constants import nwLabels
 from novelwriter.core.buildsettings import BuildSettings
@@ -68,21 +68,16 @@ class GuiManuscriptBuild(NDialog):
         self._build = build
 
         self.setWindowTitle(self.tr("Build Manuscript"))
-        self.setMinimumWidth(CONFIG.pxInt(500))
-        self.setMinimumHeight(CONFIG.pxInt(300))
+        self.setMinimumWidth(500)
+        self.setMinimumHeight(300)
 
         iSz = SHARED.theme.baseIconSize
         bSz = SHARED.theme.buttonIconSize
-        sp4 = CONFIG.pxInt(4)
-        sp8 = CONFIG.pxInt(8)
-        sp16 = CONFIG.pxInt(16)
-        wWin = CONFIG.pxInt(620)
-        hWin = CONFIG.pxInt(360)
 
         pOptions = SHARED.project.options
         self.resize(
-            CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "winWidth", wWin)),
-            CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "winHeight", hWin))
+            pOptions.getInt("GuiManuscriptBuild", "winWidth", 620),
+            pOptions.getInt("GuiManuscriptBuild", "winHeight", 360),
         )
 
         # Output Format
@@ -149,7 +144,7 @@ class GuiManuscriptBuild(NDialog):
         self.pathBox = QHBoxLayout()
         self.pathBox.addWidget(self.buildPath)
         self.pathBox.addWidget(self.btnBrowse)
-        self.pathBox.setSpacing(sp8)
+        self.pathBox.setSpacing(8)
 
         # Build Name
         self.lblName = QLabel(self.tr("File Name"), self)
@@ -160,14 +155,14 @@ class GuiManuscriptBuild(NDialog):
         self.nameBox = QHBoxLayout()
         self.nameBox.addWidget(self.buildName)
         self.nameBox.addWidget(self.btnReset)
-        self.nameBox.setSpacing(sp8)
+        self.nameBox.setSpacing(8)
 
         # Build Progress
         self.buildProgress = NProgressSimple(self)
         self.buildProgress.setMinimum(0)
         self.buildProgress.setValue(0)
         self.buildProgress.setTextVisible(False)
-        self.buildProgress.setFixedHeight(sp8)
+        self.buildProgress.setFixedHeight(8)
 
         # Build Box
         self.buildBox = QGridLayout()
@@ -175,8 +170,8 @@ class GuiManuscriptBuild(NDialog):
         self.buildBox.addLayout(self.pathBox, 0, 1)
         self.buildBox.addWidget(self.lblName, 1, 0)
         self.buildBox.addLayout(self.nameBox, 1, 1)
-        self.buildBox.setHorizontalSpacing(sp8)
-        self.buildBox.setVerticalSpacing(sp4)
+        self.buildBox.setHorizontalSpacing(8)
+        self.buildBox.setVerticalSpacing(4)
 
         # Dialog Buttons
         self.buttonBox = QDialogButtonBox(self)
@@ -196,7 +191,8 @@ class GuiManuscriptBuild(NDialog):
         self.buttonBox.addButton(self.btnBuild, QtRoleAction)
 
         self.btnClose = self.buttonBox.addButton(QtDialogClose)
-        self.btnClose.setAutoDefault(False)
+        if self.btnClose:
+            self.btnClose.setAutoDefault(False)
 
         # Assemble GUI
         # ============
@@ -204,25 +200,25 @@ class GuiManuscriptBuild(NDialog):
         self.mainSplit = QSplitter(self)
         self.mainSplit.addWidget(self.formatWidget)
         self.mainSplit.addWidget(self.contentWidget)
-        self.mainSplit.setHandleWidth(sp16)
+        self.mainSplit.setHandleWidth(16)
         self.mainSplit.setCollapsible(0, False)
         self.mainSplit.setCollapsible(1, False)
         self.mainSplit.setStretchFactor(0, 0)
         self.mainSplit.setStretchFactor(1, 1)
         self.mainSplit.setSizes([
-            CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "fmtWidth", wWin//2)),
-            CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "sumWidth", wWin//2)),
+            pOptions.getInt("GuiManuscriptBuild", "fmtWidth", 360),
+            pOptions.getInt("GuiManuscriptBuild", "sumWidth", 360),
         ])
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.lblMain, 0, QtAlignCenter)
-        self.outerBox.addSpacing(sp16)
+        self.outerBox.addSpacing(16)
         self.outerBox.addWidget(self.mainSplit, 1)
-        self.outerBox.addSpacing(sp4)
+        self.outerBox.addSpacing(4)
         self.outerBox.addWidget(self.buildProgress, 0)
-        self.outerBox.addSpacing(sp4)
+        self.outerBox.addSpacing(4)
         self.outerBox.addLayout(self.buildBox, 0)
-        self.outerBox.addSpacing(sp16)
+        self.outerBox.addSpacing(16)
         self.outerBox.addWidget(self.buttonBox, 0)
         self.outerBox.setSpacing(0)
 
@@ -363,21 +359,14 @@ class GuiManuscriptBuild(NDialog):
 
     def _saveSettings(self) -> None:
         """Save the user GUI settings."""
-        winWidth  = CONFIG.rpxInt(self.width())
-        winHeight = CONFIG.rpxInt(self.height())
-
-        mainSplit = self.mainSplit.sizes()
-        fmtWidth = CONFIG.rpxInt(mainSplit[0])
-        sumWidth = CONFIG.rpxInt(mainSplit[1])
-
         logger.debug("Saving State: GuiManuscriptBuild")
+        mainSplit = self.mainSplit.sizes()
         pOptions = SHARED.project.options
-        pOptions.setValue("GuiManuscriptBuild", "winWidth", winWidth)
-        pOptions.setValue("GuiManuscriptBuild", "winHeight", winHeight)
-        pOptions.setValue("GuiManuscriptBuild", "fmtWidth", fmtWidth)
-        pOptions.setValue("GuiManuscriptBuild", "sumWidth", sumWidth)
+        pOptions.setValue("GuiManuscriptBuild", "winWidth", self.width())
+        pOptions.setValue("GuiManuscriptBuild", "winHeight", self.height())
+        pOptions.setValue("GuiManuscriptBuild", "fmtWidth", mainSplit[0])
+        pOptions.setValue("GuiManuscriptBuild", "sumWidth", mainSplit[1])
         pOptions.saveSettings()
-
         return
 
     def _populateContentList(self) -> None:

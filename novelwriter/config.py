@@ -399,14 +399,6 @@ class Config:
     #  Methods
     ##
 
-    def pxInt(self, value: int) -> int:
-        """Deprecated. Do not use."""
-        return value
-
-    def rpxInt(self, value: int) -> int:
-        """Deprecated. Do not use."""
-        return value
-
     def homePath(self) -> Path:
         """The user's home folder."""
         return self._homePath

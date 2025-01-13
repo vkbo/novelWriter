@@ -52,18 +52,15 @@ class GuiLipsum(NDialog):
 
         self._lipsumText = ""
 
-        vSp = CONFIG.pxInt(4)
-        nPx = CONFIG.pxInt(64)
-
         self.innerBox = QHBoxLayout()
-        self.innerBox.setSpacing(CONFIG.pxInt(16))
+        self.innerBox.setSpacing(16)
 
         # Icon
         self.docIcon = QLabel(self)
-        self.docIcon.setPixmap(SHARED.theme.getPixmap("text", (nPx, nPx), "blue"))
+        self.docIcon.setPixmap(SHARED.theme.getPixmap("text", (64, 64), "blue"))
 
         self.leftBox = QVBoxLayout()
-        self.leftBox.setSpacing(vSp)
+        self.leftBox.setSpacing(4)
         self.leftBox.addWidget(self.docIcon)
         self.leftBox.addStretch(1)
         self.innerBox.addLayout(self.leftBox)
@@ -87,7 +84,7 @@ class GuiLipsum(NDialog):
         self.formBox.addWidget(self.paraCount, 1, 1, 1, 1, QtAlignRight)
         self.formBox.addWidget(self.randLabel, 2, 0, 1, 1, QtAlignLeft)
         self.formBox.addWidget(self.randSwitch, 2, 1, 1, 1, QtAlignRight)
-        self.formBox.setVerticalSpacing(vSp)
+        self.formBox.setVerticalSpacing(4)
         self.formBox.setRowStretch(3, 1)
         self.innerBox.addLayout(self.formBox)
 
@@ -96,17 +93,19 @@ class GuiLipsum(NDialog):
         self.buttonBox.rejected.connect(self.reject)
 
         self.btnClose = self.buttonBox.addButton(QtDialogClose)
-        self.btnClose.setAutoDefault(False)
+        if self.btnClose:
+            self.btnClose.setAutoDefault(False)
 
         self.btnInsert = self.buttonBox.addButton(self.tr("Insert"), QtRoleAction)
-        self.btnInsert.clicked.connect(self._doInsert)
-        self.btnInsert.setAutoDefault(False)
+        if self.btnInsert:
+            self.btnInsert.clicked.connect(self._doInsert)
+            self.btnInsert.setAutoDefault(False)
 
         # Assemble
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.innerBox)
         self.outerBox.addWidget(self.buttonBox)
-        self.outerBox.setSpacing(CONFIG.pxInt(16))
+        self.outerBox.setSpacing(16)
         self.setLayout(self.outerBox)
 
         logger.debug("Ready: GuiLipsum")

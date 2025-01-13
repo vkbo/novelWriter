@@ -37,7 +37,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import describeFont, fontMatcher, qtLambda
+from novelwriter.common import describeFont, fontMatcher, qtAddAction, qtLambda
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.configlayout import (
@@ -83,21 +83,18 @@ class GuiBuildSettings(NToolDialog):
         self._build = build
 
         self.setWindowTitle(self.tr("Manuscript Build Settings"))
-        self.setMinimumSize(CONFIG.pxInt(700), CONFIG.pxInt(400))
-
-        wWin = CONFIG.pxInt(750)
-        hWin = CONFIG.pxInt(550)
+        self.setMinimumSize(700, 400)
 
         options = SHARED.project.options
         self.resize(
-            CONFIG.pxInt(options.getInt("GuiBuildSettings", "winWidth", wWin)),
-            CONFIG.pxInt(options.getInt("GuiBuildSettings", "winHeight", hWin))
+            options.getInt("GuiBuildSettings", "winWidth", 750),
+            options.getInt("GuiBuildSettings", "winHeight", 550),
         )
 
         # Title
         self.titleLabel = NColourLabel(
             self.tr("Manuscript Build Settings"), self, color=SHARED.theme.helpText,
-            scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
+            scale=NColourLabel.HEADER_SCALE, indent=4,
         )
 
         # Settings Name
@@ -145,7 +142,7 @@ class GuiBuildSettings(NToolDialog):
         self.outerBox.addLayout(self.topBox)
         self.outerBox.addLayout(self.mainBox)
         self.outerBox.addWidget(self.buttonBox)
-        self.outerBox.setSpacing(CONFIG.pxInt(12))
+        self.outerBox.setSpacing(12)
 
         self.setLayout(self.outerBox)
 
@@ -240,14 +237,11 @@ class GuiBuildSettings(NToolDialog):
 
     def _saveSettings(self) -> None:
         """Save the various user settings."""
-        winWidth  = CONFIG.rpxInt(self.width())
-        winHeight = CONFIG.rpxInt(self.height())
         treeWidth, filterWidth = self.optTabSelect.mainSplitSizes()
-
         logger.debug("Saving State: GuiBuildSettings")
         pOptions = SHARED.project.options
-        pOptions.setValue("GuiBuildSettings", "winWidth", winWidth)
-        pOptions.setValue("GuiBuildSettings", "winHeight", winHeight)
+        pOptions.setValue("GuiBuildSettings", "winWidth", self.width())
+        pOptions.setValue("GuiBuildSettings", "winHeight", self.height())
         pOptions.setValue("GuiBuildSettings", "treeWidth", treeWidth)
         pOptions.setValue("GuiBuildSettings", "filterWidth", filterWidth)
         pOptions.saveSettings()
@@ -300,7 +294,6 @@ class _FilterTab(NFixedPage):
 
         iSz = SHARED.theme.baseIconSize
         iPx = SHARED.theme.baseIconHeight
-        cMg = CONFIG.pxInt(6)
 
         # Tree Widget
         self.optTree = QTreeWidget(self)
@@ -311,14 +304,14 @@ class _FilterTab(NFixedPage):
         self.optTree.setIndentation(iPx)
         self.optTree.setColumnCount(3)
 
-        treeHeader = self.optTree.header()
-        treeHeader.setStretchLastSection(False)
-        treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1551
-        treeHeader.setSectionResizeMode(self.C_NAME, QtHeaderStretch)
-        treeHeader.setSectionResizeMode(self.C_ACTIVE, QtHeaderFixed)
-        treeHeader.setSectionResizeMode(self.C_STATUS, QtHeaderFixed)
-        treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
-        treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
+        if header := self.optTree.header():
+            header.setStretchLastSection(False)
+            header.setMinimumSectionSize(iPx + 6)  # See Issue #1551
+            header.setSectionResizeMode(self.C_NAME, QtHeaderStretch)
+            header.setSectionResizeMode(self.C_ACTIVE, QtHeaderFixed)
+            header.setSectionResizeMode(self.C_STATUS, QtHeaderFixed)
+            header.resizeSection(self.C_ACTIVE, iPx + 6)
+            header.resizeSection(self.C_STATUS, iPx + 6)
 
         self.optTree.setDragDropMode(QAbstractItemView.DragDropMode.NoDragDrop)
         self.optTree.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
@@ -347,7 +340,7 @@ class _FilterTab(NFixedPage):
         self.modeBox.addWidget(self.includedButton)
         self.modeBox.addWidget(self.excludedButton)
         self.modeBox.addWidget(self.resetButton)
-        self.modeBox.setSpacing(CONFIG.pxInt(4))
+        self.modeBox.setSpacing(4)
 
         # Filer Options
         self.filterOpt = NSwitchBox(self, iPx)
@@ -375,8 +368,8 @@ class _FilterTab(NFixedPage):
         self.mainSplit.setStretchFactor(0, 1)
         self.mainSplit.setStretchFactor(1, 0)
         self.mainSplit.setSizes([
-            CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "treeWidth", 300)),
-            CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "filterWidth", 300))
+            pOptions.getInt("GuiBuildSettings", "treeWidth", 300),
+            pOptions.getInt("GuiBuildSettings", "filterWidth", 300),
         ])
 
         self.setCentralWidget(self.mainSplit)
@@ -393,7 +386,7 @@ class _FilterTab(NFixedPage):
         """Extract the sizes of the main splitter."""
         sizes = self.mainSplit.sizes()
         m, n = (sizes[0], sizes[1]) if len(sizes) >= 2 else (0, 0)
-        return CONFIG.rpxInt(m), CONFIG.rpxInt(n)
+        return m, n
 
     ##
     #  Slots
@@ -558,15 +551,12 @@ class _HeadingsTab(NScrollablePage):
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
-        sSp = CONFIG.pxInt(16)
-        vSp = CONFIG.pxInt(12)
-        bSp = CONFIG.pxInt(6)
         trHide = self.tr("Hide")
 
         # Format Boxes
         # ============
         self.formatBox = QGridLayout()
-        self.formatBox.setHorizontalSpacing(bSp)
+        self.formatBox.setHorizontalSpacing(6)
 
         # Title Heading
         self.lblPart = QLabel(self._build.getLabel("headings.fmtPart"), self)
@@ -575,7 +565,7 @@ class _HeadingsTab(NScrollablePage):
         self.btnPart = NIconToolButton(self, iSz, "edit", "green")
         self.btnPart.clicked.connect(qtLambda(self._editHeading, self.EDIT_TITLE))
         self.hdePart = QLabel(trHide, self)
-        self.hdePart.setIndent(bSp)
+        self.hdePart.setIndent(6)
         self.swtPart = NSwitch(self, height=iPx)
 
         self.formatBox.addWidget(self.lblPart, 0, 0)
@@ -591,7 +581,7 @@ class _HeadingsTab(NScrollablePage):
         self.btnChapter = NIconToolButton(self, iSz, "edit", "green")
         self.btnChapter.clicked.connect(qtLambda(self._editHeading, self.EDIT_CHAPTER))
         self.hdeChapter = QLabel(trHide, self)
-        self.hdeChapter.setIndent(bSp)
+        self.hdeChapter.setIndent(6)
         self.swtChapter = NSwitch(self, height=iPx)
 
         self.formatBox.addWidget(self.lblChapter, 1, 0)
@@ -607,7 +597,7 @@ class _HeadingsTab(NScrollablePage):
         self.btnUnnumbered = NIconToolButton(self, iSz, "edit", "green")
         self.btnUnnumbered.clicked.connect(qtLambda(self._editHeading, self.EDIT_UNNUM))
         self.hdeUnnumbered = QLabel(trHide, self)
-        self.hdeUnnumbered.setIndent(bSp)
+        self.hdeUnnumbered.setIndent(6)
         self.swtUnnumbered = NSwitch(self, height=iPx)
 
         self.formatBox.addWidget(self.lblUnnumbered, 2, 0)
@@ -623,7 +613,7 @@ class _HeadingsTab(NScrollablePage):
         self.btnScene = NIconToolButton(self, iSz, "edit", "green")
         self.btnScene.clicked.connect(qtLambda(self._editHeading, self.EDIT_SCENE))
         self.hdeScene = QLabel(trHide, self)
-        self.hdeScene.setIndent(bSp)
+        self.hdeScene.setIndent(6)
         self.swtScene = NSwitch(self, height=iPx)
 
         self.formatBox.addWidget(self.lblScene, 3, 0)
@@ -639,7 +629,7 @@ class _HeadingsTab(NScrollablePage):
         self.btnAScene = NIconToolButton(self, iSz, "edit", "green")
         self.btnAScene.clicked.connect(qtLambda(self._editHeading, self.EDIT_HSCENE))
         self.hdeAScene = QLabel(trHide, self)
-        self.hdeAScene.setIndent(bSp)
+        self.hdeAScene.setIndent(6)
         self.swtAScene = NSwitch(self, height=iPx)
 
         self.formatBox.addWidget(self.lblAScene, 4, 0)
@@ -655,7 +645,7 @@ class _HeadingsTab(NScrollablePage):
         self.btnSection = NIconToolButton(self, iSz, "edit", "green")
         self.btnSection.clicked.connect(qtLambda(self._editHeading, self.EDIT_SECTION))
         self.hdeSection = QLabel(trHide, self)
-        self.hdeSection.setIndent(bSp)
+        self.hdeSection.setIndent(6)
         self.swtSection = NSwitch(self, height=iPx)
 
         self.formatBox.addWidget(self.lblSection, 5, 0)
@@ -675,16 +665,16 @@ class _HeadingsTab(NScrollablePage):
 
         self.formSyntax = _HeadingSyntaxHighlighter(self.editTextBox.document())
 
-        self.menuInsert = QMenu(self)
-        self.aInsTitle = self.menuInsert.addAction(self.tr("Title"))
-        self.aInsChNum = self.menuInsert.addAction(self.tr("Chapter Number"))
-        self.aInsChWord = self.menuInsert.addAction(self.tr("Chapter Number (Word)"))
-        self.aInsChRomU = self.menuInsert.addAction(self.tr("Chapter Number (Upper Case Roman)"))
-        self.aInsChRomL = self.menuInsert.addAction(self.tr("Chapter Number (Lower Case Roman)"))
-        self.aInsScNum = self.menuInsert.addAction(self.tr("Scene Number (In Chapter)"))
-        self.aInsScAbs = self.menuInsert.addAction(self.tr("Scene Number (Absolute)"))
-        self.aInsCharPOV = self.menuInsert.addAction(self.tr("Point of View Character"))
-        self.aInsCharFocus = self.menuInsert.addAction(self.tr("Focus Character"))
+        self.mInsert = QMenu(self)
+        self.aInsTitle = qtAddAction(self.mInsert, self.tr("Title"))
+        self.aInsChNum = qtAddAction(self.mInsert, self.tr("Chapter Number"))
+        self.aInsChWord = qtAddAction(self.mInsert, self.tr("Chapter Number (Word)"))
+        self.aInsChRomU = qtAddAction(self.mInsert, self.tr("Chapter Number (Upper Case Roman)"))
+        self.aInsChRomL = qtAddAction(self.mInsert, self.tr("Chapter Number (Lower Case Roman)"))
+        self.aInsScNum = qtAddAction(self.mInsert, self.tr("Scene Number (In Chapter)"))
+        self.aInsScAbs = qtAddAction(self.mInsert, self.tr("Scene Number (Absolute)"))
+        self.aInsCharPOV = qtAddAction(self.mInsert, self.tr("Point of View Character"))
+        self.aInsCharFocus = qtAddAction(self.mInsert, self.tr("Focus Character"))
 
         self.aInsTitle.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.TITLE))
         self.aInsChNum.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CH_NUM))
@@ -697,7 +687,7 @@ class _HeadingsTab(NScrollablePage):
         self.aInsCharFocus.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CHAR_FOCUS))
 
         self.btnInsert = QPushButton(self.tr("Insert"), self)
-        self.btnInsert.setMenu(self.menuInsert)
+        self.btnInsert.setMenu(self.mInsert)
 
         self.btnApply = QPushButton(self.tr("Apply"), self)
         self.btnApply.clicked.connect(self._saveFormat)
@@ -715,8 +705,8 @@ class _HeadingsTab(NScrollablePage):
         # Layout Matrix
         # =============
         self.layoutMatrix = QGridLayout()
-        self.layoutMatrix.setVerticalSpacing(vSp)
-        self.layoutMatrix.setHorizontalSpacing(vSp)
+        self.layoutMatrix.setVerticalSpacing(12)
+        self.layoutMatrix.setHorizontalSpacing(12)
 
         self.layoutMatrix.addWidget(QLabel(self.tr("Centre"), self), 0, 1)
         self.layoutMatrix.addWidget(QLabel(self.tr("Page Break"), self), 0, 2)
@@ -764,9 +754,9 @@ class _HeadingsTab(NScrollablePage):
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.formatBox)
-        self.outerBox.addSpacing(sSp)
+        self.outerBox.addSpacing(16)
         self.outerBox.addLayout(self.editFormBox)
-        self.outerBox.addSpacing(sSp)
+        self.outerBox.addSpacing(16)
         self.outerBox.addLayout(self.layoutMatrix)
         self.outerBox.addStretch(1)
 
@@ -904,7 +894,7 @@ class _HeadingsTab(NScrollablePage):
 
 class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
 
-    def __init__(self, document: QTextDocument) -> None:
+    def __init__(self, document: QTextDocument | None) -> None:
         super().__init__(document)
         syntax = SHARED.theme.syntaxTheme
         self._fmtSymbol = QTextCharFormat()
@@ -1223,7 +1213,7 @@ class _FormattingTab(NScrollableForm):
 
         # Header
         self.odtPageHeader = QLineEdit(self)
-        self.odtPageHeader.setMinimumWidth(CONFIG.pxInt(200))
+        self.odtPageHeader.setMinimumWidth(200)
         self.btnPageHeader = NIconToolButton(self, iSz, "revert", "green")
         self.btnPageHeader.clicked.connect(self._resetPageHeader)
         self.addRow(

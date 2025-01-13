@@ -34,7 +34,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import SHARED
 from novelwriter.common import formatTime, numberToRoman
 from novelwriter.constants import nwUnicode
 from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollablePage
@@ -60,16 +60,16 @@ class GuiNovelDetails(NNonBlockingDialog):
         self.setWindowTitle(self.tr("Novel Details"))
 
         options = SHARED.project.options
-        self.setMinimumSize(CONFIG.pxInt(500), CONFIG.pxInt(400))
+        self.setMinimumSize(500, 400)
         self.resize(
-            CONFIG.pxInt(options.getInt("GuiNovelDetails", "winWidth", CONFIG.pxInt(650))),
-            CONFIG.pxInt(options.getInt("GuiNovelDetails", "winHeight", CONFIG.pxInt(500)))
+            options.getInt("GuiNovelDetails", "winWidth", 650),
+            options.getInt("GuiNovelDetails", "winHeight", 500),
         )
 
         # Title
         self.titleLabel = NColourLabel(
             self.tr("Novel Details"), self, color=SHARED.theme.helpText,
-            scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
+            scale=NColourLabel.HEADER_SCALE, indent=4,
         )
 
         # Novel Selector
@@ -114,7 +114,7 @@ class GuiNovelDetails(NNonBlockingDialog):
         self.outerBox.addLayout(self.topBox)
         self.outerBox.addLayout(self.mainBox)
         self.outerBox.addWidget(self.buttonBox)
-        self.outerBox.setSpacing(CONFIG.pxInt(8))
+        self.outerBox.setSpacing(8)
 
         self.setLayout(self.outerBox)
         self.setSizeGripEnabled(True)
@@ -172,18 +172,13 @@ class GuiNovelDetails(NNonBlockingDialog):
 
     def _saveSettings(self) -> None:
         """Save the user GUI settings."""
-        winWidth  = CONFIG.rpxInt(self.width())
-        winHeight = CONFIG.rpxInt(self.height())
-        novelRoot = self.novelSelector.handle
-
         logger.debug("Saving State: GuiNovelDetails")
+        novelRoot = self.novelSelector.handle
         options = SHARED.project.options
-        options.setValue("GuiNovelDetails", "winWidth", winWidth)
-        options.setValue("GuiNovelDetails", "winHeight", winHeight)
+        options.setValue("GuiNovelDetails", "winWidth", self.width())
+        options.setValue("GuiNovelDetails", "winHeight", self.height())
         options.setValue("GuiNovelDetails", "novelRoot", novelRoot)
-
         self.contentsPage.saveSettings()
-
         return
 
 
@@ -191,11 +186,6 @@ class _OverviewPage(NScrollablePage):
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
-
-        mPx = CONFIG.pxInt(8)
-        sPx = CONFIG.pxInt(16)
-        hPx = CONFIG.pxInt(24)
-        vPx = CONFIG.pxInt(4)
 
         # Project Info
         self.projLabel = NColourLabel(
@@ -217,9 +207,9 @@ class _OverviewPage(NScrollablePage):
         self.projForm.addRow("<b>{0}</b>".format(self.tr("Word Count")), self.projWords)
         self.projForm.addRow("<b>\u2026 {0}</b>".format(self.tr("In Novels")), self.projNovels)
         self.projForm.addRow("<b>\u2026 {0}</b>".format(self.tr("In Notes")), self.projNotes)
-        self.projForm.setContentsMargins(mPx, 0, 0, 0)
-        self.projForm.setHorizontalSpacing(hPx)
-        self.projForm.setVerticalSpacing(vPx)
+        self.projForm.setContentsMargins(8, 0, 0, 0)
+        self.projForm.setHorizontalSpacing(24)
+        self.projForm.setVerticalSpacing(4)
 
         # Novel Info
         self.novelLabel = NColourLabel(
@@ -237,9 +227,9 @@ class _OverviewPage(NScrollablePage):
         self.novelForm.addRow("<b>{0}</b>".format(self.tr("Word Count")), self.novelWords)
         self.novelForm.addRow("<b>{0}</b>".format(self.tr("Chapters")), self.novelChapters)
         self.novelForm.addRow("<b>{0}</b>".format(self.tr("Scenes")), self.novelScenes)
-        self.novelForm.setContentsMargins(mPx, 0, 0, 0)
-        self.novelForm.setHorizontalSpacing(hPx)
-        self.novelForm.setVerticalSpacing(vPx)
+        self.novelForm.setContentsMargins(8, 0, 0, 0)
+        self.novelForm.setHorizontalSpacing(24)
+        self.novelForm.setVerticalSpacing(4)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -247,7 +237,7 @@ class _OverviewPage(NScrollablePage):
         self.outerBox.addLayout(self.projForm)
         self.outerBox.addWidget(self.novelLabel)
         self.outerBox.addLayout(self.novelForm)
-        self.outerBox.setSpacing(sPx)
+        self.outerBox.setSpacing(16)
         self.outerBox.addStretch(1)
 
         self.setCentralLayout(self.outerBox)
@@ -309,8 +299,6 @@ class _ContentsPage(NFixedPage):
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
-        hPx = CONFIG.pxInt(12)
-        vPx = CONFIG.pxInt(4)
         options = SHARED.project.options
 
         # Title
@@ -341,22 +329,22 @@ class _ContentsPage(NFixedPage):
             treeHeadItem.setTextAlignment(self.C_PAGE,  QtAlignRight)
             treeHeadItem.setTextAlignment(self.C_PROG,  QtAlignRight)
 
-        treeHeader = self.tocTree.header()
-        treeHeader.setStretchLastSection(True)
-        treeHeader.setMinimumSectionSize(hPx)
+        if header := self.tocTree.header():
+            header.setStretchLastSection(True)
+            header.setMinimumSectionSize(12)
 
-        wCol0 = CONFIG.pxInt(options.getInt("GuiNovelDetails", "widthCol0", 200))
-        wCol1 = CONFIG.pxInt(options.getInt("GuiNovelDetails", "widthCol1", 60))
-        wCol2 = CONFIG.pxInt(options.getInt("GuiNovelDetails", "widthCol2", 60))
-        wCol3 = CONFIG.pxInt(options.getInt("GuiNovelDetails", "widthCol3", 60))
-        wCol4 = CONFIG.pxInt(options.getInt("GuiNovelDetails", "widthCol4", 90))
+        wCol0 = options.getInt("GuiNovelDetails", "widthCol0", 200)
+        wCol1 = options.getInt("GuiNovelDetails", "widthCol1", 60)
+        wCol2 = options.getInt("GuiNovelDetails", "widthCol2", 60)
+        wCol3 = options.getInt("GuiNovelDetails", "widthCol3", 60)
+        wCol4 = options.getInt("GuiNovelDetails", "widthCol4", 90)
 
         self.tocTree.setColumnWidth(0, wCol0)
         self.tocTree.setColumnWidth(1, wCol1)
         self.tocTree.setColumnWidth(2, wCol2)
         self.tocTree.setColumnWidth(3, wCol3)
         self.tocTree.setColumnWidth(4, wCol4)
-        self.tocTree.setColumnWidth(5, hPx)
+        self.tocTree.setColumnWidth(5, 12)
 
         # Options
         wordsPerPage = options.getInt("GuiNovelDetails", "wordsPerPage", 350)
@@ -394,8 +382,8 @@ class _ContentsPage(NFixedPage):
         self.optionsBox.addWidget(self.dblValue, 0, 4)
         self.optionsBox.addWidget(self.poLabel,  1, 0)
         self.optionsBox.addWidget(self.poValue,  1, 1)
-        self.optionsBox.setHorizontalSpacing(hPx)
-        self.optionsBox.setVerticalSpacing(vPx)
+        self.optionsBox.setHorizontalSpacing(12)
+        self.optionsBox.setVerticalSpacing(4)
         self.optionsBox.setColumnStretch(2, 1)
 
         # Assemble
@@ -410,18 +398,12 @@ class _ContentsPage(NFixedPage):
 
     def saveSettings(self) -> None:
         """Save the user GUI settings."""
-        widthCol0 = CONFIG.rpxInt(self.tocTree.columnWidth(0))
-        widthCol1 = CONFIG.rpxInt(self.tocTree.columnWidth(1))
-        widthCol2 = CONFIG.rpxInt(self.tocTree.columnWidth(2))
-        widthCol3 = CONFIG.rpxInt(self.tocTree.columnWidth(3))
-        widthCol4 = CONFIG.rpxInt(self.tocTree.columnWidth(4))
-
         options = SHARED.project.options
-        options.setValue("GuiNovelDetails", "widthCol0",    widthCol0)
-        options.setValue("GuiNovelDetails", "widthCol1",    widthCol1)
-        options.setValue("GuiNovelDetails", "widthCol2",    widthCol2)
-        options.setValue("GuiNovelDetails", "widthCol3",    widthCol3)
-        options.setValue("GuiNovelDetails", "widthCol4",    widthCol4)
+        options.setValue("GuiNovelDetails", "widthCol0",    self.tocTree.columnWidth(0))
+        options.setValue("GuiNovelDetails", "widthCol1",    self.tocTree.columnWidth(1))
+        options.setValue("GuiNovelDetails", "widthCol2",    self.tocTree.columnWidth(2))
+        options.setValue("GuiNovelDetails", "widthCol3",    self.tocTree.columnWidth(3))
+        options.setValue("GuiNovelDetails", "widthCol4",    self.tocTree.columnWidth(4))
         options.setValue("GuiNovelDetails", "wordsPerPage", self.wpValue.value())
         options.setValue("GuiNovelDetails", "countFrom",    self.poValue.value())
         options.setValue("GuiNovelDetails", "clearDouble",  self.dblValue.isChecked())
