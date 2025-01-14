@@ -32,7 +32,7 @@ from PyQt6.QtWidgets import (
     QListWidgetItem, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import SHARED
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.switch import NSwitch
@@ -63,14 +63,11 @@ class GuiDocMerge(NDialog):
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
-        hSp = CONFIG.pxInt(12)
-        vSp = CONFIG.pxInt(8)
-        bSp = CONFIG.pxInt(12)
 
         self.listBox = QListWidget(self)
         self.listBox.setIconSize(iSz)
-        self.listBox.setMinimumWidth(CONFIG.pxInt(400))
-        self.listBox.setMinimumHeight(CONFIG.pxInt(180))
+        self.listBox.setMinimumWidth(400)
+        self.listBox.setMinimumHeight(180)
         self.listBox.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.listBox.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
@@ -82,7 +79,7 @@ class GuiDocMerge(NDialog):
         self.optBox = QGridLayout()
         self.optBox.addWidget(self.trashLabel,  0, 0)
         self.optBox.addWidget(self.trashSwitch, 0, 1)
-        self.optBox.setHorizontalSpacing(hSp)
+        self.optBox.setHorizontalSpacing(12)
         self.optBox.setColumnStretch(2, 1)
 
         # Buttons
@@ -91,18 +88,19 @@ class GuiDocMerge(NDialog):
         self.buttonBox.rejected.connect(self.reject)
 
         self.resetButton = self.buttonBox.addButton(QtDialogReset)
-        self.resetButton.clicked.connect(self._resetList)
+        if self.resetButton:
+            self.resetButton.clicked.connect(self._resetList)
 
         # Assemble
         self.outerBox = QVBoxLayout()
         self.outerBox.setSpacing(0)
         self.outerBox.addWidget(self.headLabel)
         self.outerBox.addWidget(self.helpLabel)
-        self.outerBox.addSpacing(vSp)
+        self.outerBox.addSpacing(8)
         self.outerBox.addWidget(self.listBox)
-        self.outerBox.addSpacing(vSp)
+        self.outerBox.addSpacing(8)
         self.outerBox.addLayout(self.optBox)
-        self.outerBox.addSpacing(bSp)
+        self.outerBox.addSpacing(12)
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
 

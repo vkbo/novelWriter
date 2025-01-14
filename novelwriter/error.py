@@ -65,11 +65,11 @@ class NWErrorMessage(QDialog):
 
         # Widgets
         self.msgIcon = QLabel()
-        self.msgIcon.setPixmap(
-            QApplication.style().standardIcon(
-                QStyle.StandardPixmap.SP_MessageBoxCritical
-            ).pixmap(64, 64)
-        )
+        if style := QApplication.style():
+            self.msgIcon.setPixmap(
+                style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical).pixmap(64, 64)
+            )
+
         self.msgHead = QLabel()
         self.msgHead.setOpenExternalLinks(True)
         self.msgHead.setWordWrap(True)

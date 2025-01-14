@@ -38,7 +38,8 @@ from urllib.parse import urljoin
 from urllib.request import pathname2url
 
 from PyQt6.QtCore import QCoreApplication, QMimeData, QUrl
-from PyQt6.QtGui import QColor, QDesktopServices, QFont, QFontDatabase, QFontInfo
+from PyQt6.QtGui import QAction, QColor, QDesktopServices, QFont, QFontDatabase, QFontInfo
+from PyQt6.QtWidgets import QMenu, QMenuBar, QWidget
 
 from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
@@ -459,6 +460,20 @@ def qtLambda(func: Callable, *args: Any, **kwargs: Any) -> Callable:
     def wrapper(*a_: Any) -> None:
         func(*args, **kwargs)
     return wrapper
+
+
+def qtAddAction(parent: QWidget, label: str) -> QAction:
+    """Helper to add action to widget and always return the action."""
+    action = QAction(label, parent)
+    parent.addAction(action)
+    return action
+
+
+def qtAddMenu(parent: QMenuBar | QMenu, label: str) -> QMenu:
+    """Helper to add menu to menu and always return the menu."""
+    menu = QMenu(label, parent)
+    parent.addMenu(menu)
+    return menu
 
 
 def encodeMimeHandles(mimeData: QMimeData, handles: list[str]) -> None:

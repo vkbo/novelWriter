@@ -57,13 +57,11 @@ class GuiMainStatus(QStatusBar):
         # Permanent Widgets
         # =================
 
-        xM = CONFIG.pxInt(8)
-
         # The Spell Checker Language
         self.langIcon = QLabel("", self)
         self.langText = QLabel(self.tr("None"), self)
         self.langIcon.setContentsMargins(0, 0, 0, 0)
-        self.langText.setContentsMargins(0, 0, xM, 0)
+        self.langText.setContentsMargins(0, 0, 8, 0)
         self.addPermanentWidget(self.langIcon)
         self.addPermanentWidget(self.langText)
 
@@ -71,7 +69,7 @@ class GuiMainStatus(QStatusBar):
         self.docIcon = StatusLED(iPx, iPx, self)
         self.docText = QLabel(self.tr("Editor"), self)
         self.docIcon.setContentsMargins(0, 0, 0, 0)
-        self.docText.setContentsMargins(0, 0, xM, 0)
+        self.docText.setContentsMargins(0, 0, 8, 0)
         self.addPermanentWidget(self.docIcon)
         self.addPermanentWidget(self.docText)
 
@@ -79,7 +77,7 @@ class GuiMainStatus(QStatusBar):
         self.projIcon = StatusLED(iPx, iPx, self)
         self.projText = QLabel(self.tr("Project"), self)
         self.projIcon.setContentsMargins(0, 0, 0, 0)
-        self.projText.setContentsMargins(0, 0, xM, 0)
+        self.projText.setContentsMargins(0, 0, 8, 0)
         self.addPermanentWidget(self.projIcon)
         self.addPermanentWidget(self.projText)
 
@@ -87,7 +85,7 @@ class GuiMainStatus(QStatusBar):
         self.statsIcon = QLabel(self)
         self.statsText = QLabel("", self)
         self.statsIcon.setContentsMargins(0, 0, 0, 0)
-        self.statsText.setContentsMargins(0, 0, xM, 0)
+        self.statsText.setContentsMargins(0, 0, 8, 0)
         self.addPermanentWidget(self.statsIcon)
         self.addPermanentWidget(self.statsText)
 

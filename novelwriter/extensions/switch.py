@@ -27,13 +27,13 @@ from PyQt6.QtCore import QPropertyAnimation, Qt, pyqtProperty
 from PyQt6.QtGui import QEnterEvent, QMouseEvent, QPainter, QPaintEvent, QResizeEvent
 from PyQt6.QtWidgets import QAbstractButton, QWidget
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import SHARED
 from novelwriter.types import QtMouseLeft, QtNoPen, QtPaintAntiAlias, QtSizeFixed
 
 
 class NSwitch(QAbstractButton):
 
-    __slots__ = ("_xW", "_xH", "_xR", "_rB", "_rH", "_rR", "_offset")
+    __slots__ = ("_xW", "_xH", "_xR", "_rH", "_rR", "_offset")
 
     def __init__(self, parent: QWidget, height: int = 0) -> None:
         super().__init__(parent=parent)
@@ -41,9 +41,8 @@ class NSwitch(QAbstractButton):
         self._xH = height or SHARED.theme.baseButtonHeight
         self._xW = 2*self._xH
         self._xR = int(self._xH*0.5)
-        self._rB = CONFIG.pxInt(2)
-        self._rH = self._xH - 2*self._rB
-        self._rR = self._xR - self._rB
+        self._rH = self._xH - 4
+        self._rR = self._xR - 2
 
         self.setCheckable(True)
         self.setSizePolicy(QtSizeFixed, QtSizeFixed)
@@ -98,14 +97,14 @@ class NSwitch(QAbstractButton):
             trackBrush = palette.highlight()
             thumbBrush = palette.highlightedText()
         else:
-            trackBrush = palette.mid()
+            trackBrush = palette.midlight()
             thumbBrush = palette.light()
 
         if self.isEnabled():
             trackOpacity = 1.0
         else:
             trackOpacity = 0.6
-            trackBrush = palette.dark()
+            trackBrush = palette.mid()
             thumbBrush = palette.mid()
 
         painter.setBrush(trackBrush)
@@ -113,7 +112,7 @@ class NSwitch(QAbstractButton):
         painter.drawRoundedRect(0, 0, self._xW, self._xH, self._xR, self._xR)
 
         painter.setBrush(thumbBrush)
-        painter.drawEllipse(self._offset - self._rR, self._rB, self._rH, self._rH)
+        painter.drawEllipse(self._offset - self._rR, 2, self._rH, self._rH)
         painter.end()
 
         return

@@ -31,7 +31,7 @@ from PyQt6.QtCore import QEvent, QPoint, QSize, pyqtSignal
 from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QMenu, QVBoxLayout, QWidget
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import SHARED
 from novelwriter.common import qtLambda
 from novelwriter.enum import nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
@@ -114,7 +114,7 @@ class GuiSideBar(QWidget):
         self.outerBox.addWidget(self.tbStats)
         self.outerBox.addWidget(self.tbSettings)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setSpacing(CONFIG.pxInt(6))
+        self.outerBox.setSpacing(6)
 
         self.setLayout(self.outerBox)
         self.updateTheme()

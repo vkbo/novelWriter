@@ -114,10 +114,6 @@ class GuiMain(QMainWindow):
         # Build the GUI
         # =============
 
-        # Sizes
-        mPx = CONFIG.pxInt(4)
-        hWd = CONFIG.pxInt(4)
-
         # Main GUI Elements
         self.mainStatus     = GuiMainStatus(self)
         self.projView       = GuiProjectView(self)
@@ -142,7 +138,7 @@ class GuiMain(QMainWindow):
         self.treePane = QWidget(self)
         self.treeBox = QVBoxLayout()
         self.treeBox.setContentsMargins(0, 0, 0, 0)
-        self.treeBox.setSpacing(mPx)
+        self.treeBox.setSpacing(4)
         self.treeBox.addWidget(self.projStack)
         self.treeBox.addWidget(self.itemDetails)
         self.treePane.setLayout(self.treeBox)
@@ -151,7 +147,7 @@ class GuiMain(QMainWindow):
         self.splitView = QSplitter(Qt.Orientation.Vertical, self)
         self.splitView.addWidget(self.docViewer)
         self.splitView.addWidget(self.docViewerPanel)
-        self.splitView.setHandleWidth(hWd)
+        self.splitView.setHandleWidth(4)
         self.splitView.setOpaqueResize(False)
         self.splitView.setSizes(CONFIG.viewPanePos)
         self.splitView.setCollapsible(0, False)
@@ -162,7 +158,7 @@ class GuiMain(QMainWindow):
         self.splitDocs.addWidget(self.docEditor)
         self.splitDocs.addWidget(self.splitView)
         self.splitDocs.setOpaqueResize(False)
-        self.splitDocs.setHandleWidth(hWd)
+        self.splitDocs.setHandleWidth(4)
         self.splitDocs.setCollapsible(0, False)
         self.splitDocs.setCollapsible(1, False)
 
@@ -172,7 +168,7 @@ class GuiMain(QMainWindow):
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.splitDocs)
         self.splitMain.setOpaqueResize(False)
-        self.splitMain.setHandleWidth(hWd)
+        self.splitMain.setHandleWidth(4)
         self.splitMain.setSizes(CONFIG.mainPanePos)
         self.splitMain.setCollapsible(0, False)
         self.splitMain.setCollapsible(0, False)
@@ -860,10 +856,10 @@ class GuiMain(QMainWindow):
         logger.info("Exiting novelWriter")
 
         if not SHARED.focusMode:
-            CONFIG.setMainPanePos(self.splitMain.sizes())
-            CONFIG.setOutlinePanePos(self.outlineView.splitSizes())
+            CONFIG.mainPanePos = self.splitMain.sizes()
+            CONFIG.outlinePanePos = self.outlineView.splitSizes()
             if self.docViewerPanel.isVisible():
-                CONFIG.setViewPanePos(self.splitView.sizes())
+                CONFIG.viewPanePos = self.splitView.sizes()
 
         CONFIG.showViewerPanel = self.docViewerPanel.isVisible()
         wFull = Qt.WindowState.WindowFullScreen

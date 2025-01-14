@@ -1148,7 +1148,9 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     def getTransformSubMenu(menu: QMenu) -> list[str]:
         for action in menu.actions():
             if action.text() == "Transform ...":
-                return [x.text() for x in action.menu().actions() if x.text()]
+                submenu = action.menu()
+                assert submenu is not None
+                return [x.text() for x in submenu.actions() if x.text()]
         return []
 
     # Context Menu on Document File Item

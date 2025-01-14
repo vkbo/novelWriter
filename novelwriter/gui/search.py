@@ -28,14 +28,14 @@ import logging
 from time import time
 
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QCursor, QKeyEvent
+from PyQt6.QtGui import QAction, QCursor, QKeyEvent
 from PyQt6.QtWidgets import (
     QApplication, QFrame, QHBoxLayout, QLabel, QLineEdit, QToolBar,
     QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt, cssCol
+from novelwriter.common import checkInt, cssCol, qtAddAction
 from novelwriter.core.coretools import DocSearch
 from novelwriter.core.item import NWItem
 from novelwriter.types import (
@@ -65,8 +65,6 @@ class GuiProjectSearch(QWidget):
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
-        mPx = CONFIG.pxInt(2)
-        tPx = CONFIG.pxInt(4)
 
         self._time = time()
         self._search = DocSearch()
@@ -76,7 +74,7 @@ class GuiProjectSearch(QWidget):
         # Header
         self.viewLabel = QLabel(self.tr("Project Search"), self)
         self.viewLabel.setFont(SHARED.theme.guiFontB)
-        self.viewLabel.setContentsMargins(mPx, tPx, 0, mPx)
+        self.viewLabel.setContentsMargins(2, 4, 0, 2)
 
         # Options
         self.searchOpt = QToolBar(self)
@@ -84,30 +82,30 @@ class GuiProjectSearch(QWidget):
         self.searchOpt.setIconSize(iSz)
         self.searchOpt.setContentsMargins(0, 0, 0, 0)
 
-        self.toggleCase = self.searchOpt.addAction(self.tr("Case Sensitive"))
+        self.toggleCase = qtAddAction(self.searchOpt, self.tr("Case Sensitive"))
         self.toggleCase.setCheckable(True)
         self.toggleCase.setChecked(CONFIG.searchProjCase)
         self.toggleCase.toggled.connect(self._toggleCase)
 
-        self.toggleWord = self.searchOpt.addAction(self.tr("Whole Words Only"))
+        self.toggleWord = qtAddAction(self.searchOpt, self.tr("Whole Words Only"))
         self.toggleWord.setCheckable(True)
         self.toggleWord.setChecked(CONFIG.searchProjWord)
         self.toggleWord.toggled.connect(self._toggleWord)
 
-        self.toggleRegEx = self.searchOpt.addAction(self.tr("RegEx Mode"))
+        self.toggleRegEx = qtAddAction(self.searchOpt, self.tr("RegEx Mode"))
         self.toggleRegEx.setCheckable(True)
         self.toggleRegEx.setChecked(CONFIG.searchProjRegEx)
         self.toggleRegEx.toggled.connect(self._toggleRegEx)
 
         # Search Box
+        self.searchAction = QAction("", self)
+        self.searchAction.setIcon(SHARED.theme.getIcon("search", "blue"))
+        self.searchAction.triggered.connect(self._processSearch)
+
         self.searchText = QLineEdit(self)
         self.searchText.setPlaceholderText(self.tr("Search for"))
         self.searchText.setClearButtonEnabled(True)
-
-        self.searchAction = self.searchText.addAction(
-            SHARED.theme.getIcon("search", "blue"), QLineEdit.ActionPosition.TrailingPosition
-        )
-        self.searchAction.triggered.connect(self._processSearch)
+        self.searchText.addAction(self.searchAction, QLineEdit.ActionPosition.TrailingPosition)
 
         # Search Result
         self.searchResult = QTreeWidget(self)
@@ -121,10 +119,10 @@ class GuiProjectSearch(QWidget):
         self.searchResult.itemDoubleClicked.connect(self._searchResultDoubleClicked)
         self.searchResult.itemSelectionChanged.connect(self._searchResultSelected)
 
-        treeHeader = self.searchResult.header()
-        treeHeader.setStretchLastSection(False)
-        treeHeader.setSectionResizeMode(self.C_NAME, QtHeaderStretch)
-        treeHeader.setSectionResizeMode(self.C_COUNT, QtHeaderToContents)
+        if header := self.searchResult.header():
+            header.setStretchLastSection(False)
+            header.setSectionResizeMode(self.C_NAME, QtHeaderStretch)
+            header.setSectionResizeMode(self.C_COUNT, QtHeaderToContents)
 
         # Assemble
         self.headerBox = QHBoxLayout()
@@ -138,7 +136,7 @@ class GuiProjectSearch(QWidget):
         self.outerBox.addWidget(self.searchText, 0)
         self.outerBox.addWidget(self.searchResult, 1)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setSpacing(mPx)
+        self.outerBox.setSpacing(2)
 
         self.setLayout(self.outerBox)
         self.updateTheme()
@@ -153,8 +151,6 @@ class GuiProjectSearch(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        bPx = CONFIG.pxInt(1)
-        mPx = CONFIG.pxInt(2)
 
         qPalette = self.palette()
         colBase = cssCol(qPalette.base().color())
@@ -162,8 +158,8 @@ class GuiProjectSearch(QWidget):
 
         self.setStyleSheet(
             "QToolBar {padding: 0; background: none;} "
-            f"QLineEdit {{border: {bPx}px solid {colBase}; padding: {mPx}px;}} "
-            f"QLineEdit:focus {{border: {bPx}px solid {colFocus};}} "
+            f"QLineEdit {{border: 1px solid {colBase}; padding: 2px;}} "
+            f"QLineEdit:focus {{border: 1px solid {colFocus};}} "
         )
 
         self.searchAction.setIcon(SHARED.theme.getIcon("search", "blue"))

@@ -85,18 +85,16 @@ class GuiManuscript(NToolDialog):
         self._buildMap: dict[str, QListWidgetItem] = {}
 
         self.setWindowTitle(self.tr("Build Manuscript"))
-        self.setMinimumWidth(CONFIG.pxInt(600))
-        self.setMinimumHeight(CONFIG.pxInt(500))
+        self.setMinimumWidth(600)
+        self.setMinimumHeight(500)
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
-        wWin = CONFIG.pxInt(900)
-        hWin = CONFIG.pxInt(600)
 
         pOptions = SHARED.project.options
         self.resize(
-            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "winWidth", wWin)),
-            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "winHeight", hWin))
+            pOptions.getInt("GuiManuscript", "winWidth", 900),
+            pOptions.getInt("GuiManuscript", "winHeight", 600),
         )
 
         # Build Controls
@@ -153,9 +151,7 @@ class GuiManuscript(NToolDialog):
         # ============
 
         self.buildDetails = _DetailsWidget(self)
-        self.buildDetails.setColumnWidth(
-            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "detailsWidth", 100)),
-        )
+        self.buildDetails.setColumnWidth(pOptions.getInt("GuiManuscript", "detailsWidth", 100))
 
         self.buildOutline = _OutlineWidget(self)
 
@@ -168,8 +164,8 @@ class GuiManuscript(NToolDialog):
         self.buildSplit.addWidget(self.buildList)
         self.buildSplit.addWidget(self.detailsTabs)
         self.buildSplit.setSizes([
-            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "listHeight", 50)),
-            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "detailsHeight", 50)),
+            pOptions.getInt("GuiManuscript", "listHeight", 50),
+            pOptions.getInt("GuiManuscript", "detailsHeight", 50),
         ])
 
         # Process Controls
@@ -240,8 +236,8 @@ class GuiManuscript(NToolDialog):
         self.mainSplit.setStretchFactor(0, 0)
         self.mainSplit.setStretchFactor(1, 1)
         self.mainSplit.setSizes([
-            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "optsWidth", wWin//4)),
-            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "viewWidth", 3*wWin//4)),
+            pOptions.getInt("GuiManuscript", "optsWidth", 225),
+            pOptions.getInt("GuiManuscript", "viewWidth", 675),
         ])
 
         self.outerBox = QVBoxLayout()
@@ -441,28 +437,20 @@ class GuiManuscript(NToolDialog):
 
         self._builds.setBuildsState(lastBuild, buildOrder)
 
-        winWidth  = CONFIG.rpxInt(self.width())
-        winHeight = CONFIG.rpxInt(self.height())
-
         mainSplit = self.mainSplit.sizes()
-        optsWidth = CONFIG.rpxInt(mainSplit[0])
-        viewWidth = CONFIG.rpxInt(mainSplit[1])
-
         buildSplit = self.buildSplit.sizes()
-        listHeight = CONFIG.rpxInt(buildSplit[0])
-        detailsHeight = CONFIG.rpxInt(buildSplit[1])
-        detailsWidth = CONFIG.rpxInt(self.buildDetails.getColumnWidth())
+        detailsWidth = self.buildDetails.getColumnWidth()
         detailsExpanded = self.buildDetails.getExpandedState()
         showNewPage = self.swtNewPage.isChecked()
 
         logger.debug("Saving State: GuiManuscript")
         pOptions = SHARED.project.options
-        pOptions.setValue("GuiManuscript", "winWidth", winWidth)
-        pOptions.setValue("GuiManuscript", "winHeight", winHeight)
-        pOptions.setValue("GuiManuscript", "optsWidth", optsWidth)
-        pOptions.setValue("GuiManuscript", "viewWidth", viewWidth)
-        pOptions.setValue("GuiManuscript", "listHeight", listHeight)
-        pOptions.setValue("GuiManuscript", "detailsHeight", detailsHeight)
+        pOptions.setValue("GuiManuscript", "winWidth", self.width())
+        pOptions.setValue("GuiManuscript", "winHeight", self.height())
+        pOptions.setValue("GuiManuscript", "optsWidth", mainSplit[0])
+        pOptions.setValue("GuiManuscript", "viewWidth", mainSplit[1])
+        pOptions.setValue("GuiManuscript", "listHeight", buildSplit[0])
+        pOptions.setValue("GuiManuscript", "detailsHeight", buildSplit[1])
         pOptions.setValue("GuiManuscript", "detailsWidth", detailsWidth)
         pOptions.setValue("GuiManuscript", "detailsExpanded", detailsExpanded)
         pOptions.setValue("GuiManuscript", "showNewPage", showNewPage)
@@ -693,33 +681,31 @@ class _OutlineWidget(QWidget):
             hFont.setBold(True)
             hFont.setUnderline(True)
 
-            root = self.listView.invisibleRootItem()
-            parent = root
-            indent = False
-            for anchor, entry in data.items():
-                prefix, _, text = entry.partition("|")
-                if prefix in ("TT", "PT", "CH", "SC", "H1", "H2"):
-                    item = QTreeWidgetItem([text])
-                    item.setData(0, self.D_LINE, anchor)
-                    if prefix == "TT":
-                        item.setFont(0, tFont)
-                        item.setForeground(0, tBrush)
-                        root.addChild(item)
-                        parent = root
-                    elif prefix == "PT":
-                        item.setFont(0, hFont)
-                        root.addChild(item)
-                        parent = root
-                    elif prefix in ("CH", "H1"):
-                        root.addChild(item)
-                        parent = item
-                    elif prefix in ("SC", "H2"):
-                        parent.addChild(item)
-                        indent = True
+            if root := self.listView.invisibleRootItem():
+                parent = root
+                indent = False
+                for anchor, entry in data.items():
+                    prefix, _, text = entry.partition("|")
+                    if prefix in ("TT", "PT", "CH", "SC", "H1", "H2"):
+                        item = QTreeWidgetItem([text])
+                        item.setData(0, self.D_LINE, anchor)
+                        if prefix == "TT":
+                            item.setFont(0, tFont)
+                            item.setForeground(0, tBrush)
+                            root.addChild(item)
+                            parent = root
+                        elif prefix == "PT":
+                            item.setFont(0, hFont)
+                            root.addChild(item)
+                            parent = root
+                        elif prefix in ("CH", "H1"):
+                            root.addChild(item)
+                            parent = item
+                        elif prefix in ("SC", "H2"):
+                            parent.addChild(item)
+                            indent = True
 
-            self.listView.setIndentation(
-                SHARED.theme.baseIconHeight if indent else CONFIG.pxInt(4)
-            )
+            self.listView.setIndentation(SHARED.theme.baseIconHeight if indent else 4)
             self._outline = data
 
         return
@@ -750,11 +736,13 @@ class _PreviewWidget(QTextBrowser):
         self.setPalette(dPalette)
 
         self.setMinimumWidth(40*SHARED.theme.textNWidth)
-        self.setTabStopDistance(CONFIG.getTabWidth())
+        self.setTabStopDistance(CONFIG.tabWidth)
         self.setOpenExternalLinks(False)
         self.setOpenLinks(False)
 
-        self.document().setDocumentMargin(CONFIG.getTextMargin())
+        if document := self.document():
+            document.setDocumentMargin(CONFIG.textMargin)
+
         self.setPlaceholderText(self.tr(
             "Press the \"Preview\" button to generate ..."
         ))
@@ -781,7 +769,7 @@ class _PreviewWidget(QTextBrowser):
         self.ageLabel.setFixedHeight(int(2.1*SHARED.theme.fontPixelSize))
 
         # Progress
-        self.buildProgress = NProgressCircle(self, CONFIG.pxInt(160), CONFIG.pxInt(16))
+        self.buildProgress = NProgressCircle(self, 160, 16)
         self.buildProgress.setVisible(False)
         self.buildProgress.setMaximum(1)
         self.buildProgress.setValue(0)
@@ -834,7 +822,8 @@ class _PreviewWidget(QTextBrowser):
         self.buildProgress.setValue(0)
         self.buildProgress.setCentreText(None)
         self.buildProgress.setVisible(True)
-        self._scrollPos = self.verticalScrollBar().value()
+        if vBar := self.verticalScrollBar():
+            self._scrollPos = vBar.value()
         self.setPlaceholderText("")
         self.clear()
         return
@@ -852,9 +841,9 @@ class _PreviewWidget(QTextBrowser):
         self.buildProgress.setCentreText(self.tr("Processing ..."))
         QApplication.processEvents()
 
-        document.setDocumentMargin(CONFIG.getTextMargin())
+        document.setDocumentMargin(CONFIG.textMargin)
         self.setDocument(document)
-        self.setTabStopDistance(CONFIG.getTabWidth())
+        self.setTabStopDistance(CONFIG.tabWidth)
 
         self._docTime = int(time())
         self._updateBuildAge()
@@ -883,10 +872,11 @@ class _PreviewWidget(QTextBrowser):
     @pyqtSlot("QPrinter*")
     def printPreview(self, printer: QPrinter) -> None:
         """Connect the print preview painter to the document viewer."""
-        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        printer.setPageOrientation(QPageLayout.Orientation.Portrait)
-        self.document().print(printer)
-        QApplication.restoreOverrideCursor()
+        if document := self.document():
+            QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+            printer.setPageOrientation(QPageLayout.Orientation.Portrait)
+            document.print(printer)
+            QApplication.restoreOverrideCursor()
         return
 
     @pyqtSlot(str)
@@ -928,7 +918,8 @@ class _PreviewWidget(QTextBrowser):
     def _postUpdate(self) -> None:
         """Run tasks after content update."""
         self.buildProgress.setVisible(False)
-        self.verticalScrollBar().setValue(self._scrollPos)
+        if vBar := self.verticalScrollBar():
+            vBar.setValue(self._scrollPos)
         return
 
     ##
@@ -941,7 +932,7 @@ class _PreviewWidget(QTextBrowser):
         """
         vBar = self.verticalScrollBar()
         tB = self.frameWidth()
-        vW = self.width() - 2*tB - vBar.width()
+        vW = self.width() - 2*tB - (vBar.width() if vBar else 0)
         vH = self.height() - 2*tB
         tH = self.ageLabel.height()
         pS = self.buildProgress.width()
@@ -1033,10 +1024,6 @@ class _StatsWidget(QWidget):
 
     def _buildBottomPanel(self) -> None:
         """Build the bottom page."""
-        mPx = CONFIG.pxInt(8)
-        hPx = CONFIG.pxInt(12)
-        vPx = CONFIG.pxInt(4)
-
         trAllChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS])
         trTextChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_TEXT])
         trTitleChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_TITLE])
@@ -1073,8 +1060,8 @@ class _StatsWidget(QWidget):
         self.leftForm.addRow("", QLabel(self))
         self.leftForm.addRow(trTitleCount, self.maxTitleCount)
         self.leftForm.addRow(trParagraphCount, self.maxParCount)
-        self.leftForm.setHorizontalSpacing(hPx)
-        self.leftForm.setVerticalSpacing(vPx)
+        self.leftForm.setHorizontalSpacing(12)
+        self.leftForm.setVerticalSpacing(4)
 
         # Maximal Form, Right Column
         self.maxTotalChars = QLabel(self)
@@ -1098,25 +1085,25 @@ class _StatsWidget(QWidget):
         self.rightForm.addRow(trAllWordChars, self.maxTotalWordChars)
         self.rightForm.addRow(trTitleWordChars, self.maxHeadWordChars)
         self.rightForm.addRow(trTextWordChars, self.maxTextWordChars)
-        self.rightForm.setHorizontalSpacing(hPx)
-        self.rightForm.setVerticalSpacing(vPx)
+        self.rightForm.setHorizontalSpacing(12)
+        self.rightForm.setVerticalSpacing(4)
 
         # Assemble
         self.minLayout = QHBoxLayout()
         self.minLayout.addWidget(QLabel(trAllWords, self))
         self.minLayout.addWidget(self.minWordCount)
-        self.minLayout.addSpacing(mPx)
+        self.minLayout.addSpacing(8)
         self.minLayout.addWidget(QLabel(trAllChars, self))
         self.minLayout.addWidget(self.minCharCount)
         self.minLayout.addStretch(1)
-        self.minLayout.setSpacing(mPx)
+        self.minLayout.setSpacing(8)
         self.minLayout.setContentsMargins(0, 0, 0, 0)
 
         self.maxLayout = QHBoxLayout()
         self.maxLayout.addLayout(self.leftForm)
         self.maxLayout.addLayout(self.rightForm)
         self.maxLayout.addStretch(1)
-        self.maxLayout.setSpacing(CONFIG.pxInt(32))
+        self.maxLayout.setSpacing(32)
         self.maxLayout.setContentsMargins(0, 0, 0, 0)
 
         self.minWidget.setLayout(self.minLayout)

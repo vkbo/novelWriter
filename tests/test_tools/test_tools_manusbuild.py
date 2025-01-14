@@ -95,7 +95,9 @@ def testToolManuscriptBuild_Main(
         assert (fncPath / "TestBuild").with_suffix(nwLabels.BUILD_EXT[fmt]).exists()
         lastFmt = fmt
 
-    manus._dialogButtonClicked(manus.buttonBox.button(QtDialogClose))
+    button = manus.buttonBox.button(QtDialogClose)
+    assert button is not None
+    manus._dialogButtonClicked(button)
     manus.deleteLater()
 
     assert build.lastBuildName == "TestBuild"
@@ -150,5 +152,7 @@ def testToolManuscriptBuild_Main(
         assert lastUrl.startswith("file://")
 
     # Finish
-    manus._dialogButtonClicked(manus.buttonBox.button(QtDialogClose))
+    button = manus.buttonBox.button(QtDialogClose)
+    assert button is not None
+    manus._dialogButtonClicked(button)
     # qtbot.stop()

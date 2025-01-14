@@ -26,10 +26,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from PyQt6.QtCore import QPoint, QRectF, QSize, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QAction, QColor, QPainter, QPaintEvent, QPolygon
+from PyQt6.QtGui import QColor, QPainter, QPaintEvent, QPolygon
 from PyQt6.QtWidgets import (
-    QAbstractButton, QButtonGroup, QLabel, QStyle, QStyleOptionToolButton,
-    QToolBar, QToolButton, QWidget
+    QAbstractButton, QButtonGroup, QLabel, QStyleOptionToolButton, QToolBar,
+    QToolButton, QWidget
 )
 
 from novelwriter.types import (
@@ -83,21 +83,19 @@ class NPagedSideBar(QToolBar):
         self.insertWidget(self._stretchAction, label)
         return
 
-    def addButton(self, text: str, buttonId: int = -1) -> QAction:
+    def addButton(self, text: str, buttonId: int = -1) -> None:
         """Add a new button to the toolbar."""
         button = _PagedToolButton(self)
         button.setText(text)
-
-        action = self.insertWidget(self._stretchAction, button)
+        self.insertWidget(self._stretchAction, button)
         self._group.addButton(button, id=buttonId)
-
         self._buttons[buttonId] = button
-
-        return action
+        return
 
     def setSelected(self, buttonId: int) -> None:
         """Set the selected button."""
-        self._group.button(buttonId).setChecked(True)
+        if button := self._group.button(buttonId):
+            button.setChecked(True)
         return
 
     ##
@@ -115,7 +113,7 @@ class NPagedSideBar(QToolBar):
 
 class _PagedToolButton(QToolButton):
 
-    __slots__ = ("_bH", "_tM", "_lM", "_cR", "_aH")
+    __slots__ = ("_bH", "_tM", "_aH")
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -126,8 +124,6 @@ class _PagedToolButton(QToolButton):
         fH = self.fontMetrics().height()
         self._bH = round(fH * 1.7)
         self._tM = (self._bH - fH)//2
-        self._lM = 3*self.style().pixelMetric(QStyle.PixelMetric.PM_ButtonMargin)//2
-        self._cR = self._lM//2
         self._aH = 2*fH//7
         self.setFixedHeight(self._bH)
 
@@ -145,53 +141,51 @@ class _PagedToolButton(QToolButton):
         opt = QStyleOptionToolButton()
         opt.initFrom(self)
 
-        paint = QPainter(self)
-        paint.setRenderHint(QtPaintAntiAlias, True)
-        paint.setPen(QtNoPen)
-        paint.setBrush(QtNoBrush)
+        painter = QPainter(self)
+        painter.setRenderHint(QtPaintAntiAlias, True)
+        painter.setPen(QtNoPen)
+        painter.setBrush(QtNoBrush)
 
         width = self.width()
         height = self.height()
         palette = self.palette()
 
         if opt.state & QtMouseOver == QtMouseOver:  # pragma: no cover
-            backCol = palette.base()
-            paint.setBrush(backCol)
-            paint.setOpacity(0.75)
-            paint.drawRoundedRect(0, 0, width, height, self._cR, self._cR)
+            painter.setBrush(palette.light())
+            painter.drawRoundedRect(0, 0, width, height, 4, 4)
 
         if self.isChecked():
-            backCol = palette.highlight()
-            paint.setBrush(backCol)
-            paint.setOpacity(0.35)
-            paint.drawRoundedRect(0, 0, width, height, self._cR, self._cR)
+            painter.setBrush(palette.highlight())
+            painter.setOpacity(0.35)
+            painter.drawRoundedRect(0, 0, width, height, 4, 4)
             textCol = palette.highlightedText().color()
         else:
             textCol = palette.text().color()
 
-        tW = width - 2*self._lM
+        tW = width - 24
         tH = height - 2*self._tM
 
-        paint.setPen(textCol)
-        paint.setOpacity(1.0)
-        paint.drawText(QRectF(self._lM, self._tM, tW, tH), QtAlignLeft, self.text())
+        painter.setPen(textCol)
+        painter.setOpacity(1.0)
+        painter.drawText(QRectF(12, self._tM, tW, tH), QtAlignLeft, self.text())
 
         tC = self.height()//2
-        tW = self.width() - self._aH - self._lM
+        tW = self.width() - self._aH - 12
         if self.isChecked():
-            paint.setBrush(textCol)
-        paint.drawPolygon(QPolygon([
+            painter.setBrush(textCol)
+        painter.drawPolygon(QPolygon([
             QPoint(tW, tC - self._aH),
             QPoint(tW + self._aH, tC),
             QPoint(tW, tC + self._aH),
         ]))
+        painter.end()
 
         return
 
 
 class _NPagedToolLabel(QLabel):
 
-    __slots__ = ("_bH", "_tM", "_lM", "_textCol")
+    __slots__ = ("_bH", "_tM", "_textCol")
 
     def __init__(self, parent: QWidget, textColor: QColor | None = None) -> None:
         super().__init__(parent=parent)
@@ -201,7 +195,6 @@ class _NPagedToolLabel(QLabel):
         fH = self.fontMetrics().height()
         self._bH = round(fH * 1.7)
         self._tM = (self._bH - fH)//2
-        self._lM = self.style().pixelMetric(QStyle.PixelMetric.PM_ButtonMargin)//2
         self.setFixedHeight(self._bH)
 
         self._textCol = textColor or self.palette().text().color()
@@ -212,18 +205,15 @@ class _NPagedToolLabel(QLabel):
         """Overload the paint event to draw a simple, left aligned text
         label that matches the button style.
         """
-        paint = QPainter(self)
-        paint.setRenderHint(QtPaintAntiAlias, True)
-        paint.setPen(QtNoPen)
+        tW = self.width() - 8
+        tH = self.height() - 2*self._tM
 
-        width = self.width()
-        height = self.height()
-
-        tW = width - 2*self._lM
-        tH = height - 2*self._tM
-
-        paint.setPen(self._textCol)
-        paint.setOpacity(1.0)
-        paint.drawText(QRectF(self._lM, self._tM, tW, tH), QtAlignLeft, self.text())
+        painter = QPainter(self)
+        painter.setRenderHint(QtPaintAntiAlias, True)
+        painter.setPen(QtNoPen)
+        painter.setPen(self._textCol)
+        painter.setOpacity(1.0)
+        painter.drawText(QRectF(4, self._tM, tW, tH), QtAlignLeft, self.text())
+        painter.end()
 
         return

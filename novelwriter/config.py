@@ -52,6 +52,31 @@ logger = logging.getLogger(__name__)
 
 class Config:
 
+    __slots__ = (
+        "_confPath", "_dataPath", "_homePath", "_backPath", "_appPath", "_appRoot", "_hasError",
+        "_errData", "_nwLangPath", "_qtLangPath", "_qLocale", "_dLocale", "_dShortDate",
+        "_dShortDateTime", "_qtTrans", "_recentProjects", "_recentPaths", "_backupPath",
+
+        "appName", "appHandle", "pdfDocs", "guiLocale", "guiTheme", "guiSyntax", "guiFont",
+        "hideVScroll", "hideHScroll", "lastNotes", "nativeFont", "iconTheme", "iconColTree",
+        "iconColDocs", "mainWinSize", "welcomeWinSize", "prefsWinSize", "mainPanePos",
+        "viewPanePos", "outlinePanePos", "autoSaveProj", "autoSaveDoc", "emphLabels",
+        "backupOnClose", "askBeforeBackup", "textFont", "textWidth", "textMargin", "tabWidth",
+        "focusWidth", "hideFocusFooter", "showFullPath", "autoSelect", "doJustify",
+        "showTabsNSpaces", "showLineEndings", "showMultiSpaces", "doReplace", "doReplaceSQuote",
+        "doReplaceDQuote", "doReplaceDash", "doReplaceDots", "autoScroll", "autoScrollPos",
+        "scrollPastEnd", "dialogStyle", "allowOpenDial", "dialogLine", "narratorBreak",
+        "narratorDialog", "altDialogOpen", "altDialogClose", "highlightEmph", "stopWhenIdle",
+        "userIdleTime", "incNotesWCount", "fmtApostrophe", "fmtSQuoteOpen", "fmtSQuoteClose",
+        "fmtDQuoteOpen", "fmtDQuoteClose", "fmtPadBefore", "fmtPadAfter", "fmtPadThin",
+        "spellLanguage", "showViewerPanel", "showEditToolBar", "showSessionTime", "viewComments",
+        "viewSynopsis", "searchCase", "searchWord", "searchRegEx", "searchLoop", "searchNextFile",
+        "searchMatchCap", "searchProjCase", "searchProjWord", "searchProjRegEx", "verQtString",
+        "verQtValue", "verPyQtString", "verPyQtValue", "verPyString", "osType", "osLinux",
+        "osWindows", "osDarwin", "osUnknown", "hostName", "kernelVer", "isDebug", "memInfo",
+        "hasEnchant",
+    )
+
     LANG_NW   = 1
     LANG_PROJ = 2
 
@@ -126,12 +151,12 @@ class Config:
         self.iconColDocs = False                      # Keep theme colours on documents
 
         # Size Settings
-        self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
-        self._welcomeSize  = [800, 550]      # Last size of the welcome window
-        self._prefsWinSize = [700, 615]      # Last size of the Preferences dialog
-        self._mainPanePos  = [300, 800]      # Last position of the main window splitter
-        self._viewPanePos  = [500, 150]      # Last position of the document viewer splitter
-        self._outlnPanePos = [500, 150]      # Last position of the outline panel splitter
+        self.mainWinSize    = [1200, 650]  # Last size of the main GUI window
+        self.welcomeWinSize = [800, 550]   # Last size of the welcome window
+        self.prefsWinSize   = [700, 615]   # Last size of the Preferences dialog
+        self.mainPanePos    = [300, 800]   # Last position of the main window splitter
+        self.viewPanePos    = [500, 150]   # Last position of the document viewer splitter
+        self.outlinePanePos = [500, 150]   # Last position of the outline panel splitter
 
         # Project Settings
         self.autoSaveProj    = 60     # Interval for auto-saving project, in seconds
@@ -269,30 +294,6 @@ class Config:
     def recentProjects(self) -> RecentProjects:
         return self._recentProjects
 
-    @property
-    def mainWinSize(self) -> list[int]:
-        return self._mainWinSize
-
-    @property
-    def welcomeWinSize(self) -> list[int]:
-        return self._welcomeSize
-
-    @property
-    def preferencesWinSize(self) -> list[int]:
-        return self._prefsWinSize
-
-    @property
-    def mainPanePos(self) -> list[int]:
-        return self._mainPanePos
-
-    @property
-    def viewPanePos(self) -> list[int]:
-        return self._viewPanePos
-
-    @property
-    def outlinePanePos(self) -> list[int]:
-        return self._outlnPanePos
-
     ##
     #  Getters
     ##
@@ -300,17 +301,9 @@ class Config:
     def getTextWidth(self, focusMode: bool = False) -> int:
         """Get the text with for the correct editor mode."""
         if focusMode:
-            return self.pxInt(max(self.focusWidth, 200))
+            return max(self.focusWidth, 200)
         else:
-            return self.pxInt(max(self.textWidth, 200))
-
-    def getTextMargin(self) -> int:
-        """Get the scaled text margin."""
-        return self.pxInt(max(self.textMargin, 0))
-
-    def getTabWidth(self) -> int:
-        """Get the scaled tab width."""
-        return self.pxInt(max(self.tabWidth, 0))
+            return max(self.textWidth, 200)
 
     ##
     #  Setters
@@ -322,35 +315,20 @@ class Config:
         adjust it a bit, and we don't want the main window to shrink or
         grow each time the app is opened.
         """
-        if abs(self._mainWinSize[0] - width) > 5:
-            self._mainWinSize[0] = width
-        if abs(self._mainWinSize[1] - height) > 5:
-            self._mainWinSize[1] = height
+        if abs(self.mainWinSize[0] - width) > 5:
+            self.mainWinSize[0] = width
+        if abs(self.mainWinSize[1] - height) > 5:
+            self.mainWinSize[1] = height
         return
 
     def setWelcomeWinSize(self, width: int, height: int) -> None:
         """Set the size of the Preferences dialog window."""
-        self._welcomeSize = [width, height]
+        self.welcomeWinSize = [width, height]
         return
 
     def setPreferencesWinSize(self, width: int, height: int) -> None:
         """Set the size of the Preferences dialog window."""
-        self._prefsWinSize = [width, height]
-        return
-
-    def setMainPanePos(self, pos: list[int]) -> None:
-        """Set the position of the main GUI splitter."""
-        self._mainPanePos = pos
-        return
-
-    def setViewPanePos(self, pos: list[int]) -> None:
-        """Set the position of the viewer meta data splitter."""
-        self._viewPanePos = pos
-        return
-
-    def setOutlinePanePos(self, pos: list[int]) -> None:
-        """Set the position of the outline details splitter."""
-        self._outlnPanePos = pos
+        self.prefsWinSize = [width, height]
         return
 
     def setLastPath(self, key: str, path: str | Path) -> None:
@@ -420,14 +398,6 @@ class Config:
     ##
     #  Methods
     ##
-
-    def pxInt(self, value: int) -> int:
-        """Deprecated. Do not use."""
-        return value
-
-    def rpxInt(self, value: int) -> int:
-        """Deprecated. Do not use."""
-        return value
 
     def homePath(self) -> Path:
         """The user's home folder."""
@@ -614,12 +584,12 @@ class Config:
 
         # Sizes
         sec = "Sizes"
-        self._mainWinSize  = conf.rdIntList(sec, "mainwindow", self._mainWinSize)
-        self._welcomeSize  = conf.rdIntList(sec, "welcome", self._welcomeSize)
-        self._prefsWinSize = conf.rdIntList(sec, "preferences", self._prefsWinSize)
-        self._mainPanePos  = conf.rdIntList(sec, "mainpane", self._mainPanePos)
-        self._viewPanePos  = conf.rdIntList(sec, "viewpane", self._viewPanePos)
-        self._outlnPanePos = conf.rdIntList(sec, "outlinepane", self._outlnPanePos)
+        self.mainWinSize    = conf.rdIntList(sec, "mainwindow", self.mainWinSize)
+        self.welcomeWinSize = conf.rdIntList(sec, "welcome", self.welcomeWinSize)
+        self.prefsWinSize   = conf.rdIntList(sec, "preferences", self.prefsWinSize)
+        self.mainPanePos    = conf.rdIntList(sec, "mainpane", self.mainPanePos)
+        self.viewPanePos    = conf.rdIntList(sec, "viewpane", self.viewPanePos)
+        self.outlinePanePos = conf.rdIntList(sec, "outlinepane", self.outlinePanePos)
 
         # Project
         sec = "Project"
@@ -728,12 +698,12 @@ class Config:
         }
 
         conf["Sizes"] = {
-            "mainwindow":  self._packList(self._mainWinSize),
-            "welcome":     self._packList(self._welcomeSize),
-            "preferences": self._packList(self._prefsWinSize),
-            "mainpane":    self._packList(self._mainPanePos),
-            "viewpane":    self._packList(self._viewPanePos),
-            "outlinepane": self._packList(self._outlnPanePos),
+            "mainwindow":  self._packList(self.mainWinSize),
+            "welcome":     self._packList(self.welcomeWinSize),
+            "preferences": self._packList(self.prefsWinSize),
+            "mainpane":    self._packList(self.mainPanePos),
+            "viewpane":    self._packList(self.viewPanePos),
+            "outlinepane": self._packList(self.outlinePanePos),
         }
 
         conf["Project"] = {

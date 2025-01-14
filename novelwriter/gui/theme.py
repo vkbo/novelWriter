@@ -41,7 +41,7 @@ from novelwriter.common import NWConfigParser, cssCol, minmax
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
-from novelwriter.types import QtPaintAntiAlias, QtTransparent, nwDataClass
+from novelwriter.types import QtPaintAntiAlias, QtTransparent
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,6 @@ STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
 
 
-@nwDataClass
 class ThemeMeta:
 
     name:        str = ""
@@ -62,7 +61,6 @@ class ThemeMeta:
     licenseUrl:  str = ""
 
 
-@nwDataClass
 class SyntaxColors:
 
     back:   QColor = QColor(255, 255, 255)
@@ -546,31 +544,26 @@ class GuiTheme:
         """Build default style sheets."""
         self._styleSheets = {}
 
-        aPx = CONFIG.pxInt(2)
-        bPx = CONFIG.pxInt(4)
-        cPx = CONFIG.pxInt(6)
-        dPx = CONFIG.pxInt(8)
-
         tCol = palette.text().color()
         hCol = palette.highlight().color()
 
         # Flat Tab Widget and Tab Bar:
         self._styleSheets[STYLES_FLAT_TABS] = (
             "QTabWidget::pane {border: 0;} "
-            f"QTabWidget QTabBar::tab {{border: 0; padding: {bPx}px {dPx}px;}} "
+            "QTabWidget QTabBar::tab {border: 0; padding: 4px 8px;} "
             f"QTabWidget QTabBar::tab:selected {{color: {cssCol(hCol)};}} "
         )
 
         # Minimal Tool Button
         self._styleSheets[STYLES_MIN_TOOLBUTTON] = (
-            f"QToolButton {{padding: {aPx}px; margin: 0; border: none; background: transparent;}} "
+            "QToolButton {padding: 2px; margin: 0; border: none; background: transparent;} "
             f"QToolButton:hover {{border: none; background: {cssCol(tCol, 48)};}} "
             "QToolButton::menu-indicator {image: none;} "
         )
 
         # Big Tool Button
         self._styleSheets[STYLES_BIG_TOOLBUTTON] = (
-            f"QToolButton {{padding: {cPx}px; margin: 0; border: none; background: transparent;}} "
+            "QToolButton {padding: 6px; margin: 0; border: none; background: transparent;} "
             f"QToolButton:hover {{border: none; background: {cssCol(tCol, 48)};}} "
             "QToolButton::menu-indicator {image: none;} "
         )

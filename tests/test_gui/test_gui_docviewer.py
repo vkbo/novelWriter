@@ -91,18 +91,19 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     docViewer.setTextCursor(cursor)
     docViewer._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
 
-    qClip = QApplication.clipboard()
-    qClip.clear()
+    clipboard = QApplication.clipboard()
+    assert clipboard is not None
+    clipboard.clear()
 
     # Cut
     assert docViewer.docAction(nwDocAction.CUT) is True
-    assert qClip.text() == "laoreet"
-    qClip.clear()
+    assert clipboard.text() == "laoreet"
+    clipboard.clear()
 
     # Copy
     assert docViewer.docAction(nwDocAction.COPY) is True
-    assert qClip.text() == "laoreet"
-    qClip.clear()
+    assert clipboard.text() == "laoreet"
+    clipboard.clear()
 
     # Select Paragraph
     assert docViewer.docAction(nwDocAction.SEL_PARA) is True

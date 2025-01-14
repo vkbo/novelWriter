@@ -241,5 +241,7 @@ class SimpleDialog(QDialog):
 
     def addWidget(self, widget: QWidget) -> None:
         self._widget = widget
-        self.layout().addWidget(widget)
+        layout = self.layout()
+        assert layout is not None
+        layout.addWidget(widget)
         return

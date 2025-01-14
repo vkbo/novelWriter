@@ -67,7 +67,9 @@ def testToolManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     # Build a preview
     manus.buildList.clearSelection()
     manus.buildList.setCurrentRow(0)
-    with qtbot.waitSignal(manus.docPreview.document().contentsChanged):
+    document = manus.docPreview.document()
+    assert document is not None
+    with qtbot.waitSignal(document.contentsChanged):
         manus.btnPreview.click()
     assert manus.docPreview.toPlainText().strip() == allText
 
@@ -113,7 +115,9 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        bSettings.buttonBox.button(QtDialogSave).click()
+        button = bSettings.buttonBox.button(QtDialogSave)
+        assert button is not None
+        button.click()
 
     assert isinstance(build, BuildSettings)
     assert build.name == "Test Build"
@@ -132,7 +136,9 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        bSettings.buttonBox.button(QtDialogApply).click()  # Should leave the dialog open
+        button = bSettings.buttonBox.button(QtDialogApply)
+        assert button is not None
+        button.click()  # Should leave the dialog open
 
     assert isinstance(build, BuildSettings)
     assert build.name == "Test Build"
@@ -210,7 +216,9 @@ def testToolManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     manus._builds.setBuild(build)
 
     manus.buildList.setCurrentRow(0)
-    with qtbot.waitSignal(manus.docPreview.document().contentsChanged):
+    document = manus.docPreview.document()
+    assert document is not None
+    with qtbot.waitSignal(document.contentsChanged):
         manus.btnPreview.click()
     assert manus.docPreview.toPlainText().strip() != ""
 
@@ -304,7 +312,9 @@ def testToolManuscript_Print(monkeypatch, qtbot, nwGUI, projPath):
     manus.loadContent()
 
     manus.buildList.setCurrentRow(0)
-    with qtbot.waitSignal(manus.docPreview.document().contentsChanged):
+    document = manus.docPreview.document()
+    assert document is not None
+    with qtbot.waitSignal(document.contentsChanged):
         manus.btnPreview.click()
     assert manus.docPreview.toPlainText().strip() != ""
 
