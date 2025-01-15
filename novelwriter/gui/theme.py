@@ -315,18 +315,24 @@ class GuiTheme:
         QtColInactive = QPalette.ColorGroup.Inactive
         QtColDisabled = QPalette.ColorGroup.Disabled
 
-        light     = window.lighter(150)
-        mid       = window.darker(130)
+        if window.lightnessF() < 0.15:
+            # If window is too dark, we need a lighter ref colour for shades
+            ref = QColor.fromHslF(window.hueF(), window.saturationF(), 0.15, window.alphaF())
+        else:
+            ref = window
+
+        light     = ref.lighter(150)
+        mid       = ref.darker(130)
         midLight  = mid.lighter(110)
-        dark      = window.darker(150)
+        dark      = ref.darker(150)
         shadow    = dark.darker(135)
         darkOff   = dark.darker(150)
-        shadowOff = shadow.darker(150)
+        shadowOff = ref.darker(150)
 
         grey   = QColor(120, 120, 120) if isDark else QColor(140, 140, 140)
         dimmed = QColor(130, 130, 130) if isDark else QColor(190, 190, 190)
 
-        placeholder = text
+        placeholder = QColor(text)
         placeholder.setAlpha(128)
 
         self._guiPalette.setBrush(QPalette.ColorRole.Light, light)
@@ -353,7 +359,7 @@ class GuiTheme:
             self._guiPalette.setBrush(QtColInactive, QPalette.ColorRole.Accent, highlight)
             self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Accent, grey)
 
-        # Load icons after theme is parsed
+        # Load icons after the theme is parsed
         self.iconCache.loadTheme(CONFIG.iconTheme)
 
         # Finalise
