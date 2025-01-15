@@ -144,7 +144,7 @@ In the Main section you must at least define the ``name`` and ``icontheme`` sett
 setting must match the icon theme's folder name.
 
 The Palette values correspond to the Qt enum values for ``QPalette::ColorRole``, see the
-`Qt documentation <https://doc.qt.io/qt-5.15/qpalette.html#ColorRole-enum>`_ for more details. The
+`Qt documentation <https://doc.qt.io/qt-6/qpalette.html#ColorRole-enum>`_ for more details. The
 colour values are RGB numbers on the format ``r, g, b`` where each is an integer from ``0`` to
 ``255``. Omitted values are not loaded and will use default values. If the ``helptext`` colour is
 not defined, it is computed as a colour between the ``window`` and ``windowtext`` colour.
