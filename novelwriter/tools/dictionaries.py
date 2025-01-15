@@ -62,12 +62,12 @@ class GuiDictionaries(NNonBlockingDialog):
         self.setMinimumHeight(300)
 
         # Hunspell Dictionaries
-        foUrl = "https://www.freeoffice.com/en/download/dictionaries"
         loUrl = "https://extensions.libreoffice.org"
+        ooUrl = "https://extensions.openoffice.org"
         self.huInfo = QLabel("<br>".join([
             self.tr("Download a dictionary from one of the links, and add it below."),
-            f"&nbsp;\u203a <a href='{foUrl}'>{foUrl}</a>",
             f"&nbsp;\u203a <a href='{loUrl}'>{loUrl}</a>",
+            f"&nbsp;\u203a <a href='{ooUrl}'>{ooUrl}</a>",
         ]), self)
         self.huInfo.setOpenExternalLinks(True)
         self.huInfo.setWordWrap(True)
