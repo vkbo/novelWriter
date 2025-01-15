@@ -133,9 +133,9 @@ class GuiMainStatus(QStatusBar):
         self.idlePixmap = SHARED.theme.getPixmap("timer_off", (iPx, iPx))
         self.timeIcon.setPixmap(self.timePixmap)
 
-        colNone = SHARED.theme.statNone
-        colSaved = SHARED.theme.statSaved
-        colUnsaved = SHARED.theme.statUnsaved
+        colNone = SHARED.theme.getIconColor("default").darker(150)
+        colSaved = SHARED.theme.getIconColor("green").darker(150)
+        colUnsaved = SHARED.theme.getIconColor("red").darker(150)
         self.docIcon.setColors(colNone, colSaved, colUnsaved)
         self.projIcon.setColors(colNone, colSaved, colUnsaved)
 

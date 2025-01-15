@@ -75,8 +75,8 @@ class GuiWelcome(NDialog):
         # Elements
         # ========
 
-        self.bgImage = SHARED.theme.loadDecoration("welcome")
-        self.nwImage = SHARED.theme.loadDecoration("nw-text", h=36)
+        self.bgImage = SHARED.theme.getDecoration("welcome")
+        self.nwImage = SHARED.theme.getDecoration("nw-text", h=36)
         self.bgColor = QColor(54, 54, 54) if SHARED.theme.isDarkTheme else QColor(255, 255, 255)
 
         self.nwLogo = QLabel(self)

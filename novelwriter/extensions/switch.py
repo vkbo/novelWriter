@@ -88,31 +88,20 @@ class NSwitch(QAbstractButton):
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Drawing the switch itself."""
+        palette = self.palette()
+
         painter = QPainter(self)
         painter.setRenderHint(QtPaintAntiAlias, True)
-        painter.setPen(QtNoPen)
+        painter.setOpacity(1.0 if self.isEnabled() else 0.5)
 
-        palette = self.palette()
-        if self.isChecked():
-            trackBrush = palette.highlight()
-            thumbBrush = palette.highlightedText()
-        else:
-            trackBrush = palette.midlight()
-            thumbBrush = palette.light()
-
-        if self.isEnabled():
-            trackOpacity = 1.0
-        else:
-            trackOpacity = 0.6
-            trackBrush = palette.mid()
-            thumbBrush = palette.mid()
-
-        painter.setBrush(trackBrush)
-        painter.setOpacity(trackOpacity)
+        painter.setPen(palette.mid().color())
+        painter.setBrush(palette.highlight() if self.isChecked() else palette.alternateBase())
         painter.drawRoundedRect(0, 0, self._xW, self._xH, self._xR, self._xR)
 
-        painter.setBrush(thumbBrush)
+        painter.setPen(QtNoPen)
+        painter.setBrush(palette.highlightedText())
         painter.drawEllipse(self._offset - self._rR, 2, self._rH, self._rH)
+
         painter.end()
 
         return

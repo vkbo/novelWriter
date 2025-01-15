@@ -52,7 +52,7 @@ class GuiAbout(NDialog):
         self.resize(700, 500)
 
         # Logo and Banner
-        self.nwImage = SHARED.theme.loadDecoration("nw-text", h=36)
+        self.nwImage = SHARED.theme.getDecoration("nw-text", h=36)
 
         self.nwLogo = QLabel(self)
         self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (128, 128)))

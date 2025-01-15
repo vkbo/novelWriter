@@ -35,6 +35,7 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import compact, describeFont, uniqueCompact
+from novelwriter.config import DEF_GUI, DEF_ICONS, DEF_SYNTAX, DEF_TREECOL
 from novelwriter.constants import nwLabels, nwUnicode, trConst
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
@@ -167,7 +168,7 @@ class GuiPreferences(NDialog):
         self.guiTheme.setMinimumWidth(200)
         for theme, name in SHARED.theme.listThemes():
             self.guiTheme.addItem(name, theme)
-        self.guiTheme.setCurrentData(CONFIG.guiTheme, "default")
+        self.guiTheme.setCurrentData(CONFIG.guiTheme, DEF_GUI)
 
         self.mainForm.addRow(
             self.tr("Colour theme"), self.guiTheme,
@@ -179,7 +180,7 @@ class GuiPreferences(NDialog):
         self.iconTheme.setMinimumWidth(200)
         for theme, name in SHARED.theme.iconCache.listThemes():
             self.iconTheme.addItem(name, theme)
-        self.iconTheme.setCurrentData(CONFIG.iconTheme, "material_rounded_bold")
+        self.iconTheme.setCurrentData(CONFIG.iconTheme, DEF_ICONS)
 
         self.mainForm.addRow(
             self.tr("Icon theme"), self.iconTheme,
@@ -191,7 +192,7 @@ class GuiPreferences(NDialog):
         self.iconColTree.setMinimumWidth(200)
         for key, label in nwLabels.THEME_COLORS.items():
             self.iconColTree.addItem(trConst(label), key)
-        self.iconColTree.setCurrentData(CONFIG.iconColTree, "theme")
+        self.iconColTree.setCurrentData(CONFIG.iconColTree, DEF_TREECOL)
 
         self.mainForm.addRow(
             self.tr("Project tree icon colours"), self.iconColTree,
@@ -257,7 +258,7 @@ class GuiPreferences(NDialog):
         self.guiSyntax.setMinimumWidth(200)
         for syntax, name in SHARED.theme.listSyntax():
             self.guiSyntax.addItem(name, syntax)
-        self.guiSyntax.setCurrentData(CONFIG.guiSyntax, "default_light")
+        self.guiSyntax.setCurrentData(CONFIG.guiSyntax, DEF_SYNTAX)
 
         self.mainForm.addRow(
             self.tr("Document colour theme"), self.guiSyntax,
