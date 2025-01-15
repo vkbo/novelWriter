@@ -49,6 +49,11 @@ from novelwriter.error import formatException, logException
 
 logger = logging.getLogger(__name__)
 
+DEF_GUI = "default"
+DEF_SYNTAX = "default_light"
+DEF_ICONS = "material_rounded_normal"
+DEF_TREECOL = "theme"
+
 
 class Config:
 
@@ -137,18 +142,18 @@ class Config:
 
         # General GUI Settings
         self.guiLocale    = self._qLocale.name()
-        self.guiTheme     = "default"        # GUI theme
-        self.guiSyntax    = "default_light"  # Syntax theme
-        self.guiFont      = QFont()          # Main GUI font
-        self.hideVScroll  = False            # Hide vertical scroll bars on main widgets
-        self.hideHScroll  = False            # Hide horizontal scroll bars on main widgets
-        self.lastNotes    = "0x0"            # The latest release notes that have been shown
-        self.nativeFont   = True             # Use native font dialog
+        self.guiTheme     = DEF_GUI     # GUI theme
+        self.guiSyntax    = DEF_SYNTAX  # Syntax theme
+        self.guiFont      = QFont()     # Main GUI font
+        self.hideVScroll  = False       # Hide vertical scroll bars on main widgets
+        self.hideHScroll  = False       # Hide horizontal scroll bars on main widgets
+        self.lastNotes    = "0x0"       # The latest release notes that have been shown
+        self.nativeFont   = True        # Use native font dialog
 
         # Icons
-        self.iconTheme   = "material_rounded_normal"  # Icons theme
-        self.iconColTree = "theme"                    # Project tree icon colours
-        self.iconColDocs = False                      # Keep theme colours on documents
+        self.iconTheme   = DEF_ICONS    # Icons theme
+        self.iconColTree = DEF_TREECOL  # Project tree icon colours
+        self.iconColDocs = False        # Keep theme colours on documents
 
         # Size Settings
         self.mainWinSize    = [1200, 650]  # Last size of the main GUI window
@@ -477,8 +482,9 @@ class Config:
     #  Config Actions
     ##
 
-    def initConfig(self, confPath: str | Path | None = None,
-                   dataPath: str | Path | None = None) -> None:
+    def initConfig(
+        self, confPath: str | Path | None = None, dataPath: str | Path | None = None
+    ) -> None:
         """Initialise the config class. The manual setting of confPath
         and dataPath is mainly intended for the test suite.
         """

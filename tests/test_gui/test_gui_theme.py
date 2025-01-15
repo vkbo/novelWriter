@@ -28,8 +28,10 @@ from PyQt6.QtGui import QColor, QIcon, QPalette, QPixmap
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import NWConfigParser
+from novelwriter.config import DEF_GUI
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
+from novelwriter.gui.theme import _listConf
 
 from tests.mocked import causeOSError
 from tests.tools import writeFile
@@ -50,15 +52,16 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     # Scan for Themes
     # ===============
 
-    assert mainTheme._listConf({}, Path("not_a_path")) is False
+    result = {}
+    _listConf({}, Path("not_a_path"), ".conf")
+    assert result == {}
 
     themeOne = tstPaths.cnfDir / "themes" / "themeone.conf"
     themeTwo = tstPaths.cnfDir / "themes" / "themetwo.conf"
     writeFile(themeOne, "# Stuff")
     writeFile(themeTwo, "# Stuff")
 
-    result = {}
-    assert mainTheme._listConf(result, tstPaths.cnfDir / "themes") is True
+    _listConf(result, tstPaths.cnfDir / "themes", ".conf")
     assert result["themeone"] == themeOne
     assert result["themetwo"] == themeTwo
 
@@ -135,7 +138,7 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
     mainTheme._availThemes = availThemes
 
     # Check handling of unreadable file
-    CONFIG.guiTheme = "default"
+    CONFIG.guiTheme = DEF_GUI
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         assert mainTheme.loadTheme() is False
@@ -147,7 +150,7 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
     mainTheme._guiPalette.color(QPalette.ColorRole.Window).setRgb(0, 0, 0, 0)
 
     # Load the default theme
-    CONFIG.guiTheme = "default"
+    CONFIG.guiTheme = DEF_GUI
     assert mainTheme.loadTheme() is True
 
     # This should load a standard palette
@@ -280,7 +283,10 @@ def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
     # ==========
 
     # Invalid theme name
+    availThemes = iconCache._availThemes
+    iconCache._availThemes = {}
     assert iconCache.loadTheme("not_a_theme") is False
+    iconCache._availThemes = availThemes
 
     # Check handling of unreadable file
     with monkeypatch.context() as mp:

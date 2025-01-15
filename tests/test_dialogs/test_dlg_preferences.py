@@ -27,6 +27,7 @@ from PyQt6.QtGui import QAction, QFont, QFontDatabase, QKeyEvent
 from PyQt6.QtWidgets import QFileDialog, QFontDialog
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.config import DEF_GUI
 from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
@@ -56,7 +57,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     # Check GUI Themes
     themes = [prefs.guiTheme.itemData(i) for i in range(prefs.guiTheme.count())]
     assert len(themes) >= 5
-    assert "default" in themes
+    assert DEF_GUI in themes
 
     # Check GUI Syntax
     syntax = [prefs.guiSyntax.itemData(i) for i in range(prefs.guiSyntax.count())]

@@ -38,6 +38,7 @@ from PyQt6.QtWidgets import QApplication
 
 from novelwriter import CONFIG
 from novelwriter.common import NWConfigParser, cssCol, minmax
+from novelwriter.config import DEF_GUI, DEF_ICONS, DEF_SYNTAX
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
@@ -136,10 +137,10 @@ class GuiTheme:
         self._availSyntax: dict[str, Path] = {}
         self._styleSheets: dict[str, str] = {}
 
-        self._listConf(self._availSyntax, CONFIG.assetPath("syntax"))
-        self._listConf(self._availThemes, CONFIG.assetPath("themes"))
-        self._listConf(self._availSyntax, CONFIG.dataPath("syntax"))
-        self._listConf(self._availThemes, CONFIG.dataPath("themes"))
+        _listConf(self._availSyntax, CONFIG.assetPath("syntax"), ".conf")
+        _listConf(self._availThemes, CONFIG.assetPath("themes"), ".conf")
+        _listConf(self._availSyntax, CONFIG.dataPath("syntax"), ".conf")
+        _listConf(self._availThemes, CONFIG.dataPath("themes"), ".conf")
 
         self.loadTheme()
         self.loadSyntax()
@@ -213,25 +214,23 @@ class GuiTheme:
 
     def loadTheme(self) -> bool:
         """Load the currently specified GUI theme."""
-        guiTheme = CONFIG.guiTheme
-        if guiTheme not in self._availThemes:
-            logger.error("Could not find GUI theme '%s'", guiTheme)
-            guiTheme = "default"
-            CONFIG.guiTheme = guiTheme
+        theme = CONFIG.guiTheme
+        if theme not in self._availThemes:
+            logger.error("Could not find GUI theme '%s'", theme)
+            theme = DEF_GUI
+            CONFIG.guiTheme = theme
 
-        themeFile = self._availThemes.get(guiTheme, None)
-        if themeFile is None:
+        if not (file := self._availThemes.get(theme)):
             logger.error("Could not load GUI theme")
             return False
 
-        # Config File
-        logger.info("Loading GUI theme '%s'", guiTheme)
+        logger.info("Loading GUI theme '%s'", theme)
         parser = NWConfigParser()
         try:
-            with open(themeFile, mode="r", encoding="utf-8") as inFile:
-                parser.read_file(inFile)
+            with open(file, mode="r", encoding="utf-8") as fo:
+                parser.read_file(fo)
         except Exception:
-            logger.error("Could not load theme settings from: %s", themeFile)
+            logger.error("Could not read file: %s", file)
             logException()
             return False
 
@@ -371,25 +370,23 @@ class GuiTheme:
 
     def loadSyntax(self) -> bool:
         """Load the currently specified syntax highlighter theme."""
-        guiSyntax = CONFIG.guiSyntax
-        if guiSyntax not in self._availSyntax:
-            logger.error("Could not find syntax theme '%s'", guiSyntax)
-            guiSyntax = "default_light"
-            CONFIG.guiSyntax = guiSyntax
+        theme = CONFIG.guiSyntax
+        if theme not in self._availSyntax:
+            logger.error("Could not find syntax theme '%s'", theme)
+            theme = DEF_SYNTAX
+            CONFIG.guiSyntax = theme
 
-        syntaxFile = self._availSyntax.get(guiSyntax, None)
-        if syntaxFile is None:
+        if not (file := self._availSyntax.get(theme)):
             logger.error("Could not load syntax theme")
             return False
 
-        logger.info("Loading syntax theme '%s'", guiSyntax)
-
+        logger.info("Loading syntax theme '%s'", theme)
         parser = NWConfigParser()
         try:
-            with open(syntaxFile, mode="r", encoding="utf-8") as inFile:
-                parser.read_file(inFile)
+            with open(file, mode="r", encoding="utf-8") as fo:
+                parser.read_file(fo)
         except Exception:
-            logger.error("Could not load syntax colours from: %s", syntaxFile)
+            logger.error("Could not read file: %s", file)
             logException()
             return False
 
@@ -440,13 +437,14 @@ class GuiTheme:
         if self._themeList:
             return self._themeList
 
+        themes = []
         parser = NWConfigParser()
         for key, path in self._availThemes.items():
-            logger.debug("Checking theme config for '%s'", key)
+            logger.debug("Checking theme config '%s'", key)
             if name := _loadInternalName(parser, path):
-                self._themeList.append((key, name))
+                themes.append((key, name))
 
-        self._themeList = sorted(self._themeList, key=_sortTheme)
+        self._themeList = sorted(themes, key=_sortTheme)
 
         return self._themeList
 
@@ -455,13 +453,14 @@ class GuiTheme:
         if self._syntaxList:
             return self._syntaxList
 
+        themes = []
         parser = NWConfigParser()
         for key, path in self._availSyntax.items():
-            logger.debug("Checking theme syntax for '%s'", key)
+            logger.debug("Checking theme syntax '%s'", key)
             if name := _loadInternalName(parser, path):
-                self._syntaxList.append((key, name))
+                themes.append((key, name))
 
-        self._syntaxList = sorted(self._syntaxList, key=_sortTheme)
+        self._syntaxList = sorted(themes, key=_sortTheme)
 
         return self._syntaxList
 
@@ -524,17 +523,6 @@ class GuiTheme:
 
         return
 
-    def _listConf(self, targetDict: dict, checkDir: Path) -> bool:
-        """Scan for theme config files and populate the dictionary."""
-        if not checkDir.is_dir():
-            return False
-
-        for checkFile in checkDir.iterdir():
-            if checkFile.is_file() and checkFile.name.endswith(".conf"):
-                targetDict[checkFile.name[:-5]] = checkFile
-
-        return True
-
     def _parseColour(self, parser: NWConfigParser, section: str, name: str) -> QColor:
         """Parse a colour value from a config string."""
         return QColor(*parser.rdIntList(section, name, [0, 0, 0, 255]))
@@ -588,7 +576,8 @@ class GuiIcons:
 
     __slots__ = (
         "mainTheme", "themeMeta", "_svgData", "_svgColours", "_qIcons",
-        "_headerDec", "_headerDecNarrow", "_themeList", "_iconPath", "_noIcon",
+        "_headerDec", "_headerDecNarrow", "_availThemes", "_themeList",
+        "_noIcon",
     )
 
     TOGGLE_ICON_KEYS: dict[str, tuple[str, str]] = {
@@ -613,11 +602,14 @@ class GuiIcons:
         self._headerDecNarrow: list[QPixmap] = []
 
         # Icon Theme Path
+        self._availThemes: dict[str, Path] = {}
         self._themeList: list[tuple[str, str]] = []
-        self._iconPath = CONFIG.assetPath("icons")
 
         # None Icon
-        self._noIcon = QIcon(str(self._iconPath / "none.svg"))
+        self._noIcon = QIcon(str(CONFIG.assetPath("icons") / "none.svg"))
+
+        _listConf(self._availThemes, CONFIG.assetPath("icons"), ".icons")
+        _listConf(self._availThemes, CONFIG.dataPath("icons"), ".icons")
 
         return
 
@@ -635,16 +627,24 @@ class GuiIcons:
     #  Actions
     ##
 
-    def loadTheme(self, iconTheme: str) -> bool:
+    def loadTheme(self, theme: str) -> bool:
         """Update the theme map. This is more of an init, since many of
         the GUI icons cannot really be replaced without writing specific
         update functions for the classes where they're used.
         """
-        logger.info("Loading icon theme '%s'", iconTheme)
-        themePath = self._iconPath / f"{iconTheme}.icons"
+        if theme not in self._availThemes:
+            logger.error("Could not find icon theme '%s'", theme)
+            theme = DEF_ICONS
+            CONFIG.iconTheme = theme
+
+        if not (file := self._availThemes.get(theme)):
+            logger.error("Could not load icon theme")
+            return False
+
+        logger.info("Loading icon theme '%s'", theme)
         try:
             meta = ThemeMeta()
-            with open(themePath, mode="r", encoding="utf-8") as icons:
+            with open(file, mode="r", encoding="utf-8") as icons:
                 for icon in icons:
                     bits = icon.partition("=")
                     key = bits[0].strip()
@@ -660,7 +660,7 @@ class GuiIcons:
                             meta.license = value
             self.themeMeta = meta
         except Exception:
-            logger.error("Could not load icon theme from: %s", themePath)
+            logger.error("Could not read file: %s", file)
             logException()
             return False
 
@@ -810,12 +810,13 @@ class GuiIcons:
         if self._themeList:
             return self._themeList
 
-        for item in self._iconPath.iterdir():
-            if item.is_file() and item.suffix == ".icons":
-                if name := _loadIconName(item):
-                    self._themeList.append((item.stem, name))
+        themes = []
+        for key, path in self._availThemes.items():
+            logger.debug("Checking icon theme '%s'", key)
+            if name := _loadIconName(path):
+                themes.append((key, name))
 
-        self._themeList = sorted(self._themeList, key=_sortTheme)
+        self._themeList = sorted(themes, key=_sortTheme)
 
         return self._themeList
 
@@ -829,9 +830,9 @@ class GuiIcons:
         """
         # If we just want the app icons, return right away
         if name == "novelwriter":
-            return QIcon(str(self._iconPath / "novelwriter.svg"))
+            return QIcon(str(CONFIG.assetPath("icons") / "novelwriter.svg"))
         elif name == "proj_nwx":
-            return QIcon(str(self._iconPath / "x-novelwriter-project.svg"))
+            return QIcon(str(CONFIG.assetPath("icons") / "x-novelwriter-project.svg"))
 
         if svg := self._svgData.get(name, b""):
             if fill := self._svgColours.get(color or "default"):
@@ -867,6 +868,14 @@ class GuiIcons:
 # Module Functions
 # ================
 
+def _listConf(target: dict, path: Path, extension: str) -> None:
+    """Scan for theme files and populate the dictionary."""
+    if path.is_dir():
+        for item in path.iterdir():
+            if item.is_file() and item.name.endswith(extension):
+                target[item.stem] = item
+    return
+
 
 def _sortTheme(data: tuple[str, str]) -> str:
     """Key function for theme sorting."""
@@ -874,17 +883,16 @@ def _sortTheme(data: tuple[str, str]) -> str:
     return f"*{name}" if key.startswith("default_") else name
 
 
-def _loadInternalName(confParser: NWConfigParser, confFile: str | Path) -> str:
+def _loadInternalName(parser: NWConfigParser, path: str | Path) -> str:
     """Open a conf file and read the 'name' setting."""
     try:
-        with open(confFile, mode="r", encoding="utf-8") as inFile:
-            confParser.read_file(inFile)
+        with open(path, mode="r", encoding="utf-8") as inFile:
+            parser.read_file(inFile)
+        return parser.rdStr("Main", "name", "")
     except Exception:
-        logger.error("Could not load file: %s", confFile)
+        logger.error("Could not read file: %s", path)
         logException()
-        return ""
-
-    return confParser.rdStr("Main", "name", "")
+    return ""
 
 
 def _loadIconName(path: Path) -> str:
@@ -896,7 +904,6 @@ def _loadIconName(path: Path) -> str:
                 if key.strip() == "meta:name":
                     return value.strip()
     except Exception:
-        logger.error("Could not load file: %s", path)
+        logger.error("Could not read file: %s", path)
         logException()
-
     return ""
