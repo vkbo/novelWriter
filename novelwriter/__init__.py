@@ -202,14 +202,14 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             "At least Python 3.10 is required, found %s" % CONFIG.verPyString
         )
         errorCode |= 0x04
-    if CONFIG.verQtValue < 0x060000:
+    if CONFIG.verQtValue < 0x060400:
         errorData.append(
-            "At least Qt6 version 6.0 is required, found %s" % CONFIG.verQtString
+            "At least Qt6 version 6.4 is required, found %s" % CONFIG.verQtString
         )
         errorCode |= 0x08
-    if CONFIG.verPyQtValue < 0x060000:
+    if CONFIG.verPyQtValue < 0x060400:
         errorData.append(
-            "At least PyQt6 version 6.0 is required, found %s" % CONFIG.verPyQtString
+            "At least PyQt6 version 6.4 is required, found %s" % CONFIG.verPyQtString
         )
         errorCode |= 0x10
 
