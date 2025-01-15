@@ -184,13 +184,17 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
 
     # Check a few values
     assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.Window).getRgb() == (239, 239, 239, 255)
+        QPalette.ColorRole.Window
+    ).getRgb() == (239, 239, 239, 255)
     assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.WindowText).getRgb() == (0, 0, 0, 255)
+        QPalette.ColorRole.WindowText
+    ).getRgb() == (0, 0, 0, 255)
     assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.Base).getRgb() == (255, 255, 255, 255)
+        QPalette.ColorRole.Base
+    ).getRgb() == (255, 255, 255, 255)
     assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.AlternateBase).getRgb() == (239, 239, 239, 255)
+        QPalette.ColorRole.AlternateBase
+    ).getRgb() == (224, 224, 224, 255)
 
     # Load Default Dark Theme
     # =======================
@@ -298,29 +302,29 @@ def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
     assert iconCache.themeMeta.name == "Material Symbols - Rounded Medium"
 
     # Load with project colour override
-    purple = iconCache._svgColours["purple"]
-    assert iconCache._svgColours["root"] != purple
-    assert iconCache._svgColours["folder"] != purple
-    assert iconCache._svgColours["file"] != purple
-    assert iconCache._svgColours["title"] != purple
-    assert iconCache._svgColours["chapter"] != purple
-    assert iconCache._svgColours["scene"] != purple
-    assert iconCache._svgColours["note"] != purple
+    purple = iconCache._svgColors["purple"]
+    assert iconCache._svgColors["root"] != purple
+    assert iconCache._svgColors["folder"] != purple
+    assert iconCache._svgColors["file"] != purple
+    assert iconCache._svgColors["title"] != purple
+    assert iconCache._svgColors["chapter"] != purple
+    assert iconCache._svgColors["scene"] != purple
+    assert iconCache._svgColors["note"] != purple
 
     CONFIG.iconColTree = "purple"
     assert iconCache.loadTheme("material_rounded_normal") is True
-    assert iconCache._svgColours["root"] == purple
-    assert iconCache._svgColours["folder"] == purple
-    assert iconCache._svgColours["file"] == purple
-    assert iconCache._svgColours["title"] == purple
-    assert iconCache._svgColours["chapter"] == purple
-    assert iconCache._svgColours["scene"] == purple
-    assert iconCache._svgColours["note"] == purple
+    assert iconCache._svgColors["root"] == purple
+    assert iconCache._svgColors["folder"] == purple
+    assert iconCache._svgColors["file"] == purple
+    assert iconCache._svgColors["title"] == purple
+    assert iconCache._svgColors["chapter"] == purple
+    assert iconCache._svgColors["scene"] == purple
+    assert iconCache._svgColors["note"] == purple
 
     # Change some colours
     iconCache.setIconColor("root", QColor(255, 255, 255))
-    assert iconCache._svgColours["root"] != purple
-    assert iconCache._svgColours["root"] == b"#ffffff"
+    assert iconCache._svgColors["root"] != purple
+    assert iconCache._svgColors["root"] == b"#ffffff"
 
     # List Themes
     # ===========
@@ -459,31 +463,31 @@ def testGuiTheme_LoadDecorations(qtbot, monkeypatch, nwGUI):
     # ================
 
     # Invalid name should return empty pixmap
-    qPix = iconCache.loadDecoration("stuff")
+    qPix = iconCache.getDecoration("stuff")
     assert qPix.isNull() is True
 
     # Load an image
-    qPix = iconCache.loadDecoration("welcome")
+    qPix = iconCache.getDecoration("welcome")
     assert qPix.isNull() is False
 
     # Fail finding the file
     with monkeypatch.context() as mp:
         mp.setattr("pathlib.Path.is_file", lambda *a: False)
-        qPix = iconCache.loadDecoration("welcome")
+        qPix = iconCache.getDecoration("welcome")
         assert qPix.isNull() is True
 
     # Test image sizes
-    qPix = iconCache.loadDecoration("welcome", w=100, h=None)
+    qPix = iconCache.getDecoration("welcome", w=100, h=None)
     assert qPix.isNull() is False
     assert qPix.width() == 100
     assert qPix.height() > 50
 
-    qPix = iconCache.loadDecoration("welcome", w=None, h=100)
+    qPix = iconCache.getDecoration("welcome", w=None, h=100)
     assert qPix.isNull() is False
     assert qPix.width() > 100
     assert qPix.height() == 100
 
-    qPix = iconCache.loadDecoration("welcome", w=100, h=100)
+    qPix = iconCache.getDecoration("welcome", w=100, h=100)
     assert qPix.isNull() is False
     assert qPix.width() == 100
     assert qPix.height() == 100

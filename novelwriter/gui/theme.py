@@ -42,7 +42,7 @@ from novelwriter.config import DEF_GUI, DEF_ICONS, DEF_SYNTAX
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
-from novelwriter.types import QtPaintAntiAlias, QtTransparent
+from novelwriter.types import QtBlack, QtPaintAntiAlias, QtTransparent
 
 logger = logging.getLogger(__name__)
 
@@ -94,20 +94,17 @@ class GuiTheme:
 
     __slots__ = (
         # Attributes
-        "iconCache", "themeMeta", "isDarkTheme", "statNone", "statUnsaved",
-        "statSaved", "helpText", "fadedText", "errorText", "syntaxMeta",
-        "syntaxTheme", "guiFont", "guiFontB", "guiFontBU", "guiFontSmall",
-        "fontPointSize", "fontPixelSize", "baseIconHeight", "baseButtonHeight",
-        "textNHeight", "textNWidth", "baseIconSize", "buttonIconSize",
-        "guiFontFixed",
+        "iconCache", "themeMeta", "isDarkTheme", "helpText", "fadedText", "errorText",
+        "syntaxMeta", "syntaxTheme", "guiFont", "guiFontB", "guiFontBU", "guiFontSmall",
+        "fontPointSize", "fontPixelSize", "baseIconHeight", "baseButtonHeight", "textNHeight",
+        "textNWidth", "baseIconSize", "buttonIconSize", "guiFontFixed",
 
         # Functions
-        "getIcon", "getPixmap", "getItemIcon", "getToggleIcon",
-        "loadDecoration", "getHeaderDecoration", "getHeaderDecorationNarrow",
+        "getIcon", "getPixmap", "getItemIcon", "getIconColor", "getToggleIcon", "getDecoration",
+        "getHeaderDecoration", "getHeaderDecorationNarrow",
 
         # Internal
-        "_guiPalette", "_themeList", "_syntaxList", "_availThemes",
-        "_availSyntax", "_styleSheets",
+        "_guiPalette", "_themeList", "_syntaxList", "_availThemes", "_availSyntax", "_styleSheets",
     )
 
     def __init__(self) -> None:
@@ -118,12 +115,10 @@ class GuiTheme:
         self.themeMeta   = ThemeMeta()
         self.isDarkTheme = False
 
-        self.statNone    = QColor(0, 0, 0)
-        self.statUnsaved = QColor(0, 0, 0)
-        self.statSaved   = QColor(0, 0, 0)
-        self.helpText    = QColor(0, 0, 0)
-        self.fadedText   = QColor(0, 0, 0)
-        self.errorText   = QColor(255, 0, 0)
+        # Special Text Colours
+        self.helpText  = QColor(0, 0, 0)
+        self.fadedText = QColor(0, 0, 0)
+        self.errorText = QColor(255, 0, 0)
 
         # Syntax Theme
         self.syntaxMeta = ThemeMeta()
@@ -149,8 +144,9 @@ class GuiTheme:
         self.getIcon = self.iconCache.getIcon
         self.getPixmap = self.iconCache.getPixmap
         self.getItemIcon = self.iconCache.getItemIcon
+        self.getIconColor = self.iconCache.getIconColor
         self.getToggleIcon = self.iconCache.getToggleIcon
-        self.loadDecoration = self.iconCache.loadDecoration
+        self.getDecoration = self.iconCache.getDecoration
         self.getHeaderDecoration = self.iconCache.getHeaderDecoration
         self.getHeaderDecorationNarrow = self.iconCache.getHeaderDecorationNarrow
 
@@ -296,12 +292,9 @@ class GuiTheme:
         # GUI
         sec = "GUI"
         if parser.has_section(sec):
-            self.helpText    = self._parseColour(parser, sec, "helptext")
-            self.fadedText   = self._parseColour(parser, sec, "fadedtext")
-            self.errorText   = self._parseColour(parser, sec, "errortext")
-            self.statNone    = self._parseColour(parser, sec, "statusnone")
-            self.statUnsaved = self._parseColour(parser, sec, "statusunsaved")
-            self.statSaved   = self._parseColour(parser, sec, "statussaved")
+            self.helpText  = self._parseColour(parser, sec, "helptext")
+            self.fadedText = self._parseColour(parser, sec, "fadedtext")
+            self.errorText = self._parseColour(parser, sec, "errortext")
 
         # Update Dependant Colours
         # Based on: https://github.com/qt/qtbase/blob/dev/src/gui/kernel/qplatformtheme.cpp
@@ -483,7 +476,6 @@ class GuiTheme:
         # Reset GUI Palette
         faded   = QColor(128, 128, 128)
         dimmed  = QColor(130, 130, 130) if isDark else QColor(190, 190, 190)
-        grey    = QColor(120, 120, 120) if isDark else QColor(140, 140, 140)
         red     = QColor(242, 119, 122) if isDark else QColor(240, 40, 41)
         orange  = QColor(249, 145,  57) if isDark else QColor(245, 135, 31)
         yellow  = QColor(255, 204, 102) if isDark else QColor(234, 183, 0)
@@ -492,12 +484,10 @@ class GuiTheme:
         blue    = QColor(102, 153, 204) if isDark else QColor(66, 113, 174)
         purple  = QColor(204, 153, 204) if isDark else QColor(137, 89, 168)
 
-        self.statNone    = grey
-        self.statUnsaved = red
-        self.statSaved   = green
-        self.helpText    = dimmed
-        self.fadedText   = faded
-        self.errorText   = red
+        # Text Colours
+        self.helpText  = dimmed
+        self.fadedText = faded
+        self.errorText = red
 
         self._guiPalette = palette
 
@@ -575,9 +565,9 @@ class GuiIcons:
     """
 
     __slots__ = (
-        "mainTheme", "themeMeta", "_svgData", "_svgColours", "_qIcons",
-        "_headerDec", "_headerDecNarrow", "_availThemes", "_themeList",
-        "_noIcon",
+        "mainTheme", "themeMeta", "_svgData", "_svgColors", "_qColors",
+        "_qIcons", "_headerDec", "_headerDecNarrow", "_availThemes",
+        "_themeList", "_noIcon",
     )
 
     TOGGLE_ICON_KEYS: dict[str, tuple[str, str]] = {
@@ -596,7 +586,8 @@ class GuiIcons:
 
         # Storage
         self._svgData: dict[str, bytes] = {}
-        self._svgColours: dict[str, bytes] = {}
+        self._svgColors: dict[str, bytes] = {}
+        self._qColors: dict[str, QColor] = {}
         self._qIcons: dict[str, QIcon] = {}
         self._headerDec: list[QPixmap] = []
         self._headerDecNarrow: list[QPixmap] = []
@@ -616,7 +607,8 @@ class GuiIcons:
     def clear(self) -> None:
         """Clear the icon cache."""
         self._svgData = {}
-        self._svgColours = {}
+        self._svgColors = {}
+        self._qColors = {}
         self._qIcons = {}
         self._headerDec = []
         self._headerDecNarrow = []
@@ -666,52 +658,31 @@ class GuiIcons:
 
         # Set colour overrides for project item icons
         if (override := CONFIG.iconColTree) != "theme":
-            color = self._svgColours.get(override, b"#000000")
-            self._svgColours["root"] = color
-            self._svgColours["folder"] = color
+            color = self._svgColors.get(override, b"#000000")
+            self._svgColors["root"] = color
+            self._svgColors["folder"] = color
             if not CONFIG.iconColDocs:
-                self._svgColours["file"] = color
-                self._svgColours["title"] = color
-                self._svgColours["chapter"] = color
-                self._svgColours["scene"] = color
-                self._svgColours["note"] = color
+                self._svgColors["file"] = color
+                self._svgColors["title"] = color
+                self._svgColors["chapter"] = color
+                self._svgColors["scene"] = color
+                self._svgColors["note"] = color
 
         return True
 
     def setIconColor(self, key: str, color: QColor) -> None:
         """Set an icon colour for a named colour."""
-        self._svgColours[key] = color.name(QColor.NameFormat.HexRgb).encode("utf-8")
+        self._qColors[key] = QColor(color)
+        self._svgColors[key] = color.name(QColor.NameFormat.HexRgb).encode("utf-8")
         return
 
     ##
     #  Access Functions
     ##
 
-    def loadDecoration(self, name: str, w: int | None = None, h: int | None = None) -> QPixmap:
-        """Load graphical decoration element based on the decoration
-        map or the icon map. This function always returns a QPixmap.
-        """
-        if name in self.IMAGE_MAP:
-            idx = int(self.mainTheme.isDarkTheme)
-            imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[name][idx]
-        else:
-            logger.error("Decoration with name '%s' does not exist", name)
-            return QPixmap()
-
-        if not imgPath.is_file():
-            logger.error("Asset not found: %s", imgPath)
-            return QPixmap()
-
-        pixmap = QPixmap(str(imgPath))
-        tMode = Qt.TransformationMode.SmoothTransformation
-        if w is not None and h is not None:
-            return pixmap.scaled(w, h, Qt.AspectRatioMode.IgnoreAspectRatio, tMode)
-        elif w is None and h is not None:
-            return pixmap.scaledToHeight(h, tMode)
-        elif w is not None and h is None:
-            return pixmap.scaledToWidth(w, tMode)
-
-        return pixmap
+    def getIconColor(self, name: str) -> QColor:
+        """Return an icon color."""
+        return QColor(self._qColors.get(name) or QtBlack)
 
     def getIcon(self, name: str, color: str | None = None, w: int = 24, h: int = 24) -> QIcon:
         """Return an icon from the icon buffer, or load it."""
@@ -734,13 +705,6 @@ class GuiIcons:
             icon.addPixmap(pTwo, QIcon.Mode.Normal, QIcon.State.Off)
             return icon
         return self._noIcon
-
-    def getPixmap(self, name: str, size: tuple[int, int], color: str | None = None) -> QPixmap:
-        """Return an icon from the icon buffer as a QPixmap. If it
-        doesn't exist, return an empty QPixmap.
-        """
-        w, h = size
-        return self.getIcon(name, color, w, h).pixmap(w, h, QIcon.Mode.Normal)
 
     def getItemIcon(
         self, tType: nwItemType, tClass: nwItemClass, tLayout: nwItemLayout, hLevel: str = "H0"
@@ -777,6 +741,39 @@ class GuiIcons:
             return self._noIcon
 
         return self.getIcon(name, color)
+
+    def getPixmap(self, name: str, size: tuple[int, int], color: str | None = None) -> QPixmap:
+        """Return an icon from the icon buffer as a QPixmap. If it
+        doesn't exist, return an empty QPixmap.
+        """
+        w, h = size
+        return self.getIcon(name, color, w, h).pixmap(w, h, QIcon.Mode.Normal)
+
+    def getDecoration(self, name: str, w: int | None = None, h: int | None = None) -> QPixmap:
+        """Load graphical decoration element based on the decoration
+        map or the icon map. This function always returns a QPixmap.
+        """
+        if name in self.IMAGE_MAP:
+            idx = int(self.mainTheme.isDarkTheme)
+            imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[name][idx]
+        else:
+            logger.error("Decoration with name '%s' does not exist", name)
+            return QPixmap()
+
+        if not imgPath.is_file():
+            logger.error("Asset not found: %s", imgPath)
+            return QPixmap()
+
+        pixmap = QPixmap(str(imgPath))
+        tMode = Qt.TransformationMode.SmoothTransformation
+        if w is not None and h is not None:
+            return pixmap.scaled(w, h, Qt.AspectRatioMode.IgnoreAspectRatio, tMode)
+        elif w is None and h is not None:
+            return pixmap.scaledToHeight(h, tMode)
+        elif w is not None and h is None:
+            return pixmap.scaledToWidth(w, tMode)
+
+        return pixmap
 
     def getHeaderDecoration(self, hLevel: int) -> QPixmap:
         """Get the decoration for a specific heading level."""
@@ -835,7 +832,7 @@ class GuiIcons:
             return QIcon(str(CONFIG.assetPath("icons") / "x-novelwriter-project.svg"))
 
         if svg := self._svgData.get(name, b""):
-            if fill := self._svgColours.get(color or "default"):
+            if fill := self._svgColors.get(color or "default"):
                 svg = svg.replace(b"#000000", fill)
             pixmap = QPixmap(w, h)
             pixmap.fill(QtTransparent)
@@ -857,7 +854,7 @@ class GuiIcons:
 
         painter = QPainter(pixmap)
         painter.setRenderHint(QtPaintAntiAlias)
-        if fill := self._svgColours.get(color or "default"):
+        if fill := self._svgColors.get(color or "default"):
             painter.fillPath(path, QColor(fill.decode(encoding="utf-8")))
         painter.end()
 
