@@ -1509,6 +1509,12 @@ if __name__ == "__main__":
     )
     cmdBuildSetupExe.set_defaults(func=makeWindowsEmbedded)
 
+    # Build Binary
+    cmdBuildBinary = parsers.add_parser(
+        "build-bin", help="Build a standalone binary package."
+    )
+    cmdBuildBinary.set_defaults(func=utils.binary_dist.main)
+
     # Build Clean
     cmdBuildClean = parsers.add_parser(
         "build-clean", help="Recursively delete all build folders."

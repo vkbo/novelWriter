@@ -1,6 +1,7 @@
 # Setup/Install
 /MANIFEST
 /build/
+/build_*/
 /deploy/
 /dist/
 /dist_*/
