@@ -35,34 +35,24 @@ import zipfile
 
 from pathlib import Path
 
+import utils.build_appimage
 import utils.build_binary
 import utils.build_debian
 import utils.build_windows
 import utils.icon_themes
 
-from utils.common import (
-    ROOT_DIR, SETUP_DIR, copySourceCode, extractVersion, makeCheckSum,
-    readFile, stripVersion, toUpload, writeFile
-)
+from utils.common import ROOT_DIR, SETUP_DIR, extractVersion, readFile, stripVersion, writeFile
 
 OS_LINUX = sys.platform.startswith("linux")
 OS_DARWIN = sys.platform.startswith("darwin")
 OS_WIN = sys.platform.startswith("win32")
 
 
-##
-#  Print Version
-##
-
 def printVersion(args: argparse.Namespace) -> None:
     """Print the novelWriter version and exit."""
     print(extractVersion(beQuiet=True)[0], end=None)
     return
 
-
-##
-# Package Installer (pip)
-##
 
 def installPackages(args: argparse.Namespace) -> None:
     """Install package dependencies both for this script and for running
@@ -92,10 +82,6 @@ def installPackages(args: argparse.Namespace) -> None:
 
     return
 
-
-##
-#  Clean Build and Dist Folders (build-clean)
-##
 
 def cleanBuildDirs(args: argparse.Namespace) -> None:
     """Recursively delete the 'build' and 'dist' folders."""
@@ -416,178 +402,6 @@ def buildAllAssets(args: argparse.Namespace) -> None:
 # =============================================================================================== #
 
 ##
-#  Copy Package Files
-##
-
-def copyPackageFiles(dst: Path, setupPy: bool = False) -> None:
-    """Copy files needed for packaging."""
-
-    copyFiles = ["LICENSE.md", "CREDITS.md", "pyproject.toml"]
-    for copyFile in copyFiles:
-        shutil.copyfile(copyFile, dst / copyFile)
-        print("Copied: %s" % copyFile)
-
-    writeFile(dst / "MANIFEST.in", (
-        "include LICENSE.md\n"
-        "include CREDITS.md\n"
-        "recursive-include novelwriter/assets *\n"
-    ))
-    print("Wrote:  MANIFEST.in")
-
-    if setupPy:
-        writeFile(dst / "setup.py", (
-            "import setuptools\n"
-            "setuptools.setup()\n"
-        ))
-        print("Wrote:  setup.py")
-
-    text = readFile(ROOT_DIR / "pyproject.toml")
-    text = text.replace("setup/description_pypi.md", "data/description_short.txt")
-    writeFile(dst / "pyproject.toml", text)
-    print("Wrote:  pyproject.toml")
-
-    return
-
-
-##
-#  Build AppImage (build-appimage)
-##
-
-def buildAppImage(args: argparse.Namespace) -> None:
-    """Build an AppImage."""
-    try:
-        import python_appimage  # noqa: F401 # type: ignore
-    except ImportError:
-        print(
-            "ERROR: Package 'python-appimage' is missing on this system.\n"
-            "       Please run 'pip install --user python-appimage' to install it.\n"
-        )
-        sys.exit(1)
-
-    if not OS_LINUX:
-        print("ERROR: Command 'build-ubuntu' can only be used on Linux")
-        sys.exit(1)
-
-    print("")
-    print("Build AppImage")
-    print("==============")
-    print("")
-
-    linuxTag = args.linux_tag
-    pythonVer = args.python_version
-
-    # Version Info
-    # ============
-
-    pkgVers, _, relDate = extractVersion()
-    relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
-    print("")
-
-    # Set Up Folder
-    # =============
-
-    bldDir = ROOT_DIR / "dist_appimage"
-    bldPkg = f"novelwriter_{pkgVers}"
-    outDir = bldDir / bldPkg
-    imgDir = bldDir / "appimage"
-
-    # Set Up Folders
-    # ==============
-
-    bldDir.mkdir(exist_ok=True)
-
-    if outDir.exists():
-        print("Removing old build files ...")
-        print("")
-        shutil.rmtree(outDir)
-
-    outDir.mkdir()
-
-    if imgDir.exists():
-        print("Removing old build metadata files ...")
-        print("")
-        shutil.rmtree(imgDir)
-
-    imgDir.mkdir()
-
-    # Remove old AppImages
-    if images := bldDir.glob("*.AppImage"):
-        print("Removing old AppImages")
-        print("")
-        for image in images:
-            image.unlink()
-
-    # Copy novelWriter Source
-    # =======================
-
-    print("Copying novelWriter source ...")
-    print("")
-
-    copySourceCode(outDir)
-
-    print("")
-    print("Copying or generating additional files ...")
-    print("")
-
-    copyPackageFiles(outDir)
-
-    # Write Metadata
-    # ==============
-
-    appDescription = readFile(SETUP_DIR / "description_short.txt")
-    appdataXML = readFile(SETUP_DIR / "novelwriter.appdata.xml")
-    appdataXML = appdataXML.format(description=appDescription)
-    writeFile(imgDir / "novelwriter.appdata.xml", appdataXML)
-    print("Wrote:  novelwriter.appdata.xml")
-
-    writeFile(imgDir / "entrypoint.sh", (
-        '#! /bin/bash \n'
-        '{{ python-executable }} -sE ${APPDIR}/opt/python{{ python-version }}/bin/novelwriter "$@"'
-    ))
-    print("Wrote:  entrypoint.sh")
-
-    writeFile(imgDir / "requirements.txt", str(outDir))
-    print("Wrote:  requirements.txt")
-
-    shutil.copyfile(SETUP_DIR / "data" / "novelwriter.desktop", imgDir / "novelwriter.desktop")
-    print("Copied: novelwriter.desktop")
-
-    shutil.copyfile(SETUP_DIR / "icons" / "novelwriter.svg", imgDir / "novelwriter.svg")
-    print("Copied: novelwriter.svg")
-
-    shutil.copyfile(
-        SETUP_DIR / "data" / "hicolor" / "256x256" / "apps" / "novelwriter.png",
-        imgDir / "novelwriter.png"
-    )
-    print("Copied: novelwriter.png")
-
-    # Build AppImage
-    # ==============
-
-    try:
-        subprocess.call([
-            sys.executable, "-m", "python_appimage", "build", "app",
-            "-l", linuxTag, "-p", pythonVer, "appimage"
-        ], cwd=bldDir)
-    except Exception as exc:
-        print("AppImage build: FAILED")
-        print("")
-        print(str(exc))
-        print("")
-        sys.exit(1)
-
-    bldFile = list(bldDir.glob("*.AppImage"))[0]
-    outFile = bldDir / f"novelWriter-{pkgVers}.AppImage"
-    bldFile.rename(outFile)
-    shaFile = makeCheckSum(outFile.name, cwd=bldDir)
-
-    toUpload(outFile)
-    toUpload(shaFile)
-
-    return
-
-
-##
 #  Generate MacOS PList
 ##
 
@@ -752,7 +566,7 @@ if __name__ == "__main__":
     cmdBuildAppImage.add_argument(
         "--python-version", default="3.11", help="Python version (e.g. 3.11)"
     )
-    cmdBuildAppImage.set_defaults(func=buildAppImage)
+    cmdBuildAppImage.set_defaults(func=utils.build_appimage.main)
 
     # Build Windows Inno Setup Installer
     cmdBuildSetupExe = parsers.add_parser(

@@ -27,10 +27,9 @@ import shutil
 import subprocess
 import sys
 
-from pkgutils import copyPackageFiles
 from utils.common import (
-    ROOT_DIR, SETUP_DIR, checkAssetsExist, copySourceCode, extractVersion,
-    makeCheckSum, toUpload
+    ROOT_DIR, SETUP_DIR, checkAssetsExist, copyPackageFiles, copySourceCode,
+    extractVersion, makeCheckSum, toUpload
 )
 
 from tests.tools import writeFile

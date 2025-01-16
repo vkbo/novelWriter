@@ -90,6 +90,35 @@ def copySourceCode(dst: Path) -> None:
     return
 
 
+def copyPackageFiles(dst: Path, setupPy: bool = False) -> None:
+    """Copy files needed for packaging."""
+    copyFiles = ["LICENSE.md", "CREDITS.md", "pyproject.toml"]
+    for copyFile in copyFiles:
+        shutil.copyfile(copyFile, dst / copyFile)
+        print("Copied: %s" % copyFile)
+
+    writeFile(dst / "MANIFEST.in", (
+        "include LICENSE.md\n"
+        "include CREDITS.md\n"
+        "recursive-include novelwriter/assets *\n"
+    ))
+    print("Wrote:  MANIFEST.in")
+
+    if setupPy:
+        writeFile(dst / "setup.py", (
+            "import setuptools\n"
+            "setuptools.setup()\n"
+        ))
+        print("Wrote:  setup.py")
+
+    text = readFile(ROOT_DIR / "pyproject.toml")
+    text = text.replace("setup/description_pypi.md", "data/description_short.txt")
+    writeFile(dst / "pyproject.toml", text)
+    print("Wrote:  pyproject.toml")
+
+    return
+
+
 def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
     """Copy a file produced by one of the build functions to the upload
     directory. The file can optionally be given a new name.
