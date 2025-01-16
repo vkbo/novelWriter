@@ -109,7 +109,7 @@ class Config:
 
         self._appPath = Path(__file__).parent.absolute()
         self._appRoot = self._appPath.parent
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False):  # pragma: no cover
             # novelWriter is packaged as an exe
             self._appPath = Path(__file__).parent.parent.absolute()
             self._appRoot = self._appPath
