@@ -534,7 +534,7 @@ class Config:
         self._dShortDateTime = self._dLocale.dateTimeFormat(QLocale.FormatType.ShortFormat)
 
         langList = [
-            (self._qtLangPath, "qtbase"),   # Qt 5.x
+            (self._qtLangPath, "qtbase"),   # Qt
             (str(self._nwLangPath), "nw"),  # novelWriter
         ]
         for lngPath, lngBase in langList:

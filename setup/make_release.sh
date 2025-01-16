@@ -25,4 +25,4 @@ echo " Building Linux Packages"
 echo "================================================================================"
 echo ""
 python3 pkgutils.py build-deb --sign
-python3 pkgutils.py build-ubuntu --sign --first
+python3 pkgutils.py build-ubuntu --sign

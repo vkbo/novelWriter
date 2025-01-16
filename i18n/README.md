@@ -45,7 +45,7 @@ instance `en_GB` for British English.
 
 ## Qt GUI Localisation
 
-You will need the translation tool Qt 5 Linguist on your system.
+You will need the translation tool Qt Linguist on your system.
 
 For Ubuntu/Debian, run:
 
@@ -53,7 +53,7 @@ For Ubuntu/Debian, run:
 sudo apt install qttools5-dev-tools
 ```
 
-See also [Qt Linguist Manual: Translators](https://doc.qt.io/qt-5/linguist-translators.html).
+See also [Qt Linguist Manual: Translators](https://doc.qt.io/qt-6/linguist-translators.html).
 
 
 ### Workflow
@@ -94,7 +94,7 @@ TS file format. On Debian/Ubuntu it is provided by the package `pyqt6-dev-tools`
 
 ### Edit the Translation File in Qt Linguist
 
-The `i18n/nw_XX.ts` file can be edited with the Qt Linguist application provided by Qt 5. This is
+The `i18n/nw_XX.ts` file can be edited with the Qt Linguist application provided by Qt. This is
 by far easier than manually editing the `.ts` file.
 
 Please select "English" and "United Kingdom" as the _source_ language if prompted by Qt Linguist.

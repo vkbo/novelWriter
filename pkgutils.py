@@ -633,7 +633,7 @@ def copySourceCode(dst: Path) -> None:
 #  Copy Package Files
 ##
 
-def copyPackageFiles(dst: Path, setupPy: bool = False, useCfg: bool = False) -> None:
+def copyPackageFiles(dst: Path, setupPy: bool = False) -> None:
     """Copy files needed for packaging."""
 
     copyFiles = ["LICENSE.md", "CREDITS.md", "pyproject.toml"]
@@ -655,24 +655,10 @@ def copyPackageFiles(dst: Path, setupPy: bool = False, useCfg: bool = False) -> 
         ))
         print("Wrote:  setup.py")
 
-    if useCfg:
-        # This is needed for Ubuntu up to 22.04
-        text = readFile(SETUP_DIR / "launchpad_setup.cfg")
-        text = text.replace("setup/description_pypi.md", "data/description_short.txt")
-        writeFile(dst / "setup.cfg", text)
-        print("Wrote:  setup.cfg")
-
-        writeFile(dst / "pyproject.toml", (
-            "[build-system]\n"
-            "requires = [\"setuptools\"]\n"
-            "build-backend = \"setuptools.build_meta\"\n"
-        ))
-        print("Wrote:  pyproject.toml")
-    else:
-        text = readFile(CURR_DIR / "pyproject.toml")
-        text = text.replace("setup/description_pypi.md", "data/description_short.txt")
-        writeFile(dst / "pyproject.toml", text)
-        print("Wrote:  pyproject.toml")
+    text = readFile(CURR_DIR / "pyproject.toml")
+    text = text.replace("setup/description_pypi.md", "data/description_short.txt")
+    writeFile(dst / "pyproject.toml", text)
+    print("Wrote:  pyproject.toml")
 
     return
 
@@ -683,7 +669,7 @@ def copyPackageFiles(dst: Path, setupPy: bool = False, useCfg: bool = False) -> 
 
 def makeDebianPackage(
     signKey: str | None = None, sourceBuild: bool = False, distName: str = "unstable",
-    buildName: str = "", oldSetuptools: bool = False, forLaunchpad: bool = False
+    buildName: str = "", forLaunchpad: bool = False
 ) -> str:
     """Build a Debian package."""
     print("")
@@ -743,7 +729,7 @@ def makeDebianPackage(
     print("Copying or generating additional files ...")
     print("")
 
-    copyPackageFiles(outDir, setupPy=True, useCfg=oldSetuptools)
+    copyPackageFiles(outDir, setupPy=True)
 
     # Copy/Write Debian Files
     # =======================
@@ -830,22 +816,20 @@ def buildForLaunchpad(args: argparse.Namespace) -> None:
     print("==================")
     print("")
 
-    if args.first:
-        bldNum = "0"
+    if args.build:
+        bldNum = str(args.build)
     else:
-        bldNum = input("Build number [0]: ")
-        if bldNum == "":
-            bldNum = "0"
+        bldNum = "0"
 
     distLoop = [
-        ("22.04", "jammy", True),
-        ("24.04", "noble", False),
-        ("24.10", "oracular", False),
+        ("24.04", "noble"),
+        ("24.10", "oracular"),
+        ("25.04", "plucky"),
     ]
 
     print("Building Ubuntu packages for:")
     print("")
-    for distNum, codeName, _ in distLoop:
+    for distNum, codeName in distLoop:
         print(f" * Ubuntu {distNum} {codeName.title()}")
     print("")
 
@@ -855,14 +839,13 @@ def buildForLaunchpad(args: argparse.Namespace) -> None:
     print("")
 
     dputCmd = []
-    for distNum, codeName, oldSetup in distLoop:
+    for distNum, codeName in distLoop:
         buildName = f"ubuntu{distNum}.{bldNum}"
         dCmd = makeDebianPackage(
             signKey=signKey,
             sourceBuild=True,
             distName=codeName,
             buildName=buildName,
-            oldSetuptools=oldSetup,
             forLaunchpad=True,
         )
         dputCmd.append(dCmd)
@@ -1579,7 +1562,7 @@ if __name__ == "__main__":
         )
     )
     cmdBuildUbuntu.add_argument("--sign", action="store_true", help="Sign the package.")
-    cmdBuildUbuntu.add_argument("--first", action="store_true", help="Set build number to 0.")
+    cmdBuildUbuntu.add_argument("--build", type=int, help="Set build number.")
     cmdBuildUbuntu.set_defaults(func=buildForLaunchpad)
 
     # Build AppImage

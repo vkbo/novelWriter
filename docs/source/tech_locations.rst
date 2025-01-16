@@ -4,7 +4,7 @@
 File Locations
 **************
 
-.. _QStandardPaths: https://doc.qt.io/qt-5/qstandardpaths.html
+.. _QStandardPaths: https://doc.qt.io/qt-6/qstandardpaths.html
 
 novelWriter will create a few files on your system outside of the application folder itself. These
 file locations are described in this chapter.
