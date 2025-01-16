@@ -20,11 +20,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import subprocess
+import sys
 
 from pathlib import Path
 from xml.etree import ElementTree as ET
+
+from utils.common import ROOT_DIR
 
 UTILS = Path(__file__).parent
 ET.register_namespace("", "http://www.w3.org/2000/svg")
@@ -140,7 +144,7 @@ ICONS = [
 
 def _loadMap(name: str) -> dict[str, str]:
     """Load a theme map file."""
-    data = json.loads((UTILS / f"{name}.json").read_text(encoding="utf-8"))
+    data = json.loads((UTILS / "icon_themes" / f"{name}.json").read_text(encoding="utf-8"))
     icons = {}
     for key in ICONS:
         if icon := data.get(key, ""):
@@ -308,6 +312,86 @@ def processRemix(workDir: Path, iconsDir: Path, jobs: dict) -> None:
         target = iconsDir / f"{file}.icons"
         _writeThemeFile(target, name, "Remix Icon", "Apache 2.0", icons)
 
+    print("")
+
+    return
+
+
+def main(args: argparse.Namespace) -> None:
+    """Build icon themes entry point."""
+    print("")
+    print("Build Icon Themes")
+    print("=================")
+    print("")
+
+    workDir = Path(args.sources).absolute()
+    if not workDir.is_dir():
+        print(f"Source directory not found: {workDir}")
+        sys.exit(1)
+
+    iconsDir = ROOT_DIR / "novelwriter" / "assets" / "icons"
+
+    style = args.style
+    if style in ("all", "material"):
+        processMaterialIcons(workDir, iconsDir, {
+            "material_rounded_thin": {
+                "name": "Material Symbols - Rounded Thin",
+                "style": "rounded",
+                "filled": False,
+                "weight": 200,
+            },
+            "material_rounded_normal": {
+                "name": "Material Symbols - Rounded Medium",
+                "style": "rounded",
+                "filled": False,
+                "weight": 400,
+            },
+            "material_rounded_bold": {
+                "name": "Material Symbols - Rounded Bold",
+                "style": "rounded",
+                "filled": False,
+                "weight": 600,
+            },
+            "material_filled_thin": {
+                "name": "Material Symbols - Filled Thin",
+                "style": "rounded",
+                "filled": True,
+                "weight": 200,
+            },
+            "material_filled_normal": {
+                "name": "Material Symbols - Filled Medium",
+                "style": "rounded",
+                "filled": True,
+                "weight": 400,
+            },
+            "material_filled_bold": {
+                "name": "Material Symbols - Filled Bold",
+                "style": "rounded",
+                "filled": True,
+                "weight": 600,
+            },
+        })
+
+    if style in ("all", "fa"):
+        processFontAwesome(workDir, iconsDir, {
+            "font_awesome": {
+                "name": "Font Awesome 6",
+            },
+        })
+
+    if style in ("all", "remix"):
+        processRemix(workDir, iconsDir, {
+            "remix_outline": {
+                "name": "Remix Icon - Outline",
+                "filled": False,
+            },
+            "remix_filled": {
+                "name": "Remix Icon - Filled",
+                "filled": True,
+            },
+        })
+
+    print("Done")
     print("")
 
     return

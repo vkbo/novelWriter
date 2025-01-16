@@ -3,7 +3,7 @@
 # Meta
 meta:name    = Font Awesome 6
 meta:author  = Fonticons Inc
-meta:license = Font Awesome Free License
+meta:license = CC BY 4.0
 
 # Icons
 icon:alert_error     = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#000000" height="128" width="128"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" /></svg>

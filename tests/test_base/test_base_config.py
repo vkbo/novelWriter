@@ -84,12 +84,6 @@ def testBaseConfig_Constructor(monkeypatch):
         assert tstConf.osWindows is False
         assert tstConf.osUnknown is True
 
-    # App is single file
-    with monkeypatch.context() as mp:
-        mp.setattr("pathlib.Path.is_file", lambda *a: True)
-        tstConf = Config()
-        assert tstConf._appPath == tstConf._appRoot
-
 
 @pytest.mark.base
 def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):

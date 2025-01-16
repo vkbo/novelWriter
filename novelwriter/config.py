@@ -109,10 +109,10 @@ class Config:
 
         self._appPath = Path(__file__).parent.absolute()
         self._appRoot = self._appPath.parent
-        if self._appRoot.is_file():
-            # novelWriter is packaged as a single file
-            self._appRoot = self._appRoot.parent
-            self._appPath = self._appRoot
+        if getattr(sys, "frozen", False):  # pragma: no cover
+            # novelWriter is packaged as an exe
+            self._appPath = Path(__file__).parent.parent.absolute()
+            self._appRoot = self._appPath
 
         # Runtime Settings and Variables
         self._hasError = False  # True if the config class encountered an error
