@@ -35,10 +35,10 @@ import zipfile
 
 from pathlib import Path
 
-import utils.binary_dist
-import utils.debian_build
+import utils.build_binary
+import utils.build_debian
+import utils.build_windows
 import utils.icon_themes
-import utils.windows_build
 
 from utils.common import (
     ROOT_DIR, SETUP_DIR, copySourceCode, extractVersion, makeCheckSum,
@@ -719,7 +719,7 @@ if __name__ == "__main__":
         )
     )
     cmdBuildDeb.add_argument("--sign", action="store_true", help="Sign the package.")
-    cmdBuildDeb.set_defaults(func=utils.debian_build.mainDebian)
+    cmdBuildDeb.set_defaults(func=utils.build_debian.mainDebian)
 
     # Build Ubuntu Packages
     cmdBuildUbuntu = parsers.add_parser(
@@ -731,7 +731,7 @@ if __name__ == "__main__":
     )
     cmdBuildUbuntu.add_argument("--sign", action="store_true", help="Sign the package.")
     cmdBuildUbuntu.add_argument("--build", type=int, help="Set build number.")
-    cmdBuildUbuntu.set_defaults(func=utils.debian_build.mainLaunchpad)
+    cmdBuildUbuntu.set_defaults(func=utils.build_debian.mainLaunchpad)
 
     # Build AppImage
     cmdBuildAppImage = parsers.add_parser(
@@ -758,13 +758,13 @@ if __name__ == "__main__":
     cmdBuildSetupExe = parsers.add_parser(
         "build-win-exe", help="Build a setup.exe file with Python embedded for Windows."
     )
-    cmdBuildSetupExe.set_defaults(func=utils.windows_build.main)
+    cmdBuildSetupExe.set_defaults(func=utils.build_windows.main)
 
     # Build Binary
     cmdBuildBinary = parsers.add_parser(
         "build-bin", help="Build a standalone binary package."
     )
-    cmdBuildBinary.set_defaults(func=utils.binary_dist.main)
+    cmdBuildBinary.set_defaults(func=utils.build_binary.main)
 
     # Build Clean
     cmdBuildClean = parsers.add_parser(
