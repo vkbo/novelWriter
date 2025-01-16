@@ -6,6 +6,7 @@ novelWriter – Packaging Utils
 File History:
 Created: 2019-05-16 [0.5.1]
 Renamed: 2023-07-26 [2.1b1]
+Split:   2025-01-16 [2.7b1]
 
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
@@ -39,7 +40,10 @@ import utils.binary_dist
 import utils.icon_themes
 import utils.windows_build
 
-from utils.common import ROOT_DIR, SETUP_DIR, copySourceCode, extractVersion, readFile, writeFile
+from utils.common import (
+    ROOT_DIR, SETUP_DIR, checkAssetsExist, copySourceCode, extractVersion,
+    makeCheckSum, readFile, stripVersion, toUpload, writeFile
+)
 
 SIGN_KEY = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
 
@@ -47,79 +51,6 @@ OS_LINUX = sys.platform.startswith("linux")
 OS_DARWIN = sys.platform.startswith("darwin")
 OS_WIN = sys.platform.startswith("win32")
 
-
-# =============================================================================================== #
-#  Utilities
-# =============================================================================================== #
-
-def stripVersion(version: str) -> str:
-    """Strip the pre-release part from a version number."""
-    if "a" in version:
-        return version.partition("a")[0]
-    elif "b" in version:
-        return version.partition("b")[0]
-    elif "rc" in version:
-        return version.partition("rc")[0]
-    else:
-        return version
-
-
-def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
-    """Copy a file produced by one of the build functions to the upload
-    directory. The file can optionally be given a new name.
-    """
-    uplDir = Path("dist_upload")
-    uplDir.mkdir(exist_ok=True)
-    srcPath = Path(srcPath)
-    shutil.copyfile(srcPath, uplDir / (dstName or srcPath.name))
-    return
-
-
-def makeCheckSum(sumFile: str, cwd: Path | None = None) -> str:
-    """Create a SHA256 checksum file."""
-    try:
-        if cwd is None:
-            shaFile = f"{sumFile}.sha256"
-        else:
-            shaFile = cwd / f"{sumFile}.sha256"
-        with open(shaFile, mode="w") as fOut:
-            subprocess.call(["shasum", "-a", "256", sumFile], stdout=fOut, cwd=cwd)
-        print(f"SHA256 Sum: {shaFile}")
-    except Exception as exc:
-        print("Could not generate sha256 file")
-        print(str(exc))
-        return ""
-
-    return str(shaFile)
-
-
-def checkAssetsExist() -> bool:
-    """Check that the necessary assets exist ahead of a build."""
-    hasSample = False
-    hasManual = False
-    hasQmData = False
-
-    sampleZip = ROOT_DIR / "novelwriter" / "assets" / "sample.zip"
-    if sampleZip.is_file():
-        print(f"Found: {sampleZip}")
-        hasSample = True
-
-    pdfManual = ROOT_DIR / "novelwriter" / "assets" / "manual.pdf"
-    if pdfManual.is_file():
-        print(f"Found: {pdfManual}")
-        hasManual = True
-
-    i18nAssets = ROOT_DIR / "novelwriter" / "assets" / "i18n"
-    if len(list(i18nAssets.glob("*.qm"))) > 0:
-        print(f"Found: {i18nAssets}/*.qm")
-        hasQmData = True
-
-    return hasSample and hasManual and hasQmData
-
-
-# =============================================================================================== #
-#  General
-# =============================================================================================== #
 
 ##
 #  Print Version
@@ -176,7 +107,9 @@ def cleanBuildDirs(args: argparse.Namespace) -> None:
 
     folders = [
         ROOT_DIR / "build",
+        ROOT_DIR / "build_bin",
         ROOT_DIR / "dist",
+        ROOT_DIR / "dist_bin",
         ROOT_DIR / "dist_deb",
         ROOT_DIR / "dist_minimal",
         ROOT_DIR / "dist_appimage",

@@ -21,6 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import shutil
+import subprocess
 
 from pathlib import Path
 
@@ -39,7 +40,7 @@ def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
     numVers = "0"
     hexVers = "0x0"
     relDate = "Unknown"
-    initFile = Path("novelwriter") / "__init__.py"
+    initFile = ROOT_DIR / "novelwriter" / "__init__.py"
     try:
         for aLine in initFile.read_text(encoding="utf-8").splitlines():
             if aLine.startswith("__version__"):
@@ -56,6 +57,18 @@ def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
         print("novelWriter version: %s (%s) at %s" % (numVers, hexVers, relDate))
 
     return numVers, hexVers, relDate
+
+
+def stripVersion(version: str) -> str:
+    """Strip the pre-release part from a version number."""
+    if "a" in version:
+        return version.partition("a")[0]
+    elif "b" in version:
+        return version.partition("b")[0]
+    elif "rc" in version:
+        return version.partition("rc")[0]
+    else:
+        return version
 
 
 def copySourceCode(dst: Path) -> None:
@@ -75,6 +88,59 @@ def copySourceCode(dst: Path) -> None:
             shutil.copyfile(item, dst / relSrc)
             print(f"Copied: {dst / relSrc}")
     return
+
+
+def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
+    """Copy a file produced by one of the build functions to the upload
+    directory. The file can optionally be given a new name.
+    """
+    uplDir = Path("dist_upload")
+    uplDir.mkdir(exist_ok=True)
+    srcPath = Path(srcPath)
+    shutil.copyfile(srcPath, uplDir / (dstName or srcPath.name))
+    return
+
+
+def makeCheckSum(sumFile: str, cwd: Path | None = None) -> str:
+    """Create a SHA256 checksum file."""
+    try:
+        if cwd is None:
+            shaFile = f"{sumFile}.sha256"
+        else:
+            shaFile = cwd / f"{sumFile}.sha256"
+        with open(shaFile, mode="w") as fOut:
+            subprocess.call(["shasum", "-a", "256", sumFile], stdout=fOut, cwd=cwd)
+        print(f"SHA256 Sum: {shaFile}")
+    except Exception as exc:
+        print("Could not generate sha256 file")
+        print(str(exc))
+        return ""
+
+    return str(shaFile)
+
+
+def checkAssetsExist() -> bool:
+    """Check that the necessary assets exist ahead of a build."""
+    hasSample = False
+    hasManual = False
+    hasQmData = False
+
+    sampleZip = ROOT_DIR / "novelwriter" / "assets" / "sample.zip"
+    if sampleZip.is_file():
+        print(f"Found: {sampleZip}")
+        hasSample = True
+
+    pdfManual = ROOT_DIR / "novelwriter" / "assets" / "manual.pdf"
+    if pdfManual.is_file():
+        print(f"Found: {pdfManual}")
+        hasManual = True
+
+    i18nAssets = ROOT_DIR / "novelwriter" / "assets" / "i18n"
+    if len(list(i18nAssets.glob("*.qm"))) > 0:
+        print(f"Found: {i18nAssets}/*.qm")
+        hasQmData = True
+
+    return hasSample and hasManual and hasQmData
 
 
 def readFile(file: Path) -> str:
