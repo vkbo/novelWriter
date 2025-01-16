@@ -110,16 +110,19 @@ def removeRedundantQt(libDir: Path) -> None:
             file.unlink()
             print(f"Deleted: {file}")
 
-    def unlinkIfPrefix(folder: Path, prefix: tuple[str, ...]) -> None:
-        if folder.is_dir():
-            for item in folder.iterdir():
-                if item.name.startswith(prefix):
-                    unlinkIfFound(item)
-
     def deleteFolder(folder: Path) -> None:
         if folder.is_dir():
             shutil.rmtree(folder)
             print(f"Deleted: {folder}")
+
+    def unlinkIfPrefix(folder: Path, prefix: tuple[str, ...]) -> None:
+        if folder.is_dir():
+            for item in folder.iterdir():
+                if item.name.startswith(prefix):
+                    if item.is_file():
+                        unlinkIfFound(item)
+                    elif item.is_dir():
+                        deleteFolder(item)
 
     print("Deleting Redundant Files")
     print("========================")
@@ -143,6 +146,7 @@ def removeRedundantQt(libDir: Path) -> None:
 
     bulkDel = ("QtQml", "Qt6Qml", "QtQuick", "Qt6Quick")
     unlinkIfPrefix(pyQt6Dir, bulkDel)
+    unlinkIfPrefix(bindDir, bulkDel)
     unlinkIfPrefix(binDir, bulkDel)
 
     delQt6 = [
