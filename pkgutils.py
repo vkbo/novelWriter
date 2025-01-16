@@ -37,9 +37,10 @@ from pathlib import Path
 
 import utils.binary_dist
 import utils.icon_themes
+import utils.windows_build
 
-CURR_DIR = Path(__file__).parent
-SETUP_DIR = CURR_DIR / "setup"
+from utils.common import ROOT_DIR, SETUP_DIR, copySourceCode, extractVersion, readFile, writeFile
+
 SIGN_KEY = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
 
 OS_LINUX = sys.platform.startswith("linux")
@@ -51,36 +52,6 @@ OS_WIN = sys.platform.startswith("win32")
 #  Utilities
 # =============================================================================================== #
 
-def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
-    """Extract the novelWriter version number without having to import
-    anything else from the main package.
-    """
-    def getValue(text: str) -> str:
-        bits = text.partition("=")
-        return bits[2].strip().strip('"')
-
-    numVers = "0"
-    hexVers = "0x0"
-    relDate = "Unknown"
-    initFile = Path("novelwriter") / "__init__.py"
-    try:
-        for aLine in initFile.read_text(encoding="utf-8").splitlines():
-            if aLine.startswith("__version__"):
-                numVers = getValue((aLine))
-            if aLine.startswith("__hexversion__"):
-                hexVers = getValue((aLine))
-            if aLine.startswith("__date__"):
-                relDate = getValue((aLine))
-    except Exception as exc:
-        print("Could not read file: %s" % initFile)
-        print(str(exc))
-
-    if not beQuiet:
-        print("novelWriter version: %s (%s) at %s" % (numVers, hexVers, relDate))
-
-    return numVers, hexVers, relDate
-
-
 def stripVersion(version: str) -> str:
     """Strip the pre-release part from a version number."""
     if "a" in version:
@@ -91,16 +62,6 @@ def stripVersion(version: str) -> str:
         return version.partition("rc")[0]
     else:
         return version
-
-
-def readFile(file: Path) -> str:
-    """Read an entire file and return as a string."""
-    return file.read_text(encoding="utf-8")
-
-
-def writeFile(file: Path, text: str) -> int:
-    """Write string to file."""
-    return file.write_text(text, encoding="utf-8")
 
 
 def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
@@ -138,17 +99,17 @@ def checkAssetsExist() -> bool:
     hasManual = False
     hasQmData = False
 
-    sampleZip = CURR_DIR / "novelwriter" / "assets" / "sample.zip"
+    sampleZip = ROOT_DIR / "novelwriter" / "assets" / "sample.zip"
     if sampleZip.is_file():
         print(f"Found: {sampleZip}")
         hasSample = True
 
-    pdfManual = CURR_DIR / "novelwriter" / "assets" / "manual.pdf"
+    pdfManual = ROOT_DIR / "novelwriter" / "assets" / "manual.pdf"
     if pdfManual.is_file():
         print(f"Found: {pdfManual}")
         hasManual = True
 
-    i18nAssets = CURR_DIR / "novelwriter" / "assets" / "i18n"
+    i18nAssets = ROOT_DIR / "novelwriter" / "assets" / "i18n"
     if len(list(i18nAssets.glob("*.qm"))) > 0:
         print(f"Found: {i18nAssets}/*.qm")
         hasQmData = True
@@ -214,12 +175,12 @@ def cleanBuildDirs(args: argparse.Namespace) -> None:
     print("")
 
     folders = [
-        CURR_DIR / "build",
-        CURR_DIR / "dist",
-        CURR_DIR / "dist_deb",
-        CURR_DIR / "dist_minimal",
-        CURR_DIR / "dist_appimage",
-        CURR_DIR / "novelWriter.egg-info",
+        ROOT_DIR / "build",
+        ROOT_DIR / "dist",
+        ROOT_DIR / "dist_deb",
+        ROOT_DIR / "dist_minimal",
+        ROOT_DIR / "dist_appimage",
+        ROOT_DIR / "novelWriter.egg-info",
     ]
 
     for folder in folders:
@@ -252,8 +213,8 @@ def buildPdfManual(args: argparse.Namespace | None = None) -> None:
     print("===================")
     print("")
 
-    buildFile = CURR_DIR / "docs" / "build" / "latex" / "manual.pdf"
-    finalFile = CURR_DIR / "novelwriter" / "assets" / "manual.pdf"
+    buildFile = ROOT_DIR / "docs" / "build" / "latex" / "manual.pdf"
+    finalFile = ROOT_DIR / "novelwriter" / "assets" / "manual.pdf"
     finalFile.unlink(missing_ok=True)
 
     try:
@@ -303,8 +264,8 @@ def buildSampleZip(args: argparse.Namespace | None = None) -> None:
     print("========================")
     print("")
 
-    srcSample = CURR_DIR / "sample"
-    dstSample = CURR_DIR / "novelwriter" / "assets" / "sample.zip"
+    srcSample = ROOT_DIR / "sample"
+    dstSample = ROOT_DIR / "novelwriter" / "assets" / "sample.zip"
 
     if srcSample.is_dir():
         dstSample.unlink(missing_ok=True)
@@ -342,8 +303,8 @@ def importI18nUpdates(args: argparse.Namespace) -> None:
         print("File not found ...")
         sys.exit(1)
 
-    dstPath = CURR_DIR / "novelwriter" / "assets" / "i18n"
-    srcPath = CURR_DIR / "i18n"
+    dstPath = ROOT_DIR / "novelwriter" / "assets" / "i18n"
+    srcPath = ROOT_DIR / "i18n"
 
     print(f"Loading file: {fileName}")
     with zipfile.ZipFile(fileName) as zipObj:
@@ -384,10 +345,10 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
     print("Scanning Source Tree:")
     print("")
 
-    sources = list((CURR_DIR / "novelwriter").glob("**/*.py"))
-    sources.insert(0, CURR_DIR / "i18n" / "qtbase.py")
+    sources = list((ROOT_DIR / "novelwriter").glob("**/*.py"))
+    sources.insert(0, ROOT_DIR / "i18n" / "qtbase.py")
     for source in sources:
-        print(source.relative_to(CURR_DIR))
+        print(source.relative_to(ROOT_DIR))
 
     print("")
     print("TS Files to Update:")
@@ -444,8 +405,8 @@ def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
     print("TS Files to Build:")
     print("")
 
-    srcDir = CURR_DIR / "i18n"
-    dstDir = CURR_DIR / "novelwriter" / "assets" / "i18n"
+    srcDir = ROOT_DIR / "i18n"
+    dstDir = ROOT_DIR / "novelwriter" / "assets" / "i18n"
 
     srcList = []
     for item in srcDir.iterdir():
@@ -469,11 +430,11 @@ def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
     print("Moving QM Files to Assets")
     print("")
 
-    dstRel = dstDir.relative_to(CURR_DIR)
+    dstRel = dstDir.relative_to(ROOT_DIR)
     for item in srcDir.iterdir():
         if item.is_file() and item.suffix == ".qm":
             item.rename(dstDir / item.name)
-            print("Moved: %s -> %s" % (item.relative_to(CURR_DIR), dstRel / item.name))
+            print("Moved: %s -> %s" % (item.relative_to(ROOT_DIR), dstRel / item.name))
 
     print("")
 
@@ -492,14 +453,14 @@ def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
     print("")
 
     assets = [
-        CURR_DIR / "novelwriter" / "assets" / "sample.zip",
-        CURR_DIR / "novelwriter" / "assets" / "manual.pdf",
+        ROOT_DIR / "novelwriter" / "assets" / "sample.zip",
+        ROOT_DIR / "novelwriter" / "assets" / "manual.pdf",
     ]
-    assets.extend((CURR_DIR / "novelwriter" / "assets" / "i18n").glob("*.qm"))
+    assets.extend((ROOT_DIR / "novelwriter" / "assets" / "i18n").glob("*.qm"))
     for asset in assets:
         if asset.is_file():
             asset.unlink()
-            print(f"Deleted: {asset.relative_to(CURR_DIR)}")
+            print(f"Deleted: {asset.relative_to(ROOT_DIR)}")
 
     print("")
 
@@ -522,29 +483,6 @@ def buildAllAssets(args: argparse.Namespace) -> None:
 # =============================================================================================== #
 #  Python Packaging
 # =============================================================================================== #
-
-##
-#  Copy Source
-##
-
-def copySourceCode(dst: Path) -> None:
-    """Copy the novelwriter source tree to path."""
-    src = CURR_DIR / "novelwriter"
-    for item in src.glob("**/*"):
-        relSrc = item.relative_to(CURR_DIR)
-        if item.suffix in (".pyc", ".pyo"):
-            print(f"Ignore: {relSrc}")
-            continue
-        if item.parent.is_dir() and item.parent.name != "__pycache__":
-            dstDir = dst / relSrc.parent
-            if not dstDir.exists():
-                dstDir.mkdir(parents=True)
-                print(f"Folder: {dstDir}")
-        if item.is_file():
-            shutil.copyfile(item, dst / relSrc)
-            print(f"Copied: {dst / relSrc}")
-    return
-
 
 ##
 #  Copy Package Files
@@ -572,7 +510,7 @@ def copyPackageFiles(dst: Path, setupPy: bool = False) -> None:
         ))
         print("Wrote:  setup.py")
 
-    text = readFile(CURR_DIR / "pyproject.toml")
+    text = readFile(ROOT_DIR / "pyproject.toml")
     text = text.replace("setup/description_pypi.md", "data/description_short.txt")
     writeFile(dst / "pyproject.toml", text)
     print("Wrote:  pyproject.toml")
@@ -613,7 +551,7 @@ def makeDebianPackage(
     # Set Up Folder
     # =============
 
-    bldDir = CURR_DIR / "dist_deb"
+    bldDir = ROOT_DIR / "dist_deb"
     bldPkg = f"novelwriter_{pkgVers}"
     outDir = bldDir / bldPkg
     debDir = outDir / "debian"
@@ -814,7 +752,7 @@ def buildAppImage(args: argparse.Namespace) -> None:
     # Set Up Folder
     # =============
 
-    bldDir = CURR_DIR / "dist_appimage"
+    bldDir = ROOT_DIR / "dist_appimage"
     bldPkg = f"novelwriter_{pkgVers}"
     outDir = bldDir / bldPkg
     imgDir = bldDir / "appimage"
@@ -916,217 +854,6 @@ def buildAppImage(args: argparse.Namespace) -> None:
 
 
 ##
-#  Make Windows Setup EXE (build-win-exe)
-##
-
-def makeWindowsEmbedded(args: argparse.Namespace) -> None:
-    """Set up a package with embedded Python and dependencies for
-    Windows installation.
-    """
-    import compileall
-    import urllib.request
-    import zipfile
-
-    print("")
-    print("Build Standalone Windows Package")
-    print("================================")
-    print("")
-
-    numVers, _, _ = extractVersion()
-    print("Version: %s" % numVers)
-
-    # Set Up Folder
-    # =============
-
-    bldDir = CURR_DIR / "dist"
-    outDir = bldDir / "novelWriter"
-    libDir = outDir / "lib"
-    if outDir.exists():
-        shutil.rmtree(outDir)
-
-    bldDir.mkdir(exist_ok=True)
-    outDir.mkdir()
-    libDir.mkdir()
-
-    # Copy novelWriter Source
-    # =======================
-
-    print("Copying and compiling novelWriter source ...")
-    print("")
-
-    copySourceCode(outDir)
-
-    files = [
-        CURR_DIR / "CREDITS.md",
-        CURR_DIR / "LICENSE.md",
-        CURR_DIR / "requirements.txt",
-        SETUP_DIR / "icons" / "novelwriter.ico",
-        SETUP_DIR / "iss_license.txt",
-
-    ]
-    for item in files:
-        shutil.copyfile(item, outDir / item.name)
-        print(f"Copied: {item} > {outDir / item.name}")
-
-    compileall.compile_dir(outDir / "novelwriter")
-
-    print("Done")
-    print("")
-
-    # Download Python Embeddable
-    # ==========================
-
-    print("Adding Python embeddable ...")
-
-    pyVers = "%d.%d.%d" % (sys.version_info[:3])
-    zipFile = f"python-{pyVers}-embed-amd64.zip"
-    pyZip = bldDir / zipFile
-    if not pyZip.is_file():
-        pyUrl = f"https://www.python.org/ftp/python/{pyVers}/{zipFile}"
-        print("Downloading: %s" % pyUrl)
-        urllib.request.urlretrieve(pyUrl, pyZip)
-
-    print("Extracting ...")
-    with zipfile.ZipFile(pyZip, "r") as inFile:
-        inFile.extractall(outDir)
-
-    print("Done")
-    print("")
-
-    # Install Dependencies
-    # ====================
-
-    print("Install dependencies ...")
-
-    try:
-        subprocess.call([
-            sys.executable, "-m",
-            "pip", "install", "-r", "requirements.txt", "--target", str(libDir)
-        ])
-    except Exception as exc:
-        print("Failed with error:")
-        print(str(exc))
-        sys.exit(1)
-
-    print("Done")
-    print("")
-
-    # Update Launch File
-    # ==================
-
-    print("Updating starting script ...")
-
-    writeFile(outDir / "novelWriter.pyw", (
-        "#!/usr/bin/env python3\n"
-        "import os\n"
-        "import sys\n"
-        "\n"
-        "os.curdir = os.path.abspath(os.path.dirname(__file__))\n"
-        "sys.path.insert(0, os.path.join(os.curdir, \"lib\"))\n"
-        "\n"
-        "if __name__ == \"__main__\":\n"
-        "    import novelwriter\n"
-        "    novelwriter.main(sys.argv[1:])\n"
-    ))
-
-    print("Done")
-    print("")
-
-    # Clean Up Files
-    # ==============
-
-    def unlinkIfFound(file: Path) -> None:
-        if file.is_file():
-            file.unlink()
-            print(f"Deleted: {file}")
-
-    def deleteFolder(folder: Path) -> None:
-        if folder.is_dir():
-            shutil.rmtree(folder)
-            print(f"Deleted: {folder}")
-
-    print("Deleting Redundant Files")
-    print("========================")
-    print("")
-
-    pyQt5Dir = libDir / "PyQt5"
-    bindDir  = pyQt5Dir / "bindings"
-    qt5Dir   = pyQt5Dir / "Qt5"
-    binDir   = qt5Dir / "bin"
-    plugDir  = qt5Dir / "plugins"
-    qmDir    = qt5Dir / "translations"
-    dictDir  = libDir / "enchant" / "data" / "mingw64" / "share" / "enchant" / "hunspell"
-
-    for item in dictDir.iterdir():
-        if not item.name.startswith(("en_GB", "en_US")):
-            unlinkIfFound(item)
-
-    for item in qmDir.iterdir():
-        if not item.name.startswith("qtbase"):
-            unlinkIfFound(item)
-
-    delQt5 = [
-        "Qt5Bluetooth", "Qt5DBus", "Qt5Designer", "Qt5Designer", "Qt5Help", "Qt5Location",
-        "Qt5Multimedia", "Qt5MultimediaWidgets", "Qt5Network", "Qt5Nfc", "Qt5OpenGL",
-        "Qt5Positioning", "Qt5PositioningQuick", "Qt5Qml", "Qt5QmlModels", "Qt5QmlWorkerScript",
-        "Qt5Quick", "Qt5Quick3D", "Qt5Quick3DAssetImport", "Qt5Quick3DRender",
-        "Qt5Quick3DRuntimeRender", "Qt5Quick3DUtils", "Qt5QuickControls2", "Qt5QuickParticles",
-        "Qt5QuickShapes", "Qt5QuickTemplates2", "Qt5QuickTest", "Qt5QuickWidgets", "Qt5Sensors",
-        "Qt5SerialPort", "Qt5Sql", "Qt5Test", "Qt5TextToSpeech", "Qt5WebChannel", "Qt5WebSockets",
-        "Qt5WebView", "Qt5Xml", "Qt5XmlPatterns"
-    ]
-    for item in delQt5:
-        qtItem = item.replace("Qt5", "Qt")
-        unlinkIfFound(binDir / f"{item}.dll")
-        unlinkIfFound(pyQt5Dir / f"{qtItem}.pyd")
-        unlinkIfFound(pyQt5Dir / f"{qtItem}.pyi")
-        deleteFolder(bindDir / qtItem)
-
-    delList = [
-        binDir / "opengl32sw.dll",
-        qt5Dir / "qml",
-        plugDir / "geoservices",
-        plugDir / "playlistformats",
-        plugDir / "renderers",
-        plugDir / "sensorgestures",
-        plugDir / "sensors",
-        plugDir / "sqldrivers",
-        plugDir / "texttospeech",
-        plugDir / "webview",
-    ]
-    for item in delList:
-        unlinkIfFound(item)
-        deleteFolder(item)
-
-    print("Done")
-    print("")
-
-    print("Running Inno Setup")
-    print("##################")
-    print("")
-
-    # Read the iss template
-    issData = readFile(SETUP_DIR / "win_setup_embed.iss")
-    issData = issData.replace(r"%%version%%", numVers)
-    issData = issData.replace(r"%%dist%%", str(bldDir))
-    writeFile(CURR_DIR / "setup.iss", issData)
-    print("")
-
-    try:
-        subprocess.call(["iscc", "setup.iss"])
-    except Exception as exc:
-        print("Inno Setup failed with error:")
-        print(str(exc))
-        sys.exit(1)
-
-    print("")
-    print("Done")
-    print("")
-
-    return
-
-
-##
 #  Generate MacOS PList
 ##
 
@@ -1181,7 +908,7 @@ def xdgInstall(args: argparse.Namespace) -> None:
     if testExec is not None:
         exOpts.append(testExec)
 
-    testExec = CURR_DIR / "novelWriter.py"
+    testExec = ROOT_DIR / "novelWriter.py"
     if testExec.is_file():
         exOpts.append(str(testExec))
 
@@ -1214,7 +941,7 @@ def xdgInstall(args: argparse.Namespace) -> None:
     # ===========================
 
     # Generate launcher
-    desktopFile = CURR_DIR / "novelwriter.desktop"
+    desktopFile = ROOT_DIR / "novelwriter.desktop"
     desktopData = readFile(SETUP_DIR / "data" / "novelwriter.desktop")
     desktopData = desktopData.replace("Exec=novelwriter", f"Exec={useExec}")
     writeFile(desktopFile, desktopData)
@@ -1507,7 +1234,7 @@ if __name__ == "__main__":
     cmdBuildSetupExe = parsers.add_parser(
         "build-win-exe", help="Build a setup.exe file with Python embedded for Windows."
     )
-    cmdBuildSetupExe.set_defaults(func=makeWindowsEmbedded)
+    cmdBuildSetupExe.set_defaults(func=utils.windows_build.main)
 
     # Build Binary
     cmdBuildBinary = parsers.add_parser(

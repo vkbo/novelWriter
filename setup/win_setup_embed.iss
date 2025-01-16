@@ -39,9 +39,11 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; Check: not IsAdminInstallMode
 
 [InstallDelete]
+Type: filesandordirs; Name: "{app}\lib\*"
 Type: filesandordirs; Name: "{app}\novelwriter\*"
 
 [UninstallDelete]
+Type: filesandordirs; Name: "{app}\lib\*"
 Type: filesandordirs; Name: "{app}\novelwriter\*"
 
 [Files]
