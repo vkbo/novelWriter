@@ -155,11 +155,7 @@ def makeDebianPackage(
     return ""
 
 
-##
-#  Build Debian Package (build-deb)
-##
-
-def mainDebian(args: argparse.Namespace) -> None:
+def debian(args: argparse.Namespace) -> None:
     """Build a .deb package"""
     if sys.platform == "linux":
         print("ERROR: Command 'build-deb' can only be used on Linux")
@@ -169,11 +165,7 @@ def mainDebian(args: argparse.Namespace) -> None:
     return
 
 
-##
-#  Build Launchpad Packages (build-ubuntu)
-##
-
-def mainLaunchpad(args: argparse.Namespace) -> None:
+def launchpad(args: argparse.Namespace) -> None:
     """Wrapper for building Debian packages for Launchpad."""
     if sys.platform == "linux":
         print("ERROR: Command 'build-ubuntu' can only be used on Linux")

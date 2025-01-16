@@ -32,7 +32,7 @@ from utils.common import (
 )
 
 
-def main(args: argparse.Namespace) -> None:
+def appImage(args: argparse.Namespace) -> None:
     """Build an AppImage."""
     try:
         import python_appimage  # noqa: F401 # type: ignore

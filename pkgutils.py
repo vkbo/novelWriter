@@ -237,7 +237,7 @@ if __name__ == "__main__":
         )
     )
     cmdBuildDeb.add_argument("--sign", action="store_true", help="Sign the package.")
-    cmdBuildDeb.set_defaults(func=utils.build_debian.mainDebian)
+    cmdBuildDeb.set_defaults(func=utils.build_debian.debian)
 
     # Build Ubuntu Packages
     cmdBuildUbuntu = parsers.add_parser(
@@ -249,7 +249,7 @@ if __name__ == "__main__":
     )
     cmdBuildUbuntu.add_argument("--sign", action="store_true", help="Sign the package.")
     cmdBuildUbuntu.add_argument("--build", type=int, help="Set build number.")
-    cmdBuildUbuntu.set_defaults(func=utils.build_debian.mainLaunchpad)
+    cmdBuildUbuntu.set_defaults(func=utils.build_debian.launchpad)
 
     # Build AppImage
     cmdBuildAppImage = parsers.add_parser(
@@ -270,7 +270,7 @@ if __name__ == "__main__":
     cmdBuildAppImage.add_argument(
         "--python-version", default="3.11", help="Python version (e.g. 3.11)"
     )
-    cmdBuildAppImage.set_defaults(func=utils.build_appimage.main)
+    cmdBuildAppImage.set_defaults(func=utils.build_appimage.appImage)
 
     # Build Windows Inno Setup Installer
     cmdBuildSetupExe = parsers.add_parser(
