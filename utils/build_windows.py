@@ -30,9 +30,7 @@ import zipfile
 
 from pathlib import Path
 
-from utils.common import ROOT_DIR, SETUP_DIR, copySourceCode, extractVersion, writeFile
-
-from tests.tools import readFile
+from utils.common import ROOT_DIR, SETUP_DIR, copySourceCode, extractVersion, readFile, writeFile
 
 
 def prepareCode(outDir: Path) -> None:

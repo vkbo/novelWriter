@@ -29,10 +29,8 @@ import sys
 
 from utils.common import (
     ROOT_DIR, SETUP_DIR, checkAssetsExist, copyPackageFiles, copySourceCode,
-    extractVersion, makeCheckSum, toUpload
+    extractVersion, makeCheckSum, toUpload, writeFile
 )
-
-from tests.tools import writeFile
 
 SIGN_KEY = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
 

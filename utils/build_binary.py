@@ -22,11 +22,11 @@ from __future__ import annotations
 
 import argparse
 
-import PyInstaller.__main__
-
 
 def runPyinstaller() -> None:
     """Run the pyinstaller."""
+    import PyInstaller.__main__
+
     build = ["novelWriter.py", "--clean", "--windowed", "--onedir", "--noconfirm"]
     build += ["--name", "novelwriter"]
     build += ["--workpath", "build_bin"]
@@ -34,6 +34,7 @@ def runPyinstaller() -> None:
     build += ["--hidden-import", "pyenchant"]
     build += ["--add-data", "novelwriter/assets:assets"]
     PyInstaller.__main__.run(build)
+
     return
 
 
