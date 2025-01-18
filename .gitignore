@@ -11,6 +11,7 @@ setup.iss
 /novelwriter.desktop
 /novelWriter.pyw
 /setup/macos/Info.plist
+/setup/windows/build
 .venv
 
 # Translations
