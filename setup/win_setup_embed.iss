@@ -5,7 +5,6 @@
 #define nwAppVersion "%%version%%"
 #define nwAppPublisher "novelWriter"
 #define nwAppURL "https://novelWriter.io"
-#define nwAppExeName "novelWriter.pyw"
 
 [Setup]
 AppId={{459A75D0-951F-4932-9809-6002EC8E733E}
@@ -50,15 +49,15 @@ Type: filesandordirs; Name: "{app}\novelwriter\*"
 Source: "{#nwAppDir}\novelWriter\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{autoprograms}\{#nwAppName}"; Filename: "{app}\pythonw.exe"; Parameters: "{#nwAppExeName}"; IconFilename: "{app}\novelwriter.ico"
-Name: "{autodesktop}\{#nwAppName}"; Filename: "{app}\pythonw.exe"; Parameters: "{#nwAppExeName}"; IconFilename: "{app}\novelwriter.ico"; Tasks: desktopicon;
+Name: "{autoprograms}\{#nwAppName}"; Filename: "{app}\novelWriter.exe"; IconFilename: "{app}\novelWriter.ico"
+Name: "{autodesktop}\{#nwAppName}"; Filename: "{app}\novelWriter.exe"; IconFilename: "{app}\novelWriter.ico"; Tasks: desktopicon;
 
 [Run]
-Filename: "{app}\pythonw.exe"; Parameters: "{#nwAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(nwAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\novelWriter.exe"; Description: "{cm:LaunchProgram,{#StringChange(nwAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\.nwx\OpenWithProgids"; ValueType: string; ValueName: "novelWriterProject.nwx"; ValueData: ""; Flags: uninsdeletevalue
 Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx"; ValueType: string; ValueName: ""; ValueData: "novelWriter Project File"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\novelwriter\assets\icons\x-novelwriter-project.ico"
-Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\pythonw.exe"" ""{app}\{#nwAppExeName}"" ""%1"""
-Root: HKA; Subkey: "Software\Classes\Applications\{#nwAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".nwx"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\novelWriter.exe"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\Applications\novelWriter.exe\SupportedTypes"; ValueType: string; ValueName: ".nwx"; ValueData: ""; Flags: uninsdeletekey

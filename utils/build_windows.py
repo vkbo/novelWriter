@@ -44,8 +44,9 @@ def prepareCode(outDir: Path) -> None:
         ROOT_DIR / "CREDITS.md",
         ROOT_DIR / "LICENSE.md",
         ROOT_DIR / "requirements.txt",
-        SETUP_DIR / "icons" / "novelwriter.ico",
         SETUP_DIR / "iss_license.txt",
+        SETUP_DIR / "windows" / "novelWriter.ico",
+        SETUP_DIR / "windows" / "novelWriter.exe",
 
     ]
     for item in files:
