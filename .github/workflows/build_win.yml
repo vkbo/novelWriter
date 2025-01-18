@@ -23,7 +23,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: launcher
-          path: novelWriter.exe
+          path: setup/windows/novelWriter.exe
           if-no-files-found: error
           retention-days: 14
 
