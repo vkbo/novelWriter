@@ -204,7 +204,7 @@ def main(args: argparse.Namespace) -> None:
     outDir.mkdir()
     libDir.mkdir()
 
-    copySourceCode(outDir)
+    prepareCode(outDir)
     embedPython(bldDir, outDir)
     installRequirements(libDir)
     removeRedundantQt(libDir)
