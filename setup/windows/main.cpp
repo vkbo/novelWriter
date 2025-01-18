@@ -1,5 +1,5 @@
 /*
-** novelWriter – Windows Launcher
+** novelWriter - Windows Launcher
 ** ==============================
 **
 ** This file is a part of novelWriter
