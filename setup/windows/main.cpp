@@ -38,13 +38,14 @@ void _tmain( int argc, TCHAR *argv[] ) {
     SetCurrentDirectory(fileName);
     std::cout << "WorkDir: " << fileName << std::endl;
 
-    TCHAR cmd[MAX_PATH] = "pythonw.exe novelWriter.pyw";
+    TCHAR cmd[MAX_PATH] = TEXT("pythonw.exe novelWriter.pyw");
     if (argc > 1) {
         _tcscat_s(cmd, TEXT(" "));
         _tcscat_s(cmd, argv[1]);
     }
     std::cout << "Command: " << cmd << std::endl;
 
+    std::cout << "Launching novelWriter GUI" << std::endl;
     CreateProcess(NULL, cmd, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 
     return;
