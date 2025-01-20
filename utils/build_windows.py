@@ -209,6 +209,9 @@ def main(args: argparse.Namespace) -> None:
     installRequirements(libDir)
     removeRedundantQt(libDir)
 
+    print("Copy redistributable to root ...")
+    shutil.copyfile(libDir / "PyQt6" / "Qt6" / "bin" / "msvcp140.dll", outDir / "msvcp140.dll")
+
     print("Updating starting script ...")
     writeFile(outDir / "novelWriter.pyw", (
         "#!/usr/bin/env python3\n"
