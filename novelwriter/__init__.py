@@ -42,14 +42,14 @@ if TYPE_CHECKING:  # pragma: no cover
 # ============
 
 __package__    = "novelwriter"
-__copyright__  = "Copyright 2018–2024, Veronica Berglyd Olsen"
+__copyright__  = "Copyright 2018-2025 Veronica Berglyd Olsen"
 __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "2.7a1"
-__hexversion__ = "0x020700a1"
-__date__       = "2025-01-15"
+__version__    = "2.7a2"
+__hexversion__ = "0x020700a2"
+__date__       = "2025-01-20"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 
@@ -65,20 +65,20 @@ CONFIG = Config()
 SHARED = SharedData()
 
 # ANSI Colours
-C_RED    = "\033[91m"
-C_GREEN  = "\033[92m"
-C_YELLOW = "\033[93m"
-C_BLUE   = "\033[94m"
-C_WHITE  = "\033[97m"
-C_END    = "\033[0m"
+RED    = "\033[91m"
+GREEN  = "\033[92m"
+YELLOW = "\033[93m"
+BLUE   = "\033[94m"
+WHITE  = "\033[97m"
+END    = "\033[0m"
 
-# Log Formats
-L_TIME = "[{asctime:}]"
-L_FILE = "{filename:>18}"
-L_LINE = "{lineno:<4d}"
-L_LVLP = "{levelname:8}"
-L_LVLC = "{levelname:17}"
-L_TEXT = "{message:}"
+# Log Format Components
+TIME = "[{asctime:}]"
+FILE = "{filename:>18}"
+LINE = "{lineno:<4d}"
+LVLP = "{levelname:8}"
+LVLC = "{levelname:17}"
+TEXT = "{message:}"
 
 
 def main(sysArgs: list | None = None) -> GuiMain | None:
@@ -104,10 +104,18 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         f"novelWriter {__version__} ({__date__})\n"
         f"{__copyright__}\n"
         "\n"
+        "This program is free software: you can redistribute it and/or modify\n"
+        "it under the terms of the GNU General Public License as published by\n"
+        "the Free Software Foundation, either version 3 of the License, or\n"
+        "(at your option) any later version.\n"
+        "\n"
         "This program is distributed in the hope that it will be useful,\n"
         "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
         "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n"
         "GNU General Public Licence for more details.\n"
+        "\n"
+        "You should have received a copy of the GNU General Public License\n"
+        "along with this program. If not, see <https://www.gnu.org/licenses/>.\n"
         "\n"
         "Usage:\n"
         " -h, --help     Print this message.\n"
@@ -167,21 +175,21 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     if fmtFlags & 0b01:
         # This will overwrite the default level names, and also ensure that
         # they can be converted back to integer levels
-        logging.addLevelName(logging.DEBUG,    f"{C_BLUE}DEBUG{C_END}")
-        logging.addLevelName(logging.INFO,     f"{C_GREEN}INFO{C_END}")
-        logging.addLevelName(logging.WARNING,  f"{C_YELLOW}WARNING{C_END}")
-        logging.addLevelName(logging.ERROR,    f"{C_RED}ERROR{C_END}")
-        logging.addLevelName(logging.CRITICAL, f"{C_RED}CRITICAL{C_END}")
+        logging.addLevelName(logging.DEBUG,    f"{BLUE}DEBUG{END}")
+        logging.addLevelName(logging.INFO,     f"{GREEN}INFO{END}")
+        logging.addLevelName(logging.WARNING,  f"{YELLOW}WARNING{END}")
+        logging.addLevelName(logging.ERROR,    f"{RED}ERROR{END}")
+        logging.addLevelName(logging.CRITICAL, f"{RED}CRITICAL{END}")
 
     # Determine Log Format
     if fmtFlags == 0b00:
-        logFmt = f"{L_LVLP}  {L_TEXT}"
+        logFmt = f"{LVLP}  {TEXT}"
     elif fmtFlags == 0b01:
-        logFmt = f"{L_LVLC}  {L_TEXT}"
+        logFmt = f"{LVLC}  {TEXT}"
     elif fmtFlags == 0b10:
-        logFmt = f"{L_TIME}  {L_FILE}:{L_LINE}  {L_LVLP}  {L_TEXT}"
+        logFmt = f"{TIME}  {FILE}:{LINE}  {LVLP}  {TEXT}"
     elif fmtFlags == 0b11:
-        logFmt = f"{L_TIME}  {C_BLUE}{L_FILE}{C_END}:{C_WHITE}{L_LINE}{C_END}  {L_LVLC}  {L_TEXT}"
+        logFmt = f"{TIME}  {BLUE}{FILE}{END}:{WHITE}{LINE}{END}  {LVLC}  {TEXT}"
 
     # Setup Logging
     pkgLogger = logging.getLogger(__package__)
@@ -272,7 +280,9 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
 
 
 def _createApp(style: str) -> QApplication:
-    """Create the app."""
+    """Create the app. This is done in a function to make it easier to
+    block app creation during testing.
+    """
     app = QApplication([CONFIG.appName, (f"-style={style}")])
     app.setApplicationName(CONFIG.appName)
     app.setApplicationVersion(__version__)
