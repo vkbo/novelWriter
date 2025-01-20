@@ -30,8 +30,8 @@ import pytest
 from PyQt6.QtWidgets import QApplication
 
 from novelwriter import (
-    C_BLUE, C_END, C_WHITE, CONFIG, L_FILE, L_LINE, L_LVLC, L_LVLP, L_TEXT,
-    L_TIME, _createApp, logger, main
+    BLUE, CONFIG, END, FILE, LINE, LVLC, LVLP, TEXT, TIME, WHITE, _createApp,
+    logger, main
 )
 
 from tests.tools import clearLogHandlers
@@ -115,16 +115,14 @@ def testBaseInit_Options(monkeypatch, fncPath):
         main(["--info", "--color", f"--config={fncPath}", f"--data={fncPath}"])
     assert ex.value.code == 0
     assert logger.getEffectiveLevel() == logging.INFO
-    assert getFormat() == f"{L_LVLC}  {L_TEXT}"
+    assert getFormat() == f"{LVLC}  {TEXT}"
 
     clearLogHandlers()
     with pytest.raises(SystemExit) as ex:
         main(["--debug", "--color", f"--config={fncPath}", f"--data={fncPath}"])
     assert ex.value.code == 0
     assert logger.getEffectiveLevel() == logging.DEBUG
-    assert getFormat() == (
-        f"{L_TIME}  {C_BLUE}{L_FILE}{C_END}:{C_WHITE}{L_LINE}{C_END}  {L_LVLC}  {L_TEXT}"
-    )
+    assert getFormat() == f"{TIME}  {BLUE}{FILE}{END}:{WHITE}{LINE}{END}  {LVLC}  {TEXT}"
 
     # Log Levels wo/Color
     clearLogHandlers()
@@ -132,14 +130,14 @@ def testBaseInit_Options(monkeypatch, fncPath):
         main(["--info", f"--config={fncPath}", f"--data={fncPath}"])
     assert ex.value.code == 0
     assert logger.getEffectiveLevel() == logging.INFO
-    assert getFormat() == f"{L_LVLP}  {L_TEXT}"
+    assert getFormat() == f"{LVLP}  {TEXT}"
 
     clearLogHandlers()
     with pytest.raises(SystemExit) as ex:
         main(["--debug", f"--config={fncPath}", f"--data={fncPath}"])
     assert ex.value.code == 0
     assert logger.getEffectiveLevel() == logging.DEBUG
-    assert getFormat() == f"{L_TIME}  {L_FILE}:{L_LINE}  {L_LVLP}  {L_TEXT}"
+    assert getFormat() == f"{TIME}  {FILE}:{LINE}  {LVLP}  {TEXT}"
 
     # Help and Version
     with pytest.raises(SystemExit) as ex:
