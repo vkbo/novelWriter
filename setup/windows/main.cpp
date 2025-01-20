@@ -19,12 +19,15 @@
 ** along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef UNICODE
+#define UNICODE
+#endif 
+
 #include <windows.h>
 #include <stdio.h>
-#include <tchar.h>
-#include <iostream>
 
-void _tmain(int argc, TCHAR *argv[]) {
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
+
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
 
@@ -32,21 +35,18 @@ void _tmain(int argc, TCHAR *argv[]) {
     si.cb = sizeof(si);
     ZeroMemory(&pi, sizeof(pi));
 
-    TCHAR path[MAX_PATH];
-    auto pathlen = GetModuleFileName(NULL, path, MAX_PATH);
+    wchar_t path[MAX_PATH];
+    auto pathlen = GetModuleFileNameW(NULL, path, MAX_PATH);
     path[pathlen - 15] = 0;
     SetCurrentDirectory(path);
-    std::cout << "WorkDir: " << path << std::endl;
 
-    TCHAR cmd[MAX_PATH] = TEXT("pythonw.exe novelWriter.pyw");
-    if (argc > 1) {
-        _tcscat_s(cmd, TEXT(" "));
-        _tcscat_s(cmd, argv[1]);
+    wchar_t cmd[MAX_PATH] = L"pythonw.exe novelWriter.pyw";
+    if (__argc > 1) {
+        wcsncat_s(cmd, L" ", 1);
+        wcsncat_s(cmd, __wargv[1], MAX_PATH-28);
     }
-    std::cout << "Command: " << cmd << std::endl;
 
-    std::cout << "Launching novelWriter GUI" << std::endl;
     CreateProcess(NULL, cmd, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 
-    return;
+    return 0;
 }
