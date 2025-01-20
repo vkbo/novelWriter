@@ -49,7 +49,7 @@ __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
 __version__    = "2.7a2"
 __hexversion__ = "0x020700a2"
-__date__       = "2025-01-18"
+__date__       = "2025-01-20"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 
