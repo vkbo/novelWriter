@@ -1064,7 +1064,7 @@ class GuiMain(QMainWindow):
 
         if syntax:
             SHARED.theme.loadSyntax()
-            self.docEditor.updateSyntaxColours()
+            self.docEditor.updateSyntaxColors()
 
         self.docEditor.initEditor()
         self.docViewer.initViewer()

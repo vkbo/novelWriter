@@ -969,7 +969,8 @@ class GuiProjectTree(QTreeView):
 
                 if viewport := self.viewport():
                     ctxMenu.exec(viewport.mapToGlobal(point))
-                    ctxMenu.deleteLater()
+
+                ctxMenu.setParent(None)
 
         return
 

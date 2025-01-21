@@ -424,7 +424,8 @@ class GuiDocViewer(QTextBrowser):
         # Open the context menu
         if viewport := self.viewport():
             ctxMenu.exec(viewport.mapToGlobal(point))
-            ctxMenu.deleteLater()
+
+        ctxMenu.setParent(None)
 
         return
 
