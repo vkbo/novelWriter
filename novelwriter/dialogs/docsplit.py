@@ -33,7 +33,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import SHARED
-from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import QtAccepted, QtDialogCancel, QtDialogOk, QtUserRole
@@ -60,7 +60,7 @@ class GuiDocSplit(NDialog):
 
         self.headLabel = QLabel(self.tr("Document Headings"), self)
         self.headLabel.setFont(SHARED.theme.guiFontB)
-        self.helpLabel = NColourLabel(
+        self.helpLabel = NColorLabel(
             self.tr("Select the maximum level to split into files."),
             self, color=SHARED.theme.helpText, wrap=True
         )

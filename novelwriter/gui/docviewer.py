@@ -45,7 +45,7 @@ from novelwriter.common import decodeMimeHandles, qtAddAction, qtLambda
 from novelwriter.constants import nwConst, nwStyles, nwUnicode
 from novelwriter.enum import nwChange, nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
-from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.formats.shared import TextDocumentTheme
@@ -167,8 +167,8 @@ class GuiDocViewer(QTextBrowser):
             palette.setColor(QPalette.ColorRole.Base, syntax.back)
             palette.setColor(QPalette.ColorRole.Text, syntax.text)
             viewport.setPalette(palette)
-            self.docHeader.matchColours()
-            self.docFooter.matchColours()
+            self.docHeader.matchColors()
+            self.docFooter.matchColors()
 
         # Update theme colours
         self._docTheme.text      = syntax.text
@@ -424,7 +424,8 @@ class GuiDocViewer(QTextBrowser):
         # Open the context menu
         if viewport := self.viewport():
             ctxMenu.exec(viewport.mapToGlobal(point))
-            ctxMenu.deleteLater()
+
+        ctxMenu.setParent(None)
 
         return
 
@@ -643,7 +644,7 @@ class GuiDocViewHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = NColourLabel("", self, faded=SHARED.theme.fadedText)
+        self.itemTitle = NColorLabel("", self, faded=SHARED.theme.fadedText)
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
@@ -774,11 +775,11 @@ class GuiDocViewHeader(QWidget):
         self.refreshButton.setStyleSheet(buttonStyle)
         self.closeButton.setStyleSheet(buttonStyle)
 
-        self.matchColours()
+        self.matchColors()
 
         return
 
-    def matchColours(self) -> None:
+    def matchColors(self) -> None:
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
@@ -960,11 +961,11 @@ class GuiDocViewFooter(QWidget):
         self.showComments.setStyleSheet(buttonStyle)
         self.showSynopsis.setStyleSheet(buttonStyle)
 
-        self.matchColours()
+        self.matchColors()
 
         return
 
-    def matchColours(self) -> None:
+    def matchColors(self) -> None:
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """

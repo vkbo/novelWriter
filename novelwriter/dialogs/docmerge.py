@@ -33,7 +33,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import SHARED
-from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import QtAccepted, QtDialogCancel, QtDialogOk, QtDialogReset, QtUserRole
@@ -56,7 +56,7 @@ class GuiDocMerge(NDialog):
 
         self.headLabel = QLabel(self.tr("Documents to Merge"), self)
         self.headLabel.setFont(SHARED.theme.guiFontB)
-        self.helpLabel = NColourLabel(
+        self.helpLabel = NColorLabel(
             self.tr("Drag and drop items to change the order, or uncheck to exclude."),
             self, color=SHARED.theme.helpText, wrap=True
         )

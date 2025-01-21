@@ -42,7 +42,7 @@ def testExtProgressBars_NProgressCircle(qtbot):
         dialog.show()
 
     dialog.resize(200, 200)
-    progress.setColours(
+    progress.setColors(
         QColor(255, 255, 255), QColor(255, 192, 192),
         QColor(255, 0, 0), QColor(0, 0, 0),
     )

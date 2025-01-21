@@ -41,7 +41,7 @@ from novelwriter.common import describeFont, fontMatcher, qtAddAction, qtLambda
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.configlayout import (
-    NColourLabel, NFixedPage, NScrollableForm, NScrollablePage
+    NColorLabel, NFixedPage, NScrollableForm, NScrollablePage
 )
 from novelwriter.extensions.modified import (
     NComboBox, NDoubleSpinBox, NIconToolButton, NSpinBox, NToolDialog
@@ -92,9 +92,9 @@ class GuiBuildSettings(NToolDialog):
         )
 
         # Title
-        self.titleLabel = NColourLabel(
+        self.titleLabel = NColorLabel(
             self.tr("Manuscript Build Settings"), self, color=SHARED.theme.helpText,
-            scale=NColourLabel.HEADER_SCALE, indent=4,
+            scale=NColorLabel.HEADER_SCALE, indent=4,
         )
 
         # Settings Name

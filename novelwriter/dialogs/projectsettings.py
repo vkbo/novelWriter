@@ -42,7 +42,7 @@ from novelwriter.common import formatFileFilter, qtLambda, simplified
 from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.status import NWStatus, StatusEntry
 from novelwriter.enum import nwStatusShape
-from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollableForm
+from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollableForm
 from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
@@ -78,9 +78,9 @@ class GuiProjectSettings(NDialog):
         )
 
         # Title
-        self.titleLabel = NColourLabel(
+        self.titleLabel = NColorLabel(
             self.tr("Project Settings"), self, color=SHARED.theme.helpText,
-            scale=NColourLabel.HEADER_SCALE, indent=4,
+            scale=NColorLabel.HEADER_SCALE, indent=4,
         )
 
         # SideBar
@@ -339,9 +339,9 @@ class _StatusPage(NFixedPage):
         self.trSelColor  = self.tr("Select Colour")
 
         # Title
-        self.pageTitle = NColourLabel(
+        self.pageTitle = NColorLabel(
             pageLabel, self, color=SHARED.theme.helpText,
-            scale=NColourLabel.HEADER_SCALE
+            scale=NColorLabel.HEADER_SCALE
         )
 
         # List Box
@@ -398,7 +398,7 @@ class _StatusPage(NFixedPage):
         self.colorButton.setSizePolicy(QtSizeMinimum, QtSizeMinimumExpanding)
         self.colorButton.setStyleSheet(buttonStyle)
         self.colorButton.setEnabled(False)
-        self.colorButton.clicked.connect(self._onColourSelect)
+        self.colorButton.clicked.connect(self._onColorSelect)
 
         def buildMenu(menu: QMenu | None, items: dict[nwStatusShape, str]) -> None:
             if menu is not None:
@@ -494,7 +494,7 @@ class _StatusPage(NFixedPage):
         return
 
     @pyqtSlot()
-    def _onColourSelect(self) -> None:
+    def _onColorSelect(self) -> None:
         """Open a dialog to select the status icon colour."""
         if (color := QColorDialog.getColor(self._color, self, self.trSelColor)).isValid():
             self._color = color
@@ -675,9 +675,9 @@ class _ReplacePage(NFixedPage):
         wCol0 = SHARED.project.options.getInt("GuiProjectSettings", "replaceColW", 130)
 
         # Title
-        self.pageTitle = NColourLabel(
+        self.pageTitle = NColorLabel(
             self.tr("Text Auto-Replace for Preview and Build"), self,
-            color=SHARED.theme.helpText, scale=NColourLabel.HEADER_SCALE
+            color=SHARED.theme.helpText, scale=NColorLabel.HEADER_SCALE
         )
 
         # List Box

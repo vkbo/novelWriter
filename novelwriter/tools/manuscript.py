@@ -773,7 +773,7 @@ class _PreviewWidget(QTextBrowser):
         self.buildProgress.setVisible(False)
         self.buildProgress.setMaximum(1)
         self.buildProgress.setValue(0)
-        self.buildProgress.setColours(
+        self.buildProgress.setColors(
             back=QColor(255, 255, 255, 224),
             track=QColor(196, 196, 196, 128),
             text=QColor(0, 0, 0)

@@ -37,7 +37,7 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter
 from novelwriter.core.spellcheck import UserDictionary
-from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog, NIconToolButton
 from novelwriter.types import QtDialogClose, QtDialogSave
 
@@ -65,9 +65,9 @@ class GuiWordList(NDialog):
         )
 
         # Header
-        self.headLabel = NColourLabel(
+        self.headLabel = NColorLabel(
             self.tr("Project Word List"), self, color=SHARED.theme.helpText,
-            scale=NColourLabel.HEADER_SCALE
+            scale=NColorLabel.HEADER_SCALE
         )
 
         self.importButton = NIconToolButton(self, iSz, "import", "green")

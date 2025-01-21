@@ -37,7 +37,7 @@ from PyQt6.QtWidgets import (
 from novelwriter import SHARED
 from novelwriter.common import formatTime, numberToRoman
 from novelwriter.constants import nwUnicode
-from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollablePage
+from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollablePage
 from novelwriter.extensions.modified import NNonBlockingDialog
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
@@ -67,9 +67,9 @@ class GuiNovelDetails(NNonBlockingDialog):
         )
 
         # Title
-        self.titleLabel = NColourLabel(
+        self.titleLabel = NColorLabel(
             self.tr("Novel Details"), self, color=SHARED.theme.helpText,
-            scale=NColourLabel.HEADER_SCALE, indent=4,
+            scale=NColorLabel.HEADER_SCALE, indent=4,
         )
 
         # Novel Selector
@@ -188,9 +188,9 @@ class _OverviewPage(NScrollablePage):
         super().__init__(parent=parent)
 
         # Project Info
-        self.projLabel = NColourLabel(
+        self.projLabel = NColorLabel(
             self.tr("Project"), self, color=SHARED.theme.helpText,
-            scale=NColourLabel.HEADER_SCALE
+            scale=NColorLabel.HEADER_SCALE
         )
 
         self.projName = QLabel("", self)
@@ -212,9 +212,9 @@ class _OverviewPage(NScrollablePage):
         self.projForm.setVerticalSpacing(4)
 
         # Novel Info
-        self.novelLabel = NColourLabel(
+        self.novelLabel = NColorLabel(
             self.tr("Selected Novel"), self, color=SHARED.theme.helpText,
-            scale=NColourLabel.HEADER_SCALE
+            scale=NColorLabel.HEADER_SCALE
         )
 
         self.novelName = QLabel("", self)
@@ -302,9 +302,9 @@ class _ContentsPage(NFixedPage):
         options = SHARED.project.options
 
         # Title
-        self.contentLabel = NColourLabel(
+        self.contentLabel = NColorLabel(
             self.tr("Table of Contents"), self, color=SHARED.theme.helpText,
-            scale=NColourLabel.HEADER_SCALE
+            scale=NColorLabel.HEADER_SCALE
         )
 
         # Contents Tree

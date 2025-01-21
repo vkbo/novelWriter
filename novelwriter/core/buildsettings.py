@@ -178,7 +178,6 @@ SETTINGS_LABELS = {
 }
 
 RENAMED = {
-    "odt.addColours": "doc.addColours",
     "odt.pageHeader": "doc.pageHeader",
     "odt.pageCountOffset": "doc.pageCountOffset",
 }

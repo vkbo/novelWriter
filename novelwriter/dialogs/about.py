@@ -32,7 +32,7 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import cssCol, readTextFile
-from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.versioninfo import VersionInfoWidget
 from novelwriter.types import QtAlignRightTop, QtDialogClose
@@ -68,7 +68,7 @@ class GuiAbout(NDialog):
         self.nwLicence.setOpenExternalLinks(True)
 
         # Credits
-        self.lblCredits = NColourLabel(
+        self.lblCredits = NColorLabel(
             self.tr("Credits"), self, scale=1.6, bold=True
         )
 
