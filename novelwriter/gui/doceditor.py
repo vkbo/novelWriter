@@ -1104,10 +1104,10 @@ class GuiDocEditor(QPlainTextEdit):
             else:
                 self._completer.setVisible(False)
 
-        if self._doReplace and added == 1:
-            cursor = self.textCursor()
-            if self._autoReplace.process(text, cursor):
-                self._qDocument.syntaxHighlighter.rehighlightBlock(cursor.block())
+            if self._doReplace and added == 1:
+                cursor = self.textCursor()
+                if self._autoReplace.process(text, cursor):
+                    self._qDocument.syntaxHighlighter.rehighlightBlock(cursor.block())
 
         return
 
