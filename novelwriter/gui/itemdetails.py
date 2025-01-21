@@ -90,6 +90,7 @@ class GuiItemDetails(QWidget):
         self.statusData = QLabel("", self)
         self.statusData.setFont(fntValue)
         self.statusData.setAlignment(QtAlignLeft)
+        self.statusData.setWordWrap(True)
 
         # Class
         self.className = QLabel(self.tr("Class"), self)
