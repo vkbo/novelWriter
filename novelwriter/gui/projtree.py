@@ -955,23 +955,18 @@ class GuiProjectTree(QTreeView):
         if model := self._getModel():
             if point is None:
                 point = self.visualRect(self.currentIndex()).center()
-
-            if (
-                point is not None
-                and (node := self._getNode(self.currentIndex()))
-                and (indices := self._selectedRows())
-            ):
-                ctxMenu = _TreeContextMenu(self, model, node, indices)
-                if node is SHARED.project.tree.trash:
-                    ctxMenu.buildTrashMenu()
-                elif len(indices) > 1:
-                    ctxMenu.buildMultiSelectMenu()
-                else:
-                    ctxMenu.buildSingleSelectMenu()
-
-                ctxMenu.exec(self.viewport().mapToGlobal(point))
-                ctxMenu.setParent(None)
-
+            if point is not None:
+                index = self.indexAt(point)
+                if (node := self._getNode(index)) and (indices := self._selectedRows()):
+                    ctxMenu = _TreeContextMenu(self, model, node, indices)
+                    if node is SHARED.project.tree.trash:
+                        ctxMenu.buildTrashMenu()
+                    elif len(indices) > 1:
+                        ctxMenu.buildMultiSelectMenu()
+                    else:
+                        ctxMenu.buildSingleSelectMenu()
+                    ctxMenu.exec(self.viewport().mapToGlobal(point))
+                    ctxMenu.setParent(None)
         return
 
     ##
