@@ -46,7 +46,7 @@ from novelwriter.common import checkInt, formatFileFilter
 from novelwriter.constants import nwKeyWords, nwLabels, nwStats, nwStyles, trConst
 from novelwriter.enum import nwChange, nwDocMode, nwItemClass, nwItemLayout, nwItemType, nwOutline
 from novelwriter.error import logException
-from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.types import (
     QtAlignLeftTop, QtAlignRight, QtAlignRightTop, QtDecoration,
@@ -222,8 +222,8 @@ class GuiOutlineToolBar(QToolBar):
         stretch.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
 
         # Novel Selector
-        self.novelLabel = NColourLabel(
-            self.tr("Outline of"), self, scale=NColourLabel.HEADER_SCALE, bold=True
+        self.novelLabel = NColorLabel(
+            self.tr("Outline of"), self, scale=NColorLabel.HEADER_SCALE, bold=True
         )
         self.novelLabel.setContentsMargins(0, 0, 12, 0)
 

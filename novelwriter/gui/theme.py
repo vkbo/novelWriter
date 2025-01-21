@@ -250,26 +250,26 @@ class GuiTheme:
         # Icons
         sec = "Icons"
         if parser.has_section(sec):
-            self.iconCache.setIconColor("default", self._parseColour(parser, sec, "default"))
-            self.iconCache.setIconColor("faded",   self._parseColour(parser, sec, "faded"))
-            self.iconCache.setIconColor("red",     self._parseColour(parser, sec, "red"))
-            self.iconCache.setIconColor("orange",  self._parseColour(parser, sec, "orange"))
-            self.iconCache.setIconColor("yellow",  self._parseColour(parser, sec, "yellow"))
-            self.iconCache.setIconColor("green",   self._parseColour(parser, sec, "green"))
-            self.iconCache.setIconColor("aqua",    self._parseColour(parser, sec, "aqua"))
-            self.iconCache.setIconColor("blue",    self._parseColour(parser, sec, "blue"))
-            self.iconCache.setIconColor("purple",  self._parseColour(parser, sec, "purple"))
+            self.iconCache.setIconColor("default", self._parseColor(parser, sec, "default"))
+            self.iconCache.setIconColor("faded",   self._parseColor(parser, sec, "faded"))
+            self.iconCache.setIconColor("red",     self._parseColor(parser, sec, "red"))
+            self.iconCache.setIconColor("orange",  self._parseColor(parser, sec, "orange"))
+            self.iconCache.setIconColor("yellow",  self._parseColor(parser, sec, "yellow"))
+            self.iconCache.setIconColor("green",   self._parseColor(parser, sec, "green"))
+            self.iconCache.setIconColor("aqua",    self._parseColor(parser, sec, "aqua"))
+            self.iconCache.setIconColor("blue",    self._parseColor(parser, sec, "blue"))
+            self.iconCache.setIconColor("purple",  self._parseColor(parser, sec, "purple"))
 
         # Project
         sec = "Project"
         if parser.has_section(sec):
-            self.iconCache.setIconColor("root",    self._parseColour(parser, sec, "root"))
-            self.iconCache.setIconColor("folder",  self._parseColour(parser, sec, "folder"))
-            self.iconCache.setIconColor("file",    self._parseColour(parser, sec, "file"))
-            self.iconCache.setIconColor("title",   self._parseColour(parser, sec, "title"))
-            self.iconCache.setIconColor("chapter", self._parseColour(parser, sec, "chapter"))
-            self.iconCache.setIconColor("scene",   self._parseColour(parser, sec, "scene"))
-            self.iconCache.setIconColor("note",    self._parseColour(parser, sec, "note"))
+            self.iconCache.setIconColor("root",    self._parseColor(parser, sec, "root"))
+            self.iconCache.setIconColor("folder",  self._parseColor(parser, sec, "folder"))
+            self.iconCache.setIconColor("file",    self._parseColor(parser, sec, "file"))
+            self.iconCache.setIconColor("title",   self._parseColor(parser, sec, "title"))
+            self.iconCache.setIconColor("chapter", self._parseColor(parser, sec, "chapter"))
+            self.iconCache.setIconColor("scene",   self._parseColor(parser, sec, "scene"))
+            self.iconCache.setIconColor("note",    self._parseColor(parser, sec, "note"))
 
         # Palette
         sec = "Palette"
@@ -292,9 +292,9 @@ class GuiTheme:
         # GUI
         sec = "GUI"
         if parser.has_section(sec):
-            self.helpText  = self._parseColour(parser, sec, "helptext")
-            self.fadedText = self._parseColour(parser, sec, "fadedtext")
-            self.errorText = self._parseColour(parser, sec, "errortext")
+            self.helpText  = self._parseColor(parser, sec, "helptext")
+            self.fadedText = self._parseColor(parser, sec, "fadedtext")
+            self.errorText = self._parseColor(parser, sec, "errortext")
 
         # Update Dependant Colours
         # Based on: https://github.com/qt/qtbase/blob/dev/src/gui/kernel/qplatformtheme.cpp
@@ -399,26 +399,26 @@ class GuiTheme:
         sec = "Syntax"
         syntax = SyntaxColors()
         if parser.has_section(sec):
-            syntax.back   = self._parseColour(parser, sec, "background")
-            syntax.text   = self._parseColour(parser, sec, "text")
-            syntax.link   = self._parseColour(parser, sec, "link")
-            syntax.head   = self._parseColour(parser, sec, "headertext")
-            syntax.headH  = self._parseColour(parser, sec, "headertag")
-            syntax.emph   = self._parseColour(parser, sec, "emphasis")
-            syntax.dialN  = self._parseColour(parser, sec, "dialog")
-            syntax.dialA  = self._parseColour(parser, sec, "altdialog")
-            syntax.hidden = self._parseColour(parser, sec, "hidden")
-            syntax.note   = self._parseColour(parser, sec, "note")
-            syntax.code   = self._parseColour(parser, sec, "shortcode")
-            syntax.key    = self._parseColour(parser, sec, "keyword")
-            syntax.tag    = self._parseColour(parser, sec, "tag")
-            syntax.val    = self._parseColour(parser, sec, "value")
-            syntax.opt    = self._parseColour(parser, sec, "optional")
-            syntax.spell  = self._parseColour(parser, sec, "spellcheckline")
-            syntax.error  = self._parseColour(parser, sec, "errorline")
-            syntax.repTag = self._parseColour(parser, sec, "replacetag")
-            syntax.mod    = self._parseColour(parser, sec, "modifier")
-            syntax.mark   = self._parseColour(parser, sec, "texthighlight")
+            syntax.back   = self._parseColor(parser, sec, "background")
+            syntax.text   = self._parseColor(parser, sec, "text")
+            syntax.link   = self._parseColor(parser, sec, "link")
+            syntax.head   = self._parseColor(parser, sec, "headertext")
+            syntax.headH  = self._parseColor(parser, sec, "headertag")
+            syntax.emph   = self._parseColor(parser, sec, "emphasis")
+            syntax.dialN  = self._parseColor(parser, sec, "dialog")
+            syntax.dialA  = self._parseColor(parser, sec, "altdialog")
+            syntax.hidden = self._parseColor(parser, sec, "hidden")
+            syntax.note   = self._parseColor(parser, sec, "note")
+            syntax.code   = self._parseColor(parser, sec, "shortcode")
+            syntax.key    = self._parseColor(parser, sec, "keyword")
+            syntax.tag    = self._parseColor(parser, sec, "tag")
+            syntax.val    = self._parseColor(parser, sec, "value")
+            syntax.opt    = self._parseColor(parser, sec, "optional")
+            syntax.spell  = self._parseColor(parser, sec, "spellcheckline")
+            syntax.error  = self._parseColor(parser, sec, "errorline")
+            syntax.repTag = self._parseColor(parser, sec, "replacetag")
+            syntax.mod    = self._parseColor(parser, sec, "modifier")
+            syntax.mark   = self._parseColor(parser, sec, "texthighlight")
 
         self.syntaxMeta = meta
         self.syntaxTheme = syntax
@@ -513,7 +513,7 @@ class GuiTheme:
 
         return
 
-    def _parseColour(self, parser: NWConfigParser, section: str, name: str) -> QColor:
+    def _parseColor(self, parser: NWConfigParser, section: str, name: str) -> QColor:
         """Parse a colour value from a config string."""
         return QColor(*parser.rdIntList(section, name, [0, 0, 0, 255]))
 
@@ -521,7 +521,7 @@ class GuiTheme:
         self, parser: NWConfigParser, section: str, name: str, value: QPalette.ColorRole
     ) -> None:
         """Set a palette colour value from a config string."""
-        self._guiPalette.setBrush(value, self._parseColour(parser, section, name))
+        self._guiPalette.setBrush(value, self._parseColor(parser, section, name))
         return
 
     def _buildStyleSheets(self, palette: QPalette) -> None:

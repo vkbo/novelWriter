@@ -38,7 +38,7 @@ from novelwriter.common import compact, describeFont, uniqueCompact
 from novelwriter.config import DEF_GUI, DEF_ICONS, DEF_SYNTAX, DEF_TREECOL
 from novelwriter.constants import nwLabels, nwUnicode, trConst
 from novelwriter.dialogs.quotes import GuiQuoteSelect
-from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
+from novelwriter.extensions.configlayout import NColorLabel, NScrollableForm
 from novelwriter.extensions.modified import (
     NComboBox, NDialog, NDoubleSpinBox, NIconToolButton, NSpinBox
 )
@@ -63,9 +63,9 @@ class GuiPreferences(NDialog):
         self.resize(*CONFIG.prefsWinSize)
 
         # Title
-        self.titleLabel = NColourLabel(
+        self.titleLabel = NColorLabel(
             self.tr("Preferences"), self, color=SHARED.theme.helpText,
-            scale=NColourLabel.HEADER_SCALE, indent=4,
+            scale=NColorLabel.HEADER_SCALE, indent=4,
         )
 
         # Search Box

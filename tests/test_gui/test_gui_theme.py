@@ -79,12 +79,12 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     }
 
     # Test the parser for several valid and invalid values
-    assert mainTheme._parseColour(parser, "Palette", "colour1").getRgb() == (100, 150, 200, 255)
-    assert mainTheme._parseColour(parser, "Palette", "colour2").getRgb() == (100, 150, 200, 250)
-    assert mainTheme._parseColour(parser, "Palette", "colour3").getRgb() == (100, 150, 200, 250)
-    assert mainTheme._parseColour(parser, "Palette", "colour4").getRgb() == (250, 250, 0, 255)
-    assert mainTheme._parseColour(parser, "Palette", "colour5").getRgb() == (0, 0, 0, 0)
-    assert mainTheme._parseColour(parser, "Palette", "colour6").getRgb() == (0, 127, 255, 255)
+    assert mainTheme._parseColor(parser, "Palette", "colour1").getRgb() == (100, 150, 200, 255)
+    assert mainTheme._parseColor(parser, "Palette", "colour2").getRgb() == (100, 150, 200, 250)
+    assert mainTheme._parseColor(parser, "Palette", "colour3").getRgb() == (100, 150, 200, 250)
+    assert mainTheme._parseColor(parser, "Palette", "colour4").getRgb() == (250, 250, 0, 255)
+    assert mainTheme._parseColor(parser, "Palette", "colour5").getRgb() == (0, 0, 0, 0)
+    assert mainTheme._parseColor(parser, "Palette", "colour6").getRgb() == (0, 127, 255, 255)
 
     # The palette should load with the parsed values
     mainTheme._setPalette(parser, "Palette", "colour1", QPalette.ColorRole.Window)

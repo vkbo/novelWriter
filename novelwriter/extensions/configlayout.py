@@ -101,7 +101,7 @@ class NScrollableForm(QScrollArea):
         self._indent = 12
 
         self._sections: dict[int, QLabel] = {}
-        self._editable: dict[str, NColourLabel] = {}
+        self._editable: dict[str, NColorLabel] = {}
         self._index: dict[str, QWidget] = {}
 
         self._layout = QVBoxLayout()
@@ -216,7 +216,7 @@ class NScrollableForm(QScrollArea):
         qLabel.setBuddy(qWidget)
 
         if helpText:
-            qHelp = NColourLabel(
+            qHelp = NColorLabel(
                 str(helpText), self, color=self._helpCol,
                 scale=self._fontScale, wrap=True, indent=self._indent
             )
@@ -257,7 +257,7 @@ class NScrollableForm(QScrollArea):
         return
 
 
-class NColourLabel(QLabel):
+class NColorLabel(QLabel):
     """Extension: A Coloured Label
 
     A custom widget that draws a label in a specific colour, and

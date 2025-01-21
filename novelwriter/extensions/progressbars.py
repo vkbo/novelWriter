@@ -56,7 +56,7 @@ class NProgressCircle(QProgressBar):
         self._cRect = QRect(point, point, size - 2*point, size - 2*point)
         self._dPen = QPen(QtTransparent)
         self._dBrush = QBrush(QtTransparent)
-        self.setColours(
+        self.setColors(
             track=self.palette().alternateBase().color(),
             bar=self.palette().highlight().color(),
             text=self.palette().text().color()
@@ -66,8 +66,10 @@ class NProgressCircle(QProgressBar):
         self.setFixedHeight(size)
         return
 
-    def setColours(self, back: QColor | None = None, track: QColor | None = None,
-                   bar: QColor | None = None, text: QColor | None = None) -> None:
+    def setColors(
+        self, back: QColor | None = None, track: QColor | None = None,
+        bar: QColor | None = None, text: QColor | None = None
+    ) -> None:
         """Set the colours of the widget."""
         if isinstance(back, QColor):
             self._dPen = QPen(back)

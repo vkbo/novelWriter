@@ -61,7 +61,7 @@ from novelwriter.enum import (
     nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
     nwItemType, nwTrinary
 )
-from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
 from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
@@ -303,7 +303,7 @@ class GuiDocEditor(QPlainTextEdit):
             palette.setColor(QPalette.ColorRole.Text, syntax.text)
             viewport.setPalette(palette)
 
-        self.docHeader.matchColours()
+        self.docHeader.matchColors()
         self.docFooter.matchColors()
 
         return
@@ -2833,7 +2833,7 @@ class GuiDocEditHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = NColourLabel("", self, faded=SHARED.theme.fadedText)
+        self.itemTitle = NColorLabel("", self, faded=SHARED.theme.fadedText)
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
@@ -2951,11 +2951,11 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton.setStyleSheet(buttonStyle)
         self.closeButton.setStyleSheet(buttonStyle)
 
-        self.matchColours()
+        self.matchColors()
 
         return
 
-    def matchColours(self) -> None:
+    def matchColors(self) -> None:
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
