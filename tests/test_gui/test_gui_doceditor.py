@@ -332,6 +332,7 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
 def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     """Test the editor context menu."""
     monkeypatch.setattr(QMenu, "exec", lambda *a: None)
+    monkeypatch.setattr(QMenu, "setParent", lambda *a: None)
 
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
@@ -471,6 +472,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
 def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
     """Test the document spell checker."""
     monkeypatch.setattr(QMenu, "exec", lambda *a: None)
+    monkeypatch.setattr(QMenu, "setParent", lambda *a: None)
 
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
