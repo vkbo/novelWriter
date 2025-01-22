@@ -248,7 +248,7 @@ class GuiNovelToolBar(QWidget):
         self.outerBox.addWidget(self.tbNovel)
         self.outerBox.addWidget(self.tbRefresh)
         self.outerBox.addWidget(self.tbMore)
-        self.outerBox.setContentsMargins(2, 2, 0, 2)
+        self.outerBox.setContentsMargins(4, 2, 0, 2)
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
@@ -393,7 +393,7 @@ class GuiNovelTree(QTreeWidget):
         self.setUniformRowHeights(True)
         self.setAllColumnsShowFocus(True)
         self.setHeaderHidden(True)
-        self.setIndentation(0)
+        self.setIndentation(2)
         self.setColumnCount(4)
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
