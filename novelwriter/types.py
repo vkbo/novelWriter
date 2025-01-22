@@ -70,6 +70,7 @@ QtSelected = QStyle.StateFlag.State_Selected
 # Qt Colour Types
 
 QtHexRgb = QColor.NameFormat.HexRgb
+QtHexArgb = QColor.NameFormat.HexArgb
 
 # Qt Tree and Table Types
 

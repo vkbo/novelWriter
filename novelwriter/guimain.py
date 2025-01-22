@@ -1046,8 +1046,6 @@ class GuiMain(QMainWindow):
             SHARED.project.tree.refreshAllItems()
 
         if theme:
-            # We are doing this manually instead of connecting to
-            # paletteChanged since the processing order matters
             SHARED.theme.loadTheme()
             self.setPalette(QApplication.palette())
             self.docEditor.updateTheme()

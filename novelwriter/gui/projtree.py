@@ -245,6 +245,7 @@ class GuiProjectToolBar(QWidget):
         iSz = SHARED.theme.baseIconSize
 
         self.setContentsMargins(0, 0, 0, 0)
+        self.setBackgroundRole(QPalette.ColorRole.Base)
         self.setAutoFillBackground(True)
 
         # Widget Label
@@ -351,10 +352,6 @@ class GuiProjectToolBar(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        qPalette = self.palette()
-        qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
-        self.setPalette(qPalette)
-
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbQuick.setStyleSheet(buttonStyle)
         self.tbMoveU.setStyleSheet(buttonStyle)

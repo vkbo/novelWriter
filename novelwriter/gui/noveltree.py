@@ -201,6 +201,7 @@ class GuiNovelToolBar(QWidget):
         iSz = SHARED.theme.baseIconSize
 
         self.setContentsMargins(0, 0, 0, 0)
+        self.setBackgroundRole(QPalette.ColorRole.Base)
         self.setAutoFillBackground(True)
 
         # Novel Selector
@@ -269,10 +270,6 @@ class GuiNovelToolBar(QWidget):
         self.tbNovel.setThemeIcon("cls_novel", "red")
         self.tbRefresh.setThemeIcon("refresh", "green")
         self.tbMore.setThemeIcon("more_vertical")
-
-        qPalette = self.palette()
-        qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
-        self.setPalette(qPalette)
 
         # StyleSheets
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)

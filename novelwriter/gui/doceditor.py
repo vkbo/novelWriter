@@ -42,9 +42,9 @@ from PyQt6.QtCore import (
     pyqtSlot
 )
 from PyQt6.QtGui import (
-    QAction, QColor, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent,
-    QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent,
-    QShortcut, QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
+    QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent, QShortcut,
+    QTextBlock, QTextCursor, QTextDocument, QTextOption
 )
 from PyQt6.QtWidgets import (
     QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
@@ -100,6 +100,7 @@ class GuiDocEditor(QPlainTextEdit):
         Qt.Key.Key_Left, Qt.Key.Key_Right, Qt.Key.Key_Up, Qt.Key.Key_Down,
         Qt.Key.Key_PageUp, Qt.Key.Key_PageDown
     )
+    ENTER_KEYS = (Qt.Key.Key_Return, Qt.Key.Key_Enter)
 
     # Custom Signals
     closeEditorRequest = pyqtSignal()
@@ -927,7 +928,7 @@ class GuiDocEditor(QPlainTextEdit):
           * We also handle automatic scrolling here.
         """
         self._lastActive = time()
-        if self.docSearch.anyFocus() and event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+        if self.docSearch.anyFocus() and event.key() in self.ENTER_KEYS:
             return
         elif event == QKeySequence.StandardKey.Redo:
             self.docAction(nwDocAction.REDO)
@@ -1325,6 +1326,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.beginSearch()
             return
 
+        prevFocus = QApplication.focusWidget() or self
         resS, resE = self.findAllOccurences()
         if len(resS) == 0 and self._docHandle:
             self.docSearch.setResultCount(0, 0)
@@ -1333,7 +1335,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop)
                 QApplication.processEvents()
                 self.beginSearch()
-                self.setFocus()
+                prevFocus.setFocus()
             return
 
         cursor = self.textCursor()
@@ -1353,7 +1355,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop)
                 QApplication.processEvents()
                 self.beginSearch()
-                self.setFocus()
+                prevFocus.setFocus()
                 return
             else:
                 resIdx = 0 if doLoop else maxIdx
@@ -2662,10 +2664,11 @@ class GuiDocEditSearch(QFrame):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        qPalette = QApplication.palette()
-        self.setPalette(qPalette)
-        self.searchBox.setPalette(qPalette)
-        self.replaceBox.setPalette(qPalette)
+        palette = QApplication.palette()
+
+        self.setPalette(palette)
+        self.searchBox.setPalette(palette)
+        self.replaceBox.setPalette(palette)
 
         # Set icons
         self.toggleCase.setIcon(SHARED.theme.getIcon("search_case"))
@@ -2681,24 +2684,6 @@ class GuiDocEditSearch(QFrame):
         # Set stylesheets
         self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
         self.showReplace.setStyleSheet("QToolButton {border: none; background: transparent;}")
-
-        # Construct Box Colours
-        qPalette = self.searchBox.palette()
-        baseCol = qPalette.base().color()
-        rCol = baseCol.redF() + 0.1
-        gCol = baseCol.greenF() - 0.1
-        bCol = baseCol.blueF() - 0.1
-
-        mCol = max(rCol, gCol, bCol, 1.0)
-        errCol = QColor()
-        errCol.setRedF(rCol/mCol)
-        errCol.setGreenF(gCol/mCol)
-        errCol.setBlueF(bCol/mCol)
-
-        self.rxCol = {
-            True: baseCol,
-            False: errCol
-        }
 
         return
 
@@ -2716,7 +2701,7 @@ class GuiDocEditSearch(QFrame):
 
     def anyFocus(self) -> bool:
         """Return True if any of the input boxes have focus."""
-        return self.searchBox.hasFocus() or self.replaceBox.hasFocus()
+        return self.hasFocus() or self.isAncestorOf(QApplication.focusWidget())
 
     ##
     #  Public Slots
@@ -2800,9 +2785,12 @@ class GuiDocEditSearch(QFrame):
         """Highlight the search box to indicate the search string is or
         isn't valid. Take the colour from the replace box.
         """
-        qPalette = self.replaceBox.palette()
-        qPalette.setColor(QPalette.ColorRole.Base, self.rxCol[isValid])
-        self.searchBox.setPalette(qPalette)
+        palette = self.replaceBox.palette()
+        palette.setColor(
+            QPalette.ColorRole.Text,
+            palette.text().color() if isValid else SHARED.theme.errorText
+        )
+        self.searchBox.setPalette(palette)
         return
 
 
