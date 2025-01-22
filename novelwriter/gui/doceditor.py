@@ -2685,12 +2685,6 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
         self.showReplace.setStyleSheet("QToolButton {border: none; background: transparent;}")
 
-        # Construct Box Colours
-        self.rxCol = {
-            True: palette.base().color(),
-            False: SHARED.theme.errorText.darker(200),
-        }
-
         return
 
     def cycleFocus(self) -> bool:
@@ -2791,9 +2785,12 @@ class GuiDocEditSearch(QFrame):
         """Highlight the search box to indicate the search string is or
         isn't valid. Take the colour from the replace box.
         """
-        qPalette = self.replaceBox.palette()
-        qPalette.setColor(QPalette.ColorRole.Base, self.rxCol[isValid])
-        self.searchBox.setPalette(qPalette)
+        palette = self.replaceBox.palette()
+        palette.setColor(
+            QPalette.ColorRole.Text,
+            palette.text().color() if isValid else SHARED.theme.errorText
+        )
+        self.searchBox.setPalette(palette)
         return
 
 
