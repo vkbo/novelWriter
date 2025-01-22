@@ -100,6 +100,7 @@ class GuiDocEditor(QPlainTextEdit):
         Qt.Key.Key_Left, Qt.Key.Key_Right, Qt.Key.Key_Up, Qt.Key.Key_Down,
         Qt.Key.Key_PageUp, Qt.Key.Key_PageDown
     )
+    ENTER_KEYS = (Qt.Key.Key_Return, Qt.Key.Key_Enter)
 
     # Custom Signals
     closeEditorRequest = pyqtSignal()
@@ -927,7 +928,7 @@ class GuiDocEditor(QPlainTextEdit):
           * We also handle automatic scrolling here.
         """
         self._lastActive = time()
-        if self.docSearch.anyFocus() and event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+        if self.docSearch.anyFocus() and event.key() in self.ENTER_KEYS:
             return
         elif event == QKeySequence.StandardKey.Redo:
             self.docAction(nwDocAction.REDO)
@@ -1325,6 +1326,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.beginSearch()
             return
 
+        rFocus = self.docSearch.searchBox if self.docSearch.anyFocus() else self
         resS, resE = self.findAllOccurences()
         if len(resS) == 0 and self._docHandle:
             self.docSearch.setResultCount(0, 0)
@@ -1333,7 +1335,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop)
                 QApplication.processEvents()
                 self.beginSearch()
-                self.setFocus()
+                rFocus.setFocus()
             return
 
         cursor = self.textCursor()
@@ -1353,7 +1355,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop)
                 QApplication.processEvents()
                 self.beginSearch()
-                self.setFocus()
+                rFocus.setFocus()
                 return
             else:
                 resIdx = 0 if doLoop else maxIdx
@@ -2705,7 +2707,7 @@ class GuiDocEditSearch(QFrame):
 
     def anyFocus(self) -> bool:
         """Return True if any of the input boxes have focus."""
-        return self.searchBox.hasFocus() or self.replaceBox.hasFocus()
+        return self.hasFocus() or self.isAncestorOf(QApplication.focusWidget())
 
     ##
     #  Public Slots
