@@ -1326,7 +1326,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.beginSearch()
             return
 
-        rFocus = self.docSearch.searchBox if self.docSearch.anyFocus() else self
+        prevFocus = QApplication.focusWidget() or self
         resS, resE = self.findAllOccurences()
         if len(resS) == 0 and self._docHandle:
             self.docSearch.setResultCount(0, 0)
@@ -1335,7 +1335,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop)
                 QApplication.processEvents()
                 self.beginSearch()
-                rFocus.setFocus()
+                prevFocus.setFocus()
             return
 
         cursor = self.textCursor()
@@ -1355,7 +1355,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop)
                 QApplication.processEvents()
                 self.beginSearch()
-                rFocus.setFocus()
+                prevFocus.setFocus()
                 return
             else:
                 resIdx = 0 if doLoop else maxIdx
