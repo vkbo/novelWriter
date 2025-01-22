@@ -71,6 +71,7 @@ class GuiProjectSearch(QWidget):
         self._blocked = False
         self._map: dict[str, tuple[int, float]] = {}
 
+        self.setContentsMargins(0, 0, 0, 0)
         self.setBackgroundRole(QPalette.ColorRole.Base)
         self.setAutoFillBackground(True)
 
