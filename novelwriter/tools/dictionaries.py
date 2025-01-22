@@ -36,10 +36,10 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import cssCol, formatFileFilter, formatInt, getFileSize, openExternalPath
+from novelwriter.common import formatFileFilter, formatInt, getFileSize, openExternalPath
 from novelwriter.error import formatException
 from novelwriter.extensions.modified import NIconToolButton, NNonBlockingDialog
-from novelwriter.types import QtDialogClose
+from novelwriter.types import QtDialogClose, QtHexArgb
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +101,6 @@ class GuiDictionaries(NNonBlockingDialog):
         # Info Box
         self.infoBox = QPlainTextEdit(self)
         self.infoBox.setReadOnly(True)
-        self.infoBox.setFixedHeight(4*SHARED.theme.fontPixelSize)
         self.infoBox.setFrameStyle(QFrame.Shape.NoFrame)
 
         # Buttons
@@ -109,21 +108,16 @@ class GuiDictionaries(NNonBlockingDialog):
         self.buttonBox.rejected.connect(self.reject)
 
         # Assemble
-        self.innerBox = QVBoxLayout()
-        self.innerBox.addWidget(self.huInfo)
-        self.innerBox.addLayout(self.huPathBox)
-        self.innerBox.addLayout(self.huAddBox)
-        self.innerBox.addSpacing(8)
-        self.innerBox.addWidget(self.inInfo)
-        self.innerBox.addLayout(self.inBox)
-        self.innerBox.addWidget(self.infoBox)
-        self.innerBox.setSpacing(4)
-
         self.outerBox = QVBoxLayout()
-        self.outerBox.addLayout(self.innerBox, 0)
-        self.outerBox.addStretch(1)
+        self.outerBox.addWidget(self.huInfo, 0)
+        self.outerBox.addLayout(self.huPathBox, 0)
+        self.outerBox.addLayout(self.huAddBox, 0)
+        self.outerBox.addSpacing(8)
+        self.outerBox.addWidget(self.inInfo, 0)
+        self.outerBox.addLayout(self.inBox, 0)
+        self.outerBox.addWidget(self.infoBox, 1)
+        self.outerBox.addSpacing(8)
         self.outerBox.addWidget(self.buttonBox, 0)
-        self.outerBox.setSpacing(16)
 
         self.setLayout(self.outerBox)
 
@@ -248,8 +242,8 @@ class GuiDictionaries(NNonBlockingDialog):
         cursor.movePosition(QTextCursor.MoveOperation.End)
         if cursor.position() > 0:
             cursor.insertText("\n")
-        textCol = cssCol(SHARED.theme.errorText if err else self.palette().text().color())
-        cursor.insertHtml(f"<font style='color: {textCol}'>{text}</font>")
+        textCol = SHARED.theme.errorText if err else self.palette().text().color()
+        cursor.insertHtml(f"<font style='color: {textCol.name(QtHexArgb)}'>{text}</font>")
         cursor.movePosition(QTextCursor.MoveOperation.End)
         cursor.deleteChar()
         self.infoBox.setTextCursor(cursor)

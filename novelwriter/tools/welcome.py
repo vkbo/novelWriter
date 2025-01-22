@@ -40,7 +40,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import cssCol, formatInt, makeFileNameSafe, qtAddAction, qtLambda
+from novelwriter.common import formatInt, makeFileNameSafe, qtAddAction, qtLambda
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.enum import nwItemClass
@@ -48,7 +48,7 @@ from novelwriter.extensions.configlayout import NWrappedWidgetBox
 from novelwriter.extensions.modified import NDialog, NIconToolButton, NSpinBox
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.versioninfo import VersionInfoWidget
-from novelwriter.types import QtAlignLeft, QtAlignRightTop, QtScrollAsNeeded, QtSelected
+from novelwriter.types import QtAlignLeft, QtAlignRightTop, QtHexArgb, QtScrollAsNeeded, QtSelected
 
 logger = logging.getLogger(__name__)
 
@@ -301,7 +301,9 @@ class _OpenProjectPage(QWidget):
 
         self._selectFirstItem()
 
-        baseCol = cssCol(self.palette().base().color(), PANEL_ALPHA)
+        base = self.palette().base().color()
+        base.setAlpha(PANEL_ALPHA)
+        baseCol = base.name(QtHexArgb)
         self.setStyleSheet(
             f"QListView {{border: none; background: {baseCol};}} "
             f"QLineEdit {{border: none; background: {baseCol}; padding: 4px;}} "
@@ -507,7 +509,9 @@ class _NewProjectPage(QWidget):
         # Styles
         # ======
 
-        baseCol = cssCol(self.palette().base().color(), PANEL_ALPHA)
+        base = self.palette().base().color()
+        base.setAlpha(PANEL_ALPHA)
+        baseCol = base.name(QtHexArgb)
         self.setStyleSheet(
             f"QScrollArea {{border: none; background: {baseCol};}} "
             f"_NewProjectForm {{border: none; background: {baseCol};}} "

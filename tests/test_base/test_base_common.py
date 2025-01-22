@@ -28,18 +28,17 @@ from xml.etree import ElementTree as ET
 import pytest
 
 from PyQt6.QtCore import QMimeData, QUrl
-from PyQt6.QtGui import QColor, QDesktopServices, QFont, QFontDatabase, QFontInfo
+from PyQt6.QtGui import QDesktopServices, QFont, QFontDatabase, QFontInfo
 
 from novelwriter.common import (
     NWConfigParser, checkBool, checkFloat, checkInt, checkIntTuple, checkPath,
-    checkString, checkStringNone, checkUuid, compact, cssCol,
-    decodeMimeHandles, describeFont, elide, encodeMimeHandles, firstFloat,
-    fontMatcher, formatFileFilter, formatInt, formatTime, formatTimeStamp,
-    formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
-    isItemLayout, isItemType, isListInstance, isTitleTag, jsonEncode,
-    makeFileNameSafe, minmax, numberToRoman, openExternalPath, readTextFile,
-    simplified, transferCase, uniqueCompact, xmlElement, xmlIndent, xmlSubElem,
-    yesNo
+    checkString, checkStringNone, checkUuid, compact, decodeMimeHandles,
+    describeFont, elide, encodeMimeHandles, firstFloat, fontMatcher,
+    formatFileFilter, formatInt, formatTime, formatTimeStamp, formatVersion,
+    fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass, isItemLayout,
+    isItemType, isListInstance, isTitleTag, jsonEncode, makeFileNameSafe,
+    minmax, numberToRoman, openExternalPath, readTextFile, simplified,
+    transferCase, uniqueCompact, xmlElement, xmlIndent, xmlSubElem, yesNo
 )
 
 from tests.mocked import causeOSError
@@ -510,13 +509,6 @@ def testBaseCommon_numberToRoman():
     assert numberToRoman(999, False) == "CMXCIX"
     assert numberToRoman(2010, False) == "MMX"
     assert numberToRoman(999, True) == "cmxcix"
-
-
-@pytest.mark.base
-def testBaseCommon_cssCol():
-    """Test the cssCol function."""
-    assert cssCol(QColor(0, 0, 0, 0)) == "rgba(0, 0, 0, 0)"
-    assert cssCol(QColor(10, 20, 30, 40)) == "rgba(10, 20, 30, 40)"
 
 
 @pytest.mark.base

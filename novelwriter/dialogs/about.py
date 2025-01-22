@@ -31,11 +31,11 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import cssCol, readTextFile
+from novelwriter.common import readTextFile
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.versioninfo import VersionInfoWidget
-from novelwriter.types import QtAlignRightTop, QtDialogClose
+from novelwriter.types import QtAlignRightTop, QtDialogClose, QtHexArgb
 
 logger = logging.getLogger(__name__)
 
@@ -135,7 +135,7 @@ class GuiAbout(NDialog):
 
     def _setStyleSheet(self) -> None:
         """Set stylesheet text document."""
-        baseCol = cssCol(self.palette().window().color())
+        baseCol = self.palette().window().color().name(QtHexArgb)
         self.txtCredits.setStyleSheet(
             f"QTextBrowser {{border: none; background: {baseCol};}} "
         )
