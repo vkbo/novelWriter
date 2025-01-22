@@ -42,9 +42,9 @@ from PyQt6.QtCore import (
     pyqtSlot
 )
 from PyQt6.QtGui import (
-    QAction, QColor, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent,
-    QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent,
-    QShortcut, QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
+    QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent, QShortcut,
+    QTextBlock, QTextCursor, QTextDocument, QTextOption
 )
 from PyQt6.QtWidgets import (
     QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
@@ -2662,10 +2662,11 @@ class GuiDocEditSearch(QFrame):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        qPalette = QApplication.palette()
-        self.setPalette(qPalette)
-        self.searchBox.setPalette(qPalette)
-        self.replaceBox.setPalette(qPalette)
+        palette = QApplication.palette()
+
+        self.setPalette(palette)
+        self.searchBox.setPalette(palette)
+        self.replaceBox.setPalette(palette)
 
         # Set icons
         self.toggleCase.setIcon(SHARED.theme.getIcon("search_case"))
@@ -2683,21 +2684,9 @@ class GuiDocEditSearch(QFrame):
         self.showReplace.setStyleSheet("QToolButton {border: none; background: transparent;}")
 
         # Construct Box Colours
-        qPalette = self.searchBox.palette()
-        baseCol = qPalette.base().color()
-        rCol = baseCol.redF() + 0.1
-        gCol = baseCol.greenF() - 0.1
-        bCol = baseCol.blueF() - 0.1
-
-        mCol = max(rCol, gCol, bCol, 1.0)
-        errCol = QColor()
-        errCol.setRedF(rCol/mCol)
-        errCol.setGreenF(gCol/mCol)
-        errCol.setBlueF(bCol/mCol)
-
         self.rxCol = {
-            True: baseCol,
-            False: errCol
+            True: palette.base().color(),
+            False: SHARED.theme.errorText.darker(200),
         }
 
         return

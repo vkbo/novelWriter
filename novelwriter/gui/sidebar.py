@@ -28,7 +28,6 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QEvent, QPoint, QSize, pyqtSignal
-from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QMenu, QVBoxLayout, QWidget
 
 from novelwriter import SHARED
@@ -125,10 +124,6 @@ class GuiSideBar(QWidget):
 
     def updateTheme(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
-        qPalette = self.palette()
-        qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
-        self.setPalette(qPalette)
-
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_BIG_TOOLBUTTON)
 
         self.tbProject.setStyleSheet(buttonStyle)
