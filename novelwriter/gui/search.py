@@ -28,7 +28,7 @@ import logging
 from time import time
 
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QAction, QCursor, QKeyEvent
+from PyQt6.QtGui import QAction, QCursor, QKeyEvent, QPalette
 from PyQt6.QtWidgets import (
     QApplication, QFrame, QHBoxLayout, QLabel, QLineEdit, QToolBar,
     QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
@@ -74,7 +74,7 @@ class GuiProjectSearch(QWidget):
         # Header
         self.viewLabel = QLabel(self.tr("Project Search"), self)
         self.viewLabel.setFont(SHARED.theme.guiFontB)
-        self.viewLabel.setContentsMargins(2, 4, 0, 2)
+        self.viewLabel.setContentsMargins(4, 4, 0, 2)
 
         # Options
         self.searchOpt = QToolBar(self)
@@ -138,6 +138,7 @@ class GuiProjectSearch(QWidget):
         self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setSpacing(2)
 
+        self.setAutoFillBackground(True)
         self.setLayout(self.outerBox)
         self.updateTheme()
 
@@ -155,6 +156,8 @@ class GuiProjectSearch(QWidget):
         qPalette = self.palette()
         colBase = cssCol(qPalette.base().color())
         colFocus = cssCol(qPalette.highlight().color())
+        qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
+        self.setPalette(qPalette)
 
         self.setStyleSheet(
             "QToolBar {padding: 0; background: none;} "
