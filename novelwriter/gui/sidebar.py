@@ -145,8 +145,8 @@ class GuiSideBar(QWidget):
         self.tbSearch.setThemeIcon("sb_search")
         self.tbOutline.setThemeIcon("sb_outline")
         self.tbBuild.setThemeIcon("sb_build")
-        self.tbDetails.setThemeIcon("list")
-        self.tbStats.setThemeIcon("stats")
+        self.tbDetails.setThemeIcon("sb_details")
+        self.tbStats.setThemeIcon("sb_stats")
         self.tbSettings.setThemeIcon("settings")
 
         return
