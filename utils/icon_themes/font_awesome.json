@@ -49,10 +49,12 @@
     "unfold-show": "caret-down",
 
     "sb_build": "up-right-from-square",
+    "sb_details": "list",
     "sb_novel": "book-open",
     "sb_outline": "table-list",
     "sb_project": "pen-to-square",
     "sb_search": "magnifying-glass",
+    "sb_stats": "chart-simple",
 
     "add": "plus",
     "bookmarks": "bookmark",
@@ -99,7 +101,7 @@
     "revert": "arrow-rotate-left",
     "settings": "gear",
     "star": "star",
-    "stats": "chart-simple",
+    "stats": "chart-line",
     "text": "file-lines",
     "timer_off": "pause",
     "timer": "clock",

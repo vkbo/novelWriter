@@ -49,10 +49,12 @@
     "unfold-show": "arrow-down-s-fill",
 
     "sb_build": "stack",
+    "sb_details": "pages",
     "sb_novel": "booklet",
     "sb_outline": "timeline-view",
     "sb_project": "file-edit",
     "sb_search": "file-search",
+    "sb_stats": "bar-chart-fill",
 
     "add": "add",
     "bookmarks": "bookmark",
@@ -99,7 +101,7 @@
     "revert": "reset-left",
     "settings": "settings-2",
     "star": "star-fill",
-    "stats": "numbers",
+    "stats": "line-chart",
     "text": "file-text",
     "timer_off": "zzz",
     "timer": "timer",

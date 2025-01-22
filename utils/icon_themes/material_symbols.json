@@ -49,10 +49,12 @@
     "unfold-show": "arrow_drop_down",
 
     "sb_build": "export_notes",
+    "sb_details": "format_list_bulleted",
     "sb_novel": "book_4_spark",
     "sb_outline": "summarize",
     "sb_project": "bookmark_manager",
     "sb_search": "search",
+    "sb_stats": "bar_chart",
 
     "add": "add",
     "bookmarks": "bookmarks",
@@ -99,7 +101,7 @@
     "revert": "settings_backup_restore",
     "settings": "settings",
     "star": "star",
-    "stats": "bar_chart",
+    "stats": "stacked_line_chart",
     "text": "subject",
     "timer_off": "timer_off",
     "timer": "timer",
