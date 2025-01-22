@@ -70,6 +70,7 @@ def testToolWelcome_Main(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
 def testToolWelcome_Open(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
     """Test the open tab in the Welcome window."""
     monkeypatch.setattr(QMenu, "exec", lambda *a: None)
+    monkeypatch.setattr(QMenu, "setParent", lambda *a: None)
 
     CONFIG.recentProjects.update("/stuff/project_one", "Project One", 12345, 1690000000)
     CONFIG.recentProjects.update("/stuff/project_two", "Project Two", 54321, 1700000000)
