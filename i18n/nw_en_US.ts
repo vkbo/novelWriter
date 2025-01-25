@@ -181,37 +181,37 @@
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="162" />
       <source>Title and Partition</source>
-      <translation type="unfinished" />
+      <translation>Title and Partition</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="163" />
       <source>Heading 1 and Chapter</source>
-      <translation type="unfinished" />
+      <translation>Heading 1 and Chapter</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="164" />
       <source>Heading 2 and Scene</source>
-      <translation type="unfinished" />
+      <translation>Heading 2 and Scene</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="165" />
       <source>Heading 3 and Section</source>
-      <translation type="unfinished" />
+      <translation>Heading 3 and Section</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="166" />
       <source>Heading 4</source>
-      <translation type="unfinished" />
+      <translation>Heading 4</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="167" />
       <source>Text Paragraph</source>
-      <translation type="unfinished">Text Paragraph</translation>
+      <translation>Text Paragraph</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="168" />
       <source>Scene Separator</source>
-      <translation type="unfinished">Scene Separator</translation>
+      <translation>Scene Separator</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="170" />
