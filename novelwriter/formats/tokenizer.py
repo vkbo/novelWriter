@@ -68,18 +68,9 @@ COMMENT_STYLE = {
     nwComment.COMMENT:  ComStyle(),
     nwComment.STORY:    ComStyle("", "modifier", "note"),
 }
-OUTLINE_CODE = {
-    BlockTyp.TITLE:   "TT",
-    BlockTyp.PART:    "PT",
-    BlockTyp.CHAPTER: "CH",
-    BlockTyp.SCENE:   "SC",
-    BlockTyp.HEAD1:   "H1",
-    BlockTyp.HEAD2:   "H2",
-    BlockTyp.HEAD3:   "H3",
-}
 HEADINGS = [
-    BlockTyp.TITLE, BlockTyp.PART, BlockTyp.CHAPTER, BlockTyp.SCENE, BlockTyp.SECTION,
-    BlockTyp.HEAD1, BlockTyp.HEAD2, BlockTyp.HEAD3, BlockTyp.HEAD4,
+    BlockTyp.TITLE, BlockTyp.PART, BlockTyp.HEAD1,
+    BlockTyp.HEAD2, BlockTyp.HEAD3, BlockTyp.HEAD4,
 ]
 SKIP_INDENT = HEADINGS + [BlockTyp.SEP, BlockTyp.SKIP]
 B_EMPTY: T_Block = (BlockTyp.EMPTY, "", "", [], BlockFmt.NONE)
@@ -697,7 +688,7 @@ class Tokenizer(ABC):
                 sHide = self._hideChapter if isPlain else self._hideUnNum
                 tFormat = self._fmtChapter if isPlain else self._fmtUnNum
                 if isNovel:
-                    tType = BlockTyp.CHAPTER
+                    tType = BlockTyp.HEAD1  # Promote
                     if isPlain:
                         self._hFormatter.incChapter()
                     if sHide:
@@ -732,7 +723,7 @@ class Tokenizer(ABC):
                 sHide = self._hideScene if isPlain else self._hideHScene
                 tFormat = self._fmtScene if isPlain else self._fmtHScene
                 if isNovel:
-                    tType = BlockTyp.SCENE
+                    tType = BlockTyp.HEAD2  # Promote
                     self._hFormatter.incScene()
                     if sHide:
                         tText = ""
@@ -764,7 +755,7 @@ class Tokenizer(ABC):
                 tText = aLine[5:].strip()
                 tType = BlockTyp.HEAD4
                 if isNovel:
-                    tType = BlockTyp.SECTION
+                    tType = BlockTyp.HEAD3  # Promote
                     if self._hideSection:
                         tText = ""
                         tType = BlockTyp.EMPTY
@@ -936,10 +927,24 @@ class Tokenizer(ABC):
 
     def buildOutline(self) -> None:
         """Build an outline of the text up to level 3 headings."""
+        isNovel = self._isNovel
         for tType, tKey, tText, _, _ in self._blocks:
-            if prefix := OUTLINE_CODE.get(tType):
-                text = tText.replace(nwHeadFmt.BR, " ").replace("&amp;", "&")
-                self._outline[tKey] = f"{prefix}|{text}"
+            if tType == BlockTyp.TITLE:
+                prefix = "TT"
+            elif tType == BlockTyp.PART:
+                prefix = "PT"
+            elif tType == BlockTyp.HEAD1:
+                prefix = "CH" if isNovel else "H1"
+            elif tType == BlockTyp.HEAD2:
+                prefix = "SC" if isNovel else "H2"
+            elif tType == BlockTyp.HEAD3 and not isNovel:
+                prefix = "H3"
+            else:
+                continue
+
+            text = tText.replace(nwHeadFmt.BR, " ").replace("&amp;", "&")
+            self._outline[tKey] = f"{prefix}|{text}"
+
         return
 
     def countStats(self) -> None:

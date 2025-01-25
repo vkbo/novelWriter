@@ -313,7 +313,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.CHAPTER, TM1, "Chapter One", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "Chapter One", [], BlockFmt.PBB),
     ]
 
     # Note File
@@ -334,7 +334,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.SCENE, TM1, "Scene One", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM1, "Scene One", [], BlockFmt.NONE),
     ]
 
     # Note File
@@ -355,7 +355,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.SECTION, TM1, "A Section", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, TM1, "A Section", [], BlockFmt.NONE),
     ]
 
     # Note File
@@ -399,7 +399,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.CHAPTER, TM1, "Prologue", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "Prologue", [], BlockFmt.PBB),
     ]
 
     # Note File
@@ -1639,7 +1639,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.CHAPTER, TM1, "C: Chapter One", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "C: Chapter One", [], BlockFmt.PBB),
     ]
 
     # H2: Unnumbered Chapter
@@ -1647,7 +1647,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.CHAPTER, TM1, "U: Prologue", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "U: Prologue", [], BlockFmt.PBB),
     ]
 
     # H2: Chapter Word Number
@@ -1656,7 +1656,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._hFormatter._chCount = 0
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.CHAPTER, TM1, "Chapter One", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "Chapter One", [], BlockFmt.PBB),
     ]
 
     # H2: Chapter Roman Number Upper Case
@@ -1664,7 +1664,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setChapterFormat(f"Chapter {nwHeadFmt.CH_ROMU}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.CHAPTER, TM1, "Chapter II", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "Chapter II", [], BlockFmt.PBB),
     ]
 
     # H2: Chapter Roman Number Lower Case
@@ -1672,7 +1672,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setChapterFormat(f"Chapter {nwHeadFmt.CH_ROML}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.CHAPTER, TM1, "Chapter iii", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "Chapter iii", [], BlockFmt.PBB),
     ]
 
     # Scenes
@@ -1683,7 +1683,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setSceneFormat(f"S: {nwHeadFmt.TITLE}", False)
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.SCENE, TM1, "S: Scene One", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM1, "S: Scene One", [], BlockFmt.NONE),
     ]
 
     # H3: Scene Hidden wo/Format
@@ -1731,7 +1731,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._hFormatter._scChCount = 0
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.SCENE, TM1, "Scene 1", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM1, "Scene 1", [], BlockFmt.NONE),
     ]
 
     # H3: Scene w/Chapter Number
@@ -1741,7 +1741,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._hFormatter._scChCount = 1
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.SCENE, TM1, "Scene 3.2", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM1, "Scene 3.2", [], BlockFmt.NONE),
     ]
 
     # Sections
@@ -1766,7 +1766,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setSectionFormat(f"X: {nwHeadFmt.TITLE}", False)
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.SECTION, TM1, "X: A Section", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, TM1, "X: A Section", [], BlockFmt.NONE),
     ]
 
     # H4: Section Separator

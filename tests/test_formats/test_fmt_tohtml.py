@@ -410,7 +410,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Unnumbered
     html._blocks = [
-        (BlockTyp.CHAPTER, tMeta, "Prologue", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, tMeta, "Prologue", [], BlockFmt.PBB),
     ]
     html.doConvert()
     assert html._pages[-1] == (

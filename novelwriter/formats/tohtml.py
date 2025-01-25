@@ -203,15 +203,15 @@ class ToHtml(Tokenizer):
                 tHead = tText.replace("\n", "<br>")
                 lines.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
 
-            elif tType in (BlockTyp.HEAD1, BlockTyp.CHAPTER):
+            elif tType == BlockTyp.HEAD1:
                 tHead = tText.replace("\n", "<br>")
                 lines.append(f"<h1{hStyle}>{aNm}{tHead}</h1>\n")
 
-            elif tType in (BlockTyp.HEAD2, BlockTyp.SCENE):
+            elif tType == BlockTyp.HEAD2:
                 tHead = tText.replace("\n", "<br>")
                 lines.append(f"<h2{hStyle}>{aNm}{tHead}</h2>\n")
 
-            elif tType in (BlockTyp.HEAD3, BlockTyp.SECTION):
+            elif tType == BlockTyp.HEAD3:
                 tHead = tText.replace("\n", "<br>")
                 lines.append(f"<h3{hStyle}>{aNm}{tHead}</h3>\n")
 
