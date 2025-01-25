@@ -79,44 +79,44 @@ def testFmtToQTextDocument_ConvertHeaders(mockGUI):
     block = doc.document.findBlockByNumber(1)
     assert block.text() == "Partition"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == doc._mHead[BlockTyp.HEAD1][0]
-    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.HEAD1][1]
+    assert bFmt.topMargin() == doc._mHead[BlockTyp.PART][0]
+    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.PART][1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.fontWeight() == QFont.Weight.Bold
-    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.HEAD1]
+    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.PART]
     assert cFmt.foreground().color() == THEME.head
 
     # Chapter
     block = doc.document.findBlockByNumber(2)
     assert block.text() == "Chapter"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == doc._mHead[BlockTyp.HEAD2][0]
-    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.HEAD2][1]
+    assert bFmt.topMargin() == doc._mHead[BlockTyp.CHAPTER][0]
+    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.CHAPTER][1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.fontWeight() == QFont.Weight.Bold
-    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.HEAD2]
+    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.CHAPTER]
     assert cFmt.foreground().color() == THEME.head
 
     # Scene
     block = doc.document.findBlockByNumber(3)
     assert block.text() == "Scene"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == doc._mHead[BlockTyp.HEAD3][0]
-    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.HEAD3][1]
+    assert bFmt.topMargin() == doc._mHead[BlockTyp.SCENE][0]
+    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.SCENE][1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.fontWeight() == QFont.Weight.Bold
-    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.HEAD3]
+    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.SCENE]
     assert cFmt.foreground().color() == THEME.head
 
     # Section
     block = doc.document.findBlockByNumber(4)
     assert block.text() == "Section"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == doc._mHead[BlockTyp.HEAD4][0]
-    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.HEAD4][1]
+    assert bFmt.topMargin() == doc._mHead[BlockTyp.SECTION][0]
+    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.SECTION][1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.fontWeight() == QFont.Weight.Bold
-    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.HEAD4]
+    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.SECTION]
     assert cFmt.foreground().color() == THEME.head
 
 
