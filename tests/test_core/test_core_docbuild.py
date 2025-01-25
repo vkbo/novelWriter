@@ -573,8 +573,8 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert docFile.read_text(encoding="utf-8") == (
         "# New Novel\n\n"
         "By Jane Doe\n\n"
-        "## Chapter: New Chapter\n\n"
-        "### Scene: New Scene\n\n"
+        "# Chapter: New Chapter\n\n"
+        "## Scene: New Scene\n\n"
         "# Notes: Plot\n\n"
         "# Main Plot\n\n"
         "**Text**\n\n"
@@ -594,8 +594,8 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert docFile.read_text(encoding="utf-8") == (
         "# New Novel\n\n"
         "By Jane Doe\n\n"
-        "## Chapter: New Chapter\n\n"
-        "### Scene: New Scene\n\n"
+        "# Chapter: New Chapter\n\n"
+        "## Scene: New Scene\n\n"
         "# Notes: Plot\n\n"
         "# Main Plot\n\n"
         "**Text**\n\n"
