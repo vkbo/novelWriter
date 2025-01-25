@@ -58,8 +58,8 @@ def testFmtToDocX_HeadingStyles(mockGUI):
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 
-    # Heading Level 1
-    # ===============
+    # Partition
+    # =========
     doc._text = "# Hello World"
 
     # Plain
@@ -68,7 +68,7 @@ def testFmtToDocX_HeadingStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading1" /><w:jc w:val="center" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Title" /><w:jc w:val="center" /></w:pPr>'
         '<w:r><w:br w:type="page" /></w:r>'
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
@@ -80,13 +80,13 @@ def testFmtToDocX_HeadingStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading1" /><w:jc w:val="center" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Title" /><w:jc w:val="center" /></w:pPr>'
         '<w:r><w:br w:type="page" /></w:r>'
         '<w:r><w:rPr /><w:t>Part</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 
-    # Heading Level 2
-    # ===============
+    # Chapter
+    # =======
     doc._text = "## Hello World"
 
     # Plain
@@ -95,7 +95,7 @@ def testFmtToDocX_HeadingStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr>'
         '<w:r><w:br w:type="page" /></w:r>'
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
@@ -107,13 +107,13 @@ def testFmtToDocX_HeadingStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr>'
         '<w:r><w:br w:type="page" /></w:r>'
         '<w:r><w:rPr /><w:t>Chapter 2</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 
-    # Heading Level 3
-    # ===============
+    # Scene
+    # =====
     doc._text = "### Hello World"
 
     # Plain
@@ -122,7 +122,7 @@ def testFmtToDocX_HeadingStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading3" /></w:pPr><w:r><w:rPr />'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:rPr />'
         '<w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 
@@ -133,12 +133,12 @@ def testFmtToDocX_HeadingStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading3" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Scene 2</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 
-    # Heading Level 4
-    # ===============
+    # Section
+    # =======
     doc._text = "#### Hello World"
 
     xTest = ET.Element(_wTag("body"))
@@ -146,7 +146,7 @@ def testFmtToDocX_HeadingStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading4" /></w:pPr><w:r><w:rPr />'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading3" /></w:pPr><w:r><w:rPr />'
         '<w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 

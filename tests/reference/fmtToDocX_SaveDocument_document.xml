@@ -121,7 +121,7 @@
     </w:p>
     <w:p>
       <w:pPr>
-        <w:pStyle w:val="Heading2" />
+        <w:pStyle w:val="Heading1" />
       </w:pPr>
       <w:r>
         <w:rPr />
@@ -198,7 +198,7 @@
     </w:p>
     <w:p>
       <w:pPr>
-        <w:pStyle w:val="Heading1" />
+        <w:pStyle w:val="Title" />
         <w:jc w:val="center" />
       </w:pPr>
       <w:r>
@@ -221,7 +221,7 @@
     </w:p>
     <w:p>
       <w:pPr>
-        <w:pStyle w:val="Heading2" />
+        <w:pStyle w:val="Heading1" />
       </w:pPr>
       <w:r>
         <w:rPr />
@@ -624,7 +624,7 @@
     </w:p>
     <w:p>
       <w:pPr>
-        <w:pStyle w:val="Heading2" />
+        <w:pStyle w:val="Heading1" />
       </w:pPr>
       <w:r>
         <w:rPr />

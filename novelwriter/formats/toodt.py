@@ -363,7 +363,7 @@ class ToOdt(Tokenizer):
                 else:
                     self._addTextPar(xText, S_TEXT, oStyle, tText, tFmt=tFormat)
 
-            elif tType == BlockTyp.TITLE:
+            elif tType in (BlockTyp.TITLE, BlockTyp.PART):
                 # Title must be text:p
                 self._addTextPar(xText, S_TITLE, oStyle, tText, isHead=False)
 
