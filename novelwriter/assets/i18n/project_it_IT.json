@@ -1,6 +1,7 @@
 {
   "Synopsis": "Sinossi",
   "Short Description": "Breve descrizione",
+  "Footnotes": "Note a piè pagina",
   "Comment": "Commento",
   "Notes": "Note",
   "Tag": "Etichetta",
@@ -13,6 +14,7 @@
   "Objects": "Oggetti",
   "Entities": "Enti",
   "Custom": "Personalizzato",
+  "New Page": "Nuova pagina",
   "0": "Zero",
   "1": "Uno",
   "2": "Due",

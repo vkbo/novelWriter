@@ -1,6 +1,7 @@
 {
   "Synopsis": "Sammendrag",
   "Short Description": "Kort beskrivelse",
+  "Footnotes": "Fotnoter",
   "Comment": "Kommentar",
   "Notes": "Notat",
   "Tag": "Knagg",
@@ -13,6 +14,7 @@
   "Objects": "Objekter",
   "Entities": "Enheter",
   "Custom": "Annet",
+  "New Page": "Ny side",
   "0": "null",
   "1": "én",
   "2": "to",
