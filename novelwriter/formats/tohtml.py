@@ -130,20 +130,6 @@ class ToHtml(Tokenizer):
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into an HTML document."""
-        if self._isNovel:
-            # For story files, we bump the titles one level up
-            h1Cl = " class='title'"
-            h1 = "h1"
-            h2 = "h1"
-            h3 = "h2"
-            h4 = "h3"
-        else:
-            h1Cl = ""
-            h1 = "h1"
-            h2 = "h2"
-            h3 = "h3"
-            h4 = "h4"
-
         lines = []
         for tType, tMeta, tText, tFmt, tStyle in self._blocks:
 
@@ -213,25 +199,25 @@ class ToHtml(Tokenizer):
             if tType == BlockTyp.TEXT:
                 lines.append(f"<p{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
-            elif tType == BlockTyp.TITLE:
+            elif tType in (BlockTyp.TITLE, BlockTyp.PART):
                 tHead = tText.replace("\n", "<br>")
                 lines.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
 
-            elif tType == BlockTyp.HEAD1:
+            elif tType in (BlockTyp.HEAD1, BlockTyp.CHAPTER):
                 tHead = tText.replace("\n", "<br>")
-                lines.append(f"<{h1}{h1Cl}{hStyle}>{aNm}{tHead}</{h1}>\n")
+                lines.append(f"<h1{hStyle}>{aNm}{tHead}</h1>\n")
 
-            elif tType == BlockTyp.HEAD2:
+            elif tType in (BlockTyp.HEAD2, BlockTyp.SCENE):
                 tHead = tText.replace("\n", "<br>")
-                lines.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
+                lines.append(f"<h2{hStyle}>{aNm}{tHead}</h2>\n")
 
-            elif tType == BlockTyp.HEAD3:
+            elif tType in (BlockTyp.HEAD3, BlockTyp.SECTION):
                 tHead = tText.replace("\n", "<br>")
-                lines.append(f"<{h3}{hStyle}>{aNm}{tHead}</{h3}>\n")
+                lines.append(f"<h3{hStyle}>{aNm}{tHead}</h3>\n")
 
             elif tType == BlockTyp.HEAD4:
                 tHead = tText.replace("\n", "<br>")
-                lines.append(f"<{h4}{hStyle}>{aNm}{tHead}</{h4}>\n")
+                lines.append(f"<h4{hStyle}>{aNm}{tHead}</h4>\n")
 
             elif tType == BlockTyp.SEP:
                 lines.append(f"<p class='sep'{hStyle}>{tText}</p>\n")
