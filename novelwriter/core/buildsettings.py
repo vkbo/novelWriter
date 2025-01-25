@@ -159,6 +159,13 @@ SETTINGS_LABELS = {
     "format.indentFirstPar":   QT_TRANSLATE_NOOP("Builds", "Indent First Paragraph"),
 
     "format.grpMargins":       QT_TRANSLATE_NOOP("Builds", "Text Margins"),
+    "format.titleMargin":      QT_TRANSLATE_NOOP("Builds", "Title and Partition"),
+    "format.h1Margin":         QT_TRANSLATE_NOOP("Builds", "Heading 1 and Chapter"),
+    "format.h2Margin":         QT_TRANSLATE_NOOP("Builds", "Heading 2 and Scene"),
+    "format.h3Margin":         QT_TRANSLATE_NOOP("Builds", "Heading 3 and Section"),
+    "format.h4Margin":         QT_TRANSLATE_NOOP("Builds", "Heading 4"),
+    "format.textMargin":       QT_TRANSLATE_NOOP("Builds", "Text Paragraph"),
+    "format.sepMargin":        QT_TRANSLATE_NOOP("Builds", "Scene Separator"),
 
     "format.grpPage":          QT_TRANSLATE_NOOP("Builds", "Page Layout"),
     "format.pageUnit":         QT_TRANSLATE_NOOP("Builds", "Unit"),

@@ -68,11 +68,11 @@ COMMENT_STYLE = {
     nwComment.COMMENT:  ComStyle(),
     nwComment.STORY:    ComStyle("", "modifier", "note"),
 }
-HEADINGS = [BlockTyp.TITLE, BlockTyp.HEAD1, BlockTyp.HEAD2, BlockTyp.HEAD3, BlockTyp.HEAD4]
-SKIP_INDENT = [
-    BlockTyp.TITLE, BlockTyp.HEAD1, BlockTyp.HEAD2, BlockTyp.HEAD2, BlockTyp.HEAD3,
-    BlockTyp.HEAD4, BlockTyp.SEP, BlockTyp.SKIP,
+HEADINGS = [
+    BlockTyp.TITLE, BlockTyp.PART, BlockTyp.HEAD1,
+    BlockTyp.HEAD2, BlockTyp.HEAD3, BlockTyp.HEAD4,
 ]
+SKIP_INDENT = HEADINGS + [BlockTyp.SEP, BlockTyp.SKIP]
 B_EMPTY: T_Block = (BlockTyp.EMPTY, "", "", [], BlockFmt.NONE)
 
 
@@ -654,6 +654,7 @@ class Tokenizer(ABC):
                 if not (isPlain or isNovel and sHide):
                     tStyle |= self._titleStyle
                 if isNovel:
+                    tType = BlockTyp.PART if isPlain else BlockTyp.TITLE
                     if sHide:
                         tText = ""
                         tType = BlockTyp.EMPTY
@@ -687,6 +688,7 @@ class Tokenizer(ABC):
                 sHide = self._hideChapter if isPlain else self._hideUnNum
                 tFormat = self._fmtChapter if isPlain else self._fmtUnNum
                 if isNovel:
+                    tType = BlockTyp.HEAD1  # Promote
                     if isPlain:
                         self._hFormatter.incChapter()
                     if sHide:
@@ -721,6 +723,7 @@ class Tokenizer(ABC):
                 sHide = self._hideScene if isPlain else self._hideHScene
                 tFormat = self._fmtScene if isPlain else self._fmtHScene
                 if isNovel:
+                    tType = BlockTyp.HEAD2  # Promote
                     self._hFormatter.incScene()
                     if sHide:
                         tText = ""
@@ -752,6 +755,7 @@ class Tokenizer(ABC):
                 tText = aLine[5:].strip()
                 tType = BlockTyp.HEAD4
                 if isNovel:
+                    tType = BlockTyp.HEAD3  # Promote
                     if self._hideSection:
                         tText = ""
                         tType = BlockTyp.EMPTY
@@ -927,12 +931,14 @@ class Tokenizer(ABC):
         for tType, tKey, tText, _, _ in self._blocks:
             if tType == BlockTyp.TITLE:
                 prefix = "TT"
+            elif tType == BlockTyp.PART:
+                prefix = "PT"
             elif tType == BlockTyp.HEAD1:
-                prefix = "PT" if isNovel else "H1"
+                prefix = "CH" if isNovel else "H1"
             elif tType == BlockTyp.HEAD2:
-                prefix = "CH" if isNovel else "H2"
-            elif tType == BlockTyp.HEAD3:
-                prefix = "SC" if isNovel else "H3"
+                prefix = "SC" if isNovel else "H2"
+            elif tType == BlockTyp.HEAD3 and not isNovel:
+                prefix = "H3"
             else:
                 continue
 

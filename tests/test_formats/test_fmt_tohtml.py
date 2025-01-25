@@ -410,7 +410,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Unnumbered
     html._blocks = [
-        (BlockTyp.HEAD2, tMeta, "Prologue", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, tMeta, "Prologue", [], BlockFmt.PBB),
     ]
     html.doConvert()
     assert html._pages[-1] == (
@@ -443,7 +443,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     # Align Left
     html.setStyles(False)
     html._blocks = [
-        (BlockTyp.HEAD1, tMeta, "A Title", [], BlockFmt.LEFT),
+        (BlockTyp.PART, tMeta, "A Title", [], BlockFmt.LEFT),
     ]
     html.doConvert()
     assert html._pages[-1] == (
@@ -454,7 +454,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Align Left
     html._blocks = [
-        (BlockTyp.HEAD1, tMeta, "A Title", [], BlockFmt.LEFT),
+        (BlockTyp.PART, tMeta, "A Title", [], BlockFmt.LEFT),
     ]
     html.doConvert()
     assert html._pages[-1] == (
@@ -463,7 +463,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Align Right
     html._blocks = [
-        (BlockTyp.HEAD1, tMeta, "A Title", [], BlockFmt.RIGHT),
+        (BlockTyp.PART, tMeta, "A Title", [], BlockFmt.RIGHT),
     ]
     html.doConvert()
     assert html._pages[-1] == (
@@ -472,7 +472,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Align Centre
     html._blocks = [
-        (BlockTyp.HEAD1, tMeta, "A Title", [], BlockFmt.CENTRE),
+        (BlockTyp.PART, tMeta, "A Title", [], BlockFmt.CENTRE),
     ]
     html.doConvert()
     assert html._pages[-1] == (
@@ -481,7 +481,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Align Justify
     html._blocks = [
-        (BlockTyp.HEAD1, tMeta, "A Title", [], BlockFmt.JUSTIFY),
+        (BlockTyp.PART, tMeta, "A Title", [], BlockFmt.JUSTIFY),
     ]
     html.doConvert()
     assert html._pages[-1] == (
@@ -493,7 +493,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Page Break Always
     html._blocks = [
-        (BlockTyp.HEAD1, tMeta, "A Title", [], BlockFmt.PBB | BlockFmt.PBA),
+        (BlockTyp.PART, tMeta, "A Title", [], BlockFmt.PBB | BlockFmt.PBA),
     ]
     html.doConvert()
     assert html._pages[-1] == (
@@ -677,9 +677,7 @@ def testFmtToHtml_Save(mockGUI, fncPath):
         "</style>\n"
         "</head>\n"
         "<body>\n"
-        "<article>\n"
         "{bodyText:s}\n"
-        "</article>\n"
         "</body>\n"
         "</html>\n"
     ).format(

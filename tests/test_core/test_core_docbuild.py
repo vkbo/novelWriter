@@ -571,14 +571,17 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     ]
     assert isinstance(docBuild.lastBuild, ToMarkdown)
     assert docFile.read_text(encoding="utf-8") == (
-        "# New Novel\n\n"
+        "New Novel\n"
+        "=========\n\n"
         "By Jane Doe\n\n"
-        "## Chapter: New Chapter\n\n"
-        "### Scene: New Scene\n\n"
-        "# Notes: Plot\n\n"
+        "# Chapter: New Chapter\n\n"
+        "## Scene: New Scene\n\n"
+        "Notes: Plot\n"
+        "===========\n\n"
         "# Main Plot\n\n"
         "**Text**\n\n"
-        "# Notes: Characters\n\n"
+        "Notes: Characters\n"
+        "=================\n\n"
         "# Jane Doe\n\n"
         "Text\n\n"  # Standard converts strikethrough to ordinary text
     )
@@ -592,14 +595,17 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     ]
     assert isinstance(docBuild.lastBuild, ToMarkdown)
     assert docFile.read_text(encoding="utf-8") == (
-        "# New Novel\n\n"
+        "New Novel\n"
+        "=========\n\n"
         "By Jane Doe\n\n"
-        "## Chapter: New Chapter\n\n"
-        "### Scene: New Scene\n\n"
-        "# Notes: Plot\n\n"
+        "# Chapter: New Chapter\n\n"
+        "## Scene: New Scene\n\n"
+        "Notes: Plot\n"
+        "===========\n\n"
         "# Main Plot\n\n"
         "**Text**\n\n"
-        "# Notes: Characters\n\n"
+        "Notes: Characters\n"
+        "=================\n\n"
         "# Jane Doe\n\n"
         "~~Text~~\n\n"  # Extended allows this syntax
     )

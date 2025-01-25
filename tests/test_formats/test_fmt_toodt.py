@@ -295,69 +295,11 @@ def testFmtToOdt_DialogueFormatting(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToOdt_ConvertHeaders(mockGUI):
-    """Test the converter of the ToOdt class."""
+def testFmtToOdt_ConvertNovelHeadings(mockGUI):
+    """Test the novel heading converter of the ToOdt class."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
     odt._isNovel = True
-
-    # Header 1
-    odt._text = "# Title\n"
-    odt.setPartitionFormat(f"Part{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
-    odt.tokenizeText()
-    odt.initDocument()
-    odt.doConvert()
-    odt.closeDocument()
-    assert odt.errData == []
-    assert xmlToText(odt._xText) == (
-        '<office:text>'
-        '<text:h text:style-name="P1" text:outline-level="1">Part'
-        '<text:line-break />Title</text:h>'
-        '</office:text>'
-    )
-
-    # Header 2
-    odt._text = "## Title\n"
-    odt.setChapterFormat(f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
-    odt.tokenizeText()
-    odt.initDocument()
-    odt.doConvert()
-    odt.closeDocument()
-    assert odt.errData == []
-    assert xmlToText(odt._xText) == (
-        '<office:text>'
-        '<text:h text:style-name="P2" text:outline-level="2">Chapter 1'
-        '<text:line-break />Title</text:h>'
-        '</office:text>'
-    )
-
-    # Header 3
-    odt._text = "### Title\n"
-    odt.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
-    odt.tokenizeText()
-    odt.initDocument()
-    odt.doConvert()
-    odt.closeDocument()
-    assert odt.errData == []
-    assert xmlToText(odt._xText) == (
-        '<office:text>'
-        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene 1'
-        '<text:line-break />Title</text:h>'
-        '</office:text>'
-    )
-
-    # Header 4
-    odt._text = "#### Title\n"
-    odt.tokenizeText()
-    odt.initDocument()
-    odt.doConvert()
-    odt.closeDocument()
-    assert odt.errData == []
-    assert xmlToText(odt._xText) == (
-        '<office:text>'
-        '<text:h text:style-name="Heading_20_4" text:outline-level="4">Title</text:h>'
-        '</office:text>'
-    )
 
     # Title
     odt._isFirst = True
@@ -373,7 +315,36 @@ def testFmtToOdt_ConvertHeaders(mockGUI):
         '</office:text>'
     )
 
-    # Unnumbered chapter
+    # Partition
+    odt._text = "# Title\n"
+    odt.setPartitionFormat(f"Part{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert odt.errData == []
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="P1">Part<text:line-break />Title</text:p>'
+        '</office:text>'
+    )
+
+    # Chapter
+    odt._text = "## Title\n"
+    odt.setChapterFormat(f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert odt.errData == []
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:h text:style-name="P2" text:outline-level="1">Chapter 1'
+        '<text:line-break />Title</text:h>'
+        '</office:text>'
+    )
+
+    # Unnumbered Chapter
     odt._text = "##! Prologue\n"
     odt.tokenizeText()
     odt.initDocument()
@@ -382,7 +353,110 @@ def testFmtToOdt_ConvertHeaders(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:h text:style-name="P2" text:outline-level="2">Prologue</text:h>'
+        '<text:h text:style-name="P2" text:outline-level="1">Prologue</text:h>'
+        '</office:text>'
+    )
+
+    # Scene
+    odt._text = "### Title\n"
+    odt.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert odt.errData == []
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:h text:style-name="Heading_20_2" text:outline-level="2">Scene 1'
+        '<text:line-break />Title</text:h>'
+        '</office:text>'
+    )
+
+    # Alt. Scene
+    odt._text = "###! Title\n"
+    odt.setHardSceneFormat(f"Scene {nwHeadFmt.SC_ABS}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert odt.errData == []
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:h text:style-name="Heading_20_2" text:outline-level="2">Scene 2'
+        '<text:line-break />Title</text:h>'
+        '</office:text>'
+    )
+
+    # Section
+    odt._text = "#### Title\n"
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert odt.errData == []
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Title</text:h>'
+        '</office:text>'
+    )
+
+
+@pytest.mark.core
+def testFmtToOdt_ConvertNotesHeadings(mockGUI):
+    """Test the notes headings converter of the ToOdt class."""
+    project = NWProject()
+    odt = ToOdt(project, isFlat=True)
+    odt._isNovel = False
+
+    # Header 1
+    odt._text = "# Title\n"
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert odt.errData == []
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:h text:style-name="Heading_20_1" text:outline-level="1">Title</text:h>'
+        '</office:text>'
+    )
+
+    # Header 2
+    odt._text = "## Title\n"
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert odt.errData == []
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:h text:style-name="Heading_20_2" text:outline-level="2">Title</text:h>'
+        '</office:text>'
+    )
+
+    # Header 3
+    odt._text = "### Title\n"
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert odt.errData == []
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Title</text:h>'
+        '</office:text>'
+    )
+
+    # Header 4
+    odt._text = "#### Title\n"
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert odt.errData == []
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:h text:style-name="Heading_20_4" text:outline-level="4">Title</text:h>'
         '</office:text>'
     )
 
@@ -522,7 +596,7 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
+        '<text:h text:style-name="Heading_20_2" text:outline-level="2">Scene</text:h>'
         '<text:p text:style-name="Text_20_body">Hello World</text:p>'
         '<text:p text:style-name="Text_20_body">Hello <text:s />World</text:p>'
         '<text:p text:style-name="Text_20_body">Hello <text:s text:c="2" />World</text:p>'
@@ -547,7 +621,7 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
+        '<text:h text:style-name="Heading_20_2" text:outline-level="2">Scene</text:h>'
         '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T10">'
         'Point of View:</text:span> <text:span text:style-name="T11">Jane</text:span></text:p>'
         '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T12">'
@@ -617,7 +691,7 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
+        '<text:h text:style-name="Heading_20_2" text:outline-level="2">Scene</text:h>'
         '<text:p text:style-name="P1"><text:span text:style-name="T10">'
         'Point of View:</text:span> <text:span text:style-name="T11">Jane</text:span></text:p>'
         '<text:p text:style-name="P2"><text:span text:style-name="T10">'
@@ -655,7 +729,7 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
+        '<text:h text:style-name="Heading_20_2" text:outline-level="2">Scene</text:h>'
         '<text:p text:style-name="P7">Regular paragraph</text:p>'
         '<text:p text:style-name="Text_20_body">with<text:line-break />break</text:p>'
         '<text:p text:style-name="Text_20_body">Left Align</text:p>'
@@ -677,9 +751,9 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:h text:style-name="P8" text:outline-level="2">Chapter One</text:h>'
+        '<text:h text:style-name="P8" text:outline-level="1">Chapter One</text:h>'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
-        '<text:h text:style-name="P8" text:outline-level="2">Chapter Two</text:h>'
+        '<text:h text:style-name="P8" text:outline-level="1">Chapter Two</text:h>'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )

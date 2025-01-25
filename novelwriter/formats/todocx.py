@@ -271,7 +271,7 @@ class ToDocX(Tokenizer):
             if tType == BlockTyp.TEXT:
                 self._processFragments(par, S_NORM, tText, tFormat)
 
-            elif tType == BlockTyp.TITLE:
+            elif tType in (BlockTyp.TITLE, BlockTyp.PART):
                 self._processFragments(par, S_TITLE, tText, tFormat)
 
             elif tType == BlockTyp.HEAD1:
