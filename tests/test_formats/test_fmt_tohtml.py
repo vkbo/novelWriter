@@ -677,9 +677,7 @@ def testFmtToHtml_Save(mockGUI, fncPath):
         "</style>\n"
         "</head>\n"
         "<body>\n"
-        "<article>\n"
         "{bodyText:s}\n"
-        "</article>\n"
         "</body>\n"
         "</html>\n"
     ).format(

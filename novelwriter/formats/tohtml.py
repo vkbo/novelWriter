@@ -30,7 +30,7 @@ from pathlib import Path
 from time import time
 
 from novelwriter.common import formatTimeStamp
-from novelwriter.constants import nwHtmlUnicode
+from novelwriter.constants import nwHtmlUnicode, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import Tokenizer
@@ -296,9 +296,7 @@ class ToHtml(Tokenizer):
                     "</style>\n"
                     "</head>\n"
                     "<body>\n"
-                    "<article>\n"
                     "{body:s}\n"
-                    "</article>\n"
                     "</body>\n"
                     "</html>\n"
                 ).format(
@@ -345,6 +343,12 @@ class ToHtml(Tokenizer):
         mtSP = self._marginSep[0]
         mbSP = self._marginSep[1]
 
+        fSz0 = nwStyles.H_SIZES[0]
+        fSz1 = nwStyles.H_SIZES[1]
+        fSz2 = nwStyles.H_SIZES[2]
+        fSz3 = nwStyles.H_SIZES[3]
+        fSz4 = nwStyles.H_SIZES[4]
+
         font = self._textFont
         fFam = font.family()
         fSz = font.pointSize()
@@ -365,12 +369,25 @@ class ToHtml(Tokenizer):
         styles.append(f"a {{color: {lColor};}}")
         styles.append(f"mark {{background: {mColor};}}")
         styles.append(f"h1, h2, h3, h4 {{color: {hColor}; page-break-after: avoid;}}")
-        styles.append(f"h1 {{margin-top: {mtH1:.2f}em; margin-bottom: {mbH1:.2f}em;}}")
-        styles.append(f"h2 {{margin-top: {mtH2:.2f}em; margin-bottom: {mbH2:.2f}em;}}")
-        styles.append(f"h3 {{margin-top: {mtH3:.2f}em; margin-bottom: {mbH3:.2f}em;}}")
-        styles.append(f"h4 {{margin-top: {mtH4:.2f}em; margin-bottom: {mbH4:.2f}em;}}")
         styles.append(
-            f".title {{font-size: 2.5em; margin-top: {mtH0:.2f}em; margin-bottom: {mbH0:.2f}em;}}"
+            f"h1 {{font-size: {fSz1:.2f}em; "
+            f"margin-top: {mtH1:.2f}em; margin-bottom: {mbH1:.2f}em;}}"
+        )
+        styles.append(
+            f"h2 {{font-size: {fSz2:.2f}em; "
+            f"margin-top: {mtH2:.2f}em; margin-bottom: {mbH2:.2f}em;}}"
+        )
+        styles.append(
+            f"h3 {{font-size: {fSz3:.2f}em; "
+            f"margin-top: {mtH3:.2f}em; margin-bottom: {mbH3:.2f}em;}}"
+        )
+        styles.append(
+            f"h4 {{font-size: {fSz4:.2f}em; "
+            f"margin-top: {mtH4:.2f}em; margin-bottom: {mbH4:.2f}em;}}"
+        )
+        styles.append(
+            f".title {{font-size: {fSz0:.2f}em; "
+            f"margin-top: {mtH0:.2f}em; margin-bottom: {mbH0:.2f}em;}}"
         )
         styles.append(
             f".sep {{text-align: center; margin-top: {mtSP:.2f}em; margin-bottom: {mbSP:.2f}em;}}"
