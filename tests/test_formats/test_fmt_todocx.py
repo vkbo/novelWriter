@@ -38,8 +38,8 @@ from tests.tools import DOCX_IGNORE, cmpFiles, xmlToText
 
 
 @pytest.mark.core
-def testFmtToDocX_HeadingStyles(mockGUI):
-    """Test formatting of headings."""
+def testFmtToDocX_NovelHeadingStyles(mockGUI):
+    """Test formatting of novel headings."""
     project = NWProject()
     doc = ToDocX(project)
     doc._isNovel = True
@@ -147,6 +147,76 @@ def testFmtToDocX_HeadingStyles(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Heading3" /></w:pPr><w:r><w:rPr />'
+        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+
+@pytest.mark.core
+def testFmtToDocX_NotesHeadingStyles(mockGUI):
+    """Test formatting of notes headings."""
+    project = NWProject()
+    doc = ToDocX(project)
+    doc._isNovel = False
+    doc.initDocument()
+
+    # Title
+    # =====
+
+    xTest = ET.Element(_wTag("body"))
+    doc._text = "#! Hello World"
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Title" /><w:jc w:val="center" /></w:pPr>'
+        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+    # Heading 1
+    # =========
+    doc._text = "# Hello World"
+    xTest = ET.Element(_wTag("body"))
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:rPr />'
+        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+    # Heading 2
+    # =========
+    doc._text = "## Hello World"
+    xTest = ET.Element(_wTag("body"))
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:rPr />'
+        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+    # Heading 3
+    # =========
+    doc._text = "### Hello World"
+    xTest = ET.Element(_wTag("body"))
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading3" /></w:pPr><w:r><w:rPr />'
+        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+    # Heading 4
+    # =========
+    doc._text = "#### Hello World"
+    xTest = ET.Element(_wTag("body"))
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading4" /></w:pPr><w:r><w:rPr />'
         '<w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 
