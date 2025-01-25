@@ -113,19 +113,15 @@ class ToMarkdown(Tokenizer):
                 tTemp = self._formatText(tText, tFormat, mTags).replace("\n", "  \n")
                 lines.append(f"{tTemp}\n\n")
 
-            elif tType == BlockTyp.TITLE:
+            elif tType in (BlockTyp.TITLE, BlockTyp.HEAD1, BlockTyp.PART, BlockTyp.CHAPTER):
                 tHead = tText.replace("\n", " - ")
                 lines.append(f"# {tHead}\n\n")
 
-            elif tType == BlockTyp.HEAD1:
-                tHead = tText.replace("\n", " - ")
-                lines.append(f"# {tHead}\n\n")
-
-            elif tType == BlockTyp.HEAD2:
+            elif tType in (BlockTyp.HEAD2, BlockTyp.SCENE):
                 tHead = tText.replace("\n", " - ")
                 lines.append(f"## {tHead}\n\n")
 
-            elif tType == BlockTyp.HEAD3:
+            elif tType in (BlockTyp.HEAD3, BlockTyp.SECTION):
                 tHead = tText.replace("\n", " - ")
                 lines.append(f"### {tHead}\n\n")
 

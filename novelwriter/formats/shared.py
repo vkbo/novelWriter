@@ -104,17 +104,21 @@ class BlockTyp(IntEnum):
 
     EMPTY   = 1   # Empty line (new paragraph)
     TITLE   = 2   # Title
-    HEAD1   = 3   # Heading 1
-    HEAD2   = 4   # Heading 2
-    HEAD3   = 5   # Heading 3
-    HEAD4   = 6   # Heading 4
-    TEXT    = 7   # Text line
-    SEP     = 8   # Scene separator
-    SKIP    = 9   # Paragraph break
-    SUMMARY = 10  # Synopsis/short comment
-    NOTE    = 11  # Note
-    COMMENT = 12  # Comment
-    KEYWORD = 13  # Tag/reference keywords
+    PART    = 3   # Partition
+    CHAPTER = 4   # Chapter
+    SCENE   = 5   # Scene
+    SECTION = 6   # Section
+    HEAD1   = 7   # Heading 1
+    HEAD2   = 8   # Heading 2
+    HEAD3   = 9   # Heading 3
+    HEAD4   = 10  # Heading 4
+    TEXT    = 11  # Text line
+    SEP     = 12  # Scene separator
+    SKIP    = 13  # Paragraph break
+    SUMMARY = 14  # Synopsis/short comment
+    NOTE    = 15  # Note
+    COMMENT = 16  # Comment
+    KEYWORD = 17  # Tag/reference keywords
 
 
 class BlockFmt(Flag):

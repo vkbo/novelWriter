@@ -49,20 +49,20 @@ def testFmtToMarkdown_ConvertHeaders(mockGUI):
     md.setChapterFormat(f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == "## Chapter 1 - Title\n\n"
+    assert md._pages[-1] == "# Chapter 1 - Title\n\n"
 
     # Header 3
     md._text = "### Title\n"
     md.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == "### Scene 1 - Title\n\n"
+    assert md._pages[-1] == "## Scene 1 - Title\n\n"
 
     # Header 4
     md._text = "#### Section Title\n"
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == "#### Section Title\n\n"
+    assert md._pages[-1] == "### Section Title\n\n"
 
     # Title
     md._text = "#! Title\n"
@@ -74,7 +74,7 @@ def testFmtToMarkdown_ConvertHeaders(mockGUI):
     md._text = "##! Prologue\n"
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == "## Prologue\n\n"
+    assert md._pages[-1] == "# Prologue\n\n"
 
 
 @pytest.mark.core
@@ -190,7 +190,7 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "## Chapter\n\n"
+        "# Chapter\n\n"
         "**Point of View:** Bod  \n"
         "**Plot:** Main  \n"
         "**Locations:** Europe\n\n"
@@ -271,12 +271,12 @@ def testFmtToMarkdown_Save(mockGUI, fncPath):
     ]
     resText = [
         "# My Novel\n\n**By Jane Doh**\n\n",
-        "## Chapter 1\n\nThe text of chapter one.\n\n",
-        "### Scene 1\n\nThe text of scene one.\n\n",
-        "#### A Section\n\nMore text in scene one.\n\n",
-        "## Chapter 2\n\nThe text of chapter two.\n\n",
-        "### Scene 2\n\nThe text of scene two.\n\n",
-        "#### A Section\n\n\tMore text in scene two.\n\n",
+        "# Chapter 1\n\nThe text of chapter one.\n\n",
+        "## Scene 1\n\nThe text of scene one.\n\n",
+        "### A Section\n\nMore text in scene one.\n\n",
+        "# Chapter 2\n\nThe text of chapter two.\n\n",
+        "## Scene 2\n\nThe text of scene two.\n\n",
+        "### A Section\n\n\tMore text in scene two.\n\n",
     ]
 
     for i in range(len(docText)):
@@ -289,7 +289,7 @@ def testFmtToMarkdown_Save(mockGUI, fncPath):
     assert md.getFullResultSize() == len("".join(resText))
 
     md.replaceTabs(nSpaces=4, spaceChar=" ")
-    resText[6] = "#### A Section\n\n    More text in scene two.\n\n"
+    resText[6] = "### A Section\n\n    More text in scene two.\n\n"
     assert md._pages == resText
 
     # Check File
