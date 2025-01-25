@@ -2143,11 +2143,13 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# T: Title One\n\n"
+        "T: Title One\n"
+        "============\n\n"
         "Text\n\n"
         "~\n\n"
         "Text\n\n"
-        "# T: Title Two\n\n"
+        "T: Title Two\n"
+        "============\n\n"
         "Text\n\n"
         "* * *\n\n"
         "Text\n\n"
@@ -2159,12 +2161,14 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# T: Title One\n\n"
+        "T: Title One\n"
+        "============\n\n"
         "## S: Scene One\n\n"
         "Text\n\n"
         "## S: Scene Two\n\n"
         "Text\n\n"
-        "# T: Title Two\n\n"
+        "T: Title Two\n"
+        "============\n\n"
         "## S: Scene Three\n\n"
         "Text\n\n"
         "## H: Scene Four\n\n"
@@ -2197,7 +2201,8 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# T: Title One\n\n"
+        "T: Title One\n"
+        "============\n\n"
         "# C: Chapter One\n\n"
         "Text\n\n"
         "* * *\n\n"
@@ -2214,7 +2219,8 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# T: Title One\n\n"
+        "T: Title One\n"
+        "============\n\n"
         "# C: Chapter One\n\n"
         "## S: Scene One\n\n"
         "Text\n\n"
@@ -2302,8 +2308,10 @@ def testFmtToken_HeaderVisibility(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# Novel\n\n"
-        "# Title One\n\n"
+        "Novel\n"
+        "=====\n\n"
+        "Title One\n"
+        "=========\n\n"
         "# Prologue\n\n"
         "Text\n\n"
         "# Chapter One\n\n"
@@ -2330,7 +2338,8 @@ def testFmtToken_HeaderVisibility(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# Novel\n\n"
+        "Novel\n"
+        "=====\n\n"
         "Text\n\n"
         "Text\n\n"
         "Text\n\n"
@@ -2355,7 +2364,8 @@ def testFmtToken_HeaderVisibility(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# Novel\n\n"
+        "Novel\n"
+        "=====\n\n"
         "# Title One\n\n"
         "## Prologue\n\n"
         "Text\n\n"
@@ -2429,7 +2439,8 @@ def testFmtToken_CounterHandling(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# Novel One\n\n"
+        "Novel One\n"
+        "=========\n\n"
         "# U: Prologue\n\n"
         "Text\n\n"
         "# C 1: Chapter One\n\n"
@@ -2442,7 +2453,8 @@ def testFmtToken_CounterHandling(mockGUI):
         "Text\n\n"
         "## H 2.2 (4): Scene Four\n\n"
         "Text\n\n"
-        "# Novel Two\n\n"
+        "Novel Two\n"
+        "=========\n\n"
         "# U: Prologue\n\n"
         "Text\n\n"
         "# C 1: Chapter One\n\n"

@@ -1,4 +1,5 @@
-# Lorem Ipsum
+Lorem Ipsum
+===========
 
 **By lipsum.com**
 
@@ -24,7 +25,8 @@ _Lorem Ipsum_ is simply dummy text[1] of the printing and typesetting industry. 
 
 See http://lipsum.com
 
-# Part: Act One
+Part: Act One
+=============
 
 “Fusce maximus felis libero”
 
@@ -152,7 +154,8 @@ Pellentesque rhoncus pharetra eros, non mollis nisi pretium non. Mauris accumsan
 
 Integer egestas maximus leo eu facilisis. Nunc rhoncus dignissim lectus eu lacinia. Praesent lacinia urna porttitor aliquam condimentum. Nulla eu eros dictum, dictum nunc vitae, sagittis nibh. Integer ante neque, consequat nec sollicitudin id, consectetur vitae dolor. Nullam volutpat sem orci, quis viverra magna auctor a. Suspendisse potenti. Maecenas commodo sed neque pellentesque vehicula. Sed luctus nisl risus, elementum semper purus interdum vel. Ut pulvinar, massa sit amet venenatis placerat, nunc lacus hendrerit odio, non aliquet nunc risus eu lectus. Maecenas feugiat semper ligula, id lobortis sem porta eu. Integer posuere elit magna, at mollis eros bibendum et. Ut imperdiet purus vel nulla aliquam maximus. Morbi sodales purus tellus, a rhoncus sem rutrum sit amet. Quisque risus sem, laoreet nec convallis nec, rutrum vitae justo.
 
-# Notes: Characters
+Notes: Characters
+=================
 
 # Nobody Owens
 
@@ -165,7 +168,8 @@ Suspendisse faucibus est auctor orci mollis luctus. Praesent quis sodales neque.
 
 Nullam scelerisque velit et tortor congue vestibulum a at nisi. Vivamus sodales ut turpis a convallis. In dignissim nibh at luctus sodales. Etiam sit amet rhoncus massa. Phasellus ligula magna, sollicitudin non imperdiet sit amet, volutpat vel magna. Nunc vestibulum tempor lectus, sit amet porta nunc hendrerit in. Curabitur non odio sit amet massa tincidunt facilisis. Integer et luctus nunc, eget euismod leo. Praesent faucibus metus sed purus convallis scelerisque. Fusce viverra lorem et placerat malesuada. In at elit malesuada, ullamcorper risus vitae, sodales dolor. Donec quis elementum lectus. Quisque eu eros at dui imperdiet euismod ut id neque.
 
-# Notes: Plot
+Notes: Plot
+===========
 
 # Main Plot
 
@@ -175,7 +179,8 @@ Suspendisse vulputate malesuada pellentesque. Aenean sollicitudin cursus mi, vit
 
 Mauris ut erat eu lorem malesuada egestas vel vel urna. Maecenas ac semper quam. Maecenas aliquet metus non interdum mattis. Proin consectetur molestie ligula. Aliquam sollicitudin pulvinar urna a pellentesque. Suspendisse ultrices, est mattis scelerisque porta, nisi nisi laoreet nisl, non condimentum quam ante a velit. Proin scelerisque justo augue, nec laoreet ligula egestas at. Etiam enim quam, ultrices non accumsan hendrerit, elementum vel ligula. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam efficitur odio libero, in vestibulum arcu aliquam at. Cras non vehicula augue. Integer lobortis, est vitae aliquam facilisis, metus ligula aliquet eros, at porttitor sem tortor eget massa. Aliquam varius scelerisque neque sed gravida. Aenean eleifend lorem id ante elementum sollicitudin. Proin commodo massa a quam volutpat, mollis fermentum turpis efficitur.
 
-# Notes: World
+Notes: World
+============
 
 # Ancient Europe
 

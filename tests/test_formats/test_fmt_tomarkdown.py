@@ -42,7 +42,7 @@ def testFmtToMarkdown_ConvertHeaders(mockGUI):
     md.setPartitionFormat(f"Part{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == "# Part - Title\n\n"
+    assert md._pages[-1] == "Part - Title\n============\n\n"
 
     # Header 2
     md._text = "## Title\n"
@@ -68,7 +68,7 @@ def testFmtToMarkdown_ConvertHeaders(mockGUI):
     md._text = "#! Title\n"
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == "# Title\n\n"
+    assert md._pages[-1] == "Title\n=====\n\n"
 
     # Unnumbered
     md._text = "##! Prologue\n"
@@ -230,7 +230,7 @@ def testFmtToMarkdown_ConvertDirect(mockGUI):
         (BlockTyp.TITLE, "", "A Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
     md.doConvert()
-    assert md._pages[-1] == "# A Title\n\n"
+    assert md._pages[-1] == "A Title\n=======\n\n"
 
     # Separators
     # ==========
@@ -270,7 +270,7 @@ def testFmtToMarkdown_Save(mockGUI, fncPath):
         "#### A Section\n\n\tMore text in scene two.\n",
     ]
     resText = [
-        "# My Novel\n\n**By Jane Doh**\n\n",
+        "My Novel\n========\n\n**By Jane Doh**\n\n",
         "# Chapter 1\n\nThe text of chapter one.\n\n",
         "## Scene 1\n\nThe text of scene one.\n\n",
         "### A Section\n\nMore text in scene one.\n\n",
