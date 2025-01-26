@@ -112,7 +112,7 @@ class Config:
 
         # General GUI Settings
         self.guiLocale    = self._qLocale.name()
-        self.guiTheme     = "default"        # GUI theme
+        self.guiTheme     = "default_light"  # GUI theme
         self.guiSyntax    = "default_light"  # Syntax theme
         self.guiFont      = QFont()          # Main GUI font
         self.guiScale     = 1.0              # Set automatically by Theme class

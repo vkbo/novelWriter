@@ -15,8 +15,9 @@ applications. It is therefore not always obvious to new users how this is suppos
 this chapter hopes to explain in more detail how to use this tags and references system.
 
 .. tip::
+
    If you find the Tags and Reference system difficult to follow just from reading this chapter,
-   you can create a new project in the **Welcome** dialog's New project form and select  "Create an
+   you can create a new project in the **Welcome** dialog's New project form and select "Create an
    example project" from the "Pre-fill project" option. The example project contains several
    examples of tags and references.
 
@@ -39,7 +40,8 @@ documents up using the document split feature. See :ref:`a_ui_tree_split_merge` 
 You can do the same with your notes. You can treat each heading as an independent element of your
 notes that can be referenced somewhere else. That way you can collect all your minor or background
 characters in a single note file, and still be able to reference them individually by separating
-them with headings and assigning each a tag.
+them with headings and assigning each a tag. Or, you can lay out your plot in a single document and
+have a tag for each plot stage under separate headings.
 
 
 .. _a_references_tags:
@@ -82,12 +84,19 @@ to the manuscript, or an outline document. If you want to compile a single docum
 notes, you can do this from the **Manuscript Build** tool.
 
 .. versionadded:: 2.2
+
    Tags are no longer case sensitive. The tags are by default displayed with the capitalisation you
    use when defining the tag, but you don't have to use the same capitalisation when referencing
    it later.
 
 .. versionadded:: 2.3
+
    Tags can have an optional display name for manuscript builds.
+
+.. versionadded:: 2.6
+
+   You can now add tags also to Novel Documents. These can be used for cross-referencing between
+   chapters and scenes, and also from notes if desired.
 
 Example of a heading with a tag for a character of the story:
 
@@ -168,15 +177,21 @@ reference keywords allow multiple values.
    it. This can be useful when checking for consistency later. Any tag in any root note folder can
    be listed under mentions.
 
+``@story``
+   This is used when referencing a Novel Document, like a scene or chapter, from somewhere else in
+   your project.
+
 The syntax highlighter will alert the user that the tags and references are used correctly, and
 that the tags referenced exist.
 
 .. note::
+
    The highlighter may be mistaken if the index of defined tags is out of date. If so, press
    :kbd:`F9` to regenerate it, or select **Rebuild Index** from the **Tools** menu. In general, the
    index for a document is regenerated when it is saved, so this shouldn't normally be necessary.
 
 .. tip::
+
    If you add a reference in the editor to a tag that doesn't yet exist, you can right-click it and
    select **Create Note for Tag**. This will generate a new project note automatically with the new
    tag defined. In order for this to be possible, a root folder for that category of references
@@ -192,6 +207,7 @@ meaningful if you want to be able to click-navigate between them, or of course i
 highlight that two notes are related.
 
 .. tip::
+
    If you cross-reference between notes and export your project as an HTML document using the
    **Manuscript Build** tool, the cross-references become clickable links in the exported HTML
    document as well.
