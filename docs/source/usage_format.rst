@@ -14,6 +14,10 @@ In addition to formatting codes, novelWriter allows for comments, a synopsis tag
 keyword and value sets used for :term:`tags<tag>` and :term:`references<reference>`. There are also
 some codes that apply to whole paragraphs. See :ref:`a_fmt_text` for more details.
 
+URLs should also be highlighted and become clickable. However, only URLs starting with "http" or
+"https" are recognised. In the editor, you must hold down the :kbd:`Ctrl` key when clicking a URL
+to follow it.
+
 
 .. _a_fmt_hlight:
 
@@ -76,14 +80,13 @@ For headings level one through three, adding a ``!`` modifies the meaning of the
 
 ``#! Title Text``
    This tells the build tool that the level one heading is intended to be used for the novel or
-   notes folder's main title, like for instance on the front page. When building the manuscript,
-   this will use a different styling and will exclude the title from, for instance, a Table of
-   Contents in Libre Office.
+   notes folder's main title, like for instance the novel title on the cover page. When building
+   the manuscript, this will use a different styling.
 
 ``##! Title Text``
    This tells the build tool to not assign a chapter number to this chapter title if automatic
-   chapter numbers are being used. Such titles are useful for a prologue for instance. See
-   :ref:`a_struct_heads_unnum` for more details.
+   chapter numbers are being used. Such titles are useful for prologues and epilogues for instance.
+   See :ref:`a_struct_heads_unnum` for more details.
 
 ``###! Title Text``
    This is an alternative scene heading that can be formatted differently in the **Manuscript
@@ -92,6 +95,7 @@ For headings level one through three, adding a ``!`` modifies the meaning of the
    details.
 
 .. note::
+
    The space after the ``#`` or ``!`` character is mandatory. The syntax highlighter will change
    colour and font size when the heading is correctly formatted.
 
@@ -118,9 +122,17 @@ Non-breaking spaces are highlighted by the syntax highlighter with an alternate 
 background, depending on the selected theme.
 
 .. tip::
+
    Non-breaking spaces are for instance the correct type of space to separate a number from its
    unit. Generally, non-breaking spaces are used to prevent line wrapping algorithms from adding
    line breaks where they shouldn't.
+
+.. note::
+
+   You should not manually apply text indentation in your paragraphs in the editor. These can be
+   added automatically in the **Manuscript Build** tool if you want to have them in the manuscript.
+   Each new paragraph should be separated from the previous content by an empty line and with no
+   indentation.
 
 
 .. _a_fmt_emph:
@@ -160,6 +172,7 @@ In addition, the following rules apply:
    allow for formatting, and any formatting markup will be rendered as-is.
 
 .. tip::
+
    novelWriter supports standard escape syntax for the emphasis markup characters in case the
    editor misunderstands your intended usage of them. That is, ``\*``, ``\_`` and ``\~`` will
    generate a plain ``*``, ``_`` and ``~``, respectively, without interpreting them as part of the
@@ -216,8 +229,8 @@ In addition to the above formatting features, novelWriter also allows for commen
 The text of a comment is always ignored by the word counter. The text can also be filtered out
 when building the manuscript or viewing the document.
 
-The first word of a comment, followed by a colon, can be one of a small set of modifiers that
-indicates the comment is intended for a specific purpose. For instance, if the comment starts with
+The first word of a comment, followed by a colon, can be one of a set of modifiers that indicates
+the comment is intended for a specific purpose. For instance, if the comment starts with
 ``Synopsis:``, the comment is treated in a special manner and will show up in the
 :ref:`a_ui_outline` in a dedicated column. The word ``synopsis`` is not case sensitive. If it is
 correctly formatted, the syntax highlighter will indicate this by altering the colour of the word.
@@ -246,6 +259,7 @@ The different styles of comments are as follows:
    use them in your text.
 
 .. note::
+
    Only one comment can be flagged as a synopsis or short comment for each heading. If multiple
    comments are flagged as synopsis or short comments, the last one will be used and the rest
    ignored.
@@ -365,6 +379,7 @@ Examples:
    "``> Left/right indented text <``", "The text has both margins increased."
 
 .. note::
+
    The text editor will not show the alignment and indentation live. But the viewer will show them
    when you open the document there. It will of course also be reflected in the document generated
    from the manuscript build tool as long as the format supports paragraph alignment.
@@ -373,18 +388,15 @@ Examples:
 Alignment with Line Breaks
 --------------------------
 
-If you have line breaks in the paragraph, like for instance when you are writing verses, the
-alignment markers must be applied to the first line. Markers on the other lines are ignored. The
-markers for the first line are used for all the other lines.
-
-For the following text, all lines will be centred, not just the first:
+If you have line breaks in the paragraph, the markers for all the lines are combined and used for
+the entire paragraph. For the following text, all lines will be centred:
 
 .. code-block:: md
 
-   >> I am the very model of a modern Major-General <<
+   >> I am the very model of a modern Major-General
    I've information vegetable, animal, and mineral
    I know the kings of England, and I quote the fights historical
-   From Marathon to Waterloo, in order categorical
+   From Marathon to Waterloo, in order categorical <<
 
 
 Alignment with First Line Indent
@@ -424,6 +436,7 @@ If you need to add a page break somewhere, put the text ``[new page]`` on a line
 the text you wish to start on a new page.
 
 .. note::
+
    The page break code is applied to the text that follows it. It adds a "page break before" mark
    to the text when exporting to HTML or Open Document. This means that a ``[new page]`` which has
    no text following it, it will not result in a page break.
@@ -442,3 +455,16 @@ the text you wish to start on a new page.
    [new page]
 
    This text will start on a new page if the build format has pages.
+
+
+.. _a_fmt_stats:
+
+Inserting Word Counts in the Text
+=================================
+
+The cover page of a manuscript normally has the word count stated on it. Any statistics value
+collected by novelWriter can be inserted into any document. You can generate the code for this from
+the **Insert** menu under **Word/Character Count**.
+
+The value inserted is the actual count for your entire manuscript, so it is not populated until you
+run the **Manuscript Build** tool. Until then they will show up as "0" in the viewer panel.
