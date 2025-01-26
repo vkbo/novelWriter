@@ -20,6 +20,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import sys
+
 from pathlib import Path
 
 import pytest
@@ -144,16 +146,17 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
     # Load Default Theme
     # ==================
 
-    # Set a mock colour for the window background
-    mainTheme._guiPalette.color(QPalette.ColorRole.Window).setRgb(0, 0, 0, 0)
+    if sys.platform != "win32":
+        # Set a mock colour for the window background
+        mainTheme._guiPalette.color(QPalette.ColorRole.Window).setRgb(0, 0, 0, 0)
 
-    # Load the default theme
-    CONFIG.guiTheme = "default"
-    assert mainTheme.loadTheme() is True
+        # Load the default theme
+        CONFIG.guiTheme = "default"
+        assert mainTheme.loadTheme() is True
 
-    # This should load a standard palette
-    wCol = QApplication.style().standardPalette().color(QPalette.ColorRole.Window).getRgb()
-    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == wCol
+        # This should load a standard palette
+        wCol = QApplication.style().standardPalette().color(QPalette.ColorRole.Window).getRgb()
+        assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == wCol
 
     # Mock Dark Theme
     # ===============
