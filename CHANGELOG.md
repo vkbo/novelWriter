@@ -31,6 +31,15 @@ See the website for complete [Release Notes](https://novelwriter.io/releases/rel
   Correspondingly, scenes are now level 2 and sections are level 3. Notes headings remain
   unchanged. Issue #2205. PR #2206.
 
+**Internationalisation**
+
+* German, US English, Italian, Japanese, Norwegian and Polish have been updated in full. Brazilian
+  Portuguese and Chinese have been partially updated. PR #2207.
+
+**Documentation**
+
+* Documentation has been updated with 2.6 features. PR #2208.
+
 ----
 
 ## Version 2.6 RC 1 [2025-01-09]
