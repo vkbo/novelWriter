@@ -5,10 +5,10 @@ What to Read First
 ******************
 
 The documentation of novelWriter is quite extensive. There are a lot of features to get used to,
-but you don't need all of them to get started.
+but you don't need to know all of them to get started.
 
 The chapters below labelled "Essential Information" are the ones you need to know to use the
-application correctly. By "correctly", it is meant: in a way so novelWriter understands the basic
+application correctly. By "correctly" it is meant: in a way so novelWriter understands the basic
 structure of your text. It collects a lot of information from your text and uses it to display the
 structure of it in various ways to help you get an overview of your writing.
 
@@ -23,7 +23,7 @@ Using novelWriter
 =================
 
 In order to use novelWriter effectively, you need to know the basics of how it works. The following
-chapters will explain the main principles. It starts with the basics, and gets more detailed as you
+chapters will explain the main principles. They start with the basics, and get more detailed as you
 read on.
 
 :ref:`a_breakdown` – Essential Information
