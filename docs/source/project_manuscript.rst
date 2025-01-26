@@ -11,6 +11,7 @@ from the text in your project. All of this is handled by the **Manuscript Build*
 activate it from the sidebar, the **Tools** menu, or by pressing :kbd:`F5`.
 
 .. versionadded:: 2.1
+
    This tool is new for version 2.1. A simpler tool was used for earlier versions. The simpler tool
    only allows you to define a single set of options for the build, but otherwise had much the same
    functionality.
@@ -58,6 +59,7 @@ Each build definition can be edited by opening it in the **Manuscript Build Sett
 either by double-clicking or by selecting it and pressing the edit button in the toolbar.
 
 .. tip::
+
    You can keep the **Manuscript Build Settings** dialog open while testing the different options,
    and just hit the :guilabel:`Apply` button. You can test the result of your settings by pressing
    the :guilabel:`Preview` button in the main **Manuscript Build** window. When you're happy with
@@ -177,10 +179,24 @@ Open Document Format
    flat version of the document format as a single XML file. Most rich text editors support the
    former, and only a few the latter.
 
+Microsoft Word Document Format
+   The Microsoft Word Document format writes a single ``.docx`` file. It uses a fairly basic format
+   that should be compatible with most rich text editors.
+
+Portable Document Format (PDF)
+   The PDF is generated from a copy of the preview document, and should have the same formatting
+   capabilities as the preview. It's identical to what is produced if you select the print option
+   and print to PDF.
+
 novelWriter HTML
    The HTML format writes a single ``.htm`` file with minimal style formatting. The HTML document
    is suitable for further processing by document conversion tools like Pandoc_, for importing in
    word processors, or for printing from browser.
+
+Standard/Extended Markdown
+   The Markdown format comes in both Standard and Extended flavour. The *only* difference in terms
+   of novelWriter functionality is the support for strike through text, which is not supported by
+   the Standard flavour.
 
 novelWriter Markup
    This is simply a concatenation of the project documents selected by the filters into a ``.txt``
@@ -188,10 +204,9 @@ novelWriter Markup
    comments, tags, etc. included if they are selected. This is a useful format for exporting the
    project for later import back into novelWriter.
 
-Standard/Extended Markdown
-   The Markdown format comes in both Standard and Extended flavour. The *only* difference in terms
-   of novelWriter functionality is the support for strike through text, which is not supported by
-   the Standard flavour.
+.. versionadded:: 2.6
+
+   Microsoft Word and PDF output options were added.
 
 
 Additional Formats
@@ -211,13 +226,14 @@ file can be imported directly into a Python dict object or a PHP array, to menti
 
 .. _a_manuscript_print:
 
-Print and PDF
-=============
+Printing
+========
 
 The :guilabel:`Print` button allows you to print the content in the preview window. You can either
 print to one of your system's printers, or select PDF as your output format from the printer icon
 on the print dialog.
 
 .. note::
+
    The paper format should in all cases default to whatever your system default is. If you want to
    change it, you have to select it from the **Print Preview** dialog.

@@ -1,6 +1,7 @@
 {
   "Synopsis": "あらすじ",
   "Short Description": "短い説明",
+  "Footnotes": "脚注",
   "Comment": "コメント ",
   "Notes": "ノート",
   "Tag": "タグ",
@@ -13,6 +14,7 @@
   "Objects": "オブジェクト",
   "Entities": "エンティティ",
   "Custom": "カスタム",
+  "New Page": "新規ページ",
   "0": "零",
   "1": "一",
   "2": "二",

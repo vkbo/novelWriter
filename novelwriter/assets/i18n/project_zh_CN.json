@@ -1,6 +1,7 @@
 {
   "Synopsis": "概要",
   "Short Description": "简短描述",
+  "Footnotes": "注释",
   "Comment": "注释",
   "Notes": "笔记",
   "Tag": "标签",
@@ -13,6 +14,7 @@
   "Objects": "物品",
   "Entities": "条目",
   "Custom": "自定义",
+  "New Page": "新建页面",
   "0": "零",
   "1": "一",
   "2": "二",

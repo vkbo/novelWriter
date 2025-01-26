@@ -4,7 +4,7 @@
 Setup and Installation
 **********************
 
-.. _Enchant: https://abiword.github.io/enchant/
+.. _Enchant: http://rrthomas.github.io/enchant/
 .. _GitHub: https://github.com/vkbo/novelWriter
 .. _Downloads page: https://download.novelwriter.io
 .. _PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter
@@ -15,7 +15,7 @@ Setup and Installation
 .. _AppImage: https://appimage.org/
 
 Ready-made packages and installers for novelWriter are available for all major platforms, including
-Linux, Windows and MacOS, from the `Downloads page`_. See below for install additional instructions
+Linux, Windows and MacOS, from the `Downloads page`_. See below for additional install instructions
 for each platform.
 
 You can also install novelWriter from the Python Package Index (PyPi_). See :ref:`a_started_pip`.
@@ -39,12 +39,6 @@ Installing it should be straightforward.
 If you have any issues, try uninstalling the previous version and making a fresh install. If you
 already had a version installed via a different method, you should uninstall that first as having
 multiple installations has been known to cause problems.
-
-.. note::
-   The novelWriter installer is not signed because Microsoft doesn't currently provide a way for
-   non-profit open source projects to properly sign their installers. The novelWriter project
-   doesn't have the funding to pay for commercial software signing certificates. You will therefore
-   see an additional warning about this when you download and run the installer.
 
 
 .. _a_started_linux:
@@ -93,10 +87,6 @@ Then run the update and install commands as for Ubuntu:
    sudo apt update
    sudo apt install novelwriter
 
-.. note::
-   You may need to use the Ubuntu 20.04 (focal) packages for Debian 11 or earlier. The newer Ubuntu
-   packages use a different compression algorithm that may not be supported.
-
 .. tip::
    If you get an error message like ``gpg: failed to create temporary file`` when importing the key
    from the Ubuntu keyserver, try creating the folder it fails on, and import the key again:
@@ -142,7 +132,7 @@ done by holding down the option key on your keyboard and clicking on the applica
 .. note::
    The novelWriter DMG is not signed because Apple doesn't currently provide a way for non-profit
    open source projects to properly sign their installers. The novelWriter project doesn't have the
-   funding to pay for commercial software signing certificates.
+   funding to pay for a commercial software signing certificate.
 
 
 .. _a_started_pip:

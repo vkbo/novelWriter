@@ -1,6 +1,7 @@
 {
   "Synopsis": "Sinopse",
   "Short Description": "Descrição breve",
+  "Footnotes": "Notas de rodapé",
   "Comment": "Comentário",
   "Notes": "Notas",
   "Tag": "Etiqueta",
@@ -13,6 +14,7 @@
   "Objects": "Objetos",
   "Entities": "Entidades",
   "Custom": "Outros",
+  "New Page": "Nova página",
   "0": "Zero",
   "1": "Um",
   "2": "Dois",

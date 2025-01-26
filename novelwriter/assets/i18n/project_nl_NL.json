@@ -1,6 +1,7 @@
 {
   "Synopsis": "Synopsis",
   "Short Description": "Korte beschrijving",
+  "Footnotes": "Voetnoten",
   "Comment": "Opmerking",
   "Notes": "Notities",
   "Tag": "Label",
@@ -13,6 +14,7 @@
   "Objects": "Objecten",
   "Entities": "Entiteiten",
   "Custom": "Aangepast",
+  "New Page": "Nieuwe pagina",
   "0": "nul",
   "1": "één",
   "2": "twee",
