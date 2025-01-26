@@ -115,18 +115,16 @@ Root Folder Types
    options. Tags in this folder type can be references using the ``@custom`` keyword.
 
 The root folders are closely tied to the tags and reference system. Each folder type corresponds to
-the categories of tags that can be used to reference them. For more information about the tags
-listed, see :ref:`a_references_references`.
+categories of tags that can be used to reference them. For more information about the tags listed,
+see :ref:`a_references_references`.
 
 There is also a ``@mention`` keyword that can be used to reference any tag.
 See :ref:`a_references_references` for more details.
 
 .. note::
+
    You can rename root folders to whatever you want. However, this doesn't change the reference
    keyword or what they do.
-
-.. versionadded:: 2.0
-   As of version 2.0, you can make multiple root folders of each kind to split up your project.
 
 
 .. _a_proj_roots_del:
@@ -170,11 +168,10 @@ The folders are there purely as a way for you to organise the documents in meani
 to be able to collapse and hide them in the project tree when you're not working on those
 documents.
 
-.. versionadded:: 2.0
-   As of version 2.0 it is possible to add child documents to other documents. This is particularly
-   useful when you create chapters and scenes. If you add separate scene documents, you should also
-   add separate chapter documents, even if they only contain a chapter heading. You can then add
-   scene documents as child items to the chapters.
+In addition to using folders. it is also possible to add child documents to other documents. This
+is particularly  useful when you create chapters and scenes. If you add separate scene documents,
+you should also  add separate chapter documents, even if they only contain a chapter heading. You
+can then add scene documents as child items to the chapters.
 
 
 .. _a_proj_roots_orphaned:
@@ -185,7 +182,7 @@ Recovered Documents
 If novelWriter crashes or otherwise exits without saving the project state, or if you're using a
 file synchronisation tool that runs out of sync, there may be files in the project storage folder
 that aren't tracked in the core project file. These files, when discovered, are recovered and added
-back into the project.
+back into the project when a project is opened.
 
 The discovered files are scanned for metadata that give clues as to where the document may
 previously have been located in the project. The project loading routine will try to put them back
@@ -205,19 +202,21 @@ be named after its internal key, which is a string of characters and numbers.
 Project Lockfile
 ----------------
 
-To prevent lost documents caused by file conflicts when novelWriter projects are synchronised via
-file synchronisation tools, a project lockfile is written to the project storage folder when a
-project is open. If you try to open a project which already has such a file present, you will be
-presented with a warning, and some information about where else novelWriter thinks the project is
-also open. You will be given the option to ignore this warning, and continue opening the project at
-your own risk.
+To prevent data loss caused by file conflicts when novelWriter projects are synchronised via file
+synchronisation tools, a project lockfile is written to the project storage folder when a project
+is open. If you try to open a project which already has such a file present, you will be presented
+with a warning, and some information about where else novelWriter thinks the project is also open.
+You will be given the option to ignore this warning, and continue opening the project at your own
+risk.
 
 .. note::
+
    If, for some reason, novelWriter or your computer crashes, the lock file may remain even if
    there are no other instances keeping the project open. In such a case it is safe to ignore the
    lock file warning when re-opening the project.
 
 .. warning::
+
    If you choose to ignore the warning and continue opening the project, and multiple instances of
    the project are in fact open, you are likely to cause inconsistencies and create diverging
    project files, potentially resulting in loss of data and orphaned files. You are not likely to
@@ -318,9 +317,14 @@ use these to indicate at what stage of completion each novel document is, or how
 content of a note is to the story. You don't have to use them this way, that's just what they were
 intended for, but you can make them whatever you want.
 
+Both status and importance labels can be exported and imported so you can share them between
+projects, or define a standard set for all your writing projects. When you import labels to a
+project, they are always added as *new* labels.
+
 See also :ref:`a_ui_tree_status`.
 
 .. note::
+
    The status or importance level currently in use by one or more documents cannot be deleted, but
    they can be edited.
 
@@ -384,6 +388,7 @@ also export the filtered data to a JSON file or to a CSV file that can be opened
 application like for instance Libre Office Calc or Excel.
 
 .. versionadded:: 1.2
+
    As of version 1.2, the log file also stores how much of the session time was spent idle. The
    definition of idle here is that the novelWriter main window loses focus, or the user hasn't made
    any changes to the currently open document in five minutes. The number of minutes can be altered
@@ -400,4 +405,5 @@ If you do not wish to see the timer, you can click on it once to hide it. The ic
 visible. Click the icon once more to display the timer again.
 
 .. versionadded:: 2.6
+
    As of version 2.6, clicking the timer text or icon in the status bar will toggle its visibility.

@@ -63,6 +63,7 @@ currently selected item. This panel also includes the latest paragraph and chara
 addition to the word count.
 
 .. tip::
+
    If you want to set the label of a document to be the same as a header within it, you can
    right-click a header in the document when it is open in the editor and select
    :guilabel:`Set as Document Name` from the context menu.
@@ -140,29 +141,29 @@ lives in. If it's in a **Novel** type folder, it uses the "Status" flag, otherwi
 Project Tree Drag & Drop
 ------------------------
 
-The project tree allows drag & drop to a certain extent to allow you to reorder your documents and
-folders. Moving a document in the project tree will affect the text's position when you assemble
-your manuscript in the **Manuscript Build** tool.
+The project tree allows drag & drop to allow you to reorder your documents and folders. Moving a
+document in the project tree will affect the text's position when you assemble your manuscript in
+the **Manuscript Build** tool.
 
 .. versionadded:: 2.2
+
    You can now select multiple items in the project tree by holding down the :kbd:`Ctrl` or
    :kbd:`Shift` key while selecting items.
-
-You can drag and drop documents and regular folders, but not root folders. If you select multiple
-items, they can only be dragged and dropped if they are siblings. That is, they have the same
-parent item in the project. This limitation is due to the way drag and drop is implemented in the
-user interface framework novelWriter is built upon.
 
 Documents and their folders can be rearranged freely within their root folders. If you move a
 **Novel Document** out of a **Novel** folder, it will be converted to a **Project Note**. Notes can
 be moved freely between all root folders, but keep in mind that if you move a note into a **Novel**
-type root folder, its "Importance" setting will be switched with a "Status" setting. See
+type root folder, its "Importance" setting will be replaced by a "Status" setting. See
 :ref:`a_ui_tree_status`. The old value will not be overwritten though, and should be restored if
 you move it back at some point.
 
 Root folders in the project tree cannot be dragged and dropped at all. If you want to reorder them,
 you can move them up or down with respect to each other from the arrow buttons at the top of the
 project tree, or by pressing :kbd:`Ctrl+Up` or :kbd:`Ctrl+Down` when they are selected.
+
+.. tip::
+
+   You can drag and drop documents onto the editor or viewer panel to open them.
 
 
 .. _a_ui_tree_novel:
@@ -180,6 +181,7 @@ the view in the **Outline View**. It is convenient when you want to browse the s
 story itself rather than the document files.
 
 .. note::
+
    You cannot reorganise the entries in the novel view, or add any new documents, as that would
    imply restructuring the content of the document files themselves. Any such editing must be done
    in the project tree. However, you can add new headings to existing documents, or change
@@ -208,6 +210,7 @@ You can select which novel folder to display from the dropdown menu. You can opt
 to show a combination of all novel folders.
 
 .. note::
+
    Since the internal structure of the novel does not depend directly on the folder and document
    structure of the project tree, this view will not necessarily look the same, depending on how
    you choose to organise your documents. See the :ref:`a_struct` page for more details.
@@ -218,6 +221,7 @@ the menu button in the toolbar. The order of the columns can also be rearranged 
 a different position. You column settings are saved between sessions on a per-project basis.
 
 .. note::
+
    The **Title** column cannot be disabled or moved.
 
 The information viewed in the outline is based on the :term:`project index`. While novelWriter does

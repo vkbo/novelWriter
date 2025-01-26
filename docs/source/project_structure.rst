@@ -11,8 +11,8 @@ Active novel documents can only live in a **Novel** type root folder. You can al
 **Archive** and **Trash** of course, where they become inactive.
 
 The project tree can distinguish between the different heading levels of the novel documents using
-coloured icons, and optionally add emphasis on the label, set in **Preferences** for easier
-identification.
+coloured icons, and optionally add emphasis on the label. Emphasis can be enabled in
+**Preferences**.
 
 
 .. _a_struct_heads:
@@ -27,6 +27,7 @@ Four levels of headings are supported, signified by the number of hashes (``#``)
 title. See also the :ref:`a_fmt` section for more details about the markup syntax.
 
 .. note::
+
    The heading levels are not only important when generating the manuscript, they are also used by
    the indexer when building the outline tree in the **Outline View** as well as in the **Novel
    Tree**. Each heading also starts a new region where new Tags and References can be defined. See
@@ -60,15 +61,24 @@ The syntax for the four basic heading types, and the three special types, is lis
    mid-scene, like if you change the point-of-view character. You are free to use sections as you
    wish, and you can filter them out of the final manuscript.
 
-Page breaks can be automatically added before partition, chapter and scene headings from the
-**Manuscript Build** tool when you build your project to a format that supports page breaks. If you
-want page breaks in other places, you have to specify them manually. See :ref:`a_fmt_break`.
+Page breaks can be automatically added before titles, partition, chapter and scene headings from
+the **Manuscript Build** tool when you build your project to a format that supports page breaks. If
+you want page breaks in other places, you have to specify them manually. See :ref:`a_fmt_break`.
 
 .. tip::
+
    There are multiple options of how to process novel headings when building the manuscript. For
    instance, chapter numbers can be applied automatically, and so can scene numbers if you want
    them in a draft manuscript. You can also insert point-of-view character names in chapter titles.
    See the :ref:`a_manuscript` page for more details.
+
+.. note::
+
+   As of 2.6, the heading levels internally in novelWriter do not map directly to heading levels in
+   manuscript documents. In manuscript documents, chapters are considered the top level heading,
+   and partitions become plain text paragraphs with a larger font.
+
+   .. versionadded:: 2.6
 
 
 .. _a_struct_heads_title:
@@ -77,15 +87,28 @@ Novel Title and Front Matter
 ----------------------------
 
 It is recommended that you add a document at the very top of each **Novel** root folder with the
-novel title as the first line. You should modify the level 1 heading format code with an ``!`` in
-order to render it as a document title that is excluded from any automatic Table of Content in a
-manuscript build document, like so:
+novel title in it. You should modify the level 1 heading format code with an ``!`` in order to
+render it as a document title that is excluded from any automatic Table of Content in a manuscript
+build document.
+
+You can also add the author name and address above this if this is required by the manuscript
+format you use, and additional space added before the title.
+
+This is the title page novelWriter generates automatically for a new project as of version 2.6:
 
 .. code-block:: md
 
+   Jane Doe[br]
+   Address 1[br]
+   Address 2 <<
+
+   [vspace:5]
+
    #! My Novel
 
-   >> _by Jane Doe_ <<
+   >> **By Jane Doe** <<
+
+   >> Word Count: [field:textWords] <<
 
 The title is by default centred on the page. You can add more text to the page as you wish, like
 for instance the author's name and details.
