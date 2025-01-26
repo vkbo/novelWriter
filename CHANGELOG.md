@@ -38,7 +38,7 @@ See the website for complete [Release Notes](https://novelwriter.io/releases/rel
 
 **Documentation**
 
-* Documentation has been updated with 2.6 features. PR #2208.
+* Documentation has been updated with 2.6 features. PR #2210.
 
 ----
 
