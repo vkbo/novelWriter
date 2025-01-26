@@ -39,7 +39,8 @@ your notes about your characters, your world building, and so on.
 You can at any point split the individual documents by their headings up into multiple documents,
 or merge multiple documents into a single document. This makes it easier to use variations of the
 Snowflake_ method for writing. You can start by writing larger structure-focused documents, like
-for instance one document per act, and later effortlessly split these up into chapters or scenes.
+for instance one document per act, and later effortlessly split these up into individual chapter or
+scene documents.
 
 
 .. _a_intro_features:
@@ -53,7 +54,7 @@ Below are some key features of novelWriter.
    The aim of the user interface is to let you focus on writing instead of spending time formatting
    text. Formatting is therefore limited to a small set of formatting tags for simple things like
    text emphasis and paragraph alignment. Additional shortcodes are available for special
-   formatting cases.
+   formatting cases when you need them.
 
    When you really want to focus on just writing, you can switch the editor into **Focus Mode**
    where only the text editor panel itself is visible, and the project structure view is hidden
@@ -78,19 +79,19 @@ Below are some key features of novelWriter.
    Your main story text lives in the "Novel" root folder. You can have multiple such folders in a
    project, and rename them to whatever you want. This allows you to keep a series of individual
    novels with the same characters and world building in the same project, and create manuscripts
-   for them individually.
+   for them separately.
 
 **Keep track of your story elements**
-   All notes in your project can be assigned a :term:`tag` that you can then :term:`reference` from
-   any other document or note. In fact, you can add a new tag under each heading of a note if you
-   need to be able to reference specific sections of it, or you want to keep several topics in the
-   same note.
+   All documents in your project can be assigned a :term:`tag` that you can then :term:`reference`
+   from any other document or note. In fact, you can add a new tag under each heading of a note if
+   you need to be able to reference specific sections of it, or you want to keep several topics or
+   scenes in the same document.
 
 **Get an overview of your story**
    It is not the documents themselves that define the chapters and scenes of your story, but the
-   headings that separate them. In the **Outline View** on the main window you can see an outline
-   of all the chapter and scene headings of each novel root folder in your project. If they have
-   any references in them, like which character is in what chapter and scene, these are listed in
+   headings within them. In the **Outline View** on the main window you can see an outline of all
+   the chapter and scene headings of each novel root folder in your project. If they have any
+   references in them, like which character is in what chapter and scene, these are listed in
    additional columns.
 
    You can also add a synopsis to each chapter or scene, which can be listed here as well. You have
@@ -107,9 +108,9 @@ Below are some key features of novelWriter.
    Whether you want to assemble a manuscript, or export all your notes, or generate an outline of
    your chapters and scenes with a synopsis included, you can use the **Build Manuscript** tool to
    do so. The tool lets you select what information you want to include in the generated document,
-   and how it is formatted. You can send the result to a printer or PDF, or generate an Open
-   Document file that can be opened by most office type word processors. You can also generate the
-   result as HTML, or Markdown, both suitable for further conversion to other formats.
+   and how it is formatted. You can send the result to a printer, or generate an Open Document or
+   Word Document file that can be opened by most office type word processors. You can also generate
+   the result as HTML, or Markdown, both suitable for further conversion to other formats.
 
 
 .. _a_intro_screenshots:

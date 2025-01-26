@@ -13,7 +13,7 @@ Glossary
       see :ref:`a_proj_roots`.
 
    Novel Documents
-      These are documents that are created under a "Novel" :term:`root folder`. They behave
+      These are documents that are created under a "Novel" :term:`Root Folder`. They behave
       differently than :term:`Project Notes`, and have some more restrictions. For instance, they
       can not exist in folders intended only for project notes. See the :ref:`a_struct` chapter for
       more details.

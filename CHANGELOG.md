@@ -1,5 +1,47 @@
 # novelWriter Changelog
 
+## Version 2.6 [2025-01-26]
+
+### Release Notes
+
+The 2.6 release fixes a few minor issues from the RC 1 pre-release, and updates most translations.
+
+See the website for complete [Release Notes](https://novelwriter.io/releases/release_2_6.html).
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed a bug in the novel selector dropdown used a few places that would clear the selection if
+  the novel list was refreshed. PR #2179.
+* Fixed a bug that would crash the app if the project tree was clicked without any project having
+  been loaded. The selection model does not exist prior to a project load. Issue #2173. PR #2181.
+* Replaced a broken link on the dictionary install tool available on Windows. PR #2189.
+* Backported a few code fixes from 2.7 related to freeing memory from closed dialogs and one
+  instance of a potentially uninitialised variable. PR #2202.
+* Fixed word wrapping in the item details panel for status and importance labels with very long
+  names. PR #2202.
+* Fixed the project tree context menu so that it is not opened when right-clicking on an empty area
+  of the tree widget. PR #2202.
+
+**Improvements**
+
+* Chapter headings are now level 1 headings in all manuscript output formats, not just HTML like
+  before. Most applications that post-processes output will assume chapters are level 1.
+  Correspondingly, scenes are now level 2 and sections are level 3. Notes headings remain
+  unchanged. Issue #2205. PR #2206.
+
+**Internationalisation**
+
+* German, US English, Italian, Japanese, Norwegian and Polish have been updated in full. Brazilian
+  Portuguese and Chinese have been partially updated. PR #2207.
+
+**Documentation**
+
+* Documentation has been updated with 2.6 features. PR #2210.
+
+----
+
 ## Version 2.6 RC 1 [2025-01-09]
 
 ### Release Notes

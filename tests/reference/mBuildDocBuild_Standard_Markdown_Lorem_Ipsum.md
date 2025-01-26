@@ -1,4 +1,5 @@
-# Lorem Ipsum
+Lorem Ipsum
+===========
 
 **By lipsum.com**
 
@@ -16,7 +17,7 @@ Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots 
 
 The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from “de Finibus Bonorum et Malorum” by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
 
-## Prologue
+# Prologue
 
 **Synopsis:** Explanation from the lipsum.com website.
 
@@ -24,11 +25,12 @@ _Lorem Ipsum_ is simply dummy text[1] of the printing and typesetting industry. 
 
 See http://lipsum.com
 
-# Part: Act One
+Part: Act One
+=============
 
 “Fusce maximus felis libero”
 
-## Chapter: Chapter One
+# Chapter: Chapter One
 
 **Point of View:** Bod  
 **Plot:** Main  
@@ -38,7 +40,7 @@ See http://lipsum.com
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at aliquam quam. Praesent magna nunc, lacinia sit amet quam eget, aliquet ultrices justo. Morbi ornare enim et lorem rutrum finibus ut eu dolor. Aliquam a orci odio. Ut ultrices sem quis massa placerat, eget mollis nisl cursus. Cras vel sagittis justo. Ut non ultricies leo. Maecenas rutrum velit in est varius, et egestas massa pulvinar.
 
-### Scene: Scene One
+## Scene: Scene One
 
 **Point of View:** Bod  
 **Plot:** Main  
@@ -50,13 +52,13 @@ Aenean ut placerat velit. Etiam laoreet ullamcorper risus, eget lobortis enim sc
 
 Aliquam ut nisl arcu. Ut ultricies, lorem dignissim rutrum convallis, risus orci tempus lectus, congue feugiat sem lectus vitae odio. Duis sit amet justo finibus, hendrerit nulla at, ullamcorper enim. Praesent vel tellus sit amet tellus vulputate bibendum. Morbi eleifend sagittis sem, ac volutpat ante congue non. In hac habitasse platea dictumst. Morbi lobortis fermentum elit, dignissim sagittis ligula volutpat lacinia. Vestibulum eu interdum odio. Integer ac purus commodo metus congue tempor non at urna. Sed eget tortor vel quam viverra egestas. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec non convallis mauris, ac feugiat ex.
 
-#### Section: Scene One, Section Two
+### Section: Scene One, Section Two
 
 Integer vel libero ipsum. Donec varius aliquam libero, sit amet commodo urna hendrerit non. Nullam quis erat mollis nunc viverra volutpat tincidunt in odio. Nam vitae quam sem. Aliquam suscipit nulla non lorem pharetra semper. Ut suscipit erat eu ligula accumsan ultrices. Phasellus nisl tellus, placerat sed laoreet id, consectetur nec dolor. Sed fringilla ipsum id dapibus posuere. Aenean finibus pharetra tincidunt. Ut molestie malesuada nulla, id posuere lorem tincidunt eu. Aliquam tempor eros a est vulputate, scelerisque pulvinar ipsum fermentum. In hac habitasse platea dictumst.
 
 Curabitur congue, justo quis interdum fermentum, tellus nulla imperdiet sapien, eu interdum enim tellus condimentum metus. Vivamus nunc velit, dignissim ut ultrices sit amet, ultricies quis enim. Donec ut vestibulum neque. Vivamus semper neque id ex ullamcorper varius. Fusce mattis nibh viverra lorem sagittis, et tempor arcu congue. Suspendisse sit amet felis sed urna facilisis mattis eget vitae arcu. Proin eu magna hendrerit, tristique sem maximus, placerat diam. Nulla tristique sed velit sit amet varius. Etiam vel ornare magna, in vulputate arcu. Cras velit orci, tincidunt sed volutpat cursus, bibendum vel sem. Nunc vulputate pharetra tortor, ac consectetur neque tincidunt sit amet. Nulla ornare mi sed mi dignissim ultricies. Ut tincidunt bibendum mauris, sed elementum ex vulputate vel. Mauris fermentum, felis nec vehicula congue, felis lorem facilisis erat, a dictum dolor augue vitae quam. Maecenas rutrum tortor nec consequat eleifend.
 
-### Scene: Scene Two
+## Scene: Scene Two
 
 **Point of View:** Bod  
 **Plot:** Main  
@@ -70,7 +72,7 @@ Proin vitae gravida nisl. Integer viverra orci turpis, sit amet pretium ligula f
 
 Nulla accumsan ante in pulvinar efficitur. Nulla non velit quis urna hendrerit bibendum. Suspendisse ultrices ante eu justo malesuada, sed fermentum enim rutrum. Nunc fermentum pharetra felis, vitae sollicitudin quam rutrum porta. Aliquam fringilla velit a mi laoreet, et luctus est rutrum. In gravida non ipsum sit amet tempus. Curabitur et eleifend purus. Nulla facilisi.
 
-#### Section: Scene Two, Section Two
+### Section: Scene Two, Section Two
 
 Suspendisse potenti. Fusce tempus lorem nec laoreet suscipit. Fusce vulputate nisl ac diam tincidunt, nec malesuada quam pellentesque. Maecenas congue, tellus quis commodo rutrum, magna leo egestas arcu, quis suscipit ex risus id ligula. Suspendisse potenti. Morbi blandit lacus vitae laoreet vulputate. Donec vitae tellus eleifend, lobortis eros eu, tincidunt enim. Nullam et ullamcorper nisi. Vivamus tellus ex, lobortis quis rutrum ut, dapibus sit amet turpis. Phasellus pellentesque metus diam, commodo tristique ante commodo ac. Ut mollis ipsum nec diam blandit sollicitudin. Duis bibendum lacus nec commodo dapibus. Sed condimentum luctus ante, id ultricies urna varius nec. Nam convallis magna nec bibendum ultrices. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed auctor pharetra quam, vitae porta ex bibendum eu.
 
@@ -78,17 +80,17 @@ Vivamus ut venenatis lectus. Phasellus nec elit id sem dictum ornare. Quisque fe
 
 Ut et consequat enim, quis ornare nibh. In lectus neque, mollis et suscipit et, vestibulum vitae augue. Praesent id ante sit amet odio venenatis placerat a at erat. Sed sed metus sed nisi dictum varius. Integer tincidunt fermentum purus ac porta. Fusce porttitor non risus eget tristique. Donec augue nunc, maximus at fermentum vel, varius et neque. Ut sed consectetur mauris. Quisque ipsum enim, porttitor vitae imperdiet sit amet, tempor et mauris. Aliquam malesuada tincidunt lectus quis blandit. Sed commodo orci felis, quis ultrices tellus facilisis sed. Nunc vel varius est. Duis ullamcorper eu metus in pulvinar. Morbi at sapien dictum, rutrum mauris eget, interdum tellus.
 
-## Why do we use it?
+# Why do we use it?
 
 **Comment:** Exctracted from the lipsum.com website.
 
-	It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+    It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
 
-	The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.
+    The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.
 
-	Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
+    Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
 
-## Chapter: Chapter Two
+# Chapter: Chapter Two
 
 **Point of View:** Bod  
 **Plot:** Main  
@@ -98,7 +100,7 @@ Ut et consequat enim, quis ornare nibh. In lectus neque, mollis et suscipit et, 
 
 Curabitur a elit posuere, varius ex et, convallis neque. Phasellus sagittis pharetra sem vitae dapibus. Curabitur varius lorem non pulvinar congue. Vestibulum pharetra fermentum leo, sed faucibus eros placerat quis. In hac habitasse platea dictumst. Donec metus massa, rutrum quis consequat et, tincidunt ac felis. Duis mollis metus ac nunc tincidunt blandit. Ut aliquet velit eu odio pharetra condimentum. Integer rutrum lacus orci, id venenatis libero accumsan at.
 
-### Scene: Scene Three
+## Scene: Scene Three
 
 **Point of View:** Bod  
 **Plot:** Main  
@@ -114,7 +116,7 @@ Maecenas ullamcorper lacus nec turpis finibus aliquet eget rutrum augue. Integer
 
 Aenean dapibus vulputate purus, sit amet tempor nunc suscipit consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Mauris auctor congue eros, non pellentesque neque dapibus ac. Vestibulum non leo nec urna lacinia eleifend quis et diam. Praesent eu nisi magna. Nulla at magna massa. Suspendisse porta varius scelerisque. Duis at auctor dolor, non dapibus urna. Nunc venenatis feugiat magna non molestie. Aliquam non ornare ex. Quisque eu ultrices velit, quis pellentesque eros. Phasellus eleifend, elit id imperdiet aliquam, nulla quam molestie turpis, at egestas odio ante et tortor. Suspendisse fringilla condimentum justo, at aliquet odio aliquam ac.
 
-### Scene: Scene Four
+## Scene: Scene Four
 
 **Point of View:** Bod  
 **Plot:** Main  
@@ -134,7 +136,7 @@ Donec ipsum eros, vestibulum sit amet cursus eget, iaculis quis dolor. Pellentes
 
 Phasellus eu nunc ut nunc faucibus laoreet. Aliquam at magna risus. Praesent lobortis, risus finibus semper varius, magna purus vestibulum eros, at pulvinar sapien enim a ex. In scelerisque malesuada ex, sit amet egestas neque condimentum sed. Praesent vulputate efficitur massa. Cras at accumsan ligula. In elementum lectus eget blandit dictum. Nam vitae libero ut justo eleifend rutrum ac nec arcu. Aliquam sodales in quam congue vestibulum. Aliquam in accumsan sapien. Quisque lobortis nisl nisi, vitae bibendum turpis efficitur sed. Vestibulum tempor nulla eget nisi convallis, blandit sagittis ipsum convallis. Donec odio nibh, ultrices quis odio in, mollis euismod libero.
 
-### Scene: Scene Five
+## Scene: Scene Five
 
 **Point of View:** Bod  
 **Plot:** Main  
@@ -152,7 +154,8 @@ Pellentesque rhoncus pharetra eros, non mollis nisi pretium non. Mauris accumsan
 
 Integer egestas maximus leo eu facilisis. Nunc rhoncus dignissim lectus eu lacinia. Praesent lacinia urna porttitor aliquam condimentum. Nulla eu eros dictum, dictum nunc vitae, sagittis nibh. Integer ante neque, consequat nec sollicitudin id, consectetur vitae dolor. Nullam volutpat sem orci, quis viverra magna auctor a. Suspendisse potenti. Maecenas commodo sed neque pellentesque vehicula. Sed luctus nisl risus, elementum semper purus interdum vel. Ut pulvinar, massa sit amet venenatis placerat, nunc lacus hendrerit odio, non aliquet nunc risus eu lectus. Maecenas feugiat semper ligula, id lobortis sem porta eu. Integer posuere elit magna, at mollis eros bibendum et. Ut imperdiet purus vel nulla aliquam maximus. Morbi sodales purus tellus, a rhoncus sem rutrum sit amet. Quisque risus sem, laoreet nec convallis nec, rutrum vitae justo.
 
-# Notes: Characters
+Notes: Characters
+=================
 
 # Nobody Owens
 
@@ -165,7 +168,8 @@ Suspendisse faucibus est auctor orci mollis luctus. Praesent quis sodales neque.
 
 Nullam scelerisque velit et tortor congue vestibulum a at nisi. Vivamus sodales ut turpis a convallis. In dignissim nibh at luctus sodales. Etiam sit amet rhoncus massa. Phasellus ligula magna, sollicitudin non imperdiet sit amet, volutpat vel magna. Nunc vestibulum tempor lectus, sit amet porta nunc hendrerit in. Curabitur non odio sit amet massa tincidunt facilisis. Integer et luctus nunc, eget euismod leo. Praesent faucibus metus sed purus convallis scelerisque. Fusce viverra lorem et placerat malesuada. In at elit malesuada, ullamcorper risus vitae, sodales dolor. Donec quis elementum lectus. Quisque eu eros at dui imperdiet euismod ut id neque.
 
-# Notes: Plot
+Notes: Plot
+===========
 
 # Main Plot
 
@@ -175,7 +179,8 @@ Suspendisse vulputate malesuada pellentesque. Aenean sollicitudin cursus mi, vit
 
 Mauris ut erat eu lorem malesuada egestas vel vel urna. Maecenas ac semper quam. Maecenas aliquet metus non interdum mattis. Proin consectetur molestie ligula. Aliquam sollicitudin pulvinar urna a pellentesque. Suspendisse ultrices, est mattis scelerisque porta, nisi nisi laoreet nisl, non condimentum quam ante a velit. Proin scelerisque justo augue, nec laoreet ligula egestas at. Etiam enim quam, ultrices non accumsan hendrerit, elementum vel ligula. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam efficitur odio libero, in vestibulum arcu aliquam at. Cras non vehicula augue. Integer lobortis, est vitae aliquam facilisis, metus ligula aliquet eros, at porttitor sem tortor eget massa. Aliquam varius scelerisque neque sed gravida. Aenean eleifend lorem id ante elementum sollicitudin. Proin commodo massa a quam volutpat, mollis fermentum turpis efficitur.
 
-# Notes: World
+Notes: World
+============
 
 # Ancient Europe
 

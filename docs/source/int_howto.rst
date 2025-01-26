@@ -16,7 +16,7 @@ This is a list of hopefully helpful little tips on how to get the most out of no
 Managing the Project
 ====================
 
-.. dropdown:: Create a Project from a Template
+.. dropdown:: How do I create a project from a template?
    :animate: fade-in-slide-down
 
    On the Welcome dialog's **Create New Project** form, you can select to "Prefill Project" from
@@ -24,7 +24,7 @@ Managing the Project
    dedicated to be a template project. If you have a structure and settings you want to use for
    every new project, this is the best solution.
 
-.. dropdown:: Merge Multiple Documents Into One
+.. dropdown:: How do I merge multiple documents into one?
    :animate: fade-in-slide-down
 
    If you need to merge a selection of documents in your project into a single document, you can
@@ -35,28 +35,18 @@ Managing the Project
    In the dialog that pops up, the documents will be in the same order as in the folder, but you
    can rearrange them here of you wish. See :ref:`a_ui_tree_split_merge` for more details.
 
+.. dropdown:: How do I share status or importance labels between projects?
+   :animate: fade-in-slide-down
+
+   The status or importance labels you have defined in a project can be exported from **Project
+   Settings** from the respective configuration tabs. You can then import these labels in another
+   project.
+
 
 Layout Tricks
 =============
 
-.. dropdown:: Align Paragraphs with Line Breaks
-   :animate: fade-in-slide-down
-
-   If you have line breaks in you paragraphs, and also want to apply additional text alignment or
-   indentation, you must apply the alignment tags to the first line.
-
-   For example, this will centre the two lines.
-
-   .. code-block:: md
-
-      >> Line one is centred. <<
-      Line two is also centred.
-
-      This text is not centred, because it is a new paragraph.
-
-   See :ref:`a_fmt_align` for more details.
-
-.. dropdown:: Create a Simple Table
+.. dropdown:: How do I create a table?
    :animate: fade-in-slide-down
 
    The formatting tools available in novelWriter don't allow for complex structures like tables.
@@ -69,12 +59,22 @@ Layout Tricks
    This is most suitable for your notes, as the result in exported documents cannot be guaranteed
    to match. Especially if you don't use the same font in your manuscript as in the editor.
 
-.. dropdown:: Turn Off First Line Indent for a Paragraph
+.. dropdown:: How do I force a line break when line breaks are ignored in my manuscript?
+   :animate: fade-in-slide-down
+
+   In the **Manuscript Build Settings** you can choose to ignore line breaks within paragraphs in
+   your text. However, some times you still need those breaks. Like for instance on the cover page
+   where you may need to add your name and address. In such cases, you can add ``[br]`` where you
+   want line breaks. These breaks cannot be ignored by any settings and will always be respected.
+
+   .. versionadded:: 2.6
+
+.. dropdown:: How do I turn off first line indent for a specific paragraph?
    :animate: fade-in-slide-down
 
    If you have first line indent enabled, but have a specific paragraph that you don't want
-   indented, you can disable the indentation by explicitly add text alignment. Aligned paragraphs
-   are not indented. For instance by adding ``<<`` to the end to left-align it,
+   indented, you can disable the indentation by explicitly adding text alignment. For instance by
+   adding ``<<`` to the end to left-align it. Aligned paragraphs are not indented.
 
    See :ref:`a_fmt_align` for more details.
 
@@ -82,7 +82,7 @@ Layout Tricks
 Organising Your Text
 ====================
 
-.. dropdown:: Add Introductory Text to Chapters
+.. dropdown:: How do I add introductory text to chapters?
    :animate: fade-in-slide-down
 
    Sometimes chapters have a short preface, like a brief piece of text or a quote to set the stage
@@ -92,7 +92,7 @@ Organising Your Text
    such text. Separating chapter and scene files also allows you to make scene files child
    documents of the chapter.
 
-.. dropdown:: Distinguishing Soft and Hard Scene Breaks
+.. dropdown:: How do I distinguishing between soft and hard scene breaks?
    :animate: fade-in-slide-down
 
    Depending on your writing style, you may need to separate between soft and hard scene breaks
@@ -101,8 +101,8 @@ Organising Your Text
    In such cases you may want to use different scene headings for hard and soft scene breaks. The
    **Build Manuscript** tool will let you define a different format for scenes using the ``###``
    and ``###!`` heading codes when you generate your manuscript. You can for instance add the
-   common "``* * *``" for hard breaks and select to soft scene breaks, which will just insert an
-   empty paragraph in their place. See :ref:`a_manuscript_settings` for more details.
+   common "``* * *``" for hard breaks and select to hide soft scene breaks, which will just insert
+   an empty paragraph in their place. See :ref:`a_manuscript_settings` for more details.
 
    .. versionadded:: 2.4
 
@@ -110,7 +110,7 @@ Organising Your Text
 Other Tools
 ===========
 
-.. dropdown:: Convert Project to/from yWriter Format
+.. dropdown:: How do I convert my project to/from the yWriter format?
    :animate: fade-in-slide-down
 
    There is a tool available that lets you convert a `yWriter <http://spacejock.com/yWriter7.html>`_

@@ -291,7 +291,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, TM1, "Novel Title", [], BlockFmt.CENTRE),
+        (BlockTyp.PART, TM1, "Novel Title", [], BlockFmt.CENTRE),
     ]
 
     # Note File
@@ -313,7 +313,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, TM1, "Chapter One", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "Chapter One", [], BlockFmt.PBB),
     ]
 
     # Note File
@@ -334,7 +334,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD3, TM1, "Scene One", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM1, "Scene One", [], BlockFmt.NONE),
     ]
 
     # Note File
@@ -355,7 +355,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD4, TM1, "A Section", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, TM1, "A Section", [], BlockFmt.NONE),
     ]
 
     # Note File
@@ -399,7 +399,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, TM1, "Prologue", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "Prologue", [], BlockFmt.PBB),
     ]
 
     # Note File
@@ -1361,8 +1361,8 @@ def testFmtToken_SpecialFormat(mockGUI):
     # ========
 
     correctResp = [
-        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.CENTRE),
-        (BlockTyp.HEAD1, TM2, "Title Two", [], BlockFmt.CENTRE | BlockFmt.PBB),
+        (BlockTyp.PART, TM1, "Title One", [], BlockFmt.CENTRE),
+        (BlockTyp.PART, TM2, "Title Two", [], BlockFmt.CENTRE | BlockFmt.PBB),
     ]
 
     # Command wo/Space
@@ -1405,9 +1405,9 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Multiple Empty Paragraphs
@@ -1421,9 +1421,9 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Three Skips
@@ -1434,11 +1434,11 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
-        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
-        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Malformed Command, Case 1
@@ -1449,8 +1449,8 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Malformed Command, Case 2
@@ -1461,8 +1461,8 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Malformed Command, Case 3
@@ -1473,8 +1473,8 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Empty Paragraph and Page Break
@@ -1489,9 +1489,9 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP,  "",  "", [], BlockFmt.PBB),
-        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP, "",  "", [], BlockFmt.PBB),
+        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Multiple Skip
@@ -1503,11 +1503,11 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP,  "",  "", [], BlockFmt.PBB),
-        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
-        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP, "",  "", [], BlockFmt.PBB),
+        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
 
@@ -1619,7 +1619,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, TM1, "T: Part One", [], BlockFmt.CENTRE),
+        (BlockTyp.PART, TM1, "T: Part One", [], BlockFmt.CENTRE),
     ]
 
     # H1: Title, Not First Page
@@ -1628,7 +1628,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, TM1, "T: Part One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.PART, TM1, "T: Part One", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
 
     # Chapters
@@ -1639,7 +1639,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, TM1, "C: Chapter One", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "C: Chapter One", [], BlockFmt.PBB),
     ]
 
     # H2: Unnumbered Chapter
@@ -1647,7 +1647,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, TM1, "U: Prologue", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "U: Prologue", [], BlockFmt.PBB),
     ]
 
     # H2: Chapter Word Number
@@ -1656,7 +1656,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._hFormatter._chCount = 0
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, TM1, "Chapter One", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "Chapter One", [], BlockFmt.PBB),
     ]
 
     # H2: Chapter Roman Number Upper Case
@@ -1664,7 +1664,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setChapterFormat(f"Chapter {nwHeadFmt.CH_ROMU}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, TM1, "Chapter II", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "Chapter II", [], BlockFmt.PBB),
     ]
 
     # H2: Chapter Roman Number Lower Case
@@ -1672,7 +1672,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setChapterFormat(f"Chapter {nwHeadFmt.CH_ROML}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, TM1, "Chapter iii", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "Chapter iii", [], BlockFmt.PBB),
     ]
 
     # Scenes
@@ -1683,7 +1683,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setSceneFormat(f"S: {nwHeadFmt.TITLE}", False)
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD3, TM1, "S: Scene One", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM1, "S: Scene One", [], BlockFmt.NONE),
     ]
 
     # H3: Scene Hidden wo/Format
@@ -1731,7 +1731,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._hFormatter._scChCount = 0
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD3, TM1, "Scene 1", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM1, "Scene 1", [], BlockFmt.NONE),
     ]
 
     # H3: Scene w/Chapter Number
@@ -1741,7 +1741,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._hFormatter._scChCount = 1
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD3, TM1, "Scene 3.2", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM1, "Scene 3.2", [], BlockFmt.NONE),
     ]
 
     # Sections
@@ -1766,7 +1766,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setSectionFormat(f"X: {nwHeadFmt.TITLE}", False)
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD4, TM1, "X: A Section", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, TM1, "X: A Section", [], BlockFmt.NONE),
     ]
 
     # H4: Section Separator
@@ -2143,11 +2143,13 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# T: Title One\n\n"
+        "T: Title One\n"
+        "============\n\n"
         "Text\n\n"
         "~\n\n"
         "Text\n\n"
-        "# T: Title Two\n\n"
+        "T: Title Two\n"
+        "============\n\n"
         "Text\n\n"
         "* * *\n\n"
         "Text\n\n"
@@ -2159,15 +2161,17 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# T: Title One\n\n"
-        "### S: Scene One\n\n"
+        "T: Title One\n"
+        "============\n\n"
+        "## S: Scene One\n\n"
         "Text\n\n"
-        "### S: Scene Two\n\n"
+        "## S: Scene Two\n\n"
         "Text\n\n"
-        "# T: Title Two\n\n"
-        "### S: Scene Three\n\n"
+        "T: Title Two\n"
+        "============\n\n"
+        "## S: Scene Three\n\n"
         "Text\n\n"
-        "### H: Scene Four\n\n"
+        "## H: Scene Four\n\n"
         "Text\n\n"
     )
 
@@ -2197,12 +2201,13 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# T: Title One\n\n"
-        "## C: Chapter One\n\n"
+        "T: Title One\n"
+        "============\n\n"
+        "# C: Chapter One\n\n"
         "Text\n\n"
         "* * *\n\n"
         "Text\n\n"
-        "## C: Chapter Two\n\n"
+        "# C: Chapter Two\n\n"
         "Text\n\n"
         "* * *\n\n"
         "Text\n\n"
@@ -2214,16 +2219,17 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# T: Title One\n\n"
-        "## C: Chapter One\n\n"
-        "### S: Scene One\n\n"
+        "T: Title One\n"
+        "============\n\n"
+        "# C: Chapter One\n\n"
+        "## S: Scene One\n\n"
         "Text\n\n"
-        "### S: Scene Two\n\n"
+        "## S: Scene Two\n\n"
         "Text\n\n"
-        "## C: Chapter Two\n\n"
-        "### S: Scene Three\n\n"
+        "# C: Chapter Two\n\n"
+        "## S: Scene Three\n\n"
         "Text\n\n"
-        "### H: Scene Four\n\n"
+        "## H: Scene Four\n\n"
         "Text\n\n"
     )
 
@@ -2287,6 +2293,7 @@ def testFmtToken_HeaderVisibility(mockGUI):
 
     # Novel Files
     # ===========
+    # Headers are promoted one level
 
     md._isNovel = True
 
@@ -2301,20 +2308,22 @@ def testFmtToken_HeaderVisibility(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# Novel\n\n"
-        "# Title One\n\n"
-        "## Prologue\n\n"
+        "Novel\n"
+        "=====\n\n"
+        "Title One\n"
+        "=========\n\n"
+        "# Prologue\n\n"
         "Text\n\n"
-        "## Chapter One\n\n"
-        "### Scene One\n\n"
+        "# Chapter One\n\n"
+        "## Scene One\n\n"
         "Text\n\n"
-        "### Scene Two\n\n"
-        "#### Section Two\n\n"
+        "## Scene Two\n\n"
+        "### Section Two\n\n"
         "Text\n\n"
-        "## Chapter Two\n\n"
-        "### Scene Three\n\n"
+        "# Chapter Two\n\n"
+        "## Scene Three\n\n"
         "Text\n\n"
-        "### Scene Four\n\n"
+        "## Scene Four\n\n"
         "Text\n\n"
     )
 
@@ -2329,7 +2338,8 @@ def testFmtToken_HeaderVisibility(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# Novel\n\n"
+        "Novel\n"
+        "=====\n\n"
         "Text\n\n"
         "Text\n\n"
         "Text\n\n"
@@ -2339,6 +2349,7 @@ def testFmtToken_HeaderVisibility(mockGUI):
 
     # Note Files
     # ==========
+    # Headers are exported as-is
 
     md._isNovel = False
 
@@ -2353,7 +2364,8 @@ def testFmtToken_HeaderVisibility(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# Novel\n\n"
+        "Novel\n"
+        "=====\n\n"
         "# Title One\n\n"
         "## Prologue\n\n"
         "Text\n\n"
@@ -2427,31 +2439,33 @@ def testFmtToken_CounterHandling(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "# Novel One\n\n"
-        "## U: Prologue\n\n"
+        "Novel One\n"
+        "=========\n\n"
+        "# U: Prologue\n\n"
         "Text\n\n"
-        "## C 1: Chapter One\n\n"
-        "### S 1.1 (1): Scene One\n\n"
+        "# C 1: Chapter One\n\n"
+        "## S 1.1 (1): Scene One\n\n"
         "Text\n\n"
-        "### S 1.2 (2): Scene Two\n\n"
+        "## S 1.2 (2): Scene Two\n\n"
         "Text\n\n"
-        "## C 2: Chapter Two\n\n"
-        "### S 2.1 (3): Scene Three\n\n"
+        "# C 2: Chapter Two\n\n"
+        "## S 2.1 (3): Scene Three\n\n"
         "Text\n\n"
-        "### H 2.2 (4): Scene Four\n\n"
+        "## H 2.2 (4): Scene Four\n\n"
         "Text\n\n"
-        "# Novel Two\n\n"
-        "## U: Prologue\n\n"
+        "Novel Two\n"
+        "=========\n\n"
+        "# U: Prologue\n\n"
         "Text\n\n"
-        "## C 1: Chapter One\n\n"
-        "### S 1.1 (1): Scene One\n\n"
+        "# C 1: Chapter One\n\n"
+        "## S 1.1 (1): Scene One\n\n"
         "Text\n\n"
-        "### S 1.2 (2): Scene Two\n\n"
+        "## S 1.2 (2): Scene Two\n\n"
         "Text\n\n"
-        "## C 2: Chapter Two\n\n"
-        "### S 2.1 (3): Scene Three\n\n"
+        "# C 2: Chapter Two\n\n"
+        "## S 2.1 (3): Scene Three\n\n"
         "Text\n\n"
-        "### H 2.2 (4): Scene Four\n\n"
+        "## H 2.2 (4): Scene Four\n\n"
         "Text\n\n"
     )
 

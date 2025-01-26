@@ -179,67 +179,102 @@
       <translation type="unfinished" />
     </message>
     <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="162" />
+      <source>Title and Partition</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
       <location filename="../novelwriter/core/buildsettings.py" line="163" />
-      <source>Page Layout</source>
+      <source>Heading 1 and Chapter</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="164" />
-      <source>Unit</source>
+      <source>Heading 2 and Scene</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="165" />
-      <source>Page Size</source>
+      <source>Heading 3 and Section</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="166" />
-      <source>Page Margins</source>
+      <source>Heading 4</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="167" />
+      <source>Text Paragraph</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="168" />
-      <source>Document Style</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/core/buildsettings.py" line="169" />
-      <source>Page Header</source>
+      <source>Scene Separator</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="170" />
-      <source>Page Counter Offset</source>
+      <source>Page Layout</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="171" />
-      <source>Add Colours to Headings</source>
+      <source>Unit</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="172" />
-      <source>Increase Size of Headings</source>
+      <source>Page Size</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="173" />
-      <source>Bold Headings</source>
+      <source>Page Margins</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="175" />
-      <source>HTML Options</source>
+      <source>Document Style</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="176" />
-      <source>Add CSS Styles</source>
+      <source>Page Header</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="177" />
+      <source>Page Counter Offset</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="178" />
+      <source>Add Colours to Headings</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="179" />
+      <source>Increase Size of Headings</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="180" />
+      <source>Bold Headings</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="182" />
+      <source>HTML Options</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="183" />
+      <source>Add CSS Styles</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="184" />
       <source>Preserve Tab Characters</source>
       <translation type="unfinished" />
     </message>
@@ -1363,12 +1398,12 @@
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/itemdetails.py" line="98" />
+      <location filename="../novelwriter/gui/itemdetails.py" line="99" />
       <source>Class</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/itemdetails.py" line="110" />
+      <location filename="../novelwriter/gui/itemdetails.py" line="111" />
       <source>Usage</source>
       <translation type="unfinished" />
     </message>
@@ -3739,7 +3774,7 @@
   <context>
     <name>NovelSelector</name>
     <message>
-      <location filename="../novelwriter/extensions/novelselector.py" line="111" />
+      <location filename="../novelwriter/extensions/novelselector.py" line="112" />
       <source>All Novel Folders</source>
       <translation type="unfinished" />
     </message>
@@ -4896,121 +4931,121 @@
   <context>
     <name>_TreeContextMenu</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1136" />
+      <location filename="../novelwriter/gui/projtree.py" line="1133" />
       <source>Empty Trash</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1157" />
+      <location filename="../novelwriter/gui/projtree.py" line="1154" />
       <source>Rename</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1172" />
+      <location filename="../novelwriter/gui/projtree.py" line="1169" />
       <source>Duplicate</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1192" />
+      <location filename="../novelwriter/gui/projtree.py" line="1189" />
       <source>Open Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1197" />
+      <location filename="../novelwriter/gui/projtree.py" line="1194" />
       <source>View Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1206" />
+      <location filename="../novelwriter/gui/projtree.py" line="1203" />
       <source>Create New ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1218" />
+      <location filename="../novelwriter/gui/projtree.py" line="1215" />
       <source>Rename to Heading</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1227" />
+      <location filename="../novelwriter/gui/projtree.py" line="1224" />
       <source>Set Active to ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1233" />
+      <location filename="../novelwriter/gui/projtree.py" line="1230" />
       <source>Toggle Active</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1240" />
+      <location filename="../novelwriter/gui/projtree.py" line="1237" />
       <source>Set Status to ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1270" />
-      <location filename="../novelwriter/gui/projtree.py" line="1252" />
+      <location filename="../novelwriter/gui/projtree.py" line="1267" />
+      <location filename="../novelwriter/gui/projtree.py" line="1249" />
       <source>Manage Labels ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1258" />
+      <location filename="../novelwriter/gui/projtree.py" line="1255" />
       <source>Set Importance to ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1279" />
+      <location filename="../novelwriter/gui/projtree.py" line="1276" />
       <source>Transform ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1301" />
-      <location filename="../novelwriter/gui/projtree.py" line="1297" />
-      <location filename="../novelwriter/gui/projtree.py" line="1293" />
-      <location filename="../novelwriter/gui/projtree.py" line="1289" />
+      <location filename="../novelwriter/gui/projtree.py" line="1298" />
+      <location filename="../novelwriter/gui/projtree.py" line="1294" />
+      <location filename="../novelwriter/gui/projtree.py" line="1290" />
+      <location filename="../novelwriter/gui/projtree.py" line="1286" />
       <source>Convert to {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1305" />
+      <location filename="../novelwriter/gui/projtree.py" line="1302" />
       <source>Merge Child Items into Self</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1307" />
+      <location filename="../novelwriter/gui/projtree.py" line="1304" />
       <source>Merge Child Items into New</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1311" />
+      <location filename="../novelwriter/gui/projtree.py" line="1308" />
       <source>Merge Documents in Folder</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1315" />
+      <location filename="../novelwriter/gui/projtree.py" line="1312" />
       <source>Split Document by Headings</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1322" />
+      <location filename="../novelwriter/gui/projtree.py" line="1319" />
       <source>Expand All</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1324" />
+      <location filename="../novelwriter/gui/projtree.py" line="1321" />
       <source>Collapse All</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1334" />
+      <location filename="../novelwriter/gui/projtree.py" line="1331" />
       <source>Delete Permanently</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1336" />
+      <location filename="../novelwriter/gui/projtree.py" line="1333" />
       <source>Move to Trash</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1412" />
+      <location filename="../novelwriter/gui/projtree.py" line="1409" />
       <source>Do you want to convert the folder to a {0}? This action cannot be reversed.</source>
       <translation type="unfinished" />
     </message>
@@ -5018,7 +5053,7 @@
   <context>
     <name>_UpdatableMenu</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1050" />
+      <location filename="../novelwriter/gui/projtree.py" line="1047" />
       <source>From Template</source>
       <translation type="unfinished" />
     </message>
