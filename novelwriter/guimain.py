@@ -852,7 +852,7 @@ class GuiMain(QMainWindow):
 
     def closeMain(self) -> bool:
         """Save everything, and close novelWriter."""
-        if SHARED.hasProject and not SHARED.question("%s<br>%s" % (
+        if SHARED.hasProject and CONFIG.askBeforeExit and not SHARED.question("%s<br>%s" % (
             self.tr("Do you want to exit novelWriter?"),
             self.tr("Changes are saved automatically.")
         )):

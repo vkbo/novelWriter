@@ -135,6 +135,7 @@ class Config:
         self.emphLabels      = True   # Add emphasis to H1 and H2 item labels
         self.backupOnClose   = False  # Flag for running automatic backups
         self.askBeforeBackup = True   # Flag for asking before running automatic backup
+        self.askBeforeExit   = True   # Flag for asking before exiting the app
 
         # Text Editor Settings
         self.textFont        = QFont()  # Editor font
@@ -628,6 +629,7 @@ class Config:
         self._backupPath     = conf.rdPath(sec, "backuppath", self._backupPath)
         self.backupOnClose   = conf.rdBool(sec, "backuponclose", self.backupOnClose)
         self.askBeforeBackup = conf.rdBool(sec, "askbeforebackup", self.askBeforeBackup)
+        self.askBeforeExit   = conf.rdBool(sec, "askbeforeexit", self.askBeforeExit)
 
         # Editor
         sec = "Editor"
@@ -739,6 +741,7 @@ class Config:
             "backuppath":      str(self._backupPath),
             "backuponclose":   str(self.backupOnClose),
             "askbeforebackup": str(self.askBeforeBackup),
+            "askbeforeexit":   str(self.askBeforeExit),
         }
 
         conf["Editor"] = {
