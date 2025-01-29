@@ -305,7 +305,8 @@ class GuiPreferences(NDialog):
         self.askBeforeExit = NSwitch(self)
         self.askBeforeExit.setChecked(CONFIG.askBeforeExit)
         self.mainForm.addRow(
-            self.tr("Ask before exiting novelWriter"), self.askBeforeExit
+            self.tr("Ask before exiting novelWriter"), self.askBeforeExit,
+            self.tr("Only applies when a project is open.")
         )
 
         # Project Backup
