@@ -2630,8 +2630,8 @@
       <translation>Carattere del documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="427" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="416" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="435" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="424" />
       <location filename="../novelwriter/dialogs/preferences.py" line="247" />
       <source>Applies to both document editor and viewer.</source>
       <translation>Si applica sia all'editor di documenti che al visualizzatore.</translation>
@@ -2663,8 +2663,8 @@
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="277" />
-      <source>Auto Save</source>
-      <translation>Salvataggio automatico</translation>
+      <source>Behaviour</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="289" />
@@ -2693,443 +2693,453 @@
       <translation>Quante volte il progetto viene salvato automaticamente.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="307" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="308" />
+      <source>Ask before exiting novelWriter</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/preferences.py" line="309" />
+      <source>Only applies when a project is open.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/preferences.py" line="315" />
       <source>Project Backup</source>
       <translation>Backup del progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="314" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="322" />
       <source>Browse</source>
       <translation>Sfoglia</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="318" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="326" />
       <source>Backup storage location</source>
       <translation>Posizione di archiviazione del backup</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="835" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="319" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="843" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="327" />
       <source>Path: {0}</source>
       <translation>Percorso: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="327" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="335" />
       <source>Run backup when the project is closed</source>
       <translation>Esegui il backup quando il progetto è chiuso</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="328" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="336" />
       <source>Can be overridden for individual projects in Project Settings.</source>
       <translation>Può essere sovrascritto per singoli progetti nelle Impostazioni del progetto.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="337" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="345" />
       <source>Ask before running backup</source>
       <translation>Chiedi prima di eseguire il backup</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="338" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="346" />
       <source>If off, backups will run in the background.</source>
       <translation>Se disattivato, i backup verranno eseguiti in background.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="344" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="352" />
       <source>Session Timer</source>
       <translation>Timer della sessione</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="353" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="361" />
       <source>Pause the session timer when not writing</source>
       <translation>Metti in pausa il timer di sessione quando non si scrive</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="354" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="362" />
       <source>Also pauses when the application window does not have focus.</source>
       <translation>Inoltre si interrompe quando la finestra dell'applicazione non ha focus.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="365" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="373" />
       <source>Editor inactive time before pausing timer</source>
       <translation>Tempo d'inattività dell'editor prima di mettere in pausa il timer</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="366" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="374" />
       <source>User activity includes typing and changing the content.</source>
       <translation>L'attività dell'utente include la digitazione e la modifica del contenuto.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="367" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="375" />
       <source>minutes</source>
       <translation>minuti</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="371" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="379" />
       <source>Writing</source>
       <translation>Scrittura</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="376" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="384" />
       <source>Text Flow</source>
       <translation>Flusso del testo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="388" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="396" />
       <source>Maximum text width in "Normal Mode"</source>
       <translation>Larghezza massima del testo in "Modalità normale"</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="389" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="397" />
       <source>Set to 0 to disable this feature.</source>
       <translation>Impostare a 0 per disabilitare questa funzione.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="440" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="428" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="400" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="389" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="448" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="436" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="408" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="397" />
       <source>px</source>
       <translation>px</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="399" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="407" />
       <source>Maximum text width in "Focus Mode"</source>
       <translation>Larghezza massima del testo in "Modalità Focus"</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="400" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="408" />
       <source>The maximum width cannot be disabled.</source>
       <translation>La larghezza massima non può essere disabilitata.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="407" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="415" />
       <source>Hide document footer in "Focus Mode"</source>
       <translation>Nascondi piè di pagina del documento in "Modalità Focus"</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="408" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="416" />
       <source>Hide the information bar in the document editor.</source>
       <translation>Nascondi la barra delle informazioni nell'editor dei documenti.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="415" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="423" />
       <source>Justify the text margins</source>
       <translation>Giustifica i margini del testo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="426" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="434" />
       <source>Minimum text margin</source>
       <translation>Dimensione minima del margine del testo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="438" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="446" />
       <source>Tab width</source>
       <translation>Larghezza di tabulazione</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="439" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="447" />
       <source>The width of a tab key press in the editor and viewer.</source>
       <translation>La larghezza ottenibile con una pressione sul tasto TAB nell'editor e nel visualizzatore.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="446" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="454" />
       <source>Text Editing</source>
       <translation>Modifica del testo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="466" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="474" />
       <source>Spell check language</source>
       <translation>Lingua per il controllo ortografico</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="467" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="475" />
       <source>Available languages are determined by your system.</source>
       <translation>Le lingue disponibili sono determinate dal tuo sistema.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="474" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="482" />
       <source>Auto-select word under cursor</source>
       <translation>Seleziona automaticamente la parola sotto il cursore</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="475" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="483" />
       <source>Apply formatting to word under cursor if no selection is made.</source>
       <translation>Applica la formattazione alla parola sotto il cursore se non viene effettuata alcuna selezione.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="482" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="490" />
       <source>Show tabs and spaces</source>
       <translation>Mostra tabulazioni e spazi</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="489" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="497" />
       <source>Show line endings</source>
       <translation>Mostra terminazioni di riga</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="495" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="503" />
       <source>Editor Scrolling</source>
       <translation>Scorrimento dell'editor</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="504" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="512" />
       <source>Scroll past end of the document</source>
       <translation>Scorri alla fine del documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="505" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="513" />
       <source>Also centres the cursor when scrolling.</source>
       <translation>Centra anche il cursore durante lo scorrimento.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="512" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="520" />
       <source>Typewriter style scrolling when you type</source>
       <translation>Scorrimento stile macchina da scrivere quando si digita</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="513" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="521" />
       <source>Keeps the cursor at a fixed vertical position.</source>
       <translation>Mantiene il cursore in posizione verticale fissa.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="523" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="531" />
       <source>Minimum position for Typewriter scrolling</source>
       <translation>Posizione minima per lo scorrimento della macchina da scrivere</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="524" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="532" />
       <source>Percentage of the editor height from the top.</source>
       <translation>Percentuale dell'altezza dell'editor dall'alto.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="530" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="538" />
       <source>Text Highlighting</source>
       <translation>Evidenziazione del testo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="536" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="544" />
       <source>None</source>
       <translation>Nessuno</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="537" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="545" />
       <source>Single Quotes</source>
       <translation>Singole virgolette</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="538" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="546" />
       <source>Double Quotes</source>
       <translation>Doppie virgolette</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="539" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="547" />
       <source>Both</source>
       <translation>Entrambe</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="542" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="550" />
       <source>Highlight dialogue</source>
       <translation>Evidenzia il dialogo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="543" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="551" />
       <source>Applies to the selected quote styles.</source>
       <translation>Si applica agli stili di virgolette selezionati.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="559" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="567" />
       <source>Alternative dialogue symbols</source>
       <translation>Simboli di dialogo alternativi</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="560" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="568" />
       <source>Custom highlighting of dialogue text.</source>
       <translation>Evidenziazione personalizzata del testo del dialogo.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="566" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="574" />
       <source>Allow open-ended dialogue</source>
       <translation>Consenti dialogo aperto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="567" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="575" />
       <source>Highlight dialogue line with no closing quote.</source>
       <translation>Evidenzia la linea di dialogo senza virgolette di chiusura.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="576" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="584" />
       <source>Dialogue line symbols</source>
       <translation>Simboli delle righe di dialogo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="577" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="585" />
       <source>Lines starting with any of these symbols are dialogue.</source>
       <translation>Le linee che iniziano con uno di questi simboli sono dialogo.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="586" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="594" />
       <source>Narrator break symbol</source>
       <translation>Simbolo per gli interventi del narratore</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="587" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="595" />
       <source>Symbol to indicate a narrator break in dialogue.</source>
       <translation>Simbolo che indica l'intervento del narratore nel dialogo.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="596" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="604" />
       <source>Alternating dialogue/narration symbol</source>
       <translation>Simbolo alternativo di dialogo/narrazione</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="597" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="605" />
       <source>Alternates dialogue highlighting within any paragraph.</source>
       <translation>Alterna l'evidenziazione dei dialoghi all'interno di qualsiasi paragrafo.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="603" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="611" />
       <source>Add highlight colour to emphasised text</source>
       <translation>Aggiungi un colore per evidenziare ed enfatizzare il testo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="611" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="604" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="619" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="612" />
       <source>Applies to the document editor only.</source>
       <translation>Si applica solo all'editor dei documenti.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="610" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="618" />
       <source>Highlight multiple or trailing spaces</source>
       <translation>Evidenzia spazi multipli o finali</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="617" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="625" />
       <source>Text Automation</source>
       <translation>Automatismi del testo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="629" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="637" />
       <source>Auto-replace text as you type</source>
       <translation>Sostituisci automaticamente il testo mentre digiti</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="630" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="638" />
       <source>Allow the editor to replace symbols as you type.</source>
       <translation>Consenti all'editor di sostituire i simboli durante la digitazione.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="638" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="646" />
       <source>Auto-replace single quotes</source>
       <translation>Sostituisci automaticamente le virgolette singole</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="648" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="639" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="656" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="647" />
       <source>Try to guess which is an opening or a closing quote.</source>
       <translation>Prova a indovinare quale sia l'inizio o la fine di una citazione.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="647" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="655" />
       <source>Auto-replace double quotes</source>
       <translation>Sostituisci automaticamente le virgolette doppie</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="656" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="664" />
       <source>Auto-replace dashes</source>
       <translation>Sostituisci automaticamente i trattini</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="657" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="665" />
       <source>Double and triple hyphens become short and long dashes.</source>
       <translation>I trattini doppi e tripli diventano brevi e lunghi trattini.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="665" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="673" />
       <source>Auto-replace dots</source>
       <translation>Sostituisci automaticamente i puntini</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="666" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="674" />
       <source>Three consecutive dots become ellipsis.</source>
       <translation>Tre punti consecutivi diventano puntini di sospensione.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="675" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="683" />
       <source>Insert non-breaking space before</source>
       <translation>Inserisci uno spazio prima di</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="676" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="684" />
       <source>Automatically add space before any of these symbols.</source>
       <translation>Aggiungi automaticamente spazio prima di uno di questi simboli.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="685" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="693" />
       <source>Insert non-breaking space after</source>
       <translation>Inserisci uno spazio dopo di</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="686" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="694" />
       <source>Automatically add space after any of these symbols.</source>
       <translation>Aggiungi automaticamente uno spazio dopo uno di questi simboli.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="694" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="702" />
       <source>Use thin space instead</source>
       <translation>Usa invece uno spazio sottile</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="695" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="703" />
       <source>Inserts a thin space instead of a regular space.</source>
       <translation>Inserisce uno spazio sottile invece di uno spazio regolare.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="701" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="709" />
       <source>Quotation Style</source>
       <translation>Stile delle citazioni</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="716" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="724" />
       <source>Single quote open style</source>
       <translation>Singola virgoletta aperta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="717" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="725" />
       <source>The symbol to use for a leading single quote.</source>
       <translation>Il simbolo da usare per una singola virgoletta iniziale.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="730" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="738" />
       <source>Single quote close style</source>
       <translation>Singola virgoletta chiusa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="731" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="739" />
       <source>The symbol to use for a trailing single quote.</source>
       <translation>Il simbolo da usare per una singola virgoletta finale.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="745" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="753" />
       <source>Double quote open style</source>
       <translation>Doppie virgolette aperte</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="746" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="754" />
       <source>The symbol to use for a leading double quote.</source>
       <translation>Il simbolo da usare per avere doppie virgolette iniziali.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="759" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="767" />
       <source>Double quote close style</source>
       <translation>Doppie virgolette chiuse</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="760" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="768" />
       <source>The symbol to use for a trailing double quote.</source>
       <translation>Il simbolo da usare per avere doppie virgolette finali.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="831" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="839" />
       <source>Backup Directory</source>
       <translation>Percorso di backup</translation>
     </message>
