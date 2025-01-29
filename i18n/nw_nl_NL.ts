@@ -179,67 +179,102 @@
       <translation type="unfinished" />
     </message>
     <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="162" />
+      <source>Title and Partition</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
       <location filename="../novelwriter/core/buildsettings.py" line="163" />
-      <source>Page Layout</source>
-      <translation>Pagina lay-out</translation>
+      <source>Heading 1 and Chapter</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="164" />
-      <source>Unit</source>
-      <translation>Eenheid</translation>
+      <source>Heading 2 and Scene</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="165" />
-      <source>Page Size</source>
-      <translation>Paginagrootte</translation>
+      <source>Heading 3 and Section</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="166" />
-      <source>Page Margins</source>
+      <source>Heading 4</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="167" />
+      <source>Text Paragraph</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="168" />
-      <source>Document Style</source>
-      <translation type="unfinished">Document stijl</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/buildsettings.py" line="169" />
-      <source>Page Header</source>
-      <translation>Pagina kop</translation>
+      <source>Scene Separator</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="170" />
-      <source>Page Counter Offset</source>
-      <translation>Pagina teller offset</translation>
+      <source>Page Layout</source>
+      <translation>Pagina lay-out</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="171" />
-      <source>Add Colours to Headings</source>
-      <translation type="unfinished" />
+      <source>Unit</source>
+      <translation>Eenheid</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="172" />
-      <source>Increase Size of Headings</source>
-      <translation type="unfinished" />
+      <source>Page Size</source>
+      <translation>Paginagrootte</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="173" />
-      <source>Bold Headings</source>
+      <source>Page Margins</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="175" />
+      <source>Document Style</source>
+      <translation type="unfinished">Document stijl</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="176" />
+      <source>Page Header</source>
+      <translation>Pagina kop</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="177" />
+      <source>Page Counter Offset</source>
+      <translation>Pagina teller offset</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="178" />
+      <source>Add Colours to Headings</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="179" />
+      <source>Increase Size of Headings</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="180" />
+      <source>Bold Headings</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/buildsettings.py" line="182" />
       <source>HTML Options</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/buildsettings.py" line="176" />
+      <location filename="../novelwriter/core/buildsettings.py" line="183" />
       <source>Add CSS Styles</source>
       <translation>CSS stijlen toevoegen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/buildsettings.py" line="177" />
+      <location filename="../novelwriter/core/buildsettings.py" line="184" />
       <source>Preserve Tab Characters</source>
       <translation>Tab tekens behouden</translation>
     </message>
@@ -1363,12 +1398,12 @@
       <translation>Status</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/itemdetails.py" line="98" />
+      <location filename="../novelwriter/gui/itemdetails.py" line="99" />
       <source>Class</source>
       <translation>Klasse</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/itemdetails.py" line="110" />
+      <location filename="../novelwriter/gui/itemdetails.py" line="111" />
       <source>Usage</source>
       <translation>Gebruik</translation>
     </message>
@@ -2595,8 +2630,8 @@
       <translation>Lettertype document</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="427" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="416" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="435" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="424" />
       <location filename="../novelwriter/dialogs/preferences.py" line="247" />
       <source>Applies to both document editor and viewer.</source>
       <translation>Van toepassing op zowel de documentbewerker als de kijker.</translation>
@@ -2628,8 +2663,8 @@
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="277" />
-      <source>Auto Save</source>
-      <translation>Automatisch opslaan</translation>
+      <source>Behaviour</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="289" />
@@ -2658,443 +2693,453 @@
       <translation>Hoe vaak het project automatisch wordt opgeslagen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="307" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="308" />
+      <source>Ask before exiting novelWriter</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/preferences.py" line="309" />
+      <source>Only applies when a project is open.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/preferences.py" line="315" />
       <source>Project Backup</source>
       <translation>Project Reservekopie</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="314" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="322" />
       <source>Browse</source>
       <translation>Blader</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="318" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="326" />
       <source>Backup storage location</source>
       <translation>Opslaglocatie voor reservekopie</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="835" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="319" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="843" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="327" />
       <source>Path: {0}</source>
       <translation>Pad: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="327" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="335" />
       <source>Run backup when the project is closed</source>
       <translation>Reservekopie maken wanneer het project wordt gesloten</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="328" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="336" />
       <source>Can be overridden for individual projects in Project Settings.</source>
       <translation>Kan voor individuele projecten overschreven worden in Projectinstellingen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="337" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="345" />
       <source>Ask before running backup</source>
       <translation>Vraag voor het maken van een reservekopie</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="338" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="346" />
       <source>If off, backups will run in the background.</source>
       <translation>Indien uit, worden reservekopieën op de achtergrond gemaakt.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="344" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="352" />
       <source>Session Timer</source>
       <translation>Sessie Timer</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="353" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="361" />
       <source>Pause the session timer when not writing</source>
       <translation>De sessie timer pauzeren wanneer niet geschreven wordt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="354" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="362" />
       <source>Also pauses when the application window does not have focus.</source>
       <translation>Pauzeert ook wanneer het toepassingsvenster geen focus heeft.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="365" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="373" />
       <source>Editor inactive time before pausing timer</source>
       <translation>Inactieve tekstbewerker duur voordat timer wordt gepauzeerd</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="366" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="374" />
       <source>User activity includes typing and changing the content.</source>
       <translation>Gebruikersactiviteit omvat typen en het wijzigen van de inhoud.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="367" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="375" />
       <source>minutes</source>
       <translation>minuten</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="371" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="379" />
       <source>Writing</source>
       <translation>Schrijven</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="376" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="384" />
       <source>Text Flow</source>
       <translation>Tekst Flow</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="388" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="396" />
       <source>Maximum text width in "Normal Mode"</source>
       <translation>Maximale tekstbreedte in "Normale Modus"</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="389" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="397" />
       <source>Set to 0 to disable this feature.</source>
       <translation>Stel in op 0 om deze functie uit te schakelen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="440" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="428" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="400" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="389" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="448" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="436" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="408" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="397" />
       <source>px</source>
       <translation>px</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="399" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="407" />
       <source>Maximum text width in "Focus Mode"</source>
       <translation>Maximale tekstbreedte in "Focus Modus"</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="400" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="408" />
       <source>The maximum width cannot be disabled.</source>
       <translation>De maximale breedte kan niet worden uitgeschakeld.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="407" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="415" />
       <source>Hide document footer in "Focus Mode"</source>
       <translation>Verberg document voettekst in "Focus Modus"</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="408" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="416" />
       <source>Hide the information bar in the document editor.</source>
       <translation>Verberg de informatiebalk in de documentbewerker.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="415" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="423" />
       <source>Justify the text margins</source>
       <translation>De tekstmarges uitvullen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="426" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="434" />
       <source>Minimum text margin</source>
       <translation>Minimale tekstmarge</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="438" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="446" />
       <source>Tab width</source>
       <translation>Tab breedte</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="439" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="447" />
       <source>The width of a tab key press in the editor and viewer.</source>
       <translation>De breedte van een tab teken in de tekstbewerker en kijker.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="446" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="454" />
       <source>Text Editing</source>
       <translation>Tekstbewerking</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="466" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="474" />
       <source>Spell check language</source>
       <translation>Taal voor spellingscontrole</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="467" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="475" />
       <source>Available languages are determined by your system.</source>
       <translation>Beschikbare talen worden bepaald door uw systeem.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="474" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="482" />
       <source>Auto-select word under cursor</source>
       <translation>Automatisch woord onder cursor selecteren</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="475" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="483" />
       <source>Apply formatting to word under cursor if no selection is made.</source>
       <translation>Opmaak toepassen op woord onder de cursor als er geen selectie is gemaakt.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="482" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="490" />
       <source>Show tabs and spaces</source>
       <translation>Tabs en spaties weergeven</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="489" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="497" />
       <source>Show line endings</source>
       <translation>Regeleindes weergeven</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="495" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="503" />
       <source>Editor Scrolling</source>
       <translation>Bewerker scrollen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="504" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="512" />
       <source>Scroll past end of the document</source>
       <translation>Scroll voorbij het einde van het document</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="505" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="513" />
       <source>Also centres the cursor when scrolling.</source>
       <translation>Centreer ook de cursor bij het scrollen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="512" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="520" />
       <source>Typewriter style scrolling when you type</source>
       <translation>Schrijfmachine stijl scrollen bij het typen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="513" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="521" />
       <source>Keeps the cursor at a fixed vertical position.</source>
       <translation>Houd de cursor op een vaste verticale positie.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="523" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="531" />
       <source>Minimum position for Typewriter scrolling</source>
       <translation>Minimumpositie voor Schrijfmachine scrollen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="524" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="532" />
       <source>Percentage of the editor height from the top.</source>
       <translation>Percentage van de tekstverwerker hoogte vanaf de bovenkant.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="530" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="538" />
       <source>Text Highlighting</source>
       <translation>Tekstmarkering</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="536" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="544" />
       <source>None</source>
       <translation>Geen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="537" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="545" />
       <source>Single Quotes</source>
       <translation>Enkele aanhalingstekens</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="538" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="546" />
       <source>Double Quotes</source>
       <translation>Dubbele aanhalingstekens</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="539" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="547" />
       <source>Both</source>
       <translation>Beide</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="542" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="550" />
       <source>Highlight dialogue</source>
       <translation>Dialoog markeren</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="543" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="551" />
       <source>Applies to the selected quote styles.</source>
       <translation>Van toepassing op de geselecteerde aanhalingsteken stijlen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="559" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="567" />
       <source>Alternative dialogue symbols</source>
       <translation>Alternatieve dialoogsymbolen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="560" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="568" />
       <source>Custom highlighting of dialogue text.</source>
       <translation>Aangepaste markering van dialoogtekst.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="566" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="574" />
       <source>Allow open-ended dialogue</source>
       <translation>Toestaan van open einde dialoog</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="567" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="575" />
       <source>Highlight dialogue line with no closing quote.</source>
       <translation>Markeer de dialoog regel zonder afsluitend aanhalingsteken.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="576" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="584" />
       <source>Dialogue line symbols</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="577" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="585" />
       <source>Lines starting with any of these symbols are dialogue.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="586" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="594" />
       <source>Narrator break symbol</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="587" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="595" />
       <source>Symbol to indicate a narrator break in dialogue.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="596" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="604" />
       <source>Alternating dialogue/narration symbol</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="597" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="605" />
       <source>Alternates dialogue highlighting within any paragraph.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="603" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="611" />
       <source>Add highlight colour to emphasised text</source>
       <translation>Voeg markeerkleur toe aan geaccentueerde tekst</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="611" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="604" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="619" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="612" />
       <source>Applies to the document editor only.</source>
       <translation>Alleen van toepassing op de tekst bewerker.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="610" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="618" />
       <source>Highlight multiple or trailing spaces</source>
       <translation>Markeer meerdere of afsluitende spaties</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="617" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="625" />
       <source>Text Automation</source>
       <translation>Tekstautomatisering</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="629" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="637" />
       <source>Auto-replace text as you type</source>
       <translation>Automatisch tekst vervangen terwijl u typt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="630" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="638" />
       <source>Allow the editor to replace symbols as you type.</source>
       <translation>Sta de tekstbewerker toe om symbolen te vervangen terwijl u typt.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="638" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="646" />
       <source>Auto-replace single quotes</source>
       <translation>Automatisch enkele aanhalingstekens vervangen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="648" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="639" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="656" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="647" />
       <source>Try to guess which is an opening or a closing quote.</source>
       <translation>Probeer te raden wat een openend of afsluitend aanhalingsteken is.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="647" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="655" />
       <source>Auto-replace double quotes</source>
       <translation>Automatisch dubbele aanhalingstekens vervangen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="656" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="664" />
       <source>Auto-replace dashes</source>
       <translation>Automatisch streepjes vervangen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="657" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="665" />
       <source>Double and triple hyphens become short and long dashes.</source>
       <translation>Dubbele en drievoudige koppeltekens worden korte en lange streepjes.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="665" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="673" />
       <source>Auto-replace dots</source>
       <translation>Automatisch stippen vervangen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="666" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="674" />
       <source>Three consecutive dots become ellipsis.</source>
       <translation>Drie opeenvolgende stippen worden ellips.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="675" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="683" />
       <source>Insert non-breaking space before</source>
       <translation>Vaste spatie invoegen voor</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="676" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="684" />
       <source>Automatically add space before any of these symbols.</source>
       <translation>Voeg automatisch een spatie toe voor één van deze symbolen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="685" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="693" />
       <source>Insert non-breaking space after</source>
       <translation>Vaste spatie invoegen na</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="686" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="694" />
       <source>Automatically add space after any of these symbols.</source>
       <translation>Voeg automatisch een spatie toe na één van deze symbolen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="694" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="702" />
       <source>Use thin space instead</source>
       <translation>Gebruik dunne spatie in plaats van</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="695" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="703" />
       <source>Inserts a thin space instead of a regular space.</source>
       <translation>Voegt een dunne spatie toe in plaats van een normale spatie.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="701" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="709" />
       <source>Quotation Style</source>
       <translation>Citeer Stijl</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="716" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="724" />
       <source>Single quote open style</source>
       <translation>Enkel aanhalingsteken open stijl</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="717" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="725" />
       <source>The symbol to use for a leading single quote.</source>
       <translation>Het symbool om te gebruiken voor een leidend enkel aanhalingsteken.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="730" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="738" />
       <source>Single quote close style</source>
       <translation>Enkel aanhalingsteken sluit stijl</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="731" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="739" />
       <source>The symbol to use for a trailing single quote.</source>
       <translation>Het symbool om te gebruiken voor een afsluitend enkel aanhalingsteken.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="745" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="753" />
       <source>Double quote open style</source>
       <translation>Dubbele aanhalingsteken open stijl</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="746" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="754" />
       <source>The symbol to use for a leading double quote.</source>
       <translation>Het symbool om te gebruiken voor een leidend dubbel aanhalingsteken.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="759" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="767" />
       <source>Double quote close style</source>
       <translation>Dubbel aanhalingsteken sluit stijl</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="760" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="768" />
       <source>The symbol to use for a trailing double quote.</source>
       <translation>Het symbool om te gebruiken voor een afsluitend dubbel aanhalingsteken.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="831" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="839" />
       <source>Backup Directory</source>
       <translation>Reservekopie map</translation>
     </message>
@@ -3739,7 +3784,7 @@
   <context>
     <name>NovelSelector</name>
     <message>
-      <location filename="../novelwriter/extensions/novelselector.py" line="111" />
+      <location filename="../novelwriter/extensions/novelselector.py" line="112" />
       <source>All Novel Folders</source>
       <translation>Alle Roman Mappen</translation>
     </message>
@@ -4896,121 +4941,121 @@
   <context>
     <name>_TreeContextMenu</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1136" />
+      <location filename="../novelwriter/gui/projtree.py" line="1133" />
       <source>Empty Trash</source>
       <translation>Prullenbak legen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1157" />
+      <location filename="../novelwriter/gui/projtree.py" line="1154" />
       <source>Rename</source>
       <translation>Hernoemen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1172" />
+      <location filename="../novelwriter/gui/projtree.py" line="1169" />
       <source>Duplicate</source>
       <translation>Dupliceren</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1192" />
+      <location filename="../novelwriter/gui/projtree.py" line="1189" />
       <source>Open Document</source>
       <translation>Document openen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1197" />
+      <location filename="../novelwriter/gui/projtree.py" line="1194" />
       <source>View Document</source>
       <translation>Bekijk document</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1206" />
+      <location filename="../novelwriter/gui/projtree.py" line="1203" />
       <source>Create New ...</source>
       <translation>Nieuwe aanmaken...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1218" />
+      <location filename="../novelwriter/gui/projtree.py" line="1215" />
       <source>Rename to Heading</source>
       <translation>Hernoemen naar titel</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1227" />
+      <location filename="../novelwriter/gui/projtree.py" line="1224" />
       <source>Set Active to ...</source>
       <translation>Stel Actief in op...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1233" />
+      <location filename="../novelwriter/gui/projtree.py" line="1230" />
       <source>Toggle Active</source>
       <translation>Schakel actief</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1240" />
+      <location filename="../novelwriter/gui/projtree.py" line="1237" />
       <source>Set Status to ...</source>
       <translation>Status instellen op ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1270" />
-      <location filename="../novelwriter/gui/projtree.py" line="1252" />
+      <location filename="../novelwriter/gui/projtree.py" line="1267" />
+      <location filename="../novelwriter/gui/projtree.py" line="1249" />
       <source>Manage Labels ...</source>
       <translation>Labels beheren ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1258" />
+      <location filename="../novelwriter/gui/projtree.py" line="1255" />
       <source>Set Importance to ...</source>
       <translation>Belangrijkheid instellen op ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1279" />
+      <location filename="../novelwriter/gui/projtree.py" line="1276" />
       <source>Transform ...</source>
       <translation>Transformeren ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1301" />
-      <location filename="../novelwriter/gui/projtree.py" line="1297" />
-      <location filename="../novelwriter/gui/projtree.py" line="1293" />
-      <location filename="../novelwriter/gui/projtree.py" line="1289" />
+      <location filename="../novelwriter/gui/projtree.py" line="1298" />
+      <location filename="../novelwriter/gui/projtree.py" line="1294" />
+      <location filename="../novelwriter/gui/projtree.py" line="1290" />
+      <location filename="../novelwriter/gui/projtree.py" line="1286" />
       <source>Convert to {0}</source>
       <translation>Converteer naar {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1305" />
+      <location filename="../novelwriter/gui/projtree.py" line="1302" />
       <source>Merge Child Items into Self</source>
       <translation>Onderliggende items samenvoegen in zelf</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1307" />
+      <location filename="../novelwriter/gui/projtree.py" line="1304" />
       <source>Merge Child Items into New</source>
       <translation>Onderliggende items samenvoegen in nieuw</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1311" />
+      <location filename="../novelwriter/gui/projtree.py" line="1308" />
       <source>Merge Documents in Folder</source>
       <translation>Documenten in Map Samenvoegen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1315" />
+      <location filename="../novelwriter/gui/projtree.py" line="1312" />
       <source>Split Document by Headings</source>
       <translation>Document splitsen op koppen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1322" />
+      <location filename="../novelwriter/gui/projtree.py" line="1319" />
       <source>Expand All</source>
       <translation>Alles Uitklappen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1324" />
+      <location filename="../novelwriter/gui/projtree.py" line="1321" />
       <source>Collapse All</source>
       <translation>Alles Samenvouwen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1334" />
+      <location filename="../novelwriter/gui/projtree.py" line="1331" />
       <source>Delete Permanently</source>
       <translation>Permanent Verwijderen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1336" />
+      <location filename="../novelwriter/gui/projtree.py" line="1333" />
       <source>Move to Trash</source>
       <translation>Verplaatsen naar Prullenbak</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1412" />
+      <location filename="../novelwriter/gui/projtree.py" line="1409" />
       <source>Do you want to convert the folder to a {0}? This action cannot be reversed.</source>
       <translation>Wilt u de map converteren naar een {0}? Deze actie kan niet ongedaan worden gemaakt.</translation>
     </message>
@@ -5018,7 +5063,7 @@
   <context>
     <name>_UpdatableMenu</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1050" />
+      <location filename="../novelwriter/gui/projtree.py" line="1047" />
       <source>From Template</source>
       <translation>Van sjabloon</translation>
     </message>

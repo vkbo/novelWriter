@@ -2664,7 +2664,7 @@
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="277" />
       <source>Behaviour</source>
-      <translation type="unfinished" />
+      <translation>Verhalten</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="289" />
@@ -2695,12 +2695,12 @@
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="308" />
       <source>Ask before exiting novelWriter</source>
-      <translation type="unfinished" />
+      <translation>Vor dem Beenden von novelWriter fragen</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="309" />
       <source>Only applies when a project is open.</source>
-      <translation type="unfinished" />
+      <translation>Nur relevant, wenn ein Projekt geöffnet ist.</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="315" />
