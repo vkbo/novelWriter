@@ -182,12 +182,14 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     assert CONFIG.showFullPath is True
     assert CONFIG.incNotesWCount is True
 
-    # Auto Save
+    # Behaviour
     prefs.autoSaveDoc.stepUp()
     prefs.autoSaveProj.stepUp()
+    prefs.askBeforeExit.setChecked(False)
 
     assert CONFIG.autoSaveDoc == 30
     assert CONFIG.autoSaveProj == 60
+    assert CONFIG.askBeforeExit is True
 
     # Project Backup
     with monkeypatch.context() as mp:
@@ -333,9 +335,10 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     assert CONFIG.showFullPath is False
     assert CONFIG.incNotesWCount is False
 
-    # Auto Save
+    # Behaviour
     assert CONFIG.autoSaveDoc == 31
     assert CONFIG.autoSaveProj == 61
+    assert CONFIG.askBeforeExit is False
 
     # Project Backup
     assert CONFIG._backupPath == tstPaths.testDir
