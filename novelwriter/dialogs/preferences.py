@@ -271,10 +271,10 @@ class GuiPreferences(NDialog):
             self.tr("Include project notes in status bar word count"), self.incNotesWCount
         )
 
-        # Auto Save
+        # Behaviour
         # =========
 
-        title = self.tr("Auto Save")
+        title = self.tr("Behaviour")
         section += 1
         self.sidebar.addButton(title, section)
         self.mainForm.addGroupLabel(title, section)
@@ -299,6 +299,14 @@ class GuiPreferences(NDialog):
         self.mainForm.addRow(
             self.tr("Save project interval"), self.autoSaveProj,
             self.tr("How often the project is automatically saved."), unit=self.tr("seconds")
+        )
+
+        # Ask before exiting novelWriter
+        self.askBeforeExit = NSwitch(self)
+        self.askBeforeExit.setChecked(CONFIG.askBeforeExit)
+        self.mainForm.addRow(
+            self.tr("Ask before exiting novelWriter"), self.askBeforeExit,
+            self.tr("Only applies when a project is open.")
         )
 
         # Project Backup
@@ -927,9 +935,10 @@ class GuiPreferences(NDialog):
         CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
         CONFIG.setTextFont(self._textFont)
 
-        # Auto Save
-        CONFIG.autoSaveDoc  = self.autoSaveDoc.value()
-        CONFIG.autoSaveProj = self.autoSaveProj.value()
+        # Behaviour
+        CONFIG.autoSaveDoc   = self.autoSaveDoc.value()
+        CONFIG.autoSaveProj  = self.autoSaveProj.value()
+        CONFIG.askBeforeExit = self.askBeforeExit.isChecked()
 
         # Project Backup
         CONFIG.setBackupPath(self.backupPath)
