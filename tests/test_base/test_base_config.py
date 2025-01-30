@@ -31,6 +31,7 @@ import pytest
 from novelwriter import CONFIG
 from novelwriter.config import Config, RecentPaths, RecentProjects
 from novelwriter.constants import nwFiles
+from novelwriter.core.project import NWProject
 
 from tests.mocked import MockApp, causeOSError
 from tests.tools import cmpFiles, writeFile
@@ -382,7 +383,7 @@ def testBaseConfig_Internal(monkeypatch, fncPath):
 
 
 @pytest.mark.base
-def testBaseConfig_RecentCache(monkeypatch, tstPaths):
+def testBaseConfig_RecentCache(monkeypatch, tstPaths, nwGUI):
     """Test recent cache file."""
     cacheFile = tstPaths.cnfDir / nwFiles.RECENT_FILE
     recent = RecentProjects(CONFIG)
@@ -396,8 +397,18 @@ def testBaseConfig_RecentCache(monkeypatch, tstPaths):
     pathOne = tstPaths.cnfDir / "projPathOne" / nwFiles.PROJ_FILE
     pathTwo = tstPaths.cnfDir / "projPathTwo" / nwFiles.PROJ_FILE
 
-    recent.update(pathOne, "Proj One", 100, 1600002000)
-    recent.update(pathTwo, "Proj Two", 200, 1600005600)
+    prjOne = NWProject()
+    prjTwo = NWProject()
+
+    prjOne.data.setUuid(None)
+    prjTwo.data.setUuid(None)
+    prjOne.data.setName("Proj One")
+    prjTwo.data.setName("Proj Two")
+    prjOne.data.setCurrCounts(100, 0)
+    prjTwo.data.setCurrCounts(200, 0)
+
+    recent.update(pathOne, prjOne.data, 1600002000)
+    recent.update(pathTwo, prjTwo.data, 1600005600)
     assert recent.listEntries() == [
         (str(pathOne), "Proj One", 100, 1600002000),
         (str(pathTwo), "Proj Two", 200, 1600005600),
@@ -424,6 +435,14 @@ def testBaseConfig_RecentCache(monkeypatch, tstPaths):
 
     # Load Proper
     assert recent.loadCache() is True
+    assert recent.listEntries() == [
+        (str(pathOne), "Proj One", 100, 1600002000),
+        (str(pathTwo), "Proj Two", 200, 1600005600),
+    ]
+
+    # Pass Invalid
+    recent.update(None, None, 0)  # type: ignore
+    recent.update(None, None, 0)  # type: ignore
     assert recent.listEntries() == [
         (str(pathOne), "Proj One", 100, 1600002000),
         (str(pathTwo), "Proj Two", 200, 1600005600),

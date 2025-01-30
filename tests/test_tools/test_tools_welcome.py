@@ -31,6 +31,7 @@ from pytestqt.qtbot import QtBot
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwFiles
+from novelwriter.core.projectdata import NWProjectData
 from novelwriter.enum import nwItemClass
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.types import QtMouseLeft
@@ -72,8 +73,18 @@ def testToolWelcome_Open(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
     monkeypatch.setattr(QMenu, "exec", lambda *a: None)
     monkeypatch.setattr(QMenu, "setParent", lambda *a: None)
 
-    CONFIG.recentProjects.update("/stuff/project_one", "Project One", 12345, 1690000000)
-    CONFIG.recentProjects.update("/stuff/project_two", "Project Two", 54321, 1700000000)
+    data1 = NWProjectData(SHARED.project)
+    data2 = NWProjectData(SHARED.project)
+
+    data1.setUuid(None)
+    data2.setUuid(None)
+    data1.setName("Project One")
+    data2.setName("Project Two")
+    data1.setCurrCounts(12345, 0)
+    data2.setCurrCounts(54321, 0)
+
+    CONFIG.recentProjects.update("/stuff/project_one", data1, 1690000000)
+    CONFIG.recentProjects.update("/stuff/project_two", data2, 1700000000)
     dateOne = CONFIG.localDate(datetime.fromtimestamp(1700000000))
     dateTwo = CONFIG.localDate(datetime.fromtimestamp(1690000000))
 
