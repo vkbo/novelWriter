@@ -34,7 +34,7 @@ from __future__ import annotations
 import bisect
 import logging
 
-from enum import Enum
+from enum import Enum, IntFlag
 from time import time
 
 from PyQt5.QtCore import (
@@ -57,7 +57,7 @@ from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
     nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
-    nwItemType, nwTrinary
+    nwItemType
 )
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -82,6 +82,13 @@ class _SelectAction(Enum):
     KEEP_SELECTION = 1
     KEEP_POSITION  = 2
     MOVE_AFTER     = 3
+
+
+class _TagAction(IntFlag):
+
+    NONE   = 0b00
+    FOLLOW = 0b01
+    CREATE = 0b10
 
 
 class GuiDocEditor(QPlainTextEdit):
@@ -1158,11 +1165,11 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Follow
         status = self._processTag(cursor=pCursor, follow=False)
-        if status == nwTrinary.POSITIVE:
+        if status & _TagAction.FOLLOW:
             action = ctxMenu.addAction(self.tr("Follow Tag"))
             action.triggered.connect(qtLambda(self._processTag, cursor=pCursor, follow=True))
             ctxMenu.addSeparator()
-        elif status == nwTrinary.NEGATIVE:
+        elif status & _TagAction.CREATE:
             action = ctxMenu.addAction(self.tr("Create Note for Tag"))
             action.triggered.connect(qtLambda(self._processTag, cursor=pCursor, create=True))
             ctxMenu.addSeparator()
@@ -1925,8 +1932,9 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument.syntaxHighlighter.rehighlightBlock(block)
         return
 
-    def _processTag(self, cursor: QTextCursor | None = None,
-                    follow: bool = True, create: bool = False) -> nwTrinary:
+    def _processTag(
+        self, cursor: QTextCursor | None = None, follow: bool = True, create: bool = False
+    ) -> _TagAction:
         """Activated by Ctrl+Enter. Checks that we're in a block
         starting with '@'. We then find the tag under the cursor and
         check that it is not the tag itself. If all this is fine, we
@@ -1936,19 +1944,22 @@ class GuiDocEditor(QPlainTextEdit):
         if cursor is None:
             cursor = self.textCursor()
 
+        status = _TagAction.NONE
         block = cursor.block()
         text = block.text()
         if len(text) == 0:
-            return nwTrinary.NEUTRAL
+            return status
 
         if text.startswith("@") and self._docHandle:
 
             isGood, tBits, tPos = SHARED.project.index.scanThis(text)
             if (
-                not isGood or not tBits or tBits[0] == nwKeyWords.TAG_KEY
-                or tBits[0] not in nwKeyWords.VALID_KEYS
+                not isGood
+                or not tBits
+                or (key := tBits[0]) == nwKeyWords.TAG_KEY
+                or key not in nwKeyWords.VALID_KEYS
             ):
-                return nwTrinary.NEUTRAL
+                return status
 
             tag = ""
             exist = False
@@ -1965,7 +1976,14 @@ class GuiDocEditor(QPlainTextEdit):
 
             if not tag or tag.startswith("@"):
                 # The keyword cannot be looked up, so we ignore that
-                return nwTrinary.NEUTRAL
+                return status
+
+            if not exist and key in nwKeyWords.CAN_CREATE:
+                # Must only be set if we have a tag selected
+                status |= _TagAction.CREATE
+
+            if exist:
+                status |= _TagAction.FOLLOW
 
             if follow and exist:
                 logger.debug("Attempting to follow tag '%s'", tag)
@@ -1977,9 +1995,7 @@ class GuiDocEditor(QPlainTextEdit):
                     itemClass = nwKeyWords.KEY_CLASS.get(tBits[0], nwItemClass.NO_CLASS)
                     self.requestNewNoteCreation.emit(tag, itemClass)
 
-            return nwTrinary.POSITIVE if exist else nwTrinary.NEGATIVE
-
-        return nwTrinary.NEUTRAL
+        return status
 
     def _emitRenameItem(self, block: QTextBlock) -> None:
         """Emit a signal to request an item be renamed."""
