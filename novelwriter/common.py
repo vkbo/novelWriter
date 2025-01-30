@@ -110,7 +110,7 @@ def checkBool(value: Any, default: bool) -> bool:
     return default
 
 
-def checkUuid(value: Any, default: str) -> str:
+def checkUuid(value: Any, default: str = "") -> str:
     """Try to process a value as an UUID, or return a default."""
     try:
         return str(uuid.UUID(value))

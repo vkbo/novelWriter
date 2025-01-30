@@ -32,6 +32,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from time import time
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import (
     PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QLibraryInfo,
@@ -46,6 +47,9 @@ from novelwriter.common import (
 )
 from novelwriter.constants import nwFiles, nwUnicode
 from novelwriter.error import formatException, logException
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.core.projectdata import NWProjectData
 
 logger = logging.getLogger(__name__)
 
@@ -845,29 +849,31 @@ class RecentProjects:
 
     def __init__(self, config: Config) -> None:
         self._conf = config
-        self._data = {}
+        self._data: dict[str, dict[str, str | int]] = {}
+        self._map: dict[str, str] = {}
         return
 
     def loadCache(self) -> bool:
         """Load the cache file for recent projects."""
         self._data = {}
-
+        self._map = {}
         cacheFile = self._conf.dataPath(nwFiles.RECENT_FILE)
         if cacheFile.is_file():
             try:
                 with open(cacheFile, mode="r", encoding="utf-8") as inFile:
                     data = json.load(inFile)
-                for path, entry in data.items():
-                    self._data[path] = {
-                        "title": entry.get("title", ""),
-                        "words": entry.get("words", 0),
-                        "time": entry.get("time", 0),
-                    }
+                for key, entry in data.items():
+                    path = str(entry.get("path", key))
+                    title = str(entry.get("title", ""))
+                    words = checkInt(entry.get("words", 0), 0)
+                    saved = checkInt(entry.get("time", 0), 0)
+                    if path and title:
+                        self._setEntry(key, path, title, words, saved)
+                        self._map[path] = key
             except Exception:
                 logger.error("Could not load recent project cache")
                 logException()
                 return False
-
         return True
 
     def saveCache(self) -> bool:
@@ -882,31 +888,38 @@ class RecentProjects:
             logger.error("Could not save recent project cache")
             logException()
             return False
-
         return True
 
     def listEntries(self) -> list[tuple[str, str, int, int]]:
         """List all items in the cache."""
         return [
-            (str(k), str(e["title"]), checkInt(e["words"], 0), checkInt(e["time"], 0))
-            for k, e in self._data.items()
+            (str(e["path"]), str(e["title"]), checkInt(e["words"], 0), checkInt(e["time"], 0))
+            for e in self._data.values()
         ]
 
-    def update(self, path: str | Path, title: str, words: int, saved: float | int) -> None:
+    def update(self, path: str | Path, data: NWProjectData, saved: float | int) -> None:
         """Add or update recent cache information on a given project."""
-        self._data[str(path)] = {
-            "title": title,
-            "words": int(words),
-            "time": int(saved),
-        }
-        self.saveCache()
+        try:
+            self.remove(path)
+            self._setEntry(data.uuid, str(path), data.name, sum(data.currCounts), int(saved))
+            self.saveCache()
+        except Exception:
+            pass
         return
 
     def remove(self, path: str | Path) -> None:
         """Try to remove a path from the recent projects cache."""
-        if self._data.pop(str(path), None) is not None:
+        if remove := self._map.get(str(path)):
+            self._data.pop(remove, None)
+            self._map.pop(str(path), None)
             logger.debug("Removed recent: %s", path)
             self.saveCache()
+        return
+
+    def _setEntry(self, key: str, path: str, title: str, words: int, saved: int) -> None:
+        """Set an entry in the projects list."""
+        self._data[key] = {"path": path, "title": title, "words": words, "time": saved}
+        self._map[path] = key
         return
 
 

@@ -353,9 +353,7 @@ class NWProject:
 
         # Update recent projects
         if storePath := self._storage.storagePath:
-            CONFIG.recentProjects.update(
-                storePath, self._data.name, sum(self._data.initCounts), time()
-            )
+            CONFIG.recentProjects.update(storePath, self._data, time())
 
         # Check the project tree consistency
         # This also handles any orphaned files found
@@ -421,9 +419,7 @@ class NWProject:
 
         # Update recent projects
         if storagePath := self._storage.storagePath:
-            CONFIG.recentProjects.update(
-                storagePath, self._data.name, sum(self._data.currCounts), saveTime
-            )
+            CONFIG.recentProjects.update(storagePath, self._data, saveTime)
 
         SHARED.newStatusMessage(self.tr("Saved Project: {0}").format(self._data.name))
         self.setProjectChanged(False)
