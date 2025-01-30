@@ -86,11 +86,9 @@ class _SelectAction(Enum):
 
 class _TagAction(IntFlag):
 
-    NONE   = 0b0000
-    GOOD   = 0b0001
-    BAD    = 0b0010
-    FOLLOW = 0b0100
-    CREATE = 0b1000
+    NONE   = 0b00
+    FOLLOW = 0b01
+    CREATE = 0b10
 
 
 class GuiDocEditor(QPlainTextEdit):
@@ -1167,7 +1165,6 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Follow
         status = self._processTag(cursor=pCursor, follow=False)
-        print(status)
         if status & _TagAction.FOLLOW:
             action = ctxMenu.addAction(self.tr("Follow Tag"))
             action.triggered.connect(qtLambda(self._processTag, cursor=pCursor, follow=True))
