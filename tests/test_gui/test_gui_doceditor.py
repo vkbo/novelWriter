@@ -35,8 +35,8 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwTrinary
-from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout
+from novelwriter.gui.doceditor import GuiDocEditor, _TagAction
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
     QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtModNone,
@@ -1693,21 +1693,22 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Empty Block
     docEditor.setCursorLine(2)
-    assert docEditor._processTag() is nwTrinary.NEUTRAL
+    assert docEditor._processTag() == _TagAction.NONE
 
     # Not On Tag
     docEditor.setCursorLine(1)
-    assert docEditor._processTag() is nwTrinary.NEUTRAL
+    assert docEditor._processTag() == _TagAction.NONE
 
     # On Tag Keyword
     docEditor.setCursorPosition(15)
-    assert docEditor._processTag() is nwTrinary.NEUTRAL
+    assert docEditor._processTag() == _TagAction.NONE
 
     # On Known Tag, No Follow
     docEditor.setCursorPosition(22)
-    assert docEditor._processTag(follow=False) is nwTrinary.POSITIVE
+    assert docEditor._processTag(follow=False) == _TagAction.FOLLOW
     assert nwGUI.docViewer._docHandle is None
 
+    # qtbot.stop()
     # On Known Tag, Follow
     docEditor.setCursorPosition(22)
     position = docEditor.cursorRect().center()
@@ -1723,13 +1724,13 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # On Unknown Tag, Create It
     assert "0000000000011" not in SHARED.project.tree
     docEditor.setCursorPosition(28)
-    assert docEditor._processTag(create=True) is nwTrinary.NEGATIVE
+    assert docEditor._processTag(create=True) == _TagAction.CREATE
     assert "0000000000011" in SHARED.project.tree
 
     # On Unknown Tag, Missing Root
     assert "0000000000012" not in SHARED.project.tree
     docEditor.setCursorPosition(42)
-    assert docEditor._processTag(create=True) is nwTrinary.NEGATIVE
+    assert docEditor._processTag(create=True) == _TagAction.CREATE
     oHandle = SHARED.project.tree.findRoot(nwItemClass.OBJECT)
     assert oHandle == "0000000000012"
 
@@ -1738,7 +1739,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert oItem.itemParent == "0000000000012"
 
     docEditor.setCursorPosition(47)
-    assert docEditor._processTag() is nwTrinary.NEUTRAL
+    assert docEditor._processTag() == _TagAction.NONE
 
     # qtbot.stop()
 
