@@ -862,14 +862,13 @@ class RecentProjects:
             try:
                 with open(cacheFile, mode="r", encoding="utf-8") as inFile:
                     data = json.load(inFile)
-                for key, entry in data.items():
-                    path = str(entry.get("path", key))
+                for path, entry in data.items():
+                    puuid = str(entry.get("uuid", ""))
                     title = str(entry.get("title", ""))
                     words = checkInt(entry.get("words", 0), 0)
                     saved = checkInt(entry.get("time", 0), 0)
                     if path and title:
-                        self._setEntry(key, path, title, words, saved)
-                        self._map[path] = key
+                        self._setEntry(puuid, path, title, words, saved)
             except Exception:
                 logger.error("Could not load recent project cache")
                 logException()
@@ -893,14 +892,15 @@ class RecentProjects:
     def listEntries(self) -> list[tuple[str, str, int, int]]:
         """List all items in the cache."""
         return [
-            (str(e["path"]), str(e["title"]), checkInt(e["words"], 0), checkInt(e["time"], 0))
-            for e in self._data.values()
+            (str(k), str(e["title"]), checkInt(e["words"], 0), checkInt(e["time"], 0))
+            for k, e in self._data.items()
         ]
 
     def update(self, path: str | Path, data: NWProjectData, saved: float | int) -> None:
         """Add or update recent cache information on a given project."""
         try:
-            self.remove(path)
+            if (remove := self._map.get(data.uuid)) and (remove != str(path)):
+                self.remove(remove)
             self._setEntry(data.uuid, str(path), data.name, sum(data.currCounts), int(saved))
             self.saveCache()
         except Exception:
@@ -909,17 +909,16 @@ class RecentProjects:
 
     def remove(self, path: str | Path) -> None:
         """Try to remove a path from the recent projects cache."""
-        if remove := self._map.get(str(path)):
-            self._data.pop(remove, None)
-            self._map.pop(str(path), None)
+        if self._data.pop(str(path), None) is not None:
             logger.debug("Removed recent: %s", path)
             self.saveCache()
         return
 
-    def _setEntry(self, key: str, path: str, title: str, words: int, saved: int) -> None:
-        """Set an entry in the projects list."""
-        self._data[key] = {"path": path, "title": title, "words": words, "time": saved}
-        self._map[path] = key
+    def _setEntry(self, puuid: str, path: str, title: str, words: int, saved: int) -> None:
+        """Set an entry in the recent projects record."""
+        self._data[path] = {"uuid": puuid, "title": title, "words": words, "time": saved}
+        if puuid:
+            self._map[puuid] = path
         return
 
 
