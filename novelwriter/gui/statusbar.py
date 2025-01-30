@@ -34,7 +34,6 @@ from PyQt5.QtWidgets import QApplication, QLabel, QStatusBar, QWidget
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime
 from novelwriter.constants import nwConst
-from novelwriter.enum import nwTrinary
 from novelwriter.extensions.modified import NClickableLabel
 from novelwriter.extensions.statusled import StatusLED
 
@@ -121,8 +120,8 @@ class GuiMainStatus(QStatusBar):
         self.setRefTime(-1.0)
         self.setLanguage(*SHARED.spelling.describeDict())
         self.setProjectStats(0, 0)
-        self.setProjectStatus(nwTrinary.NEUTRAL)
-        self.setDocumentStatus(nwTrinary.NEUTRAL)
+        self.setProjectStatus(None)
+        self.setDocumentStatus(None)
         self.updateTime()
         return
 
@@ -152,12 +151,12 @@ class GuiMainStatus(QStatusBar):
         self._refTime = refTime
         return
 
-    def setProjectStatus(self, state: nwTrinary) -> None:
+    def setProjectStatus(self, state: bool | None) -> None:
         """Set the project status colour icon."""
         self.projIcon.setState(state)
         return
 
-    def setDocumentStatus(self, state: nwTrinary) -> None:
+    def setDocumentStatus(self, state: bool | None) -> None:
         """Set the document status colour icon."""
         self.docIcon.setState(state)
         return
@@ -220,13 +219,13 @@ class GuiMainStatus(QStatusBar):
     @pyqtSlot(bool)
     def updateProjectStatus(self, status: bool) -> None:
         """Update the project status."""
-        self.setProjectStatus(nwTrinary.NEGATIVE if status else nwTrinary.POSITIVE)
+        self.setProjectStatus(not status)
         return
 
     @pyqtSlot(bool)
     def updateDocumentStatus(self, status: bool) -> None:
         """Update the document status."""
-        self.setDocumentStatus(nwTrinary.NEGATIVE if status else nwTrinary.POSITIVE)
+        self.setDocumentStatus(not status)
         return
 
     ##
