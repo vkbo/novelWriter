@@ -355,7 +355,7 @@
   <context>
     <name>Constant</name>
     <message>
-      <location filename="../novelwriter/constants.py" line="310" />
+      <location filename="../novelwriter/constants.py" line="314" />
       <location filename="../novelwriter/constants.py" line="115" />
       <source>Title</source>
       <translation>タイトル</translation>
@@ -391,405 +391,405 @@
       <translation>シーンセパレーター</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="267" />
-      <location filename="../novelwriter/constants.py" line="262" />
-      <location filename="../novelwriter/constants.py" line="234" />
+      <location filename="../novelwriter/constants.py" line="271" />
+      <location filename="../novelwriter/constants.py" line="266" />
+      <location filename="../novelwriter/constants.py" line="238" />
       <source>None</source>
       <translation>なし</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="235" />
+      <location filename="../novelwriter/constants.py" line="239" />
       <source>Novel</source>
       <translation>小説</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="286" />
-      <location filename="../novelwriter/constants.py" line="236" />
+      <location filename="../novelwriter/constants.py" line="290" />
+      <location filename="../novelwriter/constants.py" line="240" />
       <source>Plot</source>
       <translation>プロット</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="285" />
-      <location filename="../novelwriter/constants.py" line="237" />
+      <location filename="../novelwriter/constants.py" line="289" />
+      <location filename="../novelwriter/constants.py" line="241" />
       <source>Characters</source>
       <translation>登場人物</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="288" />
-      <location filename="../novelwriter/constants.py" line="238" />
+      <location filename="../novelwriter/constants.py" line="292" />
+      <location filename="../novelwriter/constants.py" line="242" />
       <source>Locations</source>
       <translation>場所</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="287" />
-      <location filename="../novelwriter/constants.py" line="239" />
+      <location filename="../novelwriter/constants.py" line="291" />
+      <location filename="../novelwriter/constants.py" line="243" />
       <source>Timeline</source>
       <translation>タイムライン</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="289" />
-      <location filename="../novelwriter/constants.py" line="240" />
+      <location filename="../novelwriter/constants.py" line="293" />
+      <location filename="../novelwriter/constants.py" line="244" />
       <source>Objects</source>
       <translation>オブジェクト</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="290" />
-      <location filename="../novelwriter/constants.py" line="241" />
+      <location filename="../novelwriter/constants.py" line="294" />
+      <location filename="../novelwriter/constants.py" line="245" />
       <source>Entities</source>
       <translation>エンティティ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="419" />
-      <location filename="../novelwriter/constants.py" line="291" />
-      <location filename="../novelwriter/constants.py" line="242" />
+      <location filename="../novelwriter/constants.py" line="423" />
+      <location filename="../novelwriter/constants.py" line="295" />
+      <location filename="../novelwriter/constants.py" line="246" />
       <source>Custom</source>
       <translation>カスタム</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="243" />
+      <location filename="../novelwriter/constants.py" line="247" />
       <source>Archive</source>
       <translation>アーカイブ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="244" />
+      <location filename="../novelwriter/constants.py" line="248" />
       <source>Templates</source>
       <translation>テンプレート</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="245" />
+      <location filename="../novelwriter/constants.py" line="249" />
       <source>Trash</source>
       <translation>ごみ箱</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="270" />
-      <location filename="../novelwriter/constants.py" line="263" />
+      <location filename="../novelwriter/constants.py" line="274" />
+      <location filename="../novelwriter/constants.py" line="267" />
       <source>Novel Document</source>
       <translation>小説のドキュメント</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="275" />
-      <location filename="../novelwriter/constants.py" line="264" />
+      <location filename="../novelwriter/constants.py" line="279" />
+      <location filename="../novelwriter/constants.py" line="268" />
       <source>Project Note</source>
       <translation>プロジェクトノート</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="268" />
+      <location filename="../novelwriter/constants.py" line="272" />
       <source>Root Folder</source>
       <translation>ルートフォルダー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="269" />
+      <location filename="../novelwriter/constants.py" line="273" />
       <source>Folder</source>
       <translation>フォルダー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="271" />
+      <location filename="../novelwriter/constants.py" line="275" />
       <source>Novel Title Page</source>
       <translation>小説のタイトルページ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="272" />
+      <location filename="../novelwriter/constants.py" line="276" />
       <source>Novel Chapter</source>
       <translation>小説のチャプター</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="273" />
+      <location filename="../novelwriter/constants.py" line="277" />
       <source>Novel Scene</source>
       <translation>小説のシーン</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="274" />
+      <location filename="../novelwriter/constants.py" line="278" />
       <source>Novel Section</source>
       <translation>小説のセクション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="278" />
+      <location filename="../novelwriter/constants.py" line="282" />
       <source>Active</source>
       <translation>アクティブ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="279" />
+      <location filename="../novelwriter/constants.py" line="283" />
       <source>Inactive</source>
       <translation>非アクティブ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="282" />
+      <location filename="../novelwriter/constants.py" line="286" />
       <source>Tag</source>
       <translation>タグ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="283" />
+      <location filename="../novelwriter/constants.py" line="287" />
       <source>Point of View</source>
       <translation>視点</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="319" />
-      <location filename="../novelwriter/constants.py" line="284" />
+      <location filename="../novelwriter/constants.py" line="323" />
+      <location filename="../novelwriter/constants.py" line="288" />
       <source>Focus</source>
       <translation>焦点</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="292" />
+      <location filename="../novelwriter/constants.py" line="296" />
       <source>Story</source>
       <translation>ストーリー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="293" />
+      <location filename="../novelwriter/constants.py" line="297" />
       <source>Mentions</source>
       <translation>メンション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="311" />
+      <location filename="../novelwriter/constants.py" line="315" />
       <source>Level</source>
       <translation>階層</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="312" />
+      <location filename="../novelwriter/constants.py" line="316" />
       <source>Document</source>
       <translation>ドキュメント</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="313" />
+      <location filename="../novelwriter/constants.py" line="317" />
       <source>Line</source>
       <translation>行</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="314" />
+      <location filename="../novelwriter/constants.py" line="318" />
       <source>Status</source>
       <translation>ステータス</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="315" />
+      <location filename="../novelwriter/constants.py" line="319" />
       <source>Chars</source>
       <translation>文字</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="316" />
+      <location filename="../novelwriter/constants.py" line="320" />
       <source>Words</source>
       <translation>単語</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="317" />
+      <location filename="../novelwriter/constants.py" line="321" />
       <source>Pars</source>
       <translation>段落</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="318" />
+      <location filename="../novelwriter/constants.py" line="322" />
       <source>POV</source>
       <translation>視点</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="329" />
+      <location filename="../novelwriter/constants.py" line="333" />
       <source>Synopsis</source>
       <translation>あらすじ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="345" />
+      <location filename="../novelwriter/constants.py" line="349" />
       <source>Open Document (.odt)</source>
       <translation>オープンドキュメント (.odt)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="346" />
+      <location filename="../novelwriter/constants.py" line="350" />
       <source>Flat Open Document (.fodt)</source>
       <translation>フラットオープンドキュメント (.fodt)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="347" />
+      <location filename="../novelwriter/constants.py" line="351" />
       <source>Microsoft Word Document (.docx)</source>
       <translation>Microsoft Word 文書 (.docx)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="348" />
+      <location filename="../novelwriter/constants.py" line="352" />
       <source>HTML 5 (.html)</source>
       <translation>HTML 5 (.html)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="349" />
+      <location filename="../novelwriter/constants.py" line="353" />
       <source>novelWriter Markup (.txt)</source>
       <translation>novelWriterマークアップ (.txt)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="350" />
+      <location filename="../novelwriter/constants.py" line="354" />
       <source>Standard Markdown (.md)</source>
       <translation>標準マークダウン (.md)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="351" />
+      <location filename="../novelwriter/constants.py" line="355" />
       <source>Extended Markdown (.md)</source>
       <translation>拡張マークダウン (.md)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="352" />
+      <location filename="../novelwriter/constants.py" line="356" />
       <source>Portable Document Format (.pdf)</source>
       <translation>ポータブルドキュメントフォーマット (.pdf)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="353" />
+      <location filename="../novelwriter/constants.py" line="357" />
       <source>JSON + HTML 5 (.json)</source>
       <translation>JSON + HTML 5 (.json)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="354" />
+      <location filename="../novelwriter/constants.py" line="358" />
       <source>JSON + novelWriter Markup (.json)</source>
       <translation>JSON + novelWriter マークアップ (.json)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="397" />
+      <location filename="../novelwriter/constants.py" line="401" />
       <source>Text files</source>
       <translation>テキストファイル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="398" />
+      <location filename="../novelwriter/constants.py" line="402" />
       <source>Markdown files</source>
       <translation>マークダウンファイル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="399" />
+      <location filename="../novelwriter/constants.py" line="403" />
       <source>novelWriter files</source>
       <translation>novelWriterファイル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="400" />
+      <location filename="../novelwriter/constants.py" line="404" />
       <source>CSV files</source>
       <translation>CSVファイル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="401" />
+      <location filename="../novelwriter/constants.py" line="405" />
       <source>All files</source>
       <translation>すべてのファイル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="404" />
+      <location filename="../novelwriter/constants.py" line="408" />
       <source>Millimetres</source>
       <translation>ミリメートル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="405" />
+      <location filename="../novelwriter/constants.py" line="409" />
       <source>Centimetres</source>
       <translation>センチメートル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="406" />
+      <location filename="../novelwriter/constants.py" line="410" />
       <source>Inches</source>
       <translation>インチ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="414" />
+      <location filename="../novelwriter/constants.py" line="418" />
       <source>A4</source>
       <translation>A4</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="415" />
+      <location filename="../novelwriter/constants.py" line="419" />
       <source>A5</source>
       <translation>A5</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="416" />
+      <location filename="../novelwriter/constants.py" line="420" />
       <source>A6</source>
       <translation>A6</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="417" />
+      <location filename="../novelwriter/constants.py" line="421" />
       <source>US Legal</source>
       <translation>US リーガル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="418" />
+      <location filename="../novelwriter/constants.py" line="422" />
       <source>US Letter</source>
       <translation>US レター</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="461" />
+      <location filename="../novelwriter/constants.py" line="465" />
       <source>Straight single quotation mark</source>
       <translation>直線形シングルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="462" />
+      <location filename="../novelwriter/constants.py" line="466" />
       <source>Straight double quotation mark</source>
       <translation>直線形ダブルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="464" />
+      <location filename="../novelwriter/constants.py" line="468" />
       <source>Left single quotation mark</source>
       <translation>左シングルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="465" />
+      <location filename="../novelwriter/constants.py" line="469" />
       <source>Right single quotation mark</source>
       <translation>右シングルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="466" />
+      <location filename="../novelwriter/constants.py" line="470" />
       <source>Single low-9 quotation mark</source>
       <translation>シングルローナインクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="467" />
+      <location filename="../novelwriter/constants.py" line="471" />
       <source>Single high-reversed-9 quotation mark</source>
       <translation>上反転シングルローナインクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="468" />
+      <location filename="../novelwriter/constants.py" line="472" />
       <source>Left double quotation mark</source>
       <translation>左ダブルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="469" />
+      <location filename="../novelwriter/constants.py" line="473" />
       <source>Right double quotation mark</source>
       <translation>右ダブルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="470" />
+      <location filename="../novelwriter/constants.py" line="474" />
       <source>Double low-9 quotation mark</source>
       <translation>ダブルローナインクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="471" />
+      <location filename="../novelwriter/constants.py" line="475" />
       <source>Double high-reversed-9 quotation mark</source>
       <translation>上反転ダブルローナインクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="472" />
+      <location filename="../novelwriter/constants.py" line="476" />
       <source>Double low-reversed-9 quotation mark</source>
       <translation>下反転ダブルローナインクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="474" />
+      <location filename="../novelwriter/constants.py" line="478" />
       <source>Single left-pointing angle quotation mark</source>
       <translation>左フレンチシングルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="475" />
+      <location filename="../novelwriter/constants.py" line="479" />
       <source>Single right-pointing angle quotation mark</source>
       <translation>右フレンチシングルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="476" />
+      <location filename="../novelwriter/constants.py" line="480" />
       <source>Double left-pointing angle quotation mark</source>
       <translation>左フレンチダブルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="477" />
+      <location filename="../novelwriter/constants.py" line="481" />
       <source>Double right-pointing angle quotation mark</source>
       <translation>右フレンチダブルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="479" />
+      <location filename="../novelwriter/constants.py" line="483" />
       <source>Left corner bracket</source>
       <translation>左鉤括弧</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="480" />
+      <location filename="../novelwriter/constants.py" line="484" />
       <source>Right corner bracket</source>
       <translation>右鉤括弧</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="481" />
+      <location filename="../novelwriter/constants.py" line="485" />
       <source>Left white corner bracket</source>
       <translation>左二重鉤括弧</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="482" />
+      <location filename="../novelwriter/constants.py" line="486" />
       <source>Right white corner bracket</source>
       <translation>右二重鉤括弧</translation>
     </message>
@@ -897,22 +897,22 @@
   <context>
     <name>GuiDocEditFooter</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3072" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3088" />
       <source>Line: {0} ({1})</source>
       <translation>行: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3073" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3089" />
       <source>Words: {0} ({1})</source>
       <translation>単語: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3074" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3090" />
       <source>Words: {0} selected</source>
       <translation>単語: {0} 選択済み</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3086" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3102" />
       <source>Status</source>
       <translation>ステータス</translation>
     </message>
@@ -920,27 +920,27 @@
   <context>
     <name>GuiDocEditHeader</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2865" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2881" />
       <source>Toggle Tool Bar</source>
       <translation>ツールバーの切り替え</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2870" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2886" />
       <source>Outline</source>
       <translation>アウトライン</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2875" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2891" />
       <source>Search</source>
       <translation>検索</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2880" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2896" />
       <source>Toggle Focus Mode</source>
       <translation>フォーカスモードの切り替え</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2885" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2901" />
       <source>Close</source>
       <translation>閉じる</translation>
     </message>
@@ -948,62 +948,62 @@
   <context>
     <name>GuiDocEditSearch</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2483" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2499" />
       <source>Search for</source>
       <translation>検索</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2487" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2503" />
       <source>Replace with</source>
       <translation>置換候補</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2495" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2511" />
       <source>Search</source>
       <translation>検索</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2500" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2516" />
       <source>Case Sensitive</source>
       <translation>大文字と小文字を区別</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2506" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2522" />
       <source>Whole Words Only</source>
       <translation>完全一致のみ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2512" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2528" />
       <source>RegEx Mode</source>
       <translation>正規表現モード</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2518" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2534" />
       <source>Loop Search</source>
       <translation>ループ検索</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2524" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2540" />
       <source>Search Next File</source>
       <translation>次のファイルを検索</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2532" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2548" />
       <source>Preserve Case</source>
       <translation>大文字と小文字を保持</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2540" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2556" />
       <source>Close Search</source>
       <translation>検索を閉じる</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2551" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2567" />
       <source>Find in current document</source>
       <translation>現在のドキュメント内を検索</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2555" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2571" />
       <source>Find and replace in current document</source>
       <translation>現在のドキュメント内を検索して置き換え</translation>
     </message>
@@ -1011,132 +1011,132 @@
   <context>
     <name>GuiDocEditor</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="436" />
+      <location filename="../novelwriter/gui/doceditor.py" line="443" />
       <source>Opened Document: {0}</source>
       <translation>開かれたドキュメント： {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="474" />
+      <location filename="../novelwriter/gui/doceditor.py" line="481" />
       <source>This document has been changed outside of novelWriter while it was open. Overwrite the file on disk?</source>
       <translation>このドキュメントは、開いている間にnovelWriter以外で変更されました。ディスクにファイルを上書きしますか？</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="483" />
+      <location filename="../novelwriter/gui/doceditor.py" line="490" />
       <source>Could not save document.</source>
       <translation>ドキュメントを保存できませんでした。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="508" />
+      <location filename="../novelwriter/gui/doceditor.py" line="515" />
       <source>Saved Document: {0}</source>
       <translation>保存済みドキュメント: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="677" />
+      <location filename="../novelwriter/gui/doceditor.py" line="684" />
       <source>Spell checking requires the package PyEnchant. It does not appear to be installed.</source>
       <translation>スペルチェックにはPyEnchantパッケージが必要ですが、インストールされていないようです。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="703" />
+      <location filename="../novelwriter/gui/doceditor.py" line="710" />
       <source>Spell check complete</source>
       <translation>スペルチェック完了</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="823" />
+      <location filename="../novelwriter/gui/doceditor.py" line="830" />
       <source>Document Details</source>
       <translation>ドキュメントの詳細</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="825" />
+      <location filename="../novelwriter/gui/doceditor.py" line="832" />
       <source>Created: {0}</source>
       <translation>作成済み: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="826" />
+      <location filename="../novelwriter/gui/doceditor.py" line="833" />
       <source>Updated: {0}</source>
       <translation>更新: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="828" />
+      <location filename="../novelwriter/gui/doceditor.py" line="835" />
       <source>File Location: {0}</source>
       <translation>ファイル場所: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1149" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1156" />
       <source>Set as Document Name</source>
       <translation>ドキュメント名として設定</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1155" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1162" />
       <source>Open URL</source>
       <translation>URLを開く</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1162" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1169" />
       <source>Follow Tag</source>
       <translation>タグをフォロー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1166" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1173" />
       <source>Create Note for Tag</source>
       <translation>タグのメモを作成</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1172" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1179" />
       <source>Cut</source>
       <translation>切り取り</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1174" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1181" />
       <source>Copy</source>
       <translation>コピー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1177" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1184" />
       <source>Paste</source>
       <translation>貼り付け</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1182" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1189" />
       <source>Select All</source>
       <translation>すべて選択</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1184" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1191" />
       <source>Select Word</source>
       <translation>単語を選択</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1188" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1195" />
       <source>Select Paragraph</source>
       <translation>段落を選択</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1204" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1211" />
       <source>Spelling Suggestion(s)</source>
       <translation>スペルの提案</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1209" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1216" />
       <source>No Suggestions</source>
       <translation>候補なし</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1213" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1220" />
       <source>Ignore Word</source>
       <translation>単語を無視</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1215" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1222" />
       <source>Add Word to Dictionary</source>
       <translation>単語を辞書に追加</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1619" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1626" />
       <source>Please select some text before calling replace quotes.</source>
       <translation>置き換え引用符を呼び出す前にテキストを選択してください。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1974" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1992" />
       <source>Do you want to create a new project note for the tag '{0}'?</source>
       <translation>タグ '{0}' の新規プロジェクトノートを作成しますか？</translation>
     </message>
@@ -1220,52 +1220,52 @@
   <context>
     <name>GuiDocToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2346" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2362" />
       <source>Markdown Bold</source>
       <translation>マークダウン 太字</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2352" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2368" />
       <source>Markdown Italic</source>
       <translation>マークダウン 斜体</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2358" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2374" />
       <source>Markdown Strikethrough</source>
       <translation>マークダウン 取り消し線</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2364" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2380" />
       <source>Shortcode Bold</source>
       <translation>ショートコード 太字</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2370" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2386" />
       <source>Shortcode Italic</source>
       <translation>ショートコード 斜体</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2376" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2392" />
       <source>Shortcode Strikethrough</source>
       <translation>ショートコード 取り消し線</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2382" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2398" />
       <source>Shortcode Underline</source>
       <translation>ショートコード 下線</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2388" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2404" />
       <source>Shortcode Highlight</source>
       <translation>ショートコードハイライト</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2394" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2410" />
       <source>Shortcode Superscript</source>
       <translation>ショートコード 上付き文字</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2400" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2416" />
       <source>Shortcode Subscript</source>
       <translation>ショートコード 下付き文字</translation>
     </message>
@@ -2196,38 +2196,38 @@
   <context>
     <name>GuiMainStatus</name>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="213" />
-      <location filename="../novelwriter/gui/statusbar.py" line="64" />
+      <location filename="../novelwriter/gui/statusbar.py" line="212" />
+      <location filename="../novelwriter/gui/statusbar.py" line="63" />
       <source>None</source>
       <translation>なし</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="72" />
+      <location filename="../novelwriter/gui/statusbar.py" line="71" />
       <source>Editor</source>
       <translation>エディター</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="80" />
+      <location filename="../novelwriter/gui/statusbar.py" line="79" />
       <source>Project</source>
       <translation>プロジェクト</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="100" />
+      <location filename="../novelwriter/gui/statusbar.py" line="99" />
       <source>Session Time</source>
       <translation>セッション時間</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="179" />
+      <location filename="../novelwriter/gui/statusbar.py" line="178" />
       <source>Words: {0} ({1})</source>
       <translation>単語: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="181" />
+      <location filename="../novelwriter/gui/statusbar.py" line="180" />
       <source>Project word count (session change)</source>
       <translation>プロジェクト単語数 (セッション中の変更)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="183" />
+      <location filename="../novelwriter/gui/statusbar.py" line="182" />
       <source>Novel word count (session change)</source>
       <translation>小説の単語数 (セッション中の変更)</translation>
     </message>
@@ -2664,7 +2664,7 @@
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="277" />
       <source>Behaviour</source>
-      <translation type="unfinished" />
+      <translation>動作</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="289" />
@@ -2695,12 +2695,12 @@
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="308" />
       <source>Ask before exiting novelWriter</source>
-      <translation type="unfinished" />
+      <translation>ノベルライターを終了する前に確認する</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="309" />
       <source>Only applies when a project is open.</source>
-      <translation type="unfinished" />
+      <translation>プロジェクトが開いているときにのみ適用されます。</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="315" />
@@ -3637,7 +3637,7 @@
       <translation>既知のプロジェクトファイル形式ではありません。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="475" />
+      <location filename="../novelwriter/core/project.py" line="471" />
       <location filename="../novelwriter/core/project.py" line="288" />
       <location filename="../novelwriter/core/project.py" line="283" />
       <location filename="../novelwriter/core/project.py" line="278" />
@@ -3685,98 +3685,98 @@
       <translation>このプロジェクトは、新しいバージョンのnovelWriter、バージョン {0} によって保存されました。 このインスタンスはバージョン {1} です。 プロジェクトを開くと、いくつかの属性や設定は保持されませんが、プロジェクト全体は問題ありません。 プロジェクトを開きますか？</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="362" />
+      <location filename="../novelwriter/core/project.py" line="360" />
       <source>Recovered</source>
       <translation>復元されました</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="364" />
+      <location filename="../novelwriter/core/project.py" line="362" />
       <source>Found {0} orphaned file(s) in the project. {1} file(s) were recovered.</source>
       <translation>プロジェクト内に孤立している {0} ファイルが見つかりました。 {1} ファイルを復元しました。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="380" />
+      <location filename="../novelwriter/core/project.py" line="378" />
       <source>Opened Project: {0}</source>
       <translation>開いたプロジェクト: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="391" />
+      <location filename="../novelwriter/core/project.py" line="389" />
       <source>There is no project open.</source>
       <translation>プロジェクトが開かれていません。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="414" />
+      <location filename="../novelwriter/core/project.py" line="412" />
       <source>Failed to save project.</source>
       <translation>プロジェクトを保存できませんでした。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="428" />
+      <location filename="../novelwriter/core/project.py" line="424" />
       <source>Saved Project: {0}</source>
       <translation>保存されたプロジェクト: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="450" />
+      <location filename="../novelwriter/core/project.py" line="446" />
       <source>Backing up project ...</source>
       <translation>プロジェクトをバックアップ中...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="453" />
+      <location filename="../novelwriter/core/project.py" line="449" />
       <source>Cannot backup project because no project name is set. Please set a Project Name in Project Settings.</source>
       <translation>プロジェクト名が設定されていないため、プロジェクトをバックアップできません。プロジェクト設定でプロジェクト名を設定してください。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="465" />
+      <location filename="../novelwriter/core/project.py" line="461" />
       <source>Could not create backup folder.</source>
       <translation>バックアップフォルダーを作成できませんでした。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="474" />
+      <location filename="../novelwriter/core/project.py" line="470" />
       <source>Created a backup of your project of size {0}B.</source>
       <translation>プロジェクトサイズ {0}Bのバックアップを作成しました。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="478" />
+      <location filename="../novelwriter/core/project.py" line="474" />
       <source>Could not write backup archive.</source>
       <translation>バックアップアーカイブを書き込めませんでした。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="481" />
+      <location filename="../novelwriter/core/project.py" line="477" />
       <source>Project backed up to '{0}'</source>
       <translation>プロジェクトはバックアップされました '{0}'</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="495" />
       <location filename="../novelwriter/core/project.py" line="491" />
+      <location filename="../novelwriter/core/project.py" line="487" />
       <source>New</source>
       <translation>新規</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="492" />
+      <location filename="../novelwriter/core/project.py" line="488" />
       <source>Note</source>
       <translation>ノート</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="493" />
+      <location filename="../novelwriter/core/project.py" line="489" />
       <source>Draft</source>
       <translation>下書き</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="494" />
+      <location filename="../novelwriter/core/project.py" line="490" />
       <source>Finished</source>
       <translation>終了</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="496" />
+      <location filename="../novelwriter/core/project.py" line="492" />
       <source>Minor</source>
       <translation>マイナー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="497" />
+      <location filename="../novelwriter/core/project.py" line="493" />
       <source>Major</source>
       <translation>メジャー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="498" />
+      <location filename="../novelwriter/core/project.py" line="494" />
       <source>Main</source>
       <translation>メイン</translation>
     </message>
@@ -4021,102 +4021,102 @@
   <context>
     <name>Shape</name>
     <message>
-      <location filename="../novelwriter/constants.py" line="369" />
+      <location filename="../novelwriter/constants.py" line="373" />
       <source>Square</source>
       <translation>正方形</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="370" />
+      <location filename="../novelwriter/constants.py" line="374" />
       <source>Triangle</source>
       <translation>三角形</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="371" />
+      <location filename="../novelwriter/constants.py" line="375" />
       <source>Nabla</source>
       <translation>逆三角形</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="372" />
+      <location filename="../novelwriter/constants.py" line="376" />
       <source>Diamond</source>
       <translation>菱形</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="373" />
+      <location filename="../novelwriter/constants.py" line="377" />
       <source>Pentagon</source>
       <translation>五角形</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="374" />
+      <location filename="../novelwriter/constants.py" line="378" />
       <source>Hexagon</source>
       <translation>六角形</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="375" />
+      <location filename="../novelwriter/constants.py" line="379" />
       <source>Star</source>
       <translation>星</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="376" />
+      <location filename="../novelwriter/constants.py" line="380" />
       <source>Pacman</source>
       <translation>パックマン</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="379" />
+      <location filename="../novelwriter/constants.py" line="383" />
       <source>1/4 Circle</source>
       <translation>1/4の円</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="380" />
+      <location filename="../novelwriter/constants.py" line="384" />
       <source>Half Circle</source>
       <translation>半円</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="381" />
+      <location filename="../novelwriter/constants.py" line="385" />
       <source>3/4 Circle</source>
       <translation>3/4の円</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="382" />
+      <location filename="../novelwriter/constants.py" line="386" />
       <source>Full Circle</source>
       <translation>全円</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="385" />
+      <location filename="../novelwriter/constants.py" line="389" />
       <source>1 Bar</source>
       <translation>1バー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="386" />
+      <location filename="../novelwriter/constants.py" line="390" />
       <source>2 Bars</source>
       <translation>2バー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="387" />
+      <location filename="../novelwriter/constants.py" line="391" />
       <source>3 Bars</source>
       <translation>3バー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="388" />
+      <location filename="../novelwriter/constants.py" line="392" />
       <source>4 Bars</source>
       <translation>4バー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="391" />
+      <location filename="../novelwriter/constants.py" line="395" />
       <source>1 Block</source>
       <translation>1ブロック</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="392" />
+      <location filename="../novelwriter/constants.py" line="396" />
       <source>2 Blocks</source>
       <translation>2ブロック</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="393" />
+      <location filename="../novelwriter/constants.py" line="397" />
       <source>3 Blocks</source>
       <translation>3ブロック</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="394" />
+      <location filename="../novelwriter/constants.py" line="398" />
       <source>4 Blocks</source>
       <translation>4ブロック</translation>
     </message>
@@ -4147,57 +4147,57 @@
   <context>
     <name>Stats</name>
     <message>
-      <location filename="../novelwriter/constants.py" line="332" />
+      <location filename="../novelwriter/constants.py" line="336" />
       <source>Characters</source>
       <translation>文字数</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="333" />
+      <location filename="../novelwriter/constants.py" line="337" />
       <source>Characters in Text</source>
       <translation>テキスト内の文字数</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="334" />
+      <location filename="../novelwriter/constants.py" line="338" />
       <source>Characters in Headings</source>
       <translation>見出し内の文字数</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="335" />
+      <location filename="../novelwriter/constants.py" line="339" />
       <source>Paragraphs</source>
       <translation>段落</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="336" />
+      <location filename="../novelwriter/constants.py" line="340" />
       <source>Headings</source>
       <translation>見出し</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="337" />
+      <location filename="../novelwriter/constants.py" line="341" />
       <source>Characters, No Spaces</source>
       <translation>スペースなし文字数</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="338" />
+      <location filename="../novelwriter/constants.py" line="342" />
       <source>Characters in Text, No Spaces</source>
       <translation>テキスト内のスペースなし文字数</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="339" />
+      <location filename="../novelwriter/constants.py" line="343" />
       <source>Characters in Headings, No Spaces</source>
       <translation>見出し内のスペースなし文字数</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="340" />
+      <location filename="../novelwriter/constants.py" line="344" />
       <source>Words</source>
       <translation>単語数</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="341" />
+      <location filename="../novelwriter/constants.py" line="345" />
       <source>Words in Text</source>
       <translation>テキスト内の単語数</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="342" />
+      <location filename="../novelwriter/constants.py" line="346" />
       <source>Words in Headings</source>
       <translation>見出し内の単語数</translation>
     </message>
