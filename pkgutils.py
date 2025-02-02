@@ -202,6 +202,17 @@ if __name__ == "__main__":
     )
     cmdBuildQM.set_defaults(func=utils.assets.buildTranslationAssets)
 
+    # Update Docs i18n Sources
+    cmdUpdateDocsPo = parsers.add_parser(
+        "docs-lupdate", help=(
+            "Update translation files for internationalisation of the docs. "
+            "The langauges to be updated can be added as arguments, "
+            "or set to all to update all existing translations."
+        )
+    )
+    cmdUpdateDocsPo.add_argument("lang", nargs="+")
+    cmdUpdateDocsPo.set_defaults(func=utils.assets.updateDocsTranslationSources)
+
     # Build Manual
     cmdBuildManual = parsers.add_parser(
         "manual", help="Build the help documentation as a PDF (requires LaTeX)."

@@ -248,6 +248,42 @@ def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
     return
 
 
+def updateDocsTranslationSources(args: argparse.Namespace) -> None:
+    """Build the documentation .po files."""
+    print("")
+    print("Building Docs Translation Files")
+    print("===============================")
+    print("")
+
+    docsDir = ROOT_DIR / "docs"
+    locsDir = ROOT_DIR / "docs" / "source" / "locales"
+    locsDir.mkdir(exist_ok=True)
+
+    print("Generating POT Files")
+    subprocess.call(["make", "gettext"], cwd=docsDir)
+    print("")
+
+    lang = args.lang
+    update = []
+    if lang == ["all"]:
+        update = [i.stem for i in locsDir.iterdir() if i.is_dir()]
+    else:
+        update = lang
+
+    print("Generating PO Files")
+    print("Languages: ", update)
+    print("")
+
+    for code in update:
+        subprocess.call(["sphinx-intl", "update", "-p", "build/gettext", "-l", code], cwd=docsDir)
+        print("")
+
+    print("Done")
+    print("")
+
+    return
+
+
 def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
     """Remove assets built by this script."""
     print("")
