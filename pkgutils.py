@@ -213,6 +213,12 @@ if __name__ == "__main__":
     cmdUpdateDocsPo.add_argument("lang", nargs="+")
     cmdUpdateDocsPo.set_defaults(func=utils.assets.updateDocsTranslationSources)
 
+    # Build Docs i18n Files
+    cmdBuildU18nDocs = parsers.add_parser(
+        "docs-lrelease", help="Build the translated PDF manual files."
+    )
+    cmdBuildU18nDocs.set_defaults(func=utils.assets.buildDocsTranslationAssets)
+
     # Build Manual
     cmdBuildManual = parsers.add_parser(
         "manual", help="Build the help documentation as a PDF (requires LaTeX)."

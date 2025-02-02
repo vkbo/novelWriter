@@ -21,6 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 import zipfile
@@ -279,6 +280,39 @@ def updateDocsTranslationSources(args: argparse.Namespace) -> None:
         print("")
 
     print("Done")
+    print("")
+
+    return
+
+
+def buildDocsTranslationAssets(args: argparse.Namespace | None = None) -> None:
+    """Build the documentation i18n PDF files."""
+    print("")
+    print("Building Docs Manuals")
+    print("=====================")
+    print("")
+
+    docsDir = ROOT_DIR / "docs"
+    locsDir = ROOT_DIR / "docs" / "source" / "locales"
+    pdfFile = ROOT_DIR / "docs" / "build" / "latex" / "manual.pdf"
+    locsDir.mkdir(exist_ok=True)
+
+    build = [i.stem for i in locsDir.iterdir() if i.is_dir()]
+    for code in build:
+        data = (locsDir / f"authors_{code}.conf").read_text(encoding="utf-8")
+        authors = [x for x in data.splitlines() if x and not x.startswith("#")]
+        env = os.environ.copy()
+        env["SPHINX_I18N_AUTHORS"] = ", ".join(authors)
+        exCode = subprocess.call(
+            f"make -e SPHINXOPTS=\"-D language='{code}'\" clean latexpdf",
+            cwd=docsDir, env=env, shell=True
+        )
+        if exCode == 0:
+            print("")
+            pdfFile.rename(ROOT_DIR / "novelwriter" / "assets" / f"manual_{code}.pdf")
+        else:
+            raise Exception(f"Build returned error code {exCode}")
+
     print("")
 
     return
