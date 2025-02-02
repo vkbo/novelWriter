@@ -138,7 +138,7 @@ packages from PyPi:
 
 .. code-block:: bash
 
-   pip install -r docs/source/requirements.txt
+   pip install -r docs/requirements.txt
 
 The documentation can then be built from the root folder in the source code by running:
 

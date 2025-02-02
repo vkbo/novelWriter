@@ -17,7 +17,7 @@ if [ ! -d $ENVPATH ]; then
     python3 -m venv $ENVPATH
 fi
 source $ENVPATH/bin/activate
-pip3 install -r docs/source/requirements.txt
+pip3 install -r docs/requirements.txt
 python3 pkgutils.py build-assets
 deactivate
 
