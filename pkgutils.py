@@ -217,6 +217,7 @@ if __name__ == "__main__":
     cmdBuildU18nDocs = parsers.add_parser(
         "docs-lrelease", help="Build the translated PDF manual files."
     )
+    cmdBuildU18nDocs.add_argument("lang", nargs="+")
     cmdBuildU18nDocs.set_defaults(func=utils.assets.buildDocsTranslationAssets)
 
     # Build Manual

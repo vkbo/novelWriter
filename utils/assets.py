@@ -297,7 +297,13 @@ def buildDocsTranslationAssets(args: argparse.Namespace | None = None) -> None:
     pdfFile = ROOT_DIR / "docs" / "build" / "latex" / "manual.pdf"
     locsDir.mkdir(exist_ok=True)
 
-    build = [i.stem for i in locsDir.iterdir() if i.is_dir()]
+    lang = args.lang
+    build = []
+    if lang == ["all"]:
+        build = [i.stem for i in locsDir.iterdir() if i.is_dir()]
+    else:
+        build = lang
+
     for code in build:
         data = (locsDir / f"authors_{code}.conf").read_text(encoding="utf-8")
         authors = [x for x in data.splitlines() if x and not x.startswith("#")]
