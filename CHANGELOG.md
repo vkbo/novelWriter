@@ -1,5 +1,52 @@
 # novelWriter Changelog
 
+## Version 2.6.1 [2025-02-02]
+
+### Release Notes
+
+This is a patch release that fixes an issue with creating new notes from the editor context menu,
+adds an option to turn off the confirmation box that pops up when closing novelWriter, and improves
+the recent project list on the Welcome dialog.
+
+A French version of the user guide is now also available when the localisation is set to French,
+and the French, Latin American Spanish, Norwegian, US English, German and Japanese translations of
+the application have been updated.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where the "Create Note from Tag" would also show up for `@story` references. These
+  should not create new novel documents. The same menu entry was also removed for `@mention`
+  references, as it is not known what category the would belong to. Issue #2212. PR #2215.
+
+**Improvements**
+
+* A setting was added to Preferences to disable the dialog box when exiting novelWriter. It is
+  available under the "Behaviour" section. Issue #2209. PR#2213.
+* Recent projects on the Welcome dialog box are now tracked using their unique ID as well as their
+  path. This means that if a project is moved, it should not show up twice in the list, but the
+  path should be updated. Issue #2217. PR #2218.
+
+**Documentation**
+
+* A French version of the user guide is nov available from the Help menu if the GUi language is set
+  to French. The French translation was contributed by @Karduin. It is currently directly added to
+  the source, but from 2.7 it will be generated automatically in the same way the English user
+  guide is. Discussion #1834. PR #2220.
+
+**Internationalisation**
+
+* French translations are available up to the 2.6 release. That is, the new exit dialog setting is
+  not translated yet. PR #2214.
+* Latin American Spanish, Norwegian, US English, German and Japanese translations are fully
+  updated. PR #2214.
+
+See the [translation activity stream](https://crowdin.com/project/novelwriter/activity-stream) for
+more details.
+
+----
+
 ## Version 2.6 [2025-01-26]
 
 ### Release Notes
