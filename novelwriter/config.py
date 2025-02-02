@@ -105,8 +105,11 @@ class Config:
         self._qtTrans = {}
 
         # PDF Manual
-        pdfDocs = self._appPath / "assets" / "manual.pdf"
-        self.pdfDocs = pdfDocs if pdfDocs.is_file() else None
+        self._manuals: dict[str, Path] = {}
+        if (assets := self._appPath / "assets").is_dir():
+            for item in assets.iterdir():
+                if item.is_file() and item.stem.startswith("manual") and item.suffix == ".pdf":
+                    self._manuals[item.stem] = item
 
         # User Settings
         # =============
@@ -261,6 +264,10 @@ class Config:
     @property
     def hasError(self) -> bool:
         return self._hasError
+
+    @property
+    def pdfDocs(self) -> Path | None:
+        return self._manuals.get(f"manual_{self.locale.name()}", self._manuals.get("manual"))
 
     @property
     def locale(self) -> QLocale:
