@@ -28,7 +28,6 @@ import logging
 from PyQt6.QtGui import QColor, QPainter, QPaintEvent
 from PyQt6.QtWidgets import QAbstractButton, QWidget
 
-from novelwriter.enum import nwTrinary
 from novelwriter.types import QtBlack, QtPaintAntiAlias
 
 logger = logging.getLogger(__name__)
@@ -44,13 +43,13 @@ class StatusLED(QAbstractButton):
         self._postitve = QtBlack
         self._negative = QtBlack
         self._color = QtBlack
-        self._state = nwTrinary.NEUTRAL
+        self._state = None
         self.setFixedWidth(sW)
         self.setFixedHeight(sH)
         return
 
     @property
-    def state(self) -> nwTrinary:
+    def state(self) -> bool | None:
         """The current state of the LED."""
         return self._state
 
@@ -62,11 +61,11 @@ class StatusLED(QAbstractButton):
         self.setState(self._state)
         return
 
-    def setState(self, state: nwTrinary) -> None:
+    def setState(self, state: bool | None) -> None:
         """Set the colour state."""
-        if state == nwTrinary.POSITIVE:
+        if state is True:
             self._color = self._postitve
-        elif state == nwTrinary.NEGATIVE:
+        elif state is False:
             self._color = self._negative
         else:
             self._color = self._neutral

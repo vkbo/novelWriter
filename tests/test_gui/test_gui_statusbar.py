@@ -25,7 +25,6 @@ import time
 import pytest
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwTrinary
 
 from tests.tools import C, buildTestProject
 
@@ -47,20 +46,20 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert status._refTime == refTime
 
     # Project Status
-    status.setProjectStatus(nwTrinary.NEUTRAL)
-    assert status.projIcon.state == nwTrinary.NEUTRAL
-    status.setProjectStatus(nwTrinary.NEGATIVE)
-    assert status.projIcon.state == nwTrinary.NEGATIVE
-    status.setProjectStatus(nwTrinary.POSITIVE)
-    assert status.projIcon.state == nwTrinary.POSITIVE
+    status.setProjectStatus(None)
+    assert status.projIcon.state is None
+    status.setProjectStatus(False)
+    assert status.projIcon.state is False
+    status.setProjectStatus(True)
+    assert status.projIcon.state is True
 
     # Document Status
-    status.setDocumentStatus(nwTrinary.NEUTRAL)
-    assert status.docIcon.state == nwTrinary.NEUTRAL
-    status.setDocumentStatus(nwTrinary.NEGATIVE)
-    assert status.docIcon.state == nwTrinary.NEGATIVE
-    status.setDocumentStatus(nwTrinary.POSITIVE)
-    assert status.docIcon.state == nwTrinary.POSITIVE
+    status.setDocumentStatus(None)
+    assert status.docIcon.state is None
+    status.setDocumentStatus(False)
+    assert status.docIcon.state is False
+    status.setDocumentStatus(True)
+    assert status.docIcon.state is True
 
     # Idle Status
     CONFIG.stopWhenIdle = False

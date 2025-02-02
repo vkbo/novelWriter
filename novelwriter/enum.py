@@ -68,13 +68,6 @@ class nwComment(Enum):
     STORY    = 7
 
 
-class nwTrinary(Enum):
-
-    NEGATIVE = -1
-    NEUTRAL  = 0
-    POSITIVE = 1
-
-
 class nwChange(Enum):
 
     CREATE = 0

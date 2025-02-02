@@ -57,7 +57,7 @@ def resetConfigVars():
     CONFIG.backupOnClose = False
     CONFIG._homePath = _TMP_ROOT
     CONFIG._dLocale = QLocale("en_GB")
-    CONFIG.pdfDocs = _TMP_ROOT / "manual.pdf"
+    CONFIG._manuals = {"manual": _TMP_ROOT / "manual.pdf"}
     CONFIG.guiLocale = "en_GB"
     return
 
