@@ -45,8 +45,8 @@ def testGuiMainMenu_Slots(qtbot, monkeypatch, nwGUI, projPath):
     with monkeypatch.context() as mp:
         openUrl = MagicMock()
         mp.setattr(QDesktopServices, "openUrl", openUrl)
-        CONFIG.pdfDocs = projPath / "manual.pdf"
-        CONFIG.pdfDocs.touch()
+        CONFIG._manuals = {"manual": projPath / "manual.pdf"}
+        CONFIG._manuals["manual"].touch()
         nwGUI.mainMenu._openUserManualFile()
         assert openUrl.called is True
         assert "manual.pdf" in openUrl.call_args[0][0].url()
