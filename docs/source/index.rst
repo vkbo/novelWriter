@@ -1,6 +1,6 @@
-######################
-novelWriter User Guide
-######################
+##########
+User Guide
+##########
 
 | **Release Version:** |release|
 | **Updated:** |today|

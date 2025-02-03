@@ -21,11 +21,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 import zipfile
 
 from pathlib import Path
+
+from PyQt6.QtCore import QLocale
 
 from utils.common import ROOT_DIR, writeFile
 
@@ -242,6 +245,82 @@ def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
         if item.is_file() and item.suffix == ".qm":
             item.rename(dstDir / item.name)
             print("Moved: %s -> %s" % (item.relative_to(ROOT_DIR), dstRel / item.name))
+
+    print("")
+
+    return
+
+
+def updateDocsTranslationSources(args: argparse.Namespace) -> None:
+    """Build the documentation .po files."""
+    print("")
+    print("Building Docs Translation Files")
+    print("===============================")
+    print("")
+
+    docsDir = ROOT_DIR / "docs"
+    locsDir = ROOT_DIR / "docs" / "source" / "locales"
+    locsDir.mkdir(exist_ok=True)
+
+    print("Generating POT Files")
+    subprocess.call(["make", "gettext"], cwd=docsDir)
+    print("")
+
+    lang = args.lang
+    update = []
+    if lang == ["all"]:
+        update = [i.stem for i in locsDir.iterdir() if i.is_dir()]
+    else:
+        update = lang
+
+    print("Generating PO Files")
+    print("Languages: ", update)
+    print("")
+
+    for code in update:
+        subprocess.call(["sphinx-intl", "update", "-p", "build/gettext", "-l", code], cwd=docsDir)
+        print("")
+
+    print("Done")
+    print("")
+
+    return
+
+
+def buildDocsTranslationAssets(args: argparse.Namespace | None = None) -> None:
+    """Build the documentation i18n PDF files."""
+    print("")
+    print("Building Docs Manuals")
+    print("=====================")
+    print("")
+
+    docsDir = ROOT_DIR / "docs"
+    locsDir = ROOT_DIR / "docs" / "source" / "locales"
+    pdfFile = ROOT_DIR / "docs" / "build" / "latex" / "manual.pdf"
+    locsDir.mkdir(exist_ok=True)
+
+    lang = args.lang
+    build = []
+    if lang == ["all"]:
+        build = [i.stem for i in locsDir.iterdir() if i.is_dir()]
+    else:
+        build = lang
+
+    for code in build:
+        data = (locsDir / f"authors_{code}.conf").read_text(encoding="utf-8")
+        authors = [x for x in data.splitlines() if x and not x.startswith("#")]
+        env = os.environ.copy()
+        env["SPHINX_I18N_AUTHORS"] = ", ".join(authors)
+        exCode = subprocess.call(
+            f"make -e SPHINXOPTS=\"-D language='{code}'\" clean latexpdf",
+            cwd=docsDir, env=env, shell=True
+        )
+        if exCode == 0:
+            print("")
+            name = f"manual_{QLocale(code).name()}.pdf"
+            pdfFile.rename(ROOT_DIR / "novelwriter" / "assets" / name)
+        else:
+            raise Exception(f"Build returned error code {exCode}")
 
     print("")
 

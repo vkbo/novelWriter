@@ -5,15 +5,20 @@ Documentation: http://www.sphinx-doc.org/en/master/config
 
 # -- Imports -----------------------------------------------------------------
 
+import datetime
 import os
 import time
-import datetime
 
 # -- Project Information -----------------------------------------------------
 
 project = "novelWriter"
 copyright = f"{datetime.date.today().year}"
-author = "Veronica Berglyd Olsen"
+
+tmp_authors = ["Veronica Berglyd Olsen"]
+if additional := os.environ.get("SPHINX_I18N_AUTHORS"):
+    tmp_authors.extend(a.strip() for a in additional.split(","))
+
+author = ", ".join(tmp_authors)
 
 initFile = os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir,
@@ -41,6 +46,8 @@ source_suffix = ".rst"
 master_doc = "index"
 today_fmt = "%A, %d %B %Y at %H:%M"
 language = "en"
+locale_dirs = ["locales/"]
+gettext_compact = False
 exclude_patterns = []
 
 # -- Options for HTML Output -------------------------------------------------
@@ -80,5 +87,5 @@ latex_elements = {
 }
 latex_logo = "_static/novelwriter-pdf.png"
 latex_documents = [(
-    master_doc, "manual.tex", "User Guide", author, "manual"
+    master_doc, "manual.tex", None, author, "manual"
 )]
