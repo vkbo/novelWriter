@@ -28,6 +28,8 @@ import zipfile
 
 from pathlib import Path
 
+from PyQt6.QtCore import QLocale
+
 from utils.common import ROOT_DIR, writeFile
 
 
@@ -315,7 +317,8 @@ def buildDocsTranslationAssets(args: argparse.Namespace | None = None) -> None:
         )
         if exCode == 0:
             print("")
-            pdfFile.rename(ROOT_DIR / "novelwriter" / "assets" / f"manual_{code}.pdf")
+            name = f"manual_{QLocale(code).name()}.pdf"
+            pdfFile.rename(ROOT_DIR / "novelwriter" / "assets" / name)
         else:
             raise Exception(f"Build returned error code {exCode}")
 
