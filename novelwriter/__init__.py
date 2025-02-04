@@ -81,14 +81,15 @@ LVLP = "{levelname:8}"
 LVLC = "{levelname:17}"
 TEXT = "{message:}"
 
+# Read Environment
+FORCE_COLOR = bool(os.environ.get("FORCE_COLOR"))
+NO_COLOR    = bool(os.environ.get("NO_COLOR"))
+
 
 def main(sysArgs: list | None = None) -> GuiMain | None:
     """Parse command line, set up logging, and launch main GUI."""
     if sysArgs is None:
         sysArgs = sys.argv[1:]
-
-    fColor = os.environ.get("FORCE_COLOR")
-    nColor = os.environ.get("NO_COLOR")
 
     # Valid Input Options
     shortOpt = "hvidc"
@@ -135,7 +136,8 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
 
     # Defaults
     logLevel = logging.WARN
-    fmtFlags = 0b01 if fColor else 0b00
+    fmtColor = FORCE_COLOR
+    fmtLong  = False
     confPath = None
     dataPath = None
     qtStyle  = "Fusion"
@@ -163,10 +165,10 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             logLevel = logging.INFO
         elif inOpt in ("-d", "--debug"):
             CONFIG.isDebug = True
-            fmtFlags = fmtFlags | 0b10
+            fmtLong = True
             logLevel = logging.DEBUG
-        elif inOpt in ("-c", "--color") and not nColor:
-            fmtFlags = fmtFlags | 0b01
+        elif inOpt in ("-c", "--color"):
+            fmtColor = not NO_COLOR
         elif inOpt == "--meminfo":
             CONFIG.memInfo = True
         elif inOpt == "--style":
@@ -176,7 +178,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         elif inOpt == "--data":
             dataPath = inArg
 
-    if fmtFlags & 0b01:
+    if fmtColor:
         # This will overwrite the default level names, and also ensure that
         # they can be converted back to integer levels
         logging.addLevelName(logging.DEBUG,    f"{BLUE}DEBUG{END}")
@@ -185,15 +187,9 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         logging.addLevelName(logging.ERROR,    f"{RED}ERROR{END}")
         logging.addLevelName(logging.CRITICAL, f"{RED}CRITICAL{END}")
 
-    # Determine Log Format
-    if fmtFlags == 0b00:
-        logFmt = f"{LVLP}  {TEXT}"
-    elif fmtFlags == 0b01:
-        logFmt = f"{LVLC}  {TEXT}"
-    elif fmtFlags == 0b10:
-        logFmt = f"{TIME}  {FILE}:{LINE}  {LVLP}  {TEXT}"
-    elif fmtFlags == 0b11:
-        logFmt = f"{TIME}  {BLUE}{FILE}{END}:{WHITE}{LINE}{END}  {LVLC}  {TEXT}"
+    logTxt = f"{LVLC}  {TEXT}" if fmtColor else f"{LVLP}  {TEXT}"
+    logPos = f"{BLUE}{FILE}{END}:{WHITE}{LINE}{END}" if fmtColor else f"{FILE}:{LINE}"
+    logFmt = f"{TIME}  {logPos}  {logTxt}" if fmtLong else logTxt
 
     # Setup Logging
     pkgLogger = logging.getLogger(__package__)
