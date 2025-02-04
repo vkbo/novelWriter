@@ -157,7 +157,7 @@ def makeDebianPackage(
 
 def debian(args: argparse.Namespace) -> None:
     """Build a .deb package"""
-    if sys.platform == "linux":
+    if sys.platform != "linux":
         print("ERROR: Command 'build-deb' can only be used on Linux")
         sys.exit(1)
     signKey = SIGN_KEY if args.sign else None
@@ -167,7 +167,7 @@ def debian(args: argparse.Namespace) -> None:
 
 def launchpad(args: argparse.Namespace) -> None:
     """Wrapper for building Debian packages for Launchpad."""
-    if sys.platform == "linux":
+    if sys.platform != "linux":
         print("ERROR: Command 'build-ubuntu' can only be used on Linux")
         sys.exit(1)
 

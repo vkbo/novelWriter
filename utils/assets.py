@@ -28,8 +28,6 @@ import zipfile
 
 from pathlib import Path
 
-from PyQt6.QtCore import QLocale
-
 from utils.common import ROOT_DIR, writeFile
 
 
@@ -289,6 +287,8 @@ def updateDocsTranslationSources(args: argparse.Namespace) -> None:
 
 def buildDocsTranslationAssets(args: argparse.Namespace | None = None) -> None:
     """Build the documentation i18n PDF files."""
+    from PyQt6.QtCore import QLocale
+
     print("")
     print("Building Docs Manuals")
     print("=====================")
@@ -299,7 +299,7 @@ def buildDocsTranslationAssets(args: argparse.Namespace | None = None) -> None:
     pdfFile = ROOT_DIR / "docs" / "build" / "latex" / "manual.pdf"
     locsDir.mkdir(exist_ok=True)
 
-    lang = args.lang
+    lang = args.lang if args else ["all"]
     build = []
     if lang == ["all"]:
         build = [i.stem for i in locsDir.iterdir() if i.is_dir()]
@@ -334,10 +334,8 @@ def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
     print("=====================")
     print("")
 
-    assets = [
-        ROOT_DIR / "novelwriter" / "assets" / "sample.zip",
-        ROOT_DIR / "novelwriter" / "assets" / "manual.pdf",
-    ]
+    assets = [ROOT_DIR / "novelwriter" / "assets" / "sample.zip"]
+    assets.extend((ROOT_DIR / "novelwriter" / "assets").glob("manual*.pdf"))
     assets.extend((ROOT_DIR / "novelwriter" / "assets" / "i18n").glob("*.qm"))
     for asset in assets:
         if asset.is_file():
@@ -355,4 +353,5 @@ def buildAllAssets(args: argparse.Namespace) -> None:
     buildPdfManual()
     buildSampleZip()
     buildTranslationAssets()
+    buildDocsTranslationAssets()
     return
