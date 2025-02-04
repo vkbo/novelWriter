@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import getopt
 import logging
+import os
 import sys
 
 from typing import TYPE_CHECKING
@@ -80,6 +81,10 @@ LVLP = "{levelname:8}"
 LVLC = "{levelname:17}"
 TEXT = "{message:}"
 
+# Read Environment
+FORCE_COLOR = bool(os.environ.get("FORCE_COLOR"))
+NO_COLOR    = bool(os.environ.get("NO_COLOR"))
+
 
 def main(sysArgs: list | None = None) -> GuiMain | None:
     """Parse command line, set up logging, and launch main GUI."""
@@ -87,7 +92,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         sysArgs = sys.argv[1:]
 
     # Valid Input Options
-    shortOpt = "hv"
+    shortOpt = "hvidc"
     longOpt = [
         "help",
         "version",
@@ -120,9 +125,9 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         "Usage:\n"
         " -h, --help     Print this message.\n"
         " -v, --version  Print program version and exit.\n"
-        "     --info     Print additional runtime information.\n"
-        "     --debug    Print debug output. Includes --info.\n"
-        "     --color    Add ANSI colors to log output.\n"
+        " -i, --info     Print additional runtime information.\n"
+        " -d, --debug    Print debug output. Includes --info.\n"
+        " -c, --color    Add ANSI colors to log output.\n"
         "     --meminfo  Show memory usage information in the status bar.\n"
         "     --style=   Sets Qt style flag. Defaults to 'Fusion'.\n"
         "     --config=  Alternative config file.\n"
@@ -131,7 +136,8 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
 
     # Defaults
     logLevel = logging.WARN
-    fmtFlags = 0b00
+    fmtColor = FORCE_COLOR
+    fmtLong  = False
     confPath = None
     dataPath = None
     qtStyle  = "Fusion"
@@ -155,24 +161,24 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         elif inOpt in ("-v", "--version"):
             print("novelWriter Version %s [%s]" % (__version__, __date__))
             sys.exit(0)
-        elif inOpt == "--info":
+        elif inOpt in ("-i", "--info"):
             logLevel = logging.INFO
-        elif inOpt == "--debug":
+        elif inOpt in ("-d", "--debug"):
             CONFIG.isDebug = True
-            fmtFlags = fmtFlags | 0b10
+            fmtLong = True
             logLevel = logging.DEBUG
-        elif inOpt == "--color":
-            fmtFlags = fmtFlags | 0b01
+        elif inOpt in ("-c", "--color"):
+            fmtColor = not NO_COLOR
+        elif inOpt == "--meminfo":
+            CONFIG.memInfo = True
         elif inOpt == "--style":
             qtStyle = inArg
         elif inOpt == "--config":
             confPath = inArg
         elif inOpt == "--data":
             dataPath = inArg
-        elif inOpt == "--meminfo":
-            CONFIG.memInfo = True
 
-    if fmtFlags & 0b01:
+    if fmtColor:
         # This will overwrite the default level names, and also ensure that
         # they can be converted back to integer levels
         logging.addLevelName(logging.DEBUG,    f"{BLUE}DEBUG{END}")
@@ -181,15 +187,9 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         logging.addLevelName(logging.ERROR,    f"{RED}ERROR{END}")
         logging.addLevelName(logging.CRITICAL, f"{RED}CRITICAL{END}")
 
-    # Determine Log Format
-    if fmtFlags == 0b00:
-        logFmt = f"{LVLP}  {TEXT}"
-    elif fmtFlags == 0b01:
-        logFmt = f"{LVLC}  {TEXT}"
-    elif fmtFlags == 0b10:
-        logFmt = f"{TIME}  {FILE}:{LINE}  {LVLP}  {TEXT}"
-    elif fmtFlags == 0b11:
-        logFmt = f"{TIME}  {BLUE}{FILE}{END}:{WHITE}{LINE}{END}  {LVLC}  {TEXT}"
+    logTxt = f"{LVLC}  {TEXT}" if fmtColor else f"{LVLP}  {TEXT}"
+    logPos = f"{BLUE}{FILE}{END}:{WHITE}{LINE}{END}" if fmtColor else f"{FILE}:{LINE}"
+    logFmt = f"{TIME}  {logPos}  {logTxt}" if fmtLong else logTxt
 
     # Setup Logging
     pkgLogger = logging.getLogger(__package__)
