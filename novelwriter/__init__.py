@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import getopt
 import logging
+import os
 import sys
 
 from typing import TYPE_CHECKING
@@ -86,8 +87,11 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     if sysArgs is None:
         sysArgs = sys.argv[1:]
 
+    fColor = os.environ.get("FORCE_COLOR")
+    nColor = os.environ.get("NO_COLOR")
+
     # Valid Input Options
-    shortOpt = "hv"
+    shortOpt = "hvc"
     longOpt = [
         "help",
         "version",
@@ -131,7 +135,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
 
     # Defaults
     logLevel = logging.WARN
-    fmtFlags = 0b00
+    fmtFlags = 0b01 if fColor else 0b00
     confPath = None
     dataPath = None
     qtStyle  = "Fusion"
@@ -161,7 +165,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             CONFIG.isDebug = True
             fmtFlags = fmtFlags | 0b10
             logLevel = logging.DEBUG
-        elif inOpt == "--color":
+        elif inOpt == "--color" and not nColor:
             fmtFlags = fmtFlags | 0b01
         elif inOpt == "--style":
             qtStyle = inArg
