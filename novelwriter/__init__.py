@@ -91,7 +91,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     nColor = os.environ.get("NO_COLOR")
 
     # Valid Input Options
-    shortOpt = "hvc"
+    shortOpt = "hvidc"
     longOpt = [
         "help",
         "version",
@@ -124,9 +124,9 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         "Usage:\n"
         " -h, --help     Print this message.\n"
         " -v, --version  Print program version and exit.\n"
-        "     --info     Print additional runtime information.\n"
-        "     --debug    Print debug output. Includes --info.\n"
-        "     --color    Add ANSI colors to log output.\n"
+        " -i, --info     Print additional runtime information.\n"
+        " -d, --debug    Print debug output. Includes --info.\n"
+        " -c, --color    Add ANSI colors to log output.\n"
         "     --meminfo  Show memory usage information in the status bar.\n"
         "     --style=   Sets Qt style flag. Defaults to 'Fusion'.\n"
         "     --config=  Alternative config file.\n"
@@ -159,22 +159,22 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         elif inOpt in ("-v", "--version"):
             print("novelWriter Version %s [%s]" % (__version__, __date__))
             sys.exit(0)
-        elif inOpt == "--info":
+        elif inOpt in ("-i", "--info"):
             logLevel = logging.INFO
-        elif inOpt == "--debug":
+        elif inOpt in ("-d", "--debug"):
             CONFIG.isDebug = True
             fmtFlags = fmtFlags | 0b10
             logLevel = logging.DEBUG
-        elif inOpt == "--color" and not nColor:
+        elif inOpt in ("-c", "--color") and not nColor:
             fmtFlags = fmtFlags | 0b01
+        elif inOpt == "--meminfo":
+            CONFIG.memInfo = True
         elif inOpt == "--style":
             qtStyle = inArg
         elif inOpt == "--config":
             confPath = inArg
         elif inOpt == "--data":
             dataPath = inArg
-        elif inOpt == "--meminfo":
-            CONFIG.memInfo = True
 
     if fmtFlags & 0b01:
         # This will overwrite the default level names, and also ensure that
