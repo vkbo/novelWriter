@@ -172,6 +172,15 @@ def checkAssetsExist() -> bool:
     return hasSample and hasManual and hasQmData
 
 
+def appdataXml() -> str:
+    """Generate the appdata XML content."""
+    raw = readFile(SETUP_DIR / "description_short.txt")
+    desc = " ".join(raw.strip().splitlines()).strip()
+    xml = readFile(SETUP_DIR / "novelwriter.appdata.xml")
+    xml = xml.format(description=desc)
+    return xml
+
+
 def readFile(file: Path) -> str:
     """Read an entire file and return as a string."""
     return file.read_text(encoding="utf-8")

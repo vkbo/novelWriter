@@ -27,8 +27,8 @@ import subprocess
 import sys
 
 from utils.common import (
-    ROOT_DIR, SETUP_DIR, copyPackageFiles, copySourceCode, extractVersion,
-    makeCheckSum, readFile, toUpload, writeFile
+    ROOT_DIR, SETUP_DIR, appdataXml, copyPackageFiles, copySourceCode,
+    extractVersion, makeCheckSum, toUpload, writeFile
 )
 
 
@@ -113,10 +113,7 @@ def appImage(args: argparse.Namespace) -> None:
     # Write Metadata
     # ==============
 
-    appDescription = readFile(SETUP_DIR / "description_short.txt")
-    appdataXML = readFile(SETUP_DIR / "novelwriter.appdata.xml")
-    appdataXML = appdataXML.format(description=appDescription)
-    writeFile(imgDir / "novelwriter.appdata.xml", appdataXML)
+    writeFile(imgDir / "novelwriter.appdata.xml", appdataXml())
     print("Wrote:  novelwriter.appdata.xml")
 
     writeFile(imgDir / "entrypoint.sh", (
