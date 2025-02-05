@@ -44,3 +44,43 @@ jobs:
           path: dist_appimage/*.AppImage*
           if-no-files-found: error
           retention-days: 14
+
+  buildFlatpak:
+    needs: buildAssets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Python Setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3
+          architecture: x64
+
+      - name: Install Packages (apt, flatpak)
+        run: |
+          sudo apt update
+          sudo apt install flatpak flatpak-builder
+          sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: nw-assets
+          path: novelwriter/assets
+
+      - name: Build Flatpak
+        id: build
+        run: |
+          echo "BUILD_VERSION=$(python pkgutils.py version)" >> $GITHUB_OUTPUT
+          sudo python pkgutils.py build-flatpak
+        
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: novelWriter-${{ steps.build.outputs.BUILD_VERSION }}-linux.flatpak
+          path: dist_flatpak/novelWriter-${{ steps.build.outputs.BUILD_VERSION }}-linux.flatpak
+          if-no-files-found: error
+          retention-days: 1
+        

@@ -36,6 +36,7 @@ import utils.assets
 import utils.build_appimage
 import utils.build_binary
 import utils.build_debian
+import utils.build_flatpak
 import utils.build_windows
 import utils.icon_themes
 
@@ -289,6 +290,12 @@ if __name__ == "__main__":
         "--python-version", default="3.11", help="Python version (e.g. 3.11)"
     )
     cmdBuildAppImage.set_defaults(func=utils.build_appimage.appImage)
+
+    # Build Flatpak
+    cmdBuildFlatpak = parsers.add_parser(
+        "build-flatpak", help=("Build a Flatpak image.")
+    )
+    cmdBuildFlatpak.set_defaults(func=utils.build_flatpak.flatpak)
 
     # Build Windows Inno Setup Installer
     cmdBuildSetupExe = parsers.add_parser(
