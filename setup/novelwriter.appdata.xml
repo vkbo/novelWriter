@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-	<id>novelwriter</id>
-	<metadata_license>GPL-3.0</metadata_license>
-	<project_license>GPL-3.0</project_license>
-	<name>novelWriter</name>
-	<summary>A markdown-like text editor for planning and writing novels</summary>
-	<description>
-		<p>{description}</p>
-	</description>
-	<launchable type="desktop-id">novelwriter.desktop</launchable>
-	<url type="homepage">https://novelwriter.io/</url>
-	<screenshots>
-		<screenshot type="default">
-			<image>https://novelwriter.io/images/screenshot-multi.png</image>
-		</screenshot>
-	</screenshots>
-	<provides>
-		<id>novelwriter.desktop</id>
-	</provides>
+  <id>io.novelwriter.novelWriter</id>
+  <metadata_license>GPL-3.0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <developer_name>Veronica Berglyd Olsen</developer_name>
+  <name>novelWriter</name>
+  <summary>A plain text editor for planning and writing novels</summary>
+  <description>
+    <p>{description}</p>
+  </description>
+  <launchable type="desktop-id">novelwriter.desktop</launchable>
+  <url type="homepage">https://novelwriter.io/</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/vkbo/novelWriter/refs/heads/main/setup/screenshot.png</image>
+    </screenshot>
+  </screenshots>
+  <provides>
+    <mediatype>application/x-novelwriter-project</mediatype>
+    <id>novelwriter.desktop</id>
+  </provides>
 </component>
