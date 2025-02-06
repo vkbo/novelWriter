@@ -529,8 +529,8 @@ class GuiPreferences(NDialog):
         self.cursorWidth.setSingleStep(1)
         self.cursorWidth.setValue(CONFIG.cursorWidth)
         self.mainForm.addRow(
-            self.tr("Cursor Width"), self.cursorWidth,
-            self.tr("The width of the editor cursor."),
+            self.tr("Cursor width"), self.cursorWidth,
+            self.tr("The width of the text cursor of the editor."),
             unit=self.tr("px")
         )
 
