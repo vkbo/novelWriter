@@ -178,15 +178,22 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
         mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
         prefs.nativeFont.setChecked(False)  # Use Qt font dialog
         prefs.textFontButton.click()
-    prefs.emphLabels.setChecked(False)
     prefs.showFullPath.setChecked(False)
     prefs.incNotesWCount.setChecked(False)
 
     assert CONFIG.guiSyntax != "default_dark"
     assert CONFIG.textFont.family() != ""
-    assert CONFIG.emphLabels is True
     assert CONFIG.showFullPath is True
     assert CONFIG.incNotesWCount is True
+
+    # Project View
+    prefs.iconColTree.setCurrentData("faded", "default")
+    prefs.iconColDocs.setChecked(True)
+    prefs.emphLabels.setChecked(False)
+
+    assert CONFIG.iconColTree == "theme"
+    assert CONFIG.iconColDocs is False
+    assert CONFIG.emphLabels is True
 
     # Behaviour
     prefs.autoSaveDoc.stepUp()
@@ -235,11 +242,13 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     # Text Editing
     prefs.spellLanguage.setCurrentIndex(prefs.spellLanguage.findData("de"))
     prefs.autoSelect.setChecked(False)
+    prefs.cursorWidth.setValue(5)
     prefs.showTabsNSpaces.setChecked(True)
     prefs.showLineEndings.setChecked(True)
 
     assert CONFIG.spellLanguage != "de"
     assert CONFIG.autoSelect is True
+    assert CONFIG.cursorWidth == 1
     assert CONFIG.showTabsNSpaces is False
     assert CONFIG.showLineEndings is False
 
@@ -339,9 +348,13 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     # Document Style
     assert CONFIG.guiSyntax == "default_dark"
     assert CONFIG.textFont == QFont()
-    assert CONFIG.emphLabels is False
     assert CONFIG.showFullPath is False
     assert CONFIG.incNotesWCount is False
+
+    # Project View
+    assert CONFIG.iconColTree == "faded"
+    assert CONFIG.iconColDocs is True
+    assert CONFIG.emphLabels is False
 
     # Behaviour
     assert CONFIG.autoSaveDoc == 31
@@ -368,6 +381,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     # Text Editing
     assert CONFIG.spellLanguage == "de"
     assert CONFIG.autoSelect is False
+    assert CONFIG.cursorWidth == 5
     assert CONFIG.showTabsNSpaces is True
     assert CONFIG.showLineEndings is True
 

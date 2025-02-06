@@ -72,7 +72,7 @@ class Config:
         "mainWinSize", "welcomeWinSize", "prefsWinSize", "mainPanePos", "viewPanePos",
         "outlinePanePos", "autoSaveProj", "autoSaveDoc", "emphLabels", "backupOnClose",
         "askBeforeBackup", "askBeforeExit", "textFont", "textWidth", "textMargin", "tabWidth",
-        "focusWidth",  "hideFocusFooter", "showFullPath", "autoSelect", "doJustify",
+        "cursorWidth", "focusWidth", "hideFocusFooter", "showFullPath", "autoSelect", "doJustify",
         "showTabsNSpaces", "showLineEndings", "showMultiSpaces", "doReplace", "doReplaceSQuote",
         "doReplaceDQuote", "doReplaceDash", "doReplaceDots", "autoScroll", "autoScrollPos",
         "scrollPastEnd", "dialogStyle", "allowOpenDial", "dialogLine", "narratorBreak",
@@ -184,6 +184,7 @@ class Config:
         self.textWidth       = 700      # Editor text width
         self.textMargin      = 40       # Editor/viewer text margin
         self.tabWidth        = 40       # Editor tabulator width
+        self.cursorWidth     = 1        # Editor cursor width
 
         self.focusWidth      = 800      # Focus Mode text width
         self.hideFocusFooter = False    # Hide document footer in Focus Mode
@@ -626,6 +627,7 @@ class Config:
         self.textWidth       = conf.rdInt(sec, "width", self.textWidth)
         self.textMargin      = conf.rdInt(sec, "margin", self.textMargin)
         self.tabWidth        = conf.rdInt(sec, "tabwidth", self.tabWidth)
+        self.cursorWidth     = conf.rdInt(sec, "cursorwidth", self.cursorWidth)
         self.focusWidth      = conf.rdInt(sec, "focuswidth", self.focusWidth)
         self.hideFocusFooter = conf.rdBool(sec, "hidefocusfooter", self.hideFocusFooter)
         self.doJustify       = conf.rdBool(sec, "justify", self.doJustify)
@@ -741,6 +743,7 @@ class Config:
             "width":           str(self.textWidth),
             "margin":          str(self.textMargin),
             "tabwidth":        str(self.tabWidth),
+            "cursorwidth":     str(self.cursorWidth),
             "focuswidth":      str(self.focusWidth),
             "hidefocusfooter": str(self.hideFocusFooter),
             "justify":         str(self.doJustify),
