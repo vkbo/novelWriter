@@ -187,26 +187,6 @@ class GuiPreferences(NDialog):
             self.tr("User interface icon theme."), stretch=(3, 2)
         )
 
-        # Tree Icon Colours
-        self.iconColTree = NComboBox(self)
-        self.iconColTree.setMinimumWidth(200)
-        for key, label in nwLabels.THEME_COLORS.items():
-            self.iconColTree.addItem(trConst(label), key)
-        self.iconColTree.setCurrentData(CONFIG.iconColTree, DEF_TREECOL)
-
-        self.mainForm.addRow(
-            self.tr("Project tree icon colours"), self.iconColTree,
-            self.tr("Override colours for project icons."), stretch=(3, 2)
-        )
-
-        # Keep Theme Colours on Documents
-        self.iconColDocs = NSwitch(self)
-        self.iconColDocs.setChecked(CONFIG.iconColDocs)
-        self.mainForm.addRow(
-            self.tr("Keep theme colours on documents"), self.iconColDocs,
-            self.tr("Only override icon colours for folders.")
-        )
-
         # Application Font Family
         self.guiFont = QLineEdit(self)
         self.guiFont.setReadOnly(True)
@@ -279,14 +259,6 @@ class GuiPreferences(NDialog):
             button=self.textFontButton
         )
 
-        # Emphasise Labels
-        self.emphLabels = NSwitch(self)
-        self.emphLabels.setChecked(CONFIG.emphLabels)
-        self.mainForm.addRow(
-            self.tr("Emphasise partition and chapter labels"), self.emphLabels,
-            self.tr("Makes them stand out in the project tree."),
-        )
-
         # Document Path
         self.showFullPath = NSwitch(self)
         self.showFullPath.setChecked(CONFIG.showFullPath)
@@ -300,6 +272,42 @@ class GuiPreferences(NDialog):
         self.incNotesWCount.setChecked(CONFIG.incNotesWCount)
         self.mainForm.addRow(
             self.tr("Include project notes in status bar word count"), self.incNotesWCount
+        )
+
+        # Project View
+        # ============
+
+        title = self.tr("Project View")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
+
+        # Tree Icon Colours
+        self.iconColTree = NComboBox(self)
+        self.iconColTree.setMinimumWidth(200)
+        for key, label in nwLabels.THEME_COLORS.items():
+            self.iconColTree.addItem(trConst(label), key)
+        self.iconColTree.setCurrentData(CONFIG.iconColTree, DEF_TREECOL)
+
+        self.mainForm.addRow(
+            self.tr("Project tree icon colours"), self.iconColTree,
+            self.tr("Override colours for project icons."), stretch=(3, 2)
+        )
+
+        # Keep Theme Colours on Documents
+        self.iconColDocs = NSwitch(self)
+        self.iconColDocs.setChecked(CONFIG.iconColDocs)
+        self.mainForm.addRow(
+            self.tr("Keep theme colours on documents"), self.iconColDocs,
+            self.tr("Only override icon colours for folders.")
+        )
+
+        # Emphasise Labels
+        self.emphLabels = NSwitch(self)
+        self.emphLabels.setChecked(CONFIG.emphLabels)
+        self.mainForm.addRow(
+            self.tr("Emphasise partition and chapter labels"), self.emphLabels,
+            self.tr("Makes them stand out in the project tree."),
         )
 
         # Behaviour
@@ -540,7 +548,7 @@ class GuiPreferences(NDialog):
         self.scrollPastEnd = NSwitch(self)
         self.scrollPastEnd.setChecked(CONFIG.scrollPastEnd)
         self.mainForm.addRow(
-            self.tr("Scroll past end of the document"), self.scrollPastEnd,
+            self.tr("Scroll past the end of the document"), self.scrollPastEnd,
             self.tr("Also centres the cursor when scrolling.")
         )
 
@@ -940,38 +948,42 @@ class GuiPreferences(NDialog):
         guiLocale   = self.guiLocale.currentData()
         guiTheme    = self.guiTheme.currentData()
         iconTheme   = self.iconTheme.currentData()
-        iconColTree = self.iconColTree.currentData()
-        iconColDocs = self.iconColDocs.isChecked()
 
         updateTheme  |= CONFIG.guiTheme != guiTheme
         updateTheme  |= CONFIG.iconTheme != iconTheme
-        updateTheme  |= CONFIG.iconColTree != iconColTree
-        updateTheme  |= CONFIG.iconColDocs != iconColDocs
         needsRestart |= CONFIG.guiLocale != guiLocale
         needsRestart |= CONFIG.guiFont != self._guiFont
 
         CONFIG.guiLocale   = guiLocale
         CONFIG.guiTheme    = guiTheme
         CONFIG.iconTheme   = iconTheme
-        CONFIG.iconColTree = iconColTree
-        CONFIG.iconColDocs = iconColDocs
         CONFIG.hideVScroll = self.hideVScroll.isChecked()
         CONFIG.hideHScroll = self.hideHScroll.isChecked()
         CONFIG.nativeFont  = self.nativeFont.isChecked()
         CONFIG.setGuiFont(self._guiFont)
 
         # Document Style
-        guiSyntax  = self.guiSyntax.currentData()
-        emphLabels = self.emphLabels.isChecked()
+        guiSyntax = self.guiSyntax.currentData()
 
         updateSyntax |= CONFIG.guiSyntax != guiSyntax
-        refreshTree  |= CONFIG.emphLabels != emphLabels
 
         CONFIG.guiSyntax      = guiSyntax
-        CONFIG.emphLabels     = emphLabels
         CONFIG.showFullPath   = self.showFullPath.isChecked()
         CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
         CONFIG.setTextFont(self._textFont)
+
+        # Project View
+        iconColTree = self.iconColTree.currentData()
+        iconColDocs = self.iconColDocs.isChecked()
+        emphLabels = self.emphLabels.isChecked()
+
+        updateTheme |= CONFIG.iconColTree != iconColTree
+        updateTheme |= CONFIG.iconColDocs != iconColDocs
+        refreshTree |= CONFIG.emphLabels != emphLabels
+
+        CONFIG.iconColTree = iconColTree
+        CONFIG.iconColDocs = iconColDocs
+        CONFIG.emphLabels     = emphLabels
 
         # Behaviour
         CONFIG.autoSaveDoc   = self.autoSaveDoc.value()

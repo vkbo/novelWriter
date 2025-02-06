@@ -432,7 +432,7 @@ class nwLabels:
     }
     THEME_COLORS = {
         "theme":   QT_TRANSLATE_NOOP("Color", "Theme Colours"),
-        "default": QT_TRANSLATE_NOOP("Color", "No Colours"),
+        "default": QT_TRANSLATE_NOOP("Color", "Foreground Colour"),
         "faded":   QT_TRANSLATE_NOOP("Color", "Faded Colour"),
         "red":     QT_TRANSLATE_NOOP("Color", "Red"),
         "orange":  QT_TRANSLATE_NOOP("Color", "Orange"),
