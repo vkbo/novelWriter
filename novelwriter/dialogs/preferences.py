@@ -522,6 +522,18 @@ class GuiPreferences(NDialog):
             self.tr("Apply formatting to word under cursor if no selection is made.")
         )
 
+        # Cursor Width
+        self.cursorWidth = NSpinBox(self)
+        self.cursorWidth.setMinimum(1)
+        self.cursorWidth.setMaximum(20)
+        self.cursorWidth.setSingleStep(1)
+        self.cursorWidth.setValue(CONFIG.cursorWidth)
+        self.mainForm.addRow(
+            self.tr("Cursor Width"), self.cursorWidth,
+            self.tr("The width of the editor cursor."),
+            unit=self.tr("px")
+        )
+
         # Show Tabs and Spaces
         self.showTabsNSpaces = NSwitch(self)
         self.showTabsNSpaces.setChecked(CONFIG.showTabsNSpaces)
@@ -1010,6 +1022,7 @@ class GuiPreferences(NDialog):
         # Text Editing
         CONFIG.spellLanguage   = self.spellLanguage.currentData()
         CONFIG.autoSelect      = self.autoSelect.isChecked()
+        CONFIG.cursorWidth     = self.cursorWidth.value()
         CONFIG.showTabsNSpaces = self.showTabsNSpaces.isChecked()
         CONFIG.showLineEndings = self.showLineEndings.isChecked()
 

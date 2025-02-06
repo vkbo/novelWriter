@@ -367,8 +367,9 @@ class GuiDocEditor(QPlainTextEdit):
         else:
             self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
 
-        # Refresh the tab stops
+        # Refresh sizes
         self.setTabStopDistance(CONFIG.tabWidth)
+        self.setCursorWidth(CONFIG.cursorWidth)
 
         # If we have a document open, we should refresh it in case the
         # font changed, otherwise we just clear the editor entirely,
