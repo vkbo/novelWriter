@@ -71,10 +71,10 @@ class GuiDocSplit(NDialog):
         vSp = CONFIG.pxInt(8)
         bSp = CONFIG.pxInt(12)
 
-        pOptions = SHARED.project.options
-        spLevel = pOptions.getInt("GuiDocSplit", "spLevel", 3)
-        intoFolder = pOptions.getBool("GuiDocSplit", "intoFolder", True)
-        docHierarchy = pOptions.getBool("GuiDocSplit", "docHierarchy", True)
+        options = SHARED.project.options
+        spLevel = options.getInt("GuiDocSplit", "spLevel", 3)
+        intoFolder = options.getBool("GuiDocSplit", "intoFolder", True)
+        docHierarchy = options.getBool("GuiDocSplit", "docHierarchy", True)
 
         # Heading Selection
         self.listBox = QListWidget(self)
@@ -171,10 +171,10 @@ class GuiDocSplit(NDialog):
         self._data["moveToTrash"] = moveToTrash
 
         logger.debug("Saving State: GuiDocSplit")
-        pOptions = SHARED.project.options
-        pOptions.setValue("GuiDocSplit", "spLevel", spLevel)
-        pOptions.setValue("GuiDocSplit", "intoFolder", intoFolder)
-        pOptions.setValue("GuiDocSplit", "docHierarchy", docHierarchy)
+        options = SHARED.project.options
+        options.setValue("GuiDocSplit", "spLevel", spLevel)
+        options.setValue("GuiDocSplit", "intoFolder", intoFolder)
+        options.setValue("GuiDocSplit", "docHierarchy", docHierarchy)
 
         return self._data, self._text
 
@@ -218,46 +218,46 @@ class GuiDocSplit(NDialog):
         if not self._text:
             self._text = SHARED.project.storage.getDocumentText(sHandle).splitlines()
 
-        for lineNo, aLine in enumerate(self._text):
+        for i, line in enumerate(self._text):
 
-            onLine = -1
-            hLevel = 0
-            hLabel = aLine.strip()
-            if aLine.startswith("# ") and spLevel >= 1:
-                onLine = lineNo
-                hLevel = 1
-                hLabel = aLine[2:].strip()
-            elif aLine.startswith("## ") and spLevel >= 2:
-                onLine = lineNo
-                hLevel = 2
-                hLabel = aLine[3:].strip()
-            elif aLine.startswith("### ") and spLevel >= 3:
-                onLine = lineNo
-                hLevel = 3
-                hLabel = aLine[4:].strip()
-            elif aLine.startswith("#### ") and spLevel >= 4:
-                onLine = lineNo
-                hLevel = 4
-                hLabel = aLine[5:].strip()
-            elif aLine.startswith("#! ") and spLevel >= 1:
-                onLine = lineNo
-                hLevel = 1
-                hLabel = aLine[3:].strip()
-            elif aLine.startswith("##! ") and spLevel >= 2:
-                onLine = lineNo
-                hLevel = 2
-                hLabel = aLine[4:].strip()
-            elif aLine.startswith("###! ") and spLevel >= 3:
-                onLine = lineNo
-                hLevel = 3
-                hLabel = aLine[5:].strip()
+            pos = -1
+            level = 0
+            label = line.strip()
+            if line.startswith("# ") and spLevel >= 1:
+                pos = i
+                level = 1
+                label = line[2:].strip()
+            elif line.startswith("## ") and spLevel >= 2:
+                pos = i
+                level = 2
+                label = line[3:].strip()
+            elif line.startswith("### ") and spLevel >= 3:
+                pos = i
+                level = 3
+                label = line[4:].strip()
+            elif line.startswith("#### ") and spLevel >= 4:
+                pos = i
+                level = 4
+                label = line[5:].strip()
+            elif line.startswith("#! ") and spLevel >= 1:
+                pos = i
+                level = 1
+                label = line[3:].strip()
+            elif line.startswith("##! ") and spLevel >= 2:
+                pos = i
+                level = 2
+                label = line[4:].strip()
+            elif line.startswith("###! ") and spLevel >= 3:
+                pos = i
+                level = 3
+                label = line[5:].strip()
 
-            if onLine >= 0 and hLevel > 0:
-                newItem = QListWidgetItem()
-                newItem.setText(aLine.strip())
-                newItem.setData(self.LINE_ROLE, onLine)
-                newItem.setData(self.LEVEL_ROLE, hLevel)
-                newItem.setData(self.LABEL_ROLE, hLabel)
-                self.listBox.addItem(newItem)
+            if pos >= 0 and level > 0:
+                trItem = QListWidgetItem()
+                trItem.setText(line.strip())
+                trItem.setData(self.LINE_ROLE, pos)
+                trItem.setData(self.LEVEL_ROLE, level)
+                trItem.setData(self.LABEL_ROLE, label)
+                self.listBox.addItem(trItem)
 
         return
