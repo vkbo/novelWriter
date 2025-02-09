@@ -247,6 +247,10 @@ class GuiDocSplit(NDialog):
                 onLine = lineNo
                 hLevel = 2
                 hLabel = aLine[4:].strip()
+            elif aLine.startswith("###! ") and spLevel >= 3:
+                onLine = lineNo
+                hLevel = 3
+                hLabel = aLine[5:].strip()
 
             if onLine >= 0 and hLevel > 0:
                 newItem = QListWidgetItem()
