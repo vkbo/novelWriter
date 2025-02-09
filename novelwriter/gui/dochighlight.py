@@ -38,8 +38,8 @@ from PyQt6.QtGui import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt
 from novelwriter.constants import nwStyles, nwUnicode
-from novelwriter.core.index import processComment
 from novelwriter.enum import nwComment
+from novelwriter.text.comments import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 
 logger = logging.getLogger(__name__)
