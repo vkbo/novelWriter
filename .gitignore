@@ -20,8 +20,9 @@ i18n/*.qph
 
 # Documentation
 /docs/build/
+/docs/source/locales/**/*.mo
 /novelwriter/assets/help/
-/novelwriter/assets/manual.pdf
+/novelwriter/assets/manual*.pdf
 *.qch
 *.qhc
 .~lock.*
