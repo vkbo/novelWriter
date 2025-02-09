@@ -40,12 +40,12 @@ from novelwriter.constants import (
     nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwStats, nwStyles, nwUnicode,
     trConst
 )
-from novelwriter.core.index import processComment
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment, nwItemLayout
 from novelwriter.formats.shared import (
     BlockFmt, BlockTyp, T_Block, T_Formats, T_Note, TextDocumentTheme, TextFmt
 )
+from novelwriter.text.comments import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 
 logger = logging.getLogger(__name__)
