@@ -44,6 +44,10 @@ novelWriter is written with Python 3 (3.10+) using Qt6 and PyQt6 (6.4+), and is 
 Linux, Windows and macOS. It can in principle run on any Operating System that also supports Qt,
 PyQt and Python.
 
+<div style="text-align: center; padding: 20px 0;">
+<img width="80%" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/screenshot.png">
+</div>
+
 ## Project Contributions
 
 Please don't make feature pull requests without first having discussed them with the maintainer.
