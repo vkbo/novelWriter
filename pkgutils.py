@@ -1081,7 +1081,7 @@ def makeWindowsEmbedded(args: argparse.Namespace) -> None:
 
     delQt5 = [
         "Qt5Bluetooth", "Qt5DBus", "Qt5Designer", "Qt5Designer", "Qt5Help", "Qt5Location",
-        "Qt5Multimedia", "Qt5MultimediaWidgets", "Qt5Network", "Qt5Nfc", "Qt5OpenGL",
+        "Qt5Multimedia", "Qt5MultimediaWidgets", "Qt5Network", "Qt5Nfc",
         "Qt5Positioning", "Qt5PositioningQuick", "Qt5Qml", "Qt5QmlModels", "Qt5QmlWorkerScript",
         "Qt5Quick", "Qt5Quick3D", "Qt5Quick3DAssetImport", "Qt5Quick3DRender",
         "Qt5Quick3DRuntimeRender", "Qt5Quick3DUtils", "Qt5QuickControls2", "Qt5QuickParticles",
@@ -1101,7 +1101,6 @@ def makeWindowsEmbedded(args: argparse.Namespace) -> None:
         qt5Dir / "qml",
         plugDir / "geoservices",
         plugDir / "playlistformats",
-        plugDir / "renderers",
         plugDir / "sensorgestures",
         plugDir / "sensors",
         plugDir / "sqldrivers",
