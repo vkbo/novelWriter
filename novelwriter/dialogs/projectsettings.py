@@ -409,7 +409,7 @@ class _StatusPage(NFixedPage):
         def buildMenu(menu: QMenu, items: dict[nwStatusShape, str]) -> None:
             for shape, label in items.items():
                 icon = NWStatus.createIcon(self._iPx, iColor, shape)
-                action = menu.addAction(icon, trConst(label, "Shape"))
+                action = menu.addAction(icon, trConst(label))
                 action.triggered.connect(qtLambda(self._selectShape, shape))
                 self._icons[shape] = icon
 

@@ -32,7 +32,7 @@ from novelwriter.enum import (
 )
 
 
-def trConst(text: str, context: Literal["Constant", "Stats", "Shape"] = "Constant") -> str:
+def trConst(text: str, context: Literal["Constant", "Stats"] = "Constant") -> str:
     """Wrapper function for locally translating constants."""
     return QCoreApplication.translate(context, text)
 
@@ -372,32 +372,32 @@ class nwLabels:
         nwBuildFmt.J_NWD:  ".json",
     }
     SHAPES_PLAIN = {
-        nwStatusShape.SQUARE:   QT_TRANSLATE_NOOP("Shape", "Square"),
-        nwStatusShape.TRIANGLE: QT_TRANSLATE_NOOP("Shape", "Triangle"),
-        nwStatusShape.NABLA:    QT_TRANSLATE_NOOP("Shape", "Nabla"),
-        nwStatusShape.DIAMOND:  QT_TRANSLATE_NOOP("Shape", "Diamond"),
-        nwStatusShape.PENTAGON: QT_TRANSLATE_NOOP("Shape", "Pentagon"),
-        nwStatusShape.HEXAGON:  QT_TRANSLATE_NOOP("Shape", "Hexagon"),
-        nwStatusShape.STAR:     QT_TRANSLATE_NOOP("Shape", "Star"),
-        nwStatusShape.PACMAN:   QT_TRANSLATE_NOOP("Shape", "Pacman"),
+        nwStatusShape.SQUARE:   QT_TRANSLATE_NOOP("Constant", "Square"),
+        nwStatusShape.TRIANGLE: QT_TRANSLATE_NOOP("Constant", "Triangle"),
+        nwStatusShape.NABLA:    QT_TRANSLATE_NOOP("Constant", "Nabla"),
+        nwStatusShape.DIAMOND:  QT_TRANSLATE_NOOP("Constant", "Diamond"),
+        nwStatusShape.PENTAGON: QT_TRANSLATE_NOOP("Constant", "Pentagon"),
+        nwStatusShape.HEXAGON:  QT_TRANSLATE_NOOP("Constant", "Hexagon"),
+        nwStatusShape.STAR:     QT_TRANSLATE_NOOP("Constant", "Star"),
+        nwStatusShape.PACMAN:   QT_TRANSLATE_NOOP("Constant", "Pacman"),
     }
     SHAPES_CIRCLE = {
-        nwStatusShape.CIRCLE_Q: QT_TRANSLATE_NOOP("Shape", "1/4 Circle"),
-        nwStatusShape.CIRCLE_H: QT_TRANSLATE_NOOP("Shape", "Half Circle"),
-        nwStatusShape.CIRCLE_T: QT_TRANSLATE_NOOP("Shape", "3/4 Circle"),
-        nwStatusShape.CIRCLE:   QT_TRANSLATE_NOOP("Shape", "Full Circle"),
+        nwStatusShape.CIRCLE_Q: QT_TRANSLATE_NOOP("Constant", "1/4 Circle"),
+        nwStatusShape.CIRCLE_H: QT_TRANSLATE_NOOP("Constant", "Half Circle"),
+        nwStatusShape.CIRCLE_T: QT_TRANSLATE_NOOP("Constant", "3/4 Circle"),
+        nwStatusShape.CIRCLE:   QT_TRANSLATE_NOOP("Constant", "Full Circle"),
     }
     SHAPES_BARS = {
-        nwStatusShape.BARS_1: QT_TRANSLATE_NOOP("Shape", "1 Bar"),
-        nwStatusShape.BARS_2: QT_TRANSLATE_NOOP("Shape", "2 Bars"),
-        nwStatusShape.BARS_3: QT_TRANSLATE_NOOP("Shape", "3 Bars"),
-        nwStatusShape.BARS_4: QT_TRANSLATE_NOOP("Shape", "4 Bars"),
+        nwStatusShape.BARS_1: QT_TRANSLATE_NOOP("Constant", "1 Bar"),
+        nwStatusShape.BARS_2: QT_TRANSLATE_NOOP("Constant", "2 Bars"),
+        nwStatusShape.BARS_3: QT_TRANSLATE_NOOP("Constant", "3 Bars"),
+        nwStatusShape.BARS_4: QT_TRANSLATE_NOOP("Constant", "4 Bars"),
     }
     SHAPES_BLOCKS = {
-        nwStatusShape.BLOCK_1: QT_TRANSLATE_NOOP("Shape", "1 Block"),
-        nwStatusShape.BLOCK_2: QT_TRANSLATE_NOOP("Shape", "2 Blocks"),
-        nwStatusShape.BLOCK_3: QT_TRANSLATE_NOOP("Shape", "3 Blocks"),
-        nwStatusShape.BLOCK_4: QT_TRANSLATE_NOOP("Shape", "4 Blocks"),
+        nwStatusShape.BLOCK_1: QT_TRANSLATE_NOOP("Constant", "1 Block"),
+        nwStatusShape.BLOCK_2: QT_TRANSLATE_NOOP("Constant", "2 Blocks"),
+        nwStatusShape.BLOCK_3: QT_TRANSLATE_NOOP("Constant", "3 Blocks"),
+        nwStatusShape.BLOCK_4: QT_TRANSLATE_NOOP("Constant", "4 Blocks"),
     }
     FILE_FILTERS = {
         "*.txt": QT_TRANSLATE_NOOP("Constant", "Text files"),
