@@ -4,9 +4,9 @@
 
 ### Release Notes
 
-This is a patch release that fixes a few issues with the project tree. The Empty Trash option in
-the menu now works again, It is no longer possible to accidentally drag and drop project items onto
-the root of the project tree.
+This is a patch release that fixes a few issues with the project tree: The Empty Trash option in
+the menu now works again, and it is no longer possible to accidentally drag and drop project items
+onto the root of the project tree.
 
 In addition, a Czech translation has been added by Tomáš Zmek, and the Italian, Polish and
 Brazilian Portuguese translations have been updated.
