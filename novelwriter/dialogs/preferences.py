@@ -286,7 +286,7 @@ class GuiPreferences(NDialog):
         self.iconColTree = NComboBox(self)
         self.iconColTree.setMinimumWidth(200)
         for key, label in nwLabels.THEME_COLORS.items():
-            self.iconColTree.addItem(trConst(label), key)
+            self.iconColTree.addItem(trConst(label, "Color"), key)
         self.iconColTree.setCurrentData(CONFIG.iconColTree, DEF_TREECOL)
 
         self.mainForm.addRow(

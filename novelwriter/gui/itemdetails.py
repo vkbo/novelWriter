@@ -62,9 +62,9 @@ class GuiItemDetails(QWidget):
         fntValue = self.font()
         fntValue.setPointSizeF(0.9*fPt)
 
-        trStats1 = trConst(nwLabels.STATS_NAME[nwStats.CHARS])
-        trStats2 = trConst(nwLabels.STATS_NAME[nwStats.WORDS])
-        trStats3 = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
+        trStats1 = trConst(nwLabels.STATS_NAME[nwStats.CHARS], "Stats")
+        trStats2 = trConst(nwLabels.STATS_NAME[nwStats.WORDS], "Stats")
+        trStats3 = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS], "Stats")
 
         # Label
         self.labelName = QLabel(self.tr("Label"), self)

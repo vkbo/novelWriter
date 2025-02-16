@@ -1,5 +1,43 @@
 # novelWriter Changelog
 
+## Version 2.6.2 [2025-02-16]
+
+### Release Notes
+
+This is a patch release that fixes a few issues with the project tree: The Empty Trash option in
+the menu now works again, and it is no longer possible to accidentally drag and drop project items
+onto the root of the project tree.
+
+In addition, a Czech translation has been added by Tomáš Zmek, and the Italian, Polish and
+Brazilian Portuguese translations have been updated.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed a bug where alternative scene formats were ignored when splitting a document. Issue #2233.
+  PR #2234.
+* Fixed the Empty Trash menu entry in the Project menu. It was not connected to the project tree
+  and therefore selecting it did nothing. Issue #2239. PR #2242.
+* Fixed a bug where it was possible to drag items to the root levels as long as they were dropped
+  between existing root items. This action is now properly blocked. PR #2242.
+
+**Improvements**
+
+* Added an extra check in the project tree item model that can prevent a crash in certain
+  circumstances when moving multiple project items. It is probably a corner case caused by
+  competing garbage collectors in Python and Qt, but the additional check should handle. PR #2242.
+
+**Internationalisation**
+
+* Add Czech translation by Tomáš Zmek. PR #2244.
+* Updated Italian, Polish and Brazilian Portuguese translations. PR #2244.
+
+See the [translation activity stream](https://crowdin.com/project/novelwriter/activity-stream) for
+more details.
+
+----
+
 ## Version 2.6.1 [2025-02-02]
 
 ### Release Notes
@@ -246,7 +284,7 @@ careful when using this version on live writing projects, and make sure you take
   markup processing and syntax highlighting. It is both slightly faster, and there are issues with
   text encoding in at least some versions of Qt6 or PyQt6. PRs #2028 and #2043.
 * Preparation for Qt6: Added a wrapper function for connecting signals to slots that has a
-  different function signature. Python lambdas generate warnings inn Qt6. PR #2075.
+  different function signature. Python lambdas generate warnings in Qt6. PR #2075.
 * Refactored manuscript formats and moved most of the processing to the Tokenizer class to simplify
   the format classes and also make them more consistent. PRs #2060, #2061 and #2062.
 * The document builder has been refactored to support more generalised format classes. PR #2047.
@@ -1126,7 +1164,7 @@ _These Release Notes also include the changes from the 2.2 Beta 1 and 2.2 RC 1 r
   of 1 second. PR #1634.
 * The document viewer panel now shows the importance label next to each entry, and double-clicking
   an entry will open it in the viewer. All entries also now show the content in tooltips so that
-  the columns can be shrunk to only view the icon if there is too little space. Issue #16220.
+  the columns can be shrunk to only view the icon if there is too little space. Issue #1620.
   PR #1639.
 * The editor toolbar no longer uses the same buttons for markdown and shortcodes style formatting.
   They have each received their separate buttons. Some additional space has been added between the

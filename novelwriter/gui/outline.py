@@ -818,9 +818,9 @@ class GuiOutlineDetails(QScrollArea):
 
         bFont = SHARED.theme.guiFontB
 
-        trStats1 = trConst(nwLabels.STATS_NAME[nwStats.CHARS])
-        trStats2 = trConst(nwLabels.STATS_NAME[nwStats.WORDS])
-        trStats3 = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
+        trStats1 = trConst(nwLabels.STATS_NAME[nwStats.CHARS], "Stats")
+        trStats2 = trConst(nwLabels.STATS_NAME[nwStats.WORDS], "Stats")
+        trStats3 = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS], "Stats")
 
         # Details Area
         self.titleLabel = QLabel(self.tr("Title"), self)

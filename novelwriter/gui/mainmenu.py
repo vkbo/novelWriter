@@ -602,7 +602,7 @@ class GuiMainMenu(QMenuBar):
         self.mInsField = qtAddMenu(self.insMenu, self.tr("Word/Character Count"))
         for field in nwStats.ALL_FIELDS:
             value = nwShortcode.FIELD_VALUE.format(field)
-            action = qtAddAction(self.mInsField, trConst(nwLabels.STATS_NAME[field]))
+            action = qtAddAction(self.mInsField, trConst(nwLabels.STATS_NAME[field], "Stats"))
             action.triggered.connect(qtLambda(self.requestDocInsertText.emit, value))
 
         # Insert > Breaks and Vertical Space

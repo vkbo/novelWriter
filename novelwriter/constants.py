@@ -23,16 +23,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+from typing import Literal
+
 from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
 from novelwriter.enum import (
     nwBuildFmt, nwComment, nwItemClass, nwItemLayout, nwOutline, nwStatusShape
 )
 
+T_TrContext = Literal["Constant", "Stats", "Shape", "Color"]
 
-def trConst(text: str) -> str:
+
+def trConst(text: str, context: T_TrContext = "Constant") -> str:
     """Wrapper function for locally translating constants."""
-    return QCoreApplication.translate("Constant", text)
+    return QCoreApplication.translate(context, text)
 
 
 class nwConst:

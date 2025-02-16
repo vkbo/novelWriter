@@ -404,7 +404,7 @@ class _StatusPage(NFixedPage):
             if menu is not None:
                 for shape, label in items.items():
                     icon = NWStatus.createIcon(self._iPx, iColor, shape)
-                    action = QAction(icon, trConst(label))
+                    action = QAction(icon, trConst(label, "Stats"))
                     action.triggered.connect(qtLambda(self._selectShape, shape))
                     menu.addAction(action)
                     self._icons[shape] = icon

@@ -1024,17 +1024,17 @@ class _StatsWidget(QWidget):
 
     def _buildBottomPanel(self) -> None:
         """Build the bottom page."""
-        trAllChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS])
-        trTextChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_TEXT])
-        trTitleChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_TITLE])
-        trParagraphCount = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
-        trTitleCount = trConst(nwLabels.STATS_NAME[nwStats.TITLES])
-        trAllWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_ALL])
-        trTextWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_TEXT])
-        trTitleWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_TITLE])
-        trAllWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS])
-        trTextWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS_TEXT])
-        trTitleWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS_TITLE])
+        trAllChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS], "Stats")
+        trTextChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_TEXT], "Stats")
+        trTitleChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_TITLE], "Stats")
+        trParagraphCount = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS], "Stats")
+        trTitleCount = trConst(nwLabels.STATS_NAME[nwStats.TITLES], "Stats")
+        trAllWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_ALL], "Stats")
+        trTextWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_TEXT], "Stats")
+        trTitleWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_TITLE], "Stats")
+        trAllWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS], "Stats")
+        trTextWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS_TEXT], "Stats")
+        trTitleWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS_TITLE], "Stats")
 
         # Minimal Form
         self.minWordCount = QLabel(self)
