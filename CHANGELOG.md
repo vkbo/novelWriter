@@ -1,5 +1,24 @@
 # novelWriter Changelog
 
+## Version 2.6.3 [2025-02-16]
+
+### Release Notes
+
+This is a patch release that fixes a translation issue that affected several labels on the user
+interface where the wrong or no translation was used. This only affected non-English language
+settings.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix retrieval of translation string for stats and shape constants. This particularly affected the
+  details panel below the project tree, some labels on the outline, the statics panel on the
+  Manuscript tool and the status icon shape menu in Project Settings. It also affected the
+  statistics submenu in the Insert menu. Issue #2246. PRs #2247 and #2249.
+
+----
+
 ## Version 2.6.2 [2025-02-16]
 
 ### Release Notes
