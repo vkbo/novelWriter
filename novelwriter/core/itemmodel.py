@@ -328,7 +328,7 @@ class ProjectModel(QAbstractItemModel):
 
     def parent(self, index: QModelIndex) -> QModelIndex:
         """Get the parent model index of another index."""
-        if index.isValid() and (parent := index.internalPointer().parent()):
+        if index.isValid() and (node := index.internalPointer()) and (parent := node.parent()):
             return self.createIndex(parent.row(), 0, parent)
         return QModelIndex()
 
