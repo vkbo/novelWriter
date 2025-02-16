@@ -30,7 +30,7 @@ import logging
 from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QAction, QCloseEvent, QColor
+from PyQt6.QtGui import QCloseEvent, QColor
 from PyQt6.QtWidgets import (
     QAbstractItemView, QApplication, QColorDialog, QDialogButtonBox,
     QFileDialog, QGridLayout, QHBoxLayout, QLineEdit, QMenu, QStackedWidget,
@@ -38,7 +38,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatFileFilter, qtLambda, simplified
+from novelwriter.common import formatFileFilter, qtAddAction, qtLambda, simplified
 from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.status import NWStatus, StatusEntry
 from novelwriter.enum import nwStatusShape
@@ -404,7 +404,8 @@ class _StatusPage(NFixedPage):
             if menu is not None:
                 for shape, label in items.items():
                     icon = NWStatus.createIcon(self._iPx, iColor, shape)
-                    action = QAction(icon, trConst(label, "Stats"))
+                    action = qtAddAction(menu, trConst(label, "Shape"))
+                    action.setIcon(icon)
                     action.triggered.connect(qtLambda(self._selectShape, shape))
                     menu.addAction(action)
                     self._icons[shape] = icon
