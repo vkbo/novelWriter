@@ -358,11 +358,12 @@ def testCoreItemModel_ProjectModel_DragNDrop(mockGUI, mockRnd, fncPath):
         novel.item.itemHandle, folder.item.itemHandle, scene.item.itemHandle,
     ]
 
-    # Check that drop is possible
+    # Check that drop is possible, but only with valid items and not on root
     invalidMime = QMimeData()
     invalidMime.setData("plain/text", b"foobar")
 
     assert model.canDropMimeData(invalidMime, Qt.DropAction.MoveAction, 0, 0, novelIdx) is False
+    assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 0, 0, rootIdx) is False
     assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 0, 0, novelIdx) is True
 
     # Drop the scene on the novel folder

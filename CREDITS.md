@@ -21,6 +21,7 @@ The artwork on the Welcome dialog was created by Louis Durrant.
 The default language is English (UK) with English (US) as an option. These are the original
 translators for the languages currently available:
 
+* **Czech:** Tomáš Zmek (perteus)
 * **Dutch:** Martijn van der Kleijn (mvdkleijn)
 * **French:** Jan Lüdke (jyhelle)
 * **German:** Myian (HeyMyian)

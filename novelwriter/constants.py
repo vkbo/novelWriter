@@ -35,6 +35,11 @@ def trConst(text: str) -> str:
     return QCoreApplication.translate("Constant", text)
 
 
+def trStats(text: str) -> str:
+    """Wrapper function for locally translating stats constants."""
+    return QCoreApplication.translate("Stats", text)
+
+
 class nwConst:
 
     # Date and Time Formats
@@ -370,32 +375,32 @@ class nwLabels:
         nwBuildFmt.J_NWD:  ".json",
     }
     SHAPES_PLAIN = {
-        nwStatusShape.SQUARE:   QT_TRANSLATE_NOOP("Shape", "Square"),
-        nwStatusShape.TRIANGLE: QT_TRANSLATE_NOOP("Shape", "Triangle"),
-        nwStatusShape.NABLA:    QT_TRANSLATE_NOOP("Shape", "Nabla"),
-        nwStatusShape.DIAMOND:  QT_TRANSLATE_NOOP("Shape", "Diamond"),
-        nwStatusShape.PENTAGON: QT_TRANSLATE_NOOP("Shape", "Pentagon"),
-        nwStatusShape.HEXAGON:  QT_TRANSLATE_NOOP("Shape", "Hexagon"),
-        nwStatusShape.STAR:     QT_TRANSLATE_NOOP("Shape", "Star"),
-        nwStatusShape.PACMAN:   QT_TRANSLATE_NOOP("Shape", "Pacman"),
+        nwStatusShape.SQUARE:   QT_TRANSLATE_NOOP("Constant", "Square"),
+        nwStatusShape.TRIANGLE: QT_TRANSLATE_NOOP("Constant", "Triangle"),
+        nwStatusShape.NABLA:    QT_TRANSLATE_NOOP("Constant", "Nabla"),
+        nwStatusShape.DIAMOND:  QT_TRANSLATE_NOOP("Constant", "Diamond"),
+        nwStatusShape.PENTAGON: QT_TRANSLATE_NOOP("Constant", "Pentagon"),
+        nwStatusShape.HEXAGON:  QT_TRANSLATE_NOOP("Constant", "Hexagon"),
+        nwStatusShape.STAR:     QT_TRANSLATE_NOOP("Constant", "Star"),
+        nwStatusShape.PACMAN:   QT_TRANSLATE_NOOP("Constant", "Pacman"),
     }
     SHAPES_CIRCLE = {
-        nwStatusShape.CIRCLE_Q: QT_TRANSLATE_NOOP("Shape", "1/4 Circle"),
-        nwStatusShape.CIRCLE_H: QT_TRANSLATE_NOOP("Shape", "Half Circle"),
-        nwStatusShape.CIRCLE_T: QT_TRANSLATE_NOOP("Shape", "3/4 Circle"),
-        nwStatusShape.CIRCLE:   QT_TRANSLATE_NOOP("Shape", "Full Circle"),
+        nwStatusShape.CIRCLE_Q: QT_TRANSLATE_NOOP("Constant", "1/4 Circle"),
+        nwStatusShape.CIRCLE_H: QT_TRANSLATE_NOOP("Constant", "Half Circle"),
+        nwStatusShape.CIRCLE_T: QT_TRANSLATE_NOOP("Constant", "3/4 Circle"),
+        nwStatusShape.CIRCLE:   QT_TRANSLATE_NOOP("Constant", "Full Circle"),
     }
     SHAPES_BARS = {
-        nwStatusShape.BARS_1: QT_TRANSLATE_NOOP("Shape", "1 Bar"),
-        nwStatusShape.BARS_2: QT_TRANSLATE_NOOP("Shape", "2 Bars"),
-        nwStatusShape.BARS_3: QT_TRANSLATE_NOOP("Shape", "3 Bars"),
-        nwStatusShape.BARS_4: QT_TRANSLATE_NOOP("Shape", "4 Bars"),
+        nwStatusShape.BARS_1: QT_TRANSLATE_NOOP("Constant", "1 Bar"),
+        nwStatusShape.BARS_2: QT_TRANSLATE_NOOP("Constant", "2 Bars"),
+        nwStatusShape.BARS_3: QT_TRANSLATE_NOOP("Constant", "3 Bars"),
+        nwStatusShape.BARS_4: QT_TRANSLATE_NOOP("Constant", "4 Bars"),
     }
     SHAPES_BLOCKS = {
-        nwStatusShape.BLOCK_1: QT_TRANSLATE_NOOP("Shape", "1 Block"),
-        nwStatusShape.BLOCK_2: QT_TRANSLATE_NOOP("Shape", "2 Blocks"),
-        nwStatusShape.BLOCK_3: QT_TRANSLATE_NOOP("Shape", "3 Blocks"),
-        nwStatusShape.BLOCK_4: QT_TRANSLATE_NOOP("Shape", "4 Blocks"),
+        nwStatusShape.BLOCK_1: QT_TRANSLATE_NOOP("Constant", "1 Block"),
+        nwStatusShape.BLOCK_2: QT_TRANSLATE_NOOP("Constant", "2 Blocks"),
+        nwStatusShape.BLOCK_3: QT_TRANSLATE_NOOP("Constant", "3 Blocks"),
+        nwStatusShape.BLOCK_4: QT_TRANSLATE_NOOP("Constant", "4 Blocks"),
     }
     FILE_FILTERS = {
         "*.txt": QT_TRANSLATE_NOOP("Constant", "Text files"),
@@ -431,16 +436,16 @@ class nwLabels:
         "Custom": (-1.0, -1.0),
     }
     THEME_COLORS = {
-        "theme":   QT_TRANSLATE_NOOP("Color", "Theme Colours"),
-        "default": QT_TRANSLATE_NOOP("Color", "Foreground Colour"),
-        "faded":   QT_TRANSLATE_NOOP("Color", "Faded Colour"),
-        "red":     QT_TRANSLATE_NOOP("Color", "Red"),
-        "orange":  QT_TRANSLATE_NOOP("Color", "Orange"),
-        "yellow":  QT_TRANSLATE_NOOP("Color", "Yellow"),
-        "green":   QT_TRANSLATE_NOOP("Color", "Green"),
-        "aqua":    QT_TRANSLATE_NOOP("Color", "Aqua"),
-        "blue":    QT_TRANSLATE_NOOP("Color", "Blue"),
-        "purple":  QT_TRANSLATE_NOOP("Color", "Purple"),
+        "theme":   QT_TRANSLATE_NOOP("Constant", "Theme Colours"),
+        "default": QT_TRANSLATE_NOOP("Constant", "Foreground Colour"),
+        "faded":   QT_TRANSLATE_NOOP("Constant", "Faded Colour"),
+        "red":     QT_TRANSLATE_NOOP("Constant", "Red"),
+        "orange":  QT_TRANSLATE_NOOP("Constant", "Orange"),
+        "yellow":  QT_TRANSLATE_NOOP("Constant", "Yellow"),
+        "green":   QT_TRANSLATE_NOOP("Constant", "Green"),
+        "aqua":    QT_TRANSLATE_NOOP("Constant", "Aqua"),
+        "blue":    QT_TRANSLATE_NOOP("Constant", "Blue"),
+        "purple":  QT_TRANSLATE_NOOP("Constant", "Purple"),
     }
 
 
