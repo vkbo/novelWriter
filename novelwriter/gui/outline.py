@@ -42,7 +42,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, formatFileFilter
-from novelwriter.constants import nwKeyWords, nwLabels, nwStats, nwStyles, trConst
+from novelwriter.constants import nwKeyWords, nwLabels, nwStats, nwStyles, trConst, trStats
 from novelwriter.enum import nwChange, nwDocMode, nwItemClass, nwItemLayout, nwItemType, nwOutline
 from novelwriter.error import logException
 from novelwriter.extensions.configlayout import NColourLabel
@@ -815,9 +815,9 @@ class GuiOutlineDetails(QScrollArea):
 
         bFont = SHARED.theme.guiFontB
 
-        trStats1 = trConst(nwLabels.STATS_NAME[nwStats.CHARS], "Stats")
-        trStats2 = trConst(nwLabels.STATS_NAME[nwStats.WORDS], "Stats")
-        trStats3 = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS], "Stats")
+        trStats1 = trStats(nwLabels.STATS_NAME[nwStats.CHARS])
+        trStats2 = trStats(nwLabels.STATS_NAME[nwStats.WORDS])
+        trStats3 = trStats(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
 
         # Details Area
         self.titleLabel = QLabel(self.tr("Title"), self)

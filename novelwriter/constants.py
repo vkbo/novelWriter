@@ -23,8 +23,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from typing import Literal
-
 from PyQt5.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
 from novelwriter.enum import (
@@ -32,9 +30,14 @@ from novelwriter.enum import (
 )
 
 
-def trConst(text: str, context: Literal["Constant", "Stats"] = "Constant") -> str:
+def trConst(text: str) -> str:
     """Wrapper function for locally translating constants."""
-    return QCoreApplication.translate(context, text)
+    return QCoreApplication.translate("Constant", text)
+
+
+def trStats(text: str) -> str:
+    """Wrapper function for locally translating stats constants."""
+    return QCoreApplication.translate("Stats", text)
 
 
 class nwConst:
