@@ -246,7 +246,7 @@ careful when using this version on live writing projects, and make sure you take
   markup processing and syntax highlighting. It is both slightly faster, and there are issues with
   text encoding in at least some versions of Qt6 or PyQt6. PRs #2028 and #2043.
 * Preparation for Qt6: Added a wrapper function for connecting signals to slots that has a
-  different function signature. Python lambdas generate warnings inn Qt6. PR #2075.
+  different function signature. Python lambdas generate warnings in Qt6. PR #2075.
 * Refactored manuscript formats and moved most of the processing to the Tokenizer class to simplify
   the format classes and also make them more consistent. PRs #2060, #2061 and #2062.
 * The document builder has been refactored to support more generalised format classes. PR #2047.
@@ -1126,7 +1126,7 @@ _These Release Notes also include the changes from the 2.2 Beta 1 and 2.2 RC 1 r
   of 1 second. PR #1634.
 * The document viewer panel now shows the importance label next to each entry, and double-clicking
   an entry will open it in the viewer. All entries also now show the content in tooltips so that
-  the columns can be shrunk to only view the icon if there is too little space. Issue #16220.
+  the columns can be shrunk to only view the icon if there is too little space. Issue #1620.
   PR #1639.
 * The editor toolbar no longer uses the same buttons for markdown and shortcodes style formatting.
   They have each received their separate buttons. Some additional space has been added between the
