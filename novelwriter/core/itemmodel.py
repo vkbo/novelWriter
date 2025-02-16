@@ -379,7 +379,9 @@ class ProjectModel(QAbstractItemModel):
         row: int, column: int, parent: QModelIndex
     ) -> bool:
         """Check if mime data can be dropped on the current location."""
-        return data.hasFormat(nwConst.MIME_HANDLE) and action == Qt.DropAction.MoveAction
+        if parent.isValid() and parent.internalPointer() is not self._root:
+            return data.hasFormat(nwConst.MIME_HANDLE) and action == Qt.DropAction.MoveAction
+        return False
 
     def dropMimeData(
         self, data: QMimeData, action: Qt.DropAction,
