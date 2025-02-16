@@ -1,5 +1,43 @@
 # novelWriter Changelog
 
+## Version 2.6.2 [2025-02-16]
+
+### Release Notes
+
+This is a patch release that fixes a few issues with the project tree. The Empty Trash option in
+the menu now works again, It is no longer possible to accidentally drag and drop project items onto
+the root of the project tree.
+
+In addition, a Czech translation has been added by Tomáš Zmek, and the Italian, Polish and
+Brazilian Portuguese translations have been updated.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed a bug where alternative scene formats were ignored when splitting a document. Issue #2233.
+  PR #2234.
+* Fixed the Empty Trash menu entry in the Project menu. It was not connected to the project tree
+  and therefore selecting it did nothing. Issue #2239. PR #2242.
+* Fixed a bug where it was possible to drag items to the root levels as long as they were dropped
+  between existing root items. This action is now properly blocked. PR #2242.
+
+**Improvements**
+
+* Added an extra check in the project tree item model that can prevent a crash in certain
+  circumstances when moving multiple project items. It is probably a corner case caused by
+  competing garbage collectors in Python and Qt, but the additional check should handle. PR #2242.
+
+**Internationalisation**
+
+* Add Czech translation by Tomáš Zmek. PR #2244.
+* Updated Italian, Polish and Brazilian Portuguese translations. PR #2244.
+
+See the [translation activity stream](https://crowdin.com/project/novelwriter/activity-stream) for
+more details.
+
+----
+
 ## Version 2.6.1 [2025-02-02]
 
 ### Release Notes
