@@ -355,7 +355,7 @@
   <context>
     <name>Constant</name>
     <message>
-      <location filename="../novelwriter/constants.py" line="310" />
+      <location filename="../novelwriter/constants.py" line="314" />
       <location filename="../novelwriter/constants.py" line="115" />
       <source>Title</source>
       <translation>Título</translation>
@@ -391,405 +391,405 @@
       <translation>Separador de cena</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="267" />
-      <location filename="../novelwriter/constants.py" line="262" />
-      <location filename="../novelwriter/constants.py" line="234" />
+      <location filename="../novelwriter/constants.py" line="271" />
+      <location filename="../novelwriter/constants.py" line="266" />
+      <location filename="../novelwriter/constants.py" line="238" />
       <source>None</source>
       <translation>Nenhum</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="235" />
+      <location filename="../novelwriter/constants.py" line="239" />
       <source>Novel</source>
       <translation>Livro</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="286" />
-      <location filename="../novelwriter/constants.py" line="236" />
+      <location filename="../novelwriter/constants.py" line="290" />
+      <location filename="../novelwriter/constants.py" line="240" />
       <source>Plot</source>
       <translation>Enredo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="285" />
-      <location filename="../novelwriter/constants.py" line="237" />
+      <location filename="../novelwriter/constants.py" line="289" />
+      <location filename="../novelwriter/constants.py" line="241" />
       <source>Characters</source>
       <translation>Personagens</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="288" />
-      <location filename="../novelwriter/constants.py" line="238" />
+      <location filename="../novelwriter/constants.py" line="292" />
+      <location filename="../novelwriter/constants.py" line="242" />
       <source>Locations</source>
       <translation>Lugares</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="287" />
-      <location filename="../novelwriter/constants.py" line="239" />
+      <location filename="../novelwriter/constants.py" line="291" />
+      <location filename="../novelwriter/constants.py" line="243" />
       <source>Timeline</source>
       <translation>Linha do tempo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="289" />
-      <location filename="../novelwriter/constants.py" line="240" />
+      <location filename="../novelwriter/constants.py" line="293" />
+      <location filename="../novelwriter/constants.py" line="244" />
       <source>Objects</source>
       <translation>Objetos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="290" />
-      <location filename="../novelwriter/constants.py" line="241" />
+      <location filename="../novelwriter/constants.py" line="294" />
+      <location filename="../novelwriter/constants.py" line="245" />
       <source>Entities</source>
       <translation>Entidades</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="419" />
-      <location filename="../novelwriter/constants.py" line="291" />
-      <location filename="../novelwriter/constants.py" line="242" />
+      <location filename="../novelwriter/constants.py" line="423" />
+      <location filename="../novelwriter/constants.py" line="295" />
+      <location filename="../novelwriter/constants.py" line="246" />
       <source>Custom</source>
       <translation>Outros</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="243" />
+      <location filename="../novelwriter/constants.py" line="247" />
       <source>Archive</source>
       <translation>Arquivados</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="244" />
+      <location filename="../novelwriter/constants.py" line="248" />
       <source>Templates</source>
       <translation>Modelos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="245" />
+      <location filename="../novelwriter/constants.py" line="249" />
       <source>Trash</source>
       <translation>Lixeira</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="270" />
-      <location filename="../novelwriter/constants.py" line="263" />
+      <location filename="../novelwriter/constants.py" line="274" />
+      <location filename="../novelwriter/constants.py" line="267" />
       <source>Novel Document</source>
       <translation>Documento do livro</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="275" />
-      <location filename="../novelwriter/constants.py" line="264" />
+      <location filename="../novelwriter/constants.py" line="279" />
+      <location filename="../novelwriter/constants.py" line="268" />
       <source>Project Note</source>
       <translation>Notas do projeto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="268" />
+      <location filename="../novelwriter/constants.py" line="272" />
       <source>Root Folder</source>
       <translation>Diretório-raiz</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="269" />
+      <location filename="../novelwriter/constants.py" line="273" />
       <source>Folder</source>
       <translation>Diretório</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="271" />
+      <location filename="../novelwriter/constants.py" line="275" />
       <source>Novel Title Page</source>
       <translation>Folha de rosto do livro</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="272" />
+      <location filename="../novelwriter/constants.py" line="276" />
       <source>Novel Chapter</source>
       <translation>Capítulo do livro</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="273" />
+      <location filename="../novelwriter/constants.py" line="277" />
       <source>Novel Scene</source>
       <translation>Cena do livro</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="274" />
+      <location filename="../novelwriter/constants.py" line="278" />
       <source>Novel Section</source>
       <translation>Seção do livro</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="278" />
+      <location filename="../novelwriter/constants.py" line="282" />
       <source>Active</source>
       <translation>Ativo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="279" />
+      <location filename="../novelwriter/constants.py" line="283" />
       <source>Inactive</source>
       <translation>Inativo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="282" />
+      <location filename="../novelwriter/constants.py" line="286" />
       <source>Tag</source>
       <translation>Etiqueta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="283" />
+      <location filename="../novelwriter/constants.py" line="287" />
       <source>Point of View</source>
       <translation>Ponto de vista</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="319" />
-      <location filename="../novelwriter/constants.py" line="284" />
+      <location filename="../novelwriter/constants.py" line="323" />
+      <location filename="../novelwriter/constants.py" line="288" />
       <source>Focus</source>
       <translation>Foco</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="292" />
+      <location filename="../novelwriter/constants.py" line="296" />
       <source>Story</source>
       <translation>História</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="293" />
+      <location filename="../novelwriter/constants.py" line="297" />
       <source>Mentions</source>
       <translation>Menções</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="311" />
+      <location filename="../novelwriter/constants.py" line="315" />
       <source>Level</source>
       <translation>Nível</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="312" />
+      <location filename="../novelwriter/constants.py" line="316" />
       <source>Document</source>
       <translation>Documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="313" />
+      <location filename="../novelwriter/constants.py" line="317" />
       <source>Line</source>
       <translation>Linha</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="314" />
+      <location filename="../novelwriter/constants.py" line="318" />
       <source>Status</source>
       <translation>Estado</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="315" />
+      <location filename="../novelwriter/constants.py" line="319" />
       <source>Chars</source>
       <translation>Caracteres</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="316" />
+      <location filename="../novelwriter/constants.py" line="320" />
       <source>Words</source>
       <translation>Palavras</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="317" />
+      <location filename="../novelwriter/constants.py" line="321" />
       <source>Pars</source>
       <translation>Parágrafos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="318" />
+      <location filename="../novelwriter/constants.py" line="322" />
       <source>POV</source>
       <translation>Ponto de vista</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="329" />
+      <location filename="../novelwriter/constants.py" line="333" />
       <source>Synopsis</source>
       <translation>Sinopse</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="345" />
+      <location filename="../novelwriter/constants.py" line="349" />
       <source>Open Document (.odt)</source>
       <translation>Open Document (.odt)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="346" />
+      <location filename="../novelwriter/constants.py" line="350" />
       <source>Flat Open Document (.fodt)</source>
       <translation>Flat Open Document (.fodt)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="347" />
+      <location filename="../novelwriter/constants.py" line="351" />
       <source>Microsoft Word Document (.docx)</source>
       <translation>Documento do Microsoft Word (.docx)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="348" />
+      <location filename="../novelwriter/constants.py" line="352" />
       <source>HTML 5 (.html)</source>
       <translation>HTML 5 (.html)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="349" />
+      <location filename="../novelwriter/constants.py" line="353" />
       <source>novelWriter Markup (.txt)</source>
       <translation>Markup do novelWriter (.txt)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="350" />
+      <location filename="../novelwriter/constants.py" line="354" />
       <source>Standard Markdown (.md)</source>
       <translation>Markdown padrão (.md)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="351" />
+      <location filename="../novelwriter/constants.py" line="355" />
       <source>Extended Markdown (.md)</source>
       <translation>Markdown estendido (.md)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="352" />
+      <location filename="../novelwriter/constants.py" line="356" />
       <source>Portable Document Format (.pdf)</source>
       <translation>Portable Document Format (.pdf)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="353" />
+      <location filename="../novelwriter/constants.py" line="357" />
       <source>JSON + HTML 5 (.json)</source>
       <translation>JSON + HTML 5 (.json)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="354" />
+      <location filename="../novelwriter/constants.py" line="358" />
       <source>JSON + novelWriter Markup (.json)</source>
       <translation>JSON + Markup do novelWriter (.json)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="397" />
+      <location filename="../novelwriter/constants.py" line="401" />
       <source>Text files</source>
       <translation>Arquivos de texto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="398" />
+      <location filename="../novelwriter/constants.py" line="402" />
       <source>Markdown files</source>
       <translation>Arquivos Markdown</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="399" />
+      <location filename="../novelwriter/constants.py" line="403" />
       <source>novelWriter files</source>
       <translation>Arquivos do novelWriter</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="400" />
+      <location filename="../novelwriter/constants.py" line="404" />
       <source>CSV files</source>
       <translation>Arquivos CSV</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="401" />
+      <location filename="../novelwriter/constants.py" line="405" />
       <source>All files</source>
       <translation>Todos os arquivos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="404" />
+      <location filename="../novelwriter/constants.py" line="408" />
       <source>Millimetres</source>
       <translation>Milímetros</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="405" />
+      <location filename="../novelwriter/constants.py" line="409" />
       <source>Centimetres</source>
       <translation>Centímetros</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="406" />
+      <location filename="../novelwriter/constants.py" line="410" />
       <source>Inches</source>
       <translation>Polegadas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="414" />
+      <location filename="../novelwriter/constants.py" line="418" />
       <source>A4</source>
       <translation>A4</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="415" />
+      <location filename="../novelwriter/constants.py" line="419" />
       <source>A5</source>
       <translation>A5</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="416" />
+      <location filename="../novelwriter/constants.py" line="420" />
       <source>A6</source>
       <translation>A6</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="417" />
+      <location filename="../novelwriter/constants.py" line="421" />
       <source>US Legal</source>
       <translation>Ofício</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="418" />
+      <location filename="../novelwriter/constants.py" line="422" />
       <source>US Letter</source>
       <translation>Carta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="461" />
+      <location filename="../novelwriter/constants.py" line="465" />
       <source>Straight single quotation mark</source>
       <translation>Aspas simples retas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="462" />
+      <location filename="../novelwriter/constants.py" line="466" />
       <source>Straight double quotation mark</source>
       <translation>Aspas duplas retas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="464" />
+      <location filename="../novelwriter/constants.py" line="468" />
       <source>Left single quotation mark</source>
       <translation>Aspas simples à esquerda</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="465" />
+      <location filename="../novelwriter/constants.py" line="469" />
       <source>Right single quotation mark</source>
       <translation>Aspas simples à direita</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="466" />
+      <location filename="../novelwriter/constants.py" line="470" />
       <source>Single low-9 quotation mark</source>
       <translation>Aspas 9-baixo simples</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="467" />
+      <location filename="../novelwriter/constants.py" line="471" />
       <source>Single high-reversed-9 quotation mark</source>
       <translation>Aspas 9-alto-invertido simples</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="468" />
+      <location filename="../novelwriter/constants.py" line="472" />
       <source>Left double quotation mark</source>
       <translation>Aspas duplas à esquerda</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="469" />
+      <location filename="../novelwriter/constants.py" line="473" />
       <source>Right double quotation mark</source>
       <translation>Aspas duplas à direita</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="470" />
+      <location filename="../novelwriter/constants.py" line="474" />
       <source>Double low-9 quotation mark</source>
       <translation>Aspas 9-baixo duplas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="471" />
+      <location filename="../novelwriter/constants.py" line="475" />
       <source>Double high-reversed-9 quotation mark</source>
       <translation>Aspas 9-alto-invertido duplas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="472" />
+      <location filename="../novelwriter/constants.py" line="476" />
       <source>Double low-reversed-9 quotation mark</source>
       <translation>Aspas 9-baixo-invertido duplas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="474" />
+      <location filename="../novelwriter/constants.py" line="478" />
       <source>Single left-pointing angle quotation mark</source>
       <translation>Aspas angulares simples à esquerda</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="475" />
+      <location filename="../novelwriter/constants.py" line="479" />
       <source>Single right-pointing angle quotation mark</source>
       <translation>Aspas angulares simples à direita</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="476" />
+      <location filename="../novelwriter/constants.py" line="480" />
       <source>Double left-pointing angle quotation mark</source>
       <translation>Aspas angulares duplas apontando à esquerda</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="477" />
+      <location filename="../novelwriter/constants.py" line="481" />
       <source>Double right-pointing angle quotation mark</source>
       <translation>Aspas angulares duplas apontando à direita</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="479" />
+      <location filename="../novelwriter/constants.py" line="483" />
       <source>Left corner bracket</source>
       <translation>Colchete de canto à esquerda</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="480" />
+      <location filename="../novelwriter/constants.py" line="484" />
       <source>Right corner bracket</source>
       <translation>Right corner bracket</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="481" />
+      <location filename="../novelwriter/constants.py" line="485" />
       <source>Left white corner bracket</source>
       <translation>Colchete branco de canto à esquerda</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="482" />
+      <location filename="../novelwriter/constants.py" line="486" />
       <source>Right white corner bracket</source>
       <translation>Colchete branco de canto à direita</translation>
     </message>
@@ -897,22 +897,22 @@
   <context>
     <name>GuiDocEditFooter</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3072" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3088" />
       <source>Line: {0} ({1})</source>
       <translation>Linha: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3073" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3089" />
       <source>Words: {0} ({1})</source>
       <translation>Palavras: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3074" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3090" />
       <source>Words: {0} selected</source>
       <translation>Palavras: {0} selecionadas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3086" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3102" />
       <source>Status</source>
       <translation>Estado</translation>
     </message>
@@ -920,27 +920,27 @@
   <context>
     <name>GuiDocEditHeader</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2865" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2881" />
       <source>Toggle Tool Bar</source>
       <translation>Exibir/ocultar barra de ferramentas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2870" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2886" />
       <source>Outline</source>
       <translation>Estrutura</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2875" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2891" />
       <source>Search</source>
       <translation>Pesquisa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2880" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2896" />
       <source>Toggle Focus Mode</source>
       <translation>Alternar o modo de foco</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2885" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2901" />
       <source>Close</source>
       <translation>Fechar</translation>
     </message>
@@ -948,62 +948,62 @@
   <context>
     <name>GuiDocEditSearch</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2483" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2499" />
       <source>Search for</source>
       <translation>Pesquisar por</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2487" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2503" />
       <source>Replace with</source>
       <translation>Substituir por</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2495" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2511" />
       <source>Search</source>
       <translation>Pesquisa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2500" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2516" />
       <source>Case Sensitive</source>
       <translation>Diferenciar maiúsculas e minúsculas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2506" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2522" />
       <source>Whole Words Only</source>
       <translation>Apenas palavras inteiras</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2512" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2528" />
       <source>RegEx Mode</source>
       <translation>Expressão regular</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2518" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2534" />
       <source>Loop Search</source>
       <translation>Pesquisa iterativa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2524" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2540" />
       <source>Search Next File</source>
       <translation>Pesquisar no documento seguinte</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2532" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2548" />
       <source>Preserve Case</source>
       <translation>Preservar maiúsculas e minúsculas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2540" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2556" />
       <source>Close Search</source>
       <translation>Fechar pesquisa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2551" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2567" />
       <source>Find in current document</source>
       <translation>Encontrar no documento atual</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2555" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2571" />
       <source>Find and replace in current document</source>
       <translation>Encontrar e substituir no documento atual</translation>
     </message>
@@ -1011,132 +1011,132 @@
   <context>
     <name>GuiDocEditor</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="436" />
+      <location filename="../novelwriter/gui/doceditor.py" line="443" />
       <source>Opened Document: {0}</source>
       <translation>Documento aberto: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="474" />
+      <location filename="../novelwriter/gui/doceditor.py" line="481" />
       <source>This document has been changed outside of novelWriter while it was open. Overwrite the file on disk?</source>
       <translation>Este documento foi alterado fora do novelWriter enquanto estava aberto. Sobrescrever o arquivo no disco?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="483" />
+      <location filename="../novelwriter/gui/doceditor.py" line="490" />
       <source>Could not save document.</source>
       <translation>Não foi possível salvar o documento.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="508" />
+      <location filename="../novelwriter/gui/doceditor.py" line="515" />
       <source>Saved Document: {0}</source>
       <translation>Documento salvo: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="677" />
+      <location filename="../novelwriter/gui/doceditor.py" line="684" />
       <source>Spell checking requires the package PyEnchant. It does not appear to be installed.</source>
       <translation>A verificação ortográfica requer o pacote PyEnchant. Ele não parece estar instalado.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="703" />
+      <location filename="../novelwriter/gui/doceditor.py" line="710" />
       <source>Spell check complete</source>
       <translation>Verificação ortográfica concluída</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="823" />
+      <location filename="../novelwriter/gui/doceditor.py" line="830" />
       <source>Document Details</source>
       <translation>Detalhes do documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="825" />
+      <location filename="../novelwriter/gui/doceditor.py" line="832" />
       <source>Created: {0}</source>
       <translation>Criado em: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="826" />
+      <location filename="../novelwriter/gui/doceditor.py" line="833" />
       <source>Updated: {0}</source>
       <translation>Atualizado em: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="828" />
+      <location filename="../novelwriter/gui/doceditor.py" line="835" />
       <source>File Location: {0}</source>
       <translation>Caminho do arquivo: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1149" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1156" />
       <source>Set as Document Name</source>
       <translation>Definir como nome do documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1155" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1162" />
       <source>Open URL</source>
       <translation>Abrir URL</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1162" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1169" />
       <source>Follow Tag</source>
       <translation>Seguir etiqueta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1166" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1173" />
       <source>Create Note for Tag</source>
       <translation>Criar nota para a etiqueta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1172" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1179" />
       <source>Cut</source>
       <translation>Recortar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1174" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1181" />
       <source>Copy</source>
       <translation>Copiar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1177" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1184" />
       <source>Paste</source>
       <translation>Colar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1182" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1189" />
       <source>Select All</source>
       <translation>Selecionar tudo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1184" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1191" />
       <source>Select Word</source>
       <translation>Selecionar palavra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1188" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1195" />
       <source>Select Paragraph</source>
       <translation>Selecionar parágrafo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1204" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1211" />
       <source>Spelling Suggestion(s)</source>
       <translation>Sugestão(ões) de ortografia</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1209" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1216" />
       <source>No Suggestions</source>
       <translation>Sem sugestões</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1213" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1220" />
       <source>Ignore Word</source>
       <translation>Ignorar palavra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1215" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1222" />
       <source>Add Word to Dictionary</source>
       <translation>Adicionar palavra ao dicionário</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1619" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1626" />
       <source>Please select some text before calling replace quotes.</source>
       <translation>Por favor, selecione algum texto antes de usar a substituição de aspas.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1974" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1992" />
       <source>Do you want to create a new project note for the tag '{0}'?</source>
       <translation>Deseja criar uma nova nota de projeto para a etiqueta '{0}'?</translation>
     </message>
@@ -1220,52 +1220,52 @@
   <context>
     <name>GuiDocToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2346" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2362" />
       <source>Markdown Bold</source>
       <translation>Negrito (em Markdown)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2352" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2368" />
       <source>Markdown Italic</source>
       <translation>Itálico (em Markdown)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2358" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2374" />
       <source>Markdown Strikethrough</source>
       <translation>Tachado (em Markdown)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2364" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2380" />
       <source>Shortcode Bold</source>
       <translation>Negrito (código)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2370" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2386" />
       <source>Shortcode Italic</source>
       <translation>Itálico (código)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2376" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2392" />
       <source>Shortcode Strikethrough</source>
       <translation>Tachado (código)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2382" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2398" />
       <source>Shortcode Underline</source>
       <translation>Sublinhado (código)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2388" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2404" />
       <source>Shortcode Highlight</source>
       <translation>Destaque (em código)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2394" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2410" />
       <source>Shortcode Superscript</source>
       <translation>Sobrescrito (código)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2400" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2416" />
       <source>Shortcode Subscript</source>
       <translation>Subscrito (código)</translation>
     </message>
@@ -2196,38 +2196,38 @@
   <context>
     <name>GuiMainStatus</name>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="213" />
-      <location filename="../novelwriter/gui/statusbar.py" line="64" />
+      <location filename="../novelwriter/gui/statusbar.py" line="212" />
+      <location filename="../novelwriter/gui/statusbar.py" line="63" />
       <source>None</source>
       <translation>Nenhum</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="72" />
+      <location filename="../novelwriter/gui/statusbar.py" line="71" />
       <source>Editor</source>
       <translation>Editor</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="80" />
+      <location filename="../novelwriter/gui/statusbar.py" line="79" />
       <source>Project</source>
       <translation>Projeto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="100" />
+      <location filename="../novelwriter/gui/statusbar.py" line="99" />
       <source>Session Time</source>
       <translation>Duração da sessão</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="179" />
+      <location filename="../novelwriter/gui/statusbar.py" line="178" />
       <source>Words: {0} ({1})</source>
       <translation>Palavras: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="181" />
+      <location filename="../novelwriter/gui/statusbar.py" line="180" />
       <source>Project word count (session change)</source>
       <translation>Contagem de palavras do projeto (alterações na sessão atual)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="183" />
+      <location filename="../novelwriter/gui/statusbar.py" line="182" />
       <source>Novel word count (session change)</source>
       <translation>Contagem de palavras do livro (alterações na sessão atual)</translation>
     </message>
@@ -2664,7 +2664,7 @@
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="277" />
       <source>Behaviour</source>
-      <translation type="unfinished" />
+      <translation>Comportamento</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="289" />
@@ -2695,12 +2695,12 @@
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="308" />
       <source>Ask before exiting novelWriter</source>
-      <translation type="unfinished" />
+      <translation>Perguntar antes de sair do novelWriter</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="309" />
       <source>Only applies when a project is open.</source>
-      <translation type="unfinished" />
+      <translation>Só se aplica quando há um projeto aberto.</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="315" />
@@ -3204,47 +3204,47 @@
   <context>
     <name>GuiProjectToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="252" />
+      <location filename="../novelwriter/gui/projtree.py" line="253" />
       <source>Project Content</source>
       <translation>Conteúdo do projeto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="261" />
+      <location filename="../novelwriter/gui/projtree.py" line="262" />
       <source>Quick Links</source>
       <translation>Ligações rápidas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="267" />
+      <location filename="../novelwriter/gui/projtree.py" line="268" />
       <source>Move Up</source>
       <translation>Mover para cima</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="271" />
+      <location filename="../novelwriter/gui/projtree.py" line="272" />
       <source>Move Down</source>
       <translation>Mover para baixo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="311" />
+      <location filename="../novelwriter/gui/projtree.py" line="312" />
       <source>Add Item</source>
       <translation>Adicionar item</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="318" />
+      <location filename="../novelwriter/gui/projtree.py" line="319" />
       <source>Expand All</source>
       <translation>Expandir tudo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="321" />
+      <location filename="../novelwriter/gui/projtree.py" line="322" />
       <source>Collapse All</source>
       <translation>Recolher tudo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="324" />
+      <location filename="../novelwriter/gui/projtree.py" line="325" />
       <source>Empty Trash</source>
       <translation>Esvaziar a lixeira</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="328" />
+      <location filename="../novelwriter/gui/projtree.py" line="329" />
       <source>More Options</source>
       <translation>Mais opções</translation>
     </message>
@@ -3252,93 +3252,93 @@
   <context>
     <name>GuiProjectTree</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="625" />
+      <location filename="../novelwriter/gui/projtree.py" line="626" />
       <source>Did not find anywhere to add the file or folder!</source>
       <translation>Não foi possível encontrar nenhum lugar para adicionar o arquivo ou diretório!</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="629" />
+      <location filename="../novelwriter/gui/projtree.py" line="630" />
       <source>Cannot add new files or folders to the Trash folder.</source>
       <translation>Não é possível adicionar novos arquivos ou diretórios à lixeira.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="643" />
+      <location filename="../novelwriter/gui/projtree.py" line="644" />
       <source>New Note</source>
       <translation>Nova nota</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="646" />
+      <location filename="../novelwriter/gui/projtree.py" line="647" />
       <source>New Chapter</source>
       <translation>Novo capítulo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="649" />
+      <location filename="../novelwriter/gui/projtree.py" line="650" />
       <source>New Scene</source>
       <translation>Nova cena</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="652" />
+      <location filename="../novelwriter/gui/projtree.py" line="653" />
       <source>New Document</source>
       <translation>Novo documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="655" />
+      <location filename="../novelwriter/gui/projtree.py" line="656" />
       <source>New Folder</source>
       <translation>Novo diretório</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="705" />
+      <location filename="../novelwriter/gui/projtree.py" line="706" />
       <source>No documents selected for merging.</source>
       <translation>Nenhum documento selecionado para combinar.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="713" />
+      <location filename="../novelwriter/gui/projtree.py" line="714" />
       <source>Merged</source>
       <translation>Combinado</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="771" />
-      <location filename="../novelwriter/gui/projtree.py" line="727" />
+      <location filename="../novelwriter/gui/projtree.py" line="772" />
+      <location filename="../novelwriter/gui/projtree.py" line="728" />
       <source>Could not write document content.</source>
       <translation>Não foi possível escrever o conteúdo do documento.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="786" />
+      <location filename="../novelwriter/gui/projtree.py" line="787" />
       <source>Do you want to duplicate this document?</source>
       <translation>Deseja duplicar este documento?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="788" />
+      <location filename="../novelwriter/gui/projtree.py" line="789" />
       <source>Do you want to duplicate this item and all child items?</source>
       <translation>Deseja duplicar este item e todos seus subitens?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="793" />
+      <location filename="../novelwriter/gui/projtree.py" line="794" />
       <source>Could not duplicate all items.</source>
       <translation>Não foi possível duplicar todos os itens.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="909" />
+      <location filename="../novelwriter/gui/projtree.py" line="910" />
       <source>Root folders can only be deleted when they are empty.</source>
       <translation>Os diretórios-raiz só podem ser excluídos quando estiverem vazios.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="913" />
+      <location filename="../novelwriter/gui/projtree.py" line="914" />
       <source>Permanently delete selected item(s)?</source>
       <translation>Excluir permanentemente o(s) item(ns) selecionado(s)?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="923" />
+      <location filename="../novelwriter/gui/projtree.py" line="924" />
       <source>Move selected item(s) to Trash?</source>
       <translation>Mover item(ns) selecionado(s) para a lixeira?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="938" />
+      <location filename="../novelwriter/gui/projtree.py" line="939" />
       <source>The Trash folder is already empty.</source>
       <translation>O diretório da lixeira já está vazio.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="941" />
+      <location filename="../novelwriter/gui/projtree.py" line="942" />
       <source>Permanently delete {0} file(s) from Trash?</source>
       <translation>Permanentemente remover {0} arquivo(s) da lixeira?</translation>
     </message>
@@ -3637,7 +3637,7 @@
       <translation>Não é um formato conhecido de arquivo de projeto.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="475" />
+      <location filename="../novelwriter/core/project.py" line="471" />
       <location filename="../novelwriter/core/project.py" line="288" />
       <location filename="../novelwriter/core/project.py" line="283" />
       <location filename="../novelwriter/core/project.py" line="278" />
@@ -3685,98 +3685,98 @@
       <translation>O projeto foi salvo por uma versão mais nova do novelWriter, versão {0}. Esta é a versão {1}. Caso deseje abrir o projeto, alguns atributos e configurações podem não ser preservados, mas o projeto deve funcionar corretamente. Continuar?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="362" />
+      <location filename="../novelwriter/core/project.py" line="360" />
       <source>Recovered</source>
       <translation>Recuperado</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="364" />
+      <location filename="../novelwriter/core/project.py" line="362" />
       <source>Found {0} orphaned file(s) in the project. {1} file(s) were recovered.</source>
       <translation>Encontrado(s) {0} arquivo(s) órfão(s) no projeto. {1} arquivo(s) recuperado(s).</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="380" />
+      <location filename="../novelwriter/core/project.py" line="378" />
       <source>Opened Project: {0}</source>
       <translation>Projeto aberto: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="391" />
+      <location filename="../novelwriter/core/project.py" line="389" />
       <source>There is no project open.</source>
       <translation>Não há um projeto aberto.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="414" />
+      <location filename="../novelwriter/core/project.py" line="412" />
       <source>Failed to save project.</source>
       <translation>Houve uma falha ao salvar o projeto.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="428" />
+      <location filename="../novelwriter/core/project.py" line="424" />
       <source>Saved Project: {0}</source>
       <translation>Projeto salvo: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="450" />
+      <location filename="../novelwriter/core/project.py" line="446" />
       <source>Backing up project ...</source>
       <translation>Criando uma cópia de segurança do projeto...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="453" />
+      <location filename="../novelwriter/core/project.py" line="449" />
       <source>Cannot backup project because no project name is set. Please set a Project Name in Project Settings.</source>
       <translation>Não foi possível criar a cópia de segurança do projeto porque o nome do projeto não está definido. Por favor, defina-o nas configurações do projeto.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="465" />
+      <location filename="../novelwriter/core/project.py" line="461" />
       <source>Could not create backup folder.</source>
       <translation>Não foi possível criar o diretório da cópia de segurança.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="474" />
+      <location filename="../novelwriter/core/project.py" line="470" />
       <source>Created a backup of your project of size {0}B.</source>
       <translation>Foi criado uma cópia de segurança do seu projeto com {0}B de tamanho.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="478" />
+      <location filename="../novelwriter/core/project.py" line="474" />
       <source>Could not write backup archive.</source>
       <translation>Não foi possível escrever o arquivo da cópia de segurança.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="481" />
+      <location filename="../novelwriter/core/project.py" line="477" />
       <source>Project backed up to '{0}'</source>
       <translation>Cópia de segurança do projeto criada em '{0}'</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="495" />
       <location filename="../novelwriter/core/project.py" line="491" />
+      <location filename="../novelwriter/core/project.py" line="487" />
       <source>New</source>
       <translation>Novo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="492" />
+      <location filename="../novelwriter/core/project.py" line="488" />
       <source>Note</source>
       <translation>Nota</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="493" />
+      <location filename="../novelwriter/core/project.py" line="489" />
       <source>Draft</source>
       <translation>Rascunho</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="494" />
+      <location filename="../novelwriter/core/project.py" line="490" />
       <source>Finished</source>
       <translation>Finalizado</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="496" />
+      <location filename="../novelwriter/core/project.py" line="492" />
       <source>Minor</source>
       <translation>Menor</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="497" />
+      <location filename="../novelwriter/core/project.py" line="493" />
       <source>Major</source>
       <translation>Maior</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="498" />
+      <location filename="../novelwriter/core/project.py" line="494" />
       <source>Main</source>
       <translation>Principal</translation>
     </message>
@@ -4021,102 +4021,102 @@
   <context>
     <name>Shape</name>
     <message>
-      <location filename="../novelwriter/constants.py" line="369" />
+      <location filename="../novelwriter/constants.py" line="373" />
       <source>Square</source>
       <translation>Quadrado</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="370" />
+      <location filename="../novelwriter/constants.py" line="374" />
       <source>Triangle</source>
       <translation>Triângulo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="371" />
+      <location filename="../novelwriter/constants.py" line="375" />
       <source>Nabla</source>
       <translation>Nabla</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="372" />
+      <location filename="../novelwriter/constants.py" line="376" />
       <source>Diamond</source>
       <translation>Diamante</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="373" />
+      <location filename="../novelwriter/constants.py" line="377" />
       <source>Pentagon</source>
       <translation>Pentágono</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="374" />
+      <location filename="../novelwriter/constants.py" line="378" />
       <source>Hexagon</source>
       <translation>Hexágono</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="375" />
+      <location filename="../novelwriter/constants.py" line="379" />
       <source>Star</source>
       <translation>Estrela</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="376" />
+      <location filename="../novelwriter/constants.py" line="380" />
       <source>Pacman</source>
       <translation>Pacman</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="379" />
+      <location filename="../novelwriter/constants.py" line="383" />
       <source>1/4 Circle</source>
       <translation>1/4 de círculo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="380" />
+      <location filename="../novelwriter/constants.py" line="384" />
       <source>Half Circle</source>
       <translation>Meio círculo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="381" />
+      <location filename="../novelwriter/constants.py" line="385" />
       <source>3/4 Circle</source>
       <translation>3/4 de círculo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="382" />
+      <location filename="../novelwriter/constants.py" line="386" />
       <source>Full Circle</source>
       <translation>Círculo completo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="385" />
+      <location filename="../novelwriter/constants.py" line="389" />
       <source>1 Bar</source>
       <translation>1 barra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="386" />
+      <location filename="../novelwriter/constants.py" line="390" />
       <source>2 Bars</source>
       <translation>2 barras</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="387" />
+      <location filename="../novelwriter/constants.py" line="391" />
       <source>3 Bars</source>
       <translation>3 barras</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="388" />
+      <location filename="../novelwriter/constants.py" line="392" />
       <source>4 Bars</source>
       <translation>4 barras</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="391" />
+      <location filename="../novelwriter/constants.py" line="395" />
       <source>1 Block</source>
       <translation>1 bloco</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="392" />
+      <location filename="../novelwriter/constants.py" line="396" />
       <source>2 Blocks</source>
       <translation>2 blocos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="393" />
+      <location filename="../novelwriter/constants.py" line="397" />
       <source>3 Blocks</source>
       <translation>3 blocos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="394" />
+      <location filename="../novelwriter/constants.py" line="398" />
       <source>4 Blocks</source>
       <translation>4 blocos</translation>
     </message>
@@ -4147,57 +4147,57 @@
   <context>
     <name>Stats</name>
     <message>
-      <location filename="../novelwriter/constants.py" line="332" />
+      <location filename="../novelwriter/constants.py" line="336" />
       <source>Characters</source>
       <translation>Caracteres</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="333" />
+      <location filename="../novelwriter/constants.py" line="337" />
       <source>Characters in Text</source>
       <translation>Caracteres no texto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="334" />
+      <location filename="../novelwriter/constants.py" line="338" />
       <source>Characters in Headings</source>
       <translation>Caracteres em cabeçalhos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="335" />
+      <location filename="../novelwriter/constants.py" line="339" />
       <source>Paragraphs</source>
       <translation>Parágrafos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="336" />
+      <location filename="../novelwriter/constants.py" line="340" />
       <source>Headings</source>
       <translation>Cabeçalhos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="337" />
+      <location filename="../novelwriter/constants.py" line="341" />
       <source>Characters, No Spaces</source>
       <translation>Caracteres, sem espaços</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="338" />
+      <location filename="../novelwriter/constants.py" line="342" />
       <source>Characters in Text, No Spaces</source>
       <translation>Caracteres no texto, sem espaços</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="339" />
+      <location filename="../novelwriter/constants.py" line="343" />
       <source>Characters in Headings, No Spaces</source>
       <translation>Caracteres em cabeçalhos, sem espaços</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="340" />
+      <location filename="../novelwriter/constants.py" line="344" />
       <source>Words</source>
       <translation>Palavras</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="341" />
+      <location filename="../novelwriter/constants.py" line="345" />
       <source>Words in Text</source>
       <translation>Palavras no texto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="342" />
+      <location filename="../novelwriter/constants.py" line="346" />
       <source>Words in Headings</source>
       <translation>Palavras em cabeçalhos</translation>
     </message>
@@ -4941,121 +4941,121 @@
   <context>
     <name>_TreeContextMenu</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1133" />
+      <location filename="../novelwriter/gui/projtree.py" line="1134" />
       <source>Empty Trash</source>
       <translation>Esvaziar a lixeira</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1154" />
+      <location filename="../novelwriter/gui/projtree.py" line="1155" />
       <source>Rename</source>
       <translation>Renomear</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1169" />
+      <location filename="../novelwriter/gui/projtree.py" line="1170" />
       <source>Duplicate</source>
       <translation>Duplicar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1189" />
+      <location filename="../novelwriter/gui/projtree.py" line="1190" />
       <source>Open Document</source>
       <translation>Abrir documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1194" />
+      <location filename="../novelwriter/gui/projtree.py" line="1195" />
       <source>View Document</source>
       <translation>Ver documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1203" />
+      <location filename="../novelwriter/gui/projtree.py" line="1204" />
       <source>Create New ...</source>
       <translation>Criar novo ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1215" />
+      <location filename="../novelwriter/gui/projtree.py" line="1216" />
       <source>Rename to Heading</source>
       <translation>Renomear para título</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1224" />
+      <location filename="../novelwriter/gui/projtree.py" line="1225" />
       <source>Set Active to ...</source>
       <translation>Definir inclusão como...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1230" />
+      <location filename="../novelwriter/gui/projtree.py" line="1231" />
       <source>Toggle Active</source>
       <translation>Alternar inclusão</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1237" />
+      <location filename="../novelwriter/gui/projtree.py" line="1238" />
       <source>Set Status to ...</source>
       <translation>Definir estado como...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1267" />
-      <location filename="../novelwriter/gui/projtree.py" line="1249" />
+      <location filename="../novelwriter/gui/projtree.py" line="1268" />
+      <location filename="../novelwriter/gui/projtree.py" line="1250" />
       <source>Manage Labels ...</source>
       <translation>Gerenciar rótulos ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1255" />
+      <location filename="../novelwriter/gui/projtree.py" line="1256" />
       <source>Set Importance to ...</source>
       <translation>Definir importância como...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1276" />
+      <location filename="../novelwriter/gui/projtree.py" line="1277" />
       <source>Transform ...</source>
       <translation>Transformar ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1298" />
-      <location filename="../novelwriter/gui/projtree.py" line="1294" />
-      <location filename="../novelwriter/gui/projtree.py" line="1290" />
-      <location filename="../novelwriter/gui/projtree.py" line="1286" />
+      <location filename="../novelwriter/gui/projtree.py" line="1299" />
+      <location filename="../novelwriter/gui/projtree.py" line="1295" />
+      <location filename="../novelwriter/gui/projtree.py" line="1291" />
+      <location filename="../novelwriter/gui/projtree.py" line="1287" />
       <source>Convert to {0}</source>
       <translation>Converter em {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1302" />
+      <location filename="../novelwriter/gui/projtree.py" line="1303" />
       <source>Merge Child Items into Self</source>
       <translation>Combinar subitens neste documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1304" />
+      <location filename="../novelwriter/gui/projtree.py" line="1305" />
       <source>Merge Child Items into New</source>
       <translation>Combinar subitens em um novo documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1308" />
+      <location filename="../novelwriter/gui/projtree.py" line="1309" />
       <source>Merge Documents in Folder</source>
       <translation>Combinar documentos no diretório</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1312" />
+      <location filename="../novelwriter/gui/projtree.py" line="1313" />
       <source>Split Document by Headings</source>
       <translation>Dividir documento por cabeçalhos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1319" />
+      <location filename="../novelwriter/gui/projtree.py" line="1320" />
       <source>Expand All</source>
       <translation>Expandir tudo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1321" />
+      <location filename="../novelwriter/gui/projtree.py" line="1322" />
       <source>Collapse All</source>
       <translation>Recolher tudo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1331" />
+      <location filename="../novelwriter/gui/projtree.py" line="1332" />
       <source>Delete Permanently</source>
       <translation>Excluir permanentemente</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1333" />
+      <location filename="../novelwriter/gui/projtree.py" line="1334" />
       <source>Move to Trash</source>
       <translation>Mover para a lixeira</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1409" />
+      <location filename="../novelwriter/gui/projtree.py" line="1410" />
       <source>Do you want to convert the folder to a {0}? This action cannot be reversed.</source>
       <translation>Deseja converter o diretório em {0}? Esta ação não pode ser desfeita.</translation>
     </message>
@@ -5063,7 +5063,7 @@
   <context>
     <name>_UpdatableMenu</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1047" />
+      <location filename="../novelwriter/gui/projtree.py" line="1048" />
       <source>From Template</source>
       <translation>Do modelo</translation>
     </message>
