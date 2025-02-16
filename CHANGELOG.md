@@ -5,8 +5,8 @@
 ### Release Notes
 
 This is a patch release that fixes a translation issue that affected several labels on the user
-interface where the wrong or no translation was used. This only affected non-English language
-settings.
+interface where the wrong or no translation was used. The bug affected all languages except for
+English.
 
 ### Detailed Changelog
 
