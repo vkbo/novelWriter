@@ -177,6 +177,7 @@ class GuiProjectView(QWidget):
         self.projTree.addAction(trash)
         rename.triggered.connect(self.renameTreeItem)
         delete.triggered.connect(self.projTree.processDeleteRequest)
+        trash.triggered.connect(self.projTree.emptyTrash)
         return
 
     ##

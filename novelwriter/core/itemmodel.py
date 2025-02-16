@@ -326,7 +326,7 @@ class ProjectModel(QAbstractItemModel):
 
     def parent(self, index: QModelIndex) -> QModelIndex:
         """Get the parent model index of another index."""
-        if index.isValid() and (parent := index.internalPointer().parent()):
+        if index.isValid() and (node := index.internalPointer()) and (parent := node.parent()):
             return self.createIndex(parent.row(), 0, parent)
         return QModelIndex()
 
@@ -377,7 +377,9 @@ class ProjectModel(QAbstractItemModel):
         row: int, column: int, parent: QModelIndex
     ) -> bool:
         """Check if mime data can be dropped on the current location."""
-        return data.hasFormat(nwConst.MIME_HANDLE) and action == Qt.DropAction.MoveAction
+        if parent.isValid() and parent.internalPointer() is not self._root:
+            return data.hasFormat(nwConst.MIME_HANDLE) and action == Qt.DropAction.MoveAction
+        return False
 
     def dropMimeData(
         self, data: QMimeData, action: Qt.DropAction,

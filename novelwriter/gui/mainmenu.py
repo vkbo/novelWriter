@@ -36,7 +36,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import openExternalPath, qtAddAction, qtAddMenu, qtLambda
 from novelwriter.constants import (
     nwConst, nwKeyWords, nwLabels, nwShortcode, nwStats, nwStyles, nwUnicode,
-    trConst
+    trConst, trStats
 )
 from novelwriter.enum import nwDocAction, nwDocInsert, nwFocus, nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
@@ -602,7 +602,7 @@ class GuiMainMenu(QMenuBar):
         self.mInsField = qtAddMenu(self.insMenu, self.tr("Word/Character Count"))
         for field in nwStats.ALL_FIELDS:
             value = nwShortcode.FIELD_VALUE.format(field)
-            action = qtAddAction(self.mInsField, trConst(nwLabels.STATS_NAME[field]))
+            action = qtAddAction(self.mInsField, trStats(nwLabels.STATS_NAME[field]))
             action.triggered.connect(qtLambda(self.requestDocInsertText.emit, value))
 
         # Insert > Breaks and Vertical Space

@@ -32,7 +32,7 @@ from PyQt6.QtWidgets import QGridLayout, QLabel, QWidget
 
 from novelwriter import SHARED
 from novelwriter.common import elide
-from novelwriter.constants import nwLabels, nwStats, trConst
+from novelwriter.constants import nwLabels, nwStats, trConst, trStats
 from novelwriter.enum import nwChange
 from novelwriter.types import (
     QtAlignLeft, QtAlignLeftBase, QtAlignRight, QtAlignRightBase,
@@ -62,9 +62,9 @@ class GuiItemDetails(QWidget):
         fntValue = self.font()
         fntValue.setPointSizeF(0.9*fPt)
 
-        trStats1 = trConst(nwLabels.STATS_NAME[nwStats.CHARS])
-        trStats2 = trConst(nwLabels.STATS_NAME[nwStats.WORDS])
-        trStats3 = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
+        trStats1 = trStats(nwLabels.STATS_NAME[nwStats.CHARS])
+        trStats2 = trStats(nwLabels.STATS_NAME[nwStats.WORDS])
+        trStats3 = trStats(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
 
         # Label
         self.labelName = QLabel(self.tr("Label"), self)

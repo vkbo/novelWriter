@@ -43,7 +43,7 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import fuzzyTime, qtLambda
-from novelwriter.constants import nwLabels, nwStats, trConst
+from novelwriter.constants import nwLabels, nwStats, trStats
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
@@ -1024,17 +1024,17 @@ class _StatsWidget(QWidget):
 
     def _buildBottomPanel(self) -> None:
         """Build the bottom page."""
-        trAllChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS])
-        trTextChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_TEXT])
-        trTitleChars = trConst(nwLabels.STATS_NAME[nwStats.CHARS_TITLE])
-        trParagraphCount = trConst(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
-        trTitleCount = trConst(nwLabels.STATS_NAME[nwStats.TITLES])
-        trAllWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_ALL])
-        trTextWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_TEXT])
-        trTitleWordChars = trConst(nwLabels.STATS_NAME[nwStats.WCHARS_TITLE])
-        trAllWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS])
-        trTextWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS_TEXT])
-        trTitleWords = trConst(nwLabels.STATS_NAME[nwStats.WORDS_TITLE])
+        trAllChars = trStats(nwLabels.STATS_NAME[nwStats.CHARS])
+        trTextChars = trStats(nwLabels.STATS_NAME[nwStats.CHARS_TEXT])
+        trTitleChars = trStats(nwLabels.STATS_NAME[nwStats.CHARS_TITLE])
+        trParagraphCount = trStats(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
+        trTitleCount = trStats(nwLabels.STATS_NAME[nwStats.TITLES])
+        trAllWordChars = trStats(nwLabels.STATS_NAME[nwStats.WCHARS_ALL])
+        trTextWordChars = trStats(nwLabels.STATS_NAME[nwStats.WCHARS_TEXT])
+        trTitleWordChars = trStats(nwLabels.STATS_NAME[nwStats.WCHARS_TITLE])
+        trAllWords = trStats(nwLabels.STATS_NAME[nwStats.WORDS])
+        trTextWords = trStats(nwLabels.STATS_NAME[nwStats.WORDS_TEXT])
+        trTitleWords = trStats(nwLabels.STATS_NAME[nwStats.WORDS_TITLE])
 
         # Minimal Form
         self.minWordCount = QLabel(self)
