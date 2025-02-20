@@ -28,7 +28,7 @@ import pytest
 
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
-from novelwriter.core.index import IndexItem, NWIndex, TagsIndex
+from novelwriter.core.index import IndexNode, NWIndex, TagsIndex
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment, nwItemClass, nwItemLayout
@@ -712,7 +712,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     # ==================================
 
     item = index.getItemData(nHandle)
-    assert isinstance(item, IndexItem)
+    assert isinstance(item, IndexNode)
     assert item.headings() == ["T0001"]
     assert index.getHandleHeaderCount(nHandle) == 1
     assert index.getHandleHeaderCount("foo") == 0
@@ -1197,14 +1197,14 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     itemIndex.addHeadingRef(cHandle, "T0001", ["Jane", "John"], "@char")
     idxData = itemIndex.packData()
 
-    assert idxData[cHandle]["headings"]["T0001"] == {
+    assert idxData[cHandle]["T0001"]["meta"] == {
         "level": "H2", "line": 1, "title": "Chapter One", "tag": "one",
-        "cCount": 60, "wCount": 10, "pCount": 2, "synopsis": "In the beginning ...",
+        "counts": (60, 10, 2), "summary": "In the beginning ...",
     }
-    assert "@pov" in idxData[cHandle]["references"]["T0001"]["jane"]
-    assert "@focus" in idxData[cHandle]["references"]["T0001"]["jane"]
-    assert "@char" in idxData[cHandle]["references"]["T0001"]["jane"]
-    assert "@char" in idxData[cHandle]["references"]["T0001"]["john"]
+    assert "@pov" in idxData[cHandle]["T0001"]["refs"]["jane"]
+    assert "@focus" in idxData[cHandle]["T0001"]["refs"]["jane"]
+    assert "@char" in idxData[cHandle]["T0001"]["refs"]["jane"]
+    assert "@char" in idxData[cHandle]["T0001"]["refs"]["john"]
 
     # Add the other two files
     itemIndex.add(nHandle, project.tree[nHandle])  # type: ignore
@@ -1216,7 +1216,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     # ====================================
 
     # Check repr strings
-    assert repr(itemIndex[nHandle]) == f"<IndexItem handle='{nHandle}'>"
+    assert repr(itemIndex[nHandle]) == f"<IndexNode handle='{nHandle}'>"
     assert repr(itemIndex[nHandle]["T0001"]) == "<IndexHeading key='T0001'>"  # type: ignore
 
     # Check content of a single item

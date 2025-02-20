@@ -36,7 +36,7 @@ from PyQt6.QtWidgets import (
 from novelwriter import SHARED
 from novelwriter.common import checkInt, qtAddAction
 from novelwriter.constants import nwLabels, nwLists, nwStyles, trConst
-from novelwriter.core.index import IndexHeading, IndexItem
+from novelwriter.core.index import IndexHeading, IndexNode
 from novelwriter.enum import nwChange, nwDocMode, nwItemClass
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
@@ -434,7 +434,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         self.clear()
         return
 
-    def addUpdateEntry(self, tag: str, name: str, iItem: IndexItem, hItem: IndexHeading) -> None:
+    def addUpdateEntry(self, tag: str, name: str, iItem: IndexNode, hItem: IndexHeading) -> None:
         """Add a new entry, or update an existing one."""
         nwItem = iItem.item
         impLabel, impIcon = nwItem.getImportStatus()
