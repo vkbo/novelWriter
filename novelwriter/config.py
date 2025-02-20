@@ -79,7 +79,7 @@ class Config:
         "narratorDialog", "altDialogOpen", "altDialogClose", "highlightEmph", "stopWhenIdle",
         "userIdleTime", "incNotesWCount", "fmtApostrophe", "fmtSQuoteOpen", "fmtSQuoteClose",
         "fmtDQuoteOpen", "fmtDQuoteClose", "fmtPadBefore", "fmtPadAfter", "fmtPadThin",
-        "spellLanguage", "showViewerPanel", "showEditToolBar", "showSessionTime", "viewComments",
+        "spellLanguage", "showViewerPanel", "showEditToolBar", "showSessionTime", "showSessionGoal", "showProjectGoal", "viewComments",
         "viewSynopsis", "searchCase", "searchWord", "searchRegEx", "searchLoop", "searchNextFile",
         "searchMatchCap", "searchProjCase", "searchProjWord", "searchProjRegEx", "verQtString",
         "verQtValue", "verPyQtString", "verPyQtValue", "verPyString", "osType", "osLinux",
@@ -239,6 +239,8 @@ class Config:
         self.showViewerPanel = True   # The panel for the viewer is visible
         self.showEditToolBar = False  # The document editor toolbar visibility
         self.showSessionTime = True   # Show the session time in the status bar
+        self.showSessionGoal = True   # Show the session goal in the status bar
+        self.showProjectGoal = True   # Show the project goal in the status bar
         self.viewComments    = True   # Comments are shown in the viewer
         self.viewSynopsis    = True   # Synopsis is shown in the viewer
 

@@ -32,6 +32,7 @@ from enum import Enum
 from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
+from PyQt6.QtCore import QDate
 
 from novelwriter import __hexversion__, __version__
 from novelwriter.common import (
@@ -259,6 +260,15 @@ class ProjectXMLReader:
         for xItem in xSection:
             if xItem.tag == "doBackup":
                 data.setDoBackup(xItem.text)
+            elif xItem.tag == "projGoal":
+                data.setProjGoal(xItem.text)
+            elif xItem.tag == "projDeadline":
+                date = QDate.fromString(xItem.text, "yyyy-MM-dd")
+                data.setProjDeadline(date)
+            elif xItem.tag == "sessGoalAuto":
+                data.setSessGoalAuto(xItem.text)
+            elif xItem.tag == "sessGoal":
+                data.setSessGoal(xItem.text)
             elif xItem.tag == "language":
                 data.setLanguage(xItem.text)
             elif xItem.tag == "spellChecking":
@@ -510,6 +520,10 @@ class ProjectXMLWriter:
         # Save Project Settings
         xSettings = ET.SubElement(xRoot, "settings")
         self._packSingleValue(xSettings, "doBackup", yesNo(data.doBackup))
+        self._packSingleValue(xSettings, "projGoal", data.projGoal)
+        self._packSingleValue(xSettings, "projDeadline", data.projDeadline.toString("yyyy-MM-dd"))
+        self._packSingleValue(xSettings, "sessGoalAuto", yesNo(data.sessGoalAuto))
+        self._packSingleValue(xSettings, "sessGoal", data.sessGoal)
         self._packSingleValue(xSettings, "language", data.language)
         self._packSingleValue(xSettings, "spellChecking", data.spellLang, attrib={
             "auto": yesNo(data.spellCheck)
