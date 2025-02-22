@@ -5,9 +5,11 @@ novelWriter – Project Index Data
 File History:
 Created: 2022-05-28 [2.0rc1] IndexNode
 Created: 2022-05-28 [2.0rc1] IndexHeading
+Moved:   2025-02-22 [2.7b1]  IndexNode
+Moved:   2025-02-22 [2.7b1]  IndexHeading
 
 This file is a part of novelWriter
-Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
+Copyright (C) 2025 Veronica Berglyd Olsen and novelWriter contributors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

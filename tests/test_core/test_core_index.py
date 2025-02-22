@@ -1,6 +1,6 @@
 """
-novelWriter – NWIndex Class Tester
-==================================
+novelWriter – Index Class Tester
+================================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
@@ -28,7 +28,7 @@ import pytest
 
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
-from novelwriter.core.index import IndexNode, NWIndex, TagsIndex
+from novelwriter.core.index import Index, IndexNode, TagsIndex
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment, nwItemClass, nwItemLayout
@@ -49,8 +49,8 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
     project = NWProject()
     assert project.openProject(prjLipsum)
 
-    index = NWIndex(project)
-    assert repr(index) == "<NWIndex project='Lorem Ipsum'>"
+    index = Index(project)
+    assert repr(index) == "<Index project='Lorem Ipsum'>"
 
     notIndexable = {
         "b3643d0f92e32": False,  # Novel ROOT

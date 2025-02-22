@@ -3,9 +3,7 @@ novelWriter – Project Index
 ===========================
 
 File History:
-Created: 2019-05-27 [0.1.4]  NWIndex
-Created: 2022-05-28 [2.0rc1] IndexNode
-Created: 2022-05-28 [2.0rc1] IndexHeading
+Created: 2019-05-27 [0.1.4]  Index
 Created: 2022-05-29 [2.0rc1] TagsIndex
 Created: 2022-05-29 [2.0rc1] ItemIndex
 
@@ -55,7 +53,7 @@ MAX_RETRY = 1000  # Key generator recursion limit
 KEY_SOURCE = "0123456789bcdfghjklmnpqrstvwxz"
 
 
-class NWIndex:
+class Index:
     """Core: Project Index
 
     This class holds the entire index for a given project. The index
@@ -98,7 +96,7 @@ class NWIndex:
         return
 
     def __repr__(self) -> str:
-        return f"<NWIndex project='{self._project.data.name}'>"
+        return f"<Index project='{self._project.data.name}'>"
 
     ##
     #  Properties

@@ -1,6 +1,6 @@
 """
-novelWriter – NWIndex Class Tester
-==================================
+novelWriter – Index Data Class Tester
+====================================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
