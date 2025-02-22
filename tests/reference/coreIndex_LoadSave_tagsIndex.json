@@ -6,107 +6,103 @@
   },
   "novelWriter.itemIndex": {
     "7a992350f3eb6": {
-      "headings": {
-        "T0001": {"level": "H1", "title": "Lorem Ipsum", "line": 1, "tag": "", "cCount": 259, "wCount": 44, "pCount": 5, "synopsis": ""}
+      "T0001": {
+        "meta": {"level": "H1", "title": "Lorem Ipsum", "line": 1, "tag": "", "counts": [259, 44, 5]}
       }
     },
     "8c58a65414c23": {
-      "headings": {
-        "T0000": {"level": "H0", "title": "", "line": 0, "tag": "", "cCount": 1058, "wCount": 176, "pCount": 2, "synopsis": ""}
+      "T0000": {
+        "meta": {"level": "H0", "title": "", "line": 0, "tag": "", "counts": [1058, 176, 2]}
       }
     },
     "88d59a277361b": {
-      "headings": {
-        "T0001": {"level": "H2", "title": "Prologue", "line": 1, "tag": "", "cCount": 605, "wCount": 94, "pCount": 2, "synopsis": "Explanation from the lipsum.com website."}
+      "T0001": {
+        "meta": {"level": "H2", "title": "Prologue", "line": 1, "tag": "", "counts": [605, 94, 2]},
+        "summary": "Explanation from the lipsum.com website."
       },
-      "notes": {
+      "document": {
         "footnotes": ["f9kgf"]
       }
     },
     "db7e733775d4d": {
-      "headings": {
-        "T0001": {"level": "H1", "title": "Act One", "line": 1, "tag": "", "cCount": 35, "wCount": 6, "pCount": 1, "synopsis": ""}
+      "T0001": {
+        "meta": {"level": "H1", "title": "Act One", "line": 1, "tag": "", "counts": [35, 6, 1]}
       }
     },
     "fb609cd8319dc": {
-      "headings": {
-        "T0001": {"level": "H2", "title": "Chapter One", "line": 1, "tag": "", "cCount": 419, "wCount": 67, "pCount": 1, "synopsis": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at aliquam quam."}
-      },
-      "references": {
-        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
+      "T0001": {
+        "meta": {"level": "H2", "title": "Chapter One", "line": 1, "tag": "", "counts": [419, 67, 1]},
+        "refs": {"bod": "@pov", "main": "@plot", "europe": "@location"},
+        "summary": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at aliquam quam."
       }
     },
     "88243afbe5ed8": {
-      "headings": {
-        "T0001": {"level": "H3", "title": "Scene One", "line": 1, "tag": "", "cCount": 1197, "wCount": 174, "pCount": 2, "synopsis": "Aenean ut placerat velit. Etiam laoreet ullamcorper risus, eget lobortis enim scelerisque non. Suspendisse id maximus nunc, et mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. Etiam finibus nisi vel mi molestie consectetur."},
-        "T0002": {"level": "H4", "title": "Scene One, Section Two", "line": 13, "tag": "", "cCount": 1561, "wCount": 230, "pCount": 2, "synopsis": ""}
+      "T0001": {
+        "meta": {"level": "H3", "title": "Scene One", "line": 1, "tag": "", "counts": [1197, 174, 2]},
+        "refs": {"bod": "@pov", "main": "@plot", "europe": "@location"},
+        "summary": "Aenean ut placerat velit. Etiam laoreet ullamcorper risus, eget lobortis enim scelerisque non. Suspendisse id maximus nunc, et mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. Etiam finibus nisi vel mi molestie consectetur."
       },
-      "references": {
-        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
+      "T0002": {
+        "meta": {"level": "H4", "title": "Scene One, Section Two", "line": 13, "tag": "", "counts": [1561, 230, 2]}
       }
     },
     "f96ec11c6a3da": {
-      "headings": {
-        "T0001": {"level": "H3", "title": "Scene Two", "line": 1, "tag": "", "cCount": 2034, "wCount": 299, "pCount": 3, "synopsis": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer sapien nulla, dictum at lacus a, dignissim consectetur dolor. Nunc vel eleifend lacus, eu dapibus orci."},
-        "T0002": {"level": "H4", "title": "Scene Two, Section Two", "line": 15, "tag": "", "cCount": 2009, "wCount": 301, "pCount": 3, "synopsis": ""}
+      "T0001": {
+        "meta": {"level": "H3", "title": "Scene Two", "line": 1, "tag": "", "counts": [2034, 299, 3]},
+        "refs": {"bod": "@pov", "main": "@plot", "europe": "@location"},
+        "summary": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer sapien nulla, dictum at lacus a, dignissim consectetur dolor. Nunc vel eleifend lacus, eu dapibus orci."
       },
-      "references": {
-        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
+      "T0002": {
+        "meta": {"level": "H4", "title": "Scene Two, Section Two", "line": 15, "tag": "", "counts": [2009, 301, 3]}
       }
     },
     "846352075de7d": {
-      "headings": {
-        "T0001": {"level": "H2", "title": "Why do we use it?", "line": 1, "tag": "", "cCount": 631, "wCount": 109, "pCount": 3, "synopsis": ""}
+      "T0001": {
+        "meta": {"level": "H2", "title": "Why do we use it?", "line": 1, "tag": "", "counts": [631, 109, 3]}
       }
     },
     "441420a886d82": {
-      "headings": {
-        "T0001": {"level": "H2", "title": "Chapter Two", "line": 1, "tag": "", "cCount": 477, "wCount": 70, "pCount": 1, "synopsis": "Curabitur a elit posuere, varius ex et, convallis neque. Phasellus sagittis pharetra sem vitae dapibus. Curabitur varius lorem non pulvinar congue."}
-      },
-      "references": {
-        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
+      "T0001": {
+        "meta": {"level": "H2", "title": "Chapter Two", "line": 1, "tag": "", "counts": [477, 70, 1]},
+        "refs": {"bod": "@pov", "main": "@plot", "europe": "@location"},
+        "summary": "Curabitur a elit posuere, varius ex et, convallis neque. Phasellus sagittis pharetra sem vitae dapibus. Curabitur varius lorem non pulvinar congue."
       }
     },
     "eb103bc70c90c": {
-      "headings": {
-        "T0001": {"level": "H3", "title": "Scene Three", "line": 1, "tag": "", "cCount": 3006, "wCount": 439, "pCount": 4, "synopsis": "Aenean ut libero ut lectus porttitor rhoncus vel et massa. Nam pretium, nibh et varius vehicula, urna metus blandit eros, euismod pharetra diam diam et libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos."}
-      },
-      "references": {
-        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
+      "T0001": {
+        "meta": {"level": "H3", "title": "Scene Three", "line": 1, "tag": "", "counts": [3006, 439, 4]},
+        "refs": {"bod": "@pov", "main": "@plot", "europe": "@location"},
+        "summary": "Aenean ut libero ut lectus porttitor rhoncus vel et massa. Nam pretium, nibh et varius vehicula, urna metus blandit eros, euismod pharetra diam diam et libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos."
       }
     },
     "f8c0562e50f1b": {
-      "headings": {
-        "T0001": {"level": "H3", "title": "Scene Four", "line": 1, "tag": "", "cCount": 3839, "wCount": 563, "pCount": 6, "synopsis": "Nam tempor blandit magna laoreet aliquet. Vestibulum auctor posuere leo, ac gravida nisi rhoncus varius. Aenean posuere dolor vitae condimentum volutpat. Donec egestas volutpat risus, quis luctus justo."}
-      },
-      "references": {
-        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
+      "T0001": {
+        "meta": {"level": "H3", "title": "Scene Four", "line": 1, "tag": "", "counts": [3839, 563, 6]},
+        "refs": {"bod": "@pov", "main": "@plot", "europe": "@location"},
+        "summary": "Nam tempor blandit magna laoreet aliquet. Vestibulum auctor posuere leo, ac gravida nisi rhoncus varius. Aenean posuere dolor vitae condimentum volutpat. Donec egestas volutpat risus, quis luctus justo."
       }
     },
     "47666c91c7ccf": {
-      "headings": {
-        "T0001": {"level": "H3", "title": "Scene Five", "line": 1, "tag": "", "cCount": 3644, "wCount": 543, "pCount": 5, "synopsis": "Praesent eget est porta, dictum ante in, egestas risus. Mauris risus mauris, consequat aliquam mauris et, feugiat iaculis ipsum. Aliquam arcu ipsum, fermentum ut arcu sed, lobortis euismod sem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."}
-      },
-      "references": {
-        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
+      "T0001": {
+        "meta": {"level": "H3", "title": "Scene Five", "line": 1, "tag": "", "counts": [3644, 543, 5]},
+        "refs": {"bod": "@pov", "main": "@plot", "europe": "@location"},
+        "summary": "Praesent eget est porta, dictum ante in, egestas risus. Mauris risus mauris, consequat aliquam mauris et, feugiat iaculis ipsum. Aliquam arcu ipsum, fermentum ut arcu sed, lobortis euismod sem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
       }
     },
     "4c4f28287af27": {
-      "headings": {
-        "T0001": {"level": "H1", "title": "Nobody Owens", "line": 1, "tag": "bod", "cCount": 1864, "wCount": 284, "pCount": 3, "synopsis": ""}
-      },
-      "references": {
-        "T0001": {"main": "@plot"}
+      "T0001": {
+        "meta": {"level": "H1", "title": "Nobody Owens", "line": 1, "tag": "bod", "counts": [1864, 284, 3]},
+        "refs": {"main": "@plot"}
       }
     },
     "2426c6f0ca922": {
-      "headings": {
-        "T0001": {"level": "H1", "title": "Main Plot", "line": 1, "tag": "main", "cCount": 1369, "wCount": 195, "pCount": 2, "synopsis": ""}
+      "T0001": {
+        "meta": {"level": "H1", "title": "Main Plot", "line": 1, "tag": "main", "counts": [1369, 195, 2]}
       }
     },
     "04468803b92e1": {
-      "headings": {
-        "T0001": {"level": "H1", "title": "Ancient Europe", "line": 1, "tag": "europe", "cCount": 1770, "wCount": 259, "pCount": 3, "synopsis": ""}
+      "T0001": {
+        "meta": {"level": "H1", "title": "Ancient Europe", "line": 1, "tag": "europe", "counts": [1770, 259, 3]}
       }
     }
   }

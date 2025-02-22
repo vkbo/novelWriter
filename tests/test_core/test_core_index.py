@@ -1198,13 +1198,13 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     idxData = itemIndex.packData()
 
     assert idxData[cHandle]["T0001"]["meta"] == {
-        "level": "H2", "line": 1, "title": "Chapter One", "tag": "one",
-        "counts": (60, 10, 2), "summary": "In the beginning ...",
+        "level": "H2", "line": 1, "title": "Chapter One", "tag": "one", "counts": (60, 10, 2),
     }
     assert "@pov" in idxData[cHandle]["T0001"]["refs"]["jane"]
     assert "@focus" in idxData[cHandle]["T0001"]["refs"]["jane"]
     assert "@char" in idxData[cHandle]["T0001"]["refs"]["jane"]
     assert "@char" in idxData[cHandle]["T0001"]["refs"]["john"]
+    assert idxData[cHandle]["T0001"]["summary"] == "In the beginning ..."
 
     # Add the other two files
     itemIndex.add(nHandle, project.tree[nHandle])  # type: ignore
@@ -1310,112 +1310,3 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     # Delete new item
     del itemIndex[uHandle]  # type: ignore
     assert uHandle not in itemIndex
-
-    # Unpack Error Handling
-    # =====================
-
-    # Pack/unpack should restore state
-    content = itemIndex.packData()
-    itemIndex.clear()
-    itemIndex.unpackData(content)
-    assert itemIndex.packData() == content
-    itemIndex.clear()
-
-    # Data must be dictionary
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData("stuff")  # type: ignore
-    assert str(exc.value) == "itemIndex is not a dict"
-
-    # Keys must be valid handles
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({"stuff": "more stuff"})
-    assert str(exc.value) == "itemIndex keys must be handles"
-
-    # Unknown keys should be skipped
-    itemIndex.unpackData({C.hInvalid: {}})
-    assert itemIndex._items == {}
-
-    # Known keys can be added, even without data
-    itemIndex.unpackData({nHandle: {}})
-    assert nHandle in itemIndex
-    assert itemIndex[nHandle].handle == nHandle  # type: ignore
-
-    # Title tags must be valid
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({cHandle: {"headings": {"TTTTTTT": {}}}})
-    assert str(exc.value) == "The itemIndex contains an invalid title key"
-
-    # Reference without a heading should be rejected
-    itemIndex.unpackData({
-        cHandle: {
-            "headings": {"T0001": {}},
-            "references": {"T0001": {}, "T0002": {}},
-        }
-    })
-    assert "T0001" in itemIndex[cHandle]  # type: ignore
-    assert "T0002" not in itemIndex[cHandle]  # type: ignore
-    itemIndex.clear()
-
-    # Tag keys must be strings
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({
-            cHandle: {
-                "headings": {"T0001": {}},
-                "references": {"T0001": {1234: "@pov"}},
-                "notes": {"footnotes": [], "comments": []},
-            }
-        })
-    assert str(exc.value) == "itemIndex reference key must be a string"
-
-    # Type must be strings
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({
-            cHandle: {
-                "headings": {"T0001": {}},
-                "references": {"T0001": {"John": []}},
-                "notes": {"footnotes": [], "comments": []},
-            }
-        })
-    assert str(exc.value) == "itemIndex reference type must be a string"
-
-    # Types must be valid
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({
-            cHandle: {
-                "headings": {"T0001": {}},
-                "references": {"T0001": {"John": "@pov,@char,@stuff"}},
-                "notes": {"footnotes": [], "comments": []},
-            }
-        })
-    assert str(exc.value) == "The itemIndex contains an invalid reference type"
-
-    # Note type must be valid
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({
-            cHandle: {
-                "headings": {"T0001": {}},
-                "references": {"T0001": {"John": "@pov,@char"}},
-                "notes": {"stuff": [], "comments": []},
-            }
-        })
-    assert str(exc.value) == "The notes style is invalid"
-
-    # Note keys must be all strings
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({
-            cHandle: {
-                "headings": {"T0001": {}},
-                "references": {"T0001": {"John": "@pov,@char"}},
-                "notes": {"footnotes": ["fkey", 1], "comments": []},
-            }
-        })
-    assert str(exc.value) == "The notes keys must be a list of strings"
-
-    # This should pass
-    itemIndex.unpackData({
-        cHandle: {
-            "headings": {"T0001": {}},
-            "references": {"T0001": {"John": "@pov,@char"}},
-            "notes": {"footnotes": ["fkey"], "comments": ["ckey"]},
-        }
-    })

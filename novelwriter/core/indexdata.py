@@ -291,20 +291,20 @@ class IndexHeading:
         self._comments["summary"] = str(text)
         return
 
-    def setTag(self, tagKey: str) -> None:
+    def setTag(self, tag: str) -> None:
         """Set the tag for references, and make sure it is a string."""
-        self._tag = str(tagKey).lower()
+        self._tag = str(tag).lower()
         return
 
-    def addReference(self, tagKey: str, refType: str) -> None:
+    def addReference(self, tag: str, keyword: str) -> None:
         """Add a record of a reference tag, and what keyword types it is
         associated with.
         """
-        if refType in nwKeyWords.VALID_KEYS:
-            tagKey = tagKey.lower()
-            if tagKey not in self._refs:
-                self._refs[tagKey] = set()
-            self._refs[tagKey].add(refType)
+        if keyword in nwKeyWords.VALID_KEYS:
+            tag = tag.lower()
+            if tag not in self._refs:
+                self._refs[tag] = set()
+            self._refs[tag].add(keyword)
         return
 
     ##
@@ -337,18 +337,18 @@ class IndexHeading:
                 self.setLine(entry.get("line", 0))
                 self.setCounts(entry.get("counts", [0, 0, 0]))
             elif key == "refs":
-                for key, types in entry.items():
-                    if not isinstance(key, str):
-                        raise ValueError("itemIndex reference key must be a string")
-                    if not isinstance(types, str):
-                        raise ValueError("itemIndex reference type must be a string")
-                    for refType in types.split(","):
-                        if refType in nwKeyWords.VALID_KEYS:
-                            self.addReference(key, refType)
+                for tag, value in entry.items():
+                    if not isinstance(tag, str):
+                        raise ValueError("Heading reference key must be a string")
+                    if not isinstance(value, str):
+                        raise ValueError("Heading reference value must be a string")
+                    for keyword in value.split(","):
+                        if keyword in nwKeyWords.VALID_KEYS:
+                            self.addReference(tag, keyword)
                         else:
-                            raise ValueError("The itemIndex contains an invalid reference type")
+                            raise ValueError("Heading reference contains an invalid keyword")
             elif key == "summary" or key.startswith("story"):
                 self._comments[str(key)] = str(entry)
             else:
-                raise KeyError("Unknown key in itemIndex")
+                raise KeyError("Unknown key in heading entry")
         return
