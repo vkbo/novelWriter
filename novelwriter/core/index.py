@@ -38,6 +38,7 @@ from novelwriter import SHARED
 from novelwriter.common import isHandle, isItemClass, isTitleTag, jsonEncode
 from novelwriter.constants import nwFiles, nwKeyWords, nwStyles
 from novelwriter.core.indexdata import NOTE_TYPES, TT_NONE, IndexHeading, IndexNode, T_NoteTypes
+from novelwriter.core.novelmodel import NovelModel
 from novelwriter.enum import nwComment, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 from novelwriter.text.comments import processComment
@@ -89,6 +90,9 @@ class Index:
         self._itemIndex = ItemIndex(project)
         self._indexBroken = False
 
+        # Models
+        self._novelModels: dict[str, NovelModel] = {}
+
         # TimeStamps
         self._indexChange = 0.0
         self._rootChange = {}
@@ -105,6 +109,26 @@ class Index:
     @property
     def indexBroken(self) -> bool:
         return self._indexBroken
+
+    ##
+    #  Getters
+    ##
+
+    def getNovelModel(self, tHandle: str) -> NovelModel | None:
+        """Get the model for a specific novel root."""
+        if tHandle not in self._novelModels:
+            self._generateNovelModel(tHandle)
+        return self._novelModels.get(tHandle)
+
+    def _generateNovelModel(self, tHandle: str) -> None:
+        """Generate a novel model for a specific handle."""
+        if (item := SHARED.project.tree[tHandle]) and item.isRootType() and item.isNovelLike():
+            model = NovelModel(item)
+            for handle in SHARED.project.tree.subTree(tHandle):
+                if node := self._itemIndex[handle]:
+                    model.append(node)
+            self._novelModels[tHandle] = model
+        return
 
     ##
     #  Public Methods

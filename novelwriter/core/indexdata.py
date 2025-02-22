@@ -31,6 +31,7 @@ import logging
 from collections.abc import ItemsView, Sequence
 from typing import TYPE_CHECKING, Literal
 
+from novelwriter import CONFIG
 from novelwriter.common import checkInt, isListInstance, isTitleTag
 from novelwriter.constants import nwKeyWords, nwStyles
 
@@ -236,6 +237,10 @@ class IndexHeading:
     @property
     def title(self) -> str:
         return self._title
+
+    @property
+    def mainCount(self) -> int:
+        return self._counts[0 if CONFIG.useCharCount else 1]
 
     @property
     def charCount(self) -> int:
