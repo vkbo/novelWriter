@@ -1,6 +1,6 @@
 """
-novelWriter – NWIndex Class Tester
-==================================
+novelWriter – Index Class Tester
+================================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
@@ -28,7 +28,7 @@ import pytest
 
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
-from novelwriter.core.index import IndexItem, NWIndex, TagsIndex, _checkModKey, processComment
+from novelwriter.core.index import Index, IndexNode, TagsIndex
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment, nwItemClass, nwItemLayout
@@ -49,8 +49,8 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
     project = NWProject()
     assert project.openProject(prjLipsum)
 
-    index = NWIndex(project)
-    assert repr(index) == "<NWIndex project='Lorem Ipsum'>"
+    index = Index(project)
+    assert repr(index) == "<Index project='Lorem Ipsum'>"
 
     notIndexable = {
         "b3643d0f92e32": False,  # Novel ROOT
@@ -712,7 +712,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     # ==================================
 
     item = index.getItemData(nHandle)
-    assert isinstance(item, IndexItem)
+    assert isinstance(item, IndexNode)
     assert item.headings() == ["T0001"]
     assert index.getHandleHeaderCount(nHandle) == 1
     assert index.getHandleHeaderCount("foo") == 0
@@ -1197,14 +1197,14 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     itemIndex.addHeadingRef(cHandle, "T0001", ["Jane", "John"], "@char")
     idxData = itemIndex.packData()
 
-    assert idxData[cHandle]["headings"]["T0001"] == {
-        "level": "H2", "line": 1, "title": "Chapter One", "tag": "one",
-        "cCount": 60, "wCount": 10, "pCount": 2, "synopsis": "In the beginning ...",
+    assert idxData[cHandle]["T0001"]["meta"] == {
+        "level": "H2", "line": 1, "title": "Chapter One", "tag": "one", "counts": (60, 10, 2),
     }
-    assert "@pov" in idxData[cHandle]["references"]["T0001"]["jane"]
-    assert "@focus" in idxData[cHandle]["references"]["T0001"]["jane"]
-    assert "@char" in idxData[cHandle]["references"]["T0001"]["jane"]
-    assert "@char" in idxData[cHandle]["references"]["T0001"]["john"]
+    assert "@pov" in idxData[cHandle]["T0001"]["refs"]["jane"]
+    assert "@focus" in idxData[cHandle]["T0001"]["refs"]["jane"]
+    assert "@char" in idxData[cHandle]["T0001"]["refs"]["jane"]
+    assert "@char" in idxData[cHandle]["T0001"]["refs"]["john"]
+    assert idxData[cHandle]["T0001"]["summary"] == "In the beginning ..."
 
     # Add the other two files
     itemIndex.add(nHandle, project.tree[nHandle])  # type: ignore
@@ -1216,7 +1216,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     # ====================================
 
     # Check repr strings
-    assert repr(itemIndex[nHandle]) == f"<IndexItem handle='{nHandle}'>"
+    assert repr(itemIndex[nHandle]) == f"<IndexNode handle='{nHandle}'>"
     assert repr(itemIndex[nHandle]["T0001"]) == "<IndexHeading key='T0001'>"  # type: ignore
 
     # Check content of a single item
@@ -1330,176 +1330,3 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     with pytest.raises(ValueError) as exc:
         itemIndex.unpackData({"stuff": "more stuff"})
     assert str(exc.value) == "itemIndex keys must be handles"
-
-    # Unknown keys should be skipped
-    itemIndex.unpackData({C.hInvalid: {}})
-    assert itemIndex._items == {}
-
-    # Known keys can be added, even without data
-    itemIndex.unpackData({nHandle: {}})
-    assert nHandle in itemIndex
-    assert itemIndex[nHandle].handle == nHandle  # type: ignore
-
-    # Title tags must be valid
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({cHandle: {"headings": {"TTTTTTT": {}}}})
-    assert str(exc.value) == "The itemIndex contains an invalid title key"
-
-    # Reference without a heading should be rejected
-    itemIndex.unpackData({
-        cHandle: {
-            "headings": {"T0001": {}},
-            "references": {"T0001": {}, "T0002": {}},
-        }
-    })
-    assert "T0001" in itemIndex[cHandle]  # type: ignore
-    assert "T0002" not in itemIndex[cHandle]  # type: ignore
-    itemIndex.clear()
-
-    # Tag keys must be strings
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({
-            cHandle: {
-                "headings": {"T0001": {}},
-                "references": {"T0001": {1234: "@pov"}},
-                "notes": {"footnotes": [], "comments": []},
-            }
-        })
-    assert str(exc.value) == "itemIndex reference key must be a string"
-
-    # Type must be strings
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({
-            cHandle: {
-                "headings": {"T0001": {}},
-                "references": {"T0001": {"John": []}},
-                "notes": {"footnotes": [], "comments": []},
-            }
-        })
-    assert str(exc.value) == "itemIndex reference type must be a string"
-
-    # Types must be valid
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({
-            cHandle: {
-                "headings": {"T0001": {}},
-                "references": {"T0001": {"John": "@pov,@char,@stuff"}},
-                "notes": {"footnotes": [], "comments": []},
-            }
-        })
-    assert str(exc.value) == "The itemIndex contains an invalid reference type"
-
-    # Note type must be valid
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({
-            cHandle: {
-                "headings": {"T0001": {}},
-                "references": {"T0001": {"John": "@pov,@char"}},
-                "notes": {"stuff": [], "comments": []},
-            }
-        })
-    assert str(exc.value) == "The notes style is invalid"
-
-    # Note keys must be all strings
-    with pytest.raises(ValueError) as exc:
-        itemIndex.unpackData({
-            cHandle: {
-                "headings": {"T0001": {}},
-                "references": {"T0001": {"John": "@pov,@char"}},
-                "notes": {"footnotes": ["fkey", 1], "comments": []},
-            }
-        })
-    assert str(exc.value) == "The notes keys must be a list of strings"
-
-    # This should pass
-    itemIndex.unpackData({
-        cHandle: {
-            "headings": {"T0001": {}},
-            "references": {"T0001": {"John": "@pov,@char"}},
-            "notes": {"footnotes": ["fkey"], "comments": ["ckey"]},
-        }
-    })
-
-
-@pytest.mark.core
-def testCoreIndex_checkModKey():
-    """Test the _checkModKey function."""
-    # Check Requirements
-
-    # Synopsis
-    assert _checkModKey("synopsis", "") is True
-    assert _checkModKey("synopsis", "a") is False
-
-    # Short
-    assert _checkModKey("short", "") is True
-    assert _checkModKey("short", "a") is False
-
-    # Note
-    assert _checkModKey("note", "") is True
-    assert _checkModKey("note", "a") is True
-
-    # Footnote
-    assert _checkModKey("footnote", "") is False
-    assert _checkModKey("footnote", "a") is True
-
-    # Invalid
-    assert _checkModKey("stuff", "") is False
-    assert _checkModKey("stuff", "a") is False
-
-    # Check Keys
-    assert _checkModKey("note", "a") is True
-    assert _checkModKey("note", "a1") is True
-    assert _checkModKey("note", "a1.2") is False
-    assert _checkModKey("note", "a1_2") is True
-
-
-@pytest.mark.core
-def testCoreIndex_processComment():
-    """Test the comment processing function."""
-    # Plain
-    assert processComment("%Hi") == (nwComment.PLAIN, "", "Hi", 0, 0)
-    assert processComment("% Hi") == (nwComment.PLAIN, "", "Hi", 0, 0)
-    assert processComment("% Hi:You") == (nwComment.PLAIN, "", "Hi:You", 0, 0)
-    assert processComment("% Hi.You:There") == (nwComment.PLAIN, "", "Hi.You:There", 0, 0)
-
-    # Ignore
-    assert processComment("%~Hi") == (nwComment.IGNORE, "", "Hi", 0, 0)
-    assert processComment("%~ Hi") == (nwComment.IGNORE, "", "Hi", 0, 0)
-
-    # Invalid
-    assert processComment("") == (nwComment.PLAIN, "", "", 0, 0)
-
-    # Short : Term not allowed
-    assert processComment("%short: Hi") == (nwComment.SHORT, "", "Hi", 0, 7)
-    assert processComment("%short.a: Hi") == (nwComment.PLAIN, "", "short.a: Hi", 0, 0)
-
-    # Synopsis : Term not allowed
-    assert processComment("%synopsis: Hi") == (nwComment.SYNOPSIS, "", "Hi", 0, 10)
-    assert processComment("%synopsis.a: Hi") == (nwComment.PLAIN, "", "synopsis.a: Hi", 0, 0)
-
-    # Note : Term optional
-    assert processComment("%note: Hi") == (nwComment.NOTE, "", "Hi", 0, 6)
-    assert processComment("%note.a: Hi") == (nwComment.NOTE, "a", "Hi", 6, 8)
-
-    # Footnote : Term required
-    assert processComment("%footnote: Hi") == (nwComment.PLAIN, "", "footnote: Hi", 0, 0)
-    assert processComment("%footnote.a: Hi") == (nwComment.FOOTNOTE, "a", "Hi", 10, 12)
-
-    # Check Case
-    assert processComment("%Footnote.a: Hi") == (nwComment.FOOTNOTE, "a", "Hi", 10, 12)
-    assert processComment("%FOOTNOTE.A: Hi") == (nwComment.FOOTNOTE, "A", "Hi", 10, 12)
-    assert processComment("%FootNote.A_a: Hi") == (nwComment.FOOTNOTE, "A_a", "Hi", 10, 14)
-
-    # Padding without term
-    assert processComment("%short: Hi") == (nwComment.SHORT, "", "Hi", 0, 7)
-    assert processComment("% short: Hi") == (nwComment.SHORT, "", "Hi", 0, 8)
-    assert processComment("%  short : Hi") == (nwComment.SHORT, "", "Hi", 0, 10)
-    assert processComment("%   short  : Hi") == (nwComment.SHORT, "", "Hi", 0, 12)
-    assert processComment("% \t  short  : Hi") == (nwComment.SHORT, "", "Hi", 0, 13)
-
-    # Padding with term
-    assert processComment("%note.term: Hi") == (nwComment.NOTE, "term", "Hi", 6, 11)
-    assert processComment("% note.term: Hi") == (nwComment.NOTE, "term", "Hi", 7, 12)
-    assert processComment("% note.term : Hi") == (nwComment.NOTE, "term", "Hi", 7, 13)
-    assert processComment("% note. term : Hi") == (nwComment.PLAIN, "", "note. term : Hi", 0, 0)
-    assert processComment("% note . term : Hi") == (nwComment.PLAIN, "", "note . term : Hi", 0, 0)
