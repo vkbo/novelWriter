@@ -3,9 +3,7 @@ novelWriter – Project Index
 ===========================
 
 File History:
-Created: 2019-05-27 [0.1.4]  NWIndex
-Created: 2022-05-28 [2.0rc1] IndexItem
-Created: 2022-05-28 [2.0rc1] IndexHeading
+Created: 2019-05-27 [0.1.4]  Index
 Created: 2022-05-29 [2.0rc1] TagsIndex
 Created: 2022-05-29 [2.0rc1] ItemIndex
 
@@ -34,15 +32,15 @@ import random
 from collections.abc import ItemsView, Iterable
 from pathlib import Path
 from time import time
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from novelwriter import SHARED
-from novelwriter.common import (
-    checkInt, isHandle, isItemClass, isListInstance, isTitleTag, jsonEncode
-)
+from novelwriter.common import isHandle, isItemClass, isTitleTag, jsonEncode
 from novelwriter.constants import nwFiles, nwKeyWords, nwStyles
+from novelwriter.core.indexdata import NOTE_TYPES, TT_NONE, IndexHeading, IndexNode, T_NoteTypes
 from novelwriter.enum import nwComment, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
+from novelwriter.text.comments import processComment
 from novelwriter.text.counting import standardCounter
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -51,15 +49,11 @@ if TYPE_CHECKING:  # pragma: no cover
 
 logger = logging.getLogger(__name__)
 
-T_NoteTypes = Literal["footnotes", "comments"]
-
-TT_NONE = "T0000"  # Default title key
 MAX_RETRY = 1000  # Key generator recursion limit
 KEY_SOURCE = "0123456789bcdfghjklmnpqrstvwxz"
-NOTE_TYPES: list[T_NoteTypes] = ["footnotes", "comments"]
 
 
-class NWIndex:
+class Index:
     """Core: Project Index
 
     This class holds the entire index for a given project. The index
@@ -71,8 +65,8 @@ class NWIndex:
     this data is set directly by the indexer class in the NWItem object.
 
     The primary index data is contained in a single instance of the
-    ItemIndex class. This object contains an IndexItem representing each
-    NWItem of the project. Each IndexItem holds an IndexHeading object
+    ItemIndex class. This object contains an IndexNode representing each
+    NWItem of the project. Each IndexNode holds an IndexHeading object
     for each heading of the item's text.
 
     A reverse index of all tags is contained in a single instance of the
@@ -102,7 +96,7 @@ class NWIndex:
         return
 
     def __repr__(self) -> str:
-        return f"<NWIndex project='{self._project.data.name}'>"
+        return f"<Index project='{self._project.data.name}'>"
 
     ##
     #  Properties
@@ -522,7 +516,7 @@ class NWIndex:
     #  Extract Data
     ##
 
-    def getItemData(self, tHandle: str) -> IndexItem | None:
+    def getItemData(self, tHandle: str) -> IndexNode | None:
         """Get the index data for a given item."""
         return self._itemIndex[tHandle]
 
@@ -571,7 +565,7 @@ class NWIndex:
     def getHandleHeaderCount(self, tHandle: str) -> int:
         """Get the number of headers in an item."""
         tItem = self._itemIndex[tHandle]
-        if isinstance(tItem, IndexItem):
+        if isinstance(tItem, IndexNode):
             return len(tItem)
         return 0
 
@@ -683,7 +677,7 @@ class NWIndex:
 
     def getTagsData(
         self, activeOnly: bool = True
-    ) -> Iterable[tuple[str, str, str, IndexItem | None, IndexHeading | None]]:
+    ) -> Iterable[tuple[str, str, str, IndexNode | None, IndexHeading | None]]:
         """Return all known tags."""
         for tag, data in self._tagsIndex.items():
             iItem = self._itemIndex[data.get("handle")]
@@ -692,7 +686,7 @@ class NWIndex:
                 yield tag, data.get("name", ""), data.get("class", ""), iItem, hItem
         return
 
-    def getSingleTag(self, tagKey: str) -> tuple[str, str, IndexItem | None, IndexHeading | None]:
+    def getSingleTag(self, tagKey: str) -> tuple[str, str, IndexNode | None, IndexHeading | None]:
         """Return tag data for a specific tag."""
         tName = self._tagsIndex.tagName(tagKey)
         tClass = self._tagsIndex.tagClass(tagKey)
@@ -840,7 +834,7 @@ class ItemIndex:
     A wrapper object holding the indexed items. This is a wrapper
     class around a single storage dictionary with a set of utility
     functions for setting and accessing the index data. Each indexed
-    item is stored in an IndexItem object, which again holds an
+    item is stored in an IndexNode object, which again holds an
     IndexHeading object for each heading of the text.
     """
 
@@ -848,7 +842,7 @@ class ItemIndex:
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
-        self._items: dict[str, IndexItem] = {}
+        self._items: dict[str, IndexNode] = {}
         return
 
     def __contains__(self, tHandle: str) -> bool:
@@ -858,7 +852,7 @@ class ItemIndex:
         self._items.pop(tHandle, None)
         return
 
-    def __getitem__(self, tHandle: str) -> IndexItem | None:
+    def __getitem__(self, tHandle: str) -> IndexNode | None:
         return self._items.get(tHandle, None)
 
     ##
@@ -874,7 +868,7 @@ class ItemIndex:
         """Add a new item to the index. This will overwrite the item if
         it already exists.
         """
-        self._items[tHandle] = IndexItem(tHandle, nwItem)
+        self._items[tHandle] = IndexNode(tHandle, nwItem)
         return
 
     def allItemTags(self, tHandle: str) -> list[str]:
@@ -991,7 +985,7 @@ class ItemIndex:
 
     def unpackData(self, data: dict) -> None:
         """Iterate through the itemIndex loaded from cache and check
-        that it's valid. This will raise errors if there is a problem.
+        that it's valid. This will raise errors if there are problems.
         """
         self._items = {}
         if not isinstance(data, dict):
@@ -1003,388 +997,8 @@ class ItemIndex:
 
             nwItem = self._project.tree[tHandle]
             if nwItem is not None:
-                tItem = IndexItem(tHandle, nwItem)
+                tItem = IndexNode(tHandle, nwItem)
                 tItem.unpackData(tData)
                 self._items[tHandle] = tItem
 
         return
-
-
-class IndexItem:
-    """Core: Single Index Item Class
-
-    This object represents the index data of a project item (NWItem).
-    It holds a record of all the headings in the text, and the meta data
-    associated with each heading. It also holds a pointer to the project
-    item. The main heading level of the item is also held here since it
-    must be reset each time the item is re-indexed.
-    """
-
-    __slots__ = ("_handle", "_item", "_headings", "_count", "_notes")
-
-    def __init__(self, tHandle: str, nwItem: NWItem) -> None:
-        self._handle = tHandle
-        self._item = nwItem
-        self._headings: dict[str, IndexHeading] = {TT_NONE: IndexHeading(TT_NONE)}
-        self._notes: dict[str, set[str]] = {}
-        self._count = 0
-        return
-
-    def __repr__(self) -> str:
-        return f"<IndexItem handle='{self._handle}'>"
-
-    def __len__(self) -> int:
-        return len(self._headings)
-
-    def __getitem__(self, sTitle: str) -> IndexHeading | None:
-        return self._headings.get(sTitle, None)
-
-    def __contains__(self, sTitle: str) -> bool:
-        return sTitle in self._headings
-
-    ##
-    # Properties
-    ##
-
-    @property
-    def handle(self) -> str:
-        """Return the item handle of the index item."""
-        return self._handle
-
-    @property
-    def item(self) -> NWItem:
-        """Return the project item of the index item."""
-        return self._item
-
-    ##
-    #  Setters
-    ##
-
-    def addHeading(self, tHeading: IndexHeading) -> None:
-        """Add a heading to the item. Also remove the placeholder entry
-        if it exists.
-        """
-        if TT_NONE in self._headings:
-            self._headings.pop(TT_NONE)
-        self._headings[tHeading.key] = tHeading
-        return
-
-    def setHeadingCounts(self, sTitle: str, cCount: int, wCount: int, pCount: int) -> None:
-        """Set the character, word and paragraph count of a heading."""
-        if sTitle in self._headings:
-            self._headings[sTitle].setCounts(cCount, wCount, pCount)
-        return
-
-    def setHeadingSynopsis(self, sTitle: str, text: str) -> None:
-        """Set the synopsis text of a heading."""
-        if sTitle in self._headings:
-            self._headings[sTitle].setSynopsis(text)
-        return
-
-    def setHeadingTag(self, sTitle: str, tagKey: str) -> None:
-        """Set the tag of a heading."""
-        if sTitle in self._headings:
-            self._headings[sTitle].setTag(tagKey)
-        return
-
-    def addHeadingRef(self, sTitle: str, tagKeys: list[str], refType: str) -> None:
-        """Add a reference key and all its types to a heading."""
-        if sTitle in self._headings:
-            for tagKey in tagKeys:
-                self._headings[sTitle].addReference(tagKey, refType)
-        return
-
-    def addNoteKey(self, style: T_NoteTypes, key: str) -> None:
-        """Add a note key to the index."""
-        if style not in self._notes:
-            self._notes[style] = set()
-        self._notes[style].add(key)
-        return
-
-    ##
-    #  Data Methods
-    ##
-
-    def items(self) -> ItemsView[str, IndexHeading]:
-        """Return IndexHeading items."""
-        return self._headings.items()
-
-    def headings(self) -> list[str]:
-        """Return heading keys in sorted order."""
-        return sorted(self._headings.keys())
-
-    def allTags(self) -> list[str]:
-        """Return a list of all tags in the current item."""
-        return [h.tag for h in self._headings.values() if h.tag]
-
-    def nextHeading(self) -> str:
-        """Return the next heading key to be used."""
-        self._count += 1
-        return f"T{self._count:04d}"
-
-    def noteKeys(self, style: T_NoteTypes) -> set[str]:
-        """Return a set of all note keys."""
-        return self._notes.get(style, set())
-
-    ##
-    #  Pack/Unpack
-    ##
-
-    def packData(self) -> dict:
-        """Pack the indexed item's data into a dictionary."""
-        heads = {}
-        refs = {}
-        for sTitle, hItem in self._headings.items():
-            heads[sTitle] = hItem.packData()
-            hRefs = hItem.packReferences()
-            if hRefs:
-                refs[sTitle] = hRefs
-
-        data = {}
-        data["headings"] = heads
-        if refs:
-            data["references"] = refs
-        if self._notes:
-            data["notes"] = {style: list(keys) for style, keys in self._notes.items()}
-
-        return data
-
-    def unpackData(self, data: dict) -> None:
-        """Unpack an item entry from the data."""
-        references = data.get("references", {})
-        for sTitle, hData in data.get("headings", {}).items():
-            if not isTitleTag(sTitle):
-                raise ValueError("The itemIndex contains an invalid title key")
-            tHeading = IndexHeading(sTitle)
-            tHeading.unpackData(hData)
-            tHeading.unpackReferences(references.get(sTitle, {}))
-            self.addHeading(tHeading)
-
-        for style, keys in data.get("notes", {}).items():
-            if style not in NOTE_TYPES:
-                raise ValueError("The notes style is invalid")
-            if not isListInstance(keys, str):
-                raise ValueError("The notes keys must be a list of strings")
-            self._notes[style] = set(keys)
-
-        return
-
-
-class IndexHeading:
-    """Core: Single Index Heading Class
-
-    This object represents a section of text in a project item
-    associated with a single (valid) heading. It holds a separate record
-    of all references made under the heading.
-    """
-
-    __slots__ = (
-        "_key", "_line", "_level", "_title", "_charCount", "_wordCount",
-        "_paraCount", "_synopsis", "_tag", "_refs",
-    )
-
-    def __init__(self, key: str, line: int = 0, level: str = "H0", title: str = "") -> None:
-        self._key = key
-        self._line = line
-        self._level = level
-        self._title = title
-
-        self._charCount = 0
-        self._wordCount = 0
-        self._paraCount = 0
-        self._synopsis = ""
-
-        self._tag = ""
-        self._refs: dict[str, set[str]] = {}
-
-        return
-
-    def __repr__(self) -> str:
-        return f"<IndexHeading key='{self._key}'>"
-
-    ##
-    #  Properties
-    ##
-
-    @property
-    def key(self) -> str:
-        return self._key
-
-    @property
-    def line(self) -> int:
-        return self._line
-
-    @property
-    def level(self) -> str:
-        return self._level
-
-    @property
-    def title(self) -> str:
-        return self._title
-
-    @property
-    def charCount(self) -> int:
-        return self._charCount
-
-    @property
-    def wordCount(self) -> int:
-        return self._wordCount
-
-    @property
-    def paraCount(self) -> int:
-        return self._paraCount
-
-    @property
-    def synopsis(self) -> str:
-        return self._synopsis
-
-    @property
-    def tag(self) -> str:
-        return self._tag
-
-    @property
-    def references(self) -> dict[str, set[str]]:
-        return self._refs
-
-    ##
-    #  Setters
-    ##
-
-    def setLevel(self, level: str) -> None:
-        """Set the level of the heading if it's a valid value."""
-        if level in nwStyles.H_VALID:
-            self._level = level
-        return
-
-    def setLine(self, line: int) -> None:
-        """Set the line number of a heading."""
-        self._line = max(0, checkInt(line, 0))
-        return
-
-    def setCounts(self, charCount: int, wordCount: int, paraCount: int) -> None:
-        """Set the character, word and paragraph count. Make sure the
-        value is an integer and is not smaller than 0.
-        """
-        self._charCount = max(0, checkInt(charCount, 0))
-        self._wordCount = max(0, checkInt(wordCount, 0))
-        self._paraCount = max(0, checkInt(paraCount, 0))
-        return
-
-    def setSynopsis(self, text: str) -> None:
-        """Set the synopsis text and make sure it is a string."""
-        self._synopsis = str(text)
-        return
-
-    def setTag(self, tagKey: str) -> None:
-        """Set the tag for references, and make sure it is a string."""
-        self._tag = str(tagKey).lower()
-        return
-
-    def addReference(self, tagKey: str, refType: str) -> None:
-        """Add a record of a reference tag, and what keyword types it is
-        associated with.
-        """
-        if refType in nwKeyWords.VALID_KEYS:
-            tagKey = tagKey.lower()
-            if tagKey not in self._refs:
-                self._refs[tagKey] = set()
-            self._refs[tagKey].add(refType)
-        return
-
-    ##
-    #  Data Methods
-    ##
-
-    def packData(self) -> dict:
-        """Pack the values into a dictionary for saving to cache."""
-        return {
-            "level": self._level,
-            "title": self._title,
-            "line": self._line,
-            "tag": self._tag,
-            "cCount": self._charCount,
-            "wCount": self._wordCount,
-            "pCount": self._paraCount,
-            "synopsis": self._synopsis,
-        }
-
-    def packReferences(self) -> dict[str, str]:
-        """Pack references into a dictionary for saving to cache.
-        Multiple types are packed into a sorted, comma separated string.
-        It is sorted to prevent creating unnecessary diffs as the order
-        of a set is not guaranteed.
-        """
-        return {key: ",".join(sorted(list(value))) for key, value in self._refs.items()}
-
-    def unpackData(self, data: dict) -> None:
-        """Unpack a heading entry from a dictionary."""
-        self.setLevel(data.get("level", "H0"))
-        self._title = str(data.get("title", ""))
-        self._tag = str(data.get("tag", ""))
-        self.setLine(data.get("line", 0))
-        self.setCounts(
-            data.get("cCount", 0),
-            data.get("wCount", 0),
-            data.get("pCount", 0),
-        )
-        self._synopsis = str(data.get("synopsis", ""))
-        return
-
-    def unpackReferences(self, data: dict) -> None:
-        """Unpack a set of references from a dictionary."""
-        for tagKey, refTypes in data.items():
-            if not isinstance(tagKey, str):
-                raise ValueError("itemIndex reference key must be a string")
-            if not isinstance(refTypes, str):
-                raise ValueError("itemIndex reference type must be a string")
-            for refType in refTypes.split(","):
-                if refType in nwKeyWords.VALID_KEYS:
-                    self.addReference(tagKey, refType)
-                else:
-                    raise ValueError("The itemIndex contains an invalid reference type")
-        return
-
-
-# Text Processing Functions
-# =========================
-
-MODIFIERS = {
-    "synopsis": nwComment.SYNOPSIS,
-    "short":    nwComment.SHORT,
-    "note":     nwComment.NOTE,
-    "footnote": nwComment.FOOTNOTE,
-}
-KEY_REQ = {
-    "synopsis": 0,  # Key not allowed
-    "short":    0,  # Key not allowed
-    "note":     1,  # Key optional
-    "footnote": 2,  # Key required
-}
-
-
-def _checkModKey(modifier: str, key: str) -> bool:
-    """Check if a modifier and key set are ok."""
-    if modifier in MODIFIERS:
-        if key == "":
-            return KEY_REQ[modifier] < 2
-        elif key.replace("_", "").isalnum():
-            return KEY_REQ[modifier] > 0
-    return False
-
-
-def processComment(text: str) -> tuple[nwComment, str, str, int, int]:
-    """Extract comment style, key and text. Should only be called on
-    text starting with a %.
-    """
-    if text[:2] == "%~":
-        return nwComment.IGNORE, "", text[2:].lstrip(), 0, 0
-
-    check = text[1:].strip()
-    start, _, content = check.partition(":")
-    modifier, _, key = start.rstrip().partition(".")
-    if content and (clean := modifier.lower()) and _checkModKey(clean, key):
-        col = text.find(":") + 1
-        dot = text.find(".", 0, col) + 1
-        return MODIFIERS[clean], key, content.lstrip(), dot, col
-
-    return nwComment.PLAIN, "", check, 0, 0

@@ -286,7 +286,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     # Trigger an index rebuild
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.WAS_LEGACY))
-        mp.setattr("novelwriter.core.index.NWIndex.loadIndex", lambda *a: True)
+        mp.setattr("novelwriter.core.index.Index.loadIndex", lambda *a: True)
         project.index._indexBroken = True
         assert project.openProject(fncPath, clearLock=True) is True
         assert "The file format of your project is about to be" in SHARED.lastAlert
