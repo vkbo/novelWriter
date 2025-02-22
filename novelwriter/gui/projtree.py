@@ -1022,7 +1022,7 @@ class GuiProjectTree(QTreeView):
         return [i for i in self.selectedIndexes() if i.column() == 0]
 
     def _getModel(self) -> ProjectModel | None:
-        """Return a project node corresponding to a model index."""
+        """Return the model, if it exists."""
         if isinstance(model := self.model(), ProjectModel):
             return model
         return None

@@ -31,35 +31,43 @@ from PyQt6.QtGui import QIcon, QPixmap
 from novelwriter import SHARED
 from novelwriter.constants import nwStyles
 from novelwriter.core.indexdata import IndexNode
-from novelwriter.core.item import NWItem
 from novelwriter.types import QtAlignRight
 
 logger = logging.getLogger(__name__)
 
 C_FACTOR = 0x0100
 
-C_TITLE_TEXT  = 0x0000 | Qt.ItemDataRole.DisplayRole
-C_TITLE_ICON  = 0x0000 | Qt.ItemDataRole.DecorationRole
-C_COUNT_TEXT  = 0x0100 | Qt.ItemDataRole.DisplayRole
-C_COUNT_ALIGN = 0x0100 | Qt.ItemDataRole.TextAlignmentRole
-C_EXTRA_TEXT  = 0x0200 | Qt.ItemDataRole.DisplayRole
-C_EXTRA_TIP   = 0x0200 | Qt.ItemDataRole.ToolTipRole
-C_MORE_ICON   = 0x0300 | Qt.ItemDataRole.DecorationRole
+R_TEXT  = Qt.ItemDataRole.DisplayRole
+R_ICON  = Qt.ItemDataRole.DecorationRole
+R_ALIGN = Qt.ItemDataRole.TextAlignmentRole
+R_TIP   = Qt.ItemDataRole.ToolTipRole
 
 T_NodeData = str | QIcon | QPixmap | Qt.AlignmentFlag | None
 
 
 class NovelModel(QAbstractTableModel):
 
-    def __init__(self, rootItem: NWItem) -> None:
+    __slots__ = ("_meta", "_rows", "_more", "_columns")
+
+    def __init__(self) -> None:
         super().__init__()
-        self._root = rootItem
-        self._rows: list[tuple[str, str, dict]] = []
+        self._meta: list[tuple[str, str]] = []
+        self._rows: list[dict[int, T_NodeData]] = []
         self._more = SHARED.theme.getIcon("more_arrow")
+        self._columns = 3
         return
 
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: NovelModel")
+        return
+
+    ##
+    #  Setters
+    ##
+
+    def setExtraColumn(self, state: bool) -> None:
+        """Set extra data column settings."""
+        self._columns = 4 if state else 3
         return
 
     ##
@@ -72,17 +80,28 @@ class NovelModel(QAbstractTableModel):
 
     def columnCount(self, index: QModelIndex) -> int:
         """Return the number of columns for an entry."""
-        return 4
+        return self._columns
 
     def data(self, index: QModelIndex, role: Qt.ItemDataRole) -> T_NodeData:
         """Return display data for a node."""
         if index.isValid() and (row := index.row()) < len(self._rows):
-            return self._rows[row][2].get(C_FACTOR*index.column() | role)
+            return self._rows[row].get(C_FACTOR*index.column() | role)
         return None
+
+    def keys(self, index: QModelIndex) -> tuple[str | None, str | None]:
+        """Return display data for a node."""
+        if index.isValid() and (row := index.row()) < len(self._rows):
+            return self._meta[row]
+        return None, None
 
     ##
     #  Data Methods
     ##
+
+    def clear(self) -> None:
+        """Clear the model."""
+        self._rows.clear()
+        return
 
     def append(self, node: IndexNode) -> None:
         """Append a node to the model."""
@@ -90,11 +109,13 @@ class NovelModel(QAbstractTableModel):
         for key, head in node.items():
             if key != "T0000":
                 iLevel = nwStyles.H_LEVEL.get(head.level, 0)
+                more = self._columns - 1
                 data = {}
-                data[C_TITLE_TEXT]  = head.title
-                data[C_TITLE_ICON]  = SHARED.theme.getHeaderDecoration(iLevel)
-                data[C_COUNT_TEXT]  = f"{head.mainCount:n}"
-                data[C_COUNT_ALIGN] = QtAlignRight
-                data[C_MORE_ICON]   = self._more
-                self._rows.append((handle, key, data))
+                data[C_FACTOR*0 | R_TEXT]  = head.title
+                data[C_FACTOR*0 | R_ICON]  = SHARED.theme.getHeaderDecoration(iLevel)
+                data[C_FACTOR*1 | R_TEXT]  = f"{head.mainCount:n}"
+                data[C_FACTOR*1 | R_ALIGN] = QtAlignRight
+                data[C_FACTOR*more | R_ICON] = self._more
+                self._meta.append((handle, key))
+                self._rows.append(data)
         return

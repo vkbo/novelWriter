@@ -29,17 +29,15 @@ import logging
 
 from enum import Enum
 
-from PyQt6.QtCore import pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QModelIndex, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QActionGroup, QFont, QPalette
-from PyQt6.QtWidgets import (
-    QFrame, QHBoxLayout, QMenu, QTreeView, QTreeWidgetItem, QVBoxLayout,
-    QWidget
-)
+from PyQt6.QtWidgets import QAbstractItemView, QFrame, QHBoxLayout, QMenu, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import qtAddAction, qtAddMenu, qtLambda
-from novelwriter.enum import nwChange, nwItemClass
-from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.core.novelmodel import NovelModel
+from novelwriter.enum import nwChange, nwDocMode, nwItemClass
+from novelwriter.extensions.modified import NIconToolButton, NTreeView
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
@@ -93,7 +91,6 @@ class GuiNovelView(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         self.novelBar.updateTheme()
-        self.novelTree.updateTheme()
         self.refreshTree()
         return
 
@@ -104,7 +101,7 @@ class GuiNovelView(QWidget):
 
     def clearNovelView(self) -> None:
         """Clear project-related GUI content."""
-        self.novelTree.clearContent()
+        # self.novelTree.clearContent()
         self.novelBar.clearContent()
         self.novelBar.setEnabled(False)
         return
@@ -351,7 +348,7 @@ class GuiNovelToolBar(QWidget):
         return
 
 
-class GuiNovelTree(QTreeView):
+class GuiNovelTree(NTreeView):
 
     C_DATA  = 0
     C_TITLE = 0
@@ -372,21 +369,16 @@ class GuiNovelTree(QTreeView):
         self.novelView = novelView
 
         # Internal Variables
-        self._lastBuild   = 0
-        self._lastCol     = NovelTreeColumn.POV
-        self._lastColSize = 0.25
-        self._actHandle   = None
-        self._treeMap: dict[str, QTreeWidgetItem] = {}
+        # self._lastBuild   = 0
+        # self._lastCol     = NovelTreeColumn.POV
+        # self._lastColSize = 0.25
+        # self._actHandle   = None
+        # self._treeMap: dict[str, QTreeWidgetItem] = {}
 
         # Cached Strings
         # self._povLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY])
         # self._focLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.FOCUS_KEY])
         # self._pltLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY])
-
-        # Build GUI
-        # =========
-
-        # iPx = SHARED.theme.baseIconHeight
 
         self.setIconSize(SHARED.theme.baseIconSize)
         self.setFrameStyle(QFrame.Shape.NoFrame)
@@ -394,46 +386,19 @@ class GuiNovelTree(QTreeView):
         self.setAllColumnsShowFocus(True)
         self.setHeaderHidden(True)
         self.setIndentation(2)
+        self.setDragEnabled(False)
 
-        # self.setIconSize(iSz)
-        # self.setFrameStyle(QFrame.Shape.NoFrame)
-        # self.setUniformRowHeights(True)
-        # self.setAllColumnsShowFocus(True)
-        # self.setHeaderHidden(True)
-        # self.setIndentation(2)
-        # self.setColumnCount(4)
-        # self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        # self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
-        # self.setExpandsOnDoubleClick(False)
-        # self.setDragEnabled(False)
-
-        # Lock the column sizes
-        # if header := self.header():
-        #     header.setStretchLastSection(False)
-        #     header.setMinimumSectionSize(iPx + 6)
-        #     header.setSectionResizeMode(self.C_TITLE, QtHeaderStretch)
-        #     header.setSectionResizeMode(self.C_WORDS, QtHeaderToContents)
-        #     header.setSectionResizeMode(self.C_EXTRA, QtHeaderToContents)
-        #     header.setSectionResizeMode(self.C_MORE, QtHeaderToContents)
-
-        # Pre-Generate Tree Formatting
-        # fH1 = self.font()
-        # fH1.setBold(True)
-        # fH1.setUnderline(True)
-
-        # fH2 = self.font()
-        # fH2.setBold(True)
-
-        # self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
+        # Set selection options
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
 
         # Connect signals
-        # self.clicked.connect(self._treeItemClicked)
-        # self.itemDoubleClicked.connect(self._treeDoubleClick)
-        # self.itemSelectionChanged.connect(self._treeSelectionChange)
+        self.clicked.connect(self._onSingleClick)
+        self.doubleClicked.connect(self._onDoubleClick)
+        self.middleClicked.connect(self._onMiddleClick)
 
         # Set custom settings
         self.initSettings()
-        # self.updateTheme()
 
         logger.debug("Ready: GuiNovelTree")
 
@@ -441,24 +406,86 @@ class GuiNovelTree(QTreeView):
 
     def initSettings(self) -> None:
         """Set or update tree widget settings."""
-        # Scroll bars
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
             self.setVerticalScrollBarPolicy(QtScrollAsNeeded)
-
         if CONFIG.hideHScroll:
             self.setHorizontalScrollBarPolicy(QtScrollAlwaysOff)
         else:
             self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
-
         return
 
-    def updateTheme(self) -> None:
-        """Update theme elements."""
-        # iPx = SHARED.theme.baseIconHeight
-        # self._pMore = SHARED.theme.getPixmap("more_arrow", (iPx, iPx))
+    ##
+    #  Getters
+    ##
+
+    def getSelectedHandle(self) -> tuple[str | None, str | None]:
+        """Get the currently selected or active handle. If multiple
+        items are selected, return the first.
+        """
+        if model := self._getModel():
+            return model.keys(self.currentIndex())
+        return None, None
+
+    ##
+    #  Class Methods
+    ##
+
+    def resizeColumsn(self) -> None:
+        """Set the correct column sizes."""
+        if (header := self.header()) and (model := self._getModel()):
+            header.setStretchLastSection(False)
+            header.setMinimumSectionSize(SHARED.theme.baseIconHeight + 6)
+            header.setSectionResizeMode(0, QtHeaderStretch)
+            for i in range(1, model.columnCount(QModelIndex())):
+                header.setSectionResizeMode(i, QtHeaderToContents)
         return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(QModelIndex)
+    def _onSingleClick(self, index: QModelIndex) -> None:
+        """The user single-clicked an index."""
+        if (model := self._getModel()) and (keys := model.keys(index)) and (tHandle := keys[0]):
+            self.novelView.selectedItemChanged.emit(tHandle)
+        return
+
+    @pyqtSlot(QModelIndex)
+    def _onDoubleClick(self, index: QModelIndex) -> None:
+        """The user double-clicked an index."""
+        if (
+            (model := self._getModel()) and (keys := model.keys(index))
+            and (tHandle := keys[0]) and (sTitle := keys[1])
+        ):
+            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "", False)
+        return
+
+    @pyqtSlot(QModelIndex)
+    def _onMiddleClick(self, index: QModelIndex) -> None:
+        """The user middle-clicked an index."""
+        if (
+            (model := self._getModel()) and (keys := model.keys(index))
+            and (tHandle := keys[0]) and (sTitle := keys[1])
+        ):
+            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, sTitle or "", False)
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _getModel(self) -> NovelModel | None:
+        """Return the model, if it exists."""
+        if isinstance(model := self.model(), NovelModel):
+            return model
+        return None
+
+    ##
+    #  Old Code
+    ##
 
     ##
     #  Properties
@@ -476,23 +503,12 @@ class GuiNovelTree(QTreeView):
     #  Class Methods
     ##
 
-    def clearContent(self) -> None:
-        """Clear the GUI content and the related maps."""
-        # self.clear()
-        # self._treeMap = {}
-        # self._lastBuild = 0
-        return
-
-    def resizeColumsn(self) -> None:
-        """Set the correct column sizes."""
-        if header := self.header():
-            header.setStretchLastSection(False)
-            header.setMinimumSectionSize(SHARED.theme.baseIconHeight + 6)
-            header.setSectionResizeMode(self.C_TITLE, QtHeaderStretch)
-            header.setSectionResizeMode(self.C_WORDS, QtHeaderToContents)
-            header.setSectionResizeMode(self.C_EXTRA, QtHeaderToContents)
-            header.setSectionResizeMode(self.C_MORE, QtHeaderToContents)
-        return
+    # def clearContent(self) -> None:
+    #     """Clear the GUI content and the related maps."""
+    #     self.clear()
+    #     self._treeMap = {}
+    #      self._lastBuild = 0
+    #     return
 
     # def refreshTree(self, rootHandle: str | None = None, overRide: bool = False) -> None:
     #     """Refresh the tree if it has been changed."""
@@ -525,18 +541,6 @@ class GuiNovelTree(QTreeView):
     #                 self.refreshTree()
     #                 return
     #     return
-
-    def getSelectedHandle(self) -> tuple[str | None, str | None]:
-        """Get the currently selected or active handle. If multiple
-        items are selected, return the first.
-        """
-    #     selList = self.selectedItems()
-    #     trItem = selList[0] if selList else self.currentItem()
-    #     if isinstance(trItem, QTreeWidgetItem):
-    #         tHandle = trItem.data(self.C_DATA, self.D_HANDLE)
-    #         sTitle = trItem.data(self.C_DATA, self.D_TITLE)
-    #         return tHandle, sTitle
-        return None, None
 
     # def setLastColType(self, colType: NovelTreeColumn, doRefresh: bool = True) -> None:
     #     """Change the content type of the last column and rebuild."""
@@ -575,9 +579,9 @@ class GuiNovelTree(QTreeView):
     #     self._actHandle = tHandle or None
     #     return
 
-    # ##
-    # #  Events
-    # ##
+    ##
+    #  Events
+    ##
 
     # def mousePressEvent(self, event: QMouseEvent) -> None:
     #     """Overload mousePressEvent to clear selection if clicking the

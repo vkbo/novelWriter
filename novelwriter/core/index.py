@@ -123,7 +123,7 @@ class Index:
     def _generateNovelModel(self, tHandle: str) -> None:
         """Generate a novel model for a specific handle."""
         if (item := SHARED.project.tree[tHandle]) and item.isRootType() and item.isNovelLike():
-            model = NovelModel(item)
+            model = NovelModel()
             for handle in SHARED.project.tree.subTree(tHandle):
                 if node := self._itemIndex[handle]:
                     model.append(node)

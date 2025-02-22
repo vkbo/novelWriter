@@ -30,15 +30,15 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QSize, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QMouseEvent, QWheelEvent
 from PyQt6.QtWidgets import (
     QApplication, QComboBox, QDialog, QDoubleSpinBox, QLabel, QSpinBox,
-    QToolButton, QWidget
+    QToolButton, QTreeView, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.types import QtMouseLeft
+from novelwriter.types import QtMouseLeft, QtMouseMiddle
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -97,6 +97,17 @@ class NNonBlockingDialog(NDialog):
         self.raise_()
         QApplication.processEvents()
         return
+
+
+class NTreeView(QTreeView):
+
+    middleClicked = pyqtSignal(QModelIndex)
+
+    def mousePressEvent(self, event: QMouseEvent | None) -> None:
+        """Emit a signal on mouse middle click."""
+        if event and event.button() == QtMouseMiddle:
+            self.middleClicked.emit(self.indexAt(event.pos()))
+        return super().mousePressEvent(event)
 
 
 class NComboBox(QComboBox):
