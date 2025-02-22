@@ -354,8 +354,10 @@ class _GoalsPage(NScrollableForm):
         self.sessGoalAuto.setChecked(data.sessGoalAuto)
         self.addRow(
             self.tr("Auto populate session goal?"), self.sessGoalAuto,
-            self.tr("Calculate Session goal based on target date assuming daily sessions. \
-                    Overrides configured session goal below.")
+            self.tr(
+                "Calculate Session goal based on target date assuming daily sessions. "
+                "Overrides configured session goal below."
+            )
         )
 
         # Session Goal
