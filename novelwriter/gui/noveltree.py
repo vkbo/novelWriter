@@ -40,7 +40,7 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax, qtAddAction, qtAddMenu, qtLambda
 from novelwriter.constants import nwKeyWords, nwLabels, nwStyles, trConst
-from novelwriter.core.index import IndexHeading
+from novelwriter.core.indexdata import IndexHeading
 from novelwriter.enum import nwChange, nwDocMode, nwItemClass, nwOutline
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.novelselector import NovelSelector

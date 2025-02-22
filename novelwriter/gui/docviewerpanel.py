@@ -36,7 +36,7 @@ from PyQt6.QtWidgets import (
 from novelwriter import SHARED
 from novelwriter.common import checkInt, qtAddAction
 from novelwriter.constants import nwLabels, nwLists, nwStyles, trConst
-from novelwriter.core.index import IndexHeading, IndexNode
+from novelwriter.core.indexdata import IndexHeading, IndexNode
 from novelwriter.enum import nwChange, nwDocMode, nwItemClass
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
