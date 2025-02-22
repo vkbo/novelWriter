@@ -29,20 +29,24 @@ import logging
 
 from enum import Enum
 
-from PyQt6.QtCore import QModelIndex, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QActionGroup, QFont, QPalette
-from PyQt6.QtWidgets import QAbstractItemView, QFrame, QHBoxLayout, QMenu, QVBoxLayout, QWidget
+from PyQt6.QtCore import QModelIndex, QPoint, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QActionGroup, QFont, QPainter, QPalette
+from PyQt6.QtWidgets import (
+    QAbstractItemView, QFrame, QHBoxLayout, QMenu, QStyleOptionViewItem,
+    QToolTip, QVBoxLayout, QWidget
+)
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import qtAddAction, qtAddMenu, qtLambda
+from novelwriter.constants import nwKeyWords, nwLabels, trConst
 from novelwriter.core.novelmodel import NovelModel
-from novelwriter.enum import nwChange, nwDocMode, nwItemClass
+from novelwriter.enum import nwChange, nwDocMode, nwItemClass, nwOutline
 from novelwriter.extensions.modified import NIconToolButton, NTreeView
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
     QtHeaderStretch, QtHeaderToContents, QtScrollAlwaysOff, QtScrollAsNeeded,
-    QtSizeExpanding, QtUserRole
+    QtSizeExpanding
 )
 
 logger = logging.getLogger(__name__)
@@ -166,7 +170,7 @@ class GuiNovelView(QWidget):
     @pyqtSlot(str)
     def setActiveHandle(self, tHandle: str) -> None:
         """Highlight the rows associated with a given handle."""
-        # self.novelTree.setActiveHandle(tHandle)
+        self.novelTree.setActiveHandle(tHandle)
         return
 
     @pyqtSlot()
@@ -350,17 +354,6 @@ class GuiNovelToolBar(QWidget):
 
 class GuiNovelTree(NTreeView):
 
-    C_DATA  = 0
-    C_TITLE = 0
-    C_WORDS = 1
-    C_EXTRA = 2
-    C_MORE  = 3
-
-    D_HANDLE = QtUserRole
-    D_TITLE  = QtUserRole + 1
-    D_KEY    = QtUserRole + 2
-    D_EXTRA  = QtUserRole + 3
-
     def __init__(self, novelView: GuiNovelView) -> None:
         super().__init__(parent=novelView)
 
@@ -369,10 +362,10 @@ class GuiNovelTree(NTreeView):
         self.novelView = novelView
 
         # Internal Variables
+        self._actHandle = None
         # self._lastBuild   = 0
         # self._lastCol     = NovelTreeColumn.POV
         # self._lastColSize = 0.25
-        # self._actHandle   = None
         # self._treeMap: dict[str, QTreeWidgetItem] = {}
 
         # Cached Strings
@@ -429,6 +422,17 @@ class GuiNovelTree(NTreeView):
         return None, None
 
     ##
+    #  Setters
+    ##
+
+    def setActiveHandle(self, tHandle: str | None) -> None:
+        """Set the handle to be highlighted."""
+        self._actHandle = tHandle
+        if viewport := self.viewport():
+            viewport.repaint()
+        return
+
+    ##
     #  Class Methods
     ##
 
@@ -443,14 +447,30 @@ class GuiNovelTree(NTreeView):
         return
 
     ##
+    #  Overloads
+    ##
+
+    def drawRow(self, painter: QPainter, opt: QStyleOptionViewItem, index: QModelIndex) -> None:
+        """Draw a box on the active row."""
+        if (model := self._getModel()) and model.keys(index)[0] == self._actHandle:
+            painter.fillRect(opt.rect, self.palette().alternateBase())
+        super().drawRow(painter, opt, index)
+        return
+
+    ##
     #  Private Slots
     ##
 
     @pyqtSlot(QModelIndex)
     def _onSingleClick(self, index: QModelIndex) -> None:
         """The user single-clicked an index."""
-        if (model := self._getModel()) and (keys := model.keys(index)) and (tHandle := keys[0]):
-            self.novelView.selectedItemChanged.emit(tHandle)
+        if index.isValid() and (model := self._getModel()):
+            keys = model.keys(index)
+            if (tHandle := keys[0]) and (sTitle := keys[1]):
+                self.novelView.selectedItemChanged.emit(tHandle)
+                if index.column() == model.columnCount(index) - 1:
+                    pos = self.mapToGlobal(self.visualRect(index).topRight())
+                    self._popMetaBox(pos, tHandle, sTitle)
         return
 
     @pyqtSlot(QModelIndex)
@@ -482,6 +502,40 @@ class GuiNovelTree(NTreeView):
         if isinstance(model := self.model(), NovelModel):
             return model
         return None
+
+    def _popMetaBox(self, qPos: QPoint, tHandle: str, sTitle: str) -> None:
+        """Show the novel meta data box."""
+        if head := SHARED.project.index.getItemHeading(tHandle, sTitle):
+            logger.debug("Generating meta data tooltip for '%s:%s'", tHandle, sTitle)
+            if synopsis := head.synopsis:
+                label = trConst(nwLabels.OUTLINE_COLS[nwOutline.SYNOP])
+                synopsis = f"<p><b>{label}</b>: {synopsis}</p>"
+
+            def appendTags(refs: dict, key: str, lines: list[str]) -> list[str]:
+                """Generate a reference list for a given reference key."""
+                if tags := ", ".join(refs.get(key, [])):
+                    lines.append(f"<b>{trConst(nwLabels.KEY_NAME[key])}</b>: {tags}")
+                return lines
+
+            tags = SHARED.project.index.getReferences(tHandle, sTitle)
+            lines = []
+            lines = appendTags(tags, nwKeyWords.POV_KEY, lines)
+            lines = appendTags(tags, nwKeyWords.FOCUS_KEY, lines)
+            lines = appendTags(tags, nwKeyWords.CHAR_KEY, lines)
+            lines = appendTags(tags, nwKeyWords.PLOT_KEY, lines)
+            lines = appendTags(tags, nwKeyWords.TIME_KEY, lines)
+            lines = appendTags(tags, nwKeyWords.WORLD_KEY, lines)
+            lines = appendTags(tags, nwKeyWords.OBJECT_KEY, lines)
+            lines = appendTags(tags, nwKeyWords.ENTITY_KEY, lines)
+            lines = appendTags(tags, nwKeyWords.CUSTOM_KEY, lines)
+
+            text = ""
+            if lines:
+                refs = "<br>".join(lines)
+                text = f"<p>{refs}</p>"
+            if tooltip := (text + synopsis or self.tr("No meta data")):
+                QToolTip.showText(qPos, tooltip)
+        return
 
     ##
     #  Old Code
@@ -747,48 +801,3 @@ class GuiNovelTree(NTreeView):
     #         return toolText, f"{refName}: {toolText}"
 
     #     return "", ""
-
-    # def _popMetaBox(self, qPos: QPoint, tHandle: str, sTitle: str) -> None:
-    #     """Show the novel meta data box."""
-    #     logger.debug("Generating meta data tooltip for '%s:%s'", tHandle, sTitle)
-
-    #     pIndex = SHARED.project.index
-    #     novIdx = pIndex.getItemHeading(tHandle, sTitle)
-    #     refTags = pIndex.getReferences(tHandle, sTitle)
-    #     if not novIdx:
-    #         return
-
-    #     synopText = novIdx.synopsis
-    #     if synopText:
-    #         synopLabel = trConst(nwLabels.OUTLINE_COLS[nwOutline.SYNOP])
-    #         synopText = f"<p><b>{synopLabel}</b>: {synopText}</p>"
-
-    #     refLines = []
-    #     refLines = self._appendMetaTag(refTags, nwKeyWords.POV_KEY, refLines)
-    #     refLines = self._appendMetaTag(refTags, nwKeyWords.FOCUS_KEY, refLines)
-    #     refLines = self._appendMetaTag(refTags, nwKeyWords.CHAR_KEY, refLines)
-    #     refLines = self._appendMetaTag(refTags, nwKeyWords.PLOT_KEY, refLines)
-    #     refLines = self._appendMetaTag(refTags, nwKeyWords.TIME_KEY, refLines)
-    #     refLines = self._appendMetaTag(refTags, nwKeyWords.WORLD_KEY, refLines)
-    #     refLines = self._appendMetaTag(refTags, nwKeyWords.OBJECT_KEY, refLines)
-    #     refLines = self._appendMetaTag(refTags, nwKeyWords.ENTITY_KEY, refLines)
-    #     refLines = self._appendMetaTag(refTags, nwKeyWords.CUSTOM_KEY, refLines)
-
-    #     refText = ""
-    #     if refLines:
-    #         refList = "<br>".join(refLines)
-    #         refText = f"<p>{refList}</p>"
-
-    #     ttText = refText + synopText or self.tr("No meta data")
-    #     if ttText:
-    #         QToolTip.showText(qPos, ttText)
-
-    #     return
-
-    # @staticmethod
-    # def _appendMetaTag(refs: dict, key: str, lines: list[str]) -> list[str]:
-    #     """Generate a reference list for a given reference key."""
-    #     tags = ", ".join(refs.get(key, []))
-    #     if tags:
-    #         lines.append(f"<b>{trConst(nwLabels.KEY_NAME[key])}</b>: {tags}")
-    #     return lines

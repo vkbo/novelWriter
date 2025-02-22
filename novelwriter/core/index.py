@@ -125,7 +125,11 @@ class Index:
         if (item := SHARED.project.tree[tHandle]) and item.isRootType() and item.isNovelLike():
             model = NovelModel()
             for handle in SHARED.project.tree.subTree(tHandle):
-                if node := self._itemIndex[handle]:
+                if (
+                    (node := self._itemIndex[handle])
+                    and node.item.isDocumentLayout()
+                    and node.item.isActive
+                ):
                     model.append(node)
             self._novelModels[tHandle] = model
         return

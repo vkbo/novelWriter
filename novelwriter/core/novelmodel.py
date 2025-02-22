@@ -84,8 +84,10 @@ class NovelModel(QAbstractTableModel):
 
     def data(self, index: QModelIndex, role: Qt.ItemDataRole) -> T_NodeData:
         """Return display data for a node."""
-        if index.isValid() and (row := index.row()) < len(self._rows):
-            return self._rows[row].get(C_FACTOR*index.column() | role)
+        try:
+            return self._rows[index.row()].get(C_FACTOR*index.column() | role)
+        except Exception:
+            print("NovelModel Debug: Oops!")
         return None
 
     def keys(self, index: QModelIndex) -> tuple[str | None, str | None]:

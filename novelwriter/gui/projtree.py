@@ -517,7 +517,6 @@ class GuiProjectTree(QTreeView):
 
     def initSettings(self) -> None:
         """Set or update tree widget settings."""
-        # Scroll bars
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
