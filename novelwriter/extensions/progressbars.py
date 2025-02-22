@@ -24,6 +24,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import logging
+
 from math import ceil
 
 from PyQt6.QtCore import QRect
@@ -34,6 +36,8 @@ from novelwriter.types import (
     QtAlignCenter, QtPaintAntiAlias, QtRoundCap, QtSizeFixed, QtSolidLine,
     QtTransparent
 )
+
+logger = logging.getLogger(__name__)
 
 
 class NProgressCircle(QProgressBar):
@@ -125,4 +129,90 @@ class NProgressSimple(QProgressBar):
             painter.setPen(self.palette().highlight().color())
             painter.setBrush(self.palette().highlight())
             painter.drawRect(0, 0, progress, self.height())
+        return
+
+
+class NProgressGoal(QProgressBar):
+    """Extension: Goal Progress Widget
+
+    A custom widget that paints a progress bar with custom styling and text.
+    """
+
+    __slots__ = (
+        "_text", "_point", "_dRect", "_cRect", "_dPen", "_dBrush",
+        "_cPen", "_bPen", "_tColor"
+    )
+
+    def __init__(self, parent: QWidget, width: int, height: int, point: int) -> None:
+        super().__init__(parent=parent)
+        logger.debug(self.palette())
+        self._text = None
+        self._point = point
+        self._dRect = QRect(0, 0, width, height)
+        self._cRect = QRect(2 * point, 2 * point, width - 2 * point, height - 2 * point)
+        self._dPen = QPen(QtTransparent)
+        self._dBrush = QBrush(QtTransparent)
+        self.setColors(
+            track=self.palette().base().color().darker(300),
+            bar=self.palette().highlight().color(),
+            text=self.palette().text().color(),
+            back=self.palette().base().color().darker(300)
+        )
+        self.setSizePolicy(QtSizeFixed, QtSizeFixed)
+        self.setFixedWidth(width)
+        self.setFixedHeight(height)
+        return
+
+    def resetColors(self) -> None:
+        """Reset the colours to the default values."""
+        self.setColors(
+            track=self.palette().base().color().darker(300),
+            bar=self.palette().highlight().color(),
+            text=self.palette().text().color(),
+            back=self.palette().base().color().darker(300)
+        )
+        return
+
+    def setColors(
+        self, back: QColor | None = None, track: QColor | None = None,
+        bar: QColor | None = None, text: QColor | None = None
+    ) -> None:
+        """Set the colours of the widget."""
+        if isinstance(back, QColor):
+            self._dPen = QPen(back)
+            self._dBrush = QBrush(back)
+        if isinstance(bar, QColor):
+            logger.debug(f"Setting bar colour: {bar}")
+            self._cPen = QPen(QBrush(bar), 2 * self._point, QtSolidLine)
+            self._cBrush = QBrush(bar)
+        if isinstance(track, QColor):
+            logger.debug(f"Setting track colour: {track}")
+            self._bPen = QPen(QBrush(track), 2 * self._point, QtSolidLine, QtRoundCap)
+        if isinstance(text, QColor):
+            self._tColor = text
+        return
+
+    def setCentreText(self, text: str | None) -> None:
+        """Replace the progress text with a custom string."""
+        self._text = text
+        self.setValue(self.value())  # Triggers a redraw
+        return
+
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Custom painter for the progress bar."""
+        progress = self.value()/self.maximum()
+        painter = QPainter(self)
+        painter.setRenderHint(QtPaintAntiAlias, True)
+
+        painter.setPen(self._bPen)
+        painter.setBrush(self._dBrush)
+        painter.drawRect(self._dRect)
+
+        painter.setPen(self._cPen)
+        painter.setBrush(self._cBrush)
+        x, y = self._cRect.topLeft().x(), self._cRect.topLeft().y()
+        painter.drawRect(x, y, ceil(self._cRect.width() * progress), self._cRect.height())
+
+        painter.setPen(self._tColor)
+        painter.drawText(self._cRect, QtAlignCenter, self._text or f"{(progress*100):.1f} %")
         return

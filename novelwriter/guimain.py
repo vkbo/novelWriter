@@ -30,7 +30,7 @@ from datetime import datetime
 from pathlib import Path
 from time import time
 
-from PyQt6.QtCore import Qt, QTimer, pyqtSlot, QDate
+from PyQt6.QtCore import Qt, QTimer, pyqtSlot
 from PyQt6.QtGui import QCloseEvent, QCursor, QIcon, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox,

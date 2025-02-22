@@ -25,55 +25,21 @@ from __future__ import annotations
 
 import logging
 
-from datetime import datetime
+from datetime import datetime, date
 from time import time
 
-from PyQt6.QtCore import QLocale, pyqtSlot, QDate
-from PyQt6.QtWidgets import QApplication, QLabel, QStatusBar, QWidget, QProgressBar
+from PyQt6.QtCore import QLocale, pyqtSlot
+from PyQt6.QtGui import QColor
+from PyQt6.QtWidgets import QApplication, QLabel, QStatusBar, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime
 from novelwriter.constants import nwConst
 from novelwriter.extensions.modified import NClickableLabel
+from novelwriter.extensions.progressbars import NProgressGoal
 from novelwriter.extensions.statusled import StatusLED
 
 logger = logging.getLogger(__name__)
-
-default_style =  """
-    QProgressBar {
-        border: 2px solid grey;
-        border-radius: 5px;
-        text-align: center;
-    }
-    QProgressBar::chunk {
-        background-color: #007ACC;
-        width: 20px;
-    }
-"""
-
-complete_style = """
-    QProgressBar {
-        border: 2px solid grey;
-        border-radius: 5px;
-        text-align: center;
-    }
-    QProgressBar::chunk {
-        background-color: green;
-        width: 20px;
-    }
-"""
-
-negative_style = """
-    QProgressBar {
-        border: 2px solid red;
-        border-radius: 5px;
-        text-align: center;
-    }
-    QProgressBar::chunk {
-        background-color: #007ACC;
-        width: 20px;
-    }
-"""
 
 
 class GuiMainStatus(QStatusBar):
@@ -93,23 +59,19 @@ class GuiMainStatus(QStatusBar):
         # =================
 
         # The session goal tracker widget
-        self.sessBar = QProgressBar(self)
-        self.sessBar.setMaximumSize(SHARED.theme.getTextWidth("Session: 0000/0000"),20)
+        self.sessBar = NProgressGoal(self, SHARED.theme.getTextWidth("Session: 0000/0000"), 20, 1)
         self.sessBar.setValue(0)
         self.sessBar.setMaximum(1)
-        self.sessBar.setFormat("Session: %v/%m")
-        self.sessBar.setStyleSheet(default_style)
         self.sessBar.setVisible(CONFIG.showSessionGoal)
         self.addPermanentWidget(self.sessBar)
 
         # The project goal tracker widget
-        self.projBar = QProgressBar(self)
-        self.projBar.setMaximumSize(SHARED.theme.getTextWidth("Session: 0000/0000"),20)
+        self.projBar = NProgressGoal(self, SHARED.theme.getTextWidth("Session: 0000/0000"), 20, 1)
         self.projBar.setValue(0)
         self.projBar.setMaximum(1)
-        self.projBar.setFormat("Project: %p%")
-        self.projBar.setToolTip(f"Project Word Count: {self.projBar.value()}/{self.projBar.maximum()}")
-        self.projBar.setStyleSheet(default_style)
+        self.projBar.setToolTip(
+            f"Project Word Count: {self.projBar.value()}/{self.projBar.maximum()}"
+        )
         self.projBar.setVisible(CONFIG.showProjectGoal)
         self.addPermanentWidget(self.projBar)
 
@@ -234,7 +196,7 @@ class GuiMainStatus(QStatusBar):
         self.statsText.setText(self.tr("Words: {0} ({1})").format(f"{pWC:n}", f"{sWC:+n}"))
 
         if SHARED.project.data.sessGoalAuto:
-            days_remaining = QDate.currentDate().daysTo(SHARED.project.data.projDeadline)
+            days_remaining = (SHARED.project.data.projDeadline - date.today()).days
             if days_remaining == 0:
                 days_remaining == 1
             logger.debug("Days remaining: %d", days_remaining)
@@ -247,26 +209,30 @@ class GuiMainStatus(QStatusBar):
         if val > self.sessBar.maximum():
             val = self.sessBar.maximum()
         self.sessBar.setValue(val)
-        self.sessBar.setFormat(f"Session: {sWC}/%m")
+        self.sessBar.setCentreText(f"Session: {sWC}/{self.sessBar.maximum()}")
+        self.sessBar.resetColors()
         if sWC >= sessGoal:
-            self.sessBar.setStyleSheet(complete_style)
+            self.sessBar.setColors(bar=QColor(SHARED.theme.getIconColor("green")).darker(150))
         elif sWC < 0:
-            self.sessBar.setStyleSheet(negative_style)
-        else:
-            self.sessBar.setStyleSheet(default_style)
+            self.sessBar.setColors(
+                track=QColor(SHARED.theme.getIconColor("red")),
+                bar=QColor(SHARED.theme.getIconColor("red"))
+            )
 
         val = pWC if pWC > 0 else 0
         if val > self.projBar.maximum():
             val = self.projBar.maximum()
         self.projBar.setValue(val)
         self.projBar.setToolTip(f"Project Word Count: {pWC}/{self.projBar.maximum()}")
+        self.projBar.setCentreText(f"Project: {pWC/self.projBar.maximum():.0%}")
+        self.projBar.resetColors()
         if pWC >= SHARED.project.data.projGoal:
-            self.projBar.setStyleSheet(complete_style)
+            self.projBar.setColors(bar=QColor(SHARED.theme.getIconColor("green")).darker(150))
         elif pWC < 0:
-            self.projBar.setStyleSheet(negative_style)
-        else:
-            self.projBar.setStyleSheet(default_style)
-
+            self.projBar.setColors(
+                track=QColor(SHARED.theme.getIconColor("red")),
+                bar=QColor(SHARED.theme.getIconColor("red"))
+            )
 
         logger.debug("Project Stats: %d (%d)", pWC, sWC)
         if CONFIG.incNotesWCount:
@@ -274,14 +240,17 @@ class GuiMainStatus(QStatusBar):
         else:
             self.statsText.setToolTip(self.tr("Novel word count (session change)"))
         return
-    
+
     def setGoals(self, projGoal: int, sessGoal: int) -> None:
         """Set the project and session goals."""
         if sessGoal <= 0:
             sessGoal = 1
         self.sessBar.setMaximum(sessGoal)
         self.projBar.setMaximum(projGoal)
-        self.projBar.setToolTip(f"Project Word Count: {self.projBar.value()}/{self.projBar.maximum()}")
+        self.projBar.setToolTip(
+            f"Project Word Count: {self.projBar.value()}/{self.projBar.maximum()}"
+        )
+        self.sessBar.setCentreText(f"Session: {self.sessBar.value()}/{self.sessBar.maximum()}")
         return
 
     def updateTime(self, idleTime: float = 0.0) -> None:

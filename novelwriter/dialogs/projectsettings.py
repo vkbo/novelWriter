@@ -27,9 +27,10 @@ from __future__ import annotations
 import csv
 import logging
 
+from datetime import date
 from pathlib import Path
 
-from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot, QDate
+from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QCloseEvent, QColor
 from PyQt6.QtWidgets import (
     QAbstractItemView, QApplication, QColorDialog, QDialogButtonBox,
@@ -186,10 +187,10 @@ class GuiProjectSettings(NDialog):
         spellLang  = self.settingsPage.spellLang.currentData()
         doBackup   = not self.settingsPage.noBackup.isChecked()
         projGoal = int(self.goalsPage.projGoal.text())
-        projDeadline = self.goalsPage.projDeadline.date()
+        projDeadline = self.goalsPage.projDeadline.date().toPyDate()
         sessGoalAuto = self.goalsPage.sessGoalAuto.isChecked()
         if sessGoalAuto:
-            days_remaining = QDate.currentDate().daysTo(projDeadline)
+            days_remaining = (projDeadline - date.today()).days
             if days_remaining == 0:
                 days_remaining == 1
             sessGoal = projGoal // days_remaining
@@ -207,7 +208,6 @@ class GuiProjectSettings(NDialog):
         project.setProjectLang(projLang)
 
         SHARED.mainGui.mainStatus.setGoals(projGoal, sessGoal)
-
 
         if self.statusPage.changed:
             logger.debug("Updating status labels")
@@ -319,6 +319,7 @@ class _SettingsPage(NScrollableForm):
 
         return
 
+
 class _GoalsPage(NScrollableForm):
 
     def __init__(self, parent: QWidget) -> None:
@@ -353,7 +354,8 @@ class _GoalsPage(NScrollableForm):
         self.sessGoalAuto.setChecked(data.sessGoalAuto)
         self.addRow(
             self.tr("Auto populate session goal?"), self.sessGoalAuto,
-            self.tr("Calculate Session goal based on target date assuming daily sessions. Overrides configured session goal below.")
+            self.tr("Calculate Session goal based on target date assuming daily sessions. \
+                    Overrides configured session goal below.")
         )
 
         # Session Goal
@@ -367,10 +369,10 @@ class _GoalsPage(NScrollableForm):
             stretch=(3, 2)
         )
 
-
         self.finalise()
 
         return
+
 
 class _StatusPage(NFixedPage):
 

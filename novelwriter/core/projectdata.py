@@ -26,8 +26,9 @@ from __future__ import annotations
 import logging
 import uuid
 
+
+from datetime import date
 from typing import TYPE_CHECKING, Any
-from PyQt6.QtCore import QDate
 
 from novelwriter.common import (
     checkBool, checkInt, checkStringNone, checkUuid, isHandle,
@@ -63,7 +64,7 @@ class NWProjectData:
         # Project Settings
         self._doBackup = True
         self._projGoal = 1
-        self._projDeadline = QDate.currentDate()
+        self._projDeadline = date.today()
         self._sessGoal = 1
         self._sessGoalAuto = False
         self._language = None
@@ -136,14 +137,14 @@ class NWProjectData:
     def doBackup(self) -> bool:
         """Return the backup setting."""
         return self._doBackup
-    
+
     @property
     def projGoal(self) -> int:
         """Return the project goal."""
         return self._projGoal
-    
+
     @property
-    def projDeadline(self) -> QDate | None:
+    def projDeadline(self) -> date | None:
         """Return the project deadline."""
         return self._projDeadline
 
@@ -151,7 +152,7 @@ class NWProjectData:
     def sessGoal(self) -> int:
         """Return the session goal."""
         return self._sessGoal
-    
+
     @property
     def sessGoalAuto(self) -> bool:
         """Return the automatic session goal setting."""
@@ -291,21 +292,21 @@ class NWProjectData:
             self._projGoal = checkInt(value, self._projGoal)
             self._project.setProjectChanged(True)
         return
-    
+
     def setProjDeadline(self, value: Any) -> None:
         """Set the project deadline."""
-        if value != self._projDeadline and isinstance(value, QDate):
+        if value != self._projDeadline and isinstance(value, date):
             self._projDeadline = value
             self._project.setProjectChanged(True)
         return
-    
+
     def setSessGoal(self, value: Any) -> None:
         """Set the session goal."""
         if value != self._sessGoal:
             self._sessGoal = checkInt(value, self._sessGoal)
             self._project.setProjectChanged(True)
         return
-    
+
     def setSessGoalAuto(self, value: Any) -> None:
         """Set the session goal."""
         if value != self._sessGoalAuto:
