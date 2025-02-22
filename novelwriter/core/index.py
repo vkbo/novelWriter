@@ -987,7 +987,7 @@ class ItemIndex:
 
     def unpackData(self, data: dict) -> None:
         """Iterate through the itemIndex loaded from cache and check
-        that it's valid. This will raise errors if there is a problem.
+        that it's valid. This will raise errors if there are problems.
         """
         self._items = {}
         if not isinstance(data, dict):

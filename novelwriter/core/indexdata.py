@@ -114,17 +114,17 @@ class IndexNode:
             self._headings[sTitle].setSynopsis(text)
         return
 
-    def setHeadingTag(self, sTitle: str, tagKey: str) -> None:
+    def setHeadingTag(self, sTitle: str, tag: str) -> None:
         """Set the tag of a heading."""
         if sTitle in self._headings:
-            self._headings[sTitle].setTag(tagKey)
+            self._headings[sTitle].setTag(tag)
         return
 
-    def addHeadingRef(self, sTitle: str, tagKeys: list[str], refType: str) -> None:
+    def addHeadingRef(self, sTitle: str, tags: list[str], keyword: str) -> None:
         """Add a reference key and all its types to a heading."""
         if sTitle in self._headings:
-            for tagKey in tagKeys:
-                self._headings[sTitle].addReference(tagKey, refType)
+            for tag in tags:
+                self._headings[sTitle].addReference(tag, keyword)
         return
 
     def addNoteKey(self, style: T_NoteTypes, key: str) -> None:
@@ -187,7 +187,7 @@ class IndexNode:
                         raise ValueError("The notes keys must be a list of strings")
                     self._notes[style] = set(keys)
             else:
-                raise ValueError("The itemIndex contains an invalid title key")
+                raise KeyError("Index node contains an invalid key")
         return
 
 

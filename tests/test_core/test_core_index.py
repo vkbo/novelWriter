@@ -1310,3 +1310,23 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     # Delete new item
     del itemIndex[uHandle]  # type: ignore
     assert uHandle not in itemIndex
+
+    # Unpack Error Handling
+    # =====================
+
+    # Pack/unpack should restore state
+    content = itemIndex.packData()
+    itemIndex.clear()
+    itemIndex.unpackData(content)
+    assert itemIndex.packData() == content
+    itemIndex.clear()
+
+    # Data must be dictionary
+    with pytest.raises(ValueError) as exc:
+        itemIndex.unpackData("stuff")  # type: ignore
+    assert str(exc.value) == "itemIndex is not a dict"
+
+    # Keys must be valid handles
+    with pytest.raises(ValueError) as exc:
+        itemIndex.unpackData({"stuff": "more stuff"})
+    assert str(exc.value) == "itemIndex keys must be handles"
