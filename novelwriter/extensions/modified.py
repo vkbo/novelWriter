@@ -105,8 +105,11 @@ class NTreeView(QTreeView):
 
     def mousePressEvent(self, event: QMouseEvent | None) -> None:
         """Emit a signal on mouse middle click."""
-        if event and event.button() == QtMouseMiddle:
-            self.middleClicked.emit(self.indexAt(event.pos()))
+        if (
+            event and event.button() == QtMouseMiddle
+            and (index := self.indexAt(event.pos())).isValid()
+        ):
+            self.middleClicked.emit(index)
         return super().mousePressEvent(event)
 
 

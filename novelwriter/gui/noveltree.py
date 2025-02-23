@@ -418,7 +418,8 @@ class GuiNovelTree(NTreeView):
         items are selected, return the first.
         """
         if model := self._getModel():
-            return model.keys(self.currentIndex())
+            index = self.currentIndex()
+            return model.handle(index), model.key(index)
         return None, None
 
     ##
@@ -452,7 +453,7 @@ class GuiNovelTree(NTreeView):
 
     def drawRow(self, painter: QPainter, opt: QStyleOptionViewItem, index: QModelIndex) -> None:
         """Draw a box on the active row."""
-        if (model := self._getModel()) and model.keys(index)[0] == self._actHandle:
+        if (model := self._getModel()) and model.handle(index) == self._actHandle:
             painter.fillRect(opt.rect, self.palette().alternateBase())
         super().drawRow(painter, opt, index)
         return
@@ -465,8 +466,7 @@ class GuiNovelTree(NTreeView):
     def _onSingleClick(self, index: QModelIndex) -> None:
         """The user single-clicked an index."""
         if index.isValid() and (model := self._getModel()):
-            keys = model.keys(index)
-            if (tHandle := keys[0]) and (sTitle := keys[1]):
+            if (tHandle := model.handle(index)) and (sTitle := model.key(index)):
                 self.novelView.selectedItemChanged.emit(tHandle)
                 if index.column() == model.columnCount(index) - 1:
                     pos = self.mapToGlobal(self.visualRect(index).topRight())
@@ -477,20 +477,22 @@ class GuiNovelTree(NTreeView):
     def _onDoubleClick(self, index: QModelIndex) -> None:
         """The user double-clicked an index."""
         if (
-            (model := self._getModel()) and (keys := model.keys(index))
-            and (tHandle := keys[0]) and (sTitle := keys[1])
+            (model := self._getModel())
+            and (tHandle := model.handle(index))
+            and (sTitle := model.key(index))
         ):
-            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "", False)
+            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle, False)
         return
 
     @pyqtSlot(QModelIndex)
     def _onMiddleClick(self, index: QModelIndex) -> None:
         """The user middle-clicked an index."""
         if (
-            (model := self._getModel()) and (keys := model.keys(index))
-            and (tHandle := keys[0]) and (sTitle := keys[1])
+            (model := self._getModel())
+            and (tHandle := model.handle(index))
+            and (sTitle := model.key(index))
         ):
-            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, sTitle or "", False)
+            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, sTitle, False)
         return
 
     ##

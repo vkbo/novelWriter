@@ -37,21 +37,22 @@ logger = logging.getLogger(__name__)
 
 C_FACTOR = 0x0100
 
-R_TEXT  = Qt.ItemDataRole.DisplayRole
-R_ICON  = Qt.ItemDataRole.DecorationRole
-R_ALIGN = Qt.ItemDataRole.TextAlignmentRole
-R_TIP   = Qt.ItemDataRole.ToolTipRole
+R_TEXT   = Qt.ItemDataRole.DisplayRole
+R_ICON   = Qt.ItemDataRole.DecorationRole
+R_ALIGN  = Qt.ItemDataRole.TextAlignmentRole
+R_TIP    = Qt.ItemDataRole.ToolTipRole
+R_HANDLE = 0xff01
+R_KEY    = 0xff02
 
-T_NodeData = str | QIcon | QPixmap | Qt.AlignmentFlag | None
+T_NodeData = str | tuple[str, str] | QIcon | QPixmap | Qt.AlignmentFlag | None
 
 
 class NovelModel(QAbstractTableModel):
 
-    __slots__ = ("_meta", "_rows", "_more", "_columns")
+    __slots__ = ("_rows", "_more", "_columns")
 
     def __init__(self) -> None:
         super().__init__()
-        self._meta: list[tuple[str, str]] = []
         self._rows: list[dict[int, T_NodeData]] = []
         self._more = SHARED.theme.getIcon("more_arrow")
         self._columns = 3
@@ -90,11 +91,21 @@ class NovelModel(QAbstractTableModel):
             print("NovelModel Debug: Oops!")
         return None
 
-    def keys(self, index: QModelIndex) -> tuple[str | None, str | None]:
-        """Return display data for a node."""
-        if index.isValid() and (row := index.row()) < len(self._rows):
-            return self._meta[row]
-        return None, None
+    def handle(self, index: QModelIndex) -> str | None:
+        """Return item handle for the row."""
+        try:
+            return self._rows[index.row()].get(R_HANDLE)  # type: ignore
+        except Exception:
+            print("NovelModel Debug: Oops!")
+        return None
+
+    def key(self, index: QModelIndex) -> str | None:
+        """Return item handle for the row."""
+        try:
+            return self._rows[index.row()].get(R_KEY)  # type: ignore
+        except Exception:
+            print("NovelModel Debug: Oops!")
+        return None
 
     ##
     #  Data Methods
@@ -113,11 +124,12 @@ class NovelModel(QAbstractTableModel):
                 iLevel = nwStyles.H_LEVEL.get(head.level, 0)
                 more = self._columns - 1
                 data = {}
-                data[C_FACTOR*0 | R_TEXT]  = head.title
-                data[C_FACTOR*0 | R_ICON]  = SHARED.theme.getHeaderDecoration(iLevel)
-                data[C_FACTOR*1 | R_TEXT]  = f"{head.mainCount:n}"
+                data[C_FACTOR*0 | R_TEXT] = head.title
+                data[C_FACTOR*0 | R_ICON] = SHARED.theme.getHeaderDecoration(iLevel)
+                data[C_FACTOR*1 | R_TEXT] = f"{head.mainCount:n}"
                 data[C_FACTOR*1 | R_ALIGN] = QtAlignRight
                 data[C_FACTOR*more | R_ICON] = self._more
-                self._meta.append((handle, key))
+                data[R_HANDLE] = handle
+                data[R_KEY] = key
                 self._rows.append(data)
         return
