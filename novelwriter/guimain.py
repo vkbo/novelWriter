@@ -1242,6 +1242,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _updateStatusWordCount(self) -> None:
         """Update the word count on the status bar."""
+
         if not SHARED.hasProject:
             self.mainStatus.setProjectStats(0, 0)
 

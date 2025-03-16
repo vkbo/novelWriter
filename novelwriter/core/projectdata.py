@@ -26,6 +26,8 @@ from __future__ import annotations
 import logging
 import uuid
 
+
+from datetime import date
 from typing import TYPE_CHECKING, Any
 
 from novelwriter.common import (
@@ -61,6 +63,10 @@ class NWProjectData:
 
         # Project Settings
         self._doBackup = True
+        self._projGoal = 1
+        self._projDeadline = date.today()
+        self._sessGoal = 1
+        self._sessGoalAuto = False
         self._language = None
         self._spellCheck = False
         self._spellLang = None
@@ -131,6 +137,26 @@ class NWProjectData:
     def doBackup(self) -> bool:
         """Return the backup setting."""
         return self._doBackup
+
+    @property
+    def projGoal(self) -> int:
+        """Return the project goal."""
+        return self._projGoal
+
+    @property
+    def projDeadline(self) -> date | None:
+        """Return the project deadline."""
+        return self._projDeadline
+
+    @property
+    def sessGoal(self) -> int:
+        """Return the session goal."""
+        return self._sessGoal
+
+    @property
+    def sessGoalAuto(self) -> bool:
+        """Return the automatic session goal setting."""
+        return self._sessGoalAuto
 
     @property
     def language(self) -> str | None:
@@ -257,6 +283,34 @@ class NWProjectData:
         """Set the do write backup flag."""
         if value != self._doBackup:
             self._doBackup = checkBool(value, False)
+            self._project.setProjectChanged(True)
+        return
+
+    def setProjGoal(self, value: Any) -> None:
+        """Set the project goal."""
+        if value != self._projGoal:
+            self._projGoal = checkInt(value, self._projGoal)
+            self._project.setProjectChanged(True)
+        return
+
+    def setProjDeadline(self, value: Any) -> None:
+        """Set the project deadline."""
+        if value != self._projDeadline and isinstance(value, date):
+            self._projDeadline = value
+            self._project.setProjectChanged(True)
+        return
+
+    def setSessGoal(self, value: Any) -> None:
+        """Set the session goal."""
+        if value != self._sessGoal:
+            self._sessGoal = checkInt(value, self._sessGoal)
+            self._project.setProjectChanged(True)
+        return
+
+    def setSessGoalAuto(self, value: Any) -> None:
+        """Set the session goal."""
+        if value != self._sessGoalAuto:
+            self._sessGoalAuto = checkBool(value, False)
             self._project.setProjectChanged(True)
         return
 
