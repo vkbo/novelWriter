@@ -1173,7 +1173,7 @@ _These Release Notes also include the changes from the 2.2 Beta 1 and 2.2 RC 1 r
 **Usability**
 
 * Use `Ctrl+K, H` for inserting short description comments (alias to synopsis), drop the space
-  after the `%` symbol when inserting special comments, add a browse icon to the open open project
+  after the `%` symbol when inserting special comments, add a browse icon to the open project
   dialog, and remove the popup warning for Alpha releases. PR #1626.
 * Menu entries no longer clear the status bar message when they are hovered. This was caused by a
   status tip feature in Qt, which prints a blank message to the status bar. PR #1630.

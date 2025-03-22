@@ -532,7 +532,7 @@ class GuiMain(QMainWindow):
     ) -> bool:
         """Open a specific document, optionally at a given line."""
         if not (SHARED.hasProject and tHandle):
-            logger.error("Nothing to open open")
+            logger.error("Nothing to open")
             return False
 
         if sTitle and tLine is None:
