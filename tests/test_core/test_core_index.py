@@ -708,15 +708,6 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert wC == 12  # Words in text and title only
     assert pC == 2   # Paragraphs in text only
 
-    # getItemData + getHandleHeaderCount
-    # ==================================
-
-    item = index.getItemData(nHandle)
-    assert isinstance(item, IndexNode)
-    assert item.headings() == ["T0001"]
-    assert index.getHandleHeaderCount(nHandle) == 1
-    assert index.getHandleHeaderCount("foo") == 0
-
     # getReferences
     # =============
 

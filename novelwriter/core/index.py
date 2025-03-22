@@ -120,35 +120,6 @@ class Index:
             self._generateNovelModel(tHandle)
         return self._novelModels.get(tHandle)
 
-    def refreshNovelModel(self, tHandle: str) -> None:
-        """Refresh a novel model."""
-        if model := self.getNovelModel(tHandle):
-            logger.debug("Refreshing novel model '%s'", tHandle)
-            model.beginResetModel()
-            model.clear()
-            self._appendSubTreeToModel(tHandle, model)
-            model.endResetModel()
-        return
-
-    def _generateNovelModel(self, tHandle: str) -> None:
-        """Generate a novel model for a specific handle."""
-        if (item := SHARED.project.tree[tHandle]) and item.isRootType() and item.isNovelLike():
-            model = NovelModel()
-            self._appendSubTreeToModel(tHandle, model)
-            self._novelModels[tHandle] = model
-        return
-
-    def _appendSubTreeToModel(self, tHandle: str, model: NovelModel) -> None:
-        """Append all active novel documents to a novel model."""
-        for handle in SHARED.project.tree.subTree(tHandle):
-            if (
-                (node := self._itemIndex[handle])
-                and node.item.isDocumentLayout()
-                and node.item.isActive
-            ):
-                model.append(node)
-        return
-
     ##
     #  Public Methods
     ##
@@ -206,6 +177,16 @@ class Index:
         if isinstance(rootHandle, str):
             return self._rootChange.get(rootHandle, self._indexChange) > float(checkTime)
         return False
+
+    def refreshNovelModel(self, tHandle: str) -> None:
+        """Refresh a novel model."""
+        if model := self.getNovelModel(tHandle):
+            logger.info("Refreshing novel model '%s'", tHandle)
+            model.beginResetModel()
+            model.clear()
+            self._appendSubTreeToModel(tHandle, model)
+            model.endResetModel()
+        return
 
     ##
     #  Load and Save Index to/from File
@@ -304,6 +285,7 @@ class Index:
 
         # Keep a record of existing tags, and create a new item entry
         itemTags = dict.fromkeys(self._itemIndex.allItemTags(tHandle), False)
+        itemHeadings = self._itemIndex.headingCount(tHandle)
         self._itemIndex.add(tHandle, tItem)
 
         # Run word counter for the whole text
@@ -326,6 +308,11 @@ class Index:
             self._scanInactive(tItem, text)
         else:
             self._scanActive(tHandle, tItem, text, itemTags)
+
+        if itemHeadings == self._itemIndex.headingCount(tHandle):
+            pass
+        else:
+            tItem.notifyNovelStructureChange()
 
         # Update timestamps for index changes
         nowTime = time()
@@ -467,6 +454,25 @@ class Index:
 
         return
 
+    def _generateNovelModel(self, tHandle: str) -> None:
+        """Generate a novel model for a specific handle."""
+        if (item := SHARED.project.tree[tHandle]) and item.isRootType() and item.isNovelLike():
+            model = NovelModel()
+            self._appendSubTreeToModel(tHandle, model)
+            self._novelModels[tHandle] = model
+        return
+
+    def _appendSubTreeToModel(self, tHandle: str, model: NovelModel) -> None:
+        """Append all active novel documents to a novel model."""
+        for handle in SHARED.project.tree.subTree(tHandle):
+            if (
+                (node := self._itemIndex[handle])
+                and node.item.isDocumentLayout()
+                and node.item.isActive
+            ):
+                model.append(node)
+        return
+
     ##
     #  Check @ Lines
     ##
@@ -606,13 +612,6 @@ class Index:
             iLevel = nwStyles.H_LEVEL.get(hItem.level, 0)
             hCount[iLevel] += 1
         return hCount
-
-    def getHandleHeaderCount(self, tHandle: str) -> int:
-        """Get the number of headers in an item."""
-        tItem = self._itemIndex[tHandle]
-        if isinstance(tItem, IndexNode):
-            return len(tItem)
-        return 0
 
     def getTableOfContents(
         self, rHandle: str | None, maxDepth: int, activeOnly: bool = True
@@ -915,6 +914,12 @@ class ItemIndex:
         """
         self._items[tHandle] = IndexNode(tHandle, nwItem)
         return
+
+    def headingCount(self, tHandle: str) -> int:
+        """Return the number of headings in this item."""
+        if tHandle in self._items:
+            return len(self._items[tHandle])
+        return 0
 
     def allItemTags(self, tHandle: str) -> list[str]:
         """Get all tags set for headings of an item."""

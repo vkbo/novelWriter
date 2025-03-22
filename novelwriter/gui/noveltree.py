@@ -96,7 +96,6 @@ class GuiNovelView(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         self.novelBar.updateTheme()
-        self.refreshTree()
         return
 
     def initSettings(self) -> None:
@@ -172,12 +171,6 @@ class GuiNovelView(QWidget):
     def setActiveHandle(self, tHandle: str) -> None:
         """Highlight the rows associated with a given handle."""
         self.novelTree.setActiveHandle(tHandle)
-        return
-
-    @pyqtSlot()
-    def refreshTree(self) -> None:
-        """Refresh the current tree."""
-        # self.novelTree.refreshTree(rootHandle=SHARED.project.data.getLastHandle("novelTree"))
         return
 
     @pyqtSlot(str, Enum)
@@ -296,6 +289,8 @@ class GuiNovelToolBar(QWidget):
         self.novelValue.refreshNovelList()
         self.tbNovel.setVisible(self.novelValue.count() > 1)
 
+        self._forceRefreshNovelTree()
+
         return
 
     def clearContent(self) -> None:
@@ -328,7 +323,7 @@ class GuiNovelToolBar(QWidget):
         refresh when content structure changes.
         """
         self._active = state
-        if self._active:
+        if self._active and self._refresh.get(self.novelValue.handle, False):
             self._refreshNovelTree(self.novelValue.handle)
         return
 
@@ -339,21 +334,19 @@ class GuiNovelToolBar(QWidget):
     @pyqtSlot()
     def _forceRefreshNovelTree(self) -> None:
         """Rebuild the current tree."""
-        self._refresh[self.novelValue.handle] = True
-        self._refreshNovelTree(self.novelValue.handle)
+        if tHandle := self.novelValue.handle:
+            SHARED.project.index.refreshNovelModel(tHandle)
+            self._refresh[tHandle] = False
         return
 
     @pyqtSlot(str)
     def _refreshNovelTree(self, tHandle: str) -> None:
         """Refresh or schedule refresh of a novel tree."""
-        if tHandle:
-            if self._active:
-                if self._refresh.get(tHandle, False):
-                    SHARED.project.index.refreshNovelModel(tHandle)
-                self._refresh[tHandle] = False
-            else:
-                self._refresh[tHandle] = True
-        print(self._refresh)
+        if self._active:
+            SHARED.project.index.refreshNovelModel(tHandle)
+            self._refresh[tHandle] = False
+        else:
+            self._refresh[tHandle] = True
         return
 
     @pyqtSlot()
