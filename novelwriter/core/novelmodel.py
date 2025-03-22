@@ -30,7 +30,8 @@ from PyQt6.QtGui import QIcon, QPixmap
 
 from novelwriter import SHARED
 from novelwriter.constants import nwStyles
-from novelwriter.core.indexdata import IndexNode
+from novelwriter.core.indexdata import IndexHeading, IndexNode
+from novelwriter.error import logException
 from novelwriter.types import QtAlignRight
 
 logger = logging.getLogger(__name__)
@@ -121,15 +122,68 @@ class NovelModel(QAbstractTableModel):
         handle = node.handle
         for key, head in node.items():
             if key != "T0000":
-                iLevel = nwStyles.H_LEVEL.get(head.level, 0)
-                more = self._columns - 1
-                data = {}
-                data[C_FACTOR*0 | R_TEXT] = head.title
-                data[C_FACTOR*0 | R_ICON] = SHARED.theme.getHeaderDecoration(iLevel)
-                data[C_FACTOR*1 | R_TEXT] = f"{head.mainCount:n}"
-                data[C_FACTOR*1 | R_ALIGN] = QtAlignRight
-                data[C_FACTOR*more | R_ICON] = self._more
-                data[R_HANDLE] = handle
-                data[R_KEY] = key
-                self._rows.append(data)
+                self._rows.append(self._generateEntry(handle, key, head))
         return
+
+    def refresh(self, node: IndexNode) -> bool:
+        """Refresh an index node."""
+        handle = node.handle
+        current = []
+        for i, row in enumerate(self._rows):
+            if row.get(R_HANDLE) == handle:
+                current.append(i)
+
+        if current == []:
+            return False
+
+        cols = self._columns - 1
+
+        first = current[0]
+        last = current[-1]
+        remains = []
+        try:
+            for key, head in node.items():
+                if key != "T0000":
+                    if current:
+                        j = current.pop(0)
+                        self._rows[j] = self._generateEntry(handle, key, head)
+                    else:
+                        remains.append((key, head))
+
+            self.dataChanged.emit(self.createIndex(first, 0), self.createIndex(last, cols))
+
+            if remains:
+                self.beginInsertRows(QModelIndex(), last, last + len(remains) - 1)
+                for k, (key, head) in enumerate(remains, last + 1):
+                    self._rows.insert(k, self._generateEntry(handle, key, head))
+                self.endInsertRows()
+            elif current:
+                self.beginRemoveRows(QModelIndex(), current[0], current[-1])
+                del self._rows[current[0]:current[-1] + 1]
+                self.endRemoveRows()
+
+        except Exception:
+            # This is faster than to check for index boundaries.
+            # We definitely don't want to cause a crash.
+            logException()
+            return False
+
+        return True
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _generateEntry(self, handle: str, key: str, heading: IndexHeading) -> dict:
+        """Generate a cache entry."""
+        iLevel = nwStyles.H_LEVEL.get(heading.level, 0)
+        more = self._columns - 1
+        data = {}
+        data[C_FACTOR*0 | R_TEXT] = heading.title
+        data[C_FACTOR*0 | R_ICON] = SHARED.theme.getHeaderDecoration(iLevel)
+        data[C_FACTOR*1 | R_TEXT] = f"{heading.mainCount:n}"
+        data[C_FACTOR*1 | R_ALIGN] = QtAlignRight
+        data[C_FACTOR*more | R_ICON] = self._more
+        data[R_HANDLE] = handle
+        data[R_KEY] = key
+        return data

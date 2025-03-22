@@ -178,15 +178,28 @@ class Index:
             return self._rootChange.get(rootHandle, self._indexChange) > float(checkTime)
         return False
 
-    def refreshNovelModel(self, tHandle: str) -> None:
+    def refreshNovelModel(self, tHandle: str | None) -> None:
         """Refresh a novel model."""
-        if model := self.getNovelModel(tHandle):
+        if tHandle and (model := self.getNovelModel(tHandle)):
             logger.info("Refreshing novel model '%s'", tHandle)
             model.beginResetModel()
             model.clear()
             self._appendSubTreeToModel(tHandle, model)
             model.endResetModel()
         return
+
+    def updateNovelModelData(self, nwItem: NWItem) -> bool:
+        """Refresh a novel model."""
+        if (
+            (rHandle := nwItem.itemRoot)
+            and (model := self._novelModels.get(rHandle))
+            and (node := self._itemIndex[nwItem.itemHandle])
+            and node.item.isDocumentLayout()
+            and node.item.isActive
+        ):
+            logger.info("Updating novel model data '%s'", nwItem.itemHandle)
+            return model.refresh(node)
+        return False
 
     ##
     #  Load and Save Index to/from File
@@ -285,7 +298,6 @@ class Index:
 
         # Keep a record of existing tags, and create a new item entry
         itemTags = dict.fromkeys(self._itemIndex.allItemTags(tHandle), False)
-        itemHeadings = self._itemIndex.headingCount(tHandle)
         self._itemIndex.add(tHandle, tItem)
 
         # Run word counter for the whole text
@@ -309,10 +321,9 @@ class Index:
         else:
             self._scanActive(tHandle, tItem, text, itemTags)
 
-        if itemHeadings == self._itemIndex.headingCount(tHandle):
-            pass
-        else:
-            tItem.notifyNovelStructureChange()
+        if tItem.itemClass == nwItemClass.NOVEL and not blockSignal:
+            if not self.updateNovelModelData(tItem):
+                self.refreshNovelModel(tItem.itemRoot)
 
         # Update timestamps for index changes
         nowTime = time()
@@ -914,12 +925,6 @@ class ItemIndex:
         """
         self._items[tHandle] = IndexNode(tHandle, nwItem)
         return
-
-    def headingCount(self, tHandle: str) -> int:
-        """Return the number of headings in this item."""
-        if tHandle in self._items:
-            return len(self._items[tHandle])
-        return 0
 
     def allItemTags(self, tHandle: str) -> list[str]:
         """Get all tags set for headings of an item."""
