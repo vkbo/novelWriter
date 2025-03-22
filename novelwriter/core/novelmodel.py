@@ -77,11 +77,11 @@ class NovelModel(QAbstractTableModel):
     ##
 
     def rowCount(self, index: QModelIndex) -> int:
-        """Return the number of rows for an entry."""
+        """Return the number of rows."""
         return len(self._rows)
 
     def columnCount(self, index: QModelIndex) -> int:
-        """Return the number of columns for an entry."""
+        """Return the number of columns."""
         return self._columns
 
     def data(self, index: QModelIndex, role: Qt.ItemDataRole) -> T_NodeData:
@@ -89,7 +89,7 @@ class NovelModel(QAbstractTableModel):
         try:
             return self._rows[index.row()].get(C_FACTOR*index.column() | role)
         except Exception:
-            print("NovelModel Debug: Oops!")
+            logger.error("Novel model index is inconsistent")
         return None
 
     def handle(self, index: QModelIndex) -> str | None:
@@ -97,7 +97,7 @@ class NovelModel(QAbstractTableModel):
         try:
             return self._rows[index.row()].get(R_HANDLE)  # type: ignore
         except Exception:
-            print("NovelModel Debug: Oops!")
+            logger.error("Novel model index is inconsistent")
         return None
 
     def key(self, index: QModelIndex) -> str | None:
@@ -105,7 +105,7 @@ class NovelModel(QAbstractTableModel):
         try:
             return self._rows[index.row()].get(R_KEY)  # type: ignore
         except Exception:
-            print("NovelModel Debug: Oops!")
+            logger.error("Novel model index is inconsistent")
         return None
 
     ##
@@ -134,12 +134,17 @@ class NovelModel(QAbstractTableModel):
                 current.append(i)
 
         if current == []:
+            logger.warning("No novel model entries for '%s'", handle)
             return False
 
         cols = self._columns - 1
-
         first = current[0]
         last = current[-1]
+
+        if len(current) != last - first + 1:
+            logger.warning("Novel model entries for '%s' are not continuous", handle)
+            return False
+
         remains = []
         try:
             for key, head in node.items():
@@ -165,6 +170,7 @@ class NovelModel(QAbstractTableModel):
         except Exception:
             # This is faster than to check for index boundaries.
             # We definitely don't want to cause a crash.
+            logger.error("Novel model refresh error for '%s'", handle)
             logException()
             return False
 
