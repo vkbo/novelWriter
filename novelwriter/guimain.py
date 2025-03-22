@@ -1163,15 +1163,18 @@ class GuiMain(QMainWindow):
         elif view == nwView.PROJECT:
             self.mainStack.setCurrentWidget(self.splitMain)
             self.projStack.setCurrentWidget(self.projView)
+            self.novelView.setActive(False)
         elif view == nwView.NOVEL:
             self.mainStack.setCurrentWidget(self.splitMain)
             self.projStack.setCurrentWidget(self.novelView)
+            self.novelView.setActive(True)
         elif view == nwView.SEARCH:
             self.mainStack.setCurrentWidget(self.splitMain)
             self.projStack.setCurrentWidget(self.projSearch)
             self.projSearch.beginSearch(
                 self.docEditor.getSelectedText() if self.docEditor.anyFocus() else ""
             )
+            self.novelView.setActive(False)
         elif view == nwView.OUTLINE:
             self.mainStack.setCurrentWidget(self.outlineView)
         return

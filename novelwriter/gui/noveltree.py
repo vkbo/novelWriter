@@ -84,6 +84,7 @@ class GuiNovelView(QWidget):
         self.setLayout(self.outerBox)
 
         # Function Mappings
+        self.setActive = self.novelBar.setActive
         self.getSelectedHandle = self.novelTree.getSelectedHandle
 
         return
@@ -203,6 +204,9 @@ class GuiNovelToolBar(QWidget):
 
         self.novelView = novelView
 
+        self._active = False
+        self._refresh: dict[str, bool] = {}
+
         iSz = SHARED.theme.baseIconSize
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -227,7 +231,7 @@ class GuiNovelToolBar(QWidget):
         # Refresh Button
         self.tbRefresh = NIconToolButton(self, iSz)
         self.tbRefresh.setToolTip(self.tr("Refresh"))
-        self.tbRefresh.clicked.connect(self._refreshNovelTree)
+        self.tbRefresh.clicked.connect(self._forceRefreshNovelTree)
 
         # More Options Menu
         self.mMore = QMenu(self)
@@ -260,6 +264,9 @@ class GuiNovelToolBar(QWidget):
         self.setLayout(self.outerBox)
 
         self.updateTheme()
+
+        # Connect Signals
+        SHARED.novelStructureChanged.connect(self._refreshNovelTree)
 
         logger.debug("Ready: GuiNovelToolBar")
 
@@ -316,16 +323,37 @@ class GuiNovelToolBar(QWidget):
         # self.novelView.novelTree.setLastColType(colType, doRefresh=doRefresh)
         return
 
+    def setActive(self, state: bool) -> None:
+        """Set the widget active state, which enables automatic tree
+        refresh when content structure changes.
+        """
+        self._active = state
+        if self._active:
+            self._refreshNovelTree(self.novelValue.handle)
+        return
+
     ##
     #  Private Slots
     ##
 
     @pyqtSlot()
-    def _refreshNovelTree(self) -> None:
+    def _forceRefreshNovelTree(self) -> None:
         """Rebuild the current tree."""
-        if rootHandle := self.novelValue.handle:
-            SHARED.project.index.refreshNovelModel(rootHandle)
-        # self.novelView.setCurrentNovel(SHARED.project.data.getLastHandle("novelTree"))
+        self._refresh[self.novelValue.handle] = True
+        self._refreshNovelTree(self.novelValue.handle)
+        return
+
+    @pyqtSlot(str)
+    def _refreshNovelTree(self, tHandle: str) -> None:
+        """Refresh or schedule refresh of a novel tree."""
+        if tHandle:
+            if self._active:
+                if self._refresh.get(tHandle, False):
+                    SHARED.project.index.refreshNovelModel(tHandle)
+                self._refresh[tHandle] = False
+            else:
+                self._refresh[tHandle] = True
+        print(self._refresh)
         return
 
     @pyqtSlot()

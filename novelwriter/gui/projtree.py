@@ -1399,6 +1399,7 @@ class _TreeContextMenu(QMenu):
         if itemLayout == nwItemLayout.DOCUMENT and self._item.documentAllowed():
             self._item.setLayout(nwItemLayout.DOCUMENT)
             self._item.notifyToRefresh()
+            self._item.notifyNovelStructureChange()
         elif itemLayout == nwItemLayout.NOTE:
             self._item.setLayout(nwItemLayout.NOTE)
             self._item.notifyToRefresh()
@@ -1415,6 +1416,7 @@ class _TreeContextMenu(QMenu):
                 self._item.setType(nwItemType.FILE)
                 self._item.setLayout(nwItemLayout.DOCUMENT)
                 self._item.notifyToRefresh()
+                self._item.notifyNovelStructureChange()
             elif msgYes and itemLayout == nwItemLayout.NOTE:
                 self._item.setType(nwItemType.FILE)
                 self._item.setLayout(nwItemLayout.NOTE)

@@ -63,10 +63,11 @@ class SharedData(QObject):
     indexChangedTags = pyqtSignal(list, list)
     indexCleared = pyqtSignal()
     mainClockTick = pyqtSignal()
+    novelStructureChanged = pyqtSignal(str)
     projectItemChanged = pyqtSignal(str, Enum)
-    rootFolderChanged = pyqtSignal(str, Enum)
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
+    rootFolderChanged = pyqtSignal(str, Enum)
     spellLanguageChanged = pyqtSignal(str, str)
     statusLabelsChanged = pyqtSignal(str)
 

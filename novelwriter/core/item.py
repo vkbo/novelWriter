@@ -293,6 +293,12 @@ class NWItem:
         self._project.tree.refreshItems([self._handle])
         return
 
+    def notifyNovelStructureChange(self) -> None:
+        """Notify that the structure of a novel has changed."""
+        if self._root and self._class == nwItemClass.NOVEL:
+            self._project.tree.novelStructureChanged(self._root)
+        return
+
     ##
     #  Lookup Methods
     ##

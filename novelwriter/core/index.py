@@ -123,6 +123,7 @@ class Index:
     def refreshNovelModel(self, tHandle: str) -> None:
         """Refresh a novel model."""
         if model := self.getNovelModel(tHandle):
+            logger.debug("Refreshing novel model '%s'", tHandle)
             model.beginResetModel()
             model.clear()
             self._appendSubTreeToModel(tHandle, model)
@@ -170,6 +171,8 @@ class Index:
                 self.scanText(nwItem.itemHandle, text, blockSignal=True)
         self._indexBroken = False
         SHARED.emitIndexAvailable(self._project)
+        for tHandle in self._novelModels:
+            self.refreshNovelModel(tHandle)
         return
 
     def deleteHandle(self, tHandle: str) -> None:
