@@ -39,7 +39,7 @@ from novelwriter.common import isHandle, isItemClass, isTitleTag, jsonEncode
 from novelwriter.constants import nwFiles, nwKeyWords, nwStyles
 from novelwriter.core.indexdata import NOTE_TYPES, TT_NONE, IndexHeading, IndexNode, T_NoteTypes
 from novelwriter.core.novelmodel import NovelModel
-from novelwriter.enum import nwComment, nwItemClass, nwItemLayout, nwItemType
+from novelwriter.enum import nwComment, nwItemClass, nwItemLayout, nwItemType, nwNovelExtra
 from novelwriter.error import logException
 from novelwriter.text.comments import processComment
 from novelwriter.text.counting import standardCounter
@@ -92,6 +92,7 @@ class Index:
 
         # Models
         self._novelModels: dict[str, NovelModel] = {}
+        self._novelExtra = nwNovelExtra.HIDDEN
 
         # TimeStamps
         self._indexChange = 0.0
@@ -119,6 +120,15 @@ class Index:
         if tHandle not in self._novelModels:
             self._generateNovelModel(tHandle)
         return self._novelModels.get(tHandle)
+
+    ##
+    #  Setters
+    ##
+
+    def setNovelModelExtraColumn(self, extra: nwNovelExtra) -> None:
+        """Set the data content type of the novel model extra column."""
+        self._novelExtra = extra
+        return
 
     ##
     #  Public Methods
@@ -184,6 +194,7 @@ class Index:
             logger.info("Refreshing novel model '%s'", tHandle)
             model.beginResetModel()
             model.clear()
+            model.setExtraColumn(self._novelExtra)
             self._appendSubTreeToModel(tHandle, model)
             model.endResetModel()
         return
@@ -439,8 +450,9 @@ class Index:
         self._itemIndex.setHeadingCounts(tHandle, sTitle, cC, wC, pC)
         return
 
-    def _indexKeyword(self, tHandle: str, line: str, sTitle: str,
-                      itemClass: nwItemClass, tags: dict[str, bool]) -> None:
+    def _indexKeyword(
+        self, tHandle: str, line: str, sTitle: str, itemClass: nwItemClass, tags: dict[str, bool]
+    ) -> None:
         """Validate and save the information about a reference to a tag
         in another file, or the setting of a tag in the file. A record
         of active tags is updated so that no longer used tags can be
@@ -469,6 +481,7 @@ class Index:
         """Generate a novel model for a specific handle."""
         if (item := SHARED.project.tree[tHandle]) and item.isRootType() and item.isNovelLike():
             model = NovelModel()
+            model.setExtraColumn(self._novelExtra)
             self._appendSubTreeToModel(tHandle, model)
             self._novelModels[tHandle] = model
         return

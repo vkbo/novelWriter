@@ -30,34 +30,26 @@ import logging
 from enum import Enum
 
 from PyQt6.QtCore import QModelIndex, QPoint, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QActionGroup, QFont, QPainter, QPalette
+from PyQt6.QtGui import QActionGroup, QFont, QPainter, QPalette, QResizeEvent
 from PyQt6.QtWidgets import (
-    QAbstractItemView, QFrame, QHBoxLayout, QMenu, QStyleOptionViewItem,
-    QToolTip, QVBoxLayout, QWidget
+    QAbstractItemView, QFrame, QHBoxLayout, QInputDialog, QMenu,
+    QStyleOptionViewItem, QToolTip, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import qtAddAction, qtAddMenu, qtLambda
+from novelwriter.common import minmax, qtAddAction, qtAddMenu, qtLambda
 from novelwriter.constants import nwKeyWords, nwLabels, trConst
 from novelwriter.core.novelmodel import NovelModel
-from novelwriter.enum import nwChange, nwDocMode, nwItemClass, nwOutline
+from novelwriter.enum import nwChange, nwDocMode, nwItemClass, nwNovelExtra, nwOutline
 from novelwriter.extensions.modified import NIconToolButton, NTreeView
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
-    QtHeaderStretch, QtHeaderToContents, QtScrollAlwaysOff, QtScrollAsNeeded,
-    QtSizeExpanding
+    QtHeaderFixed, QtHeaderStretch, QtHeaderToContents, QtScrollAlwaysOff,
+    QtScrollAsNeeded, QtSizeExpanding
 )
 
 logger = logging.getLogger(__name__)
-
-
-class NovelTreeColumn(Enum):
-
-    HIDDEN = 0
-    POV    = 1
-    FOCUS  = 2
-    PLOT   = 3
 
 
 class GuiNovelView(QWidget):
@@ -119,11 +111,11 @@ class GuiNovelView(QWidget):
         logger.debug("Setting novel tree to root item '%s'", lastNovel)
 
         lastCol = SHARED.project.options.getEnum(
-            "GuiNovelView", "lastCol", NovelTreeColumn, NovelTreeColumn.HIDDEN
+            "GuiNovelView", "lastCol", nwNovelExtra, nwNovelExtra.HIDDEN
         )
-        # lastColSize = SHARED.project.options.getInt(
-        #     "GuiNovelView", "lastColSize", 25
-        # )
+        lastColSize = SHARED.project.options.getInt(
+            "GuiNovelView", "lastColSize", 25
+        )
 
         self.clearNovelView()
         self.novelBar.buildNovelRootMenu()
@@ -131,18 +123,18 @@ class GuiNovelView(QWidget):
         self.novelBar.setCurrentRoot(lastNovel)
         self.novelBar.setEnabled(True)
 
-        # self.novelTree.setLastColSize(lastColSize)
+        self.novelTree.setLastColSize(lastColSize)
 
         return
 
     def closeProjectTasks(self) -> None:
         """Run closing project tasks."""
-        # lastColType = self.novelTree.lastColType
-        # lastColSize = self.novelTree.lastColSize
-        # logger.debug("Saving State: GuiNovelView")
-        # pOptions = SHARED.project.options
-        # pOptions.setValue("GuiNovelView", "lastCol", lastColType)
-        # pOptions.setValue("GuiNovelView", "lastColSize", lastColSize)
+        lastColType = self.novelTree.lastColType
+        lastColSize = self.novelTree.lastColSize
+        logger.debug("Saving State: GuiNovelView")
+        options = SHARED.project.options
+        options.setValue("GuiNovelView", "lastCol", lastColType)
+        options.setValue("GuiNovelView", "lastColSize", lastColSize)
         self.clearNovelView()
         return
 
@@ -164,7 +156,7 @@ class GuiNovelView(QWidget):
         """Set the current novel to display."""
         if rootHandle and (model := SHARED.project.index.getNovelModel(rootHandle)):
             self.novelTree.setModel(model)
-            self.novelTree.resizeColumsn()
+            self.novelTree.resizeColumns()
         return
 
     @pyqtSlot(str)
@@ -232,10 +224,10 @@ class GuiNovelToolBar(QWidget):
         self.mLastCol = qtAddMenu(self.mMore, self.tr("Last Column"))
         self.gLastCol = QActionGroup(self.mMore)
         self.aLastCol = {}
-        self._addLastColAction(NovelTreeColumn.HIDDEN, self.tr("Hidden"))
-        self._addLastColAction(NovelTreeColumn.POV,    self.tr("Point of View Character"))
-        self._addLastColAction(NovelTreeColumn.FOCUS,  self.tr("Focus Character"))
-        self._addLastColAction(NovelTreeColumn.PLOT,   self.tr("Novel Plot"))
+        self._addLastColAction(nwNovelExtra.HIDDEN, self.tr("Hidden"))
+        self._addLastColAction(nwNovelExtra.POV,    self.tr("Point of View Character"))
+        self._addLastColAction(nwNovelExtra.FOCUS,  self.tr("Focus Character"))
+        self._addLastColAction(nwNovelExtra.PLOT,   self.tr("Novel Plot"))
 
         self.mLastCol.addSeparator()
         self.aLastColSize = qtAddAction(self.mLastCol, self.tr("Column Size"))
@@ -312,10 +304,13 @@ class GuiNovelToolBar(QWidget):
         self.novelView.setCurrentNovel(rootHandle)
         return
 
-    def setLastColType(self, colType: NovelTreeColumn, doRefresh: bool = True) -> None:
+    def setLastColType(self, colType: nwNovelExtra, doRefresh: bool = True) -> None:
         """Set the last column type."""
-        # self.aLastCol[colType].setChecked(True)
-        # self.novelView.novelTree.setLastColType(colType, doRefresh=doRefresh)
+        self.aLastCol[colType].setChecked(True)
+        self.novelView.novelTree.setLastColType(colType)
+        if doRefresh:
+            self._forceRefreshNovelTree()
+            self.novelView.novelTree.resizeColumns()
         return
 
     def setActive(self, state: bool) -> None:
@@ -352,20 +347,20 @@ class GuiNovelToolBar(QWidget):
     @pyqtSlot()
     def _selectLastColumnSize(self) -> None:
         """Set the maximum width for the last column."""
-        # oldSize = self.novelView.novelTree.lastColSize
-        # newSize, isOk = QInputDialog.getInt(
-        #     self, self.tr("Column Size"), self.tr("Maximum column size in %"), oldSize, 15, 75, 5
-        # )
-        # if isOk:
-        #     self.novelView.novelTree.setLastColSize(newSize)
-        #     self._refreshNovelTree()
+        oldSize = self.novelView.novelTree.lastColSize
+        newSize, isOk = QInputDialog.getInt(
+            self, self.tr("Column Size"), self.tr("Maximum column size in %"), oldSize, 15, 75, 5
+        )
+        if isOk:
+            self.novelView.novelTree.setLastColSize(newSize)
+            self.novelView.novelTree.resizeColumns()
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _addLastColAction(self, colType: NovelTreeColumn, actionLabel: str) -> None:
+    def _addLastColAction(self, colType: nwNovelExtra, actionLabel: str) -> None:
         """Add a column selection entry to the last column menu."""
         aLast = qtAddAction(self.mLastCol, actionLabel)
         aLast.setCheckable(True)
@@ -385,10 +380,10 @@ class GuiNovelTree(NTreeView):
         self.novelView = novelView
 
         # Internal Variables
-        self._actHandle = None
+        self._actHandle   = None
+        self._lastColType = nwNovelExtra.POV
+        self._lastColSize = 0.25
         # self._lastBuild   = 0
-        # self._lastCol     = NovelTreeColumn.POV
-        # self._lastColSize = 0.25
         # self._treeMap: dict[str, QTreeWidgetItem] = {}
 
         # Cached Strings
@@ -433,6 +428,20 @@ class GuiNovelTree(NTreeView):
         return
 
     ##
+    #  Properties
+    ##
+
+    @property
+    def lastColType(self) -> nwNovelExtra:
+        """The data type of the extra column."""
+        return self._lastColType
+
+    @property
+    def lastColSize(self) -> int:
+        """Return the size of the extra column."""
+        return int(self._lastColSize * 100)
+
+    ##
     #  Getters
     ##
 
@@ -456,18 +465,34 @@ class GuiNovelTree(NTreeView):
             viewport.repaint()
         return
 
+    def setLastColType(self, colType: nwNovelExtra) -> None:
+        """Set the extra column type."""
+        self._lastColType = colType
+        SHARED.project.index.setNovelModelExtraColumn(colType)
+        return
+
+    def setLastColSize(self, colSize: int) -> None:
+        """Set the extra column size between 15% and 75%."""
+        self._lastColSize = minmax(colSize, 15, 75)/100.0
+        return
+
     ##
     #  Class Methods
     ##
 
-    def resizeColumsn(self) -> None:
+    def resizeColumns(self) -> None:
         """Set the correct column sizes."""
-        if (header := self.header()) and (model := self._getModel()):
+        if (header := self.header()) and (model := self._getModel()) and (vp := self.viewport()):
             header.setStretchLastSection(False)
             header.setMinimumSectionSize(SHARED.theme.baseIconHeight + 6)
             header.setSectionResizeMode(0, QtHeaderStretch)
-            for i in range(1, model.columnCount(QModelIndex())):
-                header.setSectionResizeMode(i, QtHeaderToContents)
+            header.setSectionResizeMode(1, QtHeaderToContents)
+            if model.columns == 3:
+                header.setSectionResizeMode(2, QtHeaderToContents)
+            elif model.columns == 4:
+                header.setSectionResizeMode(2, QtHeaderFixed)
+                header.setSectionResizeMode(3, QtHeaderToContents)
+                header.resizeSection(2, int(self._lastColSize * vp.width()))
         return
 
     ##
@@ -479,6 +504,16 @@ class GuiNovelTree(NTreeView):
         if (model := self._getModel()) and model.handle(index) == self._actHandle:
             painter.fillRect(opt.rect, self.palette().alternateBase())
         super().drawRow(painter, opt, index)
+        return
+
+    ##
+    #  Events
+    ##
+
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        """Process size changed."""
+        super().resizeEvent(event)
+        self.resizeColumns()
         return
 
     ##
@@ -567,18 +602,6 @@ class GuiNovelTree(NTreeView):
     ##
 
     ##
-    #  Properties
-    ##
-
-    # @property
-    # def lastColType(self) -> NovelTreeColumn:
-    #     return self._lastCol
-
-    # @property
-    # def lastColSize(self) -> int:
-    #     return int(self._lastColSize * 100)
-
-    ##
     #  Class Methods
     ##
 
@@ -630,11 +653,6 @@ class GuiNovelTree(NTreeView):
     #         if doRefresh:
     #             lastNovel = SHARED.project.data.getLastHandle("novelTree")
     #             self.refreshTree(rootHandle=lastNovel, overRide=True)
-    #     return
-
-    # def setLastColSize(self, colSize: int) -> None:
-    #     """Set the column size in integer values between 15 and 75."""
-    #     self._lastColSize = minmax(colSize, 15, 75)/100.0
     #     return
 
     # def setActiveHandle(self, tHandle: str | None) -> None:
@@ -691,24 +709,6 @@ class GuiNovelTree(NTreeView):
     #     """Clear the selection when the tree no longer has focus."""
     #     super().focusOutEvent(event)
     #     self.clearSelection()
-    #     return
-
-    # def resizeEvent(self, event: QResizeEvent) -> None:
-    #     """Elide labels in the extra column."""
-    #     super().resizeEvent(event)
-    #     newW = event.size().width()
-    #     oldW = event.oldSize().width()
-    #     if newW != oldW:
-    #         eliW = int(self._lastColSize * newW)
-    #         fMetric = self.fontMetrics()
-    #         for i in range(self.topLevelItemCount()):
-    #             trItem = self.topLevelItem(i)
-    #             if isinstance(trItem, QTreeWidgetItem):
-    #                 lastText = trItem.data(self.C_DATA, self.D_EXTRA)
-    #                 trItem.setText(
-    #                     self.C_EXTRA,
-    #                     fMetric.elidedText(lastText, Qt.TextElideMode.ElideRight, eliW)
-    #                 )
     #     return
 
     ##

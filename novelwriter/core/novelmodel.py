@@ -25,12 +25,14 @@ from __future__ import annotations
 
 import logging
 
+from PyQt5.QtCore import QSize
 from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt
 from PyQt6.QtGui import QIcon, QPixmap
 
 from novelwriter import SHARED
-from novelwriter.constants import nwStyles
+from novelwriter.constants import nwKeyWords, nwStyles
 from novelwriter.core.indexdata import IndexHeading, IndexNode
+from novelwriter.enum import nwNovelExtra
 from novelwriter.error import logException
 from novelwriter.types import QtAlignRight
 
@@ -50,13 +52,15 @@ T_NodeData = str | tuple[str, str] | QIcon | QPixmap | Qt.AlignmentFlag | None
 
 class NovelModel(QAbstractTableModel):
 
-    __slots__ = ("_rows", "_more", "_columns")
+    __slots__ = ("_rows", "_header", "_more", "_columns", "_extra")
 
     def __init__(self) -> None:
         super().__init__()
         self._rows: list[dict[int, T_NodeData]] = []
+        self._header: list[QSize] = []
         self._more = SHARED.theme.getIcon("more_arrow")
         self._columns = 3
+        self._extra = ""
         return
 
     def __del__(self) -> None:  # pragma: no cover
@@ -64,12 +68,33 @@ class NovelModel(QAbstractTableModel):
         return
 
     ##
+    #  Properties
+    ##
+
+    @property
+    def columns(self) -> int:
+        """Return the number of columns."""
+        return self._columns
+
+    ##
     #  Setters
     ##
 
-    def setExtraColumn(self, state: bool) -> None:
+    def setExtraColumn(self, extra: nwNovelExtra) -> None:
         """Set extra data column settings."""
-        self._columns = 4 if state else 3
+        match extra:
+            case nwNovelExtra.HIDDEN:
+                self._columns = 3
+                self._extra = ""
+            case nwNovelExtra.POV:
+                self._columns = 4
+                self._extra = nwKeyWords.POV_KEY
+            case nwNovelExtra.FOCUS:
+                self._columns = 4
+                self._extra = nwKeyWords.FOCUS_KEY
+            case nwNovelExtra.PLOT:
+                self._columns = 4
+                self._extra = nwKeyWords.PLOT_KEY
         return
 
     ##
@@ -183,13 +208,17 @@ class NovelModel(QAbstractTableModel):
     def _generateEntry(self, handle: str, key: str, heading: IndexHeading) -> dict:
         """Generate a cache entry."""
         iLevel = nwStyles.H_LEVEL.get(heading.level, 0)
-        more = self._columns - 1
         data = {}
         data[C_FACTOR*0 | R_TEXT] = heading.title
         data[C_FACTOR*0 | R_ICON] = SHARED.theme.getHeaderDecoration(iLevel)
         data[C_FACTOR*1 | R_TEXT] = f"{heading.mainCount:n}"
         data[C_FACTOR*1 | R_ALIGN] = QtAlignRight
-        data[C_FACTOR*more | R_ICON] = self._more
+        if self._columns == 3:
+            data[C_FACTOR*2 | R_ICON] = self._more
+        else:
+            data[C_FACTOR*2 | R_TIP] = "Hello World"
+            data[C_FACTOR*2 | R_TEXT] = "Hello World"
+            data[C_FACTOR*3 | R_ICON] = self._more
         data[R_HANDLE] = handle
         data[R_KEY] = key
         return data
