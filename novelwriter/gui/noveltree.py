@@ -323,7 +323,9 @@ class GuiNovelToolBar(QWidget):
     @pyqtSlot()
     def _refreshNovelTree(self) -> None:
         """Rebuild the current tree."""
-        self.novelView.setCurrentNovel(SHARED.project.data.getLastHandle("novelTree"))
+        if rootHandle := self.novelValue.handle:
+            SHARED.project.index.refreshNovelModel(rootHandle)
+        # self.novelView.setCurrentNovel(SHARED.project.data.getLastHandle("novelTree"))
         return
 
     @pyqtSlot()

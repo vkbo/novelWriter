@@ -120,18 +120,32 @@ class Index:
             self._generateNovelModel(tHandle)
         return self._novelModels.get(tHandle)
 
+    def refreshNovelModel(self, tHandle: str) -> None:
+        """Refresh a novel model."""
+        if model := self.getNovelModel(tHandle):
+            model.beginResetModel()
+            model.clear()
+            self._appendSubTreeToModel(tHandle, model)
+            model.endResetModel()
+        return
+
     def _generateNovelModel(self, tHandle: str) -> None:
         """Generate a novel model for a specific handle."""
         if (item := SHARED.project.tree[tHandle]) and item.isRootType() and item.isNovelLike():
             model = NovelModel()
-            for handle in SHARED.project.tree.subTree(tHandle):
-                if (
-                    (node := self._itemIndex[handle])
-                    and node.item.isDocumentLayout()
-                    and node.item.isActive
-                ):
-                    model.append(node)
+            self._appendSubTreeToModel(tHandle, model)
             self._novelModels[tHandle] = model
+        return
+
+    def _appendSubTreeToModel(self, tHandle: str, model: NovelModel) -> None:
+        """Append all active novel documents to a novel model."""
+        for handle in SHARED.project.tree.subTree(tHandle):
+            if (
+                (node := self._itemIndex[handle])
+                and node.item.isDocumentLayout()
+                and node.item.isActive
+            ):
+                model.append(node)
         return
 
     ##
