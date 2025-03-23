@@ -28,7 +28,7 @@ import pytest
 
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
-from novelwriter.core.index import Index, IndexNode, TagsIndex
+from novelwriter.core.index import Index, TagsIndex
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment, nwItemClass, nwItemLayout

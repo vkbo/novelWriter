@@ -97,9 +97,9 @@ class GuiNovelView(QWidget):
 
     def clearNovelView(self) -> None:
         """Clear project-related GUI content."""
-        # self.novelTree.clearContent()
         self.novelBar.clearContent()
         self.novelBar.setEnabled(False)
+        self.novelTree.clearContent()
         return
 
     def openProjectTasks(self) -> None:
@@ -473,6 +473,11 @@ class GuiNovelTree(NTreeView):
     ##
     #  Class Methods
     ##
+
+    def clearContent(self) -> None:
+        """Clear the tree view."""
+        self.setModel(None)
+        return
 
     def resizeColumns(self) -> None:
         """Set the correct column sizes."""
