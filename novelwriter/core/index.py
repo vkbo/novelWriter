@@ -87,7 +87,7 @@ class Index:
 
         # Storage and State
         self._tagsIndex = TagsIndex()
-        self._itemIndex = ItemIndex(project)
+        self._itemIndex = ItemIndex(project, self._tagsIndex)
         self._indexBroken = False
 
         # Models
@@ -906,10 +906,11 @@ class ItemIndex:
     IndexHeading object for each heading of the text.
     """
 
-    __slots__ = ("_project", "_items")
+    __slots__ = ("_project", "_tags", "_items")
 
-    def __init__(self, project: NWProject) -> None:
+    def __init__(self, project: NWProject, tagsIndex: TagsIndex) -> None:
         self._project = project
+        self._tags = tagsIndex
         self._items: dict[str, IndexNode] = {}
         return
 
@@ -936,7 +937,7 @@ class ItemIndex:
         """Add a new item to the index. This will overwrite the item if
         it already exists.
         """
-        self._items[tHandle] = IndexNode(tHandle, nwItem)
+        self._items[tHandle] = IndexNode(self._tags, tHandle, nwItem)
         return
 
     def allItemTags(self, tHandle: str) -> list[str]:
@@ -994,7 +995,7 @@ class ItemIndex:
         if tHandle in self._items:
             tItem = self._items[tHandle]
             sTitle = tItem.nextHeading()
-            tItem.addHeading(IndexHeading(sTitle, lineNo, level, text))
+            tItem.addHeading(IndexHeading(self._tags, sTitle, lineNo, level, text))
             return sTitle
         return TT_NONE
 
@@ -1065,7 +1066,7 @@ class ItemIndex:
 
             nwItem = self._project.tree[tHandle]
             if nwItem is not None:
-                tItem = IndexNode(tHandle, nwItem)
+                tItem = IndexNode(self._tags, tHandle, nwItem)
                 tItem.unpackData(tData)
                 self._items[tHandle] = tItem
 

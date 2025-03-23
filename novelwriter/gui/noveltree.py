@@ -383,14 +383,8 @@ class GuiNovelTree(NTreeView):
         self._actHandle   = None
         self._lastColType = nwNovelExtra.POV
         self._lastColSize = 0.25
-        # self._lastBuild   = 0
-        # self._treeMap: dict[str, QTreeWidgetItem] = {}
 
-        # Cached Strings
-        # self._povLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY])
-        # self._focLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.FOCUS_KEY])
-        # self._pltLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY])
-
+        # Widget Setup
         self.setIconSize(SHARED.theme.baseIconSize)
         self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setUniformRowHeights(True)
@@ -569,25 +563,26 @@ class GuiNovelTree(NTreeView):
             logger.debug("Generating meta data tooltip for '%s:%s'", tHandle, sTitle)
             if synopsis := head.synopsis:
                 label = trConst(nwLabels.OUTLINE_COLS[nwOutline.SYNOP])
-                synopsis = f"<p><b>{label}</b>: {synopsis}</p>"
+                synopsis = f"<p><b>{label}:</b> {synopsis}</p>"
 
-            def appendTags(refs: dict, key: str, lines: list[str]) -> list[str]:
+            def appendTags(refs: dict, key: str, lines: list[str]) -> None:
                 """Generate a reference list for a given reference key."""
                 if tags := ", ".join(refs.get(key, [])):
-                    lines.append(f"<b>{trConst(nwLabels.KEY_NAME[key])}</b>: {tags}")
-                return lines
+                    lines.append(f"<b>{trConst(nwLabels.KEY_NAME[key])}:</b> {tags}")
+                return
 
-            tags = SHARED.project.index.getReferences(tHandle, sTitle)
             lines = []
-            lines = appendTags(tags, nwKeyWords.POV_KEY, lines)
-            lines = appendTags(tags, nwKeyWords.FOCUS_KEY, lines)
-            lines = appendTags(tags, nwKeyWords.CHAR_KEY, lines)
-            lines = appendTags(tags, nwKeyWords.PLOT_KEY, lines)
-            lines = appendTags(tags, nwKeyWords.TIME_KEY, lines)
-            lines = appendTags(tags, nwKeyWords.WORLD_KEY, lines)
-            lines = appendTags(tags, nwKeyWords.OBJECT_KEY, lines)
-            lines = appendTags(tags, nwKeyWords.ENTITY_KEY, lines)
-            lines = appendTags(tags, nwKeyWords.CUSTOM_KEY, lines)
+            if head := SHARED.project.index.getItemHeading(tHandle, sTitle):
+                tags = head.getReferences()
+                appendTags(tags, nwKeyWords.POV_KEY, lines)
+                appendTags(tags, nwKeyWords.FOCUS_KEY, lines)
+                appendTags(tags, nwKeyWords.CHAR_KEY, lines)
+                appendTags(tags, nwKeyWords.PLOT_KEY, lines)
+                appendTags(tags, nwKeyWords.TIME_KEY, lines)
+                appendTags(tags, nwKeyWords.WORLD_KEY, lines)
+                appendTags(tags, nwKeyWords.OBJECT_KEY, lines)
+                appendTags(tags, nwKeyWords.ENTITY_KEY, lines)
+                appendTags(tags, nwKeyWords.CUSTOM_KEY, lines)
 
             text = ""
             if lines:
@@ -596,233 +591,3 @@ class GuiNovelTree(NTreeView):
             if tooltip := (text + synopsis or self.tr("No meta data")):
                 QToolTip.showText(qPos, tooltip)
         return
-
-    ##
-    #  Old Code
-    ##
-
-    ##
-    #  Class Methods
-    ##
-
-    # def clearContent(self) -> None:
-    #     """Clear the GUI content and the related maps."""
-    #     self.clear()
-    #     self._treeMap = {}
-    #      self._lastBuild = 0
-    #     return
-
-    # def refreshTree(self, rootHandle: str | None = None, overRide: bool = False) -> None:
-    #     """Refresh the tree if it has been changed."""
-    #     logger.debug("Requesting refresh of the novel tree")
-    #     if rootHandle is None:
-    #         rootHandle = SHARED.project.tree.findRoot(nwItemClass.NOVEL)
-
-    #     titleKey = None
-    #     if selItems := self.selectedItems():
-    #         titleKey = selItems[0].data(self.C_DATA, self.D_KEY)
-
-    #     self._populateTree(rootHandle)
-    #     SHARED.project.data.setLastHandle(rootHandle, "novelTree")
-
-    #     if titleKey is not None and titleKey in self._treeMap:
-    #         self._treeMap[titleKey].setSelected(True)
-
-    #     return
-
-    # def refreshHandle(self, tHandle: str) -> None:
-    #     """Refresh the data for a given handle."""
-    #     if idxData := SHARED.project.index.getItemData(tHandle):
-    #         logger.debug("Refreshing meta data for item '%s'", tHandle)
-    #         for sTitle, tHeading in idxData.items():
-    #             sKey = f"{tHandle}:{sTitle}"
-    #             if trItem := self._treeMap.get(sKey, None):
-    #                 self._updateTreeItemValues(trItem, tHeading, tHandle, sTitle)
-    #             else:
-    #                 logger.debug("Heading '%s' not in novel tree", sKey)
-    #                 self.refreshTree()
-    #                 return
-    #     return
-
-    # def setLastColType(self, colType: NovelTreeColumn, doRefresh: bool = True) -> None:
-    #     """Change the content type of the last column and rebuild."""
-    #     if self._lastCol != colType:
-    #         logger.debug("Changing last column to %s", colType.name)
-    #         self._lastCol = colType
-    #         self.setColumnHidden(self.C_EXTRA, colType == NovelTreeColumn.HIDDEN)
-    #         if doRefresh:
-    #             lastNovel = SHARED.project.data.getLastHandle("novelTree")
-    #             self.refreshTree(rootHandle=lastNovel, overRide=True)
-    #     return
-
-    # def setActiveHandle(self, tHandle: str | None) -> None:
-    #     """Highlight the rows associated with a given handle."""
-    #     didScroll = False
-    #     brushOn = self.palette().alternateBase()
-    #     brushOff = self.palette().base()
-    #     if pHandle := self._actHandle:
-    #         for key, item in self._treeMap.items():
-    #             if key.startswith(pHandle):
-    #                 for i in range(self.columnCount()):
-    #                     item.setBackground(i, brushOff)
-    #     if tHandle:
-    #         for key, item in self._treeMap.items():
-    #             if key.startswith(tHandle):
-    #                 for i in range(self.columnCount()):
-    #                     item.setBackground(i, brushOn)
-    #                 if not didScroll:
-    #                     self.scrollToItem(item, QAbstractItemView.ScrollHint.PositionAtCenter)
-    #                     didScroll = True
-    #     self._actHandle = tHandle or None
-    #     return
-
-    ##
-    #  Events
-    ##
-
-    # def mousePressEvent(self, event: QMouseEvent) -> None:
-    #     """Overload mousePressEvent to clear selection if clicking the
-    #     mouse in a blank area of the tree view, and to load a document
-    #     for viewing if the user middle-clicked.
-    #     """
-    #     super().mousePressEvent(event)
-
-    #     if event.button() == QtMouseLeft:
-    #         selItem = self.indexAt(event.pos())
-    #         if not selItem.isValid():
-    #             self.clearSelection()
-
-    #     elif event.button() == QtMouseMiddle:
-    #         selItem = self.itemAt(event.pos())
-    #         if not isinstance(selItem, QTreeWidgetItem):
-    #             return
-
-    #         tHandle, sTitle = self.getSelectedHandle()
-    #         if tHandle is None:
-    #             return
-
-    #         self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, sTitle or "", False)
-
-    #     return
-
-    # def focusOutEvent(self, event: QFocusEvent) -> None:
-    #     """Clear the selection when the tree no longer has focus."""
-    #     super().focusOutEvent(event)
-    #     self.clearSelection()
-    #     return
-
-    ##
-    #  Private Slots
-    ##
-
-    # @pyqtSlot("QModelIndex")
-    # def _treeItemClicked(self, index: QModelIndex) -> None:
-    #     """The user clicked on an item in the tree."""
-    #     if index.column() == self.C_MORE:
-    #         tHandle = index.siblingAtColumn(self.C_DATA).data(self.D_HANDLE)
-    #         sTitle = index.siblingAtColumn(self.C_DATA).data(self.D_TITLE)
-    #         tipPos = self.mapToGlobal(self.visualRect(index).topRight())
-    #         self._popMetaBox(tipPos, tHandle, sTitle)
-    #     return
-
-    # @pyqtSlot()
-    # def _treeSelectionChange(self) -> None:
-    #     """Extract the handle and line number of the currently selected
-    #     title, and send it to the tree meta panel.
-    #     """
-    #     tHandle, _ = self.getSelectedHandle()
-    #     if tHandle is not None:
-    #         self.novelView.selectedItemChanged.emit(tHandle)
-    #     return
-
-    # @pyqtSlot("QTreeWidgetItem*", int)
-    # def _treeDoubleClick(self, item: QTreeWidgetItem, column: int) -> None:
-    #     """Extract the handle and line number of the title double-
-    #     clicked, and send it to the main gui class for opening in the
-    #     document editor.
-    #     """
-    #     tHandle, sTitle = self.getSelectedHandle()
-    #     self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "", True)
-    #     return
-
-    ##
-    #  Internal Functions
-    ##
-
-    # def _populateTree(self, rootHandle: str | None) -> None:
-    #     """Build the tree based on the project index."""
-    #     self.clearContent()
-    #     tStart = time()
-    #     logger.debug("Building novel tree for root item '%s'", rootHandle)
-
-    #     novStruct = SHARED.project.index.novelStructure(rootHandle=rootHandle, activeOnly=True)
-    #     for tKey, tHandle, sTitle, novIdx in novStruct:
-    #         if novIdx.level == "H0":
-    #             continue
-
-    #         newItem = QTreeWidgetItem()
-    #         newItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
-    #         newItem.setData(self.C_DATA, self.D_TITLE, sTitle)
-    #         newItem.setData(self.C_DATA, self.D_KEY, tKey)
-    #         newItem.setTextAlignment(self.C_WORDS, QtAlignRight)
-
-    #         self._updateTreeItemValues(newItem, novIdx, tHandle, sTitle)
-    #         self._treeMap[tKey] = newItem
-    #         self.addTopLevelItem(newItem)
-
-    #     self.setActiveHandle(self._actHandle)
-
-    #     logger.debug("Novel Tree built in %.3f ms", (time() - tStart)*1000)
-    #     self._lastBuild = time()
-
-    #     return
-
-    # def _updateTreeItemValues(
-    #     self, trItem: QTreeWidgetItem, idxItem: IndexHeading, tHandle: str, sTitle: str
-    # ) -> None:
-    #     """Set the tree item values from the index entry."""
-    #     iLevel = nwStyles.H_LEVEL.get(idxItem.level, 0)
-    #     hDec = SHARED.theme.getHeaderDecoration(iLevel)
-
-    #     trItem.setData(self.C_TITLE, QtDecoration, hDec)
-    #     trItem.setText(self.C_TITLE, idxItem.title)
-    #     trItem.setFont(self.C_TITLE, self._hFonts[iLevel])
-    #     trItem.setText(self.C_WORDS, f"{idxItem.wordCount:n}")
-    #     trItem.setData(self.C_MORE, QtDecoration, self._pMore)
-
-    #     # Custom column
-    #     viewport = self.viewport()
-    #     mW = int(self._lastColSize * (viewport.width() if viewport else 100))
-    #     lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
-    #     elideText = self.fontMetrics().elidedText(lastText, Qt.TextElideMode.ElideRight, mW)
-    #     trItem.setText(self.C_EXTRA, elideText)
-    #     trItem.setData(self.C_DATA, self.D_EXTRA, lastText)
-    #     trItem.setToolTip(self.C_EXTRA, toolTip)
-
-    #     return
-
-    # def _getLastColumnText(self, tHandle: str, sTitle: str) -> tuple[str, str]:
-    #     """Generate text for the last column based on user settings."""
-    #     if self._lastCol == NovelTreeColumn.HIDDEN:
-    #         return "", ""
-
-    #     refData = []
-    #     refName = ""
-    #     refs = SHARED.project.index.getReferences(tHandle, sTitle)
-    #     if self._lastCol == NovelTreeColumn.POV:
-    #         refData = refs[nwKeyWords.POV_KEY]
-    #         refName = self._povLabel
-
-    #     elif self._lastCol == NovelTreeColumn.FOCUS:
-    #         refData = refs[nwKeyWords.FOCUS_KEY]
-    #         refName = self._focLabel
-
-    #     elif self._lastCol == NovelTreeColumn.PLOT:
-    #         refData = refs[nwKeyWords.PLOT_KEY]
-    #         refName = self._pltLabel
-
-    #     if refData:
-    #         toolText = ", ".join(refData)
-    #         return toolText, f"{refName}: {toolText}"
-
-    #     return "", ""
