@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtCore import QSize
 from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt
 from PyQt6.QtGui import QIcon, QPixmap
 
@@ -52,12 +51,11 @@ T_NodeData = str | QIcon | QPixmap | Qt.AlignmentFlag | None
 
 class NovelModel(QAbstractTableModel):
 
-    __slots__ = ("_rows", "_header", "_more", "_columns", "_extraKey", "_extraLabel")
+    __slots__ = ("_rows", "_more", "_columns", "_extraKey", "_extraLabel")
 
     def __init__(self) -> None:
         super().__init__()
         self._rows: list[dict[int, T_NodeData]] = []
-        self._header: list[QSize] = []
         self._more = SHARED.theme.getIcon("more_arrow")
         self._columns = 3
         self._extraKey = ""

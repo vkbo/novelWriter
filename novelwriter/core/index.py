@@ -479,7 +479,7 @@ class Index:
 
     def _generateNovelModel(self, tHandle: str) -> None:
         """Generate a novel model for a specific handle."""
-        if (item := SHARED.project.tree[tHandle]) and item.isRootType() and item.isNovelLike():
+        if (item := self._project.tree[tHandle]) and item.isRootType() and item.isNovelLike():
             model = NovelModel()
             model.setExtraColumn(self._novelExtra)
             self._appendSubTreeToModel(tHandle, model)
@@ -488,7 +488,7 @@ class Index:
 
     def _appendSubTreeToModel(self, tHandle: str, model: NovelModel) -> None:
         """Append all active novel documents to a novel model."""
-        for handle in SHARED.project.tree.subTree(tHandle):
+        for handle in self._project.tree.subTree(tHandle):
             if (
                 (node := self._itemIndex[handle])
                 and node.item.isDocumentLayout()

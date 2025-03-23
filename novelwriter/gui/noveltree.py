@@ -104,7 +104,7 @@ class GuiNovelView(QWidget):
 
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
-        lastNovel = SHARED.project.data.getLastHandle("novelTree")
+        lastNovel = SHARED.project.data.getLastHandle("novel")
         if lastNovel and lastNovel not in SHARED.project.tree:
             lastNovel = SHARED.project.tree.findRoot(nwItemClass.NOVEL)
 
@@ -169,14 +169,6 @@ class GuiNovelView(QWidget):
     def updateRootItem(self, tHandle: str, change: nwChange) -> None:
         """If any root item changes, rebuild the novel root menu."""
         self.novelBar.buildNovelRootMenu()
-        return
-
-    @pyqtSlot(str)
-    def updateNovelItemMeta(self, tHandle: str) -> None:
-        """The meta data of a novel item has changed, and the tree item
-        needs to be refreshed.
-        """
-        # self.novelTree.refreshHandle(tHandle)
         return
 
 
@@ -299,8 +291,10 @@ class GuiNovelToolBar(QWidget):
 
     def setCurrentRoot(self, rootHandle: str | None) -> None:
         """Set the current active root handle."""
+        if rootHandle is None:
+            rootHandle = self.novelValue.firstHandle
         self.novelValue.setHandle(rootHandle)
-        SHARED.project.data.setLastHandle(rootHandle, "novelTree")
+        SHARED.project.data.setLastHandle(rootHandle, "novel")
         self.novelView.setCurrentNovel(rootHandle)
         return
 
@@ -318,7 +312,11 @@ class GuiNovelToolBar(QWidget):
         refresh when content structure changes.
         """
         self._active = state
-        if self._active and self._refresh.get(self.novelValue.handle, False):
+        if (
+            self._active
+            and (handle := self.novelValue.handle)
+            and self._refresh.get(handle, False)
+        ):
             self._refreshNovelTree(self.novelValue.handle)
         return
 

@@ -53,8 +53,11 @@ class NovelSelector(QComboBox):
     ##
 
     @property
-    def handle(self) -> str:
-        return self.currentData()
+    def handle(self) -> str | None:
+        """Return the selected handle, if any."""
+        if tHandle := self.currentData():
+            return tHandle
+        return None
 
     @property
     def firstHandle(self) -> str | None:

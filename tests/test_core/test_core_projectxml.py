@@ -155,7 +155,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
 
     assert data.getLastHandle("editor") == "636b6aa9b697b"
     assert data.getLastHandle("viewer") == "636b6aa9b697b"
-    assert data.getLastHandle("novelTree") == "7031beac91f75"
+    assert data.getLastHandle("novel") == "7031beac91f75"
     assert data.getLastHandle("outline") == "7031beac91f75"
 
     assert data.itemStatus["sf12341"].name == "New"
@@ -284,7 +284,7 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockGUI, mockRnd):
 
     assert data.getLastHandle("editor") is None  # Dropped by conversion
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
-    assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.0
+    assert data.getLastHandle("novel") is None  # Doesn't exist in 1.0
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.0
 
     assert data.itemStatus["s000000"].name == "New"
@@ -429,7 +429,7 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockGUI, mockRnd):
 
     assert data.getLastHandle("editor") is None  # Dropped by conversion
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
-    assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.1
+    assert data.getLastHandle("novel") is None  # Doesn't exist in 1.1
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.1
 
     assert data.itemStatus["s000000"].name == "New"
@@ -574,7 +574,7 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockGUI, mockRnd):
 
     assert data.getLastHandle("editor") is None  # Dropped by conversion
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
-    assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.2
+    assert data.getLastHandle("novel") is None  # Doesn't exist in 1.2
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.2
 
     assert data.itemStatus["s000000"].name == "New"
@@ -722,7 +722,7 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockGUI, mockRnd):
 
     assert data.getLastHandle("editor") is None  # Dropped by conversion
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
-    assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.3
+    assert data.getLastHandle("novel") is None  # Doesn't exist in 1.3
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.3
 
     assert data.itemStatus["s000000"].name == "New"
@@ -870,7 +870,7 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockGUI, mockRnd):
 
     assert data.getLastHandle("editor") is None  # Dropped by conversion
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
-    assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.3
+    assert data.getLastHandle("novel") is None  # Doesn't exist in 1.3
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.3
 
     assert data.itemStatus["sf12341"].name == "New"
