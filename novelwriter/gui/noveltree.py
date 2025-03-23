@@ -45,8 +45,8 @@ from novelwriter.extensions.modified import NIconToolButton, NTreeView
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
-    QtHeaderFixed, QtHeaderStretch, QtHeaderToContents, QtScrollAlwaysOff,
-    QtScrollAsNeeded, QtSizeExpanding
+    QtHeaderStretch, QtHeaderToContents, QtScrollAlwaysOff, QtScrollAsNeeded,
+    QtSizeExpanding
 )
 
 logger = logging.getLogger(__name__)
@@ -481,12 +481,10 @@ class GuiNovelTree(NTreeView):
             header.setMinimumSectionSize(SHARED.theme.baseIconHeight + 6)
             header.setSectionResizeMode(0, QtHeaderStretch)
             header.setSectionResizeMode(1, QtHeaderToContents)
-            if model.columns == 3:
-                header.setSectionResizeMode(2, QtHeaderToContents)
-            elif model.columns == 4:
-                header.setSectionResizeMode(2, QtHeaderFixed)
+            header.setSectionResizeMode(2, QtHeaderToContents)
+            if model.columns == 4:
                 header.setSectionResizeMode(3, QtHeaderToContents)
-                header.resizeSection(2, int(self._lastColSize * vp.width()))
+                header.setMaximumSectionSize(int(self._lastColSize * vp.width()))
         return
 
     ##

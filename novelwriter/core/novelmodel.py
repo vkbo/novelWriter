@@ -47,7 +47,7 @@ R_TIP    = Qt.ItemDataRole.ToolTipRole
 R_HANDLE = 0xff01
 R_KEY    = 0xff02
 
-T_NodeData = str | tuple[str, str] | QIcon | QPixmap | Qt.AlignmentFlag | None
+T_NodeData = str | QIcon | QPixmap | Qt.AlignmentFlag | None
 
 
 class NovelModel(QAbstractTableModel):
@@ -210,19 +210,19 @@ class NovelModel(QAbstractTableModel):
     #  Internal Functions
     ##
 
-    def _generateEntry(self, handle: str, key: str, heading: IndexHeading) -> dict:
+    def _generateEntry(self, handle: str, key: str, head: IndexHeading) -> dict[int, T_NodeData]:
         """Generate a cache entry."""
-        iLevel = nwStyles.H_LEVEL.get(heading.level, 0)
+        iLevel = nwStyles.H_LEVEL.get(head.level, 0)
         data = {}
-        data[C_FACTOR*0 | R_TIP] = heading.title
-        data[C_FACTOR*0 | R_TEXT] = heading.title
+        data[C_FACTOR*0 | R_TIP] = head.title
+        data[C_FACTOR*0 | R_TEXT] = head.title
         data[C_FACTOR*0 | R_ICON] = SHARED.theme.getHeaderDecoration(iLevel)
-        data[C_FACTOR*1 | R_TEXT] = f"{heading.mainCount:n}"
+        data[C_FACTOR*1 | R_TEXT] = f"{head.mainCount:n}"
         data[C_FACTOR*1 | R_ALIGN] = QtAlignRight
         if self._columns == 3:
             data[C_FACTOR*2 | R_ICON] = self._more
         else:
-            if self._extraKey and (refs := heading.getReferencesByKeyword(self._extraKey)):
+            if self._extraKey and (refs := head.getReferencesByKeyword(self._extraKey)):
                 text = ", ".join(refs)
                 data[C_FACTOR*2 | R_TEXT] = text
                 data[C_FACTOR*2 | R_TIP] = f"<b>{self._extraLabel}:</b> {text}"
