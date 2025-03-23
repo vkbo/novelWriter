@@ -141,7 +141,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         usage="pkgutils.py [command] [--flags]",
         description=(
-            "This tool provides setup and build commands for installing or distibuting "
+            "This tool provides setup and build commands for installing or distributing "
             "novelWriter as a package on Linux, Mac and Windows, as well as developer tools "
             "for internationalisation."
         )
