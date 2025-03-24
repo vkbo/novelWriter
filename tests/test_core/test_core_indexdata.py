@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import pytest
 
+from novelwriter import CONFIG
 from novelwriter.core.index import TagsIndex
 from novelwriter.core.indexdata import IndexHeading, IndexNode
 from novelwriter.core.item import NWItem
@@ -179,6 +180,7 @@ def testCoreIndexData_IndexHeading():
     assert head.charCount == 0
     assert head.wordCount == 0
     assert head.paraCount == 0
+    assert head.mainCount == 0
     assert head.synopsis == ""
     assert head.tag == ""
     assert head.references == {}
@@ -204,6 +206,11 @@ def testCoreIndexData_IndexHeading():
     assert head.charCount == 42
     assert head.wordCount == 4
     assert head.paraCount == 2
+
+    # Check Main Count
+    assert head.mainCount == 4
+    CONFIG.useCharCount = True
+    assert head.mainCount == 42
 
     # Set Summary
     head.setSynopsis("In the beginning ...")
@@ -233,6 +240,72 @@ def testCoreIndexData_IndexHeading():
     # Unpack Comments
     head.unpackData({"summary": "How it started ..."})
     assert head.synopsis == "How it started ..."
+
+
+@pytest.mark.core
+def testCoreIndexData_IndexHeadingReferences():
+    """Test the IndexHeading references handling."""
+    tags = TagsIndex()
+    head = IndexHeading(tags, "T0001")
+
+    # Add some references
+    head.addReference("Jane", "@pov")
+    head.addReference("Jane", "@char")
+    head.addReference("John", "@char")
+    head.addReference("Main", "@plot")
+    head.addReference("Gun", "@object")
+
+    # With no tagsIndex name set, these should be empty
+    assert head.getReferences() == {
+        "@entity": [],
+        "@plot": [],
+        "@object": [],
+        "@story": [],
+        "@tag": [],
+        "@focus": [],
+        "@custom": [],
+        "@time": [],
+        "@pov": [],
+        "@mention": [],
+        "@char": [],
+        "@location": [],
+    }
+
+    # Set names
+    tags.add("Jane", "Jane", "0000000000000", "T00001", "CHARACTER")
+    tags.add("John", "John", "0000000000000", "T00001", "CHARACTER")
+    tags.add("Main", "Main", "0000000000000", "T00001", "PLOT")
+    tags.add("Gun", "Gun", "0000000000000", "T00001", "OBJECT")
+
+    # Now they should be populated
+    assert head.getReferences() == {
+        "@entity": [],
+        "@plot": ["Main"],
+        "@object": ["Gun"],
+        "@story": [],
+        "@tag": [],
+        "@focus": [],
+        "@custom": [],
+        "@time": [],
+        "@pov": ["Jane"],
+        "@mention": [],
+        "@char": ["Jane", "John"],
+        "@location": [],
+    }
+
+    # Check them individually
+    assert head.getReferencesByKeyword("@entity") == []
+    assert head.getReferencesByKeyword("@plot") == ["Main"]
+    assert head.getReferencesByKeyword("@object") == ["Gun"]
+    assert head.getReferencesByKeyword("@story") == []
+    assert head.getReferencesByKeyword("@tag") == []
+    assert head.getReferencesByKeyword("@focus") == []
+    assert head.getReferencesByKeyword("@custom") == []
+    assert head.getReferencesByKeyword("@time") == []
+    assert head.getReferencesByKeyword("@pov") == ["Jane"]
+    assert head.getReferencesByKeyword("@mention") == []
+    assert head.getReferencesByKeyword("@char") == ["Jane", "John"]
+    assert head.getReferencesByKeyword("@location") == []
 
 
 @pytest.mark.core

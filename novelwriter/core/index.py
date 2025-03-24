@@ -818,13 +818,13 @@ class TagsIndex:
         }
         return
 
-    def tagName(self, tagKey: str) -> str:
+    def tagName(self, tagKey: str, default: str = "") -> str:
         """Get the name of a given tag."""
-        return self._tags.get(tagKey.lower(), {}).get("name", "")
+        return self._tags.get(tagKey.lower(), {}).get("name", default)
 
-    def tagDisplay(self, tagKey: str) -> str:
+    def tagDisplay(self, tagKey: str, default: str = "") -> str:
         """Get the display name of a given tag."""
-        return self._tags.get(tagKey.lower(), {}).get("display", "")
+        return self._tags.get(tagKey.lower(), {}).get("display", default)
 
     def tagHandle(self, tagKey: str) -> str | None:
         """Get the handle of a given tag."""

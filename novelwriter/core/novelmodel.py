@@ -32,7 +32,6 @@ from novelwriter import SHARED
 from novelwriter.constants import nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.core.indexdata import IndexHeading, IndexNode
 from novelwriter.enum import nwNovelExtra
-from novelwriter.error import logException
 from novelwriter.types import QtAlignRight
 
 logger = logging.getLogger(__name__)
@@ -169,38 +168,28 @@ class NovelModel(QAbstractTableModel):
         first = current[0]
         last = current[-1]
 
-        if len(current) != last - first + 1:
-            logger.warning("Novel model entries for '%s' are not continuous", handle)
-            return False
-
         remains = []
-        try:
-            for key, head in node.items():
-                if key != "T0000":
-                    if current:
-                        j = current.pop(0)
-                        self._rows[j] = self._generateEntry(handle, key, head)
-                    else:
-                        remains.append((key, head))
+        for key, head in node.items():
+            if key != "T0000":
+                if current:
+                    j = current.pop(0)
+                    self._rows[j] = self._generateEntry(handle, key, head)
+                else:
+                    remains.append((key, head))
 
-            self.dataChanged.emit(self.createIndex(first, 0), self.createIndex(last, cols))
+        self.dataChanged.emit(self.createIndex(first, 0), self.createIndex(last, cols))
 
-            if remains:
-                self.beginInsertRows(QModelIndex(), last, last + len(remains) - 1)
-                for k, (key, head) in enumerate(remains, last + 1):
-                    self._rows.insert(k, self._generateEntry(handle, key, head))
-                self.endInsertRows()
-            elif current:
-                self.beginRemoveRows(QModelIndex(), current[0], current[-1])
-                del self._rows[current[0]:current[-1] + 1]
-                self.endRemoveRows()
-
-        except Exception:
-            # This is faster than to check for index boundaries.
-            # We definitely don't want to cause a crash.
-            logger.error("Novel model refresh error for '%s'", handle)
-            logException()
-            return False
+        if remains:
+            # Inserting is safe for out of bounds indices
+            self.beginInsertRows(QModelIndex(), last, last + len(remains) - 1)
+            for k, (key, head) in enumerate(remains, last + 1):
+                self._rows.insert(k, self._generateEntry(handle, key, head))
+            self.endInsertRows()
+        elif current:
+            # Deleting ranges are safe for out of bounds indices
+            self.beginRemoveRows(QModelIndex(), current[0], current[-1])
+            del self._rows[current[0]:current[-1] + 1]
+            self.endRemoveRows()
 
         return True
 
