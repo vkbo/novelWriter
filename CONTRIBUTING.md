@@ -11,7 +11,7 @@ just make a pull request directly.
   also provide a fix. It makes it easier to keep track of what has been fixed and when.
 * Translations made via the [Crowdin project page](https://crowdin.com/project/novelwriter).
 * Improvements to the documentation. Particularly if the documentation is unclear. Please don't
-  make any larger changes to the documentation without discussing if with the maintainer first.
+  make any larger changes to the documentation without discussing them with the maintainer first.
 * Adaptations, installation or packaging features targeting specific operating systems.
 
 **Please do not:**
