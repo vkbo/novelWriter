@@ -180,6 +180,14 @@ class nwOutline(Enum):
     SYNOP   = 19
 
 
+class nwNovelExtra(Enum):
+
+    HIDDEN = 0
+    POV    = 1
+    FOCUS  = 2
+    PLOT   = 3
+
+
 class nwBuildFmt(Enum):
 
     ODT    = 0

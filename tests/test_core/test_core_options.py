@@ -27,7 +27,7 @@ import pytest
 from novelwriter.constants import nwFiles
 from novelwriter.core.options import OptionState
 from novelwriter.core.project import NWProject
-from novelwriter.gui.noveltree import NovelTreeColumn
+from novelwriter.enum import nwNovelExtra
 
 from tests.mocked import causeOSError
 
@@ -110,7 +110,7 @@ def testCoreOptions_SetGet(mockGUI):
     project = NWProject()
     options = OptionState(project)
 
-    nwColHidden = NovelTreeColumn.HIDDEN
+    nwColHidden = nwNovelExtra.HIDDEN
 
     # Set invalid values
     assert options.setValue("MockGroup", "mockItem", None) is False
@@ -141,7 +141,7 @@ def testCoreOptions_SetGet(mockGUI):
     assert options.getFloat("GuiNovelDetails", "mockItem", None) is None  # type: ignore
     assert options.getBool("GuiNovelDetails", "clearDouble", None) is True  # type: ignore
     assert options.getBool("GuiNovelDetails", "mockItem", None) is None  # type: ignore
-    assert options.getEnum("GuiNovelView", "lastCol", NovelTreeColumn, nwColHidden) == nwColHidden
+    assert options.getEnum("GuiNovelView", "lastCol", nwNovelExtra, nwColHidden) == nwColHidden
 
     # Get from non-existent  groups
     assert options.getValue("SomeGroup", "mockItem", None) is None
@@ -149,4 +149,4 @@ def testCoreOptions_SetGet(mockGUI):
     assert options.getInt("SomeGroup", "mockItem", None) is None  # type: ignore
     assert options.getFloat("SomeGroup", "mockItem", None) is None  # type: ignore
     assert options.getBool("SomeGroup", "mockItem", None) is None  # type: ignore
-    assert options.getEnum("SomeGroup", "mockItem", NovelTreeColumn, None) is None  # type: ignore
+    assert options.getEnum("SomeGroup", "mockItem", nwNovelExtra, None) is None  # type: ignore

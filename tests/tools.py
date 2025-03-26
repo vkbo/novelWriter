@@ -219,6 +219,7 @@ def buildTestProject(obj: object, projPath: Path) -> None:
 
     if nwGUI is not None:
         nwGUI.projView.openProjectTasks()
+        nwGUI.novelView.openProjectTasks()
 
     return
 

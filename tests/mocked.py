@@ -65,7 +65,10 @@ class MockTheme:
         self.guiFontBU = QFont()
         return
 
-    def getPixmap(self, *a):
+    def getPixmap(self, *a) -> QPixmap:
+        return QPixmap()
+
+    def getHeaderDecoration(self, *a) -> QPixmap:
         return QPixmap()
 
     def getIcon(self, *a) -> QIcon:

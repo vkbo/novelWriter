@@ -247,8 +247,6 @@ class GuiMain(QMainWindow):
         self.docEditor.itemHandleChanged.connect(self.novelView.setActiveHandle)
         self.docEditor.itemHandleChanged.connect(self.projView.setActiveHandle)
         self.docEditor.loadDocumentTagRequest.connect(self._followTag)
-        self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
-        self.docEditor.novelStructureChanged.connect(self.novelView.refreshTree)
         self.docEditor.openDocumentRequest.connect(self._openDocument)
         self.docEditor.requestNewNoteCreation.connect(SHARED.createNewNote)
         self.docEditor.requestNextDocument.connect(self.openNextDocument)
@@ -532,7 +530,7 @@ class GuiMain(QMainWindow):
     ) -> bool:
         """Open a specific document, optionally at a given line."""
         if not (SHARED.hasProject and tHandle):
-            logger.error("Nothing to open open")
+            logger.error("Nothing to open")
             return False
 
         if sTitle and tLine is None:
@@ -735,7 +733,6 @@ class GuiMain(QMainWindow):
 
             SHARED.project.index.rebuild()
             SHARED.project.tree.refreshAllItems()
-            self.novelView.refreshTree()
 
             tEnd = time()
             self.mainStatus.setStatusMessage(
@@ -1174,6 +1171,12 @@ class GuiMain(QMainWindow):
             )
         elif view == nwView.OUTLINE:
             self.mainStack.setCurrentWidget(self.outlineView)
+
+        # Set active status
+        isMain = self.mainStack.currentWidget() == self.splitMain
+        isNovel = self.projStack.currentWidget() == self.novelView
+        self.novelView.setActive(isMain and isNovel)
+
         return
 
     @pyqtSlot(nwDocAction)

@@ -694,7 +694,7 @@ class GuiIcons:
         else:
             icon = self._loadIcon(name, color, w, h)
             self._qIcons[key] = icon
-            logger.info("Icon: %s", key)
+            logger.debug("Icon: %s", key)
             return icon
 
     def getToggleIcon(self, name: str, size: tuple[int, int], color: str | None = None) -> QIcon:

@@ -151,12 +151,12 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Novel Tree has focus
     nwGUI._changeView(nwView.NOVEL)
-    nwGUI.novelView.novelTree.refreshTree(rootHandle=None, overRide=True)
     with monkeypatch.context() as mp:
         mp.setattr(GuiNovelView, "treeHasFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle is None
-        selItem = nwGUI.novelView.novelTree.topLevelItem(2)
-        nwGUI.novelView.novelTree.setCurrentItem(selItem)
+        model = nwGUI.novelView.novelTree._getModel()
+        assert model is not None
+        nwGUI.novelView.novelTree.setCurrentIndex(model.createIndex(2, 0))
         nwGUI._keyPressReturn()
         assert nwGUI.docEditor.docHandle == sHandle
         nwGUI.closeDocument()

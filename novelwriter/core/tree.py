@@ -60,7 +60,7 @@ class NWTree:
     also used for file names.
     """
 
-    __slots__ = ("_project", "_model", "_items", "_nodes", "_trash")
+    __slots__ = ("_project", "_model", "_items", "_nodes", "_trash", "_ready")
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
@@ -68,6 +68,7 @@ class NWTree:
         self._items: dict[str, NWItem] = {}
         self._nodes: dict[str, ProjectNode] = {}
         self._trash = None
+        self._ready = False
         logger.debug("Ready: NWTree")
         return
 
@@ -249,6 +250,7 @@ class NWTree:
             logger.error("Not all items could be added to project tree")
 
         self._trash = self._getTrashNode()
+        self._ready = True
         self._model.endInsertRows()
         self._model.layoutChanged.emit()
 
@@ -276,6 +278,12 @@ class NWTree:
         self._model.root.refresh()
         self._model.root.updateCount(propagate=False)
         self._model.layoutChanged.emit()
+        return
+
+    def novelStructureChanged(self, tHandle: str) -> None:
+        """Emit a novel structure change signal."""
+        if self._ready:
+            SHARED.novelStructureChanged.emit(tHandle)
         return
 
     def checkConsistency(self, prefix: str) -> tuple[int, int]:

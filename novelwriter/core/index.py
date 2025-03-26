@@ -38,7 +38,8 @@ from novelwriter import SHARED
 from novelwriter.common import isHandle, isItemClass, isTitleTag, jsonEncode
 from novelwriter.constants import nwFiles, nwKeyWords, nwStyles
 from novelwriter.core.indexdata import NOTE_TYPES, TT_NONE, IndexHeading, IndexNode, T_NoteTypes
-from novelwriter.enum import nwComment, nwItemClass, nwItemLayout, nwItemType
+from novelwriter.core.novelmodel import NovelModel
+from novelwriter.enum import nwComment, nwItemClass, nwItemLayout, nwItemType, nwNovelExtra
 from novelwriter.error import logException
 from novelwriter.text.comments import processComment
 from novelwriter.text.counting import standardCounter
@@ -86,8 +87,12 @@ class Index:
 
         # Storage and State
         self._tagsIndex = TagsIndex()
-        self._itemIndex = ItemIndex(project)
+        self._itemIndex = ItemIndex(project, self._tagsIndex)
         self._indexBroken = False
+
+        # Models
+        self._novelModels: dict[str, NovelModel] = {}
+        self._novelExtra = nwNovelExtra.HIDDEN
 
         # TimeStamps
         self._indexChange = 0.0
@@ -105,6 +110,25 @@ class Index:
     @property
     def indexBroken(self) -> bool:
         return self._indexBroken
+
+    ##
+    #  Getters
+    ##
+
+    def getNovelModel(self, tHandle: str) -> NovelModel | None:
+        """Get the model for a specific novel root."""
+        if tHandle not in self._novelModels:
+            self._generateNovelModel(tHandle)
+        return self._novelModels.get(tHandle)
+
+    ##
+    #  Setters
+    ##
+
+    def setNovelModelExtraColumn(self, extra: nwNovelExtra) -> None:
+        """Set the data content type of the novel model extra column."""
+        self._novelExtra = extra
+        return
 
     ##
     #  Public Methods
@@ -128,6 +152,8 @@ class Index:
                 self.scanText(nwItem.itemHandle, text, blockSignal=True)
         self._indexBroken = False
         SHARED.emitIndexAvailable(self._project)
+        for tHandle in self._novelModels:
+            self.refreshNovelModel(tHandle)
         return
 
     def deleteHandle(self, tHandle: str) -> None:
@@ -160,6 +186,30 @@ class Index:
         """
         if isinstance(rootHandle, str):
             return self._rootChange.get(rootHandle, self._indexChange) > float(checkTime)
+        return False
+
+    def refreshNovelModel(self, tHandle: str | None) -> None:
+        """Refresh a novel model."""
+        if tHandle and (model := self.getNovelModel(tHandle)):
+            logger.info("Refreshing novel model '%s'", tHandle)
+            model.beginResetModel()
+            model.clear()
+            model.setExtraColumn(self._novelExtra)
+            self._appendSubTreeToModel(tHandle, model)
+            model.endResetModel()
+        return
+
+    def updateNovelModelData(self, nwItem: NWItem) -> bool:
+        """Refresh a novel model."""
+        if (
+            (rHandle := nwItem.itemRoot)
+            and (model := self._novelModels.get(rHandle))
+            and (node := self._itemIndex[nwItem.itemHandle])
+            and node.item.isDocumentLayout()
+            and node.item.isActive
+        ):
+            logger.info("Updating novel model data '%s'", nwItem.itemHandle)
+            return model.refresh(node)
         return False
 
     ##
@@ -282,6 +332,10 @@ class Index:
         else:
             self._scanActive(tHandle, tItem, text, itemTags)
 
+        if tItem.itemClass == nwItemClass.NOVEL and not blockSignal:
+            if not self.updateNovelModelData(tItem):
+                self.refreshNovelModel(tItem.itemRoot)
+
         # Update timestamps for index changes
         nowTime = time()
         self._indexChange = nowTime
@@ -396,8 +450,9 @@ class Index:
         self._itemIndex.setHeadingCounts(tHandle, sTitle, cC, wC, pC)
         return
 
-    def _indexKeyword(self, tHandle: str, line: str, sTitle: str,
-                      itemClass: nwItemClass, tags: dict[str, bool]) -> None:
+    def _indexKeyword(
+        self, tHandle: str, line: str, sTitle: str, itemClass: nwItemClass, tags: dict[str, bool]
+    ) -> None:
         """Validate and save the information about a reference to a tag
         in another file, or the setting of a tag in the file. A record
         of active tags is updated so that no longer used tags can be
@@ -420,6 +475,26 @@ class Index:
         else:
             self._itemIndex.addHeadingRef(tHandle, sTitle, tBits[1:], tBits[0])
 
+        return
+
+    def _generateNovelModel(self, tHandle: str) -> None:
+        """Generate a novel model for a specific handle."""
+        if (item := self._project.tree[tHandle]) and item.isRootType() and item.isNovelLike():
+            model = NovelModel()
+            model.setExtraColumn(self._novelExtra)
+            self._appendSubTreeToModel(tHandle, model)
+            self._novelModels[tHandle] = model
+        return
+
+    def _appendSubTreeToModel(self, tHandle: str, model: NovelModel) -> None:
+        """Append all active novel documents to a novel model."""
+        for handle in self._project.tree.subTree(tHandle):
+            if (
+                (node := self._itemIndex[handle])
+                and node.item.isDocumentLayout()
+                and node.item.isActive
+            ):
+                model.append(node)
         return
 
     ##
@@ -561,13 +636,6 @@ class Index:
             iLevel = nwStyles.H_LEVEL.get(hItem.level, 0)
             hCount[iLevel] += 1
         return hCount
-
-    def getHandleHeaderCount(self, tHandle: str) -> int:
-        """Get the number of headers in an item."""
-        tItem = self._itemIndex[tHandle]
-        if isinstance(tItem, IndexNode):
-            return len(tItem)
-        return 0
 
     def getTableOfContents(
         self, rHandle: str | None, maxDepth: int, activeOnly: bool = True
@@ -750,13 +818,13 @@ class TagsIndex:
         }
         return
 
-    def tagName(self, tagKey: str) -> str:
+    def tagName(self, tagKey: str, default: str = "") -> str:
         """Get the name of a given tag."""
-        return self._tags.get(tagKey.lower(), {}).get("name", "")
+        return self._tags.get(tagKey.lower(), {}).get("name", default)
 
-    def tagDisplay(self, tagKey: str) -> str:
+    def tagDisplay(self, tagKey: str, default: str = "") -> str:
         """Get the display name of a given tag."""
-        return self._tags.get(tagKey.lower(), {}).get("display", "")
+        return self._tags.get(tagKey.lower(), {}).get("display", default)
 
     def tagHandle(self, tagKey: str) -> str | None:
         """Get the handle of a given tag."""
@@ -838,10 +906,11 @@ class ItemIndex:
     IndexHeading object for each heading of the text.
     """
 
-    __slots__ = ("_project", "_items")
+    __slots__ = ("_project", "_tags", "_items")
 
-    def __init__(self, project: NWProject) -> None:
+    def __init__(self, project: NWProject, tagsIndex: TagsIndex) -> None:
         self._project = project
+        self._tags = tagsIndex
         self._items: dict[str, IndexNode] = {}
         return
 
@@ -868,7 +937,7 @@ class ItemIndex:
         """Add a new item to the index. This will overwrite the item if
         it already exists.
         """
-        self._items[tHandle] = IndexNode(tHandle, nwItem)
+        self._items[tHandle] = IndexNode(self._tags, tHandle, nwItem)
         return
 
     def allItemTags(self, tHandle: str) -> list[str]:
@@ -926,7 +995,7 @@ class ItemIndex:
         if tHandle in self._items:
             tItem = self._items[tHandle]
             sTitle = tItem.nextHeading()
-            tItem.addHeading(IndexHeading(sTitle, lineNo, level, text))
+            tItem.addHeading(IndexHeading(self._tags, sTitle, lineNo, level, text))
             return sTitle
         return TT_NONE
 
@@ -997,7 +1066,7 @@ class ItemIndex:
 
             nwItem = self._project.tree[tHandle]
             if nwItem is not None:
-                tItem = IndexNode(tHandle, nwItem)
+                tItem = IndexNode(self._tags, tHandle, nwItem)
                 tItem.unpackData(tData)
                 self._items[tHandle] = tItem
 
