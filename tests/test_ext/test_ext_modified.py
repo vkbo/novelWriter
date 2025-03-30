@@ -23,13 +23,13 @@ from __future__ import annotations
 import pytest
 
 from PyQt6.QtCore import QEvent, QPoint, QPointF, Qt
-from PyQt6.QtGui import QKeyEvent, QMouseEvent, QWheelEvent
+from PyQt6.QtGui import QKeyEvent, QMouseEvent, QStandardItem, QStandardItemModel, QWheelEvent
 from PyQt6.QtWidgets import QWidget
 
 from novelwriter.extensions.modified import (
-    NClickableLabel, NComboBox, NDialog, NDoubleSpinBox, NSpinBox
+    NClickableLabel, NComboBox, NDialog, NDoubleSpinBox, NSpinBox, NTreeView
 )
-from novelwriter.types import QtModNone, QtMouseLeft, QtRejected
+from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
 
 from tests.tools import SimpleDialog
 
@@ -64,6 +64,32 @@ def testExtModified_NDialog(qtbot, monkeypatch):
     with qtbot.waitSignal(dialog.rejected, timeout=1000):
         dialog.keyPressEvent(QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModNone))
         assert dialog.result() == QtRejected
+
+
+@pytest.mark.gui
+def testExtModified_NTreeView(qtbot, monkeypatch):
+    """Test the NTreeView class."""
+    model = QStandardItemModel(1, 1)
+    model.insertRow(0, QStandardItem("Hello World"))
+
+    widget = NTreeView()
+    widget.setModel(model)
+    dialog = SimpleDialog(widget)
+    dialog.show()
+
+    vPort = widget.viewport()
+    item = model.item(0, 0)
+    assert vPort is not None
+    assert item is not None
+
+    position = QPointF(widget.visualRect(model.createIndex(0, 0)).center())
+    event = QMouseEvent(
+        QEvent.Type.MouseButtonPress, position, QtMouseMiddle, QtMouseMiddle, QtModNone
+    )
+    with qtbot.waitSignal(widget.middleClicked):
+        widget.mousePressEvent(event)
+
+    # qtbot.stop()
 
 
 @pytest.mark.gui
