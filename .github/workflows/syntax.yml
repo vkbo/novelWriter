@@ -1,4 +1,4 @@
-name: Flake8
+name: Linting
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v4
       - name: Install flake8
-        run: pip install -r requirements-dev.txt
+        run: pip install -r requirements.txt -r requirements-dev.txt
       - name: Syntax Check
         run: |
           flake8 --version
