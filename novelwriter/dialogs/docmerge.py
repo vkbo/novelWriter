@@ -146,9 +146,9 @@ class GuiDocMerge(NDialog):
     def _resetList(self) -> None:
         """Reset the content of the list box to its original state."""
         logger.debug("Resetting list box content")
-        sHandle = self._data.get("sHandle", None)
-        itemList = self._data.get("origItems", [])
-        self._loadContent(sHandle, itemList)
+        if sHandle := self._data.get("sHandle"):
+            itemList = self._data.get("origItems", [])
+            self._loadContent(sHandle, itemList)
         return
 
     ##

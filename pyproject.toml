@@ -65,6 +65,14 @@ exclude = ["docs/*"]
 max_line_length = 99
 ignore = ["E133", "E221", "E226", "E228", "E241", "W503"]
 
+[tool.pyright]
+include = ["novelwriter"]
+exclude = ["**/__pycache__"]
+
+reportIncompatibleMethodOverride = false
+
+pythonVersion = "3.10"
+
 [tool.coverage.run]
 branch = false
 

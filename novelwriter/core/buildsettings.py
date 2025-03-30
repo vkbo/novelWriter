@@ -43,11 +43,13 @@ from novelwriter.error import logException
 
 logger = logging.getLogger(__name__)
 
+T_BuildValue = str | int | float | bool
+
 # The Settings Template
 # =====================
 # Each entry contains a tuple on the form: (type, default)
 
-SETTINGS_TEMPLATE: dict[str, tuple[type, str | int | float | bool]] = {
+SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "filter.includeNovel":     (bool, True),
     "filter.includeNotes":     (bool, False),
     "filter.includeInactive":  (bool, False),
@@ -378,7 +380,7 @@ class BuildSettings:
             self._changed = True
         return
 
-    def setValue(self, key: str, value: str | int | float | bool) -> None:
+    def setValue(self, key: str, value: T_BuildValue) -> None:
         """Set a specific value for a build setting."""
         if (d := SETTINGS_TEMPLATE.get(key)) and len(d) == 2 and isinstance(value, d[0]):
             self._changed = value != self._settings[key]
@@ -502,7 +504,8 @@ class BuildSettings:
         self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
         if isinstance(settings, dict):
             for key, value in settings.items():
-                self.setValue(RENAMED.get(key, key), value)
+                if isinstance(key, str) and isinstance(value, T_BuildValue):
+                    self.setValue(RENAMED.get(key, key), value)
 
         self._changed = False
 

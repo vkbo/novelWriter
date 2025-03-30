@@ -598,6 +598,7 @@ class ToOdt(Tokenizer):
     def _textStyle(self, hFmt: int, fClass: str = "") -> str:
         """Return a text style for a given style code."""
         tKey = str(hFmt)
+        color = None
         if fClass and (color := self._classes.get(fClass)):
             tKey = f"{tKey}:{fClass}"
         if tKey in self._autoText:

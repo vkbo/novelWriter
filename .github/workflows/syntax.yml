@@ -1,4 +1,4 @@
-name: Flake8
+name: Linting
 
 on:
   push:
@@ -21,10 +21,14 @@ jobs:
           architecture: x64
       - name: Checkout Source
         uses: actions/checkout@v4
-      - name: Install flake8
-        run: pip install -r requirements-dev.txt
-      - name: Syntax Check
+      - name: Install Dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+      - name: Run Flake8
         run: |
           flake8 --version
           flake8 novelwriter --count --show-source --statistics
           flake8 tests --count --show-source --statistics --extend-ignore ANN
+      - name: Run Pyright
+        run: |
+          pyright --version
+          pyright

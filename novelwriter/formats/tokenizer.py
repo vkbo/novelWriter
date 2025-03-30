@@ -1034,6 +1034,7 @@ class Tokenizer(ABC):
 
     def _formatComment(self, style: ComStyle, key: str, text: str) -> tuple[str, T_Formats]:
         """Apply formatting to comments and notes."""
+        rFmt = []
         tTxt, tFmt = self._extractFormats(text)
         tFmt.insert(0, (0, TextFmt.COL_B, style.textClass))
         tFmt.append((len(tTxt), TextFmt.COL_E, ""))

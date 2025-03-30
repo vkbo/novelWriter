@@ -473,7 +473,7 @@ class TextBlockData(QTextBlockUserData):
         self._text = ""
         self._offset = 0
         self._metaData: list[tuple[int, int, str, str]] = []
-        self._spellErrors: list[tuple[int, int,]] = []
+        self._spellErrors: list[tuple[int, int]] = []
         return
 
     @property

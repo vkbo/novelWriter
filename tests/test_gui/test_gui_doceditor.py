@@ -37,6 +37,7 @@ from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout
 from novelwriter.gui.doceditor import GuiDocEditor, _TagAction
+from novelwriter.gui.dochighlight import TextBlockData
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
     QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtModNone,
@@ -58,7 +59,7 @@ def getMenuForPos(editor: GuiDocEditor, pos: int, select: bool = False) -> QMenu
     if select:
         cursor.select(QTextCursor.SelectionType.WordUnderCursor)
     editor.setTextCursor(cursor)
-    editor._openContextMenu(editor.cursorRect().center())
+    editor._openContextFromCursor()
     for obj in editor.children():
         if isinstance(obj, QMenu) and obj.objectName() == "ContextMenu":
             return obj
@@ -514,9 +515,20 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     # ==============
     SHARED.project.data.setSpellCheck(True)
 
+    cursor = docEditor.textCursor()
+    cursor.setPosition(16)
+    data = cursor.block().userData()
+    assert cursor.block().text().startswith("Lorem")
+    assert isinstance(data, TextBlockData)
+    data._spellErrors = [(0, 5)]
+
+    # No known position
+    assert docEditor._qDocument.spellErrorAtPos(-1) == ("", -1, -1, [])
+
     # With Suggestion
     with monkeypatch.context() as mp:
-        mp.setattr(docEditor._qDocument, "spellErrorAtPos", lambda *a: ("Lorem", 0, 5, ["Lorax"]))
+        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: ["Lorax"])
+
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
         actions = [x.text() for x in ctxMenu.actions() if x.text()]
@@ -530,7 +542,8 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
     # Without Suggestion
     with monkeypatch.context() as mp:
-        mp.setattr(docEditor._qDocument, "spellErrorAtPos", lambda *a: ("Lorax", 0, 5, []))
+        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [])
+
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
         actions = [x.text() for x in ctxMenu.actions() if x.text()]
@@ -541,7 +554,8 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
     # Add to Dictionary
     with monkeypatch.context() as mp:
-        mp.setattr(docEditor._qDocument, "spellErrorAtPos", lambda *a: ("Lorax", 0, 5, []))
+        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [])
+
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
         actions = [x.text() for x in ctxMenu.actions() if x.text()]
