@@ -28,17 +28,18 @@ import pytest
 
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
-from novelwriter.core.index import Index, IndexNode, TagsIndex
+from novelwriter.core.index import Index, TagsIndex
 from novelwriter.core.item import NWItem
+from novelwriter.core.novelmodel import NovelModel
 from novelwriter.core.project import NWProject
-from novelwriter.enum import nwComment, nwItemClass, nwItemLayout
+from novelwriter.enum import nwComment, nwItemClass, nwItemLayout, nwNovelExtra
 
 from tests.mocked import causeException
 from tests.tools import C, buildTestProject, cmpFiles
 
 
 @pytest.mark.core
-def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
+def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
     """Test core functionality of scanning, saving, loading and checking
     the index cache file.
     """
@@ -52,6 +53,18 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
     index = Index(project)
     assert repr(index) == "<Index project='Lorem Ipsum'>"
 
+    # Check Novel Model
+    model = index.getNovelModel("b3643d0f92e32")
+    assert isinstance(model, NovelModel)
+    assert model.columns == 3
+
+    index.setNovelModelExtraColumn(nwNovelExtra.POV)
+    index.refreshNovelModel("b3643d0f92e32")
+    model = index.getNovelModel("b3643d0f92e32")
+    assert isinstance(model, NovelModel)
+    assert model.columns == 4
+
+    # Re-index
     notIndexable = {
         "b3643d0f92e32": False,  # Novel ROOT
         "45e6b01ca35c1": False,  # Chapter One FOLDER
@@ -216,7 +229,7 @@ def testCoreIndex_ScanThis(mockGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
+def testCoreIndex_CheckThese(nwGUI, fncPath, mockRnd):
     """Test the tag checker function checkThese."""
     project = NWProject()
     mockRnd.reset()
@@ -338,7 +351,7 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_ScanText(monkeypatch, mockGUI, fncPath, mockRnd):
+def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     """Check the index text scanner."""
     project = NWProject()
     mockRnd.reset()
@@ -586,7 +599,7 @@ def testCoreIndex_ScanText(monkeypatch, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_CommentKeys(monkeypatch, mockGUI, fncPath, mockRnd):
+def testCoreIndex_CommentKeys(monkeypatch, nwGUI, fncPath, mockRnd):
     """Check the index comment key generator."""
     project = NWProject()
     mockRnd.reset()
@@ -623,7 +636,7 @@ def testCoreIndex_CommentKeys(monkeypatch, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
+def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
     """Check the index data extraction functions."""
     project = NWProject()
     mockRnd.reset()
@@ -708,15 +721,6 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert wC == 12  # Words in text and title only
     assert pC == 2   # Paragraphs in text only
 
-    # getItemData + getHandleHeaderCount
-    # ==================================
-
-    item = index.getItemData(nHandle)
-    assert isinstance(item, IndexNode)
-    assert item.headings() == ["T0001"]
-    assert index.getHandleHeaderCount(nHandle) == 1
-    assert index.getHandleHeaderCount("foo") == 0
-
     # getReferences
     # =============
 
@@ -764,7 +768,9 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
 
     # getClassTags
     # ============
+    assert index.getClassTags(None) == ["Jane", "John"]
     assert index.getClassTags(nwItemClass.CHARACTER) == ["Jane", "John"]
+    assert index.getClassTags(nwItemClass.PLOT) == []
 
     # getTagsData
     # ===========
@@ -1151,7 +1157,7 @@ def testCoreIndex_TagsIndex():
 
 
 @pytest.mark.core
-def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
+def testCoreIndex_ItemIndex(nwGUI, fncPath, mockRnd):
     """Check the ItemIndex class."""
     project = NWProject()
     mockRnd.reset()

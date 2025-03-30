@@ -69,10 +69,10 @@ class NWProjectData:
         self._initCounts = [0, 0]
         self._currCounts = [0, 0]
         self._lastHandle: dict[str, str | None] = {
-            "editor":    None,
-            "viewer":    None,
-            "novelTree": None,
-            "outline":   None,
+            "editor":  None,
+            "viewer":  None,
+            "novel":   None,
+            "outline": None,
         }
         self._autoReplace: dict[str, str] = {}
         self._titleFormat: dict[str, str] = {

@@ -24,21 +24,19 @@ from pathlib import Path
 
 import pytest
 
-from PyQt6.QtCore import QEvent, QPoint, Qt
-from PyQt6.QtGui import QFocusEvent
+from PyQt6.QtCore import QModelIndex, QPoint, Qt
 from PyQt6.QtWidgets import QInputDialog, QToolTip
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.core.novelmodel import NovelModel
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwFocus, nwItemType
-from novelwriter.gui.noveltree import GuiNovelTree, NovelTreeColumn
-from novelwriter.types import QtMouseLeft, QtMouseMiddle
+from novelwriter.enum import nwFocus, nwItemType, nwNovelExtra, nwView
 
 from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
-def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+def testGuiNovelView_Content(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test navigating the novel tree."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
@@ -51,20 +49,22 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     contentPath = SHARED.project.storage.contentPath
     assert isinstance(contentPath, Path)
+    cHandle = "0000000000010"
 
-    (contentPath / "0000000000010.nwd").write_text(
+    (contentPath / f"{cHandle}.nwd").write_text(
         "# Jane Doe\n\n@tag: Jane\n\n", encoding="utf-8"
     )
-    (contentPath / "000000000000f.nwd").write_text((
+    (contentPath / f"{C.hSceneDoc}.nwd").write_text((
         "### Scene One\n\n"
         "@pov: Jane\n"
         "@focus: Jane\n\n"
-        "% Synopsis: This is a scene."
+        "% Synopsis: This is a scene.\n\n"
+        "This is some text in the edited scene."
     ), encoding="utf-8")
 
     novelView = nwGUI.novelView
-    novelTree = novelView.novelTree
-    novelBar  = novelView.novelBar
+    novelTree = nwGUI.novelView.novelTree
+    novelBar  = nwGUI.novelView.novelBar
 
     # Show/Hide Scrollbars
     # ====================
@@ -83,153 +83,101 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Populate Tree
     # =============
+    root = QModelIndex()
 
     novelView.setTreeFocus()
+    nwGUI._changeView(nwView.NOVEL)
 
-    nwGUI.projStack.setCurrentWidget(nwGUI.novelView)
-    nwGUI.rebuildIndex()
-    novelTree._populateTree(rootHandle=None)
-    assert novelTree.topLevelItemCount() == 3
+    # Clear tree
+    novelView.setCurrentNovel(None)
+    assert novelTree._getModel() is None
 
-    # Rebuild should preserve selection
-    topItem = novelTree.topLevelItem(0)
-    assert not topItem.isSelected()
-    topItem.setSelected(True)
-    assert novelTree.selectedItems()[0] == topItem
-    assert novelView.getSelectedHandle() == (C.hTitlePage, "T0001")
+    # Reload
+    novelBar._forceRefreshNovelTree()
+    model = novelTree._getModel()
+    assert isinstance(model, NovelModel)
 
-    # Refresh using the slot for the button
-    novelBar._refreshNovelTree()
-    assert novelTree.topLevelItem(0).isSelected()
+    # Check the items
+    assert model.rowCount(root) == 3
+    assert model.columnCount(root) == 3
+    assert model.data(model.createIndex(2, 1), Qt.ItemDataRole.DisplayRole) == "2"  # Word Count
+
+    nwGUI.rebuildIndex()  # This should update the word count to the edited scene
+    assert model.data(model.createIndex(2, 1), Qt.ItemDataRole.DisplayRole) == "10"  # Word Count
+
+    # Extra Column
+    # ============
+    novelBar.setLastColType(nwNovelExtra.POV)
+    assert model.rowCount(root) == 3
+    assert model.columnCount(root) == 4
+
+    # Scene column should contain the POV character
+    assert model.data(model.createIndex(2, 2), Qt.ItemDataRole.DisplayRole) == "Jane"
+
+    # Resize the last column
+    assert novelTree.lastColSize == 25
+    with monkeypatch.context() as mp:
+        mp.setattr(QInputDialog, "getInt", lambda *a, **k: (40, True))
+        novelBar._selectLastColumnSize()
+    assert novelTree.lastColSize == 40
 
     # Open Items
     # ==========
 
     # Clear selection
     novelTree.clearSelection()
-    scItem = novelTree.topLevelItem(2)
-    scItem.setSelected(True)
-    assert scItem.isSelected()
+    assert novelView.getSelectedHandle() == (None, None)
 
-    # Clear selection with mouse
-    vPort = novelTree.viewport()
-    qtbot.mouseClick(vPort, QtMouseLeft, pos=vPort.rect().center(), delay=10)
-    assert not scItem.isSelected()
+    # Select scene
+    novelTree.setCurrentIndex(model.createIndex(2, 0))
+    assert novelView.getSelectedHandle() == (C.hSceneDoc, "T0001")
 
     # Double-click item
-    scItem.setSelected(True)
-    assert scItem.isSelected()
-    assert nwGUI.docEditor.docHandle is None
-    novelTree._treeDoubleClick(scItem, 0)
+    novelTree._onDoubleClick(model.createIndex(2, 0))
     assert nwGUI.docEditor.docHandle == C.hSceneDoc
 
-    # Open item with middle mouse button
-    scItem.setSelected(True)
-    assert scItem.isSelected()
-    assert nwGUI.docViewer.docHandle is None
-    qtbot.mouseClick(vPort, QtMouseMiddle, pos=vPort.rect().center(), delay=10)
-    assert nwGUI.docViewer.docHandle is None
-
-    scRect = novelTree.visualItemRect(scItem)
-    oldData = scItem.data(novelTree.C_TITLE, novelTree.D_HANDLE)
-    scItem.setData(novelTree.C_TITLE, novelTree.D_HANDLE, None)
-    qtbot.mouseClick(vPort, QtMouseMiddle, pos=scRect.center(), delay=10)
-    assert nwGUI.docViewer.docHandle is None
-
-    scItem.setData(novelTree.C_TITLE, novelTree.D_HANDLE, oldData)
-    qtbot.mouseClick(vPort, QtMouseMiddle, pos=scRect.center(), delay=10)
+    # Middle-click item
+    novelTree._onMiddleClick(model.createIndex(2, 0))
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
-
-    # Last Column
-    # ===========
-
-    novelBar.setLastColType(NovelTreeColumn.HIDDEN)
-    assert novelTree.isColumnHidden(novelTree.C_EXTRA) is True
-    assert novelTree.lastColType == NovelTreeColumn.HIDDEN
-    assert novelTree._getLastColumnText(C.hSceneDoc, "T0001") == ("", "")
-
-    novelBar.setLastColType(NovelTreeColumn.PLOT)
-    assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
-    assert novelTree.lastColType == NovelTreeColumn.PLOT
-    assert novelTree._getLastColumnText(C.hSceneDoc, "T0001") == (
-        "", ""
-    )
-
-    novelBar.setLastColType(NovelTreeColumn.FOCUS)
-    assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
-    assert novelTree.lastColType == NovelTreeColumn.FOCUS
-    assert novelTree._getLastColumnText(C.hSceneDoc, "T0001") == (
-        "Jane", "Focus: Jane"
-    )
-
-    novelBar.setLastColType(NovelTreeColumn.POV)
-    assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
-    assert novelTree.lastColType == NovelTreeColumn.POV
-    assert novelTree._getLastColumnText(C.hSceneDoc, "T0001") == (
-        "Jane", "Point of View: Jane"
-    )
-
-    novelTree._lastCol = None
-    assert novelTree._getLastColumnText("0000000000000", "T0000") == ("", "")
-
-    # This forces the resizeEvent function to process labels
-    spSize = nwGUI.splitMain.sizes()
-    nwGUI.splitMain.setSizes([spSize[0] + 10, spSize[1] - 10])
-
-    # Resize the last column
-    with monkeypatch.context() as mp:
-        mp.setattr(QInputDialog, "getInt", lambda *a, **k: (40, True))
-        novelBar._selectLastColumnSize()
 
     # Item Meta
     # =========
 
-    ttText = ""
+    toolTip = ""
 
     def showText(pos, text):
-        nonlocal ttText
-        ttText = text
+        nonlocal toolTip
+        toolTip = text
 
-    mIndex = novelTree.model().index(2, novelTree.C_MORE)
     with monkeypatch.context() as mp:
         mp.setattr(QToolTip, "showText", showText)
 
-        ttText = ""
-        novelTree._treeItemClicked(mIndex)
-        assert ttText == (
-            "<p><b>Point of View</b>: Jane<br><b>Focus</b>: Jane</p>"
-            "<p><b>Synopsis</b>: This is a scene.</p>"
+        toolTip = ""
+        novelTree._onSingleClick(model.createIndex(2, 3))
+        assert toolTip == (
+            "<p><b>Point of View:</b> Jane<br><b>Focus:</b> Jane</p>"
+            "<p><b>Synopsis:</b> This is a scene.</p>"
         )
 
-        ttText = ""
+        toolTip = ""
         novelTree._popMetaBox(QPoint(1, 1), C.hInvalid, "T0001")
-        assert ttText == ""
+        assert toolTip == ""
 
-    # Set Default Root
-    # ================
-    SHARED.project.data.setLastHandle(C.hInvalid, "novelTree")
-    novelView.openProjectTasks()
-    assert novelBar.novelValue.handle == C.hNovelRoot
+    # Active Status
+    # =============
+    assert novelBar._refresh == {C.hNovelRoot: False}
 
-    # Tree Focus
-    # ==========
-    with monkeypatch.context() as mp:
-        mp.setattr(GuiNovelTree, "hasFocus", lambda *a: False)
-        assert novelView.treeHasFocus() is False
-        mp.setattr(GuiNovelTree, "hasFocus", lambda *a: True)
-        assert novelView.treeHasFocus() is True
+    # Add a document while tree in focus
+    nwGUI._changeView(nwView.PROJECT)
+    assert novelBar._active is False
+    nwGUI.projView.projTree.setSelectedHandle(C.hChapterDir)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, hLevel=3)
+    assert novelBar._refresh == {C.hNovelRoot: True}
 
-    # Other Checks
-    # ============
-
-    scItem = novelTree.topLevelItem(2)
-    scItem.setSelected(True)
-    assert scItem.isSelected()
-    novelTree.focusOutEvent(QFocusEvent(QEvent.Type.None_, Qt.FocusReason.MouseFocusReason))
-    assert not scItem.isSelected()
+    # Switch back and check that the refresh status is reset
+    nwGUI._changeView(nwView.NOVEL)
+    assert novelBar._refresh == {C.hNovelRoot: False}
 
     # Close
-    # =====
-
     # qtbot.stop()
     nwGUI.closeProject()

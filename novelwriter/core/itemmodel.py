@@ -193,7 +193,7 @@ class ProjectNode:
         return self._parent
 
     def child(self, row: int) -> ProjectNode | None:
-        """Return a child ofg the node."""
+        """Return a child of the node."""
         if 0 <= row < len(self._children):
             return self._children[row]
         return None
@@ -218,6 +218,7 @@ class ProjectNode:
             child._row = len(self._children)
             self._children.append(child)
         self._refreshChildrenPos()
+        self._item.notifyNovelStructureChange()
         return
 
     def takeChild(self, pos: int) -> ProjectNode | None:
@@ -226,6 +227,7 @@ class ProjectNode:
             node = self._children.pop(pos)
             self._refreshChildrenPos()
             self.updateCount()
+            self._item.notifyNovelStructureChange()
             return node
         return None
 
@@ -236,6 +238,7 @@ class ProjectNode:
             node = self._children.pop(source)
             self._children.insert(target, node)
             self._refreshChildrenPos()
+            self._item.notifyNovelStructureChange()
         return
 
     def setExpanded(self, state: bool) -> None:
@@ -331,7 +334,7 @@ class ProjectModel(QAbstractItemModel):
         return QModelIndex()
 
     def index(self, row: int, column: int, parent: QModelIndex = QModelIndex()) -> QModelIndex:
-        """get the index of a child item of a parent."""
+        """Get the index of a child item of a parent."""
         if self.hasIndex(row, column, parent):
             node: ProjectNode = parent.internalPointer() if parent.isValid() else self._root
             if child := node.child(row):

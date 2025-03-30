@@ -39,7 +39,6 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     search = nwGUI.projSearch
 
     def totalCount():
-        nonlocal search
         res = search.searchResult
         return sum(
             int(res.topLevelItem(i).text(GuiProjectSearch.C_COUNT).strip("()"))

@@ -31,10 +31,12 @@ import logging
 from collections.abc import ItemsView, Sequence
 from typing import TYPE_CHECKING, Literal
 
+from novelwriter import CONFIG
 from novelwriter.common import checkInt, isListInstance, isTitleTag
 from novelwriter.constants import nwKeyWords, nwStyles
 
 if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.core.index import TagsIndex
     from novelwriter.core.item import NWItem
 
 logger = logging.getLogger(__name__)
@@ -55,12 +57,13 @@ class IndexNode:
     must be reset each time the item is re-indexed.
     """
 
-    __slots__ = ("_handle", "_item", "_headings", "_count", "_notes")
+    __slots__ = ("_tags", "_handle", "_item", "_headings", "_notes", "_count")
 
-    def __init__(self, tHandle: str, nwItem: NWItem) -> None:
+    def __init__(self, tagsIndex: TagsIndex, tHandle: str, nwItem: NWItem) -> None:
+        self._tags = tagsIndex
         self._handle = tHandle
         self._item = nwItem
-        self._headings: dict[str, IndexHeading] = {TT_NONE: IndexHeading(TT_NONE)}
+        self._headings: dict[str, IndexHeading] = {TT_NONE: IndexHeading(self._tags, TT_NONE)}
         self._notes: dict[str, set[str]] = {}
         self._count = 0
         return
@@ -178,7 +181,7 @@ class IndexNode:
         """Unpack an item entry from the data."""
         for key, entry in data.items():
             if isTitleTag(key):
-                heading = IndexHeading(key)
+                heading = IndexHeading(self._tags, key)
                 heading.unpackData(entry)
                 self.addHeading(heading)
             elif key == "document":
@@ -201,9 +204,16 @@ class IndexHeading:
     of all references made under the heading.
     """
 
-    __slots__ = ("_key", "_line", "_level", "_title", "_counts", "_tag", "_refs", "_comments")
+    __slots__ = (
+        "_tags", "_key", "_line", "_level", "_title",
+        "_counts", "_tag", "_refs", "_comments",
+    )
 
-    def __init__(self, key: str, line: int = 0, level: str = "H0", title: str = "") -> None:
+    def __init__(
+        self, tagsIndex: TagsIndex, key: str, line: int = 0,
+        level: str = "H0", title: str = "",
+    ) -> None:
+        self._tags = tagsIndex
         self._key = key
         self._line = line
         self._level = level
@@ -236,6 +246,10 @@ class IndexHeading:
     @property
     def title(self) -> str:
         return self._title
+
+    @property
+    def mainCount(self) -> int:
+        return self._counts[0 if CONFIG.useCharCount else 1]
 
     @property
     def charCount(self) -> int:
@@ -308,6 +322,27 @@ class IndexHeading:
                 self._refs[tag] = set()
             self._refs[tag].add(keyword)
         return
+
+    ##
+    #  Getters
+    ##
+
+    def getReferences(self) -> dict[str, list[str]]:
+        """Extract all references for this heading."""
+        refs = {x: [] for x in nwKeyWords.VALID_KEYS}
+        for tag, types in self._refs.items():
+            for keyword in types:
+                if keyword in refs and (name := self._tags.tagName(tag)):
+                    refs[keyword].append(name)
+        return refs
+
+    def getReferencesByKeyword(self, keyword: str) -> list[str]:
+        """Extract all references for this heading."""
+        refs = []
+        for tag, types in self._refs.items():
+            if keyword in types and (name := self._tags.tagName(tag)):
+                refs.append(name)
+        return refs
 
     ##
     #  Data Methods

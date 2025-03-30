@@ -68,23 +68,23 @@ class Config:
         "_backupPath",
 
         "appName", "appHandle", "guiLocale", "guiTheme", "guiSyntax", "guiFont", "hideVScroll",
-        "hideHScroll", "lastNotes", "nativeFont", "iconTheme", "iconColTree", "iconColDocs",
-        "mainWinSize", "welcomeWinSize", "prefsWinSize", "mainPanePos", "viewPanePos",
-        "outlinePanePos", "autoSaveProj", "autoSaveDoc", "emphLabels", "backupOnClose",
-        "askBeforeBackup", "askBeforeExit", "textFont", "textWidth", "textMargin", "tabWidth",
-        "cursorWidth", "focusWidth", "hideFocusFooter", "showFullPath", "autoSelect", "doJustify",
-        "showTabsNSpaces", "showLineEndings", "showMultiSpaces", "doReplace", "doReplaceSQuote",
-        "doReplaceDQuote", "doReplaceDash", "doReplaceDots", "autoScroll", "autoScrollPos",
-        "scrollPastEnd", "dialogStyle", "allowOpenDial", "dialogLine", "narratorBreak",
-        "narratorDialog", "altDialogOpen", "altDialogClose", "highlightEmph", "stopWhenIdle",
-        "userIdleTime", "incNotesWCount", "fmtApostrophe", "fmtSQuoteOpen", "fmtSQuoteClose",
-        "fmtDQuoteOpen", "fmtDQuoteClose", "fmtPadBefore", "fmtPadAfter", "fmtPadThin",
-        "spellLanguage", "showViewerPanel", "showEditToolBar", "showSessionTime", "viewComments",
-        "viewSynopsis", "searchCase", "searchWord", "searchRegEx", "searchLoop", "searchNextFile",
-        "searchMatchCap", "searchProjCase", "searchProjWord", "searchProjRegEx", "verQtString",
-        "verQtValue", "verPyQtString", "verPyQtValue", "verPyString", "osType", "osLinux",
-        "osWindows", "osDarwin", "osUnknown", "hostName", "kernelVer", "isDebug", "memInfo",
-        "hasEnchant",
+        "hideHScroll", "lastNotes", "nativeFont", "useCharCount", "iconTheme", "iconColTree",
+        "iconColDocs", "mainWinSize", "welcomeWinSize", "prefsWinSize", "mainPanePos",
+        "viewPanePos", "outlinePanePos", "autoSaveProj", "autoSaveDoc", "emphLabels",
+        "backupOnClose", "askBeforeBackup", "askBeforeExit", "textFont", "textWidth", "textMargin",
+        "tabWidth", "cursorWidth", "focusWidth", "hideFocusFooter", "showFullPath", "autoSelect",
+        "doJustify", "showTabsNSpaces", "showLineEndings", "showMultiSpaces", "doReplace",
+        "doReplaceSQuote", "doReplaceDQuote", "doReplaceDash", "doReplaceDots", "autoScroll",
+        "autoScrollPos", "scrollPastEnd", "dialogStyle", "allowOpenDial", "dialogLine",
+        "narratorBreak", "narratorDialog", "altDialogOpen", "altDialogClose", "highlightEmph",
+        "stopWhenIdle", "userIdleTime", "incNotesWCount", "fmtApostrophe", "fmtSQuoteOpen",
+        "fmtSQuoteClose", "fmtDQuoteOpen", "fmtDQuoteClose", "fmtPadBefore", "fmtPadAfter",
+        "fmtPadThin", "spellLanguage", "showViewerPanel", "showEditToolBar", "showSessionTime",
+        "viewComments", "viewSynopsis", "searchCase", "searchWord", "searchRegEx", "searchLoop",
+        "searchNextFile", "searchMatchCap", "searchProjCase", "searchProjWord", "searchProjRegEx",
+        "verQtString", "verQtValue", "verPyQtString", "verPyQtValue", "verPyString", "osType",
+        "osLinux", "osWindows", "osDarwin", "osUnknown", "hostName", "kernelVer", "isDebug",
+        "memInfo", "hasEnchant",
     )
 
     LANG_NW   = 1
@@ -157,6 +157,7 @@ class Config:
         self.hideHScroll  = False       # Hide horizontal scroll bars on main widgets
         self.lastNotes    = "0x0"       # The latest release notes that have been shown
         self.nativeFont   = True        # Use native font dialog
+        self.useCharCount = False       # Use character count as primary count
 
         # Icons
         self.iconTheme   = DEF_ICONS    # Icons theme
@@ -591,16 +592,17 @@ class Config:
         # Main
         sec = "Main"
         self.setGuiFont(conf.rdStr(sec, "font", ""))
-        self.guiTheme    = conf.rdStr(sec, "theme", self.guiTheme)
-        self.guiSyntax   = conf.rdStr(sec, "syntax", self.guiSyntax)
-        self.iconTheme   = conf.rdStr(sec, "icons", self.iconTheme)
-        self.iconColTree = conf.rdStr(sec, "iconcoltree", self.iconColTree)
-        self.iconColDocs = conf.rdBool(sec, "iconcoldocs", self.iconColDocs)
-        self.guiLocale   = conf.rdStr(sec, "localisation", self.guiLocale)
-        self.hideVScroll = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
-        self.hideHScroll = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
-        self.lastNotes   = conf.rdStr(sec, "lastnotes", self.lastNotes)
-        self.nativeFont  = conf.rdBool(sec, "nativefont", self.nativeFont)
+        self.guiTheme     = conf.rdStr(sec, "theme", self.guiTheme)
+        self.guiSyntax    = conf.rdStr(sec, "syntax", self.guiSyntax)
+        self.iconTheme    = conf.rdStr(sec, "icons", self.iconTheme)
+        self.iconColTree  = conf.rdStr(sec, "iconcoltree", self.iconColTree)
+        self.iconColDocs  = conf.rdBool(sec, "iconcoldocs", self.iconColDocs)
+        self.guiLocale    = conf.rdStr(sec, "localisation", self.guiLocale)
+        self.hideVScroll  = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
+        self.hideHScroll  = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
+        self.lastNotes    = conf.rdStr(sec, "lastnotes", self.lastNotes)
+        self.nativeFont   = conf.rdBool(sec, "nativefont", self.nativeFont)
+        self.useCharCount = conf.rdBool(sec, "usecharcount", self.useCharCount)
 
         # Sizes
         sec = "Sizes"
@@ -717,6 +719,7 @@ class Config:
             "hidehscroll":  str(self.hideHScroll),
             "lastnotes":    str(self.lastNotes),
             "nativefont":   str(self.nativeFont),
+            "usecharcount": str(self.useCharCount),
         }
 
         conf["Sizes"] = {

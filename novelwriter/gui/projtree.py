@@ -517,7 +517,6 @@ class GuiProjectTree(QTreeView):
 
     def initSettings(self) -> None:
         """Set or update tree widget settings."""
-        # Scroll bars
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
@@ -1022,7 +1021,7 @@ class GuiProjectTree(QTreeView):
         return [i for i in self.selectedIndexes() if i.column() == 0]
 
     def _getModel(self) -> ProjectModel | None:
-        """Return a project node corresponding to a model index."""
+        """Return the model, if it exists."""
         if isinstance(model := self.model(), ProjectModel):
             return model
         return None
@@ -1400,6 +1399,7 @@ class _TreeContextMenu(QMenu):
         if itemLayout == nwItemLayout.DOCUMENT and self._item.documentAllowed():
             self._item.setLayout(nwItemLayout.DOCUMENT)
             self._item.notifyToRefresh()
+            self._item.notifyNovelStructureChange()
         elif itemLayout == nwItemLayout.NOTE:
             self._item.setLayout(nwItemLayout.NOTE)
             self._item.notifyToRefresh()
@@ -1416,6 +1416,7 @@ class _TreeContextMenu(QMenu):
                 self._item.setType(nwItemType.FILE)
                 self._item.setLayout(nwItemLayout.DOCUMENT)
                 self._item.notifyToRefresh()
+                self._item.notifyNovelStructureChange()
             elif msgYes and itemLayout == nwItemLayout.NOTE:
                 self._item.setType(nwItemType.FILE)
                 self._item.setLayout(nwItemLayout.NOTE)

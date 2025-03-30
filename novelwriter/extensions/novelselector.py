@@ -26,6 +26,7 @@ from __future__ import annotations
 import logging
 
 from PyQt6.QtCore import pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QComboBox, QWidget
 
 from novelwriter import SHARED
@@ -46,6 +47,7 @@ class NovelSelector(QComboBox):
         self._includeAll = False
         self._listFormat = None
         self.currentIndexChanged.connect(self._indexChanged)
+        self.updateTheme()
         return
 
     ##
@@ -53,8 +55,11 @@ class NovelSelector(QComboBox):
     ##
 
     @property
-    def handle(self) -> str:
-        return self.currentData()
+    def handle(self) -> str | None:
+        """Return the selected handle, if any."""
+        if tHandle := self.currentData():
+            return tHandle
+        return None
 
     @property
     def firstHandle(self) -> str | None:
@@ -81,6 +86,14 @@ class NovelSelector(QComboBox):
         """Set a format string for the list entries."""
         if value is None or "{0}" in value:
             self._listFormat = value
+        return
+
+    def updateTheme(self) -> None:
+        """Update theme colours."""
+        palette = self.palette()
+        palette.setBrush(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text, palette.text())
+        self.setPalette(palette)
+        self.refreshNovelList()
         return
 
     ##

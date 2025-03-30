@@ -115,8 +115,6 @@ class GuiDocEditor(QPlainTextEdit):
     editedStatusChanged = pyqtSignal(bool)
     itemHandleChanged = pyqtSignal(str)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
-    novelItemMetaChanged = pyqtSignal(str)
-    novelStructureChanged = pyqtSignal()
     openDocumentRequest = pyqtSignal(str, Enum, str, bool)
     requestNewNoteCreation = pyqtSignal(str, nwItemClass)
     requestNextDocument = pyqtSignal(str, bool)
@@ -498,18 +496,8 @@ class GuiDocEditor(QPlainTextEdit):
 
         self.setDocumentChanged(False)
         self.docTextChanged.emit(self._docHandle, self._lastEdit)
-
-        oldCount = SHARED.project.index.getHandleHeaderCount(tHandle)
         SHARED.project.index.scanText(tHandle, text)
-        newCount = SHARED.project.index.getHandleHeaderCount(tHandle)
 
-        if self._nwItem.itemClass == nwItemClass.NOVEL:
-            if oldCount == newCount:
-                self.novelItemMetaChanged.emit(tHandle)
-            else:
-                self.novelStructureChanged.emit()
-
-        # Update the status bar
         self.updateStatusMessage.emit(self.tr("Saved Document: {0}").format(self._nwItem.itemName))
 
         return True
