@@ -131,7 +131,6 @@ def testToolWelcome_Open(qtbot, monkeypatch, nwGUI, fncPath):
 
     # Context Menu
     def getMenuForPos(pos: QPoint) -> QMenu | None:
-        nonlocal tabOpen
         tabOpen._openContextMenu(pos)
         for obj in tabOpen.children():
             if isinstance(obj, QMenu) and obj.objectName() == "ContextMenu":
