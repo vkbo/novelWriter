@@ -137,9 +137,10 @@ class GuiNovelDetails(NNonBlockingDialog):
 
     def updateValues(self) -> None:
         """Load the dialogs initial values."""
-        self.overviewPage.updateProjectData()
-        self.overviewPage.novelValueChanged(self.novelSelector.handle)
-        self.contentsPage.novelValueChanged(self.novelSelector.handle)
+        if handle := self.novelSelector.handle:
+            self.overviewPage.updateProjectData()
+            self.overviewPage.novelValueChanged(handle)
+            self.contentsPage.novelValueChanged(handle)
         return
 
     ##
