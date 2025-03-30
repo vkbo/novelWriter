@@ -192,8 +192,8 @@ class GuiDocSplit(NDialog):
     @pyqtSlot()
     def _reloadList(self) -> None:
         """Reload the content of the list box."""
-        sHandle = self._data.get("sHandle", None)
-        self._loadContent(sHandle)
+        if sHandle := self._data.get("sHandle"):
+            self._loadContent(sHandle)
         return
 
     ##

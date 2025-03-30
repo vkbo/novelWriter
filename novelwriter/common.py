@@ -537,12 +537,11 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
 #  XML Helpers
 ##
 
-def xmlIndent(tree: ET.Element | ET.ElementTree) -> None:
+def xmlIndent(xml: ET.Element | ET.ElementTree) -> None:
     """A modified version of the XML indent function in the standard
     library. It behaves more closely to how the one from lxml does.
     """
-    if isinstance(tree, ET.ElementTree):
-        tree = tree.getroot()
+    tree = xml.getroot() if isinstance(xml, ET.ElementTree) else xml
     if not isinstance(tree, ET.Element):
         return
 

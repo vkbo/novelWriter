@@ -23,7 +23,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt6.QtCore import QPropertyAnimation, Qt, pyqtProperty
+from PyQt6.QtCore import QPropertyAnimation, Qt, pyqtProperty  # pyright: ignore
 from PyQt6.QtGui import QEnterEvent, QMouseEvent, QPainter, QPaintEvent, QResizeEvent
 from PyQt6.QtWidgets import QAbstractButton, QWidget
 
@@ -60,7 +60,7 @@ class NSwitch(QAbstractButton):
     def offset(self) -> int:  # type: ignore
         return self._offset
 
-    @offset.setter
+    @offset.setter  # type: ignore
     def offset(self, offset: int) -> None:
         self._offset = offset
         self.update()

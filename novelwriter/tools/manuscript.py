@@ -681,9 +681,9 @@ class _OutlineWidget(QWidget):
             hFont.setBold(True)
             hFont.setUnderline(True)
 
+            indent = False
             if root := self.listView.invisibleRootItem():
                 parent = root
-                indent = False
                 for anchor, entry in data.items():
                     prefix, _, text = entry.partition("|")
                     if prefix in ("TT", "PT", "CH", "SC", "H1", "H2"):
