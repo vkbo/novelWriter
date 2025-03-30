@@ -28,3 +28,5 @@ jobs:
           flake8 --version
           flake8 novelwriter --count --show-source --statistics
           flake8 tests --count --show-source --statistics --extend-ignore ANN
+          pyright --version
+          pyright

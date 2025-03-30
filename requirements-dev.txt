@@ -1,5 +1,6 @@
 flake8
+flake8-annotations
 flake8-pep585
 flake8-pyproject
-flake8-annotations
 isort
+pyright
