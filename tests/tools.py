@@ -216,6 +216,7 @@ def buildTestProject(obj: object, projPath: Path) -> None:
     project.setProjectChanged(True)
     project.saveProject(autoSave=True)
     project._valid = True
+    project._tree._ready = True
 
     if nwGUI is not None:
         nwGUI.projView.openProjectTasks()

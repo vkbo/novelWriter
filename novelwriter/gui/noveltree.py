@@ -3,9 +3,11 @@ novelWriter – GUI Novel Tree
 ============================
 
 File History:
-Created: 2020-12-20 [1.1rc1] GuiNovelTree
-Created: 2022-06-12 [2.0rc1] GuiNovelView
-Created: 2022-06-12 [2.0rc1] GuiNovelToolBar
+Created:   2020-12-20 [1.1rc1] GuiNovelTree
+Created:   2022-06-12 [2.0rc1] GuiNovelView
+Created:   2022-06-12 [2.0rc1] GuiNovelToolBar
+Rewritten: 2025-02-22 [2.7b1] GuiNovelView
+Rewritten: 2025-02-22 [2.7b1] GuiNovelToolBar
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
@@ -40,7 +42,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax, qtAddAction, qtAddMenu, qtLambda
 from novelwriter.constants import nwKeyWords, nwLabels, trConst
 from novelwriter.core.novelmodel import NovelModel
-from novelwriter.enum import nwChange, nwDocMode, nwItemClass, nwNovelExtra, nwOutline
+from novelwriter.enum import nwChange, nwDocMode, nwNovelExtra, nwOutline
 from novelwriter.extensions.modified import NIconToolButton, NTreeView
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
@@ -105,9 +107,6 @@ class GuiNovelView(QWidget):
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
         lastNovel = SHARED.project.data.getLastHandle("novel")
-        if lastNovel and lastNovel not in SHARED.project.tree:
-            lastNovel = SHARED.project.tree.findRoot(nwItemClass.NOVEL)
-
         logger.debug("Setting novel tree to root item '%s'", lastNovel)
 
         lastCol = SHARED.project.options.getEnum(
@@ -129,13 +128,17 @@ class GuiNovelView(QWidget):
 
     def closeProjectTasks(self) -> None:
         """Run closing project tasks."""
+        logger.debug("Saving State: GuiNovelView")
+
         lastColType = self.novelTree.lastColType
         lastColSize = self.novelTree.lastColSize
-        logger.debug("Saving State: GuiNovelView")
+
         options = SHARED.project.options
         options.setValue("GuiNovelView", "lastCol", lastColType)
         options.setValue("GuiNovelView", "lastColSize", lastColSize)
+
         self.clearNovelView()
+
         return
 
     def setTreeFocus(self) -> None:
@@ -154,9 +157,7 @@ class GuiNovelView(QWidget):
     @pyqtSlot(str)
     def setCurrentNovel(self, rootHandle: str | None) -> None:
         """Set the current novel to display."""
-        if rootHandle and (model := SHARED.project.index.getNovelModel(rootHandle)):
-            self.novelTree.setModel(model)
-            self.novelTree.resizeColumns()
+        self.novelTree.setNovelModel(rootHandle)
         return
 
     @pyqtSlot(str)
@@ -270,7 +271,7 @@ class GuiNovelToolBar(QWidget):
             "QComboBox {border-style: none; padding-left: 0;} "
             "QComboBox::drop-down {border-style: none}"
         )
-        self.novelValue.refreshNovelList()
+        self.novelValue.updateTheme()
         self.tbNovel.setVisible(self.novelValue.count() > 1)
 
         self._forceRefreshNovelTree()
@@ -286,12 +287,13 @@ class GuiNovelToolBar(QWidget):
     def buildNovelRootMenu(self) -> None:
         """Build the novel root menu."""
         self.novelValue.refreshNovelList()
+        self.novelView.setCurrentNovel(self.novelValue.handle)
         self.tbNovel.setVisible(self.novelValue.count() > 1)
         return
 
     def setCurrentRoot(self, rootHandle: str | None) -> None:
         """Set the current active root handle."""
-        if rootHandle is None:
+        if rootHandle is None or rootHandle not in SHARED.project.tree:
             rootHandle = self.novelValue.firstHandle
         self.novelValue.setHandle(rootHandle)
         SHARED.project.data.setLastHandle(rootHandle, "novel")
@@ -328,6 +330,7 @@ class GuiNovelToolBar(QWidget):
     def _forceRefreshNovelTree(self) -> None:
         """Rebuild the current tree."""
         if tHandle := self.novelValue.handle:
+            self.novelView.setCurrentNovel(tHandle)
             SHARED.project.index.refreshNovelModel(tHandle)
             self._refresh[tHandle] = False
         return
@@ -441,14 +444,23 @@ class GuiNovelTree(NTreeView):
         """Get the currently selected or active handle. If multiple
         items are selected, return the first.
         """
-        if model := self._getModel():
-            index = self.currentIndex()
+        if (model := self._getModel()) and (index := self.currentIndex()).isValid():
             return model.handle(index), model.key(index)
         return None, None
 
     ##
     #  Setters
     ##
+
+    def setNovelModel(self, tHandle: str | None) -> None:
+        """Set the current novel model."""
+        if tHandle and (model := SHARED.project.index.getNovelModel(tHandle)):
+            if model is not self.model():
+                self.setModel(model)
+                self.resizeColumns()
+        else:
+            self.clearContent()
+        return
 
     def setActiveHandle(self, tHandle: str | None) -> None:
         """Set the handle to be highlighted."""
@@ -560,17 +572,17 @@ class GuiNovelTree(NTreeView):
 
     def _popMetaBox(self, qPos: QPoint, tHandle: str, sTitle: str) -> None:
         """Show the novel meta data box."""
+        def appendTags(refs: dict, key: str, lines: list[str]) -> None:
+            """Generate a reference list for a given reference key."""
+            if tags := ", ".join(refs.get(key, [])):
+                lines.append(f"<b>{trConst(nwLabels.KEY_NAME[key])}:</b> {tags}")
+            return
+
         if head := SHARED.project.index.getItemHeading(tHandle, sTitle):
             logger.debug("Generating meta data tooltip for '%s:%s'", tHandle, sTitle)
             if synopsis := head.synopsis:
                 label = trConst(nwLabels.OUTLINE_COLS[nwOutline.SYNOP])
                 synopsis = f"<p><b>{label}:</b> {synopsis}</p>"
-
-            def appendTags(refs: dict, key: str, lines: list[str]) -> None:
-                """Generate a reference list for a given reference key."""
-                if tags := ", ".join(refs.get(key, [])):
-                    lines.append(f"<b>{trConst(nwLabels.KEY_NAME[key])}:</b> {tags}")
-                return
 
             lines = []
             if head := SHARED.project.index.getItemHeading(tHandle, sTitle):

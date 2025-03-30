@@ -115,7 +115,6 @@ class GuiDocEditor(QPlainTextEdit):
     editedStatusChanged = pyqtSignal(bool)
     itemHandleChanged = pyqtSignal(str)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
-    novelStructureChanged = pyqtSignal()
     openDocumentRequest = pyqtSignal(str, Enum, str, bool)
     requestNewNoteCreation = pyqtSignal(str, nwItemClass)
     requestNextDocument = pyqtSignal(str, bool)
