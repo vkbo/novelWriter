@@ -565,32 +565,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 
     docEditor._wCounterDoc.run()
 
-    # Spell Checking
-    # ==============
-
-    # for c in "Some text with tesst in it.":
-    #     qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    # qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    # qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-
-    # currPos = docEditor.getCursorPosition()
-    # assert docEditor._qDocument.spellErrorAtPos(currPos) == ("", -1, -1, [])
-
-    # errPos = currPos - 13
-    # if not sys.platform.startswith("win32"):
-    #     # Skip on Windows as spell checking is off there
-    #     # This check will fail without an 'en' dictionary, like aspell-en
-    #     word, cPos, cLen, suggest = docEditor._qDocument.spellErrorAtPos(errPos)
-    #     assert word == "tesst"
-    #     assert cPos == 15
-    #     assert cLen == 5
-    #     assert "test" in suggest
-
-    # with monkeypatch.context() as mp:
-    #     mp.setattr(QMenu, "exec", lambda *a: None)
-    #     docEditor.setCursorPosition(errPos)
-    #     docEditor._openContextFromCursor()
-
     # Check Files
     # ===========
 
