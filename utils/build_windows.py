@@ -214,7 +214,6 @@ def main(args: argparse.Namespace) -> None:
 
     print("Updating starting script ...")
     writeFile(outDir / "novelWriter.pyw", (
-        "#!/usr/bin/env python3\n"
         "import os\n"
         "import sys\n"
         "\n"
