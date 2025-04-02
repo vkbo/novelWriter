@@ -56,3 +56,5 @@ ToC.txt
 
 # Other
 /test.py
+.config
+.local

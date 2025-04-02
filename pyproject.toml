@@ -61,10 +61,6 @@ ignore = ["E133", "E221", "E226", "E228", "E241", "W503", "ANN101", "ANN102", "A
 per-file-ignores = ["tests/*:ANN"]
 exclude = ["docs/*"]
 
-[tool.autopep8]
-max_line_length = 99
-ignore = ["E133", "E221", "E226", "E228", "E241", "W503"]
-
 [tool.pyright]
 include = ["novelwriter"]
 exclude = ["**/__pycache__"]
@@ -72,6 +68,16 @@ exclude = ["**/__pycache__"]
 reportIncompatibleMethodOverride = false
 
 pythonVersion = "3.10"
+
+[tool.pytest.ini_options]
+log_level = "DEBUG"
+qt_api = "pyqt6"
+markers = [
+    "base: Base classes tests",
+    "core: Core classes tests",
+    "gui: GUI classes tests",
+    "serial",
+]
 
 [tool.coverage.run]
 branch = false
