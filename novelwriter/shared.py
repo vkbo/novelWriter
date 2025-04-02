@@ -101,28 +101,28 @@ class SharedData(QObject):
     def mainGui(self) -> GuiMain:
         """Return the Main GUI instance."""
         if self._gui is None:
-            raise Exception("SharedData class not fully initialised")
+            raise RuntimeError("SharedData class not fully initialised")
         return self._gui
 
     @property
     def theme(self) -> GuiTheme:
         """Return the GUI Theme instance."""
         if self._theme is None:
-            raise Exception("SharedData class not fully initialised")
+            raise RuntimeError("SharedData class not fully initialised")
         return self._theme
 
     @property
     def project(self) -> NWProject:
         """Return the active NWProject instance."""
         if self._project is None:
-            raise Exception("SharedData class not fully initialised")
+            raise RuntimeError("SharedData class not fully initialised")
         return self._project
 
     @property
     def spelling(self) -> NWSpellEnchant:
         """Return the active NWProject instance."""
         if self._spelling is None:
-            raise Exception("SharedData class not fully initialised")
+            raise RuntimeError("SharedData class not fully initialised")
         return self._spelling
 
     @property

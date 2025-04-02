@@ -55,17 +55,44 @@ force_grid_wrap = 0
 lines_between_types = 1
 forced_separate = ["tests.*"]
 
-[tool.flake8]
-max-line-length = 99
-ignore = ["E133", "E221", "E226", "E228", "E241", "W503", "ANN101", "ANN102", "ANN401"]
-per-file-ignores = ["tests/*:ANN"]
-exclude = ["docs/*"]
+[tool.ruff]
+line-length = 99
+
+[tool.ruff.lint]
+select = [
+    "A",  # flake8-builtins (A)
+    "B",  # flake8-bugbear (B)
+    "E",  # pycodestyle (E)
+    "F",  # Pyflakes (F)
+    "W",  # pycodestyle (W)
+    "UP",
+]
+ignore = [
+    "E221",   # multiple-spaces-before-operator
+    "E226",   # missing-whitespace-around-arithmetic-operator
+    "E228",   # missing-whitespace-around-modulo-operator
+    "E241",   # multiple-spaces-after-comma
+    "ANN401",
+    "UP015",  # redundant-open-modes
+    "UP030",  # format-literals
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = []
+
+[tool.ruff.format]
+quote-style = "double"
 
 [tool.pyright]
 include = ["novelwriter"]
 exclude = ["**/__pycache__"]
 
 reportIncompatibleMethodOverride = false
+reportGeneralTypeIssues = "information"
+reportOptionalMemberAccess = "information"
+reportOptionalOperand = "information"
+reportOptionalSubscript = "information"
+reportUnboundVariable = "error"
 
 pythonVersion = "3.10"
 

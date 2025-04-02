@@ -78,7 +78,7 @@ class GuiQuoteSelect(NDialog):
 
         minSize = 100
         for sKey, sLabel in nwQuotes.SYMBOLS.items():
-            text = "[ %s ] %s" % (sKey, trConst(sLabel))
+            text = f"[ {sKey} ] {trConst(sLabel)}"
             minSize = max(minSize, metrics.boundingRect(text).width())
             qtItem = QListWidgetItem(text)
             qtItem.setData(self.D_KEY, sKey)

@@ -65,12 +65,12 @@ def embedPython(bldDir: Path, outDir: Path) -> None:
     """Embed Python library."""
     print("Adding Python embeddable ...")
 
-    pyVers = "%d.%d.%d" % (sys.version_info[:3])
+    pyVers = ".".join(str(v) for v in sys.version_info[:3])
     zipFile = f"python-{pyVers}-embed-amd64.zip"
     pyZip = bldDir / zipFile
     if not pyZip.is_file():
         pyUrl = f"https://www.python.org/ftp/python/{pyVers}/{zipFile}"
-        print("Downloading: %s" % pyUrl)
+        print(f"Downloading: {pyUrl}")
         urllib.request.urlretrieve(pyUrl, pyZip)
 
     print("Extracting ...")
@@ -192,7 +192,7 @@ def main(args: argparse.Namespace) -> None:
     print("")
 
     numVers, _, _ = extractVersion()
-    print("Version: %s" % numVers)
+    print(f"Version: {numVers}")
 
     bldDir = ROOT_DIR / "dist"
     outDir = bldDir / "novelWriter"

@@ -379,7 +379,7 @@ class ProjectBuilder:
         """Build or copy a project from a data dictionary."""
         if isinstance(data, dict):
             path = data.get("path", None) or None
-            if isinstance(path, (str, Path)):
+            if isinstance(path, str | Path):
                 self._path = Path(path).resolve()
                 if data.get("sample", False):
                     return self._extractSampleProject(self._path)
@@ -509,7 +509,7 @@ class ProjectBuilder:
 
         # Also add the archive and trash folders
         project.newRoot(nwItemClass.ARCHIVE)
-        project.tree.trash  # Triggers the creation of Trash
+        _ = project.tree.trash  # Triggers the creation of Trash
 
         project.saveProject()
         project.closeProject()

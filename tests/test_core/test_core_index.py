@@ -885,9 +885,9 @@ def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
     sHandle = project.newFile("Scene One", C.hNovelRoot)
     tHandle = project.newFile("Scene Two", C.hNovelRoot)
 
-    project.tree[hHandle].itemLayout == nwItemLayout.DOCUMENT  # type: ignore
-    project.tree[sHandle].itemLayout == nwItemLayout.DOCUMENT  # type: ignore
-    project.tree[tHandle].itemLayout == nwItemLayout.DOCUMENT  # type: ignore
+    assert project.tree[hHandle].itemLayout == nwItemLayout.DOCUMENT  # type: ignore
+    assert project.tree[sHandle].itemLayout == nwItemLayout.DOCUMENT  # type: ignore
+    assert project.tree[tHandle].itemLayout == nwItemLayout.DOCUMENT  # type: ignore
 
     assert index.scanText(hHandle, "## Chapter One\n\n")  # type: ignore
     assert index.scanText(sHandle, "### Scene One\n\n")  # type: ignore

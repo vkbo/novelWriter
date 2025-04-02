@@ -97,18 +97,18 @@ def cmpFiles(
         lnTwo = txtTwo[n].strip()
 
         if n+1 in ignoreLines:
-            print("Ignoring line %d" % (n+1))
+            print(f"Ignoring line {n+1}")
             continue
 
         if ignoreStart is not None:
             if lnOne.startswith(ignoreStart):
-                print("Ignoring line %d" % (n+1))
+                print(f"Ignoring line {n+1}")
                 continue
 
         if lnOne != lnTwo:
-            print("Diff on line %d:" % (n+1))
-            print(" << '%s'" % lnOne)
-            print(" >> '%s'" % lnTwo)
+            print(f"Diff on line {n+1}:")
+            print(f" << '{lnOne}'")
+            print(f" >> '{lnTwo}'")
             diffFound = True
 
     return not diffFound
@@ -205,11 +205,11 @@ def buildTestProject(obj: object, projPath: Path) -> None:
     project.index.reIndexHandle(tdHandle)
 
     aDoc = project.storage.getDocument(cdHandle)
-    aDoc.writeDocument("## %s\n\n" % project.tr("New Chapter"))
+    aDoc.writeDocument("## {0}\n\n".format(project.tr("New Chapter")))
     project.index.reIndexHandle(cdHandle)
 
     aDoc = project.storage.getDocument(sdHandle)
-    aDoc.writeDocument("### %s\n\n" % project.tr("New Scene"))
+    aDoc.writeDocument("### {0}\n\n".format(project.tr("New Scene")))
     project.index.reIndexHandle(sdHandle)
 
     project.session.startSession()

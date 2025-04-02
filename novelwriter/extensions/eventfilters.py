@@ -48,7 +48,7 @@ class WheelEventFilter(QObject):
         self._locked = False
         return
 
-    def eventFilter(self, object: QObject, event: QEvent) -> bool:
+    def eventFilter(self, obj: QObject, event: QEvent) -> bool:
         """Filter events of type QWheelEvent and forward them to the
         parent widget's wheelEvent handler.
         """

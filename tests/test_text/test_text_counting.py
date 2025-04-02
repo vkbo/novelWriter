@@ -86,7 +86,7 @@ def testTextCounting_standardCounter():
     assert standardCounter(" <") == (0, 0, 0)
 
     # General Text
-    cC, wC, pC = standardCounter((
+    cC, wC, pC = standardCounter(
         "#! Title\n\n"
         "##! Prologue\n\n"
         "# Heading One\n"
@@ -100,47 +100,47 @@ def testTextCounting_standardCounter():
         "The second paragraph.\n\n\n"
         "The third paragraph.\n\n"
         "Dashes\u2013and even longer\u2014dashes."
-    ))
+    )
     assert cC == 163
     assert wC == 26
     assert pC == 4
 
     # Text Alignment
-    cC, wC, pC = standardCounter((
+    cC, wC, pC = standardCounter(
         "# Title\n\n"
         "Left aligned<<\n\n"
         "Left aligned <<\n\n"
         "Right indent<\n\n"
         "Right indent <\n\n"
-    ))
+    )
     assert cC == 53
     assert wC == 9
     assert pC == 4
 
-    cC, wC, pC = standardCounter((
+    cC, wC, pC = standardCounter(
         "# Title\n\n"
         ">>Right aligned\n\n"
         ">> Right aligned\n\n"
         ">Left indent\n\n"
         "> Left indent\n\n"
-    ))
+    )
     assert cC == 53
     assert wC == 9
     assert pC == 4
 
-    cC, wC, pC = standardCounter((
+    cC, wC, pC = standardCounter(
         "# Title\n\n"
         ">>Centre aligned<<\n\n"
         ">> Centre aligned <<\n\n"
         ">Double indent<\n\n"
         "> Double indent <\n\n"
-    ))
+    )
     assert cC == 59
     assert wC == 9
     assert pC == 4
 
     # Formatting Codes, Upper Case (Old Implementation)
-    cC, wC, pC = standardCounter((
+    cC, wC, pC = standardCounter(
         "Some text\n\n"
         "[NEWPAGE]\n\n"
         "more text\n\n"
@@ -150,13 +150,13 @@ def testTextCounting_standardCounter():
         "and some final text\n\n"
         "[VSPACE:4]\n\n"
         "THE END\n\n"
-    ))
+    )
     assert cC == 58
     assert wC == 13
     assert pC == 5
 
     # Formatting Codes, Lower Case (Current Implementation)
-    cC, wC, pC = standardCounter((
+    cC, wC, pC = standardCounter(
         "Some text\n\n"
         "[newpage]\n\n"
         "more text\n\n"
@@ -166,16 +166,16 @@ def testTextCounting_standardCounter():
         "and some final text\n\n"
         "[vspace:4]\n\n"
         "THE END\n\n"
-    ))
+    )
     assert cC == 58
     assert wC == 13
     assert pC == 5
 
     # Check ShortCodes
-    cC, wC, pC = standardCounter((
+    cC, wC, pC = standardCounter(
         "Text with [b]bold[/b] text and padded [b] bold [/b] text.\n\n"
         "Text with [b][i] nested [/i] emphasis [/b] in it.\n\n"
-    ))
+    )
     assert cC == 78
     assert wC == 14
     assert pC == 2
@@ -188,7 +188,7 @@ def testTextCounting_bodyTextCounter():
     assert bodyTextCounter(None) == (0, 0, 0)  # type: ignore
 
     # General Text
-    wC, cC, sC = bodyTextCounter((
+    wC, cC, sC = bodyTextCounter(
         "#! Title\n\n"
         "##! Prologue\n\n"
         "# Heading One\n"
@@ -201,7 +201,7 @@ def testTextCounting_bodyTextCounter():
         "The second paragraph.\n\n\n"
         "The third paragraph.\n\n"
         "Dashes\u2013and even longer\u2014dashes."
-    ))
+    )
     assert wC == 14
     assert cC == 91
     assert sC == 81

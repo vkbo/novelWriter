@@ -333,8 +333,9 @@ class ProjectModel(QAbstractItemModel):
             return self.createIndex(parent.row(), 0, parent)
         return QModelIndex()
 
-    def index(self, row: int, column: int, parent: QModelIndex = QModelIndex()) -> QModelIndex:
+    def index(self, row: int, column: int, parent: QModelIndex | None = None) -> QModelIndex:
         """Get the index of a child item of a parent."""
+        parent = parent or QModelIndex()
         if self.hasIndex(row, column, parent):
             node: ProjectNode = parent.internalPointer() if parent.isValid() else self._root
             if child := node.child(row):

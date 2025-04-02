@@ -978,7 +978,7 @@ class GuiDocEditor(QPlainTextEdit):
             super().dropEvent(event)
         return
 
-    def focusNextPrevChild(self, next: bool) -> bool:
+    def focusNextPrevChild(self, _next: bool) -> bool:
         """Capture the focus request from the tab key on the text
         editor. If the editor has focus, we do not change focus and
         allow the editor to insert a tab. If the search bar has focus,
@@ -1037,7 +1037,7 @@ class GuiDocEditor(QPlainTextEdit):
             logger.error("Invalid keyword '%s'", keyword)
             return False
         logger.debug("Inserting keyword '%s'", keyword)
-        state = self.insertNewBlock("%s: " % keyword)
+        state = self.insertNewBlock(f"{keyword}: ")
         return state
 
     @pyqtSlot()
@@ -1528,10 +1528,10 @@ class GuiDocEditor(QPlainTextEdit):
         if fLen == min(numA, numB):
             cursor.beginEditBlock()
             cursor.setPosition(posS)
-            for i in range(fLen):
+            for _ in range(fLen):
                 cursor.deletePreviousChar()
             cursor.setPosition(posE)
-            for i in range(fLen):
+            for _ in range(fLen):
                 cursor.deletePreviousChar()
             cursor.endEditBlock()
 
@@ -1943,7 +1943,9 @@ class GuiDocEditor(QPlainTextEdit):
             exist = False
             cPos = cursor.selectionStart() - block.position()
             tExist = SHARED.project.index.checkThese(tBits, self._docHandle)
-            for sTag, sPos, sExist in zip(reversed(tBits), reversed(tPos), reversed(tExist)):
+            for sTag, sPos, sExist in zip(
+                reversed(tBits), reversed(tPos), reversed(tExist), strict=False
+            ):
                 if cPos >= sPos:
                     # The cursor is between the start of two tags
                     if cPos <= sPos + len(sTag):

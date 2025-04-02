@@ -490,7 +490,7 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
     """Encode a dictionary, list or tuple as a json object or array, and
     indent from level n up to a max level nmax if nmax is larger than 0.
     """
-    if not isinstance(data, (dict, list, tuple)):
+    if not isinstance(data, dict | list | tuple):
         return "[]"
 
     buffer = []

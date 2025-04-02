@@ -144,7 +144,7 @@ class NWErrorMessage(QDialog):
 
         try:
             txtTrace = "\n".join(format_tb(exTrace))
-            self.msgBody.setPlainText((
+            self.msgBody.setPlainText(
                 "Environment:\n"
                 f"novelWriter Version: {__version__}\n"
                 f"Host OS: {sys.platform} ({kernelVersion})\n"
@@ -153,7 +153,7 @@ class NWErrorMessage(QDialog):
                 f"enchant: {enchantVersion}\n\n"
                 f"{exType.__name__}:\n{str(exValue)}\n\n"
                 f"Traceback:\n{txtTrace}\n"
-            ))
+            )
         except Exception:
             self.msgBody.setPlainText("Failed to generate error report ...")
 

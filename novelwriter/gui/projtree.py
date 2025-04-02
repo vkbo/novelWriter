@@ -259,17 +259,17 @@ class GuiProjectToolBar(QWidget):
         self.mQuick = QMenu(self)
 
         self.tbQuick = NIconToolButton(self, iSz)
-        self.tbQuick.setToolTip("%s [Ctrl+L]" % self.tr("Quick Links"))
+        self.tbQuick.setToolTip("{0} [Ctrl+L]".format(self.tr("Quick Links")))
         self.tbQuick.setShortcut("Ctrl+L")
         self.tbQuick.setMenu(self.mQuick)
 
         # Move Buttons
         self.tbMoveU = NIconToolButton(self, iSz)
-        self.tbMoveU.setToolTip("%s [Ctrl+Up]" % self.tr("Move Up"))
+        self.tbMoveU.setToolTip("{0} [Ctrl+Up]".format(self.tr("Move Up")))
         self.tbMoveU.clicked.connect(self.projTree.moveItemUp)
 
         self.tbMoveD = NIconToolButton(self, iSz)
-        self.tbMoveD.setToolTip("%s [Ctrl+Down]" % self.tr("Move Down"))
+        self.tbMoveD.setToolTip("{0} [Ctrl+Down]".format(self.tr("Move Down")))
         self.tbMoveD.clicked.connect(self.projTree.moveItemDown)
 
         # Add Item Menu
@@ -309,7 +309,7 @@ class GuiProjectToolBar(QWidget):
         self._buildRootMenu()
 
         self.tbAdd = NIconToolButton(self, iSz)
-        self.tbAdd.setToolTip("%s [Ctrl+N]" % self.tr("Add Item"))
+        self.tbAdd.setToolTip("{0} [Ctrl+N]".format(self.tr("Add Item")))
         self.tbAdd.setShortcut("Ctrl+N")
         self.tbAdd.setMenu(self.mAdd)
 

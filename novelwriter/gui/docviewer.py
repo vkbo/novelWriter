@@ -610,12 +610,9 @@ class GuiDocViewHistory:
         for loop, it is skipped entirely if log level isn't DEBUG.
         """
         if CONFIG.isDebug:  # pragma: no cover
-            for i, (h, p) in enumerate(zip(self._navHistory, self._posHistory)):
-                logger.debug(
-                    "History %02d: %s %13s [x:%d]" % (
-                        i + 1, ">" if i == self._currPos else " ", h, p
-                    )
-                )
+            for i, (h, p) in enumerate(zip(self._navHistory, self._posHistory, strict=False)):
+                a = ">" if i == self._currPos else " "
+                logger.debug(f"History {i + 1:02d}: {a} {h:13s} [x:{p}]")
         return
 
 

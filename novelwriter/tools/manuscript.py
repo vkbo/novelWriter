@@ -333,7 +333,7 @@ class GuiManuscript(NToolDialog):
     def _deleteSelectedBuild(self) -> None:
         """Delete the currently selected build settings entry."""
         if build := self._getSelectedBuild():
-            if SHARED.question(self.tr("Delete build '{0}'?".format(build.name))):
+            if SHARED.question(self.tr("Delete build '{0}'?").format(build.name)):
                 if dialog := self._findSettingsDialog(build.buildID):
                     dialog.close()
                 self._builds.removeBuild(build.buildID)
@@ -977,23 +977,23 @@ class _StatsWidget(QWidget):
     def updateStats(self, data: dict[str, int]) -> None:
         """Update the stats values from a Tokenizer stats dict."""
         # Minimal
-        self.minWordCount.setText("{0:n}".format(data.get(nwStats.WORDS, 0)))
-        self.minCharCount.setText("{0:n}".format(data.get(nwStats.CHARS, 0)))
+        self.minWordCount.setText(f"{data.get(nwStats.WORDS, 0):n}")
+        self.minCharCount.setText(f"{data.get(nwStats.CHARS, 0):n}")
 
         # Maximal
-        self.maxTotalWords.setText("{0:n}".format(data.get(nwStats.WORDS, 0)))
-        self.maxHeadWords.setText("{0:n}".format(data.get(nwStats.WORDS_TITLE, 0)))
-        self.maxTextWords.setText("{0:n}".format(data.get(nwStats.WORDS_TEXT, 0)))
-        self.maxTitleCount.setText("{0:n}".format(data.get(nwStats.TITLES, 0)))
-        self.maxParCount.setText("{0:n}".format(data.get(nwStats.PARAGRAPHS, 0)))
+        self.maxTotalWords.setText(f"{data.get(nwStats.WORDS, 0):n}")
+        self.maxHeadWords.setText(f"{data.get(nwStats.WORDS_TITLE, 0):n}")
+        self.maxTextWords.setText(f"{data.get(nwStats.WORDS_TEXT, 0):n}")
+        self.maxTitleCount.setText(f"{data.get(nwStats.TITLES, 0):n}")
+        self.maxParCount.setText(f"{data.get(nwStats.PARAGRAPHS, 0):n}")
 
-        self.maxTotalChars.setText("{0:n}".format(data.get(nwStats.CHARS, 0)))
-        self.maxHeaderChars.setText("{0:n}".format(data.get(nwStats.CHARS_TITLE, 0)))
-        self.maxTextChars.setText("{0:n}".format(data.get(nwStats.CHARS_TEXT, 0)))
+        self.maxTotalChars.setText(f"{data.get(nwStats.CHARS, 0):n}")
+        self.maxHeaderChars.setText(f"{data.get(nwStats.CHARS_TITLE, 0):n}")
+        self.maxTextChars.setText(f"{data.get(nwStats.CHARS_TEXT, 0):n}")
 
-        self.maxTotalWordChars.setText("{0:n}".format(data.get(nwStats.WCHARS_ALL, 0)))
-        self.maxHeadWordChars.setText("{0:n}".format(data.get(nwStats.WCHARS_TITLE, 0)))
-        self.maxTextWordChars.setText("{0:n}".format(data.get(nwStats.WCHARS_TEXT, 0)))
+        self.maxTotalWordChars.setText(f"{data.get(nwStats.WCHARS_ALL, 0):n}")
+        self.maxHeadWordChars.setText(f"{data.get(nwStats.WCHARS_TITLE, 0):n}")
+        self.maxTextWordChars.setText(f"{data.get(nwStats.WCHARS_TEXT, 0):n}")
 
         return
 

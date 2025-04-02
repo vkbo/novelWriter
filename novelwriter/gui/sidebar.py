@@ -155,4 +155,4 @@ class _PopRightMenu(QMenu):
             if isinstance(parent := self.parent(), QWidget):
                 offset = QPoint(parent.width(), parent.height() - self.height())
                 self.move(parent.mapToGlobal(offset))
-        return super(_PopRightMenu, self).event(event)
+        return super().event(event)

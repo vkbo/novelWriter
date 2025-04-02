@@ -212,9 +212,9 @@ class ToDocX(Tokenizer):
         self._pageMargins = QMargins(_mmToSz(left), _mmToSz(top), _mmToSz(right), _mmToSz(bottom))
         return
 
-    def setHeaderFormat(self, format: str, offset: int) -> None:
+    def setHeaderFormat(self, value: str, offset: int) -> None:
         """Set the document header format."""
-        self._headerFormat = format.strip()
+        self._headerFormat = value.strip()
         self._pageOffset = offset
         return
 

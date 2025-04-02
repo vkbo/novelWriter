@@ -102,11 +102,11 @@ def cleanBuildDirs(args: argparse.Namespace) -> None:
         if folder.is_dir():
             try:
                 shutil.rmtree(folder)
-                print("Deleted: %s" % folder)
+                print(f"Deleted: {folder}")
             except OSError:
-                print("Failed:  %s" % folder)
+                print(f"Failed:  {folder}")
         else:
-            print("Missing: %s" % folder)
+            print(f"Missing: {folder}")
 
     print("")
 

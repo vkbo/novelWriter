@@ -74,7 +74,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc)
     docEditor = nwGUI.docEditor
 
-    docEditor.setPlainText("### Lorem Ipsum\n\n%s" % ipsumText[0])
+    docEditor.setPlainText(f"### Lorem Ipsum\n\n{ipsumText[0]}")
     nwGUI.saveDocument()
 
     # Check Defaults
@@ -147,7 +147,7 @@ def testGuiEditor_LoadText(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
 
-    longText = "### Lorem Ipsum\n\n%s" % "\n\n".join(ipsumText*20)
+    longText = "### Lorem Ipsum\n\n{0}".format("\n\n".join(ipsumText*20))
     docEditor.replaceText(longText)
     nwGUI.saveDocument()
     nwGUI.closeDocument()
@@ -179,7 +179,7 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
 
-    longText = "### Lorem Ipsum\n\n%s" % "\n\n".join(ipsumText)
+    longText = "### Lorem Ipsum\n\n{0}".format("\n\n".join(ipsumText))
     docEditor.replaceText(longText)
 
     # Missing item
@@ -483,7 +483,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
 
-    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
+    text = "### A Scene\n\n{0}".format("\n\n".join(ipsumText))
     docEditor.replaceText(text)
 
     # Toggle State
@@ -584,7 +584,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
 
-    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
+    text = "### A Scene\n\n{0}".format("\n\n".join(ipsumText))
     docEditor.replaceText(text)
     doc = docEditor.document()
 
@@ -650,7 +650,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Emphasis/Undo/Redo
     # ==================
 
-    text = "### A Scene\n\n%s" % ipsumText[0]
+    text = f"### A Scene\n\n{ipsumText[0]}"
     docEditor.replaceText(text)
 
     # Emphasis
@@ -683,7 +683,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Shortcodes
     # ==========
 
-    text = "### A Scene\n\n%s" % ipsumText[0]
+    text = f"### A Scene\n\n{ipsumText[0]}"
     docEditor.replaceText(text)
 
     # Italic
@@ -738,7 +738,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Quotes
     # ======
 
-    text = "### A Scene\n\n%s" % ipsumText[0]
+    text = f"### A Scene\n\n{ipsumText[0]}"
     docEditor.replaceText(text)
 
     # Add Single Quotes
@@ -772,7 +772,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Remove Line Breaks
     # ==================
 
-    text = "### A Scene\n\n%s" % ipsumText[0]
+    text = f"### A Scene\n\n{ipsumText[0]}"
     repText = text[:100] + text[100:].replace(" ", "\n", 3)
     docEditor.replaceText(repText)
     assert docEditor.docAction(nwDocAction.RM_BREAKS) is True
@@ -974,7 +974,7 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
-    text = "### A Scene\n\n%s" % ipsumText[0]
+    text = f"### A Scene\n\n{ipsumText[0]}"
 
     # Insert Text
     # ===========
@@ -1037,7 +1037,7 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
     # Insert KeyWords
     # ===============
 
-    text = "### A Scene\n\n\n%s" % ipsumText[0]
+    text = f"### A Scene\n\n\n{ipsumText[0]}"
     docEditor.replaceText(text)
     docEditor.setCursorLine(3)
 
@@ -1076,13 +1076,13 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
 
-    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
+    text = "### A Scene\n\n{0}".format("\n\n".join(ipsumText))
     docEditor.replaceText(text)
 
     # Wrap Selection
     # ==============
 
-    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2])
+    text = "### A Scene\n\n{0}".format("\n\n".join(ipsumText[0:2]))
     docEditor.replaceText(text)
     docEditor.setCursorPosition(45)
 
@@ -1114,7 +1114,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Toggle Format
     # =============
 
-    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2])
+    text = "### A Scene\n\n{0}".format("\n\n".join(ipsumText[0:2]))
 
     # Block format repetition
     docEditor.replaceText(text)
@@ -1186,7 +1186,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # ==============
 
     # No Selection
-    text = "### A Scene\n\n%s" % ipsumText[0].replace("consectetur", "=consectetur=")
+    text = "### A Scene\n\n{0}".format(ipsumText[0].replace("consectetur", "=consectetur="))
     docEditor.replaceText(text)
     docEditor.setCursorPosition(45)
     docEditor._replaceQuotes("=", "<", ">")
@@ -1194,7 +1194,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # First Paragraph Selected
     # This should not replace anything in second paragraph
-    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2]).replace("ipsum", "=ipsum=")
+    text = "### A Scene\n\n{0}".format("\n\n".join(ipsumText[0:2]).replace("ipsum", "=ipsum="))
     docEditor.replaceText(text)
     docEditor.setCursorPosition(45)
     assert docEditor.docAction(nwDocAction.SEL_PARA)
@@ -1222,7 +1222,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Check Blocks
     cursor = docEditor.textCursor()
     cursor.clearSelection()
-    text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
+    text = f"### A Scene\n\n{parOne}\n\n{parTwo}"
     docEditor.replaceText(text)
     docEditor.setCursorPosition(45)
     assert len(docEditor._selectedBlocks(cursor)) == 0
@@ -1231,15 +1231,15 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert len(docEditor._selectedBlocks(cursor)) == 15
 
     # Remove All
-    text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
+    text = f"### A Scene\n\n{parOne}\n\n{parTwo}"
     docEditor.replaceText(text)
     docEditor.setCursorPosition(45)
     docEditor._removeInParLineBreaks()
-    assert docEditor.getText() == "### A Scene\n\n%s\n" % "\n\n".join(ipsumText[0:2])
+    assert docEditor.getText() == "### A Scene\n\n{0}\n".format("\n\n".join(ipsumText[0:2]))
 
     # Remove in First Paragraph
     # Second paragraphs should remain unchanged
-    text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
+    text = f"### A Scene\n\n{parOne}\n\n{parTwo}"
     docEditor.replaceText(text)
     cursor = docEditor.textCursor()
     cursor.setPosition(16, QtMoveAnchor)
@@ -1260,7 +1260,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Key Press Events
     # ================
-    text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
+    text = f"### A Scene\n\n{parOne}\n\n{parTwo}"
     docEditor.replaceText(text)
     assert docEditor.getText() == text
 
@@ -1290,7 +1290,7 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     # Invalid and Generic
     # ===================
 
-    text = "### A Scene\n\n%s" % ipsumText[0]
+    text = f"### A Scene\n\n{ipsumText[0]}"
     docEditor.replaceText(text)
 
     # Invalid Block

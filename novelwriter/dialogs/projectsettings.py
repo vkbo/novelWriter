@@ -691,7 +691,7 @@ class _ReplacePage(NFixedPage):
         self.listBox.itemSelectionChanged.connect(self._onSelectionChanged)
 
         for aKey, aVal in SHARED.project.data.autoReplace.items():
-            newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
+            newItem = QTreeWidgetItem([f"<{aKey}>", aVal])
             self.listBox.addTopLevelItem(newItem)
 
         self.listBox.sortByColumn(self.C_KEY, Qt.SortOrder.AscendingOrder)

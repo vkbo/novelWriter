@@ -355,7 +355,7 @@ class Config:
         """Set the last used path. Only the folder is saved, so if the
         path is not a folder, the parent of the path is used instead.
         """
-        if isinstance(path, (str, Path)):
+        if isinstance(path, str | Path):
             path = checkPath(path, self._homePath)
             if not path.is_dir():
                 path = path.parent
@@ -504,10 +504,10 @@ class Config:
         and dataPath is mainly intended for the test suite.
         """
         logger.debug("Initialising Config ...")
-        if isinstance(confPath, (str, Path)):
+        if isinstance(confPath, str | Path):
             logger.info("Setting alternative config path: %s", confPath)
             self._confPath = Path(confPath)
-        if isinstance(dataPath, (str, Path)):
+        if isinstance(dataPath, str | Path):
             logger.info("Setting alternative data path: %s", dataPath)
             self._dataPath = Path(dataPath)
 
@@ -555,7 +555,7 @@ class Config:
         for lngPath, lngBase in langList:
             for lngCode in self._qLocale.uiLanguages():
                 qTrans = QTranslator()
-                lngFile = "%s_%s" % (lngBase, lngCode.replace("-", "_"))
+                lngFile = "{0}_{1}".format(lngBase, lngCode.replace("-", "_"))
                 if lngFile not in self._qtTrans:
                     if qTrans.load(lngFile, lngPath):
                         logger.debug("Loaded: %s.qm", lngFile)
