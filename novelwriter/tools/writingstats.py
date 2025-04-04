@@ -447,7 +447,7 @@ class GuiWritingStats(NToolDialog):
             rType = record.get("type")
             if rType == "initial":
                 self.wordOffset = checkInt(record.get("offset"), 0)
-                logger.debug("Initial word count when log was started is %d" % self.wordOffset)
+                logger.debug("Initial word count when log was started is %d", self.wordOffset)
             elif rType == "record":
                 try:
                     dStart = datetime.fromisoformat(str(record.get("start")))
@@ -570,7 +570,7 @@ class GuiWritingStats(NToolDialog):
                 idleEntry = formatTime(sIdle)
             else:
                 sRatio = sIdle/sDiff if sDiff > 0.0 else 0.0
-                idleEntry = "%d %%" % round(100.0 * sRatio)
+                idleEntry = f"{round(100.0 * sRatio)} %"
 
             newItem = QTreeWidgetItem()
             newItem.setText(self.C_TIME, sStart)

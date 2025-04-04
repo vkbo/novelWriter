@@ -155,15 +155,15 @@ class NDoubleSpinBox(QDoubleSpinBox):
         self,
         parent: QWidget | None = None,
         *,
-        min: float = 0.0,
-        max: float = 15.0,
+        minVal: float = 0.0,
+        maxVal: float = 15.0,
         step: float = 0.1,
         prec: int = 2,
     ) -> None:
         super().__init__(parent=parent)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-        self.setMinimum(min)
-        self.setMaximum(max)
+        self.setMinimum(minVal)
+        self.setMaximum(maxVal)
         self.setSingleStep(step)
         self.setDecimals(prec)
         return

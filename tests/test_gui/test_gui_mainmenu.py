@@ -276,11 +276,11 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Other Checks
 
     # Replace Quotes
-    docEditor.setPlainText((
+    docEditor.setPlainText(
         "### New Text\n\n"
         "Text with 'single' quotes and 'tricky stuff's'.\n\n"
         "Also text with \"double\" quotes which are \"less tricky\".\n\n"
-    ))
+    )
 
     mainMenu.aSelectAll.activate(QAction.ActionEvent.Trigger)
     mainMenu.aFmtReplSng.activate(QAction.ActionEvent.Trigger)
@@ -299,14 +299,14 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     )
 
     # Remove in-paragraph line breaks
-    docEditor.setPlainText((
+    docEditor.setPlainText(
         "### New Text\n\n"
         "@char: Someone\n"
         "@location: Somewhere\n\n"
         "% Some comment ...\n\n"
         "Here is some text\non multiple\nlines.\n\n"
         "With another paragraph\nhere."
-    ))
+    )
     mainMenu.aFmtRmBreaks.activate(QAction.ActionEvent.Trigger)
     assert docEditor.getText() == (
         "### New Text\n\n"
@@ -317,14 +317,14 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
         "With another paragraph here.\n"
     )
 
-    docEditor.setPlainText((
+    docEditor.setPlainText(
         "### New Text\n\n"
         "@char: Someone\n"
         "@location: Somewhere\n\n"
         "% Some comment ...\n\n"
         "Here is some text\non multiple\nlines.\n\n"
         "With another paragraph\nhere."
-    ))
+    )
     cursor = docEditor.textCursor()
     cursor.setPosition(74)
     cursor.movePosition(QtMoveRight, QtKeepAnchor, 29)
@@ -343,12 +343,12 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert not docEditor.docAction(nwDocAction.NO_ACTION)
 
     # Test Invalid Formats
-    docEditor.setPlainText((
+    docEditor.setPlainText(
         "### New Text\n\n"
         "@tag: Bod\n\n"
         "Text with 'single' quotes and 'tricky stuff's'.\n\n"
         "Also text with \"double\" quotes which are \"less tricky\".\n\n"
-    ))
+    )
 
     # Cannot Format Tag
     docEditor.setCursorPosition(17)
@@ -489,7 +489,7 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
     # Insert Keywords
     # ===============
 
-    for action, key in zip(mainMenu.mInsKeywords.actions(), nwKeyWords.ALL_KEYS):
+    for action, key in zip(mainMenu.mInsKeywords.actions(), nwKeyWords.ALL_KEYS, strict=False):
         docEditor.setPlainText("Stuff")
         action.activate(QAction.ActionEvent.Trigger)
         assert docEditor.getText() == f"Stuff\n{key}: "
@@ -503,7 +503,7 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
     # Insert Fields
     # =============
 
-    for action, field in zip(mainMenu.mInsField.actions(), nwStats.ALL_FIELDS):
+    for action, field in zip(mainMenu.mInsField.actions(), nwStats.ALL_FIELDS, strict=False):
         value = nwShortcode.FIELD_VALUE.format(field)
         docEditor.setPlainText("Stuff ")
         docEditor.setCursorPosition(6)

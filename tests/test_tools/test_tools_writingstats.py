@@ -121,41 +121,41 @@ def testToolWritingStats_Export(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     # Sort by time
     sessLog.listBox.sortByColumn(sessLog.C_TIME, Qt.SortOrder.AscendingOrder)
 
-    assert sessLog.novelWords.text() == "{:n}".format(600)
-    assert sessLog.notesWords.text() == "{:n}".format(275)
-    assert sessLog.totalWords.text() == "{:n}".format(875)
+    assert sessLog.novelWords.text() == f"{600:n}"
+    assert sessLog.notesWords.text() == f"{275:n}"
+    assert sessLog.totalWords.text() == f"{875:n}"
 
     item = sessLog.listBox.topLevelItem(0)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert item.text(sessLog.C_COUNT) == f"{1:n}"
 
     item = sessLog.listBox.topLevelItem(1)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-200)
+    assert item.text(sessLog.C_COUNT) == f"{-200:n}"
 
     item = sessLog.listBox.topLevelItem(2)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(300)
+    assert item.text(sessLog.C_COUNT) == f"{300:n}"
 
     item = sessLog.listBox.topLevelItem(3)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-120)
+    assert item.text(sessLog.C_COUNT) == f"{-120:n}"
 
     item = sessLog.listBox.topLevelItem(4)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-20)
+    assert item.text(sessLog.C_COUNT) == f"{-20:n}"
 
     item = sessLog.listBox.topLevelItem(5)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(40)
+    assert item.text(sessLog.C_COUNT) == f"{40:n}"
 
     item = sessLog.listBox.topLevelItem(6)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-400)
+    assert item.text(sessLog.C_COUNT) == f"{-400:n}"
 
     item = sessLog.listBox.topLevelItem(7)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(200)
+    assert item.text(sessLog.C_COUNT) == f"{200:n}"
 
     assert sessLog._saveData(sessLog.FMT_CSV)
     assert sessLog._saveData(sessLog.FMT_JSON)
@@ -230,35 +230,35 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     item = sessLog.listBox.topLevelItem(0)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert item.text(sessLog.C_COUNT) == f"{1:n}"
 
     item = sessLog.listBox.topLevelItem(1)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-200)
+    assert item.text(sessLog.C_COUNT) == f"{-200:n}"
 
     item = sessLog.listBox.topLevelItem(2)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(300)
+    assert item.text(sessLog.C_COUNT) == f"{300:n}"
 
     item = sessLog.listBox.topLevelItem(3)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-120)
+    assert item.text(sessLog.C_COUNT) == f"{-120:n}"
 
     item = sessLog.listBox.topLevelItem(4)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-20)
+    assert item.text(sessLog.C_COUNT) == f"{-20:n}"
 
     item = sessLog.listBox.topLevelItem(5)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(40)
+    assert item.text(sessLog.C_COUNT) == f"{40:n}"
 
     item = sessLog.listBox.topLevelItem(6)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-400)
+    assert item.text(sessLog.C_COUNT) == f"{-400:n}"
 
     item = sessLog.listBox.topLevelItem(7)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(200)
+    assert item.text(sessLog.C_COUNT) == f"{200:n}"
 
     # No Novel Files
     qtbot.mouseClick(sessLog.incNovel, QtMouseLeft)
@@ -270,35 +270,35 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     item = sessLog.listBox.topLevelItem(0)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert item.text(sessLog.C_COUNT) == f"{1:n}"
 
     item = sessLog.listBox.topLevelItem(1)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-100)
+    assert item.text(sessLog.C_COUNT) == f"{-100:n}"
 
     item = sessLog.listBox.topLevelItem(2)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(150)
+    assert item.text(sessLog.C_COUNT) == f"{150:n}"
 
     item = sessLog.listBox.topLevelItem(3)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-60)
+    assert item.text(sessLog.C_COUNT) == f"{-60:n}"
 
     item = sessLog.listBox.topLevelItem(4)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-10)
+    assert item.text(sessLog.C_COUNT) == f"{-10:n}"
 
     item = sessLog.listBox.topLevelItem(5)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(20)
+    assert item.text(sessLog.C_COUNT) == f"{20:n}"
 
     item = sessLog.listBox.topLevelItem(6)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-200)
+    assert item.text(sessLog.C_COUNT) == f"{-200:n}"
 
     item = sessLog.listBox.topLevelItem(7)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(100)
+    assert item.text(sessLog.C_COUNT) == f"{100:n}"
 
     assert jsonData == [
         {
@@ -339,35 +339,35 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     item = sessLog.listBox.topLevelItem(0)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert item.text(sessLog.C_COUNT) == f"{1:n}"
 
     item = sessLog.listBox.topLevelItem(1)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-100)
+    assert item.text(sessLog.C_COUNT) == f"{-100:n}"
 
     item = sessLog.listBox.topLevelItem(2)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(150)
+    assert item.text(sessLog.C_COUNT) == f"{150:n}"
 
     item = sessLog.listBox.topLevelItem(3)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-60)
+    assert item.text(sessLog.C_COUNT) == f"{-60:n}"
 
     item = sessLog.listBox.topLevelItem(4)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-10)
+    assert item.text(sessLog.C_COUNT) == f"{-10:n}"
 
     item = sessLog.listBox.topLevelItem(5)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(20)
+    assert item.text(sessLog.C_COUNT) == f"{20:n}"
 
     item = sessLog.listBox.topLevelItem(6)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-200)
+    assert item.text(sessLog.C_COUNT) == f"{-200:n}"
 
     item = sessLog.listBox.topLevelItem(7)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(100)
+    assert item.text(sessLog.C_COUNT) == f"{100:n}"
 
     assert jsonData == [
         {
@@ -408,19 +408,19 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     item = sessLog.listBox.topLevelItem(0)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert item.text(sessLog.C_COUNT) == f"{1:n}"
 
     item = sessLog.listBox.topLevelItem(1)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(300)
+    assert item.text(sessLog.C_COUNT) == f"{300:n}"
 
     item = sessLog.listBox.topLevelItem(2)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(40)
+    assert item.text(sessLog.C_COUNT) == f"{40:n}"
 
     item = sessLog.listBox.topLevelItem(3)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(200)
+    assert item.text(sessLog.C_COUNT) == f"{200:n}"
 
     assert jsonData == [
         {
@@ -449,43 +449,43 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     item = sessLog.listBox.topLevelItem(0)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert item.text(sessLog.C_COUNT) == f"{1:n}"
 
     item = sessLog.listBox.topLevelItem(1)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(0)
+    assert item.text(sessLog.C_COUNT) == f"{0:n}"
 
     item = sessLog.listBox.topLevelItem(2)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-200)
+    assert item.text(sessLog.C_COUNT) == f"{-200:n}"
 
     item = sessLog.listBox.topLevelItem(3)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(300)
+    assert item.text(sessLog.C_COUNT) == f"{300:n}"
 
     item = sessLog.listBox.topLevelItem(4)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-120)
+    assert item.text(sessLog.C_COUNT) == f"{-120:n}"
 
     item = sessLog.listBox.topLevelItem(5)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-20)
+    assert item.text(sessLog.C_COUNT) == f"{-20:n}"
 
     item = sessLog.listBox.topLevelItem(6)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(40)
+    assert item.text(sessLog.C_COUNT) == f"{40:n}"
 
     item = sessLog.listBox.topLevelItem(7)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-400)
+    assert item.text(sessLog.C_COUNT) == f"{-400:n}"
 
     item = sessLog.listBox.topLevelItem(8)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(200)
+    assert item.text(sessLog.C_COUNT) == f"{200:n}"
 
     item = sessLog.listBox.topLevelItem(9)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(0)
+    assert item.text(sessLog.C_COUNT) == f"{0:n}"
 
     assert jsonData == [
         {
@@ -542,35 +542,35 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     item = sessLog.listBox.topLevelItem(0)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert item.text(sessLog.C_COUNT) == f"{1:n}"
 
     item = sessLog.listBox.topLevelItem(1)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-200)
+    assert item.text(sessLog.C_COUNT) == f"{-200:n}"
 
     item = sessLog.listBox.topLevelItem(2)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(180)
+    assert item.text(sessLog.C_COUNT) == f"{180:n}"
 
     item = sessLog.listBox.topLevelItem(3)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-20)
+    assert item.text(sessLog.C_COUNT) == f"{-20:n}"
 
     item = sessLog.listBox.topLevelItem(4)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(40)
+    assert item.text(sessLog.C_COUNT) == f"{40:n}"
 
     item = sessLog.listBox.topLevelItem(5)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(-400)
+    assert item.text(sessLog.C_COUNT) == f"{-400:n}"
 
     item = sessLog.listBox.topLevelItem(6)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(200)
+    assert item.text(sessLog.C_COUNT) == f"{200:n}"
 
     item = sessLog.listBox.topLevelItem(7)
     assert item is not None
-    assert item.text(sessLog.C_COUNT) == "{:n}".format(0)
+    assert item.text(sessLog.C_COUNT) == f"{0:n}"
 
     assert jsonData == [
         {

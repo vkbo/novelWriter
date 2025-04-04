@@ -165,7 +165,7 @@ def _fixXml(svg: ET.Element) -> str:
 
 
 def _writeThemeFile(
-    path: Path, name: str, author: str, license: str, icons: dict[str, ET.Element]
+    path: Path, name: str, author: str, license_: str, icons: dict[str, ET.Element]
 ) -> None:
     """Write an icon theme file."""
     with open(path.with_suffix(".icons"), mode="w", encoding="utf-8") as out:
@@ -173,7 +173,7 @@ def _writeThemeFile(
         out.write("# Meta\n")
         out.write(f"meta:name    = {name}\n")
         out.write(f"meta:author  = {author}\n")
-        out.write(f"meta:license = {license}\n")
+        out.write(f"meta:license = {license_}\n")
         out.write("\n")
         out.write("# Icons\n")
         for key, svg in icons.items():

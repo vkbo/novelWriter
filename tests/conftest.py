@@ -195,8 +195,7 @@ def mockRnd(monkeypatch):
             self.reset()
 
         def _rnd(self, n):
-            for x in range(n):
-                yield x
+            yield from range(n)
 
         def reset(self):
             gen = self._rnd(1000)

@@ -12,7 +12,7 @@ import time
 # -- Project Information -----------------------------------------------------
 
 project = "novelWriter"
-copyright = f"{datetime.date.today().year}"
+copyright = f"{datetime.date.today().year}"  # noqa: A001
 
 tmp_authors = ["Veronica Berglyd Olsen"]
 if additional := os.environ.get("SPHINX_I18N_AUTHORS"):

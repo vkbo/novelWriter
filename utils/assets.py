@@ -102,7 +102,7 @@ def buildSampleZip(args: argparse.Namespace | None = None) -> None:
         sys.exit(1)
 
     print("")
-    print("Built file: %s" % dstSample)
+    print(f"Built file: {dstSample}")
     print("")
 
     return
@@ -242,7 +242,7 @@ def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
     for item in srcDir.iterdir():
         if item.is_file() and item.suffix == ".qm":
             item.rename(dstDir / item.name)
-            print("Moved: %s -> %s" % (item.relative_to(ROOT_DIR), dstRel / item.name))
+            print(f"Moved: {item.relative_to(ROOT_DIR)} -> {dstRel / item.name}")
 
     print("")
 

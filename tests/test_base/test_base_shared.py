@@ -41,14 +41,14 @@ def testBaseSharedData_Init():
     shared = SharedData()
 
     # When not initialised, it should raise exceptions
-    with pytest.raises(Exception):
-        shared.mainGui
-    with pytest.raises(Exception):
-        shared.theme
-    with pytest.raises(Exception):
-        shared.project
-    with pytest.raises(Exception):
-        shared.spelling
+    with pytest.raises(RuntimeError):
+        _ = shared.mainGui
+    with pytest.raises(RuntimeError):
+        _ = shared.theme
+    with pytest.raises(RuntimeError):
+        _ = shared.project
+    with pytest.raises(RuntimeError):
+        _ = shared.spelling
 
     # Create some mock objects
     mockGui = MockGuiMain()

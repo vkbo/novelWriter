@@ -159,7 +159,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             print(helpMsg)
             sys.exit(0)
         elif inOpt in ("-v", "--version"):
-            print("novelWriter Version %s [%s]" % (__version__, __date__))
+            print(f"novelWriter Version {__version__} [{__date__}]")
             sys.exit(0)
         elif inOpt in ("-i", "--info"):
             logLevel = logging.INFO
@@ -207,17 +207,17 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     errorCode = 0
     if sys.hexversion < 0x030a00f0:
         errorData.append(
-            "At least Python 3.10 is required, found %s" % CONFIG.verPyString
+            f"At least Python 3.10 is required, found {CONFIG.verPyString}"
         )
         errorCode |= 0x04
     if CONFIG.verQtValue < 0x060400:
         errorData.append(
-            "At least Qt6 version 6.4 is required, found %s" % CONFIG.verQtString
+            f"At least Qt6 version 6.4 is required, found {CONFIG.verQtString}"
         )
         errorCode |= 0x08
     if CONFIG.verPyQtValue < 0x060400:
         errorData.append(
-            "At least PyQt6 version 6.4 is required, found %s" % CONFIG.verPyQtString
+            f"At least PyQt6 version 6.4 is required, found {CONFIG.verPyQtString}"
         )
         errorCode |= 0x10
 
@@ -228,9 +228,9 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         errDlg.showMessage((
             "<h3>A critical error was encountered</h3>"
             "<p>novelWriter cannot start due to the following issues:<p>"
-            "<p>&nbsp;-&nbsp;%s</p>"
+            "<p>&nbsp;-&nbsp;{0}</p>"
             "<p>Shutting down ...</p>"
-        ) % (
+        ).format(
             "<br>&nbsp;-&nbsp;".join(errorData)
         ))
         for errLine in errorData:

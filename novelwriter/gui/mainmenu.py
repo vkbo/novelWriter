@@ -936,7 +936,7 @@ class GuiMainMenu(QMenuBar):
         # Search > Find in Project
         self.aFindProj = qtAddAction(self.srcMenu, self.tr("Find in Project"))
         self.aFindProj.setShortcut("Ctrl+Shift+F")
-        self.aFindProj.triggered.connect(lambda: self.requestViewChange.emit(nwView.SEARCH))
+        self.aFindProj.triggered.connect(qtLambda(self.requestViewChange.emit, nwView.SEARCH))
 
         return
 
@@ -956,10 +956,10 @@ class GuiMainMenu(QMenuBar):
         self.mSelectLanguage = qtAddMenu(self.toolsMenu, self.tr("Spell Check Language"))
         languages = SHARED.spelling.listDictionaries()
         languages.insert(0, ("None", self.tr("Default")))
-        for n, (tag, language) in enumerate(languages):
+        for tag, language in languages:
             aSpell = QAction(self.mSelectLanguage)
             aSpell.setText(language)
-            aSpell.triggered.connect(lambda n, tag=tag: self._changeSpelling(tag))
+            aSpell.triggered.connect(qtLambda(self._changeSpelling, tag))
             self.mSelectLanguage.addAction(aSpell)
 
         # Tools > Re-Run Spell Check

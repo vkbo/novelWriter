@@ -777,7 +777,7 @@ class TagsIndex:
     control of the keys.
     """
 
-    __slots__ = ("_tags")
+    __slots__ = ("_tags",)
 
     def __init__(self) -> None:
         self._tags: dict[str, dict[str, str]] = {}

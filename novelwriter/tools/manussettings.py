@@ -228,8 +228,8 @@ class GuiBuildSettings(NToolDialog):
         """
         if self._build.changed:
             response = SHARED.question(self.tr(
-                "Do you want to save your changes to '{0}'?".format(self._build.name)
-            ))
+                "Do you want to save your changes to '{0}'?"
+            ).format(self._build.name))
             if response:
                 self._emitBuildData()
             self._build.resetChangedState()
@@ -1168,11 +1168,11 @@ class _FormattingTab(NScrollableForm):
         for key, name in nwLabels.PAPER_NAME.items():
             self.pageSize.addItem(trConst(name), key)
 
-        self.pageWidth = NDoubleSpinBox(self, max=500.0)
+        self.pageWidth = NDoubleSpinBox(self, maxVal=500.0)
         self.pageWidth.setFixedWidth(dbW)
         self.pageWidth.valueChanged.connect(self._pageSizeValueChanged)
 
-        self.pageHeight = NDoubleSpinBox(self, max=500.0)
+        self.pageHeight = NDoubleSpinBox(self, maxVal=500.0)
         self.pageHeight.setFixedWidth(dbW)
         self.pageHeight.valueChanged.connect(self._pageSizeValueChanged)
 

@@ -293,7 +293,7 @@ def testToolManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
                 obj.close()
                 break
         else:
-            assert False
+            raise AssertionError
 
     # Finish
     manus.close()
@@ -327,7 +327,7 @@ def testToolManuscript_Print(monkeypatch, qtbot, nwGUI, projPath):
                 obj.close()
                 break
         else:
-            assert False
+            raise AssertionError
 
     # Finish
     manus.close()

@@ -203,9 +203,9 @@ class ToOdt(Tokenizer):
         self._mDocRight  = f"{right/10.0:.3f}cm"
         return
 
-    def setHeaderFormat(self, format: str, offset: int) -> None:
+    def setHeaderFormat(self, value: str, offset: int) -> None:
         """Set the document header format."""
-        self._headerFormat = format.strip()
+        self._headerFormat = value.strip()
         self._pageOffset = offset
         return
 
@@ -1509,7 +1509,7 @@ class XMLParagraph:
         errMsg = ""
         nMissed = len(self._rawTxt) - self._chrPos
         if nMissed != 0:
-            errMsg = "%d char(s) were not written: '%s'" % (nMissed, self._rawTxt)
+            errMsg = f"{nMissed} char(s) were not written: '{self._rawTxt}'"
         return nMissed, errMsg
 
     ##

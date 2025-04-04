@@ -643,7 +643,7 @@ class nwUnicode:
     H_LTRIS  = "&#9666;"
 
 
-class nwHtmlUnicode():
+class nwHtmlUnicode:
 
     U_TO_H = {
         # Quotes
