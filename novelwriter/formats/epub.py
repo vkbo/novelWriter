@@ -3,7 +3,7 @@ novelWriter – EPUB Converter
 ============================
 
 File History:
-Created: 2025-04-05 [2.7b1] ToEpub
+Created: 2025-04-05 [2.7b1] ToEPub
 
 This file is a part of novelWriter
 Copyright (C) 2025 Veronica Berglyd Olsen and novelWriter contributors
@@ -70,7 +70,7 @@ class ToEPub(Tokenizer):
 
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
-        self._section = EPubSection("Cover", "", EPubType.FRONTMATTER)
+        self._section = EPubSection("Cover", "", EPubType.COVER)
         self._sections = [self._section]
         self._isFront = True
         self._isBack = False
@@ -85,7 +85,7 @@ class ToEPub(Tokenizer):
         if not self._isNovel:
             self._isBack = True
 
-        for tType, tMeta, tText, tFmt, tStyle in self._blocks:
+        for tType, _, tText, tFmt, _ in self._blocks:
 
             tText, tFmt = processHtmlEntities(tText, tFmt)
 
@@ -123,6 +123,7 @@ class ToEPub(Tokenizer):
         """Save the data to a .epub file."""
         xContainer = self._containerXml()
         xPackage = self._packageXml()
+        xToc = self._tocXml()
 
         def xmlToZip(name: str, root: ET.Element, zipObj: ZipFile) -> None:
             xmlIndent(root)
@@ -133,6 +134,8 @@ class ToEPub(Tokenizer):
             outZip.writestr("mimetype", X_MIME, compress_type=None, compresslevel=None)
             xmlToZip("META-INF/container.xml", xContainer, outZip)
             xmlToZip("OEBPS/package.opf", xPackage, outZip)
+            xmlToZip("OEBPS/toc.ncx", xToc, outZip)
+            outZip.writestr("OEBPS/nav.xhtml", self._generateNavPage())
             outZip.writestr("OEBPS/styles/stylesheet.css", self._generateStyleSheet())
             for section in self._sections:
                 outZip.writestr(f"OEBPS/xhtml/{section.name}.xhtml", section.sectionToXHtml(lang))
@@ -166,7 +169,7 @@ class ToEPub(Tokenizer):
             "version": "3.0",
             _mkTag("xml", "lang"): self._dLocale.name(),
             "xmlns": "http://www.idpf.org/2007/opf",
-            "unique-identifier": "pub-id",
+            "unique-identifier": "uid",
         })
 
         # Meta Data
@@ -179,7 +182,7 @@ class ToEPub(Tokenizer):
         xmlSubElem(xMetaData, _mkTag("dc", "date"), timeStamp[:10])
         xmlSubElem(
             xMetaData, _mkTag("dc", "identifier"),
-            f"urn:uuid:{self._project.data.uuid}", attrib={"id": "pub-id"}
+            f"urn:uuid:{self._project.data.uuid}", attrib={"id": "uid"}
         )
         xmlSubElem(xMetaData, "meta", "uuid", attrib={
             "refines": "#pub-id",
@@ -202,6 +205,12 @@ class ToEPub(Tokenizer):
         })
 
         xManifest = xmlSubElem(xRoot, "manifest")
+        xmlSubElem(xManifest, "item", attrib={
+            "properties": "nav",
+            "id": "nav",
+            "href": "nav.xhtml",
+            "media-type": "application/xhtml+xml",
+        })
         for section in self._sections:
             xmlSubElem(xManifest, "item", attrib={
                 "id": section.sectionID,
@@ -209,11 +218,84 @@ class ToEPub(Tokenizer):
                 "media-type": "application/xhtml+xml",
             })
 
-        xSpine = xmlSubElem(xRoot, "spine")
+        xSpine = xmlSubElem(xRoot, "spine", attrib={"toc": "toc"})
         for section in self._sections:
             xmlSubElem(xSpine, "itemref", attrib={"idref": section.sectionID})
 
         return xRoot
+
+    def _tocXml(self) -> ET.Element:
+        """Populate toc.ncx.
+        See: https://en.wikipedia.org/wiki/EPUB#.ncx_file
+        """
+        xRoot = xmlElement("ncx", attrib={
+            "xmlns": "http://www.daisy.org/z3986/2005/ncx/",
+            "version": "2005-1",
+            _mkTag("xml", "lang"): self._dLocale.name(),
+        })
+
+        uid = f"urn:uuid:{self._project.data.uuid}"
+        xHead = xmlSubElem(xRoot, "head")
+        xmlSubElem(xHead, "meta", attrib={"name": "dtb:uid", "content": uid})
+        xmlSubElem(xHead, "meta", attrib={"name": "dtb:depth", "content": "1"})
+        xmlSubElem(xHead, "meta", attrib={"name": "dtb:totalPageCount", "content": "0"})
+        xmlSubElem(xHead, "meta", attrib={"name": "dtb:maxPageNumber", "content": "0"})
+
+        xTitle = xmlSubElem(xRoot, "docTitle")
+        xmlSubElem(xTitle, "text", self._project.data.name)
+        xAuthor = xmlSubElem(xRoot, "docTitle")
+        xmlSubElem(xAuthor, "text", self._project.data.author)
+
+        xNavMap = xmlSubElem(xRoot, "navMap")
+        playOrder = 0
+        for section in self._sections:
+            if (title := section.title) and section.epubType != EPubType.COVER:
+                playOrder += 1
+                xNavPoint = xmlSubElem(xNavMap, "navPoint", attrib={
+                    "class": "chapter",
+                    "id": section.sectionID,
+                    "playOrder": str(playOrder),
+                })
+                xLabel = xmlSubElem(xNavPoint, "navLabel")
+                xmlSubElem(xLabel, "text", title)
+                xmlSubElem(xNavPoint, "content", attrib={"src": f"xhtml/{section.name}.xhtml"})
+
+        return xRoot
+
+    def _generateNavPage(self) -> str:
+        """Generate the content XHtml page."""
+        langCode = self._dLocale.name()
+        title = self._localLookup("Contents")
+
+        xHtml = ['<?xml version="1.0" encoding="UTF-8"?>']
+        xHtml.append("<!DOCTYPE html>")
+        xHtml.append(
+            '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" '
+            f'lang="{langCode}" xml:lang="{langCode}">'
+        )
+        xHtml.append("<head>")
+        xHtml.append(f"<title>{title}</title>")
+        xHtml.append('<meta http-equiv="default-style" content="text/html; charset=utf-8"/>')
+        xHtml.append('<link rel="stylesheet" type="text/css" href="styles/stylesheet.css"/>')
+        xHtml.append("</head>")
+        xHtml.append("<body>")
+        xHtml.append("<header>")
+        xHtml.append(f'<h1 id="toc">{title}</h1>')
+        xHtml.append("</header>")
+        xHtml.append('<nav epub:type="toc" role="doc-toc" aria-labelledby="toc">')
+        xHtml.append('<ul epub:type="list">')
+        for section in self._sections:
+            if (title := section.title) and section.epubType != EPubType.COVER:
+                xHtml.append(
+                    "<li>"
+                    f'<a href="xhtml/{section.name}.xhtml#{section.sectionID}">{title}</a>'
+                    "</li>"
+                )
+        xHtml.append("</ul>")
+        xHtml.append("</nav>")
+        xHtml.append("</body>")
+        xHtml.append("</html>")
+        return "\n".join(xHtml)
 
     def _generateStyleSheet(self) -> str:
         """Generate the book style sheet."""
@@ -230,7 +312,7 @@ class EPubSection:
 
     See: https://www.w3.org/TR/epub-ssv/#sec-partitions
     """
-    __slots__ = ("_title", "_class", "_type", "_text", "_sid", "_name")
+    __slots__ = ("_title", "_class", "_type", "_text", "_id", "_name")
 
     BODY_TYPE = {
         EPubType.COVER:       "cover",
@@ -252,9 +334,14 @@ class EPubSection:
         self._class = cssClass
         self._type = eType
         self._text: list[str] = []
-        self._sid = ""
+        self._id = ""
         self._name = ""
         return
+
+    @property
+    def title(self) -> str:
+        """Return the section title."""
+        return self._title
 
     @property
     def text(self) -> list[str]:
@@ -274,12 +361,12 @@ class EPubSection:
     @property
     def sectionID(self) -> str:
         """Return the section ID of the section."""
-        return self._sid
+        return self._id
 
     def setSectionName(self, name: str, sid: int) -> None:
         """Set the section name and number."""
         self._name = name
-        self._sid = f"sid_{sid}"
+        self._id = f"r{sid:03d}"
         return
 
     def sectionToXHtml(self, langCode: str) -> str:
@@ -300,9 +387,9 @@ class EPubSection:
         xHtml.append('<link rel="stylesheet" type="text/css" href="../styles/stylesheet.css"/>')
         xHtml.append("</head>")
         xHtml.append(f'<body epub:type="{self.BODY_TYPE.get(self._type)}">')
-        xHtml.append(f'<section{sType}{sRole} aria-labelledby="{self._sid}">')
+        xHtml.append(f'<section{sType}{sRole} aria-labelledby="{self._id}">')
         xHtml.append("<header>")
-        xHtml.append(f'<h1{hClass} id="{self._sid}">{self._title}</h1>')
+        xHtml.append(f'<h1{hClass} id="{self._id}">{self._title}</h1>')
         xHtml.append("</header>")
         xHtml.extend(self._text)
         xHtml.append("</section>")
