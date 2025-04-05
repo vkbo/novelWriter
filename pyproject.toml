@@ -59,6 +59,7 @@ forced_separate = ["tests.*"]
 line-length = 99
 
 [tool.ruff.lint]
+preview = true
 select = [
     "A",   # flake8-builtins (A)
     "B",   # flake8-bugbear (B)
@@ -67,7 +68,6 @@ select = [
     "W",   # pycodestyle (W)
     "UP",  # pyupgrade (UP)
     "ANN", # flake8-annotations (ANN)
-    "PLC", # Pylint Convention (PLC)
     "PLE", # Pylint Error (PLE)
     "FA",  # flake8-future-annotations (FA)
 ]
@@ -76,6 +76,7 @@ ignore = [
     "E226",   # missing-whitespace-around-arithmetic-operator
     "E228",   # missing-whitespace-around-modulo-operator
     "E241",   # multiple-spaces-after-comma
+    "E272",   # multiple-spaces-before-keyword
     "ANN401", # any-type
     "UP015",  # redundant-open-modes
     "UP030",  # format-literals
@@ -92,11 +93,6 @@ include = ["novelwriter"]
 exclude = ["**/__pycache__"]
 
 reportIncompatibleMethodOverride = false
-reportGeneralTypeIssues = "information"
-reportOptionalMemberAccess = "information"
-reportOptionalOperand = "information"
-reportOptionalSubscript = "information"
-reportUnboundVariable = "error"
 
 pythonVersion = "3.10"
 
