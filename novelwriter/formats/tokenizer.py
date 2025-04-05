@@ -458,7 +458,7 @@ class Tokenizer(ABC):
 
         if (item := self._project.tree[tHandle]) and item.isRootType():
             self._handle = tHandle
-            self._isNovel = item.itemLayout == nwItemLayout.DOCUMENT
+            self._isNovel = item.documentAllowed()
             style = BlockFmt.CENTRE
             if self._isFirst:
                 self._isFirst = False

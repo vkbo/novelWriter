@@ -70,10 +70,9 @@ class ToEPub(Tokenizer):
 
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
-        self._section = EPubSection("Cover", "", EPubType.COVER)
+        self._section = EPubSection(EPubType.FRONTMATTER)
         self._sections = [self._section]
         self._isFront = True
-        self._isBack = False
         return
 
     ##
@@ -81,9 +80,9 @@ class ToEPub(Tokenizer):
     ##
 
     def doConvert(self) -> None:
-        """Convert the list of text tokens into a HTML."""
+        """Convert the list of text tokens into HTML."""
         if not self._isNovel:
-            self._isBack = True
+            return
 
         for tType, _, tText, tFmt, _ in self._blocks:
 
@@ -93,30 +92,51 @@ class ToEPub(Tokenizer):
             if tType == BlockTyp.TEXT:
                 self._section.text.append(f"<p>{tText}</p>")
 
+            elif tType == BlockTyp.TITLE and self._isFront:
+                tHead = tText.replace("\n", "<br />")
+                self._section.text.append(f"<h1>{tHead}</h1>")
+
             elif tType in (BlockTyp.TITLE, EPubType.PART, BlockTyp.HEAD1):
                 eType = EPubType.CHAPTER if tType == BlockTyp.HEAD1 else EPubType.PART
-                if self._isFront and tType == BlockTyp.TITLE:
-                    eType = EPubType.FRONTMATTER
-                if self._isBack:
-                    eType = EPubType.BACKMATTER
-
-                tHead = tText.replace("\n", "<br />")
-                self._section = EPubSection(tHead, "H1", eType)
+                self._section = EPubSection(eType)
                 self._sections.append(self._section)
 
-                if tType in (EPubType.PART, BlockTyp.HEAD1):
-                    self._isFront = False
+                tHead = tText.replace("\n", "<br />")
+                self._section.setTitle(tHead, "H1")
+                self._isFront = False
+
+            elif tType == BlockTyp.HEAD2:
+                tHead = tText.replace("\n", "<br />")
+                self._section.text.append(f"<h2>{tHead}</h2>")
+
+            elif tType == BlockTyp.HEAD3:
+                tHead = tText.replace("\n", "<br />")
+                self._section.text.append(f"<h3>{tHead}</h3>")
+
+            elif tType == BlockTyp.HEAD4:
+                tHead = tText.replace("\n", "<br />")
+                self._section.text.append(f"<h4>{tHead}</h4>")
+
+            elif tType == BlockTyp.SEP:
+                self._section.text.append(f"<p>{tText}</p>")
+
+            elif tType == BlockTyp.SKIP:
+                self._section.text.append("<p>&nbsp;</p>")
 
         return
 
     def closeDocument(self) -> None:
         """Run close document tasks."""
-        # Generate section names and IDs
+        # Generate section names and IDs, and prune empty ones
         counts = dict.fromkeys(EPubType, 0)
-        for n, section in enumerate(self._sections):
-            eType = section.epubType
-            counts[eType] += 1
-            section.setSectionName(f"{eType.name.lower()}{counts[eType]}", n)
+        sections = []
+        for section in self._sections:
+            if section.hasContent():
+                eType = section.epubType
+                counts[eType] += 1
+                section.setSectionName(f"{eType.name.lower()}{counts[eType]}", len(sections) + 1)
+                sections.append(section)
+        self._sections = sections
         return
 
     def saveDocument(self, path: Path) -> None:
@@ -312,7 +332,7 @@ class EPubSection:
 
     See: https://www.w3.org/TR/epub-ssv/#sec-partitions
     """
-    __slots__ = ("_title", "_class", "_type", "_text", "_id", "_name")
+    __slots__ = ("_type", "_name", "_id", "_title", "_class", "_text")
 
     BODY_TYPE = {
         EPubType.COVER:       "cover",
@@ -329,13 +349,13 @@ class EPubSection:
         EPubType.BACKMATTER:  ("backmatter", ""),
     }
 
-    def __init__(self, title: str, cssClass: str, eType: EPubType) -> None:
-        self._title = title
-        self._class = cssClass
+    def __init__(self, eType: EPubType) -> None:
         self._type = eType
-        self._text: list[str] = []
-        self._id = ""
         self._name = ""
+        self._id = ""
+        self._title = ""
+        self._class = ""
+        self._text: list[str] = []
         return
 
     @property
@@ -363,11 +383,31 @@ class EPubSection:
         """Return the section ID of the section."""
         return self._id
 
+    ##
+    #  Setters
+    ##
+
     def setSectionName(self, name: str, sid: int) -> None:
         """Set the section name and number."""
         self._name = name
-        self._id = f"r{sid:03d}"
+        self._id = f"sec_{sid}"
         return
+
+    def setTitle(self, title: str, cssClass: str) -> None:
+        """Set the title. This is useful if the title isn't available
+        when the section is created.
+        """
+        self._title = title
+        self._class = cssClass
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def hasContent(self) -> bool:
+        """Returns True if there is text."""
+        return self._title != "" or len(self._text) > 0
 
     def sectionToXHtml(self, langCode: str) -> str:
         """Pack all content into an XHtml string."""
@@ -382,15 +422,17 @@ class EPubSection:
             f'lang="{langCode}" xml:lang="{langCode}">'
         )
         xHtml.append("<head>")
-        xHtml.append(f"<title>{self._title}</title>")
+        if self._title:
+            xHtml.append(f"<title>{self._title}</title>")
         xHtml.append('<meta http-equiv="default-style" content="text/html; charset=utf-8"/>')
         xHtml.append('<link rel="stylesheet" type="text/css" href="../styles/stylesheet.css"/>')
         xHtml.append("</head>")
         xHtml.append(f'<body epub:type="{self.BODY_TYPE.get(self._type)}">')
         xHtml.append(f'<section{sType}{sRole} aria-labelledby="{self._id}">')
-        xHtml.append("<header>")
-        xHtml.append(f'<h1{hClass} id="{self._id}">{self._title}</h1>')
-        xHtml.append("</header>")
+        if self._title:
+            xHtml.append("<header>")
+            xHtml.append(f'<h1{hClass} id="{self._id}">{self._title}</h1>')
+            xHtml.append("</header>")
         xHtml.extend(self._text)
         xHtml.append("</section>")
         xHtml.append("</body>")
