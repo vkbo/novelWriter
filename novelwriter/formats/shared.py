@@ -154,3 +154,31 @@ T_Note = tuple[str, T_Formats]
 # A tokenized text block, consisting of:
 # type, header number, text, text formats, and block format
 T_Block = tuple[BlockTyp, str, str, T_Formats, BlockFmt]
+
+
+# Formatters
+# ==========
+
+def processHtmlEntities(text: str, fmt: T_Formats) -> tuple[str, T_Formats]:
+    """Replace < and > with HTML entities."""
+    if fmt:
+        # If we have formatting, we must recompute the locations
+        cText = []
+        i = 0
+        for c in text:
+            if c == "<":
+                cText.append("&lt;")
+                fmt = [(p + 3 if p > i else p, f, k) for p, f, k in fmt]
+                i += 4
+            elif c == ">":
+                cText.append("&gt;")
+                fmt = [(p + 3 if p > i else p, f, k) for p, f, k in fmt]
+                i += 4
+            else:
+                cText.append(c)
+                i += 1
+        text = "".join(cText)
+    else:
+        # If we don't have formatting, we can do a plain replace
+        text = text.replace("<", "&lt;").replace(">", "&gt;")
+    return text, fmt
