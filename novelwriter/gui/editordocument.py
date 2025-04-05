@@ -137,7 +137,7 @@ class GuiTextDocument(QTextDocument):
             if count < maxCount and block.isValid() and block.userState() & cType > 0:
                 count += 1
                 yield block
-        return None
+        return
 
     ##
     #  Public Slots

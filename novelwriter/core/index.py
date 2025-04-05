@@ -605,7 +605,7 @@ class Index:
         """Get all headings for a specific item."""
         if tItem := self._itemIndex[tHandle]:
             yield from tItem.items()
-        return []
+        return
 
     def novelStructure(
         self, rootHandle: str | None = None, activeOnly: bool = True
