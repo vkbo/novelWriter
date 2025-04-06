@@ -23,7 +23,7 @@ from __future__ import annotations
 import pytest
 
 from novelwriter import CONFIG
-from novelwriter.core.index import TagsIndex
+from novelwriter.core.index import IndexCache, TagsIndex
 from novelwriter.core.indexdata import IndexHeading, IndexNode
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
@@ -36,10 +36,10 @@ def testCoreIndexData_IndexNode(mockGUI):
     handle = "0123456789abc"
     project = NWProject()
     item = NWItem(project, handle)
-    tags = TagsIndex()
+    cache = IndexCache(TagsIndex())
 
     # Defaults
-    node = IndexNode(tags, handle, item)
+    node = IndexNode(cache, handle, item)
     assert node.handle == handle
     assert node.item is item
     assert str(node) == f"<IndexNode handle='{handle}'>"
@@ -48,8 +48,8 @@ def testCoreIndexData_IndexNode(mockGUI):
     assert "T0000" in node  # Placeholder heading
 
     # Add a heading
-    head1 = IndexHeading(tags, node.nextHeading(), line=1, level="H1", title="Heading 1")
-    head2 = IndexHeading(tags, node.nextHeading(), line=10, level="H2", title="Heading 2")
+    head1 = IndexHeading(cache, node.nextHeading(), line=1, level="H1", title="Heading 1")
+    head2 = IndexHeading(cache, node.nextHeading(), line=10, level="H2", title="Heading 2")
     node.addHeading(head1)
     node.addHeading(head2)
     assert len(node) == 2
@@ -80,7 +80,7 @@ def testCoreIndexData_IndexNode(mockGUI):
     assert head1.synopsis == "The first"
     assert head2.synopsis == "The second"
 
-    # Set tags
+    # Set cache
     node.setHeadingTag("T0001", "part1")
     node.setHeadingTag("T0002", "part2")
     assert head1.tag == "part1"
@@ -109,12 +109,12 @@ def testCoreIndexData_IndexNodePackUnpack(mockGUI):
     handle = "0123456789abc"
     project = NWProject()
     item = NWItem(project, handle)
-    tags = TagsIndex()
-    node = IndexNode(tags, handle, item)
+    cache = IndexCache(TagsIndex())
+    node = IndexNode(cache, handle, item)
 
     # Add some headings and notes
-    head1 = IndexHeading(tags, node.nextHeading(), line=1, level="H1", title="Heading 1")
-    head2 = IndexHeading(tags, node.nextHeading(), line=10, level="H2", title="Heading 2")
+    head1 = IndexHeading(cache, node.nextHeading(), line=1, level="H1", title="Heading 1")
+    head2 = IndexHeading(cache, node.nextHeading(), line=10, level="H2", title="Heading 2")
     node.addHeading(head1)
     node.addHeading(head2)
     node.setHeadingCounts("T0001", 42, 13, 3)
@@ -133,7 +133,7 @@ def testCoreIndexData_IndexNodePackUnpack(mockGUI):
     assert set(data["document"]["footnotes"]) == {"key1", "key2"}
 
     # Create a new node
-    new = IndexNode(tags, handle, item)
+    new = IndexNode(cache, handle, item)
 
     # Unpack heading one
     data = {"T0001": {"meta": {
@@ -170,8 +170,8 @@ def testCoreIndexData_IndexNodePackUnpack(mockGUI):
 def testCoreIndexData_IndexHeading():
     """Test the IndexHeading class."""
     # Defaults
-    tags = TagsIndex()
-    head = IndexHeading(tags, "T0001")
+    cache = IndexCache(TagsIndex())
+    head = IndexHeading(cache, "T0001")
     assert str(head) == "<IndexHeading key='T0001'>"
     assert repr(head) == "<IndexHeading key='T0001'>"
     assert head.key == "T0001"
@@ -214,7 +214,7 @@ def testCoreIndexData_IndexHeading():
     assert head.mainCount == 42
 
     # Set Summary
-    head.setComment(nwComment.SYNOPSIS, "", "In the beginning ...")
+    head.setComment(nwComment.SYNOPSIS.name, "", "In the beginning ...")
     assert head.synopsis == "In the beginning ..."
 
     # Set Tag
@@ -246,8 +246,8 @@ def testCoreIndexData_IndexHeading():
 @pytest.mark.core
 def testCoreIndexData_IndexHeadingReferences():
     """Test the IndexHeading references handling."""
-    tags = TagsIndex()
-    head = IndexHeading(tags, "T0001")
+    cache = IndexCache(TagsIndex())
+    head = IndexHeading(cache, "T0001")
 
     # Add some references
     head.addReference("Jane", "@pov")
@@ -273,10 +273,10 @@ def testCoreIndexData_IndexHeadingReferences():
     }
 
     # Set names
-    tags.add("Jane", "Jane", "0000000000000", "T00001", "CHARACTER")
-    tags.add("John", "John", "0000000000000", "T00001", "CHARACTER")
-    tags.add("Main", "Main", "0000000000000", "T00001", "PLOT")
-    tags.add("Gun", "Gun", "0000000000000", "T00001", "OBJECT")
+    cache.tags.add("Jane", "Jane", "0000000000000", "T00001", "CHARACTER")
+    cache.tags.add("John", "John", "0000000000000", "T00001", "CHARACTER")
+    cache.tags.add("Main", "Main", "0000000000000", "T00001", "PLOT")
+    cache.tags.add("Gun", "Gun", "0000000000000", "T00001", "OBJECT")
 
     # Now they should be populated
     assert head.getReferences() == {
@@ -312,13 +312,13 @@ def testCoreIndexData_IndexHeadingReferences():
 @pytest.mark.core
 def testCoreIndexData_IndexHeadingUnpackMeta():
     """Test IndexHeading class meta unpacking."""
-    tags = TagsIndex()
+    cache = IndexCache(TagsIndex())
 
     # Valid
     data = {"meta": {
         "level": "H1", "title": "So it Begins", "line": 1, "tag": "begins", "counts": [95, 18, 1]
     }}
-    head = IndexHeading(tags, "T0001")
+    head = IndexHeading(cache, "T0001")
     head.unpackData(data)
     assert head.level == "H1"
     assert head.title == "So it Begins"
@@ -332,7 +332,7 @@ def testCoreIndexData_IndexHeadingUnpackMeta():
     data = {"meta": {
         "level": "H9", "title": None, "line": None, "tag": None, "counts": [42]
     }}
-    head = IndexHeading(tags, "T0001")
+    head = IndexHeading(cache, "T0001")
     head.unpackData(data)
     assert head.level == "H0"
     assert head.title == "None"
@@ -344,7 +344,7 @@ def testCoreIndexData_IndexHeadingUnpackMeta():
 
     # Empty
     data = {"meta": {}}
-    head = IndexHeading(tags, "T0001")
+    head = IndexHeading(cache, "T0001")
     head.unpackData(data)
     assert head.level == "H0"
     assert head.title == ""
@@ -358,13 +358,13 @@ def testCoreIndexData_IndexHeadingUnpackMeta():
 @pytest.mark.core
 def testCoreIndexData_IndexHeadingUnpackRefs():
     """Test IndexHeading class refs unpacking."""
-    tags = TagsIndex()
+    cache = IndexCache(TagsIndex())
 
     # Valid
     data = {"refs": {
         "jane": "@char,@pov", "john": "@char", "earth": "@location", "space": "@mention,@location"
     }}
-    head = IndexHeading(tags, "T0001")
+    head = IndexHeading(cache, "T0001")
     head.unpackData(data)
     assert head.references["jane"] == {"@char", "@pov"}
     assert head.references["john"] == {"@char"}
@@ -373,18 +373,18 @@ def testCoreIndexData_IndexHeadingUnpackRefs():
 
     # Invalid key
     data = {"refs": {0: "@char,@pov"}}
-    head = IndexHeading(tags, "T0001")
+    head = IndexHeading(cache, "T0001")
     with pytest.raises(ValueError, match="Heading reference key must be a string"):
         head.unpackData(data)
 
     # Invalid value
     data = {"refs": {"jane": None}}
-    head = IndexHeading(tags, "T0001")
+    head = IndexHeading(cache, "T0001")
     with pytest.raises(ValueError, match="Heading reference value must be a string"):
         head.unpackData(data)
 
     # Invalid keyword
     data = {"refs": {"jane": "@char,@pov,@stuff"}}
-    head = IndexHeading(tags, "T0001")
+    head = IndexHeading(cache, "T0001")
     with pytest.raises(ValueError, match="Heading reference contains an invalid keyword"):
         head.unpackData(data)

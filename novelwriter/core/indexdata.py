@@ -32,12 +32,12 @@ from collections.abc import ItemsView, Sequence
 from typing import TYPE_CHECKING, Literal
 
 from novelwriter import CONFIG
-from novelwriter.common import checkInt, isListInstance, isTitleTag
+from novelwriter.common import checkInt, compact, isListInstance, isTitleTag
 from novelwriter.constants import nwKeyWords, nwStyles
 from novelwriter.enum import nwComment
 
 if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.core.index import TagsIndex
+    from novelwriter.core.index import IndexCache
     from novelwriter.core.item import NWItem
 
 logger = logging.getLogger(__name__)
@@ -58,13 +58,13 @@ class IndexNode:
     must be reset each time the item is re-indexed.
     """
 
-    __slots__ = ("_tags", "_handle", "_item", "_headings", "_notes", "_count")
+    __slots__ = ("_cache", "_handle", "_item", "_headings", "_notes", "_count")
 
-    def __init__(self, tagsIndex: TagsIndex, tHandle: str, nwItem: NWItem) -> None:
-        self._tags = tagsIndex
+    def __init__(self, cache: IndexCache, tHandle: str, nwItem: NWItem) -> None:
+        self._cache = cache
         self._handle = tHandle
         self._item = nwItem
-        self._headings: dict[str, IndexHeading] = {TT_NONE: IndexHeading(self._tags, TT_NONE)}
+        self._headings: dict[str, IndexHeading] = {TT_NONE: IndexHeading(self._cache, TT_NONE)}
         self._notes: dict[str, set[str]] = {}
         self._count = 0
         return
@@ -117,7 +117,7 @@ class IndexNode:
     def setHeadingComment(self, sTitle: str, comment: nwComment, key: str, text: str) -> None:
         """Set the comment text of a heading."""
         if sTitle in self._headings:
-            self._headings[sTitle].setComment(comment, key, text)
+            self._headings[sTitle].setComment(comment.name, key, text)
         return
 
     def setHeadingTag(self, sTitle: str, tag: str) -> None:
@@ -182,7 +182,7 @@ class IndexNode:
         """Unpack an item entry from the data."""
         for key, entry in data.items():
             if isTitleTag(key):
-                heading = IndexHeading(self._tags, key)
+                heading = IndexHeading(self._cache, key)
                 heading.unpackData(entry)
                 self.addHeading(heading)
             elif key == "document":
@@ -206,15 +206,15 @@ class IndexHeading:
     """
 
     __slots__ = (
-        "_tags", "_key", "_line", "_level", "_title",
+        "_cache", "_key", "_line", "_level", "_title",
         "_counts", "_tag", "_refs", "_comments",
     )
 
     def __init__(
-        self, tagsIndex: TagsIndex, key: str, line: int = 0,
+        self, cache: IndexCache, key: str, line: int = 0,
         level: str = "H0", title: str = "",
     ) -> None:
-        self._tags = tagsIndex
+        self._cache = cache
         self._key = key
         self._line = line
         self._level = level
@@ -303,10 +303,14 @@ class IndexHeading:
             )
         return
 
-    def setComment(self, comment: nwComment, key: str, text: str) -> None:
+    def setComment(self, comment: str, key: str, text: str) -> None:
         """Set the text for a comment and make sure it is a string."""
-        if comment in (nwComment.SHORT, nwComment.SYNOPSIS):
-            self._comments["summary"] = str(text)
+        match comment.lower():
+            case "short" | "synopsis" | "summary":
+                self._comments["summary"] = str(text)
+            case "story" if key:
+                self._cache.story.add(key)
+                self._comments[f"story.{key}"] = str(text)
         return
 
     def setTag(self, tag: str) -> None:
@@ -334,7 +338,7 @@ class IndexHeading:
         refs = {x: [] for x in nwKeyWords.VALID_KEYS}
         for tag, types in self._refs.items():
             for keyword in types:
-                if keyword in refs and (name := self._tags.tagName(tag)):
+                if keyword in refs and (name := self._cache.tags.tagName(tag)):
                     refs[keyword].append(name)
         return refs
 
@@ -342,7 +346,7 @@ class IndexHeading:
         """Extract all references for this heading."""
         refs = []
         for tag, types in self._refs.items():
-            if keyword in types and (name := self._tags.tagName(tag)):
+            if keyword in types and (name := self._cache.tags.tagName(tag)):
                 refs.append(name)
         return refs
 
@@ -387,7 +391,8 @@ class IndexHeading:
                         else:
                             raise ValueError("Heading reference contains an invalid keyword")
             elif key == "summary" or key.startswith("story"):
-                self._comments[str(key)] = str(entry)
+                comment, _, kind = str(key).partition(".")
+                self.setComment(comment, compact(kind), str(entry))
             else:
                 raise KeyError("Unknown key in heading entry")
         return

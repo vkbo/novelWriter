@@ -893,6 +893,21 @@ class TagsIndex:
         return
 
 
+class IndexCache:
+    """Core: Item Index Lookup Data Class
+
+    A small data class passed between all objects of the Item Index
+    which provides lookup capabilities and caching for shared data.
+    """
+
+    __slots__ = ("tags", "story")
+
+    def __init__(self, tagsIndex: TagsIndex) -> None:
+        self.tags: TagsIndex = tagsIndex
+        self.story: set[str] = set()
+        return
+
+
 # The Item Index Objects
 # ======================
 
@@ -906,11 +921,11 @@ class ItemIndex:
     IndexHeading object for each heading of the text.
     """
 
-    __slots__ = ("_project", "_tags", "_items")
+    __slots__ = ("_project", "_cache", "_items")
 
     def __init__(self, project: NWProject, tagsIndex: TagsIndex) -> None:
         self._project = project
-        self._tags = tagsIndex
+        self._cache = IndexCache(tagsIndex)
         self._items: dict[str, IndexNode] = {}
         return
 
@@ -937,7 +952,7 @@ class ItemIndex:
         """Add a new item to the index. This will overwrite the item if
         it already exists.
         """
-        self._items[tHandle] = IndexNode(self._tags, tHandle, nwItem)
+        self._items[tHandle] = IndexNode(self._cache, tHandle, nwItem)
         return
 
     def allItemTags(self, tHandle: str) -> list[str]:
@@ -995,7 +1010,7 @@ class ItemIndex:
         if tHandle in self._items:
             tItem = self._items[tHandle]
             sTitle = tItem.nextHeading()
-            tItem.addHeading(IndexHeading(self._tags, sTitle, lineNo, level, text))
+            tItem.addHeading(IndexHeading(self._cache, sTitle, lineNo, level, text))
             return sTitle
         return TT_NONE
 
@@ -1069,7 +1084,7 @@ class ItemIndex:
 
             nwItem = self._project.tree[tHandle]
             if nwItem is not None:
-                tItem = IndexNode(self._tags, tHandle, nwItem)
+                tItem = IndexNode(self._cache, tHandle, nwItem)
                 tItem.unpackData(tData)
                 self._items[tHandle] = tItem
 
