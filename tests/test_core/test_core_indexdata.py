@@ -27,6 +27,7 @@ from novelwriter.core.index import TagsIndex
 from novelwriter.core.indexdata import IndexHeading, IndexNode
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
+from novelwriter.enum import nwComment
 
 
 @pytest.mark.core
@@ -74,8 +75,8 @@ def testCoreIndexData_IndexNode(mockGUI):
     assert head2.paraCount == 6
 
     # Set synopsis
-    node.setHeadingSynopsis("T0001", "The first")
-    node.setHeadingSynopsis("T0002", "The second")
+    node.setHeadingComment("T0001", nwComment.SYNOPSIS, "", "The first")
+    node.setHeadingComment("T0002", nwComment.SYNOPSIS, "", "The second")
     assert head1.synopsis == "The first"
     assert head2.synopsis == "The second"
 
@@ -213,7 +214,7 @@ def testCoreIndexData_IndexHeading():
     assert head.mainCount == 42
 
     # Set Summary
-    head.setSynopsis("In the beginning ...")
+    head.setComment(nwComment.SYNOPSIS, "", "In the beginning ...")
     assert head.synopsis == "In the beginning ..."
 
     # Set Tag

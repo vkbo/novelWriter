@@ -31,12 +31,14 @@ MODIFIERS = {
     "short":    nwComment.SHORT,
     "note":     nwComment.NOTE,
     "footnote": nwComment.FOOTNOTE,
+    "story":    nwComment.STORY,
 }
 KEY_REQ = {
     "synopsis": 0,  # Key not allowed
     "short":    0,  # Key not allowed
     "note":     1,  # Key optional
     "footnote": 2,  # Key required
+    "story":    2,  # Key required
 }
 
 

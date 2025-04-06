@@ -34,6 +34,7 @@ from typing import TYPE_CHECKING, Literal
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, isListInstance, isTitleTag
 from novelwriter.constants import nwKeyWords, nwStyles
+from novelwriter.enum import nwComment
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.index import TagsIndex
@@ -113,10 +114,10 @@ class IndexNode:
             self._headings[sTitle].setCounts([cCount, wCount, pCount])
         return
 
-    def setHeadingSynopsis(self, sTitle: str, text: str) -> None:
-        """Set the synopsis text of a heading."""
+    def setHeadingComment(self, sTitle: str, comment: nwComment, key: str, text: str) -> None:
+        """Set the comment text of a heading."""
         if sTitle in self._headings:
-            self._headings[sTitle].setSynopsis(text)
+            self._headings[sTitle].setComment(comment, key, text)
         return
 
     def setHeadingTag(self, sTitle: str, tag: str) -> None:
@@ -302,9 +303,10 @@ class IndexHeading:
             )
         return
 
-    def setSynopsis(self, text: str) -> None:
-        """Set the synopsis text and make sure it is a string."""
-        self._comments["summary"] = str(text)
+    def setComment(self, comment: nwComment, key: str, text: str) -> None:
+        """Set the text for a comment and make sure it is a string."""
+        if comment in (nwComment.SHORT, nwComment.SYNOPSIS):
+            self._comments["summary"] = str(text)
         return
 
     def setTag(self, tag: str) -> None:

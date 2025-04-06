@@ -386,10 +386,10 @@ class Index:
 
             elif line.startswith("%"):
                 cStyle, cKey, cText, _, _ = processComment(line)
-                if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT):
-                    self._itemIndex.setHeadingSynopsis(tHandle, cTitle, cText)
-                elif cStyle == nwComment.FOOTNOTE:
+                if cStyle == nwComment.FOOTNOTE:
                     self._itemIndex.addNoteKey(tHandle, "footnotes", cKey)
+                else:
+                    self._itemIndex.setHeadingComment(tHandle, cTitle, cStyle, cKey, cText)
 
         # Count words for remaining text after last heading
         if pTitle != TT_NONE:
@@ -1007,10 +1007,13 @@ class ItemIndex:
             self._items[tHandle].setHeadingCounts(sTitle, cC, wC, pC)
         return
 
-    def setHeadingSynopsis(self, tHandle: str, sTitle: str, text: str) -> None:
-        """Set the synopsis text for a heading on a given item."""
+    def setHeadingComment(
+        self, tHandle: str, sTitle: str,
+        comment: nwComment, key: str, text: str,
+    ) -> None:
+        """Set a story comment for a heading on a given item."""
         if tHandle in self._items:
-            self._items[tHandle].setHeadingSynopsis(sTitle, text)
+            self._items[tHandle].setHeadingComment(sTitle, comment, key, text)
         return
 
     def setHeadingTag(self, tHandle: str, sTitle: str, tagKey: str) -> None:
