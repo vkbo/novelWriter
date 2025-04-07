@@ -60,30 +60,48 @@ line-length = 99
 
 [tool.ruff.lint]
 preview = true
+
+# Rules: https://docs.astral.sh/ruff/rules
 select = [
-    "A",   # flake8-builtins (A)
-    "B",   # flake8-bugbear (B)
-    "E",   # pycodestyle (E)
-    "F",   # Pyflakes (F)
-    "W",   # pycodestyle (W)
-    "UP",  # pyupgrade (UP)
-    "ANN", # flake8-annotations (ANN)
-    "PLE", # Pylint Error (PLE)
-    "FA",  # flake8-future-annotations (FA)
+    "A",    # flake8-builtins (A)
+    "ANN",  # flake8-annotations (ANN)
+    "B",    # flake8-bugbear (B)
+    "E",    # pycodestyle (E)
+    "F",    # Pyflakes (F)
+    "FA",   # flake8-future-annotations (FA)
+    "PERF", # Perflint (PERF)
+    "PLC",  # Pylint Convention (PLC)
+    "PLE",  # Pylint Error (PLE)
+    "PLW",  # Pylint Warning (PLW)
+    "Q",    # flake8-quotes (Q)
+    "RUF",  # Ruff-specific rules (RUF)
+    "SLF",  # flake8-self (SLF)
+    "SLOT", # flake8-slots (SLOT)
+    "TC",   # flake8-type-checking (TC)
+    "UP",   # pyupgrade (UP)
+    "W",    # pycodestyle (W)
 ]
 ignore = [
-    "E221",   # multiple-spaces-before-operator
-    "E226",   # missing-whitespace-around-arithmetic-operator
-    "E228",   # missing-whitespace-around-modulo-operator
-    "E241",   # multiple-spaces-after-comma
-    "E272",   # multiple-spaces-before-keyword
-    "ANN401", # any-type
-    "UP015",  # redundant-open-modes
-    "UP030",  # format-literals
+    "ANN401",  # any-type
+    "E221",    # multiple-spaces-before-operator
+    "E226",    # missing-whitespace-around-arithmetic-operator
+    "E228",    # missing-whitespace-around-modulo-operator
+    "E241",    # multiple-spaces-after-comma
+    "E272",    # multiple-spaces-before-keyword
+    "PLC0415", # import-outside-top-level
+    "PLC1901", # compare-to-empty-string
+    "PLW0108", # unnecessary-lambda
+    "PLW2901", # redefined-loop-name
+    "RUF001",  # ambiguous-unicode-character-string
+    "RUF002",  # ambiguous-unicode-character-docstring
+    "RUF015",  # unnecessary-iterable-allocation-for-first-element
+    "UP015",   # redundant-open-modes
+    "UP030",   # format-literals
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["ANN"]
+"tests/*" = ["ANN", "SLF", "TC", "PLC2701"]
+"utils/*" = ["ANN", "SLF", "TC"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -111,3 +129,6 @@ branch = false
 
 [tool.coverage.report]
 precision = 2
+exclude_also = [
+    "if TYPE_CHECKING:"
+]

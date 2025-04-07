@@ -23,11 +23,15 @@ jobs:
         uses: actions/checkout@v4
       - name: Install Dependencies
         run: pip install -r requirements.txt -r requirements-dev.txt
-      - name: Run Ruff
+      - name: Ruff Check
         run: |
           ruff --version
           ruff check
-      - name: Run Pyright
+      - name: Pyright Check
         run: |
           pyright --version
           pyright
+      - name: Isort Check
+        run: |
+          isort --version
+          isort --check .
