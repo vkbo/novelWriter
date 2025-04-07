@@ -26,15 +26,19 @@ from __future__ import annotations
 import json
 import logging
 
-from pathlib import Path
 from time import time
+from typing import TYPE_CHECKING
 
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHtmlUnicode, nwStyles
-from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import Tokenizer
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS, QtHexRgb
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
@@ -311,10 +315,8 @@ class ToHtml(Tokenizer):
 
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = "&nbsp;") -> None:
         """Replace tabs with spaces in the html."""
-        pages = []
         tabSpace = spaceChar*nSpaces
-        for aLine in self._pages:
-            pages.append(aLine.replace("\t", tabSpace))
+        pages = [aLine.replace("\t", tabSpace) for aLine in self._pages]
         self._pages = pages
         return
 

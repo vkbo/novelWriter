@@ -113,7 +113,7 @@ class NPagedSideBar(QToolBar):
 
 class _PagedToolButton(QToolButton):
 
-    __slots__ = ("_bH", "_tM", "_aH")
+    __slots__ = ("_aH", "_bH", "_tM")
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)

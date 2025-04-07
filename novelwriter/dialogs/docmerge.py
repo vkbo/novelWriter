@@ -131,11 +131,11 @@ class GuiDocMerge(NDialog):
     @classmethod
     def getData(cls, parent: QWidget, handle: str, items: list[str]) -> tuple[dict, bool]:
         """Pop the dialog and return the result."""
-        cls = GuiDocMerge(parent, handle, items)
-        cls.exec()
-        data = cls.data()
-        accepted = cls.result() == QtAccepted
-        cls.softDelete()
+        dialog = cls(parent, handle, items)
+        dialog.exec()
+        data = dialog.data()
+        accepted = dialog.result() == QtAccepted
+        dialog.softDelete()
         return data, accepted
 
     ##

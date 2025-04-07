@@ -32,6 +32,7 @@ import logging
 
 from enum import Enum
 from time import time
+from typing import Final
 
 from PyQt6.QtCore import QT_TRANSLATE_NOOP, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QAction, QIcon
@@ -319,7 +320,7 @@ class GuiOutlineToolBar(QToolBar):
 
 class GuiOutlineTree(QTreeWidget):
 
-    DEF_WIDTH = {
+    DEF_WIDTH: Final[dict[nwOutline, int]] = {
         nwOutline.TITLE:   200,
         nwOutline.LEVEL:   40,
         nwOutline.LABEL:   150,
@@ -342,7 +343,7 @@ class GuiOutlineTree(QTreeWidget):
         nwOutline.SYNOP:   200,
     }
 
-    DEF_HIDDEN = {
+    DEF_HIDDEN: Final[dict[nwOutline, bool]] = {
         nwOutline.TITLE:   False,
         nwOutline.LEVEL:   True,
         nwOutline.LABEL:   False,
@@ -498,7 +499,7 @@ class GuiOutlineTree(QTreeWidget):
         tree.
         """
         # If it's the first time, we always build
-        if self._firstView or self._firstView and overRide:
+        if self._firstView or (self._firstView and overRide):
             self._loadHeaderState()
             self._populateTree(rootHandle)
             self._firstView = False
@@ -558,7 +559,7 @@ class GuiOutlineTree(QTreeWidget):
             logger.info("Writing CSV file: %s", path)
             cols = [col for col in self._treeOrder if not self._colHidden[col]]
             order = [self._colIdx[col] for col in cols]
-            with open(path, mode="w", newline="") as csvFile:
+            with open(path, mode="w", newline="", encoding="utf-8") as csvFile:
                 writer = csv.writer(csvFile, dialect="excel", quoting=csv.QUOTE_ALL)
                 writer.writerow([trConst(nwLabels.OUTLINE_COLS[col]) for col in cols])
                 for i in range(self.topLevelItemCount()):
@@ -795,7 +796,7 @@ class GuiOutlineHeaderMenu(QMenu):
 
 class GuiOutlineDetails(QScrollArea):
 
-    LVL_MAP = {
+    LVL_MAP: Final[dict[str, str]] = {
         "H1": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Title"),
         "H2": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Chapter"),
         "H3": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Scene"),

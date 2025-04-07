@@ -33,7 +33,7 @@ from novelwriter.types import QtMouseLeft, QtNoPen, QtPaintAntiAlias, QtSizeFixe
 
 class NSwitch(QAbstractButton):
 
-    __slots__ = ("_xW", "_xH", "_xR", "_rH", "_rR", "_offset")
+    __slots__ = ("_offset", "_rH", "_rR", "_xH", "_xR", "_xW")
 
     def __init__(self, parent: QWidget, height: int = 0) -> None:
         super().__init__(parent=parent)

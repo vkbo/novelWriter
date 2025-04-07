@@ -31,11 +31,11 @@ from time import time
 from typing import TYPE_CHECKING
 
 from novelwriter.common import formatTimeStamp, isHandle
-from novelwriter.core.item import NWItem
 from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.error import formatException, logException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
+    from novelwriter.core.item import NWItem
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)

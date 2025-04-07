@@ -385,7 +385,7 @@ class _OpenProjectPage(QWidget):
 
 class _ProjectListItem(QStyledItemDelegate):
 
-    __slots__ = ("_pPx", "_hPx", "_tFont", "_dFont", "_dPen", "_icon")
+    __slots__ = ("_dFont", "_dPen", "_hPx", "_icon", "_pPx", "_tFont")
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)

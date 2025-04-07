@@ -28,9 +28,9 @@ import json
 import logging
 import uuid
 
-from collections.abc import Iterable
 from enum import Enum
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
@@ -40,6 +40,9 @@ from novelwriter.constants import nwFiles, nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import logException
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 logger = logging.getLogger(__name__)
 
@@ -227,9 +230,9 @@ class BuildSettings:
     @classmethod
     def fromDict(cls, data: dict) -> BuildSettings:
         """Create a build settings object from a dict."""
-        cls = BuildSettings()
-        cls.unpack(data)
-        return cls
+        new = cls()
+        new.unpack(data)
+        return new
 
     ##
     #  Properties
@@ -514,11 +517,11 @@ class BuildSettings:
     @classmethod
     def duplicate(cls, source: BuildSettings) -> BuildSettings:
         """Make a copy of another build."""
-        cls = BuildSettings()
-        cls.unpack(source.pack())
-        cls._uuid = str(uuid.uuid4())
-        cls._name = f"{source.name} 2"
-        return cls
+        new = cls()
+        new.unpack(source.pack())
+        new._uuid = str(uuid.uuid4())
+        new._name = f"{source.name} 2"
+        return new
 
 
 class BuildCollection:

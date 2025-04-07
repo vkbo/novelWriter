@@ -97,10 +97,10 @@ class GuiDocEditor(QPlainTextEdit):
     """Gui Widget: Main Document Editor"""
 
     __slots__ = (
-        "_nwDocument", "_nwItem", "_docChanged", "_docHandle", "_vpMargin",
-        "_lastEdit", "_lastActive", "_lastFind", "_doReplace", "_autoReplace",
-        "_completer", "_qDocument", "_keyContext", "_followTag1", "_followTag2",
-        "_timerDoc", "_wCounterDoc", "_timerSel", "_wCounterSel",
+        "_autoReplace", "_completer", "_doReplace", "_docChanged", "_docHandle", "_followTag1",
+        "_followTag2", "_keyContext", "_lastActive", "_lastEdit", "_lastFind", "_nwDocument",
+        "_nwItem", "_qDocument", "_timerDoc", "_timerSel", "_vpMargin", "_wCounterDoc",
+        "_wCounterSel",
     )
 
     MOVE_KEYS = (
@@ -760,7 +760,7 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.REPL_SNG:
             self._replaceQuotes("'", CONFIG.fmtSQuoteOpen, CONFIG.fmtSQuoteClose)
         elif action == nwDocAction.REPL_DBL:
-            self._replaceQuotes("\"", CONFIG.fmtDQuoteOpen, CONFIG.fmtDQuoteClose)
+            self._replaceQuotes('"', CONFIG.fmtDQuoteOpen, CONFIG.fmtDQuoteClose)
         elif action == nwDocAction.RM_BREAKS:
             self._removeInParLineBreaks()
         elif action == nwDocAction.ALIGN_L:
@@ -2003,7 +2003,7 @@ class GuiDocEditor(QPlainTextEdit):
                 sPos = cPos - i - 1
                 cOne = str(self._qDocument.characterAt(sPos))
                 cTwo = str(self._qDocument.characterAt(sPos - 1))
-                if not (cOne.isalnum() or cOne in apos and cTwo.isalnum()):
+                if not (cOne.isalnum() or (cOne in apos and cTwo.isalnum())):
                     sPos += 1
                     break
 
@@ -2013,7 +2013,7 @@ class GuiDocEditor(QPlainTextEdit):
                 ePos = cPos + i
                 cOne = str(self._qDocument.characterAt(ePos))
                 cTwo = str(self._qDocument.characterAt(ePos + 1))
-                if not (cOne.isalnum() or cOne in apos and cTwo.isalnum()):
+                if not (cOne.isalnum() or (cOne in apos and cTwo.isalnum())):
                     break
 
             if ePos - sPos <= 0:
@@ -2193,9 +2193,9 @@ class BackgroundWordCounterSignals(QObject):
 class TextAutoReplace:
 
     __slots__ = (
-        "_quoteSO", "_quoteSC", "_quoteDO", "_quoteDC",
-        "_replaceSQuote", "_replaceDQuote", "_replaceDash", "_replaceDots",
-        "_padChar", "_padBefore", "_padAfter", "_doPadBefore", "_doPadAfter",
+        "_doPadAfter", "_doPadBefore", "_padAfter", "_padBefore", "_padChar",
+        "_quoteDC", "_quoteDO", "_quoteSC", "_quoteSO", "_replaceDQuote",
+        "_replaceDash", "_replaceDots", "_replaceSQuote",
     )
 
     def __init__(self) -> None:

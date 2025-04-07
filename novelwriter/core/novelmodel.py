@@ -25,14 +25,18 @@ from __future__ import annotations
 
 import logging
 
+from typing import TYPE_CHECKING
+
 from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt
 from PyQt6.QtGui import QIcon, QPixmap
 
 from novelwriter import SHARED
 from novelwriter.constants import nwKeyWords, nwLabels, nwStyles, trConst
-from novelwriter.core.indexdata import IndexHeading, IndexNode
 from novelwriter.enum import nwNovelExtra
 from novelwriter.types import QtAlignRight
+
+if TYPE_CHECKING:
+    from novelwriter.core.indexdata import IndexHeading, IndexNode
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +54,7 @@ T_NodeData = str | QIcon | QPixmap | Qt.AlignmentFlag | None
 
 class NovelModel(QAbstractTableModel):
 
-    __slots__ = ("_rows", "_more", "_columns", "_extraKey", "_extraLabel")
+    __slots__ = ("_columns", "_extraKey", "_extraLabel", "_more", "_rows")
 
     def __init__(self) -> None:
         super().__init__()

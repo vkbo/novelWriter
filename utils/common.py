@@ -137,7 +137,7 @@ def makeCheckSum(sumFile: str, cwd: Path | None = None) -> str:
             shaFile = f"{sumFile}.sha256"
         else:
             shaFile = cwd / f"{sumFile}.sha256"
-        with open(shaFile, mode="w") as fOut:
+        with open(shaFile, mode="w", encoding="utf-8") as fOut:
             subprocess.call(["shasum", "-a", "256", sumFile], stdout=fOut, cwd=cwd)
         print(f"SHA256 Sum: {shaFile}")
     except Exception as exc:

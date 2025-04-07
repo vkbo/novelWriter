@@ -128,8 +128,8 @@ REGEX_PATTERNS = RegExPatterns()
 class DialogParser:
 
     __slots__ = (
-        "_quotes", "_dialog", "_alternate", "_enabled",
-        "_narrator", "_breakD", "_breakQ", "_mode",
+        "_alternate", "_breakD", "_breakQ", "_dialog", "_enabled", "_mode",
+        "_narrator", "_quotes",
     )
 
     def __init__(self) -> None:

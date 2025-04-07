@@ -768,7 +768,7 @@ def testCoreTools_ProjectBuilderSample(monkeypatch, mockGUI, fncPath, tstPaths):
     assert builder.buildProject(data) is False
 
     # Create and open a defective zip file
-    with open(dstSample, mode="w+") as outFile:
+    with open(dstSample, mode="w+", encoding="utf-8") as outFile:
         outFile.write("foo")
 
     assert builder.buildProject(data) is False

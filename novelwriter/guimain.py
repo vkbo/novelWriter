@@ -1009,7 +1009,7 @@ class GuiMain(QMainWindow):
             fN = self.novelView.treeHasFocus()
 
             self._changeView(nwView.EDITOR)
-            if (vM and (vP and fP or vN and not fN)) or (not vM and vN):
+            if (vM and ((vP and fP) or (vN and not fN))) or (not vM and vN):
                 self._changeView(nwView.NOVEL)
                 self.novelView.setTreeFocus()
             else:

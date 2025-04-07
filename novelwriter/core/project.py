@@ -30,6 +30,7 @@ from enum import Enum
 from functools import partial
 from pathlib import Path
 from time import time
+from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QCoreApplication
 
@@ -44,11 +45,13 @@ from novelwriter.core.options import OptionState
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.sessions import NWSessionLog
-from novelwriter.core.status import T_StatusKind, T_UpdateEntry
 from novelwriter.core.storage import NWStorage, NWStorageOpen
 from novelwriter.core.tree import NWTree
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
+
+if TYPE_CHECKING:
+    from novelwriter.core.status import T_StatusKind, T_UpdateEntry
 
 logger = logging.getLogger(__name__)
 
@@ -64,8 +67,8 @@ class NWProjectState(Enum):
 class NWProject:
 
     __slots__ = (
-        "_options", "_storage", "_data", "_tree", "_index", "_session",
-        "_langData", "_changed", "_valid", "_state", "tr",
+        "_changed", "_data", "_index", "_langData", "_options", "_session",
+        "_state", "_storage", "_tree", "_valid", "tr",
     )
 
     def __init__(self) -> None:
@@ -557,13 +560,13 @@ class NWProject:
 
     def _loadProjectLocalisation(self) -> bool:
         """Load the language data for the current project language."""
-        if self._data.language is None or CONFIG._nwLangPath is None:
+        if self._data.language is None or CONFIG.nwLangPath is None:
             self._langData = {}
             return False
 
-        langFile = Path(CONFIG._nwLangPath) / f"project_{self._data.language}.json"
+        langFile = Path(CONFIG.nwLangPath) / f"project_{self._data.language}.json"
         if not langFile.is_file():
-            langFile = Path(CONFIG._nwLangPath) / "project_en_GB.json"
+            langFile = Path(CONFIG.nwLangPath) / "project_en_GB.json"
 
         try:
             with open(langFile, mode="r", encoding="utf-8") as inFile:

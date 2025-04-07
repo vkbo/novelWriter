@@ -279,7 +279,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     docEditor.setPlainText(
         "### New Text\n\n"
         "Text with 'single' quotes and 'tricky stuff's'.\n\n"
-        "Also text with \"double\" quotes which are \"less tricky\".\n\n"
+        'Also text with "double" quotes which are "less tricky".\n\n'
     )
 
     mainMenu.aSelectAll.activate(QAction.ActionEvent.Trigger)
@@ -287,7 +287,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert docEditor.getText() == (
         "### New Text\n\n"
         "Text with ‘single’ quotes and ‘tricky stuff’s’.\n\n"
-        "Also text with \"double\" quotes which are \"less tricky\".\n\n"
+        'Also text with "double" quotes which are "less tricky".\n\n'
     )
 
     mainMenu.aSelectAll.activate(QAction.ActionEvent.Trigger)
@@ -347,7 +347,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
         "### New Text\n\n"
         "@tag: Bod\n\n"
         "Text with 'single' quotes and 'tricky stuff's'.\n\n"
-        "Also text with \"double\" quotes which are \"less tricky\".\n\n"
+        'Also text with "double" quotes which are "less tricky".\n\n'
     )
 
     # Cannot Format Tag
@@ -363,7 +363,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
         "### New Text\n\n"
         "@tag: Bod\n\n"
         "Text with 'single' quotes and 'tricky stuff's'.\n\n"
-        "Also text with \"double\" quotes which are \"less tricky\".\n\n"
+        'Also text with "double" quotes which are "less tricky".\n\n'
     )
 
     # qtbot.stop()

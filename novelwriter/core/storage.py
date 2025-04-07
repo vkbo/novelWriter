@@ -40,7 +40,7 @@ from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.error import logException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)

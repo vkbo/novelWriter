@@ -26,9 +26,9 @@ from __future__ import annotations
 import logging
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QTimer, pyqtSlot
-from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialogButtonBox, QFileDialog,
     QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
@@ -38,13 +38,17 @@ from PyQt6.QtWidgets import (
 from novelwriter import SHARED
 from novelwriter.common import makeFileNameSafe, openExternalPath
 from novelwriter.constants import nwLabels
-from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.item import NWItem
 from novelwriter.enum import nwBuildFmt
 from novelwriter.extensions.modified import NDialog, NIconToolButton
 from novelwriter.extensions.progressbars import NProgressSimple
 from novelwriter.types import QtAlignCenter, QtDialogClose, QtRoleAction, QtRoleReject, QtUserRole
+
+if TYPE_CHECKING:
+    from PyQt6.QtGui import QCloseEvent
+
+    from novelwriter.core.buildsettings import BuildSettings
 
 logger = logging.getLogger(__name__)
 

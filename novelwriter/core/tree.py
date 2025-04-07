@@ -27,7 +27,6 @@ from __future__ import annotations
 import logging
 import random
 
-from collections.abc import Iterable, Iterator
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, overload
 
@@ -40,7 +39,9 @@ from novelwriter.core.itemmodel import ProjectModel, ProjectNode
 from novelwriter.enum import nwChange, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
+
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
@@ -60,7 +61,7 @@ class NWTree:
     also used for file names.
     """
 
-    __slots__ = ("_project", "_model", "_items", "_nodes", "_trash", "_ready")
+    __slots__ = ("_items", "_model", "_nodes", "_project", "_ready", "_trash")
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
@@ -106,6 +107,11 @@ class NWTree:
     ##
     #  Properties
     ##
+
+    @property
+    def project(self) -> NWProject:
+        """Return the parent project."""
+        return self._project
 
     @property
     def trash(self) -> ProjectNode | None:
@@ -396,7 +402,7 @@ class NWTree:
 
     def checkType(self, tHandle: str, itemType: nwItemType) -> bool:
         """Check if item exists and is of the specified item type."""
-        if tItem := self.__getitem__(tHandle):
+        if tItem := self[tHandle]:
             return tItem.itemType == itemType
         return False
 
@@ -414,8 +420,7 @@ class NWTree:
                     node = parent
                 else:
                     return path
-            else:
-                logger.error("Max project tree depth reached")
+            logger.error("Max project tree depth reached")
         return path
 
     def subTree(self, tHandle: str) -> list[str]:

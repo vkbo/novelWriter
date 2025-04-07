@@ -35,7 +35,7 @@ from novelwriter.common import checkBool, checkFloat, checkInt, checkString, jso
 from novelwriter.constants import nwFiles
 from novelwriter.error import logException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)

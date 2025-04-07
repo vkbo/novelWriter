@@ -28,8 +28,7 @@ import logging
 import re
 
 from abc import ABC, abstractmethod
-from pathlib import Path
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 from PyQt6.QtCore import QLocale
 from PyQt6.QtGui import QColor, QFont
@@ -40,13 +39,17 @@ from novelwriter.constants import (
     nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwStats, nwStyles, nwUnicode,
     trConst
 )
-from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment, nwItemLayout
 from novelwriter.formats.shared import (
     BlockFmt, BlockTyp, T_Block, T_Formats, T_Note, TextDocumentTheme, TextFmt
 )
 from novelwriter.text.comments import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +75,7 @@ HEADINGS = [
     BlockTyp.TITLE, BlockTyp.PART, BlockTyp.HEAD1,
     BlockTyp.HEAD2, BlockTyp.HEAD3, BlockTyp.HEAD4,
 ]
-SKIP_INDENT = HEADINGS + [BlockTyp.SEP, BlockTyp.SKIP]
+SKIP_INDENT = [*HEADINGS, BlockTyp.SEP, BlockTyp.SKIP]
 B_EMPTY: T_Block = (BlockTyp.EMPTY, "", "", [], BlockFmt.NONE)
 
 
@@ -651,7 +654,7 @@ class Tokenizer(ABC):
                 tText = aLine[2:].strip()
                 tType = BlockTyp.HEAD1 if isPlain else BlockTyp.TITLE
                 sHide = self._hidePart if isPlain else False
-                if not (isPlain or isNovel and sHide):
+                if not (isPlain or (isNovel and sHide)):
                     tStyle |= self._titleStyle
                 if isNovel:
                     tType = BlockTyp.PART if isPlain else BlockTyp.TITLE
@@ -1124,12 +1127,10 @@ class Tokenizer(ABC):
             temp.append((res.end(0), 0, TextFmt.HRF_E, ""))
 
         # Match Shortcodes
-        for res in REGEX_PATTERNS.shortcodePlain.finditer(text):
-            temp.append((
-                res.start(1), res.end(1),
-                self._shortCodeFmt.get(res.group(1).lower(), 0),
-                "",
-            ))
+        temp.extend(
+            (res.start(1), res.end(1), self._shortCodeFmt.get(res.group(1).lower(), 0), "")
+            for res in REGEX_PATTERNS.shortcodePlain.finditer(text)
+        )
 
         # Match Shortcode w/Values
         tHandle = self._handle or ""

@@ -29,11 +29,10 @@ import unicodedata
 import uuid
 import xml.etree.ElementTree as ET
 
-from collections.abc import Callable
 from configparser import ConfigParser
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Literal, TypeGuard, TypeVar
+from typing import TYPE_CHECKING, Any, Literal, TypeGuard, TypeVar
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 
@@ -44,6 +43,9 @@ from PyQt6.QtWidgets import QMenu, QMenuBar, QWidget
 from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -347,7 +349,7 @@ def fuzzyTime(seconds: int) -> str:
     elif seconds < 3300:  # 55 minutes
         return QCoreApplication.translate(
             "Common", "{0} minutes ago"
-        ).format(int(round(seconds/60)))
+        ).format(round(seconds/60))
     elif seconds < 5400:  # 90 minutes
         return QCoreApplication.translate(
             "Common", "an hour ago"
@@ -355,7 +357,7 @@ def fuzzyTime(seconds: int) -> str:
     elif seconds < 84600:  # 23.5 hours
         return QCoreApplication.translate(
             "Common", "{0} hours ago"
-        ).format(int(round(seconds/3600)))
+        ).format(round(seconds/3600))
     elif seconds < 129600:  # 1.5 days
         return QCoreApplication.translate(
             "Common", "a day ago"
@@ -363,7 +365,7 @@ def fuzzyTime(seconds: int) -> str:
     elif seconds < 561600:  # 6.5 days
         return QCoreApplication.translate(
             "Common", "{0} days ago"
-        ).format(int(round(seconds/86400)))
+        ).format(round(seconds/86400))
     elif seconds < 907200:  # 10.5 days
         return QCoreApplication.translate(
             "Common", "a week ago"
@@ -371,7 +373,7 @@ def fuzzyTime(seconds: int) -> str:
     elif seconds < 2419200:  # 28 days
         return QCoreApplication.translate(
             "Common", "{0} weeks ago"
-        ).format(int(round(seconds/604800)))
+        ).format(round(seconds/604800))
     elif seconds < 3888000:  # 45 days
         return QCoreApplication.translate(
             "Common", "a month ago"
@@ -379,7 +381,7 @@ def fuzzyTime(seconds: int) -> str:
     elif seconds < 29808000:  # 345 days
         return QCoreApplication.translate(
             "Common", "{0} months ago"
-        ).format(int(round(seconds/2592000)))
+        ).format(round(seconds/2592000))
     elif seconds < 47336400:  # 1.5 years
         return QCoreApplication.translate(
             "Common", "a year ago"
@@ -387,7 +389,7 @@ def fuzzyTime(seconds: int) -> str:
     else:
         return QCoreApplication.translate(
             "Common", "{0} years ago"
-        ).format(int(round(seconds/31557600)))
+        ).format(round(seconds/31557600))
 
 
 def numberToRoman(value: int, toLower: bool = False) -> str:
@@ -423,7 +425,7 @@ def describeFont(font: QFont) -> str:
         info = QFontInfo(font)
         family = info.family()
         styles = [v for v in info.styleName().split() if v not in family]
-        return " ".join([f"{info.pointSize()} pt", family] + styles)
+        return " ".join([f"{info.pointSize()} pt", family, *styles])
     return "Error"
 
 

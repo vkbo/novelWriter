@@ -763,7 +763,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.getText() == text.replace("consectetur", "\u2018consectetur\u2019")
 
     # Replace Double Quotes
-    repText = text.replace("consectetur", "\"consectetur\"")
+    repText = text.replace("consectetur", '"consectetur"')
     docEditor.replaceText(repText)
     assert docEditor.docAction(nwDocAction.SEL_ALL) is True
     assert docEditor.docAction(nwDocAction.REPL_DBL) is True

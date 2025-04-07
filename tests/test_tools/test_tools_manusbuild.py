@@ -83,8 +83,7 @@ def testToolManuscriptBuild_Main(
             if item.data(manus.D_KEY) == fmt:
                 manus.listFormats.setCurrentItem(item)
                 return
-        else:
-            raise ValueError("No such key in format list")
+        raise ValueError("No such key in format list")
 
     # Build documents
     lastFmt = None

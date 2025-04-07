@@ -218,9 +218,9 @@ def main(args: argparse.Namespace) -> None:
         "import sys\n"
         "\n"
         "os.curdir = os.path.abspath(os.path.dirname(__file__))\n"
-        "sys.path.insert(0, os.path.join(os.curdir, \"lib\"))\n"
+        'sys.path.insert(0, os.path.join(os.curdir, "lib"))\n'
         "\n"
-        "if __name__ == \"__main__\":\n"
+        'if __name__ == "__main__":\n'
         "    import novelwriter\n"
         "    novelwriter.main(sys.argv[1:])\n"
     ))

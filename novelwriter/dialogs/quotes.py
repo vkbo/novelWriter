@@ -122,11 +122,11 @@ class GuiQuoteSelect(NDialog):
     @classmethod
     def getQuote(cls, parent: QWidget, current: str = "") -> tuple[str, bool]:
         """Pop the dialog and return the result."""
-        cls = GuiQuoteSelect(parent, current=current)
-        cls.exec()
-        quote = cls._selected
-        accepted = cls.result() == QtAccepted
-        cls.softDelete()
+        dialog = cls(parent, current=current)
+        dialog.exec()
+        quote = dialog._selected
+        accepted = dialog.result() == QtAccepted
+        dialog.softDelete()
         return quote, accepted
 
     ##

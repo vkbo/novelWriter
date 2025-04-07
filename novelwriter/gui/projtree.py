@@ -1099,7 +1099,7 @@ class _UpdatableMenu(QMenu):
 
 class _TreeContextMenu(QMenu):
 
-    __slots__ = ("_tree", "_view", "_node", "_item", "_model", "_handle", "_indices", "_children")
+    __slots__ = ("_children", "_handle", "_indices", "_item", "_model", "_node", "_tree", "_view")
 
     def __init__(
         self, projTree: GuiProjectTree, model: ProjectModel,
@@ -1327,7 +1327,7 @@ class _TreeContextMenu(QMenu):
         """Add move to Trash action."""
         if (
             self._model.trashSelection(self._indices)
-            or len(self._indices) == 1 and self._item.isRootType()
+            or (len(self._indices) == 1 and self._item.isRootType())
         ):
             text = self.tr("Delete Permanently")
         else:

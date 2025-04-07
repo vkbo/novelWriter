@@ -82,9 +82,9 @@ class GuiEditLabel(NDialog):
     @classmethod
     def getLabel(cls, parent: QWidget, text: str) -> tuple[str, bool]:
         """Pop the dialog and return the result."""
-        cls = GuiEditLabel(parent, text=text)
-        cls.exec()
-        label = cls.itemLabel
-        accepted = cls.result() == QtAccepted
-        cls.softDelete()
+        dialog = cls(parent, text=text)
+        dialog.exec()
+        label = dialog.itemLabel
+        accepted = dialog.result() == QtAccepted
+        dialog.softDelete()
         return label, accepted

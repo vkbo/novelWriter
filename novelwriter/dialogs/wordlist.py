@@ -26,9 +26,9 @@ from __future__ import annotations
 import logging
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import (
     QAbstractItemView, QApplication, QDialogButtonBox, QFileDialog,
     QHBoxLayout, QLineEdit, QListWidget, QVBoxLayout, QWidget
@@ -40,6 +40,9 @@ from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog, NIconToolButton
 from novelwriter.types import QtDialogClose, QtDialogSave
+
+if TYPE_CHECKING:
+    from PyQt6.QtGui import QCloseEvent
 
 logger = logging.getLogger(__name__)
 
@@ -242,8 +245,7 @@ class GuiWordList(NDialog):
 
     def _listWords(self) -> list[str]:
         """List all words in the list box."""
-        result = []
-        for i in range(self.listBox.count()):
-            if (item := self.listBox.item(i)) and (word := item.text().strip()):
-                result.append(word)
-        return result
+        return [
+            word for i in range(self.listBox.count())
+            if (item := self.listBox.item(i)) and (word := item.text().strip())
+        ]
