@@ -40,9 +40,9 @@ documentation.
 
 ## Implementation
 
-novelWriter is written with Python 3 (3.10+) using Qt6 and PyQt6 (6.4+), and is released on
-Linux, Windows and macOS. It can in principle run on any Operating System that also supports Qt,
-PyQt and Python.
+novelWriter is written with Python and Qt6 with PyQt6 Python binding. It is released on Linux,
+Windows and MacOS. It can in principle run on any Operating System that also supports Qt, PyQt and
+Python.
 
 <p align="center">
   <img width="80%" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/screenshot.png">
@@ -51,9 +51,9 @@ PyQt and Python.
 ## Project Contributions
 
 Please don't make feature pull requests without first having discussed them with the maintainer.
-You can make a feature request in the issue tracker, or if the idea isn't fully formed, start a
-discussion on the discussion page. Please also don't make pull requests to reformat or rewrite
-existing code unless there is a very good reason for doing so.
+You can make a feature request in the [issues tracker](https://github.com/vkbo/novelWriter/issues),
+or if the idea isn't fully formed, start a [discussion](https://github.com/vkbo/novelWriter/discussions).
+Please also don't make pull requests to reformat or rewrite existing code unless there is a very good reason for doing so.
 
 Fixes and patches are welcome. Contributions related to packaging and installing novelWriter will
 also be appreciated, but please make an issue or a discussion topic first. Before contributing any
@@ -62,9 +62,9 @@ code, please also read the full
 
 Project credits are available in [CREDITS.md](https://github.com/vkbo/novelWriter/blob/main/CREDITS.md).
 
-**Note:** As of April 2024 only pre-releases are made from the `main` branch. Full releases are
-made from the `release` branch. So if you're submitting a fix to a current release, **including
-changes to documentation**, they must be made to the `release` branch.
+**Note:** New features and pre-releases are made on the `main` branch. Full releases are made from
+the `release` branch. So if you're submitting a fix to a current release, **including changes to
+documentation**, they must be made to the `release` branch.
 
 ### Translations
 
@@ -72,9 +72,6 @@ New translations are always welcome. This project uses Crowdin to maintain trans
 can contribute translations at the [Crowdin project page](https://crowdin.com/project/novelwriter).
 If you have any questions, feel free to post them to the
 [Translations of novelWriter](https://github.com/vkbo/novelWriter/issues/93) issue thread.
-
-For more details, and how to use Qt Linguist for translations, see the
-[i18n instructions](https://github.com/vkbo/novelWriter/blob/main/i18n/README.md).
 
 ## Licence
 
