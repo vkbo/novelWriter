@@ -141,8 +141,8 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
     assert newConf.guiSyntax == "bar"
 
     # Test Correcting Quote Settings
-    tstConf.fmtDQuoteOpen = "\""
-    tstConf.fmtDQuoteClose = "\""
+    tstConf.fmtDQuoteOpen = '"'
+    tstConf.fmtDQuoteClose = '"'
     tstConf.fmtSQuoteOpen = "'"
     tstConf.fmtSQuoteClose = "'"
     tstConf.doReplaceDQuote = True

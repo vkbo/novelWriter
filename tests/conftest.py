@@ -33,10 +33,10 @@ from PyQt6.QtWidgets import QMessageBox
 
 sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
-from novelwriter import CONFIG, SHARED  # noqa: E402
+from novelwriter import CONFIG, SHARED
 
-from tests.mocked import MockGuiMain, MockTheme  # noqa: E402
-from tests.tools import cleanProject  # noqa: E402
+from tests.mocked import MockGuiMain, MockTheme
+from tests.tools import cleanProject
 
 _TST_ROOT = Path(__file__).parent
 _TMP_ROOT = _TST_ROOT / "temp"
@@ -89,7 +89,7 @@ def functionFixture(qtbot):
         shutil.rmtree(_TMP_CONF)
     _TMP_CONF.mkdir()
 
-    CONFIG.__init__()
+    CONFIG.__init__()  # noqa: PLC2801
     CONFIG.initConfig(confPath=_TMP_CONF, dataPath=_TMP_CONF)
     resetConfigVars()
     logging.getLogger("novelwriter").setLevel(logging.INFO)

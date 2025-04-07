@@ -29,15 +29,12 @@ from novelwriter.constants import nwUnicode
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 
 
-def allMatches(regEx: re.Pattern, text: str) -> list[list[str]]:
+def allMatches(regEx: re.Pattern, text: str) -> list[list[tuple[str, int, int]]]:
     """Get all matches for a regex."""
-    result = []
-    for res in regEx.finditer(text):
-        result.append([
-            (res.group(n), res.start(n), res.end(n))
-            for n in range((res.lastindex or 0) + 1)
-        ])
-    return result
+    return [
+        [(res.group(n), res.start(n), res.end(n)) for n in range((res.lastindex or 0) + 1)]
+        for res in regEx.finditer(text)
+    ]
 
 
 @pytest.mark.core
@@ -310,7 +307,7 @@ def testTextPatterns_DialogueStyle():
     assert allMatches(regEx, "one 'two' three") == []
 
     # Straight double quotes are ignored
-    assert allMatches(regEx, "one \"two\" three") == []
+    assert allMatches(regEx, 'one "two" three') == []
 
     # Check with no whitespace, single quote
     assert allMatches(regEx, "one\u2018two\u2019three") == [
@@ -370,19 +367,19 @@ def testTextPatterns_DialoguePlain():
     # ======
 
     # One double quoted string
-    assert allMatches(regEx, "one \"two\" three") == [
-        [("\"two\"", 4, 9)]
+    assert allMatches(regEx, 'one "two" three') == [
+        [('"two"', 4, 9)]
     ]
 
     # Two double quoted strings
-    assert allMatches(regEx, "one \"two\" three \"four\" five") == [
-        [("\"two\"", 4, 9)], [("\"four\"", 16, 22)],
+    assert allMatches(regEx, 'one "two" three "four" five') == [
+        [('"two"', 4, 9)], [('"four"', 16, 22)],
     ]
 
     # No space
-    assert allMatches(regEx, "one\"two\" three") == []
-    assert allMatches(regEx, "one \"two\"three") == []
-    assert allMatches(regEx, "one\"two\"three") == []
+    assert allMatches(regEx, 'one"two" three') == []
+    assert allMatches(regEx, 'one "two"three') == []
+    assert allMatches(regEx, 'one"two"three') == []
 
     # Single
     # ======
@@ -595,6 +592,6 @@ def testTextPatterns_DialogParserPolish():
     ]
 
     assert parser(
-        "And so on and so forth. However, \"text in quotation marks\" should not be "
+        'And so on and so forth. However, "text in quotation marks" should not be '
         "highlighted at all, and if so, it should be highlighted differently."
     ) == []
