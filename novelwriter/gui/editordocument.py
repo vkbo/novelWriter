@@ -25,8 +25,8 @@ from __future__ import annotations
 
 import logging
 
-from collections.abc import Iterable
 from time import time
+from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QObject, pyqtSlot
 from PyQt6.QtGui import QTextBlock, QTextCursor, QTextDocument
@@ -34,6 +34,9 @@ from PyQt6.QtWidgets import QApplication, QPlainTextDocumentLayout
 
 from novelwriter import SHARED
 from novelwriter.gui.dochighlight import GuiDocHighlighter, TextBlockData
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 logger = logging.getLogger(__name__)
 

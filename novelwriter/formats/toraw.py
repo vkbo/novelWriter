@@ -26,12 +26,16 @@ from __future__ import annotations
 import json
 import logging
 
-from pathlib import Path
 from time import time
+from typing import TYPE_CHECKING
 
 from novelwriter.common import formatTimeStamp
-from novelwriter.core.project import NWProject
 from novelwriter.formats.tokenizer import Tokenizer
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 

@@ -26,8 +26,9 @@ from __future__ import annotations
 import logging
 import math
 
+from typing import TYPE_CHECKING
+
 from PyQt6.QtCore import pyqtSlot
-from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import (
     QAbstractItemView, QDialogButtonBox, QFormLayout, QGridLayout, QHBoxLayout,
     QLabel, QSpinBox, QStackedWidget, QTreeWidget, QTreeWidgetItem,
@@ -43,6 +44,9 @@ from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import QtAlignRight, QtDecoration, QtDialogClose
+
+if TYPE_CHECKING:
+    from PyQt6.QtGui import QCloseEvent
 
 logger = logging.getLogger(__name__)
 

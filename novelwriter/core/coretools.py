@@ -30,9 +30,9 @@ import logging
 import re
 import shutil
 
-from collections.abc import Iterable
 from functools import partial
 from pathlib import Path
+from typing import TYPE_CHECKING
 from zipfile import ZipFile, is_zipfile
 
 from PyQt6.QtCore import QCoreApplication
@@ -40,9 +40,13 @@ from PyQt6.QtCore import QCoreApplication
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import isHandle, minmax, simplified
 from novelwriter.constants import nwConst, nwFiles, nwItemClass, nwStats
-from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.core.storage import NWStorageCreate
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from novelwriter.core.item import NWItem
 
 logger = logging.getLogger(__name__)
 
@@ -284,7 +288,7 @@ class DocDuplicator:
 class DocSearch:
 
     def __init__(self) -> None:
-        self._regEx = re.compile("")
+        self._regEx = re.compile(r"")
         self._opts = re.UNICODE | re.IGNORECASE
         self._words = False
         self._escape = True
@@ -381,7 +385,7 @@ class ProjectBuilder:
             path = data.get("path", None) or None
             if isinstance(path, str | Path):
                 self._path = Path(path).resolve()
-                if data.get("sample", False):
+                if data.get("sample"):
                     return self._extractSampleProject(self._path)
                 elif data.get("template"):
                     return self._copyProject(self._path, data)

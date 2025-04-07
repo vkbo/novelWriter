@@ -27,7 +27,6 @@ from __future__ import annotations
 import json
 import logging
 
-from collections.abc import Iterator
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -36,7 +35,9 @@ from PyQt6.QtCore import QLocale
 from novelwriter.constants import nwFiles
 from novelwriter.error import logException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)

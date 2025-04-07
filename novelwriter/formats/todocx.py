@@ -29,20 +29,24 @@ import re
 import xml.etree.ElementTree as ET
 
 from datetime import datetime
-from pathlib import Path
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from PyQt6.QtCore import QMargins, QSize
-from PyQt6.QtGui import QColor
 
 from novelwriter import __version__
 from novelwriter.common import firstFloat, xmlElement, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwStyles
-from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
 from novelwriter.formats.tokenizer import Tokenizer
 from novelwriter.types import QtHexRgb
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from PyQt6.QtGui import QColor
+
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
@@ -1052,9 +1056,9 @@ class ToDocX(Tokenizer):
 class DocXParagraph:
 
     __slots__ = (
-        "_content", "_style", "_textAlign",
-        "_topMargin", "_bottomMargin", "_leftMargin", "_rightMargin",
-        "_indentFirst", "_breakBefore", "_breakAfter", "_footnoteRef",
+        "_bottomMargin", "_breakAfter", "_breakBefore", "_content",
+        "_footnoteRef", "_indentFirst", "_leftMargin", "_rightMargin",
+        "_style", "_textAlign", "_topMargin",
     )
 
     def __init__(self) -> None:

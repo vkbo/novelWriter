@@ -27,8 +27,6 @@ import logging
 
 from typing import TYPE_CHECKING, Any
 
-from PyQt6.QtGui import QFont, QIcon
-
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified,
@@ -37,7 +35,9 @@ from novelwriter.common import (
 from novelwriter.constants import nwLabels, nwStyles, trConst
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
+    from PyQt6.QtGui import QFont, QIcon
+
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
@@ -53,10 +53,10 @@ class NWItem:
     """
 
     __slots__ = (
-        "_project", "_name", "_handle", "_parent", "_root", "_order",
-        "_type", "_class", "_layout", "_status", "_import", "_active",
-        "_expanded", "_heading", "_charCount", "_wordCount",
-        "_paraCount", "_cursorPos", "_initCount",
+        "_active", "_charCount", "_class", "_cursorPos", "_expanded",
+        "_handle", "_heading", "_import", "_initCount", "_layout", "_name",
+        "_order", "_paraCount", "_parent", "_project", "_root", "_status",
+        "_type", "_wordCount",
     )
 
     def __init__(self, project: NWProject, handle: str) -> None:
@@ -264,25 +264,25 @@ class NWItem:
     @classmethod
     def duplicate(cls, source: NWItem, handle: str) -> NWItem:
         """Make a copy of an item."""
-        cls = NWItem(source._project, handle)
-        cls._name      = source._name
-        cls._parent    = source._parent
-        cls._root      = source._root
-        cls._order     = source._order
-        cls._type      = source._type
-        cls._class     = source._class
-        cls._layout    = source._layout
-        cls._status    = source._status
-        cls._import    = source._import
-        cls._active    = source._active
-        cls._expanded  = source._expanded
-        cls._heading   = source._heading
-        cls._charCount = source._charCount
-        cls._wordCount = source._wordCount
-        cls._paraCount = source._paraCount
-        cls._cursorPos = source._cursorPos
-        cls._initCount = source._initCount
-        return cls
+        new = cls(source._project, handle)
+        new._name      = source._name
+        new._parent    = source._parent
+        new._root      = source._root
+        new._order     = source._order
+        new._type      = source._type
+        new._class     = source._class
+        new._layout    = source._layout
+        new._status    = source._status
+        new._import    = source._import
+        new._active    = source._active
+        new._expanded  = source._expanded
+        new._heading   = source._heading
+        new._charCount = source._charCount
+        new._wordCount = source._wordCount
+        new._paraCount = source._paraCount
+        new._cursorPos = source._cursorPos
+        new._initCount = source._initCount
+        return new
 
     ##
     #  Action Methods

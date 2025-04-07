@@ -28,8 +28,7 @@ import dataclasses
 import logging
 import random
 
-from collections.abc import Iterable
-from typing import Literal, TypeGuard
+from typing import TYPE_CHECKING, Literal, TypeGuard
 
 from PyQt6.QtCore import QPointF, Qt
 from PyQt6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPixmap, QPolygonF
@@ -38,6 +37,9 @@ from novelwriter import SHARED
 from novelwriter.common import simplified
 from novelwriter.enum import nwStatusShape
 from novelwriter.types import QtPaintAntiAlias, QtTransparent
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 logger = logging.getLogger(__name__)
 
@@ -54,10 +56,10 @@ class StatusEntry:
     @classmethod
     def duplicate(cls, source: StatusEntry) -> StatusEntry:
         """Create a deep copy of the source object."""
-        cls = dataclasses.replace(source)
-        cls.color = QColor(source.color)
-        cls.icon = QIcon(source.icon)
-        return cls
+        status = dataclasses.replace(source)
+        status.color = QColor(source.color)
+        status.icon = QIcon(source.icon)
+        return status
 
 
 NO_ENTRY = StatusEntry("", QColor(0, 0, 0), nwStatusShape.SQUARE, QIcon(), 0)
@@ -71,7 +73,7 @@ class NWStatus:
     STATUS = "s"
     IMPORT = "i"
 
-    __slots__ = ("_store", "_default", "_prefix", "_height")
+    __slots__ = ("_default", "_height", "_prefix", "_store")
 
     def __init__(self, prefix: T_StatusKind) -> None:
         self._store: dict[str, StatusEntry] = {}

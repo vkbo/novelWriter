@@ -27,7 +27,7 @@ from __future__ import annotations
 import logging
 
 from math import ceil
-from pathlib import Path
+from typing import TYPE_CHECKING, Final
 
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import (
@@ -43,6 +43,9 @@ from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 from novelwriter.types import QtBlack, QtHexArgb, QtPaintAntiAlias, QtTransparent
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -93,18 +96,13 @@ class GuiTheme:
     """
 
     __slots__ = (
-        # Attributes
-        "iconCache", "themeMeta", "isDarkTheme", "helpText", "fadedText", "errorText",
-        "syntaxMeta", "syntaxTheme", "guiFont", "guiFontB", "guiFontBU", "guiFontSmall",
-        "fontPointSize", "fontPixelSize", "baseIconHeight", "baseButtonHeight", "textNHeight",
-        "textNWidth", "baseIconSize", "buttonIconSize", "guiFontFixed",
-
-        # Functions
-        "getIcon", "getPixmap", "getItemIcon", "getIconColor", "getToggleIcon", "getDecoration",
-        "getHeaderDecoration", "getHeaderDecorationNarrow",
-
-        # Internal
-        "_guiPalette", "_themeList", "_syntaxList", "_availThemes", "_availSyntax", "_styleSheets",
+        "_availSyntax", "_availThemes", "_guiPalette", "_styleSheets", "_syntaxList", "_themeList",
+        "baseButtonHeight", "baseIconHeight", "baseIconSize", "buttonIconSize", "errorText",
+        "fadedText", "fontPixelSize", "fontPointSize", "getDecoration", "getHeaderDecoration",
+        "getHeaderDecorationNarrow", "getIcon", "getIconColor", "getItemIcon", "getPixmap",
+        "getToggleIcon", "guiFont", "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall",
+        "helpText", "iconCache", "isDarkTheme", "syntaxMeta", "syntaxTheme", "textNHeight",
+        "textNWidth", "themeMeta",
     )
 
     def __init__(self) -> None:
@@ -164,9 +162,9 @@ class GuiTheme:
         fHeight = qMetric.height()
         fAscent = qMetric.ascent()
         self.fontPointSize = self.guiFont.pointSizeF()
-        self.fontPixelSize = int(round(fHeight))
-        self.baseIconHeight = int(round(fAscent))
-        self.baseButtonHeight = int(round(1.35*fAscent))
+        self.fontPixelSize = round(fHeight)
+        self.baseIconHeight = round(fAscent)
+        self.baseButtonHeight = round(1.35*fAscent)
         self.textNHeight = qMetric.boundingRect("N").height()
         self.textNWidth = qMetric.boundingRect("N").width()
 
@@ -202,7 +200,7 @@ class GuiTheme:
             qMetrics = QFontMetrics(font)
         else:
             qMetrics = QFontMetrics(self.guiFont)
-        return int(ceil(qMetrics.boundingRect(text).width()))
+        return ceil(qMetrics.boundingRect(text).width())
 
     ##
     #  Theme Methods
@@ -567,16 +565,16 @@ class GuiIcons:
     """
 
     __slots__ = (
-        "mainTheme", "themeMeta", "_svgData", "_svgColors", "_qColors",
-        "_qIcons", "_headerDec", "_headerDecNarrow", "_availThemes",
-        "_themeList", "_noIcon",
+        "_availThemes", "_headerDec", "_headerDecNarrow", "_noIcon",
+        "_qColors", "_qIcons", "_svgColors", "_svgData", "_themeList",
+        "mainTheme", "themeMeta",
     )
 
-    TOGGLE_ICON_KEYS: dict[str, tuple[str, str]] = {
+    TOGGLE_ICON_KEYS: Final[dict[str, tuple[str, str]]] = {
         "bullet": ("bullet-on", "bullet-off"),
         "unfold": ("unfold-show", "unfold-hide"),
     }
-    IMAGE_MAP: dict[str, tuple[str, str]] = {
+    IMAGE_MAP: Final[dict[str, tuple[str, str]]] = {
         "welcome":  ("welcome-light.jpg", "welcome-dark.jpg"),
         "nw-text":  ("novelwriter-text-light.svg", "novelwriter-text-dark.svg"),
     }

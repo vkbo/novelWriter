@@ -25,25 +25,29 @@ from __future__ import annotations
 
 import logging
 
-from collections.abc import Iterable
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from PyQt6.QtGui import QFont
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwLabels
-from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.core.item import NWItem
-from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import formatException, logException
 from novelwriter.formats.todocx import ToDocX
 from novelwriter.formats.tohtml import ToHtml
-from novelwriter.formats.tokenizer import Tokenizer
 from novelwriter.formats.tomarkdown import ToMarkdown
 from novelwriter.formats.toodt import ToOdt
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.formats.toraw import ToRaw
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from pathlib import Path
+
+    from novelwriter.core.buildsettings import BuildSettings
+    from novelwriter.core.project import NWProject
+    from novelwriter.formats.tokenizer import Tokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -56,8 +60,8 @@ class NWBuildDocument:
     """
 
     __slots__ = (
-        "_project", "_build", "_queue", "_error", "_cache", "_count",
-        "_outline",
+        "_build", "_cache", "_count", "_error", "_outline", "_project",
+        "_queue",
     )
 
     def __init__(self, project: NWProject, build: BuildSettings) -> None:

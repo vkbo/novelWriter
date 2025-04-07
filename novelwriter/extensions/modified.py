@@ -27,11 +27,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from enum import Enum
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QMouseEvent, QWheelEvent
 from PyQt6.QtWidgets import (
     QApplication, QComboBox, QDialog, QDoubleSpinBox, QLabel, QSpinBox,
     QToolButton, QTreeView, QWidget
@@ -40,7 +38,11 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.types import QtMouseLeft, QtMouseMiddle
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
+    from enum import Enum
+
+    from PyQt6.QtGui import QMouseEvent, QWheelEvent
+
     from novelwriter.guimain import GuiMain
 
 

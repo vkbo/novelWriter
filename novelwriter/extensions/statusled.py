@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 class StatusLED(QAbstractButton):
 
-    __slots__ = ("_neutral", "_postitve", "_negative", "_color", "_state")
+    __slots__ = ("_color", "_negative", "_neutral", "_postitve", "_state")
 
     def __init__(self, sW: int, sH: int, parent: QWidget | None = None) -> None:
         super().__init__(parent=parent)

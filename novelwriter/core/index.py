@@ -29,7 +29,6 @@ import json
 import logging
 import random
 
-from collections.abc import ItemsView, Iterable
 from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
@@ -44,7 +43,9 @@ from novelwriter.error import logException
 from novelwriter.text.comments import processComment
 from novelwriter.text.counting import standardCounter
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
+    from collections.abc import ItemsView, Iterable
+
     from novelwriter.core.item import NWItem
     from novelwriter.core.project import NWProject
 
@@ -906,7 +907,7 @@ class ItemIndex:
     IndexHeading object for each heading of the text.
     """
 
-    __slots__ = ("_project", "_tags", "_items")
+    __slots__ = ("_items", "_project", "_tags")
 
     def __init__(self, project: NWProject, tagsIndex: TagsIndex) -> None:
         self._project = project

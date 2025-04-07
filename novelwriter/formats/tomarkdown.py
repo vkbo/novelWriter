@@ -25,12 +25,16 @@ from __future__ import annotations
 
 import logging
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from novelwriter.constants import nwUnicode
-from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
 from novelwriter.formats.tokenizer import Tokenizer
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 

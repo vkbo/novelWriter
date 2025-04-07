@@ -55,7 +55,7 @@ from novelwriter.types import (
     QtUserRole
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)

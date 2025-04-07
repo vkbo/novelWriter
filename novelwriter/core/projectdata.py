@@ -34,7 +34,7 @@ from novelwriter.common import (
 )
 from novelwriter.core.status import NWStatus
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)

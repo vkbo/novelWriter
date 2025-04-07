@@ -28,14 +28,15 @@ from __future__ import annotations
 
 import logging
 
-from collections.abc import ItemsView, Sequence
 from typing import TYPE_CHECKING, Literal
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, isListInstance, isTitleTag
 from novelwriter.constants import nwKeyWords, nwStyles
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
+    from collections.abc import ItemsView, Sequence
+
     from novelwriter.core.index import TagsIndex
     from novelwriter.core.item import NWItem
 
@@ -57,7 +58,7 @@ class IndexNode:
     must be reset each time the item is re-indexed.
     """
 
-    __slots__ = ("_tags", "_handle", "_item", "_headings", "_notes", "_count")
+    __slots__ = ("_count", "_handle", "_headings", "_item", "_notes", "_tags")
 
     def __init__(self, tagsIndex: TagsIndex, tHandle: str, nwItem: NWItem) -> None:
         self._tags = tagsIndex
@@ -205,8 +206,8 @@ class IndexHeading:
     """
 
     __slots__ = (
-        "_tags", "_key", "_line", "_level", "_title",
-        "_counts", "_tag", "_refs", "_comments",
+        "_comments", "_counts", "_key", "_level", "_line", "_refs", "_tag",
+        "_tags", "_title",
     )
 
     def __init__(

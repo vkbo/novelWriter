@@ -432,7 +432,7 @@ class GuiPreferences(NDialog):
         self.textWidth.setSingleStep(10)
         self.textWidth.setValue(CONFIG.textWidth)
         self.mainForm.addRow(
-            self.tr("Maximum text width in \"Normal Mode\""), self.textWidth,
+            self.tr('Maximum text width in "Normal Mode"'), self.textWidth,
             self.tr("Set to 0 to disable this feature."), unit=self.tr("px")
         )
 
@@ -443,7 +443,7 @@ class GuiPreferences(NDialog):
         self.focusWidth.setSingleStep(10)
         self.focusWidth.setValue(CONFIG.focusWidth)
         self.mainForm.addRow(
-            self.tr("Maximum text width in \"Focus Mode\""), self.focusWidth,
+            self.tr('Maximum text width in "Focus Mode"'), self.focusWidth,
             self.tr("The maximum width cannot be disabled."), unit=self.tr("px")
         )
 
@@ -451,7 +451,7 @@ class GuiPreferences(NDialog):
         self.hideFocusFooter = NSwitch(self)
         self.hideFocusFooter.setChecked(CONFIG.hideFocusFooter)
         self.mainForm.addRow(
-            self.tr("Hide document footer in \"Focus Mode\""), self.hideFocusFooter,
+            self.tr('Hide document footer in "Focus Mode"'), self.hideFocusFooter,
             self.tr("Hide the information bar in the document editor.")
         )
 

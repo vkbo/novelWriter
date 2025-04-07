@@ -59,7 +59,7 @@ from novelwriter.types import (
     QtUserRole
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
@@ -427,10 +427,10 @@ class GuiManuscript(NToolDialog):
 
     def _saveSettings(self) -> None:
         """Save the user GUI settings."""
-        buildOrder = []
-        for i in range(self.buildList.count()):
-            if item := self.buildList.item(i):
-                buildOrder.append(item.data(self.D_KEY))
+        buildOrder = [
+            item.data(self.D_KEY) for i in range(self.buildList.count())
+            if (item := self.buildList.item(i))
+        ]
 
         current = self.buildList.currentItem()
         lastBuild = current.data(self.D_KEY) if isinstance(current, QListWidgetItem) else ""
@@ -744,7 +744,7 @@ class _PreviewWidget(QTextBrowser):
             document.setDocumentMargin(CONFIG.textMargin)
 
         self.setPlaceholderText(self.tr(
-            "Press the \"Preview\" button to generate ..."
+            'Press the "Preview" button to generate ...'
         ))
 
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
