@@ -134,10 +134,10 @@ def makeDebianPackage(
         signArgs = [f"-k{signKey}"]
 
     if sourceBuild:
-        subprocess.call(["debuild", "-S"] + signArgs, cwd=outDir)
+        subprocess.call(["debuild", "-S", *signArgs], cwd=outDir)
         toUpload(bldDir / f"{bldPkg}.tar.xz")
     else:
-        subprocess.call(["dpkg-buildpackage"] + signArgs, cwd=outDir)
+        subprocess.call(["dpkg-buildpackage", *signArgs], cwd=outDir)
         shutil.copyfile(bldDir / f"{bldPkg}.tar.xz", bldDir / f"{bldPkg}.debian.tar.xz")
         toUpload(bldDir / f"{bldPkg}.debian.tar.xz")
         toUpload(bldDir / f"{bldPkg}_all.deb")
@@ -195,7 +195,7 @@ def launchpad(args: argparse.Namespace) -> None:
 
     signKey = SIGN_KEY if args.sign else None
 
-    print(f"Sign Key: {str(signKey)}")
+    print(f"Sign Key: {signKey!s}")
     print("")
 
     dputCmd = []
