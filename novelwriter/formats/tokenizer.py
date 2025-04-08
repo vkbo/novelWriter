@@ -64,12 +64,12 @@ class ComStyle(NamedTuple):
 COMMENT_STYLE = {
     nwComment.PLAIN:    ComStyle("Comment", "comment", "comment"),
     nwComment.IGNORE:   ComStyle(),
-    nwComment.SYNOPSIS: ComStyle("Synopsis", "modifier", "synopsis"),
-    nwComment.SHORT:    ComStyle("Short Description", "modifier", "synopsis"),
+    nwComment.SYNOPSIS: ComStyle("Synopsis", "modifier", "note"),
+    nwComment.SHORT:    ComStyle("Short Description", "modifier", "note"),
     nwComment.NOTE:     ComStyle("Note", "modifier", "note"),
     nwComment.FOOTNOTE: ComStyle("", "modifier", "note"),
     nwComment.COMMENT:  ComStyle(),
-    nwComment.STORY:    ComStyle("", "modifier", "note"),
+    nwComment.STORY:    ComStyle("Story Structure", "modifier", "note"),
 }
 HEADINGS = [
     BlockTyp.TITLE, BlockTyp.PART, BlockTyp.HEAD1,
@@ -440,7 +440,7 @@ class Tokenizer(ABC):
     def initDocument(self) -> None:
         """Initialise data after settings."""
         self._classes["modifier"] = self._theme.modifier
-        self._classes["synopsis"] = self._theme.note
+        self._classes["note"] = self._theme.note
         self._classes["comment"] = self._theme.comment
         self._classes["dialog"] = self._theme.dialog
         self._classes["altdialog"] = self._theme.altdialog
@@ -615,7 +615,9 @@ class Tokenizer(ABC):
                 if doJustify and not tStyle & BlockFmt.ALIGNED:
                     tStyle |= BlockFmt.JUSTIFY
 
-                if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT, nwComment.PLAIN):
+                if cStyle in (
+                    nwComment.SYNOPSIS, nwComment.SHORT, nwComment.PLAIN, nwComment.STORY
+                ):
                     bStyle = COMMENT_STYLE[cStyle]
                     tLine, tFmt = self._formatComment(bStyle, cKey, cText)
                     tBlocks.append((

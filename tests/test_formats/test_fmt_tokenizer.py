@@ -785,7 +785,7 @@ def testFmtToken_MetaFormat(mockGUI):
         BlockTyp.COMMENT, "", "Synopsis: The synopsis", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
             (9, TextFmt.COL_E, ""), (9, TextFmt.B_E, ""),
-            (10, TextFmt.COL_B, "synopsis"), (22, TextFmt.COL_E, "")
+            (10, TextFmt.COL_B, "note"), (22, TextFmt.COL_E, "")
         ], BlockFmt.NONE
     )]
 
@@ -802,7 +802,7 @@ def testFmtToken_MetaFormat(mockGUI):
         BlockTyp.COMMENT, "", "Short Description: A short description", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
             (18, TextFmt.COL_E, ""), (18, TextFmt.B_E, ""),
-            (19, TextFmt.COL_B, "synopsis"), (38, TextFmt.COL_E, ""),
+            (19, TextFmt.COL_B, "note"), (38, TextFmt.COL_E, ""),
         ], BlockFmt.NONE
     )]
 
@@ -1553,7 +1553,7 @@ def testFmtToken_TextIndent(mockGUI):
     tokens.tokenizeText()
     tFmt = [
         (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"), (9, TextFmt.COL_E, ""),
-        (9, TextFmt.B_E, ""), (10, TextFmt.COL_B, "synopsis"), (24, TextFmt.COL_E, ""),
+        (9, TextFmt.B_E, ""), (10, TextFmt.COL_B, "note"), (24, TextFmt.COL_E, ""),
     ]
     assert tokens._blocks == [
         (BlockTyp.HEAD3,   TM1, "Scene Two", [], BlockFmt.NONE),
@@ -1814,7 +1814,7 @@ def testFmtToken_FormatComment(mockGUI):
         "Synopsis: Hello world!", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
             (9, TextFmt.COL_E, ""), (9, TextFmt.B_E, ""),
-            (10, TextFmt.COL_B, "synopsis"), (22, TextFmt.COL_E, ""),
+            (10, TextFmt.COL_B, "note"), (22, TextFmt.COL_E, ""),
         ]
     )
 
