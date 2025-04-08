@@ -40,7 +40,7 @@ from novelwriter.constants import nwFiles
 from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.enum import nwChange, nwItemClass
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from novelwriter.core.project import NWProject
     from novelwriter.core.status import T_StatusKind
     from novelwriter.gui.theme import GuiTheme
@@ -54,8 +54,8 @@ NWWidget = TypeVar("NWWidget", bound=QWidget)
 class SharedData(QObject):
 
     __slots__ = (
-        "_gui", "_theme", "_project", "_spelling", "_lockedBy", "_lastAlert",
-        "_idleTime", "_idleRefTime",
+        "_gui", "_idleRefTime", "_idleTime", "_lastAlert", "_lockedBy",
+        "_project", "_spelling", "_theme",
     )
 
     focusModeChanged = pyqtSignal(bool)
@@ -480,7 +480,7 @@ class _GuiAlert(QMessageBox):
     def setException(self, exception: Exception) -> None:
         """Add exception details."""
         info = self.informativeText()
-        text = f"<b>{type(exception).__name__}</b>: {str(exception)}"
+        text = f"<b>{type(exception).__name__}</b>: {exception!s}"
         self.setInformativeText(f"{info}<br>{text}" if info else text)
         return
 

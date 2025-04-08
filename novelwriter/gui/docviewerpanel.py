@@ -26,6 +26,7 @@ from __future__ import annotations
 import logging
 
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QModelIndex, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
@@ -36,11 +37,13 @@ from PyQt6.QtWidgets import (
 from novelwriter import SHARED
 from novelwriter.common import checkInt, qtAddAction
 from novelwriter.constants import nwLabels, nwLists, nwStyles, trConst
-from novelwriter.core.indexdata import IndexHeading, IndexNode
 from novelwriter.enum import nwChange, nwDocMode, nwItemClass
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.types import QtDecoration, QtHeaderFixed, QtHeaderToContents, QtUserRole
+
+if TYPE_CHECKING:
+    from novelwriter.core.indexdata import IndexHeading, IndexNode
 
 logger = logging.getLogger(__name__)
 

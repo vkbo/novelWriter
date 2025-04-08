@@ -29,10 +29,9 @@ from __future__ import annotations
 import logging
 import xml.etree.ElementTree as ET
 
-from collections.abc import Sequence
 from datetime import datetime
 from hashlib import sha256
-from pathlib import Path
+from typing import TYPE_CHECKING, Final
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from PyQt6.QtGui import QColor, QFont
@@ -40,10 +39,15 @@ from PyQt6.QtGui import QColor, QFont
 from novelwriter import __version__
 from novelwriter.common import xmlElement, xmlIndent, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwStyles
-from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import Tokenizer
 from novelwriter.types import FONT_STYLE, QtHexRgb
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from pathlib import Path
+
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
@@ -1000,11 +1004,11 @@ class ODTParagraphStyle:
     exporter. Only the used settings are exposed here to keep the class
     minimal and fast.
     """
-    VALID_ALIGN  = ["start", "center", "end", "justify", "inside", "outside", "left", "right"]
-    VALID_BREAK  = ["auto", "column", "page", "even-page", "odd-page", "inherit"]
-    VALID_LEVEL  = ["1", "2", "3", "4"]
-    VALID_CLASS  = ["text", "chapter", "extra"]
-    VALID_WEIGHT = ["normal", "bold"] + FONT_WEIGHT_NUM
+    VALID_ALIGN: Final[list[str]]  = ["start", "center", "end", "justify", "left", "right"]
+    VALID_BREAK: Final[list[str]]  = ["auto", "page", "even-page", "odd-page", "inherit"]
+    VALID_LEVEL: Final[list[str]]  = ["1", "2", "3", "4"]
+    VALID_CLASS: Final[list[str]]  = ["text", "chapter", "extra"]
+    VALID_WEIGHT: Final[list[str]] = ["normal", "bold", *FONT_WEIGHT_NUM]
 
     def __init__(self, name: str) -> None:
 
@@ -1207,9 +1211,9 @@ class ODTParagraphStyle:
     def getID(self) -> str:
         """Generate a unique ID from the settings."""
         return sha256((
-            f"Paragraph:Main:{str(self._mAttr)}:"
-            f"Paragraph:Para:{str(self._pAttr)}:"
-            f"Paragraph:Text:{str(self._tAttr)}:"
+            f"Paragraph:Main:{self._mAttr!s}:"
+            f"Paragraph:Para:{self._pAttr!s}:"
+            f"Paragraph:Text:{self._tAttr!s}:"
         ).encode()).hexdigest()
 
     def packXML(self, xParent: ET.Element) -> None:
@@ -1237,13 +1241,13 @@ class ODTTextStyle:
     Only the used settings are exposed here to keep the class minimal
     and fast.
     """
-    VALID_WEIGHT = ["normal", "bold"] + FONT_WEIGHT_NUM
-    VALID_STYLE  = ["normal", "italic", "oblique"]
-    VALID_POS    = ["super", "sub"]
-    VALID_LSTYLE = ["none", "solid"]
-    VALID_LTYPE  = ["single", "double"]
-    VALID_LWIDTH = ["auto"]
-    VALID_LCOL   = ["font-color"]
+    VALID_WEIGHT: Final[list[str]] = ["normal", "bold", *FONT_WEIGHT_NUM]
+    VALID_STYLE: Final[list[str]]  = ["normal", "italic", "oblique"]
+    VALID_POS: Final[list[str]]    = ["super", "sub"]
+    VALID_LSTYLE: Final[list[str]] = ["none", "solid"]
+    VALID_LTYPE: Final[list[str]]  = ["single", "double"]
+    VALID_LWIDTH: Final[list[str]] = ["auto"]
+    VALID_LCOL: Final[list[str]]   = ["font-color"]
 
     def __init__(self, name: str) -> None:
         self._name = name

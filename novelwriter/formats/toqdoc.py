@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import logging
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QMarginsF, QSizeF
 from PyQt6.QtGui import (
@@ -36,7 +36,6 @@ from PyQt6.QtPrintSupport import QPrinter
 
 from novelwriter import __version__
 from novelwriter.constants import nwStyles, nwUnicode
-from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
 from novelwriter.formats.tokenizer import HEADINGS, Tokenizer
 from novelwriter.types import (
@@ -44,6 +43,11 @@ from novelwriter.types import (
     QtKeepAnchor, QtMoveAnchor, QtPageBreakAfter, QtPageBreakBefore,
     QtPropLineHeight, QtTransparent, QtVAlignNormal, QtVAlignSub, QtVAlignSuper
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 

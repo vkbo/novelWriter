@@ -42,6 +42,8 @@ from tests.tools import cmpFiles, writeFile
 class MockProject:
     """Fake project object."""
 
+    data: NWProjectData
+
     def setProjectChanged(self, *a):
         """Fake project method."""
         pass
@@ -219,7 +221,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
 
     packedContent = []
     mockProject = MockProject()
-    mockProject.__setattr__("data", data)
+    mockProject.data = data
     for entry in content:
         item = NWItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
@@ -348,7 +350,7 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockGUI, mockRnd):
 
     packedContent = []
     mockProject = MockProject()
-    mockProject.__setattr__("data", data)
+    mockProject.data = data
     status = {}
     for entry in content:
         item = NWItem(mockProject, "0000000000000")  # type: ignore
@@ -493,7 +495,7 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockGUI, mockRnd):
 
     packedContent = []
     mockProject = MockProject()
-    mockProject.__setattr__("data", data)
+    mockProject.data = data
     status = {}
     for entry in content:
         item = NWItem(mockProject, "0000000000000")  # type: ignore
@@ -638,7 +640,7 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockGUI, mockRnd):
 
     packedContent = []
     mockProject = MockProject()
-    mockProject.__setattr__("data", data)
+    mockProject.data = data
     status = {}
     for entry in content:
         item = NWItem(mockProject, "0000000000000")  # type: ignore
@@ -786,7 +788,7 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockGUI, mockRnd):
 
     packedContent = []
     mockProject = MockProject()
-    mockProject.__setattr__("data", data)
+    mockProject.data = data
     status = {}
     for entry in content:
         item = NWItem(mockProject, "0000000000000")  # type: ignore
@@ -933,7 +935,7 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockGUI, mockRnd):
 
     packedContent = []
     mockProject = MockProject()
-    mockProject.__setattr__("data", data)
+    mockProject.data = data
     status = {}
     for entry in content:
         item = NWItem(mockProject, "0000000000000")  # type: ignore

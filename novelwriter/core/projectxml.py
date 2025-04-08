@@ -39,7 +39,7 @@ from novelwriter.common import (
     hexToInt, simplified, xmlIndent, yesNo
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from novelwriter.core.projectdata import NWProjectData
     from novelwriter.core.status import NWStatus
 

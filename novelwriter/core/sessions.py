@@ -26,7 +26,6 @@ from __future__ import annotations
 import json
 import logging
 
-from collections.abc import Iterable
 from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
@@ -35,7 +34,9 @@ from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwFiles
 from novelwriter.error import logException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)

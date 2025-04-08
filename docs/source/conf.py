@@ -24,7 +24,7 @@ initFile = os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir,
     "novelwriter", "__init__.py"
 )
-with open(initFile) as inFile:
+with open(initFile, encoding="utf-8") as inFile:
     for aLine in inFile:
         if aLine.startswith("__version__"):
             release = aLine.split('"')[1].strip()

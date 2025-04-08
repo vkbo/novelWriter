@@ -47,7 +47,7 @@ from novelwriter.types import (
     QtDialogClose, QtRoleAction
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
@@ -124,7 +124,7 @@ class GuiWritingStats(NToolDialog):
         self.listBox.setSortingEnabled(True)
 
         # Word Bar
-        self.barHeight = int(round(0.5*SHARED.theme.fontPixelSize))
+        self.barHeight = round(0.5*SHARED.theme.fontPixelSize)
         self.barImage = QPixmap(self.barHeight, self.barHeight)
         self.barImage.fill(self.palette().highlight().color())
 

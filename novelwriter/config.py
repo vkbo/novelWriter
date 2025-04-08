@@ -29,10 +29,9 @@ import json
 import logging
 import sys
 
-from datetime import datetime
 from pathlib import Path
 from time import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from PyQt6.QtCore import (
     PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QLibraryInfo,
@@ -48,7 +47,9 @@ from novelwriter.common import (
 from novelwriter.constants import nwFiles, nwUnicode
 from novelwriter.error import formatException, logException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
+    from datetime import datetime
+
     from novelwriter.core.projectdata import NWProjectData
 
 logger = logging.getLogger(__name__)
@@ -62,29 +63,27 @@ DEF_TREECOL = "theme"
 class Config:
 
     __slots__ = (
-        "_confPath", "_dataPath", "_homePath", "_backPath", "_appPath", "_appRoot", "_hasError",
-        "_errData", "_nwLangPath", "_qtLangPath", "_qLocale", "_dLocale", "_dShortDate",
-        "_dShortDateTime", "_qtTrans", "_manuals", "_recentProjects", "_recentPaths",
-        "_backupPath",
-
-        "appName", "appHandle", "guiLocale", "guiTheme", "guiSyntax", "guiFont", "hideVScroll",
-        "hideHScroll", "lastNotes", "nativeFont", "useCharCount", "iconTheme", "iconColTree",
-        "iconColDocs", "mainWinSize", "welcomeWinSize", "prefsWinSize", "mainPanePos",
-        "viewPanePos", "outlinePanePos", "autoSaveProj", "autoSaveDoc", "emphLabels",
-        "backupOnClose", "askBeforeBackup", "askBeforeExit", "textFont", "textWidth", "textMargin",
-        "tabWidth", "cursorWidth", "focusWidth", "hideFocusFooter", "showFullPath", "autoSelect",
-        "doJustify", "showTabsNSpaces", "showLineEndings", "showMultiSpaces", "doReplace",
-        "doReplaceSQuote", "doReplaceDQuote", "doReplaceDash", "doReplaceDots", "autoScroll",
-        "autoScrollPos", "scrollPastEnd", "dialogStyle", "allowOpenDial", "dialogLine",
-        "narratorBreak", "narratorDialog", "altDialogOpen", "altDialogClose", "highlightEmph",
-        "stopWhenIdle", "userIdleTime", "incNotesWCount", "fmtApostrophe", "fmtSQuoteOpen",
-        "fmtSQuoteClose", "fmtDQuoteOpen", "fmtDQuoteClose", "fmtPadBefore", "fmtPadAfter",
-        "fmtPadThin", "spellLanguage", "showViewerPanel", "showEditToolBar", "showSessionTime",
-        "viewComments", "viewSynopsis", "searchCase", "searchWord", "searchRegEx", "searchLoop",
-        "searchNextFile", "searchMatchCap", "searchProjCase", "searchProjWord", "searchProjRegEx",
-        "verQtString", "verQtValue", "verPyQtString", "verPyQtValue", "verPyString", "osType",
-        "osLinux", "osWindows", "osDarwin", "osUnknown", "hostName", "kernelVer", "isDebug",
-        "memInfo", "hasEnchant",
+        "_appPath", "_appRoot", "_backPath", "_backupPath", "_confPath", "_dLocale", "_dShortDate",
+        "_dShortDateTime", "_dataPath", "_errData", "_hasError", "_homePath", "_manuals",
+        "_nwLangPath", "_qLocale", "_qtLangPath", "_qtTrans", "_recentPaths", "_recentProjects",
+        "allowOpenDial", "altDialogClose", "altDialogOpen", "appHandle", "appName",
+        "askBeforeBackup", "askBeforeExit", "autoSaveDoc", "autoSaveProj", "autoScroll",
+        "autoScrollPos", "autoSelect", "backupOnClose", "cursorWidth", "dialogLine", "dialogStyle",
+        "doJustify", "doReplace", "doReplaceDQuote", "doReplaceDash", "doReplaceDots",
+        "doReplaceSQuote", "emphLabels", "fmtApostrophe", "fmtDQuoteClose", "fmtDQuoteOpen",
+        "fmtPadAfter", "fmtPadBefore", "fmtPadThin", "fmtSQuoteClose", "fmtSQuoteOpen",
+        "focusWidth", "guiFont", "guiLocale", "guiSyntax", "guiTheme", "hasEnchant",
+        "hideFocusFooter", "hideHScroll", "hideVScroll", "highlightEmph", "hostName",
+        "iconColDocs", "iconColTree", "iconTheme", "incNotesWCount", "isDebug", "kernelVer",
+        "lastNotes", "mainPanePos", "mainWinSize", "memInfo", "narratorBreak", "narratorDialog",
+        "nativeFont", "osDarwin", "osLinux", "osType", "osUnknown", "osWindows", "outlinePanePos",
+        "prefsWinSize", "scrollPastEnd", "searchCase", "searchLoop", "searchMatchCap",
+        "searchNextFile", "searchProjCase", "searchProjRegEx", "searchProjWord", "searchRegEx",
+        "searchWord", "showEditToolBar", "showFullPath", "showLineEndings", "showMultiSpaces",
+        "showSessionTime", "showTabsNSpaces", "showViewerPanel", "spellLanguage", "stopWhenIdle",
+        "tabWidth", "textFont", "textMargin", "textWidth", "useCharCount", "userIdleTime",
+        "verPyQtString", "verPyQtValue", "verPyString", "verQtString", "verQtValue",
+        "viewComments", "viewPanePos", "viewSynopsis", "welcomeWinSize",
     )
 
     LANG_NW   = 1
@@ -305,6 +304,10 @@ class Config:
     @property
     def pdfDocs(self) -> Path | None:
         return self._manuals.get(f"manual_{self.locale.name()}", self._manuals.get("manual"))
+
+    @property
+    def nwLangPath(self) -> Path:
+        return self._nwLangPath
 
     @property
     def locale(self) -> QLocale:
@@ -918,7 +921,7 @@ class RecentProjects:
 
 class RecentPaths:
 
-    KEYS = ["default", "project", "import", "outline", "stats"]
+    KEYS: Final[list[str]] = ["default", "project", "import", "outline", "stats"]
 
     def __init__(self, config: Config) -> None:
         self._conf = config

@@ -178,11 +178,11 @@ class GuiDocSplit(NDialog):
     @classmethod
     def getData(cls, parent: QWidget, handle: str) -> tuple[dict, list[str], bool]:
         """Pop the dialog and return the result."""
-        cls = GuiDocSplit(parent, handle)
-        cls.exec()
-        data, text = cls.data()
-        accepted = cls.result() == QtAccepted
-        cls.softDelete()
+        dialog = cls(parent, handle)
+        dialog.exec()
+        data, text = dialog.data()
+        accepted = dialog.result() == QtAccepted
+        dialog.softDelete()
         return data, text, accepted
 
     ##

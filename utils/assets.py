@@ -180,9 +180,9 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
         else:  # Create an empty new language file
             langCode = item.name[3:-3]
             writeFile(item, (
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                '<?xml version="1.0" encoding="utf-8"?>\n'
                 "<!DOCTYPE TS>\n"
-                f"<TS version=\"2.0\" language=\"{langCode}\" sourcelanguage=\"en_GB\"/>\n"
+                f'<TS version="2.0" language="{langCode}" sourcelanguage="en_GB"/>\n'
             ))
             translations.append(item)
             print(f"Created: {item}")

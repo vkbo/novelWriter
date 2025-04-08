@@ -982,7 +982,7 @@ def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths, ipsumText):
     def prettifyXml(inFile, outFile):
         with open(outFile, mode="wb") as fStream:
             xml = ET.parse(inFile)
-            xmlIndent(xml)
+            xmlIndent(xml.getroot())
             xml.write(fStream, encoding="utf-8", xml_declaration=True)
 
     prettifyXml(maniOut, maniFile)
@@ -1082,10 +1082,6 @@ def testFmtToOdt_ODTParagraphStyle():
     assert parStyle._pAttr["text-align"] == ["fo", "end"]
     parStyle.setTextAlign("justify")
     assert parStyle._pAttr["text-align"] == ["fo", "justify"]
-    parStyle.setTextAlign("inside")
-    assert parStyle._pAttr["text-align"] == ["fo", "inside"]
-    parStyle.setTextAlign("outside")
-    assert parStyle._pAttr["text-align"] == ["fo", "outside"]
     parStyle.setTextAlign("left")
     assert parStyle._pAttr["text-align"] == ["fo", "left"]
     parStyle.setTextAlign("right")
@@ -1099,8 +1095,6 @@ def testFmtToOdt_ODTParagraphStyle():
     assert parStyle._pAttr["break-before"] == ["fo", None]
     parStyle.setBreakBefore("auto")
     assert parStyle._pAttr["break-before"] == ["fo", "auto"]
-    parStyle.setBreakBefore("column")
-    assert parStyle._pAttr["break-before"] == ["fo", "column"]
     parStyle.setBreakBefore("page")
     assert parStyle._pAttr["break-before"] == ["fo", "page"]
     parStyle.setBreakBefore("even-page")
@@ -1118,8 +1112,6 @@ def testFmtToOdt_ODTParagraphStyle():
     assert parStyle._pAttr["break-after"]  == ["fo", None]
     parStyle.setBreakAfter("auto")
     assert parStyle._pAttr["break-after"] == ["fo", "auto"]
-    parStyle.setBreakAfter("column")
-    assert parStyle._pAttr["break-after"] == ["fo", "column"]
     parStyle.setBreakAfter("page")
     assert parStyle._pAttr["break-after"] == ["fo", "page"]
     parStyle.setBreakAfter("even-page")
@@ -1394,9 +1386,9 @@ def testFmtToOdt_XMLParagraph():
     # Plain Text
     xmlPar.appendText("Hello World")
     assert xmlToText(xRoot) == (
-        '<root>'
-        '<text:p>Hello World</text:p>'
-        '</root>'
+        "<root>"
+        "<text:p>Hello World</text:p>"
+        "</root>"
     )
 
     # Text Span
@@ -1431,9 +1423,9 @@ def testFmtToOdt_XMLParagraph():
     # Plain Text w/Line Break
     xmlPar.appendText("Hello\nWorld\n!!")
     assert xmlToText(xRoot) == (
-        '<root>'
-        '<text:p>Hello<text:line-break />World<text:line-break />!!</text:p>'
-        '</root>'
+        "<root>"
+        "<text:p>Hello<text:line-break />World<text:line-break />!!</text:p>"
+        "</root>"
     )
 
     # Text Span w/Line Break
@@ -1467,9 +1459,9 @@ def testFmtToOdt_XMLParagraph():
     # Plain Text w/Line Break
     xmlPar.appendText("Hello\tWorld\t!!")
     assert xmlToText(xRoot) == (
-        '<root>'
-        '<text:p>Hello<text:tab />World<text:tab />!!</text:p>'
-        '</root>'
+        "<root>"
+        "<text:p>Hello<text:tab />World<text:tab />!!</text:p>"
+        "</root>"
     )
 
     # Text Span w/Line Break

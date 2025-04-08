@@ -36,7 +36,7 @@ from novelwriter.config import Config
 from novelwriter.error import exceptionHandler
 from novelwriter.shared import SharedData
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
 
 # Package Meta
@@ -148,7 +148,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         inOpts, inRemain = getopt.getopt(sysArgs, shortOpt, longOpt)
     except getopt.GetoptError as exc:
         print(helpMsg)
-        print(f"ERROR: {str(exc)}")
+        print(f"ERROR: {exc!s}")
         sys.exit(2)
 
     if len(inRemain) > 0:

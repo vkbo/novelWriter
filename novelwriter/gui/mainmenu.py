@@ -41,7 +41,7 @@ from novelwriter.constants import (
 from novelwriter.enum import nwDocAction, nwDocInsert, nwFocus, nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
@@ -471,7 +471,7 @@ class GuiMainMenu(QMenuBar):
 
         # Insert > Double Prime
         self.aInsDPrime = qtAddAction(self.mInsPunct, self.tr("Double Prime"))
-        self.aInsDPrime.setShortcut("Ctrl+K, Ctrl+\"")
+        self.aInsDPrime.setShortcut('Ctrl+K, Ctrl+"')
         self.aInsDPrime.triggered.connect(
             lambda: self.requestDocInsertText.emit(nwUnicode.U_DPRIME)
         )
@@ -680,7 +680,7 @@ class GuiMainMenu(QMenuBar):
 
         # Format > Double Quotes
         self.aFmtDQuote = qtAddAction(self.fmtMenu, self.tr("Wrap Double Quotes"))
-        self.aFmtDQuote.setShortcut("Ctrl+\"")
+        self.aFmtDQuote.setShortcut('Ctrl+"')
         self.aFmtDQuote.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.D_QUOTE)
         )

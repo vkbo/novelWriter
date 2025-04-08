@@ -28,17 +28,18 @@ from __future__ import annotations
 
 import logging
 
-from collections.abc import ItemsView, Sequence
 from typing import TYPE_CHECKING, Literal
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, compact, isListInstance, isTitleTag
 from novelwriter.constants import nwKeyWords, nwStyles
-from novelwriter.enum import nwComment
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
+    from collections.abc import ItemsView, Sequence
+
     from novelwriter.core.index import IndexCache
     from novelwriter.core.item import NWItem
+    from novelwriter.enum import nwComment
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +59,7 @@ class IndexNode:
     must be reset each time the item is re-indexed.
     """
 
-    __slots__ = ("_cache", "_handle", "_item", "_headings", "_notes", "_count")
+    __slots__ = ("_cache", "_count", "_handle", "_headings", "_item", "_notes")
 
     def __init__(self, cache: IndexCache, tHandle: str, nwItem: NWItem) -> None:
         self._cache = cache
@@ -206,8 +207,8 @@ class IndexHeading:
     """
 
     __slots__ = (
-        "_cache", "_key", "_line", "_level", "_title",
-        "_counts", "_tag", "_refs", "_comments",
+        "_cache", "_comments", "_counts", "_key", "_level", "_line", "_refs",
+        "_tag", "_title",
     )
 
     def __init__(

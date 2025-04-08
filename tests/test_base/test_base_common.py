@@ -556,7 +556,7 @@ def testBaseCommon_jsonEncode():
     # Correct types
     assert jsonEncode([1, 2]) == "[\n  1,\n  2\n]"
     assert jsonEncode((1, 2)) == "[\n  1,\n  2\n]"
-    assert jsonEncode({1: 2}) == "{\n  \"1\": 2\n}"
+    assert jsonEncode({1: 2}) == '{\n  "1": 2\n}'
 
     tstDict = {
         "null": None,

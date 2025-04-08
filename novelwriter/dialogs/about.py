@@ -25,7 +25,8 @@ from __future__ import annotations
 
 import logging
 
-from PyQt6.QtGui import QCloseEvent
+from typing import TYPE_CHECKING
+
 from PyQt6.QtWidgets import (
     QDialogButtonBox, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout, QWidget
 )
@@ -36,6 +37,9 @@ from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.versioninfo import VersionInfoWidget
 from novelwriter.types import QtAlignRightTop, QtDialogClose, QtHexArgb
+
+if TYPE_CHECKING:
+    from PyQt6.QtGui import QCloseEvent
 
 logger = logging.getLogger(__name__)
 

@@ -116,7 +116,8 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     # Check that project open dialog launches
     nwGUI.postLaunchTasks(None)
     qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiWelcome) is not None, timeout=1000)
-    assert isinstance(welcome := SHARED.findTopLevelWidget(GuiWelcome), GuiWelcome)
+    welcome = SHARED.findTopLevelWidget(GuiWelcome)
+    assert isinstance(welcome, GuiWelcome)
     welcome.show()
     welcome.close()
 
@@ -454,7 +455,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     # Dialogue
     # ========
 
-    for c in "\"Full line double quoted text.\"":
+    for c in '"Full line double quoted text."':
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
@@ -469,7 +470,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     CONFIG.fmtPadAfter = "\u201c"
     docEditor.initEditor()
 
-    for c in "Some \"double quoted text with spaces padded\".":
+    for c in 'Some "double quoted text with spaces padded".':
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
@@ -533,17 +534,17 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     # ================
 
     nwGUI._switchFocus(nwView.EDITOR)
-    for c in "\t\"Tab-indented text\"":
+    for c in '\t"Tab-indented text"':
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
 
-    for c in ">\"Paragraph-indented text\"":
+    for c in '>"Paragraph-indented text"':
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
 
-    for c in ">>\"Right-aligned text\"":
+    for c in '>>"Right-aligned text"':
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)

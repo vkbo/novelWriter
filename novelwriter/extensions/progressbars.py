@@ -44,8 +44,8 @@ class NProgressCircle(QProgressBar):
     """
 
     __slots__ = (
-        "_text", "_point", "_dRect", "_cRect", "_dPen", "_dBrush",
-        "_cPen", "_bPen", "_tColor"
+        "_bPen", "_cPen", "_cRect", "_dBrush", "_dPen", "_dRect", "_point",
+        "_tColor", "_text",
     )
 
     def __init__(self, parent: QWidget, size: int, point: int) -> None:

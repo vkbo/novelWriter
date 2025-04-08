@@ -36,7 +36,7 @@ from PyQt6.QtWidgets import (
     QPlainTextEdit, QStyle, QWidget
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from types import TracebackType
 
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ def logException() -> None:
     """Log the content of an exception message."""
     exType, exValue, _ = sys.exc_info()
     if exType is not None:
-        logger.error(f"{exType.__name__}: {str(exValue)}", stacklevel=2)
+        logger.error(f"{exType.__name__}: {exValue!s}", stacklevel=2)
     return
 
 
@@ -54,7 +54,7 @@ def formatException(exc: BaseException) -> str:
     """Format an exception as a string the same way the default
     exception handler does.
     """
-    return f"{type(exc).__name__}: {str(exc)}"
+    return f"{type(exc).__name__}: {exc!s}"
 
 
 class NWErrorMessage(QDialog):
@@ -151,7 +151,7 @@ class NWErrorMessage(QDialog):
                 f"Python: {sys.version.split()[0]} ({sys.hexversion:#x})\n"
                 f"Qt: {QT_VERSION_STR}, PyQt: {PYQT_VERSION_STR}\n"
                 f"enchant: {enchantVersion}\n\n"
-                f"{exType.__name__}:\n{str(exValue)}\n\n"
+                f"{exType.__name__}:\n{exValue!s}\n\n"
                 f"Traceback:\n{txtTrace}\n"
             )
         except Exception:

@@ -58,8 +58,8 @@ BLOCK_TITLE = 4
 class GuiDocHighlighter(QSyntaxHighlighter):
 
     __slots__ = (
-        "_tHandle", "_isNovel", "_isInactive", "_spellCheck", "_spellErr",
-        "_hStyles", "_minRules", "_txtRules", "_cmnRules", "_dialogParser",
+        "_cmnRules", "_dialogParser", "_hStyles", "_isInactive", "_isNovel",
+        "_minRules", "_spellCheck", "_spellErr", "_tHandle", "_txtRules",
     )
 
     def __init__(self, document: QTextDocument) -> None:
@@ -466,7 +466,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
 class TextBlockData(QTextBlockUserData):
 
-    __slots__ = ("_text", "_offset", "_metaData", "_spellErrors")
+    __slots__ = ("_metaData", "_offset", "_spellErrors", "_text")
 
     def __init__(self) -> None:
         super().__init__()
