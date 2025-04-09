@@ -156,8 +156,8 @@ def testCoreNovelModel_Data(nwGUI, fncPath, mockRnd):
     model.append(scene)
 
     # Add headings to scene
-    scene.addHeading(IndexHeading(scene._tags, "T0002", 10, "H4", "A Section"))
-    scene.addHeading(IndexHeading(scene._tags, "T0003", 10, "H4", "Another Section"))
+    scene.addHeading(IndexHeading(scene._cache, "T0002", 10, "H4", "A Section"))
+    scene.addHeading(IndexHeading(scene._cache, "T0003", 10, "H4", "Another Section"))
     assert model.refresh(scene) is True
     assert [
         model.data(model.createIndex(i, 0), Qt.ItemDataRole.DisplayRole)

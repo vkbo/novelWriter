@@ -387,10 +387,10 @@ class Index:
 
             elif line.startswith("%"):
                 cStyle, cKey, cText, _, _ = processComment(line)
-                if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT):
-                    self._itemIndex.setHeadingSynopsis(tHandle, cTitle, cText)
-                elif cStyle == nwComment.FOOTNOTE:
+                if cStyle == nwComment.FOOTNOTE:
                     self._itemIndex.addNoteKey(tHandle, "footnotes", cKey)
+                else:
+                    self._itemIndex.setHeadingComment(tHandle, cTitle, cStyle, cKey, cText)
 
         # Count words for remaining text after last heading
         if pTitle != TT_NONE:
@@ -894,6 +894,21 @@ class TagsIndex:
         return
 
 
+class IndexCache:
+    """Core: Item Index Lookup Data Class
+
+    A small data class passed between all objects of the Item Index
+    which provides lookup capabilities and caching for shared data.
+    """
+
+    __slots__ = ("story", "tags")
+
+    def __init__(self, tagsIndex: TagsIndex) -> None:
+        self.tags: TagsIndex = tagsIndex
+        self.story: set[str] = set()
+        return
+
+
 # The Item Index Objects
 # ======================
 
@@ -907,11 +922,11 @@ class ItemIndex:
     IndexHeading object for each heading of the text.
     """
 
-    __slots__ = ("_items", "_project", "_tags")
+    __slots__ = ("_cache", "_items", "_project")
 
     def __init__(self, project: NWProject, tagsIndex: TagsIndex) -> None:
         self._project = project
-        self._tags = tagsIndex
+        self._cache = IndexCache(tagsIndex)
         self._items: dict[str, IndexNode] = {}
         return
 
@@ -938,7 +953,7 @@ class ItemIndex:
         """Add a new item to the index. This will overwrite the item if
         it already exists.
         """
-        self._items[tHandle] = IndexNode(self._tags, tHandle, nwItem)
+        self._items[tHandle] = IndexNode(self._cache, tHandle, nwItem)
         return
 
     def allItemTags(self, tHandle: str) -> list[str]:
@@ -996,7 +1011,7 @@ class ItemIndex:
         if tHandle in self._items:
             tItem = self._items[tHandle]
             sTitle = tItem.nextHeading()
-            tItem.addHeading(IndexHeading(self._tags, sTitle, lineNo, level, text))
+            tItem.addHeading(IndexHeading(self._cache, sTitle, lineNo, level, text))
             return sTitle
         return TT_NONE
 
@@ -1008,10 +1023,13 @@ class ItemIndex:
             self._items[tHandle].setHeadingCounts(sTitle, cC, wC, pC)
         return
 
-    def setHeadingSynopsis(self, tHandle: str, sTitle: str, text: str) -> None:
-        """Set the synopsis text for a heading on a given item."""
+    def setHeadingComment(
+        self, tHandle: str, sTitle: str,
+        comment: nwComment, key: str, text: str,
+    ) -> None:
+        """Set a story comment for a heading on a given item."""
         if tHandle in self._items:
-            self._items[tHandle].setHeadingSynopsis(sTitle, text)
+            self._items[tHandle].setHeadingComment(sTitle, comment, key, text)
         return
 
     def setHeadingTag(self, tHandle: str, sTitle: str, tagKey: str) -> None:
@@ -1067,7 +1085,7 @@ class ItemIndex:
 
             nwItem = self._project.tree[tHandle]
             if nwItem is not None:
-                tItem = IndexNode(self._tags, tHandle, nwItem)
+                tItem = IndexNode(self._cache, tHandle, nwItem)
                 tItem.unpackData(tData)
                 self._items[tHandle] = tItem
 

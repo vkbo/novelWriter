@@ -1196,7 +1196,7 @@ def testCoreIndex_ItemIndex(nwGUI, fncPath, mockRnd):
 
     # Set the remaining data values
     itemIndex.setHeadingCounts(cHandle, "T0001", 60, 10, 2)
-    itemIndex.setHeadingSynopsis(cHandle, "T0001", "In the beginning ...")
+    itemIndex.setHeadingComment(cHandle, "T0001", nwComment.SYNOPSIS, "", "In the beginning ...")
     itemIndex.setHeadingTag(cHandle, "T0001", "One")
     itemIndex.addHeadingRef(cHandle, "T0001", ["Jane"], "@pov")
     itemIndex.addHeadingRef(cHandle, "T0001", ["Jane"], "@focus")
