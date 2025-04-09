@@ -270,6 +270,10 @@ class IndexHeading:
         return self._comments.get("summary", "")
 
     @property
+    def comments(self) -> dict[str, str]:
+        return self._comments
+
+    @property
     def tag(self) -> str:
         return self._tag
 

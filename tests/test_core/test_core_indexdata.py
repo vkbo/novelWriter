@@ -217,6 +217,13 @@ def testCoreIndexData_IndexHeading():
     head.setComment(nwComment.SYNOPSIS.name, "", "In the beginning ...")
     assert head.synopsis == "In the beginning ..."
 
+    # Set Story Structure Comment
+    head.setComment(nwComment.STORY.name, "crisis", "It exploded!")
+    assert head.comments == {
+        "summary": "In the beginning ...",
+        "story.crisis": "It exploded!",
+    }
+
     # Set Tag
     head.setTag("Stuff")
     assert head.tag == "stuff"  # Case insensitive
@@ -232,6 +239,7 @@ def testCoreIndexData_IndexHeading():
         "meta": {"level": "H1", "title": "", "line": 42, "tag": "stuff", "counts": (42, 4, 2)},
         "refs": {"stuff": "@object"},
         "summary": "In the beginning ...",
+        "story.crisis": "It exploded!",
     }
 
     # Unpack KeyError
