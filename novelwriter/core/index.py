@@ -608,6 +608,10 @@ class Index:
             yield from tItem.items()
         return
 
+    def getStoryKeys(self) -> set[str]:
+        """Return all story structure keys."""
+        return self._itemIndex.allStoryKeys()
+
     def novelStructure(
         self, rootHandle: str | None = None, activeOnly: bool = True
     ) -> Iterable[tuple[str, str, str, IndexHeading]]:
@@ -955,6 +959,10 @@ class ItemIndex:
         """
         self._items[tHandle] = IndexNode(self._cache, tHandle, nwItem)
         return
+
+    def allStoryKeys(self) -> set[str]:
+        """Return all story structure keys."""
+        return self._cache.story.copy()
 
     def allItemTags(self, tHandle: str) -> list[str]:
         """Get all tags set for headings of an item."""
