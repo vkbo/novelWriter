@@ -557,14 +557,11 @@ class GuiOutlineTree(QTreeWidget):
         )[0]:
             CONFIG.setLastPath("outline", path)
             logger.info("Writing CSV file: %s", path)
-            cols = [col for col in self._treeOrder if not self._colHidden[col]]
-            order = [self._colIdx[col] for col in cols]
             with open(path, mode="w", newline="", encoding="utf-8") as csvFile:
                 writer = csv.writer(csvFile, dialect="excel", quoting=csv.QUOTE_ALL)
-                writer.writerow([trConst(nwLabels.OUTLINE_COLS[col]) for col in cols])
-                for i in range(self.topLevelItemCount()):
-                    if item := self.topLevelItem(i):
-                        writer.writerow(item.text(i) for i in order)
+                writer.writerows(
+                    self._dumpNovelData(self.outlineView.outlineBar.novelValue.handle)
+                )
         return
 
     ##
@@ -750,6 +747,69 @@ class GuiOutlineTree(QTreeWidget):
         logger.debug("Project outline built in %.3f ms", 1000.0*(time() - tStart))
 
         return
+
+    def _dumpNovelData(self, rootHandle: str | None) -> list[list[str | int]]:
+        """Dump all novel data into a table."""
+        sLabel = SHARED.project.localLookup("Story Structure")
+        sKeys = sorted(SHARED.project.index.getStoryKeys())
+        sMatch = [f"story.{k}" for k in sKeys]
+        sHeaders = [f"{sLabel} ({k})" for k in sKeys]
+
+        data: list[list[str | int]] = [[
+            "H",
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.TITLE]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.LABEL]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.LINE]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.STATUS]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.CCOUNT]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.WCOUNT]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.PCOUNT]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.POV]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.FOCUS]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.CHAR]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.PLOT]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.TIME]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.WORLD]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.OBJECT]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.ENTITY]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.CUSTOM]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.STORY]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.MENTION]),
+            trConst(nwLabels.OUTLINE_COLS[nwOutline.SYNOP]),
+            *sHeaders,
+        ]]
+
+        for _, tHandle, sTitle, novIdx in SHARED.project.index.novelStructure(
+            rootHandle=rootHandle, activeOnly=True
+        ):
+            if novIdx.level != "H0" and (nwItem := SHARED.project.tree[tHandle]):
+                refs = SHARED.project.index.getReferences(tHandle, sTitle)
+                story = {k: v for k, v in novIdx.comments.items() if k in sMatch}.values()
+                data.append([
+                    novIdx.level,
+                    novIdx.title,
+                    nwItem.itemName,
+                    novIdx.line,
+                    nwItem.getImportStatus()[0],
+                    novIdx.charCount,
+                    novIdx.wordCount,
+                    novIdx.paraCount,
+                    ", ".join(refs[nwKeyWords.POV_KEY]),
+                    ", ".join(refs[nwKeyWords.FOCUS_KEY]),
+                    ", ".join(refs[nwKeyWords.CHAR_KEY]),
+                    ", ".join(refs[nwKeyWords.PLOT_KEY]),
+                    ", ".join(refs[nwKeyWords.TIME_KEY]),
+                    ", ".join(refs[nwKeyWords.WORLD_KEY]),
+                    ", ".join(refs[nwKeyWords.OBJECT_KEY]),
+                    ", ".join(refs[nwKeyWords.ENTITY_KEY]),
+                    ", ".join(refs[nwKeyWords.CUSTOM_KEY]),
+                    ", ".join(refs[nwKeyWords.STORY_KEY]),
+                    ", ".join(refs[nwKeyWords.MENTION_KEY]),
+                    novIdx.synopsis,
+                    *story,
+                ])
+
+        return data
 
 
 class GuiOutlineHeaderMenu(QMenu):
