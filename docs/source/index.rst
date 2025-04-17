@@ -77,6 +77,13 @@ See :ref:`a_started` for more details.
 
 .. toctree::
    :maxdepth: 1
+   :caption: Writing Aids
+   :hidden:
+
+   writing_story
+
+.. toctree::
+   :maxdepth: 1
    :caption: Additional Details
    :hidden:
 
