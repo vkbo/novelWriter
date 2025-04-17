@@ -26,27 +26,27 @@ In order to use novelWriter effectively, you need to know the basics of how it w
 chapters will explain the main principles. They start with the basics, and get more detailed as you
 read on.
 
-:ref:`a_breakdown` – Essential Information
+:ref:`a_breakdown` -- Essential Information
    This chapter explains the basics of how the application works and what it can and cannot do.
 
-:ref:`a_ui_project` – Recommended Reading
+:ref:`a_ui_project` -- Recommended Reading
    This chapter will give you a more detailed explanation of how you can use the user interface
    components to organise and view your project work.
 
-:ref:`a_ui_writing` – Recommended Reading
+:ref:`a_ui_writing` -- Recommended Reading
    This chapter will give you a more detailed explanation of how the text editor and viewer work.
 
-:ref:`a_fmt` – Essential Information
+:ref:`a_fmt` -- Essential Information
    This chapter covers how you should format your text. The editor is plain text, so text
    formatting requires some basic markup. The structure of your novel is also inferred from how you
    use headings. Tags and references are implemented by special keywords.
 
-:ref:`a_kb` – Optional / Lookup
+:ref:`a_kb` -- Optional / Lookup
    This chapter lists all the keyboard shortcuts in novelWriter and what they do. Most of the
    shortcuts are also listed next to their menu entries inside the app, or in tool tips. This
    chapter is mostly for reference.
 
-:ref:`a_typ` – Optional
+:ref:`a_typ` -- Optional
    This chapter gives you an overview of the special typographical symbols available in
    novelWriter. The auto-replace feature can handle the insertion of standard quote symbols for
    your language, and other special characters. If you use any symbols aside from these, their
@@ -61,23 +61,35 @@ structure of your novel and show you additional information about its flow and c
 to take advantage of these features, you must structure your text in a specific way and add some
 meta data for it to extract.
 
-:ref:`a_proj` – Essential Information
+:ref:`a_proj` -- Essential Information
    This chapter explains how you organise the content of your project, and how to set up automated
    backups of your work.
 
-:ref:`a_struct` – Essential Information
+:ref:`a_struct` -- Essential Information
    This chapter covers the way your novel's structure is encoded into the text documents. It
    explains how the different levels of headings are used, and some special formatting for
    different kinds of headings.
 
-:ref:`a_references` - Recommended Reading
+:ref:`a_references` -- Recommended Reading
    This chapter explains how you organise your notes, and how the Tags and References system works.
    This system lets you cross-link your documents in your project, and display these references in
    the application interface.
 
-:ref:`a_manuscript` - Recommended Reading
+:ref:`a_manuscript` -- Recommended Reading
    This chapter explains how the **Manuscript Build** tool works, how you can control the way
    chapter titles are formatted, and how scene and section breaks are handled.
+
+
+Writing Aids
+============
+
+We are in the process of adding tools to novelWriter that can be used to track more information
+about your project to assist in your writing. These tools are entirely optional and will not be in
+your way if you choose to not use them.
+
+:ref:`a_story_structure` -- Writing Tools
+   Story structure comments are a way to add meta data that can be used to analyse the structure of
+   your writing. These comments can be exported to spreadsheets for analysis.
 
 
 Additional Details & Technical Topics
