@@ -27,6 +27,7 @@ from PyQt6.QtGui import QFont, QTextBlock, QTextCharFormat, QTextCursor
 from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
 from novelwriter.core.project import NWProject
+from novelwriter.enum import nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp, TextDocumentTheme
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.types import (
@@ -195,8 +196,8 @@ def testFmtToQTextDocument_NovelMeta(mockGUI):
 
     doc._isNovel = True
     doc._isFirst = True
-    doc.setComments(True)
-    doc.setSynopsis(True)
+    doc.setCommentType(nwComment.PLAIN, True)
+    doc.setCommentType(nwComment.SYNOPSIS, True)
     doc.setKeywords(True)
     doc._text = (
         "### Scene\n\n"
@@ -272,8 +273,8 @@ def testFmtToQTextDocument_NoteMeta(mockGUI):
 
     doc._isNovel = False
     doc._isFirst = True
-    doc.setComments(True)
-    doc.setSynopsis(True)
+    doc.setCommentType(nwComment.PLAIN, True)
+    doc.setCommentType(nwComment.SHORT, True)
     doc.setKeywords(True)
     doc._text = (
         "# Jane Smith\n\n"

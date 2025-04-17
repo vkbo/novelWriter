@@ -30,7 +30,7 @@ from novelwriter.constants import nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
-from novelwriter.enum import nwBuildFmt
+from novelwriter.enum import nwBuildFmt, nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.todocx import OOXML_SCM, ToDocX, _mkTag, _wTag
 
@@ -226,8 +226,9 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
     """Test formatting of paragraphs."""
     project = NWProject()
     doc = ToDocX(project)
-    doc.setSynopsis(True)
-    doc.setComments(True)
+    doc.setCommentType(nwComment.PLAIN, True)
+    doc.setCommentType(nwComment.SYNOPSIS, True)
+    doc.setCommentType(nwComment.SHORT, True)
     doc.setKeywords(True)
     doc.initDocument()
 
@@ -389,8 +390,8 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     """Test formatting of paragraphs."""
     project = NWProject()
     doc = ToDocX(project)
-    doc.setSynopsis(True)
-    doc.setComments(True)
+    doc.setCommentType(nwComment.PLAIN, True)
+    doc.setCommentType(nwComment.SYNOPSIS, True)
     doc.setKeywords(True)
     doc.initDocument()
 
@@ -743,7 +744,7 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
     def prettifyXml(inFile, outFile):
         with open(outFile, mode="wb") as fStream:
             xml = ET.parse(inFile)
-            xmlIndent(xml)
+            xmlIndent(xml)  # type: ignore
             xml.write(fStream, encoding="utf-8", xml_declaration=True)
 
     expected = [

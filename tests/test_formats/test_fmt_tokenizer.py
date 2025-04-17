@@ -99,8 +99,7 @@ def testFmtToken_Setters(mockGUI):
     assert tokens._hideSection is False
     assert tokens._linkHeadings is False
     assert tokens._doBodyText is True
-    assert tokens._doSynopsis is False
-    assert tokens._doComments is False
+    assert tokens._doComments == {nwComment.FOOTNOTE}
     assert tokens._doKeywords is False
 
     # Set new values
@@ -124,8 +123,9 @@ def testFmtToken_Setters(mockGUI):
     tokens.setSeparatorMargins(2.0, 2.0)
     tokens.setLinkHeadings(True)
     tokens.setBodyText(False)
-    tokens.setSynopsis(True)
-    tokens.setComments(True)
+    tokens.setCommentType(nwComment.PLAIN, True)
+    tokens.setCommentType(nwComment.SHORT, True)
+    tokens.setCommentType(nwComment.SYNOPSIS, True)
     tokens.setKeywords(True)
 
     # Check new values
@@ -155,8 +155,9 @@ def testFmtToken_Setters(mockGUI):
     assert tokens._hideSection is True
     assert tokens._linkHeadings is True
     assert tokens._doBodyText is False
-    assert tokens._doSynopsis is True
-    assert tokens._doComments is True
+    assert tokens._doComments == {
+        nwComment.FOOTNOTE, nwComment.PLAIN, nwComment.SYNOPSIS, nwComment.SHORT,
+    }
     assert tokens._doKeywords is True
 
     # Properties
@@ -756,12 +757,12 @@ def testFmtToken_MetaFormat(mockGUI):
     assert tokens._blocks == []
 
     # Comment
-    tokens.setComments(False)
+    tokens.setCommentType(nwComment.PLAIN, False)
     tokens._text = "% A comment\n"
     tokens.tokenizeText()
     assert tokens._blocks == []
 
-    tokens.setComments(True)
+    tokens.setCommentType(nwComment.PLAIN, True)
     tokens._text = "% A comment\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
@@ -773,12 +774,12 @@ def testFmtToken_MetaFormat(mockGUI):
     )]
 
     # Synopsis
-    tokens.setSynopsis(False)
+    tokens.setCommentType(nwComment.SYNOPSIS, False)
     tokens._text = "%synopsis: The synopsis\n"
     tokens.tokenizeText()
     assert tokens._blocks == []
 
-    tokens.setSynopsis(True)
+    tokens.setCommentType(nwComment.SYNOPSIS, True)
     tokens._text = "% synopsis: The synopsis\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
@@ -790,12 +791,12 @@ def testFmtToken_MetaFormat(mockGUI):
     )]
 
     # Short
-    tokens.setSynopsis(False)
+    tokens.setCommentType(nwComment.SHORT, False)
     tokens._text = "% short: A short description\n"
     tokens.tokenizeText()
     assert tokens._blocks == []
 
-    tokens.setSynopsis(True)
+    tokens.setCommentType(nwComment.SHORT, True)
     tokens._text = "% short: A short description\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
@@ -1151,7 +1152,7 @@ def testFmtToken_LineBreak(mockGUI):
     project = NWProject()
     tokens = BareTokenizer(project)
     tokens._handle = TMH
-    tokens.setComments(True)
+    tokens.setCommentType(nwComment.PLAIN, True)
 
     # They are stripped in headers
     tokens._text = "## Hello[br] World"
@@ -1516,7 +1517,7 @@ def testFmtToken_TextIndent(mockGUI):
     """Test the handling of text indent in the Tokenizer class."""
     project = NWProject()
     tokens = BareTokenizer(project)
-    tokens.setSynopsis(True)
+    tokens.setCommentType(nwComment.SYNOPSIS, True)
     tokens._handle = TMH
 
     # No First Indent
@@ -1987,7 +1988,7 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens._counts = {}
     tokens.setChapterFormat(nwHeadFmt.TITLE)
     tokens.setSceneFormat("* * *", False)
-    tokens.setSynopsis(True)
+    tokens.setCommentType(nwComment.SYNOPSIS, True)
     tokens.tokenizeText()
     tokens.countStats()
     assert [t[2] for t in tokens._blocks] == ["Chapter", "Synopsis: Stuff", "Text"]
@@ -2004,7 +2005,7 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens._counts = {}
     tokens.setChapterFormat(nwHeadFmt.TITLE)
     tokens.setSceneFormat("* * *", False)
-    tokens.setSynopsis(True)
+    tokens.setCommentType(nwComment.SHORT, True)
     tokens.tokenizeText()
     tokens.countStats()
     assert [t[2] for t in tokens._blocks] == ["Chapter", "Short Description: Stuff", "Text"]
@@ -2021,7 +2022,7 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens._counts = {}
     tokens.setChapterFormat(nwHeadFmt.TITLE)
     tokens.setSceneFormat("* * *", False)
-    tokens.setComments(True)
+    tokens.setCommentType(nwComment.PLAIN, True)
     tokens.tokenizeText()
     tokens.countStats()
     assert [t[2] for t in tokens._blocks] == ["Chapter", "Comment: Stuff", "Text"]
@@ -2095,8 +2096,8 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     tokens.setChapterFormat(f"C {nwHeadFmt.CH_NUM}: {nwHeadFmt.TITLE}")
     tokens.setSceneFormat("* * *", False)
-    tokens.setSynopsis(True)
-    tokens.setComments(True)
+    tokens.setCommentType(nwComment.SYNOPSIS, True)
+    tokens.setCommentType(nwComment.PLAIN, True)
     tokens.setKeywords(True)
 
     tokens.tokenizeText()

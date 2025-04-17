@@ -121,13 +121,15 @@ class Tokenizer(ABC):
         self._indentFirst  = False   # Indent first paragraph
         self._doJustify    = False   # Justify text
         self._doBodyText   = True    # Include body text
-        self._doSynopsis   = False   # Also process synopsis comments
-        self._doComments   = False   # Also process comments
+        self._doComments   = set()   # Comment styles to allow
         self._doKeywords   = False   # Also process keywords like tags and references
         self._keepBreaks   = True    # Keep line breaks in paragraphs
         self._defaultAlign = "left"  # The default text alignment
 
         self._skipKeywords: set[str] = set()  # Keywords to ignore
+
+        # Defaults
+        self._doComments.add(nwComment.FOOTNOTE)
 
         # Other Setting
         self._theme = TextDocumentTheme()
@@ -396,14 +398,12 @@ class Tokenizer(ABC):
         self._doBodyText = state
         return
 
-    def setSynopsis(self, state: bool) -> None:
-        """Include synopsis comments in build."""
-        self._doSynopsis = state
-        return
-
-    def setComments(self, state: bool) -> None:
-        """Include comments in build."""
-        self._doComments = state
+    def setCommentType(self, comment: nwComment, state: bool) -> None:
+        """Toggle the inclusion og certain comment types."""
+        if state:
+            self._doComments.add(comment)
+        else:
+            self._doComments.discard(comment)
         return
 
     def setKeywords(self, state: bool) -> None:
@@ -607,9 +607,7 @@ class Tokenizer(ABC):
                     continue
 
                 cStyle, cKey, cText, _, _ = processComment(aLine)
-                if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT) and not self._doSynopsis:
-                    continue
-                if cStyle == nwComment.PLAIN and not self._doComments:
+                if cStyle not in self._doComments:
                     continue
 
                 if doJustify and not tStyle & BlockFmt.ALIGNED:
@@ -1043,7 +1041,8 @@ class Tokenizer(ABC):
         tTxt, tFmt = self._extractFormats(text)
         tFmt.insert(0, (0, TextFmt.COL_B, style.textClass))
         tFmt.append((len(tTxt), TextFmt.COL_E, ""))
-        if label := (self._localLookup(style.label) + (f" ({key})" if key else "")).strip():
+        term = f" ({key.title()})" if key else ""
+        if label := f"{self._localLookup(style.label)}{term}".strip():
             shift = len(label) + 2
             tTxt = f"{label}: {tTxt}"
             rFmt = [(0, TextFmt.B_B, ""), (shift - 1, TextFmt.B_E, "")]

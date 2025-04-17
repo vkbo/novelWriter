@@ -43,7 +43,7 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles, qtAddAction, qtLambda
 from novelwriter.constants import nwConst, nwStyles, nwUnicode
-from novelwriter.enum import nwChange, nwDocAction, nwDocMode, nwItemType
+from novelwriter.enum import nwChange, nwComment, nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -228,8 +228,9 @@ class GuiDocViewer(QTextBrowser):
         qDoc.setTheme(self._docTheme)
         qDoc.initDocument()
         qDoc.setKeywords(True)
-        qDoc.setComments(CONFIG.viewComments)
-        qDoc.setSynopsis(CONFIG.viewSynopsis)
+        qDoc.setCommentType(nwComment.PLAIN, CONFIG.viewComments)
+        qDoc.setCommentType(nwComment.SYNOPSIS, CONFIG.viewSynopsis)
+        qDoc.setCommentType(nwComment.SHORT, CONFIG.viewSynopsis)
 
         # Be extra careful here to prevent crashes when first opening a
         # project as a crash here leaves no way of recovering.

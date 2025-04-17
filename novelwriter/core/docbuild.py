@@ -32,7 +32,7 @@ from PyQt6.QtGui import QFont
 from novelwriter import CONFIG
 from novelwriter.constants import nwLabels
 from novelwriter.core.item import NWItem
-from novelwriter.enum import nwBuildFmt
+from novelwriter.enum import nwBuildFmt, nwComment
 from novelwriter.error import formatException, logException
 from novelwriter.formats.todocx import ToDocX
 from novelwriter.formats.tohtml import ToHtml
@@ -311,10 +311,11 @@ class NWBuildDocument:
         )
 
         bldObj.setBodyText(self._build.getBool("text.includeBodyText"))
-        bldObj.setSynopsis(self._build.getBool("text.includeSynopsis"))
-        bldObj.setComments(self._build.getBool("text.includeComments"))
         bldObj.setKeywords(self._build.getBool("text.includeKeywords"))
         bldObj.setIgnoredKeywords(self._build.getStr("text.ignoredKeywords"))
+        bldObj.setCommentType(nwComment.PLAIN, self._build.getBool("text.includeComments"))
+        bldObj.setCommentType(nwComment.SYNOPSIS, self._build.getBool("text.includeSynopsis"))
+        bldObj.setCommentType(nwComment.SHORT, self._build.getBool("text.includeSynopsis"))
 
         if isinstance(bldObj, ToHtml):
             bldObj.setStyles(self._build.getBool("html.addStyles"))

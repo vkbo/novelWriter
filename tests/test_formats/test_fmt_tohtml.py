@@ -27,6 +27,7 @@ import pytest
 from novelwriter import CONFIG
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
+from novelwriter.enum import nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.tohtml import ToHtml
 
@@ -185,7 +186,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html._pages[-1] == ""
 
-    html.setSynopsis(True)
+    html.setCommentType(nwComment.SYNOPSIS, True)
     html._text = "%synopsis: The synopsis ...\n"
     html.tokenizeText()
     html.doConvert()
@@ -196,7 +197,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
         "</p>\n"
     )
 
-    html.setSynopsis(True)
+    html.setCommentType(nwComment.SHORT, True)
     html._text = "%short: A short description ...\n"
     html.tokenizeText()
     html.doConvert()
@@ -213,7 +214,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html._pages[-1] == ""
 
-    html.setComments(True)
+    html.setCommentType(nwComment.PLAIN, True)
     html._text = "% A comment ...\n"
     html.tokenizeText()
     html.doConvert()
@@ -575,7 +576,7 @@ def testFmtToHtml_SpecialCases(mockGUI):
     # ===================
     # See: https://github.com/vkbo/novelWriter/issues/950
 
-    html.setComments(True)
+    html.setCommentType(nwComment.PLAIN, True)
     html._text = "% Test > text _<**bold**>_ and more.\n"
     html.tokenizeText()
     html.doConvert()
