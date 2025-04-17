@@ -393,7 +393,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         else:  # Text Paragraph
             self.setCurrentBlockState(BLOCK_TEXT)
             hRules = self._txtRules if self._isNovel else self._minRules
-            if self._dialogParser.enabled:
+            if self._isNovel and self._dialogParser.enabled:
                 for pos, end in self._dialogParser(text):
                     length = end - pos
                     self.setFormat(pos, length, self._hStyles["dialog"])
