@@ -310,11 +310,11 @@ def testTextPatterns_DialogueStyle():
     assert allMatches(regEx, 'one "two" three') == []
 
     # Check with no whitespace, single quote
-    assert allMatches(regEx, "one\u2018two\u2019three") == [
-        [("\u2018two\u2019", 3, 8)]
-    ]
-    assert allMatches(regEx, "one\u2018two\u2019 three") == [
-        [("\u2018two\u2019", 3, 8)]
+    # The apostrophe ambiguity rule should kick in here
+    assert allMatches(regEx, "one\u2018two\u2019three") == []
+    assert allMatches(regEx, "one\u2018two\u2019 three") == []
+    assert allMatches(regEx, "one \u2018two\u02bc three\u2019 four") == [
+        [("\u2018two\u02bc three\u2019", 4, 16)],
     ]
 
     # Check with no whitespace, double quote
