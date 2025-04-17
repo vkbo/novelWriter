@@ -629,7 +629,7 @@ class _DetailsWidget(QWidget):
         item.setText(1, "")
         self.listView.addTopLevelItem(item)
         for key in [
-            "text.includeSynopsis", "text.includeComments",
+            "text.includeSynopsis", "text.includeComments", "text.includeStory",
             "text.includeKeywords", "text.includeBodyText",
         ]:
             sub = QTreeWidgetItem()
