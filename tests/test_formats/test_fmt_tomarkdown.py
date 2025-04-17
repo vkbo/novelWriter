@@ -24,6 +24,7 @@ import pytest
 
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
+from novelwriter.enum import nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.tomarkdown import ToMarkdown
 
@@ -148,13 +149,13 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     md.doConvert()
     assert md._pages[-1] == ""
 
-    md.setSynopsis(True)
+    md.setCommentType(nwComment.SYNOPSIS, True)
     md._text = "%synopsis: The synopsis ...\n"
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == "**Synopsis:** The synopsis ...\n\n"
 
-    md.setSynopsis(True)
+    md.setCommentType(nwComment.SHORT, True)
     md._text = "%short: A description ...\n"
     md.tokenizeText()
     md.doConvert()
@@ -166,7 +167,7 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     md.doConvert()
     assert md._pages[-1] == ""
 
-    md.setComments(True)
+    md.setCommentType(nwComment.PLAIN, True)
     md._text = "% A comment ...\n"
     md.tokenizeText()
     md.doConvert()

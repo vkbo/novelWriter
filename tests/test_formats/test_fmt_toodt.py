@@ -32,6 +32,7 @@ from PyQt6.QtGui import QColor
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
+from novelwriter.enum import nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp, TextFmt
 from novelwriter.formats.toodt import ODTParagraphStyle, ODTTextStyle, ToOdt, XMLParagraph, _mkTag
 
@@ -611,8 +612,9 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
         "% short: Then what\n\n"
         "% A plain comment\n\n"
     )
-    odt.setSynopsis(True)
-    odt.setComments(True)
+    odt.setCommentType(nwComment.SYNOPSIS, True)
+    odt.setCommentType(nwComment.SHORT, True)
+    odt.setCommentType(nwComment.PLAIN, True)
     odt.setKeywords(True)
     odt.tokenizeText()
     odt.initDocument()
