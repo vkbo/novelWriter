@@ -505,7 +505,7 @@ class TextBlockData(QTextBlockUserData):
                     text = f"{text[:s]}{pad}{text[e:]}"
                     self._metaData.append((s, e, res.group(0), "url"))
 
-        self._text = text
+        self._text = text.replace("\u02bc", "'")
         self._offset = offset
 
         return
