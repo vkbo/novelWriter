@@ -4,8 +4,6 @@
 Story Structure Comments
 ************************
 
-.. _The Story Grid: https://storygrid.com
-
 
 As of version 2.7, story structure annotations using the ``%story`` style of comment is supported.
 To use the feature, make the first word of a comment ``story``, followed by a period, a structure
@@ -30,7 +28,7 @@ There are probably as many ways to examine story structure as there are authors 
 combined. For this reason the story tag is flexible. You can use any terms you want and track any
 aspect of the story that serves your purposes.
 
-An example method has been advanced by Shawn Coyne in `The Story Grid`_. This method asserts that a
+An example method has been advanced by Shawn Coyne in *The Story Grid*. This method asserts that a
 story is composed of "beats", and that each beat has an inciting incident, a complication, a
 crisis, and a resolution. One might capture these elements of a beat where a character overcomes
 their fear of giving a speech as:
