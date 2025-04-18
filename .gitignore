@@ -58,3 +58,4 @@ ToC.txt
 /test.py
 .config
 .local
+*.patch

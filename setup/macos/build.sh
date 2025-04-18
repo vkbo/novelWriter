@@ -9,6 +9,11 @@ PYTHON="$1"
 ARCH="$2"
 CONDA="$3"
 
+TIMESTAMP=$(date "+%s")
+
+CONDA_ENV_NAME="novelWriter_${CONDA}_${TIMESTAMP}"
+CONDA_PATH="$HOME/miniconda_novelWriter_${ARCH}_${TIMESTAMP}"
+
 echo "Python Version: $PYTHON"
 echo "Architecture: $ARCH"
 echo "Miniconda Architecture: $CONDA"
@@ -90,13 +95,13 @@ pushd "$BUILD_DIR"/ || exit 1
 
 echo "Downloading Miniconda ..."
 curl -LO https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-$CONDA.sh
-bash Miniconda3-latest-MacOSX-$CONDA.sh -b -p ~/miniconda -f
+bash Miniconda3-latest-MacOSX-$CONDA.sh -b -p$CONDA_PATH -f
 rm Miniconda3-latest-MacOSX-$CONDA.sh 
-export PATH="$HOME/miniconda/bin:$PATH"
+export PATH="$CONDA_PATH/bin:$PATH"
 
 echo "Creating Conda env ..."
-conda create -n novelWriter -c conda-forge python=$PYTHON --yes
-source activate novelWriter
+conda create -n $CONDA_ENV_NAME -c conda-forge python=$PYTHON --yes
+source activate $CONDA_ENV_NAME
 
 echo "Installing dictionaries ..."
 conda install -c conda-forge enchant hunspell-en --yes
@@ -119,7 +124,7 @@ mkdir novelWriter.app/Contents/MacOS novelWriter.app/Contents/Resources novelWri
 cp $SRC_DIR/setup/macos/Info.plist novelWriter.app/Contents/Info.plist
 
 echo "Copying miniconda env to bundle ..."
-cp -R ~/miniconda/envs/novelWriter/* novelWriter.app/Contents/Resources/
+cp -R $CONDA_PATH/envs/$CONDA_ENV_NAME/* novelWriter.app/Contents/Resources/
 
 echo "Copying novelWriter to bundle ..."
 FILES_COPY=(
@@ -166,13 +171,27 @@ rm -rf lib/python3.1
 
 # Remove web engine
 rm lib/python3.*/site-packages/PyQt6/QtWebEngine* || true
-rm -r lib/python3.*/site-packages/PyQt6/Qt/translations/qtwebengine* || true
-rm lib/python3.*/site-packages/PyQt6/Qt/resources/qtwebengine* || true
-rm -r lib/python3.*/site-packages/PyQt6/Qt/qml/QtWebEngine* || true
-rm -r lib/python3.*/site-packages/PyQt6/Qt/plugins/webview/libqtwebview* || true
-rm lib/python3.*/site-packages/PyQt6/Qt/libexec/QtWebEngineProcess* || true
-rm lib/python3.*/site-packages/PyQt6/Qt/lib/libQt5WebEngine* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/translations/qtwebengine* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/plugins/webview/libqtwebview* || true
 
+# Remove unneeded QtQuick/Decaritive components
+rm lib/python3.*/site-packages/PyQt6/QtQml* || true
+rm lib/python3.*/site-packages/PyQt6/QtQuick* || true
+rm lib/python3.*/site-packages/PyQt6/WebChannel* || true
+rm lib/python3.*/site-packages/PyQt6/WebSockets* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/translations/qtdeclarative* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/translations/qtwebsockets* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/qml || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/plugins/qmlls || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/plugins/qmllint || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/lib/QtQml* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/lib/QtQuick* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/lib/QtWebChannel* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/lib/QtWebSockets* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/bindings/QtQml* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/bindings/QtQuick* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/bindings/QtWebChannel* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/bindings/QtWebSockets* || true
 popd || exit 1
 popd || exit 1
 
@@ -192,3 +211,5 @@ create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novel
 pushd $RLS_DIR || exit 1
 shasum -a 256 novelWriter-"${VERSION}"-$ARCH.dmg | tee novelWriter-"${VERSION}"-$ARCH.dmg.sha256
 popd || exit 1
+
+rm -r $CONDA_PATH
