@@ -212,6 +212,114 @@ def testCoreTree_ManipulateTree(mockGUI, mockItems):
 
 
 @pytest.mark.core
+def testCoreTree_PickParent(mockGUI, mockItems):
+    """Check the parent item picker."""
+    project = NWProject()
+    tree = NWTree(project)
+    assert len(tree) == 0
+
+    # Case 1: Root and Folder
+    # =======================
+
+    hNovelRoot = tree.create("Novel", None, nwItemType.ROOT, nwItemClass.NOVEL)
+    nNovelRoot = tree.nodes[hNovelRoot]
+
+    # Add a folder
+    sHandle, sPos = tree.pickParent(nNovelRoot, 0, False)
+    assert sHandle == hNovelRoot
+    assert sPos == 0
+    hNovelFolder = tree.create("Folder", sHandle, nwItemType.FOLDER, pos=sPos)
+    assert hNovelFolder is not None
+    nNovelFolder = tree.nodes[hNovelFolder]
+    assert nNovelFolder.item.itemClass == nwItemClass.NOVEL
+
+    # Add a partition
+    sHandle, sPos = tree.pickParent(nNovelRoot, 1, False)
+    assert sHandle == hNovelRoot
+    assert sPos == 1
+    hPartOne = tree.create("Part One", sHandle, nwItemType.FILE, pos=sPos)
+    assert hPartOne is not None
+    nPartOne = tree.nodes[hPartOne]
+    assert nPartOne.item.itemClass == nwItemClass.NOVEL
+    nPartOne.item.setMainHeading("H1")
+
+    # Folders behave identical to root
+    sHandle, sPos = tree.pickParent(nNovelFolder, 0, False)
+    assert sHandle == hNovelFolder
+    assert sPos == 0
+
+    # Case 2: Documents of Same Level
+    # ===============================
+
+    # Add a chapter under Part One
+    hChapterOne = tree.create("Chapter One", hPartOne, nwItemType.FILE, pos=sPos)
+    assert hChapterOne is not None
+    nChapterOne = tree.nodes[hChapterOne]
+    assert nChapterOne.item.itemParent == hPartOne
+    nChapterOne.item.setMainHeading("H2")
+
+    # Add a chapter next to Chapter One -> Sibling (default behaviour)
+    sHandle, sPos = tree.pickParent(nChapterOne, 2, False)
+    assert sHandle == hPartOne
+    assert sPos == 1
+    hChapterTwo = tree.create("Chapter Two", sHandle, nwItemType.FILE, pos=sPos)
+    assert hChapterTwo is not None
+    nChapterTwo = tree.nodes[hChapterTwo]
+    assert nChapterTwo.item.itemClass == nwItemClass.NOVEL
+    nChapterTwo.item.setMainHeading("H2")
+
+    # Add a new part next to Chapter Two -> Sibling to parent (second if condition)
+    sHandle, sPos = tree.pickParent(nChapterTwo, 1, False)
+    assert sHandle == hNovelRoot
+    assert sPos == 2
+
+    # Case 3: Documents of Deeper Level
+    # =================================
+
+    # Add chapter directly to Part One with existing chapters -> Added as child (third if)
+    sHandle, sPos = tree.pickParent(nPartOne, 2, False)
+    assert sHandle == hPartOne
+    assert sPos == 2
+
+    # But adding a new part becomes a sibling
+    sHandle, sPos = tree.pickParent(nPartOne, 1, False)
+    assert sHandle == hNovelRoot
+    assert sPos == 2
+
+    # Case 4: Notes
+    # =============
+
+    hCharRoot = tree.create("Characters", None, nwItemType.ROOT, nwItemClass.CHARACTER)
+    nCharRoot = tree.nodes[hCharRoot]
+
+    # Add a note at root level
+    hNoteOne = tree.create("Note One", hCharRoot, nwItemType.FILE, pos=sPos)
+    assert hNoteOne is not None
+    nNoteOne = tree.nodes[hNoteOne]
+    assert nNoteOne.item.itemClass == nwItemClass.CHARACTER
+    nNoteOne.item.setMainHeading("H1")
+    assert nCharRoot.childCount() == 1
+
+    # Adding a new note is a sibling
+    sHandle, sPos = tree.pickParent(nNoteOne, 1, True)
+    assert sHandle == hCharRoot
+    assert sPos == 1
+
+    # Add a child note to Note One
+    hNoteTwo = tree.create("Note Two", hNoteOne, nwItemType.FILE, pos=sPos)
+    assert hNoteTwo is not None
+    nNoteTwo = tree.nodes[hNoteTwo]
+    assert nNoteTwo.item.itemClass == nwItemClass.CHARACTER
+    nNoteTwo.item.setMainHeading("H1")
+    assert nNoteOne.childCount() == 1
+
+    # Adding a new note now is a child
+    sHandle, sPos = tree.pickParent(nNoteOne, 1, True)
+    assert sHandle == hNoteOne
+    assert sPos == 1
+
+
+@pytest.mark.core
 def testCoreTree_ItemMethods(monkeypatch, mockGUI, mockItems):
     """Check the item methods of the tree."""
     project = NWProject()

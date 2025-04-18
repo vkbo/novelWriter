@@ -659,23 +659,20 @@ class GuiProjectTree(QTreeView):
                 nLevel = 0
 
             sHandle, sPos = SHARED.project.tree.pickParent(node, nLevel, nNote)
-            if not sHandle:
-                SHARED.error(self.tr("Did not find anywhere to add the file or folder!"))
-                return
-
-            newLabel, dlgOk = GuiEditLabel.getLabel(self, text=newLabel)
-            if dlgOk:
-                # Add the file or folder
-                if itemType == nwItemType.FILE:
-                    if tHandle := SHARED.project.newFile(newLabel, sHandle, sPos):
-                        if copyDoc:
-                            SHARED.project.copyFileContent(tHandle, copyDoc)
-                        elif hLevel > 0:
-                            SHARED.project.writeNewFile(tHandle, hLevel, not nNote)
-                        SHARED.project.index.reIndexHandle(tHandle)
-                        SHARED.project.tree.refreshItems([tHandle])
-                else:
-                    tHandle = SHARED.project.newFolder(newLabel, sHandle, sPos)
+            if sHandle:
+                newLabel, dlgOk = GuiEditLabel.getLabel(self, text=newLabel)
+                if dlgOk:
+                    # Add the file or folder
+                    if itemType == nwItemType.FILE:
+                        if tHandle := SHARED.project.newFile(newLabel, sHandle, sPos):
+                            if copyDoc:
+                                SHARED.project.copyFileContent(tHandle, copyDoc)
+                            elif hLevel > 0:
+                                SHARED.project.writeNewFile(tHandle, hLevel, not nNote)
+                            SHARED.project.index.reIndexHandle(tHandle)
+                            SHARED.project.tree.refreshItems([tHandle])
+                    else:
+                        tHandle = SHARED.project.newFolder(newLabel, sHandle, sPos)
 
         # Select the new item automatically
         if tHandle:
