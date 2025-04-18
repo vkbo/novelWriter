@@ -510,7 +510,6 @@ class GuiProjectTree(QTreeView):
         self.customContextMenuRequested.connect(self.openContextMenu)
 
         # Connect signals
-        self.clicked.connect(self._onSingleClick)
         self.doubleClicked.connect(self._onDoubleClick)
         self.collapsed.connect(self._onNodeCollapsed)
         self.expanded.connect(self._onNodeExpanded)
@@ -560,6 +559,9 @@ class GuiProjectTree(QTreeView):
 
     def loadModel(self) -> None:
         """Load and prepare a new project model."""
+        if selectModelOld := self.selectionModel():
+            selectModelOld.disconnect()
+
         self.setModel(SHARED.project.tree.model)
 
         # Lock the column sizes
@@ -574,6 +576,9 @@ class GuiProjectTree(QTreeView):
             header.setSectionResizeMode(ProjectNode.C_STATUS, QtHeaderFixed)
             header.resizeSection(ProjectNode.C_ACTIVE, iPx + 6)
             header.resizeSection(ProjectNode.C_STATUS, iPx + 6)
+
+        if selectModelNew := self.selectionModel():
+            selectModelNew.currentChanged.connect(self._onSelectionChange)
 
         self.restoreExpandedState()
 
@@ -970,10 +975,10 @@ class GuiProjectTree(QTreeView):
     #  Private Slots
     ##
 
-    @pyqtSlot(QModelIndex)
-    def _onSingleClick(self, index: QModelIndex) -> None:
+    @pyqtSlot(QModelIndex, QModelIndex)
+    def _onSelectionChange(self, current: QModelIndex, previous: QModelIndex) -> None:
         """The user changed which item is selected."""
-        if node := self._getNode(index):
+        if node := self._getNode(current):
             self.projView.selectedItemChanged.emit(node.item.itemHandle)
         return
 
