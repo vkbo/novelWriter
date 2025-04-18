@@ -252,7 +252,7 @@ def testCoreTree_PickParent(mockGUI, mockItems):
     # ===============================
 
     # Add a chapter under Part One
-    hChapterOne = tree.create("Chapter One", hPartOne, nwItemType.FILE, pos=sPos)
+    hChapterOne = tree.create("Chapter One", hPartOne, nwItemType.FILE)
     assert hChapterOne is not None
     nChapterOne = tree.nodes[hChapterOne]
     assert nChapterOne.item.itemParent == hPartOne
@@ -273,6 +273,18 @@ def testCoreTree_PickParent(mockGUI, mockItems):
     assert sHandle == hNovelRoot
     assert sPos == 2
 
+    # Add a scene under Chapter Two
+    hSceneOne = tree.create("Scene One", hChapterOne, nwItemType.FILE)
+    assert hSceneOne is not None
+    nSceneOne = tree.nodes[hSceneOne]
+    assert nSceneOne.item.itemParent == hChapterOne
+    nSceneOne.item.setMainHeading("H3")
+
+    # Adding a part next to the scene should also jump a level up
+    sHandle, sPos = tree.pickParent(nSceneOne, 1, False)
+    assert sHandle == hPartOne
+    assert sPos == 1
+
     # Case 3: Documents of Deeper Level
     # =================================
 
@@ -286,6 +298,25 @@ def testCoreTree_PickParent(mockGUI, mockItems):
     assert sHandle == hNovelRoot
     assert sPos == 2
 
+    # Add a page without a heading
+    hPage = tree.create("Page", hNovelRoot, nwItemType.FILE)
+    assert hPage is not None
+    nPage = tree.nodes[hPage]
+    assert nPage.item.itemParent == hNovelRoot
+    nPage.item.setMainHeading("H0")
+
+    # Add a scene below the page
+    hSceneTwo = tree.create("Scene Two", hPage, nwItemType.FILE)
+    assert hSceneTwo is not None
+    nSceneTwo = tree.nodes[hSceneTwo]
+    assert nSceneTwo.item.itemParent == hPage
+    nSceneTwo.item.setMainHeading("H3")
+
+    # A page without a heading should not add anything as a child
+    sHandle, sPos = tree.pickParent(nPage, 3, False)
+    assert sHandle == hNovelRoot
+    assert sPos == 3
+
     # Case 4: Notes
     # =============
 
@@ -293,7 +324,7 @@ def testCoreTree_PickParent(mockGUI, mockItems):
     nCharRoot = tree.nodes[hCharRoot]
 
     # Add a note at root level
-    hNoteOne = tree.create("Note One", hCharRoot, nwItemType.FILE, pos=sPos)
+    hNoteOne = tree.create("Note One", hCharRoot, nwItemType.FILE)
     assert hNoteOne is not None
     nNoteOne = tree.nodes[hNoteOne]
     assert nNoteOne.item.itemClass == nwItemClass.CHARACTER
@@ -306,7 +337,7 @@ def testCoreTree_PickParent(mockGUI, mockItems):
     assert sPos == 1
 
     # Add a child note to Note One
-    hNoteTwo = tree.create("Note Two", hNoteOne, nwItemType.FILE, pos=sPos)
+    hNoteTwo = tree.create("Note Two", hNoteOne, nwItemType.FILE)
     assert hNoteTwo is not None
     nNoteTwo = tree.nodes[hNoteTwo]
     assert nNoteTwo.item.itemClass == nwItemClass.CHARACTER

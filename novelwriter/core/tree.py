@@ -270,16 +270,18 @@ class NWTree:
 
         pNode = sNode.parent()
         pLevel = nwStyles.H_LEVEL.get(pNode.item.mainHeading, 0) if pNode else 0
-        sLevel = 0 if isNote else nwStyles.H_LEVEL.get(sNode.item.mainHeading, 0)
 
-        if pNode and pNode.item.isFileType() and pLevel == hLevel and sLevel > hLevel:
-            # If the selected item is deeper level, but the parent is a document
-            # of the same level, we make it a sibling of the parent (See #2260)
+        # Notes are treated as H0, and scenes and sections both as H3
+        sLevel = min(0 if isNote else nwStyles.H_LEVEL.get(sNode.item.mainHeading, 0), 3)
+
+        if pNode and pNode.item.isFileType() and pLevel >= hLevel and sLevel > hLevel:
+            # If the selected item is a smaller heading and the parent heading
+            # is equal or larger, we make it a sibling of the parent (See #2260)
             return pNode.item.itemParent, pNode.row() + 1
 
-        if sNode.childCount() > 0 and (sLevel < hLevel or isNote):
-            # If the item already has child nodes and is of a lower level
-            # or is a note, we make the new item a child
+        if sNode.childCount() > 0 and (0 < sLevel < hLevel or isNote):
+            # If the selected item already has child nodes and has a larger
+            # heading or is a note, we make the new item a child
             return sNode.item.itemHandle, sNode.childCount()
 
         # The default behaviour is to make the new item a sibling
