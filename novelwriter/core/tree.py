@@ -33,7 +33,7 @@ from typing import TYPE_CHECKING, Literal, overload
 from PyQt6.QtCore import QModelIndex
 
 from novelwriter import SHARED
-from novelwriter.constants import nwFiles, nwLabels, trConst
+from novelwriter.constants import nwFiles, nwLabels, nwStyles, trConst
 from novelwriter.core.item import NWItem
 from novelwriter.core.itemmodel import ProjectModel, ProjectNode
 from novelwriter.enum import nwChange, nwItemClass, nwItemLayout, nwItemType
@@ -261,6 +261,29 @@ class NWTree:
         self._model.layoutChanged.emit()
 
         return
+
+    def pickParent(self, sNode: ProjectNode, hLevel: int, isNote: bool) -> tuple[str | None, int]:
+        """Pick an appropriate parent handle for adding a new item."""
+        if sNode.item.isFolderType() or sNode.item.isRootType():
+            # Always add as a direct child of folders
+            return sNode.item.itemHandle, sNode.childCount()
+
+        pNode = sNode.parent()
+        pLevel = nwStyles.H_LEVEL.get(pNode.item.mainHeading, 0) if pNode else 0
+        sLevel = 0 if isNote else nwStyles.H_LEVEL.get(sNode.item.mainHeading, 0)
+
+        if pNode and pNode.item.isFileType() and pLevel == hLevel and sLevel > hLevel:
+            # If the selected item is deeper level, but the parent is a document
+            # of the same level, we make it a sibling of the parent (See #2260)
+            return pNode.item.itemParent, pNode.row() + 1
+
+        if sNode.childCount() > 0 and (sLevel < hLevel or isNote):
+            # If the item already has child nodes and is of a lower level
+            # or is a note, we make the new item a child
+            return sNode.item.itemHandle, sNode.childCount()
+
+        # The default behaviour is to make the new item a sibling
+        return sNode.item.itemParent, sNode.row() + 1
 
     def refreshItems(self, items: list[str]) -> None:
         """Refresh these items on the GUI. If they are an ordered range,
