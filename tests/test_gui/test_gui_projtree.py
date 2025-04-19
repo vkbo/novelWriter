@@ -134,7 +134,7 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     # Add a new file in the new folder
     hNewFile = "0000000000013"
     projView.setSelectedHandle(hNewFolder, doScroll=True)
-    projTree.newTreeItem(nwItemType.FILE)
+    projTree.newTreeItem(nwItemType.FILE, hLevel=0)
     assert hNewFile in tree
     item = tree[hNewFile]
     assert item is not None
@@ -148,9 +148,28 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
         "Objects", "Trash",
     ]
 
-    # Add a new chapter next to the other new file
-    hNewChapter = "0000000000014"
+    # Add a new partition next to the other new file
+    hNewPart = "0000000000014"
     projView.setSelectedHandle(hNewFile, doScroll=True)
+    projTree.newTreeItem(nwItemType.FILE, hLevel=1)
+    assert hNewPart in tree
+    item = tree[hNewPart]
+    assert item is not None
+    assert item.itemName == "New Part"
+    assert item.itemParent == hNewFolder
+    assert item.itemRoot == C.hNovelRoot
+    assert item.itemClass == nwItemClass.NOVEL
+    assert nwGUI.openDocument(hNewPart)
+    assert nwGUI.docEditor.getText() == "# New Part\n\n"
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
+        "New Folder", "New Document", "New Part", "Plot", "Characters",
+        "Locations", "Objects", "Trash",
+    ]
+
+    # Add a new chapter next to the other new file
+    hNewChapter = "0000000000015"
+    projView.setSelectedHandle(hNewPart, doScroll=True)
     projTree.newTreeItem(nwItemType.FILE, hLevel=2)
     assert hNewChapter in tree
     item = tree[hNewChapter]
@@ -163,12 +182,12 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert nwGUI.docEditor.getText() == "## New Chapter\n\n"
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Chapter", "Plot", "Characters",
-        "Locations", "Objects", "Trash",
+        "New Folder", "New Document", "New Part", "New Chapter", "Plot",
+        "Characters", "Locations", "Objects", "Trash",
     ]
 
     # Add a new scene next to the other new file
-    hNewScene = "0000000000015"
+    hNewScene = "0000000000016"
     projView.setSelectedHandle(hNewChapter, doScroll=True)
     projTree.newTreeItem(nwItemType.FILE, hLevel=3)
     assert hNewScene in tree
@@ -182,8 +201,8 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert nwGUI.docEditor.getText() == "### New Scene\n\n"
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Chapter", "New Scene", "Plot",
-        "Characters", "Locations", "Objects", "Trash",
+        "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
+        "Plot", "Characters", "Locations", "Objects", "Trash",
     ]
 
     # Add a new scene with the content copied from the previous
@@ -191,7 +210,7 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     nwGUI.docEditor.setPlainText("### New Scene\n\nWith Stuff\n\n")
     nwGUI.saveDocument()
 
-    hNewSceneCopy = "0000000000016"
+    hNewSceneCopy = "0000000000017"
     projView.setSelectedHandle(hNewScene, doScroll=True)
     projTree.newTreeItem(nwItemType.FILE, copyDoc=hNewScene)
     assert hNewSceneCopy in tree
@@ -205,12 +224,12 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert nwGUI.docEditor.getText() == "### New Scene\n\nWith Stuff\n\n"
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Chapter", "New Scene", "New Scene",
-        "Plot", "Characters", "Locations", "Objects", "Trash",
+        "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
+        "New Scene", "Plot", "Characters", "Locations", "Objects", "Trash",
     ]
 
     # Add a new file to the characters folder
-    hNewCharacter = "0000000000017"
+    hNewCharacter = "0000000000018"
     projView.setSelectedHandle(C.hCharRoot, doScroll=True)
     projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
     assert hNewCharacter in tree
@@ -224,8 +243,9 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert nwGUI.docEditor.getText() == "# New Note\n\n"
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Chapter", "New Scene", "New Scene",
-        "Plot", "Characters", "New Note", "Locations", "Objects", "Trash",
+        "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
+        "New Scene", "Plot", "Characters", "New Note", "Locations",
+        "Objects", "Trash",
     ]
 
     # Cancel during creation
@@ -235,15 +255,16 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
         projTree.newTreeItem(nwItemType.FILE)
         assert [n.item.itemName for n in tree.model.root.allChildren()] == [
             "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-            "New Folder", "New Document", "New Chapter", "New Scene", "New Scene",
-            "Plot", "Characters", "New Note", "Locations", "Objects", "Trash",
+            "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
+            "New Scene", "Plot", "Characters", "New Note", "Locations",
+            "Objects", "Trash",
         ]
 
     # From Template
     # =============
 
     # Create template folder
-    hTemplateRoot = "0000000000018"
+    hTemplateRoot = "0000000000019"
     projView.setSelectedHandle(hObjectRoot)
     projTree.newTreeItem(nwItemType.ROOT, nwItemClass.TEMPLATE)
     assert hTemplateRoot in tree
@@ -255,13 +276,13 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert item.itemClass == nwItemClass.TEMPLATE
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Chapter", "New Scene", "New Scene",
-        "Plot", "Characters", "New Note", "Locations", "Objects", "Templates",
-        "Trash",
+        "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
+        "New Scene", "Plot", "Characters", "New Note", "Locations",
+        "Objects", "Templates", "Trash",
     ]
 
     # Create scene template
-    hSceneTemplate = "0000000000019"
+    hSceneTemplate = "000000000001a"
     projView.setSelectedHandle(hTemplateRoot, doScroll=True)
     projTree.newTreeItem(nwItemType.FILE, hLevel=3)
     assert hSceneTemplate in tree
@@ -278,13 +299,13 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     nwGUI.saveDocument()
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Chapter", "New Scene", "New Scene",
-        "Plot", "Characters", "New Note", "Locations", "Objects", "Templates",
-        "New Scene Template", "Trash",
+        "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
+        "New Scene", "Plot", "Characters", "New Note", "Locations",
+        "Objects", "Templates", "New Scene Template", "Trash",
     ]
 
     # Create from template
-    hNewFromTemplate = "000000000001a"
+    hNewFromTemplate = "000000000001b"
     projView.setSelectedHandle(hNewSceneCopy, doScroll=True)
     projView.createFileFromTemplate(hSceneTemplate)
     assert hNewFromTemplate in tree
@@ -298,9 +319,9 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert nwGUI.docEditor.getText() == "### New Scene Template\n\nWith Stuff\n\n"
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Chapter", "New Scene", "New Scene",
-        "New Scene Template", "Plot", "Characters", "New Note", "Locations",
-        "Objects", "Templates", "New Scene Template", "Trash",
+        "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
+        "New Scene", "New Scene Template", "Plot", "Characters", "New Note",
+        "Locations", "Objects", "Templates", "New Scene Template", "Trash",
     ]
 
     # Rename Item
@@ -489,7 +510,7 @@ def testGuiProjTree_MouseClicks(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Single click emits a signal
     with qtbot.waitSignal(projView.selectedItemChanged) as signal:
-        projTree._onSingleClick(model.indexFromHandle(C.hNovelRoot))
+        projTree._onSelectionChange(model.indexFromHandle(C.hNovelRoot), QModelIndex())
     assert signal.args[0] == C.hNovelRoot
 
     # Double click on folder expands/collapses it
@@ -1065,7 +1086,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Handles for new objects
     hCharNote     = "0000000000011"
     hNovelNote    = "0000000000012"
-    hTrashDoc    = "0000000000013"
+    hTrashDoc     = "0000000000013"
     hSubNote      = "0000000000014"
     hNewFolderOne = "0000000000015"
     hNewFolderTwo = "0000000000017"
@@ -1090,7 +1111,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
         "New Note", "SubNote", "Plot", "Characters", "New Note", "Locations",
-        "Trash", "New Document",
+        "Trash", "New Part",
     ]
 
     # Pop the menu in various positions and check for success

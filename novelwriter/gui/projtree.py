@@ -275,9 +275,9 @@ class GuiProjectToolBar(QWidget):
         # Add Item Menu
         self.mAdd = QMenu(self)
 
-        self.aAddEmpty = qtAddAction(self.mAdd, trConst(nwLabels.ITEM_DESCRIPTION["document"]))
-        self.aAddEmpty.triggered.connect(
-            qtLambda(self.projTree.newTreeItem, nwItemType.FILE, hLevel=0, isNote=False)
+        self.aAddScene = qtAddAction(self.mAdd, trConst(nwLabels.ITEM_DESCRIPTION["doc_h3"]))
+        self.aAddScene.triggered.connect(
+            qtLambda(self.projTree.newTreeItem, nwItemType.FILE, hLevel=3, isNote=False)
         )
 
         self.aAddChap = qtAddAction(self.mAdd, trConst(nwLabels.ITEM_DESCRIPTION["doc_h2"]))
@@ -285,9 +285,14 @@ class GuiProjectToolBar(QWidget):
             qtLambda(self.projTree.newTreeItem, nwItemType.FILE, hLevel=2, isNote=False)
         )
 
-        self.aAddScene = qtAddAction(self.mAdd, trConst(nwLabels.ITEM_DESCRIPTION["doc_h3"]))
-        self.aAddScene.triggered.connect(
-            qtLambda(self.projTree.newTreeItem, nwItemType.FILE, hLevel=3, isNote=False)
+        self.aAddPart = qtAddAction(self.mAdd, trConst(nwLabels.ITEM_DESCRIPTION["doc_h1"]))
+        self.aAddPart.triggered.connect(
+            qtLambda(self.projTree.newTreeItem, nwItemType.FILE, hLevel=1, isNote=False)
+        )
+
+        self.aAddEmpty = qtAddAction(self.mAdd, trConst(nwLabels.ITEM_DESCRIPTION["document"]))
+        self.aAddEmpty.triggered.connect(
+            qtLambda(self.projTree.newTreeItem, nwItemType.FILE, hLevel=0, isNote=False)
         )
 
         self.aAddNote = qtAddAction(self.mAdd, trConst(nwLabels.ITEM_DESCRIPTION["note"]))
@@ -366,9 +371,10 @@ class GuiProjectToolBar(QWidget):
         self.tbAdd.setThemeIcon("add", "green")
         self.tbMore.setThemeIcon("more_vertical")
 
-        self.aAddEmpty.setIcon(SHARED.theme.getIcon("prj_document", "file"))
-        self.aAddChap.setIcon(SHARED.theme.getIcon("prj_chapter", "chapter"))
         self.aAddScene.setIcon(SHARED.theme.getIcon("prj_scene", "scene"))
+        self.aAddChap.setIcon(SHARED.theme.getIcon("prj_chapter", "chapter"))
+        self.aAddPart.setIcon(SHARED.theme.getIcon("prj_title", "title"))
+        self.aAddEmpty.setIcon(SHARED.theme.getIcon("prj_document", "file"))
         self.aAddNote.setIcon(SHARED.theme.getIcon("prj_note", "note"))
         self.aAddFolder.setIcon(SHARED.theme.getIcon("prj_folder", "folder"))
 
@@ -425,9 +431,10 @@ class GuiProjectToolBar(QWidget):
         """
         nwItem = SHARED.project.tree[tHandle]
         allowDoc = isinstance(nwItem, NWItem) and nwItem.documentAllowed()
-        self.aAddEmpty.setVisible(allowDoc)
-        self.aAddChap.setVisible(allowDoc)
         self.aAddScene.setVisible(allowDoc)
+        self.aAddChap.setVisible(allowDoc)
+        self.aAddPart.setVisible(allowDoc)
+        self.aAddEmpty.setVisible(allowDoc)
         return
 
     ##
@@ -503,7 +510,6 @@ class GuiProjectTree(QTreeView):
         self.customContextMenuRequested.connect(self.openContextMenu)
 
         # Connect signals
-        self.clicked.connect(self._onSingleClick)
         self.doubleClicked.connect(self._onDoubleClick)
         self.collapsed.connect(self._onNodeCollapsed)
         self.expanded.connect(self._onNodeExpanded)
@@ -553,6 +559,9 @@ class GuiProjectTree(QTreeView):
 
     def loadModel(self) -> None:
         """Load and prepare a new project model."""
+        if selectModelOld := self.selectionModel():
+            selectModelOld.disconnect()
+
         self.setModel(SHARED.project.tree.model)
 
         # Lock the column sizes
@@ -567,6 +576,9 @@ class GuiProjectTree(QTreeView):
             header.setSectionResizeMode(ProjectNode.C_STATUS, QtHeaderFixed)
             header.resizeSection(ProjectNode.C_ACTIVE, iPx + 6)
             header.resizeSection(ProjectNode.C_STATUS, iPx + 6)
+
+        if selectModelNew := self.selectionModel():
+            selectModelNew.currentChanged.connect(self._onSelectionChange)
 
         self.restoreExpandedState()
 
@@ -606,12 +618,12 @@ class GuiProjectTree(QTreeView):
         tHandle = None
         if itemType == nwItemType.ROOT and isinstance(itemClass, nwItemClass):
 
-            pos = -1
+            sPos = -1
             if (node := self._getNode(self.currentIndex())) and (itemRoot := node.item.itemRoot):
                 if root := SHARED.project.tree.nodes.get(itemRoot):
-                    pos = root.row() + 1
+                    sPos = root.row() + 1
 
-            tHandle = SHARED.project.newRoot(itemClass, pos)
+            tHandle = SHARED.project.newRoot(itemClass, sPos)
             self.restoreExpandedState()
 
         elif itemType in (nwItemType.FILE, nwItemType.FOLDER):
@@ -624,52 +636,43 @@ class GuiProjectTree(QTreeView):
                 SHARED.error(self.tr("Cannot add new files or folders to the Trash folder."))
                 return
 
-            # Collect some information about the selected item
-            sLevel = nwStyles.H_LEVEL.get(node.item.mainHeading, 0)
-            sIsParent = node.childCount() > 0
-
-            # Set default label and determine if new item is to be added
-            # as child or sibling to the selected item
+            # Set default label and determine where to put the new item
+            nNote = isNote
+            nLevel = hLevel
             if itemType == nwItemType.FILE:
                 if copyDoc and (cItem := SHARED.project.tree[copyDoc]):
+                    nNote = cItem.isNoteLayout()
+                    nLevel = nwStyles.H_LEVEL.get(cItem.mainHeading, 0)
                     newLabel = cItem.itemName
-                    asChild = sIsParent and node.item.isDocumentLayout()
                 elif isNote:
                     newLabel = self.tr("New Note")
-                    asChild = sIsParent
+                elif hLevel == 1:
+                    newLabel = self.tr("New Part")
                 elif hLevel == 2:
                     newLabel = self.tr("New Chapter")
-                    asChild = sIsParent and node.item.isDocumentLayout() and sLevel < 2
                 elif hLevel == 3:
                     newLabel = self.tr("New Scene")
-                    asChild = sIsParent and node.item.isDocumentLayout() and sLevel < 3
                 else:
                     newLabel = self.tr("New Document")
-                    asChild = sIsParent and node.item.isDocumentLayout()
             else:
                 newLabel = self.tr("New Folder")
-                asChild = False
+                nLevel = 0
 
-            pos = -1
-            sHandle = None
-            if not (asChild or node.item.isFolderType() or node.item.isRootType()):
-                pos = node.row() + 1
-                sHandle = node.item.itemParent
-
-            sHandle = sHandle or node.item.itemHandle
-            newLabel, dlgOk = GuiEditLabel.getLabel(self, text=newLabel)
-            if dlgOk:
-                # Add the file or folder
-                if itemType == nwItemType.FILE:
-                    if tHandle := SHARED.project.newFile(newLabel, sHandle, pos):
-                        if copyDoc:
-                            SHARED.project.copyFileContent(tHandle, copyDoc)
-                        elif hLevel > 0:
-                            SHARED.project.writeNewFile(tHandle, hLevel, not isNote)
-                        SHARED.project.index.reIndexHandle(tHandle)
-                        SHARED.project.tree.refreshItems([tHandle])
-                else:
-                    tHandle = SHARED.project.newFolder(newLabel, sHandle, pos)
+            sHandle, sPos = SHARED.project.tree.pickParent(node, nLevel, nNote)
+            if sHandle:
+                newLabel, dlgOk = GuiEditLabel.getLabel(self, text=newLabel)
+                if dlgOk:
+                    # Add the file or folder
+                    if itemType == nwItemType.FILE:
+                        if tHandle := SHARED.project.newFile(newLabel, sHandle, sPos):
+                            if copyDoc:
+                                SHARED.project.copyFileContent(tHandle, copyDoc)
+                            elif hLevel > 0:
+                                SHARED.project.writeNewFile(tHandle, hLevel, not nNote)
+                            SHARED.project.index.reIndexHandle(tHandle)
+                            SHARED.project.tree.refreshItems([tHandle])
+                    else:
+                        tHandle = SHARED.project.newFolder(newLabel, sHandle, sPos)
 
         # Select the new item automatically
         if tHandle:
@@ -969,10 +972,10 @@ class GuiProjectTree(QTreeView):
     #  Private Slots
     ##
 
-    @pyqtSlot(QModelIndex)
-    def _onSingleClick(self, index: QModelIndex) -> None:
+    @pyqtSlot(QModelIndex, QModelIndex)
+    def _onSelectionChange(self, current: QModelIndex, previous: QModelIndex) -> None:
         """The user changed which item is selected."""
-        if node := self._getNode(index):
+        if node := self._getNode(current):
             self.projView.selectedItemChanged.emit(node.item.itemHandle)
         return
 
@@ -1198,9 +1201,10 @@ class _TreeContextMenu(QMenu):
     def _itemCreation(self) -> None:
         """Add create item actions."""
         menu = qtAddMenu(self, self.tr("Create New ..."))
-        menu.addAction(self._view.projBar.aAddEmpty)
-        menu.addAction(self._view.projBar.aAddChap)
         menu.addAction(self._view.projBar.aAddScene)
+        menu.addAction(self._view.projBar.aAddChap)
+        menu.addAction(self._view.projBar.aAddPart)
+        menu.addAction(self._view.projBar.aAddEmpty)
         menu.addAction(self._view.projBar.aAddNote)
         menu.addAction(self._view.projBar.aAddFolder)
         return
