@@ -31,7 +31,7 @@ where applicable.
    A full description of the current file format is available in the
    :download:`File Format Spec 1.5 <fileformatspec15.pdf>`
    document, available as a PDF. This document is intended for contributors to novelWriter, those
-   building project conversion tools, either to or from tne novelWriter format, and for those who
+   building project conversion tools, either to or from the novelWriter format, and for those who
    wish to make their own templating system.
 
 
