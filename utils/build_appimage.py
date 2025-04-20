@@ -43,8 +43,8 @@ def appImage(args: argparse.Namespace) -> None:
         )
         sys.exit(1)
 
-    if sys.platform == "linux":
-        print("ERROR: Command 'build-ubuntu' can only be used on Linux")
+    if sys.platform != "linux":
+        print("ERROR: Command 'build-appimage' can only be used on Linux")
         sys.exit(1)
 
     print("")
