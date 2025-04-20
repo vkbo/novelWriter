@@ -49,8 +49,7 @@ careful when using this version on live writing projects, and make sure you take
 * The move to Qt6 is complete, and the new minimum requirement is Qt 6.4. Issues #864, #1142,
   #2192, #2193, #2194 and #2195. PRs #2184, #2187, #2190, #2191, #2196, #2204, #2301 and #2306.
 * Support for Python 3.9 has been dropped. Due to the Qt6 change, older distros are no longer
-  supported. The oldest Ubuntu release still supported is 22.04, which comes with Python 3.10.
-  PR #2182.
+  supported. The oldest Ubuntu release still supported is 24.04. PR #2182.
 * The Windows release now uses a custom novelWriter.exe launcher rather than calling the Python exe
   directly with novelWriter.pyw as an argument. This means novelWriter can also be launched from
   its install folder, and desktop shortcuts created directly. It also simplifies the registry
