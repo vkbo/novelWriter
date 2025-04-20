@@ -72,11 +72,11 @@ def buildHtmlDocs(args: argparse.Namespace | None = None) -> None:
     print("==================")
     print("")
 
-    bldRoot = ROOT_DIR / "dist_doc"
+    bldRoot = ROOT_DIR / "dist_doc" / "html"
     docsDir = ROOT_DIR / "docs"
     locsDir = ROOT_DIR / "docs" / "source" / "locales"
     locsDir.mkdir(exist_ok=True)
-    bldRoot.mkdir(exist_ok=True)
+    bldRoot.mkdir(exist_ok=True, parents=True)
 
     lang = args.lang if args else ["all"]
     build = []
@@ -99,8 +99,7 @@ def buildHtmlDocs(args: argparse.Namespace | None = None) -> None:
             print("")
             if outDir.exists():
                 shutil.rmtree(outDir)
-            outDir.mkdir()
-            (docsDir / "build" / "html").rename(outDir / "html")
+            (docsDir / "build" / "html").rename(outDir)
         else:
             raise Exception(f"Build returned error code {ex}")
 
