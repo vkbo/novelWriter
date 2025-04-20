@@ -1,5 +1,77 @@
 # novelWriter Changelog
 
+## Version 2.7 Beta 1 [2025-04-20]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+### Detailed Changelog
+
+**New Features**
+
+* The TypIcons icon set has been dropped and all individual icon files removed. Instead, three new
+  icon themes have been added in a total of nine different variations. These icon themes are kept
+  in single files and generated from official sources. They are also colourised at runtime using
+  the GUI theme colours for consistency. Issue #2159. PRs #2171, #2174, #2177, #2178 and #2203.
+* Support for Story Structure comments have been added. These are special in-text comments that can
+  be used for analysing the story structure using various writing techniques. The comments are
+  indexed by novelWriter and can be included in manuscripts as well as exported to CSV files from
+  the Outline View for use with spread sheet software. Idea and documentation by Alan Langford
+  (@instancezero). Issues #1784, #2288, #2289 and #2296. PRs #2255, #2284, #2293, #2295 and #2298.
+
+**Improvements**
+
+* The thickness of the editor cursor can now be set in Preferences. Issue #2219. PR #2230.
+* The Novel View has been rewritten from scratch using a model/view framework. Several minor issues
+  were resolved in the process. Issues #942 and #2253. PR #2272.
+* The logic of where new documents are added in the project tree has been rewritten and improved.
+  The algorithm should now avoid adding chapters within chapters when a scene inside a chapter is
+  selected. Otherwise the behaviour should be similar to before, but it will now also apply the
+  same logic when new documents are created from templates. Issue #2260. PR #2302.
+* Dialogue highlighting should now work a little better for single quoted dialogue when it
+  encounters apostrophes in the same text. Issue #2271. PR #2300.
+* Quoted text is no longer highlighted as dialogue in the editor when the document is a project
+  note. This is consistent with how the viewer and manuscript tool work. Issue #2297. PR #2299.
+
+**Documentation**
+
+* Internationalisation for the documentation is now properly supported in the code base, and new
+  contributions are possible. Discussion #1834. PRs #2224 and #2227.
+
+**Internationalisation**
+
+* French translation files for the documentation were added by @Karduin. PR #2226.
+
+**Packaging and Installation**
+
+* The move to Qt6 is complete, and the new minimum requirement is Qt 6.4. Issues #864, #1142,
+  #2192, #2193, #2194 and #2195. PRs #2184, #2187, #2190, #2191, #2196, #2204, #2301 and #2306.
+* Support for Python 3.9 has been dropped. Due to the Qt6 change, older distros are no longer
+  supported. The oldest Ubuntu release still supported is 22.04, which comes with Python 3.10.
+  PR #2182.
+* The Windows release now uses a custom novelWriter.exe launcher rather than calling the Python exe
+  directly with novelWriter.pyw as an argument. This means novelWriter can also be launched from
+  its install folder, and desktop shortcuts created directly. It also simplifies the registry
+  entries. PRs #2197, #2198 and #2199.
+* The Appdata XML files used with AppImage releases has been updated and broken links fixed.
+  PR #2229.
+* RPM packages are now available for the 2.6.3 release on Fedora 41 and 42. Several minor
+  adjustments to the code base has been made to make the packaging process easier for the 2.7
+  release. The Fedora releases are maintained by Benson Muite (@bkmgit). Issues #907, #2276 and
+  #2303. PRs #2305 and #2307.
+* The shebang from the launch script on Windows has been removed. Issue #1284. PR #2280.
+
+**Code Improvements**
+
+* The log output now obeys the `NO_COLOR` and `FORCE_COLOR` environment variables. PR #2228.
+* The CI/CD pipeline now runs type checking on the code base using Pyright. Issue #2276. PR #2279.
+* The CI/CD pipeline now uses Ruff to check code style and format. PRs #2281, #2282 and #2287.
+* The code base has been updated to conform to new linting rules. PR #2201.
+
+----
+
 ## Version 2.6.3 [2025-02-16]
 
 ### Release Notes
