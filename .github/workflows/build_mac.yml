@@ -10,7 +10,7 @@ jobs:
     needs: buildAssets
     runs-on: macos-latest
     env:
-      PYTHON_VERSION: "3.12"
+      PYTHON_VERSION: "3.13"
       PACKAGE_ARCH: x86_64
       MINICONDA_ARCH: x86_64
     steps:
@@ -41,7 +41,7 @@ jobs:
     needs: buildAssets
     runs-on: macos-latest
     env:
-      PYTHON_VERSION: "3.12"
+      PYTHON_VERSION: "3.13"
       PACKAGE_ARCH: aarch64
       MINICONDA_ARCH: arm64
     steps:

@@ -10,13 +10,13 @@ jobs:
     needs: buildAssets
     runs-on: ubuntu-latest
     env:
-      PYTHON_VERSION: "3.12"
+      PYTHON_VERSION: "3.13"
       LINUX_TAG: "manylinux_2_28_x86_64"
     steps:
       - name: Python Setup
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13"
           architecture: x64
 
       - name: Install Packages (pip)
