@@ -4,8 +4,6 @@
 How Data is Stored
 ******************
 
-.. _documentation: https://docs.novelwriter.io/
-
 This chapter contains details of how novelWriter stores and handles the project data.
 
 
@@ -36,14 +34,7 @@ The project XML file is indent-formatted, and is suitable for diff tools and ver
 most of the file will stay static, although a timestamp is set in the meta section on line 2, and
 various meta data entries incremented, on each save.
 
-.. only:: not html
-
-   A full project file format specification is available in the online documentation_.
-
-.. only:: html
-
-   A full description of the current file format is available in the
-   :download:`File Format Spec 1.5 <fileformatspec15.pdf>` document, available as a PDF.
+A full project file format specification is available under "More Documents".
 
 
 Project Documents

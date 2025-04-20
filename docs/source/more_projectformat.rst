@@ -14,25 +14,13 @@ changes require minor actions from the user.
 The key changes in the formats are listed in this chapter, as well as the user actions required,
 where applicable.
 
-.. only:: not html
-
-   A full project file format specification is available in the online documentation_.
+A full project file format specification is available under "More Documents".
 
 .. caution::
    When you update a project from one format version to the next, the project can no longer be
    opened by a version of novelWriter prior to the version where the new file format was
    introduced. You will get a notification about any updates to your project file format and will
    have the option to decline the upgrade.
-
-.. only:: html
-
-   **For Developers**
-
-   A full description of the current file format is available in the
-   :download:`File Format Spec 1.5 <fileformatspec15.pdf>`
-   document, available as a PDF. This document is intended for contributors to novelWriter, those
-   building project conversion tools, either to or from the novelWriter format, and for those who
-   wish to make their own templating system.
 
 
 .. _a_prjfmt_1_5:
