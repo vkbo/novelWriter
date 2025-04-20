@@ -273,7 +273,7 @@ if __name__ == "__main__":
     cmdBuildAppImage = parsers.add_parser(
         "build-appimage", help=(
             "Build an AppImage. "
-            "Argument --linux-tag defaults manylinux_2_28_x86_64, and --python-version to 3.11."
+            "Argument --linux-tag defaults manylinux_2_28_x86_64, and --python-version to 3.13."
         )
     )
     cmdBuildAppImage.add_argument(
@@ -286,7 +286,7 @@ if __name__ == "__main__":
         ),
     )
     cmdBuildAppImage.add_argument(
-        "--python-version", default="3.11", help="Python version (e.g. 3.11)"
+        "--python-version", default="3.13", help="Python version (e.g. 3.13)"
     )
     cmdBuildAppImage.set_defaults(func=utils.build_appimage.appImage)
 
