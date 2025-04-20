@@ -34,7 +34,7 @@ The project XML file is indent-formatted, and is suitable for diff tools and ver
 most of the file will stay static, although a timestamp is set in the meta section on line 2, and
 various meta data entries incremented, on each save.
 
-A full project file format specification is available from the "More Documents" link.
+A full project file format specification is available under "More Documents".
 
 
 Project Documents

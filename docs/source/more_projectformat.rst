@@ -14,7 +14,7 @@ changes require minor actions from the user.
 The key changes in the formats are listed in this chapter, as well as the user actions required,
 where applicable.
 
-A full project file format specification is available from the "More Documents" link.
+A full project file format specification is available under "More Documents".
 
 .. caution::
    When you update a project from one format version to the next, the project can no longer be
