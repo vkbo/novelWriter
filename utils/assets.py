@@ -90,7 +90,9 @@ def buildSampleZip(args: argparse.Namespace | None = None) -> None:
 
     if srcSample.is_dir():
         dstSample.unlink(missing_ok=True)
-        with zipfile.ZipFile(dstSample, "w") as zipObj:
+        with zipfile.ZipFile(
+            dstSample, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=3
+        ) as zipObj:
             print("Compressing: nwProject.nwx")
             zipObj.write(srcSample / "nwProject.nwx", "nwProject.nwx")
             for doc in (srcSample / "content").iterdir():
