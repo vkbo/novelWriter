@@ -21,7 +21,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import argparse
-import os
 import subprocess
 import sys
 import zipfile
@@ -29,51 +28,7 @@ import zipfile
 from pathlib import Path
 
 from utils.common import ROOT_DIR, writeFile
-
-
-def buildPdfManual(args: argparse.Namespace | None = None) -> None:
-    """This function will build the documentation as manual.pdf."""
-    print("")
-    print("Building PDF Manual")
-    print("===================")
-    print("")
-
-    buildFile = ROOT_DIR / "docs" / "build" / "latex" / "manual.pdf"
-    finalFile = ROOT_DIR / "novelwriter" / "assets" / "manual.pdf"
-    finalFile.unlink(missing_ok=True)
-
-    try:
-        subprocess.call(["make", "clean"], cwd="docs")
-        exCode = subprocess.call(["make", "latexpdf"], cwd="docs")
-        if exCode == 0:
-            print("")
-            buildFile.rename(finalFile)
-        else:
-            raise Exception(f"Build returned error code {exCode}")
-
-        print("PDF manual build: OK")
-        print("")
-
-    except Exception as exc:
-        print("PDF manual build: FAILED")
-        print("")
-        print(str(exc))
-        print("")
-        print("Dependencies:")
-        print(" * pip install sphinx")
-        print(" * Package latexmk")
-        print(" * LaTeX build system")
-        print("")
-        print(" On Debian/Ubuntu, install: python3-sphinx latexmk texlive texlive-latex-extra")
-        print("")
-        sys.exit(1)
-
-    if not finalFile.is_file():
-        print("No output file was found!")
-        print("")
-        sys.exit(1)
-
-    return
+from utils.docs import buildPdfDocAssets
 
 
 def buildSampleZip(args: argparse.Namespace | None = None) -> None:
@@ -90,7 +45,9 @@ def buildSampleZip(args: argparse.Namespace | None = None) -> None:
 
     if srcSample.is_dir():
         dstSample.unlink(missing_ok=True)
-        with zipfile.ZipFile(dstSample, "w") as zipObj:
+        with zipfile.ZipFile(
+            dstSample, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=3
+        ) as zipObj:
             print("Compressing: nwProject.nwx")
             zipObj.write(srcSample / "nwProject.nwx", "nwProject.nwx")
             for doc in (srcSample / "content").iterdir():
@@ -249,84 +206,6 @@ def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
     return
 
 
-def updateDocsTranslationSources(args: argparse.Namespace) -> None:
-    """Build the documentation .po files."""
-    print("")
-    print("Building Docs Translation Files")
-    print("===============================")
-    print("")
-
-    docsDir = ROOT_DIR / "docs"
-    locsDir = ROOT_DIR / "docs" / "source" / "locales"
-    locsDir.mkdir(exist_ok=True)
-
-    print("Generating POT Files")
-    subprocess.call(["make", "gettext"], cwd=docsDir)
-    print("")
-
-    lang = args.lang
-    update = []
-    if lang == ["all"]:
-        update = [i.stem for i in locsDir.iterdir() if i.is_dir()]
-    else:
-        update = lang
-
-    print("Generating PO Files")
-    print("Languages: ", update)
-    print("")
-
-    for code in update:
-        subprocess.call(["sphinx-intl", "update", "-p", "build/gettext", "-l", code], cwd=docsDir)
-        print("")
-
-    print("Done")
-    print("")
-
-    return
-
-
-def buildDocsTranslationAssets(args: argparse.Namespace | None = None) -> None:
-    """Build the documentation i18n PDF files."""
-    from PyQt6.QtCore import QLocale
-
-    print("")
-    print("Building Docs Manuals")
-    print("=====================")
-    print("")
-
-    docsDir = ROOT_DIR / "docs"
-    locsDir = ROOT_DIR / "docs" / "source" / "locales"
-    pdfFile = ROOT_DIR / "docs" / "build" / "latex" / "manual.pdf"
-    locsDir.mkdir(exist_ok=True)
-
-    lang = args.lang if args else ["all"]
-    build = []
-    if lang == ["all"]:
-        build = [i.stem for i in locsDir.iterdir() if i.is_dir()]
-    else:
-        build = lang
-
-    for code in build:
-        data = (locsDir / f"authors_{code}.conf").read_text(encoding="utf-8")
-        authors = [x for x in data.splitlines() if x and not x.startswith("#")]
-        env = os.environ.copy()
-        env["SPHINX_I18N_AUTHORS"] = ", ".join(authors)
-        exCode = subprocess.call(
-            f"make -e SPHINXOPTS=\"-D language='{code}'\" clean latexpdf",
-            cwd=docsDir, env=env, shell=True
-        )
-        if exCode == 0:
-            print("")
-            name = f"manual_{QLocale(code).name()}.pdf"
-            pdfFile.rename(ROOT_DIR / "novelwriter" / "assets" / name)
-        else:
-            raise Exception(f"Build returned error code {exCode}")
-
-    print("")
-
-    return
-
-
 def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
     """Remove assets built by this script."""
     print("")
@@ -350,8 +229,7 @@ def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
 def buildAllAssets(args: argparse.Namespace) -> None:
     """Build all assets."""
     cleanBuiltAssets()
-    buildPdfManual()
     buildSampleZip()
     buildTranslationAssets()
-    buildDocsTranslationAssets()
+    buildPdfDocAssets()
     return
