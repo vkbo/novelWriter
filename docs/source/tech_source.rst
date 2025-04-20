@@ -153,8 +153,9 @@ You can also build a PDF manual from the documentation using the ``pkgutils.py``
 
 .. code-block:: bash
 
-   python pkgutils.py manual
+   python pkgutils.py docs-pdf en
 
-This will build the documentation as a PDF using LaTeX. The file will then be copied into the
-assets folder and made available in the **Help** menu in novelWriter. The Sphinx build system has a
-few extra dependencies when building the PDF. Please check the `Sphinx Docs`_ for more details.
+This will build the English documentation as a PDF using LaTeX. The file will then be copied into
+the assets folder and made available in the **Help** menu in novelWriter. Replace ``en`` with
+``all`` to build for all languages. The Sphinx build system has a few extra dependencies when
+building the PDF. Please check the `Sphinx Docs`_ for more details.

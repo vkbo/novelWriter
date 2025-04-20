@@ -303,7 +303,8 @@ class Config:
 
     @property
     def pdfDocs(self) -> Path | None:
-        return self._manuals.get(f"manual_{self.locale.name()}", self._manuals.get("manual"))
+        """Return the local manual PDF file, if any exist."""
+        return self._manuals.get(f"manual_{self.locale.bcp47Name()}", self._manuals.get("manual"))
 
     @property
     def nwLangPath(self) -> Path:
