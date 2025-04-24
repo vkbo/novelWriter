@@ -274,6 +274,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
 
     # Launch main GUI
     nwGUI = GuiMain()
+    nwGUI.showNormal()
     nwGUI.postLaunchTasks(cmdOpen)
 
     sys.exit(app.exec())
