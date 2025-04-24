@@ -65,7 +65,7 @@ careful when using this version on live writing projects, and make sure you take
 **Code Improvements**
 
 * The log output now obeys the `NO_COLOR` and `FORCE_COLOR` environment variables. PR #2228.
-* The CI/CD pipeline now runs type checking on the code base using Pyright. Issue #2276. PR #2279.
+* The CI/CD pipeline now runs type checking on the code base using Pyright. PR #2279.
 * The CI/CD pipeline now uses Ruff to check code style and format. PRs #2281, #2282 and #2287.
 * The code base has been updated to conform to new linting rules. PR #2201.
 
