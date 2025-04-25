@@ -285,6 +285,8 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     splash.finish(nwGUI)
 
     CONFIG.finishStartup()
+    del splash
+
     nwGUI.postLaunchTasks(cmdOpen)
 
     sys.exit(app.exec())
