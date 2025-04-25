@@ -33,6 +33,7 @@ from novelwriter import (
     BLUE, CONFIG, END, FILE, LINE, LVLC, LVLP, TEXT, TIME, WHITE, _createApp,
     logger, main
 )
+from novelwriter.splash import NSplashScreen
 
 from tests.tools import clearLogHandlers
 
@@ -40,6 +41,8 @@ from tests.tools import clearLogHandlers
 @pytest.mark.base
 def testBaseInit_Launch(caplog, monkeypatch, fncPath):
     """Check launching the main GUI. This test """
+    monkeypatch.setattr(NSplashScreen, "finish", lambda *a: None)
+    monkeypatch.setattr("novelwriter.splash.sleep", lambda *a: None)
     monkeypatch.setattr("novelwriter._createApp", lambda *a: Mock())
     monkeypatch.setattr("novelwriter.guimain.GuiMain", Mock())
     monkeypatch.setattr(sys, "exit", Mock())
@@ -77,6 +80,9 @@ def testBaseInit_CreateApp(caplog, monkeypatch, fncPath):
 @pytest.mark.base
 def testBaseInit_Options(monkeypatch, fncPath):
     """Test command line options for logging level."""
+    monkeypatch.setattr(NSplashScreen, "finish", lambda *a: None)
+    monkeypatch.setattr("novelwriter.splash.sleep", lambda *a: None)
+
     gui = Mock()
     app = Mock()
     app.exec = Mock(return_value=0)

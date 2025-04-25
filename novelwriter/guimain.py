@@ -314,6 +314,7 @@ class GuiMain(QMainWindow):
         logger.debug("Ready: GUI")
         logger.info("novelWriter is ready ...")
         self.mainStatus.setStatusMessage(self.tr("novelWriter is ready ..."))
+        CONFIG.splashMessage("novelWriter is ready ...")
 
         return
 

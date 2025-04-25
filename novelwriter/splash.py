@@ -70,5 +70,5 @@ class NSplashScreen(QSplashScreen):
         self.showMessage(message)
         if message:
             logger.info("[Splash] %s", message)
-        sleep(0.05)
+        sleep(0.025)
         return
