@@ -310,11 +310,11 @@ class GuiMain(QMainWindow):
         self.asProjTimer.start()
         self.asDocTimer.start()
         self.mainStatus.clearStatus()
-        self.showNormal()
 
         logger.debug("Ready: GUI")
         logger.info("novelWriter is ready ...")
         self.mainStatus.setStatusMessage(self.tr("novelWriter is ready ..."))
+        CONFIG.splashMessage("novelWriter is ready ...")
 
         return
 
@@ -340,6 +340,15 @@ class GuiMain(QMainWindow):
             logger.info("Command line path: %s", cmdOpen)
             self.openProject(cmdOpen)
 
+        # Add a small delay for the window coordinates to be ready
+        # before showing any dialogs
+        QTimer.singleShot(50, self.showPostLaunchDialogs)
+
+        return
+
+    @pyqtSlot()
+    def showPostLaunchDialogs(self) -> None:
+        """Show post launch dialogs."""
         if not SHARED.hasProject:
             self.showWelcomeDialog()
 

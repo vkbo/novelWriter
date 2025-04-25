@@ -37,20 +37,21 @@ from PyQt6.QtCore import (
     PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QLibraryInfo,
     QLocale, QStandardPaths, QSysInfo, QTranslator
 )
-from PyQt6.QtGui import QFont, QFontDatabase
+from PyQt6.QtGui import QFont, QFontDatabase, QFontMetrics
 from PyQt6.QtWidgets import QApplication
 
 from novelwriter.common import (
     NWConfigParser, checkInt, checkPath, describeFont, fontMatcher,
     formatTimeStamp
 )
-from novelwriter.constants import nwFiles, nwUnicode
+from novelwriter.constants import nwFiles, nwHtmlUnicode, nwUnicode
 from novelwriter.error import formatException, logException
 
 if TYPE_CHECKING:
     from datetime import datetime
 
     from novelwriter.core.projectdata import NWProjectData
+    from novelwriter.splash import NSplashScreen
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +67,7 @@ class Config:
         "_appPath", "_appRoot", "_backPath", "_backupPath", "_confPath", "_dLocale", "_dShortDate",
         "_dShortDateTime", "_dataPath", "_errData", "_hasError", "_homePath", "_manuals",
         "_nwLangPath", "_qLocale", "_qtLangPath", "_qtTrans", "_recentPaths", "_recentProjects",
-        "allowOpenDial", "altDialogClose", "altDialogOpen", "appHandle", "appName",
+        "_splash", "allowOpenDial", "altDialogClose", "altDialogOpen", "appHandle", "appName",
         "askBeforeBackup", "askBeforeExit", "autoSaveDoc", "autoSaveProj", "autoScroll",
         "autoScrollPos", "autoSelect", "backupOnClose", "cursorWidth", "dialogLine", "dialogStyle",
         "doJustify", "doReplace", "doReplaceDQuote", "doReplaceDash", "doReplaceDots",
@@ -93,6 +94,8 @@ class Config:
 
         # Initialisation
         # ==============
+
+        self._splash = None
 
         # Set Application Variables
         self.appName   = "novelWriter"
@@ -497,6 +500,12 @@ class Config:
 
         return sorted(langList.items(), key=lambda x: x[0])
 
+    def splashMessage(self, message: str) -> None:
+        """Send a message to the splash screen."""
+        if self._splash:
+            self._splash.showStatus(message)
+        return
+
     ##
     #  Config Actions
     ##
@@ -543,6 +552,8 @@ class Config:
 
     def initLocalisation(self, nwApp: QApplication) -> None:
         """Initialise the localisation of the GUI."""
+        self.splashMessage("Loading localisation ...")
+
         self._qLocale = QLocale(self.guiLocale)
         QLocale.setDefault(self._qLocale)
         self._qtTrans = {}
@@ -568,8 +579,11 @@ class Config:
 
         return
 
-    def loadConfig(self) -> bool:
+    def loadConfig(self, splash: NSplashScreen | None = None) -> bool:
         """Load preferences from file and replace default settings."""
+        self._splash = splash
+        self.splashMessage("Loading user configuration ...")
+
         logger.debug("Loading config file")
 
         conf = NWConfigParser()
@@ -689,6 +703,9 @@ class Config:
 
         # Check Values
         # ============
+
+        self._prepareFont(self.guiFont, "GUI")
+        self._prepareFont(self.textFont, "document")
 
         # If we're using straight quotes, disable auto-replace
         if self.fmtSQuoteOpen == self.fmtSQuoteClose == "'" and self.doReplaceSQuote:
@@ -820,6 +837,11 @@ class Config:
 
         return True
 
+    def finishStartup(self) -> None:
+        """Call after startup is complete."""
+        self._splash = None
+        return
+
     ##
     #  Internal Functions
     ##
@@ -840,6 +862,17 @@ class Config:
         else:
             self.hasEnchant = True
             logger.debug("Checking package 'pyenchant': OK")
+        return
+
+    def _prepareFont(self, font: QFont, kind: str) -> None:
+        """Check Unicode availability in font. This also initialises any
+        alternative character used for missing glyphs. See #2315.
+        """
+        self.splashMessage(f"Initialising {kind} font: {font.family()}")
+        metrics = QFontMetrics(font)
+        for char in nwHtmlUnicode.U_TO_H.keys():
+            if not metrics.inFont(char):  # type: ignore
+                logger.warning("No glyph U+%04x in font", ord(char))  # pragma: no cover
         return
 
 

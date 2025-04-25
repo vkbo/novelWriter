@@ -130,14 +130,6 @@ class GuiTheme:
         self._availSyntax: dict[str, Path] = {}
         self._styleSheets: dict[str, str] = {}
 
-        _listConf(self._availSyntax, CONFIG.assetPath("syntax"), ".conf")
-        _listConf(self._availThemes, CONFIG.assetPath("themes"), ".conf")
-        _listConf(self._availSyntax, CONFIG.dataPath("syntax"), ".conf")
-        _listConf(self._availThemes, CONFIG.dataPath("themes"), ".conf")
-
-        self.loadTheme()
-        self.loadSyntax()
-
         # Icon Functions
         self.getIcon = self.iconCache.getIcon
         self.getPixmap = self.iconCache.getPixmap
@@ -186,6 +178,15 @@ class GuiTheme:
         logger.debug("Text 'N' Height: %d", self.textNHeight)
         logger.debug("Text 'N' Width: %d", self.textNWidth)
 
+        # Process Themes
+        _listConf(self._availSyntax, CONFIG.assetPath("syntax"), ".conf")
+        _listConf(self._availThemes, CONFIG.assetPath("themes"), ".conf")
+        _listConf(self._availSyntax, CONFIG.dataPath("syntax"), ".conf")
+        _listConf(self._availThemes, CONFIG.dataPath("themes"), ".conf")
+
+        self.loadTheme()
+        self.loadSyntax()
+
         return
 
     ##
@@ -218,6 +219,7 @@ class GuiTheme:
             logger.error("Could not load GUI theme")
             return False
 
+        CONFIG.splashMessage("Loading GUI theme ...")
         logger.info("Loading GUI theme '%s'", theme)
         parser = NWConfigParser()
         try:
@@ -357,6 +359,8 @@ class GuiTheme:
         QApplication.setPalette(self._guiPalette)
         self._buildStyleSheets(self._guiPalette)
 
+        CONFIG.splashMessage(f"Loaded GUI theme: {meta.name}")
+
         return True
 
     def loadSyntax(self) -> bool:
@@ -371,6 +375,7 @@ class GuiTheme:
             logger.error("Could not load syntax theme")
             return False
 
+        CONFIG.splashMessage("Loading syntax theme ...")
         logger.info("Loading syntax theme '%s'", theme)
         parser = NWConfigParser()
         try:
@@ -417,6 +422,8 @@ class GuiTheme:
             syntax.repTag = self._parseColor(parser, sec, "replacetag")
             syntax.mod    = self._parseColor(parser, sec, "modifier")
             syntax.mark   = self._parseColor(parser, sec, "texthighlight")
+
+        CONFIG.splashMessage(f"Loaded syntax theme: {meta.name}")
 
         self.syntaxMeta = meta
         self.syntaxTheme = syntax
@@ -633,6 +640,7 @@ class GuiIcons:
             logger.error("Could not load icon theme")
             return False
 
+        CONFIG.splashMessage("Loading icon theme ...")
         logger.info("Loading icon theme '%s'", theme)
         try:
             meta = ThemeMeta()
@@ -656,6 +664,9 @@ class GuiIcons:
             logException()
             return False
 
+        CONFIG.splashMessage(f"Loaded icon theme: {meta.name}")
+        CONFIG.splashMessage("Generating additional icons ...")
+
         # Set colour overrides for project item icons
         if (override := CONFIG.iconColTree) != "theme":
             color = self._svgColors.get(override, b"#000000")
@@ -667,6 +678,10 @@ class GuiIcons:
                 self._svgColors["chapter"] = color
                 self._svgColors["scene"] = color
                 self._svgColors["note"] = color
+
+        # Populate generated icons cache
+        self.getHeaderDecoration(0)
+        self.getHeaderDecorationNarrow(0)
 
         return True
 
@@ -822,8 +837,8 @@ class GuiIcons:
     ##
 
     def _loadIcon(self, name: str, color: str | None = None, w: int = 24, h: int = 24) -> QIcon:
-        """Load an icon from the assets themes folder. Is guaranteed to
-        return a QIcon.
+        """Load an icon from the assets themes folder. This function is
+        guaranteed to return a QIcon.
         """
         # If we just want the app icons, return right away
         if name == "novelwriter":

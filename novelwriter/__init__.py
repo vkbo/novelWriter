@@ -35,6 +35,7 @@ from PyQt6.QtWidgets import QApplication, QErrorMessage
 from novelwriter.config import Config
 from novelwriter.error import exceptionHandler
 from novelwriter.shared import SharedData
+from novelwriter.splash import NSplashScreen
 
 if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
@@ -267,13 +268,25 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     # Connect the exception handler before making the main GUI
     sys.excepthook = exceptionHandler
 
+    splash = NSplashScreen()
+    splash.show()
+
+    splash.showStatus("")
+    splash.showStatus("Starting novelWriter ...")
+
     # Run Config steps that require the QApplication
-    CONFIG.loadConfig()
+    CONFIG.loadConfig(splash)
     CONFIG.initLocalisation(app)
     SHARED.initTheme(GuiTheme())
 
     # Launch main GUI
     nwGUI = GuiMain()
+    nwGUI.showNormal()
+    splash.finish(nwGUI)
+
+    CONFIG.finishStartup()
+    del splash
+
     nwGUI.postLaunchTasks(cmdOpen)
 
     sys.exit(app.exec())
