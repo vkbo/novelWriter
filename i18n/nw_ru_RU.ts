@@ -4146,7 +4146,7 @@
     <message>
       <location filename="../novelwriter/constants.py" line="338" />
       <source>Characters</source>
-      <translation type="unfinished">Персонажи</translation>
+      <translation type="unfinished">Символов</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="339" />
