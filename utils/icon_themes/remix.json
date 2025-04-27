@@ -94,7 +94,7 @@
     "open": "file-upload",
     "panel": "layout-bottom",
     "pin": "pushpin",
-    "project_copy": "",
+    "project_copy": "file-copy-2",
     "quote": "double-quotes-r",
     "refresh": "refresh-line",
     "remove": "subtract",
