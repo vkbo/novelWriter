@@ -93,7 +93,7 @@ def testGuiNovelView_Content(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert novelTree._getModel() is None
 
     # Reload
-    novelBar._forceRefreshNovelTree()
+    novelView.refreshCurrentTree()
     model = novelTree._getModel()
     assert isinstance(model, NovelModel)
 

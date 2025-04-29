@@ -1048,8 +1048,10 @@ class GuiMain(QMainWindow):
         self.initMain()
         self.saveDocument()
 
-        if tree:
+        if tree and not theme:
+            # These are also updated by a theme refresh
             SHARED.project.tree.refreshAllItems()
+            self.novelView.refreshCurrentTree()
 
         if theme:
             SHARED.theme.loadTheme()
