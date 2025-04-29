@@ -225,6 +225,14 @@ class GuiPreferences(NDialog):
             self.tr("Turn off to use the Qt font dialog, which may have more options.")
         )
 
+        # Use Character Count
+        self.useCharCount = NSwitch(self)
+        self.useCharCount.setChecked(CONFIG.useCharCount)
+        self.mainForm.addRow(
+            self.tr("Prefer character count over word count"), self.useCharCount,
+            self.tr("Display character count instead where available.")
+        )
+
         # Document Style
         # ==============
 
@@ -957,21 +965,24 @@ class GuiPreferences(NDialog):
         refreshTree  = False
 
         # Appearance
-        guiLocale   = self.guiLocale.currentData()
-        guiTheme    = self.guiTheme.currentData()
-        iconTheme   = self.iconTheme.currentData()
+        guiLocale    = self.guiLocale.currentData()
+        guiTheme     = self.guiTheme.currentData()
+        iconTheme    = self.iconTheme.currentData()
+        useCharCount = self.useCharCount.isChecked()
 
         updateTheme  |= CONFIG.guiTheme != guiTheme
         updateTheme  |= CONFIG.iconTheme != iconTheme
         needsRestart |= CONFIG.guiLocale != guiLocale
         needsRestart |= CONFIG.guiFont != self._guiFont
+        refreshTree  |= CONFIG.useCharCount != useCharCount
 
-        CONFIG.guiLocale   = guiLocale
-        CONFIG.guiTheme    = guiTheme
-        CONFIG.iconTheme   = iconTheme
-        CONFIG.hideVScroll = self.hideVScroll.isChecked()
-        CONFIG.hideHScroll = self.hideHScroll.isChecked()
-        CONFIG.nativeFont  = self.nativeFont.isChecked()
+        CONFIG.guiLocale    = guiLocale
+        CONFIG.guiTheme     = guiTheme
+        CONFIG.iconTheme    = iconTheme
+        CONFIG.hideVScroll  = self.hideVScroll.isChecked()
+        CONFIG.hideHScroll  = self.hideHScroll.isChecked()
+        CONFIG.nativeFont   = self.nativeFont.isChecked()
+        CONFIG.useCharCount = useCharCount
         CONFIG.setGuiFont(self._guiFont)
 
         # Document Style
