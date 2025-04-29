@@ -517,7 +517,7 @@ class NWProject:
 
     def updateCounts(self) -> None:
         """Update the total word and character count values."""
-        wNovel, wNotes, cNovel, cNotes = self._tree.sumWords()
+        wNovel, wNotes, cNovel, cNotes = self._tree.sumCounts()
         self._data.setCurrCounts(wNovel=wNovel, wNotes=wNotes, cNovel=cNovel, cNotes=cNotes)
         return
 

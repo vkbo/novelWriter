@@ -52,8 +52,8 @@ class MockProject:
 @pytest.fixture(scope="function", autouse=True)
 def mockVersion(monkeypatch):
     """Mock the version info to prevent diff from failing."""
-    monkeypatch.setattr("novelwriter.core.projectxml.__version__", "2.0-rc1")
-    monkeypatch.setattr("novelwriter.core.projectxml.__hexversion__", "0x020000c1")
+    monkeypatch.setattr("novelwriter.core.projectxml.__version__", "2.7b1")
+    monkeypatch.setattr("novelwriter.core.projectxml.__hexversion__", "0x020700b1")
     return
 
 
@@ -137,23 +137,23 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     assert xmlReader.state == XMLReadState.PARSED_OK
     assert xmlReader.xmlRoot == "novelWriterXML"
     assert xmlReader.xmlVersion == 0x0105
-    assert xmlReader.xmlRevision == 4
-    assert xmlReader.appVersion == "2.0-rc1"
-    assert xmlReader.hexVersion == 0x020000c1
+    assert xmlReader.xmlRevision == 5
+    assert xmlReader.appVersion == "2.7b1"
+    assert xmlReader.hexVersion == 0x020700b1
 
     # Check loaded data
     assert data.name == "Sample Project"
     assert data.author == "Jane Smith"
-    assert data.saveCount == 5
-    assert data.autoCount == 10
+    assert data.saveCount == 2179
+    assert data.autoCount == 285
     assert data.editTime == 1000
 
-    assert data.doBackup is True
+    assert data.doBackup is False
     assert data.language == "en_GB"
     assert data.spellCheck is True
-    assert data.spellLang == "en_GB"
-    assert data.initCounts == (954, 409)
-    assert data.currCounts == (954, 409)
+    assert data.spellLang is None
+    assert data.initCounts == (1016, 416, 5602, 2285)
+    assert data.currCounts == (1016, 416, 5602, 2285)
 
     assert data.getLastHandle("editor") == "636b6aa9b697b"
     assert data.getLastHandle("viewer") == "636b6aa9b697b"
@@ -182,33 +182,36 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     assert data.itemStatus["s78ea90"].color == QColor(58, 180, 58)
 
     assert data.itemImport["ia857f0"].color == QColor(100, 100, 100)
-    assert data.itemImport["icfb3a5"].color == QColor(0, 122, 188)
-    assert data.itemImport["i2d7a54"].color == QColor(21, 0, 180)
-    assert data.itemImport["i56be10"].color == QColor(117, 0, 175)
+    assert data.itemImport["i4a1d39"].color == QColor(220, 138, 221)
+    assert data.itemImport["icfb3a5"].color == QColor(220, 138, 221)
+    assert data.itemImport["i2d7a54"].color == QColor(220, 138, 221)
+    assert data.itemImport["i56be10"].color == QColor(220, 138, 221)
 
     assert data.itemStatus["sf12341"].shape == nwStatusShape.SQUARE
     assert data.itemStatus["sf24ce6"].shape == nwStatusShape.SQUARE
-    assert data.itemStatus["sc24b8f"].shape == nwStatusShape.SQUARE
-    assert data.itemStatus["s90e6c9"].shape == nwStatusShape.SQUARE
-    assert data.itemStatus["sd51c5b"].shape == nwStatusShape.SQUARE
-    assert data.itemStatus["s8ae72a"].shape == nwStatusShape.SQUARE
-    assert data.itemStatus["s78ea90"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["sc24b8f"].shape == nwStatusShape.BARS_1
+    assert data.itemStatus["s90e6c9"].shape == nwStatusShape.BARS_2
+    assert data.itemStatus["sd51c5b"].shape == nwStatusShape.BARS_3
+    assert data.itemStatus["s8ae72a"].shape == nwStatusShape.BARS_4
+    assert data.itemStatus["s78ea90"].shape == nwStatusShape.STAR
 
     assert data.itemImport["ia857f0"].shape == nwStatusShape.SQUARE
-    assert data.itemImport["icfb3a5"].shape == nwStatusShape.SQUARE
-    assert data.itemImport["i2d7a54"].shape == nwStatusShape.SQUARE
-    assert data.itemImport["i56be10"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i4a1d39"].shape == nwStatusShape.BLOCK_1
+    assert data.itemImport["icfb3a5"].shape == nwStatusShape.BLOCK_2
+    assert data.itemImport["i2d7a54"].shape == nwStatusShape.BLOCK_3
+    assert data.itemImport["i56be10"].shape == nwStatusShape.BLOCK_4
 
-    assert data.itemStatus["sf12341"].count == 4
+    assert data.itemStatus["sf12341"].count == 8
     assert data.itemStatus["sf24ce6"].count == 2
     assert data.itemStatus["sc24b8f"].count == 3
-    assert data.itemStatus["s90e6c9"].count == 7
-    assert data.itemStatus["sd51c5b"].count == 0
-    assert data.itemStatus["s8ae72a"].count == 0
+    assert data.itemStatus["s90e6c9"].count == 5
+    assert data.itemStatus["sd51c5b"].count == 1
+    assert data.itemStatus["s8ae72a"].count == 1
     assert data.itemStatus["s78ea90"].count == 1
 
     assert data.itemImport["ia857f0"].count == 5
-    assert data.itemImport["icfb3a5"].count == 2
+    assert data.itemImport["i4a1d39"].count == 1
+    assert data.itemImport["icfb3a5"].count == 1
     assert data.itemImport["i2d7a54"].count == 2
     assert data.itemImport["i56be10"].count == 1
 
@@ -281,8 +284,8 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.language is None  # Doesn't exist in 1.0
     assert data.spellCheck is True
     assert data.spellLang is None  # Doesn't exist in 1.0
-    assert data.initCounts == (0, 0)
-    assert data.currCounts == (0, 0)
+    assert data.initCounts == (0, 0, 0, 0)
+    assert data.currCounts == (0, 0, 0, 0)
 
     assert data.getLastHandle("editor") is None  # Dropped by conversion
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
@@ -426,8 +429,8 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.language is None  # Doesn't exist in 1.1
     assert data.spellCheck is True
     assert data.spellLang is None  # Doesn't exist in 1.1
-    assert data.initCounts == (0, 0)
-    assert data.currCounts == (0, 0)
+    assert data.initCounts == (0, 0, 0, 0)
+    assert data.currCounts == (0, 0, 0, 0)
 
     assert data.getLastHandle("editor") is None  # Dropped by conversion
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
@@ -571,8 +574,8 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.language == "en_GB"
     assert data.spellCheck is True
     assert data.spellLang == "en_GB"
-    assert data.initCounts == (840, 376)
-    assert data.currCounts == (840, 376)
+    assert data.initCounts == (840, 376, 0, 0)
+    assert data.currCounts == (840, 376, 0, 0)
 
     assert data.getLastHandle("editor") is None  # Dropped by conversion
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
@@ -719,8 +722,8 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.language == "en_GB"
     assert data.spellCheck is True
     assert data.spellLang == "en_GB"
-    assert data.initCounts == (830, 376)
-    assert data.currCounts == (830, 376)
+    assert data.initCounts == (830, 376, 0, 0)
+    assert data.currCounts == (830, 376, 0, 0)
 
     assert data.getLastHandle("editor") is None  # Dropped by conversion
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
@@ -867,8 +870,8 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.language == "en_GB"
     assert data.spellCheck is True
     assert data.spellLang == "en_GB"
-    assert data.initCounts == (954, 409)
-    assert data.currCounts == (954, 409)
+    assert data.initCounts == (954, 409, 0, 0)
+    assert data.currCounts == (954, 409, 0, 0)
 
     assert data.getLastHandle("editor") is None  # Dropped by conversion
     assert data.getLastHandle("viewer") is None  # Dropped by conversion

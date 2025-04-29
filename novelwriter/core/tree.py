@@ -410,7 +410,7 @@ class NWTree:
 
         return True
 
-    def sumWords(self) -> tuple[int, int, int, int]:
+    def sumCounts(self) -> tuple[int, int, int, int]:
         """Loop over all entries and add up the word and char counts."""
         novelWords = 0
         notesWords = 0
