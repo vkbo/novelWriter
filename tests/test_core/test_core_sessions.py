@@ -43,8 +43,8 @@ def testCoreSessions_Main(monkeypatch, mockGUI, fncPath):
     assert isinstance(logFile, Path)
 
     # Set some mock word counts
-    project.data.setInitCounts(50, 60)
-    project.data.setCurrCounts(160, 150)
+    project.data.setInitCounts(50, 60, 500, 600)
+    project.data.setCurrCounts(160, 150, 1600, 1500)
 
     # The project init should already have created the session
     sessLog = project.session
@@ -71,17 +71,19 @@ def testCoreSessions_Main(monkeypatch, mockGUI, fncPath):
     assert records[1]["type"] == "record"
     assert records[1]["novel"] == 160
     assert records[1]["notes"] == 150
+    assert records[1]["cnovel"] == 1600
+    assert records[1]["cnotes"] == 1500
     assert records[1]["idle"] == 1  # Should be rounded to full seconds
 
     # Adding another record without changing word count should do nothing
-    project.data.setInitCounts(160, 150)
-    project.data.setCurrCounts(160, 150)
+    project.data.setInitCounts(160, 150, 1600, 1500)
+    project.data.setCurrCounts(160, 150, 1600, 1500)
     assert sessLog.appendSession(1.6) is False
     assert len(list(sessLog.iterRecords())) == 2
 
     # But adding when count has changed should
-    project.data.setInitCounts(160, 150)
-    project.data.setCurrCounts(270, 240)
+    project.data.setInitCounts(160, 150, 1600, 1500)
+    project.data.setCurrCounts(270, 240, 2700, 2400)
     sessLog._start -= 350.0  # Backdate the session start to allow logging
     assert sessLog.appendSession(1.6) is True
     records = list(sessLog.iterRecords())
