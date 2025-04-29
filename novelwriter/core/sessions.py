@@ -79,8 +79,8 @@ class NWSessionLog:
             return False
 
         now = time()
-        iNovel, iNotes = self._project.data.initCounts
-        cNovel, cNotes = self._project.data.currCounts
+        iNovel, iNotes, _, _ = self._project.data.initCounts
+        cNovel, cNotes, _, _ = self._project.data.currCounts
         iTotal = iNovel + iNotes
         wDiff = cNovel + cNotes - iTotal
         sTime = now - self._start

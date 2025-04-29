@@ -367,7 +367,7 @@ class NWProject:
             # Often, the index needs to be rebuilt when updating format
             self._index.rebuild()
 
-        self.updateWordCounts()
+        self.updateCounts()
         self._session.startSession()
         self.setProjectChanged(False)
         self._valid = True
@@ -397,7 +397,7 @@ class NWProject:
         else:
             self._data.incSaveCount()
 
-        self.updateWordCounts()
+        self.updateCounts()
         self.countStatus()
 
         xmlWriter = self._storage.getXmlWriter()
@@ -515,10 +515,10 @@ class NWProject:
     #  Class Methods
     ##
 
-    def updateWordCounts(self) -> None:
-        """Update the total word count values."""
-        novel, notes = self._tree.sumWords()
-        self._data.setCurrCounts(novel=novel, notes=notes)
+    def updateCounts(self) -> None:
+        """Update the total word and character count values."""
+        wNovel, wNotes, cNovel, cNotes = self._tree.sumWords()
+        self._data.setCurrCounts(wNovel=wNovel, wNotes=wNotes, cNovel=cNovel, cNotes=cNotes)
         return
 
     def countStatus(self) -> None:

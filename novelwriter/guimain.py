@@ -1261,15 +1261,14 @@ class GuiMain(QMainWindow):
         if self._lastTotalCount != currentTotalCount:
             self._lastTotalCount = currentTotalCount
 
-            SHARED.project.updateWordCounts()
+            SHARED.project.updateCounts()
             if CONFIG.incNotesWCount:
-                iTotal = sum(SHARED.project.data.initCounts)
-                cTotal = sum(SHARED.project.data.currCounts)
-                self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
+                iTotal = sum(SHARED.project.data.initCounts[:2])
+                cTotal = sum(SHARED.project.data.currCounts[:2])
             else:
-                iNovel, _ = SHARED.project.data.initCounts
-                cNovel, _ = SHARED.project.data.currCounts
-                self.mainStatus.setProjectStats(cNovel, cNovel - iNovel)
+                iTotal = SHARED.project.data.initCounts[0]
+                cTotal = SHARED.project.data.currCounts[0]
+            self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
 
         return
 
