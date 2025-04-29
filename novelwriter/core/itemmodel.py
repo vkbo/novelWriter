@@ -162,7 +162,7 @@ class ProjectNode:
 
     def updateCount(self, propagate: bool = True) -> None:
         """Update counts, and propagate upwards in the tree."""
-        self._count = self._item.wordCount + sum(c._count for c in self._children)  # noqa: SLF001
+        self._count = self._item.mainCount + sum(c._count for c in self._children)  # noqa: SLF001
         self._cache[C_COUNT_TEXT] = f"{self._count:n}"
         if propagate and (parent := self._parent):
             parent.updateCount()
