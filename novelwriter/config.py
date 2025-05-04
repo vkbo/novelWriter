@@ -44,7 +44,7 @@ from novelwriter.common import (
     NWConfigParser, checkInt, checkPath, describeFont, fontMatcher,
     formatTimeStamp
 )
-from novelwriter.constants import nwFiles, nwHtmlUnicode, nwUnicode
+from novelwriter.constants import nwFiles, nwHtmlUnicode, nwQuotes, nwUnicode
 from novelwriter.error import formatException, logException
 
 if TYPE_CHECKING:
@@ -681,8 +681,8 @@ class Config:
         self.dialogStyle     = conf.rdInt(sec, "dialogstyle", self.dialogStyle)
         self.allowOpenDial   = conf.rdBool(sec, "allowopendial", self.allowOpenDial)
         self.dialogLine      = conf.rdStr(sec, "dialogline", self.dialogLine)
-        self.narratorBreak   = conf.rdStr(sec, "narratorbreak", self.narratorBreak)
-        self.narratorDialog  = conf.rdStr(sec, "narratordialog", self.narratorDialog)
+        narratorBreak        = conf.rdStr(sec, "narratorbreak", self.narratorBreak)
+        narratorDialog       = conf.rdStr(sec, "narratordialog", self.narratorDialog)
         self.altDialogOpen   = conf.rdStr(sec, "altdialogopen", self.altDialogOpen)
         self.altDialogClose  = conf.rdStr(sec, "altdialogclose", self.altDialogClose)
         self.highlightEmph   = conf.rdBool(sec, "highlightemph", self.highlightEmph)
@@ -720,6 +720,9 @@ class Config:
         if self.fmtDQuoteOpen == self.fmtDQuoteClose == '"' and self.doReplaceDQuote:
             logger.info("Using straight double quotes, so disabling auto-replace")
             self.doReplaceDQuote = False
+
+        self.narratorBreak = narratorBreak if narratorBreak in nwQuotes.DASHES else ""
+        self.narratorDialog = narratorDialog if narratorDialog in nwQuotes.DASHES else ""
 
         return True
 
