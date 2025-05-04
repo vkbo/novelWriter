@@ -42,7 +42,7 @@ from PyQt6.QtWidgets import QApplication
 
 from novelwriter.common import (
     NWConfigParser, checkInt, checkPath, describeFont, fontMatcher,
-    formatTimeStamp
+    formatTimeStamp, processDialogSymbols
 )
 from novelwriter.constants import nwFiles, nwHtmlUnicode, nwQuotes, nwUnicode
 from novelwriter.error import formatException, logException
@@ -680,7 +680,7 @@ class Config:
         self.showFullPath    = conf.rdBool(sec, "showfullpath", self.showFullPath)
         self.dialogStyle     = conf.rdInt(sec, "dialogstyle", self.dialogStyle)
         self.allowOpenDial   = conf.rdBool(sec, "allowopendial", self.allowOpenDial)
-        self.dialogLine      = conf.rdStr(sec, "dialogline", self.dialogLine)
+        dialogLine           = conf.rdStr(sec, "dialogline", self.dialogLine)
         narratorBreak        = conf.rdStr(sec, "narratorbreak", self.narratorBreak)
         narratorDialog       = conf.rdStr(sec, "narratordialog", self.narratorDialog)
         self.altDialogOpen   = conf.rdStr(sec, "altdialogopen", self.altDialogOpen)
@@ -721,6 +721,7 @@ class Config:
             logger.info("Using straight double quotes, so disabling auto-replace")
             self.doReplaceDQuote = False
 
+        self.dialogLine = processDialogSymbols(dialogLine)
         self.narratorBreak = narratorBreak if narratorBreak in nwQuotes.DASHES else ""
         self.narratorDialog = narratorDialog if narratorDialog in nwQuotes.DASHES else ""
 

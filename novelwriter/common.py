@@ -40,7 +40,7 @@ from PyQt6.QtCore import QCoreApplication, QMimeData, QUrl
 from PyQt6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QFontInfo
 from PyQt6.QtWidgets import QMenu, QMenuBar, QWidget
 
-from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
+from novelwriter.constants import nwConst, nwLabels, nwQuotes, nwUnicode, trConst
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 
@@ -296,6 +296,15 @@ def compact(text: str) -> str:
 def uniqueCompact(text: str) -> str:
     """Return a unique, compact and sorted string."""
     return "".join(sorted(set(compact(text))))
+
+
+def processDialogSymbols(symbols: str) -> str:
+    """Process dialogue line symbols."""
+    result = ""
+    for c in uniqueCompact(symbols):
+        if c in nwQuotes.ALLOWED:
+            result += c
+    return result
 
 
 def elide(text: str, length: int) -> str:

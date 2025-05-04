@@ -34,7 +34,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import compact, describeFont, uniqueCompact
+from novelwriter.common import compact, describeFont, processDialogSymbols, uniqueCompact
 from novelwriter.config import DEF_GUI, DEF_ICONS, DEF_SYNTAX, DEF_TREECOL
 from novelwriter.constants import nwLabels, nwQuotes, nwUnicode, trConst
 from novelwriter.dialogs.quotes import GuiQuoteSelect
@@ -1033,7 +1033,7 @@ class GuiPreferences(NDialog):
         # Text Highlighting
         dialogueStyle   = self.dialogStyle.currentData()
         allowOpenDial   = self.allowOpenDial.isChecked()
-        dialogueLine    = uniqueCompact(self.dialogLine.text())
+        dialogueLine    = processDialogSymbols(self.dialogLine.text())
         narratorBreak   = self.narratorBreak.currentData()
         narratorDialog  = self.narratorDialog.currentData()
         altDialogOpen   = compact(self.altDialogOpen.text())
