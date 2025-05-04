@@ -34,8 +34,8 @@ from time import time
 from typing import TYPE_CHECKING, Final
 
 from PyQt6.QtCore import (
-    PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QLibraryInfo,
-    QLocale, QStandardPaths, QSysInfo, QTranslator
+    PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QDate,
+    QDateTime, QLibraryInfo, QLocale, QStandardPaths, QSysInfo, QTranslator
 )
 from PyQt6.QtGui import QFont, QFontDatabase, QFontMetrics
 from PyQt6.QtWidgets import QApplication
@@ -467,11 +467,16 @@ class Config:
 
     def localDate(self, value: datetime) -> str:
         """Return a localised date format."""
-        return self._dLocale.toString(value, self._dShortDate)
+        # Explicitly convert the date first, see bug #2325
+        return self._dLocale.toString(QDate(value.year, value.month, value.day), self._dShortDate)
 
     def localDateTime(self, value: datetime) -> str:
         """Return a localised datetime format."""
-        return self._dLocale.toString(value, self._dShortDateTime)
+        # Explicitly convert the datetime first, see bug #2325
+        return self._dLocale.toString(
+            QDateTime(value.year, value.month, value.day, value.hour, value.minute, value.second),
+            self._dShortDateTime,
+        )
 
     def listLanguages(self, lngSet: int) -> list[tuple[str, str]]:
         """List localisation files in the i18n folder. The default GUI
