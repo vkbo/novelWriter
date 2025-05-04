@@ -505,6 +505,19 @@ class nwQuotes:
         "\u300f": QT_TRANSLATE_NOOP("Constant", "Right white corner bracket"),
     }
 
+    DASHES: Final[dict[str, str]] = {
+        "":       QT_TRANSLATE_NOOP("Constant", "None"),
+        "\u2013": QT_TRANSLATE_NOOP("Constant", "Short dash"),
+        "\u2014": QT_TRANSLATE_NOOP("Constant", "Long dash"),
+        "\u2015": QT_TRANSLATE_NOOP("Constant", "Horizontal bar"),
+    }
+
+    ALLOWED: Final[list[str]] = [
+        "\u0027", "\u0022", "\u2018", "\u2019", "\u201a", "\u201b", "\u201c", "\u201d", "\u201e",
+        "\u201f", "\u2e42", "\u2039", "\u203a", "\u00ab", "\u00bb", "\u300c", "\u300d", "\u300e",
+        "\u300f", "\u2013", "\u2014", "\u2015",
+    ]
+
 
 class nwUnicode:
     """Supported unicode character constants and their HTML equivalents."""
