@@ -38,10 +38,10 @@
     "metaAttr": {
       "expanded": false,
       "heading": "H1",
-      "charCount": 93,
-      "wordCount": 19,
-      "paraCount": 2,
-      "cursorPos": 119
+      "charCount": 148,
+      "wordCount": 29,
+      "paraCount": 4,
+      "cursorPos": 178
     },
     "nameAttr": {
       "status": "sc24b8f",
@@ -63,10 +63,10 @@
     "metaAttr": {
       "expanded": false,
       "heading": "H0",
-      "charCount": 251,
-      "wordCount": 50,
+      "charCount": 233,
+      "wordCount": 47,
       "paraCount": 2,
-      "cursorPos": 277
+      "cursorPos": 194
     },
     "nameAttr": {
       "status": "sf12341",
@@ -138,10 +138,10 @@
     "metaAttr": {
       "expanded": false,
       "heading": "H3",
-      "charCount": 2687,
-      "wordCount": 479,
-      "paraCount": 14,
-      "cursorPos": 67
+      "charCount": 2999,
+      "wordCount": 530,
+      "paraCount": 16,
+      "cursorPos": 159
     },
     "nameAttr": {
       "status": "s90e6c9",
@@ -166,7 +166,7 @@
       "charCount": 548,
       "wordCount": 108,
       "paraCount": 3,
-      "cursorPos": 465
+      "cursorPos": 650
     },
     "nameAttr": {
       "status": "s90e6c9",
@@ -191,7 +191,7 @@
       "charCount": 617,
       "wordCount": 101,
       "paraCount": 3,
-      "cursorPos": 310
+      "cursorPos": 1182
     },
     "nameAttr": {
       "status": "s78ea90",
@@ -216,7 +216,7 @@
       "charCount": 1909,
       "wordCount": 346,
       "paraCount": 7,
-      "cursorPos": 0
+      "cursorPos": 1940
     },
     "nameAttr": {
       "status": "sf24ce6",
@@ -241,7 +241,7 @@
       "charCount": 139,
       "wordCount": 28,
       "paraCount": 1,
-      "cursorPos": 188
+      "cursorPos": 356
     },
     "nameAttr": {
       "status": "s90e6c9",
@@ -266,10 +266,10 @@
       "charCount": 189,
       "wordCount": 37,
       "paraCount": 1,
-      "cursorPos": 0
+      "cursorPos": 237
     },
     "nameAttr": {
-      "status": "s90e6c9",
+      "status": "sd51c5b",
       "import": "ia857f0",
       "active": true
     }
@@ -341,10 +341,10 @@
       "charCount": 299,
       "wordCount": 55,
       "paraCount": 2,
-      "cursorPos": 104
+      "cursorPos": 387
     },
     "nameAttr": {
-      "status": "s90e6c9",
+      "status": "s8ae72a",
       "import": "ia857f0",
       "active": true
     }
@@ -416,11 +416,11 @@
       "charCount": 49,
       "wordCount": 9,
       "paraCount": 1,
-      "cursorPos": 24
+      "cursorPos": 23
     },
     "nameAttr": {
       "status": "sf12341",
-      "import": "icfb3a5",
+      "import": "i2d7a54",
       "active": true
     }
   },
@@ -441,11 +441,11 @@
       "charCount": 55,
       "wordCount": 9,
       "paraCount": 1,
-      "cursorPos": 25
+      "cursorPos": 31
     },
     "nameAttr": {
       "status": "sf12341",
-      "import": "i2d7a54",
+      "import": "i56be10",
       "active": true
     }
   },
@@ -491,11 +491,11 @@
       "charCount": 76,
       "wordCount": 15,
       "paraCount": 1,
-      "cursorPos": 20
+      "cursorPos": 111
     },
     "nameAttr": {
       "status": "sf12341",
-      "import": "i56be10",
+      "import": "i2d7a54",
       "active": true
     }
   },
@@ -516,11 +516,11 @@
       "charCount": 115,
       "wordCount": 24,
       "paraCount": 1,
-      "cursorPos": 133
+      "cursorPos": 0
     },
     "nameAttr": {
       "status": "sf12341",
-      "import": "icfb3a5",
+      "import": "i4a1d39",
       "active": true
     }
   },
@@ -541,11 +541,11 @@
       "charCount": 28,
       "wordCount": 6,
       "paraCount": 1,
-      "cursorPos": 45
+      "cursorPos": 62
     },
     "nameAttr": {
       "status": "sf12341",
-      "import": "i2d7a54",
+      "import": "icfb3a5",
       "active": true
     }
   },
@@ -625,12 +625,112 @@
     }
   },
   {
+    "name": "Templates",
+    "itemAttr": {
+      "handle": "f4ed1ae756a1f",
+      "parent": null,
+      "root": "f4ed1ae756a1f",
+      "order": 5,
+      "type": "ROOT",
+      "class": "TEMPLATE",
+      "layout": "NO_LAYOUT"
+    },
+    "metaAttr": {
+      "expanded": true,
+      "heading": "H0",
+      "charCount": 0,
+      "wordCount": 0,
+      "paraCount": 0,
+      "cursorPos": 0
+    },
+    "nameAttr": {
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": false
+    }
+  },
+  {
+    "name": "Scene",
+    "itemAttr": {
+      "handle": "5aec885635c85",
+      "parent": "f4ed1ae756a1f",
+      "root": "f4ed1ae756a1f",
+      "order": 0,
+      "type": "FILE",
+      "class": "TEMPLATE",
+      "layout": "DOCUMENT"
+    },
+    "metaAttr": {
+      "expanded": false,
+      "heading": "H3",
+      "charCount": 9,
+      "wordCount": 2,
+      "paraCount": 1,
+      "cursorPos": 78
+    },
+    "nameAttr": {
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": true
+    }
+  },
+  {
+    "name": "Chapter",
+    "itemAttr": {
+      "handle": "2a60782759c6f",
+      "parent": "f4ed1ae756a1f",
+      "root": "f4ed1ae756a1f",
+      "order": 1,
+      "type": "FILE",
+      "class": "TEMPLATE",
+      "layout": "DOCUMENT"
+    },
+    "metaAttr": {
+      "expanded": false,
+      "heading": "H2",
+      "charCount": 11,
+      "wordCount": 2,
+      "paraCount": 1,
+      "cursorPos": 81
+    },
+    "nameAttr": {
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": true
+    }
+  },
+  {
+    "name": "Character Note",
+    "itemAttr": {
+      "handle": "5ee8aebcdebc9",
+      "parent": "f4ed1ae756a1f",
+      "root": "f4ed1ae756a1f",
+      "order": 2,
+      "type": "FILE",
+      "class": "TEMPLATE",
+      "layout": "NOTE"
+    },
+    "metaAttr": {
+      "expanded": false,
+      "heading": "H1",
+      "charCount": 53,
+      "wordCount": 7,
+      "paraCount": 1,
+      "cursorPos": 75
+    },
+    "nameAttr": {
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": true
+    }
+  },
+  {
     "name": "Trash",
     "itemAttr": {
       "handle": "98acd8c76c93a",
       "parent": null,
       "root": "98acd8c76c93a",
-      "order": 5,
+      "order": 6,
       "type": "ROOT",
       "class": "TRASH",
       "layout": "NO_LAYOUT"

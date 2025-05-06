@@ -410,16 +410,20 @@ class NWTree:
 
         return True
 
-    def sumWords(self) -> tuple[int, int]:
-        """Loop over all entries and add up the word counts."""
-        noteWords = 0
+    def sumCounts(self) -> tuple[int, int, int, int]:
+        """Loop over all entries and add up the word and char counts."""
         novelWords = 0
+        notesWords = 0
+        novelChars = 0
+        notesChars = 0
         for item in self._items.values():
             if item.itemLayout == nwItemLayout.NOTE:
-                noteWords += item.wordCount
+                notesWords += item.wordCount
+                notesChars += item.charCount
             elif item.itemLayout == nwItemLayout.DOCUMENT:
                 novelWords += item.wordCount
-        return novelWords, noteWords
+                novelChars += item.charCount
+        return novelWords, notesWords, novelChars, notesChars
 
     ##
     #  Tree Item Methods
