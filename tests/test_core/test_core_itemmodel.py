@@ -23,11 +23,12 @@ from __future__ import annotations
 import pytest
 
 from PyQt6.QtCore import QMimeData, QModelIndex, Qt
+from PyQt6.QtTest import QAbstractItemModelTester
 
 from novelwriter.common import decodeMimeHandles
 from novelwriter.constants import nwConst
 from novelwriter.core.item import NWItem
-from novelwriter.core.itemmodel import INV_ROOT, NODE_FLAGS, ProjectNode
+from novelwriter.core.itemmodel import INV_ROOT, NODE_FLAGS, ProjectModel, ProjectNode
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwItemLayout, nwItemType
 
@@ -251,6 +252,14 @@ def testCoreItemModel_ProjectNode_Data(mockGUI, mockRnd, fncPath):
     # Check Flags
     assert novel.flags() == NODE_FLAGS
     assert scene.flags() == NODE_FLAGS | Qt.ItemFlag.ItemIsDragEnabled
+
+
+@pytest.mark.core
+def testCoreItemModel_ProjectModel_ModelTest(mockGUI):
+    """Run the Qt model tester on the model."""
+    project = NWProject()
+    model = ProjectModel(project.tree)
+    QAbstractItemModelTester(model)
 
 
 @pytest.mark.core

@@ -23,6 +23,7 @@ from __future__ import annotations
 import pytest
 
 from PyQt6.QtCore import QModelIndex, Qt
+from PyQt6.QtTest import QAbstractItemModelTester
 
 from novelwriter.core.indexdata import IndexHeading
 from novelwriter.core.novelmodel import NovelModel
@@ -30,6 +31,13 @@ from novelwriter.core.project import NWProject
 from novelwriter.enum import nwNovelExtra
 
 from tests.tools import C, buildTestProject
+
+
+@pytest.mark.core
+def testCoreNovelModel_ModelTest(nwGUI):
+    """Run the Qt model tester on the model."""
+    model = NovelModel()
+    QAbstractItemModelTester(model)
 
 
 @pytest.mark.core
