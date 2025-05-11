@@ -104,6 +104,7 @@ class GuiBuildSettings(NToolDialog):
         # SideBar
         self.sidebar = NPagedSideBar(self)
         self.sidebar.setLabelColor(SHARED.theme.helpText)
+        self.sidebar.setAccessibleName(self.titleLabel.text())
 
         self.sidebar.addLabel(self.tr("General"))
         self.sidebar.addButton(self.tr("Selection"), self.OPT_FILTERS)

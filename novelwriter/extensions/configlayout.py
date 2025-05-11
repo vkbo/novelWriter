@@ -211,7 +211,8 @@ class NScrollableForm(QScrollArea):
         else:
             qWidget = widget
 
-        qLabel = QLabel(label or "", self)
+        text = label or ""
+        qLabel = QLabel(text, self)
         qLabel.setIndent(self._indent)
         qLabel.setBuddy(qWidget)
 
@@ -227,6 +228,7 @@ class NScrollableForm(QScrollArea):
             row.addLayout(labelBox, stretch[0])
             if editable:
                 self._editable[editable] = qHelp
+            text = f"{text}: {helpText}"
         else:
             row.addWidget(qLabel, stretch[0])
 
@@ -235,6 +237,7 @@ class NScrollableForm(QScrollArea):
             box.addWidget(qWidget, 1)
             box.addWidget(QLabel(unit, self), 0)
             row.addLayout(box, stretch[1])
+            text = f"{text} Unit: {unit}"
         elif isinstance(button, QAbstractButton):
             box = QHBoxLayout()
             box.addWidget(qWidget, 1)
@@ -243,10 +246,11 @@ class NScrollableForm(QScrollArea):
         else:
             row.addWidget(qWidget, stretch[1])
 
+        self._first = False
         self._layout.addLayout(row)
         if label:
             self._index[label.strip()] = qWidget
-        self._first = False
+        qLabel.setAccessibleName(text)
 
         return
 

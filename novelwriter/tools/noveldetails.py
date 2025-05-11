@@ -86,6 +86,7 @@ class GuiNovelDetails(NNonBlockingDialog):
         # SideBar
         self.sidebar = NPagedSideBar(self)
         self.sidebar.setLabelColor(SHARED.theme.helpText)
+        self.sidebar.setAccessibleName(self.titleLabel.text())
         self.sidebar.addButton(self.tr("Overview"), self.PAGE_OVERVIEW)
         self.sidebar.addButton(self.tr("Contents"), self.PAGE_CONTENTS)
         self.sidebar.setSelected(self.PAGE_OVERVIEW)
