@@ -242,6 +242,11 @@ def testBaseConfig_Methods(fncPath):
     # Recent Projects
     assert isinstance(tstConf.recentProjects, RecentProjects)
 
+    # Last Author
+    assert CONFIG.lastAuthor == ""
+    CONFIG.setLastAuthor(" Jane    Doe  ")
+    assert CONFIG.lastAuthor == "Jane Doe"
+
 
 @pytest.mark.base
 def testBaseConfig_SettersGetters(fncPath):
