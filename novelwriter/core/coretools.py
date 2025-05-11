@@ -383,6 +383,8 @@ class ProjectBuilder:
         """Build or copy a project from a data dictionary."""
         if isinstance(data, dict):
             path = data.get("path", None) or None
+            if author := data.get("author"):
+                CONFIG.setLastAuthor(author)
             if isinstance(path, str | Path):
                 self._path = Path(path).resolve()
                 if data.get("sample"):
@@ -416,21 +418,21 @@ class ProjectBuilder:
 
         self._path = project.storage.storagePath
 
-        lblName = self.tr("New Project")
-        lblAuthor = self.tr("Author")
-        lblTitlePage = self.tr("Title Page")
+        trName = self.tr("New Project")
+        trAuthor = self.tr("Author Name")
+        trTitlePage = self.tr("Title Page")
 
         # Settings
         project.data.setUuid(None)
-        project.data.setName(data.get("name", lblName))
-        project.data.setAuthor(data.get("author", lblAuthor))
+        project.data.setName(data.get("name", trName))
+        project.data.setAuthor(data.get("author", trAuthor))
         project.data.setLanguage(CONFIG.guiLocale)
         project.setDefaultStatusImport()
         project.session.startSession()
 
         # Add Root Folders
         hNovelRoot = project.newRoot(nwItemClass.NOVEL)
-        hTitlePage = project.newFile(lblTitlePage, hNovelRoot)
+        hTitlePage = project.newFile(trTitlePage, hNovelRoot)
 
         # Generate Title Page
         aDoc = project.storage.getDocument(hTitlePage)
@@ -447,9 +449,9 @@ class ProjectBuilder:
             "\n"
             ">> {count}: [field:{field}] <<\n"
         ).format(
-            author=project.data.author or lblAuthor,
+            author=project.data.author or trAuthor,
             address=self.tr("Address Line"),
-            title=project.data.name or lblName,
+            title=project.data.name or trName,
             by=self.tr("By"),
             count=self.tr("Word Count"),
             field=nwStats.WORDS_TEXT,
@@ -459,9 +461,9 @@ class ProjectBuilder:
         numChapters = data.get("chapters", 0)
         numScenes = data.get("scenes", 0)
 
-        chSynop = self.tr("Summary of the chapter.")
-        scSynop = self.tr("Summary of the scene.")
-        bfNote = self.tr("A short description.")
+        trChSynop = self.tr("Summary of the chapter.")
+        trScSynop = self.tr("Summary of the scene.")
+        trNoteDesc = self.tr("A short description.")
 
         # Create chapters
         if numChapters > 0:
@@ -469,7 +471,7 @@ class ProjectBuilder:
                 chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
                 cHandle = project.newFile(chTitle, hNovelRoot)
                 aDoc = project.storage.getDocument(cHandle)
-                aDoc.writeDocument(f"## {chTitle}\n\n%Synopsis: {chSynop}\n\n")
+                aDoc.writeDocument(f"## {chTitle}\n\n%Synopsis: {trChSynop}\n\n")
 
                 # Create chapter scenes
                 if numScenes > 0 and cHandle:
@@ -477,7 +479,7 @@ class ProjectBuilder:
                         scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
                         sHandle = project.newFile(scTitle, cHandle)
                         aDoc = project.storage.getDocument(sHandle)
-                        aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {scSynop}\n\n")
+                        aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {trScSynop}\n\n")
 
         # Create scenes (no chapters)
         elif numScenes > 0:
@@ -485,7 +487,7 @@ class ProjectBuilder:
                 scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
                 sHandle = project.newFile(scTitle, hNovelRoot)
                 aDoc = project.storage.getDocument(sHandle)
-                aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {scSynop}\n\n")
+                aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {trScSynop}\n\n")
 
         # Create notes folders
         noteTitles = {
@@ -505,7 +507,7 @@ class ProjectBuilder:
                     aDoc.writeDocument(
                         f"# {noteTitles[newRoot]}\n\n"
                         f"@tag: {ntTag}\n\n"
-                        f"%Short: {bfNote}\n\n"
+                        f"%Short: {trNoteDesc}\n\n"
                     )
 
         # Also add the archive and trash folders

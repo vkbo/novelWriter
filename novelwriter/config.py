@@ -42,7 +42,7 @@ from PyQt6.QtWidgets import QApplication
 
 from novelwriter.common import (
     NWConfigParser, checkInt, checkPath, describeFont, fontMatcher,
-    formatTimeStamp, processDialogSymbols
+    formatTimeStamp, processDialogSymbols, simplified
 )
 from novelwriter.constants import nwFiles, nwHtmlUnicode, nwQuotes, nwUnicode
 from novelwriter.error import formatException, logException
@@ -65,16 +65,16 @@ class Config:
 
     __slots__ = (
         "_appPath", "_appRoot", "_backPath", "_backupPath", "_confPath", "_dLocale", "_dShortDate",
-        "_dShortDateTime", "_dataPath", "_errData", "_hasError", "_homePath", "_manuals",
-        "_nwLangPath", "_qLocale", "_qtLangPath", "_qtTrans", "_recentPaths", "_recentProjects",
-        "_splash", "allowOpenDial", "altDialogClose", "altDialogOpen", "appHandle", "appName",
-        "askBeforeBackup", "askBeforeExit", "autoSaveDoc", "autoSaveProj", "autoScroll",
-        "autoScrollPos", "autoSelect", "backupOnClose", "cursorWidth", "dialogLine", "dialogStyle",
-        "doJustify", "doReplace", "doReplaceDQuote", "doReplaceDash", "doReplaceDots",
-        "doReplaceSQuote", "emphLabels", "fmtApostrophe", "fmtDQuoteClose", "fmtDQuoteOpen",
-        "fmtPadAfter", "fmtPadBefore", "fmtPadThin", "fmtSQuoteClose", "fmtSQuoteOpen",
-        "focusWidth", "guiFont", "guiLocale", "guiSyntax", "guiTheme", "hasEnchant",
-        "hideFocusFooter", "hideHScroll", "hideVScroll", "highlightEmph", "hostName",
+        "_dShortDateTime", "_dataPath", "_errData", "_hasError", "_homePath", "_lastAuthor",
+        "_manuals", "_nwLangPath", "_qLocale", "_qtLangPath", "_qtTrans", "_recentPaths",
+        "_recentProjects", "_splash", "allowOpenDial", "altDialogClose", "altDialogOpen",
+        "appHandle", "appName", "askBeforeBackup", "askBeforeExit", "autoSaveDoc", "autoSaveProj",
+        "autoScroll", "autoScrollPos", "autoSelect", "backupOnClose", "cursorWidth", "dialogLine",
+        "dialogStyle", "doJustify", "doReplace", "doReplaceDQuote", "doReplaceDash",
+        "doReplaceDots", "doReplaceSQuote", "emphLabels", "fmtApostrophe", "fmtDQuoteClose",
+        "fmtDQuoteOpen", "fmtPadAfter", "fmtPadBefore", "fmtPadThin", "fmtSQuoteClose",
+        "fmtSQuoteOpen", "focusWidth", "guiFont", "guiLocale", "guiSyntax", "guiTheme",
+        "hasEnchant", "hideFocusFooter", "hideHScroll", "hideVScroll", "highlightEmph", "hostName",
         "iconColDocs", "iconColTree", "iconTheme", "incNotesWCount", "isDebug", "kernelVer",
         "lastNotes", "mainPanePos", "mainWinSize", "memInfo", "narratorBreak", "narratorDialog",
         "nativeFont", "osDarwin", "osLinux", "osType", "osUnknown", "osWindows", "outlinePanePos",
@@ -149,6 +149,7 @@ class Config:
 
         self._recentProjects = RecentProjects(self)
         self._recentPaths = RecentPaths(self)
+        self._lastAuthor = ""
 
         # General GUI Settings
         self.guiLocale    = self._qLocale.name()
@@ -321,6 +322,11 @@ class Config:
     def recentProjects(self) -> RecentProjects:
         return self._recentProjects
 
+    @property
+    def lastAuthor(self) -> str:
+        """Return the last author name used."""
+        return simplified(self._lastAuthor)
+
     ##
     #  Getters
     ##
@@ -335,6 +341,11 @@ class Config:
     ##
     #  Setters
     ##
+
+    def setLastAuthor(self, value: str) -> None:
+        """Set tle last used author name."""
+        self._lastAuthor = simplified(value)
+        return
 
     def setMainWinSize(self, width: int, height: int) -> None:
         """Set the size of the main window, but only if the change is
@@ -645,6 +656,7 @@ class Config:
         self.backupOnClose   = conf.rdBool(sec, "backuponclose", self.backupOnClose)
         self.askBeforeBackup = conf.rdBool(sec, "askbeforebackup", self.askBeforeBackup)
         self.askBeforeExit   = conf.rdBool(sec, "askbeforeexit", self.askBeforeExit)
+        self._lastAuthor     = conf.rdStr(sec, "lastauthor", self._lastAuthor)
 
         # Editor
         sec = "Editor"
@@ -769,6 +781,7 @@ class Config:
             "backuponclose":   str(self.backupOnClose),
             "askbeforebackup": str(self.askBeforeBackup),
             "askbeforeexit":   str(self.askBeforeExit),
+            "lastauthor":      str(self._lastAuthor),
         }
 
         conf["Editor"] = {

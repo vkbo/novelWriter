@@ -565,6 +565,7 @@ class _NewProjectForm(QWidget):
         self.projAuthor = QLineEdit(self)
         self.projAuthor.setMaxLength(200)
         self.projAuthor.setPlaceholderText(self.tr("Optional"))
+        self.projAuthor.setText(CONFIG.lastAuthor)
 
         # Project Path
         self.projPath = QLineEdit(self)
