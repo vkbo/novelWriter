@@ -416,13 +416,14 @@ class ProjectBuilder:
 
         self._path = project.storage.storagePath
 
-        lblNewProject = self.tr("New Project")
-        lblTitlePage  = self.tr("Title Page")
+        lblName = self.tr("New Project")
+        lblAuthor = self.tr("Author")
+        lblTitlePage = self.tr("Title Page")
 
         # Settings
         project.data.setUuid(None)
-        project.data.setName(data.get("name", lblNewProject))
-        project.data.setAuthor(data.get("author", ""))
+        project.data.setName(data.get("name", lblName))
+        project.data.setAuthor(data.get("author", lblAuthor))
         project.data.setLanguage(CONFIG.guiLocale)
         project.setDefaultStatusImport()
         project.session.startSession()
@@ -446,17 +447,13 @@ class ProjectBuilder:
             "\n"
             ">> {count}: [field:{field}] <<\n"
         ).format(
-            author=project.data.author or "None",
-            address=self.tr("Address"),
-            title=project.data.name or "None",
+            author=project.data.author or lblAuthor,
+            address=self.tr("Address Line"),
+            title=project.data.name or lblName,
             by=self.tr("By"),
             count=self.tr("Word Count"),
             field=nwStats.WORDS_TEXT,
         ))
-
-        # Create a project structure based on selected root folders
-        # and a number of chapters and scenes selected in the
-        # wizard's custom page.
 
         # Create chapters and scenes
         numChapters = data.get("chapters", 0)
@@ -563,19 +560,7 @@ class ProjectBuilder:
             return False
 
         # Open the copied project and update settings
-        project = NWProject()
-        project.openProject(dstPath)
-        project.data.setUuid("")  # Creates a fresh uuid
-        project.data.setName(data.get("name", "None"))
-        project.data.setAuthor(data.get("author", ""))
-        project.data.setSpellCheck(True)
-        project.data.setSpellLang(None)
-        project.data.setDoBackup(True)
-        project.data.setSaveCount(0)
-        project.data.setAutoCount(0)
-        project.data.setEditTime(0)
-        project.saveProject()
-        project.closeProject()
+        self._resetProject(dstPath, data.get("name", ""), data.get("author", ""))
 
         return True
 
@@ -593,6 +578,7 @@ class ProjectBuilder:
         if (sample := CONFIG.assetPath("sample.zip")).is_file():
             try:
                 shutil.unpack_archive(sample, path)
+                self._resetProject(path)
             except Exception as exc:
                 SHARED.error(self.tr("Failed to create a new example project."), exc=exc)
                 return False
@@ -605,3 +591,22 @@ class ProjectBuilder:
             return False
 
         return True
+
+    def _resetProject(self, path: Path, name: str = "", author: str = "") -> None:
+        """Open a project and reset/update its settings."""
+        project = NWProject()
+        project.openProject(path)
+        project.data.setUuid("")  # Creates a fresh uuid
+        if name:
+            project.data.setName(name)
+        if author:
+            project.data.setAuthor(author)
+        project.data.setSpellCheck(True)
+        project.data.setSpellLang(None)
+        project.data.setDoBackup(True)
+        project.data.setSaveCount(0)
+        project.data.setAutoCount(0)
+        project.data.setEditTime(0)
+        project.saveProject()
+        project.closeProject()
+        return
