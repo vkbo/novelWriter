@@ -73,8 +73,9 @@ class GuiDocMerge(NDialog):
         self.listBox.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
 
         # Merge Options
-        self.trashLabel = QLabel(self.tr("Move merged items to Trash"), self)
         self.trashSwitch = NSwitch(self, height=iPx)
+        self.trashLabel = QLabel(self.tr("Move merged items to Trash"), self)
+        self.trashLabel.setBuddy(self.trashSwitch)
 
         self.optBox = QGridLayout()
         self.optBox.addWidget(self.trashLabel,  0, 0)
