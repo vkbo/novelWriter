@@ -298,6 +298,7 @@ class GuiNovelToolBar(QWidget):
         self.novelValue.setHandle(rootHandle)
         SHARED.project.data.setLastHandle(rootHandle, "novel")
         self.novelView.setCurrentNovel(rootHandle)
+        self.novelView.novelTree.setAccessibleName(self.novelValue.currentText())
         return
 
     def setLastColType(self, colType: nwNovelExtra, doRefresh: bool = True) -> None:

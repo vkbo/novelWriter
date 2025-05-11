@@ -125,6 +125,7 @@ class GuiProjectSearch(QWidget):
         self.searchResult.setAllColumnsShowFocus(True)
         self.searchResult.itemDoubleClicked.connect(self._searchResultDoubleClicked)
         self.searchResult.itemSelectionChanged.connect(self._searchResultSelected)
+        self.searchResult.setAccessibleName(self.viewLabel.text())
 
         if header := self.searchResult.header():
             header.setStretchLastSection(False)
