@@ -388,7 +388,7 @@ class ProjectBuilder:
             if isinstance(path, str | Path):
                 self._path = Path(path).resolve()
                 if data.get("sample"):
-                    return self._extractSampleProject(self._path)
+                    return self._extractSampleProject(self._path, data)
                 elif data.get("template"):
                     return self._copyProject(self._path, data)
                 else:
@@ -562,11 +562,11 @@ class ProjectBuilder:
             return False
 
         # Open the copied project and update settings
-        self._resetProject(dstPath, data.get("name", ""), data.get("author", ""))
+        self._resetProject(dstPath, data)
 
         return True
 
-    def _extractSampleProject(self, path: Path) -> bool:
+    def _extractSampleProject(self, path: Path, data: dict) -> bool:
         """Make a copy of the sample project by extracting the
         sample.zip file to the new path.
         """
@@ -580,7 +580,7 @@ class ProjectBuilder:
         if (sample := CONFIG.assetPath("sample.zip")).is_file():
             try:
                 shutil.unpack_archive(sample, path)
-                self._resetProject(path)
+                self._resetProject(path, data)
             except Exception as exc:
                 SHARED.error(self.tr("Failed to create a new example project."), exc=exc)
                 return False
@@ -594,14 +594,14 @@ class ProjectBuilder:
 
         return True
 
-    def _resetProject(self, path: Path, name: str = "", author: str = "") -> None:
+    def _resetProject(self, path: Path, data: dict) -> None:
         """Open a project and reset/update its settings."""
         project = NWProject()
         project.openProject(path)
         project.data.setUuid("")  # Creates a fresh uuid
-        if name:
+        if name := data.get("name", ""):
             project.data.setName(name)
-        if author:
+        if author := data.get("author", ""):
             project.data.setAuthor(author)
         project.data.setSpellCheck(True)
         project.data.setSpellLang(None)
