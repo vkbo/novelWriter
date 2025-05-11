@@ -96,7 +96,7 @@ class NSwitch(QAbstractButton):
         painter.setRenderHint(QtPaintAntiAlias, True)
         painter.setOpacity(1.0 if self.isEnabled() else 0.5)
 
-        painter.setPen(palette.mid().color())
+        painter.setPen(palette.highlight().color() if self.hasFocus() else palette.mid().color())
         painter.setBrush(palette.highlight() if self.isChecked() else palette.alternateBase())
         painter.drawRoundedRect(0, 0, self._xW, self._xH, self._xR, self._xR)
 
