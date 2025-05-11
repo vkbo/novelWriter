@@ -80,6 +80,7 @@ class GuiPreferences(NDialog):
         # SideBar
         self.sidebar = NPagedSideBar(self)
         self.sidebar.setLabelColor(SHARED.theme.helpText)
+        self.sidebar.setAccessibleName(self.titleLabel.text())
         self.sidebar.buttonClicked.connect(self._sidebarClicked)
 
         # Form

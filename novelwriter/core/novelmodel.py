@@ -46,6 +46,7 @@ R_TEXT   = Qt.ItemDataRole.DisplayRole
 R_ICON   = Qt.ItemDataRole.DecorationRole
 R_ALIGN  = Qt.ItemDataRole.TextAlignmentRole
 R_TIP    = Qt.ItemDataRole.ToolTipRole
+R_ACCESS = Qt.ItemDataRole.AccessibleTextRole
 R_HANDLE = 0xff01
 R_KEY    = 0xff02
 
@@ -217,6 +218,7 @@ class NovelModel(QAbstractTableModel):
                 text = ", ".join(refs)
                 data[C_FACTOR*2 | R_TEXT] = text
                 data[C_FACTOR*2 | R_TIP] = f"<b>{self._extraLabel}:</b> {text}"
+                data[C_FACTOR*2 | R_ACCESS] = f"{self._extraLabel}: {text}"
             data[C_FACTOR*3 | R_ICON] = self._more
         data[R_HANDLE] = handle
         data[R_KEY] = key

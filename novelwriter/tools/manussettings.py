@@ -104,6 +104,7 @@ class GuiBuildSettings(NToolDialog):
         # SideBar
         self.sidebar = NPagedSideBar(self)
         self.sidebar.setLabelColor(SHARED.theme.helpText)
+        self.sidebar.setAccessibleName(self.titleLabel.text())
 
         self.sidebar.addLabel(self.tr("General"))
         self.sidebar.addButton(self.tr("Selection"), self.OPT_FILTERS)
@@ -564,9 +565,10 @@ class _HeadingsTab(NScrollablePage):
         self.fmtPart.setReadOnly(True)
         self.btnPart = NIconToolButton(self, iSz, "edit", "green")
         self.btnPart.clicked.connect(qtLambda(self._editHeading, self.EDIT_TITLE))
+        self.swtPart = NSwitch(self, height=iPx)
         self.hdePart = QLabel(trHide, self)
         self.hdePart.setIndent(6)
-        self.swtPart = NSwitch(self, height=iPx)
+        self.hdePart.setBuddy(self.swtPart)
 
         self.formatBox.addWidget(self.lblPart, 0, 0)
         self.formatBox.addWidget(self.fmtPart, 0, 1)
@@ -580,9 +582,10 @@ class _HeadingsTab(NScrollablePage):
         self.fmtChapter.setReadOnly(True)
         self.btnChapter = NIconToolButton(self, iSz, "edit", "green")
         self.btnChapter.clicked.connect(qtLambda(self._editHeading, self.EDIT_CHAPTER))
+        self.swtChapter = NSwitch(self, height=iPx)
         self.hdeChapter = QLabel(trHide, self)
         self.hdeChapter.setIndent(6)
-        self.swtChapter = NSwitch(self, height=iPx)
+        self.hdeChapter.setBuddy(self.swtChapter)
 
         self.formatBox.addWidget(self.lblChapter, 1, 0)
         self.formatBox.addWidget(self.fmtChapter, 1, 1)
@@ -596,9 +599,10 @@ class _HeadingsTab(NScrollablePage):
         self.fmtUnnumbered.setReadOnly(True)
         self.btnUnnumbered = NIconToolButton(self, iSz, "edit", "green")
         self.btnUnnumbered.clicked.connect(qtLambda(self._editHeading, self.EDIT_UNNUM))
+        self.swtUnnumbered = NSwitch(self, height=iPx)
         self.hdeUnnumbered = QLabel(trHide, self)
         self.hdeUnnumbered.setIndent(6)
-        self.swtUnnumbered = NSwitch(self, height=iPx)
+        self.hdeUnnumbered.setBuddy(self.swtUnnumbered)
 
         self.formatBox.addWidget(self.lblUnnumbered, 2, 0)
         self.formatBox.addWidget(self.fmtUnnumbered, 2, 1)
@@ -612,9 +616,10 @@ class _HeadingsTab(NScrollablePage):
         self.fmtScene.setReadOnly(True)
         self.btnScene = NIconToolButton(self, iSz, "edit", "green")
         self.btnScene.clicked.connect(qtLambda(self._editHeading, self.EDIT_SCENE))
+        self.swtScene = NSwitch(self, height=iPx)
         self.hdeScene = QLabel(trHide, self)
         self.hdeScene.setIndent(6)
-        self.swtScene = NSwitch(self, height=iPx)
+        self.hdeScene.setBuddy(self.swtScene)
 
         self.formatBox.addWidget(self.lblScene, 3, 0)
         self.formatBox.addWidget(self.fmtScene, 3, 1)
@@ -628,9 +633,10 @@ class _HeadingsTab(NScrollablePage):
         self.fmtAScene.setReadOnly(True)
         self.btnAScene = NIconToolButton(self, iSz, "edit", "green")
         self.btnAScene.clicked.connect(qtLambda(self._editHeading, self.EDIT_HSCENE))
+        self.swtAScene = NSwitch(self, height=iPx)
         self.hdeAScene = QLabel(trHide, self)
         self.hdeAScene.setIndent(6)
-        self.swtAScene = NSwitch(self, height=iPx)
+        self.hdeAScene.setBuddy(self.swtAScene)
 
         self.formatBox.addWidget(self.lblAScene, 4, 0)
         self.formatBox.addWidget(self.fmtAScene, 4, 1)
@@ -644,9 +650,10 @@ class _HeadingsTab(NScrollablePage):
         self.fmtSection.setReadOnly(True)
         self.btnSection = NIconToolButton(self, iSz, "edit", "green")
         self.btnSection.clicked.connect(qtLambda(self._editHeading, self.EDIT_SECTION))
+        self.swtSection = NSwitch(self, height=iPx)
         self.hdeSection = QLabel(trHide, self)
         self.hdeSection.setIndent(6)
-        self.swtSection = NSwitch(self, height=iPx)
+        self.hdeSection.setBuddy(self.swtSection)
 
         self.formatBox.addWidget(self.lblSection, 5, 0)
         self.formatBox.addWidget(self.fmtSection, 5, 1)
@@ -704,44 +711,59 @@ class _HeadingsTab(NScrollablePage):
 
         # Layout Matrix
         # =============
+        trCentre = self.tr("Centre")
+        trBreak = self.tr("Page Break")
+
         self.layoutMatrix = QGridLayout()
         self.layoutMatrix.setVerticalSpacing(12)
         self.layoutMatrix.setHorizontalSpacing(12)
 
-        self.layoutMatrix.addWidget(QLabel(self.tr("Centre"), self), 0, 1)
-        self.layoutMatrix.addWidget(QLabel(self.tr("Page Break"), self), 0, 2)
+        self.layoutMatrix.addWidget(QLabel(trCentre, self), 0, 1)
+        self.layoutMatrix.addWidget(QLabel(trBreak, self), 0, 2)
 
         # Title Layout
-        self.lblTitle = QLabel(self._build.getLabel("headings.styleTitle"), self)
+        trLabel = self._build.getLabel("headings.styleTitle")
+        self.lblTitle = QLabel(trLabel, self)
         self.centerTitle = NSwitch(self, height=iPx)
+        self.centerTitle.setAccessibleName(f"{trLabel}: {trCentre}")
         self.breakTitle = NSwitch(self, height=iPx)
+        self.breakTitle.setAccessibleName(f"{trLabel}: {trBreak}")
 
         self.layoutMatrix.addWidget(self.lblTitle,    1, 0)
         self.layoutMatrix.addWidget(self.centerTitle, 1, 1, QtAlignCenter)
         self.layoutMatrix.addWidget(self.breakTitle,  1, 2, QtAlignCenter)
 
         # Partition Layout
-        self.lblPart = QLabel(self._build.getLabel("headings.stylePart"), self)
+        trLabel = self._build.getLabel("headings.stylePart")
+        self.lblPart = QLabel(trLabel, self)
         self.centerPart = NSwitch(self, height=iPx)
+        self.centerPart.setAccessibleName(f"{trLabel}: {trCentre}")
         self.breakPart = NSwitch(self, height=iPx)
+        self.breakPart.setAccessibleName(f"{trLabel}: {trBreak}")
 
         self.layoutMatrix.addWidget(self.lblPart,    2, 0)
         self.layoutMatrix.addWidget(self.centerPart, 2, 1, QtAlignCenter)
         self.layoutMatrix.addWidget(self.breakPart,  2, 2, QtAlignCenter)
 
         # Chapter Layout
-        self.lblChapter = QLabel(self._build.getLabel("headings.styleChapter"), self)
+        trLabel = self._build.getLabel("headings.styleChapter")
+        self.lblChapter = QLabel(trLabel, self)
         self.centerChapter = NSwitch(self, height=iPx)
+        self.centerChapter.setAccessibleName(f"{trLabel}: {trCentre}")
         self.breakChapter = NSwitch(self, height=iPx)
+        self.breakChapter.setAccessibleName(f"{trLabel}: {trBreak}")
 
         self.layoutMatrix.addWidget(self.lblChapter,    3, 0)
         self.layoutMatrix.addWidget(self.centerChapter, 3, 1, QtAlignCenter)
         self.layoutMatrix.addWidget(self.breakChapter,  3, 2, QtAlignCenter)
 
         # Scene Layout
-        self.lblScene = QLabel(self._build.getLabel("headings.styleScene"), self)
+        trLabel = self._build.getLabel("headings.styleScene")
+        self.lblScene = QLabel(trLabel, self)
         self.centerScene = NSwitch(self, height=iPx)
+        self.centerScene.setAccessibleName(f"{trLabel}: {trCentre}")
         self.breakScene = NSwitch(self, height=iPx)
+        self.breakScene.setAccessibleName(f"{trLabel}: {trBreak}")
 
         self.layoutMatrix.addWidget(self.lblScene,    4, 0)
         self.layoutMatrix.addWidget(self.centerScene, 4, 1, QtAlignCenter)
@@ -979,7 +1001,6 @@ class _FormattingTab(NScrollableForm):
 
         # Note Headings
         self.addNoteHead = NSwitch(self, height=iPx)
-
         self.addRow(self._build.getLabel("text.addNoteHeadings"), self.addNoteHead)
 
         # Text Format
