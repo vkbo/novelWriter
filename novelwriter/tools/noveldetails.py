@@ -257,8 +257,8 @@ class _OverviewPage(NScrollablePage):
     def updateProjectData(self) -> None:
         """Load information about the project."""
         project = SHARED.project
-        project.updateWordCounts()
-        wcNovel, wcNotes = project.data.currCounts
+        project.updateCounts()
+        wcNovel, wcNotes, _, _ = project.data.currCounts
 
         self.projName.setText(project.data.name)
         self.projRevisions.setText(f"{project.data.saveCount:n}")

@@ -165,6 +165,10 @@ class NWItem:
         return self._paraCount
 
     @property
+    def mainCount(self) -> int:
+        return self._charCount if CONFIG.useCharCount else self._wordCount
+
+    @property
     def initCount(self) -> int:
         return self._initCount
 

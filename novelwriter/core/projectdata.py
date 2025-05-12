@@ -66,8 +66,8 @@ class NWProjectData:
         self._spellLang = None
 
         # Project Dictionaries
-        self._initCounts = [0, 0]
-        self._currCounts = [0, 0]
+        self._initCounts = [0, 0, 0, 0]
+        self._currCounts = [0, 0, 0, 0]
         self._lastHandle: dict[str, str | None] = {
             "editor":  None,
             "viewer":  None,
@@ -148,18 +148,18 @@ class NWProjectData:
         return self._spellLang
 
     @property
-    def initCounts(self) -> tuple[int, int]:
-        """Return the initial count of words for novel and note
-        documents.
+    def initCounts(self) -> tuple[int, int, int, int]:
+        """Return the initial count of words and characters for novel
+        and note documents.
         """
-        return self._initCounts[0], self._initCounts[1]
+        return self._initCounts[0], self._initCounts[1], self._initCounts[2], self._initCounts[3]
 
     @property
-    def currCounts(self) -> tuple[int, int]:
-        """Return the current count of words for novel and note
-        documents.
+    def currCounts(self) -> tuple[int, int, int, int]:
+        """Return the current count of words and characters for novel
+        and note documents.
         """
-        return self._currCounts[0], self._currCounts[1]
+        return self._currCounts[0], self._currCounts[1], self._currCounts[2], self._currCounts[3]
 
     @property
     def lastHandle(self) -> dict[str, str | None]:
@@ -301,22 +301,40 @@ class NWProjectData:
             self._project.setProjectChanged(True)
         return
 
-    def setInitCounts(self, novel: Any = None, notes: Any = None) -> None:
-        """Set the word count totals for novel and note files."""
-        if novel is not None:
-            self._initCounts[0] = checkInt(novel, 0)
-            self._currCounts[0] = checkInt(novel, 0)
-        if notes is not None:
-            self._initCounts[1] = checkInt(notes, 0)
-            self._currCounts[1] = checkInt(notes, 0)
+    def setInitCounts(
+        self, wNovel: Any = None, wNotes: Any = None, cNovel: Any = None, cNotes: Any = None
+    ) -> None:
+        """Set the count totals for novel and note files."""
+        if wNovel is not None:
+            count = checkInt(wNovel, 0)
+            self._initCounts[0] = count
+            self._currCounts[0] = count
+        if wNotes is not None:
+            count = checkInt(wNotes, 0)
+            self._initCounts[1] = count
+            self._currCounts[1] = count
+        if cNovel is not None:
+            count = checkInt(cNovel, 0)
+            self._initCounts[2] = count
+            self._currCounts[2] = count
+        if cNotes is not None:
+            count = checkInt(cNotes, 0)
+            self._initCounts[3] = count
+            self._currCounts[3] = count
         return
 
-    def setCurrCounts(self, novel: Any = None, notes: Any = None) -> None:
-        """Set the word count totals for novel and note files."""
-        if novel is not None:
-            self._currCounts[0] = checkInt(novel, 0)
-        if notes is not None:
-            self._currCounts[1] = checkInt(notes, 0)
+    def setCurrCounts(
+        self, wNovel: Any = None, wNotes: Any = None, cNovel: Any = None, cNotes: Any = None
+    ) -> None:
+        """Set the count totals for novel and note files."""
+        if wNovel is not None:
+            self._currCounts[0] = checkInt(wNovel, 0)
+        if wNotes is not None:
+            self._currCounts[1] = checkInt(wNotes, 0)
+        if cNovel is not None:
+            self._currCounts[2] = checkInt(cNovel, 0)
+        if cNotes is not None:
+            self._currCounts[3] = checkInt(cNotes, 0)
         return
 
     def setAutoReplace(self, value: dict) -> None:

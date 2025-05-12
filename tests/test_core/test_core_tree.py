@@ -436,7 +436,7 @@ def testCoreTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
     ]
 
     # Refresh All
-    assert tree.sumWords() == (9, 0)
+    assert tree.sumCounts() == (9, 0, 40, 0)
     assert tree.model.root.count == 9
 
     for node in tree.nodes.values():

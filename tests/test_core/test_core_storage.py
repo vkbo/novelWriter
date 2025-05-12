@@ -435,8 +435,8 @@ def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
     sessLogOld.write_text((
         "# Offset 150\n"
         "# Start Time         End Time                Novel     Notes    Idle\n"
-        "2021-02-02 02:02:02  2021-02-02 03:03:03       200      200       10\n"
-        "2021-03-03 03:03:03  2021-03-03 04:04:04       300      300       20\n"
+        "2021-02-02 02:02:02  2021-02-02 03:03:03       200       200      10\n"
+        "2021-03-03 03:03:03  2021-03-03 04:04:04       300       300      20\n"
     ), encoding="utf-8")
 
     assert sessLogOld.exists() is True
@@ -496,6 +496,8 @@ def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
         "end": "2021-02-02 03:03:03",
         "novel": 200,
         "notes": 200,
+        "cnovel": 0,
+        "cnotes": 0,
         "idle": 10,
     }
     assert data[2] == {
@@ -504,6 +506,8 @@ def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
         "end": "2021-03-03 04:04:04",
         "novel": 300,
         "notes": 300,
+        "cnovel": 0,
+        "cnotes": 0,
         "idle": 20,
     }
 
