@@ -45,16 +45,18 @@ logger = logging.getLogger(__name__)
 INV_ROOT = "invisibleRoot"
 C_FACTOR = 0x0100
 
-C_LABEL_TEXT  = 0x0000 | Qt.ItemDataRole.DisplayRole
-C_LABEL_ICON  = 0x0000 | Qt.ItemDataRole.DecorationRole
-C_LABEL_FONT  = 0x0000 | Qt.ItemDataRole.FontRole
-C_COUNT_TEXT  = 0x0100 | Qt.ItemDataRole.DisplayRole
-C_COUNT_ICON  = 0x0100 | Qt.ItemDataRole.DecorationRole
-C_COUNT_ALIGN = 0x0100 | Qt.ItemDataRole.TextAlignmentRole
-C_ACTIVE_ICON = 0x0200 | Qt.ItemDataRole.DecorationRole
-C_ACTIVE_TIP  = 0x0200 | Qt.ItemDataRole.ToolTipRole
-C_STATUS_ICON = 0x0300 | Qt.ItemDataRole.DecorationRole
-C_STATUS_TIP  = 0x0300 | Qt.ItemDataRole.ToolTipRole
+C_LABEL_TEXT    = 0x0000 | Qt.ItemDataRole.DisplayRole
+C_LABEL_ICON    = 0x0000 | Qt.ItemDataRole.DecorationRole
+C_LABEL_FONT    = 0x0000 | Qt.ItemDataRole.FontRole
+C_COUNT_TEXT    = 0x0100 | Qt.ItemDataRole.DisplayRole
+C_COUNT_ICON    = 0x0100 | Qt.ItemDataRole.DecorationRole
+C_COUNT_ALIGN   = 0x0100 | Qt.ItemDataRole.TextAlignmentRole
+C_ACTIVE_ICON   = 0x0200 | Qt.ItemDataRole.DecorationRole
+C_ACTIVE_TIP    = 0x0200 | Qt.ItemDataRole.ToolTipRole
+C_ACTIVE_ACCESS = 0x0200 | Qt.ItemDataRole.AccessibleTextRole
+C_STATUS_ICON   = 0x0300 | Qt.ItemDataRole.DecorationRole
+C_STATUS_TIP    = 0x0300 | Qt.ItemDataRole.ToolTipRole
+C_STATUS_ACCESS = 0x0300 | Qt.ItemDataRole.AccessibleTextRole
 
 NODE_FLAGS = Qt.ItemFlag.ItemIsEnabled
 NODE_FLAGS |= Qt.ItemFlag.ItemIsSelectable
@@ -150,13 +152,15 @@ class ProjectNode:
 
         # Active
         aText, aIcon = self._item.getActiveStatus()
-        self._cache[C_ACTIVE_TIP] = aText
         self._cache[C_ACTIVE_ICON] = aIcon
+        self._cache[C_ACTIVE_TIP] = aText
+        self._cache[C_ACTIVE_ACCESS] = aText
 
         # Status
         sText, sIcon = self._item.getImportStatus()
-        self._cache[C_STATUS_TIP] = sText
         self._cache[C_STATUS_ICON] = sIcon
+        self._cache[C_STATUS_TIP] = sText
+        self._cache[C_STATUS_ACCESS] = sText
 
         return
 

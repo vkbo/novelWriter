@@ -34,17 +34,17 @@ from time import time
 from typing import TYPE_CHECKING, Final
 
 from PyQt6.QtCore import (
-    PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QLibraryInfo,
-    QLocale, QStandardPaths, QSysInfo, QTranslator
+    PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QDate,
+    QDateTime, QLibraryInfo, QLocale, QStandardPaths, QSysInfo, QTranslator
 )
 from PyQt6.QtGui import QFont, QFontDatabase, QFontMetrics
 from PyQt6.QtWidgets import QApplication
 
 from novelwriter.common import (
     NWConfigParser, checkInt, checkPath, describeFont, fontMatcher,
-    formatTimeStamp
+    formatTimeStamp, processDialogSymbols, simplified
 )
-from novelwriter.constants import nwFiles, nwHtmlUnicode, nwUnicode
+from novelwriter.constants import nwFiles, nwHtmlUnicode, nwQuotes, nwUnicode
 from novelwriter.error import formatException, logException
 
 if TYPE_CHECKING:
@@ -65,16 +65,16 @@ class Config:
 
     __slots__ = (
         "_appPath", "_appRoot", "_backPath", "_backupPath", "_confPath", "_dLocale", "_dShortDate",
-        "_dShortDateTime", "_dataPath", "_errData", "_hasError", "_homePath", "_manuals",
-        "_nwLangPath", "_qLocale", "_qtLangPath", "_qtTrans", "_recentPaths", "_recentProjects",
-        "_splash", "allowOpenDial", "altDialogClose", "altDialogOpen", "appHandle", "appName",
-        "askBeforeBackup", "askBeforeExit", "autoSaveDoc", "autoSaveProj", "autoScroll",
-        "autoScrollPos", "autoSelect", "backupOnClose", "cursorWidth", "dialogLine", "dialogStyle",
-        "doJustify", "doReplace", "doReplaceDQuote", "doReplaceDash", "doReplaceDots",
-        "doReplaceSQuote", "emphLabels", "fmtApostrophe", "fmtDQuoteClose", "fmtDQuoteOpen",
-        "fmtPadAfter", "fmtPadBefore", "fmtPadThin", "fmtSQuoteClose", "fmtSQuoteOpen",
-        "focusWidth", "guiFont", "guiLocale", "guiSyntax", "guiTheme", "hasEnchant",
-        "hideFocusFooter", "hideHScroll", "hideVScroll", "highlightEmph", "hostName",
+        "_dShortDateTime", "_dataPath", "_errData", "_hasError", "_homePath", "_lastAuthor",
+        "_manuals", "_nwLangPath", "_qLocale", "_qtLangPath", "_qtTrans", "_recentPaths",
+        "_recentProjects", "_splash", "allowOpenDial", "altDialogClose", "altDialogOpen",
+        "appHandle", "appName", "askBeforeBackup", "askBeforeExit", "autoSaveDoc", "autoSaveProj",
+        "autoScroll", "autoScrollPos", "autoSelect", "backupOnClose", "cursorWidth", "dialogLine",
+        "dialogStyle", "doJustify", "doReplace", "doReplaceDQuote", "doReplaceDash",
+        "doReplaceDots", "doReplaceSQuote", "emphLabels", "fmtApostrophe", "fmtDQuoteClose",
+        "fmtDQuoteOpen", "fmtPadAfter", "fmtPadBefore", "fmtPadThin", "fmtSQuoteClose",
+        "fmtSQuoteOpen", "focusWidth", "guiFont", "guiLocale", "guiSyntax", "guiTheme",
+        "hasEnchant", "hideFocusFooter", "hideHScroll", "hideVScroll", "highlightEmph", "hostName",
         "iconColDocs", "iconColTree", "iconTheme", "incNotesWCount", "isDebug", "kernelVer",
         "lastNotes", "mainPanePos", "mainWinSize", "memInfo", "narratorBreak", "narratorDialog",
         "nativeFont", "osDarwin", "osLinux", "osType", "osUnknown", "osWindows", "outlinePanePos",
@@ -149,6 +149,7 @@ class Config:
 
         self._recentProjects = RecentProjects(self)
         self._recentPaths = RecentPaths(self)
+        self._lastAuthor = ""
 
         # General GUI Settings
         self.guiLocale    = self._qLocale.name()
@@ -321,6 +322,11 @@ class Config:
     def recentProjects(self) -> RecentProjects:
         return self._recentProjects
 
+    @property
+    def lastAuthor(self) -> str:
+        """Return the last author name used."""
+        return simplified(self._lastAuthor)
+
     ##
     #  Getters
     ##
@@ -335,6 +341,11 @@ class Config:
     ##
     #  Setters
     ##
+
+    def setLastAuthor(self, value: str) -> None:
+        """Set tle last used author name."""
+        self._lastAuthor = simplified(value)
+        return
 
     def setMainWinSize(self, width: int, height: int) -> None:
         """Set the size of the main window, but only if the change is
@@ -467,11 +478,16 @@ class Config:
 
     def localDate(self, value: datetime) -> str:
         """Return a localised date format."""
-        return self._dLocale.toString(value, self._dShortDate)
+        # Explicitly convert the date first, see bug #2325
+        return self._dLocale.toString(QDate(value.year, value.month, value.day), self._dShortDate)
 
     def localDateTime(self, value: datetime) -> str:
         """Return a localised datetime format."""
-        return self._dLocale.toString(value, self._dShortDateTime)
+        # Explicitly convert the datetime first, see bug #2325
+        return self._dLocale.toString(
+            QDateTime(value.year, value.month, value.day, value.hour, value.minute, value.second),
+            self._dShortDateTime,
+        )
 
     def listLanguages(self, lngSet: int) -> list[tuple[str, str]]:
         """List localisation files in the i18n folder. The default GUI
@@ -640,6 +656,7 @@ class Config:
         self.backupOnClose   = conf.rdBool(sec, "backuponclose", self.backupOnClose)
         self.askBeforeBackup = conf.rdBool(sec, "askbeforebackup", self.askBeforeBackup)
         self.askBeforeExit   = conf.rdBool(sec, "askbeforeexit", self.askBeforeExit)
+        self._lastAuthor     = conf.rdStr(sec, "lastauthor", self._lastAuthor)
 
         # Editor
         sec = "Editor"
@@ -675,9 +692,9 @@ class Config:
         self.showFullPath    = conf.rdBool(sec, "showfullpath", self.showFullPath)
         self.dialogStyle     = conf.rdInt(sec, "dialogstyle", self.dialogStyle)
         self.allowOpenDial   = conf.rdBool(sec, "allowopendial", self.allowOpenDial)
-        self.dialogLine      = conf.rdStr(sec, "dialogline", self.dialogLine)
-        self.narratorBreak   = conf.rdStr(sec, "narratorbreak", self.narratorBreak)
-        self.narratorDialog  = conf.rdStr(sec, "narratordialog", self.narratorDialog)
+        dialogLine           = conf.rdStr(sec, "dialogline", self.dialogLine)
+        narratorBreak        = conf.rdStr(sec, "narratorbreak", self.narratorBreak)
+        narratorDialog       = conf.rdStr(sec, "narratordialog", self.narratorDialog)
         self.altDialogOpen   = conf.rdStr(sec, "altdialogopen", self.altDialogOpen)
         self.altDialogClose  = conf.rdStr(sec, "altdialogclose", self.altDialogClose)
         self.highlightEmph   = conf.rdBool(sec, "highlightemph", self.highlightEmph)
@@ -715,6 +732,10 @@ class Config:
         if self.fmtDQuoteOpen == self.fmtDQuoteClose == '"' and self.doReplaceDQuote:
             logger.info("Using straight double quotes, so disabling auto-replace")
             self.doReplaceDQuote = False
+
+        self.dialogLine = processDialogSymbols(dialogLine)
+        self.narratorBreak = narratorBreak if narratorBreak in nwQuotes.DASHES else ""
+        self.narratorDialog = narratorDialog if narratorDialog in nwQuotes.DASHES else ""
 
         return True
 
@@ -760,6 +781,7 @@ class Config:
             "backuponclose":   str(self.backupOnClose),
             "askbeforebackup": str(self.askBeforeBackup),
             "askbeforeexit":   str(self.askBeforeExit),
+            "lastauthor":      str(self._lastAuthor),
         }
 
         conf["Editor"] = {

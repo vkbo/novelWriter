@@ -254,6 +254,7 @@ class GuiProjectToolBar(QWidget):
         self.viewLabel.setFont(SHARED.theme.guiFontB)
         self.viewLabel.setContentsMargins(0, 0, 0, 0)
         self.viewLabel.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
+        self.projTree.setAccessibleName(self.viewLabel.text())
 
         # Quick Links
         self.mQuick = QMenu(self)

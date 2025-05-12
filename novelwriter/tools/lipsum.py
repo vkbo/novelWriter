@@ -75,8 +75,9 @@ class GuiLipsum(NDialog):
         self.paraCount.setMaximum(100)
         self.paraCount.setValue(5)
 
-        self.randLabel = QLabel(self.tr("Randomise order"), self)
         self.randSwitch = NSwitch(self)
+        self.randLabel = QLabel(self.tr("Randomise order"), self)
+        self.randLabel.setBuddy(self.randSwitch)
 
         self.formBox = QGridLayout()
         self.formBox.addWidget(self.headLabel, 0, 0, 1, 2, QtAlignLeft)

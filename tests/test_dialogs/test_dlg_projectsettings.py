@@ -214,18 +214,18 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
 
     assert update[0][0] == C.sNew
     assert update[0][1].name == "New"
-    assert update[0][1].color == QColor(100, 100, 100)
-    assert update[0][1].shape == nwStatusShape.SQUARE
+    assert update[0][1].color == QColor(120, 120, 120)
+    assert update[0][1].shape == nwStatusShape.STAR
 
     assert update[1][0] == C.sDraft
     assert update[1][1].name == "Draft"
-    assert update[1][1].color == QColor(200, 150, 0)
-    assert update[1][1].shape == nwStatusShape.SQUARE
+    assert update[1][1].color == QColor(143, 240, 164)
+    assert update[1][1].shape == nwStatusShape.CIRCLE_T
 
     assert update[2][0] == C.sFinished
     assert update[2][1].name == "Finished"
-    assert update[2][1].color == QColor(50, 200, 0)
-    assert update[2][1].shape == nwStatusShape.SQUARE
+    assert update[2][1].color == QColor(249, 240, 107)
+    assert update[2][1].shape == nwStatusShape.STAR
 
     assert update[3][0] is None
     assert update[3][1].name == "Final"
@@ -289,18 +289,18 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
 
     assert update[0][0] == C.iNew
     assert update[0][1].name == "New"
-    assert update[0][1].color == QColor(100, 100, 100)
+    assert update[0][1].color == QColor(120, 120, 120)
     assert update[0][1].shape == nwStatusShape.SQUARE
 
     assert update[1][0] == C.iMajor
     assert update[1][1].name == "Major"
-    assert update[1][1].color == QColor(200, 150, 0)
-    assert update[1][1].shape == nwStatusShape.SQUARE
+    assert update[1][1].color == QColor(220, 138, 221)
+    assert update[1][1].shape == nwStatusShape.BLOCK_3
 
     assert update[2][0] == C.iMain
     assert update[2][1].name == "Main"
-    assert update[2][1].color == QColor(50, 200, 0)
-    assert update[2][1].shape == nwStatusShape.SQUARE
+    assert update[2][1].color == QColor(220, 138, 221)
+    assert update[2][1].shape == nwStatusShape.BLOCK_4
 
     assert update[3][0] is None
     assert update[3][1].name == "Final"
@@ -354,10 +354,10 @@ def testDlgProjSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPath, 
 
     assert expFile.is_file() is True
     assert expFile.read_text().split() == [
-        "SQUARE,#646464,New",
-        "SQUARE,#c83200,Note",
-        "SQUARE,#c89600,Draft",
-        "SQUARE,#32c800,Finished",
+        "STAR,#787878,New",
+        "TRIANGLE,#cdab8f,Note",
+        "CIRCLE_T,#8ff0a4,Draft",
+        "STAR,#f9f06b,Finished",
     ]
 
     # Import Error

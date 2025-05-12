@@ -183,59 +183,82 @@ class GuiWritingStats(NToolDialog):
         # Filter Options
         iPx = SHARED.theme.baseIconHeight
 
-        self.filterBox = QGroupBox(self.tr("Filters"), self)
         self.filterForm = QGridLayout(self)
+        self.filterForm.setRowStretch(6, 1)
+        self.filterBox = QGroupBox(self.tr("Filters"), self)
         self.filterBox.setLayout(self.filterForm)
 
-        self.incNovel = NSwitch(self, height=iPx)
-        self.incNovel.setChecked(
+        # Include Novel Files
+        self.swtIncNovel = NSwitch(self, height=iPx)
+        self.swtIncNovel.setChecked(
             pOptions.getBool("GuiWritingStats", "incNovel", True)
         )
-        self.incNovel.clicked.connect(self._updateListBox)
+        self.swtIncNovel.clicked.connect(self._updateListBox)
+        self.lblIncNovel = QLabel(self.tr("Count novel files"), self)
+        self.lblIncNovel.setBuddy(self.swtIncNovel)
 
-        self.incNotes = NSwitch(self, height=iPx)
-        self.incNotes.setChecked(
+        self.filterForm.addWidget(self.lblIncNovel, 0, 0)
+        self.filterForm.addWidget(self.swtIncNovel, 0, 1)
+
+        # Include Note Files
+        self.swtIncNotes = NSwitch(self, height=iPx)
+        self.swtIncNotes.setChecked(
             pOptions.getBool("GuiWritingStats", "incNotes", True)
         )
-        self.incNotes.clicked.connect(self._updateListBox)
+        self.swtIncNotes.clicked.connect(self._updateListBox)
+        self.lblIncNotes = QLabel(self.tr("Count note files"), self)
+        self.lblIncNotes.setBuddy(self.swtIncNotes)
 
-        self.hideZeros = NSwitch(self, height=iPx)
-        self.hideZeros.setChecked(
+        self.filterForm.addWidget(self.lblIncNotes, 1, 0)
+        self.filterForm.addWidget(self.swtIncNotes, 1, 1)
+
+        # Hide Zero Counts
+        self.swtHideZeros = NSwitch(self, height=iPx)
+        self.swtHideZeros.setChecked(
             pOptions.getBool("GuiWritingStats", "hideZeros", True)
         )
-        self.hideZeros.clicked.connect(self._updateListBox)
+        self.swtHideZeros.clicked.connect(self._updateListBox)
+        self.lblHideZeros = QLabel(self.tr("Hide zero word count"), self)
+        self.lblHideZeros.setBuddy(self.swtHideZeros)
 
-        self.hideNegative = NSwitch(self, height=iPx)
-        self.hideNegative.setChecked(
+        self.filterForm.addWidget(self.lblHideZeros, 2, 0)
+        self.filterForm.addWidget(self.swtHideZeros, 2, 1)
+
+        # Hide Negative Counts
+        self.swtHideNegative = NSwitch(self, height=iPx)
+        self.swtHideNegative.setChecked(
             pOptions.getBool("GuiWritingStats", "hideNegative", False)
         )
-        self.hideNegative.clicked.connect(self._updateListBox)
+        self.swtHideNegative.clicked.connect(self._updateListBox)
+        self.lblHideNegative = QLabel(self.tr("Hide negative word count"), self)
+        self.lblHideNegative.setBuddy(self.swtHideNegative)
 
-        self.groupByDay = NSwitch(self, height=iPx)
-        self.groupByDay.setChecked(
+        self.filterForm.addWidget(self.lblHideNegative, 3, 0)
+        self.filterForm.addWidget(self.swtHideNegative, 3, 1)
+
+        # Group Entries
+        self.swtGroupByDay = NSwitch(self, height=iPx)
+        self.swtGroupByDay.setChecked(
             pOptions.getBool("GuiWritingStats", "groupByDay", False)
         )
-        self.groupByDay.clicked.connect(self._updateListBox)
+        self.swtGroupByDay.clicked.connect(self._updateListBox)
+        self.lblGroupByDay = QLabel(self.tr("Group entries by day"), self)
+        self.lblGroupByDay.setBuddy(self.swtGroupByDay)
 
-        self.showIdleTime = NSwitch(self, height=iPx)
-        self.showIdleTime.setChecked(
+        self.filterForm.addWidget(self.lblGroupByDay, 4, 0)
+        self.filterForm.addWidget(self.swtGroupByDay, 4, 1)
+
+        # Show Idle
+        self.swtShowIdleTime = NSwitch(self, height=iPx)
+        self.swtShowIdleTime.setChecked(
             pOptions.getBool("GuiWritingStats", "showIdleTime", False)
         )
-        self.showIdleTime.clicked.connect(self._updateListBox)
+        self.swtShowIdleTime.clicked.connect(self._updateListBox)
+        self.lblShowIdleTime = QLabel(self.tr("Show idle time"), self)
+        self.lblShowIdleTime.setBuddy(self.swtShowIdleTime)
 
-        self.filterForm.addWidget(QLabel(self.tr("Count novel files"), self),        0, 0)
-        self.filterForm.addWidget(QLabel(self.tr("Count note files"), self),         1, 0)
-        self.filterForm.addWidget(QLabel(self.tr("Hide zero word count"), self),     2, 0)
-        self.filterForm.addWidget(QLabel(self.tr("Hide negative word count"), self), 3, 0)
-        self.filterForm.addWidget(QLabel(self.tr("Group entries by day"), self),     4, 0)
-        self.filterForm.addWidget(QLabel(self.tr("Show idle time"), self),           5, 0)
-        self.filterForm.addWidget(self.incNovel,     0, 1)
-        self.filterForm.addWidget(self.incNotes,     1, 1)
-        self.filterForm.addWidget(self.hideZeros,    2, 1)
-        self.filterForm.addWidget(self.hideNegative, 3, 1)
-        self.filterForm.addWidget(self.groupByDay,   4, 1)
-        self.filterForm.addWidget(self.showIdleTime, 5, 1)
-        self.filterForm.setRowStretch(6, 1)
+        self.filterForm.addWidget(self.lblShowIdleTime, 5, 0)
+        self.filterForm.addWidget(self.swtShowIdleTime, 5, 1)
 
         # Settings
         self.histMax = QSpinBox(self)
@@ -325,12 +348,12 @@ class GuiWritingStats(NToolDialog):
 
         sortCol      = self.listBox.sortColumn()
         sortOrder    = header.sortIndicatorOrder() if header else 0
-        incNovel     = self.incNovel.isChecked()
-        incNotes     = self.incNotes.isChecked()
-        hideZeros    = self.hideZeros.isChecked()
-        hideNegative = self.hideNegative.isChecked()
-        groupByDay   = self.groupByDay.isChecked()
-        showIdleTime = self.showIdleTime.isChecked()
+        incNovel     = self.swtIncNovel.isChecked()
+        incNotes     = self.swtIncNotes.isChecked()
+        hideZeros    = self.swtHideZeros.isChecked()
+        hideNegative = self.swtHideNegative.isChecked()
+        groupByDay   = self.swtGroupByDay.isChecked()
+        showIdleTime = self.swtShowIdleTime.isChecked()
         histMax      = self.histMax.value()
 
         logger.debug("Saving State: GuiWritingStats")
@@ -487,11 +510,11 @@ class GuiWritingStats(NToolDialog):
         self.listBox.clear()
         self.timeFilter = 0.0
 
-        incNovel     = self.incNovel.isChecked()
-        incNotes     = self.incNotes.isChecked()
-        hideZeros    = self.hideZeros.isChecked()
-        hideNegative = self.hideNegative.isChecked()
-        groupByDay   = self.groupByDay.isChecked()
+        incNovel     = self.swtIncNovel.isChecked()
+        incNotes     = self.swtIncNotes.isChecked()
+        hideZeros    = self.swtHideZeros.isChecked()
+        hideNegative = self.swtHideNegative.isChecked()
+        groupByDay   = self.swtGroupByDay.isChecked()
         histMax      = self.histMax.value()
 
         # Group the data
@@ -563,7 +586,7 @@ class GuiWritingStats(NToolDialog):
         # Populate the list
         mTrans = Qt.TransformationMode.FastTransformation
         mAspect = Qt.AspectRatioMode.IgnoreAspectRatio
-        showIdleTime = self.showIdleTime.isChecked()
+        showIdleTime = self.swtShowIdleTime.isChecked()
         for _, sStart, sDiff, nWords, _, _, sIdle in self.filterData:
 
             if showIdleTime:

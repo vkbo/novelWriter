@@ -34,9 +34,9 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import compact, describeFont, uniqueCompact
+from novelwriter.common import compact, describeFont, processDialogSymbols, uniqueCompact
 from novelwriter.config import DEF_GUI, DEF_ICONS, DEF_SYNTAX, DEF_TREECOL
-from novelwriter.constants import nwLabels, nwUnicode, trConst
+from novelwriter.constants import nwLabels, nwQuotes, nwUnicode, trConst
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.configlayout import NColorLabel, NScrollableForm
 from novelwriter.extensions.modified import (
@@ -80,6 +80,7 @@ class GuiPreferences(NDialog):
         # SideBar
         self.sidebar = NPagedSideBar(self)
         self.sidebar.setLabelColor(SHARED.theme.helpText)
+        self.sidebar.setAccessibleName(self.titleLabel.text())
         self.sidebar.buttonClicked.connect(self._sidebarClicked)
 
         # Form
@@ -644,21 +645,20 @@ class GuiPreferences(NDialog):
             self.tr("Lines starting with any of these symbols are dialogue.")
         )
 
-        self.narratorBreak = QLineEdit(self)
-        self.narratorBreak.setMaxLength(1)
-        self.narratorBreak.setFixedWidth(boxFixed)
-        self.narratorBreak.setAlignment(QtAlignCenter)
-        self.narratorBreak.setText(CONFIG.narratorBreak)
+        self.narratorBreak = NComboBox(self)
+        self.narratorDialog = NComboBox(self)
+        for key, value in nwQuotes.DASHES.items():
+            label = trConst(value)
+            self.narratorBreak.addItem(label, key)
+            self.narratorDialog.addItem(label, key)
+
+        self.narratorBreak.setCurrentData(CONFIG.narratorBreak, "")
+        self.narratorDialog.setCurrentData(CONFIG.narratorDialog, "")
+
         self.mainForm.addRow(
             self.tr("Narrator break symbol"), self.narratorBreak,
             self.tr("Symbol to indicate a narrator break in dialogue.")
         )
-
-        self.narratorDialog = QLineEdit(self)
-        self.narratorDialog.setMaxLength(1)
-        self.narratorDialog.setFixedWidth(boxFixed)
-        self.narratorDialog.setAlignment(QtAlignCenter)
-        self.narratorDialog.setText(CONFIG.narratorDialog)
         self.mainForm.addRow(
             self.tr("Alternating dialogue/narration symbol"), self.narratorDialog,
             self.tr("Alternates dialogue highlighting within any paragraph.")
@@ -1045,9 +1045,9 @@ class GuiPreferences(NDialog):
         # Text Highlighting
         dialogueStyle   = self.dialogStyle.currentData()
         allowOpenDial   = self.allowOpenDial.isChecked()
-        dialogueLine    = uniqueCompact(self.dialogLine.text())
-        narratorBreak   = self.narratorBreak.text().strip()
-        narratorDialog  = self.narratorDialog.text().strip()
+        dialogueLine    = processDialogSymbols(self.dialogLine.text())
+        narratorBreak   = self.narratorBreak.currentData()
+        narratorDialog  = self.narratorDialog.currentData()
         altDialogOpen   = compact(self.altDialogOpen.text())
         altDialogClose  = compact(self.altDialogClose.text())
         highlightEmph   = self.highlightEmph.isChecked()

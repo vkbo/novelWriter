@@ -100,6 +100,7 @@ class NSwitchBox(QScrollArea):
         switch.toggled.connect(lambda state: self._emitSwitchSignal(identifier, state))
         self._content.addWidget(switch, self._index, 2, QtAlignRight)
 
+        label.setBuddy(switch)
         self._widgets.append(switch)
         self._bumpIndex()
 

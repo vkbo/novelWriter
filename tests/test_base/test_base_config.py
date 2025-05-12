@@ -20,6 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import datetime
 import json
 import sys
 
@@ -189,6 +190,14 @@ def testBaseConfig_Localisation(fncPath, tstPaths):
     languages = tstConf.listLanguages(tstConf.LANG_NW)
     assert languages == [("en_GB", "British English"), ("fr", "Français")]
 
+    # Date Formats
+    # Checks for bug #2325
+    ts = datetime.datetime.fromtimestamp(1746370775)
+    CONFIG._dShortDate = "dd/MM/yyyy"
+    CONFIG._dShortDateTime = "dd/MM/yyyy HH:mm"
+    assert CONFIG.localDate(ts) == ts.strftime("%d/%m/%Y")
+    assert CONFIG.localDateTime(ts) == ts.strftime("%d/%m/%Y %H:%M")
+
 
 @pytest.mark.base
 def testBaseConfig_Methods(fncPath):
@@ -232,6 +241,11 @@ def testBaseConfig_Methods(fncPath):
 
     # Recent Projects
     assert isinstance(tstConf.recentProjects, RecentProjects)
+
+    # Last Author
+    assert CONFIG.lastAuthor == ""
+    CONFIG.setLastAuthor(" Jane    Doe  ")
+    assert CONFIG.lastAuthor == "Jane Doe"
 
 
 @pytest.mark.base

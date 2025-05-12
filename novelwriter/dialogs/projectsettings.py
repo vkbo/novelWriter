@@ -86,6 +86,7 @@ class GuiProjectSettings(NDialog):
         # SideBar
         self.sidebar = NPagedSideBar(self)
         self.sidebar.setLabelColor(SHARED.theme.helpText)
+        self.sidebar.setAccessibleName(self.titleLabel.text())
         self.sidebar.addButton(self.tr("Settings"), self.PAGE_SETTINGS)
         self.sidebar.addButton(self.tr("Status"), self.PAGE_STATUS)
         self.sidebar.addButton(self.tr("Importance"), self.PAGE_IMPORT)
@@ -349,6 +350,7 @@ class _StatusPage(NFixedPage):
         self.listBox.setHeaderLabels([self.tr("Label"), self.tr("Usage")])
         self.listBox.setColumnWidth(self.C_LABEL, wCol0)
         self.listBox.setIndentation(0)
+        self.listBox.setAccessibleName(pageLabel)
         self.listBox.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.listBox.itemSelectionChanged.connect(self._onSelectionChanged)
@@ -686,6 +688,7 @@ class _ReplacePage(NFixedPage):
         self.listBox.setHeaderLabels([self.tr("Keyword"), self.tr("Replace With")])
         self.listBox.setColumnWidth(self.C_KEY, wCol0)
         self.listBox.setIndentation(0)
+        self.listBox.setAccessibleName(self.pageTitle.text())
         self.listBox.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.listBox.itemSelectionChanged.connect(self._onSelectionChanged)

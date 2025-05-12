@@ -16,16 +16,16 @@
     </lastHandle>
     <autoReplace />
     <status>
-      <entry key="s000000" count="5" red="100" green="100" blue="100" shape="SQUARE">New</entry>
-      <entry key="s000001" count="0" red="200" green="50" blue="0" shape="SQUARE">Note</entry>
-      <entry key="s000002" count="0" red="200" green="150" blue="0" shape="SQUARE">Draft</entry>
-      <entry key="s000003" count="0" red="50" green="200" blue="0" shape="SQUARE">Finished</entry>
+      <entry key="s000000" count="5" red="120" green="120" blue="120" shape="STAR">New</entry>
+      <entry key="s000001" count="0" red="205" green="171" blue="143" shape="TRIANGLE">Note</entry>
+      <entry key="s000002" count="0" red="143" green="240" blue="164" shape="CIRCLE_T">Draft</entry>
+      <entry key="s000003" count="0" red="249" green="240" blue="107" shape="STAR">Finished</entry>
     </status>
     <importance>
-      <entry key="i000004" count="3" red="100" green="100" blue="100" shape="SQUARE">New</entry>
-      <entry key="i000005" count="0" red="200" green="50" blue="0" shape="SQUARE">Minor</entry>
-      <entry key="i000006" count="0" red="200" green="150" blue="0" shape="SQUARE">Major</entry>
-      <entry key="i000007" count="0" red="50" green="200" blue="0" shape="SQUARE">Main</entry>
+      <entry key="i000004" count="3" red="120" green="120" blue="120" shape="SQUARE">New</entry>
+      <entry key="i000005" count="0" red="220" green="138" blue="221" shape="BLOCK_2">Minor</entry>
+      <entry key="i000006" count="0" red="220" green="138" blue="221" shape="BLOCK_3">Major</entry>
+      <entry key="i000007" count="0" red="220" green="138" blue="221" shape="BLOCK_4">Main</entry>
     </importance>
   </settings>
   <content items="8" novelWords="9" notesWords="0" novelChars="40" notesChars="0">

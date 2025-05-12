@@ -483,14 +483,14 @@ class NWProject:
 
     def setDefaultStatusImport(self) -> None:
         """Set the default status and importance values."""
-        self._data.itemStatus.add(None, self.tr("New"),      (100, 100, 100), "SQUARE", 0)
-        self._data.itemStatus.add(None, self.tr("Note"),     (200, 50,  0),   "SQUARE", 0)
-        self._data.itemStatus.add(None, self.tr("Draft"),    (200, 150, 0),   "SQUARE", 0)
-        self._data.itemStatus.add(None, self.tr("Finished"), (50,  200, 0),   "SQUARE", 0)
-        self._data.itemImport.add(None, self.tr("New"),      (100, 100, 100), "SQUARE", 0)
-        self._data.itemImport.add(None, self.tr("Minor"),    (200, 50,  0),   "SQUARE", 0)
-        self._data.itemImport.add(None, self.tr("Major"),    (200, 150, 0),   "SQUARE", 0)
-        self._data.itemImport.add(None, self.tr("Main"),     (50,  200, 0),   "SQUARE", 0)
+        self._data.itemStatus.add(None, self.tr("New"),      (120, 120, 120), "STAR", 0)
+        self._data.itemStatus.add(None, self.tr("Note"),     (205, 171, 143), "TRIANGLE", 0)
+        self._data.itemStatus.add(None, self.tr("Draft"),    (143, 240, 164), "CIRCLE_T", 0)
+        self._data.itemStatus.add(None, self.tr("Finished"), (249, 240, 107), "STAR", 0)
+        self._data.itemImport.add(None, self.tr("New"),      (120, 120, 120), "SQUARE", 0)
+        self._data.itemImport.add(None, self.tr("Minor"),    (220, 138, 221), "BLOCK_2", 0)
+        self._data.itemImport.add(None, self.tr("Major"),    (220, 138, 221), "BLOCK_3", 0)
+        self._data.itemImport.add(None, self.tr("Main"),     (220, 138, 221), "BLOCK_4", 0)
         return
 
     def setProjectLang(self, language: str | None) -> None:

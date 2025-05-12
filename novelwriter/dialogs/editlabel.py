@@ -43,11 +43,14 @@ class GuiEditLabel(NDialog):
         self.setWindowTitle(self.tr("Item Label"))
 
         # Item Label
-        self.labelValue = QLineEdit(self)
-        self.labelValue.setMinimumWidth(220)
-        self.labelValue.setMaxLength(200)
-        self.labelValue.setText(text)
-        self.labelValue.selectAll()
+        self.edtValue = QLineEdit(self)
+        self.edtValue.setMinimumWidth(220)
+        self.edtValue.setMaxLength(200)
+        self.edtValue.setText(text)
+        self.edtValue.selectAll()
+
+        self.lblValue = QLabel(self.tr("Label"), self)
+        self.lblValue.setBuddy(self.lblValue)
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
@@ -56,8 +59,8 @@ class GuiEditLabel(NDialog):
 
         # Assemble
         self.innerBox = QHBoxLayout()
-        self.innerBox.addWidget(QLabel(self.tr("Label"), self), 0)
-        self.innerBox.addWidget(self.labelValue, 1)
+        self.innerBox.addWidget(self.lblValue, 0)
+        self.innerBox.addWidget(self.edtValue, 1)
         self.innerBox.setSpacing(12)
 
         self.outerBox = QVBoxLayout()
@@ -77,7 +80,7 @@ class GuiEditLabel(NDialog):
 
     @property
     def itemLabel(self) -> str:
-        return self.labelValue.text()
+        return self.edtValue.text()
 
     @classmethod
     def getLabel(cls, parent: QWidget, text: str) -> tuple[str, bool]:

@@ -261,7 +261,7 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     assert item.text(sessLog.C_COUNT) == f"{200:n}"
 
     # No Novel Files
-    qtbot.mouseClick(sessLog.incNovel, QtMouseLeft)
+    qtbot.mouseClick(sessLog.swtIncNovel, QtMouseLeft)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
     jsonStats = tstPaths.tmpDir / "sessionStats.json"
@@ -329,8 +329,8 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     ]
 
     # No Note Files
-    qtbot.mouseClick(sessLog.incNovel, QtMouseLeft)
-    qtbot.mouseClick(sessLog.incNotes, QtMouseLeft)
+    qtbot.mouseClick(sessLog.swtIncNovel, QtMouseLeft)
+    qtbot.mouseClick(sessLog.swtIncNotes, QtMouseLeft)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
     jsonStats = tstPaths.tmpDir / "sessionStats.json"
@@ -398,8 +398,8 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     ]
 
     # No Negative Entries
-    qtbot.mouseClick(sessLog.incNotes, QtMouseLeft)
-    qtbot.mouseClick(sessLog.hideNegative, QtMouseLeft)
+    qtbot.mouseClick(sessLog.swtIncNotes, QtMouseLeft)
+    qtbot.mouseClick(sessLog.swtHideNegative, QtMouseLeft)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
     jsonStats = tstPaths.tmpDir / "sessionStats.json"
@@ -439,8 +439,8 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     ]
 
     # Un-hide Zero Entries
-    qtbot.mouseClick(sessLog.hideNegative, QtMouseLeft)
-    qtbot.mouseClick(sessLog.hideZeros, QtMouseLeft)
+    qtbot.mouseClick(sessLog.swtHideNegative, QtMouseLeft)
+    qtbot.mouseClick(sessLog.swtHideZeros, QtMouseLeft)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
     jsonStats = tstPaths.tmpDir / "sessionStats.json"
@@ -526,14 +526,14 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     assert item is not None
     assert item.text(sessLog.C_IDLE) == "4 %"
 
-    qtbot.mouseClick(sessLog.showIdleTime, QtMouseLeft)
+    qtbot.mouseClick(sessLog.swtShowIdleTime, QtMouseLeft)
 
     item = sessLog.listBox.topLevelItem(7)
     assert item is not None
     assert item.text(sessLog.C_IDLE) == "00:01:10"
 
     # Group by Day
-    qtbot.mouseClick(sessLog.groupByDay, QtMouseLeft)
+    qtbot.mouseClick(sessLog.swtGroupByDay, QtMouseLeft)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
     jsonStats = tstPaths.tmpDir / "sessionStats.json"

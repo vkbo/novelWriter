@@ -383,10 +383,12 @@ class ProjectBuilder:
         """Build or copy a project from a data dictionary."""
         if isinstance(data, dict):
             path = data.get("path", None) or None
+            if author := data.get("author"):
+                CONFIG.setLastAuthor(author)
             if isinstance(path, str | Path):
                 self._path = Path(path).resolve()
                 if data.get("sample"):
-                    return self._extractSampleProject(self._path)
+                    return self._extractSampleProject(self._path, data)
                 elif data.get("template"):
                     return self._copyProject(self._path, data)
                 else:
@@ -416,20 +418,21 @@ class ProjectBuilder:
 
         self._path = project.storage.storagePath
 
-        lblNewProject = self.tr("New Project")
-        lblTitlePage  = self.tr("Title Page")
+        trName = self.tr("New Project")
+        trAuthor = self.tr("Author Name")
+        trTitlePage = self.tr("Title Page")
 
         # Settings
         project.data.setUuid(None)
-        project.data.setName(data.get("name", lblNewProject))
-        project.data.setAuthor(data.get("author", ""))
+        project.data.setName(data.get("name", trName))
+        project.data.setAuthor(data.get("author", trAuthor))
         project.data.setLanguage(CONFIG.guiLocale)
         project.setDefaultStatusImport()
         project.session.startSession()
 
         # Add Root Folders
         hNovelRoot = project.newRoot(nwItemClass.NOVEL)
-        hTitlePage = project.newFile(lblTitlePage, hNovelRoot)
+        hTitlePage = project.newFile(trTitlePage, hNovelRoot)
 
         # Generate Title Page
         aDoc = project.storage.getDocument(hTitlePage)
@@ -446,25 +449,21 @@ class ProjectBuilder:
             "\n"
             ">> {count}: [field:{field}] <<\n"
         ).format(
-            author=project.data.author or "None",
-            address=self.tr("Address"),
-            title=project.data.name or "None",
+            author=project.data.author or trAuthor,
+            address=self.tr("Address Line"),
+            title=project.data.name or trName,
             by=self.tr("By"),
             count=self.tr("Word Count"),
             field=nwStats.WORDS_TEXT,
         ))
 
-        # Create a project structure based on selected root folders
-        # and a number of chapters and scenes selected in the
-        # wizard's custom page.
-
         # Create chapters and scenes
         numChapters = data.get("chapters", 0)
         numScenes = data.get("scenes", 0)
 
-        chSynop = self.tr("Summary of the chapter.")
-        scSynop = self.tr("Summary of the scene.")
-        bfNote = self.tr("A short description.")
+        trChSynop = self.tr("Summary of the chapter.")
+        trScSynop = self.tr("Summary of the scene.")
+        trNoteDesc = self.tr("A short description.")
 
         # Create chapters
         if numChapters > 0:
@@ -472,7 +471,7 @@ class ProjectBuilder:
                 chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
                 cHandle = project.newFile(chTitle, hNovelRoot)
                 aDoc = project.storage.getDocument(cHandle)
-                aDoc.writeDocument(f"## {chTitle}\n\n%Synopsis: {chSynop}\n\n")
+                aDoc.writeDocument(f"## {chTitle}\n\n%Synopsis: {trChSynop}\n\n")
 
                 # Create chapter scenes
                 if numScenes > 0 and cHandle:
@@ -480,7 +479,7 @@ class ProjectBuilder:
                         scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
                         sHandle = project.newFile(scTitle, cHandle)
                         aDoc = project.storage.getDocument(sHandle)
-                        aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {scSynop}\n\n")
+                        aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {trScSynop}\n\n")
 
         # Create scenes (no chapters)
         elif numScenes > 0:
@@ -488,7 +487,7 @@ class ProjectBuilder:
                 scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
                 sHandle = project.newFile(scTitle, hNovelRoot)
                 aDoc = project.storage.getDocument(sHandle)
-                aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {scSynop}\n\n")
+                aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {trScSynop}\n\n")
 
         # Create notes folders
         noteTitles = {
@@ -508,7 +507,7 @@ class ProjectBuilder:
                     aDoc.writeDocument(
                         f"# {noteTitles[newRoot]}\n\n"
                         f"@tag: {ntTag}\n\n"
-                        f"%Short: {bfNote}\n\n"
+                        f"%Short: {trNoteDesc}\n\n"
                     )
 
         # Also add the archive and trash folders
@@ -563,23 +562,11 @@ class ProjectBuilder:
             return False
 
         # Open the copied project and update settings
-        project = NWProject()
-        project.openProject(dstPath)
-        project.data.setUuid("")  # Creates a fresh uuid
-        project.data.setName(data.get("name", "None"))
-        project.data.setAuthor(data.get("author", ""))
-        project.data.setSpellCheck(True)
-        project.data.setSpellLang(None)
-        project.data.setDoBackup(True)
-        project.data.setSaveCount(0)
-        project.data.setAutoCount(0)
-        project.data.setEditTime(0)
-        project.saveProject()
-        project.closeProject()
+        self._resetProject(dstPath, data)
 
         return True
 
-    def _extractSampleProject(self, path: Path) -> bool:
+    def _extractSampleProject(self, path: Path, data: dict) -> bool:
         """Make a copy of the sample project by extracting the
         sample.zip file to the new path.
         """
@@ -593,6 +580,7 @@ class ProjectBuilder:
         if (sample := CONFIG.assetPath("sample.zip")).is_file():
             try:
                 shutil.unpack_archive(sample, path)
+                self._resetProject(path, data)
             except Exception as exc:
                 SHARED.error(self.tr("Failed to create a new example project."), exc=exc)
                 return False
@@ -605,3 +593,22 @@ class ProjectBuilder:
             return False
 
         return True
+
+    def _resetProject(self, path: Path, data: dict) -> None:
+        """Open a project and reset/update its settings."""
+        project = NWProject()
+        project.openProject(path)
+        project.data.setUuid("")  # Creates a fresh uuid
+        if name := data.get("name", ""):
+            project.data.setName(name)
+        if author := data.get("author", ""):
+            project.data.setAuthor(author)
+        project.data.setSpellCheck(True)
+        project.data.setSpellLang(None)
+        project.data.setDoBackup(True)
+        project.data.setSaveCount(0)
+        project.data.setAutoCount(0)
+        project.data.setEditTime(0)
+        project.saveProject()
+        project.closeProject()
+        return
