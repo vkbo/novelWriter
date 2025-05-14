@@ -72,28 +72,103 @@ Debian and Mint
 
 Since this is a pure Python package, the Launchpad PPA can in principle also be used on Debian or
 Mint. However, the above command will fail to add the signing key, as it is Ubuntu-specific.
+Instead, do one of the following:
 
-Instead, run the following commands to add the repository and key:
+.. tab-set::
 
-.. code-block:: bash
+   .. tab-item:: Debian 13 (Trixie) and Later
+      :selected:
 
-   sudo gpg --no-default-keyring --keyring /usr/share/keyrings/novelwriter-ppa-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F19F1FCE50043114
-   echo "deb [signed-by=/usr/share/keyrings/novelwriter-ppa-keyring.gpg] http://ppa.launchpad.net/vkbo/novelwriter/ubuntu noble main" | sudo tee /etc/apt/sources.list.d/novelwriter.list
+      As of Debian 13 (Trixie) and other Debian derivatives, the keyring format has changed.
+      The following instructions use Sequoia to install the key in the correct format, and sets up
+      the source file in the new format.
+
+      If you don't have Sequoia installed, first run:
+
+      .. code-block:: bash
+
+         sudo apt install sq
+
+      Import the keyring:
+
+      .. code-block:: bash
+
+         sudo sq network keyserver --server hkps://keyserver.ubuntu.com search "F19F1FCE50043114" \
+               --output /usr/share/keyrings/novelwriter-ppa-keyring.gpg --overwrite
+
+      Add the source file:
+
+      .. tab-set::
+
+         .. tab-item:: Releases
+            :selected:
+
+            .. code-block:: bash
+
+               sudo sh -c "cat > /etc/apt/sources.list.d/novelwriter.sources" << EOF
+               Types: deb
+               URIs: http://ppa.launchpad.net/vkbo/novelwriter/ubuntu/
+               Suites: noble
+               Components: main
+               Signed-By: /usr/share/keyrings/novelwriter-ppa-keyring.gpg
+               EOF
+
+         .. tab-item:: Pre-Releases
+
+            .. code-block:: bash
+
+               sudo sh -c "cat > /etc/apt/sources.list.d/novelwriter-pre.sources" << EOF
+               Types: deb
+               URIs: http://ppa.launchpad.net/vkbo/novelwriter-pre/ubuntu/
+               Suites: noble
+               Components: main
+               Signed-By: /usr/share/keyrings/novelwriter-ppa-keyring.gpg
+               EOF
+
+   .. tab-item:: Debian 12 (Bookworm) and Earlier
+
+      For Debian 12 (Bookworm) and older, and equivalent derivatives, use the old keyring format
+      and apt sources list file format.
+
+      Import the keyring:
+
+      .. code-block:: bash
+
+         sudo gpg --no-default-keyring --keyring /usr/share/keyrings/novelwriter-ppa-keyring.gpg \
+                  --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F19F1FCE50043114
+
+      Add the source list:
+
+      .. tab-set::
+
+         .. tab-item:: Releases
+            :selected:
+
+            .. code-block:: bash
+
+               echo "deb [signed-by=/usr/share/keyrings/novelwriter-ppa-keyring.gpg] http://ppa.launchpad.net/vkbo/novelwriter/ubuntu noble main" | sudo tee /etc/apt/sources.list.d/novelwriter.list
+
+         .. tab-item:: Pre-Releases
+
+            .. code-block:: bash
+
+               echo "deb [signed-by=/usr/share/keyrings/novelwriter-ppa-keyring.gpg] http://ppa.launchpad.net/vkbo/novelwriter-pre/ubuntu noble main" | sudo tee /etc/apt/sources.list.d/novelwriter-pre.list
+
+      .. tip::
+         If you get an error message like ``gpg: failed to create temporary file`` when importing the key
+         from the Ubuntu keyserver, try creating the folder it fails on, and import the key again:
+
+         .. code-block:: bash
+
+            sudo mkdir -m 700 /root/.gnupg/
+
+**Install novelWriter**
 
 Then run the update and install commands as for Ubuntu:
 
 .. code-block:: bash
 
-   sudo apt update
-   sudo apt install novelwriter
-
-.. tip::
-   If you get an error message like ``gpg: failed to create temporary file`` when importing the key
-   from the Ubuntu keyserver, try creating the folder it fails on, and import the key again:
-
-   .. code-block:: bash
-
-      sudo mkdir /root/.gnupg/
+   sudo apt update && sudo apt install novelwriter
 
 
 AppImage Releases

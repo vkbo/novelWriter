@@ -13,7 +13,7 @@ structure of your text. It collects a lot of information from your text and uses
 structure of it in various ways to help you get an overview of your writing.
 
 The chapters labelled "Recommended Reading" includes additional information on how the different
-parts if the application work and what the features do. 
+parts of the application work and what the features do. 
 
 The "Optional" and "Lookup" chapters contain additional information or lookup tables that are not
 essential for using the application.

@@ -194,7 +194,7 @@ within those documents.
 The four heading levels, **Level 1** to **Level 4**, are treated as follows:
 
 * **Level 1** is used for the novel title, and for partitions.
-* **Level 2** is used for chapter tiles.
+* **Level 2** is used for chapter titles.
 * **Level 3** is used for scene titles -- optionally replaced by separators.
 * **Level 4** is for section titles within scenes, if such granularity is needed.
 
