@@ -32,4 +32,4 @@ jobs:
             an issue for any related bugs or feature requests.
           pr-lock-reason: "Completed"
           process-only: "issues. prs"
-          log-output: false
+          log-output: true
