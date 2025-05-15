@@ -2,7 +2,7 @@ name: LockThreads
 
 on:
   schedule:
-    - cron: "40 * * * *"
+    - cron: "14 3 */3 * *"
 
 permissions:
   issues: write
@@ -19,10 +19,10 @@ jobs:
         with:
           github-token: ${{ github.token }}
           issue-inactive-days: 120
-          # issue-comment: >
-          #   This issue has been automatically locked since there has not been
-          #   any recent activity after it was closed. Please open a new issue
-          #   for related bugs or feature requests.
+          issue-comment: >
+            This issue has been automatically locked since there has not been
+            any recent activity after it was closed. Please open a new issue
+            for related bugs or feature requests.
           issue-lock-reason: "resolved"
           pr-inactive-days: 120
           # pr-comment: >
