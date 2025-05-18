@@ -109,4 +109,18 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         nwGUI._timeTick()
         assert status.statsText.text() == "Words: 11 (+11)"
 
+    # Switch to character count
+    CONFIG.useCharCount = True
+    status.initSettings()
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.guimain.time", lambda *a: 50.0)
+        CONFIG.incNotesWCount = True
+        nwGUI._lastTotalCount = 0
+        nwGUI._timeTick()
+        assert status.statsText.text() == "Characters: 46 (+46)"
+        CONFIG.incNotesWCount = False
+        nwGUI._lastTotalCount = 0
+        nwGUI._timeTick()
+        assert status.statsText.text() == "Characters: 40 (+40)"
+
     # qtbot.stop()

@@ -1957,7 +1957,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     # Open a document and populate it
-    SHARED.project.tree[C.hSceneDoc]._initCount = 0  # type: ignore
+    SHARED.project.tree[C.hSceneDoc]._wordInit = 0  # type: ignore
     SHARED.project.tree[C.hSceneDoc]._wordCount = 0  # type: ignore
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
@@ -1981,7 +1981,6 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     assert threadPool.objectID() == id(docEditor._wCounterDoc)
 
     docEditor._wCounterDoc.run()
-    # docEditor._updateDocCounts(cC, wC, pC)
     assert SHARED.project.tree[C.hSceneDoc]._charCount == cC  # type: ignore
     assert SHARED.project.tree[C.hSceneDoc]._wordCount == wC  # type: ignore
     assert SHARED.project.tree[C.hSceneDoc]._paraCount == pC  # type: ignore
@@ -1993,7 +1992,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     assert threadPool.objectID() == id(docEditor._wCounterSel)
 
     docEditor._wCounterSel.run()
-    assert docEditor.docFooter.wordsText.text() == f"Words: {wC} selected"
+    assert docEditor.docFooter.wordsText.text() == f"Selected: {wC}"
 
     # qtbot.stop()
 
