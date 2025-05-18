@@ -3,15 +3,16 @@ novelWriter – GUI Document Editor
 =================================
 
 File History:
-Created:   2018-09-29 [0.0.1] GuiDocEditor
-Created:   2019-04-22 [0.0.1] BackgroundWordCounter
-Created:   2019-09-29 [0.2.1] GuiDocEditSearch
-Created:   2020-04-25 [0.4.5] GuiDocEditHeader
-Rewritten: 2020-06-15 [0.9]   GuiDocEditSearch
-Created:   2020-06-27 [0.10]  GuiDocEditFooter
-Rewritten: 2020-10-07 [1.0b3] BackgroundWordCounter
-Created:   2023-11-06 [2.2b1] MetaCompleter
-Created:   2023-11-07 [2.2b1] GuiDocToolBar
+Created:   2018-09-29 [0.0.1]  GuiDocEditor
+Created:   2019-04-22 [0.0.1]  BackgroundWordCounter
+Created:   2019-09-29 [0.2.1]  GuiDocEditSearch
+Created:   2020-04-25 [0.4.5]  GuiDocEditHeader
+Rewritten: 2020-06-15 [0.9]    GuiDocEditSearch
+Created:   2020-06-27 [0.10]   GuiDocEditFooter
+Rewritten: 2020-10-07 [1.0b3]  BackgroundWordCounter
+Created:   2023-11-06 [2.2b1]  MetaCompleter
+Created:   2023-11-07 [2.2b1]  GuiDocToolBar
+Extended:  2025-05-18 [2.7rc1] CommandCompleter
 
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
@@ -149,7 +150,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._autoReplace = TextAutoReplace()
 
         # Completer
-        self._completer = MetaCompleter(self)
+        self._completer = CommandCompleter(self)
         self._completer.complete.connect(self._insertCompletion)
 
         # Create Custom Document
@@ -1079,13 +1080,16 @@ class GuiDocEditor(QPlainTextEdit):
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
-            if text.startswith("@") and added + removed == 1:
+            if text and text[0] in "@%" and added + removed == 1:
                 # Only run on single character changes, or it will trigger
                 # at unwanted times when other changes are made to the document
                 cursor = self.textCursor()
                 bPos = cursor.positionInBlock()
                 if bPos > 0 and (viewport := self.viewport()):
-                    show = self._completer.updateText(text, bPos)
+                    if text[0] == "@":
+                        show = self._completer.updateMetaText(text, bPos)
+                    else:
+                        show = self._completer.updateCommentText(text, bPos)
                     point = self.cursorRect().bottomRight()
                     self._completer.move(viewport.mapToGlobal(point))
                     self._completer.setVisible(show)
@@ -2073,13 +2077,13 @@ class GuiDocEditor(QPlainTextEdit):
         return
 
 
-class MetaCompleter(QMenu):
-    """GuiWidget: Meta Completer Menu
+class CommandCompleter(QMenu):
+    """GuiWidget: Command Completer Menu
 
     This is a context menu with options populated from the user's
-    defined tags. It also helps to type the meta data keyword on a new
-    line starting with an @. The updateText function should be called on
-    every keystroke on a line starting with @.
+    defined tags and keys. It also helps to type the meta data keyword
+    on a new line starting with @ or %. The update functions should be
+    called on every keystroke on a line starting with @ or %.
     """
 
     complete = pyqtSignal(int, int, str)
@@ -2088,14 +2092,14 @@ class MetaCompleter(QMenu):
         super().__init__(parent=parent)
         return
 
-    def updateText(self, text: str, pos: int) -> bool:
+    def updateMetaText(self, text: str, pos: int) -> bool:
         """Update the menu options based on the line of text."""
         self.clear()
         kw, sep, _ = text.partition(":")
         if pos <= len(kw):
             offset = 0
             length = len(kw.rstrip())
-            suffix = "" if sep else ":"
+            suffix = "" if sep else ": "
             options = list(filter(
                 lambda x: x.startswith(kw.rstrip()), nwKeyWords.VALID_KEYS
             ))
@@ -2108,7 +2112,7 @@ class MetaCompleter(QMenu):
             offset = tPos[index] if lookup else pos
             length = len(lookup)
             suffix = ""
-            options = list(filter(
+            options = sorted(filter(
                 lambda x: lookup in x.lower(), SHARED.project.index.getClassTags(
                     nwKeyWords.KEY_CLASS.get(kw.strip())
                 )
@@ -2117,12 +2121,47 @@ class MetaCompleter(QMenu):
         if not options:
             return False
 
-        for value in sorted(options):
+        for value in options:
             rep = value + suffix
             action = qtAddAction(self, value)
             action.triggered.connect(qtLambda(self._emitComplete, offset, length, rep))
 
         return True
+
+    def updateCommentText(self, text: str, pos: int) -> bool:
+        """Update the menu options based on the line of text."""
+        self.clear()
+        cmd, sep, _ = text.partition(":")
+        if pos <= len(cmd):
+            clean = text[1:].lstrip()[:6].lower()
+            if clean[:6] == "story.":
+                pre, _, key = cmd.partition(".")
+                offset = len(pre) + 1
+                length = len(key)
+                suffix = "" if sep else ": "
+                options = sorted(filter(
+                    lambda x: x.startswith(key.rstrip()),
+                    SHARED.project.index.getStoryKeys(),
+                ))
+            elif pos < 12:
+                offset = 0
+                length = len(cmd.rstrip())
+                suffix = ""
+                options = list(filter(
+                    lambda x: x.startswith(cmd.rstrip()),
+                    ["%Synopsis: ", "%Short: ", "%Story", "%Note"],
+                ))
+            else:
+                return False
+
+            if options:
+                for value in options:
+                    rep = value + suffix
+                    action = qtAddAction(self, rep.rstrip(":. "))
+                    action.triggered.connect(qtLambda(self._emitComplete, offset, length, rep))
+                return True
+
+        return False
 
     ##
     #  Events
