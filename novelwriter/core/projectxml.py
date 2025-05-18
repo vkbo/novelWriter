@@ -46,7 +46,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 FILE_VERSION = "1.5"  # The current project file format version
-FILE_REVISION = "4"   # The current project file format revision
+FILE_REVISION = "5"   # The current project file format revision
 HEX_VERSION = 0x0105
 
 NUM_VERSION = {
@@ -109,6 +109,8 @@ class ProjectXMLReader:
         Rev 3: Added TEMPLATE class. 2.3.
         Rev 4: Added shape attribute to status and importance entry
                nodes. 2.5.
+        Rev 5: Added novelChars and notesChars attributes to content
+               node. 2.7 RC 1.
     """
 
     def __init__(self, path: str | Path) -> None:
@@ -286,9 +288,9 @@ class ProjectXMLReader:
                 elif xItem.tag == "spellLang":  # Changed to spellChecking in 1.5
                     data.setSpellLang(xItem.text)
                 elif xItem.tag == "novelWordCount":  # Moved to content attribute in 1.5
-                    data.setInitCounts(novel=xItem.text)
+                    data.setInitCounts(wNovel=xItem.text)
                 elif xItem.tag == "notesWordCount":  # Moved to content attribute in 1.5
-                    data.setInitCounts(notes=xItem.text)
+                    data.setInitCounts(wNotes=xItem.text)
 
         return
 
@@ -298,8 +300,13 @@ class ProjectXMLReader:
         """Parse the content section of the XML file."""
         logger.debug("Parsing <content> section")
 
-        data.setInitCounts(novel=xSection.attrib.get("novelWords", None))  # Moved in 1.5
-        data.setInitCounts(notes=xSection.attrib.get("notesWords", None))  # Moved in 1.5
+        # Moved in 1.5
+        data.setInitCounts(
+            wNovel=xSection.attrib.get("novelWords", None),
+            wNotes=xSection.attrib.get("notesWords", None),
+            cNovel=xSection.attrib.get("novelChars", None),
+            cNotes=xSection.attrib.get("notesChars", None),
+        )
 
         for xItem in xSection:
             if xItem.tag != "item":
@@ -527,10 +534,13 @@ class ProjectXMLWriter:
             self._packSingleValue(xImport, "entry", label, attrib=attrib)
 
         # Save Tree Content
+        counts = data.currCounts
         contAttr = {
             "items": str(len(content)),
-            "novelWords": str(data.currCounts[0]),
-            "notesWords": str(data.currCounts[1]),
+            "novelWords": str(counts[0]),
+            "notesWords": str(counts[1]),
+            "novelChars": str(counts[2]),
+            "notesChars": str(counts[3]),
         }
 
         xContent = ET.SubElement(xRoot, "content", attrib=contAttr)

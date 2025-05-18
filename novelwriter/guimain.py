@@ -1048,8 +1048,10 @@ class GuiMain(QMainWindow):
         self.initMain()
         self.saveDocument()
 
-        if tree:
+        if tree and not theme:
+            # These are also updated by a theme refresh
             SHARED.project.tree.refreshAllItems()
+            self.novelView.refreshCurrentTree()
 
         if theme:
             SHARED.theme.loadTheme()
@@ -1075,6 +1077,7 @@ class GuiMain(QMainWindow):
         self.projView.initSettings()
         self.novelView.initSettings()
         self.outlineView.initSettings()
+        self.mainStatus.initSettings()
 
         # Force update of word count
         self._lastTotalCount = 0
@@ -1261,15 +1264,23 @@ class GuiMain(QMainWindow):
         if self._lastTotalCount != currentTotalCount:
             self._lastTotalCount = currentTotalCount
 
-            SHARED.project.updateWordCounts()
+            SHARED.project.updateCounts()
             if CONFIG.incNotesWCount:
-                iTotal = sum(SHARED.project.data.initCounts)
-                cTotal = sum(SHARED.project.data.currCounts)
-                self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
+                if CONFIG.useCharCount:
+                    iTotal = sum(SHARED.project.data.initCounts[2:])
+                    cTotal = sum(SHARED.project.data.currCounts[2:])
+                else:
+                    iTotal = sum(SHARED.project.data.initCounts[:2])
+                    cTotal = sum(SHARED.project.data.currCounts[:2])
             else:
-                iNovel, _ = SHARED.project.data.initCounts
-                cNovel, _ = SHARED.project.data.currCounts
-                self.mainStatus.setProjectStats(cNovel, cNovel - iNovel)
+                if CONFIG.useCharCount:
+                    iTotal = SHARED.project.data.initCounts[2]
+                    cTotal = SHARED.project.data.currCounts[2]
+                else:
+                    iTotal = SHARED.project.data.initCounts[0]
+                    cTotal = SHARED.project.data.currCounts[0]
+
+            self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
 
         return
 

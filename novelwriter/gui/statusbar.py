@@ -33,7 +33,7 @@ from PyQt6.QtWidgets import QApplication, QLabel, QStatusBar, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime
-from novelwriter.constants import nwConst
+from novelwriter.constants import nwConst, nwLabels, nwStats, trStats
 from novelwriter.extensions.modified import NClickableLabel
 from novelwriter.extensions.statusled import StatusLED
 
@@ -108,9 +108,20 @@ class GuiMainStatus(QStatusBar):
 
         logger.debug("Ready: GuiMainStatus")
 
+        self.initSettings()
         self.updateTheme()
         self.clearStatus()
 
+        return
+
+    def initSettings(self) -> None:
+        """Apply user settings."""
+        if CONFIG.useCharCount:
+            self._trStatsCount = trStats(nwLabels.STATS_DISPLAY[nwStats.CHARS])
+            self._trStatsTip = self.tr("Total character count (session change)")
+        else:
+            self._trStatsCount = trStats(nwLabels.STATS_DISPLAY[nwStats.WORDS])
+            self._trStatsTip = self.tr("Total word count (session change)")
         return
 
     def clearStatus(self) -> None:
@@ -173,11 +184,8 @@ class GuiMainStatus(QStatusBar):
 
     def setProjectStats(self, pWC: int, sWC: int) -> None:
         """Update the current project statistics."""
-        self.statsText.setText(self.tr("Words: {0} ({1})").format(f"{pWC:n}", f"{sWC:+n}"))
-        if CONFIG.incNotesWCount:
-            self.statsText.setToolTip(self.tr("Project word count (session change)"))
-        else:
-            self.statsText.setToolTip(self.tr("Novel word count (session change)"))
+        self.statsText.setText(self._trStatsCount.format(f"{pWC:n}", f"{sWC:+n}"))
+        self.statsText.setToolTip(self._trStatsTip)
         return
 
     def updateTime(self, idleTime: float = 0.0) -> None:

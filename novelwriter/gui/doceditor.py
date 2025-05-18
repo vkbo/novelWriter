@@ -55,7 +55,9 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import (
     decodeMimeHandles, fontMatcher, minmax, qtAddAction, qtLambda, transferCase
 )
-from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
+from novelwriter.constants import (
+    nwConst, nwKeyWords, nwLabels, nwShortcode, nwStats, nwUnicode, trStats
+)
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
     nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
@@ -321,6 +323,7 @@ class GuiDocEditor(QPlainTextEdit):
         """
         # Auto-Replace
         self._autoReplace.initSettings()
+        self.docFooter.initSettings()
 
         # Reload spell check and dictionaries
         SHARED.updateSpellCheckLanguage()
@@ -1233,7 +1236,8 @@ class GuiDocEditor(QPlainTextEdit):
         """Process the word counter's finished signal."""
         if self._docHandle and self._nwItem:
             logger.debug("Updating word count")
-            needsRefresh = wCount != self._nwItem.wordCount
+            mCount = cCount if CONFIG.useCharCount else wCount
+            needsRefresh = mCount != self._nwItem.mainCount
             self._nwItem.setCharCount(cCount)
             self._nwItem.setWordCount(wCount)
             self._nwItem.setParaCount(pCount)
@@ -1241,7 +1245,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self._nwItem.notifyToRefresh()
                 if not self.textCursor().hasSelection():
                     # Selection counter should take precedence (#2155)
-                    self.docFooter.updateWordCount(wCount, False)
+                    self.docFooter.updateMainCount(mCount, False)
         return
 
     @pyqtSlot()
@@ -1254,7 +1258,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self._timerSel.start()
         else:
             self._timerSel.stop()
-            self.docFooter.updateWordCount(0, False)
+            self.docFooter.updateMainCount(0, False)
         return
 
     @pyqtSlot()
@@ -1271,8 +1275,7 @@ class GuiDocEditor(QPlainTextEdit):
     def _updateSelCounts(self, cCount: int, wCount: int, pCount: int) -> None:
         """Update the counts on the counter's finished signal."""
         if self._docHandle and self._nwItem:
-            logger.debug("User selected %d words", wCount)
-            self.docFooter.updateWordCount(wCount, True)
+            self.docFooter.updateMainCount(cCount if CONFIG.useCharCount else wCount, True)
             self._timerSel.stop()
         return
 
@@ -3045,9 +3048,9 @@ class GuiDocEditFooter(QWidget):
         fPx = int(0.9*SHARED.theme.fontPixelSize)
 
         # Cached Translations
+        self.initSettings()
         self._trLineCount = self.tr("Line: {0} ({1})")
-        self._trWordCount = self.tr("Words: {0} ({1})")
-        self._trSelectCount = self.tr("Words: {0} selected")
+        self._trSelectCount = self.tr("Selected: {0}")
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
@@ -3108,7 +3111,7 @@ class GuiDocEditFooter(QWidget):
         self.updateTheme()
 
         # Initialise Info
-        self.updateWordCount(0, False)
+        self.updateMainCount(0, False)
 
         logger.debug("Ready: GuiDocEditFooter")
 
@@ -3117,6 +3120,13 @@ class GuiDocEditFooter(QWidget):
     ##
     #  Methods
     ##
+
+    def initSettings(self) -> None:
+        """Apply user settings."""
+        self._trMainCount = trStats(nwLabels.STATS_DISPLAY[
+            nwStats.CHARS if CONFIG.useCharCount else nwStats.WORDS
+        ])
+        return
 
     def updateFont(self) -> None:
         """Update the font settings."""
@@ -3162,7 +3172,7 @@ class GuiDocEditFooter(QWidget):
             self._tItem = SHARED.project.tree[self._docHandle]
 
         self.updateInfo()
-        self.updateWordCount(0, False)
+        self.updateMainCount(0, False)
 
         return
 
@@ -3193,15 +3203,15 @@ class GuiDocEditFooter(QWidget):
             )
         return
 
-    def updateWordCount(self, wCount: int, selection: bool) -> None:
-        """Update word counter information."""
-        if selection and wCount:
-            wText = self._trSelectCount.format(f"{wCount:n}")
+    def updateMainCount(self, count: int, selection: bool) -> None:
+        """Update main counter information."""
+        if selection and count:
+            text = self._trSelectCount.format(f"{count:n}")
         elif self._tItem:
-            wCount = self._tItem.wordCount
-            wDiff = wCount - self._tItem.initCount
-            wText = self._trWordCount.format(f"{wCount:n}", f"{wDiff:+n}")
+            count = self._tItem.mainCount
+            diff = count - self._tItem.initCount
+            text = self._trMainCount.format(f"{count:n}", f"{diff:+n}")
         else:
-            wText = self._trWordCount.format("0", "+0")
-        self.wordsText.setText(wText)
+            text = self._trMainCount.format("0", "+0")
+        self.wordsText.setText(text)
         return

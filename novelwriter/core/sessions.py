@@ -79,29 +79,36 @@ class NWSessionLog:
             return False
 
         now = time()
-        iNovel, iNotes = self._project.data.initCounts
-        cNovel, cNotes = self._project.data.currCounts
-        iTotal = iNovel + iNotes
-        wDiff = cNovel + cNotes - iTotal
+        iWNovel, iWNotes, iCNovel, iCNotes = self._project.data.initCounts
+        cWNovel, cWNotes, cCNovel, cCNotes = self._project.data.currCounts
+        iWTotal = iWNovel + iWNotes
+        iCTotal = iCNovel + iCNotes
+        wDiff = cWNovel + cWNotes - iWTotal
+        cDiff = cCNovel + cCNotes - iCTotal
         sTime = now - self._start
 
-        logger.info("The session lasted %d sec and added %d words", int(sTime), wDiff)
-        if sTime < 300 and wDiff == 0:
+        logger.info(
+            "The session lasted %d sec and added %d words abd %d characters",
+            int(sTime), wDiff, cDiff
+        )
+        if sTime < 300 and (wDiff == 0 or cDiff == 0):
             logger.info("Session too short, skipping log entry")
             return False
 
         try:
             if not sessFile.exists():
                 with open(sessFile, mode="w", encoding="utf-8") as fObj:
-                    fObj.write(self.createInitial(iTotal))
+                    fObj.write(self.createInitial(iWTotal))
 
             with open(sessFile, mode="a+", encoding="utf-8") as fObj:
                 fObj.write(self.createRecord(
                     start=formatTimeStamp(self._start),
                     end=formatTimeStamp(now),
-                    novel=cNovel,
-                    notes=cNotes,
-                    idle=round(idleTime)
+                    novel=cWNovel,
+                    notes=cWNotes,
+                    idle=round(idleTime),
+                    cnovel=cCNovel,
+                    cnotes=cCNotes,
                 ))
 
         except Exception:
@@ -129,10 +136,19 @@ class NWSessionLog:
         data = json.dumps({"type": "initial", "offset": total})
         return f"{data}\n"
 
-    def createRecord(self, start: str, end: str, novel: int, notes: int, idle: int) -> str:
+    def createRecord(
+        self, start: str, end: str, novel: int, notes: int, idle: int,
+        cnovel: int = 0, cnotes: int = 0,
+    ) -> str:
         """Low level function to create a log record."""
         data = json.dumps({
-            "type": "record", "start": start, "end": end,
-            "novel": novel, "notes": notes, "idle": idle,
+            "type": "record",
+            "start": start,
+            "end": end,
+            "novel": novel,
+            "notes": notes,
+            "cnovel": cnovel,
+            "cnotes": cnotes,
+            "idle": idle,
         })
         return f"{data}\n"

@@ -919,9 +919,10 @@ class RecentProjects:
                     puuid = str(entry.get("uuid", ""))
                     title = str(entry.get("title", ""))
                     words = checkInt(entry.get("words", 0), 0)
+                    chars = checkInt(entry.get("chars", 0), 0)
                     saved = checkInt(entry.get("time", 0), 0)
                     if path and title:
-                        self._setEntry(puuid, path, title, words, saved)
+                        self._setEntry(puuid, path, title, words, chars, saved)
             except Exception:
                 logger.error("Could not load recent project cache")
                 logException()
@@ -954,7 +955,14 @@ class RecentProjects:
         try:
             if (remove := self._map.get(data.uuid)) and (remove != str(path)):
                 self.remove(remove)
-            self._setEntry(data.uuid, str(path), data.name, sum(data.currCounts), int(saved))
+            self._setEntry(
+                data.uuid,
+                str(path),
+                data.name,
+                sum(data.currCounts[:2]),
+                sum(data.currCounts[2:]),
+                int(saved),
+            )
             self.saveCache()
         except Exception:
             pass
@@ -967,9 +975,17 @@ class RecentProjects:
             self.saveCache()
         return
 
-    def _setEntry(self, puuid: str, path: str, title: str, words: int, saved: int) -> None:
+    def _setEntry(
+        self, puuid: str, path: str, title: str, words: int, chars: int, saved: int
+    ) -> None:
         """Set an entry in the recent projects record."""
-        self._data[path] = {"uuid": puuid, "title": title, "words": words, "time": saved}
+        self._data[path] = {
+            "uuid": puuid,
+            "title": title,
+            "words": words,
+            "chars": chars,
+            "time": saved,
+        }
         if puuid:
             self._map[puuid] = path
         return

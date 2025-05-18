@@ -184,6 +184,7 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
     CONFIG.guiSyntax = "default_dark"
     mainTheme.loadTheme()
     mainTheme.loadSyntax()
+    nwGUI._processConfigChanges(False, True, False, False)
     nwGUI._processConfigChanges(True, True, True, True)
 
     syntax = SHARED.theme.syntaxTheme

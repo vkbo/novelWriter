@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.6b1" hexVersion="0x020600b1" fileVersion="1.5" fileRevision="4" timeStamp="2024-11-20 19:22:22">
-  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="51" autoCount="29" editTime="2456">
+<novelWriterXML appVersion="2.7b1" hexVersion="0x020700b1" fileVersion="1.5" fileRevision="5" timeStamp="2025-04-29 22:45:09">
+  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="52" autoCount="29" editTime="2465">
     <name>Lorem Ipsum</name>
     <author>lipsum.com</author>
   </project>
@@ -31,7 +31,7 @@
       <entry key="id6b1d0" count="0" red="50" green="200" blue="0" shape="SQUARE">Main</entry>
     </importance>
   </settings>
-  <content items="22" novelWords="3115" notesWords="738">
+  <content items="22" novelWords="3115" notesWords="738" novelChars="20774" notesChars="5003">
     <item handle="b3643d0f92e32" parent="None" root="b3643d0f92e32" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="sbaa94f" import="i613591">Novel</name>
@@ -116,7 +116,7 @@
       <meta expanded="no" heading="H1" charCount="1770" wordCount="259" paraCount="3" cursorPos="47" />
       <name status="sbaa94f" import="i613591" active="yes">Ancient Europe</name>
     </item>
-    <item handle="1ace7ab1a0fc6" parent="None" root="1ace7ab1a0fc6" order="0" type="ROOT" class="TRASH">
+    <item handle="1ace7ab1a0fc6" parent="None" root="1ace7ab1a0fc6" order="4" type="ROOT" class="TRASH">
       <meta expanded="no" />
       <name status="sbaa94f" import="i613591">Trash</name>
     </item>
