@@ -1877,10 +1877,68 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
     qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(completer, Qt.Key.Key_Escape, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     assert docEditor.getText() == (
         "### Scene One\n\n"
         "@char: Jane\n"
-        "@focus: John"
+        "@focus: John\n"
+    )
+
+    # Send keypresses to the completer object for a comment
+    qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
+    assert len(completer.actions()) == 4
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    assert docEditor.getText() == (
+        "### Scene One\n\n"
+        "@char: Jane\n"
+        "@focus: John\n"
+        "%Synopsis: \n"
+    )
+
+    # Auto-complete story comment
+    SHARED.project.index._itemIndex._cache.story.add("Resolution")
+    qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
+    assert len(completer.actions()) == 4
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, ".", delay=KEY_DELAY)
+    assert len(completer.actions()) == 1
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    assert docEditor.getText() == (
+        "### Scene One\n\n"
+        "@char: Jane\n"
+        "@focus: John\n"
+        "%Synopsis: \n"
+        "%Story.Resolution: \n"
+    )
+
+    # Auto-complete note comment
+    SHARED.project.index._itemIndex._cache.note.add("Consistency")
+    qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
+    assert len(completer.actions()) == 4
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, ".", delay=KEY_DELAY)
+    assert len(completer.actions()) == 1
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    assert docEditor.getText() == (
+        "### Scene One\n\n"
+        "@char: Jane\n"
+        "@focus: John\n"
+        "%Synopsis: \n"
+        "%Story.Resolution: \n"
+        "%Note.Consistency: \n"
     )
 
     # qtbot.stop()

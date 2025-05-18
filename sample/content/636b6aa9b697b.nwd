@@ -1,8 +1,8 @@
 %%~name: Making a Scene
 %%~path: 6a2d6d5f4f401/636b6aa9b697b
 %%~kind: NOVEL/DOCUMENT
-%%~hash: c057a5e9309b0e764c367b0fe9ab0607e3308622
-%%~date: Unknown/2025-04-08 20:10:33
+%%~hash: 1f3d98a6a27b4f9a7f2239fcd78f9e2263cd3b97
+%%~date: Unknown/2025-05-18 22:36:59
 ### Making a Scene
 
 @pov: Jane
@@ -11,6 +11,7 @@
 @mention: Space
 
 %Story.Resolution: You can describe the scene structure with story comments.
+%Note.Consistency: You can also make notes about things like consistency of the story.
 
 A scene is defined by a level three heading, like the one at the top of this page. The scene will be assigned to the chapter preceding it in the project tree. The scene document can be sorted after the chapter document, or as a child of the chapter. Both result in the same output in the end, so it is a matter of preference.
 
