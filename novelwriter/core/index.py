@@ -131,6 +131,12 @@ class Index:
         self._novelExtra = extra
         return
 
+    def setItemClass(self, tHandle: str, itemClass: nwItemClass) -> None:
+        """Update the class for all tags of a handle."""
+        logger.info("Updating class for '%s'", tHandle)
+        self._tagsIndex.updateClass(tHandle, itemClass.name)
+        return
+
     ##
     #  Public Methods
     ##
@@ -853,6 +859,15 @@ class TagsIndex:
             return [
                 x.get("name", "") for x in self._tags.values() if x.get("class", "") == className
             ]
+
+    def updateClass(self, tHandle: str, className: str) -> None:
+        """Update the class name of an item. This must be called when a
+        document moves to another class.
+        """
+        for entry in self._tags.values():
+            if entry.get("handle") == tHandle:
+                entry["class"] = className
+        return
 
     ##
     #  Pack/Unpack
