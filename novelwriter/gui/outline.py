@@ -784,7 +784,8 @@ class GuiOutlineTree(QTreeWidget):
         ):
             if novIdx.level != "H0" and (nwItem := SHARED.project.tree[tHandle]):
                 refs = SHARED.project.index.getReferences(tHandle, sTitle)
-                story = {k: v for k, v in novIdx.comments.items() if k in sMatch}.values()
+                comments = dict(novIdx.comments.items())
+                story = [comments.get(k, "") for k in sMatch]
                 data.append([
                     novIdx.level,
                     novIdx.title,
