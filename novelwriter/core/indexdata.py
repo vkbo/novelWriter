@@ -316,6 +316,9 @@ class IndexHeading:
             case "story" if key:
                 self._cache.story.add(key)
                 self._comments[f"story.{key}"] = str(text)
+            case "note" if key:
+                self._cache.note.add(key)
+                self._comments[f"note.{key}"] = str(text)
         return
 
     def setTag(self, tag: str) -> None:
@@ -395,7 +398,7 @@ class IndexHeading:
                             self.addReference(tag, keyword)
                         else:
                             raise ValueError("Heading reference contains an invalid keyword")
-            elif key == "summary" or key.startswith("story"):
+            elif key == "summary" or key.startswith(("story", "note")):
                 comment, _, kind = str(key).partition(".")
                 self.setComment(comment, compact(kind), str(entry))
             else:

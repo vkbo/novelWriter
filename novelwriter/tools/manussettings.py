@@ -974,12 +974,14 @@ class _FormattingTab(NScrollableForm):
         self.incSynopsis = NSwitch(self, height=iPx)
         self.incComments = NSwitch(self, height=iPx)
         self.incStory = NSwitch(self, height=iPx)
+        self.incNotes = NSwitch(self, height=iPx)
         self.incKeywords = NSwitch(self, height=iPx)
 
         self.addRow(self._build.getLabel("text.includeBodyText"), self.incBodyText)
         self.addRow(self._build.getLabel("text.includeSynopsis"), self.incSynopsis)
         self.addRow(self._build.getLabel("text.includeComments"), self.incComments)
         self.addRow(self._build.getLabel("text.includeStory"), self.incStory)
+        self.addRow(self._build.getLabel("text.includeNotes"), self.incNotes)
         self.addRow(self._build.getLabel("text.includeKeywords"), self.incKeywords)
 
         # Ignored Keywords
@@ -1288,6 +1290,7 @@ class _FormattingTab(NScrollableForm):
         self.incSynopsis.setChecked(self._build.getBool("text.includeSynopsis"))
         self.incComments.setChecked(self._build.getBool("text.includeComments"))
         self.incStory.setChecked(self._build.getBool("text.includeStory"))
+        self.incNotes.setChecked(self._build.getBool("text.includeNotes"))
         self.incKeywords.setChecked(self._build.getBool("text.includeKeywords"))
         self.ignoredKeywords.setText(self._build.getStr("text.ignoredKeywords"))
         self.addNoteHead.setChecked(self._build.getBool("text.addNoteHeadings"))
@@ -1387,6 +1390,7 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("text.includeSynopsis", self.incSynopsis.isChecked())
         self._build.setValue("text.includeComments", self.incComments.isChecked())
         self._build.setValue("text.includeStory", self.incStory.isChecked())
+        self._build.setValue("text.includeNotes", self.incNotes.isChecked())
         self._build.setValue("text.includeKeywords", self.incKeywords.isChecked())
         self._build.setValue("text.ignoredKeywords", self.ignoredKeywords.text())
         self._build.setValue("text.addNoteHeadings", self.addNoteHead.isChecked())

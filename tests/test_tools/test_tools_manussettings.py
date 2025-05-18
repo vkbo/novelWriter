@@ -510,6 +510,8 @@ def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
     build.setValue("text.includeBodyText", False)
     build.setValue("text.includeSynopsis", False)
     build.setValue("text.includeComments", False)
+    build.setValue("text.includeStory", False)
+    build.setValue("text.includeNotes", False)
     build.setValue("text.includeKeywords", False)
     build.setValue("text.ignoredKeywords", "")
 
@@ -530,6 +532,8 @@ def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
     assert fmtTab.incBodyText.isChecked() is False
     assert fmtTab.incSynopsis.isChecked() is False
     assert fmtTab.incComments.isChecked() is False
+    assert fmtTab.incStory.isChecked() is False
+    assert fmtTab.incNotes.isChecked() is False
     assert fmtTab.incKeywords.isChecked() is False
     assert fmtTab.ignoredKeywords.text() == ""
 
@@ -539,6 +543,8 @@ def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
     fmtTab.incBodyText.setChecked(True)
     fmtTab.incSynopsis.setChecked(True)
     fmtTab.incComments.setChecked(True)
+    fmtTab.incStory.setChecked(True)
+    fmtTab.incNotes.setChecked(True)
     fmtTab.incKeywords.setChecked(True)
 
     fmtTab.addNoteHead.setChecked(True)
@@ -554,6 +560,8 @@ def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
     assert build.getBool("text.includeBodyText") is True
     assert build.getBool("text.includeSynopsis") is True
     assert build.getBool("text.includeComments") is True
+    assert build.getBool("text.includeStory") is True
+    assert build.getBool("text.includeNotes") is True
     assert build.getBool("text.includeKeywords") is True
     assert build.getStr("text.ignoredKeywords") in ("@custom, @object", "@object, @custom")
 
