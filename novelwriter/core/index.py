@@ -618,6 +618,10 @@ class Index:
         """Return all story structure keys."""
         return self._itemIndex.allStoryKeys()
 
+    def getNoteKeys(self) -> set[str]:
+        """Return all note comment keys."""
+        return self._itemIndex.allNoteKeys()
+
     def novelStructure(
         self, rootHandle: str | None = None, activeOnly: bool = True
     ) -> Iterable[tuple[str, str, str, IndexHeading]]:
@@ -920,11 +924,12 @@ class IndexCache:
     which provides lookup capabilities and caching for shared data.
     """
 
-    __slots__ = ("story", "tags")
+    __slots__ = ("note", "story", "tags")
 
     def __init__(self, tagsIndex: TagsIndex) -> None:
         self.tags: TagsIndex = tagsIndex
         self.story: set[str] = set()
+        self.note: set[str] = set()
         return
 
 
@@ -978,6 +983,10 @@ class ItemIndex:
     def allStoryKeys(self) -> set[str]:
         """Return all story structure keys."""
         return self._cache.story.copy()
+
+    def allNoteKeys(self) -> set[str]:
+        """Return all note comment keys."""
+        return self._cache.note.copy()
 
     def allItemTags(self, tHandle: str) -> list[str]:
         """Get all tags set for headings of an item."""

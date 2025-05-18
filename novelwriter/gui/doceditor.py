@@ -2099,8 +2099,8 @@ class CommandCompleter(QMenu):
         if pos <= len(kw):
             offset = 0
             length = len(kw.rstrip())
-            suffix = "" if sep else ": "
-            options = list(filter(
+            suffix = "" if sep else ":"
+            options = sorted(filter(
                 lambda x: x.startswith(kw.rstrip()), nwKeyWords.VALID_KEYS
             ))
         else:
@@ -2142,6 +2142,15 @@ class CommandCompleter(QMenu):
                 options = sorted(filter(
                     lambda x: x.startswith(key.rstrip()),
                     SHARED.project.index.getStoryKeys(),
+                ))
+            elif clean[:5] == "note.":
+                pre, _, key = cmd.partition(".")
+                offset = len(pre) + 1
+                length = len(key)
+                suffix = "" if sep else ": "
+                options = sorted(filter(
+                    lambda x: x.startswith(key.rstrip()),
+                    SHARED.project.index.getNoteKeys(),
                 ))
             elif pos < 12:
                 offset = 0
