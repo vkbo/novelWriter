@@ -352,6 +352,10 @@ class nwLabels:
         nwStats.WORDS_TEXT:   QT_TRANSLATE_NOOP("Stats", "Words in Text"),
         nwStats.WORDS_TITLE:  QT_TRANSLATE_NOOP("Stats", "Words in Headings"),
     }
+    STATS_DISPLAY: Final[dict[str, str]] = {
+        nwStats.CHARS: QT_TRANSLATE_NOOP("Stats", "Characters: {0} ({1})"),
+        nwStats.WORDS: QT_TRANSLATE_NOOP("Stats", "Words: {0} ({1})"),
+    }
     BUILD_FMT: Final[dict[nwBuildFmt, str]] = {
         nwBuildFmt.ODT:    QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)"),
         nwBuildFmt.FODT:   QT_TRANSLATE_NOOP("Constant", "Flat Open Document (.fodt)"),

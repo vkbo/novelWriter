@@ -1077,6 +1077,7 @@ class GuiMain(QMainWindow):
         self.projView.initSettings()
         self.novelView.initSettings()
         self.outlineView.initSettings()
+        self.mainStatus.initSettings()
 
         # Force update of word count
         self._lastTotalCount = 0
@@ -1265,11 +1266,20 @@ class GuiMain(QMainWindow):
 
             SHARED.project.updateCounts()
             if CONFIG.incNotesWCount:
-                iTotal = sum(SHARED.project.data.initCounts[:2])
-                cTotal = sum(SHARED.project.data.currCounts[:2])
+                if CONFIG.useCharCount:
+                    iTotal = sum(SHARED.project.data.initCounts[2:])
+                    cTotal = sum(SHARED.project.data.currCounts[2:])
+                else:
+                    iTotal = sum(SHARED.project.data.initCounts[:2])
+                    cTotal = sum(SHARED.project.data.currCounts[:2])
             else:
-                iTotal = SHARED.project.data.initCounts[0]
-                cTotal = SHARED.project.data.currCounts[0]
+                if CONFIG.useCharCount:
+                    iTotal = SHARED.project.data.initCounts[2]
+                    cTotal = SHARED.project.data.currCounts[2]
+                else:
+                    iTotal = SHARED.project.data.initCounts[0]
+                    cTotal = SHARED.project.data.currCounts[0]
+
             self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
 
         return
