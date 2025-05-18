@@ -147,7 +147,7 @@ SETTINGS_LABELS = {
     "text.includeSynopsis":    QT_TRANSLATE_NOOP("Builds", "Include Synopsis"),
     "text.includeComments":    QT_TRANSLATE_NOOP("Builds", "Include Comments"),
     "text.includeStory":       QT_TRANSLATE_NOOP("Builds", "Include Story Structure"),
-    "text.includeNotes":       QT_TRANSLATE_NOOP("Builds", "Include Notes"),
+    "text.includeNotes":       QT_TRANSLATE_NOOP("Builds", "Include Manuscript Notes"),
     "text.includeKeywords":    QT_TRANSLATE_NOOP("Builds", "Include Keywords"),
     "text.includeBodyText":    QT_TRANSLATE_NOOP("Builds", "Include Body Text"),
     "text.ignoredKeywords":    QT_TRANSLATE_NOOP("Builds", "Ignore These Keywords"),
