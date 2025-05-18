@@ -317,6 +317,7 @@ class NWBuildDocument:
         bldObj.setCommentType(nwComment.SYNOPSIS, self._build.getBool("text.includeSynopsis"))
         bldObj.setCommentType(nwComment.SHORT, self._build.getBool("text.includeSynopsis"))
         bldObj.setCommentType(nwComment.STORY, self._build.getBool("text.includeStory"))
+        bldObj.setCommentType(nwComment.NOTE, self._build.getBool("text.includeNotes"))
 
         if isinstance(bldObj, ToHtml):
             bldObj.setStyles(self._build.getBool("html.addStyles"))
