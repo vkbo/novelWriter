@@ -435,7 +435,11 @@ class NWItem:
         """
         if self._parent is not None:
             # Only update for child items
-            self.setClass(itemClass)
+            if itemClass != self._class:
+                self.setClass(itemClass)
+                if self._type == nwItemType.FILE:
+                    # Notify the index of the class change
+                    self._project.index.setItemClass(self._handle, itemClass)
 
         if self._layout == nwItemLayout.NO_LAYOUT:
             # If no layout is set, pick one

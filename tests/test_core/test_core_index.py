@@ -1049,6 +1049,12 @@ def testCoreIndex_TagsIndex():
     assert tagsIndex.tagClass("Tag3") == nwItemClass.PLOT.name
     assert tagsIndex.tagClass("Tag4") is None
 
+    # Change class of item
+    tagsIndex.updateClass("0000000000003", nwItemClass.WORLD.name)
+    assert tagsIndex.tagClass("Tag3") == nwItemClass.WORLD.name
+    tagsIndex.updateClass("0000000000003", nwItemClass.PLOT.name)
+    assert tagsIndex.tagClass("Tag3") == nwItemClass.PLOT.name
+
     # Pack Data
     assert tagsIndex.packData() == content
 
