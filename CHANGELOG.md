@@ -1,5 +1,84 @@
 # novelWriter Changelog
 
+## Version 2.7 RC 1 [2025-05-19]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+### Detailed Changelog
+
+**New Features**
+
+* It is now possible to set character count as the main statistics displayed on the GUI instead of
+  word count. The setting is available under the "Appearance" section in Preferences. Issue #1657.
+  PR #2323.
+* Comments can now be marked as "Manuscript Notes" with the `%Note.term:` syntax. The term is a
+  free form value that is displayed alongside the note when exported to the manuscript. Each term
+  is also added as a column in exports from the Outline View. Issue #1133. PR #2346.
+* A completer drop down menu has been added to comments as well in the editor. It is triggered when
+  a new line starts with `%`. It will show the options of Synopsis, Short, Story and Note, and when
+  a period is added after the latter two, show a list of previously used Story and Note keys.
+  Issue #1784. PR #2290.
+
+**Improvements**
+
+* The dialogue colour of the Snazzy Light syntax theme has changed from yellow to blue, which
+  should make it easier to read. PR #2336.
+* The Snazzy Light theme has also been added as a GUI theme. PR #2334.
+* The auto-generated title page for new projects should now make a little more sense in terms of
+  default values filled in for the author. PR #2333.
+* The new project form on the Welcome dialog now remembers the previous author name filled in, so
+  there should be no need to type it again every time. PR #2333.
+* Project name and author name values are now also used for new example projects. PR #2333.
+* The narrator break symbol settings for dialogue have been changed from a free text field to a
+  dropdown list of dashes. This helps to avoid misunderstandings where the field was populated with
+  other symbols, like quote symbols (see #2320). Issue #2324. PR #2327.
+* A splash screen is now shown at startup, providing some information about the initialisation
+  steps the startup script is running before the GUI is launched. Since loading system fonts can be
+  quote heavy, this at least gives some user feedback to users running on systems where there is a
+  significant delay. In particular, there is a long delay when loading fonts with poor Unicode
+  support, in which case the Qt library will look for replacement glyphs when the symbols are first
+  encountered. Previously, the delay happened when the Welcome dialog was being drawn, since this
+  is the first time a non-Ascii Unicode character is used. Now these Unicode characters are probed
+  when the config is loaded, with progress output on the splash screen. Issue #2315. PR #2316.
+
+**Bugfixes**
+
+* Moving a note between root folders of a different type will now update the class the tags defined
+  within the note are associated with. This association is used to populate the tag auto-completion
+  in the editor. Issue #2330. PR #2343.
+* The story structure comments now appear under the correct column when exported to CSV from the
+  Outline View. Issue #2313. PR #2343.
+* A new unique ID is now assigned to new example projects. Creating multiple example projects would
+  previously retain the original ID, causing the Welcome dialog to override them rather than list
+  them as unique projects. PR #2333.
+* In Qt6, or probably in PyQt6, the datetime type from Python was truncated to a date variable when
+  localising it. This has been fixed by explicitly converting the Python datetime to a QDateTime
+  before passing it to the PyQt wrapper. This is probably a bug in PyQt6. Issue #2325. PR #2326.
+* A missing Remix icon for project copy has been added. Issue #2314. PR #2317.
+
+**Accessibility**
+
+* Trees and lists on the GUI have been assigned names so that screen readers can more easily
+  identify them. Switches on the GUI have also been associated with their labels so the screen
+  reader can pick up the label text. Icons on the project tree also have an accessibility label.
+  Issues #2106 and #2107. PR #2337.
+* Switches should now show a highlighted border when they have focus, and the toggle animation also
+  now works properly when a switch is toggled using the keyboard. This should improve keyboard
+  navigation. PR #2337.
+* The default status and importance labels for new projects now use shapes for icons, to make the
+  defaults more accessible for people with reduced colour vision. Issue #2332. PR #2333.
+
+**Code Improvements**
+
+* New tests have been added for the custom data models, using the Qt model tester framework that
+  ensures the models have all the virtual methods implemented. PR #2331.
+
+----
+
 ## Version 2.7 Beta 1 [2025-04-20]
 
 ### Release Notes
