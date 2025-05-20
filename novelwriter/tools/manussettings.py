@@ -211,11 +211,12 @@ class GuiBuildSettings(NToolDialog):
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
-        self._applyChanges()
         role = self.buttonBox.buttonRole(button)
         if role == QtRoleApply:
+            self._applyChanges()
             self._emitBuildData()
         elif role == QtRoleAccept:
+            self._applyChanges()
             self._emitBuildData()
             self.close()
         elif role == QtRoleReject:
