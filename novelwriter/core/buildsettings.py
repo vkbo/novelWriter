@@ -390,7 +390,7 @@ class BuildSettings:
     def setValue(self, key: str, value: T_BuildValue) -> None:
         """Set a specific value for a build setting."""
         if (d := SETTINGS_TEMPLATE.get(key)) and len(d) == 2 and isinstance(value, d[0]):
-            self._changed = value != self._settings[key]
+            self._changed |= (value != self._settings[key])
             self._settings[key] = value
         return
 
