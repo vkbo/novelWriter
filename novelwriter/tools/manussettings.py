@@ -80,7 +80,8 @@ class GuiBuildSettings(NToolDialog):
         logger.debug("Create: GuiBuildSettings")
         self.setObjectName("GuiBuildSettings")
 
-        self._build = build
+        # Make a copy of the build object
+        self._build = BuildSettings.fromDict(build.pack())
 
         self.setWindowTitle(self.tr("Manuscript Build Settings"))
         self.setMinimumSize(700, 400)
@@ -184,6 +185,7 @@ class GuiBuildSettings(NToolDialog):
         settings.
         """
         logger.debug("Closing: GuiBuildSettings")
+        self._applyChanges()
         self._askToSaveBuild()
         self._saveSettings()
         event.accept()
@@ -211,11 +213,14 @@ class GuiBuildSettings(NToolDialog):
         """Handle button clicks from the dialog button box."""
         role = self.buttonBox.buttonRole(button)
         if role == QtRoleApply:
+            self._applyChanges()
             self._emitBuildData()
         elif role == QtRoleAccept:
+            self._applyChanges()
             self._emitBuildData()
             self.close()
         elif role == QtRoleReject:
+            self._build.resetChangedState()
             self.close()
         return
 
@@ -228,10 +233,9 @@ class GuiBuildSettings(NToolDialog):
         whether the user wants to save them.
         """
         if self._build.changed:
-            response = SHARED.question(self.tr(
+            if SHARED.question(self.tr(
                 "Do you want to save your changes to '{0}'?"
-            ).format(self._build.name))
-            if response:
+            ).format(self._build.name)):
                 self._emitBuildData()
             self._build.resetChangedState()
         return
@@ -246,14 +250,17 @@ class GuiBuildSettings(NToolDialog):
         pOptions.setValue("GuiBuildSettings", "treeWidth", treeWidth)
         pOptions.setValue("GuiBuildSettings", "filterWidth", filterWidth)
         pOptions.saveSettings()
+        return
 
+    def _applyChanges(self) -> None:
+        """Apply all settings changes to the build object."""
+        self._build.setName(self.editBuildName.text())
+        self.optTabHeadings.saveContent()
+        self.optTabFormatting.saveContent()
         return
 
     def _emitBuildData(self) -> None:
         """Assemble the build data and emit the signal."""
-        self._build.setName(self.editBuildName.text())
-        self.optTabHeadings.saveContent()
-        self.optTabFormatting.saveContent()
         self.newSettingsReady.emit(self._build)
         self._build.resetChangedState()
         return
