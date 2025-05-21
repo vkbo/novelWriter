@@ -1,8 +1,10 @@
 {
-  "Synopsis": "Synopsis",
+  "Synopsis": "Zusammenfassung",
   "Short Description": "Kurzbeschreibung",
   "Footnotes": "Fußnoten",
   "Comment": "Kommentar",
+  "Story Structure": "Struktur",
+  "Note": "Notiz",
   "Notes": "Notizen",
   "Tag": "Schlagwort",
   "Point of View": "Perspektive",
