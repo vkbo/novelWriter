@@ -2324,7 +2324,7 @@
     <message>
       <location filename="../novelwriter/gui/statusbar.py" line="180"/>
       <source>Project word count (session change)</source>
-      <translation>プロジェクト単語数 (セッション中の変更)</translation>
+      <translation>プロジェクトの単語数 (セッション中の変更)</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/statusbar.py" line="182"/>

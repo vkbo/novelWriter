@@ -3858,7 +3858,7 @@
     <message>
       <location filename="../novelwriter/core/project.py" line="489"/>
       <source>Draft</source>
-      <translation>Návrh</translation>
+      <translation>Koncept</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/project.py" line="490"/>
