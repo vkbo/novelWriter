@@ -7,26 +7,7 @@ Overview
 .. _Snowflake: https://www.advancedfictionwriting.com/articles/snowflake-method/
 .. _Markdown: https://en.wikipedia.org/wiki/Markdown
 
-At its core, novelWriter is a multi-document plain text editor. The idea is to let you edit your
-text without having to deal with formatting until you generate a draft document or manuscript.
-Instead, you can focus on the writing right from the start.
 
-Of course, you probably need *some* formatting for your text. At the very least you need emphasis.
-Most people are familiar with adding emphasis using ``_underscores_`` and ``**asterisks**``. This
-formatting standard comes from Markdown_ and is supported by novelWriter. It also uses Markdown
-formatting for defining document headings. If you need more specialised formatting, additional
-formatting options are available using a shortcode format. See :ref:`a_fmt_shortcodes` for more
-details.
-
-.. admonition:: Limitations
-
-   novelWriter is designed for writing fiction, so the formatting features available are limited to
-   those relevant for this purpose. It is *not* suitable for technical writing, and it is *not* a
-   full-featured Markdown editor.
-
-   It is also not intended as a tool for organising research for writing, and therefore lacks
-   formatting features you may need for this purpose. The notes feature in novelWriter is mainly
-   intended for character profiles and plot outlines.
 
 Your novel project in novelWriter is organised as a collection of separate plain text documents
 instead of a single, large document. The idea is to make it easier to reorganise your project

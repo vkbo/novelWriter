@@ -16,14 +16,6 @@ storage for robustness.
    :align: center
    :width: 500
 
-The project storage is suitable for version control software, and also well suited for file
-synchronisation tools. All text is saved as plain text files, and your project data as standard
-data formats in XML and JSON. See :ref:`a_storage` for more details.
-
-Any operating system that has Python 3 and the Qt 6 libraries should be able to run novelWriter.
-It runs fine on Linux, Windows and MacOS, and users have tested it on other platforms as well.
-See :ref:`a_started` for more details.
-
 **Useful Links**
 
 * Website: https://novelwriter.io
@@ -42,6 +34,18 @@ See :ref:`a_started` for more details.
 
    Main Page <self>
    More Documents <https://novelwriter.io/more/>
+
+.. toctree::
+   :caption: Using novelWriter
+   :hidden:
+
+   usage/introduction
+   usage/folders_and_documents
+   usage/chapters_and_scenes
+   usage/basic_formatting
+   usage/comments
+   usage/tags_and_references
+   usage/alignment_and_indent
 
 .. toctree::
    :maxdepth: 1
