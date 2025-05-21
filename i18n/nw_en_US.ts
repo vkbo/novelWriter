@@ -96,12 +96,12 @@
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="149" />
       <source>Include Story Structure</source>
-      <translation type="unfinished" />
+      <translation>Include Story Structure</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="150" />
       <source>Include Manuscript Notes</source>
-      <translation type="unfinished" />
+      <translation>Include Manuscript Notes</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="151" />
@@ -812,52 +812,52 @@
     <message>
       <location filename="../novelwriter/constants.py" line="445" />
       <source>Theme Colours</source>
-      <translation type="unfinished" />
+      <translation>Theme Colors</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="446" />
       <source>Foreground Colour</source>
-      <translation type="unfinished" />
+      <translation>Foreground Color</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="447" />
       <source>Faded Colour</source>
-      <translation type="unfinished" />
+      <translation>Faded Color</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="448" />
       <source>Red</source>
-      <translation type="unfinished" />
+      <translation>Red</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="449" />
       <source>Orange</source>
-      <translation type="unfinished" />
+      <translation>Orange</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="450" />
       <source>Yellow</source>
-      <translation type="unfinished" />
+      <translation>Yellow</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="451" />
       <source>Green</source>
-      <translation type="unfinished" />
+      <translation>Green</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="452" />
       <source>Aqua</source>
-      <translation type="unfinished" />
+      <translation>Aqua</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="453" />
       <source>Blue</source>
-      <translation type="unfinished" />
+      <translation>Blue</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="454" />
       <source>Purple</source>
-      <translation type="unfinished" />
+      <translation>Purple</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="488" />
@@ -957,17 +957,17 @@
     <message>
       <location filename="../novelwriter/constants.py" line="514" />
       <source>Short dash</source>
-      <translation type="unfinished" />
+      <translation>Short dash</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="515" />
       <source>Long dash</source>
-      <translation type="unfinished" />
+      <translation>Long dash</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="516" />
       <source>Horizontal bar</source>
-      <translation type="unfinished" />
+      <translation>Horizontal bar</translation>
     </message>
   </context>
   <context>
@@ -1024,7 +1024,7 @@
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="236" />
       <source>Do you want to save your changes to '{0}'?</source>
-      <translation type="unfinished" />
+      <translation>Do you want to save your changes to '{0}'?</translation>
     </message>
   </context>
   <context>
@@ -1085,7 +1085,7 @@
     <message>
       <location filename="../novelwriter/gui/doceditor.py" line="3101" />
       <source>Selected: {0}</source>
-      <translation type="unfinished" />
+      <translation>Selected: {0}</translation>
     </message>
   </context>
   <context>
@@ -2336,7 +2336,7 @@
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="1025" />
       <source>About Qt</source>
-      <translation type="unfinished" />
+      <translation>About Qt</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="1033" />
@@ -2390,12 +2390,12 @@
     <message>
       <location filename="../novelwriter/gui/statusbar.py" line="121" />
       <source>Total character count (session change)</source>
-      <translation type="unfinished" />
+      <translation>Total character count (session change)</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/statusbar.py" line="124" />
       <source>Total word count (session change)</source>
-      <translation type="unfinished" />
+      <translation>Total word count (session change)</translation>
     </message>
   </context>
   <context>
@@ -2474,7 +2474,7 @@
     <message>
       <location filename="../novelwriter/tools/manuscript.py" line="336" />
       <source>Delete build '{0}'?</source>
-      <translation type="unfinished" />
+      <translation>Delete build '{0}'?</translation>
     </message>
   </context>
   <context>
@@ -2747,17 +2747,17 @@
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="176" />
       <source>User interface colour theme.</source>
-      <translation type="unfinished" />
+      <translation>User interface color theme.</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="187" />
       <source>Icon theme</source>
-      <translation type="unfinished" />
+      <translation>Icon theme</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="188" />
       <source>User interface icon theme.</source>
-      <translation type="unfinished" />
+      <translation>User interface icon theme.</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="200" />
@@ -2793,12 +2793,12 @@
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="233" />
       <source>Prefer character count over word count</source>
-      <translation type="unfinished" />
+      <translation>Prefer character count over word count</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="234" />
       <source>Display character count instead where available.</source>
-      <translation type="unfinished" />
+      <translation>Display character count instead where available.</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="240" />
@@ -2845,27 +2845,27 @@
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="289" />
       <source>Project View</source>
-      <translation type="unfinished" />
+      <translation>Project View</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="302" />
       <source>Project tree icon colours</source>
-      <translation type="unfinished" />
+      <translation>Project tree icon colors</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="303" />
       <source>Override colours for project icons.</source>
-      <translation type="unfinished" />
+      <translation>Override colors for project icons.</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="310" />
       <source>Keep theme colours on documents</source>
-      <translation type="unfinished" />
+      <translation>Keep theme colors on documents</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="311" />
       <source>Only override icon colours for folders.</source>
-      <translation type="unfinished" />
+      <translation>Only override icon colors for folders.</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="318" />
@@ -3086,12 +3086,12 @@
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="541" />
       <source>Cursor width</source>
-      <translation type="unfinished" />
+      <translation>Cursor width</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="542" />
       <source>The width of the text cursor of the editor.</source>
-      <translation type="unfinished" />
+      <translation>The width of the text cursor of the editor.</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="550" />
@@ -3111,7 +3111,7 @@
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="572" />
       <source>Scroll past the end of the document</source>
-      <translation type="unfinished" />
+      <translation>Scroll past the end of the document</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="573" />
@@ -3496,7 +3496,7 @@
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="651" />
       <source>New Part</source>
-      <translation type="unfinished" />
+      <translation>New Part</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="653" />
@@ -4041,7 +4041,7 @@
     <message>
       <location filename="../novelwriter/core/coretools.py" line="422" />
       <source>Author Name</source>
-      <translation type="unfinished" />
+      <translation>Author Name</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/coretools.py" line="423" />
@@ -4051,7 +4051,7 @@
     <message>
       <location filename="../novelwriter/core/coretools.py" line="453" />
       <source>Address Line</source>
-      <translation type="unfinished" />
+      <translation>Address Line</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/coretools.py" line="455" />
@@ -4338,12 +4338,12 @@
     <message>
       <location filename="../novelwriter/constants.py" line="356" />
       <source>Characters: {0} ({1})</source>
-      <translation type="unfinished" />
+      <translation>Characters: {0} ({1})</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="357" />
       <source>Words: {0} ({1})</source>
-      <translation type="unfinished">Words: {0} ({1})</translation>
+      <translation>Words: {0} ({1})</translation>
     </message>
   </context>
   <context>
