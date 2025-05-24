@@ -116,3 +116,32 @@ manuscript from it, these folders are ignored. Only the order of the documents t
 The folders are there purely as a way for you to organise the documents in meaningful sections and
 to be able to collapse and hide them in the project tree when you're not working on those
 documents.
+
+
+.. _docs_usage_project_documents:
+
+Project Documents
+=================
+
+New documents can be created from the toolbar in the project tree, or by pressing :kbd:`Ctrl+N`.
+This will open the create new item menu and let you choose between a number of pre-defined
+documents and folders. You will be prompted for a label for the new item.
+
+You can always rename an item by selecting **Rename Item** from the **Project** menu, or by
+pressing :kbd:`F2` when a document or folder is selected.
+
+Other settings for project documents and folders are available from the context menu that you can
+activate by right-clicking on an it in the tree. The **Transform** submenu includes options for
+converting, splitting, or merging documents. See :ref:`docs_ui_split_merge` for more details on
+the latter two.
+
+
+Document Templates
+------------------
+
+If you wish to create template documents to be used when creating new project documents, like for
+instance a character note template, you can add a **Templates** root folder to your project. Any
+document added to this root folder will show up in the **Add Item** menu in the project tree
+toolbar. When selected, a new document is created with its content copied from the chosen template.
+
+.. versionadded:: 2.3

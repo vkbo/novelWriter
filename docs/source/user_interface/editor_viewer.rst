@@ -1,4 +1,4 @@
-.. _a_ui_writing:
+.. _docs_ui_edit_view:
 
 *********************
 The Editor and Viewer
@@ -9,7 +9,7 @@ The Editor and Viewer
 This chapter covers in more detail how the document editor and viewer panels work.
 
 
-.. _a_ui_edit:
+.. _docs_ui_edit_view_edit:
 
 Editing a Document
 ==================
@@ -37,7 +37,7 @@ be shown. This can be set in **Preferences**.
    Clicking on the document title bar will select the document in the project tree and thus reveal
    its location there, making it easier to find in a large project.
 
-Any  `references<reference>` in the editor can be opened in the viewer by moving the cursor to
+Any references in the editor can be opened in the viewer by moving the cursor to
 the label and pressing :kbd:`Ctrl+Return`. You can also control-click them with your mouse.
 
 
@@ -62,7 +62,26 @@ edited from the **Project Word List** tool available from the **Tools** menu.
 .. versionadded:: 2.2
 
 
-.. _a_ui_view:
+Word Counts
+-----------
+
+A character, word and paragraph count is maintained for each document, as well as for each section
+of a document following a heading. The word count and change of words in the current session is
+displayed in the footer of any document open in the editor, and all stats are shown in the details
+panel below the project tree for any document selected in the project or novel trees.
+
+The word counts are not updated in real time, but run in the background every few seconds for as
+long as the document is being actively edited.
+
+A total project word count is displayed in the status bar. The total count depends on the sum of
+the values in the project tree, which again depend on an up to date project index. If the
+counts seem wrong, a full project word recount can be initiated by rebuilding the project's index.
+Either from the **Tools** menu, or by pressing :kbd:`F9`.
+
+The rules for how the counts are made is covered in more detail in :ref:`docs_more_counting`.
+
+
+.. _docs_ui_edit_view_view:
 
 Viewing a Document
 ==================
@@ -108,7 +127,7 @@ these will appear as additional tabs in this panel.
    The reference panel was redesigned and the additional tabs added.
 
 
-.. _a_ui_edit_search:
+.. _docs_ui_edit_view_search:
 
 Search & Replace
 ================
@@ -138,7 +157,7 @@ match the word being replaced.
    class.
 
 
-.. _a_ui_edit_auto:
+.. _docs_ui_edit_view_auto:
 
 Auto-Replace as You Type
 ========================
@@ -149,8 +168,8 @@ auto-replace feature from **Preferences**. You can also disable this feature ent
 .. tip::
 
    If you don't like auto-replacement, all symbols inserted by this feature are also available in
-   the :guilabel:`Insert` menu, and via :ref:`a_kb_ins`. You may also be using a `Compose Key`_
-   setup, which means you may not need the auto-replace feature at all.
+   the :guilabel:`Insert` menu, and via :ref:`docs_features_shortcuts_insert`. You may also be
+   using a `Compose Key`_ setup, which means you may not need the auto-replace feature at all.
 
 The editor is able to replace two and three hyphens with short and long dashes, triple points with
 ellipsis, and replace straight single and double quotes with user-defined quote symbols. It will
@@ -165,7 +184,7 @@ tricky for languages that use the same symbol for these, like English does.
    you typed before it.
 
 
-.. _a_ui_edit_dialogue:
+.. _docs_ui_edit_view_dialogue:
 
 Dialogue Highlighting
 =====================

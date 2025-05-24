@@ -12,7 +12,7 @@ Typographical Notes
 novelWriter has some support for typographical symbols that are not usually easily available in
 many text editors. This includes for instance the proper unicode quotation marks, dashes, ellipsis,
 thin spaces, etc. All these symbols are available from the **Insert** menu, and via
-keyboard shortcuts. See :ref:`a_kb_ins`.
+keyboard shortcuts. See :ref:`docs_features_shortcuts_insert`.
 
 This chapter provides some additional information on how novelWriter handles these symbols.
 
@@ -28,10 +28,10 @@ This section contains additional notes on the available special symbols.
 Dashes and Ellipsis
 -------------------
 
-With the auto-replace feature enabled (see :ref:`a_ui_edit_auto`), multiple hyphens are converted
-automatically to short and long dashes, and three dots to ellipsis. The last auto-replace can
-always be reverted with the undo command :kbd:`Ctrl+Z`, reverting the text to what you typed before
-the automatic replacement occurred.
+With the auto-replace feature enabled (see :ref:`docs_ui_edit_view_auto`), multiple hyphens are
+converted automatically to short and long dashes, and three dots to ellipsis. The last auto-replace
+can always be reverted with the undo command :kbd:`Ctrl+Z`, reverting the text to what you typed
+before the automatic replacement occurred.
 
 In addition, "Figure Dash" is available. The Figure Dash is a dash that has the same width as the
 numbers of the same font, for most fonts. It helps to align numbers nicely in columns when you need

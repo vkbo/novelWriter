@@ -33,7 +33,7 @@ Managing the Project
    and :guilabel:`Merge Documents in Folder`.
 
    In the dialog that pops up, the documents will be in the same order as in the folder, but you
-   can rearrange them here of you wish. See :ref:`a_ui_tree_split_merge` for more details.
+   can rearrange them here of you wish. See :ref:`docs_ui_split_merge` for more details.
 
 .. dropdown:: How do I share status or importance labels between projects?
    :animate: fade-in-slide-down

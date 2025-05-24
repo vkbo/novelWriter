@@ -30,8 +30,8 @@ the header of the document editor. It gives quick access to standard formatting 
 
 Most formatting features supported are available through convenient keyboard shortcuts. They are
 also available in the main menu under **Format**, so you don't have to look up formatting codes
-every time you need them. For reference, a list of all shortcuts can be found in the :ref:`a_kb`
-chapter.
+every time you need them. For reference, a list of all shortcuts can be found in the
+:ref:`docs_features_shortcuts` section.
 
 .. note::
    novelWriter is not intended to be a full office type word processor. It doesn't support images,

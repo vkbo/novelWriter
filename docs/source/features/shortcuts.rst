@@ -114,7 +114,7 @@ Other Editor Shortcuts
    ":kbd:`Ctrl+.`",         "Open the context menu at the current cursor location"
    ":kbd:`Ctrl+A`",         "Select all text in the document"
    ":kbd:`Ctrl+C`",         "Copy selected text to clipboard"
-   ":kbd:`Ctrl+K`",         "Activate the insert commands (see list in :ref:`a_kb_ins`)"
+   ":kbd:`Ctrl+K`",         "Activate the insert commands (see list in :ref:`docs_features_shortcuts_insert`)"
    ":kbd:`Ctrl+R`",         "Open or reload the current document in the viewer"
    ":kbd:`Ctrl+S`",         "Save the current document"
    ":kbd:`Ctrl+V`",         "Paste text from clipboard to cursor position"
@@ -128,6 +128,8 @@ Other Editor Shortcuts
    ":kbd:`Ctrl+Return`",    "Open the tag or reference under the cursor in the viewer"
    ":kbd:`Ctrl+Shift+A`",   "Select all text in the current paragraph"
 
+
+.. _docs_features_shortcuts_insert:
 
 Insert Shortcuts
 ----------------

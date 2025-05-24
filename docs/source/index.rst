@@ -34,6 +34,7 @@ storage for robustness.
 
    Main Page <self>
    More Documents <https://novelwriter.io/more/>
+   howto
 
 .. toctree::
    :caption: Using novelWriter
@@ -53,7 +54,11 @@ storage for robustness.
    :hidden:
 
    user_interface/introduction
+   user_interface/projects
+   user_interface/editor_viewer
+   user_interface/split_and_merge
    user_interface/manuscript
+   user_interface/statistics
 
 .. toctree::
    :caption: Additional Features
@@ -69,10 +74,10 @@ storage for robustness.
    :caption: Special Topics
    :hidden:
 
-   more/howto
    more/counting
    more/typography
    more/customise
+   more/handling_errors
    more/project_format
 
 .. toctree::
@@ -84,24 +89,3 @@ storage for robustness.
    technical/storage
    technical/source
    technical/tests
-
-
-
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Using novelWriter
-   :hidden:
-
-   usage_breakdown
-   usage_project
-   usage_writing
-   usage_shortcuts
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Organising Your Project
-   :hidden:
-
-   project_overview
-   project_structure
