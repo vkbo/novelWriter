@@ -70,7 +70,7 @@ you want page breaks in other places, you have to specify them manually. See :re
    There are multiple options of how to process novel headings when building the manuscript. For
    instance, chapter numbers can be applied automatically, and so can scene numbers if you want
    them in a draft manuscript. You can also insert point-of-view character names in chapter titles.
-   See the :ref:`a_manuscript` page for more details.
+   See the :ref:`docs_ui_manuscript` page for more details.
 
 
 
@@ -127,9 +127,9 @@ the build tool to skip these chapters when adding numbers.
    Chapter Text
 
 There is a separate formatting feature for such chapter titles in the **Manuscript Build** tool as
-well. See the :ref:`a_manuscript` page for more details. When building a document of a format that
-supports page breaks, also unnumbered chapters can have a page break added just like for normal
-chapters.
+well. See the :ref:`docs_ui_manuscript` page for more details. When building a document of a format
+that supports page breaks, also unnumbered chapters can have a page break added just like for
+normal chapters.
 
 
 .. _a_struct_heads_scenes:

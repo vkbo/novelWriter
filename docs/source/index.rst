@@ -49,10 +49,11 @@ storage for robustness.
    usage/advanced_formatting
 
 .. toctree::
-   :caption: The Manuscript Tool
+   :caption: The User Interface
    :hidden:
 
-   manuscript/introduction
+   user_interface/introduction
+   user_interface/manuscript
 
 .. toctree::
    :caption: Additional Features
@@ -104,4 +105,3 @@ storage for robustness.
 
    project_overview
    project_structure
-   project_manuscript

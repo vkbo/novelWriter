@@ -193,13 +193,13 @@ if you want to write your own custom processing script in for instance Python, a
 can be read into a Python dictionary with a couple of lines of code. The JSON file can be populated
 with either HTML formatted text, or with the raw text as typed it into the novel documents.
 
-See :ref:`a_manuscript` for more details.
+See :ref:`docs_ui_manuscript` for more details.
 
 .. versionadded:: 2.1
 
    You can now define multiple build definitions in the **Build Manuscript** tool. This allows you
    to define specific settings for various types of draft documents, outline documents, and
-   manuscript formats. See :ref:`a_manuscript` for more details.
+   manuscript formats. See :ref:`docs_ui_manuscript` for more details.
 
 
 .. _a_breakdown_storage:

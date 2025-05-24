@@ -1,4 +1,4 @@
-.. _a_manuscript:
+.. _docs_ui_manuscript:
 
 ***********************
 Building the Manuscript
@@ -17,7 +17,7 @@ activate it from the sidebar, the **Tools** menu, or by pressing :kbd:`F5`.
    functionality.
 
 
-.. _a_manuscript_main:
+.. _docs_ui_manuscript_main:
 
 The Manuscript Build Tool
 =========================
@@ -50,7 +50,7 @@ than what's available in the project tree since they are counted *after formatti
 For a detailed description on how they are counted, see :ref:`docs_more_counting`.
 
 
-.. _a_manuscript_settings:
+.. _docs_ui_manuscript_settings:
 
 Build Settings
 ==============
@@ -87,7 +87,7 @@ In the figure, the green arrow icon and the blue pin icon indicates which docume
 and the red forbidden icon indicates that a document is explicitly excluded.
 
 
-.. _a_manuscript_settings_head:
+.. _docs_ui_manuscript_head:
 
 Formatting Headings
 -------------------
@@ -127,7 +127,7 @@ the desired separator text as the format. If the format is any piece of static t
 be treated as a separator.
 
 
-.. _a_manuscript_settings_head_hard:
+.. _docs_ui_manuscript_head_hard:
 
 Hard and Soft Scenes
 ^^^^^^^^^^^^^^^^^^^^
@@ -147,7 +147,7 @@ control a number of other settings for the output. Some of these only apply to s
 formats, which is indicated by the section headings on the settings pages.
 
 
-.. _a_manuscript_build:
+.. _docs_ui_manuscript_build:
 
 Building Manuscript Documents
 =============================
@@ -224,7 +224,7 @@ These files are mainly intended for scripted post-processing for those who want 
 file can be imported directly into a Python dict object or a PHP array, to mentions a few options.
 
 
-.. _a_manuscript_print:
+.. _docs_ui_manuscript_print:
 
 Printing
 ========
