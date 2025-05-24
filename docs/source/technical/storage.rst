@@ -1,4 +1,4 @@
-.. _a_storage:
+.. _docs_technical_storage:
 
 ******************
 How Data is Stored

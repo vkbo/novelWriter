@@ -1,4 +1,4 @@
-.. _a_howto:
+.. _docs_more_howto:
 
 *************
 Tips & Tricks
@@ -33,7 +33,7 @@ Managing the Project
    and :guilabel:`Merge Documents in Folder`.
 
    In the dialog that pops up, the documents will be in the same order as in the folder, but you
-   can rearrange them here of you wish. See :ref:`a_ui_tree_split_merge` for more details.
+   can rearrange them here of you wish. See :ref:`docs_ui_split_merge` for more details.
 
 .. dropdown:: How do I share status or importance labels between projects?
    :animate: fade-in-slide-down
@@ -76,7 +76,7 @@ Layout Tricks
    indented, you can disable the indentation by explicitly adding text alignment. For instance by
    adding ``<<`` to the end to left-align it. Aligned paragraphs are not indented.
 
-   See :ref:`a_fmt_align` for more details.
+   See :ref:`docs_usage_align_indent` for more details.
 
 
 Organising Your Text
@@ -102,7 +102,7 @@ Organising Your Text
    **Build Manuscript** tool will let you define a different format for scenes using the ``###``
    and ``###!`` heading codes when you generate your manuscript. You can for instance add the
    common "``* * *``" for hard breaks and select to hide soft scene breaks, which will just insert
-   an empty paragraph in their place. See :ref:`a_manuscript_settings` for more details.
+   an empty paragraph in their place. See :ref:`docs_ui_manuscript_settings` for more details.
 
    .. versionadded:: 2.4
 

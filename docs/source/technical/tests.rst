@@ -1,4 +1,4 @@
-.. _a_pytest:
+.. _docs_technical_pytest:
 
 *************
 Running Tests

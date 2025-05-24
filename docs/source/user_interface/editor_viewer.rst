@@ -1,4 +1,4 @@
-.. _a_ui_writing:
+.. _docs_ui_edit_view:
 
 *********************
 The Editor and Viewer
@@ -9,7 +9,7 @@ The Editor and Viewer
 This chapter covers in more detail how the document editor and viewer panels work.
 
 
-.. _a_ui_edit:
+.. _docs_ui_edit_view_edit:
 
 Editing a Document
 ==================
@@ -21,7 +21,7 @@ Editing a Document
 To edit a document, double-click it in the project tree, press the :kbd:`Return` key while having
 it selected, or drag and drop it onto the editor panel. This will open the document in the document
 editor. The editor uses a Markdown-like syntax for some features, and a novelWriter-specific syntax
-for others. The syntax format is described in the :ref:`a_fmt` chapter.
+for others.
 
 The editor has a maximise button, which toggles the **Focus Mode**, and a close button in the
 top--right corner. On the top--left side you will find a tools button that opens a toolbar with a
@@ -37,7 +37,7 @@ be shown. This can be set in **Preferences**.
    Clicking on the document title bar will select the document in the project tree and thus reveal
    its location there, making it easier to find in a large project.
 
-Any :term:`references<reference>` in the editor can be opened in the viewer by moving the cursor to
+Any references in the editor can be opened in the viewer by moving the cursor to
 the label and pressing :kbd:`Ctrl+Return`. You can also control-click them with your mouse.
 
 
@@ -56,21 +56,32 @@ edited from the **Project Word List** tool available from the **Tools** menu.
 .. note::
 
    Generally, spell checking dictionaries are collected from your operating system, but on Windows
-   they are not. See :ref:`a_custom_dict` for how to add spell checking dictionaries on Windows.
+   they are not. See :ref:`docs_more_custom_dict` for how to add spell checking dictionaries on Windows.
 
-
-Editor Auto-Completer
----------------------
-
-If you type the character ``@`` on a new line, a pop-up menu will appear showing the different
-available keywords. The list will shorten as you type. Once a keyword command has been selected or
-typed, the editor may suggest further options based on your project content. See
-:ref:`a_references_completer` for more details.
 
 .. versionadded:: 2.2
 
 
-.. _a_ui_view:
+Word Counts
+-----------
+
+A character, word and paragraph count is maintained for each document, as well as for each section
+of a document following a heading. The word count and change of words in the current session is
+displayed in the footer of any document open in the editor, and all stats are shown in the details
+panel below the project tree for any document selected in the project or novel trees.
+
+The word counts are not updated in real time, but run in the background every few seconds for as
+long as the document is being actively edited.
+
+A total project word count is displayed in the status bar. The total count depends on the sum of
+the values in the project tree, which again depend on an up to date project index. If the
+counts seem wrong, a full project word recount can be initiated by rebuilding the project's index.
+Either from the **Tools** menu, or by pressing :kbd:`F9`.
+
+The rules for how the counts are made is covered in more detail in :ref:`docs_more_counting`.
+
+
+.. _docs_ui_edit_view_view:
 
 Viewing a Document
 ==================
@@ -89,7 +100,7 @@ However, If you *are* viewing the same document, pressing :kbd:`Ctrl+R` from the
 the document with your latest changes. You can also press the reload button in the top--right
 corner of the viewer panel, next to the close button, to achieve the same thing.
 
-In the viewer :term:`references<reference>` become clickable links. Clicking them will replace the
+In the viewer  `references<reference>` become clickable links. Clicking them will replace the
 content of the viewer with the content of the document the reference points to.
 
 The document viewer keeps a history of viewed documents, which you can navigate with the arrow
@@ -106,7 +117,7 @@ these will appear as additional tabs in this panel.
 
 .. note::
 
-   The **References** panel relies on an up-to-date :term:`index<project index>` of the project.
+   The **References** panel relies on an up-to-date  `index<project index>` of the project.
    The index is maintained automatically. However, if anything is missing, or seems wrong, the
    index can always be rebuilt by selecting **Rebuild Index** from the **Tools** menu, or by
    pressing :kbd:`F9`.
@@ -116,7 +127,7 @@ these will appear as additional tabs in this panel.
    The reference panel was redesigned and the additional tabs added.
 
 
-.. _a_ui_edit_search:
+.. _docs_ui_edit_view_search:
 
 Search & Replace
 ================
@@ -146,7 +157,7 @@ match the word being replaced.
    class.
 
 
-.. _a_ui_edit_auto:
+.. _docs_ui_edit_view_auto:
 
 Auto-Replace as You Type
 ========================
@@ -157,8 +168,8 @@ auto-replace feature from **Preferences**. You can also disable this feature ent
 .. tip::
 
    If you don't like auto-replacement, all symbols inserted by this feature are also available in
-   the :guilabel:`Insert` menu, and via :ref:`a_kb_ins`. You may also be using a `Compose Key`_
-   setup, which means you may not need the auto-replace feature at all.
+   the :guilabel:`Insert` menu, and via :ref:`docs_features_shortcuts_insert`. You may also be
+   using a `Compose Key`_ setup, which means you may not need the auto-replace feature at all.
 
 The editor is able to replace two and three hyphens with short and long dashes, triple points with
 ellipsis, and replace straight single and double quotes with user-defined quote symbols. It will
@@ -173,7 +184,7 @@ tricky for languages that use the same symbol for these, like English does.
    you typed before it.
 
 
-.. _a_ui_edit_dialogue:
+.. _docs_ui_edit_view_dialogue:
 
 Dialogue Highlighting
 =====================

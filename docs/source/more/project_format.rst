@@ -1,4 +1,4 @@
-.. _a_prjfmt:
+.. _docs_more_project_formats:
 
 **********************
 Project Format Changes
@@ -23,7 +23,7 @@ A full project file format specification is available under "More Documents".
    have the option to decline the upgrade.
 
 
-.. _a_prjfmt_1_5:
+.. _docs_more_project_formats_1_5:
 
 Format 1.5 Changes
 ==================
@@ -37,7 +37,7 @@ heading of the document is now saved to the item rather than in the index. The c
 automatically the first time a project is loaded. No user action is required.
 
 
-.. _a_prjfmt_1_4:
+.. _docs_more_project_formats_1_4:
 
 Format 1.4 Changes
 ==================
@@ -51,7 +51,7 @@ compact format that is simpler and faster to parse, and easier to extend. The co
 automatically the first time a project is loaded. No user action is required.
 
 
-.. _a_prjfmt_1_3:
+.. _docs_more_project_formats_1_3:
 
 Format 1.3 Changes
 ==================
@@ -71,25 +71,26 @@ should be used only a few places in any given project. These are as follows:
 **Title Pages**
 
 * The formatting of the level one title on the title page must be changed from ``# Title Text`` to
-  ``#! Title Text`` in order to retain the previous functionality. See :ref:`a_fmt_head`.
+  ``#! Title Text`` in order to retain the previous functionality.
+  See :ref:`docs_usage_headers_levels`.
 * Any text that was previously centred on the page must be manually centred using the text
-  alignment feature. See :ref:`a_fmt_align`.
+  alignment feature. See :ref:`docs_usage_align_indent`.
 
 **Unnumbered Chapters**
 
 * Since the specific layout for unnumbered chapters has been dropped, such chapters must all use
   the ``##! Chapter Name`` formatting code instead of ``## Chapter Name``. This also includes
   chapters marked by an asterisk: ``## *Chapter Name``, as this feature has also been dropped.
-  See :ref:`a_fmt_head`.
+  See :ref:`docs_usage_headers_levels`.
 
 **Plain Pages**
 
 * The layout named "Plain Page" has also been removed. The only feature of this layout was that it
   ensured that the content always started on a fresh page. In the new format, fresh pages can be
-  set anywhere in the text with the ``[NEW PAGE]`` code. See :ref:`a_fmt_break`.
+  set anywhere in the text with the ``[NEW PAGE]`` code. See :ref:`docs_usage_formatting_breaks`.
 
 
-.. _a_prjfmt_1_2:
+.. _docs_more_project_formats_1_2:
 
 Format 1.2 Changes
 ==================
@@ -99,7 +100,7 @@ This project format was introduced in novelWriter version 0.10.
 With this format, the way auto-replace entries were stored in the main project XML file changed.
 
 
-.. _a_prjfmt_1_1:
+.. _docs_more_project_formats_1_1:
 
 Format 1.1 Changes
 ==================
@@ -113,7 +114,7 @@ It also reduces the number of meta data and cache files. These files are automat
 an old project is opened. This was also when the Table of Contents file was introduced.
 
 
-.. _a_prjfmt_1_0:
+.. _docs_more_project_formats_1_0:
 
 Format 1.0 Changes
 ==================

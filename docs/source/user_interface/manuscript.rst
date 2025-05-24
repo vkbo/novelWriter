@@ -1,4 +1,4 @@
-.. _a_manuscript:
+.. _docs_ui_manuscript:
 
 ***********************
 Building the Manuscript
@@ -17,7 +17,7 @@ activate it from the sidebar, the **Tools** menu, or by pressing :kbd:`F5`.
    functionality.
 
 
-.. _a_manuscript_main:
+.. _docs_ui_manuscript_main:
 
 The Manuscript Build Tool
 =========================
@@ -47,10 +47,10 @@ A collapsible panel of word and character counts are also available below the pr
 These are calculated from the text you have included in the document, and are more accurate counts
 than what's available in the project tree since they are counted *after formatting*.
 
-For a detailed description on how they are counted, see :ref:`a_counting`.
+For a detailed description on how they are counted, see :ref:`docs_more_counting`.
 
 
-.. _a_manuscript_settings:
+.. _docs_ui_manuscript_settings:
 
 Build Settings
 ==============
@@ -87,7 +87,7 @@ In the figure, the green arrow icon and the blue pin icon indicates which docume
 and the red forbidden icon indicates that a document is explicitly excluded.
 
 
-.. _a_manuscript_settings_head:
+.. _docs_ui_manuscript_head:
 
 Formatting Headings
 -------------------
@@ -98,7 +98,7 @@ Formatting Headings
    The **Headings** page of the **Manuscript Build Settings** dialog.
 
 The **Headings** page of the **Manuscript Build Settings** dialog allows you to set how the
-headings in your :term:`Novel Documents` are formatted. By default, the title is just copied as-is,
+headings in your Novel Documents are formatted. By default, the title is just copied as-is,
 indicated by the ``{Title}`` format. You can change this to for instance add chapter numbers and
 scene numbers, or insert character names, like shown in the figure above.
 
@@ -127,7 +127,7 @@ the desired separator text as the format. If the format is any piece of static t
 be treated as a separator.
 
 
-.. _a_manuscript_settings_head_hard:
+.. _docs_ui_manuscript_head_hard:
 
 Hard and Soft Scenes
 ^^^^^^^^^^^^^^^^^^^^
@@ -136,7 +136,7 @@ If you wish to distinguish between so-called soft and hard scene breaks, you can
 alternative scene heading format in your text. You can then give these headings a different
 formatting in the **Headings** settings.
 
-See :ref:`a_fmt_head` for more info on how to format headings in your text.
+See :ref:`docs_usage_headers_levels` for more info on how to format headings in your text.
 
 
 Output Settings
@@ -147,7 +147,7 @@ control a number of other settings for the output. Some of these only apply to s
 formats, which is indicated by the section headings on the settings pages.
 
 
-.. _a_manuscript_build:
+.. _docs_ui_manuscript_build:
 
 Building Manuscript Documents
 =============================
@@ -224,7 +224,7 @@ These files are mainly intended for scripted post-processing for those who want 
 file can be imported directly into a Python dict object or a PHP array, to mentions a few options.
 
 
-.. _a_manuscript_print:
+.. _docs_ui_manuscript_print:
 
 Printing
 ========

@@ -10,7 +10,7 @@ How it Works
 .. _Office Open XML: https://en.wikipedia.org/wiki/Office_Open_XML
 .. _version control: https://en.wikipedia.org/wiki/Version_control
 
-The main features of novelWriter are listed in the :ref:`a_intro` chapter. In this chapter, we go
+The main features of novelWriter are listed in the a_intro chapter. In this chapter, we go
 into some more details on how they are implemented. This is intended as an overview. Later on in
 this documentation these features will be covered in more detail.
 
@@ -30,8 +30,8 @@ the header of the document editor. It gives quick access to standard formatting 
 
 Most formatting features supported are available through convenient keyboard shortcuts. They are
 also available in the main menu under **Format**, so you don't have to look up formatting codes
-every time you need them. For reference, a list of all shortcuts can be found in the :ref:`a_kb`
-chapter.
+every time you need them. For reference, a list of all shortcuts can be found in the
+:ref:`docs_features_shortcuts` section.
 
 .. note::
    novelWriter is not intended to be a full office type word processor. It doesn't support images,
@@ -88,7 +88,7 @@ Novel View and Editor View
    A screenshot of the Novel Tree and Editor View.
 
 When the application is in **Novel Tree View** mode, the project tree is replaced by an overview of
-your novel structure for a specific Novel :term:`root folder`. Instead of showing individual
+your novel structure for a specific Novel root folder. Instead of showing individual
 documents, the tree now shows all headings of your novel text. This includes multiple headings
 within the same document.
 
@@ -137,7 +137,7 @@ By default, novelWriter uses a light colour theme. You can also choose between a
 theme that have neutral colours, or a series of other included themes, from **Preferences**. 
 
 If you wish, you *can* create your own colour themes, and even have them added to the application.
-See :ref:`a_custom_theme` for more details.
+See :ref:`docs_more_custom_theme` for more details.
 
 Switching the GUI colour theme does not affect the colours of the editor and viewer. They have
 separate colour selectable from the "Document colour theme" setting in **Preferences**. They are
@@ -173,51 +173,6 @@ These two shortcuts make it possible to jump between all these GUI elements with
 for the mouse or touchpad.
 
 
-.. _a_breakdown_project:
-
-Project Layout
-==============
-
-This is a brief introduction to how you should structure your writing projects. All of this will be
-covered in more detail later.
-
-The main point of novelWriter is that you are free to organise your project documents as you wish
-into sub-folders or sub-documents, and split the text between these documents in whatever way suits
-you. All that matters to novelWriter is the linear order the documents appear at in the project
-tree (top to bottom). The chapters, scenes and sections of the novel are determined by the headings
-within those documents.
-
-.. figure:: images/fig_header_levels.png
-
-   An illustration of how heading levels correspond to the novel structure.
-
-The four heading levels, **Level 1** to **Level 4**, are treated as follows:
-
-* **Level 1** is used for the novel title, and for partitions.
-* **Level 2** is used for chapter tiles.
-* **Level 3** is used for scene titles -- optionally replaced by separators.
-* **Level 4** is for section titles within scenes, if such granularity is needed.
-
-The project tree will select an icon for the document based on the first heading in it.
-
-This heading level structure is only taken into account for :term:`novel documents`. For
-:term:`project notes`, the heading levels have no structural meaning, and you are free to use them
-however you want. See :ref:`a_struct` and :ref:`a_references` for more details.
-
-.. tip::
-
-   You can add documents as child items of other documents. This is often more useful than adding
-   folders, since you anyway may want to have the chapter heading in a separate document from your
-   individual scene documents so that you can rearrange scene documents freely without affecting
-   chapter placement.
-
-.. versionadded:: 2.6
-
-   The heading levels for partitions, chapters and scenes only apply within novelWriter. When you
-   generate your manuscript, chapters are considered as the topmost heading level, with scenes
-   below it. Partitions are inserted as text elements in most formats.
-
-
 .. _a_breakdown_export:
 
 Building a Manuscript
@@ -238,13 +193,13 @@ if you want to write your own custom processing script in for instance Python, a
 can be read into a Python dictionary with a couple of lines of code. The JSON file can be populated
 with either HTML formatted text, or with the raw text as typed it into the novel documents.
 
-See :ref:`a_manuscript` for more details.
+See :ref:`docs_ui_manuscript` for more details.
 
 .. versionadded:: 2.1
 
    You can now define multiple build definitions in the **Build Manuscript** tool. This allows you
    to define specific settings for various types of draft documents, outline documents, and
-   manuscript formats. See :ref:`a_manuscript` for more details.
+   manuscript formats. See :ref:`docs_ui_manuscript` for more details.
 
 
 .. _a_breakdown_storage:
@@ -255,7 +210,7 @@ Project Storage
 The files of a novelWriter project are stored in a dedicated project folder. The project structure
 is kept in a file at the root of this folder called ``nwProject.nwx``. All the document files and
 associated meta data are stored in other folders below the project folder. For a more technical
-description of what all the files mean and how they're organised, see the :ref:`a_storage` section.
+description of what all the files mean and how they're organised, see the :ref:`docs_technical_storage` section.
 
 This way of storing data was chosen for several reasons.
 
@@ -282,7 +237,7 @@ well, which makes it easier to track them with version control software.
 
    You should not add additional files to the project folder yourself. Nor should you, as a rule,
    manually edit files within it. If you really must manually edit the text files, e.g. with some
-   automated task you want to perform, you need to rebuild the :term:`Project Index` when you open
+   automated task you want to perform, you need to rebuild the Project Index when you open
    the project again.
 
    Editing text files in the ``content`` folder is less risky as these are just plain text. Editing

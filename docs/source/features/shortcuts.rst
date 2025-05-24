@@ -1,4 +1,4 @@
-.. _a_kb:
+.. _docs_features_shortcuts:
 
 ******************
 Keyboard Shortcuts
@@ -10,8 +10,6 @@ shortcuts. Most of them are also listed in the application's user interface.
 .. note::
    On MacOS, replace :kbd:`Ctrl` with :kbd:`Cmd`.
 
-
-.. _a_kb_main:
 
 Main Window Shortcuts
 =====================
@@ -38,8 +36,6 @@ Main Window Shortcuts
    ":kbd:`Shift+F6`",     "Open the **Project Details** dialog"
 
 
-.. _a_kb_tree:
-
 Project Tree Shortcuts
 ======================
 
@@ -61,8 +57,6 @@ Project Tree Shortcuts
    ":kbd:`Ctrl+Down`",      "Move selected item one step down in the tree"
    ":kbd:`Ctrl+Shift+Del`", "Move the selected item to Trash"
 
-
-.. _a_kb_editor:
 
 Document Editor Shortcuts
 =========================
@@ -120,7 +114,7 @@ Other Editor Shortcuts
    ":kbd:`Ctrl+.`",         "Open the context menu at the current cursor location"
    ":kbd:`Ctrl+A`",         "Select all text in the document"
    ":kbd:`Ctrl+C`",         "Copy selected text to clipboard"
-   ":kbd:`Ctrl+K`",         "Activate the insert commands (see list in :ref:`a_kb_ins`)"
+   ":kbd:`Ctrl+K`",         "Activate the insert commands (see list in :ref:`docs_features_shortcuts_insert`)"
    ":kbd:`Ctrl+R`",         "Open or reload the current document in the viewer"
    ":kbd:`Ctrl+S`",         "Save the current document"
    ":kbd:`Ctrl+V`",         "Paste text from clipboard to cursor position"
@@ -135,7 +129,7 @@ Other Editor Shortcuts
    ":kbd:`Ctrl+Shift+A`",   "Select all text in the current paragraph"
 
 
-.. _a_kb_ins:
+.. _docs_features_shortcuts_insert:
 
 Insert Shortcuts
 ----------------
@@ -183,8 +177,6 @@ a key or key combination for the inserted content.
    ":kbd:`Ctrl+K`, :kbd:`Ctrl+X`",      "Insert a times sign"
    ":kbd:`Ctrl+K`, :kbd:`Shift+Space`", "Insert a thin space"
 
-
-.. _a_kb_viewer:
 
 Document Viewer Shortcuts
 =========================
