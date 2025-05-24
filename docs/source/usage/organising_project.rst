@@ -45,7 +45,7 @@ however you want.
 Root Folder Types
 -----------------
 
-**Novel**
+**Novel** (Story)
    This is where you put the documents that are part of your story. You can create multiple Novel
    folders if you wish, but various parts of the application assumes each Novel folder belong to
    one novel.
@@ -53,35 +53,35 @@ Root Folder Types
    The Novel folder is somewhat special in that it can contain documents for chapters, scenes and
    story partitions. How this is indicated is covered in the section :ref:`docs_usage_headers`.
 
-**Plot**
+**Plot** (Notes)
    This is where you can keep notes and outlines of your story plots. Such notes can be
    particularly useful if you have outlines for sub plot. You can make references to these subplots
    from the scene documents, which makes it easier to track story progress.
 
-**Characters**
+**Characters** (Notes)
    Character notes go in this root folder type. For your main characters, you may want to make one
    document for each character. For smaller characters you can put multiple into the same document.
    In your chapters and scenes you can reference these character notes as Point of View or Focus
    characters.
 
-**Locations**
+**Locations** (Notes)
    The locations where your story takes place can be documented here. This, together with Plot and
    Characters are the particularly useful story elements to track, and to reference from your
    chapter and scene documents.
 
-**Timeline**
+**Timeline** (Notes)
    If the story has multiple plot timelines or jumps in time within the same plot, this folder type
    can be used to track this.
 
-**Objects**
+**Objects** (Notes)
    Important objects in the story, for instance physical objects that change hands often, can be
    tracked here.
 
-**Entities**
+**Entities** (Notes)
    Does your plot have many powerful organisations or companies? Or other entities that are part of
    the plot? They can be organised here.
 
-**Custom**
+**Custom** (Notes)
    The custom root folder type can be used for tracking anything else not covered by the above
    options.
 

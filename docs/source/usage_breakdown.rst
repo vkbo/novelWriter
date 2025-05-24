@@ -178,45 +178,6 @@ for the mouse or touchpad.
 Project Layout
 ==============
 
-This is a brief introduction to how you should structure your writing projects. All of this will be
-covered in more detail later.
-
-The main point of novelWriter is that you are free to organise your project documents as you wish
-into sub-folders or sub-documents, and split the text between these documents in whatever way suits
-you. All that matters to novelWriter is the linear order the documents appear at in the project
-tree (top to bottom). The chapters, scenes and sections of the novel are determined by the headings
-within those documents.
-
-.. figure:: images/fig_header_levels.png
-
-   An illustration of how heading levels correspond to the novel structure.
-
-The four heading levels, **Level 1** to **Level 4**, are treated as follows:
-
-* **Level 1** is used for the novel title, and for partitions.
-* **Level 2** is used for chapter titles.
-* **Level 3** is used for scene titles -- optionally replaced by separators.
-* **Level 4** is for section titles within scenes, if such granularity is needed.
-
-The project tree will select an icon for the document based on the first heading in it.
-
-This heading level structure is only taken into account for :term:`novel documents`. For
-:term:`project notes`, the heading levels have no structural meaning, and you are free to use them
-however you want. See :ref:`a_struct` and :ref:`a_references` for more details.
-
-.. tip::
-
-   You can add documents as child items of other documents. This is often more useful than adding
-   folders, since you anyway may want to have the chapter heading in a separate document from your
-   individual scene documents so that you can rearrange scene documents freely without affecting
-   chapter placement.
-
-.. versionadded:: 2.6
-
-   The heading levels for partitions, chapters and scenes only apply within novelWriter. When you
-   generate your manuscript, chapters are considered as the topmost heading level, with scenes
-   below it. Partitions are inserted as text elements in most formats.
-
 
 .. _a_breakdown_export:
 
