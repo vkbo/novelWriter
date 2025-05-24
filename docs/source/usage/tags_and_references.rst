@@ -32,7 +32,7 @@ the documents themselves. See :ref:`docs_usage_headers` for more details. Theref
 also associated with headings, and not the documents directly.
 
 A "tag" in novelWriter is a word or phrase that you define as belonging to a heading. Tags are set
-by using the ``@tag`` :term:`keyword`.
+by using the ``@tag`` keyword.
 
 The basic format of a tag is ``@tag: TagName``.
 

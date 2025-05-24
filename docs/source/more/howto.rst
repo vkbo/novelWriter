@@ -1,4 +1,4 @@
-.. _a_howto:
+.. _docs_more_howto:
 
 *************
 Tips & Tricks
@@ -76,7 +76,7 @@ Layout Tricks
    indented, you can disable the indentation by explicitly adding text alignment. For instance by
    adding ``<<`` to the end to left-align it. Aligned paragraphs are not indented.
 
-   See :ref:`a_fmt_align` for more details.
+   See :ref:`docs_usage_align_indent` for more details.
 
 
 Organising Your Text

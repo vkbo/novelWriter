@@ -24,22 +24,22 @@ Subfolders under root folders have no impact on the structure of the novel itsel
 instead dictated by the heading level of the headings within the documents.
 
 Four levels of headings are supported, signified by the number of hashes (``#``) preceding the
-title. See also the :ref:`a_fmt` section for more details about the markup syntax.
+title.
 
 .. note::
 
    The heading levels are not only important when generating the manuscript, they are also used by
    the indexer when building the outline tree in the **Outline View** as well as in the **Novel
    Tree**. Each heading also starts a new region where new Tags and References can be defined. See
-   :ref:`a_references` for more details.
+   a_references for more details.
 
 The syntax for the four basic heading types, and the three special types, is listed in section
-:ref:`a_fmt_head`. The meaning of the four levels for the structure of your novel is as follows:
+:ref:`docs_usage_headers_levels`. The meaning of the four levels for the structure of your novel is as follows:
 
 **Heading Level 1: Partition**
    This heading level signifies that the text refers to a top level heading. This is useful when
    you want to split the manuscript up into books, parts, or acts. These headings are not required.
-   The novel title itself should use the special heading level ``#!`` covered in :ref:`a_fmt_head`.
+   The novel title itself should use the special heading level ``#!`` covered in :ref:`docs_usage_headers_levels`.
 
 **Heading Level 2: Chapter**
    This heading level signifies a chapter. Each time you want to start a new chapter, you must add
@@ -52,7 +52,7 @@ The syntax for the four basic heading types, and the three special types, is lis
    This heading level signifies a scene. You must provide a title text, but the title text can be
    replaced with a scene separator or just skipped entirely when you build your manuscript. If you
    need to distinguish between hard and soft scene breaks, there is an alternative format for
-   scenes you can use for this distinction. The formatting is covered in :ref:`a_fmt_head`. See
+   scenes you can use for this distinction. The formatting is covered in :ref:`docs_usage_headers_levels`. See
    also :ref:`a_struct_heads_scenes`.
 
 **Heading Level 4: Section**
@@ -63,7 +63,7 @@ The syntax for the four basic heading types, and the three special types, is lis
 
 Page breaks can be automatically added before titles, partition, chapter and scene headings from
 the **Manuscript Build** tool when you build your project to a format that supports page breaks. If
-you want page breaks in other places, you have to specify them manually. See :ref:`a_fmt_break`.
+you want page breaks in other places, you have to specify them manually. See :ref:`docs_usage_formatting_breaks`.
 
 .. tip::
 
@@ -72,13 +72,6 @@ you want page breaks in other places, you have to specify them manually. See :re
    them in a draft manuscript. You can also insert point-of-view character names in chapter titles.
    See the :ref:`a_manuscript` page for more details.
 
-.. note::
-
-   As of 2.6, the heading levels internally in novelWriter do not map directly to heading levels in
-   manuscript documents. In manuscript documents, chapters are considered the top level heading,
-   and partitions become plain text paragraphs with a larger font.
-
-   .. versionadded:: 2.6
 
 
 .. _a_struct_heads_title:
@@ -115,7 +108,7 @@ for instance the author's name and details.
 
 If you want an additional page of text after the title page, starting on a fresh page, you can add
 ``[new page]`` on a line by itself, and continue the text after it. This will insert a page break
-before the text. See also :ref:`a_fmt_break`.
+before the text. See also :ref:`docs_usage_formatting_breaks`.
 
 
 .. _a_struct_heads_unnum:

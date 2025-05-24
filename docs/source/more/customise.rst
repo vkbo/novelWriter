@@ -1,4 +1,4 @@
-.. _a_custom:
+.. _docs_more_custom:
 
 **************
 Customisations
@@ -11,7 +11,7 @@ There are a few ways you can customise novelWriter yourself. Currently, you can 
 your own syntax themes, and install additional dictionaries.
 
 
-.. _a_custom_dict:
+.. _docs_more_custom_dict:
 
 Spell Check Dictionaries
 ========================
@@ -61,7 +61,7 @@ You can find the various dictionaries on the `Free Desktop`_ website.
    each line and download that.
 
 
-.. _a_custom_theme:
+.. _docs_more_custom_theme:
 
 Syntax and GUI Themes
 =====================
@@ -84,7 +84,7 @@ Remember to also change the name of your theme by modifying the ``name`` setting
 file, otherwise you may not be able to distinguish them in **Preferences**.
 
 For novelWriter to be able to locate the custom theme files, you must copy them to the
-:ref:`a_locations_data` location in your home or user area. There should be a folder there named
+:ref:`docs_technical_locations_data` location in your home or user area. There should be a folder there named
 ``syntax`` for syntax themes, just ``themes`` for GUI themes, and ``icons`` for icon themes. These
 folders are created the first time you start novelWriter.
 

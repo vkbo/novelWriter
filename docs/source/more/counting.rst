@@ -1,4 +1,4 @@
-.. _a_counting:
+.. _docs_more_counting:
 
 ********************
 Word and Text Counts

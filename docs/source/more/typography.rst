@@ -1,4 +1,4 @@
-.. _a_typ:
+.. _docs_more_typographical:
 
 *******************
 Typographical Notes

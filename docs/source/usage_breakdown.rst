@@ -10,7 +10,7 @@ How it Works
 .. _Office Open XML: https://en.wikipedia.org/wiki/Office_Open_XML
 .. _version control: https://en.wikipedia.org/wiki/Version_control
 
-The main features of novelWriter are listed in the :ref:`a_intro` chapter. In this chapter, we go
+The main features of novelWriter are listed in the a_intro chapter. In this chapter, we go
 into some more details on how they are implemented. This is intended as an overview. Later on in
 this documentation these features will be covered in more detail.
 
@@ -88,7 +88,7 @@ Novel View and Editor View
    A screenshot of the Novel Tree and Editor View.
 
 When the application is in **Novel Tree View** mode, the project tree is replaced by an overview of
-your novel structure for a specific Novel :term:`root folder`. Instead of showing individual
+your novel structure for a specific Novel root folder. Instead of showing individual
 documents, the tree now shows all headings of your novel text. This includes multiple headings
 within the same document.
 
@@ -137,7 +137,7 @@ By default, novelWriter uses a light colour theme. You can also choose between a
 theme that have neutral colours, or a series of other included themes, from **Preferences**. 
 
 If you wish, you *can* create your own colour themes, and even have them added to the application.
-See :ref:`a_custom_theme` for more details.
+See :ref:`docs_more_custom_theme` for more details.
 
 Switching the GUI colour theme does not affect the colours of the editor and viewer. They have
 separate colour selectable from the "Document colour theme" setting in **Preferences**. They are
@@ -171,12 +171,6 @@ them already have focus, it will switch focus between them,
 
 These two shortcuts make it possible to jump between all these GUI elements without having to reach
 for the mouse or touchpad.
-
-
-.. _a_breakdown_project:
-
-Project Layout
-==============
 
 
 .. _a_breakdown_export:
@@ -216,7 +210,7 @@ Project Storage
 The files of a novelWriter project are stored in a dedicated project folder. The project structure
 is kept in a file at the root of this folder called ``nwProject.nwx``. All the document files and
 associated meta data are stored in other folders below the project folder. For a more technical
-description of what all the files mean and how they're organised, see the :ref:`a_storage` section.
+description of what all the files mean and how they're organised, see the :ref:`docs_technical_storage` section.
 
 This way of storing data was chosen for several reasons.
 
@@ -243,7 +237,7 @@ well, which makes it easier to track them with version control software.
 
    You should not add additional files to the project folder yourself. Nor should you, as a rule,
    manually edit files within it. If you really must manually edit the text files, e.g. with some
-   automated task you want to perform, you need to rebuild the :term:`Project Index` when you open
+   automated task you want to perform, you need to rebuild the Project Index when you open
    the project again.
 
    Editing text files in the ``content`` folder is less risky as these are just plain text. Editing

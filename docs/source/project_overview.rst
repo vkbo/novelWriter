@@ -18,7 +18,7 @@ will open the **Welcome** dialog, where you can select the :guilabel:`New` butto
 you in creating a new project. This dialog is also displayed when you start novelWriter.
 
 A novelWriter project requires a dedicated folder for storing its files on the local file system.
-If you're interested in the details, you can have a look at the chapter :ref:`a_storage`.
+If you're interested in the details, you can have a look at the chapter :ref:`docs_technical_storage`.
 
 A list of recently opened projects is maintained, and displayed in the **Welcome** dialog. A
 project can be removed from this list by selecting it and pressing the :kbd:`Del` key or by
@@ -58,7 +58,7 @@ Deleted Documents
 
 Deleted documents are moved into a special **Trash** root folder. Documents in the trash folder can
 then be deleted permanently, either individually, or by emptying the trash from the menu. Documents
-in the trash folder are removed from the :term:`project index` and cannot be referenced.
+in the trash folder are removed from the project index and cannot be referenced.
 
 A document or a folder can be moved to trash from the **Project** menu, or by pressing
 :kbd:`Ctrl+Shift+Del`. Root folders can only be removed when they are empty.
@@ -161,7 +161,7 @@ Word Counts
 -----------
 
 A character, word and paragraph count is maintained for each document, as well as for each section
-of a document following a :term:`heading<headings>`. The word count and change of words in the
+of a document following a heading. The word count and change of words in the
 current session is displayed in the footer of any document open in the editor, and all stats are
 shown in the details panel below the project tree for any document selected in the project or novel
 trees.
@@ -170,11 +170,11 @@ The word counts are not updated in real time, but run in the background every fe
 long as the document is being actively edited.
 
 A total project word count is displayed in the status bar. The total count depends on the sum of
-the values in the project tree, which again depend on an up to date :term:`project index`. If the
+the values in the project tree, which again depend on an up to date project index. If the
 counts seem wrong, a full project word recount can be initiated by rebuilding the project's index.
 Either from the **Tools** menu, or by pressing :kbd:`F9`.
 
-The rules for how the counts are made is covered in more detail in :ref:`a_counting`.
+The rules for how the counts are made is covered in more detail in :ref:`docs_more_counting`.
 
 
 .. _a_proj_settings:
@@ -280,7 +280,7 @@ Writing Statistics
 When you work on a project, a log file records when you opened it, when you closed it, and the
 total word counts of your novel documents and notes at the end of the session, provided that the
 session lasted either more than 5 minutes, or that the total word count changed. For more details
-about the log file, see :ref:`a_storage`.
+about the log file, see :ref:`docs_technical_storage`.
 
 A tool to view the content of the log file is available in the **Tools** menu under **Writing
 Statistics**. You can also launch it by pressing :kbd:`F6`, or find it on the sidebar.

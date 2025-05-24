@@ -1,4 +1,4 @@
-.. _a_locations:
+.. _docs_technical_locations:
 
 **************
 File Locations
@@ -10,7 +10,7 @@ novelWriter will create a few files on your system outside of the application fo
 file locations are described in this chapter.
 
 
-.. _a_locations_conf:
+.. _docs_technical_locations_conf:
 
 Configuration
 =============
@@ -33,7 +33,7 @@ user's username on Windows.
    different way, these locations may also be different.
 
 
-.. _a_locations_data:
+.. _docs_technical_locations_data:
 
 Application Data
 ================
@@ -62,4 +62,4 @@ The Application Data location also holds several folders:
 
 ``icons``, ``syntax`` and ``themes``
    These folders are empty by default, but this is where the user can store custom theme files.
-   See :ref:`a_custom` for more details.
+   See :ref:`docs_more_custom` for more details.

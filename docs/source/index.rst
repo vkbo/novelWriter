@@ -61,17 +61,31 @@ storage for robustness.
    features/introduction
    features/shortcuts
    features/breaks_and_spaces
+   features/story_structure
 
 .. toctree::
    :maxdepth: 1
-   :caption: Introduction
+   :caption: Special Topics
    :hidden:
 
-   int_introduction
-   int_overview
-   int_started
-   int_howto
-   int_glossary
+   more/howto
+   more/counting
+   more/typography
+   more/customise
+   more/project_format
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Technical Topics
+   :hidden:
+
+   technical/locations
+   technical/storage
+   technical/source
+   technical/tests
+
+
+
 
 .. toctree::
    :maxdepth: 1
@@ -81,9 +95,7 @@ storage for robustness.
    usage_breakdown
    usage_project
    usage_writing
-   usage_format
    usage_shortcuts
-   usage_typography
 
 .. toctree::
    :maxdepth: 1
@@ -92,31 +104,4 @@ storage for robustness.
 
    project_overview
    project_structure
-   project_references
    project_manuscript
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Writing Aids
-   :hidden:
-
-   writing_story
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Additional Details
-   :hidden:
-
-   more_customise
-   more_projectformat
-   more_counting
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Technical Topics
-   :hidden:
-
-   tech_locations
-   tech_storage
-   tech_source
-   tech_tests

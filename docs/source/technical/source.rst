@@ -1,4 +1,4 @@
-.. _a_source:
+.. _docs_technical_source:
 
 *******************
 Running from Source

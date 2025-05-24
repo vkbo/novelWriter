@@ -1,4 +1,4 @@
-.. _a_story_structure:
+.. _docs_features_story:
 
 ************************
 Story Structure Comments

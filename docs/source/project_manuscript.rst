@@ -47,7 +47,7 @@ A collapsible panel of word and character counts are also available below the pr
 These are calculated from the text you have included in the document, and are more accurate counts
 than what's available in the project tree since they are counted *after formatting*.
 
-For a detailed description on how they are counted, see :ref:`a_counting`.
+For a detailed description on how they are counted, see :ref:`docs_more_counting`.
 
 
 .. _a_manuscript_settings:
@@ -98,7 +98,7 @@ Formatting Headings
    The **Headings** page of the **Manuscript Build Settings** dialog.
 
 The **Headings** page of the **Manuscript Build Settings** dialog allows you to set how the
-headings in your :term:`Novel Documents` are formatted. By default, the title is just copied as-is,
+headings in your Novel Documents are formatted. By default, the title is just copied as-is,
 indicated by the ``{Title}`` format. You can change this to for instance add chapter numbers and
 scene numbers, or insert character names, like shown in the figure above.
 
@@ -136,7 +136,7 @@ If you wish to distinguish between so-called soft and hard scene breaks, you can
 alternative scene heading format in your text. You can then give these headings a different
 formatting in the **Headings** settings.
 
-See :ref:`a_fmt_head` for more info on how to format headings in your text.
+See :ref:`docs_usage_headers_levels` for more info on how to format headings in your text.
 
 
 Output Settings
