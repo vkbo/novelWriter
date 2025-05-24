@@ -47,136 +47,15 @@ can select them from **Preferences**.
 Headings
 ========
 
-.. figure:: images/fig_header_levels.png
-
-   An illustration of how heading levels correspond to the novel structure.
-
-Four levels of headings are allowed. For :term:`project notes`, they are free to be used as you see
-fit. That is, novelWriter doesn't assign the different headings any particular meaning. However,
-for :term:`novel documents` they indicate the structural level of the novel and must be used
-correctly to produce the intended result. See :ref:`a_struct_heads` for more details.
-
-``# Title Text``
-   Heading level one. For novel documents, the level indicates the start of a new partition.
-   Partitions are for when you want to split your story into "Part 1", "Part 2", etc. You can also
-   choose to use them for splitting the text up into acts, and then hide these headings in your
-   manuscript.
-
-``## Title Text``
-   Heading level two. For novel documents, the level indicates the start of a new chapter. Chapter
-   numbers can be inserted automatically when building the manuscript.
-
-``### Title Text``
-   Heading level three. For novel documents, the level indicates the start of a new scene. Scene
-   numbers or scene separators can be inserted automatically when building the manuscript, so you
-   can use the title field as a working title for your scenes if you wish, but you must provide a
-   minimal title.
-
-``#### Title Text``
-   Heading level four. For novel documents, the level indicates the start of a new section. Section
-   titles can be replaced by separators or ignored completely when building the manuscript.
-
-For headings level one through three, adding a ``!`` modifies the meaning of the heading:
-
-``#! Title Text``
-   This tells the build tool that the level one heading is intended to be used for the novel or
-   notes folder's main title, like for instance the novel title on the cover page. When building
-   the manuscript, this will use a different styling.
-
-``##! Title Text``
-   This tells the build tool to not assign a chapter number to this chapter title if automatic
-   chapter numbers are being used. Such titles are useful for prologues and epilogues for instance.
-   See :ref:`a_struct_heads_unnum` for more details.
-
-``###! Title Text``
-   This is an alternative scene heading that can be formatted differently in the **Manuscript
-   Build** tool. It is intended for separating "soft" and "hard" scene breaks. Aside from this, it
-   behaves identically to a regular scene heading. See :ref:`a_struct_heads_scenes` for more
-   details.
-
-.. note::
-
-   The space after the ``#`` or ``!`` character is mandatory. The syntax highlighter will change
-   colour and font size when the heading is correctly formatted.
-
-
 .. _a_fmt_text:
 
 Text Paragraphs
 ===============
 
-A text paragraph is indicated by a blank line. That is, you need two line breaks to separate two
-fragments of text into two paragraphs. Single line breaks are treated as line breaks within a
-paragraph.
-
-In addition, the editor supports a few additional types of white spaces:
-
-* A non-breaking space can be inserted with :kbd:`Ctrl+K`, :kbd:`Space`.
-* Thin spaces are also supported, and can be inserted with :kbd:`Ctrl+K`, :kbd:`Shift+Space`.
-* Non-breaking thin space can be inserted with :kbd:`Ctrl+K`, :kbd:`Ctrl+Space`.
-
-These are all insert features, and the **Insert** menu has more. The keyboard shortcuts for them
-are also listed in :ref:`a_kb_ins`.
-
-Non-breaking spaces are highlighted by the syntax highlighter with an alternate coloured
-background, depending on the selected theme.
-
-.. tip::
-
-   Non-breaking spaces are for instance the correct type of space to separate a number from its
-   unit. Generally, non-breaking spaces are used to prevent line wrapping algorithms from adding
-   line breaks where they shouldn't.
-
-.. note::
-
-   You should not manually apply text indentation in your paragraphs in the editor. These can be
-   added automatically in the **Manuscript Build** tool if you want to have them in the manuscript.
-   Each new paragraph should be separated from the previous content by an empty line and with no
-   indentation.
-
-
 .. _a_fmt_emph:
 
 Text Emphasis with Markdown
 ===========================
-
-A minimal set of Markdown text emphasis styles are supported for text paragraphs.
-
-``_text_``
-   The text is rendered as emphasised text (italicised).
-
-``**text**``
-   The text is rendered as strongly emphasised text (bold).
-
-``~~text~~``
-   Strike through text.
-
-In Markdown guides it is often recommended to differentiate between strong emphasis and emphasis
-by using ``**`` for strong and ``_`` for emphasis, although Markdown generally also supports ``__``
-for strong and ``*`` for emphasis. However, since the differentiation makes the highlighting and
-conversion significantly simpler and faster, in novelWriter this is a rule, not just a
-recommendation.
-
-In addition, the following rules apply:
-
-1. The emphasis and strike through formatting tags do not allow spaces between the words and the
-   tag itself. That is, ``**text**`` is valid, ``**text **`` is not.
-2. More generally, the delimiters must be on the outer edge of words. That is, ``some **text in
-   bold** here`` is valid, ``some** text in bold** here`` is not.
-3. If using both ``**`` and ``_`` to wrap the same text, the underscore must be the **inner**
-   wrapper. This is due to the underscore also being a valid word character, so if they are on the
-   outside, they violate rule 2.
-4. Text emphasis does not span past line breaks. If you need to add emphasis to multiple lines or
-   paragraphs, you must apply it to each of them in turn.
-5. Text emphasis can only be used in comments and paragraphs. Headings and meta data tags don't
-   allow for formatting, and any formatting markup will be rendered as-is.
-
-.. tip::
-
-   novelWriter supports standard escape syntax for the emphasis markup characters in case the
-   editor misunderstands your intended usage of them. That is, ``\*``, ``\_`` and ``\~`` will
-   generate a plain ``*``, ``_`` and ``~``, respectively, without interpreting them as part of the
-   markup.
 
 
 .. _a_fmt_shortcodes:

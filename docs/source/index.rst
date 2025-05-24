@@ -40,12 +40,27 @@ storage for robustness.
    :hidden:
 
    usage/introduction
-   usage/folders_and_documents
+   usage/organising_project
    usage/chapters_and_scenes
    usage/basic_formatting
    usage/comments
    usage/tags_and_references
    usage/alignment_and_indent
+   usage/advanced_formatting
+
+.. toctree::
+   :caption: The Manuscript Tool
+   :hidden:
+
+   manuscript/introduction
+
+.. toctree::
+   :caption: Additional Features
+   :hidden:
+
+   features/introduction
+   features/shortcuts
+   features/breaks_and_spaces
 
 .. toctree::
    :maxdepth: 1

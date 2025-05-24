@@ -50,82 +50,6 @@ option from the **New Project** form.
 Project Structure
 =================
 
-Projects are structured into a set of top level folders called "Root Folders". They are visible in
-the project tree at the left side of the main window.
-
-The :term:`novel documents` go into a root folder of type **Novel**. :term:`Project notes` go into
-the other root folders. These other root folder types are intended for your notes on the various
-elements of your story. Using them is of course entirely optional.
-
-A new project may not have all of the root folders present, but you can add the ones you want from
-the project tree tool bar.
-
-Each root folder has one or more :term:`reference` :term:`keyword` associated with it that is used
-to reference them from other documents and notes. The intended usage of each type of root folder is
-listed below. However, aside from the **Novel** folder, no restrictions are applied by the
-application on what you put in them. You can use them however you want.
-
-The root folder system is closely connected to how the Tags and References system works. For more
-details, see the :ref:`a_references` chapter.
-
-
-Root Folder Types
------------------
-
-**Novel**
-   This is the root folder type for text that goes into the final novel or novels. This class of
-   documents have other rules and features than the project notes. See :ref:`a_struct` for more
-   details.
-
-**Plot**
-   This is the root folder type where main plots can be outlined. It is optional, but adding at
-   least brief notes can be useful in order to tag plot elements for the **Outline View**. Tags in
-   this folder can be references using the ``@plot`` keyword.
-
-**Characters**
-   Character notes go in this root folder type. These are especially important if you want to use
-   the **Outline View** to see which character appears where, which part of the story is told from
-   a specific character's point-of-view, or focusing on a particular character's storyline.
-
-   The character names can also be inserted into for instance chapter titles when you create your
-   manuscript. Tags in this type of folder can be referenced using the ``@pov`` keyword for
-   point-of-view characters, ``@focus`` for a focus character, or the ``@char`` keyword for any
-   other character present.
-
-**Locations**
-   The locations folder type is for various scene locations that you want to track. Tags in this
-   folder can be references using the ``@location`` keyword.
-
-**Timeline**
-   If the story has multiple plot timelines or jumps in time within the same plot, this folder type
-   can be used to track this. Tags in this type of folder can be references using the ``@time``
-   keyword.
-
-**Objects**
-   Important objects in the story, for instance physical objects that change hands often, can be
-   tracked here. Tags in this type of folder can be references using the ``@object`` keyword.
-
-**Entities**
-   Does your plot have many powerful organisations or companies? Or other entities that are part of
-   the plot? They can be organised here. Tags in this type of folder can be references using the
-   ``@entity`` keyword.
-
-**Custom**
-   The custom root folder type can be used for tracking anything else not covered by the above
-   options. Tags in this folder type can be references using the ``@custom`` keyword.
-
-The root folders are closely tied to the tags and reference system. Each folder type corresponds to
-categories of tags that can be used to reference them. For more information about the tags listed,
-see :ref:`a_references_references`.
-
-There is also a ``@mention`` keyword that can be used to reference any tag.
-See :ref:`a_references_references` for more details.
-
-.. note::
-
-   You can rename root folders to whatever you want. However, this doesn't change the reference
-   keyword or what they do.
-
 
 .. _a_proj_roots_del:
 
@@ -145,33 +69,11 @@ A document or a folder can be moved to trash from the **Project** menu, or by pr
 Archived Documents
 ------------------
 
-If you don't want to delete a document, or put it in the **Trash** folder where it may be deleted
-accidentally, but still want it out of your main project tree, you can create an **Archive** root
-folder instead and move it there. It has the same effect as moving it to **Trash**, but it is safe
-from deletion.
-
-You can drag any document to this folder and preserve its settings. The document will always be
-excluded from the **Build Manuscript** tool. It is also removed from the :term:`project index`, so
-the tags and references defined in it will not show up anywhere else.
-
 
 .. _a_proj_roots_dirs:
 
 Using Folders in the Project Tree
 ---------------------------------
-
-Regular folders, those that are not root folders, have no structural significance to the project.
-When novelWriter is processing the documents in a project, like for instance when you create a
-manuscript from it, these folders are ignored. Only the order of the documents themselves matter.
-
-The folders are there purely as a way for you to organise the documents in meaningful sections and
-to be able to collapse and hide them in the project tree when you're not working on those
-documents.
-
-In addition to using folders. it is also possible to add child documents to other documents. This
-is particularly  useful when you create chapters and scenes. If you add separate scene documents,
-you should also  add separate chapter documents, even if they only contain a chapter heading. You
-can then add scene documents as child items to the chapters.
 
 
 .. _a_proj_roots_orphaned:
