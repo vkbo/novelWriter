@@ -3,15 +3,16 @@ novelWriter – GUI Document Editor
 =================================
 
 File History:
-Created:   2018-09-29 [0.0.1] GuiDocEditor
-Created:   2019-04-22 [0.0.1] BackgroundWordCounter
-Created:   2019-09-29 [0.2.1] GuiDocEditSearch
-Created:   2020-04-25 [0.4.5] GuiDocEditHeader
-Rewritten: 2020-06-15 [0.9]   GuiDocEditSearch
-Created:   2020-06-27 [0.10]  GuiDocEditFooter
-Rewritten: 2020-10-07 [1.0b3] BackgroundWordCounter
-Created:   2023-11-06 [2.2b1] MetaCompleter
-Created:   2023-11-07 [2.2b1] GuiDocToolBar
+Created:   2018-09-29 [0.0.1]  GuiDocEditor
+Created:   2019-04-22 [0.0.1]  BackgroundWordCounter
+Created:   2019-09-29 [0.2.1]  GuiDocEditSearch
+Created:   2020-04-25 [0.4.5]  GuiDocEditHeader
+Rewritten: 2020-06-15 [0.9]    GuiDocEditSearch
+Created:   2020-06-27 [0.10]   GuiDocEditFooter
+Rewritten: 2020-10-07 [1.0b3]  BackgroundWordCounter
+Created:   2023-11-06 [2.2b1]  MetaCompleter
+Created:   2023-11-07 [2.2b1]  GuiDocToolBar
+Extended:  2025-05-18 [2.7rc1] CommandCompleter
 
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
@@ -55,7 +56,9 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import (
     decodeMimeHandles, fontMatcher, minmax, qtAddAction, qtLambda, transferCase
 )
-from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
+from novelwriter.constants import (
+    nwConst, nwKeyWords, nwLabels, nwShortcode, nwStats, nwUnicode, trStats
+)
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
     nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
@@ -147,7 +150,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._autoReplace = TextAutoReplace()
 
         # Completer
-        self._completer = MetaCompleter(self)
+        self._completer = CommandCompleter(self)
         self._completer.complete.connect(self._insertCompletion)
 
         # Create Custom Document
@@ -321,6 +324,7 @@ class GuiDocEditor(QPlainTextEdit):
         """
         # Auto-Replace
         self._autoReplace.initSettings()
+        self.docFooter.initSettings()
 
         # Reload spell check and dictionaries
         SHARED.updateSpellCheckLanguage()
@@ -1076,13 +1080,16 @@ class GuiDocEditor(QPlainTextEdit):
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
-            if text.startswith("@") and added + removed == 1:
+            if text and text[0] in "@%" and added + removed == 1:
                 # Only run on single character changes, or it will trigger
                 # at unwanted times when other changes are made to the document
                 cursor = self.textCursor()
                 bPos = cursor.positionInBlock()
                 if bPos > 0 and (viewport := self.viewport()):
-                    show = self._completer.updateText(text, bPos)
+                    if text[0] == "@":
+                        show = self._completer.updateMetaText(text, bPos)
+                    else:
+                        show = self._completer.updateCommentText(text, bPos)
                     point = self.cursorRect().bottomRight()
                     self._completer.move(viewport.mapToGlobal(point))
                     self._completer.setVisible(show)
@@ -1233,7 +1240,8 @@ class GuiDocEditor(QPlainTextEdit):
         """Process the word counter's finished signal."""
         if self._docHandle and self._nwItem:
             logger.debug("Updating word count")
-            needsRefresh = wCount != self._nwItem.wordCount
+            mCount = cCount if CONFIG.useCharCount else wCount
+            needsRefresh = mCount != self._nwItem.mainCount
             self._nwItem.setCharCount(cCount)
             self._nwItem.setWordCount(wCount)
             self._nwItem.setParaCount(pCount)
@@ -1241,7 +1249,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self._nwItem.notifyToRefresh()
                 if not self.textCursor().hasSelection():
                     # Selection counter should take precedence (#2155)
-                    self.docFooter.updateWordCount(wCount, False)
+                    self.docFooter.updateMainCount(mCount, False)
         return
 
     @pyqtSlot()
@@ -1254,7 +1262,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self._timerSel.start()
         else:
             self._timerSel.stop()
-            self.docFooter.updateWordCount(0, False)
+            self.docFooter.updateMainCount(0, False)
         return
 
     @pyqtSlot()
@@ -1271,8 +1279,7 @@ class GuiDocEditor(QPlainTextEdit):
     def _updateSelCounts(self, cCount: int, wCount: int, pCount: int) -> None:
         """Update the counts on the counter's finished signal."""
         if self._docHandle and self._nwItem:
-            logger.debug("User selected %d words", wCount)
-            self.docFooter.updateWordCount(wCount, True)
+            self.docFooter.updateMainCount(cCount if CONFIG.useCharCount else wCount, True)
             self._timerSel.stop()
         return
 
@@ -2070,13 +2077,13 @@ class GuiDocEditor(QPlainTextEdit):
         return
 
 
-class MetaCompleter(QMenu):
-    """GuiWidget: Meta Completer Menu
+class CommandCompleter(QMenu):
+    """GuiWidget: Command Completer Menu
 
     This is a context menu with options populated from the user's
-    defined tags. It also helps to type the meta data keyword on a new
-    line starting with an @. The updateText function should be called on
-    every keystroke on a line starting with @.
+    defined tags and keys. It also helps to type the meta data keyword
+    on a new line starting with @ or %. The update functions should be
+    called on every keystroke on a line starting with @ or %.
     """
 
     complete = pyqtSignal(int, int, str)
@@ -2085,7 +2092,7 @@ class MetaCompleter(QMenu):
         super().__init__(parent=parent)
         return
 
-    def updateText(self, text: str, pos: int) -> bool:
+    def updateMetaText(self, text: str, pos: int) -> bool:
         """Update the menu options based on the line of text."""
         self.clear()
         kw, sep, _ = text.partition(":")
@@ -2093,7 +2100,7 @@ class MetaCompleter(QMenu):
             offset = 0
             length = len(kw.rstrip())
             suffix = "" if sep else ":"
-            options = list(filter(
+            options = sorted(filter(
                 lambda x: x.startswith(kw.rstrip()), nwKeyWords.VALID_KEYS
             ))
         else:
@@ -2105,7 +2112,7 @@ class MetaCompleter(QMenu):
             offset = tPos[index] if lookup else pos
             length = len(lookup)
             suffix = ""
-            options = list(filter(
+            options = sorted(filter(
                 lambda x: lookup in x.lower(), SHARED.project.index.getClassTags(
                     nwKeyWords.KEY_CLASS.get(kw.strip())
                 )
@@ -2114,12 +2121,56 @@ class MetaCompleter(QMenu):
         if not options:
             return False
 
-        for value in sorted(options):
+        for value in options:
             rep = value + suffix
             action = qtAddAction(self, value)
             action.triggered.connect(qtLambda(self._emitComplete, offset, length, rep))
 
         return True
+
+    def updateCommentText(self, text: str, pos: int) -> bool:
+        """Update the menu options based on the line of text."""
+        self.clear()
+        cmd, sep, _ = text.partition(":")
+        if pos <= len(cmd):
+            clean = text[1:].lstrip()[:6].lower()
+            if clean[:6] == "story.":
+                pre, _, key = cmd.partition(".")
+                offset = len(pre) + 1
+                length = len(key)
+                suffix = "" if sep else ": "
+                options = sorted(filter(
+                    lambda x: x.startswith(key.rstrip()),
+                    SHARED.project.index.getStoryKeys(),
+                ))
+            elif clean[:5] == "note.":
+                pre, _, key = cmd.partition(".")
+                offset = len(pre) + 1
+                length = len(key)
+                suffix = "" if sep else ": "
+                options = sorted(filter(
+                    lambda x: x.startswith(key.rstrip()),
+                    SHARED.project.index.getNoteKeys(),
+                ))
+            elif pos < 12:
+                offset = 0
+                length = len(cmd.rstrip())
+                suffix = ""
+                options = list(filter(
+                    lambda x: x.startswith(cmd.rstrip()),
+                    ["%Synopsis: ", "%Short: ", "%Story", "%Note"],
+                ))
+            else:
+                return False
+
+            if options:
+                for value in options:
+                    rep = value + suffix
+                    action = qtAddAction(self, rep.rstrip(":. "))
+                    action.triggered.connect(qtLambda(self._emitComplete, offset, length, rep))
+                return True
+
+        return False
 
     ##
     #  Events
@@ -3045,9 +3096,9 @@ class GuiDocEditFooter(QWidget):
         fPx = int(0.9*SHARED.theme.fontPixelSize)
 
         # Cached Translations
+        self.initSettings()
         self._trLineCount = self.tr("Line: {0} ({1})")
-        self._trWordCount = self.tr("Words: {0} ({1})")
-        self._trSelectCount = self.tr("Words: {0} selected")
+        self._trSelectCount = self.tr("Selected: {0}")
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
@@ -3108,7 +3159,7 @@ class GuiDocEditFooter(QWidget):
         self.updateTheme()
 
         # Initialise Info
-        self.updateWordCount(0, False)
+        self.updateMainCount(0, False)
 
         logger.debug("Ready: GuiDocEditFooter")
 
@@ -3117,6 +3168,13 @@ class GuiDocEditFooter(QWidget):
     ##
     #  Methods
     ##
+
+    def initSettings(self) -> None:
+        """Apply user settings."""
+        self._trMainCount = trStats(nwLabels.STATS_DISPLAY[
+            nwStats.CHARS if CONFIG.useCharCount else nwStats.WORDS
+        ])
+        return
 
     def updateFont(self) -> None:
         """Update the font settings."""
@@ -3162,7 +3220,7 @@ class GuiDocEditFooter(QWidget):
             self._tItem = SHARED.project.tree[self._docHandle]
 
         self.updateInfo()
-        self.updateWordCount(0, False)
+        self.updateMainCount(0, False)
 
         return
 
@@ -3193,15 +3251,15 @@ class GuiDocEditFooter(QWidget):
             )
         return
 
-    def updateWordCount(self, wCount: int, selection: bool) -> None:
-        """Update word counter information."""
-        if selection and wCount:
-            wText = self._trSelectCount.format(f"{wCount:n}")
+    def updateMainCount(self, count: int, selection: bool) -> None:
+        """Update main counter information."""
+        if selection and count:
+            text = self._trSelectCount.format(f"{count:n}")
         elif self._tItem:
-            wCount = self._tItem.wordCount
-            wDiff = wCount - self._tItem.initCount
-            wText = self._trWordCount.format(f"{wCount:n}", f"{wDiff:+n}")
+            count = self._tItem.mainCount
+            diff = count - self._tItem.initCount
+            text = self._trMainCount.format(f"{count:n}", f"{diff:+n}")
         else:
-            wText = self._trWordCount.format("0", "+0")
-        self.wordsText.setText(wText)
+            text = self._trMainCount.format("0", "+0")
+        self.wordsText.setText(text)
         return

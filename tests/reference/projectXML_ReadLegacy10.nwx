@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.5" fileRevision="4" timeStamp="2020-05-28 09:59:15">
+<novelWriterXML appVersion="2.7b1" hexVersion="0x020700b1" fileVersion="1.5" fileRevision="5" timeStamp="2020-05-28 09:59:15">
   <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="0" autoCount="0" editTime="1000">
     <name>Sample Project</name>
     <author>Jay Doh</author>
@@ -35,7 +35,7 @@
       <entry key="i00000a" count="0" red="117" green="0" blue="175" shape="SQUARE">Main</entry>
     </importance>
   </settings>
-  <content items="22" novelWords="0" notesWords="0">
+  <content items="22" novelWords="0" notesWords="0" novelChars="0" notesChars="0">
     <item handle="7031beac91f75" parent="None" root="7031beac91f75" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="s000002" import="i000007">Novel</name>

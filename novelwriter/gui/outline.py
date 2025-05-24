@@ -751,9 +751,13 @@ class GuiOutlineTree(QTreeWidget):
     def _dumpNovelData(self, rootHandle: str | None) -> list[list[str | int]]:
         """Dump all novel data into a table."""
         sLabel = SHARED.project.localLookup("Story Structure")
+        nLabel = SHARED.project.localLookup("Note")
         sKeys = sorted(SHARED.project.index.getStoryKeys())
+        nKeys = sorted(SHARED.project.index.getNoteKeys())
         sMatch = [f"story.{k}" for k in sKeys]
+        nMatch = [f"note.{k}" for k in nKeys]
         sHeaders = [f"{sLabel} ({k})" for k in sKeys]
+        nHeaders = [f"{nLabel} ({k})" for k in nKeys]
 
         data: list[list[str | int]] = [[
             "H",
@@ -777,6 +781,7 @@ class GuiOutlineTree(QTreeWidget):
             trConst(nwLabels.OUTLINE_COLS[nwOutline.MENTION]),
             trConst(nwLabels.OUTLINE_COLS[nwOutline.SYNOP]),
             *sHeaders,
+            *nHeaders,
         ]]
 
         for _, tHandle, sTitle, novIdx in SHARED.project.index.novelStructure(
@@ -784,7 +789,9 @@ class GuiOutlineTree(QTreeWidget):
         ):
             if novIdx.level != "H0" and (nwItem := SHARED.project.tree[tHandle]):
                 refs = SHARED.project.index.getReferences(tHandle, sTitle)
-                story = {k: v for k, v in novIdx.comments.items() if k in sMatch}.values()
+                comments = dict(novIdx.comments.items())
+                story = [comments.get(k, "") for k in sMatch]
+                notes = [comments.get(k, "") for k in nMatch]
                 data.append([
                     novIdx.level,
                     novIdx.title,
@@ -807,6 +814,7 @@ class GuiOutlineTree(QTreeWidget):
                     ", ".join(refs[nwKeyWords.MENTION_KEY]),
                     novIdx.synopsis,
                     *story,
+                    *notes,
                 ])
 
         return data

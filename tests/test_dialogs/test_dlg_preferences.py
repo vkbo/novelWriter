@@ -163,14 +163,17 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
         mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
         prefs.nativeFont.setChecked(True)  # Use OS font dialog
         prefs.guiFontButton.click()
+
     prefs.hideVScroll.setChecked(True)
     prefs.hideHScroll.setChecked(True)
+    prefs.useCharCount.setChecked(True)
 
     assert CONFIG.guiLocale != "en_US"
     assert CONFIG.guiTheme != "default_dark"
     assert CONFIG.guiFont.family() != ""
     assert CONFIG.hideVScroll is False
     assert CONFIG.hideHScroll is False
+    assert CONFIG.useCharCount is False
 
     # Document Style
     prefs.guiSyntax.setCurrentIndex(prefs.guiSyntax.findData("default_dark"))
@@ -178,6 +181,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
         mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
         prefs.nativeFont.setChecked(False)  # Use Qt font dialog
         prefs.textFontButton.click()
+
     prefs.showFullPath.setChecked(False)
     prefs.incNotesWCount.setChecked(False)
 
@@ -344,6 +348,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.guiFont == QFont()
     assert CONFIG.hideVScroll is True
     assert CONFIG.hideHScroll is True
+    assert CONFIG.useCharCount is True
 
     # Document Style
     assert CONFIG.guiSyntax == "default_dark"

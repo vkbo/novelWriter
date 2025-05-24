@@ -224,6 +224,14 @@ def testCoreIndexData_IndexHeading():
         "story.crisis": "It exploded!",
     }
 
+    # Set Note Comment
+    head.setComment(nwComment.NOTE.name, "consitency", "Only explode once")
+    assert head.comments == {
+        "summary": "In the beginning ...",
+        "story.crisis": "It exploded!",
+        "note.consitency": "Only explode once",
+    }
+
     # Set Tag
     head.setTag("Stuff")
     assert head.tag == "stuff"  # Case insensitive
@@ -240,6 +248,7 @@ def testCoreIndexData_IndexHeading():
         "refs": {"stuff": "@object"},
         "summary": "In the beginning ...",
         "story.crisis": "It exploded!",
+        "note.consitency": "Only explode once",
     }
 
     # Unpack KeyError

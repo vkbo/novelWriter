@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.7b1" hexVersion="0x020700b1" fileVersion="1.5" fileRevision="4" timeStamp="2025-05-11 12:42:59">
+<novelWriterXML appVersion="2.7b1" hexVersion="0x020700b1" fileVersion="1.5" fileRevision="5" timeStamp="2025-04-29 22:08:41">
   <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="3" autoCount="2" editTime="4">
     <name>New Project</name>
     <author>Jane Doe</author>
@@ -28,7 +28,7 @@
       <entry key="i000007" count="0" red="220" green="138" blue="221" shape="BLOCK_4">Main</entry>
     </importance>
   </settings>
-  <content items="12" novelWords="173" notesWords="27">
+  <content items="12" novelWords="173" notesWords="27" novelChars="1007" notesChars="133">
     <item handle="0000000000008" parent="None" root="0000000000008" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="s000000" import="i000004">Novel</name>

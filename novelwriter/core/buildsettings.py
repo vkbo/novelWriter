@@ -79,6 +79,7 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "text.includeSynopsis":    (bool, False),
     "text.includeComments":    (bool, False),
     "text.includeStory":       (bool, False),
+    "text.includeNotes":       (bool, False),
     "text.includeKeywords":    (bool, False),
     "text.includeBodyText":    (bool, True),
     "text.ignoredKeywords":    (str, ""),
@@ -146,6 +147,7 @@ SETTINGS_LABELS = {
     "text.includeSynopsis":    QT_TRANSLATE_NOOP("Builds", "Include Synopsis"),
     "text.includeComments":    QT_TRANSLATE_NOOP("Builds", "Include Comments"),
     "text.includeStory":       QT_TRANSLATE_NOOP("Builds", "Include Story Structure"),
+    "text.includeNotes":       QT_TRANSLATE_NOOP("Builds", "Include Manuscript Notes"),
     "text.includeKeywords":    QT_TRANSLATE_NOOP("Builds", "Include Keywords"),
     "text.includeBodyText":    QT_TRANSLATE_NOOP("Builds", "Include Body Text"),
     "text.ignoredKeywords":    QT_TRANSLATE_NOOP("Builds", "Ignore These Keywords"),
@@ -388,7 +390,7 @@ class BuildSettings:
     def setValue(self, key: str, value: T_BuildValue) -> None:
         """Set a specific value for a build setting."""
         if (d := SETTINGS_TEMPLATE.get(key)) and len(d) == 2 and isinstance(value, d[0]):
-            self._changed = value != self._settings[key]
+            self._changed |= (value != self._settings[key])
             self._settings[key] = value
         return
 

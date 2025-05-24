@@ -1877,10 +1877,68 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
     qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(completer, Qt.Key.Key_Escape, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     assert docEditor.getText() == (
         "### Scene One\n\n"
         "@char: Jane\n"
-        "@focus: John"
+        "@focus: John\n"
+    )
+
+    # Send keypresses to the completer object for a comment
+    qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
+    assert len(completer.actions()) == 4
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    assert docEditor.getText() == (
+        "### Scene One\n\n"
+        "@char: Jane\n"
+        "@focus: John\n"
+        "%Synopsis: \n"
+    )
+
+    # Auto-complete story comment
+    SHARED.project.index._itemIndex._cache.story.add("Resolution")
+    qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
+    assert len(completer.actions()) == 4
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, ".", delay=KEY_DELAY)
+    assert len(completer.actions()) == 1
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    assert docEditor.getText() == (
+        "### Scene One\n\n"
+        "@char: Jane\n"
+        "@focus: John\n"
+        "%Synopsis: \n"
+        "%Story.Resolution: \n"
+    )
+
+    # Auto-complete note comment
+    SHARED.project.index._itemIndex._cache.note.add("Consistency")
+    qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
+    assert len(completer.actions()) == 4
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, ".", delay=KEY_DELAY)
+    assert len(completer.actions()) == 1
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    assert docEditor.getText() == (
+        "### Scene One\n\n"
+        "@char: Jane\n"
+        "@focus: John\n"
+        "%Synopsis: \n"
+        "%Story.Resolution: \n"
+        "%Note.Consistency: \n"
     )
 
     # qtbot.stop()
@@ -1957,7 +2015,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     # Open a document and populate it
-    SHARED.project.tree[C.hSceneDoc]._initCount = 0  # type: ignore
+    SHARED.project.tree[C.hSceneDoc]._wordInit = 0  # type: ignore
     SHARED.project.tree[C.hSceneDoc]._wordCount = 0  # type: ignore
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
@@ -1981,7 +2039,6 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     assert threadPool.objectID() == id(docEditor._wCounterDoc)
 
     docEditor._wCounterDoc.run()
-    # docEditor._updateDocCounts(cC, wC, pC)
     assert SHARED.project.tree[C.hSceneDoc]._charCount == cC  # type: ignore
     assert SHARED.project.tree[C.hSceneDoc]._wordCount == wC  # type: ignore
     assert SHARED.project.tree[C.hSceneDoc]._paraCount == pC  # type: ignore
@@ -1993,7 +2050,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     assert threadPool.objectID() == id(docEditor._wCounterSel)
 
     docEditor._wCounterSel.run()
-    assert docEditor.docFooter.wordsText.text() == f"Words: {wC} selected"
+    assert docEditor.docFooter.wordsText.text() == f"Selected: {wC}"
 
     # qtbot.stop()
 

@@ -72,7 +72,7 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     @pyqtSlot(BuildSettings)
     def _testNewSettingsReady(new: BuildSettings):
         nonlocal triggered
-        assert new is build
+        assert new.buildID == build.buildID
         triggered = True
 
     # Capture Apply button
@@ -103,6 +103,7 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
+        bSettings._build._changed = True
         bSettings.close()
 
     assert triggered
@@ -140,6 +141,9 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     bSettings.show()
     bSettings.loadContent()
 
+    sBuild = bSettings._build
+    assert sBuild.buildID == build.buildID
+
     filterTab = bSettings.optTabSelect
     button = bSettings.sidebar._group.button(bSettings.OPT_FILTERS)
     assert button is not None
@@ -153,15 +157,15 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     # Un-toggle note folders
     filterTab.filterOpt._widgets[switchMap["worldRoot"]].setChecked(False)  # World Root
     assert filterTab.optTree.topLevelItemCount() == 3
-    assert C.hWorldRoot in build._skipRoot
+    assert C.hWorldRoot in sBuild._skipRoot
 
     filterTab.filterOpt._widgets[switchMap["charRoot"]].setChecked(False)  # Char Root
     assert filterTab.optTree.topLevelItemCount() == 2
-    assert C.hCharRoot in build._skipRoot
+    assert C.hCharRoot in sBuild._skipRoot
 
     filterTab.filterOpt._widgets[switchMap["plotRoot"]].setChecked(False)  # Plot Root
     assert filterTab.optTree.topLevelItemCount() == 1
-    assert C.hPlotRoot in build._skipRoot
+    assert C.hPlotRoot in sBuild._skipRoot
 
     # Reset Plot and Char
     filterTab.filterOpt._widgets[switchMap["plotRoot"]].setChecked(True)
@@ -170,7 +174,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
 
     # Switch off novel docs
     filterTab.filterOpt._widgets[switchMap["incNovel"]].setChecked(False)
-    assert build.buildItemFilter(SHARED.project) == {
+    assert sBuild.buildItemFilter(SHARED.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -186,7 +190,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
 
     # Switch on note docs
     filterTab.filterOpt._widgets[switchMap["incNotes"]].setChecked(True)
-    assert build.buildItemFilter(SHARED.project) == {
+    assert sBuild.buildItemFilter(SHARED.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -202,7 +206,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
 
     # Switch on inactive docs
     filterTab.filterOpt._widgets[switchMap["incInactive"]].setChecked(True)
-    assert build.buildItemFilter(SHARED.project) == {
+    assert sBuild.buildItemFilter(SHARED.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -220,7 +224,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     filterTab._treeMap[C.hChapterDoc].setSelected(True)
     filterTab._treeMap[C.hSceneDoc].setSelected(True)
     filterTab.includedButton.click()
-    assert build.buildItemFilter(SHARED.project) == {
+    assert sBuild.buildItemFilter(SHARED.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -239,7 +243,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     filterTab._treeMap[hPlotDoc].setSelected(True)  # type: ignore
     filterTab._treeMap[hCharDoc].setSelected(True)  # type: ignore
     filterTab.excludedButton.click()
-    assert build.buildItemFilter(SHARED.project) == {
+    assert sBuild.buildItemFilter(SHARED.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -255,7 +259,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
 
     # Switch on novel docs
     filterTab.filterOpt._widgets[switchMap["incNovel"]].setChecked(True)
-    assert build.buildItemFilter(SHARED.project) == {
+    assert sBuild.buildItemFilter(SHARED.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (True,  FilterMode.FILTERED),  # Now enabled
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -273,7 +277,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     filterTab.optTree.clearSelection()
     filterTab._treeMap[C.hNovelRoot].setSelected(True)
     filterTab.resetButton.click()
-    assert build.buildItemFilter(SHARED.project) == {
+    assert sBuild.buildItemFilter(SHARED.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (True,  FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -294,7 +298,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     filterTab._treeMap[hPlotDoc].setSelected(True)  # type: ignore
     filterTab._treeMap[hCharDoc].setSelected(True)  # type: ignore
     filterTab.resetButton.click()
-    assert build.buildItemFilter(SHARED.project) == {
+    assert sBuild.buildItemFilter(SHARED.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (True,  FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -429,6 +433,8 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
 
     # Edit a Heading
     # ==============
+    sBuild = bSettings._build
+    assert sBuild.buildID == build.buildID
 
     # Create new format of all bits
     headTab.btnChapter.click()
@@ -447,13 +453,13 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     headTab.aInsScAbs.trigger()
     assert headTab.editTextBox.toPlainText() == allFmt
     headTab.btnApply.click()
-    assert build.getStr("headings.fmtChapter") == allFmt
+    assert sBuild.getStr("headings.fmtChapter") == allFmt
 
     # Check complex format
     headTab.btnChapter.click()
     headTab.editTextBox.setPlainText(f"Chapter {nwHeadFmt.CH_NUM}\n{nwHeadFmt.TITLE}\n")
     headTab.btnApply.click()
-    assert build.getStr("headings.fmtChapter") == (
+    assert sBuild.getStr("headings.fmtChapter") == (
         f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}"
     )
 
@@ -461,39 +467,42 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     headTab.btnPart.click()
     headTab.editTextBox.setPlainText(nwHeadFmt.TITLE)
     headTab.btnApply.click()
-    assert build.getStr("headings.fmtPart") == nwHeadFmt.TITLE
+    assert sBuild.getStr("headings.fmtPart") == nwHeadFmt.TITLE
 
     headTab.btnChapter.click()
     headTab.editTextBox.setPlainText(nwHeadFmt.TITLE)
     headTab.btnApply.click()
-    assert build.getStr("headings.fmtChapter") == nwHeadFmt.TITLE
+    assert sBuild.getStr("headings.fmtChapter") == nwHeadFmt.TITLE
 
     headTab.btnUnnumbered.click()
     headTab.editTextBox.setPlainText(nwHeadFmt.TITLE)
     headTab.btnApply.click()
-    assert build.getStr("headings.fmtUnnumbered") == nwHeadFmt.TITLE
+    assert sBuild.getStr("headings.fmtUnnumbered") == nwHeadFmt.TITLE
 
     headTab.btnScene.click()
     headTab.editTextBox.setPlainText(nwHeadFmt.TITLE)
     headTab.btnApply.click()
-    assert build.getStr("headings.fmtScene") == nwHeadFmt.TITLE
+    assert sBuild.getStr("headings.fmtScene") == nwHeadFmt.TITLE
 
     headTab.btnAScene.click()
     headTab.editTextBox.setPlainText(nwHeadFmt.TITLE)
     headTab.btnApply.click()
-    assert build.getStr("headings.fmtAltScene") == nwHeadFmt.TITLE
+    assert sBuild.getStr("headings.fmtAltScene") == nwHeadFmt.TITLE
 
     headTab.btnSection.click()
     headTab.editTextBox.setPlainText(nwHeadFmt.TITLE)
     headTab.btnApply.click()
-    assert build.getStr("headings.fmtSection") == nwHeadFmt.TITLE
+    assert sBuild.getStr("headings.fmtSection") == nwHeadFmt.TITLE
 
     # Check hide switches
     headTab.swtScene.setChecked(True)
     headTab.swtSection.setChecked(True)
     headTab.saveContent()
-    assert build.getBool("headings.hideScene") is True
-    assert build.getBool("headings.hideSection") is True
+    sBuild = bSettings._build
+    assert sBuild.buildID == build.buildID
+
+    assert sBuild.getBool("headings.hideScene") is True
+    assert sBuild.getBool("headings.hideSection") is True
 
     # Finish
     button = bSettings.buttonBox.button(QtDialogClose)
@@ -510,6 +519,8 @@ def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
     build.setValue("text.includeBodyText", False)
     build.setValue("text.includeSynopsis", False)
     build.setValue("text.includeComments", False)
+    build.setValue("text.includeStory", False)
+    build.setValue("text.includeNotes", False)
     build.setValue("text.includeKeywords", False)
     build.setValue("text.ignoredKeywords", "")
 
@@ -530,6 +541,8 @@ def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
     assert fmtTab.incBodyText.isChecked() is False
     assert fmtTab.incSynopsis.isChecked() is False
     assert fmtTab.incComments.isChecked() is False
+    assert fmtTab.incStory.isChecked() is False
+    assert fmtTab.incNotes.isChecked() is False
     assert fmtTab.incKeywords.isChecked() is False
     assert fmtTab.ignoredKeywords.text() == ""
 
@@ -539,6 +552,8 @@ def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
     fmtTab.incBodyText.setChecked(True)
     fmtTab.incSynopsis.setChecked(True)
     fmtTab.incComments.setChecked(True)
+    fmtTab.incStory.setChecked(True)
+    fmtTab.incNotes.setChecked(True)
     fmtTab.incKeywords.setChecked(True)
 
     fmtTab.addNoteHead.setChecked(True)
@@ -550,14 +565,18 @@ def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
 
     # Save values
     fmtTab.saveContent()
+    sBuild = bSettings._build
+    assert sBuild.buildID == build.buildID
 
-    assert build.getBool("text.includeBodyText") is True
-    assert build.getBool("text.includeSynopsis") is True
-    assert build.getBool("text.includeComments") is True
-    assert build.getBool("text.includeKeywords") is True
-    assert build.getStr("text.ignoredKeywords") in ("@custom, @object", "@object, @custom")
+    assert sBuild.getBool("text.includeBodyText") is True
+    assert sBuild.getBool("text.includeSynopsis") is True
+    assert sBuild.getBool("text.includeComments") is True
+    assert sBuild.getBool("text.includeStory") is True
+    assert sBuild.getBool("text.includeNotes") is True
+    assert sBuild.getBool("text.includeKeywords") is True
+    assert sBuild.getStr("text.ignoredKeywords") in ("@custom, @object", "@object, @custom")
 
-    assert build.getBool("text.addNoteHeadings") is True
+    assert sBuild.getBool("text.addNoteHeadings") is True
 
     # Finish
     button = bSettings.buttonBox.button(QtDialogClose)
@@ -615,15 +634,17 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
 
     # Save values
     fmtTab.saveContent()
+    sBuild = bSettings._build
+    assert sBuild.buildID == build.buildID
 
-    assert build.getStr("format.textFont") == testFont.toString()
-    assert build.getFloat("format.lineHeight") == 1.15
+    assert sBuild.getStr("format.textFont") == testFont.toString()
+    assert sBuild.getFloat("format.lineHeight") == 1.15
 
-    assert build.getBool("format.justifyText") is True
-    assert build.getBool("format.stripUnicode") is True
-    assert build.getBool("format.replaceTabs") is True
-    assert build.getBool("format.keepBreaks") is False
-    assert build.getBool("format.showDialogue") is True
+    assert sBuild.getBool("format.justifyText") is True
+    assert sBuild.getBool("format.stripUnicode") is True
+    assert sBuild.getBool("format.replaceTabs") is True
+    assert sBuild.getBool("format.keepBreaks") is False
+    assert sBuild.getBool("format.showDialogue") is True
 
     # Check that the font dialog doesn't fail
     with monkeypatch.context() as mp:
@@ -674,10 +695,12 @@ def testToolBuildSettings_FormatFirstLineIndent(monkeypatch, qtbot, nwGUI):
 
     # Save values
     fmtTab.saveContent()
+    sBuild = bSettings._build
+    assert sBuild.buildID == build.buildID
 
-    assert build.getBool("format.firstLineIndent") is True
-    assert build.getFloat("format.firstIndentWidth") == 2.0
-    assert build.getBool("format.indentFirstPar") is True
+    assert sBuild.getBool("format.firstLineIndent") is True
+    assert sBuild.getFloat("format.firstIndentWidth") == 2.0
+    assert sBuild.getBool("format.indentFirstPar") is True
 
     # Finish
     button = bSettings.buttonBox.button(QtDialogClose)
@@ -792,15 +815,17 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
 
     # Save values
     fmtTab.saveContent()
+    sBuild = bSettings._build
+    assert sBuild.buildID == build.buildID
 
-    assert build.getStr("doc.pageHeader") == "Stuff"
-    assert build.getInt("doc.pageCountOffset") == 1
-    assert build.getBool("doc.colorHeadings") is False
-    assert build.getBool("doc.scaleHeadings") is False
-    assert build.getBool("doc.boldHeadings") is False
+    assert sBuild.getStr("doc.pageHeader") == "Stuff"
+    assert sBuild.getInt("doc.pageCountOffset") == 1
+    assert sBuild.getBool("doc.colorHeadings") is False
+    assert sBuild.getBool("doc.scaleHeadings") is False
+    assert sBuild.getBool("doc.boldHeadings") is False
 
-    assert build.getBool("html.addStyles") is True
-    assert build.getBool("html.preserveTabs") is True
+    assert sBuild.getBool("html.addStyles") is True
+    assert sBuild.getBool("html.preserveTabs") is True
 
     # Reset header format
     fmtTab.btnPageHeader.click()

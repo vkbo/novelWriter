@@ -53,10 +53,10 @@ class NWItem:
     """
 
     __slots__ = (
-        "_active", "_charCount", "_class", "_cursorPos", "_expanded",
-        "_handle", "_heading", "_import", "_initCount", "_layout", "_name",
+        "_active", "_charCount", "_charInit", "_class", "_cursorPos",
+        "_expanded", "_handle", "_heading", "_import", "_layout", "_name",
         "_order", "_paraCount", "_parent", "_project", "_root", "_status",
-        "_type", "_wordCount",
+        "_type", "_wordCount", "_wordInit",
     )
 
     def __init__(self, project: NWProject, handle: str) -> None:
@@ -81,7 +81,8 @@ class NWItem:
         self._wordCount = 0     # Current word count
         self._paraCount = 0     # Current paragraph count
         self._cursorPos = 0     # Last cursor position
-        self._initCount = 0     # Initial word count
+        self._wordInit  = 0     # Initial character count
+        self._charInit  = 0     # Initial word count
 
         return
 
@@ -165,8 +166,12 @@ class NWItem:
         return self._paraCount
 
     @property
+    def mainCount(self) -> int:
+        return self._charCount if CONFIG.useCharCount else self._wordCount
+
+    @property
     def initCount(self) -> int:
-        return self._initCount
+        return self._wordInit if CONFIG.useCharCount else self._charInit
 
     @property
     def cursorPos(self) -> int:
@@ -257,7 +262,8 @@ class NWItem:
             self._paraCount = 0
             self._cursorPos = 0
 
-        self._initCount = self._wordCount
+        self._wordInit = self._charCount
+        self._charInit = self._wordCount
 
         return True
 
@@ -265,23 +271,24 @@ class NWItem:
     def duplicate(cls, source: NWItem, handle: str) -> NWItem:
         """Make a copy of an item."""
         new = cls(source._project, handle)
-        new._name      = source._name
-        new._parent    = source._parent
-        new._root      = source._root
-        new._order     = source._order
-        new._type      = source._type
-        new._class     = source._class
-        new._layout    = source._layout
-        new._status    = source._status
-        new._import    = source._import
-        new._active    = source._active
-        new._expanded  = source._expanded
-        new._heading   = source._heading
-        new._charCount = source._charCount
-        new._wordCount = source._wordCount
-        new._paraCount = source._paraCount
-        new._cursorPos = source._cursorPos
-        new._initCount = source._initCount
+        new._name       = source._name
+        new._parent     = source._parent
+        new._root       = source._root
+        new._order      = source._order
+        new._type       = source._type
+        new._class      = source._class
+        new._layout     = source._layout
+        new._status     = source._status
+        new._import     = source._import
+        new._active     = source._active
+        new._expanded   = source._expanded
+        new._heading    = source._heading
+        new._charCount  = source._charCount
+        new._wordCount  = source._wordCount
+        new._paraCount  = source._paraCount
+        new._cursorPos  = source._cursorPos
+        new._wordInit = source._wordInit
+        new._charInit = source._charInit
         return new
 
     ##
@@ -428,7 +435,11 @@ class NWItem:
         """
         if self._parent is not None:
             # Only update for child items
-            self.setClass(itemClass)
+            if itemClass != self._class:
+                self.setClass(itemClass)
+                if self._type == nwItemType.FILE:
+                    # Notify the index of the class change
+                    self._project.index.setItemClass(self._handle, itemClass)
 
         if self._layout == nwItemLayout.NO_LAYOUT:
             # If no layout is set, pick one

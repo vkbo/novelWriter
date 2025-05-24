@@ -26,6 +26,7 @@ import pytest
 
 from PyQt6.QtGui import QIcon
 
+from novelwriter import CONFIG
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
@@ -167,6 +168,15 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
     assert item.paraCount == 0
     item.setParaCount(1)
     assert item.paraCount == 1
+
+    # MainCount
+    item.setWordCount(123)
+    item.setCharCount(1234)
+    CONFIG.useCharCount = False
+    assert item.mainCount == 123
+    CONFIG.useCharCount = True
+    assert item.mainCount == 1234
+    CONFIG.useCharCount = False
 
     # CursorPos
     item.setCursorPos(None)

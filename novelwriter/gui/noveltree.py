@@ -80,6 +80,7 @@ class GuiNovelView(QWidget):
         # Function Mappings
         self.setActive = self.novelBar.setActive
         self.getSelectedHandle = self.novelTree.getSelectedHandle
+        self.refreshCurrentTree = self.novelBar.forceRefreshNovelTree
 
         return
 
@@ -209,7 +210,7 @@ class GuiNovelToolBar(QWidget):
         # Refresh Button
         self.tbRefresh = NIconToolButton(self, iSz)
         self.tbRefresh.setToolTip(self.tr("Refresh"))
-        self.tbRefresh.clicked.connect(self._forceRefreshNovelTree)
+        self.tbRefresh.clicked.connect(self.forceRefreshNovelTree)
 
         # More Options Menu
         self.mMore = QMenu(self)
@@ -274,7 +275,7 @@ class GuiNovelToolBar(QWidget):
         self.novelValue.updateTheme()
         self.tbNovel.setVisible(self.novelValue.count() > 1)
 
-        self._forceRefreshNovelTree()
+        self.forceRefreshNovelTree()
 
         return
 
@@ -306,7 +307,7 @@ class GuiNovelToolBar(QWidget):
         self.aLastCol[colType].setChecked(True)
         self.novelView.novelTree.setLastColType(colType)
         if doRefresh:
-            self._forceRefreshNovelTree()
+            self.forceRefreshNovelTree()
             self.novelView.novelTree.resizeColumns()
         return
 
@@ -324,17 +325,21 @@ class GuiNovelToolBar(QWidget):
         return
 
     ##
-    #  Private Slots
+    #  Public Slots
     ##
 
     @pyqtSlot()
-    def _forceRefreshNovelTree(self) -> None:
+    def forceRefreshNovelTree(self) -> None:
         """Rebuild the current tree."""
         if tHandle := self.novelValue.handle:
             self.novelView.setCurrentNovel(tHandle)
             SHARED.project.index.refreshNovelModel(tHandle)
             self._refresh[tHandle] = False
         return
+
+    ##
+    #  Private Slots
+    ##
 
     @pyqtSlot(str)
     def _refreshNovelTree(self, tHandle: str) -> None:

@@ -614,7 +614,8 @@ class Tokenizer(ABC):
                     tStyle |= BlockFmt.JUSTIFY
 
                 if cStyle in (
-                    nwComment.SYNOPSIS, nwComment.SHORT, nwComment.PLAIN, nwComment.STORY
+                    nwComment.SYNOPSIS, nwComment.SHORT, nwComment.PLAIN,
+                    nwComment.STORY, nwComment.NOTE,
                 ):
                     bStyle = COMMENT_STYLE[cStyle]
                     tLine, tFmt = self._formatComment(bStyle, cKey, cText)

@@ -131,6 +131,12 @@ class Index:
         self._novelExtra = extra
         return
 
+    def setItemClass(self, tHandle: str, itemClass: nwItemClass) -> None:
+        """Update the class for all tags of a handle."""
+        logger.info("Updating class for '%s'", tHandle)
+        self._tagsIndex.updateClass(tHandle, itemClass.name)
+        return
+
     ##
     #  Public Methods
     ##
@@ -612,6 +618,10 @@ class Index:
         """Return all story structure keys."""
         return self._itemIndex.allStoryKeys()
 
+    def getNoteKeys(self) -> set[str]:
+        """Return all note comment keys."""
+        return self._itemIndex.allNoteKeys()
+
     def novelStructure(
         self, rootHandle: str | None = None, activeOnly: bool = True
     ) -> Iterable[tuple[str, str, str, IndexHeading]]:
@@ -854,6 +864,15 @@ class TagsIndex:
                 x.get("name", "") for x in self._tags.values() if x.get("class", "") == className
             ]
 
+    def updateClass(self, tHandle: str, className: str) -> None:
+        """Update the class name of an item. This must be called when a
+        document moves to another class.
+        """
+        for entry in self._tags.values():
+            if entry.get("handle") == tHandle:
+                entry["class"] = className
+        return
+
     ##
     #  Pack/Unpack
     ##
@@ -905,11 +924,12 @@ class IndexCache:
     which provides lookup capabilities and caching for shared data.
     """
 
-    __slots__ = ("story", "tags")
+    __slots__ = ("note", "story", "tags")
 
     def __init__(self, tagsIndex: TagsIndex) -> None:
         self.tags: TagsIndex = tagsIndex
         self.story: set[str] = set()
+        self.note: set[str] = set()
         return
 
 
@@ -963,6 +983,10 @@ class ItemIndex:
     def allStoryKeys(self) -> set[str]:
         """Return all story structure keys."""
         return self._cache.story.copy()
+
+    def allNoteKeys(self) -> set[str]:
+        """Return all note comment keys."""
+        return self._cache.note.copy()
 
     def allItemTags(self, tHandle: str) -> list[str]:
         """Get all tags set for headings of an item."""
