@@ -9,9 +9,9 @@ Basic Formatting
 The basic text formatting syntax of novelWriter is based on Markdown_. It is only a subset of the
 Markdown syntax though. Lists, images, and links are not supported.
 
-URLs in the text should automatically be highlighted and become clickable. However, only URLs
-starting with "http" or "https" are recognised. In the editor, you must hold down the :kbd:`Ctrl`
-key when clicking a URL to follow it.
+That said, URLs in the text should automatically be highlighted and become clickable. However, only
+URLs starting with "http" or "https" are recognised. In the editor, you must hold down the
+:kbd:`Ctrl` key when clicking a URL to follow it.
 
 
 .. _docs_usage_basics_paragraphs:
@@ -25,7 +25,7 @@ paragraph.
 
 It is important that you actually follow this rule. You should not, for instance, mimic indented
 paragraphs manually in the editor. This, and a lot of other formatting options that can be
-applied to text paragraphs in the :ref:`Manuscript Tool <docs_ui_manuscript>` depends on paragraphs
+applied to text paragraphs in the :ref:`Manuscript Tool <docs_ui_manuscript>` depend on paragraphs
 being separated by blank lines.
 
 :bdg-success:`Correct`
@@ -85,7 +85,7 @@ In addition, the following rules apply:
 4. Text emphasis does not span past line breaks. If you need to add emphasis to multiple lines or
    paragraphs, you must apply it to each of them in turn.
 5. Text emphasis can only be used in comments and paragraphs. Headings and meta data tags don't
-   allow for formatting, and any formatting markup will be rendered as-is.
+   allow for formatting, and any formatting markup will be displayed as-is.
 
 .. tip::
 

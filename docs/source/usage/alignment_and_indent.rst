@@ -40,7 +40,7 @@ from the edge.
 
    The text editor will not show the alignment and indentation live. But the viewer will show them
    when you open the document there. It will of course also be reflected in the document generated
-   from the manuscript build tool as long as the format supports paragraph alignment.
+   from the **Manuscript Build** tool as long as the format supports paragraph alignment.
 
 
 Alignment with Line Breaks
@@ -62,7 +62,7 @@ the entire paragraph. For the following text, all lines will be centred:
 Alignment with First Line Indent
 ================================
 
-If you have first line indent enabled in your Manuscript build settings, you probably want to
+If you have first line indent enabled in your manuscript build settings, you probably want to
 disable it for text in verses. Adding any alignment tags will cause the first line indent to be
 switched off for that paragraph.
 

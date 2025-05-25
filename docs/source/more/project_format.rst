@@ -72,7 +72,7 @@ should be used only a few places in any given project. These are as follows:
 
 * The formatting of the level one title on the title page must be changed from ``# Title Text`` to
   ``#! Title Text`` in order to retain the previous functionality.
-  See :ref:`docs_usage_headers_levels`.
+  See :ref:`docs_usage_headings_levels`.
 * Any text that was previously centred on the page must be manually centred using the text
   alignment feature. See :ref:`docs_usage_align_indent`.
 
@@ -81,7 +81,7 @@ should be used only a few places in any given project. These are as follows:
 * Since the specific layout for unnumbered chapters has been dropped, such chapters must all use
   the ``##! Chapter Name`` formatting code instead of ``## Chapter Name``. This also includes
   chapters marked by an asterisk: ``## *Chapter Name``, as this feature has also been dropped.
-  See :ref:`docs_usage_headers_levels`.
+  See :ref:`docs_usage_headings_levels`.
 
 **Plain Pages**
 

@@ -4,9 +4,9 @@
 Advanced Formatting
 *******************
 
-Markdown formatting is somewhat limited by default, so novelWriter has some additional formatting
-codes for common use cases. These codes are all based on brackets, and some allow an additional
-value after a colon.
+Standard Markdown formatting is somewhat limited, so novelWriter has some additional formatting
+codes for special use cases. These codes are all based on brackets, and some allow an additional
+value to be set after a colon.
 
 This section covers all these formatting codes.
 
@@ -17,10 +17,11 @@ Formatting with Shortcodes
 ==========================
 
 For basic formatting, like emphasis, you should use the standard Markdown style formatting tags
-descried in :ref:`docs_usage_basics_emphasis`.
+descried in :ref:`docs_usage_basics_emphasis` whenever possible.
 
 For additional formatting options, you can use shortcodes. Shortcodes is a form of in-line codes
-that wrap the section of text to be formatted. Shortcodes can overlap and intersect.
+that wrap the section of text to be formatted. Shortcodes can be nested to apply multiple formats
+to the same piece of text.
 
 These shortcodes are intended for special formatting cases, or more complex cases that cannot be
 solved with simple Markdown-like formatting codes. Available shortcodes are listed below.
@@ -30,13 +31,13 @@ solved with simple Markdown-like formatting codes. Available shortcodes are list
    :widths: 40, 60
    :class: "tight-table"
 
-   "``[b]text[/b]``",     "Text is rendered as bold text."
-   "``[i]text[/i]``",     "Text is rendered as italicised text."
-   "``[s]text[/s]``",     "Text is rendered as strike through text."
-   "``[u]text[/u]``",     "Text is rendered as underlined text."
-   "``[m]text[/m]``",     "Text is rendered as highlighted text."
-   "``[sup]text[/sup]``", "Text is rendered as superscript text."
-   "``[sub]text[/sub]``", "Text is rendered as subscript text."
+   "``[b]text[/b]``",     "Text is displayed as bold text."
+   "``[i]text[/i]``",     "Text is displayed as italicised text."
+   "``[s]text[/s]``",     "Text is displayed as strike through text."
+   "``[u]text[/u]``",     "Text is displayed as underlined text."
+   "``[m]text[/m]``",     "Text is displayed as highlighted text."
+   "``[sup]text[/sup]``", "Text is displayed as superscript text."
+   "``[sub]text[/sub]``", "Text is displayed as subscript text."
    "``[footnote:key]``",  "A reference to a :ref:`footnote comment <docs_usage_comments_footnotes>`."
 
 Unlike Markdown style codes, these can be used anywhere within a paragraph. Even in the middle of a
@@ -65,9 +66,9 @@ You can apply page breaks to partition, chapter and scene headings for novel doc
 places, there are special codes available for this purpose.
 
 Adding more than one line break between paragraphs will **not** increase the space between those
-paragraphs when building the project. To add additional space between paragraphs, add the text
-``[vspace]`` on a line of its own, and the **Manuscript** tool will insert a blank paragraph in its
-place.
+paragraphs when generating a manuscript document. To add additional space between paragraphs, add
+the text ``[vspace]`` on a line of its own, and the **Manuscript Build** tool will insert a blank
+paragraph in its place.
 
 If you need multiple blank paragraphs just add a colon and a number to the above code. For
 instance, writing ``[vspace:3]`` will insert three blank paragraphs.
@@ -78,8 +79,8 @@ the text you wish to start on a new page.
 .. note::
 
    The page break code is applied to the text that follows it. It adds a "page break before" mark
-   to the text when exporting to HTML or Open Document. This means that a ``[new page]`` which has
-   no text following it, it will not result in a page break.
+   to the text when exporting to HTML or Open Document. This means that a ``[new page]`` code which
+   has no text following it will not result in a page break.
 
 :bdg-info:`Example`
 
@@ -94,7 +95,7 @@ the text you wish to start on a new page.
 
    [new page]
 
-   This text will start on a new page if the build format has pages.
+   This text will start on a new page if the build format supports pages.
 
 
 .. _docs_usage_formatting_counts:
@@ -114,7 +115,6 @@ The available codes are:
 
 .. csv-table:: Stats Shortcodes
    :header: "Code", "Description"
-   :widths: 40, 60
    :class: "tight-table"
 
    "``[field:allChars]``",       "Characters"
@@ -132,8 +132,7 @@ The available codes are:
 :bdg-info:`Example`
 
 This is an example cover page. A similar page is automatically generated when you create a new
-project. The Word Count uses a "field" shortcode to insert a count of all words in text paragraphs
-on the cover page.
+project.
 
 .. code-block:: md
 

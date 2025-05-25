@@ -4,9 +4,9 @@
 Tags and References
 *******************
 
-One of the core features of novelWriter is its Tags and References system. This is perhaps one of
-the features that makes novelWriter different from other, similar applications. It is therefore not
-always obvious to new users how this is supposed to work.
+One of the core features of novelWriter is its **Tags and References** system. This is perhaps one
+of the features that makes novelWriter different from other similar applications. It is therefore
+not always obvious to new users how this is supposed to work.
 
 In novelWriter there are no forms or tables to fill in to define characters, locations or other
 elements of your story. Instead, you create documents in one of the root folders for notes. Within
@@ -17,7 +17,7 @@ tag.
 .. tip::
 
    If you find the Tags and Reference system difficult to follow just from reading this chapter,
-   you can create a new project in the **Welcome** dialog's New project form and select "Create an
+   you can create a new project in the **Welcome** dialog's New Project form and select "Create an
    example project" from the "Pre-fill project" option. The example project contains several
    examples of tags and references.
 
@@ -28,8 +28,8 @@ How to Use Tags
 ===============
 
 The structure of your novelWriter project is inferred from the headings within the documents, not
-the documents themselves. See :ref:`docs_usage_headers` for more details. Therefore, metadata is
-also associated with headings, and not the documents directly.
+the documents themselves. See :ref:`docs_usage_headings` for more details. Therefore, metadata is
+also associated with headings, and not the documents themselves.
 
 A "tag" in novelWriter is a word or phrase that you define as belonging to a heading. Tags are set
 by using the ``@tag`` keyword.
@@ -40,27 +40,29 @@ An alternative format of a tag is ``@tag: TagName | Display Name``.
 
 ``tagName`` (Required)
    This is a unique identifier of your choosing. It is the value you use later for making
-   references back to the heading in the document.
+   references back to the heading in the document. The tag must be unique.
 
 ``Display Name`` (Optional)
    This is an optional display name used for the tag. When you build your manuscript, you can for
-   instance insert the point-of-view character name directly into chapter headings. By default, the
+   instance insert the point-of-view character name directly into chapter titles. By default, the
    ``tagName`` value is used in such headings, but if you use a shortened format internally in your
-   project, you can use this to specify a more suitable format for your chapter headings.
+   project, you can use the display name to specify a more suitable format for your chapter title.
 
-You can only set **one** tag per heading, and the tag has to be unique across **all** documents in
-the project.
+.. note::
+
+   You can only set **one** tag per heading, and the tag has to be unique across **all** documents
+   in the project.
 
 After a tag has been defined, it can be referenced in novel documents, or cross-referenced in other
-notes. Tags will also show up in the **Outline View** and in the references panel under the
+notes. Tags will also show up in the **Outline View** and in the **References** panel under the
 document viewer when a document is open in the viewer.
 
 The editor will indicate to you that the keyword is correctly used and that the tag is allowed,
 that is, the tag is unique, by adding a colour highlighting to it. An invalid tag should have a
 wiggly line under it, and will not receive the colour that valid tags do.
 
-The tag is the only part of these notes that novelWriter uses. The rest of the document content is
-there for you to use in whatever way you wish.
+The tag is the only part of notes that novelWriter uses. The rest of the document content is there
+for you to use in whatever way you wish.
 
 .. versionadded:: 2.2
 
@@ -79,7 +81,7 @@ there for you to use in whatever way you wish.
 
 :bdg-info:`Example`
 
-Example of a heading with a tag for a character of the story:
+Example of a note document for a character with a tag set:
 
 .. code-block:: md
 
@@ -176,8 +178,8 @@ editor.
 .. tip::
 
    If you add a reference in the editor to a tag that doesn't yet exist, you can right-click it and
-   select **Create Note for Tag**. This will generate a new note automatically with the new tag
-   defined.
+   select **Create Note for Tag**. This will generate a new note automatically in the correct type
+   of root folder, with the new tag defined.
 
 One note can also reference another note in the same way novel documents do. When the note is
 opened in the document viewer, the references become clickable links, making it easier to follow
@@ -222,7 +224,7 @@ character ``@`` on a new line. It will first suggest tag or reference keywords f
 after the ``:`` has been added, suggest references from the list of tags you have already defined.
 
 You can use the auto-completer to add multiple references with a ``,`` between them, and even type
-new ones. New references can be created by right-clicking on them and selecting **Create Note for
-Tag** from the menu.
+new ones. Notes for new references can be created by right-clicking on them and selecting **Create
+Note for Tag** from the menu.
 
 .. versionadded:: 2.2

@@ -25,7 +25,7 @@ by running:
    python pkgutils.py help
 
 
-.. _a_source_depend:
+.. _docs_technical_source_depend:
 
 Dependencies
 ============
@@ -56,7 +56,7 @@ source, dependencies can still be installed from PyPi with:
    case on for instance Arch Linux.
 
 
-.. _a_source_install:
+.. _docs_technical_source_install:
 
 Build and Install from Source
 =============================
@@ -89,7 +89,7 @@ different:
    pip install --user dist/novelWriter-2.0.7-py3-none-any.whl
 
 
-.. _a_source_i18n:
+.. _docs_technical_source_i18n:
 
 Building the Translation Files
 ==============================
@@ -114,7 +114,7 @@ needed package is called ``qttools5-dev-tools``.
    in the ``i18n`` folder of the source code.
 
 
-.. _a_source_sample:
+.. _docs_technical_source_sample:
 
 Building the Example Project
 ============================
@@ -128,7 +128,7 @@ running:
    python pkgutils.py sample
 
 
-.. _a_source_docs:
+.. _docs_technical_source_docs:
 
 Building the Documentation
 ==========================

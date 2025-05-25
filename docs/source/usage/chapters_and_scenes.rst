@@ -1,4 +1,4 @@
-.. _docs_usage_headers:
+.. _docs_usage_headings:
 
 *******************
 Chapters and Scenes
@@ -8,20 +8,20 @@ Chapters and Scenes
 
 Since novelWriter uses a plain text format, the structure of your novel must follow a certain set
 of simple rules. For documents in a **Novel** type root folder, it is the heading that determines
-if it is a Chapter or a Scene document.
+if the document is a chapter or a scene.
 
-The formatting of headings is based on Markdown_, and a heading is indicated by a line starting
-with the ``#`` character. It accepts from one two four of these. You can use multiple headings in
-the same document, but it is the first heading that determines which icon and information is
-displayed in the project tree.
+The formatting of headings is based on Markdown_. A heading is indicated by a line starting with
+one or more ``#`` characters. It accepts up to four of these. You can use multiple headings in the
+same document, but it is the first heading that determines which icon and information is displayed
+in the project tree.
 
 .. note::
 
-   You can use the same headings for your notes in the other root folders, but they aren't
-   treated as chapters or scenes, so you are free to use them as you want.
+   You can use the same heading levels for your notes in the other root folders, but they aren't
+   treated as chapters or scenes, so there you are free to use them as you want.
 
 
-.. _docs_usage_headers_levels:
+.. _docs_usage_headings_levels:
 
 Heading Levels
 ==============
@@ -33,12 +33,14 @@ Heading Levels
 Four levels of headings are understood for novel documents. You can pick and choose from these as
 you want, but if your story has chapters, you should use these headings to indicate them. If you
 also add scene headings, you have better control of how your scene separators are formatted in your
-manuscript.
+manuscript. The chapter and scenes headings are also displayed in the
+:ref:`Novel View <docs_ui_main_novel>` and :ref:`Outline View <docs_ui_main_outline>`.
 
 ``# Title Text``
    This is a heading level one. This heading indicates the start of a new partition. Partitions are
    for when you want to split your story into "Part 1", "Part 2", etc. You can also choose to use
-   them for splitting the text up into acts, and then hide these headings in your manuscript.
+   them for splitting the text up into acts, and then hide these headings in your manuscript so
+   that they are not included in the output.
 
 ``## Chapter Title``
    This is a heading level two. This heading indicates the start of a new chapter. Chapter numbers
@@ -58,19 +60,20 @@ manuscript.
    chunks, or into separate documents.
 
 For headings level one through three, adding a ``!`` modifies the meaning of the heading. The
-alternative meaning of the heading is only relevant to when you generate your manuscript, but you
-may want to keep the use cases in mind while writing.
+alternative meaning of the heading is only relevant when you generate your manuscript, but you may
+want to keep the use cases in mind while writing.
 
 ``#! Title Text``
    This tells the **Manuscript Build** tool that the level one heading is intended to be used for
    the novel or notes folder's main title, like for instance the novel title on the cover page.
    When building the manuscript, this will use a different styling of the title, which you can
    modify independently from how partition titles are styled.
+   See :ref:`docs_usage_front_back_matter_title` for more details.
 
 ``##! Chapter Title``
    This tells the **Manuscript Build** tool to not assign a chapter number to this chapter title if
    automatic chapter numbers are enabled. Such titles are useful for prologues and epilogues for
-   instance.
+   instance. See :ref:`docs_usage_front_back_matter_unnumbered` for more details.
 
 ``###! Scene Title``
    This is an alternative scene heading that can be formatted differently in the **Manuscript
@@ -84,8 +87,8 @@ documentation.
 
 .. note::
 
-   The space after the ``#`` or ``!`` character is mandatory. The syntax highlighter will change
-   colour and font size when the heading is correctly formatted.
+   The space after the ``#`` or ``!`` character is mandatory. The editor will change colour and
+   font size when the heading is correctly formatted.
 
 Page breaks can be automatically added before titles, partition, chapter and scene headings from
 the **Manuscript Build** tool when you build your project to a format that supports page breaks.

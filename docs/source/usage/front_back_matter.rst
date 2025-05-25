@@ -43,6 +43,9 @@ This is the title page novelWriter generates automatically for a new project as 
 The title is by default centred on the page. You can add more text to the page as you wish, like
 for instance the author's name and details.
 
+The default title page inserts the word count for text only, but you can add other counts too.
+See :ref:`docs_usage_formatting_counts` for more details.
+
 
 .. _docs_usage_front_back_matter_pages:
 
@@ -66,7 +69,6 @@ the build tool to skip these chapters when adding numbers.
 Unnumbered chapters are useful for prologue and epilogue chapters, and also for interlude chapters
 if you use those in your text. There is a separate formatting feature for such chapter titles in
 the **Manuscript Build** tool. See the :ref:`docs_ui_manuscript` page for more details.
-
 
 :bdg-info:`Example`
 

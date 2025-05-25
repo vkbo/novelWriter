@@ -141,7 +141,7 @@ Automatic Numbering
 
 The headings formatter also allows you to automatically insert chapter and scene numbers into your
 heading formats. The automatic chapter number counter will skip all chapter headings marked as
-unnumbered using the heading format described in :ref:`docs_usage_headers_levels`.
+unnumbered using the heading format described in :ref:`docs_usage_headings_levels`.
 
 Scene numbers are mostly intended for use in a draft manuscript. You can either insert absolute
 scene numbers that counts every scene in the novel, or you can insert per-chapter scene numbers
@@ -184,7 +184,7 @@ If you wish to distinguish between so-called soft and hard scene breaks, you can
 alternative scene heading format in your text. You can then give these headings a different
 formatting in the **Headings** settings.
 
-See :ref:`docs_usage_headers_levels` for more info on how to format headings in your text.
+See :ref:`docs_usage_headings_levels` for more info on how to format headings in your text.
 
 
 Output Settings

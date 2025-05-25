@@ -13,12 +13,12 @@ side of the main window.
 
    The **Project Content** tree populated with example documents.
 
-Each line in the project tree shows the label of each item, its word count (or alternatively
-character count), an active/inactive icon (see :ref:`docs_usage_project_active`), and a custom
-status icon (see :ref:`docs_usage_project_status`).
+Each line in the project tree shows the name of each item, its word count (or alternatively
+character count), an icon for :ref:`docs_usage_project_active`, and a custom icon for
+:ref:`docs_usage_project_status` of each item. These latter two are covered alter in this section.
 
-You can add, view and edit the documents in the project tree by right-clicking on them. Some
-features are also located in the buttons along the top next to the **Project Content** label.
+You can add, view and edit documents in the project tree by right-clicking on them. Some features
+are also located in the buttons along the top, next to the **Project Content** label.
 
 
 .. _docs_usage_project_roots:
@@ -27,7 +27,7 @@ How Root Folders Work
 =====================
 
 Projects are structured into a set of top level folders called "Root Folders". They are visible in
-the project tree at the left side of the main window.
+the project tree at the left side of the main window. Each type of root folder has a distinct icon.
 
 The documents that make up your story go into a root folder of type **Novel**. Your notes go into
 the other root folders. These other root folder types are separated into types depending on what
@@ -38,7 +38,7 @@ A new project may not have all of the root folders present, but you can add the 
 the project tree tool bar.
 
 The intended usage of each type of root folder is listed below. However, aside from the **Novel**
-folder, no restrictions are applied by the application on what you put in them. You can use them
+folder, no restrictions are applied by novelWriter on what you put in them. You can use them
 however you want.
 
 
@@ -51,7 +51,7 @@ Root Folder Types
    one novel.
 
    The Novel folder is somewhat special in that it can contain documents for chapters, scenes and
-   story partitions. How this is indicated is covered in the section :ref:`docs_usage_headers`.
+   story partitions. How this is indicated is covered in the section :ref:`docs_usage_headings`.
 
 **Plot** (Notes)
    This is where you can keep notes and outlines of your story plots. Such notes can be
@@ -61,13 +61,13 @@ Root Folder Types
 **Characters** (Notes)
    Character notes go in this root folder type. For your main characters, you may want to make one
    document for each character. For smaller characters you can put multiple into the same document.
-   In your chapters and scenes you can reference these character notes as Point of View or Focus
+   In your chapters and scenes you can reference these character notes as point-of-view or focus
    characters.
 
 **Locations** (Notes)
    The locations where your story takes place can be documented here. This, together with Plot and
-   Characters are the particularly useful story elements to track, and to reference from your
-   chapter and scene documents.
+   Characters are the key story elements to track, and to reference from your chapter and scene
+   documents.
 
 **Timeline** (Notes)
    If the story has multiple plot timelines or jumps in time within the same plot, this folder type
@@ -99,9 +99,9 @@ Root Folder Types
    This folder behaves like you expect. Anything dropped in here can be deleted permanently from
    the project, and the content doesn't show up anywhere else in novelWriter.
 
-The root folders are closely tied to the tags and reference system. Each folder type except
-**Archive** and **Trash** corresponds to one or more categories of tags that can be used to
-reference the content in them. See :ref:`docs_usage_tags_refs` for more details.
+The root folder types are closely tied to the tags and reference system. Each folder type for novel
+and notes corresponds to one or more categories of tags that can be used to reference the content
+in them. See :ref:`docs_usage_tags_refs` for more details.
 
 .. tip::
 
@@ -113,13 +113,12 @@ reference the content in them. See :ref:`docs_usage_tags_refs` for more details.
 Regular Folders
 ===============
 
-Regular folders, those that are not root folders, have no structural significance to the project.
+You can add regular folders anywhere you want in the project. The folders are there purely as a way
+for you to organise the documents in meaningful sections and to be able to collapse and hide them
+in the project tree when you're not working on those documents.
+
 When novelWriter is processing the documents in a project, like for instance when you create a
 manuscript from it, these folders are ignored. Only the order of the documents themselves matter.
-
-The folders are there purely as a way for you to organise the documents in meaningful sections and
-to be able to collapse and hide them in the project tree when you're not working on those
-documents.
 
 
 .. _docs_usage_project_documents:
@@ -128,34 +127,33 @@ Documents
 =========
 
 You can add documents anywhere you want in your project structure. You can even add documents as
-child items of other documents, just like if they were folders. This makes it easy to associate a
-set of scenes with their chapter. You can also do this in your notes, where you for instance may
-have a hierarchy of your locations.
+child items of other documents, just as if they were folders. This makes it easy to associate a set
+of scenes with their chapter. You can also do this in your notes, where you for instance may have a
+hierarchy of your locations.
 
 The name on a document in the project tree is not linked to any headings in the document text.
 Think of the document name as a file name. You can rename a document, or any other item in the
 project, at any time.
-
 
 Documents come in two types:
 
 **Novel Documents**
    These are the documents that make up your story or novel. They can only be added under a root
    folder of type **Novel**. You can technically also add them under **Archive**. See
-   :ref:`docs_usage_headers` for more details about how these documents are handled by novelWriter.
+   :ref:`docs_usage_headings` for more details on how these documents are handled by novelWriter.
 
 **Project Notes**
    These are the documents where you keep your notes. You can add them anywhere in your project,
    including under **Novel** type folders. If you do add them there, they are not treated as a part
    of the story by default.
 
-You can convert between the two types of documents where the types are allowed. You can also
-convert folders into documents, which may sometimes be convenient.
+You can convert between the two types of documents where both types are allowed. You can also
+convert folders into documents, which may sometimes be convenient too.
 
-Another convenient feature is that documents can be split into sub-documents by its containing
-headings, or multiple documents merged into one. This is particularly convenient if you start out
-with larger structural documents, like one containing all chapters and scenes in an act, and then
-split those. See :ref:`docs_ui_split_merge` for more details.
+Another convenient feature is that documents can be split into sub-documents by its headings, or
+multiple documents merged into one. This is particularly useful if you start out with larger
+structural documents, like one containing all chapters and scenes in an act, and then split those
+when you start writing. See :ref:`docs_ui_split_merge` for more details.
 
 
 .. _docs_usage_project_documents_templates:
@@ -163,10 +161,10 @@ split those. See :ref:`docs_ui_split_merge` for more details.
 Document Templates
 ------------------
 
-If you wish to create template documents to be used when creating new project documents, like for
-instance a character note template, you can add a **Templates** root folder to your project. Any
-document added to this root folder will show up in the **Add Item** menu in the project tree
-toolbar. When selected, a new document is created with its content copied from the chosen template.
+If you wish to create template documents to be used when creating new documents, like for instance
+a character note template, you can add a **Templates** root folder to your project. Any document
+added to this root folder will show up in the **Add Item** menu in the project tree toolbar. When
+selected, a new document is created with its content copied from the chosen template.
 
 .. versionadded:: 2.3
 
@@ -176,13 +174,13 @@ toolbar. When selected, a new document is created with its content copied from t
 Active and Inactive Documents
 =============================
 
-A document can be set as "Active" or "Inactive", which alters the icon in the third column. These
-are mostly intended for your convenience as they will indicate whether the document is meant to be
-included in the manuscript or not. You can think of it as a whole document out-take. It is a less
-radical option than to move it to **Archive**.
+A document can be set as "Active" or "Inactive", which alters the icon in the third column of the
+project tree. These are mostly intended for your convenience as they will indicate whether the
+document is meant to be included in the manuscript or not. You can think of an inactive status as a
+whole-document out-take. It allows you to take it out without moving it to **Archive**.
 
-Inactive documents are by default excluded from your manuscript, but you can override this.
-See :ref:`docs_ui_manuscript_selection` for more details.
+Inactive documents are by default excluded from your manuscript, but you can override this if you
+wish. See :ref:`docs_ui_manuscript_selection` for more details.
 
 
 .. _docs_usage_project_status:
@@ -190,9 +188,9 @@ See :ref:`docs_ui_manuscript_selection` for more details.
 Importance and Status
 =====================
 
-Each document or folder in your project can have either a "Status" or "Importance" labels set.
-These are labels and icons that you control and define yourself, and novelWriter doesn't use them
-for anything. You can modify these labels in **Project Settings**.
+Each document or folder in your project can have either a "Status" or "Importance" label set. These
+are labels and icons that you control and define yourself, and novelWriter doesn't use them for
+anything. You can modify these labels in **Project Settings**.
 See :ref:`docs_ui_projects_settings_status` for more details.
 
 The "Status" labels are intended to tag a novel document as for instance a draft or as completed,

@@ -84,6 +84,8 @@ project tree, or by pressing :kbd:`Ctrl+Up` or :kbd:`Ctrl+Down` when they are se
    .. versionadded:: 2.2
 
 
+.. _docs_ui_main_novel:
+
 Novel View and Editor View
 ==========================
 
@@ -124,6 +126,8 @@ meta data collected for that heading.
    in the project tree. However, you can add new headings to existing documents, or change
    references, which will be updated in this view when the document is saved.
 
+
+.. _docs_ui_main_outline:
 
 Novel Outline View
 ==================

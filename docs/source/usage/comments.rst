@@ -8,7 +8,7 @@ You can add comments to your text that are not a part of the story. Regular comm
 for you to add notes to yourself inside the text, which may be useful when you revise your drafts.
 However, there are several types of comments you can use.
 
-This section covers the basic comment types. There are a couple of advanced features that sue
+This section covers the basic comment types. There are a couple of advanced features that use
 comment syntax too, but they are covered later.
 
 
@@ -18,11 +18,12 @@ Plain Comments
 ==============
 
 A plain comment is a line or paragraph that starts with the character ``%`` as its first character.
-You can put them wherever you like in your documents, and you can chose to include or exclude them
+You can put them wherever you like in your documents, and you can choose to include or exclude them
 from your manuscript.
 
 For the most part, novelWriter completely ignores these comments. They are not included in your
-word or character count, and are only displayed in the document viewer panel if you enable them.
+word or character counts either, and are only displayed in the document viewer panel if you enable
+them.
 
 :bdg-info:`Example`
 
@@ -49,9 +50,9 @@ in your manuscript, but they are formatted differently than plain comments.
 
 .. note::
 
-   A summary or description comment can only be used once for each heading as they are considered a
-   description of the content of the text under that heading. If you add two such comments under
-   the same heading, the last one will be used.
+   A summary or description comment can be used once, and only once, for each heading as they are
+   considered a description of the content of the text under that heading. If you add two such
+   comments under the same heading, the last one will be used.
 
 
 Synopsis
@@ -111,9 +112,9 @@ The matching is done with a key that links the two. If you insert a footnote fro
 menu, a unique key is generated for you. Shortcodes in general are covered in more detail in
 :ref:`docs_usage_formatting_shortcodes`.
 
-The insert feature will add the footnote shortcode marker at the position of your cursor in the
-editor panel, and create the associated footnote comment right after the paragraph. It will then
-move the cursor there so you can immediately start typing the footnote text.
+The insert footnote feature will add the footnote shortcode marker at the position of your cursor
+in the editor panel, and create the associated footnote comment right after the paragraph. It will
+then move the cursor there so you can immediately start typing the footnote text.
 
 The footnote comment can be anywhere in the document, so if you wish to move them to, say, the
 bottom of the text, you are free to do so.

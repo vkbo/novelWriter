@@ -25,8 +25,8 @@ It also uses Markdown formatting for defining document headings, which is how yo
 between chapters and scenes.
 
 For those special cases where you need more complex formatting, a set of shortcodes are available.
-To make them easier to use, a dropdown button bar is available in the editor panel with standard
-format buttons. So don't worry. You don't have to learn any codes.
+To make these codes easier to use, a dropdown button bar is available in the editor panel with
+standard format buttons. So don't worry. You don't have to learn any of these codes.
 
 
 Adding Meta Data
@@ -37,12 +37,12 @@ data into your text documents to indicate things like which characters are prese
 scene, whose point of view we're seeing, what location the events take place in, and so on.
 
 Since the editor is plain text, this is done on special lines of text starting with an ``@``
-character. The editor will show an auto-complete menu when to help you write these lines. We will
-talk more about this later.
+character. The editor will show an auto-complete menu to help you write these lines. We will talk
+more about this later.
 
 You can also add your own author's comments in your text, without these comments becoming a part of
 the story itself. A comment line starts with a ``%`` character. There are different types of
-comments too, and an auto-complete menu has suggestions here too. More about this later as well.
+comments, and an auto-complete menu can help you here too. More about this later as well.
 
 .. admonition:: Limitations
 
@@ -50,8 +50,8 @@ comments too, and an auto-complete menu has suggestions here too. More about thi
    available are limited to those relevant for this purpose. It is *not* suitable for technical
    writing. It is also *not* a full-featured Markdown editor.
 
-   It is also not intended as a tool for organising research for writing, and therefore lacks
-   formatting features you may need for this purpose. The notes feature in novelWriter is mainly
-   intended for character profiles and plot outlines. It is recommended to use a proper note taking
-   tool for research. This is anyway more practical as you may use the same research for multiple
-   projects.
+   In addition, novelWriter is not intended as a tool for organising research for writing, and
+   therefore lacks formatting features you may need for this purpose. The notes feature in is
+   mainly intended for character profiles and plot outlines. It is recommended to use a proper
+   note-taking tool for research. This is anyway more practical as you may use the same research
+   for multiple projects.
