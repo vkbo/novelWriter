@@ -32,7 +32,7 @@ storage for robustness.
 .. toctree::
    :hidden:
 
-   Main Page <self>
+   self
    More Documents <https://novelwriter.io/more/>
 
 .. toctree::
