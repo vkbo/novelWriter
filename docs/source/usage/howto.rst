@@ -1,4 +1,4 @@
-.. _docs_more_howto:
+.. _docs_usage_howto:
 
 *************
 Tips & Tricks

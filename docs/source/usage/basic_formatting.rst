@@ -25,7 +25,7 @@ paragraph.
 
 It is important that you actually follow this rule. You should not, for instance, mimic indented
 paragraphs manually in the editor. This, and a lot of other formatting options that can be
-applied to text paragraphs in the :ref:`Manuscript Tool <docs_manuscript>` depends on paragraphs
+applied to text paragraphs in the :ref:`Manuscript Tool <docs_ui_manuscript>` depends on paragraphs
 being separated by blank lines.
 
 :bdg-success:`Correct`

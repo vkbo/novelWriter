@@ -30,7 +30,10 @@ Heading Levels
 
    An illustration of how heading levels correspond to the novel structure.
 
-Four levels of headings are understood for novel documents:
+Four levels of headings are understood for novel documents. You can pick and choose from these as
+you want, but if your story has chapters, you should use these headings to indicate them. If you
+also add scene headings, you have better control of how your scene separators are formatted in your
+manuscript.
 
 ``# Title Text``
    This is a heading level one. This heading indicates the start of a new partition. Partitions are
@@ -40,7 +43,7 @@ Four levels of headings are understood for novel documents:
 ``## Chapter Title``
    This is a heading level two. This heading indicates the start of a new chapter. Chapter numbers
    can be inserted automatically when building the manuscript, so you don't have to do this in the
-   title. See :ref:`docs_manuscript_numbers` for more details.
+   title. See :ref:`docs_ui_manuscript_head_numbers` for more details.
 
 ``### Scene Title``
    This is a heading level three. This heading indicates the start of a new scene. Scene numbers or
@@ -72,13 +75,19 @@ may want to keep the use cases in mind while writing.
 ``###! Scene Title``
    This is an alternative scene heading that can be formatted differently in the **Manuscript
    Build** tool. It is intended for separating "soft" and "hard" scene breaks. Aside from this, it
-   behaves identically to a regular scene heading. See :ref:`docs_features_scene_breaks` for more
-   details.
+   behaves identically to a regular scene heading. See :ref:`docs_ui_manuscript_head_hard_soft`
+   for more details.
 
 The formatting of these headings can be customised quite extensively in the
-:ref:`Manuscript Tool <docs_manuscript>`, which is covered in a separate part of the documentation.
+:ref:`Manuscript Tool <docs_ui_manuscript>`, which is covered in a separate part of the
+documentation.
 
 .. note::
 
    The space after the ``#`` or ``!`` character is mandatory. The syntax highlighter will change
    colour and font size when the heading is correctly formatted.
+
+Page breaks can be automatically added before titles, partition, chapter and scene headings from
+the **Manuscript Build** tool when you build your project to a format that supports page breaks.
+If you want page breaks in other places, you have to specify them manually.
+See :ref:`docs_usage_formatting_breaks` for more details.

@@ -85,6 +85,10 @@ Root Folder Types
    The custom root folder type can be used for tracking anything else not covered by the above
    options.
 
+**Templates**
+   Any document added under this root folder will be made available as template options when
+   creating new documents. See :ref:`docs_usage_project_documents_templates` for more details.
+
 **Archive**
    If you don't want to delete a document, or put it in the **Trash** folder where it may be
    deleted, but still want it out of your main project, you can put it in this folder. The contents
@@ -120,21 +124,41 @@ documents.
 
 .. _docs_usage_project_documents:
 
-Project Documents
-=================
+Documents
+=========
 
-New documents can be created from the toolbar in the project tree, or by pressing :kbd:`Ctrl+N`.
-This will open the create new item menu and let you choose between a number of pre-defined
-documents and folders. You will be prompted for a label for the new item.
+You can add documents anywhere you want in your project structure. You can even add documents as
+child items of other documents, just like if they were folders. This makes it easy to associate a
+set of scenes with their chapter. You can also do this in your notes, where you for instance may
+have a hierarchy of your locations.
 
-You can always rename an item by selecting **Rename Item** from the **Project** menu, or by
-pressing :kbd:`F2` when a document or folder is selected.
+The name on a document in the project tree is not linked to any headings in the document text.
+Think of the document name as a file name. You can rename a document, or any other item in the
+project, at any time.
 
-Other settings for project documents and folders are available from the context menu that you can
-activate by right-clicking on an it in the tree. The **Transform** submenu includes options for
-converting, splitting, or merging documents. See :ref:`docs_ui_split_merge` for more details on
-the latter two.
 
+Documents come in two types:
+
+**Novel Documents**
+   These are the documents that make up your story or novel. They can only be added under a root
+   folder of type **Novel**. You can technically also add them under **Archive**. See
+   :ref:`docs_usage_headers` for more details about how these documents are handled by novelWriter.
+
+**Project Notes**
+   These are the documents where you keep your notes. You can add them anywhere in your project,
+   including under **Novel** type folders. If you do add them there, they are not treated as a part
+   of the story by default.
+
+You can convert between the two types of documents where the types are allowed. You can also
+convert folders into documents, which may sometimes be convenient.
+
+Another convenient feature is that documents can be split into sub-documents by its containing
+headings, or multiple documents merged into one. This is particularly convenient if you start out
+with larger structural documents, like one containing all chapters and scenes in an act, and then
+split those. See :ref:`docs_ui_split_merge` for more details.
+
+
+.. _docs_usage_project_documents_templates:
 
 Document Templates
 ------------------

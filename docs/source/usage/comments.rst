@@ -158,6 +158,6 @@ on your keyboard with your cursor somewhere in the paragraph.
 
    ### Scene
 
-   %~ This text is completely ignored.
+   %~ This text is ignored.
 
    This text is a regular paragraph.

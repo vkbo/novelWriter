@@ -34,10 +34,9 @@ storage for robustness.
 
    Main Page <self>
    More Documents <https://novelwriter.io/more/>
-   howto
 
 .. toctree::
-   :caption: Using novelWriter
+   :caption: Getting Started
    :hidden:
 
    usage/introduction
@@ -48,12 +47,13 @@ storage for robustness.
    usage/tags_and_references
    usage/alignment_and_indent
    usage/advanced_formatting
+   usage/front_back_matter
+   usage/howto
 
 .. toctree::
    :caption: The User Interface
    :hidden:
 
-   user_interface/introduction
    user_interface/projects
    user_interface/editor_viewer
    user_interface/split_and_merge

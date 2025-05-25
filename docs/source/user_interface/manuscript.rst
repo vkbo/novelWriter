@@ -110,8 +110,51 @@ selecting one will insert it at the position of the cursor.
 Any text you add that isn't highlighted in colours will remain in your formatted titles.
 ``{Title}`` will always be replaced by the text in the heading from your documents.
 
+.. csv-table:: Heading Formats
+   :header: "Code", "Description"
+   :class: "tight-table"
+
+   "``{BR}``",             "Insert a line break."
+   "``{Title}``",          "Insert the original title text."
+   "``{Chapter}``",        "Insert a chapter number."
+   "``{Chapter:Word}``",   "Insert a chapter number as a word."
+   "``{Chapter:URoman}``", "Insert a chapter number as an upper case Roman numeral."
+   "``{Chapter:LRoman}``", "Insert a chapter number as an lower case Roman numeral."
+   "``{Scene}``",          "Insert a scene number within the current chapter."
+   "``{Scene:Abs}``",      "Insert a scene number unique to the whole manuscript."
+   "``{Char:POV}``",       "Insert the point-of-view character's :ref:`display name <docs_usage_tags_refs_tags>`."
+   "``{Char:Focus}``",     "Insert the focus character's :ref:`display name <docs_usage_tags_refs_tags>`."
+
 You can preview the result of these format strings by clicking :guilabel:`Apply`, and then clicking
 :guilabel:`Preview` in the **Manuscript Build** tool main window.
+
+
+.. _docs_ui_manuscript_head_numbers:
+
+Automatic Numbering
+^^^^^^^^^^^^^^^^^^^
+
+The headings formatter also allows you to automatically insert chapter and scene numbers into your
+heading formats. The automatic chapter number counter will skip all chapter headings marked as
+unnumbered using the heading format described in :ref:`docs_usage_headers_levels`.
+
+Scene numbers are mostly intended for use in a draft manuscript. You can either insert absolute
+scene numbers that counts every scene in the novel, or you can insert per-chapter scene numbers
+that reset to 1 for each chapter.
+
+:bdg-info:`Example`
+
+This will create a chapter title on the format "Chapter 1: Title Text":
+
+.. code-block:: md
+
+   Chapter {Chapter}: {Title}
+
+This will create a scene title on the format "Scene 1.1: Title Text":
+
+.. code-block:: md
+
+   Scene {Chapter}.{Scene}: {Title}
 
 
 Scene Separators
@@ -127,7 +170,7 @@ the desired separator text as the format. If the format is any piece of static t
 be treated as a separator.
 
 
-.. _docs_ui_manuscript_head_hard:
+.. _docs_ui_manuscript_head_hard_soft:
 
 Hard and Soft Scenes
 ^^^^^^^^^^^^^^^^^^^^
