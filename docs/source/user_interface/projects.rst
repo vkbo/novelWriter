@@ -57,8 +57,8 @@ The **Project Settings** can be accessed from the **Project** menu, or by pressi
 :kbd:`Ctrl+Shift+,`. This will open a dialog box, with a set of tabs.
 
 
-Settings Tab
-------------
+General Settings
+----------------
 
 The **Settings** tab holds the project name, author, and language settings.
 
@@ -77,8 +77,10 @@ menu.
 You can also override the automatic backup setting for the project if you wish.
 
 
-Status and Importance Tabs
---------------------------
+.. _docs_ui_projects_settings_status:
+
+Status and Importance
+---------------------
 
 Each document or folder of type **Novel** can be given a "Status" label accompanied by a coloured
 icon with an optional shape selected from a list of pre-defined shapes. Each document or folder of
@@ -94,7 +96,7 @@ Both status and importance labels can be exported and imported so you can share 
 projects, or define a standard set for all your writing projects. When you import labels to a
 project, they are always added as *new* labels.
 
-See also :ref:`a_ui_tree_status`.
+See also :ref:`docs_usage_project_status`.
 
 .. note::
 
@@ -102,8 +104,8 @@ See also :ref:`a_ui_tree_status`.
    they can be edited.
 
 
-Auto-Replace Tab
-----------------
+Text Auto-Replace
+-----------------
 
 A set of automatically replaced keywords can be added in this tab. The keywords in the left column
 will be replaced by the text in the right column when documents are opened in the viewer. They will

@@ -54,6 +54,7 @@ storage for robustness.
    :caption: The User Interface
    :hidden:
 
+   user_interface/main_window
    user_interface/projects
    user_interface/editor_viewer
    user_interface/split_and_merge
@@ -64,7 +65,6 @@ storage for robustness.
    :caption: Additional Features
    :hidden:
 
-   features/introduction
    features/shortcuts
    features/breaks_and_spaces
    features/story_structure

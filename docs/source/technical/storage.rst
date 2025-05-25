@@ -4,7 +4,49 @@
 How Data is Stored
 ******************
 
+.. _version control: https://en.wikipedia.org/wiki/Version_control
+
 This chapter contains details of how novelWriter stores and handles the project data.
+
+
+Overview
+========
+
+The files of a novelWriter project are stored in a dedicated project folder. The project structure
+is kept in a file at the root of this folder called ``nwProject.nwx``. All the document files and
+associated meta data are stored in other folders below the project folder.
+
+This way of storing data was chosen for several reasons.
+
+Firstly, all the text you add to your project is saved directly to your project folder in separate
+files. Only the project structure and the text you are currently editing is stored in memory at any
+given time, which means there is a smaller risk of losing data if the application or your computer
+crashes.
+
+Secondly, having multiple small files means it is very easy to synchronise them between computers
+with standard file synchronisation tools.
+
+Thirdly, if you use `version control`_ software to track the changes to your project, the file
+formats used for the files are well suited. All the JSON documents have line breaks and indents as
+well, which makes it easier to track them with version control software.
+
+.. note::
+
+   Since novelWriter has to keep track of a bunch of files and folders when a project is open, it
+   may not run well on some virtual file systems. A file or folder must be accessible with exactly
+   the path it was saved or created with. An example where this is not the case is the way Google
+   Drive is mapped on Linux Gnome desktops using gvfs/gio.
+
+.. caution::
+
+   You should not add additional files to the project folder yourself. Nor should you, as a rule,
+   manually edit files within it. If you really must manually edit the text files, e.g. with some
+   automated task you want to perform, you need to rebuild the Project Index when you open
+   the project again.
+
+   Editing text files in the ``content`` folder is less risky as these are just plain text. Editing
+   the main project XML file, however, may make the project file unreadable and you may crash
+   novelWriter and lose project structure information and project settings.
 
 
 Project Structure

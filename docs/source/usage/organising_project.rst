@@ -14,8 +14,8 @@ side of the main window.
    The **Project Content** tree populated with example documents.
 
 Each line in the project tree shows the label of each item, its word count (or alternatively
-character count), an active/inactive icon (see :ref:`docs_features_active`), and a custom status
-icon (see :ref:`docs_features_status`).
+character count), an active/inactive icon (see :ref:`docs_usage_project_active`), and a custom
+status icon (see :ref:`docs_usage_project_status`).
 
 You can add, view and edit the documents in the project tree by right-clicking on them. Some
 features are also located in the buttons along the top next to the **Project Content** label.
@@ -169,3 +169,36 @@ document added to this root folder will show up in the **Add Item** menu in the 
 toolbar. When selected, a new document is created with its content copied from the chosen template.
 
 .. versionadded:: 2.3
+
+
+.. _docs_usage_project_active:
+
+Active and Inactive Documents
+=============================
+
+A document can be set as "Active" or "Inactive", which alters the icon in the third column. These
+are mostly intended for your convenience as they will indicate whether the document is meant to be
+included in the manuscript or not. You can think of it as a whole document out-take. It is a less
+radical option than to move it to **Archive**.
+
+Inactive documents are by default excluded from your manuscript, but you can override this.
+See :ref:`docs_ui_manuscript_selection` for more details.
+
+
+.. _docs_usage_project_status:
+
+Importance and Status
+=====================
+
+Each document or folder in your project can have either a "Status" or "Importance" labels set.
+These are labels and icons that you control and define yourself, and novelWriter doesn't use them
+for anything. You can modify these labels in **Project Settings**.
+See :ref:`docs_ui_projects_settings_status` for more details.
+
+The "Status" labels are intended to tag a novel document as for instance a draft or as completed,
+and the "Importance" labels are intended to tag character notes, or other project notes, as for
+instance a main, major, or minor character or story element.
+
+Whether a document uses a "Status" or "Importance" label depends on which root folder it lives in.
+If it's in a **Novel** type folder, it uses the "Status" label, otherwise it uses an "Importance"
+label.

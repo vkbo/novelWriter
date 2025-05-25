@@ -66,6 +66,8 @@ either by double-clicking or by selecting it and pressing the edit button in the
    the result, you can close the settings.
 
 
+.. _docs_ui_manuscript_selection:
+
 Document Selection
 ------------------
 
@@ -85,6 +87,9 @@ used to reset the override and return control to the filter settings.
 
 In the figure, the green arrow icon and the blue pin icon indicates which documents are included,
 and the red forbidden icon indicates that a document is explicitly excluded.
+
+By default, inactive documents are excluded, but you can override this in the filter settings.
+See :ref:`docs_usage_project_active` for more details.
 
 
 .. _docs_ui_manuscript_head:
