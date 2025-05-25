@@ -1,25 +1,26 @@
 .. _docs_features_story:
 
-************************
-Story Structure Comments
-************************
+**************
+Story Comments
+**************
 
-
-As of version 2.7, story structure annotations using the ``%story`` style of comment is supported.
-To use the feature, make the first word of a comment ``story``, followed by a period, a structure
-term, a colon, a space and the text for that term.
-
-Here's an example:
-
-.. code-block:: md
-
-   %story.term: text
+A special set of comment styles allow for annotating your text with structure information. There
+are two styles of comments available. They are an extension to regular comments as described in
+:ref:`docs_usage_comments`.
 
 .. versionadded:: 2.7
 
 
+Story Structure Comments
+========================
+
+You can annotate story structure by using the ``%Story`` style of comment. To use the feature,
+make the first word of a comment ``Story``, followed by a period, a structure term, a colon, a
+space and the text for that term.
+
+
 Usage
-=====
+-----
 
 The story term can be anything that you want to track in the manuscript. This construct is intended
 to make it easier to extract metadata from a work to perform a structural analysis of the story.
@@ -32,6 +33,8 @@ An example method has been advanced by Shawn Coyne in *The Story Grid*. This met
 story is composed of "beats", and that each beat has an inciting incident, a complication, a
 crisis, and a resolution. One might capture these elements of a beat where a character overcomes
 their fear of giving a speech as:
+
+:bdg-info:`Example`
 
 .. code-block:: md
 
@@ -56,7 +59,7 @@ fast-paced scenes without a break that readers might become fatigued or over-sti
 
 
 Output
-======
+------
 
 The story structure comments can be included in the manuscript, and are formatted similarly to
 the synopsis comments:
@@ -67,3 +70,41 @@ the synopsis comments:
 
 When you export your project data from the Outline View, all story structure terms are added as
 columns to the exported file, which can then be opened in the spread sheet software of your choice.
+
+
+Story Notes
+===========
+
+Story notes are similar to story structure comments, but have no predefined meaning. Essentially
+they are a generalisation of the story structure comment, and the only point of having this
+additional format is to allow you do filter them in and out of your manuscript independently.
+
+You can annotate story notes by using the ``%Note`` style of comment. To use the feature,
+make the first word of a comment ``Note``, followed by a period, a term, a colon, a space and the
+text for the note.
+
+
+Usage
+-----
+
+These notes are free form, but one intended use case is to add consistency annotations to your text
+to remind yourself where you have described something that must be checked against other parts of
+your text later on.
+
+:bdg-info:`Example`
+
+.. code-block:: md
+
+   ### Scene
+
+   %Synopsis: Carol overcomes her fear of giving a speech.
+
+   %Note.consistency: This is the first time in the story Carol gives a speech.
+
+
+Output
+------
+
+Story notes are included in the manuscript in exactly the same way story structure comments are,
+but has a separate inclusion setting in the build settings. They are also included in CSV exports
+from the **Outline View**.

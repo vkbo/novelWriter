@@ -65,9 +65,10 @@ storage for robustness.
    :caption: Additional Features
    :hidden:
 
-   features/shortcuts
+   features/dialogue
    features/breaks_and_spaces
-   features/story_structure
+   features/story_comments
+   features/shortcuts
 
 .. toctree::
    :maxdepth: 1

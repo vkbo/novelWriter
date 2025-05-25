@@ -182,18 +182,3 @@ tricky for languages that use the same symbol for these, like English does.
    If the auto-replace feature changes a symbol when you did not want it to change, pressing
    :kbd:`Ctrl+Z` once after the auto-replacement will undo it without undoing the character
    you typed before it.
-
-
-.. _docs_ui_edit_view_dialogue:
-
-Dialogue Highlighting
-=====================
-
-The editor and viewer can optionally highlight character dialogue in your novel documents. By
-default, this feature is set to display text in double quotes as dialogue. In **Preferences**, you
-can change this to support various other dialogue markers that instead uses dashes to indicate
-dialogue, like those used in Spanish, Portuguese, Polish, etc.
-
-Various styles are supported by changing the settings under "Text Highlighting" in **Preferences**.
-
-It is also possible to include the dialogue highlighting in your manuscripts.

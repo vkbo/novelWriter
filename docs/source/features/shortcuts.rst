@@ -8,6 +8,7 @@ Most features in novelWriter are available as keyboard shortcuts. This is a refe
 shortcuts. Most of them are also listed in the application's user interface.
 
 .. note::
+
    On MacOS, replace :kbd:`Ctrl` with :kbd:`Cmd`.
 
 

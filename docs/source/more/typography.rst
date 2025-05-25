@@ -17,7 +17,7 @@ keyboard shortcuts. See :ref:`docs_features_shortcuts_insert`.
 This chapter provides some additional information on how novelWriter handles these symbols.
 
 
-.. _a_typ_notes:
+.. _docs_more_typographical_symbols:
 
 Special Notes on Symbols
 ========================
@@ -65,6 +65,8 @@ and double straight quotes, and may be rendered similarly by the font, but they 
 codes. Using these correctly will also prevent the auto-replace and dialogue highlighting features
 misunderstanding their meaning in the text.
 
+
+.. _docs_more_typographical_symbols_apostrophe:
 
 Modifier Letter Apostrophe
 --------------------------
