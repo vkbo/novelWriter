@@ -10,11 +10,14 @@ You can at any time build a manuscript, an outline of your notes, or any other t
 from the text in your project. All of this is handled by the **Manuscript Build** tool. You can
 activate it from the sidebar, the **Tools** menu, or by pressing :kbd:`F5`.
 
+.. note::
+
+   The term "Build" in this context means to assemble or generate a single document from a
+   selection of your project documents. You can select between multiple standard document formats.
+
 .. versionadded:: 2.1
 
-   This tool is new for version 2.1. A simpler tool was used for earlier versions. The simpler tool
-   only allows you to define a single set of options for the build, but otherwise had much the same
-   functionality.
+   This tool is new for version 2.1. A simpler tool was used for earlier versions.
 
 
 .. _docs_ui_manuscript_main:
@@ -43,9 +46,9 @@ Outline and Word Counts
 The **Outline** tab on the left lets you navigate the headings in the preview document. It will
 show up to scene level headings for novel documents, and level 2 headings for notes.
 
-A collapsible panel of word and character counts are also available below the preview document.
-These are calculated from the text you have included in the document, and are more accurate counts
-than what's available in the project tree since they are counted *after formatting*.
+A collapsible panel of word and character counts is also available below the preview pane. These
+are calculated from the text you have included in the document, and are more accurate counts than
+what's available in the project tree since they are counted *after formatting*.
 
 For a detailed description on how they are counted, see :ref:`docs_more_counting`.
 
@@ -55,15 +58,15 @@ For a detailed description on how they are counted, see :ref:`docs_more_counting
 Build Settings
 ==============
 
-Each build definition can be edited by opening it in the **Manuscript Build Settings** dialog,
-either by double-clicking or by selecting it and pressing the edit button in the toolbar.
+You can edit a build definition by opening it in the **Manuscript Build Settings** dialog, either
+by double-clicking or by selecting it and pressing the edit button in the toolbar.
 
 .. tip::
 
    You can keep the **Manuscript Build Settings** dialog open while testing the different options,
-   and just hit the :guilabel:`Apply` button. You can test the result of your settings by pressing
-   the :guilabel:`Preview` button in the main **Manuscript Build** window. When you're happy with
-   the result, you can close the settings.
+   and just hit the :guilabel:`Apply` button. You can test the result of your settings change by
+   pressing the :guilabel:`Preview` button in the main **Manuscript Build** window. When you're
+   happy with the result, you can close the settings.
 
 
 .. _docs_ui_manuscript_selection:
@@ -77,16 +80,16 @@ Document Selection
    The **Selections** page of the **Manuscript Build Settings** dialog.
 
 The **Selections** page of the **Manuscript Build Settings** dialog allows you to fine tune which
-documents are included in the build. They are indicated by a green arrow icon in the last column.
-On the right you have some filter options for selecting content of a specific type, and a set of
-switches for which root folders to include.
+documents are included in the build. The included documents are indicated by an icon in the last
+column. On the right you have some filter options for selecting content of a specific type, and a
+set of switches for which root folders to include.
 
 You can override the result of these filters by marking one or more documents and selecting to
 explicitly include or exclude them by using the buttons below the tree view. The last button can be
 used to reset the override and return control to the filter settings.
 
-In the figure, the green arrow icon and the blue pin icon indicates which documents are included,
-and the red forbidden icon indicates that a document is explicitly excluded.
+In the figure, the orange icon and the blue icon indicates which documents are included, and the
+red icon indicates that a document is explicitly excluded.
 
 By default, inactive documents are excluded, but you can override this in the filter settings.
 See :ref:`docs_usage_project_active` for more details.
@@ -139,13 +142,13 @@ You can preview the result of these format strings by clicking :guilabel:`Apply`
 Automatic Numbering
 ^^^^^^^^^^^^^^^^^^^
 
-The headings formatter also allows you to automatically insert chapter and scene numbers into your
-heading formats. The automatic chapter number counter will skip all chapter headings marked as
-unnumbered using the heading format described in :ref:`docs_usage_headings_levels`.
+The headings formatter allows you to automatically insert chapter and scene numbers into your
+headings. The automatic chapter number counter will skip all chapter headings marked as unnumbered
+using the heading format described in :ref:`docs_usage_headings_levels`.
 
 Scene numbers are mostly intended for use in a draft manuscript. You can either insert absolute
 scene numbers that counts every scene in the novel, or you can insert per-chapter scene numbers
-that reset to 1 for each chapter.
+that reset to 1 for each new chapter.
 
 :bdg-info:`Example`
 
@@ -167,12 +170,13 @@ Scene Separators
 
 If you don't want any titles for your scenes (or for your sections if you have them), you can leave
 the formatting boxes empty. If so, an empty paragraph will be inserted between the scenes or
-sections instead, resulting in a gap in the text. You can also switch on the :guilabel:`Hide`
-setting, which will ignore them completely. That is, there won't even be an extra gap inserted.
+sections instead, resulting in a gap in the text. You can also enable the :guilabel:`Hide` setting,
+which will ignore them completely. That is, there won't even be an extra gap inserted.
 
 Alternatively, if you want a separator text between them, like the common ``* * *``, you can enter
 the desired separator text as the format. If the format is any piece of static text, it will always
-be treated as a separator.
+be treated as a separator. A static separator is only inserted between scenes, as opposed to a
+formatted heading which is also inserted before the first scene of a chapter.
 
 
 .. _docs_ui_manuscript_head_hard_soft:
@@ -184,15 +188,17 @@ If you wish to distinguish between so-called soft and hard scene breaks, you can
 alternative scene heading format in your text. You can then give these headings a different
 formatting in the **Headings** settings.
 
-See :ref:`docs_usage_headings_levels` for more info on how to format headings in your text.
+See :ref:`docs_usage_headings_levels` for more info on how to format alternative scene headings in
+your text.
 
 
 Output Settings
 ---------------
 
-The **Content**, **Format** and **Output** pages of the **Manuscript Build Settings** dialog
-control a number of other settings for the output. Some of these only apply to specific output
-formats, which is indicated by the section headings on the settings pages.
+The **Formatting** sections of the **Manuscript Build Settings** dialog control a number of other
+settings for the output. This includes formatting, but also what content is included. You can for
+instance select to include comments, synopsis. tags and reference, and even exclude the body text
+itself.
 
 
 .. _docs_ui_manuscript_build:
@@ -220,14 +226,14 @@ show the build progress, but for small projects it may pass very fast.
 File Formats
 ------------
 
-Currently, four document formats are supported.
+The following document formats are supported:
 
-Open Document Format
+Open Document
    The Build tool can produce either an ``.odt`` file, or an ``.fodt`` file. The latter is just a
    flat version of the document format as a single XML file. Most rich text editors support the
    former, and only a few the latter.
 
-Microsoft Word Document Format
+Microsoft Word Document
    The Microsoft Word Document format writes a single ``.docx`` file. It uses a fairly basic format
    that should be compatible with most rich text editors.
 
@@ -261,8 +267,7 @@ Additional Formats
 ------------------
 
 In addition to the above document formats, the novelWriter HTML and Markup formats can also be
-wrapped in a JSON file. These files will have a meta data entry and a body entry. For HTML, also
-the accompanying CSS styles used by the preview are included.
+wrapped in a JSON file. These files will have a meta data entry and a body entry.
 
 The text body is saved in a two-level list. The outer list contains one entry per document, in the
 order they appear in the project tree. Each document is then split up into a list as well, with one
@@ -283,5 +288,5 @@ on the print dialog.
 
 .. note::
 
-   The paper format should in all cases default to whatever your system default is. If you want to
-   change it, you have to select it from the **Print Preview** dialog.
+   The paper format should default to whatever your system default is. If you want to change it,
+   you have to select it from the **Print Preview** dialog.

@@ -62,7 +62,7 @@ storage for robustness.
    user_interface/statistics
 
 .. toctree::
-   :caption: Additional Features
+   :caption: Other Features
    :hidden:
 
    features/dialogue
@@ -71,8 +71,7 @@ storage for robustness.
    features/shortcuts
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Special Topics
+   :caption: In-Depth Topics
    :hidden:
 
    more/counting
@@ -82,7 +81,6 @@ storage for robustness.
    more/project_format
 
 .. toctree::
-   :maxdepth: 1
    :caption: Technical Topics
    :hidden:
 

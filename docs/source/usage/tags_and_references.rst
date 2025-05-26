@@ -55,7 +55,8 @@ An alternative format of a tag is ``@tag: TagName | Display Name``.
 
 After a tag has been defined, it can be referenced in novel documents, or cross-referenced in other
 notes. Tags will also show up in the **Outline View** and in the **References** panel under the
-document viewer when a document is open in the viewer.
+document viewer when a document is open in the viewer. See :ref:`docs_ui_main_outline` and
+:ref:`docs_ui_edit_view_view_references` for more details.
 
 The editor will indicate to you that the keyword is correctly used and that the tag is allowed,
 that is, the tag is unique, by adding a colour highlighting to it. An invalid tag should have a

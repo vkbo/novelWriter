@@ -20,7 +20,7 @@ This will open the **Welcome** dialog, where you can select the :guilabel:`New` 
 assist you in creating a project. This dialog is also displayed when you start novelWriter.
 
 A novelWriter project requires a dedicated folder for storing its files on the local file system.
-If you're interested in the details, you can have a look at the section
+If you're interested in the details of how projects are stored, you can have a look at the section
 :ref:`docs_technical_storage`.
 
 A list of recently opened projects is maintained, and displayed in the **Welcome** dialog. A
@@ -44,8 +44,8 @@ Template Projects
 
 From the Welcome dialog you can also create a new from another existing project. If you have a
 specific structure you want to use for all your new projects, you can create a dedicated project to
-be used as a template, and select to copy an existing project from the :guilabel:"Prefill Project"
-option from the **New Project** form.
+be used as a template, and select to copy an existing project from the "Prefill Project" option
+from the **New Project** form.
 
 
 .. _docs_ui_projects_settings:
@@ -66,7 +66,7 @@ The **Project Name** can be edited here. It is used for the main window title an
 backup files. So keep in mind that if you do change this setting, the backup file names will change
 too.
 
-You can also change the **Authors** and **Project Language** setting. These are only used when
+You can also change the **Author** and **Project Language** setting. These are only used when
 building the manuscript, for some formats. The language setting is also used when inserting text
 into documents in the viewer, like for instance labels for keywords and special comments.
 
@@ -100,8 +100,7 @@ See also :ref:`docs_usage_project_status`.
 
 .. note::
 
-   The status or importance level currently in use by one or more documents cannot be deleted, but
-   they can be edited.
+   Status or importance level currently in use cannot be deleted, but they can be edited.
 
 
 Text Auto-Replace
@@ -116,6 +115,7 @@ highlighter will add an alternate colour to text matching the syntax, but it doe
 text is in this list.
 
 .. note::
+
    A keyword cannot contain spaces. The angle brackets are added by default, and when used in the
    text are a part of the keyword to be replaced. This is to ensure that parts of the text aren't
    unintentionally replaced by the content of the list.
@@ -130,16 +130,17 @@ An automatic backup system is built into novelWriter. In order to use it, a back
 the backup files are to be stored must be provided in **Preferences**. The path defaults to a
 folder named "Backups" in your home directory.
 
-Backups can be run automatically when a project is closed, which also implies it is run when the
+Backups can run automatically when a project is closed, which also implies it is run when the
 application itself is closed. Backups are date stamped zip files of the project files in the
 project folder (files not strictly a part of the project are ignored). The zip archives are stored
-in a subfolder of the backup path. The subfolder will have the same name as the **Project Name** as
+in a subfolder of the backup path. The subfolder will have the same name as the **Project Name**
 defined in :ref:`docs_ui_projects_settings`.
 
 The backup feature, when configured, can also be run manually from the **Tools** menu. It is also
 possible to disable automated backups for a given project in **Project Settings**.
 
 .. note::
+
    For the backup to be able to run, the **Project Name** must be set in **Project Settings**. This
    value is used to generate the name and path of the backups. Without it, the backup will not run
    at all, but it will produce a warning message.

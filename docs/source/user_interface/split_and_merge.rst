@@ -25,7 +25,7 @@ headings will be split into new documents.
 You are given the option to create a folder for these new documents, and whether or not to create a
 hierarchy of documents. That is, put sections under scenes, and scenes under chapters.
 
-The source document **is not** deleted in the process, but you have the option to let the tool move
+The source document *is not* deleted in the process, but you have the option to let the tool move
 the source document to the **Trash** folder.
 
 
@@ -41,8 +41,8 @@ either **Merge Child Items into Self** and **Merge Child Items into New**. The f
 pull all content of child items and merge them into the parent document, while the second option
 will create a new document in the process.
 
-When merging documents in a folder, you only have the latter process is possible, so only the
-choice **Merge Documents in Folder** is available.
+When merging documents in a folder, only the latter option is possible, so only the choice
+**Merge Documents in Folder** is available.
 
 In either case, the **Merge Documents** dialog will let you exclude documents you don't want to
 include, and it also lets you reorder them if you wish.
