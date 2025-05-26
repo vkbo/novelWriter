@@ -66,7 +66,6 @@ storage for robustness.
    :hidden:
 
    features/dialogue
-   features/breaks_and_spaces
    features/story_comments
    features/shortcuts
 

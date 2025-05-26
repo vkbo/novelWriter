@@ -4,9 +4,9 @@
 Handling Errors
 ***************
 
-In case something goes wrong, novelWriter has a few built-in features to reduce the change your
+In case something goes wrong, novelWriter has a few built-in features to reduce the chance your
 work is lost. In case of a crash, it will also try to save whatever changes you have made before
-existing, if this is at all possible.
+exiting, if this is at all possible.
 
 The storage solution is designed to save each text document independently, so only the document
 you're working on is actually at a risk of losing data in the event of a crash.
@@ -42,7 +42,7 @@ Project Lockfile
 
 To prevent data loss caused by file conflicts when novelWriter projects are synchronised via file
 synchronisation tools, a project lockfile is written to the project storage folder when a project
-is open. If you try to open a project which already has such a file present, you will be presented
+is open. If you try to open a project that already has such a file present, you will be presented
 with a warning, and some information about where else novelWriter thinks the project is also open.
 You will be given the option to ignore this warning, and continue opening the project at your own
 risk.

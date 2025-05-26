@@ -19,12 +19,14 @@ Spell Check Dictionaries
 novelWriter uses Enchant_ as the spell checking tool. Depending on your operating system, it may or
 may not load all installed spell check dictionaries automatically.
 
+
 Linux and MacOS
 ---------------
 
 On Linux and MacOS, you generally only have to install hunspell, aspell or myspell dictionaries on
 your system like you do for other applications. See your distro or OS documentation for how to do
 this. These dictionaries should show up as available spell check languages in novelWriter.
+
 
 Windows
 -------
@@ -91,10 +93,10 @@ folders are created the first time you start novelWriter.
 Once the files are copied there, they should show up in **Preferences** with the label you
 set as ``name`` inside the file.
 
-.. versionadded:: 2.0
-   The ``icontheme`` value was added to GUI themes. Make sure you set this value in existing custom
-   themes. Otherwise, novelWriter will try to guess your icon theme, and may not pick the most
-   suitable one.
+.. note::
+
+   The theme file formats change regularly in new releases. It is up to you to keep custom theme
+   files up to date.
 
 
 Custom GUI and Icons Theme
@@ -112,7 +114,26 @@ A GUI theme ``.conf`` file consists of the following settings:
    url         = https://example.com
    license     = CC BY-SA 4.0
    licenseurl  = https://creativecommons.org/licenses/by-sa/4.0/
-   icontheme   = typicons_light
+
+   [Icons]
+   default         = 100, 100, 100
+   faded           = 100, 100, 100
+   red             = 255,   0,   0
+   orange          = 255, 128,   0
+   yellow          = 255, 255,   0
+   green           =   0, 255,   0
+   aqua            =   0, 255, 255
+   blue            =   0,   0, 255
+   purple          = 255,   0, 255
+
+   [Project]
+   root            =   0, 255, 255
+   folder          = 255, 255,   0
+   file            = 100, 100, 100
+   title           =   0, 255,   0
+   chapter         = 255,   0,   0
+   scene           =   0,   0, 255
+   note            = 255, 255,   0
 
    [Palette]
    window          = 100, 100, 100
@@ -134,23 +155,22 @@ A GUI theme ``.conf`` file consists of the following settings:
    helptext        =   0,   0,   0
    fadedtext       = 128, 128, 128
    errortext       = 255,   0,   0
-   statusnone      = 120, 120, 120
-   statussaved     =   2, 133,  37
-   statusunsaved   = 200,  15,  39
 
-In the Main section you must at least define the ``name`` and ``icontheme`` settings. The
-``icontheme`` settings should correspond to one of the internal icon themes, either
-``typicons_light`` or ``typicons_dark``, or to an icon theme in your custom icons directory. The
-setting must match the icon theme's folder name.
+In the Main section you must at least define the ``name`` settings.
 
 The Palette values correspond to the Qt enum values for ``QPalette::ColorRole``, see the
 `Qt documentation <https://doc.qt.io/qt-6/qpalette.html#ColorRole-enum>`_ for more details. The
 colour values are RGB numbers on the format ``r, g, b`` where each is an integer from ``0`` to
 ``255``. Omitted values are not loaded and will use default values. If the ``helptext`` colour is
 not defined, it is computed as a colour between the ``window`` and ``windowtext`` colour.
+Additional shades of some of the colours are also computed. These are mainly used for 3D effects.
 
 .. versionadded:: 2.5
    The ``fadedtext`` and ``errortext`` theme colour entries were added.
+
+.. versionadded:: 2.7
+   The ``icontheme`` setting was dropped as the icon theme is now its own setting.
+   The ``[Icons]`` and ``[Project]`` sections were added, and the ``status*`` settings removed.
 
 
 Custom Syntax Theme

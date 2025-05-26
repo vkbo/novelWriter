@@ -12,6 +12,7 @@ This chapter describes various ways of running novelWriter directly from the sou
 to build the various components like the translation files and documentation.
 
 .. note::
+
    The text below assumes the command ``python`` corresponds to a Python 3 executable. Python 2 is
    now deprecated, but on many systems the command ``python3`` may be needed instead. Likewise,
    ``pip`` may need to be replaced with ``pip3``.
@@ -22,7 +23,7 @@ by running:
 
 .. code-block:: bash
 
-   python pkgutils.py help
+   python pkgutils.py --help
 
 
 .. _docs_technical_source_depend:
@@ -50,6 +51,7 @@ source, dependencies can still be installed from PyPi with:
    pip install -r requirements.txt
 
 .. note::
+
    On Linux distros, the Qt library is usually split up into multiple packages. In some cases,
    secondary dependencies may not be installed automatically. For novelWriter, the library files
    for rendering the SVG icons may be left out and needs to be installed manually. This is the
@@ -109,6 +111,7 @@ This requires that the Qt Linguist tool is installed on your system. On Ubuntu a
 needed package is called ``qttools5-dev-tools``.
 
 .. note::
+
    If you want to improve novelWriter with translation files for another language, or update an
    existing translation, instructions for how to contribute can be found in the ``README.md`` file
    in the ``i18n`` folder of the source code.

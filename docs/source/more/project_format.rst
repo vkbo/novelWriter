@@ -4,9 +4,6 @@
 Project Format Changes
 **********************
 
-.. _File Format Spec 1.5: _static/fileformatspec15.pdf
-.. _documentation: https://docs.novelwriter.io/
-
 Most of the changes to the file formats over the history of novelWriter have no impact on the
 user side of things. The project files are generally updated automatically. However, some of the
 changes require minor actions from the user.
@@ -17,6 +14,7 @@ where applicable.
 A full project file format specification is available under "More Documents".
 
 .. caution::
+
    When you update a project from one format version to the next, the project can no longer be
    opened by a version of novelWriter prior to the version where the new file format was
    introduced. You will get a notification about any updates to your project file format and will
@@ -87,7 +85,7 @@ should be used only a few places in any given project. These are as follows:
 
 * The layout named "Plain Page" has also been removed. The only feature of this layout was that it
   ensured that the content always started on a fresh page. In the new format, fresh pages can be
-  set anywhere in the text with the ``[NEW PAGE]`` code. See :ref:`docs_usage_formatting_breaks`.
+  set anywhere in the text with the ``[new page]`` code. See :ref:`docs_usage_formatting_breaks`.
 
 
 .. _docs_more_project_formats_1_2:
@@ -98,6 +96,7 @@ Format 1.2 Changes
 This project format was introduced in novelWriter version 0.10.
 
 With this format, the way auto-replace entries were stored in the main project XML file changed.
+Conversion from this format is done automatically.
 
 
 .. _docs_more_project_formats_1_1:
@@ -111,7 +110,8 @@ With this format, the ``content`` folder was introduced in the project storage. 
 novelWriter documents were saved in a series of folders numbered from ``data_0`` to ``data_f``.
 
 It also reduces the number of meta data and cache files. These files are automatically deleted if
-an old project is opened. This was also when the Table of Contents file was introduced.
+an old project is opened. This was also when the Table of Contents file was introduced. Conversion
+from this format is done automatically.
 
 
 .. _docs_more_project_formats_1_0:
