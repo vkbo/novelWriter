@@ -1,16 +1,16 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2024
+# Copyright (C) 2025
 # This file is distributed under the same license as the novelWriter
 # package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: novelWriter 2.6b1\n"
+"Project-Id-Version: novelWriter 2.7rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-21 19:37+0100\n"
-"PO-Revision-Date: 2024-12-26 17:00+0100\n"
+"POT-Creation-Date: 2025-05-27 19:59+0200\n"
+"PO-Revision-Date: 2025-05-29 11:33+0200\n"
 "Last-Translator: \n"
 "Language-Team: fr <LL@li.org>\n"
 "Language: fr\n"
@@ -21,11 +21,11 @@ msgstr ""
 "Generated-By: Babel 2.16.0\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: ../../source/tech_storage.rst:5
+#: ../../source/technical/storage.rst:5
 msgid "How Data is Stored"
 msgstr "Comment les données sont stockées"
 
-#: ../../source/tech_storage.rst:9
+#: ../../source/technical/storage.rst:9
 msgid ""
 "This chapter contains details of how novelWriter stores and handles the "
 "project data."
@@ -33,11 +33,115 @@ msgstr ""
 "Ce chapitre contient des détails sur la manière dont novelWriter stocke "
 "et gère les données du projet."
 
-#: ../../source/tech_storage.rst:13
+#: ../../source/technical/storage.rst:13
+msgid "Overview"
+msgstr "Présentation générale"
+
+#: ../../source/technical/storage.rst:15
+msgid ""
+"The files of a novelWriter project are stored in a dedicated project "
+"folder. The project structure is kept in a file at the root of this "
+"folder called ``nwProject.nwx``. All the document files and associated "
+"meta data are stored in other folders below the project folder."
+msgstr ""
+"Les fichiers d'un projet novelWriter sont stockés dans un dossier dédié "
+"au projet. La structure du projet est conservée dans un fichier à la "
+"racine de ce dossier appelé ``nwProject.nwx``. Tous les fichiers de "
+"documents et les métadonnées associées sont stockés dans d'autres "
+"dossiers sous le dossier du projet."
+
+#: ../../source/technical/storage.rst:19
+msgid "This way of storing data was chosen for several reasons."
+msgstr ""
+"Ce mode de stockage des données a été choisi pour plusieurs raisons."
+
+#: ../../source/technical/storage.rst:21
+msgid ""
+"Firstly, all the text you add to your project is saved directly to your "
+"project folder in separate files. Only the project structure and the "
+"text you are currently editing is stored in memory at any given time, "
+"which means there is a smaller risk of losing data if the application or "
+"your computer crashes."
+msgstr ""
+"Tout d'abord, tout le texte que vous ajoutez à votre projet est "
+"enregistré directement dans le dossier de votre projet, dans des "
+"fichiers séparés. Seule la structure du projet et le texte que vous êtes "
+"en train d'éditer sont stockés en mémoire à un moment donné, ce qui "
+"signifie qu'il y a moins de risque de perdre des données si "
+"l'application ou votre ordinateur tombe en panne."
+
+#: ../../source/technical/storage.rst:26
+msgid ""
+"Secondly, having multiple small files means it is very easy to "
+"synchronise them between computers with standard file synchronisation "
+"tools."
+msgstr ""
+"Deuxièmement, le fait d'avoir plusieurs petits fichiers signifie qu'il "
+"est très facile de les synchroniser entre ordinateurs à l'aide d'outils "
+"de synchronisation de fichiers standard."
+
+#: ../../source/technical/storage.rst:29
+msgid ""
+"Thirdly, if you use `version control`_ software to track the changes to "
+"your project, the file formats used for the files are well suited. All "
+"the JSON documents have line breaks and indents as well, which makes it "
+"easier to track them with version control software."
+msgstr ""
+"Troisièmement, si vous utilisez un logiciel de `contrôle de version`_ "
+"pour suivre les modifications apportées à votre projet, les formats "
+"utilisés pour les fichiers sont bien adaptés. Tous les documents JSON "
+"comportent des sauts de ligne et des retraits, ce qui facilite leur "
+"suivi avec un logiciel de contrôle de version."
+
+#: ../../source/technical/storage.rst:35
+msgid ""
+"Since novelWriter has to keep track of a bunch of files and folders when "
+"a project is open, it may not run well on some virtual file systems. A "
+"file or folder must be accessible with exactly the path it was saved or "
+"created with. An example where this is not the case is the way Google "
+"Drive is mapped on Linux Gnome desktops using gvfs/gio."
+msgstr ""
+"Comme novelWriter doit garder la trace d'un grand nombre de fichiers et "
+"de dossiers lorsqu'un projet est ouvert, il peut ne pas fonctionner "
+"correctement sur certains systèmes de fichiers virtuels. Un fichier ou "
+"un dossier doit être accessible avec exactement le chemin avec lequel il "
+"a été sauvegardé ou créé. Un exemple où ce n'est pas le cas est la façon "
+"dont Google Drive est mappé sur les bureaux Linux Gnome en utilisant "
+"gvfs/gio."
+
+#: ../../source/technical/storage.rst:42
+msgid ""
+"You should not add additional files to the project folder yourself. Nor "
+"should you, as a rule, manually edit files within it. If you really must "
+"manually edit the text files, e.g. with some automated task you want to "
+"perform, you need to rebuild the Project Index when you open the project "
+"again."
+msgstr ""
+"Vous ne devez pas ajouter vous-même des fichiers supplémentaires au "
+"dossier du projet. En règle générale, vous ne devez pas non plus "
+"modifier manuellement les fichiers qui s'y trouvent. Si vous devez "
+"vraiment modifier manuellement les fichiers texte, par exemple dans le "
+"cadre d'une tâche automatisée, vous devez reconstruire l'index du projet "
+"lorsque vous ouvrez à nouveau le projet."
+
+#: ../../source/technical/storage.rst:47
+msgid ""
+"Editing text files in the ``content`` folder is less risky as these are "
+"just plain text. Editing the main project XML file, however, may make "
+"the project file unreadable and you may crash novelWriter and lose "
+"project structure information and project settings."
+msgstr ""
+"L'édition de fichiers texte dans le dossier ``content`` est moins "
+"risquée car il s'agit de texte simple. Cependant, éditer le fichier XML "
+"du projet principal peut rendre le fichier du projet illisible et vous "
+"risquez de planter novelWriter et de perdre les informations sur la "
+"structure et les paramètres du projet."
+
+#: ../../source/technical/storage.rst:53
 msgid "Project Structure"
 msgstr "Structure du projet"
 
-#: ../../source/tech_storage.rst:15
+#: ../../source/technical/storage.rst:55
 msgid ""
 "All novelWriter files are written with utf-8 encoding. Since Python "
 "automatically converts Unix line endings to Windows line endings on "
@@ -54,11 +158,11 @@ msgstr ""
 "travaille sur les mêmes fichiers sur les systèmes d'exploitation Windows "
 "et Unix."
 
-#: ../../source/tech_storage.rst:23
+#: ../../source/technical/storage.rst:63
 msgid "Main Project File"
 msgstr "Fichier principal du projet"
 
-#: ../../source/tech_storage.rst:25
+#: ../../source/technical/storage.rst:65
 msgid ""
 "The project itself requires a dedicated folder for storing its files, "
 "where novelWriter will create its own \"file system\" where the "
@@ -77,7 +181,7 @@ msgstr ""
 "l'exception des données d'index), ainsi qu'un certain nombre de "
 "paramètres liés au projet."
 
-#: ../../source/tech_storage.rst:31
+#: ../../source/technical/storage.rst:71
 msgid ""
 "If this file is lost or corrupted, the structure of the project is lost, "
 "although not the text itself. It is important to keep this file backed "
@@ -88,7 +192,7 @@ msgstr ""
 "soit à l'aide de l'outil de sauvegarde intégré, soit à l'aide de votre "
 "propre solution de sauvegarde."
 
-#: ../../source/tech_storage.rst:35
+#: ../../source/technical/storage.rst:75
 msgid ""
 "The project XML file is indent-formatted, and is suitable for diff tools "
 "and version control since most of the file will stay static, although a "
@@ -101,29 +205,19 @@ msgstr ""
 "section méta à la ligne 2 et que diverses entrées de données méta soient "
 "incrémentées à chaque enregistrement."
 
-#: ../../source/tech_storage.rst:41
+#: ../../source/technical/storage.rst:79
 msgid ""
-"A full project file format specification is available in the online "
-"documentation_."
+"A full project file format specification is available under \"More "
+"Documents\"."
 msgstr ""
 "Une spécification complète du format de fichier du projet est disponible "
-"dans la documentation en ligne_."
+"sous « Plus d'informations »."
 
-#: ../../source/tech_storage.rst:45
-msgid ""
-"A full description of the current file format is available in the :"
-"download:`File Format Spec 1.5 <fileformatspec15.pdf>` document, "
-"available as a PDF."
-msgstr ""
-"Une description complète du format de fichier actuel est disponible dans "
-"le document :download:`File Format Spec 1.5 <fileformatspec15.pdf>`, "
-"disponible au format PDF."
-
-#: ../../source/tech_storage.rst:50
+#: ../../source/technical/storage.rst:83
 msgid "Project Documents"
 msgstr "Documents de projet"
 
-#: ../../source/tech_storage.rst:52
+#: ../../source/technical/storage.rst:85
 msgid ""
 "All the project documents are saved in a subfolder of the main project "
 "folder named ``content``. Each document has a file handle based on a 52 "
@@ -138,7 +232,7 @@ msgstr ""
 "enregistrés avec un nom de fichier assemblé à partir de cet identifiant "
 "et de l'extension ``.nwd``."
 
-#: ../../source/tech_storage.rst:57
+#: ../../source/technical/storage.rst:90
 msgid ""
 "If you wish to find the file system location of a document in the "
 "project, you can either look it up in the project XML file, select "
@@ -156,7 +250,7 @@ msgstr ""
 "du projet, référencés par leur étiquette, et l'endroit où ils sont "
 "sauvegardés."
 
-#: ../../source/tech_storage.rst:63
+#: ../../source/technical/storage.rst:96
 msgid ""
 "The reason for this cryptic file naming is to avoid issues with file "
 "naming conventions and restrictions on different operating systems, and "
@@ -171,7 +265,7 @@ msgstr ""
 "des modifications que vous lui apportez. Ceci est particulièrement utile "
 "lors de l'utilisation d'un système de gestion des versions."
 
-#: ../../source/tech_storage.rst:68
+#: ../../source/technical/storage.rst:101
 msgid ""
 "Each document file contains a plain text version of the text from the "
 "editor. The file can in principle be edited in any text editor, and is "
@@ -186,7 +280,7 @@ msgstr ""
 "encodage utf-8, sinon les caractères unicode risquent d'être altérés "
 "lorsque le fichier est ouvert dans novelWriter."
 
-#: ../../source/tech_storage.rst:73
+#: ../../source/technical/storage.rst:106
 msgid ""
 "Editing these files is generally not recommended. The reason for this is "
 "that the index will not be automatically updated when doing so, which "
@@ -200,7 +294,7 @@ msgstr ""
 "modifiez un fichier de cette manière, vous devez reconstruire l'index "
 "lorsque vous ouvrez le projet dans novelWriter."
 
-#: ../../source/tech_storage.rst:78
+#: ../../source/technical/storage.rst:111
 #, python-format
 msgid ""
 "The first lines of the file may contain some meta data starting with the "
@@ -222,11 +316,11 @@ msgstr ""
 "reste du contenu du fichier, et seront ajoutées la prochaine fois que le "
 "document sera sauvegardé dans novelWriter."
 
-#: ../../source/tech_storage.rst:87
+#: ../../source/technical/storage.rst:120
 msgid "The File Saving Process"
 msgstr "Le processus d'enregistrement des fichiers"
 
-#: ../../source/tech_storage.rst:89
+#: ../../source/technical/storage.rst:122
 msgid ""
 "When saving the project file, or any of the documents, the data is first "
 "saved to a temporary file. If successful, the old data file is then "
@@ -241,11 +335,11 @@ msgstr ""
 "enregistrées ne sont remplacées que lorsque les nouvelles données ont "
 "été enregistrées avec succès sur le support de stockage."
 
-#: ../../source/tech_storage.rst:96
+#: ../../source/technical/storage.rst:129
 msgid "Project Meta Data"
 msgstr "Métadonnées du projet"
 
-#: ../../source/tech_storage.rst:98
+#: ../../source/technical/storage.rst:131
 msgid ""
 "The project folder contains a subfolder named ``meta``, containing a "
 "number of files. The meta folder contains semi-important files. That is, "
@@ -262,7 +356,7 @@ msgstr ""
 "de versions antérieures de novelWriter, car ils n'ont pas tous été des "
 "fichiers JSON dans le passé."
 
-#: ../../source/tech_storage.rst:103
+#: ../../source/technical/storage.rst:136
 msgid ""
 "If you use version control software on your project, you can exclude "
 "this folder, although you may want to track the session log file and the "
@@ -272,11 +366,11 @@ msgstr ""
 "vous pouvez exclure ce dossier, même si vous souhaitez suivre le fichier "
 "journal de la session et la liste des mots personnalisés."
 
-#: ../../source/tech_storage.rst:108
+#: ../../source/technical/storage.rst:141
 msgid "The Project Index"
 msgstr "L'index des projets"
 
-#: ../../source/tech_storage.rst:110
+#: ../../source/technical/storage.rst:143
 msgid ""
 "Between writing sessions, the project index is saved in a JSON file in "
 "``meta/index.json``. This file is not critical. If it is lost, it can be "
@@ -287,7 +381,7 @@ msgstr ""
 "S'il est perdu, il peut être complètement reconstruit à partir de "
 "novelWriter dans le menu **Outils**."
 
-#: ../../source/tech_storage.rst:114
+#: ../../source/technical/storage.rst:147
 msgid ""
 "The index is maintained and updated whenever a document or note is saved "
 "in the editor. It contains all references and tags in documents and "
@@ -300,7 +394,7 @@ msgstr ""
 "les en-têtes dans le projet et le nombre de mots dans chaque section de "
 "l'en-tête."
 
-#: ../../source/tech_storage.rst:118
+#: ../../source/technical/storage.rst:151
 msgid ""
 "The integrity of the index is checked when the file is loaded. It is "
 "possible to corrupt the index if the file is manually edited and "
@@ -320,11 +414,11 @@ msgstr ""
 "l'index. Si cela échoue également, vous avez probablement rencontré un "
 "bogue."
 
-#: ../../source/tech_storage.rst:126
+#: ../../source/technical/storage.rst:159
 msgid "Build Definitions"
 msgstr "Définitions des compilations"
 
-#: ../../source/tech_storage.rst:128
+#: ../../source/technical/storage.rst:161
 msgid ""
 "The build definitions from the **Manuscript Build** tool are kept in the "
 "``meta/builds.json`` file. If this file is lost, all custom build "
@@ -335,11 +429,11 @@ msgstr ""
 "perdu, toutes les définitions de construction personnalisées sont "
 "également perdues."
 
-#: ../../source/tech_storage.rst:133
+#: ../../source/technical/storage.rst:166
 msgid "Cached GUI Options"
 msgstr "Options de l'interface graphique mises en cache"
 
-#: ../../source/tech_storage.rst:135
+#: ../../source/technical/storage.rst:168
 msgid ""
 "A file named ``meta/options.json`` contains the latest state of various "
 "GUI buttons, switches, dialog window sizes, column sizes, etc, from the "
@@ -353,7 +447,7 @@ msgstr ""
 "qui sont spécifiques au projet. Les paramètres globaux de l'interface "
 "graphique sont stockés dans le fichier de configuration principal."
 
-#: ../../source/tech_storage.rst:139
+#: ../../source/technical/storage.rst:172
 msgid ""
 "The file is not critical, but if it is lost, all such GUI options will "
 "revert back to their default settings."
@@ -361,11 +455,11 @@ msgstr ""
 "Le fichier n'est pas critique, mais s'il est perdu, toutes les options "
 "de l'interface graphique reviendront à leurs paramètres par défaut."
 
-#: ../../source/tech_storage.rst:144
+#: ../../source/technical/storage.rst:177
 msgid "Custom Word List"
 msgstr "Liste des mots personnalisés"
 
-#: ../../source/tech_storage.rst:146
+#: ../../source/technical/storage.rst:179
 msgid ""
 "A file named ``meta/userdict.json`` contains all the custom words you've "
 "added to the project for spell checking purposes. The content of the "
@@ -378,11 +472,11 @@ msgstr ""
 "menu **Outils**. Si vous perdez ce fichier, tous vos mots personnalisés "
 "pour la vérification orthographique seront également perdus."
 
-#: ../../source/tech_storage.rst:152
+#: ../../source/technical/storage.rst:185
 msgid "Session Stats"
 msgstr "Statistiques de la session"
 
-#: ../../source/tech_storage.rst:154
+#: ../../source/technical/storage.rst:187
 msgid ""
 "The writing progress is saved in the ``meta/sessions.jsonl`` file. This "
 "file records the length and word counts of each writing session on the "
@@ -397,7 +491,7 @@ msgstr ""
 "l'historique qu'il contient est également perdu, mais cela n'a par "
 "ailleurs aucun impact sur le projet."
 
-#: ../../source/tech_storage.rst:159
+#: ../../source/technical/storage.rst:192
 msgid ""
 "Each session is recorded as a JSON object on a single line of the file. "
 "Each session record is appended tot he file."
