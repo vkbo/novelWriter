@@ -1,17 +1,18 @@
-# French translations for PROJECT.
-# Copyright (C) 2024 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025
+# This file is distributed under the same license as the novelWriter
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-01-28 21:52+0100\n"
-"PO-Revision-Date: 2025-01-28 21:59+0100\n"
+"Project-Id-Version: novelWriter 2.7rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-27 19:59+0200\n"
+"PO-Revision-Date: 2025-05-29 11:05+0200\n"
 "Last-Translator: \n"
-"Language-Team: \n"
+"Language-Team: fr <LL@li.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -20,25 +21,25 @@ msgstr ""
 "Generated-By: Babel 2.16.0\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: ../../source/more_customise.rst:5
+#: ../../source/more/customise.rst:5
 msgid "Customisations"
 msgstr "Personnalisations"
 
-#: ../../source/more_customise.rst:10
+#: ../../source/more/customise.rst:10
 msgid ""
-"There are a few ways you can customise novelWriter yourself. Currently, you "
-"can add new GUI themes, your own syntax themes, and install additional "
+"There are a few ways you can customise novelWriter yourself. Currently, "
+"you can add new GUI themes, your own syntax themes, and install additional "
 "dictionaries."
 msgstr ""
 "Vous pouvez personnaliser novelWriter de plusieurs façons. Actuellement, "
 "vous pouvez ajouter de nouveaux thèmes d'interface graphique, vos propres "
 "thèmes de syntaxe et installer des dictionnaires supplémentaires."
 
-#: ../../source/more_customise.rst:17
+#: ../../source/more/customise.rst:17
 msgid "Spell Check Dictionaries"
 msgstr "Dictionnaires de vérification orthographique"
 
-#: ../../source/more_customise.rst:19
+#: ../../source/more/customise.rst:19
 msgid ""
 "novelWriter uses Enchant_ as the spell checking tool. Depending on your "
 "operating system, it may or may not load all installed spell check "
@@ -48,46 +49,46 @@ msgstr ""
 "Selon votre système d'exploitation, il peut ou non charger automatiquement "
 "tous les dictionnaires de vérification orthographique installés."
 
-#: ../../source/more_customise.rst:23
+#: ../../source/more/customise.rst:24
 msgid "Linux and MacOS"
 msgstr "Linux et MacOS"
 
-#: ../../source/more_customise.rst:25
+#: ../../source/more/customise.rst:26
 msgid ""
 "On Linux and MacOS, you generally only have to install hunspell, aspell or "
-"myspell dictionaries on your system like you do for other applications. See "
-"your distro or OS documentation for how to do this. These dictionaries "
+"myspell dictionaries on your system like you do for other applications. "
+"See your distro or OS documentation for how to do this. These dictionaries "
 "should show up as available spell check languages in novelWriter."
 msgstr ""
 "Sous Linux et MacOS, il vous suffit généralement d'installer les "
 "dictionnaires hunspell, aspell ou myspell sur votre système, comme vous le "
 "faites pour d'autres applications. Consultez la documentation de votre "
-"distro ou de votre système d'exploitation pour savoir comment procéder. Ces "
-"dictionnaires devraient apparaître comme des langues de vérification "
+"distro ou de votre système d'exploitation pour savoir comment procéder. "
+"Ces dictionnaires devraient apparaître comme des langues de vérification "
 "orthographique disponibles dans novelWriter."
 
-#: ../../source/more_customise.rst:30
+#: ../../source/more/customise.rst:32
 msgid "Windows"
 msgstr "Windows"
 
-#: ../../source/more_customise.rst:32
+#: ../../source/more/customise.rst:34
 msgid ""
-"For Windows, English is included with the installation. For other languages "
-"you have to download and add dictionaries yourself."
+"For Windows, English is included with the installation. For other "
+"languages you have to download and add dictionaries yourself."
 msgstr ""
 "Pour Windows, l'anglais est inclus dans l'installation. Pour les autres "
 "langues, vous devez télécharger et ajouter les dictionnaires vous-même."
 
-#: ../../source/more_customise.rst:35
+#: ../../source/more/customise.rst:37
 msgid "**Install Tool**"
 msgstr "**Outil d'installation**"
 
-#: ../../source/more_customise.rst:37
+#: ../../source/more/customise.rst:39
 msgid ""
 "A small tool to assist with this can be found under **Tools > Add "
-"Dictionaries**. It will import spell checking dictionaries from Free Office "
-"or Libre Office extensions. The dictionaries are then installed in the "
-"install location for the Enchant library and should thus work for any "
+"Dictionaries**. It will import spell checking dictionaries from Free "
+"Office or Libre Office extensions. The dictionaries are then installed in "
+"the install location for the Enchant library and should thus work for any "
 "application that uses Enchant for spell checking."
 msgstr ""
 "Un petit outil pour vous aider se trouve sous **Outils > Ajouter des "
@@ -97,11 +98,11 @@ msgstr ""
 "bibliothèque Enchant et devraient donc fonctionner pour toute application "
 "qui utilise Enchant pour la vérification orthographique."
 
-#: ../../source/more_customise.rst:42
+#: ../../source/more/customise.rst:44
 msgid "**Manual Install**"
 msgstr "**Installation manuelle**"
 
-#: ../../source/more_customise.rst:44
+#: ../../source/more/customise.rst:46
 msgid ""
 "If you prefer to do this manually or want to use a different source than "
 "the ones mentioned above, You need to get compatible dictionary files for "
@@ -114,26 +115,26 @@ msgstr ""
 "de deux fichiers se terminant par ``.aff`` et ``.dic``. Ces fichiers "
 "doivent ensuite être copiés à l'emplacement suivant :"
 
-#: ../../source/more_customise.rst:48
+#: ../../source/more/customise.rst:50
 msgid "``C:\\Users\\<USER>\\AppData\\Local\\enchant\\hunspell``"
 msgstr "``C:\\Users\\<USER>\\AppData\\Local\\enchant\\hunspell``"
 
-#: ../../source/more_customise.rst:50
+#: ../../source/more/customise.rst:52
 msgid ""
-"This assumes your user profile is stored at ``C:\\Users\\<USER>``. The last "
-"one or two folders may not exist, so you may need to create them."
+"This assumes your user profile is stored at ``C:\\Users\\<USER>``. The "
+"last one or two folders may not exist, so you may need to create them."
 msgstr ""
 "Cela suppose que votre profil d'utilisateur est stocké dans ``C:"
 "\\Users\\<USER>``. Le dernier ou les deux derniers dossiers peuvent ne pas "
 "exister, vous devrez donc les créer."
 
-#: ../../source/more_customise.rst:53
+#: ../../source/more/customise.rst:55
 msgid "You can find the various dictionaries on the `Free Desktop`_ website."
 msgstr ""
 "Vous pouvez trouver les différents dictionnaires sur le site web `Free "
 "Desktop`_."
 
-#: ../../source/more_customise.rst:56
+#: ../../source/more/customise.rst:58
 msgid ""
 "The Free Desktop link points to a repository, and what may look like file "
 "links inside the dictionary folder are actually links to web pages. If you "
@@ -145,25 +146,25 @@ msgstr ""
 "la souris et que vous les téléchargez, vous obtiendrez des fichiers HTML, "
 "pas des dictionnaires !"
 
-#: ../../source/more_customise.rst:60
+#: ../../source/more/customise.rst:62
 msgid ""
-"In order to download the actual dictionary files, right-click the \"plain\" "
-"label at the end of each line and download that."
+"In order to download the actual dictionary files, right-click the "
+"\"plain\" label at the end of each line and download that."
 msgstr ""
-"Pour télécharger les fichiers du dictionnaire, cliquez avec le bouton droit "
-"de la souris sur l'étiquette « plain » à la fin de chaque ligne et "
+"Pour télécharger les fichiers du dictionnaire, cliquez avec le bouton "
+"droit de la souris sur l'étiquette « plain » à la fin de chaque ligne et "
 "téléchargez-la."
 
-#: ../../source/more_customise.rst:67
+#: ../../source/more/customise.rst:69
 msgid "Syntax and GUI Themes"
 msgstr "Syntaxe et thèmes de l'interface graphique"
 
-#: ../../source/more_customise.rst:69
+#: ../../source/more/customise.rst:71
 msgid ""
 "Adding your own GUI and syntax themes is relatively easy, although it "
-"requires that you manually edit config files with colour values. The themes "
-"are defined by simple plain text config files with meta data and colour "
-"settings."
+"requires that you manually edit config files with colour values. The "
+"themes are defined by simple plain text config files with meta data and "
+"colour settings."
 msgstr ""
 "L'ajout de vos propres thèmes d'interface graphique et de syntaxe est "
 "relativement facile, bien qu'il soit nécessaire d'éditer manuellement les "
@@ -171,32 +172,34 @@ msgstr ""
 "définis par de simples fichiers de configuration en texte brut contenant "
 "des métadonnées et des paramètres de couleur."
 
-#: ../../source/more_customise.rst:73
+#: ../../source/more/customise.rst:75
 msgid ""
-"In order to make your own versions, first copy one of the existing files to "
-"your local computer and modify it as you like."
+"In order to make your own versions, first copy one of the existing files "
+"to your local computer and modify it as you like."
 msgstr ""
-"Pour créer vos propres versions, copiez d'abord l'un des fichiers existants "
-"sur votre ordinateur local et modifiez-le à votre guise."
+"Pour créer vos propres versions, copiez d'abord l'un des fichiers "
+"existants sur votre ordinateur local et modifiez-le à votre guise."
 
-#: ../../source/more_customise.rst:76
+#: ../../source/more/customise.rst:78
 msgid ""
 "The existing syntax themes are stored in `novelwriter/assets/syntax "
-"<https://github.com/vkbo/novelWriter/tree/main/novelwriter/assets/syntax>`_."
+"<https://github.com/vkbo/novelWriter/tree/main/novelwriter/assets/"
+"syntax>`_."
 msgstr ""
 "Les thèmes syntaxiques existants sont stockés dans `novelwriter/assets/"
 "syntax <https://github.com/vkbo/novelWriter/tree/main/novelwriter/assets/"
 "syntax>`_."
 
-#: ../../source/more_customise.rst:78
+#: ../../source/more/customise.rst:80
 msgid ""
 "The existing GUI themes are stored in `novelwriter/assets/themes <https://"
 "github.com/vkbo/novelWriter/tree/main/novelwriter/assets/themes>`_."
 msgstr ""
 "Les thèmes GUI existants sont stockés dans `novelwriter/assets/themes "
-"<https://github.com/vkbo/novelWriter/tree/main/novelwriter/assets/themes>`_."
+"<https://github.com/vkbo/novelWriter/tree/main/novelwriter/assets/"
+"themes>`_."
 
-#: ../../source/more_customise.rst:80
+#: ../../source/more/customise.rst:82
 msgid ""
 "The existing icon themes are stored in `novelwriter/assets/icons <https://"
 "github.com/vkbo/novelWriter/tree/main/novelwriter/assets/icons>`_."
@@ -204,7 +207,7 @@ msgstr ""
 "Les thèmes d'icônes existants sont stockés dans `novelwriter/assets/icons "
 "<https://github.com/vkbo/novelWriter/tree/main/novelwriter/assets/icons>`_."
 
-#: ../../source/more_customise.rst:83
+#: ../../source/more/customise.rst:85
 msgid ""
 "Remember to also change the name of your theme by modifying the ``name`` "
 "setting at the top of the file, otherwise you may not be able to "
@@ -214,22 +217,25 @@ msgstr ""
 "paramètre ``name`` en haut du fichier, sinon vous ne pourrez pas les "
 "distinguer dans les **Préférences**."
 
-#: ../../source/more_customise.rst:86
+#: ../../source/more/customise.rst:88
 msgid ""
 "For novelWriter to be able to locate the custom theme files, you must copy "
-"them to the :ref:`a_locations_data` location in your home or user area. "
-"There should be a folder there named ``syntax`` for syntax themes, just "
-"``themes`` for GUI themes, and ``icons`` for icon themes. These folders are "
-"created the first time you start novelWriter."
+"them to the :ref:`docs_technical_locations_data` location in your home or "
+"user area. There should be a folder there named ``syntax`` for syntax "
+"themes, just ``themes`` for GUI themes, and ``icons`` for icon themes. "
+"These folders are created the first time you start novelWriter."
 msgstr ""
-"Pour que novelWriter puisse localiser les fichiers de thèmes personnalisés, "
-"vous devez les copier dans l'emplacement :ref:`a_locations_data` dans votre "
-"espace personnel ou utilisateur. Il devrait y avoir un dossier nommé "
-"``syntax`` pour les thèmes de syntaxe, juste ``themes`` pour les thèmes "
-"d'interface graphique, et ``icons`` pour les thèmes d'icônes. Ces dossiers "
-"sont créés la première fois que vous démarrez novelWriter."
+"Pour que novelWriter puisse localiser les fichiers de thèmes "
+"personnalisés, vous devez les copier dans l'emplacement :ref:"
+"`docs_technical_locations_data` dans votre espace personnel ou "
+"utilisateur. Il devrait y avoir un dossier nommé ``syntax`` pour les "
+"thèmes de syntaxe, juste ``themes`` pour les thèmes GUI, et ``icons`` pour "
+"les thèmes d'icônes. Ces dossiers sont créés la première fois que vous "
+"démarrez novelWriter.\n"
+"\n"
+"Traduit avec DeepL.com (version gratuite)"
 
-#: ../../source/more_customise.rst:91
+#: ../../source/more/customise.rst:93
 msgid ""
 "Once the files are copied there, they should show up in **Preferences** "
 "with the label you set as ``name`` inside the file."
@@ -237,41 +243,30 @@ msgstr ""
 "Une fois les fichiers copiés, ils devraient apparaître dans les "
 "**Préférences** avec le nom que vous avez défini dans le fichier."
 
-#: ../../source/more_customise.rst:94
+#: ../../source/more/customise.rst:98
 msgid ""
-"The ``icontheme`` value was added to GUI themes. Make sure you set this "
-"value in existing custom themes. Otherwise, novelWriter will try to guess "
-"your icon theme, and may not pick the most suitable one."
+"The theme file formats change regularly in new releases. It is up to you "
+"to keep custom theme files up to date."
 msgstr ""
-"La valeur ``icontheme`` a été ajoutée aux thèmes GUI. Assurez-vous de "
-"définir cette valeur dans les thèmes personnalisés existants. Sinon, "
-"novelWriter essaiera de deviner votre thème d'icônes, et ne choisira peut-"
-"être pas le plus approprié."
+"Les formats des fichiers de thème changent régulièrement dans les "
+"nouvelles versions. C'est à vous qu'il incombe de mettre à jour les "
+"fichiers des thèmes personnalisés."
 
-#: ../../source/more_customise.rst:101
+#: ../../source/more/customise.rst:103
 msgid "Custom GUI and Icons Theme"
 msgstr "Thème d'interface graphique et d'icônes personnalisé"
 
-#: ../../source/more_customise.rst:103
+#: ../../source/more/customise.rst:105
 msgid "A GUI theme ``.conf`` file consists of the following settings:"
 msgstr ""
 "Le fichier ``.conf`` d'un thème GUI est constitué des paramètres suivants :"
 
-#: ../../source/more_customise.rst:141
-msgid ""
-"In the Main section you must at least define the ``name`` and ``icontheme`` "
-"settings. The ``icontheme`` settings should correspond to one of the "
-"internal icon themes, either ``typicons_light`` or ``typicons_dark``, or to "
-"an icon theme in your custom icons directory. The setting must match the "
-"icon theme's folder name."
+#: ../../source/more/customise.rst:159
+msgid "In the Main section you must at least define the ``name`` settings."
 msgstr ""
-"Dans la section Main, vous devez au moins définir les paramètres ``name`` "
-"et ``icontheme``. Le paramètre ``icontheme`` doit correspondre à l'un des "
-"thèmes d'icônes internes, soit ``typicons_light`` ou ``typicons_dark``, "
-"soit à un thème d'icônes dans votre répertoire d'icônes personnalisé. Le "
-"paramètre doit correspondre au nom du dossier du thème d'icônes."
+"Dans la section Main, vous devez au moins définir les paramètres ``name``."
 
-#: ../../source/more_customise.rst:146
+#: ../../source/more/customise.rst:161
 msgid ""
 "The Palette values correspond to the Qt enum values for ``QPalette::"
 "ColorRole``, see the `Qt documentation <https://doc.qt.io/qt-6/qpalette."
@@ -279,7 +274,8 @@ msgid ""
 "on the format ``r, g, b`` where each is an integer from ``0`` to ``255``. "
 "Omitted values are not loaded and will use default values. If the "
 "``helptext`` colour is not defined, it is computed as a colour between the "
-"``window`` and ``windowtext`` colour."
+"``window`` and ``windowtext`` colour. Additional shades of some of the "
+"colours are also computed. These are mainly used for 3D effects."
 msgstr ""
 "Les valeurs de la palette correspondent aux valeurs de l'enum Qt pour "
 "``QPalette::ColorRole``, voir la documentation Qt <https://doc.qt.io/qt-6/"
@@ -288,23 +284,36 @@ msgstr ""
 "de ``0`` à ``255``. Les valeurs omises ne sont pas chargées et utilisent "
 "les valeurs par défaut. Si la couleur ``helptext`` n'est pas définie, elle "
 "est calculée comme une couleur comprise entre les couleurs ``window`` et "
-"``windowtext``."
+"``windowtext``. Des nuances supplémentaires de certaines couleurs sont "
+"également calculées. Elles sont principalement utilisées pour les effets "
+"3D."
 
-#: ../../source/more_customise.rst:152
+#: ../../source/more/customise.rst:168
 msgid "The ``fadedtext`` and ``errortext`` theme colour entries were added."
 msgstr ""
 "Les entrées de couleur des thèmes ``fadedtext`` et ``errortext`` ont été "
 "ajoutées."
 
-#: ../../source/more_customise.rst:157
+#: ../../source/more/customise.rst:171
+msgid ""
+"The ``icontheme`` setting was dropped as the icon theme is now its own "
+"setting. The ``[Icons]`` and ``[Project]`` sections were added, and the "
+"``status*`` settings removed."
+msgstr ""
+"Le paramètre ``icontheme`` a été supprimé car le thème des icônes a "
+"maintenant son propre paramètre. Les sections ``[Icons]`` et ``[Project]`` "
+"ont été ajoutées, et le paramètre ``status*`` a été supprimé."
+
+#: ../../source/more/customise.rst:177
 msgid "Custom Syntax Theme"
 msgstr "Syntaxe des thèmes personnalisés"
 
-#: ../../source/more_customise.rst:159
+#: ../../source/more/customise.rst:179
 msgid "A syntax theme ``.conf`` file consists of the following settings:"
-msgstr "Un fichier ``.conf`` de thème est constitué des paramètres suivants :"
+msgstr ""
+"Un fichier ``.conf`` de thème est constitué des paramètres suivants :"
 
-#: ../../source/more_customise.rst:193
+#: ../../source/more/customise.rst:213
 msgid ""
 "In the Main section, you must define at least the ``name`` setting. The "
 "Syntax colour values are RGB(A) numbers of the format ``r, g, b, a`` where "
@@ -312,39 +321,39 @@ msgid ""
 "channel, which can be omitted."
 msgstr ""
 "Dans la section Main, vous devez définir au moins le paramètre ``name``. "
-"Les valeurs de couleur de la syntaxe sont des nombres RVB(A) du format ``r, "
-"g, b, a`` où chacun est un entier de ``0`` à ``255``. La quatrième valeur "
-"est le canal alpha, qui peut être omis."
+"Les valeurs de couleur de la syntaxe sont des nombres RVB(A) du format "
+"``r, g, b, a`` où chacun est un entier de ``0`` à ``255``. La quatrième "
+"valeur est le canal alpha, qui peut être omis."
 
-#: ../../source/more_customise.rst:197
+#: ../../source/more/customise.rst:217
 msgid ""
 "Omitted syntax colours default to black, except ``background`` which "
 "defaults to white, and ``texthighlight`` which defaults to white with half "
 "transparency."
 msgstr ""
-"Les couleurs omises dans la syntaxe prennent par défaut la couleur noire, à "
-"l'exception de ``background`` qui prend par défaut la couleur blanche, et "
-"de ``texthighlight`` qui prend par défaut la couleur blanche avec une demi-"
-"transparence."
+"Les couleurs omises dans la syntaxe prennent par défaut la couleur noire, "
+"à l'exception de ``background`` qui prend par défaut la couleur blanche, "
+"et de ``texthighlight`` qui prend par défaut la couleur blanche avec une "
+"demi-transparence."
 
-#: ../../source/more_customise.rst:200
+#: ../../source/more/customise.rst:220
 msgid "The ``shortcode`` syntax colour entry was added."
 msgstr "Le paramètre de couleur ``shortcode`` a été ajouté."
 
-#: ../../source/more_customise.rst:203
+#: ../../source/more/customise.rst:223
 msgid "The ``optional`` syntax colour entry was added."
 msgstr "Le paramètre de couleur ``optional`` a été ajouté."
 
-#: ../../source/more_customise.rst:206
+#: ../../source/more/customise.rst:226
 msgid "The ``texthighlight`` syntax colour entry was added."
 msgstr "Le paramètre de couleur ``texthighlight`` a été ajouté."
 
-#: ../../source/more_customise.rst:209
+#: ../../source/more/customise.rst:229
 msgid ""
 "The ``dialog``, ``altdialog``, ``note`` and ``tag`` syntax colour entries "
 "were added. ``straightquotes``, ``doublequotes`` and ``singlequotes`` were "
 "removed."
 msgstr ""
-"Les paramètres de couleur  ``dialog``, ``altdialog``, ``note`` et ``tag`` "
+"Les paramètres de couleur ``dialog``, ``altdialog``, ``note`` et ``tag`` "
 "ont été ajoutés. Les paramètres ``guillemets droits``, ``guillemets "
 "doubles`` et ``guillemets simples`` ont été supprimés."

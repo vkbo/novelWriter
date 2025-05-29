@@ -1,29 +1,31 @@
-# Translations template for PROJECT.
-# Copyright (C) 2024 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025
+# This file is distributed under the same license as the novelWriter
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-12-21 19:37+0100\n"
-"PO-Revision-Date: 2024-12-23 17:49+0100\n"
+"Project-Id-Version: novelWriter 2.7rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-27 19:59+0200\n"
+"PO-Revision-Date: 2025-05-29 11:21+0200\n"
 "Last-Translator: \n"
-"Language-Team: \n"
+"Language-Team: fr <LL@li.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "Generated-By: Babel 2.16.0\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: ../../source/more_projectformat.rst:5
+#: ../../source/more/project_format.rst:5
 msgid "Project Format Changes"
-msgstr "Modifications du format des projet"
+msgstr "Modifications du format des projets"
 
-#: ../../source/more_projectformat.rst:10
+#: ../../source/more/project_format.rst:7
 msgid ""
 "Most of the changes to the file formats over the history of novelWriter "
 "have no impact on the user side of things. The project files are "
@@ -36,7 +38,7 @@ msgstr ""
 "Cependant, certains changements nécessitent des actions mineures de la "
 "part de l'utilisateur."
 
-#: ../../source/more_projectformat.rst:14
+#: ../../source/more/project_format.rst:11
 msgid ""
 "The key changes in the formats are listed in this chapter, as well as "
 "the user actions required, where applicable."
@@ -45,15 +47,15 @@ msgstr ""
 "ce chapitre, ainsi que les actions requises de la part de l'utilisateur, "
 "le cas échéant."
 
-#: ../../source/more_projectformat.rst:19
+#: ../../source/more/project_format.rst:14
 msgid ""
-"A full project file format specification is available in the online "
-"documentation_."
+"A full project file format specification is available under \"More "
+"Documents\"."
 msgstr ""
 "Une spécification complète du format de fichier du projet est disponible "
-"dans la documentation en ligne_."
+"sous « Plus d'informations »."
 
-#: ../../source/more_projectformat.rst:22
+#: ../../source/more/project_format.rst:18
 msgid ""
 "When you update a project from one format version to the next, the "
 "project can no longer be opened by a version of novelWriter prior to the "
@@ -68,37 +70,17 @@ msgstr ""
 "jour du format de fichier de votre projet et vous aurez la possibilité "
 "de refuser la mise à jour."
 
-#: ../../source/more_projectformat.rst:29
-msgid "**For Developers**"
-msgstr "**Pour les développeurs**"
-
-#: ../../source/more_projectformat.rst:31
-msgid ""
-"A full description of the current file format is available in the :"
-"download:`File Format Spec 1.5 <fileformatspec15.pdf>` document, "
-"available as a PDF. This document is intended for contributors to "
-"novelWriter, those building project conversion tools, either to or from "
-"tne novelWriter format, and for those who wish to make their own "
-"templating system."
-msgstr ""
-"Une description complète du format de fichier actuel est disponible dans "
-"le document :download:`File Format Spec 1.5 <fileformatspec15.pdf>`, "
-"disponible au format PDF. Ce document est destiné aux contributeurs de "
-"novelWriter, à ceux qui construisent des outils de conversion de "
-"projets, soit vers, soit à partir du format novelWriter, et à ceux qui "
-"souhaitent créer leur propre système de gabarit."
-
-#: ../../source/more_projectformat.rst:41
+#: ../../source/more/project_format.rst:27
 msgid "Format 1.5 Changes"
 msgstr "Format 1.5 Modifications"
 
-#: ../../source/more_projectformat.rst:43
+#: ../../source/more/project_format.rst:29
 msgid "This project format was introduced in novelWriter version 2.0 RC 2."
 msgstr ""
 "Ce format de projet a été introduit dans la version 2.0 RC 2 de "
 "novelWriter."
 
-#: ../../source/more_projectformat.rst:45
+#: ../../source/more/project_format.rst:31
 msgid ""
 "This is a modification of the 1.4 format. It makes the XML more "
 "consistent in that meta data have been moved to their respective section "
@@ -118,11 +100,11 @@ msgstr ""
 "lors du premier chargement d'un projet. Aucune action de l'utilisateur "
 "n'est nécessaire."
 
-#: ../../source/more_projectformat.rst:55
+#: ../../source/more/project_format.rst:41
 msgid "Format 1.4 Changes"
 msgstr "Format 1.4 Modifications"
 
-#: ../../source/more_projectformat.rst:57
+#: ../../source/more/project_format.rst:43
 msgid ""
 "This project format was introduced in novelWriter version 2.0 RC 1. "
 "Since this was a release candidate, it is unlikely that your project "
@@ -133,7 +115,7 @@ msgstr ""
 "probable que votre projet l'utilise, mais c'est peut-être le cas si vous "
 "avez installé une préversion."
 
-#: ../../source/more_projectformat.rst:61
+#: ../../source/more/project_format.rst:47
 msgid ""
 "This format changes the way project items (folders, documents and notes) "
 "are stored. It is a more compact format that is simpler and faster to "
@@ -146,16 +128,16 @@ msgstr ""
 "conversion se fait automatiquement lors du premier chargement d'un "
 "projet. Aucune action de l'utilisateur n'est nécessaire."
 
-#: ../../source/more_projectformat.rst:69
+#: ../../source/more/project_format.rst:55
 msgid "Format 1.3 Changes"
 msgstr "Format 1.3 Modifications"
 
-#: ../../source/more_projectformat.rst:71
+#: ../../source/more/project_format.rst:57
 msgid "This project format was introduced in novelWriter version 1.5."
 msgstr ""
 "Ce format de projet a été introduit dans la version 1.5 de novelWriter."
 
-#: ../../source/more_projectformat.rst:73
+#: ../../source/more/project_format.rst:59
 msgid ""
 "With this format, the number of document layouts was reduced from eight "
 "to two. The conversion of document layouts is performed automatically "
@@ -165,7 +147,7 @@ msgstr ""
 "huit à deux. La conversion des présentations de documents s'effectue "
 "automatiquement lors de l'ouverture du projet."
 
-#: ../../source/more_projectformat.rst:76
+#: ../../source/more/project_format.rst:62
 msgid ""
 "Due to the reduction of layouts, some features that were previously "
 "controlled by these layouts will be lost. These features are instead now "
@@ -178,7 +160,7 @@ msgstr ""
 "Pour les récupérer, l'utilisateur doit donc apporter quelques "
 "modifications mineures aux documents sélectionnés."
 
-#: ../../source/more_projectformat.rst:80
+#: ../../source/more/project_format.rst:66
 msgid ""
 "The manual changes the user must make should be very few as they apply "
 "to document layouts that should be used only a few places in any given "
@@ -189,92 +171,97 @@ msgstr ""
 "qui ne doivent être utilisées qu'à quelques endroits dans un projet "
 "donné. Ces modifications sont les suivantes :"
 
-#: ../../source/more_projectformat.rst:83
+#: ../../source/more/project_format.rst:69
 msgid "**Title Pages**"
 msgstr "**Pages de titres**"
 
-#: ../../source/more_projectformat.rst:85
+#: ../../source/more/project_format.rst:71
 msgid ""
 "The formatting of the level one title on the title page must be changed "
 "from ``# Title Text`` to ``#! Title Text`` in order to retain the "
-"previous functionality. See :ref:`a_fmt_head`."
+"previous functionality. See :ref:`docs_usage_headings_levels`."
 msgstr ""
 "Le formatage du titre de niveau 1 sur la page de titre doit être modifié "
-"de ``# Texte du titre`` à ``# ! Texte du titre`` afin de conserver la "
-"fonctionnalité précédente. Voir :ref:`a_fmt_head`."
+"de ``# Title Text`` à ``# ! Title Text`` afin de conserver la "
+"fonctionnalité précédente. Voir :ref:`docs_usage_headings_levels`."
 
-#: ../../source/more_projectformat.rst:87
+#: ../../source/more/project_format.rst:74
 msgid ""
 "Any text that was previously centred on the page must be manually "
-"centred using the text alignment feature. See :ref:`a_fmt_align`."
+"centred using the text alignment feature. See :ref:"
+"`docs_usage_align_indent`."
 msgstr ""
 "Tout texte qui était précédemment centré sur la page doit être centré "
 "manuellement en utilisant la fonction d'alignement du texte. Voir :ref:"
-"`a_fmt_align`."
+"`docs_usage_align_indent`."
 
-#: ../../source/more_projectformat.rst:90
+#: ../../source/more/project_format.rst:77
 msgid "**Unnumbered Chapters**"
 msgstr "**Chapitres non numérotés**"
 
-#: ../../source/more_projectformat.rst:92
+#: ../../source/more/project_format.rst:79
 msgid ""
 "Since the specific layout for unnumbered chapters has been dropped, such "
 "chapters must all use the ``##! Chapter Name`` formatting code instead "
 "of ``## Chapter Name``. This also includes chapters marked by an "
 "asterisk: ``## *Chapter Name``, as this feature has also been dropped. "
-"See :ref:`a_fmt_head`."
+"See :ref:`docs_usage_headings_levels`."
 msgstr ""
 "La mise en page spécifique pour les chapitres non numérotés ayant été "
 "abandonnée, ces chapitres doivent tous utiliser le code de formatage "
-"``# ! Nom de chapitre`` au lieu de `## Nom de chapitre``. Cela inclut "
+"``# ! Nom du chapitre`` au lieu de `## Nom du chapitre``. Cela inclut "
 "également les chapitres marqués d'un astérisque : `## *Nom de "
 "chapitre``, car cette fonctionnalité a également été abandonnée. Voir :"
-"ref:`a_fmt_head`."
+"ref:`docs_usage_headings_levels`."
 
-#: ../../source/more_projectformat.rst:97
+#: ../../source/more/project_format.rst:84
 msgid "**Plain Pages**"
 msgstr "**Pages vierges**"
 
-#: ../../source/more_projectformat.rst:99
+#: ../../source/more/project_format.rst:86
 msgid ""
 "The layout named \"Plain Page\" has also been removed. The only feature "
 "of this layout was that it ensured that the content always started on a "
 "fresh page. In the new format, fresh pages can be set anywhere in the "
-"text with the ``[NEW PAGE]`` code. See :ref:`a_fmt_break`."
+"text with the ``[new page]`` code. See :ref:"
+"`docs_usage_formatting_breaks`."
 msgstr ""
-"La mise en page appelée « Page vierge » a également été supprimée. La "
+"La mise en page appelée « page simple » a également été supprimée. La "
 "seule caractéristique de cette mise en page était qu'elle garantissait "
 "que le contenu commençait toujours sur une nouvelle page. Dans le "
-"nouveau format, les pages fraîches peuvent être placées n'importe où "
-"dans le texte avec le code ``[NEW PAGE]``. Voir :ref:`a_fmt_break`."
+"nouveau format, les nouvelles pages peuvent être placées n'importe où "
+"dans le texte avec le code ``[new page]``. Voir :ref:"
+"`docs_usage_formatting_breaks`."
 
-#: ../../source/more_projectformat.rst:107
+#: ../../source/more/project_format.rst:94
 msgid "Format 1.2 Changes"
 msgstr "Format 1.2 Modifications"
 
-#: ../../source/more_projectformat.rst:109
+#: ../../source/more/project_format.rst:96
 msgid "This project format was introduced in novelWriter version 0.10."
 msgstr ""
 "Ce format de projet a été introduit dans la version 0.10 de novelWriter."
 
-#: ../../source/more_projectformat.rst:111
+#: ../../source/more/project_format.rst:98
 msgid ""
 "With this format, the way auto-replace entries were stored in the main "
-"project XML file changed."
+"project XML file changed. Conversion from this format is done "
+"automatically."
 msgstr ""
 "Avec ce format, la façon dont les entrées de remplacement automatique "
-"étaient stockées dans le fichier XML du projet principal a changé."
+"étaient stockées dans le fichier XML du projet principal a changé. La "
+"conversion de ce format se fait automatiquement."
 
-#: ../../source/more_projectformat.rst:117
+#: ../../source/more/project_format.rst:105
 msgid "Format 1.1 Changes"
 msgstr "Format 1.1 Modifications"
 
-#: ../../source/more_projectformat.rst:119
+#: ../../source/more/project_format.rst:107
 msgid "This project format was introduced in novelWriter version 0.7."
 msgstr ""
 "Ce format de projet a été introduit dans la version 0.7 de novelWriter."
 
-#: ../../source/more_projectformat.rst:121
+#: ../../source/more/project_format.rst:109
 msgid ""
 "With this format, the ``content`` folder was introduced in the project "
 "storage. Previously, all novelWriter documents were saved in a series of "
@@ -285,22 +272,24 @@ msgstr ""
 "sauvegardés dans une série de dossiers numérotés de ``data_0`` à "
 "``data_f``."
 
-#: ../../source/more_projectformat.rst:124
+#: ../../source/more/project_format.rst:112
 msgid ""
 "It also reduces the number of meta data and cache files. These files are "
 "automatically deleted if an old project is opened. This was also when "
-"the Table of Contents file was introduced."
+"the Table of Contents file was introduced. Conversion from this format "
+"is done automatically."
 msgstr ""
 "Il réduit également le nombre de métadonnées et de fichiers de cache. "
 "Ces fichiers sont automatiquement supprimés lorsqu'un ancien projet est "
 "ouvert. C'est également à cette époque que le fichier de table des "
-"matières a été introduit."
+"matières a été introduit. La conversion de ce format se fait "
+"automatiquement."
 
-#: ../../source/more_projectformat.rst:131
+#: ../../source/more/project_format.rst:120
 msgid "Format 1.0 Changes"
 msgstr "Format 1.0 Modifications"
 
-#: ../../source/more_projectformat.rst:133
+#: ../../source/more/project_format.rst:122
 msgid ""
 "This is the original file format and project structure. It was in use up "
 "to version 0.6.3."
