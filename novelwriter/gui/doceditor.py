@@ -580,9 +580,9 @@ class GuiDocEditor(QPlainTextEdit):
         self.setDocumentChanged(False)
         self.docTextChanged.emit(self._docHandle, self._lastEdit)
 
-        oldCount = SHARED.project.index.getHandleHeaderCount(tHandle)
+        oldCount = SHARED.project.index.getCounts(tHandle)
         SHARED.project.index.scanText(tHandle, text)
-        newCount = SHARED.project.index.getHandleHeaderCount(tHandle)
+        newCount = SHARED.project.index.getCounts(tHandle)
 
         if self._nwItem.itemClass == nwItemClass.NOVEL:
             if oldCount == newCount:
