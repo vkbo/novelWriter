@@ -34,35 +34,74 @@ from __future__ import annotations
 
 import bisect
 import logging
-
+from typing import Any
 from enum import Enum, IntFlag
 from time import time
 
 from PyQt6.QtCore import (
-    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
-    pyqtSlot
+    QObject,
+    QPoint,
+    QRegularExpression,
+    QRunnable,
+    Qt,
+    QTimer,
+    pyqtSignal,
+    pyqtSlot,
+    QSize,
+    QRect,
 )
 from PyQt6.QtGui import (
-    QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
-    QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent, QShortcut,
-    QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QAction,
+    QCursor,
+    QDragEnterEvent,
+    QDragMoveEvent,
+    QDropEvent,
+    QInputMethodEvent,
+    QKeyEvent,
+    QKeySequence,
+    QMouseEvent,
+    QPalette,
+    QPixmap,
+    QResizeEvent,
+    QShortcut,
+    QTextBlock,
+    QTextCursor,
+    QTextDocument,
+    QTextOption,
 )
 from PyQt6.QtWidgets import (
-    QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
-    QPlainTextEdit, QToolBar, QVBoxLayout, QWidget
+    QApplication,
+    QFrame,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMenu,
+    QPlainTextEdit,
+    QToolBar,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import (
-    decodeMimeHandles, fontMatcher, minmax, qtAddAction, qtLambda, transferCase
+    decodeMimeHandles,
+    fontMatcher,
+    minmax,
+    qtAddAction,
+    qtLambda,
+    transferCase,
 )
-from novelwriter.constants import (
-    nwConst, nwKeyWords, nwLabels, nwShortcode, nwStats, nwUnicode, trStats
-)
+from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
-    nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
-    nwItemType
+    nwChange,
+    nwComment,
+    nwDocAction,
+    nwDocInsert,
+    nwDocMode,
+    nwItemClass,
+    nwItemType,
 )
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -73,9 +112,21 @@ from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
-    QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
-    QtAlignRight, QtKeepAnchor, QtModCtrl, QtModNone, QtModShift, QtMouseLeft,
-    QtMoveAnchor, QtMoveLeft, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
+    QtAlignCenterTop,
+    QtAlignJustify,
+    QtAlignLeft,
+    QtAlignLeftTop,
+    QtAlignRight,
+    QtKeepAnchor,
+    QtModCtrl,
+    QtModNone,
+    QtModShift,
+    QtMouseLeft,
+    QtMoveAnchor,
+    QtMoveLeft,
+    QtMoveRight,
+    QtScrollAlwaysOff,
+    QtScrollAsNeeded,
 )
 
 logger = logging.getLogger(__name__)
@@ -83,15 +134,15 @@ logger = logging.getLogger(__name__)
 
 class _SelectAction(Enum):
 
-    NO_DECISION    = 0
+    NO_DECISION = 0
     KEEP_SELECTION = 1
-    KEEP_POSITION  = 2
-    MOVE_AFTER     = 3
+    KEEP_POSITION = 2
+    MOVE_AFTER = 3
 
 
 class _TagAction(IntFlag):
 
-    NONE   = 0b00
+    NONE = 0b00
     FOLLOW = 0b01
     CREATE = 0b10
 
@@ -100,15 +151,34 @@ class GuiDocEditor(QPlainTextEdit):
     """Gui Widget: Main Document Editor"""
 
     __slots__ = (
-        "_autoReplace", "_completer", "_doReplace", "_docChanged", "_docHandle", "_followTag1",
-        "_followTag2", "_keyContext", "_lastActive", "_lastEdit", "_lastFind", "_nwDocument",
-        "_nwItem", "_qDocument", "_timerDoc", "_timerSel", "_vpMargin", "_wCounterDoc",
+        "_nwDocument",
+        "_nwItem",
+        "_docChanged",
+        "_docHandle",
+        "_vpMargin",
+        "_lastEdit",
+        "_lastActive",
+        "_lastFind",
+        "_doReplace",
+        "_autoReplace",
+        "_completer",
+        "_qDocument",
+        "_keyContext",
+        "_followTag1",
+        "_followTag2",
+        "_timerDoc",
+        "_wCounterDoc",
+        "_timerSel",
         "_wCounterSel",
     )
 
     MOVE_KEYS = (
-        Qt.Key.Key_Left, Qt.Key.Key_Right, Qt.Key.Key_Up, Qt.Key.Key_Down,
-        Qt.Key.Key_PageUp, Qt.Key.Key_PageDown
+        Qt.Key.Key_Left,
+        Qt.Key.Key_Right,
+        Qt.Key.Key_Up,
+        Qt.Key.Key_Down,
+        Qt.Key.Key_PageUp,
+        Qt.Key.Key_PageDown,
     )
     ENTER_KEYS = (Qt.Key.Key_Return, Qt.Key.Key_Enter)
 
@@ -118,6 +188,8 @@ class GuiDocEditor(QPlainTextEdit):
     editedStatusChanged = pyqtSignal(bool)
     itemHandleChanged = pyqtSignal(str)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
+    novelItemMetaChanged = pyqtSignal(str)
+    novelStructureChanged = pyqtSignal()
     openDocumentRequest = pyqtSignal(str, Enum, str, bool)
     requestNewNoteCreation = pyqtSignal(str, nwItemClass)
     requestNextDocument = pyqtSignal(str, bool)
@@ -134,23 +206,23 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Class Variables
         self._nwDocument = None
-        self._nwItem     = None
+        self._nwItem = None
 
         self._docChanged = False  # Flag for changed status of document
-        self._docHandle  = None   # The handle of the open document
-        self._vpMargin   = 0      # The editor viewport margin, set during init
+        self._docHandle = None  # The handle of the open document
+        self._vpMargin = 0  # The editor viewport margin, set during init
 
         # Document Variables
-        self._lastEdit   = 0.0    # Timestamp of last edit
-        self._lastActive = 0.0    # Timestamp of last activity
-        self._lastFind   = None   # Position of the last found search word
-        self._doReplace  = False  # Switch to temporarily disable auto-replace
+        self._lastEdit = 0.0  # Timestamp of last edit
+        self._lastActive = 0.0  # Timestamp of last activity
+        self._lastFind = None  # Position of the last found search word
+        self._doReplace = False  # Switch to temporarily disable auto-replace
 
         # Auto-Replace
         self._autoReplace = TextAutoReplace()
 
         # Completer
-        self._completer = CommandCompleter(self)
+        self._completer = MetaCompleter(self)
         self._completer.complete.connect(self._insertCompletion)
 
         # Create Custom Document
@@ -273,11 +345,11 @@ class GuiDocEditor(QPlainTextEdit):
         self._timerDoc.stop()
         self._timerSel.stop()
 
-        self._docHandle  = None
-        self._lastEdit   = 0.0
+        self._docHandle = None
+        self._lastEdit = 0.0
         self._lastActive = 0.0
-        self._lastFind   = None
-        self._doReplace  = False
+        self._lastFind = None
+        self._doReplace = False
 
         self.setDocumentChanged(False)
         self.docHeader.clearHeader()
@@ -324,7 +396,6 @@ class GuiDocEditor(QPlainTextEdit):
         """
         # Auto-Replace
         self._autoReplace.initSettings()
-        self.docFooter.initSettings()
 
         # Reload spell check and dictionaries
         SHARED.updateSpellCheckLanguage()
@@ -345,7 +416,9 @@ class GuiDocEditor(QPlainTextEdit):
         # allocated to the document itself. See issue #1112.
         self._qDocument.setDocumentMargin(4)
         self._vpMargin = max(CONFIG.textMargin - 4, 0)
-        self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
+        self.setViewportMargins(
+            self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin
+        )
 
         # Also set the document text options for the document text flow
         options = QTextOption()
@@ -354,7 +427,9 @@ class GuiDocEditor(QPlainTextEdit):
         if CONFIG.showTabsNSpaces:
             options.setFlags(options.flags() | QTextOption.Flag.ShowTabsAndSpaces)
         if CONFIG.showLineEndings:
-            options.setFlags(options.flags() | QTextOption.Flag.ShowLineAndParagraphSeparators)
+            options.setFlags(
+                options.flags() | QTextOption.Flag.ShowLineAndParagraphSeparators
+            )
         self._qDocument.setDefaultTextOption(options)
 
         # Scrolling
@@ -474,7 +549,9 @@ class GuiDocEditor(QPlainTextEdit):
         tHandle = self._nwItem.itemHandle
         if self._docHandle != tHandle:
             logger.error(
-                "Editor handle '%s' and item handle '%s' do not match", self._docHandle, tHandle
+                "Editor handle '%s' and item handle '%s' do not match",
+                self._docHandle,
+                tHandle,
             )
             return False
 
@@ -484,25 +561,39 @@ class GuiDocEditor(QPlainTextEdit):
 
         if not self._nwDocument.writeDocument(text):
             saveOk = False
-            if self._nwDocument.hashError and SHARED.question(self.tr(
-                "This document has been changed outside of novelWriter "
-                "while it was open. Overwrite the file on disk?"
-            )):
+            if self._nwDocument.hashError and SHARED.question(
+                self.tr(
+                    "This document has been changed outside of novelWriter "
+                    "while it was open. Overwrite the file on disk?"
+                )
+            ):
                 saveOk = self._nwDocument.writeDocument(text, forceWrite=True)
 
             if not saveOk:
                 SHARED.error(
                     self.tr("Could not save document."),
-                    info=self._nwDocument.getError()
+                    info=self._nwDocument.getError(),
                 )
 
             return False
 
         self.setDocumentChanged(False)
         self.docTextChanged.emit(self._docHandle, self._lastEdit)
-        SHARED.project.index.scanText(tHandle, text)
 
-        self.updateStatusMessage.emit(self.tr("Saved Document: {0}").format(self._nwItem.itemName))
+        oldCount = SHARED.project.index.getHandleHeaderCount(tHandle)
+        SHARED.project.index.scanText(tHandle, text)
+        newCount = SHARED.project.index.getHandleHeaderCount(tHandle)
+
+        if self._nwItem.itemClass == nwItemClass.NOVEL:
+            if oldCount == newCount:
+                self.novelItemMetaChanged.emit(tHandle)
+            else:
+                self.novelStructureChanged.emit()
+
+        # Update the status bar
+        self.updateStatusMessage.emit(
+            self.tr("Saved Document: {0}").format(self._nwItem.itemName)
+        )
 
         return True
 
@@ -548,10 +639,10 @@ class GuiDocEditor(QPlainTextEdit):
         tM = self._vpMargin
         if CONFIG.textWidth > 0 or SHARED.focusMode:
             tW = CONFIG.getTextWidth(SHARED.focusMode)
-            tM = max((wW - sW - tW)//2, self._vpMargin)
+            tM = max((wW - sW - tW) // 2, self._vpMargin)
 
         tB = self.frameWidth()
-        tW = wW - 2*tB - sW
+        tW = wW - 2 * tB - sW
         tH = self.docHeader.height()
         fH = self.docFooter.height()
         fY = wH - fH - tB - sH
@@ -563,8 +654,8 @@ class GuiDocEditor(QPlainTextEdit):
         if self.docSearch.isVisible():
             rH = self.docSearch.height()
             rW = self.docSearch.width()
-            rL = wW - sW - rW - 2*tB
-            self.docSearch.move(rL, 2*tB)
+            rL = wW - sW - rW - 2 * tB
+            self.docSearch.move(rL, 2 * tB)
 
         uM = max(self._vpMargin, tH, rH)
         lM = max(self._vpMargin, fH)
@@ -619,9 +710,11 @@ class GuiDocEditor(QPlainTextEdit):
 
     def setCursorPosition(self, position: int) -> None:
         """Move the cursor to a given position in the document."""
-        if (chars := self._qDocument.characterCount()) > 1 and isinstance(position, int):
+        if (chars := self._qDocument.characterCount()) > 1 and isinstance(
+            position, int
+        ):
             cursor = self.textCursor()
-            cursor.setPosition(minmax(position, 0, chars-1))
+            cursor.setPosition(minmax(position, 0, chars - 1))
             self.setTextCursor(cursor)
             self.centerCursor()
         return
@@ -668,10 +761,12 @@ class GuiDocEditor(QPlainTextEdit):
             state = False
 
         if state and not CONFIG.hasEnchant:
-            SHARED.info(self.tr(
-                "Spell checking requires the package PyEnchant. "
-                "It does not appear to be installed."
-            ))
+            SHARED.info(
+                self.tr(
+                    "Spell checking requires the package PyEnchant. "
+                    "It does not appear to be installed."
+                )
+            )
             state = False
 
         SHARED.project.data.setSpellCheck(state)
@@ -691,7 +786,7 @@ class GuiDocEditor(QPlainTextEdit):
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self._qDocument.syntaxHighlighter.rehighlight()
         QApplication.restoreOverrideCursor()
-        logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
+        logger.debug("Document highlighted in %.3f ms", 1000 * (time() - start))
         self.updateStatusMessage.emit(self.tr("Spell check complete"))
         return
 
@@ -811,14 +906,18 @@ class GuiDocEditor(QPlainTextEdit):
         """
         if isinstance(self._nwDocument, NWDocument):
             SHARED.info(
-                "<br>".join([
-                    self.tr("Document Details"),
-                    "–"*40,
-                    self.tr("Created: {0}").format(self._nwDocument.createdDate),
-                    self.tr("Updated: {0}").format(self._nwDocument.updatedDate),
-                ]),
-                details=self.tr("File Location: {0}").format(self._nwDocument.fileLocation),
-                log=False
+                "<br>".join(
+                    [
+                        self.tr("Document Details"),
+                        "–" * 40,
+                        self.tr("Created: {0}").format(self._nwDocument.createdDate),
+                        self.tr("Updated: {0}").format(self._nwDocument.updatedDate),
+                    ]
+                ),
+                details=self.tr("File Location: {0}").format(
+                    self._nwDocument.fileLocation
+                ),
+                log=False,
             )
         return
 
@@ -948,7 +1047,7 @@ class GuiDocEditor(QPlainTextEdit):
             okMod = kMod in (QtModNone, QtModShift)
             okKey = event.key() not in self.MOVE_KEYS
             if nPos != cPos and okMod and okKey and (viewport := self.viewport()):
-                mPos = CONFIG.autoScrollPos*0.01 * viewport.height()
+                mPos = CONFIG.autoScrollPos * 0.01 * viewport.height()
                 if cPos > mPos and (vBar := self.verticalScrollBar()):
                     vBar.setValue(vBar.value() + (1 if nPos > cPos else -1))
         else:
@@ -982,7 +1081,7 @@ class GuiDocEditor(QPlainTextEdit):
             super().dropEvent(event)
         return
 
-    def focusNextPrevChild(self, _next: bool) -> bool:
+    def focusNextPrevChild(self, next: bool) -> bool:
         """Capture the focus request from the tab key on the text
         editor. If the editor has focus, we do not change focus and
         allow the editor to insert a tab. If the search bar has focus,
@@ -1017,6 +1116,29 @@ class GuiDocEditor(QPlainTextEdit):
         super().resizeEvent(event)
         return
 
+    def inputMethodEvent(self, event: QInputMethodEvent) -> None:
+        """处理输入法事件"""
+        super().inputMethodEvent(event)
+        if event.commitString():
+            self.ensureCursorVisible()
+            # 更新输入框位置
+            if self._completer.isVisible():
+                rect = self.cursorRect()
+                pos = self.mapToGlobal(rect.bottomLeft())
+                self._completer.move(pos)
+
+    def inputMethodQuery(self, query: Qt.InputMethodQuery) -> Any:
+        """处理输入法查询"""
+        result = super().inputMethodQuery(query)
+        if query == Qt.InputMethodQuery.ImCursorRectangle:
+            # 获取光标矩形
+            rect = self.cursorRect()
+            # 转换为全局坐标
+            pos = self.mapToGlobal(rect.bottomLeft())
+            # 返回相对于输入法窗口的位置
+            return QRect(pos, QSize(1, rect.height()))
+        return result
+
     ##
     #  Public Slots
     ##
@@ -1041,7 +1163,7 @@ class GuiDocEditor(QPlainTextEdit):
             logger.error("Invalid keyword '%s'", keyword)
             return False
         logger.debug("Inserting keyword '%s'", keyword)
-        state = self.insertNewBlock(f"{keyword}: ")
+        state = self.insertNewBlock("%s: " % keyword)
         return state
 
     @pyqtSlot()
@@ -1080,18 +1202,16 @@ class GuiDocEditor(QPlainTextEdit):
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
-            if text and text[0] in "@%" and added + removed == 1:
+            if text.startswith("@") and added + removed == 1:
                 # Only run on single character changes, or it will trigger
                 # at unwanted times when other changes are made to the document
                 cursor = self.textCursor()
                 bPos = cursor.positionInBlock()
                 if bPos > 0 and (viewport := self.viewport()):
-                    if text[0] == "@":
-                        show = self._completer.updateMetaText(text, bPos)
-                    else:
-                        show = self._completer.updateCommentText(text, bPos)
-                    point = self.cursorRect().bottomRight()
-                    self._completer.move(viewport.mapToGlobal(point))
+                    show = self._completer.updateText(text, bPos)
+                    rect = self.cursorRect()
+                    pos = self.mapToGlobal(rect.bottomLeft())
+                    self._completer.move(pos)
                     self._completer.setVisible(show)
             else:
                 self._completer.setVisible(False)
@@ -1151,11 +1271,15 @@ class GuiDocEditor(QPlainTextEdit):
         status = self._processTag(cursor=pCursor, follow=False)
         if status & _TagAction.FOLLOW:
             action = qtAddAction(ctxMenu, self.tr("Follow Tag"))
-            action.triggered.connect(qtLambda(self._processTag, cursor=pCursor, follow=True))
+            action.triggered.connect(
+                qtLambda(self._processTag, cursor=pCursor, follow=True)
+            )
             ctxMenu.addSeparator()
         elif status & _TagAction.CREATE:
             action = qtAddAction(ctxMenu, self.tr("Create Note for Tag"))
-            action.triggered.connect(qtLambda(self._processTag, cursor=pCursor, create=True))
+            action.triggered.connect(
+                qtLambda(self._processTag, cursor=pCursor, create=True)
+            )
             ctxMenu.addSeparator()
 
         # Cut, Copy and Paste
@@ -1173,17 +1297,25 @@ class GuiDocEditor(QPlainTextEdit):
         action = qtAddAction(ctxMenu, self.tr("Select All"))
         action.triggered.connect(qtLambda(self.docAction, nwDocAction.SEL_ALL))
         action = qtAddAction(ctxMenu, self.tr("Select Word"))
-        action.triggered.connect(qtLambda(
-            self._makePosSelection, QTextCursor.SelectionType.WordUnderCursor, pos,
-        ))
+        action.triggered.connect(
+            qtLambda(
+                self._makePosSelection,
+                QTextCursor.SelectionType.WordUnderCursor,
+                pos,
+            )
+        )
         action = qtAddAction(ctxMenu, self.tr("Select Paragraph"))
-        action.triggered.connect(qtLambda(
-            self._makePosSelection, QTextCursor.SelectionType.BlockUnderCursor, pos
-        ))
+        action.triggered.connect(
+            qtLambda(
+                self._makePosSelection, QTextCursor.SelectionType.BlockUnderCursor, pos
+            )
+        )
 
         # Spell Checking
         if SHARED.project.data.spellCheck:
-            word, cPos, cLen, suggest = self._qDocument.spellErrorAtPos(pCursor.position())
+            word, cPos, cLen, suggest = self._qDocument.spellErrorAtPos(
+                pCursor.position()
+            )
             if word and cPos >= 0 and cLen > 0:
                 logger.debug("Word '%s' is misspelled", word)
                 block = pCursor.block()
@@ -1195,7 +1327,9 @@ class GuiDocEditor(QPlainTextEdit):
                     qtAddAction(ctxMenu, self.tr("Spelling Suggestion(s)"))
                     for option in suggest[:15]:
                         action = qtAddAction(ctxMenu, f"{nwUnicode.U_ENDASH} {option}")
-                        action.triggered.connect(qtLambda(self._correctWord, sCursor, option))
+                        action.triggered.connect(
+                            qtLambda(self._correctWord, sCursor, option)
+                        )
                 else:
                     trNone = self.tr("No Suggestions")
                     qtAddAction(ctxMenu, f"{nwUnicode.U_ENDASH} {trNone}")
@@ -1225,10 +1359,14 @@ class GuiDocEditor(QPlainTextEdit):
             if not self._wCounterDoc.isRunning():
                 SHARED.runInThreadPool(self._wCounterDoc)
 
-            self.docHeader.setOutline({
-                block.blockNumber(): block.text()
-                for block in self._qDocument.iterBlockByType(BLOCK_TITLE, maxCount=30)
-            })
+            self.docHeader.setOutline(
+                {
+                    block.blockNumber(): block.text()
+                    for block in self._qDocument.iterBlockByType(
+                        BLOCK_TITLE, maxCount=30
+                    )
+                }
+            )
 
             if self._docChanged:
                 self.docTextChanged.emit(self._docHandle, self._lastEdit)
@@ -1240,8 +1378,7 @@ class GuiDocEditor(QPlainTextEdit):
         """Process the word counter's finished signal."""
         if self._docHandle and self._nwItem:
             logger.debug("Updating word count")
-            mCount = cCount if CONFIG.useCharCount else wCount
-            needsRefresh = mCount != self._nwItem.mainCount
+            needsRefresh = wCount != self._nwItem.wordCount
             self._nwItem.setCharCount(cCount)
             self._nwItem.setWordCount(wCount)
             self._nwItem.setParaCount(pCount)
@@ -1249,7 +1386,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self._nwItem.notifyToRefresh()
                 if not self.textCursor().hasSelection():
                     # Selection counter should take precedence (#2155)
-                    self.docFooter.updateMainCount(mCount, False)
+                    self.docFooter.updateWordCount(wCount, False)
         return
 
     @pyqtSlot()
@@ -1262,7 +1399,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self._timerSel.start()
         else:
             self._timerSel.stop()
-            self.docFooter.updateMainCount(0, False)
+            self.docFooter.updateWordCount(0, False)
         return
 
     @pyqtSlot()
@@ -1279,7 +1416,8 @@ class GuiDocEditor(QPlainTextEdit):
     def _updateSelCounts(self, cCount: int, wCount: int, pCount: int) -> None:
         """Update the counts on the counter's finished signal."""
         if self._docHandle and self._nwItem:
-            self.docFooter.updateMainCount(cCount if CONFIG.useCharCount else wCount, True)
+            logger.debug("User selected %d words", wCount)
+            self.docFooter.updateWordCount(wCount, True)
             self._timerSel.stop()
         return
 
@@ -1473,7 +1611,9 @@ class GuiDocEditor(QPlainTextEdit):
             self.setTextCursor(cursor)
             logger.debug(
                 "Replaced occurrence of '%s' with '%s' on line %d",
-                searchFor, replWith, cursor.blockNumber() + 1
+                searchFor,
+                replWith,
+                cursor.blockNumber() + 1,
             )
 
         self.findNext()
@@ -1520,14 +1660,14 @@ class GuiDocEditor(QPlainTextEdit):
 
         numB = 0
         for n in range(fLen):
-            if self._qDocument.characterAt(posS-n-1) == fChar:
+            if self._qDocument.characterAt(posS - n - 1) == fChar:
                 numB += 1
             else:
                 break
 
         numA = 0
         for n in range(fLen):
-            if self._qDocument.characterAt(posE+n) == fChar:
+            if self._qDocument.characterAt(posE + n) == fChar:
                 numA += 1
             else:
                 break
@@ -1535,10 +1675,10 @@ class GuiDocEditor(QPlainTextEdit):
         if fLen == min(numA, numB):
             cursor.beginEditBlock()
             cursor.setPosition(posS)
-            for _ in range(fLen):
+            for i in range(fLen):
                 cursor.deletePreviousChar()
             cursor.setPosition(posE)
-            for _ in range(fLen):
+            for i in range(fLen):
                 cursor.deletePreviousChar()
             cursor.endEditBlock()
 
@@ -1548,13 +1688,16 @@ class GuiDocEditor(QPlainTextEdit):
                 self.setTextCursor(cursor)
 
         else:
-            self._wrapSelection(fChar*fLen, pos=posO, select=select)
+            self._wrapSelection(fChar * fLen, pos=posO, select=select)
 
         return
 
     def _wrapSelection(
-        self, before: str, after: str | None = None, pos: int | None = None,
-        select: _SelectAction = _SelectAction.NO_DECISION
+        self,
+        before: str,
+        after: str | None = None,
+        pos: int | None = None,
+        select: _SelectAction = _SelectAction.NO_DECISION,
     ) -> None:
         """Wrap the selected text in whatever is in tBefore and tAfter.
         If there is no selection, the autoSelect setting decides the
@@ -1608,7 +1751,9 @@ class GuiDocEditor(QPlainTextEdit):
         """Replace all straight quotes in the selected text."""
         cursor = self.textCursor()
         if not cursor.hasSelection():
-            SHARED.error(self.tr("Please select some text before calling replace quotes."))
+            SHARED.error(
+                self.tr("Please select some text before calling replace quotes.")
+            )
             return
 
         posS = cursor.selectionStart()
@@ -1616,7 +1761,7 @@ class GuiDocEditor(QPlainTextEdit):
         closeCheck = (" ", "\n", nwUnicode.U_LSEP, nwUnicode.U_PSEP)
 
         self._allowAutoReplace(False)
-        for posC in range(posS, posE+1):
+        for posC in range(posS, posE + 1):
             cursor.setPosition(posC)
             cursor.movePosition(QtMoveLeft, QtKeepAnchor, 2)
             selText = cursor.selectedText()
@@ -1760,7 +1905,9 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.BLOCK_TXT:
             text = temp
         else:
-            logger.error("Unknown or unsupported block format requested: '%s'", str(action))
+            logger.error(
+                "Unknown or unsupported block format requested: '%s'", str(action)
+            )
             return nwDocAction.NO_ACTION, "", 0
 
         return action, text, offset
@@ -1821,7 +1968,7 @@ class GuiDocEditor(QPlainTextEdit):
         if cursor.hasSelection():
             iS = self._qDocument.findBlock(cursor.selectionStart()).blockNumber()
             iE = self._qDocument.findBlock(cursor.selectionEnd()).blockNumber()
-            return [self._qDocument.findBlockByNumber(i) for i in range(iS, iE+1)]
+            return [self._qDocument.findBlockByNumber(i) for i in range(iS, iE + 1)]
         return []
 
     def _removeInParLineBreaks(self) -> None:
@@ -1859,7 +2006,7 @@ class GuiDocEditor(QPlainTextEdit):
         cursor.beginEditBlock()
         cursor.clearSelection()
         cursor.setPosition(rS)
-        cursor.movePosition(QtMoveRight, QtKeepAnchor, rE-rS)
+        cursor.movePosition(QtMoveRight, QtKeepAnchor, rE - rS)
         cursor.insertText(cleanText.rstrip() + "\n")
         cursor.endEditBlock()
 
@@ -1912,13 +2059,18 @@ class GuiDocEditor(QPlainTextEdit):
         """Slot for the spell check context menu triggered when the user
         wants to add a word to the project dictionary.
         """
-        logger.debug("Added '%s' to project dictionary, %s", word, "saved" if save else "unsaved")
+        logger.debug(
+            "Added '%s' to project dictionary, %s", word, "saved" if save else "unsaved"
+        )
         SHARED.spelling.addWord(word, save=save)
         self._qDocument.syntaxHighlighter.rehighlightBlock(block)
         return
 
     def _processTag(
-        self, cursor: QTextCursor | None = None, follow: bool = True, create: bool = False
+        self,
+        cursor: QTextCursor | None = None,
+        follow: bool = True,
+        create: bool = False,
     ) -> _TagAction:
         """Activated by Ctrl+Enter. Checks that we're in a block
         starting with '@'. We then find the tag under the cursor and
@@ -1951,7 +2103,7 @@ class GuiDocEditor(QPlainTextEdit):
             cPos = cursor.selectionStart() - block.position()
             tExist = SHARED.project.index.checkThese(tBits, self._docHandle)
             for sTag, sPos, sExist in zip(
-                reversed(tBits), reversed(tPos), reversed(tExist), strict=False
+                reversed(tBits), reversed(tPos), reversed(tExist)
             ):
                 if cPos >= sPos:
                     # The cursor is between the start of two tags
@@ -1976,9 +2128,11 @@ class GuiDocEditor(QPlainTextEdit):
                 logger.debug("Attempting to follow tag '%s'", tag)
                 self.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
             elif create and not exist:
-                if SHARED.question(self.tr(
-                    "Do you want to create a new project note for the tag '{0}'?"
-                ).format(tag)):
+                if SHARED.question(
+                    self.tr(
+                        "Do you want to create a new project note for the tag '{0}'?"
+                    ).format(tag)
+                ):
                     itemClass = nwKeyWords.KEY_CLASS.get(tBits[0], nwItemClass.NO_CLASS)
                     self.requestNewNoteCreation.emit(tag, itemClass)
 
@@ -2010,7 +2164,7 @@ class GuiDocEditor(QPlainTextEdit):
                 sPos = cPos - i - 1
                 cOne = str(self._qDocument.characterAt(sPos))
                 cTwo = str(self._qDocument.characterAt(sPos - 1))
-                if not (cOne.isalnum() or (cOne in apos and cTwo.isalnum())):
+                if not (cOne.isalnum() or cOne in apos and cTwo.isalnum()):
                     sPos += 1
                     break
 
@@ -2020,7 +2174,7 @@ class GuiDocEditor(QPlainTextEdit):
                 ePos = cPos + i
                 cOne = str(self._qDocument.characterAt(ePos))
                 cTwo = str(self._qDocument.characterAt(ePos + 1))
-                if not (cOne.isalnum() or (cOne in apos and cTwo.isalnum())):
+                if not (cOne.isalnum() or cOne in apos and cTwo.isalnum()):
                     break
 
             if ePos - sPos <= 0:
@@ -2054,7 +2208,7 @@ class GuiDocEditor(QPlainTextEdit):
             posE = cursor.selectionEnd()
             selTxt = cursor.selectedText()
             if selTxt.startswith(nwUnicode.U_PSEP):
-                cursor.setPosition(posS+1, QtMoveAnchor)
+                cursor.setPosition(posS + 1, QtMoveAnchor)
                 cursor.setPosition(posE, QtKeepAnchor)
 
         self.setTextCursor(cursor)
@@ -2076,14 +2230,53 @@ class GuiDocEditor(QPlainTextEdit):
             self._doReplace = False
         return
 
+    def _calculatePopupPosition(self) -> QPoint:
+        """计算输入框应该显示的位置。
+        返回一个全局坐标系中的点，表示输入框的左上角位置。
+        """
+        cursorRect = self.cursorRect()
+        viewportPos = self.viewport().mapToGlobal(cursorRect.bottomLeft())
 
-class CommandCompleter(QMenu):
-    """GuiWidget: Command Completer Menu
+        # 设置基础位置：光标正下方
+        point = QPoint(viewportPos.x(), viewportPos.y() + cursorRect.height() + 5)
+
+        # 获取屏幕几何信息
+        screen = QApplication.primaryScreen().geometry()
+        popupSize = self._completer.sizeHint()
+
+        # 检查是否会超出屏幕底部
+        if point.y() + popupSize.height() > screen.bottom():
+            # 如果会超出底部，改为显示在光标上方
+            point.setY(viewportPos.y() - popupSize.height() - cursorRect.height() - 5)
+
+        # 检查是否会超出屏幕右侧
+        if point.x() + popupSize.width() > screen.right():
+            point.setX(screen.right() - popupSize.width())
+
+        return point
+
+    def _showCompleter(self, text: str, cursorPos: int) -> None:
+        """显示自动完成输入框。
+
+        Args:
+            text: 当前行的文本
+            cursorPos: 光标在当前行中的位置
+        """
+        if show := self._completer.updateText(text, cursorPos):
+            point = self._calculatePopupPosition()
+            self._completer.move(point)
+            self._completer.setVisible(True)
+        else:
+            self._completer.setVisible(False)
+
+
+class MetaCompleter(QMenu):
+    """GuiWidget: Meta Completer Menu
 
     This is a context menu with options populated from the user's
-    defined tags and keys. It also helps to type the meta data keyword
-    on a new line starting with @ or %. The update functions should be
-    called on every keystroke on a line starting with @ or %.
+    defined tags. It also helps to type the meta data keyword on a new
+    line starting with an @. The updateText function should be called on
+    every keystroke on a line starting with @.
     """
 
     complete = pyqtSignal(int, int, str)
@@ -2092,7 +2285,7 @@ class CommandCompleter(QMenu):
         super().__init__(parent=parent)
         return
 
-    def updateMetaText(self, text: str, pos: int) -> bool:
+    def updateText(self, text: str, pos: int) -> bool:
         """Update the menu options based on the line of text."""
         self.clear()
         kw, sep, _ = text.partition(":")
@@ -2100,9 +2293,9 @@ class CommandCompleter(QMenu):
             offset = 0
             length = len(kw.rstrip())
             suffix = "" if sep else ":"
-            options = sorted(filter(
-                lambda x: x.startswith(kw.rstrip()), nwKeyWords.VALID_KEYS
-            ))
+            options = list(
+                filter(lambda x: x.startswith(kw.rstrip()), nwKeyWords.VALID_KEYS)
+            )
         else:
             status, tBits, tPos = SHARED.project.index.scanThis(text)
             if not status:
@@ -2112,65 +2305,24 @@ class CommandCompleter(QMenu):
             offset = tPos[index] if lookup else pos
             length = len(lookup)
             suffix = ""
-            options = sorted(filter(
-                lambda x: lookup in x.lower(), SHARED.project.index.getClassTags(
-                    nwKeyWords.KEY_CLASS.get(kw.strip())
+            options = list(
+                filter(
+                    lambda x: lookup in x.lower(),
+                    SHARED.project.index.getClassTags(
+                        nwKeyWords.KEY_CLASS.get(kw.strip())
+                    ),
                 )
-            ))[:15]
+            )[:15]
 
         if not options:
             return False
 
-        for value in options:
+        for value in sorted(options):
             rep = value + suffix
             action = qtAddAction(self, value)
             action.triggered.connect(qtLambda(self._emitComplete, offset, length, rep))
 
         return True
-
-    def updateCommentText(self, text: str, pos: int) -> bool:
-        """Update the menu options based on the line of text."""
-        self.clear()
-        cmd, sep, _ = text.partition(":")
-        if pos <= len(cmd):
-            clean = text[1:].lstrip()[:6].lower()
-            if clean[:6] == "story.":
-                pre, _, key = cmd.partition(".")
-                offset = len(pre) + 1
-                length = len(key)
-                suffix = "" if sep else ": "
-                options = sorted(filter(
-                    lambda x: x.startswith(key.rstrip()),
-                    SHARED.project.index.getStoryKeys(),
-                ))
-            elif clean[:5] == "note.":
-                pre, _, key = cmd.partition(".")
-                offset = len(pre) + 1
-                length = len(key)
-                suffix = "" if sep else ": "
-                options = sorted(filter(
-                    lambda x: x.startswith(key.rstrip()),
-                    SHARED.project.index.getNoteKeys(),
-                ))
-            elif pos < 12:
-                offset = 0
-                length = len(cmd.rstrip())
-                suffix = ""
-                options = list(filter(
-                    lambda x: x.startswith(cmd.rstrip()),
-                    ["%Synopsis: ", "%Short: ", "%Story", "%Note"],
-                ))
-            else:
-                return False
-
-            if options:
-                for value in options:
-                    rep = value + suffix
-                    action = qtAddAction(self, rep.rstrip(":. "))
-                    action.triggered.connect(qtLambda(self._emitComplete, offset, length, rep))
-                return True
-
-        return False
 
     ##
     #  Events
@@ -2180,8 +2332,11 @@ class CommandCompleter(QMenu):
         """Capture keypresses and forward most of them to the editor."""
         parent = self.parent()
         if event.key() in (
-            Qt.Key.Key_Up, Qt.Key.Key_Down, Qt.Key.Key_Return,
-            Qt.Key.Key_Enter, Qt.Key.Key_Escape
+            Qt.Key.Key_Up,
+            Qt.Key.Key_Down,
+            Qt.Key.Key_Return,
+            Qt.Key.Key_Enter,
+            Qt.Key.Key_Escape,
         ):
             super().keyPressEvent(event)
         elif isinstance(parent, GuiDocEditor):
@@ -2238,15 +2393,26 @@ class BackgroundWordCounterSignals(QObject):
     """The QRunnable cannot emit a signal, so we need a simple QObject
     to hold the word counter signal.
     """
+
     countsReady = pyqtSignal(int, int, int)
 
 
 class TextAutoReplace:
 
     __slots__ = (
-        "_doPadAfter", "_doPadBefore", "_padAfter", "_padBefore", "_padChar",
-        "_quoteDC", "_quoteDO", "_quoteSC", "_quoteSO", "_replaceDQuote",
-        "_replaceDash", "_replaceDots", "_replaceSQuote",
+        "_quoteSO",
+        "_quoteSC",
+        "_quoteDO",
+        "_quoteDC",
+        "_replaceSQuote",
+        "_replaceDQuote",
+        "_replaceDash",
+        "_replaceDots",
+        "_padChar",
+        "_padBefore",
+        "_padAfter",
+        "_doPadBefore",
+        "_doPadAfter",
     )
 
     def __init__(self) -> None:
@@ -2262,14 +2428,14 @@ class TextAutoReplace:
 
         self._replaceSQuote = CONFIG.doReplaceSQuote
         self._replaceDQuote = CONFIG.doReplaceDQuote
-        self._replaceDash   = CONFIG.doReplaceDash
-        self._replaceDots   = CONFIG.doReplaceDots
+        self._replaceDash = CONFIG.doReplaceDash
+        self._replaceDots = CONFIG.doReplaceDots
 
-        self._padChar     = nwUnicode.U_THNBSP if CONFIG.fmtPadThin else nwUnicode.U_NBSP
-        self._padBefore   = CONFIG.fmtPadBefore
-        self._padAfter    = CONFIG.fmtPadAfter
+        self._padChar = nwUnicode.U_THNBSP if CONFIG.fmtPadThin else nwUnicode.U_NBSP
+        self._padBefore = CONFIG.fmtPadBefore
+        self._padAfter = CONFIG.fmtPadAfter
         self._doPadBefore = bool(CONFIG.fmtPadBefore)
-        self._doPadAfter  = bool(CONFIG.fmtPadAfter)
+        self._doPadAfter = bool(CONFIG.fmtPadAfter)
         return
 
     def process(self, text: str, cursor: QTextCursor) -> bool:
@@ -2278,7 +2444,7 @@ class TextAutoReplace:
         """
         pos = cursor.positionInBlock()
         length = len(text)
-        if length < 1 or pos-1 > length:
+        if length < 1 or pos - 1 > length:
             return False
 
         delete, insert = self._determine(text, pos)
@@ -2309,10 +2475,10 @@ class TextAutoReplace:
 
     def _determine(self, text: str, pos: int) -> tuple[int, str]:
         """Determine what to replace, if anything."""
-        t1 = text[pos-1:pos]
-        t2 = text[pos-2:pos]
-        t3 = text[pos-3:pos]
-        t4 = text[pos-4:pos]
+        t1 = text[pos - 1 : pos]
+        t2 = text[pos - 2 : pos]
+        t3 = text[pos - 3 : pos]
+        t4 = text[pos - 4 : pos]
         if t1 == "":
             # Return early if there is nothing to check
             return 0, ""
@@ -2600,13 +2766,13 @@ class GuiDocEditSearch(QFrame):
         self.replaceButton.setToolTip(self.tr("Find and replace in current document"))
         self.replaceButton.clicked.connect(self._doReplace)
 
-        self.mainBox.addWidget(self.searchLabel,   0, 0, 1, 2, QtAlignLeft)
-        self.mainBox.addWidget(self.searchOpt,     0, 2, 1, 3, QtAlignRight)
-        self.mainBox.addWidget(self.showReplace,   1, 0, 1, 1)
-        self.mainBox.addWidget(self.searchBox,     1, 1, 1, 2)
-        self.mainBox.addWidget(self.searchButton,  1, 3, 1, 1)
-        self.mainBox.addWidget(self.resultLabel,   1, 4, 1, 1)
-        self.mainBox.addWidget(self.replaceBox,    2, 1, 1, 2)
+        self.mainBox.addWidget(self.searchLabel, 0, 0, 1, 2, QtAlignLeft)
+        self.mainBox.addWidget(self.searchOpt, 0, 2, 1, 3, QtAlignRight)
+        self.mainBox.addWidget(self.showReplace, 1, 0, 1, 1)
+        self.mainBox.addWidget(self.searchBox, 1, 1, 1, 2)
+        self.mainBox.addWidget(self.searchButton, 1, 3, 1, 1)
+        self.mainBox.addWidget(self.resultLabel, 1, 4, 1, 1)
+        self.mainBox.addWidget(self.replaceBox, 2, 1, 1, 2)
         self.mainBox.addWidget(self.replaceButton, 2, 3, 1, 1)
 
         self.mainBox.setColumnStretch(0, 0)
@@ -2740,7 +2906,9 @@ class GuiDocEditSearch(QFrame):
 
         # Set stylesheets
         self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
-        self.showReplace.setStyleSheet("QToolButton {border: none; background: transparent;}")
+        self.showReplace.setStyleSheet(
+            "QToolButton {border: none; background: transparent;}"
+        )
 
         return
 
@@ -2845,7 +3013,7 @@ class GuiDocEditSearch(QFrame):
         palette = self.replaceBox.palette()
         palette.setColor(
             QPalette.ColorRole.Text,
-            palette.text().color() if isValid else SHARED.theme.errorText
+            palette.text().color() if isValid else SHARED.theme.errorText,
         )
         self.searchBox.setPalette(palette)
         return
@@ -2907,7 +3075,9 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton = NIconToolButton(self, iSz)
         self.minmaxButton.setVisible(False)
         self.minmaxButton.setToolTip(self.tr("Toggle Focus Mode"))
-        self.minmaxButton.clicked.connect(qtLambda(self.docEditor.toggleFocusModeRequest.emit))
+        self.minmaxButton.clicked.connect(
+            qtLambda(self.docEditor.toggleFocusModeRequest.emit)
+        )
 
         self.closeButton = NIconToolButton(self, iSz)
         self.closeButton.setVisible(False)
@@ -2972,7 +3142,9 @@ class GuiDocEditHeader(QWidget):
                 action = qtAddAction(self.outlineMenu, text)
                 action.triggered.connect(qtLambda(self._gotoBlock, number))
             self._docOutline = data
-            logger.debug("Document outline updated in %.3f ms", 1000*(time() - tStart))
+            logger.debug(
+                "Document outline updated in %.3f ms", 1000 * (time() - tStart)
+            )
         return
 
     def updateFont(self) -> None:
@@ -3027,11 +3199,22 @@ class GuiDocEditHeader(QWidget):
         self._docHandle = tHandle
 
         if CONFIG.showFullPath:
-            self.itemTitle.setText(f"  {nwUnicode.U_RSAQUO}  ".join(reversed(
-                [name for name in SHARED.project.tree.itemPath(tHandle, asName=True)]
-            )))
+            self.itemTitle.setText(
+                f"  {nwUnicode.U_RSAQUO}  ".join(
+                    reversed(
+                        [
+                            name
+                            for name in SHARED.project.tree.itemPath(
+                                tHandle, asName=True
+                            )
+                        ]
+                    )
+                )
+            )
         else:
-            self.itemTitle.setText(i.itemName if (i := SHARED.project.tree[tHandle]) else "")
+            self.itemTitle.setText(
+                i.itemName if (i := SHARED.project.tree[tHandle]) else ""
+            )
 
         self.tbButton.setVisible(True)
         self.searchButton.setVisible(True)
@@ -3092,13 +3275,13 @@ class GuiDocEditFooter(QWidget):
         self._tItem = None
         self._docHandle = None
 
-        iPx = round(0.9*SHARED.theme.baseIconHeight)
-        fPx = int(0.9*SHARED.theme.fontPixelSize)
+        iPx = round(0.9 * SHARED.theme.baseIconHeight)
+        fPx = int(0.9 * SHARED.theme.fontPixelSize)
 
         # Cached Translations
-        self.initSettings()
         self._trLineCount = self.tr("Line: {0} ({1})")
-        self._trSelectCount = self.tr("Selected: {0}")
+        self._trWordCount = self.tr("Words: {0} ({1})")
+        self._trSelectCount = self.tr("Words: {0} selected")
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
@@ -3159,7 +3342,7 @@ class GuiDocEditFooter(QWidget):
         self.updateTheme()
 
         # Initialise Info
-        self.updateMainCount(0, False)
+        self.updateWordCount(0, False)
 
         logger.debug("Ready: GuiDocEditFooter")
 
@@ -3168,13 +3351,6 @@ class GuiDocEditFooter(QWidget):
     ##
     #  Methods
     ##
-
-    def initSettings(self) -> None:
-        """Apply user settings."""
-        self._trMainCount = trStats(nwLabels.STATS_DISPLAY[
-            nwStats.CHARS if CONFIG.useCharCount else nwStats.WORDS
-        ])
-        return
 
     def updateFont(self) -> None:
         """Update the font settings."""
@@ -3186,7 +3362,7 @@ class GuiDocEditFooter(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        iPx = round(0.9*SHARED.theme.baseIconHeight)
+        iPx = round(0.9 * SHARED.theme.baseIconHeight)
         self.linesIcon.setPixmap(SHARED.theme.getPixmap("lines", (iPx, iPx)))
         self.wordsIcon.setPixmap(SHARED.theme.getPixmap("stats", (iPx, iPx)))
         self.matchColors()
@@ -3220,7 +3396,7 @@ class GuiDocEditFooter(QWidget):
             self._tItem = SHARED.project.tree[self._docHandle]
 
         self.updateInfo()
-        self.updateMainCount(0, False)
+        self.updateWordCount(0, False)
 
         return
 
@@ -3230,7 +3406,7 @@ class GuiDocEditFooter(QWidget):
             sIcon = QPixmap()
             sText = ""
         else:
-            iPx = round(0.9*SHARED.theme.baseIconHeight)
+            iPx = round(0.9 * SHARED.theme.baseIconHeight)
             status, icon = self._tItem.getImportStatus()
             sIcon = icon.pixmap(iPx, iPx)
             sText = f"{status} / {self._tItem.describeMe()}"
@@ -3251,15 +3427,15 @@ class GuiDocEditFooter(QWidget):
             )
         return
 
-    def updateMainCount(self, count: int, selection: bool) -> None:
-        """Update main counter information."""
-        if selection and count:
-            text = self._trSelectCount.format(f"{count:n}")
+    def updateWordCount(self, wCount: int, selection: bool) -> None:
+        """Update word counter information."""
+        if selection and wCount:
+            wText = self._trSelectCount.format(f"{wCount:n}")
         elif self._tItem:
-            count = self._tItem.mainCount
-            diff = count - self._tItem.initCount
-            text = self._trMainCount.format(f"{count:n}", f"{diff:+n}")
+            wCount = self._tItem.wordCount
+            wDiff = wCount - self._tItem.initCount
+            wText = self._trWordCount.format(f"{wCount:n}", f"{wDiff:+n}")
         else:
-            text = self._trMainCount.format("0", "+0")
-        self.wordsText.setText(text)
+            wText = self._trWordCount.format("0", "+0")
+        self.wordsText.setText(wText)
         return
