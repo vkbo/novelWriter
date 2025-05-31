@@ -39,6 +39,10 @@ Additional larger translation contributions:
 * **French:** Albert Aribaud (aaribaud)
 * **Portuguese:** Oli Maia (olimaia)
 
+Translations of the documentation:
+
+* **French:** Jean-Michel Heras (Karduin)
+
 Translations are managed on [Crowdin](https://crowdin.com/project/novelwriter), and more
 contributions are listed on the project's Members page.
 

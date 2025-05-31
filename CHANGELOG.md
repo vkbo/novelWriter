@@ -1,5 +1,39 @@
 # novelWriter Changelog
 
+## Version 2.7 [2025-06-01]
+
+### Release Notes
+
+The 2.7 release updates the 2.7 RC 1 release and makes an improvement to the build settings tool.
+It also updates most translations and updates the French version of the documentation.
+
+See the website for complete [Release Notes](https://novelwriter.io/releases/release_2_7.html).
+
+### Detailed Changelog
+
+**Improvement**
+
+* The Manuscript Build Settings dialog now works on a copy of the settings so that if the dialog
+  box is closed without saving, all changes are discarded. It should also now detect any change
+  made to properly raise a confirmation prompt when closing without saving. Issue #2350. PR #2351.
+
+**Documentation**
+
+* The user documentation has been restructured, and the Getting Started section has been made less
+  technical. The install instructions have been moved out and into the main website. The technical
+  and in-depth parts of the documentation have been kept, but moved further back so that the
+  documentation can be read from the start and to the point where the user has enough information.
+  The larger sections have also been split up so that it should be easier to find the wanted
+  information directly from the menu. Issue #2345. PR #2355.
+
+**Internationalisation**
+
+* Updated US English, Japanese, Norwegian. German, Italian, Polish, Brazilian Portuguese and
+  Chinese translation files. PR #2353.
+* French documentation updated by @Karduin. Issue #2360. PR #2361.
+
+----
+
 ## Version 2.7 RC 1 [2025-05-19]
 
 ### Release Notes
