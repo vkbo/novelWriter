@@ -4,7 +4,8 @@
 
 ### Release Notes
 
-The 2.7 release fixes a few minor issues from the RC 1 pre-release, and updates most translations.
+The 2.7 release updates the 2.7 RC 1 release and makes an improvement to the build settings tool.
+It also updates most translations and updates the French version of the documentation.
 
 See the website for complete [Release Notes](https://novelwriter.io/releases/release_2_7.html).
 
