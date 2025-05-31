@@ -1,6 +1,10 @@
 {
   "Synopsis": "Samandrag",
+  "Short Description": "Kort beskriving",
+  "Footnotes": "Fotnotar",
   "Comment": "Kommentar",
+  "Story Structure": "Tekst-element",
+  "Note": "Notat",
   "Notes": "Notat",
   "Tag": "Knagg",
   "Point of View": "Perspektiv",
@@ -12,6 +16,7 @@
   "Objects": "Objekt",
   "Entities": "Eining",
   "Custom": "Anna",
+  "New Page": "Ny side",
   "0": "null",
   "1": "ein",
   "2": "to",
