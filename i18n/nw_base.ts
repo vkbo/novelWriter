@@ -991,38 +991,38 @@
   <context>
     <name>GuiBuildSettings</name>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="96" />
-      <location filename="../novelwriter/tools/manussettings.py" line="85" />
+      <location filename="../novelwriter/tools/manussettings.py" line="97" />
+      <location filename="../novelwriter/tools/manussettings.py" line="86" />
       <source>Manuscript Build Settings</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="101" />
+      <location filename="../novelwriter/tools/manussettings.py" line="102" />
       <source>Name</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="109" />
+      <location filename="../novelwriter/tools/manussettings.py" line="110" />
       <source>General</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="110" />
+      <location filename="../novelwriter/tools/manussettings.py" line="111" />
       <source>Selection</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="111" />
+      <location filename="../novelwriter/tools/manussettings.py" line="112" />
       <source>Headings</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="112" />
+      <location filename="../novelwriter/tools/manussettings.py" line="113" />
       <source>Formatting</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="231" />
+      <location filename="../novelwriter/tools/manussettings.py" line="236" />
       <source>Do you want to save your changes to '{0}'?</source>
       <translation type="unfinished" />
     </message>
@@ -4483,37 +4483,37 @@
   <context>
     <name>_FilterTab</name>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="290" />
+      <location filename="../novelwriter/tools/manussettings.py" line="297" />
       <source>Included in manuscript</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="291" />
+      <location filename="../novelwriter/tools/manussettings.py" line="298" />
       <source>Excluded from manuscript</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="325" />
+      <location filename="../novelwriter/tools/manussettings.py" line="332" />
       <source>Always included</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="330" />
+      <location filename="../novelwriter/tools/manussettings.py" line="337" />
       <source>Always excluded</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="335" />
+      <location filename="../novelwriter/tools/manussettings.py" line="342" />
       <source>Reset to default</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="339" />
+      <location filename="../novelwriter/tools/manussettings.py" line="346" />
       <source>Mark selection as</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="477" />
+      <location filename="../novelwriter/tools/manussettings.py" line="484" />
       <source>Select Root Folders</source>
       <translation type="unfinished" />
     </message>
@@ -4544,84 +4544,84 @@
   <context>
     <name>_HeadingsTab</name>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="555" />
+      <location filename="../novelwriter/tools/manussettings.py" line="562" />
       <source>Hide</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="877" />
-      <location filename="../novelwriter/tools/manussettings.py" line="667" />
+      <location filename="../novelwriter/tools/manussettings.py" line="884" />
+      <location filename="../novelwriter/tools/manussettings.py" line="674" />
       <source>Editing: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="874" />
-      <location filename="../novelwriter/tools/manussettings.py" line="667" />
+      <location filename="../novelwriter/tools/manussettings.py" line="881" />
+      <location filename="../novelwriter/tools/manussettings.py" line="674" />
       <source>None</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="676" />
+      <location filename="../novelwriter/tools/manussettings.py" line="683" />
       <source>Title</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="677" />
+      <location filename="../novelwriter/tools/manussettings.py" line="684" />
       <source>Chapter Number</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="678" />
+      <location filename="../novelwriter/tools/manussettings.py" line="685" />
       <source>Chapter Number (Word)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="679" />
+      <location filename="../novelwriter/tools/manussettings.py" line="686" />
       <source>Chapter Number (Upper Case Roman)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="680" />
+      <location filename="../novelwriter/tools/manussettings.py" line="687" />
       <source>Chapter Number (Lower Case Roman)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="681" />
+      <location filename="../novelwriter/tools/manussettings.py" line="688" />
       <source>Scene Number (In Chapter)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="682" />
+      <location filename="../novelwriter/tools/manussettings.py" line="689" />
       <source>Scene Number (Absolute)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="683" />
+      <location filename="../novelwriter/tools/manussettings.py" line="690" />
       <source>Point of View Character</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="684" />
+      <location filename="../novelwriter/tools/manussettings.py" line="691" />
       <source>Focus Character</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="696" />
+      <location filename="../novelwriter/tools/manussettings.py" line="703" />
       <source>Insert</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="699" />
+      <location filename="../novelwriter/tools/manussettings.py" line="706" />
       <source>Apply</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="714" />
+      <location filename="../novelwriter/tools/manussettings.py" line="721" />
       <source>Centre</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="715" />
+      <location filename="../novelwriter/tools/manussettings.py" line="722" />
       <source>Page Break</source>
       <translation type="unfinished" />
     </message>
