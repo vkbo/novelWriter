@@ -1,5 +1,7 @@
 # Contributing Guide
 
+See also [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md).
+
 When contributing to this repository, please first discuss the change you wish to make with the
 owner. Either via the issue tracker or on the discussions page. Especially if it is regarding new
 features. If you just want to make a minor correction, like fix a typo or similar, feel free to
@@ -22,19 +24,22 @@ just make a pull request directly.
 
 ## Picking the Correct Branch for a Pull Request
 
-The `main` branch is the default branch. For general changes, please make a new branch in your own
-fork from the current `main` branch. Do not make pull requests from your copy of the `main` branch.
+Pre-releases are made from the `main` branch, and full releases are made from the `release` branch.
+If you are submitting a fix to a current release you must do so from the `release` branch. If you
+make such a fix on the `main` branch, **it cannot be included in a patch release**. This also
+applies to the documentation for the latest release published on the main website.
 
-As of April 2024, releases are made from the `release` branch. If you are submitting a fix to a
-current release you must do so from the `release` branch. If you make such a fix on the `main`
-branch, **it cannot be included in a patch release**. This also applies to the documentation for
-the latest release published on the main website.
+New features are only accepted on full releases, so a feature pull request must be made to the
+`main` branch. However, if the `main` branch is very close to a new full release, pull requests may
+not be merged until the release is completed.
 
-**Also check the following:**
+## Pull Request Check List
 
-* Make sure your code passes all tests and conforms to the style guide. You can check that the
-  code generally conforms by running the Python linting tool `flake8` from the root of the project
-  folder, although it doesn't check everything. The same check is also run on pull requests.
+Make sure the pull request follows these rules:
+
+* The `main` branch is the default branch. For general changes, please make a new branch in your
+  own fork from the current `main` branch. Do not make pull requests from your copy of the `main`
+  branch.
 * Please provide a description of the changes in the pull request under the summary section of the
   pull request template, and reference any related issues by providing the issue number.
 * Do not change the version number.
@@ -42,90 +47,63 @@ the latest release published on the main website.
   mostly an issue with translation files. The language tool may update all files in the `i18n`
   folder.
 
-## Code of Conduct
+## General Rules
 
-There is a code of conduct. Please follow it in all your interactions with the project.
+These are the guidelines for the project. The source code of novelWriter broadly follows the
+[PEP8](https://www.python.org/dev/peps/pep-0008) style guide, but with a few exceptions.
 
-### Our Pledge
+### Tests
 
-In the interest of fostering an open and welcoming environment, we as contributors and maintainers
-pledge to making participation in our project and our community a harassment-free experience for
-everyone, regardless of age, body size, disability, ethnicity, gender identity and expression,
-level of experience, nationality, personal appearance, race, religion, or sexual identity and
-orientation.
+* New code must not break any existing tests.
+* New code must come with tests that cover the code in full. If the code has branches that only
+  runs on some OSes, they must be covered when test are run on that OS. The test suite runs on
+  Linux, Windows and MacOS.
 
-Please see the [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) file for the full text.
+### Code Formatting
 
-## Code Style Guide
+* Do not run automatic formatting tools like `black` or `ruff` on the code. Auto-formatting using
+  `ruff` is planned, but there are a couple of features missing in it, so it is currently only used
+  for linting. Auto-formatting with `isort` is configured in `pyproject.toml` and can be used.
+* The pull request code *must* pass the `ruff` linting rules specified in `pyproject.toml`.
+* In general, do not make large scale formatting changes to the code.
 
-The source code of novelWriter broadly follows the [PEP8](https://www.python.org/dev/peps/pep-0008)
-style guide, but with a few exceptions. Some key points are listed below.
+### Type Annotations
 
-**Line Length:**
+* All functions and parameters must be type annotated, and so must variables and attributes if the
+  type cannot be inferred from the initial value. Typing rules are set in `pyproject.toml` and a
+  pull request must pass `pyright` with these settings.
+* Do not use the `Any` type when an actual type exists. `Any` is allowed for functions that
+  actually handles any kind of input and returns a standard type.
+* Do not use deprecated capitalised annotations like `Dict`, `List`, `Tuple`, etc.
+* Type annotated code must be runnable on all supported Python versions.
 
-* Source code lines can extend to the upper limit of 99 characters allowed by PEP8. 79 characters
-  is the recommended line length in PEP8, but this is often too restrictive. 99 characters are
-  acceptable when that is more practical. Readability has priority. Generally, if a code statement
+### Internationalisation
+
+* All comments and docstrings in the code must be in English.
+* All text presented to the user must be wrapped in calls to Qt's translation framework, and the
+  spelling of this text *must* be UK English. US English spelling is not allowed for these strings.
+* Commit descriptions and pull requests must also be in English.
+
+### Line Length
+
+* Source code lines can extend to the upper limit of 99 characters. Generally, if a code statement
   requires multiple lines, the lines should wrap at 79 characters if possible. If wrapping can be
-  avoided by going to 99, then that is generally preferable.
-* For text files, the text should be wrapped at 99 character. The exception is markdown image tags
-  and urls which can run past that limit.
+  avoided by going to 99, then that is generally preferable. Readability has priority.
+* For text files, the text should be wrapped at 99 character. The exception is Markdown image tags
+  and URLs which can run past that limit.
 
-**Variable and Function Names**
-
-* PEP8 allows for camelCase for consistency with existing code. The Qt library uses camelCase, so
-  the novelWriter source code does too.
-* The exception to the above is for constants. They should always be in upper snake case, like PEP8
-  states.
-
-**Spaces, Indentation and Alignment**
+### Spaces, Indentation and Alignment
 
 * Only indentation by multiples of 4 spaces is allowed.
 * No trailing spaces should occur on any line in the source code, including empty lines.
-* All common line wrapping methods are allowed in the code, but avoid deep indentations.
+* Common line wrapping methods are allowed in the code except `\`, but avoid deep indentations.
 * Aligning operators and attributes in columns with multiple spaces is not allowed by PEP8. The
   rule is relaxed a bit here. Alignment is allowed when populating large dictionaries or setting
   many class attributes. It does improve readability in such cases, but should not be overused.
 
-**Type Annotation**
+### General Code Rules
 
-* All functions must be properly type annotated, and a return type stated in all cases.
-* Do not use `List`, `Dict`, `Tuple`, etc, annotations that were deprecated in Python 3.9. You can
-  install the `flake8-pep585` extension to make sure you don't forget. This is also checked by the
-  syntax action run on pull requests.
-* If annotations require a more recent Python version than the minimum version stated in the
-  project's `pyproject.toml`, hide it under an `if TYPE_CHECKING` condition so that the code can
-  still run on older versions. It's OK to require a more recent version for development.
-
-### Linting with `flake8`
-
-A good tool for checking Python code for errors and code style is `flake8`. The documentation is
-available [here](https://flake8.pycqa.org/en/latest/).
-
-The `.flake8` file in the root of this project has the following settings for that matches the
-required code style:
-
-```conf
-[flake8]
-ignore = E133,E221,E226,E228,E241,W503
-max-line-length = 99
-exclude = docs/*
-```
-
-The command line equivalent, with reporting, is:
-```bash
-flake8 . --count --ignore E133,E221,E226,E228,E241,W503 --max-line-length=99 --show-source --statistics
-```
-
-Passing this check is required before contributions are merged. This is checked automatically when
-you make a pull request. You can run the `flake8` command locally to check beforehand. The full
-command will give you a detailed description of the code lines that do not conform to the standard.
-
-Two of the ignored errors are due to the relaxed restriction on column alignment, these are the
-E221 and E241 error codes.
-
-The code E226 is ignored because it doesn't actually follow the
-[PEP8 recommendation](https://www.python.org/dev/peps/pep-0008/#other-recommendations)
-of grouping longer equations by operator precedence like `2*a + 3*b` instead of `a * a + 3 * b`.
-Generally, don't use spaces around `*`, `/` and `**`, but _do_ use spaces around `+` and `-`.
-The same applies to the modulo operator `%`, hence E228 is also ignored.
+* Use f-string style for string formatting as the first choice, and `.format` functions if there is
+  a good reason for it. Do not use `%` style formatting except for logging output. For logging, `%`
+  must be used (it's a limitation in the logging library unfortunately).
+* Functions should be on camelCase form for consistency with the Qt library code.
