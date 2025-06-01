@@ -38,7 +38,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__
-from novelwriter.common import formatFileFilter, formatVersion, hexToInt
+from novelwriter.common import formatFileFilter, formatVersion, hexToInt, minmax
 from novelwriter.constants import nwConst
 from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
@@ -103,7 +103,7 @@ class GuiMain(QMainWindow):
         SHARED.initSharedData(self)
 
         # Prepare Main Window
-        self.resize(*CONFIG.mainWinSize)
+        self._setWindowSize(CONFIG.mainWinSize)
         self._updateWindowTitle()
 
         nwIcon = CONFIG.assetPath("icons") / "novelwriter.svg"
@@ -1325,6 +1325,15 @@ class GuiMain(QMainWindow):
     ##
     #  Internal Functions
     ##
+
+    def _setWindowSize(self, size: list[int]) -> None:
+        """Set the main window size."""
+        if len(size) == 2 and (screen := SHARED.mainScreen):
+            availSize = screen.availableSize()
+            width = minmax(size[0], 900, availSize.width())
+            height = minmax(size[1], 500, availSize.height())
+            self.resize(width, height)
+        return
 
     def _updateWindowTitle(self, projName: str | None = None) -> None:
         """Set the window title and add the project's name."""
