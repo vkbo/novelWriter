@@ -137,8 +137,9 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     assert theme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (0, 127, 255, 255)
 
     # Non-existing value should return default colour
+    theme._setBaseColor("default", QColor(64, 64, 64, 255))
     theme._setPalette(parser, "Palette", "stuff", QPalette.ColorRole.Window)
-    assert theme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (0, 0, 0, 255)
+    assert theme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (64, 64, 64, 255)
 
     # qtbot.stop()
 
