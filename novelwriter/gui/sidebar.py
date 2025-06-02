@@ -27,12 +27,13 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QEvent, QPoint, QSize, pyqtSignal
+from PyQt6.QtCore import QEvent, QPoint, QSize, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QMenu, QVBoxLayout, QWidget
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import qtLambda
-from novelwriter.enum import nwView
+from novelwriter.constants import nwLabels, trConst
+from novelwriter.enum import nwTheme, nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_BIG_TOOLBUTTON
@@ -77,6 +78,10 @@ class GuiSideBar(QWidget):
         self.tbOutline.setToolTip("{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
         self.tbOutline.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.OUTLINE))
 
+        self.tbTheme = NIconToolButton(self, iSz)
+        self.tbTheme.setToolTip(self.tr("Switch Colour Theme"))
+        self.tbTheme.clicked.connect(self._cycleColurTheme)
+
         self.tbBuild = NIconToolButton(self, iSz)
         self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Build Manuscript")))
         self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
@@ -109,6 +114,7 @@ class GuiSideBar(QWidget):
         self.outerBox.addWidget(self.tbOutline)
         self.outerBox.addWidget(self.tbBuild)
         self.outerBox.addStretch(1)
+        self.outerBox.addWidget(self.tbTheme)
         self.outerBox.addWidget(self.tbDetails)
         self.outerBox.addWidget(self.tbStats)
         self.outerBox.addWidget(self.tbSettings)
@@ -131,6 +137,7 @@ class GuiSideBar(QWidget):
         self.tbSearch.setStyleSheet(buttonStyle)
         self.tbOutline.setStyleSheet(buttonStyle)
         self.tbBuild.setStyleSheet(buttonStyle)
+        self.tbTheme.setStyleSheet(buttonStyle)
         self.tbDetails.setStyleSheet(buttonStyle)
         self.tbStats.setStyleSheet(buttonStyle)
         self.tbSettings.setStyleSheet(buttonStyle)
@@ -144,6 +151,36 @@ class GuiSideBar(QWidget):
         self.tbStats.setThemeIcon("sb_stats")
         self.tbSettings.setThemeIcon("settings")
 
+        self._setThemeModeIcon()
+
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _cycleColurTheme(self) -> None:
+        """Go to nex colour theme."""
+        match CONFIG.themeMode:
+            case nwTheme.AUTO:
+                CONFIG.themeMode = nwTheme.LIGHT
+            case nwTheme.LIGHT:
+                CONFIG.themeMode = nwTheme.DARK
+            case nwTheme.DARK:
+                CONFIG.themeMode = nwTheme.AUTO
+        self.mainGui.checkThemeUpdate()
+        self._setThemeModeIcon()
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _setThemeModeIcon(self) -> None:
+        """Set the theme button icon."""
+        self.tbTheme.setThemeIcon(nwLabels.THEME_MODE_ICON[CONFIG.themeMode])
+        self.tbTheme.setToolTip(trConst(nwLabels.THEME_MODE_LABEL[CONFIG.themeMode]))
         return
 
 

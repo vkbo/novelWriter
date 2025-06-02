@@ -100,22 +100,22 @@ class GuiTheme:
     """
 
     __slots__ = (
-        "_availSyntax", "_availThemes", "_darkThemes", "_guiPalette", "_lightThemes", "_qColors",
-        "_styleSheets", "_svgColors", "_syntaxList", "_themeList", "baseButtonHeight",
-        "baseIconHeight", "baseIconSize", "buttonIconSize", "errorText", "fadedText",
-        "fontPixelSize", "fontPointSize", "getDecoration", "getHeaderDecoration",
+        "_availSyntax", "_availThemes", "_currentTheme", "_darkThemes", "_guiPalette",
+        "_lightThemes", "_qColors", "_styleSheets", "_svgColors", "_syntaxList", "_themeList",
+        "baseButtonHeight", "baseIconHeight", "baseIconSize", "buttonIconSize", "errorText",
+        "fadedText", "fontPixelSize", "fontPointSize", "getDecoration", "getHeaderDecoration",
         "getHeaderDecorationNarrow", "getIcon", "getItemIcon", "getPixmap", "getToggleIcon",
         "guiFont", "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall", "helpText",
-        "iconCache", "isDarkTheme", "syntaxMeta", "syntaxTheme", "textNHeight", "textNWidth",
+        "iconCache", "isDarkTheme", "syntaxTheme", "textNHeight", "textNWidth",
         "themeMeta",
     )
 
     def __init__(self) -> None:
 
-        self.iconCache = GuiIcons(self)
-
-        # GUI Theme
+        # Theme Objects
         self.themeMeta   = ThemeMeta()
+        self.iconCache   = GuiIcons(self)
+        self.syntaxTheme = SyntaxColors()
         self.isDarkTheme = False
 
         # Special Text Colours
@@ -123,11 +123,8 @@ class GuiTheme:
         self.fadedText = QColor(0, 0, 0)
         self.errorText = QColor(255, 0, 0)
 
-        # Syntax Theme
-        self.syntaxMeta = ThemeMeta()
-        self.syntaxTheme = SyntaxColors()
-
         # Load Themes
+        self._currentTheme = ""
         self._guiPalette = QPalette()
         self._themeList: list[T_ThemeEntry] = []
         self._availThemes: dict[str, Path] = {}
@@ -275,6 +272,10 @@ class GuiTheme:
                 theme = DEF_GUI_LIGHT
                 CONFIG.lightTheme = DEF_GUI_LIGHT
 
+        if theme == self._currentTheme:
+            logger.info("Theme '%s' is already loaded", theme)
+            return False
+
         if not (file := self._availThemes.get(theme)):
             logger.error("Could not load GUI theme")
             return False
@@ -387,7 +388,6 @@ class GuiTheme:
         text = self._guiPalette.text().color()
         window = self._guiPalette.window().color()
         highlight = self._guiPalette.highlight().color()
-        isDark = text.lightnessF() > window.lightnessF()
 
         QtColActive = QPalette.ColorGroup.Active
         QtColInactive = QPalette.ColorGroup.Inactive
@@ -407,8 +407,8 @@ class GuiTheme:
         darkOff   = dark.darker(150)
         shadowOff = ref.darker(150)
 
-        grey   = QColor(120, 120, 120) if isDark else QColor(140, 140, 140)
-        dimmed = QColor(130, 130, 130) if isDark else QColor(190, 190, 190)
+        grey   = QColor(120, 120, 120) if darkMode else QColor(140, 140, 140)
+        dimmed = QColor(130, 130, 130) if darkMode else QColor(190, 190, 190)
 
         placeholder = QColor(text)
         placeholder.setAlpha(128)
@@ -453,10 +453,11 @@ class GuiTheme:
         self.iconCache.loadTheme(CONFIG.iconTheme)
 
         # Finalise
-        self.isDarkTheme = isDark
+        self.isDarkTheme = darkMode
         QApplication.setPalette(self._guiPalette)
         self._buildStyleSheets(self._guiPalette)
 
+        self._currentTheme = theme
         CONFIG.splashMessage(f"Loaded GUI theme: {meta.name}")
 
         return True
