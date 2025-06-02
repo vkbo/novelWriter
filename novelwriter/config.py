@@ -553,11 +553,10 @@ class Config:
         self._confPath.mkdir(exist_ok=True)
         self._dataPath.mkdir(exist_ok=True)
 
-        # Also create the syntax, themes and icons folders if possible
+        # Also create the themes and icons folders if possible
         if self._dataPath.is_dir():
             (self._dataPath / "cache").mkdir(exist_ok=True)
             (self._dataPath / "icons").mkdir(exist_ok=True)
-            (self._dataPath / "syntax").mkdir(exist_ok=True)
             (self._dataPath / "themes").mkdir(exist_ok=True)
 
         self._recentPaths.loadCache()
