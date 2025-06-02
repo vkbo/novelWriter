@@ -910,9 +910,9 @@ class GuiMain(QMainWindow):
             self.docViewer.initViewer()
         return
 
-    def refreshThemeColors(self, syntax: bool) -> None:
+    def refreshThemeColors(self, syntax: bool = False, force: bool = False) -> None:
         """Refresh the GUI theme."""
-        SHARED.theme.loadTheme()
+        SHARED.theme.loadTheme(force=force)
         self.setPalette(QApplication.palette())
         self.docEditor.updateTheme()
         self.docViewer.updateTheme()
@@ -1090,7 +1090,7 @@ class GuiMain(QMainWindow):
             self.novelView.refreshCurrentTree()
 
         if theme:
-            self.refreshThemeColors(syntax=syntax)
+            self.refreshThemeColors(syntax=syntax, force=True)
 
         self.docEditor.initEditor()
         self.docViewer.initViewer()

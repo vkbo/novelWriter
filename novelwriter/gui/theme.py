@@ -252,7 +252,7 @@ class GuiTheme:
                 return QColor(*result)
         return default
 
-    def loadTheme(self) -> bool:
+    def loadTheme(self, force: bool = False) -> bool:
         """Load the currently specified GUI theme."""
         match CONFIG.themeMode:
             case nwTheme.LIGHT:
@@ -272,7 +272,7 @@ class GuiTheme:
                 theme = DEF_GUI_LIGHT
                 CONFIG.lightTheme = DEF_GUI_LIGHT
 
-        if theme == self._currentTheme:
+        if theme == self._currentTheme and not force:
             logger.info("Theme '%s' is already loaded", theme)
             return False
 
