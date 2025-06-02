@@ -35,7 +35,7 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import compact, describeFont, processDialogSymbols, uniqueCompact
-from novelwriter.config import DEF_GUI, DEF_ICONS, DEF_SYNTAX, DEF_TREECOL
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS, DEF_TREECOL
 from novelwriter.constants import nwLabels, nwQuotes, nwUnicode, trConst
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.configlayout import NColorLabel, NScrollableForm
@@ -165,14 +165,24 @@ class GuiPreferences(NDialog):
         )
 
         # Colour Theme
-        self.guiTheme = NComboBox(self)
-        self.guiTheme.setMinimumWidth(200)
-        for theme, name in SHARED.theme.listThemes():
-            self.guiTheme.addItem(name, theme)
-        self.guiTheme.setCurrentData(CONFIG.guiTheme, DEF_GUI)
+        self.lightTheme = NComboBox(self)
+        self.lightTheme.setMinimumWidth(200)
+        self.darkTheme = NComboBox(self)
+        self.darkTheme.setMinimumWidth(200)
+        for theme, name, dark in SHARED.theme.listThemes():
+            if dark:
+                self.darkTheme.addItem(name, theme)
+            else:
+                self.lightTheme.addItem(name, theme)
+        self.lightTheme.setCurrentData(CONFIG.lightTheme, DEF_GUI_LIGHT)
+        self.darkTheme.setCurrentData(CONFIG.darkTheme, DEF_GUI_DARK)
 
         self.mainForm.addRow(
-            self.tr("Colour theme"), self.guiTheme,
+            self.tr("Light colour theme"), self.lightTheme,
+            self.tr("User interface colour theme."), stretch=(3, 2)
+        )
+        self.mainForm.addRow(
+            self.tr("Dark colour theme"), self.darkTheme,
             self.tr("User interface colour theme."), stretch=(3, 2)
         )
 
@@ -241,18 +251,6 @@ class GuiPreferences(NDialog):
         section += 1
         self.sidebar.addButton(title, section)
         self.mainForm.addGroupLabel(title, section)
-
-        # Document Colour Theme
-        self.guiSyntax = NComboBox(self)
-        self.guiSyntax.setMinimumWidth(200)
-        for syntax, name in SHARED.theme.listSyntax():
-            self.guiSyntax.addItem(name, syntax)
-        self.guiSyntax.setCurrentData(CONFIG.guiSyntax, DEF_SYNTAX)
-
-        self.mainForm.addRow(
-            self.tr("Document colour theme"), self.guiSyntax,
-            self.tr("Colour theme for the editor and viewer."), stretch=(3, 2)
-        )
 
         # Document Font Family
         self.textFont = QLineEdit(self)
@@ -966,18 +964,23 @@ class GuiPreferences(NDialog):
 
         # Appearance
         guiLocale    = self.guiLocale.currentData()
-        guiTheme     = self.guiTheme.currentData()
+        lightTheme   = self.lightTheme.currentData()
+        darkTheme    = self.darkTheme.currentData()
         iconTheme    = self.iconTheme.currentData()
         useCharCount = self.useCharCount.isChecked()
 
-        updateTheme  |= CONFIG.guiTheme != guiTheme
+        updateTheme  |= CONFIG.lightTheme != lightTheme
+        updateTheme  |= CONFIG.darkTheme != darkTheme
         updateTheme  |= CONFIG.iconTheme != iconTheme
         needsRestart |= CONFIG.guiLocale != guiLocale
         needsRestart |= CONFIG.guiFont != self._guiFont
         refreshTree  |= CONFIG.useCharCount != useCharCount
+        updateSyntax |= CONFIG.lightTheme != lightTheme
+        updateSyntax |= CONFIG.darkTheme != darkTheme
 
         CONFIG.guiLocale    = guiLocale
-        CONFIG.guiTheme     = guiTheme
+        CONFIG.lightTheme   = lightTheme
+        CONFIG.darkTheme    = darkTheme
         CONFIG.iconTheme    = iconTheme
         CONFIG.hideVScroll  = self.hideVScroll.isChecked()
         CONFIG.hideHScroll  = self.hideHScroll.isChecked()
@@ -986,11 +989,6 @@ class GuiPreferences(NDialog):
         CONFIG.setGuiFont(self._guiFont)
 
         # Document Style
-        guiSyntax = self.guiSyntax.currentData()
-
-        updateSyntax |= CONFIG.guiSyntax != guiSyntax
-
-        CONFIG.guiSyntax      = guiSyntax
         CONFIG.showFullPath   = self.showFullPath.isChecked()
         CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
         CONFIG.setTextFont(self._textFont)

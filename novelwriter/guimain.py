@@ -1069,7 +1069,6 @@ class GuiMain(QMainWindow):
             SHARED.project.tree.refreshAllItems()
 
         if syntax:
-            SHARED.theme.loadSyntax()
             self.docEditor.updateSyntaxColors()
 
         self.docEditor.initEditor()

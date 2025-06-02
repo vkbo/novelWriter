@@ -31,16 +31,16 @@ from typing import TYPE_CHECKING, Final
 
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import (
-    QColor, QFont, QFontDatabase, QFontMetrics, QIcon, QPainter, QPainterPath,
-    QPalette, QPixmap
+    QColor, QFont, QFontDatabase, QFontMetrics, QGuiApplication, QIcon,
+    QPainter, QPainterPath, QPalette, QPixmap
 )
 from PyQt6.QtWidgets import QApplication
 
 from novelwriter import CONFIG
 from novelwriter.common import NWConfigParser, minmax
-from novelwriter.config import DEF_GUI, DEF_ICONS, DEF_SYNTAX
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS
 from novelwriter.constants import nwLabels
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwTheme
 from novelwriter.error import logException
 from novelwriter.types import QtBlack, QtHexArgb, QtPaintAntiAlias, QtTransparent
 
@@ -48,6 +48,8 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+T_ThemeEntry = tuple[str, str, bool]
 
 STYLES_FLAT_TABS = "flatTabWidget"
 STYLES_MIN_TOOLBUTTON = "minimalToolButton"
@@ -57,6 +59,7 @@ STYLES_BIG_TOOLBUTTON = "bigToolButton"
 class ThemeMeta:
 
     name:        str = ""
+    mode:        str = ""
     description: str = ""
     author:      str = ""
     credit:      str = ""
@@ -96,13 +99,13 @@ class GuiTheme:
     """
 
     __slots__ = (
-        "_availSyntax", "_availThemes", "_guiPalette", "_styleSheets", "_syntaxList", "_themeList",
-        "baseButtonHeight", "baseIconHeight", "baseIconSize", "buttonIconSize", "errorText",
-        "fadedText", "fontPixelSize", "fontPointSize", "getDecoration", "getHeaderDecoration",
-        "getHeaderDecorationNarrow", "getIcon", "getIconColor", "getItemIcon", "getPixmap",
-        "getToggleIcon", "guiFont", "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall",
-        "helpText", "iconCache", "isDarkTheme", "syntaxMeta", "syntaxTheme", "textNHeight",
-        "textNWidth", "themeMeta",
+        "_availSyntax", "_availThemes", "_darkThemes", "_guiPalette", "_lightThemes",
+        "_styleSheets", "_syntaxList", "_themeList", "baseButtonHeight", "baseIconHeight",
+        "baseIconSize", "buttonIconSize", "errorText", "fadedText", "fontPixelSize",
+        "fontPointSize", "getDecoration", "getHeaderDecoration", "getHeaderDecorationNarrow",
+        "getIcon", "getIconColor", "getItemIcon", "getPixmap", "getToggleIcon", "guiFont",
+        "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall", "helpText", "iconCache",
+        "isDarkTheme", "syntaxMeta", "syntaxTheme", "textNHeight", "textNWidth", "themeMeta",
     )
 
     def __init__(self) -> None:
@@ -124,8 +127,7 @@ class GuiTheme:
 
         # Load Themes
         self._guiPalette = QPalette()
-        self._themeList: list[tuple[str, str]] = []
-        self._syntaxList: list[tuple[str, str]] = []
+        self._themeList: list[T_ThemeEntry] = []
         self._availThemes: dict[str, Path] = {}
         self._availSyntax: dict[str, Path] = {}
         self._styleSheets: dict[str, str] = {}
@@ -179,13 +181,10 @@ class GuiTheme:
         logger.debug("Text 'N' Width: %d", self.textNWidth)
 
         # Process Themes
-        _listConf(self._availSyntax, CONFIG.assetPath("syntax"), ".conf")
         _listConf(self._availThemes, CONFIG.assetPath("themes"), ".conf")
-        _listConf(self._availSyntax, CONFIG.dataPath("syntax"), ".conf")
         _listConf(self._availThemes, CONFIG.dataPath("themes"), ".conf")
 
         self.loadTheme()
-        self.loadSyntax()
 
         return
 
@@ -207,13 +206,35 @@ class GuiTheme:
     #  Theme Methods
     ##
 
+    def isDesktopDarkMode(self) -> bool:
+        """Check if the desktop is in dark mode."""
+        if CONFIG.verQtValue >= 0x060500 and (hint := QGuiApplication.styleHints()):
+            return hint.colorScheme() == Qt.ColorScheme.Dark
+
+        palette = QPalette()
+        text = palette.color(QPalette.ColorRole.WindowText)
+        window = palette.color(QPalette.ColorRole.Window)
+        return text.lightnessF() > window.lightnessF()
+
     def loadTheme(self) -> bool:
         """Load the currently specified GUI theme."""
-        theme = CONFIG.guiTheme
+        match CONFIG.themeMode:
+            case nwTheme.LIGHT:
+                darkMode = False
+            case nwTheme.DARK:
+                darkMode = True
+            case _:
+                darkMode = self.isDesktopDarkMode()
+
+        theme = CONFIG.darkTheme if darkMode else CONFIG.lightTheme
         if theme not in self._availThemes:
             logger.error("Could not find GUI theme '%s'", theme)
-            theme = DEF_GUI
-            CONFIG.guiTheme = theme
+            if darkMode:
+                theme = DEF_GUI_DARK
+                CONFIG.darkTheme = DEF_GUI_DARK
+            else:
+                theme = DEF_GUI_LIGHT
+                CONFIG.lightTheme = DEF_GUI_LIGHT
 
         if not (file := self._availThemes.get(theme)):
             logger.error("Could not load GUI theme")
@@ -238,6 +259,7 @@ class GuiTheme:
         meta = ThemeMeta()
         if parser.has_section(sec):
             meta.name        = parser.rdStr(sec, "name", "")
+            meta.mode        = parser.rdStr(sec, "mode", "light")
             meta.description = parser.rdStr(sec, "description", "N/A")
             meta.author      = parser.rdStr(sec, "author", "N/A")
             meta.credit      = parser.rdStr(sec, "credit", "N/A")
@@ -295,6 +317,31 @@ class GuiTheme:
             self.helpText  = self._parseColor(parser, sec, "helptext")
             self.fadedText = self._parseColor(parser, sec, "fadedtext")
             self.errorText = self._parseColor(parser, sec, "errortext")
+
+        # Syntax
+        sec = "Syntax"
+        self.syntaxTheme = SyntaxColors()
+        if parser.has_section(sec):
+            self.syntaxTheme.back   = self._parseColor(parser, sec, "background")
+            self.syntaxTheme.text   = self._parseColor(parser, sec, "text")
+            self.syntaxTheme.link   = self._parseColor(parser, sec, "link")
+            self.syntaxTheme.head   = self._parseColor(parser, sec, "headertext")
+            self.syntaxTheme.headH  = self._parseColor(parser, sec, "headertag")
+            self.syntaxTheme.emph   = self._parseColor(parser, sec, "emphasis")
+            self.syntaxTheme.dialN  = self._parseColor(parser, sec, "dialog")
+            self.syntaxTheme.dialA  = self._parseColor(parser, sec, "altdialog")
+            self.syntaxTheme.hidden = self._parseColor(parser, sec, "hidden")
+            self.syntaxTheme.note   = self._parseColor(parser, sec, "note")
+            self.syntaxTheme.code   = self._parseColor(parser, sec, "shortcode")
+            self.syntaxTheme.key    = self._parseColor(parser, sec, "keyword")
+            self.syntaxTheme.tag    = self._parseColor(parser, sec, "tag")
+            self.syntaxTheme.val    = self._parseColor(parser, sec, "value")
+            self.syntaxTheme.opt    = self._parseColor(parser, sec, "optional")
+            self.syntaxTheme.spell  = self._parseColor(parser, sec, "spellcheckline")
+            self.syntaxTheme.error  = self._parseColor(parser, sec, "errorline")
+            self.syntaxTheme.repTag = self._parseColor(parser, sec, "replacetag")
+            self.syntaxTheme.mod    = self._parseColor(parser, sec, "modifier")
+            self.syntaxTheme.mark   = self._parseColor(parser, sec, "texthighlight")
 
         # Update Dependant Colours
         # Based on: https://github.com/qt/qtbase/blob/dev/src/gui/kernel/qplatformtheme.cpp
@@ -363,104 +410,21 @@ class GuiTheme:
 
         return True
 
-    def loadSyntax(self) -> bool:
-        """Load the currently specified syntax highlighter theme."""
-        theme = CONFIG.guiSyntax
-        if theme not in self._availSyntax:
-            logger.error("Could not find syntax theme '%s'", theme)
-            theme = DEF_SYNTAX
-            CONFIG.guiSyntax = theme
-
-        if not (file := self._availSyntax.get(theme)):
-            logger.error("Could not load syntax theme")
-            return False
-
-        CONFIG.splashMessage("Loading syntax theme ...")
-        logger.info("Loading syntax theme '%s'", theme)
-        parser = NWConfigParser()
-        try:
-            with open(file, mode="r", encoding="utf-8") as fo:
-                parser.read_file(fo)
-        except Exception:
-            logger.error("Could not read file: %s", file)
-            logException()
-            return False
-
-        # Main
-        sec = "Main"
-        meta = ThemeMeta()
-        if parser.has_section(sec):
-            meta.name        = parser.rdStr(sec, "name", "")
-            meta.description = parser.rdStr(sec, "description", "N/A")
-            meta.author      = parser.rdStr(sec, "author", "N/A")
-            meta.credit      = parser.rdStr(sec, "credit", "N/A")
-            meta.url         = parser.rdStr(sec, "url", "")
-            meta.license     = parser.rdStr(sec, "license", "N/A")
-            meta.licenseUrl  = parser.rdStr(sec, "licenseurl", "")
-
-        # Syntax
-        sec = "Syntax"
-        syntax = SyntaxColors()
-        if parser.has_section(sec):
-            syntax.back   = self._parseColor(parser, sec, "background")
-            syntax.text   = self._parseColor(parser, sec, "text")
-            syntax.link   = self._parseColor(parser, sec, "link")
-            syntax.head   = self._parseColor(parser, sec, "headertext")
-            syntax.headH  = self._parseColor(parser, sec, "headertag")
-            syntax.emph   = self._parseColor(parser, sec, "emphasis")
-            syntax.dialN  = self._parseColor(parser, sec, "dialog")
-            syntax.dialA  = self._parseColor(parser, sec, "altdialog")
-            syntax.hidden = self._parseColor(parser, sec, "hidden")
-            syntax.note   = self._parseColor(parser, sec, "note")
-            syntax.code   = self._parseColor(parser, sec, "shortcode")
-            syntax.key    = self._parseColor(parser, sec, "keyword")
-            syntax.tag    = self._parseColor(parser, sec, "tag")
-            syntax.val    = self._parseColor(parser, sec, "value")
-            syntax.opt    = self._parseColor(parser, sec, "optional")
-            syntax.spell  = self._parseColor(parser, sec, "spellcheckline")
-            syntax.error  = self._parseColor(parser, sec, "errorline")
-            syntax.repTag = self._parseColor(parser, sec, "replacetag")
-            syntax.mod    = self._parseColor(parser, sec, "modifier")
-            syntax.mark   = self._parseColor(parser, sec, "texthighlight")
-
-        CONFIG.splashMessage(f"Loaded syntax theme: {meta.name}")
-
-        self.syntaxMeta = meta
-        self.syntaxTheme = syntax
-
-        return True
-
-    def listThemes(self) -> list[tuple[str, str]]:
+    def listThemes(self) -> list[T_ThemeEntry]:
         """Scan the GUI themes folder and list all themes."""
         if self._themeList:
             return self._themeList
 
-        themes = []
+        themes: list[T_ThemeEntry] = []
         parser = NWConfigParser()
         for key, path in self._availThemes.items():
             logger.debug("Checking theme config '%s'", key)
-            if name := _loadInternalName(parser, path):
-                themes.append((key, name))
+            if meta := _loadInternalName(parser, path):
+                themes.append((key, meta[0], meta[1]))
 
         self._themeList = sorted(themes, key=_sortTheme)
 
         return self._themeList
-
-    def listSyntax(self) -> list[tuple[str, str]]:
-        """Scan the syntax themes folder and list all themes."""
-        if self._syntaxList:
-            return self._syntaxList
-
-        themes = []
-        parser = NWConfigParser()
-        for key, path in self._availSyntax.items():
-            logger.debug("Checking theme syntax '%s'", key)
-            if name := _loadInternalName(parser, path):
-                themes.append((key, name))
-
-        self._syntaxList = sorted(themes, key=_sortTheme)
-
-        return self._syntaxList
 
     def getStyleSheet(self, name: str) -> str:
         """Load a standard style sheet."""
@@ -889,22 +853,24 @@ def _listConf(target: dict, path: Path, extension: str) -> None:
     return
 
 
-def _sortTheme(data: tuple[str, str]) -> str:
+def _sortTheme(data: tuple) -> str:
     """Key function for theme sorting."""
-    key, name = data
+    key, name = data[:2]
     return f"*{name}" if key.startswith("default_") else name
 
 
-def _loadInternalName(parser: NWConfigParser, path: str | Path) -> str:
+def _loadInternalName(parser: NWConfigParser, path: str | Path) -> tuple[str, bool]:
     """Open a conf file and read the 'name' setting."""
     try:
         with open(path, mode="r", encoding="utf-8") as inFile:
             parser.read_file(inFile)
-        return parser.rdStr("Main", "name", "")
+        name = parser.rdStr("Main", "name", "")
+        dark = parser.rdStr("Main", "mode", "light").lower() == "dark"
+        return name, dark
     except Exception:
         logger.error("Could not read file: %s", path)
         logException()
-    return ""
+    return "", False
 
 
 def _loadIconName(path: Path) -> str:
