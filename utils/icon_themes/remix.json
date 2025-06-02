@@ -56,6 +56,10 @@
     "sb_search": "file-search",
     "sb_stats": "bar-chart-fill",
 
+    "theme_light": "sun",
+    "theme_dark": "moon",
+    "theme_auto": "contrast",
+
     "add": "add",
     "bookmarks": "bookmark",
     "browse": "folder-2",
