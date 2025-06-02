@@ -34,7 +34,7 @@ from PyQt6.QtWidgets import QInputDialog, QMessageBox
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwFiles
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemType, nwView
+from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemType, nwTheme, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.outline import GuiOutlineView
@@ -180,10 +180,11 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 def testGuiMain_UpdateTheme(qtbot, nwGUI):
     """Test updating the theme in the GUI."""
     mainTheme = SHARED.theme
-    CONFIG.guiTheme = "default_dark"
-    CONFIG.guiSyntax = "default_dark"
+    CONFIG.themeMode = nwTheme.DARK
+    CONFIG.darkTheme = "default_dark"
+    CONFIG.lightTheme = "default_light"
     mainTheme.loadTheme()
-    mainTheme.loadSyntax()
+
     nwGUI._processConfigChanges(False, True, False, False)
     nwGUI._processConfigChanges(True, True, True, True)
 

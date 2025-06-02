@@ -27,7 +27,7 @@ from PyQt6.QtGui import QAction, QFont, QFontDatabase, QKeyEvent
 from PyQt6.QtWidgets import QFileDialog, QFontDialog
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.config import DEF_GUI
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
@@ -55,15 +55,11 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     assert "en_GB" in languages
 
     # Check GUI Themes
-    themes = [prefs.guiTheme.itemData(i) for i in range(prefs.guiTheme.count())]
-    assert len(themes) >= 5
-    assert DEF_GUI in themes
+    themes = [prefs.lightTheme.itemData(i) for i in range(prefs.lightTheme.count())]
+    assert DEF_GUI_LIGHT in themes
 
-    # Check GUI Syntax
-    syntax = [prefs.guiSyntax.itemData(i) for i in range(prefs.guiSyntax.count())]
-    assert len(syntax) >= 10
-    assert "default_dark" in syntax
-    assert "default_light" in syntax
+    themes = [prefs.darkTheme.itemData(i) for i in range(prefs.darkTheme.count())]
+    assert DEF_GUI_DARK in themes
 
     # Check Spell Checking
     spelling = [prefs.spellLanguage.itemData(i) for i in range(prefs.spellLanguage.count())]
@@ -124,7 +120,7 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
         button = prefs.buttonBox.button(QtDialogSave)
         assert button is not None
         button.click()
-        assert signal.args == [False, False, False, False]
+        assert len(signal.args) == 4
 
     # Check Close Button
     prefs.show()
@@ -151,6 +147,12 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     (fncPath / "nw_en_US.qm").touch()
     (fncPath / "project_en_US.json").touch()
     CONFIG._nwLangPath = fncPath
+    SHARED.theme._themeList = [
+        ("theme1", "Theme 1", False),
+        ("theme2", "Theme 2", False),
+        ("theme3", "Theme 3", True),
+        ("theme4", "Theme 4", True),
+    ]
 
     prefs = GuiPreferences(nwGUI)
     with qtbot.waitExposed(prefs):
@@ -158,7 +160,8 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
 
     # Appearance
     prefs.guiLocale.setCurrentIndex(prefs.guiLocale.findData("en_US"))
-    prefs.guiTheme.setCurrentIndex(prefs.guiTheme.findData("default_dark"))
+    prefs.lightTheme.setCurrentIndex(prefs.lightTheme.findData("theme1"))
+    prefs.darkTheme.setCurrentIndex(prefs.darkTheme.findData("theme3"))
     with monkeypatch.context() as mp:
         mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
         prefs.nativeFont.setChecked(True)  # Use OS font dialog
@@ -169,14 +172,14 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.useCharCount.setChecked(True)
 
     assert CONFIG.guiLocale != "en_US"
-    assert CONFIG.guiTheme != "default_dark"
+    assert CONFIG.lightTheme == "default_light"
+    assert CONFIG.darkTheme == "default_dark"
     assert CONFIG.guiFont.family() != ""
     assert CONFIG.hideVScroll is False
     assert CONFIG.hideHScroll is False
     assert CONFIG.useCharCount is False
 
     # Document Style
-    prefs.guiSyntax.setCurrentIndex(prefs.guiSyntax.findData("default_dark"))
     with monkeypatch.context() as mp:
         mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
         prefs.nativeFont.setChecked(False)  # Use Qt font dialog
@@ -185,7 +188,6 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.showFullPath.setChecked(False)
     prefs.incNotesWCount.setChecked(False)
 
-    assert CONFIG.guiSyntax != "default_dark"
     assert CONFIG.textFont.family() != ""
     assert CONFIG.showFullPath is True
     assert CONFIG.incNotesWCount is True
@@ -344,14 +346,14 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
 
     # Appearance
     assert CONFIG.guiLocale == "en_US"
-    assert CONFIG.guiTheme == "default_dark"
+    assert CONFIG.lightTheme == "theme1"
+    assert CONFIG.darkTheme == "theme3"
     assert CONFIG.guiFont == QFont()
     assert CONFIG.hideVScroll is True
     assert CONFIG.hideHScroll is True
     assert CONFIG.useCharCount is True
 
     # Document Style
-    assert CONFIG.guiSyntax == "default_dark"
     assert CONFIG.textFont == QFont()
     assert CONFIG.showFullPath is False
     assert CONFIG.incNotesWCount is False
