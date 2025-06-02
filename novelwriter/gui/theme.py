@@ -244,7 +244,7 @@ class GuiTheme:
             entries = len(data)
             if entries == 2:
                 # Assume name, alpha
-                color = self._qColors.get(data[0].strip(), default)
+                color = QColor(self._qColors.get(data[0].strip(), default))
                 color.setAlpha(checkInt(data[1], 255))
                 return color
             else:
