@@ -169,11 +169,12 @@ class GuiPreferences(NDialog):
         self.lightTheme.setMinimumWidth(200)
         self.darkTheme = NComboBox(self)
         self.darkTheme.setMinimumWidth(200)
-        for theme, name, dark in SHARED.theme.listThemes():
-            if dark:
-                self.darkTheme.addItem(name, theme)
+        for key, theme in SHARED.theme.colourThemes.items():
+            if theme.dark:
+                self.darkTheme.addItem(theme.name, key)
             else:
-                self.lightTheme.addItem(name, theme)
+                self.lightTheme.addItem(theme.name, key)
+
         self.lightTheme.setCurrentData(CONFIG.lightTheme, DEF_GUI_LIGHT)
         self.darkTheme.setCurrentData(CONFIG.darkTheme, DEF_GUI_DARK)
 
@@ -189,8 +190,9 @@ class GuiPreferences(NDialog):
         # Icon Theme
         self.iconTheme = NComboBox(self)
         self.iconTheme.setMinimumWidth(200)
-        for theme, name in SHARED.theme.iconCache.listThemes():
-            self.iconTheme.addItem(name, theme)
+        for key, theme in SHARED.theme.iconCache.iconThemes.items():
+            self.iconTheme.addItem(theme.name, key)
+
         self.iconTheme.setCurrentData(CONFIG.iconTheme, DEF_ICONS)
 
         self.mainForm.addRow(

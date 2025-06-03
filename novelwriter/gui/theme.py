@@ -27,6 +27,7 @@ from __future__ import annotations
 import logging
 
 from configparser import ConfigParser
+from dataclasses import dataclass
 from math import ceil
 from typing import TYPE_CHECKING, Final
 
@@ -50,11 +51,17 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-T_ThemeEntry = tuple[str, str, bool]
-
 STYLES_FLAT_TABS = "flatTabWidget"
 STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
+
+
+@dataclass
+class ThemeEntry:
+
+    name: str
+    dark: bool
+    path: Path
 
 
 class ThemeMeta:
@@ -100,20 +107,18 @@ class GuiTheme:
     """
 
     __slots__ = (
-        "_availSyntax", "_availThemes", "_currentTheme", "_darkThemes", "_guiPalette",
-        "_lightThemes", "_qColors", "_styleSheets", "_svgColors", "_syntaxList", "_themeList",
-        "baseButtonHeight", "baseIconHeight", "baseIconSize", "buttonIconSize", "errorText",
-        "fadedText", "fontPixelSize", "fontPointSize", "getDecoration", "getHeaderDecoration",
+        "_allThemes", "_currentTheme", "_darkThemes", "_guiPalette", "_lightThemes", "_meta",
+        "_qColors", "_styleSheets", "_svgColors", "_syntaxList", "baseButtonHeight",
+        "baseIconHeight", "baseIconSize", "buttonIconSize", "errorText", "fadedText",
+        "fontPixelSize", "fontPointSize", "getDecoration", "getHeaderDecoration",
         "getHeaderDecorationNarrow", "getIcon", "getItemIcon", "getPixmap", "getToggleIcon",
         "guiFont", "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall", "helpText",
         "iconCache", "isDarkTheme", "syntaxTheme", "textNHeight", "textNWidth",
-        "themeMeta",
     )
 
     def __init__(self) -> None:
 
         # Theme Objects
-        self.themeMeta   = ThemeMeta()
         self.iconCache   = GuiIcons(self)
         self.syntaxTheme = SyntaxColors()
         self.isDarkTheme = False
@@ -123,12 +128,11 @@ class GuiTheme:
         self.fadedText = QColor(0, 0, 0)
         self.errorText = QColor(255, 0, 0)
 
-        # Load Themes
+        # Theme Data
+        self._meta = ThemeMeta()
         self._currentTheme = ""
         self._guiPalette = QPalette()
-        self._themeList: list[T_ThemeEntry] = []
-        self._availThemes: dict[str, Path] = {}
-        self._availSyntax: dict[str, Path] = {}
+        self._allThemes: dict[str, ThemeEntry] = {}
         self._styleSheets: dict[str, str] = {}
         self._svgColors: dict[str, bytes] = {}
         self._qColors: dict[str, QColor] = {}
@@ -180,16 +184,19 @@ class GuiTheme:
         logger.debug("Text 'N' Height: %d", self.textNHeight)
         logger.debug("Text 'N' Width: %d", self.textNWidth)
 
-        # Process Themes
-        _listConf(self._availThemes, CONFIG.assetPath("themes"), ".conf")
-        _listConf(self._availThemes, CONFIG.dataPath("themes"), ".conf")
-
-        self.loadTheme()
-
         return
 
     ##
-    #  Methods
+    #  Properties
+    ##
+
+    @property
+    def colourThemes(self) -> dict[str, ThemeEntry]:
+        """Return a dictionary of all themes."""
+        return self._allThemes
+
+    ##
+    #  Getters
     ##
 
     def getTextWidth(self, text: str, font: QFont | None = None) -> int:
@@ -213,6 +220,19 @@ class GuiTheme:
     ##
     #  Theme Methods
     ##
+
+    def initThemes(self) -> None:
+        """Initialise themes."""
+        CONFIG.splashMessage("Scanning for colour themes ...")
+        themes: list[Path] = []
+        _listContent(themes, CONFIG.assetPath("themes"), ".conf")
+        _listContent(themes, CONFIG.dataPath("themes"), ".conf")
+        self._scanThemes(themes)
+
+        self.iconCache.initIcons()
+        self.loadTheme()
+
+        return
 
     def isDesktopDarkMode(self) -> bool:
         """Check if the desktop is in dark mode."""
@@ -261,8 +281,8 @@ class GuiTheme:
                 darkMode = self.isDesktopDarkMode()
 
         theme = CONFIG.darkTheme if darkMode else CONFIG.lightTheme
-        if theme not in self._availThemes:
-            logger.error("Could not find GUI theme '%s'", theme)
+        if theme not in self._allThemes:
+            logger.error("Could not find theme for key '%s'", theme)
             if darkMode:
                 theme = DEF_GUI_DARK
                 CONFIG.darkTheme = DEF_GUI_DARK
@@ -274,18 +294,19 @@ class GuiTheme:
             logger.info("Theme '%s' is already loaded", theme)
             return False
 
-        if not (file := self._availThemes.get(theme)):
+        entry = self._allThemes.get(theme)
+        if not entry:
             logger.error("Could not load GUI theme")
             return False
 
-        CONFIG.splashMessage("Loading GUI theme ...")
+        CONFIG.splashMessage(f"Loading colour theme: {entry.name}")
         logger.info("Loading GUI theme '%s'", theme)
         parser = ConfigParser()
         try:
-            with open(file, mode="r", encoding="utf-8") as fo:
+            with open(entry.path, mode="r", encoding="utf-8") as fo:
                 parser.read_file(fo)
         except Exception:
-            logger.error("Could not read file: %s", file)
+            logger.error("Could not read file: %s", entry.path)
             logException()
             return False
 
@@ -305,9 +326,9 @@ class GuiTheme:
             meta.license     = parser.get(sec, "license", fallback="N/A")
             meta.licenseUrl  = parser.get(sec, "licenseurl", fallback="")
 
-        self.themeMeta = meta
+        self._meta = meta
 
-        # Icons
+        # Base
         sec = "Base"
         if parser.has_section(sec):
             self._setBaseColor("default", self._readColor(parser, sec, "default"))
@@ -447,34 +468,17 @@ class GuiTheme:
                 self._svgColors["scene"] = color
                 self._svgColors["note"] = color
 
+        self.isDarkTheme = darkMode
+        self._currentTheme = theme
+
         # Load icons after the theme is parsed
         self.iconCache.loadTheme(CONFIG.iconTheme)
 
         # Finalise
-        self.isDarkTheme = darkMode
         QApplication.setPalette(self._guiPalette)
         self._buildStyleSheets(self._guiPalette)
 
-        self._currentTheme = theme
-        CONFIG.splashMessage(f"Loaded GUI theme: {meta.name}")
-
         return True
-
-    def listThemes(self) -> list[T_ThemeEntry]:
-        """Scan the GUI themes folder and list all themes."""
-        if self._themeList:
-            return self._themeList
-
-        themes: list[T_ThemeEntry] = []
-        parser = ConfigParser()
-        for key, path in self._availThemes.items():
-            logger.debug("Checking theme config '%s'", key)
-            if meta := _loadInternalName(parser, path):
-                themes.append((key, meta[0], meta[1]))
-
-        self._themeList = sorted(themes, key=_sortTheme)
-
-        return self._themeList
 
     def getStyleSheet(self, name: str) -> str:
         """Load a standard style sheet."""
@@ -493,12 +497,10 @@ class GuiTheme:
     def _resetTheme(self) -> None:
         """Reset GUI colours to default values."""
         palette = QPalette()
-
-        text = palette.color(QPalette.ColorRole.Text)
-        window = palette.color(QPalette.ColorRole.Window)
-        isDark = text.lightnessF() > window.lightnessF()
+        isDark = self.isDesktopDarkMode()
 
         # Reset GUI Palette
+        default = palette.color(QPalette.ColorRole.Text)
         faded   = QColor(128, 128, 128)
         dimmed  = QColor(130, 130, 130) if isDark else QColor(190, 190, 190)
         red     = QColor(242, 119, 122) if isDark else QColor(240, 40, 41)
@@ -520,7 +522,7 @@ class GuiTheme:
         self.iconCache.clear()
         self._svgColors = {}
         self._qColors = {}
-        self._setBaseColor("default", text)
+        self._setBaseColor("default", default)
         self._setBaseColor("faded",   faded)
         self._setBaseColor("red",     red)
         self._setBaseColor("orange",  orange)
@@ -531,7 +533,7 @@ class GuiTheme:
         self._setBaseColor("purple",  purple)
         self._setBaseColor("root",    blue)
         self._setBaseColor("folder",  yellow)
-        self._setBaseColor("file",    text)
+        self._setBaseColor("file",    default)
         self._setBaseColor("title",   green)
         self._setBaseColor("chapter", red)
         self._setBaseColor("scene",   blue)
@@ -582,6 +584,35 @@ class GuiTheme:
 
         return
 
+    def _scanThemes(self, files: list[Path]) -> None:
+        """Scan the GUI themes folder and list all themes."""
+        parser = ConfigParser()
+        data: dict[str, tuple[str, str, bool, Path]] = {}
+        keys = []
+        for file in files:
+            try:
+                parser.clear()
+                parser.read(file, encoding="utf-8")
+                name = parser.get("Main", "name", fallback="")
+                dark = parser.get("Main", "mode", fallback="light").lower() == "dark"
+                if name:
+                    key = file.stem
+                    prefix = "*" if key.startswith("default") else ""
+                    lookup = f"{prefix}{name} {key}"
+                    keys.append(lookup)
+                    data[lookup] = (file.stem, name, dark, file)
+            except Exception:  # noqa: PERF203
+                logger.error("Could not read file: %s", file)
+                logException()
+
+        self._allThemes = {}
+        for lookup in sorted(keys):
+            key, name, dark, item = data[lookup]
+            logger.debug("Checking theme config '%s'", key)
+            self._allThemes[key] = ThemeEntry(name, dark, item)
+
+        return
+
 
 class GuiIcons:
     """The icon class manages the content of the assets/icons folder,
@@ -593,8 +624,8 @@ class GuiIcons:
     """
 
     __slots__ = (
-        "_availThemes", "_headerDec", "_headerDecNarrow", "_meta", "_noIcon",
-        "_qIcons", "_svgData", "_theme", "_themeList",
+        "_allThemes", "_headerDec", "_headerDecNarrow", "_meta",
+        "_noIcon", "_qIcons", "_svgData", "_theme",
     )
 
     TOGGLE_ICON_KEYS: Final[dict[str, tuple[str, str]]] = {
@@ -612,20 +643,14 @@ class GuiIcons:
         self._meta = ThemeMeta()
 
         # Storage
+        self._allThemes: dict[str, ThemeEntry] = {}
         self._svgData: dict[str, bytes] = {}
         self._qIcons: dict[str, QIcon] = {}
         self._headerDec: list[QPixmap] = []
         self._headerDecNarrow: list[QPixmap] = []
 
-        # Icon Theme Path
-        self._availThemes: dict[str, Path] = {}
-        self._themeList: list[tuple[str, str]] = []
-
         # None Icon
         self._noIcon = QIcon(str(CONFIG.assetPath("icons") / "none.svg"))
-
-        _listConf(self._availThemes, CONFIG.assetPath("icons"), ".icons")
-        _listConf(self._availThemes, CONFIG.dataPath("icons"), ".icons")
 
         return
 
@@ -639,28 +664,47 @@ class GuiIcons:
         return
 
     ##
+    #  Properties
+    ##
+
+    @property
+    def iconThemes(self) -> dict[str, ThemeEntry]:
+        """Return a dictionary of all icon themes."""
+        return self._allThemes
+
+    ##
     #  Actions
     ##
+
+    def initIcons(self) -> None:
+        """Initialise icons."""
+        CONFIG.splashMessage("Scanning for icon themes ...")
+        icons: list[Path] = []
+        _listContent(icons, CONFIG.assetPath("icons"), ".icons")
+        _listContent(icons, CONFIG.dataPath("icons"), ".icons")
+        self._scanThemes(icons)
+        return
 
     def loadTheme(self, theme: str) -> bool:
         """Update the theme map. This is more of an init, since many of
         the GUI icons cannot really be replaced without writing specific
         update functions for the classes where they're used.
         """
-        if theme not in self._availThemes:
+        if theme not in self._allThemes:
             logger.error("Could not find icon theme '%s'", theme)
             theme = DEF_ICONS
             CONFIG.iconTheme = theme
 
-        if not (file := self._availThemes.get(theme)):
+        entry = self._allThemes.get(theme)
+        if not entry:
             logger.error("Could not load icon theme")
             return False
 
-        CONFIG.splashMessage("Loading icon theme ...")
+        CONFIG.splashMessage(f"Loading icon theme: {entry.name}")
         logger.info("Loading icon theme '%s'", theme)
         try:
             meta = ThemeMeta()
-            with open(file, mode="r", encoding="utf-8") as icons:
+            with open(entry.path, mode="r", encoding="utf-8") as icons:
                 for icon in icons:
                     bits = icon.partition("=")
                     key = bits[0].strip()
@@ -676,14 +720,12 @@ class GuiIcons:
                             meta.license = value
             self._meta = meta
         except Exception:
-            logger.error("Could not read file: %s", file)
+            logger.error("Could not read file: %s", entry.path)
             logException()
             return False
 
-        CONFIG.splashMessage(f"Loaded icon theme: {meta.name}")
-        CONFIG.splashMessage("Generating additional icons ...")
-
         # Populate generated icons cache
+        CONFIG.splashMessage("Generating additional icons ...")
         self.getHeaderDecoration(0)
         self.getHeaderDecorationNarrow(0)
 
@@ -811,21 +853,6 @@ class GuiIcons:
             ]
         return self._headerDecNarrow[minmax(hLevel, 0, 5)]
 
-    def listThemes(self) -> list[tuple[str, str]]:
-        """Scan the GUI icons folder and list all themes."""
-        if self._themeList:
-            return self._themeList
-
-        themes = []
-        for key, path in self._availThemes.items():
-            logger.debug("Checking icon theme '%s'", key)
-            if name := _loadIconName(path):
-                themes.append((key, name))
-
-        self._themeList = sorted(themes, key=_sortTheme)
-
-        return self._themeList
-
     ##
     #  Internal Functions
     ##
@@ -870,49 +897,39 @@ class GuiIcons:
         tMode = Qt.TransformationMode.SmoothTransformation
         return pixmap.scaledToHeight(height, tMode)
 
+    def _scanThemes(self, entries: list[Path]) -> None:
+        """Scan the GUI themes folder and list all themes."""
+        data: dict[str, tuple[str, str, Path]] = {}
+        keys = []
+        for entry in entries:
+            try:
+                with open(entry, mode="r", encoding="utf-8") as fo:
+                    for line in fo:
+                        key, _, value = line.partition("=")
+                        if key.strip() == "meta:name":
+                            if name := value.strip():
+                                lookup = entry.stem
+                                keys.append(lookup)
+                                data[lookup] = (lookup, name, entry)
+                            break
+            except Exception:
+                logger.error("Could not read file: %s", entry)
+                logException()
+
+        self._allThemes = {}
+        for lookup in sorted(keys):
+            key, name, item = data[lookup]
+            logger.debug("Checking icon theme '%s'", key)
+            self._allThemes[key] = ThemeEntry(name, False, item)
+
+        return
+
 
 # Module Functions
 # ================
 
-def _listConf(target: dict, path: Path, extension: str) -> None:
-    """Scan for theme files and populate the dictionary."""
+def _listContent(data: list[Path], path: Path, extension: str) -> None:
+    """List files of a specific type and extend the list."""
     if path.is_dir():
-        for item in path.iterdir():
-            if item.is_file() and item.name.endswith(extension):
-                target[item.stem] = item
+        data.extend(n for n in path.iterdir() if n.is_file() and n.suffix == extension)
     return
-
-
-def _sortTheme(data: tuple) -> str:
-    """Key function for theme sorting."""
-    key, name = data[:2]
-    return f"*{name}" if key.startswith("default_") else name
-
-
-def _loadInternalName(parser: ConfigParser, path: str | Path) -> tuple[str, bool]:
-    """Open a conf file and read the 'name' setting."""
-    try:
-        parser.clear()
-        with open(path, mode="r", encoding="utf-8") as inFile:
-            parser.read_file(inFile)
-        name = parser.get("Main", "name", fallback="")
-        dark = parser.get("Main", "mode", fallback="light").lower() == "dark"
-        return name, dark
-    except Exception:
-        logger.error("Could not read file: %s", path)
-        logException()
-    return "", False
-
-
-def _loadIconName(path: Path) -> str:
-    """Open an icons file and read the name setting."""
-    try:
-        with open(path, mode="r", encoding="utf-8") as icons:
-            for icon in icons:
-                key, _, value = icon.partition("=")
-                if key.strip() == "meta:name":
-                    return value.strip()
-    except Exception:
-        logger.error("Could not read file: %s", path)
-        logException()
-    return ""

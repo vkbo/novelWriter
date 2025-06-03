@@ -405,7 +405,7 @@ class Config:
             else:
                 font = QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont)
             self.guiFont = fontMatcher(font)
-            logger.debug("GUI font set to: %s", describeFont(font))
+            logger.debug("Main font set to: %s", describeFont(font))
         QApplication.setFont(self.guiFont)
         return
 
@@ -723,7 +723,7 @@ class Config:
         # Check Values
         # ============
 
-        self._prepareFont(self.guiFont, "GUI")
+        self._prepareFont(self.guiFont, "main")
         self._prepareFont(self.textFont, "document")
 
         # If we're using straight quotes, disable auto-replace

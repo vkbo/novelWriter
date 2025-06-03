@@ -33,7 +33,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.config import DEF_GUI_LIGHT
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
-from novelwriter.gui.theme import _listConf
+from novelwriter.gui.theme import _listContent
 
 from tests.mocked import causeOSError
 from tests.tools import writeFile
@@ -54,18 +54,17 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     # Scan for Themes
     # ===============
 
-    result = {}
-    _listConf({}, Path("not_a_path"), ".conf")
-    assert result == {}
+    result = []
+    _listContent(result, Path("not_a_path"), ".conf")
+    assert result == []
 
     themeOne = tstPaths.cnfDir / "themes" / "themeone.conf"
     themeTwo = tstPaths.cnfDir / "themes" / "themetwo.conf"
     writeFile(themeOne, "# Stuff")
     writeFile(themeTwo, "# Stuff")
 
-    _listConf(result, tstPaths.cnfDir / "themes", ".conf")
-    assert result["themeone"] == themeOne
-    assert result["themetwo"] == themeTwo
+    _listContent(result, tstPaths.cnfDir / "themes", ".conf")
+    assert result == [themeOne, themeTwo]
 
     # Parse Colours
     # =============
@@ -157,17 +156,17 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         theme._themeList = []
-        assert theme.listThemes() == []
+        assert theme.getColourThemes() == []
 
     # Load the theme info, default themes first
-    themesList = theme.listThemes()
+    themesList = theme.getColourThemes()
     assert themesList[0] == ("default_dark", "Default Dark Theme")
     assert themesList[1] == ("default_light", "Default Light Theme")
     assert themesList[2] == ("cyberpunk_night", "Cyberpunk Night")
     assert themesList[3] == ("dracula", "Dracula")
 
     # A second call should returned the cached list
-    assert theme.listThemes() == theme._themeList
+    assert theme.getColourThemes() == theme._themeList
 
     # Check handling of broken theme settings
     CONFIG.guiTheme = "not_a_theme"
@@ -376,18 +375,18 @@ def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
     # Load error returns empty list
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        themes = iconCache.listThemes()
+        themes = iconCache.getIconThemes()
         assert themes == []
 
     # Successful read
-    themes = iconCache.listThemes()
+    themes = iconCache.getIconThemes()
     assert len(themes) > 1
     assert "material_rounded_normal" in dict(themes)
 
     # Load error doesn't matter on second read since list is cached
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert iconCache.listThemes() == themes
+        assert iconCache.getIconThemes() == themes
 
     # qtbot.stop()
 

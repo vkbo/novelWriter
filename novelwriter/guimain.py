@@ -937,8 +937,7 @@ class GuiMain(QMainWindow):
 
     def changeEvent(self, event: QEvent) -> None:
         """Capture application change events."""
-        if int(event.type()) == 210:
-            # ThemeChange
+        if int(event.type()) == 210:  # ThemeChange
             self.checkThemeUpdate()
         return
 
