@@ -240,8 +240,8 @@ class GuiTheme:
             return hint.colorScheme() == Qt.ColorScheme.Dark
 
         palette = QPalette()
-        text = palette.color(QPalette.ColorRole.WindowText)
-        window = palette.color(QPalette.ColorRole.Window)
+        text = palette.windowText().color()
+        window = palette.window().color()
         return text.lightnessF() > window.lightnessF()
 
     def parseColor(self, value: str, default: QColor = QtBlack) -> QColor:
@@ -270,7 +270,7 @@ class GuiTheme:
             return QColor(*result)
         return default
 
-    def loadTheme(self, force: bool = False) -> bool:
+    def loadTheme(self, force: bool = False) -> None:
         """Load the currently specified GUI theme."""
         match CONFIG.themeMode:
             case nwTheme.LIGHT:
@@ -282,7 +282,7 @@ class GuiTheme:
 
         theme = CONFIG.darkTheme if darkMode else CONFIG.lightTheme
         if theme not in self._allThemes:
-            logger.error("Could not find theme for key '%s'", theme)
+            logger.error("Could not find theme '%s'", theme)
             if darkMode:
                 theme = DEF_GUI_DARK
                 CONFIG.darkTheme = DEF_GUI_DARK
@@ -292,23 +292,22 @@ class GuiTheme:
 
         if theme == self._currentTheme and not force:
             logger.info("Theme '%s' is already loaded", theme)
-            return False
+            return
 
         entry = self._allThemes.get(theme)
         if not entry:
             logger.error("Could not load GUI theme")
-            return False
+            return
 
         CONFIG.splashMessage(f"Loading colour theme: {entry.name}")
         logger.info("Loading GUI theme '%s'", theme)
         parser = ConfigParser()
         try:
-            with open(entry.path, mode="r", encoding="utf-8") as fo:
-                parser.read_file(fo)
+            parser.read(entry.path, encoding="utf-8")
         except Exception:
             logger.error("Could not read file: %s", entry.path)
             logException()
-            return False
+            return
 
         # Reset Palette
         self._resetTheme()
@@ -458,15 +457,15 @@ class GuiTheme:
 
         # Set project override colours
         if (override := CONFIG.iconColTree) != "theme":
-            color = self._svgColors.get(override, b"#000000")
-            self._svgColors["root"] = color
-            self._svgColors["folder"] = color
+            color = self._qColors.get(override, QtBlack)
+            self._setBaseColor("root", color)
+            self._setBaseColor("folder", color)
             if not CONFIG.iconColDocs:
-                self._svgColors["file"] = color
-                self._svgColors["title"] = color
-                self._svgColors["chapter"] = color
-                self._svgColors["scene"] = color
-                self._svgColors["note"] = color
+                self._setBaseColor("file", color)
+                self._setBaseColor("title", color)
+                self._setBaseColor("chapter", color)
+                self._setBaseColor("scene", color)
+                self._setBaseColor("note", color)
 
         self.isDarkTheme = darkMode
         self._currentTheme = theme
@@ -478,7 +477,7 @@ class GuiTheme:
         QApplication.setPalette(self._guiPalette)
         self._buildStyleSheets(self._guiPalette)
 
-        return True
+        return
 
     def getStyleSheet(self, name: str) -> str:
         """Load a standard style sheet."""
@@ -685,7 +684,7 @@ class GuiIcons:
         self._scanThemes(icons)
         return
 
-    def loadTheme(self, theme: str) -> bool:
+    def loadTheme(self, theme: str) -> None:
         """Update the theme map. This is more of an init, since many of
         the GUI icons cannot really be replaced without writing specific
         update functions for the classes where they're used.
@@ -698,7 +697,7 @@ class GuiIcons:
         entry = self._allThemes.get(theme)
         if not entry:
             logger.error("Could not load icon theme")
-            return False
+            return
 
         CONFIG.splashMessage(f"Loading icon theme: {entry.name}")
         logger.info("Loading icon theme '%s'", theme)
@@ -722,14 +721,14 @@ class GuiIcons:
         except Exception:
             logger.error("Could not read file: %s", entry.path)
             logException()
-            return False
+            return
 
         # Populate generated icons cache
         CONFIG.splashMessage("Generating additional icons ...")
         self.getHeaderDecoration(0)
         self.getHeaderDecorationNarrow(0)
 
-        return True
+        return
 
     ##
     #  Access Functions
