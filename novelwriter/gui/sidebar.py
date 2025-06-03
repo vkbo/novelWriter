@@ -82,10 +82,6 @@ class GuiSideBar(QWidget):
         self.tbTheme.setToolTip(self.tr("Switch Colour Theme"))
         self.tbTheme.clicked.connect(self._cycleColurTheme)
 
-        self.tbBuild = NIconToolButton(self, iSz)
-        self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Build Manuscript")))
-        self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
-
         self.tbDetails = NIconToolButton(self, iSz)
         self.tbDetails.setToolTip("{0} [Shift+F6]".format(self.tr("Novel Details")))
         self.tbDetails.clicked.connect(self.mainGui.showNovelDetailsDialog)
@@ -93,6 +89,10 @@ class GuiSideBar(QWidget):
         self.tbStats = NIconToolButton(self, iSz)
         self.tbStats.setToolTip("{0} [F6]".format(self.tr("Writing Statistics")))
         self.tbStats.clicked.connect(self.mainGui.showWritingStatsDialog)
+
+        self.tbBuild = NIconToolButton(self, iSz)
+        self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Build Manuscript")))
+        self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
 
         # Settings Menu
         self.tbSettings = NIconToolButton(self, iSz)
@@ -114,9 +114,9 @@ class GuiSideBar(QWidget):
         self.outerBox.addWidget(self.tbOutline)
         self.outerBox.addWidget(self.tbBuild)
         self.outerBox.addStretch(1)
-        self.outerBox.addWidget(self.tbTheme)
         self.outerBox.addWidget(self.tbDetails)
         self.outerBox.addWidget(self.tbStats)
+        self.outerBox.addWidget(self.tbTheme)
         self.outerBox.addWidget(self.tbSettings)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setSpacing(6)
@@ -137,9 +137,9 @@ class GuiSideBar(QWidget):
         self.tbSearch.setStyleSheet(buttonStyle)
         self.tbOutline.setStyleSheet(buttonStyle)
         self.tbBuild.setStyleSheet(buttonStyle)
-        self.tbTheme.setStyleSheet(buttonStyle)
         self.tbDetails.setStyleSheet(buttonStyle)
         self.tbStats.setStyleSheet(buttonStyle)
+        self.tbTheme.setStyleSheet(buttonStyle)
         self.tbSettings.setStyleSheet(buttonStyle)
 
         self.tbProject.setThemeIcon("sb_project")

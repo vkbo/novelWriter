@@ -229,27 +229,25 @@ class GuiTheme:
         if value in self._qColors:
             # Named colour
             return self._qColors[value]
-        elif value.startswith("#"):
-            if len(value) >= 9:
-                # Convert from #RRGGBBAA to #AARRGGBB
-                return QColor.fromString(f"#{value[7:9]}{value[1:7]}")
-            else:
-                # Assume #RRGGBB
-                return QColor.fromString(value[:7])
+        elif value.startswith("#") and len(value) == 7:
+            # Assume #RRGGBB
+            return QColor.fromString(value)
+        elif value.startswith("#") and len(value) == 9:
+            # Assume #RRGGBBAA and convert to #AARRGGBB
+            return QColor.fromString(f"#{value[7:9]}{value[1:7]}")
+        elif ":" in value:
+            # Colour name and alpha
+            name, _, alpha = value.partition(":")
+            color = QColor(self._qColors.get(name.strip(), default))
+            color.setAlpha(checkInt(alpha, 255))
+            return color
         elif "," in value:
+            # Integer red, green, blue, alpha
             data = value.split(",")
-            entries = len(data)
-            if entries == 2:
-                # Assume name, alpha
-                color = QColor(self._qColors.get(data[0].strip(), default))
-                color.setAlpha(checkInt(data[1], 255))
-                return color
-            else:
-                # Assume red, green, blue, alpha
-                result = [0, 0, 0, 255]
-                for i in range(min(entries, 4)):
-                    result[i] = checkInt(data[i].strip(), result[i])
-                return QColor(*result)
+            result = [0, 0, 0, 255]
+            for i in range(min(len(data), 4)):
+                result[i] = checkInt(data[i].strip(), result[i])
+            return QColor(*result)
         return default
 
     def loadTheme(self, force: bool = False) -> bool:

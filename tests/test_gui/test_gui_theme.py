@@ -40,40 +40,6 @@ from tests.tools import writeFile
 
 
 @pytest.mark.gui
-def testGuiTheme_ParseColor(qtbot, nwGUI):
-    """Test the colour parsing."""
-    theme = SHARED.theme
-
-    # Pre-Populate
-    theme._qColors["red"] = QColor(255, 0, 0)
-    theme._qColors["green"] = QColor(0, 255, 0)
-    theme._qColors["blue"] = QColor(0, 0, 255)
-
-    # By Name
-    assert theme.parseColor("red").getRgb() == (255, 0, 0, 255)
-    assert theme.parseColor("green").getRgb() == (0, 255, 0, 255)
-    assert theme.parseColor("blue").getRgb() == (0, 0, 255, 255)
-    assert theme.parseColor("bob").getRgb() == (0, 0, 0, 255)
-
-    # CSS Format
-    assert theme.parseColor("#ff0000").getRgb() == (255, 0, 0, 255)
-    assert theme.parseColor("#ff00007f").getRgb() == (255, 0, 0, 127)
-    assert theme.parseColor("#ff00").getRgb() == (0, 0, 0, 255)  # Too short -> ignored
-    assert theme.parseColor("#ff00007f15").getRgb() == (255, 0, 0, 127)  # Too long -> truncated
-
-    # Name + Alpha
-    assert theme.parseColor("red, 255").getRgb() == (255, 0, 0, 255)
-    assert theme.parseColor("red, 127").getRgb() == (255, 0, 0, 127)
-    assert theme.parseColor("red, 512").getRgb() == (255, 0, 0, 255)  # Value truncated
-
-    # Values
-    assert theme.parseColor("255, 0, 0").getRgb() == (255, 0, 0, 255)
-    assert theme.parseColor("255, 0, 0, 255").getRgb() == (255, 0, 0, 255)
-    assert theme.parseColor("255, 0, 0, 127").getRgb() == (255, 0, 0, 127)
-    assert theme.parseColor("255, 0, 0, 127, 42").getRgb() == (255, 0, 0, 127)  # Truncated
-
-
-@pytest.mark.gui
 def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     """Test the theme class init."""
     theme = SHARED.theme
@@ -118,7 +84,7 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     assert theme._readColor(parser, "Palette", "colour1").getRgb() == (100, 150, 200, 255)
     assert theme._readColor(parser, "Palette", "colour2").getRgb() == (100, 150, 200, 250)
     assert theme._readColor(parser, "Palette", "colour3").getRgb() == (100, 150, 200, 250)
-    assert theme._readColor(parser, "Palette", "colour4").getRgb() == (0, 0, 0, 250)
+    assert theme._readColor(parser, "Palette", "colour4").getRgb() == (250, 250, 0, 255)
     assert theme._readColor(parser, "Palette", "colour5").getRgb() == (0, 0, 0, 0)
     assert theme._readColor(parser, "Palette", "colour6").getRgb() == (0, 127, 255, 255)
 
@@ -130,7 +96,7 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     theme._setPalette(parser, "Palette", "colour3", QPalette.ColorRole.Window)
     assert theme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (100, 150, 200, 250)
     theme._setPalette(parser, "Palette", "colour4", QPalette.ColorRole.Window)
-    assert theme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (0, 0, 0, 250)
+    assert theme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (250, 250, 0, 255)
     theme._setPalette(parser, "Palette", "colour5", QPalette.ColorRole.Window)
     assert theme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (0, 0, 0, 0)
     theme._setPalette(parser, "Palette", "colour6", QPalette.ColorRole.Window)
@@ -142,6 +108,40 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     assert theme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (64, 64, 64, 255)
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiTheme_ParseColor(qtbot, nwGUI):
+    """Test the colour parsing."""
+    theme = SHARED.theme
+
+    # Pre-Populate
+    theme._qColors["red"] = QColor(255, 0, 0)
+    theme._qColors["green"] = QColor(0, 255, 0)
+    theme._qColors["blue"] = QColor(0, 0, 255)
+
+    # By Name
+    assert theme.parseColor("red").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("green").getRgb() == (0, 255, 0, 255)
+    assert theme.parseColor("blue").getRgb() == (0, 0, 255, 255)
+    assert theme.parseColor("bob").getRgb() == (0, 0, 0, 255)
+
+    # CSS Format
+    assert theme.parseColor("#ff0000").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("#ff00007f").getRgb() == (255, 0, 0, 127)
+    assert theme.parseColor("#ff00").getRgb() == (0, 0, 0, 255)  # Too short -> ignored
+    assert theme.parseColor("#ff00007f15").getRgb() == (0, 0, 0, 255)  # Too long -> ignored
+
+    # Name + Alpha
+    assert theme.parseColor("red:255").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("red:127").getRgb() == (255, 0, 0, 127)
+    assert theme.parseColor("red:512").getRgb() == (255, 0, 0, 255)  # Value truncated
+
+    # Values
+    assert theme.parseColor("255, 0, 0").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("255, 0, 0, 255").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("255, 0, 0, 127").getRgb() == (255, 0, 0, 127)
+    assert theme.parseColor("255, 0, 0, 127, 42").getRgb() == (255, 0, 0, 127)  # Truncated
 
 
 @pytest.mark.gui
