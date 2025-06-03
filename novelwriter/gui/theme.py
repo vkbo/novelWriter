@@ -316,7 +316,7 @@ class GuiTheme:
             self._setBaseColor("orange",  self._readColor(parser, sec, "orange"))
             self._setBaseColor("yellow",  self._readColor(parser, sec, "yellow"))
             self._setBaseColor("green",   self._readColor(parser, sec, "green"))
-            self._setBaseColor("aqua",    self._readColor(parser, sec, "aqua"))
+            self._setBaseColor("cyan",    self._readColor(parser, sec, "cyan"))
             self._setBaseColor("blue",    self._readColor(parser, sec, "blue"))
             self._setBaseColor("purple",  self._readColor(parser, sec, "purple"))
 
@@ -505,7 +505,7 @@ class GuiTheme:
         orange  = QColor(249, 145,  57) if isDark else QColor(245, 135, 31)
         yellow  = QColor(255, 204, 102) if isDark else QColor(234, 183, 0)
         green   = QColor(153, 204, 153) if isDark else QColor(113, 140, 0)
-        aqua    = QColor(102, 204, 204) if isDark else QColor(62, 153, 159)
+        cyan    = QColor(102, 204, 204) if isDark else QColor(62, 153, 159)
         blue    = QColor(102, 153, 204) if isDark else QColor(66, 113, 174)
         purple  = QColor(204, 153, 204) if isDark else QColor(137, 89, 168)
 
@@ -526,7 +526,7 @@ class GuiTheme:
         self._setBaseColor("orange",  orange)
         self._setBaseColor("yellow",  yellow)
         self._setBaseColor("green",   green)
-        self._setBaseColor("aqua",    aqua)
+        self._setBaseColor("cyan",    cyan)
         self._setBaseColor("blue",    blue)
         self._setBaseColor("purple",  purple)
         self._setBaseColor("root",    blue)

@@ -450,7 +450,7 @@ class nwLabels:
         "orange":  QT_TRANSLATE_NOOP("Constant", "Orange"),
         "yellow":  QT_TRANSLATE_NOOP("Constant", "Yellow"),
         "green":   QT_TRANSLATE_NOOP("Constant", "Green"),
-        "aqua":    QT_TRANSLATE_NOOP("Constant", "Aqua"),
+        "cyan":    QT_TRANSLATE_NOOP("Constant", "Cyan"),
         "blue":    QT_TRANSLATE_NOOP("Constant", "Blue"),
         "purple":  QT_TRANSLATE_NOOP("Constant", "Purple"),
     }
