@@ -270,8 +270,10 @@ class GuiTheme:
             return QColor(*result)
         return default
 
-    def loadTheme(self, force: bool = False) -> None:
-        """Load the currently specified GUI theme."""
+    def loadTheme(self, force: bool = False) -> bool:
+        """Load the currently specified GUI theme. The boolean return
+        can be used to determine if the GUI needs refreshing.
+        """
         match CONFIG.themeMode:
             case nwTheme.LIGHT:
                 darkMode = False
@@ -292,12 +294,12 @@ class GuiTheme:
 
         if theme == self._currentTheme and not force:
             logger.info("Theme '%s' is already loaded", theme)
-            return
+            return False
 
         entry = self._allThemes.get(theme)
         if not entry:
             logger.error("Could not load GUI theme")
-            return
+            return False
 
         CONFIG.splashMessage(f"Loading colour theme: {entry.name}")
         logger.info("Loading GUI theme '%s'", theme)
@@ -307,7 +309,7 @@ class GuiTheme:
         except Exception:
             logger.error("Could not read file: %s", entry.path)
             logException()
-            return
+            return False
 
         # Reset Palette
         self._resetTheme()
@@ -477,7 +479,7 @@ class GuiTheme:
         QApplication.setPalette(self._guiPalette)
         self._buildStyleSheets(self._guiPalette)
 
-        return
+        return True
 
     def getStyleSheet(self, name: str) -> str:
         """Load a standard style sheet."""
