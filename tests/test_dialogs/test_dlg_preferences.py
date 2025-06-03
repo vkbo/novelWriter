@@ -31,6 +31,7 @@ from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.gui.theme import ThemeEntry
 from novelwriter.types import QtDialogCancel, QtDialogSave, QtModNone
 
 KEY_DELAY = 1
@@ -147,12 +148,12 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     (fncPath / "nw_en_US.qm").touch()
     (fncPath / "project_en_US.json").touch()
     CONFIG._nwLangPath = fncPath
-    SHARED.theme._themeList = [
-        ("theme1", "Theme 1", False),
-        ("theme2", "Theme 2", False),
-        ("theme3", "Theme 3", True),
-        ("theme4", "Theme 4", True),
-    ]
+    SHARED.theme._allThemes = {
+        "theme1": ThemeEntry(name="Theme 1", dark=False, path=fncPath),
+        "theme2": ThemeEntry(name="Theme 2", dark=False, path=fncPath),
+        "theme3": ThemeEntry(name="Theme 3", dark=True, path=fncPath),
+        "theme4": ThemeEntry(name="Theme 4", dark=True, path=fncPath),
+    }
 
     prefs = GuiPreferences(nwGUI)
     with qtbot.waitExposed(prefs):

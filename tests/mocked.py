@@ -65,6 +65,9 @@ class MockTheme:
         self.guiFontBU = QFont()
         return
 
+    def initThemes(self) -> None:
+        return
+
     def getPixmap(self, *a) -> QPixmap:
         return QPixmap()
 
