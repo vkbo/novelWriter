@@ -28,7 +28,8 @@ from typing import Final
 from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
 from novelwriter.enum import (
-    nwBuildFmt, nwComment, nwItemClass, nwItemLayout, nwOutline, nwStatusShape
+    nwBuildFmt, nwComment, nwItemClass, nwItemLayout, nwOutline, nwStatusShape,
+    nwTheme
 )
 
 
@@ -449,9 +450,19 @@ class nwLabels:
         "orange":  QT_TRANSLATE_NOOP("Constant", "Orange"),
         "yellow":  QT_TRANSLATE_NOOP("Constant", "Yellow"),
         "green":   QT_TRANSLATE_NOOP("Constant", "Green"),
-        "aqua":    QT_TRANSLATE_NOOP("Constant", "Aqua"),
+        "cyan":    QT_TRANSLATE_NOOP("Constant", "Cyan"),
         "blue":    QT_TRANSLATE_NOOP("Constant", "Blue"),
         "purple":  QT_TRANSLATE_NOOP("Constant", "Purple"),
+    }
+    THEME_MODE_ICON: Final[dict[nwTheme, str]] = {
+        nwTheme.AUTO:  "theme_auto",
+        nwTheme.LIGHT: "theme_light",
+        nwTheme.DARK:  "theme_dark",
+    }
+    THEME_MODE_LABEL: Final[dict[nwTheme, str]] = {
+        nwTheme.AUTO:  QT_TRANSLATE_NOOP("Constant", "System Theme"),
+        nwTheme.LIGHT: QT_TRANSLATE_NOOP("Constant", "Light Theme"),
+        nwTheme.DARK:  QT_TRANSLATE_NOOP("Constant", "Dark Theme"),
     }
 
 

@@ -56,6 +56,10 @@
     "sb_search": "search",
     "sb_stats": "bar_chart",
 
+    "theme_light": "light_mode",
+    "theme_dark": "dark_mode",
+    "theme_auto": "contrast",
+
     "add": "add",
     "bookmarks": "bookmarks",
     "browse": "folder_open",

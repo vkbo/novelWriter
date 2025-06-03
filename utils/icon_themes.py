@@ -90,6 +90,10 @@ ICONS = [
     "sb_search",
     "sb_stats",
 
+    "theme_light",
+    "theme_dark",
+    "theme_auto",
+
     "add",
     "bookmarks",
     "browse",

@@ -175,6 +175,7 @@ class SharedData(QObject):
         is created.
         """
         self._theme = theme
+        self._theme.initThemes()
         return
 
     def initSharedData(self, gui: GuiMain) -> None:

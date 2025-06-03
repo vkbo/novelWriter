@@ -156,6 +156,13 @@ class nwFocus(Enum):
     OUTLINE  = 3
 
 
+class nwTheme(Enum):
+
+    AUTO  = 0
+    LIGHT = 1
+    DARK  = 2
+
+
 class nwOutline(Enum):
 
     TITLE   = 0

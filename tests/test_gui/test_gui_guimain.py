@@ -24,6 +24,7 @@ import shutil
 
 from pathlib import Path
 from shutil import copyfile
+from unittest.mock import Mock
 
 import pytest
 
@@ -32,9 +33,10 @@ from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QInputDialog, QMessageBox
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.constants import nwFiles
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemType, nwView
+from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemType, nwTheme, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.outline import GuiOutlineView
@@ -179,20 +181,34 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiMain_UpdateTheme(qtbot, nwGUI):
     """Test updating the theme in the GUI."""
-    mainTheme = SHARED.theme
-    CONFIG.guiTheme = "default_dark"
-    CONFIG.guiSyntax = "default_dark"
-    mainTheme.loadTheme()
-    mainTheme.loadSyntax()
+    theme = SHARED.theme
+    CONFIG.themeMode = nwTheme.DARK
+    CONFIG.darkTheme = DEF_GUI_DARK
+    CONFIG.lightTheme = DEF_GUI_LIGHT
+    theme.loadTheme()
+    assert theme.isDarkTheme is True
+
     nwGUI._processConfigChanges(False, True, False, False)
     nwGUI._processConfigChanges(True, True, True, True)
 
+    # Check editor syntax
     syntax = SHARED.theme.syntaxTheme
-
     assert nwGUI.docEditor.palette().color(QPalette.ColorRole.Window) == syntax.back
     assert nwGUI.docEditor.docHeader.palette().color(QPalette.ColorRole.Window) == syntax.back
     assert nwGUI.docViewer.palette().color(QPalette.ColorRole.Window) == syntax.back
     assert nwGUI.docViewer.docHeader.palette().color(QPalette.ColorRole.Window) == syntax.back
+
+    # Update by check
+    CONFIG.themeMode = nwTheme.LIGHT
+    nwGUI.checkThemeUpdate()
+    assert theme.isDarkTheme is False
+
+    # Through change event
+    event = Mock()
+    event.type.return_value = 210
+    CONFIG.themeMode = nwTheme.DARK
+    nwGUI.changeEvent(event)
+    assert theme.isDarkTheme is True
 
     # qtbot.stop()
 
