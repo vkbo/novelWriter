@@ -244,32 +244,6 @@ class GuiTheme:
         window = palette.window().color()
         return text.lightnessF() > window.lightnessF()
 
-    def parseColor(self, value: str, default: QColor = QtBlack) -> QColor:
-        """Parse a string as a colour value."""
-        if value in self._qColors:
-            # Named colour
-            return self._qColors[value]
-        elif value.startswith("#") and len(value) == 7:
-            # Assume #RRGGBB
-            return QColor.fromString(value)
-        elif value.startswith("#") and len(value) == 9:
-            # Assume #RRGGBBAA and convert to #AARRGGBB
-            return QColor.fromString(f"#{value[7:9]}{value[1:7]}")
-        elif ":" in value:
-            # Colour name and alpha
-            name, _, alpha = value.partition(":")
-            color = QColor(self._qColors.get(name.strip(), default))
-            color.setAlpha(checkInt(alpha, 255))
-            return color
-        elif "," in value:
-            # Integer red, green, blue, alpha
-            data = value.split(",")
-            result = [0, 0, 0, 255]
-            for i in range(min(len(data), 4)):
-                result[i] = checkInt(data[i].strip(), result[i])
-            return QColor(*result)
-        return default
-
     def loadTheme(self, force: bool = False) -> bool:
         """Load the currently specified GUI theme. The boolean return
         can be used to determine if the GUI needs refreshing.
@@ -489,6 +463,37 @@ class GuiTheme:
     #  Internal Functions
     ##
 
+    def _parseColor(self, value: str, default: QColor = QtBlack) -> QColor:
+        """Parse a string as a colour value."""
+        if value in self._qColors:
+            # Named colour
+            return self._qColors[value]
+        elif value.startswith("#") and len(value) == 7:
+            # Assume #RRGGBB
+            return QColor.fromString(value)
+        elif value.startswith("#") and len(value) == 9:
+            # Assume #RRGGBBAA and convert to #AARRGGBB
+            return QColor.fromString(f"#{value[7:9]}{value[1:7]}")
+        elif ":" in value:
+            # Colour name and alpha
+            name, _, adjust = value.partition(":")
+            color = QColor(self._qColors.get(name.strip(), default))
+            if adjust.startswith("L"):
+                color = color.lighter(checkInt(adjust[1:], 100))
+            elif adjust.startswith("D"):
+                color = color.darker(checkInt(adjust[1:], 100))
+            else:
+                color.setAlpha(checkInt(adjust, 255))
+            return color
+        elif "," in value:
+            # Integer red, green, blue, alpha
+            data = value.split(",")
+            result = [0, 0, 0, 255]
+            for i in range(min(len(data), 4)):
+                result[i] = checkInt(data[i].strip(), result[i])
+            return QColor(*result)
+        return default
+
     def _setBaseColor(self, key: str, color: QColor) -> None:
         """Set the colour for a named colour."""
         self._qColors[key] = QColor(color)
@@ -544,7 +549,7 @@ class GuiTheme:
 
     def _readColor(self, parser: ConfigParser, section: str, name: str) -> QColor:
         """Parse a colour value from a config string."""
-        return self.parseColor(parser.get(section, name, fallback="default"))
+        return self._parseColor(parser.get(section, name, fallback="default"))
 
     def _setPalette(
         self, parser: ConfigParser, section: str, name: str, value: QPalette.ColorRole
