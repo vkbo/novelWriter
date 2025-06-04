@@ -20,6 +20,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import json
+
 from configparser import ConfigParser
 from pathlib import Path
 from unittest.mock import MagicMock, Mock
@@ -563,3 +565,114 @@ def testGuiTheme_LoadDecorations(monkeypatch):
     assert iconCache.getHeaderDecorationNarrow(4)  == iconCache._headerDecNarrow[4]
     assert iconCache.getHeaderDecorationNarrow(5)  == iconCache._headerDecNarrow[5]
     assert iconCache.getHeaderDecorationNarrow(6)  == iconCache._headerDecNarrow[5]
+
+
+THEMES = []
+_listContent(THEMES, CONFIG.assetPath("themes"), ".conf")
+
+
+@pytest.mark.gui
+@pytest.mark.parametrize("theme", [a.stem for a in THEMES])
+def testGuiTheme_CheckTheme(theme):
+    """Test loading all themes."""
+    themes = GuiTheme()
+    themes.iconCache = MagicMock()
+    themes._scanThemes(THEMES)
+
+    assert theme in themes.colourThemes
+    current = themes.colourThemes[theme]
+    if current.dark:
+        CONFIG.darkTheme = theme
+        CONFIG.themeMode = nwTheme.DARK
+    else:
+        CONFIG.lightTheme = theme
+        CONFIG.themeMode = nwTheme.LIGHT
+
+    # Check loading
+    themes.loadTheme()
+    assert themes._meta.name == current.name
+    assert themes.isDarkTheme == current.dark
+
+    # Check completeness
+    parser = ConfigParser()
+    parser.read(current.path, encoding="utf-8")
+
+    sections = ["Main", "Base", "Project", "Palette", "GUI", "Syntax"]
+    assert sorted(parser.sections()) == sorted(sections)
+
+    structure = {
+        "Main": [
+            "name", "mode",  # The rest are not required
+        ],
+        "Base": [
+            "default", "faded", "red", "orange", "yellow", "green", "cyan",
+            "blue", "purple",
+        ],
+        "Project": [
+            "root", "folder", "file", "title", "chapter", "scene", "note",
+        ],
+        "Palette": [
+            "window", "windowtext", "base", "alternatebase", "text",
+            "tooltipbase", "tooltiptext", "button", "buttontext", "brighttext",
+            "highlight", "highlightedtext", "link", "linkvisited",
+        ],
+        "GUI": [
+            "helptext", "fadedtext", "errortext",
+        ],
+        "Syntax": [
+            "background", "text", "link", "headertext", "headertag",
+            "emphasis", "dialog", "altdialog", "hidden", "note", "shortcode",
+            "keyword", "tag", "value", "optional", "spellcheckline",
+            "errorline", "replacetag", "modifier", "texthighlight",
+        ],
+    }
+    optional = ["description", "author", "credit", "url", "license", "licenseurl"]
+    missing = []
+    for section, options in structure.items():
+        missing.extend(opt for opt in options if opt not in parser[section])
+    assert missing == [], "Missing options in theme file"
+
+    # Check deprecated
+    deprecated = []
+    for section in sections:
+        deprecated.extend(
+            opt for opt in parser[section]
+            if opt not in structure[section] and opt not in optional
+        )
+    assert deprecated == [], "Deprecated options in theme file"
+
+
+ICONS = []
+_listContent(ICONS, CONFIG.assetPath("icons"), ".icons")
+
+
+@pytest.mark.gui
+@pytest.mark.parametrize("icons", [a.stem for a in ICONS])
+def testGuiTheme_CheckIcons(icons, tstPaths):
+    """Test loading all icons."""
+    keysFile: Path = tstPaths.filesDir / "all_icons.json"
+    iconKeys = json.loads(keysFile.read_text(encoding="utf-8"))
+    assert isinstance(iconKeys, list)
+
+    CONFIG.lightTheme = DEF_GUI_LIGHT
+    CONFIG.themeMode = nwTheme.LIGHT
+
+    themes = GuiTheme()
+    themes.initThemes()
+    iconCache = themes.iconCache
+
+    assert icons in iconCache.iconThemes
+    current = iconCache.iconThemes[icons]
+    CONFIG.iconTheme = icons
+
+    # Check loading
+    iconCache.loadTheme(icons)
+    assert iconCache._meta.name == current.name
+
+    # Check completeness
+    missing = [key for key in iconKeys if key not in iconCache._svgData]
+    assert missing == [], "Missing keys in icons file"
+
+    # Check deprecated
+    deprecated = [key for key in iconCache._svgData if key not in iconKeys]
+    assert deprecated == [], "Deprecated keys in icons file"
