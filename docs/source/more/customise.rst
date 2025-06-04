@@ -59,24 +59,24 @@ A colour theme ``.conf`` file consists of the following settings:
    licenseurl  = https://creativecommons.org/licenses/by-sa/4.0/
 
    [Base]
-   default         = #303030
-   faded           = #6c6c6c
-   red             = #a62a2d
-   orange          = #b36829
-   yellow          = #a68542
-   green           = #296629
-   cyan            = #269999
-   blue            = #3a70a6
-   purple          = #b35ab3
+   default = #303030
+   faded   = #6c6c6c
+   red     = #a62a2d
+   orange  = #b36829
+   yellow  = #a68542
+   green   = #296629
+   cyan    = #269999
+   blue    = #3a70a6
+   purple  = #b35ab3
 
    [Project]
-   root            = blue
-   folder          = yellow
-   file            = default
-   title           = green
-   chapter         = red
-   scene           = blue
-   note            = yellow
+   root    = blue
+   folder  = yellow
+   file    = default
+   title   = green
+   chapter = red
+   scene   = blue
+   note    = yellow
 
    [Palette]
    window          = #efefef
@@ -95,31 +95,31 @@ A colour theme ``.conf`` file consists of the following settings:
    linkvisited     = blue
 
    [GUI]
-   helptext        = #5c5c5c
-   fadedtext       = #6c6c6c
-   errortext       = red
+   helptext  = #5c5c5c
+   fadedtext = #6c6c6c
+   errortext = red
 
    [Syntax]
-   background      = #ffffff
-   text            = #000000
-   link            = blue
-   headertext      = green
-   headertag       = green:160
-   emphasis        = orange
-   dialog          = blue
-   altdialog       = blue
-   note            = yellow
-   hidden          = faded
-   shortcode       = green
-   keyword         = red
-   tag             = green
-   value           = blue
-   optional        = green
-   spellcheckline  = red
-   errorline       = green
-   replacetag      = green
-   modifier        = green
-   texthighlight   = #c8c80060
+   background     = #ffffff
+   text           = #000000
+   link           = blue
+   headertext     = green
+   headertag      = green:L135
+   emphasis       = orange
+   dialog         = blue
+   altdialog      = blue
+   note           = yellow
+   hidden         = faded
+   shortcode      = green
+   keyword        = red
+   tag            = green
+   value          = blue
+   optional       = green
+   spellcheckline = red
+   errorline      = green
+   replacetag     = green
+   modifier       = green
+   texthighlight  = #c8c80060
 
 
 Theme Sections
@@ -149,12 +149,15 @@ There are several ways to enter colour values:
 
 .. csv-table:: Colour Formats
    :header: "Syntax", "Description"
+   :widths: 15, 85
    :class: "tight-table"
 
    "``#RRGGBB``",    "A CSS style hexadecimal values, like ``#ff0000`` for red."
    "``#RRGGBBAA``",  "A CSS style hexadecimal values with transparency, like ``#ff00007f`` for half-transparent red."
    "``name``",       "A name referring to one of the colours already specified under the ``[Base]`` section, like ``red``. Note that you should not use named colours in the ``[Base]`` section itself as that may have unintended results."
-   "``name:alpha``", "A name referring to one of the colours already specified under the ``[Base]`` section, with a transparency value added. The alpha value must be in the range ``0`` to ``255``, like ``red:127`` for half-transparent red."
+   "``name:255``",   "A name referring to one of the colours already specified under the ``[Base]`` section, with a transparency value added. The value must be in the range ``0`` to ``255``, like ``red:127`` for half-transparent red."
+   "``name:L100``",  "A name referring to one of the colours already specified under the ``[Base]`` section, where the L-number is a percentage value that makes it lighter. The value must be greater than ``0``. ``L100`` means no change."
+   "``name:D100``",  "A name referring to one of the colours already specified under the ``[Base]`` section, where the D-number is a percentage value that makes it darker. The value must be greater than ``0``. ``D100`` means no change."
    "``r, g, b``",    "A set of red, green and blue numbers in the range ``0`` to ``255``, like ``255, 0, 0`` for red."
    "``r, g, b, a``", "A set of red, green, blue and alpha numbers in the range ``0`` to ``255``, like ``255, 0, 0, 127`` for half-transparent red."
 
