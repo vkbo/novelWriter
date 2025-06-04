@@ -634,7 +634,7 @@ class GuiIcons:
         "unfold": ("unfold-show", "unfold-hide"),
     }
     IMAGE_MAP: Final[dict[str, tuple[str, str]]] = {
-        "welcome":  ("welcome-light.jpg", "welcome-dark.jpg"),
+        "welcome":  ("welcome.webp", "welcome.webp"),
         "nw-text":  ("novelwriter-text-light.svg", "novelwriter-text-dark.svg"),
     }
 
