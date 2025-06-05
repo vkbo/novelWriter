@@ -616,16 +616,17 @@ def testGuiTheme_CheckTheme(theme):
             "name", "mode",  # The rest are not required
         ],
         "Base": [
-            "default", "faded", "red", "orange", "yellow", "green", "cyan",
-            "blue", "purple",
+            "base", "default", "faded", "red", "orange", "yellow", "green",
+            "cyan", "blue", "purple",
         ],
         "Project": [
             "root", "folder", "file", "title", "chapter", "scene", "note",
+            "active", "inactive", "disabled",
         ],
         "Palette": [
             "window", "windowtext", "base", "alternatebase", "text",
             "tooltipbase", "tooltiptext", "button", "buttontext", "brighttext",
-            "highlight", "highlightedtext", "link", "linkvisited",
+            "highlight", "highlightedtext", "link", "linkvisited", "accent",
         ],
         "GUI": [
             "helptext", "fadedtext", "errortext",

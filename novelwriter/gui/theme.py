@@ -108,7 +108,7 @@ class GuiTheme:
 
     __slots__ = (
         "_allThemes", "_currentTheme", "_darkThemes", "_guiPalette", "_lightThemes", "_meta",
-        "_qColors", "_styleSheets", "_svgColors", "_syntaxList", "baseButtonHeight",
+        "_qColors", "_styleSheets", "_svgColors", "_syntaxList", "accentCol", "baseButtonHeight",
         "baseIconHeight", "baseIconSize", "buttonIconSize", "errorText", "fadedText",
         "fontPixelSize", "fontPointSize", "getDecoration", "getHeaderDecoration",
         "getHeaderDecorationNarrow", "getIcon", "getItemIcon", "getPixmap", "getToggleIcon",
@@ -123,10 +123,11 @@ class GuiTheme:
         self.syntaxTheme = SyntaxColors()
         self.isDarkTheme = False
 
-        # Special Text Colours
+        # Special Colours
         self.helpText  = QColor(0, 0, 0)
         self.fadedText = QColor(0, 0, 0)
         self.errorText = QColor(255, 0, 0)
+        self.accentCol = QColor(255, 0, 255)  # Needed until we move to Qt 6.6
 
         # Theme Data
         self._meta = ThemeMeta()
@@ -306,6 +307,7 @@ class GuiTheme:
         # Base
         sec = "Base"
         if parser.has_section(sec):
+            self._setBaseColor("base",    self._readColor(parser, sec, "base"))
             self._setBaseColor("default", self._readColor(parser, sec, "default"))
             self._setBaseColor("faded",   self._readColor(parser, sec, "faded"))
             self._setBaseColor("red",     self._readColor(parser, sec, "red"))
@@ -319,13 +321,16 @@ class GuiTheme:
         # Project
         sec = "Project"
         if parser.has_section(sec):
-            self._setBaseColor("root",    self._readColor(parser, sec, "root"))
-            self._setBaseColor("folder",  self._readColor(parser, sec, "folder"))
-            self._setBaseColor("file",    self._readColor(parser, sec, "file"))
-            self._setBaseColor("title",   self._readColor(parser, sec, "title"))
-            self._setBaseColor("chapter", self._readColor(parser, sec, "chapter"))
-            self._setBaseColor("scene",   self._readColor(parser, sec, "scene"))
-            self._setBaseColor("note",    self._readColor(parser, sec, "note"))
+            self._setBaseColor("root",     self._readColor(parser, sec, "root"))
+            self._setBaseColor("folder",   self._readColor(parser, sec, "folder"))
+            self._setBaseColor("file",     self._readColor(parser, sec, "file"))
+            self._setBaseColor("title",    self._readColor(parser, sec, "title"))
+            self._setBaseColor("chapter",  self._readColor(parser, sec, "chapter"))
+            self._setBaseColor("scene",    self._readColor(parser, sec, "scene"))
+            self._setBaseColor("note",     self._readColor(parser, sec, "note"))
+            self._setBaseColor("active",   self._readColor(parser, sec, "active"))
+            self._setBaseColor("inactive", self._readColor(parser, sec, "inactive"))
+            self._setBaseColor("disabled", self._readColor(parser, sec, "disabled"))
 
         # Palette
         sec = "Palette"
@@ -344,6 +349,7 @@ class GuiTheme:
             self._setPalette(parser, sec, "highlightedtext", QPalette.ColorRole.HighlightedText)
             self._setPalette(parser, sec, "link",            QPalette.ColorRole.Link)
             self._setPalette(parser, sec, "linkvisited",     QPalette.ColorRole.LinkVisited)
+            self.accentCol = self._readColor(parser, sec, "accent")  # Special handling 'til Qt 6.6
 
         # GUI
         sec = "GUI"
@@ -427,8 +433,8 @@ class GuiTheme:
         self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Highlight, grey)
 
         if CONFIG.verQtValue >= 0x060600:
-            self._guiPalette.setBrush(QtColActive, QPalette.ColorRole.Accent, highlight)
-            self._guiPalette.setBrush(QtColInactive, QPalette.ColorRole.Accent, highlight)
+            self._guiPalette.setBrush(QtColActive, QPalette.ColorRole.Accent, self.accentCol)
+            self._guiPalette.setBrush(QtColInactive, QPalette.ColorRole.Accent, self.accentCol)
             self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Accent, grey)
 
         # Set project override colours
@@ -506,6 +512,7 @@ class GuiTheme:
         isDark = self.isDesktopDarkMode()
 
         # Reset GUI Palette
+        base    = palette.color(QPalette.ColorRole.Base)
         default = palette.color(QPalette.ColorRole.Text)
         faded   = QColor(128, 128, 128)
         dimmed  = QColor(130, 130, 130) if isDark else QColor(190, 190, 190)
@@ -528,22 +535,26 @@ class GuiTheme:
         self.iconCache.clear()
         self._svgColors = {}
         self._qColors = {}
-        self._setBaseColor("default", default)
-        self._setBaseColor("faded",   faded)
-        self._setBaseColor("red",     red)
-        self._setBaseColor("orange",  orange)
-        self._setBaseColor("yellow",  yellow)
-        self._setBaseColor("green",   green)
-        self._setBaseColor("cyan",    cyan)
-        self._setBaseColor("blue",    blue)
-        self._setBaseColor("purple",  purple)
-        self._setBaseColor("root",    blue)
-        self._setBaseColor("folder",  yellow)
-        self._setBaseColor("file",    default)
-        self._setBaseColor("title",   green)
-        self._setBaseColor("chapter", red)
-        self._setBaseColor("scene",   blue)
-        self._setBaseColor("note",    yellow)
+        self._setBaseColor("base",     base)
+        self._setBaseColor("default",  default)
+        self._setBaseColor("faded",    faded)
+        self._setBaseColor("red",      red)
+        self._setBaseColor("orange",   orange)
+        self._setBaseColor("yellow",   yellow)
+        self._setBaseColor("green",    green)
+        self._setBaseColor("cyan",     cyan)
+        self._setBaseColor("blue",     blue)
+        self._setBaseColor("purple",   purple)
+        self._setBaseColor("root",     blue)
+        self._setBaseColor("folder",   yellow)
+        self._setBaseColor("file",     default)
+        self._setBaseColor("title",    green)
+        self._setBaseColor("chapter",  red)
+        self._setBaseColor("scene",    blue)
+        self._setBaseColor("note",     yellow)
+        self._setBaseColor("active",   green)
+        self._setBaseColor("inactive", red)
+        self._setBaseColor("disabled", faded)
 
         return
 
