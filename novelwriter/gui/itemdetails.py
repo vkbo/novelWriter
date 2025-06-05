@@ -233,14 +233,8 @@ class GuiItemDetails(QWidget):
         # Label
         # =====
 
-        if nwItem.isFileType():
-            if nwItem.isActive:
-                self.labelIcon.setPixmap(SHARED.theme.getPixmap("checked", (iPx, iPx), "green"))
-            else:
-                self.labelIcon.setPixmap(SHARED.theme.getPixmap("unchecked", (iPx, iPx), "red"))
-        else:
-            self.labelIcon.setPixmap(SHARED.theme.getPixmap("noncheckable", (iPx, iPx), "faded"))
-
+        _, icon = nwItem.getActiveStatus()
+        self.labelIcon.setPixmap(icon.pixmap(iPx, iPx))
         self.labelData.setText(elide(nwItem.itemName, 100))
 
         # Status

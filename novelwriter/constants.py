@@ -445,6 +445,7 @@ class nwLabels:
     THEME_COLORS: Final[dict[str, str]] = {
         "theme":   QT_TRANSLATE_NOOP("Constant", "Theme Colours"),
         "default": QT_TRANSLATE_NOOP("Constant", "Foreground Colour"),
+        "base":    QT_TRANSLATE_NOOP("Constant", "Background Colour"),
         "faded":   QT_TRANSLATE_NOOP("Constant", "Faded Colour"),
         "red":     QT_TRANSLATE_NOOP("Constant", "Red"),
         "orange":  QT_TRANSLATE_NOOP("Constant", "Orange"),
