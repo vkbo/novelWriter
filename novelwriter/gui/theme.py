@@ -481,7 +481,7 @@ class GuiTheme:
             # Assume #RRGGBBAA and convert to #AARRGGBB
             return QColor.fromString(f"#{value[7:9]}{value[1:7]}")
         elif ":" in value:
-            # Colour name and alpha
+            # Colour name and lighter, darker or alpha
             name, _, adjust = value.partition(":")
             color = QColor(self._qColors.get(name.strip(), default))
             if adjust.startswith("L"):
