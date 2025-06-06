@@ -1090,11 +1090,14 @@ class GuiDocEditor(QPlainTextEdit):
                         show = self._completer.updateMetaText(text, bPos)
                     else:
                         show = self._completer.updateCommentText(text, bPos)
-                    point = self.cursorRect().bottomRight()
-                    self._completer.move(viewport.mapToGlobal(point))
-                    self._completer.setVisible(show)
+                    if show:
+                        point = self.cursorRect().bottomRight()
+                        self._completer.move(viewport.mapToGlobal(point))
+                        self._completer.show()
+                    else:
+                        self._completer.close()
             else:
-                self._completer.setVisible(False)
+                self._completer.close()
 
             if self._doReplace and added == 1:
                 cursor = self.textCursor()
@@ -2113,9 +2116,7 @@ class CommandCompleter(QMenu):
             length = len(lookup)
             suffix = ""
             options = sorted(filter(
-                lambda x: lookup in x.lower(), SHARED.project.index.getClassTags(
-                    nwKeyWords.KEY_CLASS.get(kw.strip())
-                )
+                lambda x: lookup in x.lower(), SHARED.project.index.getKeyWordTags(kw.strip())
             ))[:15]
 
         if not options:
