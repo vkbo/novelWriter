@@ -789,11 +789,12 @@ def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
     assert index.getDocumentTags(cHandle) == ["jane"]
     assert index.getDocumentTags(None) == []
 
-    # getClassTags
-    # ============
-    assert index.getClassTags(None) == ["Jane", "John"]
-    assert index.getClassTags(nwItemClass.CHARACTER) == ["Jane", "John"]
-    assert index.getClassTags(nwItemClass.PLOT) == []
+    # getKeyWordTags
+    # ==============
+    assert index.getKeyWordTags("@mention") == ["Jane", "John"]
+    assert index.getKeyWordTags("@char") == ["Jane", "John"]
+    assert index.getKeyWordTags("@plot") == []
+    assert index.getKeyWordTags("@tag") == []
 
     # getTagsData
     # ===========

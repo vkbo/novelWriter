@@ -757,10 +757,12 @@ class Index:
         """Return all tags used by a specific document."""
         return self._itemIndex.allItemTags(tHandle) if tHandle else []
 
-    def getClassTags(self, itemClass: nwItemClass | None) -> list[str]:
-        """Return all tags based on itemClass."""
-        name = None if itemClass is None else itemClass.name
-        return self._tagsIndex.filterTagNames(name)
+    def getKeyWordTags(self, keyWord: str) -> list[str]:
+        """Return all tags usable for a specific keyword."""
+        if keyWord in nwKeyWords.CAN_LOOKUP:
+            itemClass = nwKeyWords.KEY_CLASS.get(keyWord)
+            return self._tagsIndex.filterTagNames(itemClass.name if itemClass else None)
+        return []
 
     def getTagsData(
         self, activeOnly: bool = True

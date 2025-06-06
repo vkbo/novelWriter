@@ -2116,9 +2116,7 @@ class CommandCompleter(QMenu):
             length = len(lookup)
             suffix = ""
             options = sorted(filter(
-                lambda x: lookup in x.lower(), SHARED.project.index.getClassTags(
-                    nwKeyWords.KEY_CLASS.get(kw.strip())
-                )
+                lambda x: lookup in x.lower(), SHARED.project.index.getKeyWordTags(kw.strip())
             ))[:15]
 
         if not options:
