@@ -95,12 +95,35 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
     tagIndex = str(index._tagsIndex.packData())
     itemsIndex = str(index._itemIndex.packData())
 
+    # Update item class
+    bHandle = "4c4f28287af27"
+    bItem = project.tree[bHandle]
+    assert bItem is not None
+
+    tagsBod = index._tagsIndex["Bod"]
+    assert tagsBod is not None
+    assert tagsBod["handle"] == bHandle
+    assert tagsBod["class"] == "CHARACTER"
+
+    bItem.setClass(nwItemClass.CUSTOM)
+    index.refreshHandle(bHandle)
+    assert tagsBod is not None
+    assert tagsBod["handle"] == bHandle
+    assert tagsBod["class"] == "CUSTOM"
+
+    # Update item class to inactive
+    bItem.setClass(nwItemClass.TRASH)
+    index.refreshHandle(bHandle)
+    assert "Bod" not in index._tagsIndex
+    bItem.setClass(nwItemClass.CHARACTER)
+    index.reIndexHandle(bHandle)
+
     # Delete a handle
     assert index._tagsIndex["Bod"] is not None
-    assert index._itemIndex["4c4f28287af27"] is not None
-    index.deleteHandle("4c4f28287af27")
+    assert index._itemIndex[bHandle] is not None
+    index.deleteHandle(bHandle)
     assert index._tagsIndex["Bod"] is None
-    assert index._itemIndex["4c4f28287af27"] is None
+    assert index._itemIndex[bHandle] is None
 
     # Clear the index
     index.clear()

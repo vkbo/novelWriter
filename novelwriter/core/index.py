@@ -131,12 +131,6 @@ class Index:
         self._novelExtra = extra
         return
 
-    def setItemClass(self, tHandle: str, itemClass: nwItemClass) -> None:
-        """Update the class for all tags of a handle."""
-        logger.info("Updating class for '%s'", tHandle)
-        self._tagsIndex.updateClass(tHandle, itemClass.name)
-        return
-
     ##
     #  Public Methods
     ##
@@ -181,6 +175,16 @@ class Index:
         if tHandle and self._project.tree.checkType(tHandle, nwItemType.FILE):
             logger.debug("Re-indexing item '%s'", tHandle)
             self.scanText(tHandle, self._project.storage.getDocumentText(tHandle))
+        return
+
+    def refreshHandle(self, tHandle: str) -> None:
+        """Update the class for all tags of a handle."""
+        if item := self._project.tree[tHandle]:
+            logger.info("Updating class for '%s'", tHandle)
+            if item.isInactiveClass():
+                self.deleteHandle(tHandle)
+            else:
+                self._tagsIndex.updateClass(tHandle, item.itemClass.name)
         return
 
     def indexChangedSince(self, checkTime: int | float) -> bool:
