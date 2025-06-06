@@ -1090,11 +1090,14 @@ class GuiDocEditor(QPlainTextEdit):
                         show = self._completer.updateMetaText(text, bPos)
                     else:
                         show = self._completer.updateCommentText(text, bPos)
-                    point = self.cursorRect().bottomRight()
-                    self._completer.move(viewport.mapToGlobal(point))
-                    self._completer.setVisible(show)
+                    if show:
+                        point = self.cursorRect().bottomRight()
+                        self._completer.move(viewport.mapToGlobal(point))
+                        self._completer.show()
+                    else:
+                        self._completer.close()
             else:
-                self._completer.setVisible(False)
+                self._completer.close()
 
             if self._doReplace and added == 1:
                 cursor = self.textCursor()
