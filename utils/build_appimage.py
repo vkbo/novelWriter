@@ -114,10 +114,11 @@ def appImage(args: argparse.Namespace) -> None:
     shutil.copyfile(libPath / "libxcb-cursor.so.0", appLibs / "libxcb-cursor.so.0")
 
     # Build Image
+    appToolExec = os.environ.get("APPIMAGE_TOOL_EXEC", "appimagetool")
     env = os.environ.copy()
     env["ARCH"] = mArch
     systemCall([
-        "appimagetool", "--no-appstream", "--updateinformation",
+        appToolExec, "--no-appstream", "--updateinformation",
         f"gh-releases-zsync|vkbo|novelwriter|latest|novelwriter-*-{mArch}.AppImage.zsync",
         str(appDir), bldImg
     ], cwd=bldDir, env=env)
