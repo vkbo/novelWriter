@@ -4,9 +4,9 @@
 
 ### Release Notes
 
-This is a patch release that fixes some issues with tags and references, and issue with the
-auto-complete menu on Windows, and issues with the AppImage on Linux. The Czech translation for
-2.7 has been completed.
+This is a patch release that fixes some issues with tags and references, an issue with the
+auto-complete menu on Windows, and some issues with the AppImage on Linux. The Czech translation
+for 2.7 has also been completed.
 
 ### Detailed Changelog
 
