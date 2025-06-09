@@ -23,7 +23,6 @@ from __future__ import annotations
 import argparse
 import compileall
 import shutil
-import subprocess
 import sys
 import urllib.request
 import zipfile
@@ -32,7 +31,7 @@ from pathlib import Path
 
 from utils.common import (
     ROOT_DIR, SETUP_DIR, copySourceCode, extractVersion, readFile,
-    removeRedundantQt, writeFile
+    removeRedundantQt, systemCall, writeFile
 )
 
 
@@ -89,20 +88,11 @@ def embedPython(bldDir: Path, outDir: Path) -> None:
 def installRequirements(libDir: Path) -> None:
     """Install dependencies."""
     print("Install dependencies ...")
-
-    try:
-        subprocess.call([
-            sys.executable, "-m",
-            "pip", "install", "-r", "requirements.txt", "--target", str(libDir)
-        ])
-    except Exception as exc:
-        print("Failed with error:")
-        print(str(exc))
-        sys.exit(1)
-
+    systemCall([
+        sys.executable, "-m", "pip", "install", "-r", "requirements.txt", "--target", libDir
+    ])
     print("Done")
     print("")
-
     return
 
 
@@ -162,12 +152,7 @@ def main(args: argparse.Namespace) -> None:
     writeFile(ROOT_DIR / "setup.iss", issData)
     print("")
 
-    try:
-        subprocess.call(["iscc", "setup.iss"])
-    except Exception as exc:
-        print("Inno Setup failed with error:")
-        print(str(exc))
-        sys.exit(1)
+    systemCall(["iscc", "setup.iss"])
 
     print("")
     print("Done")

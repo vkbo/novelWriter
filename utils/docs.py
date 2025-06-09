@@ -25,7 +25,7 @@ import os
 import shutil
 import subprocess
 
-from utils.common import ROOT_DIR
+from utils.common import ROOT_DIR, systemCall
 
 
 def updateDocsTranslationSources(args: argparse.Namespace) -> None:
@@ -40,7 +40,7 @@ def updateDocsTranslationSources(args: argparse.Namespace) -> None:
     locsDir.mkdir(exist_ok=True)
 
     print("Generating POT Files")
-    subprocess.call(["make", "gettext"], cwd=docsDir)
+    systemCall(["make", "gettext"], cwd=docsDir)
     print("")
 
     lang = args.lang
@@ -55,7 +55,7 @@ def updateDocsTranslationSources(args: argparse.Namespace) -> None:
     print("")
 
     for code in update:
-        subprocess.call(["sphinx-intl", "update", "-p", "build/gettext", "-l", code], cwd=docsDir)
+        systemCall(["sphinx-intl", "update", "-p", "build/gettext", "-l", code], cwd=docsDir)
         print("")
 
     print("Done")

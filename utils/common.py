@@ -51,11 +51,11 @@ def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
             if aLine.startswith("__date__"):
                 relDate = getValue(aLine)
     except Exception as exc:
-        print(f"Could not read file: {initFile}")
-        print(str(exc))
+        print(f"Could not read file: {initFile}", flush=True)
+        print(str(exc), flush=True)
 
     if not beQuiet:
-        print(f"novelWriter version: {numVers} ({hexVers}) at {relDate}")
+        print(f"novelWriter version: {numVers} ({hexVers}) at {relDate}", flush=True)
 
     return numVers, hexVers, relDate
 
@@ -78,16 +78,16 @@ def copySourceCode(dst: Path) -> None:
     for item in src.glob("**/*"):
         relSrc = item.relative_to(ROOT_DIR)
         if item.suffix in (".pyc", ".pyo"):
-            print("Ignored:", relSrc)
+            print("Ignored:", relSrc, flush=True)
             continue
         if item.parent.is_dir() and item.parent.name != "__pycache__":
             dstDir = dst / relSrc.parent
             if not dstDir.exists():
                 dstDir.mkdir(parents=True)
-                print("Created:", dstDir.relative_to(ROOT_DIR))
+                print("Created:", dstDir.relative_to(ROOT_DIR), flush=True)
         if item.is_file():
             shutil.copyfile(item, dst / relSrc)
-            print("Copied:", relSrc)
+            print("Copied:", relSrc, flush=True)
     return
 
 
@@ -96,7 +96,7 @@ def copyPackageFiles(dst: Path, setupPy: bool = False) -> None:
     copyFiles = ["LICENSE.md", "CREDITS.md", "pyproject.toml"]
     for copyFile in copyFiles:
         shutil.copyfile(copyFile, dst / copyFile)
-        print("Copied:", copyFile)
+        print("Copied:", copyFile, flush=True)
 
     writeFile(dst / "MANIFEST.in", (
         "include LICENSE.md\n"
@@ -137,10 +137,10 @@ def makeCheckSum(sumFile: str, cwd: Path | None = None) -> str:
             shaFile = cwd / f"{sumFile}.sha256"
         with open(shaFile, mode="w", encoding="utf-8") as fOut:
             subprocess.call(["shasum", "-a", "256", sumFile], stdout=fOut, cwd=cwd)
-        print(f"SHA256 Sum: {shaFile}")
+        print(f"SHA256 Sum: {shaFile}", flush=True)
     except Exception as exc:
-        print("Could not generate sha256 file")
-        print(str(exc))
+        print("Could not generate sha256 file", flush=True)
+        print(str(exc), flush=True)
         return ""
 
     return str(shaFile)
@@ -154,17 +154,17 @@ def checkAssetsExist() -> bool:
 
     sampleZip = ROOT_DIR / "novelwriter" / "assets" / "sample.zip"
     if sampleZip.is_file():
-        print(f"Found: {sampleZip}")
+        print(f"Found: {sampleZip}", flush=True)
         hasSample = True
 
     pdfManual = ROOT_DIR / "novelwriter" / "assets" / "manual.pdf"
     if pdfManual.is_file():
-        print(f"Found: {pdfManual}")
+        print(f"Found: {pdfManual}", flush=True)
         hasManual = True
 
     i18nAssets = ROOT_DIR / "novelwriter" / "assets" / "i18n"
     if len(list(i18nAssets.glob("*.qm"))) > 0:
-        print(f"Found: {i18nAssets}/*.qm")
+        print(f"Found: {i18nAssets}/*.qm", flush=True)
         hasQmData = True
 
     return hasSample and hasManual and hasQmData
@@ -187,29 +187,29 @@ def readFile(file: Path) -> str:
 def writeFile(file: Path, text: str) -> int:
     """Write string to file."""
     result = file.write_text(text, encoding="utf-8")
-    print("Wrote:", file.relative_to(ROOT_DIR))
+    print("Wrote:", file.relative_to(ROOT_DIR), flush=True)
     return result
 
 
 def freshFolder(path: Path) -> None:
     """Make sure a folder exists and is empty."""
     if path.exists():
-        print("Removing:", str(path))
+        print("Removing:", str(path), flush=True)
         shutil.rmtree(path)
     path.mkdir()
     return
 
 
-def systemCall(cmd: list, cwd: Path | str | None = None, env: dict | None = None) -> None:
+def systemCall(cmd: list, cwd: Path | str | None = None, env: dict | None = None) -> int:
     """Make a system call using subprocess."""
     if isinstance(cwd, Path):
         cwd = str(cwd)
     try:
-        subprocess.call([str(c) for c in cmd], cwd=cwd, env=env)
+        code = subprocess.call([str(c) for c in cmd], cwd=cwd, env=env)
     except Exception as exc:
-        print("ERROR:", str(exc))
+        print("ERROR:", str(exc), flush=True)
         sys.exit(1)
-    return
+    return code
 
 
 def removeRedundantQt(qtBase: Path) -> None:
@@ -218,12 +218,12 @@ def removeRedundantQt(qtBase: Path) -> None:
     def unlinkIfFound(file: Path) -> None:
         if file.is_file():
             file.unlink()
-            print("Deleted:", file.relative_to(ROOT_DIR))
+            print("Deleted:", file.relative_to(ROOT_DIR), flush=True)
 
     def deleteFolder(folder: Path) -> None:
         if folder.is_dir():
             shutil.rmtree(folder)
-            print("Deleted:", folder.relative_to(ROOT_DIR))
+            print("Deleted:", folder.relative_to(ROOT_DIR), flush=True)
 
     def unlinkIfPrefix(folder: Path, prefix: tuple[str, ...]) -> None:
         if folder.is_dir():
