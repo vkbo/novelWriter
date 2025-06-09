@@ -1,5 +1,34 @@
 # novelWriter Changelog
 
+## Version 2.7.1 [2025-06-10]
+
+### Release Notes
+
+This is a patch release that fixes some issues with tags and references, and issue with the
+auto-complete menu on Windows, and issues with the AppImage on Linux. The Czech translation for
+2.7 has been completed.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix a bug where tags would be listed in the auto-complete menu for mentions even if the file
+  defining it had been moved to Archive or Trash. Issue #2387. PR #2389.
+* Fixed a bug that seems to only have occurred on Windows where the auto-complete menu would hold
+  on to the return and arrow keys even when it was hidden. Issue #2386. PR #2389.
+
+**Improvements**
+
+* The auto-complete menu in the editor no longer shows any suggestions when defining the tag.
+  This never made sense anyway. PR #2389.
+
+**Packaging**
+
+* Fixed an issue with the AppImage release where on some platforms `libxcb-cursor0` was missing.
+  The library is now included in the AppImage. Issue #2374. PR #2392.
+
+----
+
 ## Version 2.7 [2025-06-01]
 
 ### Release Notes
