@@ -24,12 +24,11 @@ import argparse
 import datetime
 import email.utils
 import shutil
-import subprocess
 import sys
 
 from utils.common import (
     ROOT_DIR, SETUP_DIR, checkAssetsExist, copyPackageFiles, copySourceCode,
-    extractVersion, makeCheckSum, toUpload, writeFile
+    extractVersion, makeCheckSum, systemCall, toUpload, writeFile
 )
 
 SIGN_KEY = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
@@ -134,10 +133,10 @@ def makeDebianPackage(
         signArgs = [f"-k{signKey}"]
 
     if sourceBuild:
-        subprocess.call(["debuild", "-S", *signArgs], cwd=outDir)
+        systemCall(["debuild", "-S", *signArgs], cwd=outDir)
         toUpload(bldDir / f"{bldPkg}.tar.xz")
     else:
-        subprocess.call(["dpkg-buildpackage", *signArgs], cwd=outDir)
+        systemCall(["dpkg-buildpackage", *signArgs], cwd=outDir)
         shutil.copyfile(bldDir / f"{bldPkg}.tar.xz", bldDir / f"{bldPkg}.debian.tar.xz")
         toUpload(bldDir / f"{bldPkg}.debian.tar.xz")
         toUpload(bldDir / f"{bldPkg}_all.deb")
@@ -185,6 +184,7 @@ def launchpad(args: argparse.Namespace) -> None:
         ("24.04", "noble"),
         ("24.10", "oracular"),
         ("25.04", "plucky"),
+        ("25.10", "questing"),
     ]
 
     print("Building Ubuntu packages for:")

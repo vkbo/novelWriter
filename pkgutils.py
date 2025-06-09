@@ -272,24 +272,12 @@ if __name__ == "__main__":
     cmdBuildUbuntu.set_defaults(func=utils.build_debian.launchpad)
 
     # Build AppImage
-    cmdBuildAppImage = parsers.add_parser(
-        "build-appimage", help=(
-            "Build an AppImage. "
-            "Argument --linux-tag defaults manylinux_2_28_x86_64, and --python-version to 3.13."
-        )
-    )
-    cmdBuildAppImage.add_argument(
-        "--linux-tag",
-        default="manylinux_2_28_x86_64",
-        help=(
-            "Linux compatibility tag (e.g. manylinux_2_28_x86_64) "
-            "see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages "
-            "and https://github.com/pypa/manylinux for a list of valid tags."
-        ),
-    )
-    cmdBuildAppImage.add_argument(
-        "--python-version", default="3.13", help="Python version (e.g. 3.13)"
-    )
+    # See https://github.com/pypa/manylinux
+    # See https://python-appimage.readthedocs.io/en/latest/#available-python-appimages
+    cmdBuildAppImage = parsers.add_parser("build-appimage", help="Build an AppImage.")
+    cmdBuildAppImage.add_argument("linux", help="Manylinux version, e.g. manylinux_2_28.")
+    cmdBuildAppImage.add_argument("arch", help="Architecture, e.g. x86_64.")
+    cmdBuildAppImage.add_argument("python", help="Python version, e.g. 3.13.")
     cmdBuildAppImage.set_defaults(func=utils.build_appimage.appImage)
 
     # Build Windows Inno Setup Installer

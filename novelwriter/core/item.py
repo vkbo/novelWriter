@@ -439,7 +439,7 @@ class NWItem:
                 self.setClass(itemClass)
                 if self._type == nwItemType.FILE:
                     # Notify the index of the class change
-                    self._project.index.setItemClass(self._handle, itemClass)
+                    self._project.index.refreshHandle(self._handle)
 
         if self._layout == nwItemLayout.NO_LAYOUT:
             # If no layout is set, pick one

@@ -185,6 +185,10 @@ class nwKeyWords:
         POV_KEY, FOCUS_KEY, CHAR_KEY, PLOT_KEY, TIME_KEY, WORLD_KEY,
         OBJECT_KEY, ENTITY_KEY, CUSTOM_KEY,
     ]
+    CAN_LOOKUP: Final[list[str]] = [
+        POV_KEY, FOCUS_KEY, CHAR_KEY, PLOT_KEY, TIME_KEY, WORLD_KEY,
+        OBJECT_KEY, ENTITY_KEY, CUSTOM_KEY, STORY_KEY, MENTION_KEY,
+    ]
 
     # Set of Valid Keys
     VALID_KEYS: Final[set[str]] = set(ALL_KEYS)

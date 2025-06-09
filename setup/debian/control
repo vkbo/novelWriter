@@ -10,10 +10,4 @@ X-Python3-Version: >= 3.10
 Package: novelwriter
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, python3 (>=3.10), python3-pyqt6 (>= 6.4), python3-pyqt6.qtsvg (>= 6.4), python3-enchant (>= 2.0)
-Description: A markdown-like text editor for planning and writing novels
- novelWriter is a plain text editor designed for writing novels assembled from
- many smaller text documents. It uses a minimal formatting syntax inspired by
- Markdown, and adds a meta data syntax for comments, synopsis, and
- cross-referencing. It's designed to be a simple text editor that allows for
- easy organisation of text and notes, using human readable text files as
- storage for robustness.
+Description: A plain text editor for planning and writing novels
