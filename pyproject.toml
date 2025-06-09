@@ -7,7 +7,7 @@ name = "novelWriter"
 authors = [
     {name = "Veronica Berglyd Olsen", email = "code@vkbo.net"},
 ]
-description = "A markdown-like text editor for planning and writing novels"
+description = "A plain text editor for planning and writing novels"
 readme = {file = "setup/description_pypi.md", content-type = "text/markdown"}
 license = {text = "GNU General Public License v3"}
 classifiers = [
