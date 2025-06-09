@@ -91,7 +91,7 @@ def appImage(args: argparse.Namespace) -> None:
     writeFile(imgDir / "novelwriter.appdata.xml", appdataXml())
     writeFile(imgDir / "requirements.txt", str(outDir))
     writeFile(imgDir / "entrypoint.sh", (
-        f"export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{APPDIR}}/usr/lib/{mArch}-linux-gnu/\n"
+        # f"export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{APPDIR}}/usr/lib/{mArch}-linux-gnu/\n"
         '{{ python-executable }} -sE ${APPDIR}/opt/python{{ python-version }}/bin/novelwriter "$@"'
     ))
 
@@ -109,9 +109,9 @@ def appImage(args: argparse.Namespace) -> None:
 
     # Copy Libraries
     libPath = Path(f"/usr/lib/{mArch}-linux-gnu")
-    appLibs = appDir / "usr" / "lib" / f"{mArch}-linux-gnu"
-    appLibs.mkdir(exist_ok=True)
-    shutil.copyfile(libPath / "libxcb-cursor.so.0", appLibs / "libxcb-cursor.so.0")
+    siteDir = appDir / "opt" / f"python{pyVer}" / "lib" / f"python{pyVer}" / "site-packages"
+    qt6Lib = siteDir / "PyQt6" / "Qt6" / "lib"
+    shutil.copyfile(libPath / "libxcb-cursor.so.0", qt6Lib / "libxcb-cursor.so.0")
 
     # Build Image
     appToolExec = os.environ.get("APPIMAGE_TOOL_EXEC", "appimagetool")
