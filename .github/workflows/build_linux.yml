@@ -40,6 +40,9 @@ jobs:
       - name: Build AppImage
         id: build
         run: |
+          wget https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$LINUX_ARCH.AppImage
+          chmod +x appimagetool-$LINUX_ARCH.AppImage
+          ln -sfv appimagetool-$LINUX_ARCH.AppImage appimagetool
           echo "BUILD_VERSION=$(python pkgutils.py version)" >> $GITHUB_OUTPUT
           python pkgutils.py build-appimage $LINUX_TAG $LINUX_ARCH $PYTHON_VERSION
 
