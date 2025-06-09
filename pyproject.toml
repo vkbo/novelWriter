@@ -9,7 +9,7 @@ authors = [
 ]
 description = "A plain text editor for planning and writing novels"
 readme = {file = "setup/description_pypi.md", content-type = "text/markdown"}
-license = {text = "GNU General Public License v3"}
+license = "GPL-3.0"
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
