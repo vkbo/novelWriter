@@ -206,10 +206,10 @@ brew install create-dmg
 create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novelwriter.icns \
     --window-pos 200 120 --window-size 800 400 --icon-size 100 \
     --icon novelWriter.app 200 190 --hide-extension novelWriter.app \
-    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}"-$ARCH.dmg "$BUILD_DIR"/
+    --app-drop-link 600 185 $RLS_DIR/novelwriter-"${VERSION}"-$ARCH.dmg "$BUILD_DIR"/
 
 pushd $RLS_DIR || exit 1
-shasum -a 256 novelWriter-"${VERSION}"-$ARCH.dmg | tee novelWriter-"${VERSION}"-$ARCH.dmg.sha256
+shasum -a 256 novelwriter-"${VERSION}"-$ARCH.dmg | tee novelwriter-"${VERSION}"-$ARCH.dmg.sha256
 popd || exit 1
 
 rm -r $CONDA_PATH
