@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import shutil
 import subprocess
+import sys
 
 from pathlib import Path
 
@@ -77,16 +78,16 @@ def copySourceCode(dst: Path) -> None:
     for item in src.glob("**/*"):
         relSrc = item.relative_to(ROOT_DIR)
         if item.suffix in (".pyc", ".pyo"):
-            print(f"Ignore: {relSrc}")
+            print("Ignored:", relSrc)
             continue
         if item.parent.is_dir() and item.parent.name != "__pycache__":
             dstDir = dst / relSrc.parent
             if not dstDir.exists():
                 dstDir.mkdir(parents=True)
-                print(f"Folder: {dstDir}")
+                print("Created:", dstDir.relative_to(ROOT_DIR))
         if item.is_file():
             shutil.copyfile(item, dst / relSrc)
-            print(f"Copied: {dst / relSrc}")
+            print("Copied:", relSrc)
     return
 
 
@@ -95,26 +96,23 @@ def copyPackageFiles(dst: Path, setupPy: bool = False) -> None:
     copyFiles = ["LICENSE.md", "CREDITS.md", "pyproject.toml"]
     for copyFile in copyFiles:
         shutil.copyfile(copyFile, dst / copyFile)
-        print(f"Copied: {copyFile}")
+        print("Copied:", copyFile)
 
     writeFile(dst / "MANIFEST.in", (
         "include LICENSE.md\n"
         "include CREDITS.md\n"
         "recursive-include novelwriter/assets *\n"
     ))
-    print("Wrote:  MANIFEST.in")
 
     if setupPy:
         writeFile(dst / "setup.py", (
             "import setuptools\n"
             "setuptools.setup()\n"
         ))
-        print("Wrote:  setup.py")
 
     text = readFile(ROOT_DIR / "pyproject.toml")
     text = text.replace("setup/description_pypi.md", "data/description_short.txt")
     writeFile(dst / "pyproject.toml", text)
-    print("Wrote:  pyproject.toml")
 
     return
 
@@ -188,4 +186,27 @@ def readFile(file: Path) -> str:
 
 def writeFile(file: Path, text: str) -> int:
     """Write string to file."""
-    return file.write_text(text, encoding="utf-8")
+    result = file.write_text(text, encoding="utf-8")
+    print("Wrote:", file.relative_to(ROOT_DIR))
+    return result
+
+
+def freshFolder(path: Path) -> None:
+    """Make sure a folder exists and is empty."""
+    if path.exists():
+        print("Removing:", str(path))
+        shutil.rmtree(path)
+    path.mkdir()
+    return
+
+
+def systemCall(cmd: list, cwd: Path | str | None = None, env: dict | None = None) -> None:
+    """Make a system call using subprocess."""
+    if isinstance(cwd, Path):
+        cwd = str(cwd)
+    try:
+        subprocess.call([str(c) for c in cmd], cwd=cwd, env=env)
+    except Exception as exc:
+        print("ERROR:", str(exc))
+        sys.exit(1)
+    return
