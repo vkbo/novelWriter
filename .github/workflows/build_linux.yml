@@ -10,14 +10,20 @@ jobs:
     needs: buildAssets
     runs-on: ubuntu-latest
     env:
-      PYTHON_VERSION: "3.11"
-      LINUX_TAG: "manylinux_2_28_x86_64"
+      PYTHON_VERSION: "3.13"
+      LINUX_TAG: "manylinux_2_28"
+      LINUX_ARCH: "x86_64"
     steps:
       - name: Python Setup
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13"
           architecture: x64
+
+      - name: Install Packages (apt)
+        run: |
+          sudo apt update
+          sudo apt install libxcb-cursor0
 
       - name: Install Packages (pip)
         run: pip install python-appimage setuptools
@@ -34,8 +40,11 @@ jobs:
       - name: Build AppImage
         id: build
         run: |
+          wget https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$LINUX_ARCH.AppImage
+          chmod +x appimagetool-$LINUX_ARCH.AppImage
+          export APPIMAGE_TOOL_EXEC="$(pwd)/appimagetool-$LINUX_ARCH.AppImage"
           echo "BUILD_VERSION=$(python pkgutils.py version)" >> $GITHUB_OUTPUT
-          python pkgutils.py build-appimage --linux-tag $LINUX_TAG --python-version $PYTHON_VERSION
+          python pkgutils.py build-appimage $LINUX_TAG $LINUX_ARCH $PYTHON_VERSION
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

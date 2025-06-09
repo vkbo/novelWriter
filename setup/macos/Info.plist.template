@@ -11,7 +11,7 @@
     <key>CFBundleExecutable</key>
     <string>novelWriter</string>
     <key>CFBundleGetInfoString</key>
-    <string>novelWriter: A markdown-like text editor for planning and writing novels.</string>
+    <string>novelWriter: A plain text editor for planning and writing novels.</string>
     <key>CFBundleIconFile</key>
     <string>novelwriter.icns</string>
     <key>CFBundleIdentifier</key>

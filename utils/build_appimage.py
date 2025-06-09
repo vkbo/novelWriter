@@ -22,13 +22,16 @@ from __future__ import annotations
 
 import argparse
 import datetime
+import os
 import shutil
-import subprocess
 import sys
+
+from pathlib import Path
 
 from utils.common import (
     ROOT_DIR, SETUP_DIR, appdataXml, copyPackageFiles, copySourceCode,
-    extractVersion, makeCheckSum, toUpload, writeFile
+    extractVersion, freshFolder, makeCheckSum, removeRedundantQt, systemCall,
+    toUpload, writeFile
 )
 
 
@@ -49,115 +52,87 @@ def appImage(args: argparse.Namespace) -> None:
 
     print("")
     print("Build AppImage")
-    print("==============")
-    print("")
+    print("="*120)
 
-    linuxTag = args.linux_tag
-    pythonVer = args.python_version
+    mLinux = args.linux
+    mArch = args.arch
+    pyVer = args.python
 
     # Version Info
-    # ============
-
     pkgVers, _, relDate = extractVersion()
     relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
-    print("")
 
     # Set Up Folder
-    # =============
-
     bldDir = ROOT_DIR / "dist_appimage"
-    bldPkg = f"novelwriter_{pkgVers}"
+    bldPkg = f"novelwriter-{pkgVers}-{mArch}"
+    bldImg = f"{bldPkg}.AppImage"
     outDir = bldDir / bldPkg
     imgDir = bldDir / "appimage"
-
-    # Set Up Folders
-    # ==============
+    appDir = bldDir / f"novelWriter-{mArch}"
 
     bldDir.mkdir(exist_ok=True)
-
-    if outDir.exists():
-        print("Removing old build files ...")
-        print("")
-        shutil.rmtree(outDir)
-
-    outDir.mkdir()
-
-    if imgDir.exists():
-        print("Removing old build metadata files ...")
-        print("")
-        shutil.rmtree(imgDir)
-
-    imgDir.mkdir()
+    freshFolder(outDir)
+    freshFolder(imgDir)
+    freshFolder(appDir)
 
     # Remove old AppImages
     if images := bldDir.glob("*.AppImage"):
         print("Removing old AppImages")
-        print("")
         for image in images:
             image.unlink()
 
     # Copy novelWriter Source
-    # =======================
-
     print("Copying novelWriter source ...")
-    print("")
-
     copySourceCode(outDir)
 
-    print("")
     print("Copying or generating additional files ...")
-    print("")
-
     copyPackageFiles(outDir)
 
     # Write Metadata
-    # ==============
-
     writeFile(imgDir / "novelwriter.appdata.xml", appdataXml())
-    print("Wrote:  novelwriter.appdata.xml")
-
+    writeFile(imgDir / "requirements.txt", str(outDir))
     writeFile(imgDir / "entrypoint.sh", (
-        '#! /bin/bash \n'
+        # f"export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{APPDIR}}/usr/lib/{mArch}-linux-gnu/\n"
         '{{ python-executable }} -sE ${APPDIR}/opt/python{{ python-version }}/bin/novelwriter "$@"'
     ))
-    print("Wrote:  entrypoint.sh")
-
-    writeFile(imgDir / "requirements.txt", str(outDir))
-    print("Wrote:  requirements.txt")
 
     shutil.copyfile(SETUP_DIR / "data" / "novelwriter.desktop", imgDir / "novelwriter.desktop")
     print("Copied: novelwriter.desktop")
 
-    shutil.copyfile(SETUP_DIR / "icons" / "novelwriter.svg", imgDir / "novelwriter.svg")
-    print("Copied: novelwriter.svg")
-
-    shutil.copyfile(
-        SETUP_DIR / "data" / "hicolor" / "256x256" / "apps" / "novelwriter.png",
-        imgDir / "novelwriter.png"
-    )
+    shutil.copyfile(SETUP_DIR / "icons" / "novelwriter.png", imgDir / "novelwriter.png")
     print("Copied: novelwriter.png")
 
-    # Build AppImage
-    # ==============
+    # Build AppDir
+    systemCall([
+        sys.executable, "-m", "python_appimage", "build", "app", "--no-packaging",
+        "-l", f"{mLinux}_{mArch}", "-p", pyVer, "appimage"
+    ], cwd=bldDir)
 
-    try:
-        subprocess.call([
-            sys.executable, "-m", "python_appimage", "build", "app",
-            "-l", linuxTag, "-p", pythonVer, "appimage"
-        ], cwd=bldDir)
-    except Exception as exc:
-        print("AppImage build: FAILED")
-        print("")
-        print(str(exc))
-        print("")
-        sys.exit(1)
+    # Copy Libraries
+    libPath = Path(f"/usr/lib/{mArch}-linux-gnu")
+    siteDir = appDir / "opt" / f"python{pyVer}" / "lib" / f"python{pyVer}" / "site-packages"
+    qt6Lib = siteDir / "PyQt6" / "Qt6" / "lib"
+    shutil.copyfile(libPath / "libxcb-cursor.so.0", qt6Lib / "libxcb-cursor.so.0")
 
-    bldFile = list(bldDir.glob("*.AppImage"))[0]
-    outFile = bldDir / f"novelWriter-{pkgVers}.AppImage"
-    bldFile.rename(outFile)
-    shaFile = makeCheckSum(outFile.name, cwd=bldDir)
+    # Remove Redundant
+    removeRedundantQt(siteDir)
 
-    toUpload(outFile)
+    # Build Image
+    appToolExec = os.environ.get("APPIMAGE_TOOL_EXEC", "appimagetool")
+    env = os.environ.copy()
+    env["ARCH"] = mArch
+    systemCall([
+        appToolExec, "--no-appstream", "--updateinformation",
+        f"gh-releases-zsync|vkbo|novelwriter|latest|novelwriter-*-{mArch}.AppImage.zsync",
+        str(appDir), bldImg
+    ], cwd=bldDir, env=env)
+
+    updFile = bldDir / f"{bldImg}.zsync"
+    bldFile = bldDir / bldImg
+    shaFile = makeCheckSum(bldFile.name, cwd=bldDir)
+
+    toUpload(bldFile)
+    toUpload(updFile)
     toUpload(shaFile)
 
     return
