@@ -1,6 +1,6 @@
 # novelWriter Changelog
 
-## Version 2.7.1 [2025-06-10]
+## Version 2.7.1 [2025-06-09]
 
 ### Release Notes
 
@@ -21,6 +21,10 @@ auto-complete menu on Windows, and issues with the AppImage on Linux. The Czech 
 
 * The auto-complete menu in the editor no longer shows any suggestions when defining the tag.
   This never made sense anyway. PR #2389.
+
+**Internationalisation**
+
+* Updated the Czech. PR #2393.
 
 **Packaging**
 
