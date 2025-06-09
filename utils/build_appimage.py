@@ -30,7 +30,8 @@ from pathlib import Path
 
 from utils.common import (
     ROOT_DIR, SETUP_DIR, appdataXml, copyPackageFiles, copySourceCode,
-    extractVersion, freshFolder, makeCheckSum, systemCall, toUpload, writeFile
+    extractVersion, freshFolder, makeCheckSum, removeRedundantQt, systemCall,
+    toUpload, writeFile
 )
 
 
@@ -112,6 +113,9 @@ def appImage(args: argparse.Namespace) -> None:
     siteDir = appDir / "opt" / f"python{pyVer}" / "lib" / f"python{pyVer}" / "site-packages"
     qt6Lib = siteDir / "PyQt6" / "Qt6" / "lib"
     shutil.copyfile(libPath / "libxcb-cursor.so.0", qt6Lib / "libxcb-cursor.so.0")
+
+    # Remove Redundant
+    removeRedundantQt(siteDir)
 
     # Build Image
     appToolExec = os.environ.get("APPIMAGE_TOOL_EXEC", "appimagetool")

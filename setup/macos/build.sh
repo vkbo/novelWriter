@@ -174,7 +174,7 @@ rm lib/python3.*/site-packages/PyQt6/QtWebEngine* || true
 rm -r lib/python3.*/site-packages/PyQt6/Qt6/translations/qtwebengine* || true
 rm -r lib/python3.*/site-packages/PyQt6/Qt6/plugins/webview/libqtwebview* || true
 
-# Remove unneeded QtQuick/Decaritive components
+# Remove unneeded QtQuick/Declarative components
 rm lib/python3.*/site-packages/PyQt6/QtQml* || true
 rm lib/python3.*/site-packages/PyQt6/QtQuick* || true
 rm lib/python3.*/site-packages/PyQt6/WebChannel* || true
@@ -200,7 +200,7 @@ mkdir -p $RLS_DIR
 # --- Create DMG -------------------------------------------------------------------------------- #
 
 # Generate .dmg
-echo "Packageing DMG ..."
+echo "Packaging DMG ..."
 brew install create-dmg
 
 create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novelwriter.icns \

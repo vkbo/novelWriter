@@ -30,7 +30,10 @@ import zipfile
 
 from pathlib import Path
 
-from utils.common import ROOT_DIR, SETUP_DIR, copySourceCode, extractVersion, readFile, writeFile
+from utils.common import (
+    ROOT_DIR, SETUP_DIR, copySourceCode, extractVersion, readFile,
+    removeRedundantQt, writeFile
+)
 
 
 def prepareCode(outDir: Path) -> None:
@@ -96,85 +99,6 @@ def installRequirements(libDir: Path) -> None:
         print("Failed with error:")
         print(str(exc))
         sys.exit(1)
-
-    print("Done")
-    print("")
-
-    return
-
-
-def removeRedundantQt(libDir: Path) -> None:
-    """Delete Qt files that are not needed"""
-
-    def unlinkIfFound(file: Path) -> None:
-        if file.is_file():
-            file.unlink()
-            print(f"Deleted: {file}")
-
-    def deleteFolder(folder: Path) -> None:
-        if folder.is_dir():
-            shutil.rmtree(folder)
-            print(f"Deleted: {folder}")
-
-    def unlinkIfPrefix(folder: Path, prefix: tuple[str, ...]) -> None:
-        if folder.is_dir():
-            for item in folder.iterdir():
-                if item.name.startswith(prefix):
-                    if item.is_file():
-                        unlinkIfFound(item)
-                    elif item.is_dir():
-                        deleteFolder(item)
-
-    print("Deleting Redundant Files")
-    print("========================")
-    print("")
-
-    pyQt6Dir = libDir / "PyQt6"
-    bindDir  = libDir / "PyQt6" / "bindings"
-    qt6Dir   = libDir / "PyQt6" / "Qt6"
-    binDir   = libDir / "PyQt6" / "Qt6" / "bin"
-    plugDir  = libDir / "PyQt6" / "Qt6" / "plugins"
-    qmDir    = libDir / "PyQt6" / "Qt6" / "translations"
-    dictDir  = libDir / "enchant" / "data" / "mingw64" / "share" / "enchant" / "hunspell"
-
-    for item in dictDir.iterdir():
-        if not item.name.startswith(("en_GB", "en_US")):
-            unlinkIfFound(item)
-
-    for item in qmDir.iterdir():
-        if not item.name.startswith("qtbase"):
-            unlinkIfFound(item)
-
-    bulkDel = ("QtQml", "Qt6Qml", "QtQuick", "Qt6Quick")
-    unlinkIfPrefix(pyQt6Dir, bulkDel)
-    unlinkIfPrefix(bindDir, bulkDel)
-    unlinkIfPrefix(binDir, bulkDel)
-
-    delQt6 = [
-        "Qt6Bluetooth", "Qt6DBus", "Qt6Designer", "Qt6Help", "Qt6Multimedia",
-        "Qt6MultimediaWidgets", "Qt6Network", "Qt6Nfc", "Qt6OpenGL", "Qt6Positioning",
-        "Qt6PositioningQuick", "Qt6Sensors", "Qt6SerialPort", "Qt6Sql", "Qt6Test",
-        "Qt6TextToSpeech", "Qt6WebChannel", "Qt6WebSockets", "Qt6Xml",
-    ]
-    for item in delQt6:
-        qtItem = item.replace("Qt6", "Qt")
-        unlinkIfFound(binDir / f"{item}.dll")
-        unlinkIfFound(pyQt6Dir / f"{qtItem}.pyd")
-        unlinkIfFound(pyQt6Dir / f"{qtItem}.pyi")
-        deleteFolder(bindDir / qtItem)
-
-    delList = [
-        binDir / "opengl32sw.dll",
-        qt6Dir / "qml",
-        plugDir / "renderers",
-        plugDir / "sensors",
-        plugDir / "sqldrivers",
-        plugDir / "texttospeech",
-        plugDir / "webview",
-    ]
-    for item in delList:
-        unlinkIfFound(item)
-        deleteFolder(item)
 
     print("Done")
     print("")

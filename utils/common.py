@@ -210,3 +210,69 @@ def systemCall(cmd: list, cwd: Path | str | None = None, env: dict | None = None
         print("ERROR:", str(exc))
         sys.exit(1)
     return
+
+
+def removeRedundantQt(qtBase: Path) -> None:
+    """Delete Qt files that are not needed"""
+
+    def unlinkIfFound(file: Path) -> None:
+        if file.is_file():
+            file.unlink()
+            print("Deleted:", file.relative_to(ROOT_DIR))
+
+    def deleteFolder(folder: Path) -> None:
+        if folder.is_dir():
+            shutil.rmtree(folder)
+            print("Deleted:", folder.relative_to(ROOT_DIR))
+
+    def unlinkIfPrefix(folder: Path, prefix: tuple[str, ...]) -> None:
+        if folder.is_dir():
+            for item in folder.iterdir():
+                if item.name.startswith(prefix):
+                    if item.is_file():
+                        unlinkIfFound(item)
+                    elif item.is_dir():
+                        deleteFolder(item)
+
+    print("Deleting redundant files ...")
+
+    pyQt6Dir = qtBase / "PyQt6"
+    bindDir  = qtBase / "PyQt6" / "bindings"
+    qt6Dir   = qtBase / "PyQt6" / "Qt6"
+    binDir   = qtBase / "PyQt6" / "Qt6" / "bin"
+    libDir   = qtBase / "PyQt6" / "Qt6" / "lib"
+    plugDir  = qtBase / "PyQt6" / "Qt6" / "plugins"
+    qmDir    = qtBase / "PyQt6" / "Qt6" / "translations"
+    dictDir  = qtBase / "enchant" / "data" / "mingw64" / "share" / "enchant" / "hunspell"
+
+    # Prune Dictionaries
+    if dictDir.exists():
+        for item in dictDir.iterdir():
+            if not item.name.startswith(("en_GB", "en_US")):
+                unlinkIfFound(item)
+
+    # Prune Translations
+    for item in qmDir.iterdir():
+        if not item.name.startswith("qtbase"):
+            unlinkIfFound(item)
+
+    # Delete Modules
+    modules = [
+        "Qt6Qml", "Qt6Quick", "Qt6Bluetooth", "Qt6Nfc",
+        "Qt6Sensors", "Qt6SerialPort", "Qt6Test",
+    ]
+    modules.extend([x.replace("Qt6", "Qt") for x in modules])
+    modules.extend([f"lib{x}" for x in modules])
+    modules = tuple(modules)
+
+    unlinkIfPrefix(pyQt6Dir, modules)
+    unlinkIfPrefix(bindDir, modules)
+    unlinkIfPrefix(binDir, modules)
+    unlinkIfPrefix(libDir, modules)
+
+    # Other Files
+    deleteFolder(qt6Dir / "qml")
+    deleteFolder(plugDir / "qmlls")
+    deleteFolder(plugDir / "qmllint")
+
+    return
