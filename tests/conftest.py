@@ -39,6 +39,7 @@ from tests.mocked import MockGuiMain, MockTheme
 from tests.tools import cleanProject
 
 _TST_ROOT = Path(__file__).parent
+_SRC_ROOT = _TST_ROOT.parent
 _TMP_ROOT = _TST_ROOT / "temp"
 _TMP_CONF = _TMP_ROOT / "conf"
 
@@ -75,6 +76,8 @@ def sessionFixture():
     _TMP_ROOT.mkdir()
     _TMP_CONF.mkdir()
     (_TMP_ROOT / "manual.pdf").touch()
+    (_SRC_ROOT / "novelwriter" / "assets"/ "manual.pdf").touch()
+    (_SRC_ROOT / "novelwriter" / "assets"/ "manual_fr.pdf").touch()
     return
 
 

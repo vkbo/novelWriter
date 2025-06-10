@@ -180,8 +180,8 @@ class Config:
         # Project Settings
         self.autoSaveProj    = 60     # Interval for auto-saving project, in seconds
         self.autoSaveDoc     = 30     # Interval for auto-saving document, in seconds
-        self.emphLabels      = True   # Add emphasis to H1 and H2 item labels
-        self.backupOnClose   = False  # Flag for running automatic backups
+        self.emphLabels      = False  # Add emphasis to H1 and H2 item labels
+        self.backupOnClose   = True   # Flag for running automatic backups
         self.askBeforeBackup = True   # Flag for asking before running automatic backup
         self.askBeforeExit   = True   # Flag for asking before exiting the app
 
@@ -208,7 +208,7 @@ class Config:
         self.doReplaceDash   = True     # Replace multiple hyphens with dashes
         self.doReplaceDots   = True     # Replace three dots with ellipsis
 
-        self.autoScroll      = False    # Typewriter-like scrolling
+        self.autoScroll      = True     # Typewriter-like scrolling
         self.autoScrollPos   = 30       # Start point for typewriter-like scrolling
         self.scrollPastEnd   = True     # Scroll past end of document, and centre cursor
 
