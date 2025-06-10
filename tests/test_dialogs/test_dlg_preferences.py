@@ -196,11 +196,11 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     # Project View
     prefs.iconColTree.setCurrentData("faded", "default")
     prefs.iconColDocs.setChecked(True)
-    prefs.emphLabels.setChecked(False)
+    prefs.emphLabels.setChecked(True)
 
     assert CONFIG.iconColTree == "theme"
     assert CONFIG.iconColDocs is False
-    assert CONFIG.emphLabels is True
+    assert CONFIG.emphLabels is False
 
     # Behaviour
     prefs.autoSaveDoc.stepUp()
@@ -261,11 +261,11 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
 
     # Editor Scrolling
     prefs.scrollPastEnd.setChecked(False)
-    prefs.autoScroll.setChecked(True)
+    prefs.autoScroll.setChecked(False)
     prefs.autoScrollPos.stepUp()
 
     assert CONFIG.scrollPastEnd is True
-    assert CONFIG.autoScroll is False
+    assert CONFIG.autoScroll is True
     assert CONFIG.autoScrollPos == 30
 
     # Text Highlighting
@@ -362,7 +362,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     # Project View
     assert CONFIG.iconColTree == "faded"
     assert CONFIG.iconColDocs is True
-    assert CONFIG.emphLabels is False
+    assert CONFIG.emphLabels is True
 
     # Behaviour
     assert CONFIG.autoSaveDoc == 31
@@ -395,7 +395,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
 
     # Editor Scrolling
     assert CONFIG.scrollPastEnd is False
-    assert CONFIG.autoScroll is True
+    assert CONFIG.autoScroll is False
     assert CONFIG.autoScrollPos == 31
 
     # Text Highlighting
