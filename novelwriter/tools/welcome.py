@@ -419,7 +419,7 @@ class _ProjectListItem(QStyledItemDelegate):
         painter.save()
         if opt.state & QtSelected == QtSelected:
             painter.setOpacity(0.25)
-            painter.fillRect(rect, QApplication.palette().highlight())
+            painter.fillRect(rect, QApplication.palette().text())
             painter.setOpacity(1.0)
 
         painter.drawPixmap(2, rect.top() + 6, self._icon)

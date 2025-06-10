@@ -156,7 +156,7 @@ class _PagedToolButton(QToolButton):
 
         if self.isChecked():
             painter.setBrush(palette.highlight())
-            painter.setOpacity(0.35)
+            painter.setOpacity(0.8)
             painter.drawRoundedRect(0, 0, width, height, 4, 4)
             textCol = palette.highlightedText().color()
         else:
