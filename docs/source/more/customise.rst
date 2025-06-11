@@ -59,40 +59,45 @@ A colour theme ``.conf`` file consists of the following settings:
    licenseurl  = https://creativecommons.org/licenses/by-sa/4.0/
 
    [Base]
+   base    = #fcfcfc
    default = #303030
    faded   = #6c6c6c
    red     = #a62a2d
    orange  = #b36829
-   yellow  = #a68542
+   yellow  = #a39c34
    green   = #296629
    cyan    = #269999
    blue    = #3a70a6
    purple  = #b35ab3
 
    [Project]
-   root    = blue
-   folder  = yellow
-   file    = default
-   title   = green
-   chapter = red
-   scene   = blue
-   note    = yellow
+   root     = blue
+   folder   = yellow
+   file     = default
+   title    = green
+   chapter  = red
+   scene    = blue
+   note     = yellow
+   active   = green
+   inactive = red
+   disabled = faded
 
    [Palette]
-   window          = #efefef
-   windowtext      = #000000
-   base            = #ffffff
+   window          = base:D105
+   windowtext      = default
+   base            = base
    alternatebase   = #e0e0e0
-   text            = #000000
+   text            = default
    tooltipbase     = #ffffc0
    tooltiptext     = #15150d
    button          = #efefef
-   buttontext      = #000000
-   brighttext      = #ffffff
+   buttontext      = default
+   brighttext      = base
    highlight       = #3087c6
-   highlightedtext = #ffffff
+   highlightedtext = base
    link            = blue
    linkvisited     = blue
+   accent          = #3087c6
 
    [GUI]
    helptext  = #5c5c5c
@@ -100,15 +105,15 @@ A colour theme ``.conf`` file consists of the following settings:
    errortext = red
 
    [Syntax]
-   background     = #ffffff
-   text           = #000000
+   background     = base
+   text           = default
    link           = blue
    headertext     = green
    headertag      = green:L135
    emphasis       = orange
    dialog         = blue
    altdialog      = blue
-   note           = yellow
+   note           = yellow:D125
    hidden         = faded
    shortcode      = green
    keyword        = red
@@ -119,7 +124,7 @@ A colour theme ``.conf`` file consists of the following settings:
    errorline      = green
    replacetag     = green
    modifier       = green
-   texthighlight  = #c8c80060
+   texthighlight  = yellow:72
 
 
 Theme Sections
