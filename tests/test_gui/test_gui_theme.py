@@ -55,37 +55,37 @@ def testGuiTheme_ParseColor():
     theme._qColors["grey"] = QColor(127, 127, 127)
 
     # By Name
-    assert theme._parseColor("red").getRgb() == (255, 0, 0, 255)
-    assert theme._parseColor("green").getRgb() == (0, 255, 0, 255)
-    assert theme._parseColor("blue").getRgb() == (0, 0, 255, 255)
-    assert theme._parseColor("bob").getRgb() == (0, 0, 0, 255)
+    assert theme.parseColor("red").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("green").getRgb() == (0, 255, 0, 255)
+    assert theme.parseColor("blue").getRgb() == (0, 0, 255, 255)
+    assert theme.parseColor("bob").getRgb() == (0, 0, 0, 255)
 
     # CSS Format
-    assert theme._parseColor("#ff0000").getRgb() == (255, 0, 0, 255)
-    assert theme._parseColor("#ff00007f").getRgb() == (255, 0, 0, 127)
-    assert theme._parseColor("#ff00").getRgb() == (0, 0, 0, 255)  # Too short -> ignored
-    assert theme._parseColor("#ff00007f15").getRgb() == (0, 0, 0, 255)  # Too long -> ignored
+    assert theme.parseColor("#ff0000").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("#ff00007f").getRgb() == (255, 0, 0, 127)
+    assert theme.parseColor("#ff00").getRgb() == (0, 0, 0, 255)  # Too short -> ignored
+    assert theme.parseColor("#ff00007f15").getRgb() == (0, 0, 0, 255)  # Too long -> ignored
 
     # Name + Alpha
-    assert theme._parseColor("red:255").getRgb() == (255, 0, 0, 255)
-    assert theme._parseColor("red:127").getRgb() == (255, 0, 0, 127)
-    assert theme._parseColor("red:512").getRgb() == (255, 0, 0, 255)  # Value truncated
+    assert theme.parseColor("red:255").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("red:127").getRgb() == (255, 0, 0, 127)
+    assert theme.parseColor("red:512").getRgb() == (255, 0, 0, 255)  # Value truncated
 
     # Name + Lighter
-    assert theme._parseColor("grey:L100").getRgb() == (127, 127, 127, 255)
-    assert theme._parseColor("grey:L150").getRgb() == (190, 190, 190, 255)
-    assert theme._parseColor("grey:L50").getRgb() == (63, 63, 63, 255)
+    assert theme.parseColor("grey:L100").getRgb() == (127, 127, 127, 255)
+    assert theme.parseColor("grey:L150").getRgb() == (190, 190, 190, 255)
+    assert theme.parseColor("grey:L50").getRgb() == (63, 63, 63, 255)
 
     # Name + Darker
-    assert theme._parseColor("grey:D100").getRgb() == (127, 127, 127, 255)
-    assert theme._parseColor("grey:D150").getRgb() == (85, 85, 85, 255)
-    assert theme._parseColor("grey:D50").getRgb() == (254, 254, 254, 255)
+    assert theme.parseColor("grey:D100").getRgb() == (127, 127, 127, 255)
+    assert theme.parseColor("grey:D150").getRgb() == (85, 85, 85, 255)
+    assert theme.parseColor("grey:D50").getRgb() == (254, 254, 254, 255)
 
     # Values
-    assert theme._parseColor("255, 0, 0").getRgb() == (255, 0, 0, 255)
-    assert theme._parseColor("255, 0, 0, 255").getRgb() == (255, 0, 0, 255)
-    assert theme._parseColor("255, 0, 0, 127").getRgb() == (255, 0, 0, 127)
-    assert theme._parseColor("255, 0, 0, 127, 42").getRgb() == (255, 0, 0, 127)  # Truncated
+    assert theme.parseColor("255, 0, 0").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("255, 0, 0, 255").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("255, 0, 0, 127").getRgb() == (255, 0, 0, 127)
+    assert theme.parseColor("255, 0, 0, 127, 42").getRgb() == (255, 0, 0, 127)  # Truncated
 
 
 @pytest.mark.gui
