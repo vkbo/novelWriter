@@ -27,7 +27,7 @@ from PyQt6.QtGui import QAction, QFont, QFontDatabase, QKeyEvent
 from PyQt6.QtWidgets import QFileDialog, QFontDialog
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_TREECOL
 from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
@@ -198,7 +198,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.iconColDocs.setChecked(True)
     prefs.emphLabels.setChecked(True)
 
-    assert CONFIG.iconColTree == "theme"
+    assert CONFIG.iconColTree == DEF_TREECOL
     assert CONFIG.iconColDocs is False
     assert CONFIG.emphLabels is False
 
