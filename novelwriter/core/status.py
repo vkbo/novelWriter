@@ -189,6 +189,16 @@ class NWStatus:
             logger.error("Could not parse entry %s", str(data))
         return None
 
+    def refreshIcons(self) -> None:
+        """Refresh all icons."""
+        for entry in self._store.values():
+            if entry.theme != CUSTOM_COL:
+                print("<", entry.color.name(QColor.NameFormat.HexRgb))
+                entry.color = SHARED.theme.parseColor(entry.theme)
+                print(">", entry.color.name(QColor.NameFormat.HexRgb))
+            entry.icon = NWStatus.createIcon(self._height, entry.color, entry.shape)
+        return
+
     @staticmethod
     def createIcon(height: int, color: QColor, shape: nwStatusShape) -> QIcon:
         """Generate an icon for a status label."""

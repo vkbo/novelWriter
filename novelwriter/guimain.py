@@ -913,6 +913,7 @@ class GuiMain(QMainWindow):
     def refreshThemeColors(self, syntax: bool = False, force: bool = False) -> None:
         """Refresh the GUI theme."""
         SHARED.theme.loadTheme(force=force)
+        SHARED.project.updateTheme()
         self.setPalette(QApplication.palette())
         self.docEditor.updateTheme()
         self.docViewer.updateTheme()
