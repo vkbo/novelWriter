@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <dcterms:created xsi:type="dcterms:W3CDTF">2025-04-29T22:46:36</dcterms:created>
-  <dcterms:modified xsi:type="dcterms:W3CDTF">2025-04-29T22:46:36</dcterms:modified>
+  <dcterms:created xsi:type="dcterms:W3CDTF">2025-06-12T19:20:06</dcterms:created>
+  <dcterms:modified xsi:type="dcterms:W3CDTF">2025-06-12T19:20:06</dcterms:modified>
   <dc:creator>lipsum.com</dc:creator>
   <dc:title>Lorem Ipsum</dc:title>
   <dc:language>en_GB</dc:language>
-  <cp:revision>52</cp:revision>
+  <cp:revision>54</cp:revision>
   <cp:lastModifiedBy>lipsum.com</cp:lastModifiedBy>
 </cp:coreProperties>

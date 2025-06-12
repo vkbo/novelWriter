@@ -35,7 +35,7 @@ sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
 from novelwriter import CONFIG, SHARED
 
-from tests.mocked import MockGuiMain, MockTheme
+from tests.mocked import MockGuiMain
 from tests.tools import cleanProject
 
 _TST_ROOT = Path(__file__).parent
@@ -151,12 +151,16 @@ def projPath(fncPath):
 @pytest.fixture(scope="function")
 def mockGUI(qtbot, monkeypatch):
     """Create a mock instance of novelWriter's main GUI class."""
+    from novelwriter.gui.theme import GuiTheme
+
     monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
     gui = MockGuiMain()
-    theme = MockTheme()
+    theme = GuiTheme()
+    theme.loadTheme()
     monkeypatch.setattr(SHARED, "_gui", gui)
     monkeypatch.setattr(SHARED, "_theme", theme)
+
     return gui
 
 
