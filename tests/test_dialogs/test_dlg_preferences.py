@@ -196,11 +196,11 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     # Project View
     prefs.iconColTree.setCurrentData("faded", "default")
     prefs.iconColDocs.setChecked(True)
-    prefs.emphLabels.setChecked(True)
+    prefs.emphLabels.setChecked(False)
 
     assert CONFIG.iconColTree == DEF_TREECOL
     assert CONFIG.iconColDocs is False
-    assert CONFIG.emphLabels is False
+    assert CONFIG.emphLabels is True
 
     # Behaviour
     prefs.autoSaveDoc.stepUp()
@@ -362,7 +362,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     # Project View
     assert CONFIG.iconColTree == "faded"
     assert CONFIG.iconColDocs is True
-    assert CONFIG.emphLabels is True
+    assert CONFIG.emphLabels is False
 
     # Behaviour
     assert CONFIG.autoSaveDoc == 31

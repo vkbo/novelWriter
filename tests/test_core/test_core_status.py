@@ -324,13 +324,32 @@ def testCoreStatus_Entries(mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreStatus_Pack(mockGUI, mockRnd):
+def testCoreStatus_RefreshIcons(mockGUIwithTheme, mockRnd):
+    """Test refreshing the icons of the NWStatus class."""
+    nStatus = NWStatus(NWStatus.STATUS)
+    nStatus.add(None, "New",      "default", "SQUARE", 0)
+    nStatus.add(None, "Note",     "red",     "CIRCLE", 0)
+    nStatus.add(None, "Draft",    "yellow",  "SQUARE", 0)
+    nStatus.add(None, "Finished", "green",   "SQUARE", 0)
+
+    beforeIcons = [nStatus[statusKeys[i]].icon for i in range(4)]
+
+    # Refreshing the icons should generate new ones
+    nStatus.refreshIcons()
+    afterIcons = [nStatus[statusKeys[i]].icon for i in range(4)]
+
+    for before, after in zip(beforeIcons, afterIcons, strict=False):
+        assert before is not after
+
+
+@pytest.mark.core
+def testCoreStatus_Pack(mockGUIwithTheme, mockRnd):
     """Test data packing of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
     nStatus.add(None, "New",      "#646464", "SQUARE", 0)
     nStatus.add(None, "Note",     "#c83200", "CIRCLE", 0)
     nStatus.add(None, "Draft",    "#c89600", "SQUARE", 0)
-    nStatus.add(None, "Finished", "#32c800", "SQUARE", 0)
+    nStatus.add(None, "Finished", "default", "SQUARE", 0)
 
     countTo = [3, 5, 7, 9]
     for i, n in enumerate(countTo):
@@ -360,7 +379,7 @@ def testCoreStatus_Pack(mockGUI, mockRnd):
         ("Finished", {
             "key": statusKeys[3],
             "count": "9",
-            "color": "#32c800",
+            "color": "default",
             "shape": "SQUARE",
         }),
     ]
