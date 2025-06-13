@@ -267,8 +267,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     # Change some settings
     CONFIG.hideHScroll = True
     CONFIG.hideVScroll = True
-    CONFIG.autoScrollPos = 80
-    CONFIG.autoScroll = True
+    CONFIG.autoScroll = False
 
     # Add a Character File
     nwGUI._changeView(nwView.PROJECT)

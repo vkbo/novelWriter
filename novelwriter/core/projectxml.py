@@ -46,7 +46,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 FILE_VERSION = "1.5"  # The current project file format version
-FILE_REVISION = "5"   # The current project file format revision
+FILE_REVISION = "6"   # The current project file format revision
 HEX_VERSION = 0x0105
 
 NUM_VERSION = {
@@ -111,6 +111,8 @@ class ProjectXMLReader:
                nodes. 2.5.
         Rev 5: Added novelChars and notesChars attributes to content
                node. 2.7 RC 1.
+        Rev 6: Replaced red, green and blue attributes with a single
+               color attribute. 2.8 Beta 1.
     """
 
     def __init__(self, path: str | Path) -> None:
@@ -439,12 +441,15 @@ class ProjectXMLReader:
         for xEntry in xItem:
             if xEntry.tag == "entry":
                 key   = xEntry.attrib.get("key", None)
-                red   = checkInt(xEntry.attrib.get("red", 0), 0)
-                green = checkInt(xEntry.attrib.get("green", 0), 0)
-                blue  = checkInt(xEntry.attrib.get("blue", 0), 0)
+                red   = checkInt(xEntry.attrib.get("red", 0), 0)    # Deprecated in 1.5 R6
+                green = checkInt(xEntry.attrib.get("green", 0), 0)  # Deprecated in 1.5 R6
+                blue  = checkInt(xEntry.attrib.get("blue", 0), 0)   # Deprecated in 1.5 R6
+                color = xEntry.attrib.get("color")  # Added in 1.5 R6
                 count = checkInt(xEntry.attrib.get("count", 0), 0)
                 shape = xEntry.attrib.get("shape", "")
-                sObject.add(key, xEntry.text or "", (red, green, blue), shape, count)
+                if color is None:
+                    color = f"{red}, {green}, {blue}"
+                sObject.add(key, xEntry.text or "", color, shape, count)
         return
 
     def _parseDictKeyText(self, xItem: ET.Element) -> dict:

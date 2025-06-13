@@ -40,7 +40,7 @@ from PyQt6.QtWidgets import QApplication
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, minmax
-from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS, DEF_TREECOL
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwTheme
 from novelwriter.error import logException
@@ -438,7 +438,7 @@ class GuiTheme:
             self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Accent, grey)
 
         # Set project override colours
-        if (override := CONFIG.iconColTree) != "theme":
+        if (override := CONFIG.iconColTree) != DEF_TREECOL:
             color = self._qColors.get(override, QtBlack)
             self._setBaseColor("root", color)
             self._setBaseColor("folder", color)
@@ -465,11 +465,7 @@ class GuiTheme:
         """Load a standard style sheet."""
         return self._styleSheets.get(name, "")
 
-    ##
-    #  Internal Functions
-    ##
-
-    def _parseColor(self, value: str, default: QColor = QtBlack) -> QColor:
+    def parseColor(self, value: str, default: QColor = QtBlack) -> QColor:
         """Parse a string as a colour value."""
         if value in self._qColors:
             # Named colour
@@ -499,6 +495,10 @@ class GuiTheme:
                 result[i] = checkInt(data[i].strip(), result[i])
             return QColor(*result)
         return default
+
+    ##
+    #  Internal Functions
+    ##
 
     def _setBaseColor(self, key: str, color: QColor) -> None:
         """Set the colour for a named colour."""
@@ -560,7 +560,7 @@ class GuiTheme:
 
     def _readColor(self, parser: ConfigParser, section: str, name: str) -> QColor:
         """Parse a colour value from a config string."""
-        return self._parseColor(parser.get(section, name, fallback="default"))
+        return self.parseColor(parser.get(section, name, fallback="default"))
 
     def _setPalette(
         self, parser: ConfigParser, section: str, name: str, value: QPalette.ColorRole

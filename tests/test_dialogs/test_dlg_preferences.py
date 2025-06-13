@@ -27,7 +27,7 @@ from PyQt6.QtGui import QAction, QFont, QFontDatabase, QKeyEvent
 from PyQt6.QtWidgets import QFileDialog, QFontDialog
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_TREECOL
 from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
@@ -196,11 +196,11 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     # Project View
     prefs.iconColTree.setCurrentData("faded", "default")
     prefs.iconColDocs.setChecked(True)
-    prefs.emphLabels.setChecked(True)
+    prefs.emphLabels.setChecked(False)
 
-    assert CONFIG.iconColTree == "theme"
+    assert CONFIG.iconColTree == DEF_TREECOL
     assert CONFIG.iconColDocs is False
-    assert CONFIG.emphLabels is False
+    assert CONFIG.emphLabels is True
 
     # Behaviour
     prefs.autoSaveDoc.stepUp()
@@ -362,7 +362,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     # Project View
     assert CONFIG.iconColTree == "faded"
     assert CONFIG.iconColDocs is True
-    assert CONFIG.emphLabels is True
+    assert CONFIG.emphLabels is False
 
     # Behaviour
     assert CONFIG.autoSaveDoc == 31

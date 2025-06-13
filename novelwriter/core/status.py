@@ -35,6 +35,7 @@ from PyQt6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPixmap, QPolygon
 
 from novelwriter import SHARED
 from novelwriter.common import simplified
+from novelwriter.constants import nwLabels
 from novelwriter.enum import nwStatusShape
 from novelwriter.types import QtPaintAntiAlias, QtTransparent
 
@@ -43,12 +44,15 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+CUSTOM_COL = "custom"
+
 
 @dataclasses.dataclass
 class StatusEntry:
 
     name: str
     color: QColor
+    theme: str
     shape: nwStatusShape
     icon: QIcon
     count: int = 0
@@ -62,7 +66,7 @@ class StatusEntry:
         return status
 
 
-NO_ENTRY = StatusEntry("", QColor(0, 0, 0), nwStatusShape.SQUARE, QIcon(), 0)
+NO_ENTRY = StatusEntry("", QColor(0, 0, 0), CUSTOM_COL, nwStatusShape.SQUARE, QIcon(), 0)
 
 T_UpdateEntry = list[tuple[str | None, StatusEntry]]
 T_StatusKind = Literal["s", "i"]
@@ -97,15 +101,12 @@ class NWStatus:
     #  Methods
     ##
 
-    def add(self, key: str | None, name: str, color: tuple[int, int, int],
-            shape: str, count: int) -> str:
+    def add(self, key: str | None, name: str, color: str, shape: str, count: int) -> str:
         """Add or update a status entry. If the key is invalid, a new
         key is generated.
         """
-        if isinstance(color, tuple) and len(color) == 3:
-            qColor = QColor(*color)
-        else:
-            qColor = QColor(100, 100, 100)
+        qColor = SHARED.theme.parseColor(color)
+        theme = color if color in nwLabels.THEME_COLORS else CUSTOM_COL
 
         try:
             iShape = nwStatusShape[shape]
@@ -115,7 +116,7 @@ class NWStatus:
         key = self._checkKey(key)
         name = simplified(name)
         icon = self.createIcon(self._height, qColor, iShape)
-        self._store[key] = StatusEntry(name, qColor, iShape, icon, count)
+        self._store[key] = StatusEntry(name, qColor, theme, iShape, icon, count)
 
         if self._default is None:
             self._default = key
@@ -157,12 +158,14 @@ class NWStatus:
     def pack(self) -> Iterable[tuple[str, dict]]:
         """Pack the status entries into a dictionary."""
         for key, entry in self._store.items():
+            if entry.theme == CUSTOM_COL:
+                color = entry.color.name(QColor.NameFormat.HexRgb)
+            else:
+                color = entry.theme
             yield (entry.name, {
                 "key":   key,
                 "count": str(entry.count),
-                "red":   str(entry.color.red()),
-                "green": str(entry.color.green()),
-                "blue":  str(entry.color.blue()),
+                "color": color,
                 "shape": entry.shape.name,
             })
         return
@@ -179,11 +182,19 @@ class NWStatus:
         try:
             shape = nwStatusShape[str(data[0])]
             color = QColor(str(data[1]))
+            theme = CUSTOM_COL if data[1].startswith("#") else data[1]
             icon = NWStatus.createIcon(self._height, color, shape)
-            return StatusEntry(simplified(data[2]), color, shape, icon)
+            return StatusEntry(simplified(data[2]), color, theme, shape, icon)
         except Exception:
             logger.error("Could not parse entry %s", str(data))
         return None
+
+    def refreshIcons(self) -> None:
+        """Refresh all icons."""
+        for entry in self._store.values():
+            entry.color = SHARED.theme.parseColor(entry.theme)
+            entry.icon = NWStatus.createIcon(self._height, entry.color, entry.shape)
+        return
 
     @staticmethod
     def createIcon(height: int, color: QColor, shape: nwStatusShape) -> QIcon:
