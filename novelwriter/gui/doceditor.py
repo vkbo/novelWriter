@@ -234,9 +234,6 @@ class GuiDocEditor(QPlainTextEdit):
         self.updateSyntaxColors()
         self.initEditor()
 
-        # Connect Additional Signal
-        self.cursorPositionChanged.connect(self._highlightCurrentLine)
-
         logger.debug("Ready: GuiDocEditor")
 
         return
@@ -383,7 +380,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.setTabStopDistance(CONFIG.tabWidth)
         self.setCursorWidth(CONFIG.cursorWidth)
         self.setExtraSelections([])
-        self._highlightCurrentLine()
+        self._cursorMoved()
 
         # If we have a document open, we should refresh it in case the
         # font changed, otherwise we just clear the editor entirely,
@@ -1122,6 +1119,10 @@ class GuiDocEditor(QPlainTextEdit):
     def _cursorMoved(self) -> None:
         """Triggered when the cursor moved in the editor."""
         self.docFooter.updateLineCount(self.textCursor())
+        if CONFIG.lineHighlight:
+            self._selection.cursor = self.textCursor()
+            self._selection.cursor.clearSelection()
+            self.setExtraSelections([self._selection])
         return
 
     @pyqtSlot(int, int, str)
@@ -1311,15 +1312,6 @@ class GuiDocEditor(QPlainTextEdit):
         state = not self.docToolBar.isVisible()
         self.docToolBar.setVisible(state)
         CONFIG.showEditToolBar = state
-        return
-
-    @pyqtSlot()
-    def _highlightCurrentLine(self) -> None:
-        """Highlight the cursor line if setting is enabled."""
-        if CONFIG.lineHighlight:
-            self._selection.cursor = self.textCursor()
-            self._selection.cursor.clearSelection()
-            self.setExtraSelections([self._selection])
         return
 
     ##
