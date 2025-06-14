@@ -80,6 +80,7 @@ class SyntaxColors:
 
     back:   QColor = QColor(255, 255, 255)
     text:   QColor = QColor(0, 0, 0)
+    line:   QColor = QColor(0, 0, 0)
     link:   QColor = QColor(0, 0, 0)
     head:   QColor = QColor(0, 0, 0)
     headH:  QColor = QColor(0, 0, 0)
@@ -364,6 +365,7 @@ class GuiTheme:
         if parser.has_section(sec):
             self.syntaxTheme.back   = self._readColor(parser, sec, "background")
             self.syntaxTheme.text   = self._readColor(parser, sec, "text")
+            self.syntaxTheme.line   = self._readColor(parser, sec, "line")
             self.syntaxTheme.link   = self._readColor(parser, sec, "link")
             self.syntaxTheme.head   = self._readColor(parser, sec, "headertext")
             self.syntaxTheme.headH  = self._readColor(parser, sec, "headertag")

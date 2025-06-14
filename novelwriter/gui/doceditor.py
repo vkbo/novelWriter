@@ -320,8 +320,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.docHeader.matchColors()
         self.docFooter.matchColors()
 
-        self._lineColor = self.palette().alternateBase().color()
-        self._lineColor.setAlpha(160)
+        self._lineColor = syntax.line
 
         return
 
