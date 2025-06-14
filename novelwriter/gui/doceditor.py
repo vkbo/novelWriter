@@ -147,6 +147,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._lastFind   = None   # Position of the last found search word
         self._doReplace  = False  # Switch to temporarily disable auto-replace
         self._lineColor  = QtTransparent
+        self._selection  = QTextEdit.ExtraSelection()
 
         # Auto-Replace
         self._autoReplace = TextAutoReplace()
@@ -321,6 +322,8 @@ class GuiDocEditor(QPlainTextEdit):
         self.docFooter.matchColors()
 
         self._lineColor = syntax.line
+        self._selection.format.setBackground(self._lineColor)
+        self._selection.format.setProperty(QTextFormat.Property.FullWidthSelection, True)
 
         return
 
@@ -1314,12 +1317,9 @@ class GuiDocEditor(QPlainTextEdit):
     def _highlightCurrentLine(self) -> None:
         """Highlight the cursor line if setting is enabled."""
         if CONFIG.lineHighlight:
-            selection = QTextEdit.ExtraSelection()
-            selection.format.setBackground(self._lineColor)
-            selection.format.setProperty(QTextFormat.Property.FullWidthSelection, True)
-            selection.cursor = self.textCursor()
-            selection.cursor.clearSelection()
-            self.setExtraSelections([selection])
+            self._selection.cursor = self.textCursor()
+            self._selection.cursor.clearSelection()
+            self.setExtraSelections([self._selection])
         return
 
     ##
