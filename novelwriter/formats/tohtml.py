@@ -159,34 +159,33 @@ class ToHtml(Tokenizer):
                 # If we don't have formatting, we can do a plain replace
                 tText = tText.replace("<", "&lt;").replace(">", "&gt;")
 
-            # Styles
+            # Inline Styles
             aStyle = []
-            if self._cssStyles:
-                if tStyle & BlockFmt.LEFT:
-                    aStyle.append("text-align: left;")
-                elif tStyle & BlockFmt.RIGHT:
-                    aStyle.append("text-align: right;")
-                elif tStyle & BlockFmt.CENTRE:
-                    aStyle.append("text-align: center;")
-                elif tStyle & BlockFmt.JUSTIFY:
-                    aStyle.append("text-align: justify;")
+            if tStyle & BlockFmt.LEFT:
+                aStyle.append("text-align: left;")
+            elif tStyle & BlockFmt.RIGHT:
+                aStyle.append("text-align: right;")
+            elif tStyle & BlockFmt.CENTRE:
+                aStyle.append("text-align: center;")
+            elif tStyle & BlockFmt.JUSTIFY:
+                aStyle.append("text-align: justify;")
 
-                if tStyle & BlockFmt.PBB:
-                    aStyle.append("page-break-before: always;")
-                if tStyle & BlockFmt.PBA:
-                    aStyle.append("page-break-after: always;")
+            if tStyle & BlockFmt.PBB:
+                aStyle.append("page-break-before: always;")
+            if tStyle & BlockFmt.PBA:
+                aStyle.append("page-break-after: always;")
 
-                if tStyle & BlockFmt.Z_BTM:
-                    aStyle.append("margin-bottom: 0;")
-                if tStyle & BlockFmt.Z_TOP:
-                    aStyle.append("margin-top: 0;")
+            if tStyle & BlockFmt.Z_BTM:
+                aStyle.append("margin-bottom: 0;")
+            if tStyle & BlockFmt.Z_TOP:
+                aStyle.append("margin-top: 0;")
 
-                if tStyle & BlockFmt.IND_L:
-                    aStyle.append(f"margin-left: {self._blockIndent:.2f}em;")
-                if tStyle & BlockFmt.IND_R:
-                    aStyle.append(f"margin-right: {self._blockIndent:.2f}em;")
-                if tStyle & BlockFmt.IND_T:
-                    aStyle.append(f"text-indent: {self._firstWidth:.2f}em;")
+            if tStyle & BlockFmt.IND_L:
+                aStyle.append(f"margin-left: {self._blockIndent:.2f}em;")
+            if tStyle & BlockFmt.IND_R:
+                aStyle.append(f"margin-right: {self._blockIndent:.2f}em;")
+            if tStyle & BlockFmt.IND_T:
+                aStyle.append(f"text-indent: {self._firstWidth:.2f}em;")
 
             if aStyle:
                 stVals = " ".join(aStyle)
@@ -288,26 +287,25 @@ class ToHtml(Tokenizer):
                 json.dump(data, fObj, indent=2)
 
         else:
+            html = []
+            html.append("<!DOCTYPE html>")
+            html.append("<html>")
+            html.append("<head>")
+            html.append(f"<title>{self._project.data.name:s}</title>")
+            html.append("<meta charset='utf-8'>")
+            if self._cssStyles:
+                html.append("<meta name='viewport' content='width=device-width, initial-scale=1'>")
+                html.append("<style>")
+                html.extend(self.getStyleSheet())
+                html.append("</style>")
+            html.append("</head>")
+            html.append("<body>")
+            html.append(("".join(self._pages)).replace("\t", "&#09;").rstrip())
+            html.append("</body>")
+            html.append("</html>\n")
+
             with open(path, mode="w", encoding="utf-8") as fObj:
-                fObj.write((
-                    "<!DOCTYPE html>\n"
-                    "<html>\n"
-                    "<head>\n"
-                    "<meta charset='utf-8'>\n"
-                    "<title>{title:s}</title>\n"
-                    "<style>\n"
-                    "{style:s}\n"
-                    "</style>\n"
-                    "</head>\n"
-                    "<body>\n"
-                    "{body:s}\n"
-                    "</body>\n"
-                    "</html>\n"
-                ).format(
-                    title=self._project.data.name,
-                    style="\n".join(self.getStyleSheet()),
-                    body=("".join(self._pages)).replace("\t", "&#09;").rstrip(),
-                ))
+                fObj.write("\n".join(html))
 
         logger.info("Wrote file: %s", path)
 
@@ -410,7 +408,11 @@ class ToHtml(Tokenizer):
         # isn't already open, and only closed if it has previously been opened.
         tags: list[tuple[int, str]] = []
         state = dict.fromkeys(HTML_OPENER, False)
+        plain = not self._cssStyles
         for pos, fmt, data in tFmt:
+            if plain and fmt in (TextFmt.COL_B, TextFmt.COL_E):
+                # We ignore colour tags if CSS is off
+                continue
             if m := HTML_OPENER.get(fmt):
                 if not state.get(fmt, True):
                     if fmt == TextFmt.COL_B and (color := self._classes.get(data)):
