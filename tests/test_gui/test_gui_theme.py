@@ -632,7 +632,7 @@ def testGuiTheme_CheckTheme(theme):
             "helptext", "fadedtext", "errortext",
         ],
         "Syntax": [
-            "background", "text", "link", "headertext", "headertag",
+            "background", "text", "line", "link", "headertext", "headertag",
             "emphasis", "dialog", "altdialog", "hidden", "note", "shortcode",
             "keyword", "tag", "value", "optional", "spellcheckline",
             "errorline", "replacetag", "modifier", "texthighlight",

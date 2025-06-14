@@ -544,6 +544,13 @@ class GuiPreferences(NDialog):
             unit=self.tr("px")
         )
 
+        # Highlight Current Line
+        self.lineHighlight = NSwitch(self)
+        self.lineHighlight.setChecked(CONFIG.lineHighlight)
+        self.mainForm.addRow(
+            self.tr("Highlight current line"), self.lineHighlight
+        )
+
         # Show Tabs and Spaces
         self.showTabsNSpaces = NSwitch(self)
         self.showTabsNSpaces.setChecked(CONFIG.showTabsNSpaces)
@@ -1032,9 +1039,14 @@ class GuiPreferences(NDialog):
         CONFIG.tabWidth        = self.tabWidth.value()
 
         # Text Editing
+        lineHighlight = self.lineHighlight.isChecked()
+
+        updateSyntax |= CONFIG.lineHighlight != lineHighlight
+
         CONFIG.spellLanguage   = self.spellLanguage.currentData()
         CONFIG.autoSelect      = self.autoSelect.isChecked()
         CONFIG.cursorWidth     = self.cursorWidth.value()
+        CONFIG.lineHighlight   = lineHighlight
         CONFIG.showTabsNSpaces = self.showTabsNSpaces.isChecked()
         CONFIG.showLineEndings = self.showLineEndings.isChecked()
 

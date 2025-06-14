@@ -77,15 +77,16 @@ class Config:
         "fmtSQuoteOpen", "focusWidth", "guiFont", "guiLocale", "hasEnchant", "hideFocusFooter",
         "hideHScroll", "hideVScroll", "highlightEmph", "hostName", "iconColDocs", "iconColTree",
         "iconTheme", "incNotesWCount", "isDebug", "kernelVer", "lastNotes", "lightTheme",
-        "mainPanePos", "mainWinSize", "memInfo", "narratorBreak", "narratorDialog", "nativeFont",
-        "osDarwin", "osLinux", "osType", "osUnknown", "osWindows", "outlinePanePos",
-        "prefsWinSize", "scrollPastEnd", "searchCase", "searchLoop", "searchMatchCap",
-        "searchNextFile", "searchProjCase", "searchProjRegEx", "searchProjWord", "searchRegEx",
-        "searchWord", "showEditToolBar", "showFullPath", "showLineEndings", "showMultiSpaces",
-        "showSessionTime", "showTabsNSpaces", "showViewerPanel", "spellLanguage", "stopWhenIdle",
-        "tabWidth", "textFont", "textMargin", "textWidth", "themeMode", "useCharCount",
-        "userIdleTime", "verPyQtString", "verPyQtValue", "verPyString", "verQtString",
-        "verQtValue", "viewComments", "viewPanePos", "viewSynopsis", "welcomeWinSize",
+        "lineHighlight", "mainPanePos", "mainWinSize", "memInfo", "narratorBreak",
+        "narratorDialog", "nativeFont", "osDarwin", "osLinux", "osType", "osUnknown", "osWindows",
+        "outlinePanePos", "prefsWinSize", "scrollPastEnd", "searchCase", "searchLoop",
+        "searchMatchCap", "searchNextFile", "searchProjCase", "searchProjRegEx", "searchProjWord",
+        "searchRegEx", "searchWord", "showEditToolBar", "showFullPath", "showLineEndings",
+        "showMultiSpaces", "showSessionTime", "showTabsNSpaces", "showViewerPanel",
+        "spellLanguage", "stopWhenIdle", "tabWidth", "textFont", "textMargin", "textWidth",
+        "themeMode", "useCharCount", "userIdleTime", "verPyQtString", "verPyQtValue",
+        "verPyString", "verQtString", "verQtValue", "viewComments", "viewPanePos", "viewSynopsis",
+        "welcomeWinSize",
     )
 
     LANG_NW   = 1
@@ -191,6 +192,7 @@ class Config:
         self.textMargin      = 40       # Editor/viewer text margin
         self.tabWidth        = 40       # Editor tabulator width
         self.cursorWidth     = 1        # Editor cursor width
+        self.lineHighlight   = False    # Highlight current line in editor
 
         self.focusWidth      = 800      # Focus Mode text width
         self.hideFocusFooter = False    # Hide document footer in Focus Mode
@@ -667,6 +669,7 @@ class Config:
         self.textMargin      = conf.rdInt(sec, "margin", self.textMargin)
         self.tabWidth        = conf.rdInt(sec, "tabwidth", self.tabWidth)
         self.cursorWidth     = conf.rdInt(sec, "cursorwidth", self.cursorWidth)
+        self.lineHighlight   = conf.rdBool(sec, "linehighlight", self.lineHighlight)
         self.focusWidth      = conf.rdInt(sec, "focuswidth", self.focusWidth)
         self.hideFocusFooter = conf.rdBool(sec, "hidefocusfooter", self.hideFocusFooter)
         self.doJustify       = conf.rdBool(sec, "justify", self.doJustify)
@@ -793,6 +796,7 @@ class Config:
             "margin":          str(self.textMargin),
             "tabwidth":        str(self.tabWidth),
             "cursorwidth":     str(self.cursorWidth),
+            "lineHighlight":   str(self.lineHighlight),
             "focuswidth":      str(self.focusWidth),
             "hidefocusfooter": str(self.hideFocusFooter),
             "justify":         str(self.doJustify),

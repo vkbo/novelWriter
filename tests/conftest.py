@@ -65,7 +65,11 @@ def resetConfigVars():
     CONFIG.darkTheme = DEF_GUI_DARK
     CONFIG.lightTheme = DEF_GUI_LIGHT
     CONFIG.themeMode = nwTheme.LIGHT
-    CONFIG.emphLabels = True  # Ensures better coverage, off by default
+
+    # Enable a few settings to ensure better coverage
+    CONFIG.emphLabels = True
+    CONFIG.lineHighlight = True
+
     return
 
 
