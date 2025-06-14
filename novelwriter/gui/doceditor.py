@@ -45,11 +45,11 @@ from PyQt6.QtCore import (
 from PyQt6.QtGui import (
     QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
     QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent, QShortcut,
-    QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QTextBlock, QTextCursor, QTextDocument, QTextFormat, QTextOption
 )
 from PyQt6.QtWidgets import (
     QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
-    QPlainTextEdit, QToolBar, QVBoxLayout, QWidget
+    QPlainTextEdit, QTextEdit, QToolBar, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -75,7 +75,8 @@ from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
     QtAlignRight, QtKeepAnchor, QtModCtrl, QtModNone, QtModShift, QtMouseLeft,
-    QtMoveAnchor, QtMoveLeft, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
+    QtMoveAnchor, QtMoveLeft, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded,
+    QtTransparent
 )
 
 logger = logging.getLogger(__name__)
@@ -145,6 +146,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._lastActive = 0.0    # Timestamp of last activity
         self._lastFind   = None   # Position of the last found search word
         self._doReplace  = False  # Switch to temporarily disable auto-replace
+        self._lineColor  = QtTransparent
 
         # Auto-Replace
         self._autoReplace = TextAutoReplace()
@@ -231,6 +233,9 @@ class GuiDocEditor(QPlainTextEdit):
         self.updateSyntaxColors()
         self.initEditor()
 
+        # Connect Additional Signal
+        self.cursorPositionChanged.connect(self._highlightCurrentLine)
+
         logger.debug("Ready: GuiDocEditor")
 
         return
@@ -315,6 +320,9 @@ class GuiDocEditor(QPlainTextEdit):
         self.docHeader.matchColors()
         self.docFooter.matchColors()
 
+        self._lineColor = self.palette().alternateBase().color()
+        self._lineColor.setAlpha(160)
+
         return
 
     def initEditor(self) -> None:
@@ -372,6 +380,8 @@ class GuiDocEditor(QPlainTextEdit):
         # Refresh sizes
         self.setTabStopDistance(CONFIG.tabWidth)
         self.setCursorWidth(CONFIG.cursorWidth)
+        self.setExtraSelections([])
+        self._highlightCurrentLine()
 
         # If we have a document open, we should refresh it in case the
         # font changed, otherwise we just clear the editor entirely,
@@ -1299,6 +1309,18 @@ class GuiDocEditor(QPlainTextEdit):
         state = not self.docToolBar.isVisible()
         self.docToolBar.setVisible(state)
         CONFIG.showEditToolBar = state
+        return
+
+    @pyqtSlot()
+    def _highlightCurrentLine(self) -> None:
+        """Highlight the cursor line if setting is enabled."""
+        if CONFIG.lineHighlight:
+            selection = QTextEdit.ExtraSelection()
+            selection.format.setBackground(self._lineColor)
+            selection.format.setProperty(QTextFormat.Property.FullWidthSelection, True)
+            selection.cursor = self.textCursor()
+            selection.cursor.clearSelection()
+            self.setExtraSelections([selection])
         return
 
     ##
