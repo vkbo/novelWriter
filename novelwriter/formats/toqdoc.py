@@ -36,7 +36,7 @@ from PyQt6.QtPrintSupport import QPrinter
 
 from novelwriter import __version__
 from novelwriter.constants import nwStyles, nwUnicode
-from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import HEADINGS, Tokenizer
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
@@ -343,7 +343,7 @@ class ToQTextDocument(Tokenizer):
         for pos, fmt, data in tFmt:
 
             # Insert buffer with previous format
-            cursor.insertText(temp[start:pos], cFmt)
+            cursor.insertText(stripEscape(temp[start:pos]), cFmt)
 
             # Construct next format
             if fmt == TextFmt.B_B:
@@ -425,13 +425,12 @@ class ToQTextDocument(Tokenizer):
                 if field := data.partition(":")[2]:
                     self._usedFields.append((cursor.position(), field))
                     cursor.insertText("0", cFmt)
-                pass
 
             # Move pos for next pass
             start = pos
 
         # Insert whatever is left in the buffer
-        cursor.insertText(temp[start:], cFmt)
+        cursor.insertText(stripEscape(temp[start:]), cFmt)
 
         return
 
