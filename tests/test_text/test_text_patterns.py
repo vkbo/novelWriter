@@ -157,6 +157,15 @@ def testTextPatterns_Markdown():
     assert allMatches(regEx, "one ~two~~ three") == []
     assert allMatches(regEx, "one~~two~~three") == []
 
+    # Mark
+    regEx = REGEX_PATTERNS.markdownMark
+    assert allMatches(regEx, "one ==two== three") == [
+        [("==two==", 4, 11), ("==", 4, 6), ("two", 6, 9), ("==", 9, 11)]
+    ]
+    assert allMatches(regEx, "one ==two= three") == []
+    assert allMatches(regEx, "one =two== three") == []
+    assert allMatches(regEx, "one==two==three") == []
+
 
 @pytest.mark.core
 def testTextPatterns_ShortcodesPlain():
