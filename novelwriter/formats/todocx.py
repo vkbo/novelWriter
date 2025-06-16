@@ -37,7 +37,7 @@ from PyQt6.QtCore import QMargins, QSize
 from novelwriter import __version__
 from novelwriter.common import firstFloat, xmlElement, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwStyles
-from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import Tokenizer
 from novelwriter.types import QtHexRgb
 
@@ -480,7 +480,7 @@ class ToDocX(Tokenizer):
             xmlSubElem(rPr, _wTag("color"), attrib={W_VAL: _docXCol(color)})
 
         if isinstance(text, str):
-            for segment in RX_TEXT.split(text):
+            for segment in RX_TEXT.split(stripEscape(text)):
                 if segment == "\n":
                     xmlSubElem(xR, _wTag("br"))
                 elif segment == "\t":
