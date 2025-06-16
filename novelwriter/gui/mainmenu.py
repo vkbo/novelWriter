@@ -675,6 +675,14 @@ class GuiMainMenu(QMenuBar):
         )
         self.mainGui.addAction(self.aFmtStrike)
 
+        # Format > Highlight
+        self.aFmtMark = qtAddAction(self.fmtMenu, self.tr("Highlight"))
+        self.aFmtMark.setShortcut("Ctrl+M")
+        self.aFmtMark.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.MD_MARK)
+        )
+        self.mainGui.addAction(self.aFmtStrike)
+
         # Edit > Separator
         self.fmtMenu.addSeparator()
 

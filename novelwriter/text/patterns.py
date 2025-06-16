@@ -42,6 +42,7 @@ class RegExPatterns:
     _rxItalic  = re.compile(nwRegEx.FMT_EI, re.UNICODE)
     _rxBold    = re.compile(nwRegEx.FMT_EB, re.UNICODE)
     _rxStrike  = re.compile(nwRegEx.FMT_ST, re.UNICODE)
+    _rxMark    = re.compile(nwRegEx.FMT_HL, re.UNICODE)
     _rxSCPlain = re.compile(nwRegEx.FMT_SC, re.UNICODE)
     _rxSCValue = re.compile(nwRegEx.FMT_SV, re.UNICODE)
 
@@ -74,6 +75,11 @@ class RegExPatterns:
     def markdownStrike(self) -> re.Pattern:
         """Markdown strikethrough style."""
         return self._rxStrike
+
+    @property
+    def markdownMark(self) -> re.Pattern:
+        """Markdown highlight style."""
+        return self._rxMark
 
     @property
     def shortcodePlain(self) -> re.Pattern:

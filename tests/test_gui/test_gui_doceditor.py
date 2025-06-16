@@ -674,9 +674,16 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    # Mark
+    docEditor.setCursorPosition(50)
+    assert docEditor.docAction(nwDocAction.MD_MARK) is True
+    assert docEditor.getText() == text.replace("consectetur", "==consectetur==")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
+
     # Redo
     assert docEditor.docAction(nwDocAction.REDO) is True
-    assert docEditor.getText() == text.replace("consectetur", "~~consectetur~~")
+    assert docEditor.getText() == text.replace("consectetur", "==consectetur==")
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
