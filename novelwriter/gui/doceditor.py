@@ -286,6 +286,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.docHeader.clearHeader()
         self.docFooter.setHandle(self._docHandle)
         self.docToolBar.setVisible(False)
+        self.setExtraSelections([])
 
         self.itemHandleChanged.emit("")
 
@@ -742,6 +743,8 @@ class GuiDocEditor(QPlainTextEdit):
             self._toggleFormat(2, "*")
         elif action == nwDocAction.MD_STRIKE:
             self._toggleFormat(2, "~")
+        elif action == nwDocAction.MD_MARK:
+            self._toggleFormat(2, "=")
         elif action == nwDocAction.S_QUOTE:
             self._wrapSelection(CONFIG.fmtSQuoteOpen, CONFIG.fmtSQuoteClose)
         elif action == nwDocAction.D_QUOTE:
@@ -2418,6 +2421,12 @@ class GuiDocToolBar(QWidget):
             qtLambda(self.requestDocAction.emit, nwDocAction.MD_STRIKE)
         )
 
+        self.tbMarkMD = NIconToolButton(self, iSz)
+        self.tbMarkMD.setToolTip(self.tr("Markdown Highlight"))
+        self.tbMarkMD.clicked.connect(
+            qtLambda(self.requestDocAction.emit, nwDocAction.MD_MARK)
+        )
+
         self.tbBold = NIconToolButton(self, iSz)
         self.tbBold.setToolTip(self.tr("Shortcode Bold"))
         self.tbBold.clicked.connect(
@@ -2467,6 +2476,7 @@ class GuiDocToolBar(QWidget):
         self.outerBox.addWidget(self.tbBoldMD)
         self.outerBox.addWidget(self.tbItalicMD)
         self.outerBox.addWidget(self.tbStrikeMD)
+        self.outerBox.addWidget(self.tbMarkMD)
         self.outerBox.addSpacing(4)
         self.outerBox.addWidget(self.tbBold)
         self.outerBox.addWidget(self.tbItalic)
@@ -2501,6 +2511,7 @@ class GuiDocToolBar(QWidget):
         self.tbBoldMD.setThemeIcon("fmt_bold", "orange")
         self.tbItalicMD.setThemeIcon("fmt_italic", "orange")
         self.tbStrikeMD.setThemeIcon("fmt_strike", "orange")
+        self.tbMarkMD.setThemeIcon("fmt_mark", "orange")
         self.tbBold.setThemeIcon("fmt_bold")
         self.tbItalic.setThemeIcon("fmt_italic")
         self.tbStrike.setThemeIcon("fmt_strike")
