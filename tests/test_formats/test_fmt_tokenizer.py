@@ -919,6 +919,11 @@ def testFmtToken_ExtractFormats(mockGUI):
     assert text == "Text with strikethrough in it."
     assert fmt == [(10, TextFmt.D_B, ""), (23, TextFmt.D_E, "")]
 
+    # Plain mark
+    text, fmt = tokens._extractFormats("Text with ==a highlight== in it.")
+    assert text == "Text with a highlight in it."
+    assert fmt == [(10, TextFmt.M_B, ""), (21, TextFmt.M_E, "")]
+
     # Nested bold/italics
     text, fmt = tokens._extractFormats("Text with **bold and _italics_** in it.")
     assert text == "Text with bold and italics in it."

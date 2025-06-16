@@ -189,6 +189,7 @@ class Tokenizer(ABC):
             (REGEX_PATTERNS.markdownItalic, [0, TextFmt.I_B, 0, TextFmt.I_E]),
             (REGEX_PATTERNS.markdownBold,   [0, TextFmt.B_B, 0, TextFmt.B_E]),
             (REGEX_PATTERNS.markdownStrike, [0, TextFmt.D_B, 0, TextFmt.D_E]),
+            (REGEX_PATTERNS.markdownMark,   [0, TextFmt.M_B, 0, TextFmt.M_E]),
         ]
 
         self._shortCodeFmt = {
