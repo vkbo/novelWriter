@@ -496,12 +496,10 @@ class Tokenizer(ABC):
     def doPreProcessing(self) -> None:
         """Run pre-processing jobs before the text is tokenized."""
         # Process the user's auto-replace dictionary
-        if autoReplace := self._project.data.autoReplace:
-            repDict = {}
-            for aKey, aVal in autoReplace.items():
-                repDict[f"<{aKey}>"] = aVal
-            xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
-            self._text = xRep.sub(lambda x: repDict[x.group(0)], self._text)
+        if entry := self._project.data.autoReplace:
+            replace = {f"<{k}>": v for k, v in entry.items()}
+            rxRep = re.compile("|".join([re.escape(k) for k in replace]), flags=re.DOTALL)
+            self._text = rxRep.sub(lambda x: replace[x.group(0)], self._text)
         return
 
     def tokenizeText(self) -> None:
