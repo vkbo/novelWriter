@@ -1659,7 +1659,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     # H2: Chapter Word Number
     tokens._text = "## Chapter\n"
     tokens.setChapterFormat(f"Chapter {nwHeadFmt.CH_WORD}")
-    tokens._hFormatter._chCount = 0
+    tokens._hFormatter._chapter = 0
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.HEAD1, TM1, "Chapter One", [], BlockFmt.PBB),
@@ -1733,8 +1733,8 @@ def testFmtToken_ProcessHeaders(mockGUI):
     # H3: Scene w/Absolute Number
     tokens._text = "### A Scene\n"
     tokens.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}", False)
-    tokens._hFormatter._scAbsCount = 0
-    tokens._hFormatter._scChCount = 0
+    tokens._hFormatter._scene = 0
+    tokens._hFormatter._absolute = 0
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.HEAD2, TM1, "Scene 1", [], BlockFmt.NONE),
@@ -1743,8 +1743,8 @@ def testFmtToken_ProcessHeaders(mockGUI):
     # H3: Scene w/Chapter Number
     tokens._text = "### A Scene\n"
     tokens.setSceneFormat(f"Scene {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM}", False)
-    tokens._hFormatter._scAbsCount = 0
-    tokens._hFormatter._scChCount = 1
+    tokens._hFormatter._scene = 1
+    tokens._hFormatter._absolute = 0
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.HEAD2, TM1, "Scene 3.2", [], BlockFmt.NONE),
@@ -2549,9 +2549,9 @@ def testFmtToken_HeadingFormatter(fncPath, mockGUI, mockRnd):
 
     # Special Formats
     # ===============
-    formatter._chCount = 2
-    formatter._scChCount = 3
-    formatter._scAbsCount = 8
+    formatter._chapter = 2
+    formatter._scene = 3
+    formatter._absolute = 8
 
     # Chapter Number Word
     cFormat = f"Chapter {nwHeadFmt.CH_WORD}, Scene {nwHeadFmt.SC_NUM} - {nwHeadFmt.TITLE}"
