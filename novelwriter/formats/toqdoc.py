@@ -40,8 +40,9 @@ from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, s
 from novelwriter.formats.tokenizer import HEADINGS, Tokenizer
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
-    QtKeepAnchor, QtMoveAnchor, QtPageBreakAfter, QtPageBreakBefore,
-    QtPropLineHeight, QtTransparent, QtVAlignNormal, QtVAlignSub, QtVAlignSuper
+    QtKeepAnchor, QtMoveAnchor, QtPageBreakAfter, QtPageBreakAuto,
+    QtPageBreakBefore, QtPropLineHeight, QtTransparent, QtVAlignNormal,
+    QtVAlignSub, QtVAlignSuper
 )
 
 if TYPE_CHECKING:
@@ -253,8 +254,10 @@ class ToQTextDocument(Tokenizer):
 
             elif tType in HEADINGS:
                 bFmt, cFmt = self._genHeadStyle(tType, tMeta, bFmt)
-                newBlock(cursor, bFmt)
-                cursor.insertText(tText, cFmt)
+                for tPart in tText.split("\n"):
+                    newBlock(cursor, bFmt)
+                    cursor.insertText(tPart, cFmt)
+                    bFmt.setPageBreakPolicy(QtPageBreakAuto)
 
             elif tType == BlockTyp.SEP:
                 newBlock(cursor, bFmt)
