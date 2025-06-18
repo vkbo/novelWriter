@@ -52,6 +52,7 @@ QtVAlignSuper = QTextCharFormat.VerticalAlignment.AlignSuperScript
 
 QtPageBreakBefore = QTextFormat.PageBreakFlag.PageBreak_AlwaysBefore
 QtPageBreakAfter = QTextFormat.PageBreakFlag.PageBreak_AlwaysAfter
+QtPageBreakAuto = QTextFormat.PageBreakFlag.PageBreak_Auto
 
 QtPropLineHeight = 1  # QTextBlockFormat.LineHeightTypes.ProportionalHeight
 

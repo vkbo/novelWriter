@@ -43,7 +43,7 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import fuzzyTime, qtLambda
-from novelwriter.constants import nwLabels, nwStats, trStats
+from novelwriter.constants import nwHeadFmt, nwLabels, nwStats, nwUnicode, trStats
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
@@ -595,11 +595,7 @@ class _DetailsWidget(QWidget):
                 item.addChild(sub)
 
         # Headings
-        hFmt = HeadingFormatter(SHARED.project)
-        hFmt.incChapter()
-        hFmt.incScene()
-        hFmt.resetScene()
-        hFmt.incScene()
+        hFmt = HeadingFormatter(SHARED.project, 7, 5, 23)
         title = self.tr("Title")
         hidden = self.tr("Hidden")
 
@@ -620,7 +616,8 @@ class _DetailsWidget(QWidget):
             if build.getBool(hHide):
                 sub.setText(1, f"[{hidden}]")
             else:
-                sub.setText(1, hFmt.apply(build.getStr(hFormat), title, 0))
+                preview = build.getStr(hFormat).replace(nwHeadFmt.BR, nwUnicode.U_LBREAK)
+                sub.setText(1, hFmt.apply(preview, title, 0))
             item.addChild(sub)
 
         # Text Content
