@@ -38,7 +38,7 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import describeFont, fontMatcher, qtAddAction, qtLambda
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, trConst
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwUnicode, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.configlayout import (
     NColorLabel, NFixedPage, NScrollableForm, NScrollablePage
@@ -795,12 +795,15 @@ class _HeadingsTab(NScrollablePage):
 
     def loadContent(self) -> None:
         """Populate the widgets."""
-        self.fmtPart.setText(self._build.getStr("headings.fmtPart"))
-        self.fmtChapter.setText(self._build.getStr("headings.fmtChapter"))
-        self.fmtUnnumbered.setText(self._build.getStr("headings.fmtUnnumbered"))
-        self.fmtScene.setText(self._build.getStr("headings.fmtScene"))
-        self.fmtAScene.setText(self._build.getStr("headings.fmtAltScene"))
-        self.fmtSection.setText(self._build.getStr("headings.fmtSection"))
+        def fmtBreak(text: str) -> str:
+            return text.replace(nwHeadFmt.BR, nwUnicode.U_LBREAK)
+
+        self.fmtPart.setText(fmtBreak(self._build.getStr("headings.fmtPart")))
+        self.fmtChapter.setText(fmtBreak(self._build.getStr("headings.fmtChapter")))
+        self.fmtUnnumbered.setText(fmtBreak(self._build.getStr("headings.fmtUnnumbered")))
+        self.fmtScene.setText(fmtBreak(self._build.getStr("headings.fmtScene")))
+        self.fmtAScene.setText(fmtBreak(self._build.getStr("headings.fmtAltScene")))
+        self.fmtSection.setText(fmtBreak(self._build.getStr("headings.fmtSection")))
 
         self.swtPart.setChecked(self._build.getBool("headings.hidePart"))
         self.swtChapter.setChecked(self._build.getBool("headings.hideChapter"))
@@ -880,7 +883,7 @@ class _HeadingsTab(NScrollablePage):
             text = ""
             label = self.tr("None")
 
-        self.editTextBox.setPlainText(text.replace(nwHeadFmt.BR, "\n"))
+        self.editTextBox.setPlainText(text.replace(nwUnicode.U_LBREAK, "\n"))
         self.lblEditForm.setText(self.tr("Editing: {0}").format(label))
 
         return
@@ -893,25 +896,26 @@ class _HeadingsTab(NScrollablePage):
     def _saveFormat(self) -> None:
         """Save the format from the edit text box."""
         heading = self._editing
-        text = self.editTextBox.toPlainText().strip().replace("\n", nwHeadFmt.BR)
+        text = self.editTextBox.toPlainText().strip().replace("\n", nwUnicode.U_LBREAK)
+        value = text.replace(nwUnicode.U_LBREAK, nwHeadFmt.BR)
         if heading == self.EDIT_TITLE:
             self.fmtPart.setText(text)
-            self._build.setValue("headings.fmtPart", text)
+            self._build.setValue("headings.fmtPart", value)
         elif heading == self.EDIT_CHAPTER:
             self.fmtChapter.setText(text)
-            self._build.setValue("headings.fmtChapter", text)
+            self._build.setValue("headings.fmtChapter", value)
         elif heading == self.EDIT_UNNUM:
             self.fmtUnnumbered.setText(text)
-            self._build.setValue("headings.fmtUnnumbered", text)
+            self._build.setValue("headings.fmtUnnumbered", value)
         elif heading == self.EDIT_SCENE:
             self.fmtScene.setText(text)
-            self._build.setValue("headings.fmtScene", text)
+            self._build.setValue("headings.fmtScene", value)
         elif heading == self.EDIT_HSCENE:
             self.fmtAScene.setText(text)
-            self._build.setValue("headings.fmtAltScene", text)
+            self._build.setValue("headings.fmtAltScene", value)
         elif heading == self.EDIT_SECTION:
             self.fmtSection.setText(text)
-            self._build.setValue("headings.fmtSection", text)
+            self._build.setValue("headings.fmtSection", value)
         else:
             return
 

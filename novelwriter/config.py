@@ -44,7 +44,7 @@ from novelwriter.common import (
     NWConfigParser, checkInt, checkPath, describeFont, fontMatcher,
     formatTimeStamp, processDialogSymbols, simplified
 )
-from novelwriter.constants import nwFiles, nwHtmlUnicode, nwQuotes, nwUnicode
+from novelwriter.constants import nwFiles, nwQuotes, nwUnicode
 from novelwriter.error import formatException, logException
 
 if TYPE_CHECKING:
@@ -892,7 +892,7 @@ class Config:
         """
         self.splashMessage(f"Initialising {kind} font: {font.family()}")
         metrics = QFontMetrics(font)
-        for char in nwHtmlUnicode.U_TO_H.keys():
+        for char in nwUnicode.UI_SYMBOLS:
             if not metrics.inFont(char):  # type: ignore
                 logger.warning("No glyph U+%04x in font", ord(char))  # pragma: no cover
         return

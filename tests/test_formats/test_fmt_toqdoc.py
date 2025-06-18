@@ -25,14 +25,15 @@ import pytest
 from PyQt6.QtGui import QFont, QTextBlock, QTextCharFormat, QTextCursor
 
 from novelwriter import CONFIG
-from novelwriter.constants import nwUnicode
+from novelwriter.constants import nwHeadFmt, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp, TextDocumentTheme
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
-    QtPageBreakAfter, QtTransparent, QtVAlignNormal, QtVAlignSub, QtVAlignSuper
+    QtPageBreakAfter, QtPageBreakAuto, QtPageBreakBefore, QtTransparent,
+    QtVAlignNormal, QtVAlignSub, QtVAlignSuper
 )
 
 THEME = TextDocumentTheme()
@@ -54,6 +55,11 @@ def testFmtToQTextDocument_ConvertHeaders(mockGUI):
 
     doc._isNovel = True
     doc._isFirst = True
+
+    # Add a line break in chapter header format, see #2415
+    doc.setChapterFormat(f"{nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
+
+    # Populate
     doc._text = (
         "#! Title\n"
         "# Partition\n"
@@ -63,12 +69,13 @@ def testFmtToQTextDocument_ConvertHeaders(mockGUI):
     )
     doc.tokenizeText()
     doc.doConvert()
-    assert doc.document.blockCount() == 5
+    assert doc.document.blockCount() == 6
 
     # Title
     block = doc.document.findBlockByNumber(0)
     assert block.text() == "Title"
     bFmt = block.blockFormat()
+    assert bFmt.pageBreakPolicy() == QtPageBreakAuto  # Expected on first title
     assert bFmt.topMargin() == doc._mHead[BlockTyp.TITLE][0]
     assert bFmt.bottomMargin() == doc._mHead[BlockTyp.TITLE][1]
     cFmt = charFmtInBlock(block, 1)
@@ -87,10 +94,23 @@ def testFmtToQTextDocument_ConvertHeaders(mockGUI):
     assert cFmt.fontPointSize() == doc._sHead[BlockTyp.PART]
     assert cFmt.foreground().color() == THEME.head
 
-    # Chapter
+    # Chapter, Line 1
     block = doc.document.findBlockByNumber(2)
+    assert block.text() == "1"
+    bFmt = block.blockFormat()
+    assert bFmt.pageBreakPolicy() == QtPageBreakBefore
+    assert bFmt.topMargin() == doc._mHead[BlockTyp.HEAD1][0]
+    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.HEAD1][1]
+    cFmt = charFmtInBlock(block, 1)
+    assert cFmt.fontWeight() == QFont.Weight.Bold
+    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.HEAD1]
+    assert cFmt.foreground().color() == THEME.head
+
+    # Chapter, Line 2
+    block = doc.document.findBlockByNumber(3)
     assert block.text() == "Chapter"
     bFmt = block.blockFormat()
+    assert bFmt.pageBreakPolicy() == QtPageBreakAuto  # Important! See #2415
     assert bFmt.topMargin() == doc._mHead[BlockTyp.HEAD1][0]
     assert bFmt.bottomMargin() == doc._mHead[BlockTyp.HEAD1][1]
     cFmt = charFmtInBlock(block, 1)
@@ -99,9 +119,10 @@ def testFmtToQTextDocument_ConvertHeaders(mockGUI):
     assert cFmt.foreground().color() == THEME.head
 
     # Scene
-    block = doc.document.findBlockByNumber(3)
+    block = doc.document.findBlockByNumber(4)
     assert block.text() == "Scene"
     bFmt = block.blockFormat()
+    assert bFmt.pageBreakPolicy() == QtPageBreakAuto
     assert bFmt.topMargin() == doc._mHead[BlockTyp.HEAD2][0]
     assert bFmt.bottomMargin() == doc._mHead[BlockTyp.HEAD2][1]
     cFmt = charFmtInBlock(block, 1)
@@ -110,9 +131,10 @@ def testFmtToQTextDocument_ConvertHeaders(mockGUI):
     assert cFmt.foreground().color() == THEME.head
 
     # Section
-    block = doc.document.findBlockByNumber(4)
+    block = doc.document.findBlockByNumber(5)
     assert block.text() == "Section"
     bFmt = block.blockFormat()
+    assert bFmt.pageBreakPolicy() == QtPageBreakAuto
     assert bFmt.topMargin() == doc._mHead[BlockTyp.HEAD3][0]
     assert bFmt.bottomMargin() == doc._mHead[BlockTyp.HEAD3][1]
     cFmt = charFmtInBlock(block, 1)
