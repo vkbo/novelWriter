@@ -296,7 +296,8 @@ def _createApp(style: str) -> QApplication:
     """Create the app. This is done in a function to make it easier to
     block app creation during testing.
     """
-    app = QApplication([CONFIG.appName, f"-style={style}"])
+    app = QApplication([CONFIG.appName])
+    app.setStyle(style)
     app.setApplicationName(CONFIG.appName)
     app.setApplicationVersion(__version__)
     app.setOrganizationDomain(__domain__)
