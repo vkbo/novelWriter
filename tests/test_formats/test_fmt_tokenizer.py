@@ -807,6 +807,45 @@ def testFmtToken_MetaFormat(mockGUI):
         ], BlockFmt.NONE
     )]
 
+    # Story Comments
+    tokens.setCommentType(nwComment.STORY, False)
+    tokens.setCommentType(nwComment.NOTE, False)
+    tokens._text = (
+        "%Story.Stuff: Stuff happens\n"
+        "%Note.More: That stuff that happened\n"
+        "%Note.Other: That other stuff that happened\n"
+    )
+    tokens.tokenizeText()
+    assert tokens._blocks == []
+
+    tokens.setCommentType(nwComment.STORY, True)
+    tokens.setCommentType(nwComment.NOTE, True)
+    tokens._text = (
+        "%Story.Stuff: Stuff happens\n"
+        "%Note.More: That stuff that happened\n"
+        "%Note.Other: That other stuff that happened\n"
+    )
+    tokens.tokenizeText()
+    assert tokens._blocks == [(
+        BlockTyp.NOTE, "", "Story Structure (Stuff): Stuff happens", [
+            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
+            (24, TextFmt.COL_E, ""), (24, TextFmt.B_E, ""),
+            (25, TextFmt.COL_B, "note"), (38, TextFmt.COL_E, "")
+        ], BlockFmt.Z_BTM
+    ), (
+        BlockTyp.NOTE, "", "Note (More): That stuff that happened", [
+            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
+            (12, TextFmt.COL_E, ""), (12, TextFmt.B_E, ""),
+            (13, TextFmt.COL_B, "note"), (37, TextFmt.COL_E, "")
+        ], BlockFmt.Z_TOP | BlockFmt.Z_BTM
+    ), (
+        BlockTyp.NOTE, "", "Note (Other): That other stuff that happened", [
+            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
+            (13, TextFmt.COL_E, ""), (13, TextFmt.B_E, ""),
+            (14, TextFmt.COL_B, "note"), (44, TextFmt.COL_E, "")
+        ], BlockFmt.Z_TOP
+    )]
+
     # Keyword
     tokens.setKeywords(False)
     tokens._text = "@char: Bod\n"
