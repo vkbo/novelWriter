@@ -34,7 +34,7 @@
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t>4,035</w:t>
+        <w:t>4,050</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -48,7 +48,7 @@
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t>27,064</w:t>
+        <w:t>27,164</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -1252,6 +1252,28 @@
     </w:p>
     <w:p>
       <w:pPr>
+        <w:pStyle w:val="MetaText" />
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b />
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>Short Description:</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr />
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>The Hero</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
         <w:pStyle w:val="Normal" />
       </w:pPr>
       <w:r>
@@ -1325,6 +1347,28 @@
     </w:p>
     <w:p>
       <w:pPr>
+        <w:pStyle w:val="MetaText" />
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b />
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>Short Description:</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr />
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>Where it all happens</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
         <w:pStyle w:val="Normal" />
       </w:pPr>
       <w:r>
@@ -1394,6 +1438,28 @@
           <w:color w:val="4271ae" />
         </w:rPr>
         <w:t>Ancient Europe</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="MetaText" />
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b />
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>Short Description:</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr />
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>A strange place</w:t>
       </w:r>
     </w:p>
     <w:p>
