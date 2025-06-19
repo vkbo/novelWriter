@@ -1169,12 +1169,18 @@ class Tokenizer(ABC):
 
 class HeadingFormatter:
 
-    def __init__(self, project: NWProject) -> None:
+    def __init__(
+        self,
+        project: NWProject,
+        chapter: int = 0,
+        scene: int = 0,
+        absolute: int = 0,
+    ) -> None:
         self._project = project
         self._handle = None
-        self._chCount = 0
-        self._scChCount = 0
-        self._scAbsCount = 0
+        self._chapter = chapter
+        self._scene = scene
+        self._absolute = absolute
         return
 
     def setHandle(self, tHandle: str | None) -> None:
@@ -1184,42 +1190,42 @@ class HeadingFormatter:
 
     def incChapter(self) -> None:
         """Increment the chapter counter."""
-        self._chCount += 1
+        self._chapter += 1
         return
 
     def incScene(self) -> None:
         """Increment the scene counters."""
-        self._scChCount += 1
-        self._scAbsCount += 1
+        self._scene += 1
+        self._absolute += 1
         return
 
     def resetAll(self) -> None:
         """Reset all counters."""
-        self._chCount = 0
-        self._scChCount = 0
-        self._scAbsCount = 0
+        self._chapter = 0
+        self._scene = 0
+        self._absolute = 0
         return
 
     def resetScene(self) -> None:
         """Reset the chapter scene counter."""
-        self._scChCount = 0
+        self._scene = 0
         return
 
     def apply(self, hFormat: str, text: str, nHead: int) -> str:
         """Apply formatting to a specific heading."""
         hFormat = hFormat.replace(nwHeadFmt.TITLE, text)
         hFormat = hFormat.replace(nwHeadFmt.BR, "\n")
-        hFormat = hFormat.replace(nwHeadFmt.CH_NUM, str(self._chCount))
-        hFormat = hFormat.replace(nwHeadFmt.SC_NUM, str(self._scChCount))
-        hFormat = hFormat.replace(nwHeadFmt.SC_ABS, str(self._scAbsCount))
+        hFormat = hFormat.replace(nwHeadFmt.CH_NUM, str(self._chapter))
+        hFormat = hFormat.replace(nwHeadFmt.SC_NUM, str(self._scene))
+        hFormat = hFormat.replace(nwHeadFmt.SC_ABS, str(self._absolute))
         if nwHeadFmt.CH_WORD in hFormat:
-            chWord = self._project.localLookup(self._chCount)
+            chWord = self._project.localLookup(self._chapter)
             hFormat = hFormat.replace(nwHeadFmt.CH_WORD, chWord)
         if nwHeadFmt.CH_ROML in hFormat:
-            chRom = numberToRoman(self._chCount, toLower=True)
+            chRom = numberToRoman(self._chapter, toLower=True)
             hFormat = hFormat.replace(nwHeadFmt.CH_ROML, chRom)
         if nwHeadFmt.CH_ROMU in hFormat:
-            chRom = numberToRoman(self._chCount, toLower=False)
+            chRom = numberToRoman(self._chapter, toLower=False)
             hFormat = hFormat.replace(nwHeadFmt.CH_ROMU, chRom)
 
         if nwHeadFmt.CHAR_POV in hFormat or nwHeadFmt.CHAR_FOCUS in hFormat:
