@@ -783,7 +783,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "% synopsis: The synopsis\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.COMMENT, "", "Synopsis: The synopsis", [
+        BlockTyp.SUMMARY, "", "Synopsis: The synopsis", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
             (9, TextFmt.COL_E, ""), (9, TextFmt.B_E, ""),
             (10, TextFmt.COL_B, "note"), (22, TextFmt.COL_E, "")
@@ -800,7 +800,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "% short: A short description\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.COMMENT, "", "Short Description: A short description", [
+        BlockTyp.SUMMARY, "", "Short Description: A short description", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
             (18, TextFmt.COL_E, ""), (18, TextFmt.B_E, ""),
             (19, TextFmt.COL_B, "note"), (38, TextFmt.COL_E, ""),
@@ -1563,7 +1563,7 @@ def testFmtToken_TextIndent(mockGUI):
     ]
     assert tokens._blocks == [
         (BlockTyp.HEAD3,   TM1, "Scene Two", [], BlockFmt.NONE),
-        (BlockTyp.COMMENT, "",  "Synopsis: Stuff happens.", tFmt, BlockFmt.NONE),
+        (BlockTyp.SUMMARY, "",  "Synopsis: Stuff happens.", tFmt, BlockFmt.NONE),
     ]
     assert tokens._noIndent is True
 
