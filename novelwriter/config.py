@@ -85,8 +85,8 @@ class Config:
         "showMultiSpaces", "showSessionTime", "showTabsNSpaces", "showViewerPanel",
         "spellLanguage", "stopWhenIdle", "tabWidth", "textFont", "textMargin", "textWidth",
         "themeMode", "useCharCount", "userIdleTime", "verPyQtString", "verPyQtValue",
-        "verPyString", "verQtString", "verQtValue", "viewComments", "viewPanePos", "viewSynopsis",
-        "welcomeWinSize",
+        "verPyString", "verQtString", "verQtValue", "viewComments", "viewNotes", "viewPanePos",
+        "viewSynopsis", "welcomeWinSize",
     )
 
     LANG_NW   = 1
@@ -249,6 +249,7 @@ class Config:
         self.showSessionTime = True   # Show the session time in the status bar
         self.viewComments    = True   # Comments are shown in the viewer
         self.viewSynopsis    = True   # Synopsis is shown in the viewer
+        self.viewNotes       = True   # Notes are shown in the viewer
 
         # Search Box States
         self.searchCase      = False
@@ -713,6 +714,7 @@ class Config:
         self.showSessionTime = conf.rdBool(sec, "showsessiontime", self.showSessionTime)
         self.viewComments    = conf.rdBool(sec, "viewcomments", self.viewComments)
         self.viewSynopsis    = conf.rdBool(sec, "viewsynopsis", self.viewSynopsis)
+        self.viewNotes       = conf.rdBool(sec, "viewnotes", self.viewNotes)
         self.searchCase      = conf.rdBool(sec, "searchcase", self.searchCase)
         self.searchWord      = conf.rdBool(sec, "searchword", self.searchWord)
         self.searchRegEx     = conf.rdBool(sec, "searchregex", self.searchRegEx)
@@ -840,6 +842,7 @@ class Config:
             "showsessiontime": str(self.showSessionTime),
             "viewcomments":    str(self.viewComments),
             "viewsynopsis":    str(self.viewSynopsis),
+            "viewnotes":       str(self.viewNotes),
             "searchcase":      str(self.searchCase),
             "searchword":      str(self.searchWord),
             "searchregex":     str(self.searchRegEx),
