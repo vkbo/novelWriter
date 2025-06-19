@@ -29,7 +29,7 @@ from typing import TYPE_CHECKING
 
 from novelwriter.constants import nwUnicode
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
-from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.formats.tokenizer import COMMENT_BLOCKS, Tokenizer
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -144,7 +144,7 @@ class ToMarkdown(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 lines.append(f"{cSkip}\n\n")
 
-            elif tType == BlockTyp.COMMENT:
+            elif tType in COMMENT_BLOCKS:
                 lines.append(f"{self._formatText(tText, tFormat, mTags)}\n\n")
 
             elif tType == BlockTyp.KEYWORD:

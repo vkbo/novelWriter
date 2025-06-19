@@ -3,9 +3,9 @@ Lorem Ipsum
 
 **By lipsum.com**
 
-Word Count: 4,169
+Word Count: 4,184
 
-Character Count: 27,898
+Character Count: 27,998
 
 “Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit…”
 
@@ -162,6 +162,8 @@ Notes: Characters
 **Tag:** Bod | Nobody Owens  
 **Plot:** Main
 
+**Short Description:** The Hero
+
 Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta imperdiet, efficitur id leo. Cras finibus arcu at nibh commodo congue. Proin suscipit placerat condimentum. Aenean ante enim, cursus id lorem a, blandit venenatis nibh. Maecenas suscipit porta elit, sit amet porta felis porttitor eu. Sed a dui nibh. Phasellus sed faucibus dui. Pellentesque felis nulla, ultrices non efficitur quis, rutrum id mi. Mauris tempus auctor nisl, in bibendum enim pellentesque sit amet. Proin nunc lacus, imperdiet nec posuere ac, interdum non lectus.
 
 Suspendisse faucibus est auctor orci mollis luctus. Praesent quis sodales neque. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec sodales rutrum mattis. In in sem ornare, consequat nulla ac, convallis arcu. Duis ac metus id felis commodo commodo sit amet eget diam. Curabitur rhoncus lacinia leo at sodales. Etiam finibus porta diam a viverra. Praesent nisi urna, volutpat sit amet odio at, vehicula vehicula leo. In non enim eget nisl luctus commodo. Pellentesque pellentesque at lectus at luctus. Quisque nec felis bibendum, lacinia libero ut, lacinia eros. Integer finibus ultricies nibh sit amet placerat.
@@ -175,6 +177,8 @@ Notes: Plot
 
 **Tag:** Main
 
+**Short Description:** Where it all happens
+
 Suspendisse vulputate malesuada pellentesque. Aenean sollicitudin cursus mi, vitae ultricies felis ullamcorper eu. Duis luctus risus mi, in accumsan velit cursus ut. Vestibulum eleifend leo in magna eleifend fermentum. Proin nec ornare elit. Phasellus nec interdum risus. In a volutpat augue, quis egestas justo. Morbi porta mauris mattis bibendum imperdiet.
 
 Mauris ut erat eu lorem malesuada egestas vel vel urna. Maecenas ac semper quam. Maecenas aliquet metus non interdum mattis. Proin consectetur molestie ligula. Aliquam sollicitudin pulvinar urna a pellentesque. Suspendisse ultrices, est mattis scelerisque porta, nisi nisi laoreet nisl, non condimentum quam ante a velit. Proin scelerisque justo augue, nec laoreet ligula egestas at. Etiam enim quam, ultrices non accumsan hendrerit, elementum vel ligula. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam efficitur odio libero, in vestibulum arcu aliquam at. Cras non vehicula augue. Integer lobortis, est vitae aliquam facilisis, metus ligula aliquet eros, at porttitor sem tortor eget massa. Aliquam varius scelerisque neque sed gravida. Aenean eleifend lorem id ante elementum sollicitudin. Proin commodo massa a quam volutpat, mollis fermentum turpis efficitur.
@@ -185,6 +189,8 @@ Notes: World
 # Ancient Europe
 
 **Tag:** Europe | Ancient Europe
+
+**Short Description:** A strange place
 
 Vivamus sodales risus ac accumsan posuere. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nunc vel enim felis. Vestibulum dignissim massa nunc, a auctor magna eleifend et. Proin dignissim sodales erat vitae convallis. Aliquam id tellus dui. Curabitur sollicitudin scelerisque ex sit amet posuere. Nam rutrum felis id rhoncus feugiat. Duis sagittis quam quis purus efficitur, quis rutrum odio iaculis. Maecenas semper ante turpis, at vulputate mi consectetur non. Sed rutrum nibh turpis, quis rhoncus purus ornare quis. Vestibulum at rutrum mauris. Integer dolor nisi, tincidunt eget vehicula ac, ultricies at ligula.
 
