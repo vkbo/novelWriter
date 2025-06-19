@@ -180,11 +180,11 @@ class GuiPreferences(NDialog):
 
         self.mainForm.addRow(
             self.tr("Light colour theme"), self.lightTheme,
-            self.tr("User interface colour theme."), stretch=(3, 2)
+            self.tr("You can change theme mode from the sidebar."), stretch=(3, 2)
         )
         self.mainForm.addRow(
             self.tr("Dark colour theme"), self.darkTheme,
-            self.tr("User interface colour theme."), stretch=(3, 2)
+            self.tr("You can change theme mode from the sidebar."), stretch=(3, 2)
         )
 
         # Icon Theme
