@@ -72,8 +72,13 @@ class ThemeMeta:
     author:      str = ""
     credit:      str = ""
     url:         str = ""
-    license:     str = ""
-    licenseUrl:  str = ""
+
+
+class IconsMeta:
+
+    name:    str = ""
+    author:  str = ""
+    license: str = ""
 
 
 class SyntaxColors:
@@ -296,12 +301,10 @@ class GuiTheme:
         if parser.has_section(sec):
             meta.name        = parser.get(sec, "name", fallback="")
             meta.mode        = parser.get(sec, "mode", fallback="light")
-            meta.description = parser.get(sec, "description", fallback="N/A")
-            meta.author      = parser.get(sec, "author", fallback="N/A")
-            meta.credit      = parser.get(sec, "credit", fallback="N/A")
+            meta.description = parser.get(sec, "description", fallback="")
+            meta.author      = parser.get(sec, "author", fallback="")
+            meta.credit      = parser.get(sec, "credit", fallback="")
             meta.url         = parser.get(sec, "url", fallback="")
-            meta.license     = parser.get(sec, "license", fallback="N/A")
-            meta.licenseUrl  = parser.get(sec, "licenseurl", fallback="")
 
         self._meta = meta
 
@@ -613,13 +616,13 @@ class GuiTheme:
                 parser.clear()
                 parser.read(file, encoding="utf-8")
                 name = parser.get("Main", "name", fallback="")
-                dark = parser.get("Main", "mode", fallback="light").lower() == "dark"
-                if name:
+                mode = parser.get("Main", "mode", fallback="").lower()
+                if name and mode in ("light", "dark"):
                     key = file.stem
                     prefix = "*" if key.startswith("default") else ""
                     lookup = f"{prefix}{name} {key}"
                     keys.append(lookup)
-                    data[lookup] = (file.stem, name, dark, file)
+                    data[lookup] = (file.stem, name, mode == "dark", file)
             except Exception:  # noqa: PERF203
                 logger.error("Could not read file: %s", file)
                 logException()
@@ -659,7 +662,7 @@ class GuiIcons:
     def __init__(self, mainTheme: GuiTheme) -> None:
 
         self._theme = mainTheme
-        self._meta = ThemeMeta()
+        self._meta = IconsMeta()
 
         # Storage
         self._allThemes: dict[str, ThemeEntry] = {}
@@ -722,7 +725,7 @@ class GuiIcons:
         CONFIG.splashMessage(f"Loading icon theme: {entry.name}")
         logger.info("Loading icon theme '%s'", theme)
         try:
-            meta = ThemeMeta()
+            meta = IconsMeta()
             with open(entry.path, mode="r", encoding="utf-8") as icons:
                 for icon in icons:
                     bits = icon.partition("=")

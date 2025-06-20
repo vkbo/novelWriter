@@ -613,7 +613,7 @@ def testGuiTheme_CheckTheme(theme):
 
     structure = {
         "Main": [
-            "name", "mode",  # The rest are not required
+            "name", "mode", "description", "author",  # The rest are not required
         ],
         "Base": [
             "base", "default", "faded", "red", "orange", "yellow", "green",
@@ -638,7 +638,7 @@ def testGuiTheme_CheckTheme(theme):
             "errorline", "replacetag", "modifier", "texthighlight",
         ],
     }
-    optional = ["description", "author", "credit", "url", "license", "licenseurl"]
+    optional = ["credit", "url"]
     missing = []
     for section, options in structure.items():
         missing.extend(opt for opt in options if opt not in parser[section])
