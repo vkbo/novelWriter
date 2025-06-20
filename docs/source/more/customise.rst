@@ -55,8 +55,6 @@ A colour theme ``.conf`` file consists of the following settings:
    author      = Veronica Berglyd Olsen
    credit      = Veronica Berglyd Olsen
    url         = https://github.com/vkbo/novelWriter
-   license     = CC BY-SA 4.0
-   licenseurl  = https://creativecommons.org/licenses/by-sa/4.0/
 
    [Base]
    base    = #fcfcfc
@@ -140,7 +138,7 @@ affects.
    :header: "Section", "Description"
    :class: "tight-table"
 
-   "``[Main]``",    "Meta data about the theme, You must at least set ``name`` and ``mode``, and ``mode`` must be either ``light`` or ``dark``."
+   "``[Main]``",    "Meta data about the theme, You must at least set ``name``, ``mode`` and ``author``, and ``mode`` must be either ``light`` or ``dark``."
    "``[Base]``",    "The base colours of the theme. These are also selectable colours in various places inside the app, like for icon colours in **Preferences**."
    "``[Project]``", "The colours used for icons and markers for the different project item types."
    "``[Palette]``", "The colours used for styling the user interface. The values correspond to the ColorRole_ values in the Qt library."
@@ -177,6 +175,8 @@ There are several ways to enter colour values:
 .. versionadded:: 2.8
    The ``[Syntax]`` section was moved into the main theme file. Previously, these settings were in
    their own file. The ``[Icons]`` section was renamed to ``[Base]``. Added the ``line`` setting.
+   Dropped the ``license`` and ``licenseurl`` settings. The ``description`` and ``author`` fields
+   are now required if the theme is included in the app, but not for user themes.
 
 
 Icon Themes
