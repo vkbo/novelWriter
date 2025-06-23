@@ -62,12 +62,12 @@ Forced Line Break
 -----------------
 
 Inserting ``[br]`` in the text will ensure a line break is always inserted in that place, even if
-you turn off **Preserve Hard Line breaks** in your **Manuscript Build Settings**.
+you turn off **Preserve Hard Line Breaks** in your manuscript build settings.
 
 You can add a manual line break after it too, for a better visual representation in the editor, but
 keep in mind that this line break is removed before the text is processed, so the text on either
-side will be considered as belonging to the same line. This can affect how alignment is treated.
-See :ref:`docs_usage_align_indent_forced` for more details.
+side of the ``[br]`` shortcode will be considered as belonging to the same line. This can affect
+how alignment is treated. See :ref:`docs_usage_align_indent_forced` for more details.
 
 
 .. _docs_usage_formatting_breaks:

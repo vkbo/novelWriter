@@ -69,9 +69,9 @@ precedence is:
 .. note::
 
    It is strongly recommended that you keep the **Preserve Hard Line Breaks** setting enabled in
-   your **Manuscript Build Settings**. This setting assumes all single line breaks in your text are
-   intended. Turning this off makes adding line breaks much more complicated, but it is still
-   possible. See :ref:`docs_usage_align_indent_forced`.
+   your manuscript build settings. This setting assumes all single line breaks in your text are
+   intended. Turning this off makes adding line breaks more complicated, but it is still possible.
+   See :ref:`docs_usage_align_indent_forced`.
 
 
 Alignment with First Line Indent
@@ -98,13 +98,13 @@ The following text will always be aligned against the left margin:
 Alignment with Forced Line Breaks
 =================================
 
-If you turn off **Preserve Hard Line Breaks** in **Manuscript Build Settings**, you can still force
-line breaks in paragraphs using the ``[br]`` shortcode. For clarity in the text, you can add a line
-break after it as well. It doesn't result in two line breaks.
+If you turn off **Preserve Hard Line Breaks** in your manuscript build settings, you can still
+force line breaks in paragraphs using the ``[br]`` shortcode. For clarity in the text, you can add
+a line break after it as well. It doesn't result in two line breaks.
 
-Keep in mind that when the text is processed, these lines on either side of a ``[br]`` shortcode
-are combined, and a trailing hard line break is *ignored*. This means that when such a paragraph is
-processed, these line breaks count as the same line. This affects hiw alignment tags are handled.
+Keep in mind that when the text is processed, the lines on either side of a ``[br]`` shortcode are
+combined, and any trailing hard line break is *ignored*. This means that when such a paragraph is
+processed, these line breaks count as the same line. This affects how alignment tags are handled.
 For instance, this text becomes centred instead of left aligned.
 
 .. code-block:: md
