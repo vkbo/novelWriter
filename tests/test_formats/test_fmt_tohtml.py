@@ -147,9 +147,6 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html._isNovel = True
     html._isFirst = True
 
-    # Paragraphs
-    # ==========
-
     # Text
     html._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     html.tokenizeText()
@@ -277,6 +274,54 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
         "<p class='meta meta-location' style='margin-top: 0;'>"
         "<strong><span style='color: #f5871f'>Locations:</span></strong> "
         "<span style='color: #4271ae'><a href='#tag_europe'>Europe</a></span></p>\n"
+    )
+
+
+@pytest.mark.core
+def testFmtToHtml_Alignment(mockGUI):
+    """Test paragraph alignment in the ToHtml class."""
+    project = NWProject()
+    html = ToHtml(project)
+    html.initDocument()
+
+    # Left
+    html._text = "This is text <<\nspanning multiple\nlines"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<p style='text-align: left;'>This is text<br>spanning multiple<br>lines</p>\n"
+    )
+
+    # Right
+    html._text = ">> This is text\nspanning multiple\nlines"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<p style='text-align: right;'>This is text<br>spanning multiple<br>lines</p>\n"
+    )
+
+    # Centre
+    html._text = ">> This is text <<\nspanning multiple\nlines"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<p style='text-align: center;'>This is text<br>spanning multiple<br>lines</p>\n"
+    )
+
+    # Left before Right
+    html._text = ">> This is text\nspanning multiple <<\nlines"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<p style='text-align: left;'>This is text<br>spanning multiple<br>lines</p>\n"
+    )
+
+    # Right before Centre
+    html._text = ">> This is text <<\n>> spanning multiple\nlines"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<p style='text-align: right;'>This is text<br>spanning multiple<br>lines</p>\n"
     )
 
 
