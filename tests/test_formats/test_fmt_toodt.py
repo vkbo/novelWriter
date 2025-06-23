@@ -733,7 +733,7 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
         '<office:text>'
         '<text:h text:style-name="Heading_20_2" text:outline-level="2">Scene</text:h>'
         '<text:p text:style-name="P7">Regular paragraph</text:p>'
-        '<text:p text:style-name="Text_20_body">with<text:line-break />break</text:p>'
+        '<text:p text:style-name="P7">with<text:line-break />break</text:p>'
         '<text:p text:style-name="Text_20_body">Left Align</text:p>'
         '</office:text>'
     )

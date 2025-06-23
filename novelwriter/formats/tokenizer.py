@@ -880,31 +880,21 @@ class Tokenizer(ABC):
                 if nBlock[0] != BlockTyp.TEXT:
                     # Next block is not text, so we add the buffer to blocks
                     nLines = len(pLines)
-                    cStyle = pLines[0][4]
-                    if firstIndent and not (self._noIndent or cStyle & BlockFmt.ALIGNED):
-                        # If paragraph indentation is enabled, not temporarily
-                        # turned off, and the block is not aligned, we add the
-                        # text indentation flag
-                        cStyle |= BlockFmt.IND_T
+                    tFmt: T_Formats = []
+                    pTxt = ""
+                    cStyle = BlockFmt.NONE
 
                     if nLines == 1:
-                        # The paragraph contains a single line, so we just save
-                        # that directly to the blocks list. If justify is
-                        # enabled, and there is no alignment, we apply it.
-                        if doJustify and not cStyle & BlockFmt.ALIGNED:
-                            cStyle |= BlockFmt.JUSTIFY
-
+                        # The paragraph contains a single line
+                        tFmt = pLines[0][3]
                         pTxt = pLines[0][2].translate(transMapB)
-                        sBlocks.append((
-                            BlockTyp.TEXT, pLines[0][1], pTxt, pLines[0][3], cStyle
-                        ))
+                        cStyle = pLines[0][4]
 
                     elif nLines > 1:
                         # The paragraph contains multiple lines, so we need to
                         # join them according to the line break policy, and
                         # recompute all the formatting markers
                         tTxt = ""
-                        tFmt: T_Formats = []
                         for aBlock in pLines:
                             tLen = len(tTxt)
                             tTxt += f"{aBlock[2]}{lineSep}"
@@ -912,6 +902,18 @@ class Tokenizer(ABC):
                             cStyle |= aBlock[4]
 
                         pTxt = tTxt[:-1].translate(transMapB)
+
+                    if nLines:
+                        isAligned = cStyle & BlockFmt.ALIGNED
+                        if firstIndent and not (self._noIndent or isAligned):
+                            # If paragraph indentation is enabled, not temporarily
+                            # turned off, and the block is not aligned, we add the
+                            # text indentation flag
+                            cStyle |= BlockFmt.IND_T
+
+                        if doJustify and not isAligned:
+                            cStyle |= BlockFmt.JUSTIFY
+
                         sBlocks.append((
                             BlockTyp.TEXT, pLines[0][1], pTxt, tFmt, cStyle
                         ))
