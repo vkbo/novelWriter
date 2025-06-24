@@ -228,8 +228,6 @@ class GuiDocViewer(QTextBrowser):
         qDoc.setTheme(self._docTheme)
         qDoc.initDocument()
         qDoc.setKeywords(True)
-        qDoc.setCommentType(nwComment.NOTE, CONFIG.viewComments)
-        qDoc.setCommentType(nwComment.STORY, CONFIG.viewComments)
         qDoc.setCommentType(nwComment.PLAIN, CONFIG.viewComments)
         qDoc.setCommentType(nwComment.SYNOPSIS, CONFIG.viewSynopsis)
         qDoc.setCommentType(nwComment.SHORT, CONFIG.viewSynopsis)
