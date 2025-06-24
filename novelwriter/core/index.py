@@ -708,17 +708,19 @@ class Index:
         return 0, 0, 0
 
     def getReferences(self, tHandle: str, sTitle: str | None = None) -> dict[str, list[str]]:
-        """Extract all references made in a file, and optionally title
-        section.
+        """Extract all tags and references made in a file, and
+        optionally title section.
         """
-        tRefs = {x: [] for x in nwKeyWords.VALID_KEYS}
+        refs = {x: [] for x in nwKeyWords.VALID_KEYS}
         for rTitle, hItem in self._itemIndex.iterItemHeaders(tHandle):
             if sTitle is None or sTitle == rTitle:
                 for aTag, refTypes in hItem.references.items():
                     for refType in refTypes:
-                        if refType in tRefs:
-                            tRefs[refType].append(self._tagsIndex.tagName(aTag))
-        return tRefs
+                        if refType in refs:
+                            refs[refType].append(self._tagsIndex.tagName(aTag))
+                if tag := hItem.tag:
+                    refs[nwKeyWords.TAG_KEY] = [self._tagsIndex.tagName(tag)]
+        return refs
 
     def getReferenceForHeader(self, tHandle: str, nHead: int, keyClass: str) -> list[str]:
         """Get the display names for a tags class for insertion into a

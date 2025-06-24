@@ -267,6 +267,7 @@ def testCoreIndexData_IndexHeadingReferences():
     head = IndexHeading(cache, "T0001")
 
     # Add some references
+    head.setTag("Scene")
     head.addReference("Jane", "@pov")
     head.addReference("Jane", "@char")
     head.addReference("John", "@char")
@@ -290,6 +291,7 @@ def testCoreIndexData_IndexHeadingReferences():
     }
 
     # Set names
+    cache.tags.add("Scene", "Scene", "0000000000000", "T00001", "NOVEL")
     cache.tags.add("Jane", "Jane", "0000000000000", "T00001", "CHARACTER")
     cache.tags.add("John", "John", "0000000000000", "T00001", "CHARACTER")
     cache.tags.add("Main", "Main", "0000000000000", "T00001", "PLOT")
@@ -301,7 +303,7 @@ def testCoreIndexData_IndexHeadingReferences():
         "@plot": ["Main"],
         "@object": ["Gun"],
         "@story": [],
-        "@tag": [],
+        "@tag": ["Scene"],
         "@focus": [],
         "@custom": [],
         "@time": [],
@@ -316,7 +318,7 @@ def testCoreIndexData_IndexHeadingReferences():
     assert head.getReferencesByKeyword("@plot") == ["Main"]
     assert head.getReferencesByKeyword("@object") == ["Gun"]
     assert head.getReferencesByKeyword("@story") == []
-    assert head.getReferencesByKeyword("@tag") == []
+    assert head.getReferencesByKeyword("@tag") == ["Scene"]
     assert head.getReferencesByKeyword("@focus") == []
     assert head.getReferencesByKeyword("@custom") == []
     assert head.getReferencesByKeyword("@time") == []
