@@ -1,5 +1,45 @@
 # novelWriter Changelog
 
+## Version 2.7.2 [2025-06-24]
+
+### Release Notes
+
+This is a patch release that fixes several issues related to DocX and PDF manuscript documents,
+improves how line breaks, alignment and indentation is processed, and fixes some issues with
+displaying tags for novel documents on the user interface.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where escaped markup characters were not replaced properly in DocX and PDF
+  documents, and in previews. Issue #2410. PR #2411.
+* Fixed an issue where titles with line breaks in them would have page breaks applied to both lines
+  for preview and PDF documents. Issue #2415. PR #2416.
+* When comments are enabled in the viewer, story comments should also be visible. A separate filter
+  button will be added for this in 2.8. PR #2420.
+* Fixed an issue where the justified text setting would not be properly applied to a paragraph in a
+  manuscript document if there was a line break in the paragraph, but single line breaks were set
+  to be ignored. Issue #2426. PR #2427.
+* Fixed an issue where the "Tag" field of the Outline View details panel remained blank even if a
+  tag was set for the novel document. Issue #2428. PR #2429.
+
+**Improvements**
+
+* When a paragraph has line breaks in it, the alignment tag will now override first line
+  indentation even if the alignment tag is not on the first line. This is more consistent with the
+  alignment behaviour for multi-line paragraphs in general. Issue #2425. PR #2427.
+* Tags will now be shown in the Novel View tooltip pop-out under the triangle button, together with
+  all the other meta data collected about a document or heading. PR #2429.
+
+**Documentation**
+
+* The documentation on how alignment and first line indentation works in conjunction with
+  in-paragraph line breaks, the setting to keep or ignore such line breaks, and the forced line
+  break shortcode, has been improved. Issue #2425. PR #2427.
+
+----
+
 ## Version 2.7.1 [2025-06-09]
 
 ### Release Notes
