@@ -348,16 +348,20 @@ class IndexHeading:
             for keyword in types:
                 if keyword in refs and (name := self._cache.tags.tagName(tag)):
                     refs[keyword].append(name)
-            if tag := self._tag:
-                refs[nwKeyWords.TAG_KEY] = [self._cache.tags.tagName(tag)]
+            if name := self._cache.tags.tagName(self._tag):
+                refs[nwKeyWords.TAG_KEY] = [name]
         return refs
 
     def getReferencesByKeyword(self, keyword: str) -> list[str]:
         """Extract all references for this heading."""
         refs = []
-        for tag, types in self._refs.items():
-            if keyword in types and (name := self._cache.tags.tagName(tag)):
+        if keyword == nwKeyWords.TAG_KEY:
+            if name := self._cache.tags.tagName(self._tag):
                 refs.append(name)
+        else:
+            for tag, types in self._refs.items():
+                if keyword in types and (name := self._cache.tags.tagName(tag)):
+                    refs.append(name)
         return refs
 
     ##
