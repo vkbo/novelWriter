@@ -1075,6 +1075,80 @@ def testFmtToken_Paragraphs(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToken_BreakAlignIndent(mockGUI):
+    """Test the splitting of paragraphs with alignment."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens._handle = TMH
+
+    for text in [
+        "This is text <<\nspanning multiple\nlines",
+        "This is text\nspanning multiple <<\nlines",
+        "This is text\nspanning multiple\nlines <<",
+    ]:
+        # Preserve Breaks
+        tokens.setKeepLineBreaks(True)
+        tokens._text = text
+        tokens.tokenizeText()
+        assert tokens._blocks == [
+            (BlockTyp.TEXT, "", "This is text\nspanning multiple\nlines", [], BlockFmt.LEFT),
+        ]
+
+        # Don't Preserve Breaks
+        tokens.setKeepLineBreaks(False)
+        tokens._text = text
+        tokens.tokenizeText()
+        assert tokens._blocks == [
+            (BlockTyp.TEXT, "", "This is text spanning multiple lines", [], BlockFmt.LEFT),
+        ]
+
+        # With Justify
+        # This should disable justify
+        tokens.setKeepLineBreaks(True)
+        tokens.setJustify(True)
+        tokens._text = text
+        tokens.tokenizeText()
+        assert tokens._blocks == [
+            (BlockTyp.TEXT, "", "This is text\nspanning multiple\nlines", [], BlockFmt.LEFT),
+        ]
+
+        # With Indent
+        # This should disable indent
+        tokens.setKeepLineBreaks(True)
+        tokens.setFirstLineIndent(True, 1.0, False)
+        tokens._text = text
+        tokens.tokenizeText()
+        assert tokens._blocks == [
+            (BlockTyp.TEXT, "", "This is text\nspanning multiple\nlines", [], BlockFmt.LEFT),
+        ]
+
+
+@pytest.mark.core
+def testFmtToken_BreakJustify(mockGUI):
+    """Test the of processing of justify with breaks."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens._handle = TMH
+    tokens.setJustify(True)
+
+    # Applied to all lines when breaks are preserved
+    tokens._text = "This is text\nspanning multiple\nlines"
+    tokens.setKeepLineBreaks(True)
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.TEXT, "", "This is text\nspanning multiple\nlines", [], BlockFmt.JUSTIFY),
+    ]
+
+    # Turning off breaks should make no difference (see issue #2426)
+    tokens._text = "This is text\nspanning multiple\nlines"
+    tokens.setKeepLineBreaks(False)
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.TEXT, "", "This is text spanning multiple lines", [], BlockFmt.JUSTIFY),
+    ]
+
+
+@pytest.mark.core
 def testFmtToken_TextFormat(mockGUI):
     """Test the tokenization of text formats in the Tokenizer class."""
     project = NWProject()
