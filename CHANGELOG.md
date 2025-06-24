@@ -16,8 +16,6 @@ displaying tags for novel documents on the user interface.
   documents, and in previews. Issue #2410. PR #2411.
 * Fixed an issue where titles with line breaks in them would have page breaks applied to both lines
   for preview and PDF documents. Issue #2415. PR #2416.
-* When comments are enabled in the viewer, story comments should also be visible. A separate filter
-  button will be added for this in 2.8. PR #2420.
 * Fixed an issue where the justified text setting would not be properly applied to a paragraph in a
   manuscript document if there was a line break in the paragraph, but single line breaks were set
   to be ignored. Issue #2426. PR #2427.
@@ -26,6 +24,8 @@ displaying tags for novel documents on the user interface.
 
 **Improvements**
 
+* When comments are enabled in the viewer, story comments should also be visible. A separate filter
+  button will be added for this in 2.8. PR #2420.
 * When a paragraph has line breaks in it, the alignment tag will now override first line
   indentation even if the alignment tag is not on the first line. This is more consistent with the
   alignment behaviour for multi-line paragraphs in general. Issue #2425. PR #2427.
