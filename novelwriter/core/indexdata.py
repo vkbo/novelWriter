@@ -342,12 +342,14 @@ class IndexHeading:
     ##
 
     def getReferences(self) -> dict[str, list[str]]:
-        """Extract all references for this heading."""
+        """Extract all tags and references for this heading."""
         refs = {x: [] for x in nwKeyWords.VALID_KEYS}
         for tag, types in self._refs.items():
             for keyword in types:
                 if keyword in refs and (name := self._cache.tags.tagName(tag)):
                     refs[keyword].append(name)
+            if tag := self._tag:
+                refs[nwKeyWords.TAG_KEY] = [self._cache.tags.tagName(tag)]
         return refs
 
     def getReferencesByKeyword(self, keyword: str) -> list[str]:
