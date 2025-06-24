@@ -695,6 +695,7 @@ def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
     ))
     assert index.scanText(nHandle, (
         "# Hello World!\n"
+        "@tag: Scene\n"
         "@pov: Jane\n"
         "@char: Jane, John\n\n"
         "% this is a comment\n\n"
@@ -749,11 +750,13 @@ def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
 
     # Look up an invalid handle
     refs = index.getReferences("Not a handle")
+    assert refs["@tag"] == []
     assert refs["@pov"] == []
     assert refs["@char"] == []
 
     # The novel file should now refer to Jane as @pov and @char
     refs = index.getReferences(nHandle)
+    assert refs["@tag"] == ["Scene"]
     assert refs["@pov"] == ["Jane"]
     assert refs["@char"] == ["Jane", "John"]
 
@@ -791,7 +794,7 @@ def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
 
     # getKeyWordTags
     # ==============
-    assert index.getKeyWordTags("@mention") == ["Jane", "John"]
+    assert index.getKeyWordTags("@mention") == ["Jane", "John", "Scene"]
     assert index.getKeyWordTags("@char") == ["Jane", "John"]
     assert index.getKeyWordTags("@plot") == []
     assert index.getKeyWordTags("@tag") == []

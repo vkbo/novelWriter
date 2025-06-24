@@ -593,6 +593,7 @@ class GuiNovelTree(NTreeView):
             lines = []
             if head := SHARED.project.index.getItemHeading(tHandle, sTitle):
                 tags = head.getReferences()
+                appendTags(tags, nwKeyWords.TAG_KEY, lines)
                 appendTags(tags, nwKeyWords.POV_KEY, lines)
                 appendTags(tags, nwKeyWords.FOCUS_KEY, lines)
                 appendTags(tags, nwKeyWords.CHAR_KEY, lines)
