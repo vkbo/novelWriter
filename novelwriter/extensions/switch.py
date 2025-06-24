@@ -33,7 +33,7 @@ from novelwriter.types import QtNoPen, QtPaintAntiAlias, QtSizeFixed
 
 class NSwitch(QAbstractButton):
 
-    __slots__ = ("_offset", "_rH", "_rR", "_xH", "_xR", "_xW")
+    __slots__ = ("_cOff", "_cOn", "_offset", "_rH", "_rR", "_xH", "_xR", "_xW")
 
     def __init__(self, parent: QWidget, height: int = 0) -> None:
         super().__init__(parent=parent)
@@ -43,6 +43,9 @@ class NSwitch(QAbstractButton):
         self._xR = int(self._xH*0.5)
         self._rH = self._xH - 4
         self._rR = self._xR - 2
+
+        self._cOn = SHARED.theme.accentCol
+        self._cOff = self.palette().alternateBase()
 
         self.setCheckable(True)
         self.setSizePolicy(QtSizeFixed, QtSizeFixed)
@@ -97,7 +100,7 @@ class NSwitch(QAbstractButton):
         painter.setOpacity(1.0 if self.isEnabled() else 0.5)
 
         painter.setPen(palette.highlight().color() if self.hasFocus() else palette.mid().color())
-        painter.setBrush(palette.highlight() if self.isChecked() else palette.alternateBase())
+        painter.setBrush(self._cOn if self.isChecked() else self._cOff)
         painter.drawRoundedRect(0, 0, self._xW, self._xH, self._xR, self._xR)
 
         painter.setPen(QtNoPen)

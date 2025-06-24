@@ -34,11 +34,14 @@ from PyQt6.QtWidgets import QMessageBox
 sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
+from novelwriter.enum import nwTheme
 
-from tests.mocked import MockGuiMain, MockTheme
+from tests.mocked import MockGuiMain
 from tests.tools import cleanProject
 
 _TST_ROOT = Path(__file__).parent
+_SRC_ROOT = _TST_ROOT.parent
 _TMP_ROOT = _TST_ROOT / "temp"
 _TMP_CONF = _TMP_ROOT / "conf"
 
@@ -59,6 +62,14 @@ def resetConfigVars():
     CONFIG._dLocale = QLocale("en_GB")
     CONFIG._manuals = {"manual": _TMP_ROOT / "manual.pdf"}
     CONFIG.guiLocale = "en_GB"
+    CONFIG.darkTheme = DEF_GUI_DARK
+    CONFIG.lightTheme = DEF_GUI_LIGHT
+    CONFIG.themeMode = nwTheme.LIGHT
+
+    # Enable a few settings to ensure better coverage
+    CONFIG.emphLabels = True
+    CONFIG.lineHighlight = True
+
     return
 
 
@@ -75,6 +86,8 @@ def sessionFixture():
     _TMP_ROOT.mkdir()
     _TMP_CONF.mkdir()
     (_TMP_ROOT / "manual.pdf").touch()
+    (_SRC_ROOT / "novelwriter" / "assets"/ "manual.pdf").touch()
+    (_SRC_ROOT / "novelwriter" / "assets"/ "manual_fr.pdf").touch()
     return
 
 
@@ -148,13 +161,25 @@ def projPath(fncPath):
 @pytest.fixture(scope="function")
 def mockGUI(qtbot, monkeypatch):
     """Create a mock instance of novelWriter's main GUI class."""
+    from novelwriter.gui.theme import GuiTheme
+
     monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
     gui = MockGuiMain()
-    theme = MockTheme()
+    theme = GuiTheme()
     monkeypatch.setattr(SHARED, "_gui", gui)
     monkeypatch.setattr(SHARED, "_theme", theme)
+
     return gui
+
+
+@pytest.fixture(scope="function")
+def mockGUIwithTheme(mockGUI):
+    """Create a mock instance of novelWriter's main GUI class with the
+    theme instance initialised.
+    """
+    SHARED.theme.initThemes()
+    return mockGUI
 
 
 @pytest.fixture(scope="function")

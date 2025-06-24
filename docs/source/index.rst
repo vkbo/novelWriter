@@ -75,6 +75,7 @@ storage for robustness.
 
    more/counting
    more/typography
+   more/dictionaries
    more/customise
    more/handling_errors
    more/project_format

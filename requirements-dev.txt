@@ -1,3 +1,4 @@
+build
 isort
 pyright
 ruff

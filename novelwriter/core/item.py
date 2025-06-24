@@ -363,13 +363,13 @@ class NWItem:
         """
         if self.isFileType():
             key = "checked" if self._active else "unchecked"
-            color = "green" if self._active else "red"
+            color = "active" if self._active else "inactive"
             text = trConst(nwLabels.ACTIVE_NAME[key])
-            icon = SHARED.theme.getIcon(key, color)
         else:
+            key = "noncheckable"
+            color = "disabled"
             text = ""
-            icon = SHARED.theme.getIcon("noncheckable", "faded")
-        return text, icon
+        return text, SHARED.theme.getIcon(key, color)
 
     ##
     #  Checker Methods

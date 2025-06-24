@@ -45,11 +45,11 @@ from PyQt6.QtCore import (
 from PyQt6.QtGui import (
     QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
     QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent, QShortcut,
-    QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QTextBlock, QTextCursor, QTextDocument, QTextFormat, QTextOption
 )
 from PyQt6.QtWidgets import (
     QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
-    QPlainTextEdit, QToolBar, QVBoxLayout, QWidget
+    QPlainTextEdit, QTextEdit, QToolBar, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -75,7 +75,8 @@ from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
     QtAlignRight, QtKeepAnchor, QtModCtrl, QtModNone, QtModShift, QtMouseLeft,
-    QtMoveAnchor, QtMoveLeft, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
+    QtMoveAnchor, QtMoveLeft, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded,
+    QtTransparent
 )
 
 logger = logging.getLogger(__name__)
@@ -145,6 +146,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._lastActive = 0.0    # Timestamp of last activity
         self._lastFind   = None   # Position of the last found search word
         self._doReplace  = False  # Switch to temporarily disable auto-replace
+        self._lineColor  = QtTransparent
+        self._selection  = QTextEdit.ExtraSelection()
 
         # Auto-Replace
         self._autoReplace = TextAutoReplace()
@@ -283,6 +286,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.docHeader.clearHeader()
         self.docFooter.setHandle(self._docHandle)
         self.docToolBar.setVisible(False)
+        self.setExtraSelections([])
 
         self.itemHandleChanged.emit("")
 
@@ -314,6 +318,10 @@ class GuiDocEditor(QPlainTextEdit):
 
         self.docHeader.matchColors()
         self.docFooter.matchColors()
+
+        self._lineColor = syntax.line
+        self._selection.format.setBackground(self._lineColor)
+        self._selection.format.setProperty(QTextFormat.Property.FullWidthSelection, True)
 
         return
 
@@ -372,6 +380,8 @@ class GuiDocEditor(QPlainTextEdit):
         # Refresh sizes
         self.setTabStopDistance(CONFIG.tabWidth)
         self.setCursorWidth(CONFIG.cursorWidth)
+        self.setExtraSelections([])
+        self._cursorMoved()
 
         # If we have a document open, we should refresh it in case the
         # font changed, otherwise we just clear the editor entirely,
@@ -733,6 +743,8 @@ class GuiDocEditor(QPlainTextEdit):
             self._toggleFormat(2, "*")
         elif action == nwDocAction.MD_STRIKE:
             self._toggleFormat(2, "~")
+        elif action == nwDocAction.MD_MARK:
+            self._toggleFormat(2, "=")
         elif action == nwDocAction.S_QUOTE:
             self._wrapSelection(CONFIG.fmtSQuoteOpen, CONFIG.fmtSQuoteClose)
         elif action == nwDocAction.D_QUOTE:
@@ -1110,6 +1122,10 @@ class GuiDocEditor(QPlainTextEdit):
     def _cursorMoved(self) -> None:
         """Triggered when the cursor moved in the editor."""
         self.docFooter.updateLineCount(self.textCursor())
+        if CONFIG.lineHighlight:
+            self._selection.cursor = self.textCursor()
+            self._selection.cursor.clearSelection()
+            self.setExtraSelections([self._selection])
         return
 
     @pyqtSlot(int, int, str)
@@ -2405,6 +2421,12 @@ class GuiDocToolBar(QWidget):
             qtLambda(self.requestDocAction.emit, nwDocAction.MD_STRIKE)
         )
 
+        self.tbMarkMD = NIconToolButton(self, iSz)
+        self.tbMarkMD.setToolTip(self.tr("Markdown Highlight"))
+        self.tbMarkMD.clicked.connect(
+            qtLambda(self.requestDocAction.emit, nwDocAction.MD_MARK)
+        )
+
         self.tbBold = NIconToolButton(self, iSz)
         self.tbBold.setToolTip(self.tr("Shortcode Bold"))
         self.tbBold.clicked.connect(
@@ -2454,6 +2476,7 @@ class GuiDocToolBar(QWidget):
         self.outerBox.addWidget(self.tbBoldMD)
         self.outerBox.addWidget(self.tbItalicMD)
         self.outerBox.addWidget(self.tbStrikeMD)
+        self.outerBox.addWidget(self.tbMarkMD)
         self.outerBox.addSpacing(4)
         self.outerBox.addWidget(self.tbBold)
         self.outerBox.addWidget(self.tbItalic)
@@ -2488,6 +2511,7 @@ class GuiDocToolBar(QWidget):
         self.tbBoldMD.setThemeIcon("fmt_bold", "orange")
         self.tbItalicMD.setThemeIcon("fmt_italic", "orange")
         self.tbStrikeMD.setThemeIcon("fmt_strike", "orange")
+        self.tbMarkMD.setThemeIcon("fmt_mark", "orange")
         self.tbBold.setThemeIcon("fmt_bold")
         self.tbItalic.setThemeIcon("fmt_italic")
         self.tbStrike.setThemeIcon("fmt_strike")

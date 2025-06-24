@@ -25,13 +25,18 @@ from __future__ import annotations
 
 import logging
 
+from typing import TYPE_CHECKING
+
 from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QPalette
-from PyQt6.QtWidgets import QComboBox, QWidget
+from PyQt6.QtWidgets import QComboBox
 
 from novelwriter import SHARED
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass
+
+if TYPE_CHECKING:
+    from PyQt6.QtWidgets import QWidget
 
 logger = logging.getLogger(__name__)
 

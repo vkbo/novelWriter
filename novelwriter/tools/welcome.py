@@ -32,7 +32,7 @@ from PyQt6.QtCore import (
     QAbstractListModel, QModelIndex, QObject, QPoint, QSize, Qt, pyqtSignal,
     pyqtSlot
 )
-from PyQt6.QtGui import QAction, QCloseEvent, QColor, QFont, QPainter, QPaintEvent, QPen, QShortcut
+from PyQt6.QtGui import QAction, QCloseEvent, QFont, QPainter, QPaintEvent, QPen, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QFileDialog, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
     QListView, QMenu, QPushButton, QScrollArea, QStackedWidget,
@@ -77,7 +77,6 @@ class GuiWelcome(NDialog):
 
         self.bgImage = SHARED.theme.getDecoration("welcome")
         self.nwImage = SHARED.theme.getDecoration("nw-text", h=36)
-        self.bgColor = QColor(54, 54, 54) if SHARED.theme.isDarkTheme else QColor(255, 255, 255)
 
         self.nwLogo = QLabel(self)
         self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (128, 128)))
@@ -178,8 +177,8 @@ class GuiWelcome(NDialog):
         hPix = min(hWin, 600)
         tMode = Qt.TransformationMode.SmoothTransformation
         painter = QPainter(self)
-        painter.fillRect(self.rect(), self.bgColor)
         painter.drawPixmap(0, hWin - hPix, self.bgImage.scaledToHeight(hPix, tMode))
+        painter.end()
         super().paintEvent(event)
         return
 
@@ -420,7 +419,7 @@ class _ProjectListItem(QStyledItemDelegate):
         painter.save()
         if opt.state & QtSelected == QtSelected:
             painter.setOpacity(0.25)
-            painter.fillRect(rect, QApplication.palette().highlight())
+            painter.fillRect(rect, QApplication.palette().text())
             painter.setOpacity(1.0)
 
         painter.drawPixmap(2, rect.top() + 6, self._icon)

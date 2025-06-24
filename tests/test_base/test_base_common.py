@@ -41,6 +41,7 @@ from novelwriter.common import (
     readTextFile, simplified, transferCase, uniqueCompact, xmlElement,
     xmlIndent, xmlSubElem, yesNo
 )
+from novelwriter.enum import nwItemClass
 
 from tests.mocked import causeOSError
 from tests.tools import writeFile
@@ -804,6 +805,7 @@ def testBaseCommon_NWConfigParser(fncPath):
         "list1 = a, b, c\n"
         "list2 = 17, 18, 19\n"
         "float1 = 4.2\n"
+        "enum1 = NOVEL\n"
         f"path1 = {fncPath}\n"
     ))
 
@@ -875,3 +877,7 @@ def testBaseCommon_NWConfigParser(fncPath):
 
     assert cfgParser.rdIntList("nope", "list2", [1]) == [1]
     assert cfgParser.rdIntList("main", "blabla", [1]) == [1]
+
+    # Read Enum
+    assert cfgParser.rdEnum("main", "enum1", nwItemClass.NO_CLASS) == nwItemClass.NOVEL
+    assert cfgParser.rdEnum("main", "blabla", nwItemClass.NO_CLASS) == nwItemClass.NO_CLASS
