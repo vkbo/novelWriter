@@ -289,7 +289,7 @@ class DocSearch:
 
     def __init__(self) -> None:
         self._regEx = re.compile(r"")
-        self._opts = re.UNICODE | re.IGNORECASE
+        self._opts = re.IGNORECASE
         self._words = False
         self._escape = True
         return
@@ -300,9 +300,7 @@ class DocSearch:
 
     def setCaseSensitive(self, state: bool) -> None:
         """Set the case sensitive search flag."""
-        self._opts = re.UNICODE
-        if not state:
-            self._opts |= re.IGNORECASE
+        self._opts = 0 if state else re.IGNORECASE
         return
 
     def setWholeWords(self, state: bool) -> None:
