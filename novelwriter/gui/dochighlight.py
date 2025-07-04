@@ -35,7 +35,7 @@ from PyQt6.QtGui import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt
+from novelwriter.common import checkInt, utf16CharMap
 from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.enum import nwComment
 from novelwriter.text.comments import processComment
@@ -301,6 +301,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             return
 
         bLen = self.currentBlock().length()
+        isWide = bLen > len(text) + 1
+
         xOff = 0
         hRules = None
         if text.startswith("@"):  # Keywords and commands
@@ -309,17 +311,32 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             isValid, bits, pos = index.scanThis(text)
             isGood = index.checkThese(bits, self._tHandle)
             if isValid:
+                posMap = []
+                if isWide:
+                    posMap = utf16CharMap(text)
                 for n, bit in enumerate(bits):
-                    xPos = pos[n]
-                    xLen = len(bit)
+                    if posMap:
+                        xPos = posMap[pos[n]]
+                        xLen = posMap[pos[n] + len(bit)] - xPos
+                    else:
+                        xPos = pos[n]
+                        xLen = len(bit)
                     if n == 0 and isGood[n]:
                         self.setFormat(xPos, xLen, self._hStyles["keyword"])
                     elif isGood[n] and not self._isInactive:
                         one, two = index.parseValue(bit)
-                        self.setFormat(xPos, len(one), self._hStyles["tag"])
+                        if posMap:
+                            oLen = posMap[pos[n] + len(one)] - xPos
+                        else:
+                            oLen = len(one)
+                        self.setFormat(xPos, oLen, self._hStyles["tag"])
                         if two:
-                            yPos = xPos + len(bit) - len(two)
-                            self.setFormat(yPos, len(two), self._hStyles["optional"])
+                            if posMap:
+                                yLen = posMap[pos[n] + len(two)] - xPos
+                            else:
+                                yLen = len(two)
+                            yPos = xPos + xLen - yLen
+                            self.setFormat(yPos, yLen, self._hStyles["optional"])
                     elif not self._isInactive:
                         self.setFormat(xPos, xLen, self._hStyles["invalid"])
 
@@ -399,7 +416,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.setCurrentBlockState(BLOCK_TEXT)
             hRules = self._txtRules if self._isNovel else self._minRules
             if self._isNovel and self._dialogParser.enabled:
-                for pos, end in self._dialogParser(text):
+                for pos, end in self._dialogParser(text, isWide):
                     length = end - pos
                     self.setFormat(pos, length, self._hStyles["dialog"])
 

@@ -27,7 +27,7 @@ from __future__ import annotations
 import re
 
 from novelwriter import CONFIG
-from novelwriter.common import compact, uniqueCompact
+from novelwriter.common import compact, uniqueCompact, utf16CharMap
 from novelwriter.constants import nwRegEx, nwUnicode
 
 
@@ -170,7 +170,7 @@ class DialogParser:
 
         return
 
-    def __call__(self, text: str) -> list[tuple[int, int]]:
+    def __call__(self, text: str, wideChar: bool = False) -> list[tuple[int, int]]:
         """Caller wrapper for dialogue processing."""
         temp: list[int] = []
         result: list[tuple[int, int]] = []
@@ -217,5 +217,9 @@ class DialogParser:
                     else:
                         result.append((start, pos))
                         start = None
+
+                if wideChar:
+                    posMap = utf16CharMap(text)
+                    result = [(posMap[s], posMap[p]) for s, p in result]
 
         return result
