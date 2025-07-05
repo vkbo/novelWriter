@@ -326,6 +326,54 @@ def testFmtToHtml_ConvertMeta(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToHtml_Alignment(mockGUI):
+    """Test paragraph alignment in the ToHtml class."""
+    project = NWProject()
+    html = ToHtml(project)
+    html.initDocument()
+
+    # Left
+    html._text = "This is text <<\nspanning multiple\nlines"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<p style='text-align: left;'>This is text<br>spanning multiple<br>lines</p>\n"
+    )
+
+    # Right
+    html._text = ">> This is text\nspanning multiple\nlines"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<p style='text-align: right;'>This is text<br>spanning multiple<br>lines</p>\n"
+    )
+
+    # Centre
+    html._text = ">> This is text <<\nspanning multiple\nlines"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<p style='text-align: center;'>This is text<br>spanning multiple<br>lines</p>\n"
+    )
+
+    # Left before Right
+    html._text = ">> This is text\nspanning multiple <<\nlines"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<p style='text-align: left;'>This is text<br>spanning multiple<br>lines</p>\n"
+    )
+
+    # Right before Centre
+    html._text = ">> This is text <<\n>> spanning multiple\nlines"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<p style='text-align: right;'>This is text<br>spanning multiple<br>lines</p>\n"
+    )
+
+
+@pytest.mark.core
 def testFmtToHtml_Dialog(mockGUI):
     """Test paragraph formats in the ToHtml class."""
     CONFIG.altDialogOpen = "::"
