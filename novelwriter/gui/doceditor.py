@@ -2303,8 +2303,6 @@ class TextAutoReplace:
         cursor.movePosition(QtMoveLeft, QtKeepAnchor, min(4, pos))
         last = cursor.selectedText()
         delete, insert = self._determine(last, pos)
-        if insert == "":
-            return False
 
         check = insert
         if self._doPadBefore and check in self._padBefore:
@@ -2335,9 +2333,6 @@ class TextAutoReplace:
         t2 = text[-2:]
         t3 = text[-3:]
         t4 = text[-4:]
-        if t1 == "":
-            # Return early if there is nothing to check
-            return 0, ""
 
         leading = t2[:1].isspace()
         if self._replaceDQuote:
