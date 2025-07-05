@@ -323,24 +323,23 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         if text.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(BLOCK_META)
             index = SHARED.project.index
-            isValid, bits, pos = index.scanThis(text)
+            isValid, bits, loc = index.scanThis(text)
             isGood = index.checkThese(bits, self._tHandle)
             if isValid:
                 for n, bit in enumerate(bits):
-                    xPos = utf16Map[pos[n]] if utf16Map else pos[n]
-                    xLen = utf16Map[pos[n] + len(bit)] - xPos if utf16Map else len(bit)
+                    pos = utf16Map[loc[n]] if utf16Map else loc[n]
+                    length = utf16Map[loc[n] + len(bit)] - pos if utf16Map else len(bit)
                     if n == 0 and isGood[n]:
-                        self.setFormat(xPos, xLen, self._hStyles["keyword"])
+                        self.setFormat(pos, length, self._hStyles["keyword"])
                     elif isGood[n] and not self._isInactive:
                         a, b = index.parseValue(bit)
-                        aLen = utf16Map[pos[n] + len(a)] - xPos if utf16Map else len(a)
-                        self.setFormat(xPos, aLen, self._hStyles["tag"])
+                        aLen = utf16Map[loc[n] + len(a)] - pos if utf16Map else len(a)
+                        self.setFormat(pos, aLen, self._hStyles["tag"])
                         if b:
-                            blockLen = utf16Map[pos[n] + len(b)] - xPos if utf16Map else len(b)
-                            bPos = xPos + xLen - blockLen
-                            self.setFormat(bPos, blockLen, self._hStyles["optional"])
+                            bLen = utf16Map[loc[n] + len(b)] - pos if utf16Map else len(b)
+                            self.setFormat(pos + length - bLen, bLen, self._hStyles["optional"])
                     elif not self._isInactive:
-                        self.setFormat(xPos, xLen, self._hStyles["invalid"])
+                        self.setFormat(pos, length, self._hStyles["invalid"])
 
             # We never want to run the spell checker on keyword/values,
             # so we force a return here
@@ -386,19 +385,19 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             if utf16Map:
                 dot = utf16Map[dot]
                 pos = utf16Map[pos]
-            cLen = blockLen - pos
+            length = blockLen - pos
             if style == nwComment.PLAIN:
-                self.setFormat(0, cLen, self._hStyles["hidden"])
+                self.setFormat(0, length, self._hStyles["hidden"])
             elif style == nwComment.IGNORE:
-                self.setFormat(0, cLen, self._hStyles["strike"])
+                self.setFormat(0, length, self._hStyles["strike"])
                 return  # No more processing for these
             elif mod:
                 self.setFormat(0, dot, self._hStyles["modifier"])
                 self.setFormat(dot, pos - dot, self._hStyles["value"])
-                self.setFormat(pos, cLen, self._hStyles["note"])
+                self.setFormat(pos, length, self._hStyles["note"])
             else:
                 self.setFormat(0, pos, self._hStyles["modifier"])
-                self.setFormat(pos, cLen, self._hStyles["note"])
+                self.setFormat(pos, length, self._hStyles["note"])
 
         elif text.startswith("["):  # Special Command
             self.setCurrentBlockState(BLOCK_TEXT)
@@ -409,12 +408,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, blockLen, self._hStyles["code"])
                 return
             elif check.startswith("[vspace:") and check.endswith("]"):
-                tLen = len(check)
-                tVal = checkInt(check[8:-1], 0)
-                cVal = "value" if tVal > 0 else "invalid"
+                length = len(check)
+                value = checkInt(check[8:-1], 0)
+                style = "value" if value > 0 else "invalid"
                 self.setFormat(0, 8, self._hStyles["code"])
-                self.setFormat(8, tLen-9, self._hStyles[cVal])
-                self.setFormat(tLen-1, tLen, self._hStyles["code"])
+                self.setFormat(8, length-9, self._hStyles[style])
+                self.setFormat(length-1, length, self._hStyles["code"])
                 return
 
         else:  # Text Paragraph
@@ -462,19 +461,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         data.processText(text, offset)
         if self._spellCheck:
-            if utf16Map:
-                for pos, end in data.spellCheck():
-                    for x in range(pos, end):
-                        m = utf16Map[x]
-                        cFmt = self.format(m)
-                        cFmt.merge(self._spellErr)
-                        self.setFormat(m, utf16Map[x+1] - m, cFmt)
-            else:
-                for pos, end in data.spellCheck():
-                    for x in range(pos, end):
-                        cFmt = self.format(x)
-                        cFmt.merge(self._spellErr)
-                        self.setFormat(x, 1, cFmt)
+            for pos, end, _ in data.spellCheck(utf16Map):
+                for x in range(pos, end):
+                    cFmt = self.format(x)
+                    cFmt.merge(self._spellErr)
+                    self.setFormat(x, 1, cFmt)
 
         return
 
@@ -528,7 +519,7 @@ class TextBlockData(QTextBlockUserData):
         self._text = ""
         self._offset = 0
         self._metaData: list[tuple[int, int, str, str]] = []
-        self._spellErrors: list[tuple[int, int]] = []
+        self._spellErrors: list[tuple[int, int, str]] = []
         return
 
     @property
@@ -537,7 +528,7 @@ class TextBlockData(QTextBlockUserData):
         return self._metaData
 
     @property
-    def spellErrors(self) -> list[tuple[int, int]]:
+    def spellErrors(self) -> list[tuple[int, int, str]]:
         """Return spell error data from last check."""
         return self._spellErrors
 
@@ -565,13 +556,21 @@ class TextBlockData(QTextBlockUserData):
 
         return
 
-    def spellCheck(self) -> list[tuple[int, int]]:
+    def spellCheck(self, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
         """Run the spell checker and cache the result, and return the
         list of spell check errors.
         """
         spell = SHARED.spelling
-        self._spellErrors = [
-            (r.start(0), r.end(0)) for r in RX_WORDS.finditer(self._text, self._offset)
-            if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
-        ]
+        if utf16Map:
+            self._spellErrors = [
+                (utf16Map[r.start(0)], utf16Map[r.end(0)], w)
+                for r in RX_WORDS.finditer(self._text, self._offset)
+                if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
+            ]
+        else:
+            self._spellErrors = [
+                (r.start(0), r.end(0), w)
+                for r in RX_WORDS.finditer(self._text, self._offset)
+                if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
+            ]
         return self._spellErrors

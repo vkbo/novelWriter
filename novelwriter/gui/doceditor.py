@@ -1202,13 +1202,13 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Spell Checking
         if SHARED.project.data.spellCheck:
-            word, cPos, cLen, suggest = self._qDocument.spellErrorAtPos(pCursor.position())
-            if word and cPos >= 0 and cLen > 0:
+            word, offset, suggest = self._qDocument.spellErrorAtPos(pCursor.position())
+            if word and offset >= 0:
                 logger.debug("Word '%s' is misspelled", word)
                 block = pCursor.block()
                 sCursor = self.textCursor()
-                sCursor.setPosition(block.position() + cPos)
-                sCursor.movePosition(QtMoveRight, QtKeepAnchor, cLen)
+                sCursor.setPosition(block.position() + offset)
+                sCursor.movePosition(QtMoveRight, QtKeepAnchor, len(word))
                 if suggest:
                     ctxMenu.addSeparator()
                     qtAddAction(ctxMenu, self.tr("Spelling Suggestion(s)"))

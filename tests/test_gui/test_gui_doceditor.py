@@ -520,10 +520,10 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     data = cursor.block().userData()
     assert cursor.block().text().startswith("Lorem")
     assert isinstance(data, TextBlockData)
-    data._spellErrors = [(0, 5)]
+    data._spellErrors = [(0, 5, "Lorem")]
 
     # No known position
-    assert docEditor._qDocument.spellErrorAtPos(-1) == ("", -1, -1, [])
+    assert docEditor._qDocument.spellErrorAtPos(-1) == ("", -1, [])
 
     # With Suggestion
     with monkeypatch.context() as mp:
@@ -539,6 +539,9 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
         assert docEditor.getText() == text.replace("Lorem", "Lorax", 1)
         ctxMenu.setObjectName("")
         ctxMenu.deleteLater()
+
+    # Update Entry
+    data._spellErrors = [(0, 5, "Lorax")]
 
     # Without Suggestion
     with monkeypatch.context() as mp:
