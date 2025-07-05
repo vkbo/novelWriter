@@ -607,6 +607,7 @@ class ProjectBuilder:
         project.data.setSaveCount(0)
         project.data.setAutoCount(0)
         project.data.setEditTime(0)
+        project.index.rebuild()
         project.saveProject()
         project.closeProject()
         return

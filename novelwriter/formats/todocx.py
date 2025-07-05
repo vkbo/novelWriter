@@ -38,7 +38,7 @@ from novelwriter import __version__
 from novelwriter.common import firstFloat, xmlElement, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
-from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.formats.tokenizer import COMMENT_BLOCKS, Tokenizer
 from novelwriter.types import QtHexRgb
 
 if TYPE_CHECKING:
@@ -296,7 +296,7 @@ class ToDocX(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 self._processFragments(par, S_NORM, "")
 
-            elif tType == BlockTyp.COMMENT:
+            elif tType in COMMENT_BLOCKS:
                 self._processFragments(par, S_META, tText, tFormat)
 
             elif tType == BlockTyp.KEYWORD:

@@ -31,6 +31,7 @@ import xml.etree.ElementTree as ET
 
 from configparser import ConfigParser
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, TypeGuard, TypeVar
 from urllib.parse import urljoin
@@ -691,6 +692,9 @@ def openExternalPath(path: Path) -> bool:
 #  Classes
 ##
 
+_T_Enum = TypeVar("_T_Enum", bound=Enum)
+
+
 class NWConfigParser(ConfigParser):
     """Common: Adapted Config Parser
 
@@ -751,3 +755,10 @@ class NWConfigParser(ConfigParser):
             for i in range(min(len(data), len(result))):
                 result[i] = checkInt(data[i].strip(), result[i])
         return result
+
+    def rdEnum(self, section: str, option: str, default: _T_Enum) -> _T_Enum:
+        """Read enum value."""
+        if self.has_option(section, option):
+            data = self.get(section, option, fallback="")
+            return type(default).__members__.get(data.upper(), default)
+        return default

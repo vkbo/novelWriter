@@ -128,6 +128,7 @@ QtHeaderFixed = QHeaderView.ResizeMode.Fixed
 
 # Scroll Bar Policy
 
+QtScrollAlwaysOn = Qt.ScrollBarPolicy.ScrollBarAlwaysOn
 QtScrollAlwaysOff = Qt.ScrollBarPolicy.ScrollBarAlwaysOff
 QtScrollAsNeeded = Qt.ScrollBarPolicy.ScrollBarAsNeeded
 

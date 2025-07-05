@@ -30,7 +30,7 @@ from datetime import datetime
 from pathlib import Path
 from time import time
 
-from PyQt6.QtCore import Qt, QTimer, pyqtSlot
+from PyQt6.QtCore import QEvent, Qt, QTimer, pyqtSlot
 from PyQt6.QtGui import QCloseEvent, QCursor, QIcon, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox,
@@ -38,7 +38,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__
-from novelwriter.common import formatFileFilter, formatVersion, hexToInt
+from novelwriter.common import formatFileFilter, formatVersion, hexToInt, minmax
 from novelwriter.constants import nwConst
 from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
@@ -103,7 +103,7 @@ class GuiMain(QMainWindow):
         SHARED.initSharedData(self)
 
         # Prepare Main Window
-        self.resize(*CONFIG.mainWinSize)
+        self._setWindowSize(CONFIG.mainWinSize)
         self._updateWindowTitle()
 
         nwIcon = CONFIG.assetPath("icons") / "novelwriter.svg"
@@ -902,9 +902,45 @@ class GuiMain(QMainWindow):
 
         return not self.splitView.isVisible()
 
+    def checkThemeUpdate(self) -> None:
+        """Load theme if mode changed."""
+        if SHARED.theme.loadTheme():
+            self.refreshThemeColors(syntax=True)
+            self.docEditor.initEditor()
+            self.docViewer.initViewer()
+        return
+
+    def refreshThemeColors(self, syntax: bool = False, force: bool = False) -> None:
+        """Refresh the GUI theme."""
+        SHARED.theme.loadTheme(force=force)
+        SHARED.project.updateTheme()
+        self.setPalette(QApplication.palette())
+        self.docEditor.updateTheme()
+        self.docViewer.updateTheme()
+        self.docViewerPanel.updateTheme()
+        self.sideBar.updateTheme()
+        self.projView.updateTheme()
+        self.novelView.updateTheme()
+        self.projSearch.updateTheme()
+        self.outlineView.updateTheme()
+        self.itemDetails.updateTheme()
+        self.mainStatus.updateTheme()
+        SHARED.project.tree.refreshAllItems()
+
+        if syntax:
+            self.docEditor.updateSyntaxColors()
+
+        return
+
     ##
     #  Events
     ##
+
+    def changeEvent(self, event: QEvent) -> None:
+        """Capture application change events."""
+        if int(event.type()) == 210:  # ThemeChange
+            self.checkThemeUpdate()
+        return
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """Capture the closing event of the GUI and call the close
@@ -1054,23 +1090,7 @@ class GuiMain(QMainWindow):
             self.novelView.refreshCurrentTree()
 
         if theme:
-            SHARED.theme.loadTheme()
-            self.setPalette(QApplication.palette())
-            self.docEditor.updateTheme()
-            self.docViewer.updateTheme()
-            self.docViewerPanel.updateTheme()
-            self.sideBar.updateTheme()
-            self.projView.updateTheme()
-            self.novelView.updateTheme()
-            self.projSearch.updateTheme()
-            self.outlineView.updateTheme()
-            self.itemDetails.updateTheme()
-            self.mainStatus.updateTheme()
-            SHARED.project.tree.refreshAllItems()
-
-        if syntax:
-            SHARED.theme.loadSyntax()
-            self.docEditor.updateSyntaxColors()
+            self.refreshThemeColors(syntax=syntax, force=True)
 
         self.docEditor.initEditor()
         self.docViewer.initViewer()
@@ -1325,6 +1345,15 @@ class GuiMain(QMainWindow):
     ##
     #  Internal Functions
     ##
+
+    def _setWindowSize(self, size: list[int]) -> None:
+        """Set the main window size."""
+        if len(size) == 2 and (screen := SHARED.mainScreen):
+            availSize = screen.availableSize()
+            width = minmax(size[0], 900, availSize.width())
+            height = minmax(size[1], 500, availSize.height())
+            self.resize(width, height)
+        return
 
     def _updateWindowTitle(self, projName: str | None = None) -> None:
         """Set the window title and add the project's name."""

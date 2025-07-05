@@ -56,6 +56,10 @@
     "sb_search": "magnifying-glass",
     "sb_stats": "chart-simple",
 
+    "theme_light": "sun",
+    "theme_dark": "moon",
+    "theme_auto": "circle-half-stroke",
+
     "add": "plus",
     "bookmarks": "bookmark",
     "browse": "folder-open",

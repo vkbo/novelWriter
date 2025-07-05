@@ -224,7 +224,7 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
 
     # Update Labels
     assert charTab.topLevelItem(0).text(charTab.C_IMPORT) == "New"
-    SHARED.project.data.itemImport.add(C.iNew, "Stuff", (100, 100, 100), "SQUARE", 0)
+    SHARED.project.data.itemImport.add(C.iNew, "Stuff", "#646464", "SQUARE", 0)
     viewPanel.updateStatusLabels("i")
     assert charTab.topLevelItem(0).text(charTab.C_IMPORT) == "Stuff"
 

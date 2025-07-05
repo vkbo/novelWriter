@@ -35,7 +35,7 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import compact, describeFont, processDialogSymbols, uniqueCompact
-from novelwriter.config import DEF_GUI, DEF_ICONS, DEF_SYNTAX, DEF_TREECOL
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS, DEF_TREECOL
 from novelwriter.constants import nwLabels, nwQuotes, nwUnicode, trConst
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.configlayout import NColorLabel, NScrollableForm
@@ -165,22 +165,34 @@ class GuiPreferences(NDialog):
         )
 
         # Colour Theme
-        self.guiTheme = NComboBox(self)
-        self.guiTheme.setMinimumWidth(200)
-        for theme, name in SHARED.theme.listThemes():
-            self.guiTheme.addItem(name, theme)
-        self.guiTheme.setCurrentData(CONFIG.guiTheme, DEF_GUI)
+        self.lightTheme = NComboBox(self)
+        self.lightTheme.setMinimumWidth(200)
+        self.darkTheme = NComboBox(self)
+        self.darkTheme.setMinimumWidth(200)
+        for key, theme in SHARED.theme.colourThemes.items():
+            if theme.dark:
+                self.darkTheme.addItem(theme.name, key)
+            else:
+                self.lightTheme.addItem(theme.name, key)
+
+        self.lightTheme.setCurrentData(CONFIG.lightTheme, DEF_GUI_LIGHT)
+        self.darkTheme.setCurrentData(CONFIG.darkTheme, DEF_GUI_DARK)
 
         self.mainForm.addRow(
-            self.tr("Colour theme"), self.guiTheme,
-            self.tr("User interface colour theme."), stretch=(3, 2)
+            self.tr("Light colour theme"), self.lightTheme,
+            self.tr("You can change theme mode from the sidebar."), stretch=(3, 2)
+        )
+        self.mainForm.addRow(
+            self.tr("Dark colour theme"), self.darkTheme,
+            self.tr("You can change theme mode from the sidebar."), stretch=(3, 2)
         )
 
         # Icon Theme
         self.iconTheme = NComboBox(self)
         self.iconTheme.setMinimumWidth(200)
-        for theme, name in SHARED.theme.iconCache.listThemes():
-            self.iconTheme.addItem(name, theme)
+        for key, theme in SHARED.theme.iconCache.iconThemes.items():
+            self.iconTheme.addItem(theme.name, key)
+
         self.iconTheme.setCurrentData(CONFIG.iconTheme, DEF_ICONS)
 
         self.mainForm.addRow(
@@ -242,18 +254,6 @@ class GuiPreferences(NDialog):
         self.sidebar.addButton(title, section)
         self.mainForm.addGroupLabel(title, section)
 
-        # Document Colour Theme
-        self.guiSyntax = NComboBox(self)
-        self.guiSyntax.setMinimumWidth(200)
-        for syntax, name in SHARED.theme.listSyntax():
-            self.guiSyntax.addItem(name, syntax)
-        self.guiSyntax.setCurrentData(CONFIG.guiSyntax, DEF_SYNTAX)
-
-        self.mainForm.addRow(
-            self.tr("Document colour theme"), self.guiSyntax,
-            self.tr("Colour theme for the editor and viewer."), stretch=(3, 2)
-        )
-
         # Document Font Family
         self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
@@ -294,6 +294,7 @@ class GuiPreferences(NDialog):
         # Tree Icon Colours
         self.iconColTree = NComboBox(self)
         self.iconColTree.setMinimumWidth(200)
+        self.iconColTree.addItem(self.tr("Theme Colours"), DEF_TREECOL)
         for key, label in nwLabels.THEME_COLORS.items():
             self.iconColTree.addItem(trConst(label), key)
         self.iconColTree.setCurrentData(CONFIG.iconColTree, DEF_TREECOL)
@@ -541,6 +542,13 @@ class GuiPreferences(NDialog):
             self.tr("Cursor width"), self.cursorWidth,
             self.tr("The width of the text cursor of the editor."),
             unit=self.tr("px")
+        )
+
+        # Highlight Current Line
+        self.lineHighlight = NSwitch(self)
+        self.lineHighlight.setChecked(CONFIG.lineHighlight)
+        self.mainForm.addRow(
+            self.tr("Highlight current line"), self.lineHighlight
         )
 
         # Show Tabs and Spaces
@@ -966,18 +974,23 @@ class GuiPreferences(NDialog):
 
         # Appearance
         guiLocale    = self.guiLocale.currentData()
-        guiTheme     = self.guiTheme.currentData()
+        lightTheme   = self.lightTheme.currentData()
+        darkTheme    = self.darkTheme.currentData()
         iconTheme    = self.iconTheme.currentData()
         useCharCount = self.useCharCount.isChecked()
 
-        updateTheme  |= CONFIG.guiTheme != guiTheme
+        updateTheme  |= CONFIG.lightTheme != lightTheme
+        updateTheme  |= CONFIG.darkTheme != darkTheme
         updateTheme  |= CONFIG.iconTheme != iconTheme
         needsRestart |= CONFIG.guiLocale != guiLocale
         needsRestart |= CONFIG.guiFont != self._guiFont
         refreshTree  |= CONFIG.useCharCount != useCharCount
+        updateSyntax |= CONFIG.lightTheme != lightTheme
+        updateSyntax |= CONFIG.darkTheme != darkTheme
 
         CONFIG.guiLocale    = guiLocale
-        CONFIG.guiTheme     = guiTheme
+        CONFIG.lightTheme   = lightTheme
+        CONFIG.darkTheme    = darkTheme
         CONFIG.iconTheme    = iconTheme
         CONFIG.hideVScroll  = self.hideVScroll.isChecked()
         CONFIG.hideHScroll  = self.hideHScroll.isChecked()
@@ -986,11 +999,6 @@ class GuiPreferences(NDialog):
         CONFIG.setGuiFont(self._guiFont)
 
         # Document Style
-        guiSyntax = self.guiSyntax.currentData()
-
-        updateSyntax |= CONFIG.guiSyntax != guiSyntax
-
-        CONFIG.guiSyntax      = guiSyntax
         CONFIG.showFullPath   = self.showFullPath.isChecked()
         CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
         CONFIG.setTextFont(self._textFont)
@@ -1031,9 +1039,14 @@ class GuiPreferences(NDialog):
         CONFIG.tabWidth        = self.tabWidth.value()
 
         # Text Editing
+        lineHighlight = self.lineHighlight.isChecked()
+
+        updateSyntax |= CONFIG.lineHighlight != lineHighlight
+
         CONFIG.spellLanguage   = self.spellLanguage.currentData()
         CONFIG.autoSelect      = self.autoSelect.isChecked()
         CONFIG.cursorWidth     = self.cursorWidth.value()
+        CONFIG.lineHighlight   = lineHighlight
         CONFIG.showTabsNSpaces = self.showTabsNSpaces.isChecked()
         CONFIG.showLineEndings = self.showLineEndings.isChecked()
 

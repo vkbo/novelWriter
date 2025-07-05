@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.7.2" hexVersion="0x020702f0" fileVersion="1.5" fileRevision="5" timeStamp="2025-06-24 16:24:56">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2209" autoCount="287" editTime="97152">
+<novelWriterXML appVersion="2.8a1" hexVersion="0x020800a1" fileVersion="1.5" fileRevision="6" timeStamp="2025-06-24 17:12:20">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2236" autoCount="290" editTime="98026">
     <name>Sample Project</name>
     <author>Jane Smith</author>
   </project>
@@ -20,23 +20,23 @@
       <entry key="C">D</entry>
     </autoReplace>
     <status>
-      <entry key="sf12341" count="8" red="100" green="100" blue="100" shape="SQUARE">New</entry>
-      <entry key="sf24ce6" count="2" red="200" green="50" blue="0" shape="SQUARE">Notes</entry>
-      <entry key="sc24b8f" count="3" red="182" green="60" blue="0" shape="BARS_1">Started</entry>
-      <entry key="s90e6c9" count="5" red="193" green="129" blue="0" shape="BARS_2">1st Draft</entry>
-      <entry key="sd51c5b" count="1" red="193" green="129" blue="0" shape="BARS_3">2nd Draft</entry>
-      <entry key="s8ae72a" count="1" red="193" green="129" blue="0" shape="BARS_4">3rd Draft</entry>
-      <entry key="s78ea90" count="1" red="58" green="180" blue="58" shape="STAR">Finished</entry>
+      <entry key="sf12341" count="8" color="faded" shape="STAR">New</entry>
+      <entry key="sf24ce6" count="2" color="red" shape="STAR">Notes</entry>
+      <entry key="sc24b8f" count="3" color="yellow" shape="BARS_1">Started</entry>
+      <entry key="s90e6c9" count="5" color="yellow" shape="BARS_2">1st Draft</entry>
+      <entry key="sd51c5b" count="1" color="yellow" shape="BARS_3">2nd Draft</entry>
+      <entry key="s8ae72a" count="1" color="yellow" shape="BARS_4">3rd Draft</entry>
+      <entry key="s78ea90" count="1" color="green" shape="STAR">Finished</entry>
     </status>
     <importance>
-      <entry key="ia857f0" count="5" red="100" green="100" blue="100" shape="SQUARE">None</entry>
-      <entry key="i4a1d39" count="1" red="220" green="138" blue="221" shape="BLOCK_1">Background</entry>
-      <entry key="icfb3a5" count="1" red="220" green="138" blue="221" shape="BLOCK_2">Minor</entry>
-      <entry key="i2d7a54" count="2" red="220" green="138" blue="221" shape="BLOCK_3">Major</entry>
-      <entry key="i56be10" count="1" red="220" green="138" blue="221" shape="BLOCK_4">Main</entry>
+      <entry key="ia857f0" count="5" color="faded" shape="STAR">None</entry>
+      <entry key="i4a1d39" count="1" color="purple" shape="BLOCK_1">Background</entry>
+      <entry key="icfb3a5" count="1" color="purple" shape="BLOCK_2">Minor</entry>
+      <entry key="i2d7a54" count="2" color="purple" shape="BLOCK_3">Major</entry>
+      <entry key="i56be10" count="1" color="purple" shape="BLOCK_4">Main</entry>
     </importance>
   </settings>
-  <content items="31" novelWords="1016" notesWords="416" novelChars="5602" notesChars="2285">
+  <content items="31" novelWords="1016" notesWords="416" novelChars="5606" notesChars="2285">
     <item handle="7031beac91f75" parent="None" root="7031beac91f75" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="sc24b8f" import="ia857f0">Novel</name>
@@ -58,7 +58,7 @@
       <name status="sf24ce6" import="ia857f0" active="yes">Chapter One</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="2999" wordCount="530" paraCount="16" cursorPos="93" />
+      <meta expanded="no" heading="H3" charCount="3003" wordCount="530" paraCount="16" cursorPos="586" />
       <name status="s90e6c9" import="ia857f0" active="yes">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
