@@ -271,8 +271,8 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.dialogLine.setText("–")
     prefs.narratorBreak.setCurrentData("–", "")
     prefs.narratorDialog.setCurrentData("–", "")
-    prefs.altDialogOpen.setText("<")
-    prefs.altDialogClose.setText(">")
+    prefs.altDialogOpen.setText("%")  # Symbol also tests for #2455
+    prefs.altDialogClose.setText("%")  # Symbol also tests for #2455
     prefs.highlightEmph.setChecked(False)
     prefs.showMultiSpaces.setChecked(False)
 
@@ -401,8 +401,8 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.dialogLine == "–"
     assert CONFIG.narratorBreak == "–"
     assert CONFIG.narratorDialog == "–"
-    assert CONFIG.altDialogOpen == "<"
-    assert CONFIG.altDialogClose == ">"
+    assert CONFIG.altDialogOpen == "%"
+    assert CONFIG.altDialogClose == "%"
     assert CONFIG.highlightEmph is False
     assert CONFIG.showMultiSpaces is False
 
