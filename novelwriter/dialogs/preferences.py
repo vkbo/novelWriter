@@ -600,6 +600,7 @@ class GuiPreferences(NDialog):
         self.sidebar.addButton(title, section)
         self.mainForm.addGroupLabel(title, section)
 
+        # Dialogue Quotes
         self.dialogStyle = NComboBox(self)
         self.dialogStyle.addItem(self.tr("None"), 0)
         self.dialogStyle.addItem(self.tr("Single Quotes"), 1)
@@ -611,6 +612,15 @@ class GuiPreferences(NDialog):
             self.tr("Applies to the selected quote styles.")
         )
 
+        # Open-Ended Dialogue
+        self.allowOpenDial = NSwitch(self)
+        self.allowOpenDial.setChecked(CONFIG.allowOpenDial)
+        self.mainForm.addRow(
+            self.tr("Allow open-ended dialogue"), self.allowOpenDial,
+            self.tr("Highlight dialogue line with no closing quote.")
+        )
+
+        # Alternative Dialogue
         self.altDialogOpen = QLineEdit(self)
         self.altDialogOpen.setMaxLength(4)
         self.altDialogOpen.setFixedWidth(boxFixed)
@@ -628,13 +638,7 @@ class GuiPreferences(NDialog):
             self.tr("Custom highlighting of dialogue text.")
         )
 
-        self.allowOpenDial = NSwitch(self)
-        self.allowOpenDial.setChecked(CONFIG.allowOpenDial)
-        self.mainForm.addRow(
-            self.tr("Allow open-ended dialogue"), self.allowOpenDial,
-            self.tr("Highlight dialogue line with no closing quote.")
-        )
-
+        # Dialogue Line
         self.dialogLine = QLineEdit(self)
         self.dialogLine.setMaxLength(4)
         self.dialogLine.setFixedWidth(boxFixed)
@@ -645,6 +649,7 @@ class GuiPreferences(NDialog):
             self.tr("Lines starting with any of these symbols are dialogue.")
         )
 
+        # Narrator Break
         self.narratorBreak = NComboBox(self)
         self.narratorDialog = NComboBox(self)
         for key, value in nwQuotes.DASHES.items():
@@ -664,6 +669,7 @@ class GuiPreferences(NDialog):
             self.tr("Alternates dialogue highlighting within any paragraph.")
         )
 
+        # Emphasis
         self.highlightEmph = NSwitch(self)
         self.highlightEmph.setChecked(CONFIG.highlightEmph)
         self.mainForm.addRow(
@@ -671,6 +677,7 @@ class GuiPreferences(NDialog):
             self.tr("Applies to the document editor only.")
         )
 
+        # Additional Spaces
         self.showMultiSpaces = NSwitch(self)
         self.showMultiSpaces.setChecked(CONFIG.showMultiSpaces)
         self.mainForm.addRow(
