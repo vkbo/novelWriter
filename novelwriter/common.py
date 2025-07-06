@@ -498,7 +498,7 @@ def utf16CharMap(text: str) -> list[int]:
     """Compute mapping from Python string index to QString index.
     Python strings are always one character per position in either
     ASCII, UCS-2 or UCS-4. QStrings are in UTF-16, so wide characters
-    use 2 indices, and thus creates an offset.
+    use 2 indices, and thus create an offset.
     """
     utf16Map = list(range(0, len(text) + 1))
     offset = 0
