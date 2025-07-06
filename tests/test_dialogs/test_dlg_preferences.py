@@ -268,13 +268,16 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     # Text Highlighting
     prefs.dialogStyle.setCurrentData(3, 0)
     prefs.allowOpenDial.setChecked(False)
-    prefs.dialogLine.setText("–")
-    prefs.narratorBreak.setCurrentData("–", "")
-    prefs.narratorDialog.setCurrentData("–", "")
+    prefs.dialogLine.setText(nwUnicode.U_EMDASH)
+    prefs.narratorBreak.setCurrentData(nwUnicode.U_EMDASH, "")
+    prefs.narratorDialog.setCurrentData(nwUnicode.U_EMDASH, "")
     prefs.altDialogOpen.setText("%")  # Symbol also tests for #2455
     prefs.altDialogClose.setText("%")  # Symbol also tests for #2455
     prefs.highlightEmph.setChecked(False)
     prefs.showMultiSpaces.setChecked(False)
+
+    prefs._insertDialogLineSymbol(nwUnicode.U_ENDASH)
+    assert prefs.dialogLine.text() == f"{nwUnicode.U_ENDASH} {nwUnicode.U_EMDASH}"
 
     assert CONFIG.dialogStyle == 2
     assert CONFIG.allowOpenDial is True
@@ -398,9 +401,9 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     # Text Highlighting
     assert CONFIG.dialogStyle == 3
     assert CONFIG.allowOpenDial is False
-    assert CONFIG.dialogLine == "–"
-    assert CONFIG.narratorBreak == "–"
-    assert CONFIG.narratorDialog == "–"
+    assert CONFIG.dialogLine == f"{nwUnicode.U_ENDASH}{nwUnicode.U_EMDASH}"
+    assert CONFIG.narratorBreak == nwUnicode.U_EMDASH
+    assert CONFIG.narratorDialog == nwUnicode.U_EMDASH
     assert CONFIG.altDialogOpen == "%"
     assert CONFIG.altDialogClose == "%"
     assert CONFIG.highlightEmph is False

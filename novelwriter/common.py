@@ -301,7 +301,7 @@ def uniqueCompact(text: str) -> str:
 def processDialogSymbols(symbols: str) -> str:
     """Process dialogue line symbols."""
     result = ""
-    for c in uniqueCompact(symbols):
+    for c in uniqueCompact("".join(symbols.split())):
         if c in nwQuotes.ALLOWED:
             result += c
     return result
