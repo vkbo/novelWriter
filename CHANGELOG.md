@@ -4,7 +4,7 @@
 
 ### Release Notes
 
-This is a patch release that fixes several issues related to 
+This is a patch release that fixes a bug in, and makes a few improvement to, Preferences.
 
 ### Detailed Changelog
 
