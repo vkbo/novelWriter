@@ -29,7 +29,7 @@ import logging
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QAction, QCloseEvent, QKeyEvent, QKeySequence
 from PyQt6.QtWidgets import (
-    QCompleter, QDialogButtonBox, QFileDialog, QHBoxLayout, QLineEdit,
+    QCompleter, QDialogButtonBox, QFileDialog, QHBoxLayout, QLineEdit, QMenu,
     QPushButton, QVBoxLayout, QWidget
 )
 
@@ -608,6 +608,7 @@ class GuiPreferences(NDialog):
         self.sidebar.addButton(title, section)
         self.mainForm.addGroupLabel(title, section)
 
+        # Dialogue Quotes
         self.dialogStyle = NComboBox(self)
         self.dialogStyle.addItem(self.tr("None"), 0)
         self.dialogStyle.addItem(self.tr("Single Quotes"), 1)
@@ -619,6 +620,15 @@ class GuiPreferences(NDialog):
             self.tr("Applies to the selected quote styles.")
         )
 
+        # Open-Ended Dialogue
+        self.allowOpenDial = NSwitch(self)
+        self.allowOpenDial.setChecked(CONFIG.allowOpenDial)
+        self.mainForm.addRow(
+            self.tr("Allow open-ended dialogue"), self.allowOpenDial,
+            self.tr("Highlight dialogue line with no closing quote.")
+        )
+
+        # Alternative Dialogue
         self.altDialogOpen = QLineEdit(self)
         self.altDialogOpen.setMaxLength(4)
         self.altDialogOpen.setFixedWidth(boxFixed)
@@ -636,23 +646,30 @@ class GuiPreferences(NDialog):
             self.tr("Custom highlighting of dialogue text.")
         )
 
-        self.allowOpenDial = NSwitch(self)
-        self.allowOpenDial.setChecked(CONFIG.allowOpenDial)
-        self.mainForm.addRow(
-            self.tr("Allow open-ended dialogue"), self.allowOpenDial,
-            self.tr("Highlight dialogue line with no closing quote.")
-        )
+        # Dialogue Line
+        self.mnLineSymbols = QMenu(self)
+        for symbol in nwQuotes.ALLOWED:
+            label = trConst(nwQuotes.SYMBOLS.get(symbol, nwQuotes.DASHES.get(symbol, "None")))
+            self.mnLineSymbols.addAction(
+                f"[ {symbol } ] {label}",
+                lambda symbol=symbol: self._insertDialogLineSymbol(symbol)
+            )
 
         self.dialogLine = QLineEdit(self)
-        self.dialogLine.setMaxLength(4)
-        self.dialogLine.setFixedWidth(boxFixed)
+        self.dialogLine.setMinimumWidth(100)
         self.dialogLine.setAlignment(QtAlignCenter)
-        self.dialogLine.setText(CONFIG.dialogLine)
+        self.dialogLine.setText(" ".join(CONFIG.dialogLine))
+
+        self.dialogLineButton = NIconToolButton(self, iSz, "add", "green")
+        self.dialogLineButton.setMenu(self.mnLineSymbols)
+
         self.mainForm.addRow(
             self.tr("Dialogue line symbols"), self.dialogLine,
-            self.tr("Lines starting with any of these symbols are dialogue.")
+            self.tr("Lines starting with any of these symbols are dialogue."),
+            button=self.dialogLineButton
         )
 
+        # Narrator Break
         self.narratorBreak = NComboBox(self)
         self.narratorDialog = NComboBox(self)
         for key, value in nwQuotes.DASHES.items():
@@ -672,6 +689,7 @@ class GuiPreferences(NDialog):
             self.tr("Alternates dialogue highlighting within any paragraph.")
         )
 
+        # Emphasis
         self.highlightEmph = NSwitch(self)
         self.highlightEmph.setChecked(CONFIG.highlightEmph)
         self.mainForm.addRow(
@@ -679,6 +697,7 @@ class GuiPreferences(NDialog):
             self.tr("Applies to the document editor only.")
         )
 
+        # Additional Spaces
         self.showMultiSpaces = NSwitch(self)
         self.showMultiSpaces.setChecked(CONFIG.showMultiSpaces)
         self.mainForm.addRow(
@@ -912,6 +931,14 @@ class GuiPreferences(NDialog):
     def _toggledBackupOnClose(self, state: bool) -> None:
         """Toggle switch that depends on the backup on close switch."""
         self.askBeforeBackup.setEnabled(state)
+        return
+
+    @pyqtSlot(str)
+    def _insertDialogLineSymbol(self, symbol: str) -> None:
+        """Insert a symbol in the dialogue line box."""
+        current = self.dialogLine.text()
+        values = processDialogSymbols(f"{current} {symbol}")
+        self.dialogLine.setText(" ".join(values))
         return
 
     @pyqtSlot(bool)

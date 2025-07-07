@@ -1,5 +1,35 @@
 # novelWriter Changelog
 
+## Version 2.7.3 [2025-07-07]
+
+### Release Notes
+
+This is a patch release that fixes a bug in, and makes a few improvement to, Preferences.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixes an issue where novelWriter would crash if a `%` was added to any of the free text settings
+  fields in Preferences. Issue #2455. PR #2456.
+
+**Improvements**
+
+* The "Dialogue line symbols" setting in Preferences now has an "Add" button with a dropdown menu
+  for all the symbols allowed in this field. Since virtually none of them are available on a
+  regular keyboard, this makes it easier to add them and more transparent which symbols are allowed
+  in the box. Issue #2453. PR #2457.
+* The switch for the "Allow open-ended dialogue" setting in Preferences has been moved up one line
+  so it is clearer that it only applies to quoted dialogue, and not to the alternative dialogue
+  settings. Issue #2454. PR #2457.
+
+**Packaging**
+
+* Package license information has been updated to also list the licenses for the new icon themes.
+  Issue #2434. PRs #2435 and #2458.
+
+----
+
 ## Version 2.7.2 [2025-06-24]
 
 ### Release Notes
