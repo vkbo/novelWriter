@@ -110,6 +110,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._addCharFormat("bold",      colEmph, "b")
         self._addCharFormat("italic",    colEmph, "i")
         self._addCharFormat("strike",    syntax.hidden, "s")
+        self._addCharFormat("mark",      syntax.mark, "bg")
         self._addCharFormat("mspaces",   syntax.error, "err")
         self._addCharFormat("nobreak",   colBreak, "bg")
         self._addCharFormat("altdialog", syntax.dialA)
@@ -190,6 +191,17 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         hlRule = {
             1: self._hStyles["markup"],
             2: self._hStyles["strike"],
+            3: self._hStyles["markup"],
+        }
+        self._minRules.append((rxRule, hlRule))
+        self._txtRules.append((rxRule, hlRule))
+        self._cmnRules.append((rxRule, hlRule))
+
+        # Markdown Highlight
+        rxRule = REGEX_PATTERNS.markdownMark
+        hlRule = {
+            1: self._hStyles["markup"],
+            2: self._hStyles["mark"],
             3: self._hStyles["markup"],
         }
         self._minRules.append((rxRule, hlRule))
@@ -437,9 +449,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         charFormat = QTextCharFormat()
         charFormat.setFontStyleName(name)
 
-        if color:
-            charFormat.setForeground(color)
-
         if style:
             styles = style.split(",")
             if "b" in styles:
@@ -455,6 +464,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 charFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
             if "bg" in styles and color is not None:
                 charFormat.setBackground(QBrush(color, Qt.BrushStyle.SolidPattern))
+                color = None
+
+        if color:
+            charFormat.setForeground(color)
 
         if size:
             charFormat.setFontPointSize(round(size*CONFIG.textFont.pointSize()))

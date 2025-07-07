@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <office:document xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" office:version="1.3" office:mimetype="application/vnd.oasis.opendocument.text">
   <office:meta>
-    <meta:creation-date>2025-01-25T16:15:30</meta:creation-date>
-    <meta:generator>novelWriter/2.6rc1</meta:generator>
+    <meta:creation-date>2025-06-19T21:05:16</meta:creation-date>
+    <meta:generator>novelWriter/2.8a1</meta:generator>
     <meta:initial-creator>lipsum.com</meta:initial-creator>
-    <meta:editing-cycles>51</meta:editing-cycles>
-    <meta:editing-duration>P0DT0H40M56S</meta:editing-duration>
+    <meta:editing-cycles>55</meta:editing-cycles>
+    <meta:editing-duration>P0DT0H45M46S</meta:editing-duration>
     <dc:title>Lorem Ipsum</dc:title>
-    <dc:date>2025-01-25T16:15:30</dc:date>
+    <dc:date>2025-06-19T21:05:16</dc:date>
     <dc:creator>lipsum.com</dc:creator>
   </office:meta>
   <office:font-face-decls>
@@ -152,13 +152,13 @@
       <text:user-field-decls>
         <text:user-field-decl office:value-type="float" office:value="19" text:name="ManuscriptTitleCount" />
         <text:user-field-decl office:value-type="float" office:value="48" text:name="ManuscriptParagraphCount" />
-        <text:user-field-decl office:value-type="float" office:value="4169" text:name="ManuscriptAllWords" />
+        <text:user-field-decl office:value-type="float" office:value="4184" text:name="ManuscriptAllWords" />
         <text:user-field-decl office:value-type="float" office:value="3815" text:name="ManuscriptTextWords" />
         <text:user-field-decl office:value-type="float" office:value="54" text:name="ManuscriptTitleWords" />
-        <text:user-field-decl office:value-type="float" office:value="27898" text:name="ManuscriptAllChars" />
+        <text:user-field-decl office:value-type="float" office:value="27998" text:name="ManuscriptAllChars" />
         <text:user-field-decl office:value-type="float" office:value="25578" text:name="ManuscriptTextChars" />
         <text:user-field-decl office:value-type="float" office:value="310" text:name="ManuscriptTitleChars" />
-        <text:user-field-decl office:value-type="float" office:value="23826" text:name="ManuscriptAllWordChars" />
+        <text:user-field-decl office:value-type="float" office:value="23914" text:name="ManuscriptAllWordChars" />
         <text:user-field-decl office:value-type="float" office:value="21806" text:name="ManuscriptTextWordChars" />
         <text:user-field-decl office:value-type="float" office:value="275" text:name="ManuscriptTitleWordChars" />
       </text:user-field-decls>
@@ -255,17 +255,20 @@
       <text:h text:style-name="Heading_20_1" text:outline-level="1">Nobody Owens</text:h>
       <text:p text:style-name="P8"><text:span text:style-name="T8">Tag:</text:span> <text:span text:style-name="T9">Bod</text:span> | <text:span text:style-name="T10">Nobody Owens</text:span></text:p>
       <text:p text:style-name="Text_20_Meta"><text:span text:style-name="T8">Plot:</text:span> <text:span text:style-name="T9">Main</text:span></text:p>
+      <text:p text:style-name="P5"><text:span text:style-name="T4">Short Description:</text:span> <text:span text:style-name="T5">The Hero</text:span></text:p>
       <text:p text:style-name="P6">Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta imperdiet, efficitur id leo. Cras finibus arcu at nibh commodo congue. Proin suscipit placerat condimentum. Aenean ante enim, cursus id lorem a, blandit venenatis nibh. Maecenas suscipit porta elit, sit amet porta felis porttitor eu. Sed a dui nibh. Phasellus sed faucibus dui. Pellentesque felis nulla, ultrices non efficitur quis, rutrum id mi. Mauris tempus auctor nisl, in bibendum enim pellentesque sit amet. Proin nunc lacus, imperdiet nec posuere ac, interdum non lectus.</text:p>
       <text:p text:style-name="P3">Suspendisse faucibus est auctor orci mollis luctus. Praesent quis sodales neque. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec sodales rutrum mattis. In in sem ornare, consequat nulla ac, convallis arcu. Duis ac metus id felis commodo commodo sit amet eget diam. Curabitur rhoncus lacinia leo at sodales. Etiam finibus porta diam a viverra. Praesent nisi urna, volutpat sit amet odio at, vehicula vehicula leo. In non enim eget nisl luctus commodo. Pellentesque pellentesque at lectus at luctus. Quisque nec felis bibendum, lacinia libero ut, lacinia eros. Integer finibus ultricies nibh sit amet placerat.</text:p>
       <text:p text:style-name="P3">Nullam scelerisque velit et tortor congue vestibulum a at nisi. Vivamus sodales ut turpis a convallis. In dignissim nibh at luctus sodales. Etiam sit amet rhoncus massa. Phasellus ligula magna, sollicitudin non imperdiet sit amet, volutpat vel magna. Nunc vestibulum tempor lectus, sit amet porta nunc hendrerit in. Curabitur non odio sit amet massa tincidunt facilisis. Integer et luctus nunc, eget euismod leo. Praesent faucibus metus sed purus convallis scelerisque. Fusce viverra lorem et placerat malesuada. In at elit malesuada, ullamcorper risus vitae, sodales dolor. Donec quis elementum lectus. Quisque eu eros at dui imperdiet euismod ut id neque.</text:p>
       <text:p text:style-name="P7">Notes: Plot</text:p>
       <text:h text:style-name="Heading_20_1" text:outline-level="1">Main Plot</text:h>
       <text:p text:style-name="Text_20_Meta"><text:span text:style-name="T8">Tag:</text:span> <text:span text:style-name="T9">Main</text:span></text:p>
+      <text:p text:style-name="P5"><text:span text:style-name="T4">Short Description:</text:span> <text:span text:style-name="T5">Where it all happens</text:span></text:p>
       <text:p text:style-name="P6">Suspendisse vulputate malesuada pellentesque. Aenean sollicitudin cursus mi, vitae ultricies felis ullamcorper eu. Duis luctus risus mi, in accumsan velit cursus ut. Vestibulum eleifend leo in magna eleifend fermentum. Proin nec ornare elit. Phasellus nec interdum risus. In a volutpat augue, quis egestas justo. Morbi porta mauris mattis bibendum imperdiet.</text:p>
       <text:p text:style-name="P3">Mauris ut erat eu lorem malesuada egestas vel vel urna. Maecenas ac semper quam. Maecenas aliquet metus non interdum mattis. Proin consectetur molestie ligula. Aliquam sollicitudin pulvinar urna a pellentesque. Suspendisse ultrices, est mattis scelerisque porta, nisi nisi laoreet nisl, non condimentum quam ante a velit. Proin scelerisque justo augue, nec laoreet ligula egestas at. Etiam enim quam, ultrices non accumsan hendrerit, elementum vel ligula. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam efficitur odio libero, in vestibulum arcu aliquam at. Cras non vehicula augue. Integer lobortis, est vitae aliquam facilisis, metus ligula aliquet eros, at porttitor sem tortor eget massa. Aliquam varius scelerisque neque sed gravida. Aenean eleifend lorem id ante elementum sollicitudin. Proin commodo massa a quam volutpat, mollis fermentum turpis efficitur.</text:p>
       <text:p text:style-name="P7">Notes: World</text:p>
       <text:h text:style-name="Heading_20_1" text:outline-level="1">Ancient Europe</text:h>
       <text:p text:style-name="Text_20_Meta"><text:span text:style-name="T8">Tag:</text:span> <text:span text:style-name="T9">Europe</text:span> | <text:span text:style-name="T10">Ancient Europe</text:span></text:p>
+      <text:p text:style-name="P5"><text:span text:style-name="T4">Short Description:</text:span> <text:span text:style-name="T5">A strange place</text:span></text:p>
       <text:p text:style-name="P6">Vivamus sodales risus ac accumsan posuere. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nunc vel enim felis. Vestibulum dignissim massa nunc, a auctor magna eleifend et. Proin dignissim sodales erat vitae convallis. Aliquam id tellus dui. Curabitur sollicitudin scelerisque ex sit amet posuere. Nam rutrum felis id rhoncus feugiat. Duis sagittis quam quis purus efficitur, quis rutrum odio iaculis. Maecenas semper ante turpis, at vulputate mi consectetur non. Sed rutrum nibh turpis, quis rhoncus purus ornare quis. Vestibulum at rutrum mauris. Integer dolor nisi, tincidunt eget vehicula ac, ultricies at ligula.</text:p>
       <text:p text:style-name="P3">Aenean semper turpis quis varius rhoncus. Vivamus ac mi eget felis euismod vulputate. Nam eu tempus velit. Etiam ut est porta, finibus erat sit amet, consectetur felis. Nullam consequat felis ut lacus pharetra, in lobortis urna mollis. Nulla varius eros nec lorem rhoncus, sed venenatis risus ultrices. Phasellus pellentesque laoreet neque, ut ultricies lacus vulputate quis. In malesuada dui sit amet est interdum, eget consectetur mi gravida. Cras vel bibendum purus. Quisque commodo tempor arcu, non lacinia sem blandit eleifend. Quisque at neque gravida, porttitor metus a, suscipit diam. Quisque convallis sodales lacus et condimentum. Donec a suscipit diam. Pellentesque eget cursus neque.</text:p>
       <text:p text:style-name="P3">Nunc ullamcorper magna quis elit condimentum rhoncus. Aenean dictum pulvinar dolor suscipit interdum. Aliquam elit massa, elementum nec cursus eu, maximus nec ipsum. Donec ullamcorper iaculis dolor eu commodo. Nunc eget tortor quis turpis consectetur varius. Vestibulum nec justo vel tellus venenatis condimentum. Duis auctor iaculis massa. Nunc risus magna, rutrum vitae eros non, tristique mollis enim.</text:p>

@@ -40,7 +40,7 @@ from novelwriter import __version__
 from novelwriter.common import xmlElement, xmlIndent, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.formats.shared import BlockFmt, BlockTyp, TextFmt, stripEscape
-from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.formats.tokenizer import COMMENT_BLOCKS, Tokenizer
 from novelwriter.types import FONT_STYLE, QtHexRgb
 
 if TYPE_CHECKING:
@@ -389,7 +389,7 @@ class ToOdt(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 self._addTextPar(xText, S_TEXT, oStyle, "")
 
-            elif tType == BlockTyp.COMMENT:
+            elif tType in COMMENT_BLOCKS:
                 self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
 
             elif tType == BlockTyp.KEYWORD:

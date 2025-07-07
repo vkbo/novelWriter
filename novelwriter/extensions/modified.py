@@ -117,12 +117,19 @@ class NTreeView(QTreeView):
 
 class NComboBox(QComboBox):
 
-    def __init__(self, parent: QWidget | None = None) -> None:
+    def __init__(self, parent: QWidget | None = None, maxItems: int = 15) -> None:
         super().__init__(parent=parent)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setMaxVisibleItems(maxItems)
+
+        # The style sheet disables Fusion style pop-up mode on some platforms
+        # and allows for scrolling of long lists of items
+        self.setStyleSheet("QComboBox {combobox-popup: 0;}")
+
         return
 
     def wheelEvent(self, event: QWheelEvent) -> None:
+        """Only capture the mouse wheel if the widget has focus."""
         if self.hasFocus():
             super().wheelEvent(event)
         else:

@@ -71,11 +71,23 @@ COMMENT_STYLE = {
     nwComment.COMMENT:  ComStyle(),
     nwComment.STORY:    ComStyle("Story Structure", "modifier", "note"),
 }
-HEADINGS = [
+COMMENT_TYPE = {
+    nwComment.PLAIN:    BlockTyp.COMMENT,
+    nwComment.IGNORE:   BlockTyp.COMMENT,
+    nwComment.SYNOPSIS: BlockTyp.SUMMARY,
+    nwComment.SHORT:    BlockTyp.SUMMARY,
+    nwComment.NOTE:     BlockTyp.NOTE,
+    nwComment.FOOTNOTE: BlockTyp.COMMENT,
+    nwComment.COMMENT:  BlockTyp.COMMENT,
+    nwComment.STORY:    BlockTyp.NOTE,
+}
+HEADING_BLOCKS = [
     BlockTyp.TITLE, BlockTyp.PART, BlockTyp.HEAD1,
     BlockTyp.HEAD2, BlockTyp.HEAD3, BlockTyp.HEAD4,
 ]
-SKIP_INDENT = [*HEADINGS, BlockTyp.SEP, BlockTyp.SKIP]
+COMMENT_BLOCKS = (BlockTyp.COMMENT, BlockTyp.SUMMARY, BlockTyp.NOTE)
+META_BLOCKS = (BlockTyp.COMMENT, BlockTyp.SUMMARY, BlockTyp.NOTE, BlockTyp.KEYWORD)
+SKIP_INDENT = [*HEADING_BLOCKS, BlockTyp.SEP, BlockTyp.SKIP]
 B_EMPTY: T_Block = (BlockTyp.EMPTY, "", "", [], BlockFmt.NONE)
 
 
@@ -189,6 +201,7 @@ class Tokenizer(ABC):
             (REGEX_PATTERNS.markdownItalic, [0, TextFmt.I_B, 0, TextFmt.I_E]),
             (REGEX_PATTERNS.markdownBold,   [0, TextFmt.B_B, 0, TextFmt.B_E]),
             (REGEX_PATTERNS.markdownStrike, [0, TextFmt.D_B, 0, TextFmt.D_E]),
+            (REGEX_PATTERNS.markdownMark,   [0, TextFmt.M_B, 0, TextFmt.M_E]),
         ]
 
         self._shortCodeFmt = {
@@ -618,7 +631,7 @@ class Tokenizer(ABC):
                     bStyle = COMMENT_STYLE[cStyle]
                     tLine, tFmt = self._formatComment(bStyle, cKey, cText)
                     tBlocks.append((
-                        BlockTyp.COMMENT, "", tLine, tFmt, tStyle
+                        COMMENT_TYPE[cStyle], "", tLine, tFmt, tStyle
                     ))
 
                 elif cStyle == nwComment.FOOTNOTE:
@@ -862,12 +875,12 @@ class Tokenizer(ABC):
                 # We don't need to keep the empty lines after this pass
                 pass
 
-            elif cBlock[0] == BlockTyp.KEYWORD:
-                # Adjust margins for lines in a list of keyword lines
+            elif cBlock[0] in (BlockTyp.KEYWORD, BlockTyp.NOTE):
+                # Adjust margins for lines in repeated meta blocks
                 aStyle = cBlock[4]
-                if pBlock[0] == BlockTyp.KEYWORD:
+                if pBlock[0] == cBlock[0]:
                     aStyle |= BlockFmt.Z_TOP
-                if nBlock[0] == BlockTyp.KEYWORD:
+                if nBlock[0] == cBlock[0]:
                     aStyle |= BlockFmt.Z_BTM
                 sBlocks.append((
                     cBlock[0], cBlock[1], cBlock[2], cBlock[3], aStyle
@@ -991,7 +1004,7 @@ class Tokenizer(ABC):
                 allWordChars += nPWChars
                 textWordChars += nPWChars
 
-            elif tType in HEADINGS:
+            elif tType in HEADING_BLOCKS:
                 titleCount += 1
                 allWords += nWords
                 titleWords += nWords
@@ -1005,7 +1018,7 @@ class Tokenizer(ABC):
                 allChars += nChars
                 allWordChars += nWChars
 
-            elif tType in (BlockTyp.COMMENT, BlockTyp.KEYWORD):
+            elif tType in META_BLOCKS:
                 words = tText.split()
                 allWords += len(words)
                 allChars += len(tText)

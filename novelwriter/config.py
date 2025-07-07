@@ -45,6 +45,7 @@ from novelwriter.common import (
     formatTimeStamp, processDialogSymbols, simplified
 )
 from novelwriter.constants import nwFiles, nwQuotes, nwUnicode
+from novelwriter.enum import nwTheme
 from novelwriter.error import formatException, logException
 
 if TYPE_CHECKING:
@@ -55,8 +56,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-DEF_GUI = "default"
-DEF_SYNTAX = "default_light"
+DEF_GUI_DARK = "default_dark"
+DEF_GUI_LIGHT = "default_light"
 DEF_ICONS = "material_rounded_normal"
 DEF_TREECOL = "theme"
 
@@ -69,22 +70,23 @@ class Config:
         "_manuals", "_nwLangPath", "_qLocale", "_qtLangPath", "_qtTrans", "_recentPaths",
         "_recentProjects", "_splash", "allowOpenDial", "altDialogClose", "altDialogOpen",
         "appHandle", "appName", "askBeforeBackup", "askBeforeExit", "autoSaveDoc", "autoSaveProj",
-        "autoScroll", "autoScrollPos", "autoSelect", "backupOnClose", "cursorWidth", "dialogLine",
-        "dialogStyle", "doJustify", "doReplace", "doReplaceDQuote", "doReplaceDash",
+        "autoScroll", "autoScrollPos", "autoSelect", "backupOnClose", "cursorWidth", "darkTheme",
+        "dialogLine", "dialogStyle", "doJustify", "doReplace", "doReplaceDQuote", "doReplaceDash",
         "doReplaceDots", "doReplaceSQuote", "emphLabels", "fmtApostrophe", "fmtDQuoteClose",
         "fmtDQuoteOpen", "fmtPadAfter", "fmtPadBefore", "fmtPadThin", "fmtSQuoteClose",
-        "fmtSQuoteOpen", "focusWidth", "guiFont", "guiLocale", "guiSyntax", "guiTheme",
-        "hasEnchant", "hideFocusFooter", "hideHScroll", "hideVScroll", "highlightEmph", "hostName",
-        "iconColDocs", "iconColTree", "iconTheme", "incNotesWCount", "isDebug", "kernelVer",
-        "lastNotes", "mainPanePos", "mainWinSize", "memInfo", "narratorBreak", "narratorDialog",
-        "nativeFont", "osDarwin", "osLinux", "osType", "osUnknown", "osWindows", "outlinePanePos",
-        "prefsWinSize", "scrollPastEnd", "searchCase", "searchLoop", "searchMatchCap",
-        "searchNextFile", "searchProjCase", "searchProjRegEx", "searchProjWord", "searchRegEx",
-        "searchWord", "showEditToolBar", "showFullPath", "showLineEndings", "showMultiSpaces",
-        "showSessionTime", "showTabsNSpaces", "showViewerPanel", "spellLanguage", "stopWhenIdle",
-        "tabWidth", "textFont", "textMargin", "textWidth", "useCharCount", "userIdleTime",
-        "verPyQtString", "verPyQtValue", "verPyString", "verQtString", "verQtValue",
-        "viewComments", "viewPanePos", "viewSynopsis", "welcomeWinSize",
+        "fmtSQuoteOpen", "focusWidth", "guiFont", "guiLocale", "hasEnchant", "hideFocusFooter",
+        "hideHScroll", "hideVScroll", "highlightEmph", "hostName", "iconColDocs", "iconColTree",
+        "iconTheme", "incNotesWCount", "isDebug", "kernelVer", "lastNotes", "lightTheme",
+        "lineHighlight", "mainPanePos", "mainWinSize", "memInfo", "narratorBreak",
+        "narratorDialog", "nativeFont", "osDarwin", "osLinux", "osType", "osUnknown", "osWindows",
+        "outlinePanePos", "prefsWinSize", "scrollPastEnd", "searchCase", "searchLoop",
+        "searchMatchCap", "searchNextFile", "searchProjCase", "searchProjRegEx", "searchProjWord",
+        "searchRegEx", "searchWord", "showEditToolBar", "showFullPath", "showLineEndings",
+        "showMultiSpaces", "showSessionTime", "showTabsNSpaces", "showViewerPanel",
+        "spellLanguage", "stopWhenIdle", "tabWidth", "textFont", "textMargin", "textWidth",
+        "themeMode", "useCharCount", "userIdleTime", "verPyQtString", "verPyQtValue",
+        "verPyString", "verQtString", "verQtValue", "viewComments", "viewNotes", "viewPanePos",
+        "viewSynopsis", "welcomeWinSize",
     )
 
     LANG_NW   = 1
@@ -153,14 +155,15 @@ class Config:
 
         # General GUI Settings
         self.guiLocale    = self._qLocale.name()
-        self.guiTheme     = DEF_GUI     # GUI theme
-        self.guiSyntax    = DEF_SYNTAX  # Syntax theme
-        self.guiFont      = QFont()     # Main GUI font
-        self.hideVScroll  = False       # Hide vertical scroll bars on main widgets
-        self.hideHScroll  = False       # Hide horizontal scroll bars on main widgets
-        self.lastNotes    = "0x0"       # The latest release notes that have been shown
-        self.nativeFont   = True        # Use native font dialog
-        self.useCharCount = False       # Use character count as primary count
+        self.lightTheme   = DEF_GUI_LIGHT  # Light GUI theme
+        self.darkTheme    = DEF_GUI_DARK   # Dark GUI theme
+        self.themeMode    = nwTheme.AUTO   # Colour theme mode
+        self.guiFont      = QFont()        # Main GUI font
+        self.hideVScroll  = False          # Hide vertical scroll bars on main widgets
+        self.hideHScroll  = False          # Hide horizontal scroll bars on main widgets
+        self.lastNotes    = "0x0"          # The latest release notes that have been shown
+        self.nativeFont   = True           # Use native font dialog
+        self.useCharCount = False          # Use character count as primary count
 
         # Icons
         self.iconTheme   = DEF_ICONS    # Icons theme
@@ -178,8 +181,8 @@ class Config:
         # Project Settings
         self.autoSaveProj    = 60     # Interval for auto-saving project, in seconds
         self.autoSaveDoc     = 30     # Interval for auto-saving document, in seconds
-        self.emphLabels      = True   # Add emphasis to H1 and H2 item labels
-        self.backupOnClose   = False  # Flag for running automatic backups
+        self.emphLabels      = False  # Add emphasis to H1 and H2 item labels
+        self.backupOnClose   = True   # Flag for running automatic backups
         self.askBeforeBackup = True   # Flag for asking before running automatic backup
         self.askBeforeExit   = True   # Flag for asking before exiting the app
 
@@ -189,6 +192,7 @@ class Config:
         self.textMargin      = 40       # Editor/viewer text margin
         self.tabWidth        = 40       # Editor tabulator width
         self.cursorWidth     = 1        # Editor cursor width
+        self.lineHighlight   = False    # Highlight current line in editor
 
         self.focusWidth      = 800      # Focus Mode text width
         self.hideFocusFooter = False    # Hide document footer in Focus Mode
@@ -206,7 +210,7 @@ class Config:
         self.doReplaceDash   = True     # Replace multiple hyphens with dashes
         self.doReplaceDots   = True     # Replace three dots with ellipsis
 
-        self.autoScroll      = False    # Typewriter-like scrolling
+        self.autoScroll      = True     # Typewriter-like scrolling
         self.autoScrollPos   = 30       # Start point for typewriter-like scrolling
         self.scrollPastEnd   = True     # Scroll past end of document, and centre cursor
 
@@ -245,6 +249,7 @@ class Config:
         self.showSessionTime = True   # Show the session time in the status bar
         self.viewComments    = True   # Comments are shown in the viewer
         self.viewSynopsis    = True   # Synopsis is shown in the viewer
+        self.viewNotes       = True   # Notes are shown in the viewer
 
         # Search Box States
         self.searchCase      = False
@@ -403,7 +408,7 @@ class Config:
             else:
                 font = QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont)
             self.guiFont = fontMatcher(font)
-            logger.debug("GUI font set to: %s", describeFont(font))
+            logger.debug("Main font set to: %s", describeFont(font))
         QApplication.setFont(self.guiFont)
         return
 
@@ -551,11 +556,10 @@ class Config:
         self._confPath.mkdir(exist_ok=True)
         self._dataPath.mkdir(exist_ok=True)
 
-        # Also create the syntax, themes and icons folders if possible
+        # Also create the themes and icons folders if possible
         if self._dataPath.is_dir():
             (self._dataPath / "cache").mkdir(exist_ok=True)
             (self._dataPath / "icons").mkdir(exist_ok=True)
-            (self._dataPath / "syntax").mkdir(exist_ok=True)
             (self._dataPath / "themes").mkdir(exist_ok=True)
 
         self._recentPaths.loadCache()
@@ -626,8 +630,9 @@ class Config:
         # Main
         sec = "Main"
         self.setGuiFont(conf.rdStr(sec, "font", ""))
-        self.guiTheme     = conf.rdStr(sec, "theme", self.guiTheme)
-        self.guiSyntax    = conf.rdStr(sec, "syntax", self.guiSyntax)
+        self.lightTheme   = conf.rdStr(sec, "lighttheme", self.lightTheme)
+        self.darkTheme    = conf.rdStr(sec, "darktheme", self.darkTheme)
+        self.themeMode    = conf.rdEnum(sec, "thememode", self.themeMode)
         self.iconTheme    = conf.rdStr(sec, "icons", self.iconTheme)
         self.iconColTree  = conf.rdStr(sec, "iconcoltree", self.iconColTree)
         self.iconColDocs  = conf.rdBool(sec, "iconcoldocs", self.iconColDocs)
@@ -665,6 +670,7 @@ class Config:
         self.textMargin      = conf.rdInt(sec, "margin", self.textMargin)
         self.tabWidth        = conf.rdInt(sec, "tabwidth", self.tabWidth)
         self.cursorWidth     = conf.rdInt(sec, "cursorwidth", self.cursorWidth)
+        self.lineHighlight   = conf.rdBool(sec, "linehighlight", self.lineHighlight)
         self.focusWidth      = conf.rdInt(sec, "focuswidth", self.focusWidth)
         self.hideFocusFooter = conf.rdBool(sec, "hidefocusfooter", self.hideFocusFooter)
         self.doJustify       = conf.rdBool(sec, "justify", self.doJustify)
@@ -708,6 +714,7 @@ class Config:
         self.showSessionTime = conf.rdBool(sec, "showsessiontime", self.showSessionTime)
         self.viewComments    = conf.rdBool(sec, "viewcomments", self.viewComments)
         self.viewSynopsis    = conf.rdBool(sec, "viewsynopsis", self.viewSynopsis)
+        self.viewNotes       = conf.rdBool(sec, "viewnotes", self.viewNotes)
         self.searchCase      = conf.rdBool(sec, "searchcase", self.searchCase)
         self.searchWord      = conf.rdBool(sec, "searchword", self.searchWord)
         self.searchRegEx     = conf.rdBool(sec, "searchregex", self.searchRegEx)
@@ -721,7 +728,7 @@ class Config:
         # Check Values
         # ============
 
-        self._prepareFont(self.guiFont, "GUI")
+        self._prepareFont(self.guiFont, "main")
         self._prepareFont(self.textFont, "document")
 
         # If we're using straight quotes, disable auto-replace
@@ -751,8 +758,9 @@ class Config:
 
         conf["Main"] = {
             "font":         self.guiFont.toString(),
-            "theme":        str(self.guiTheme),
-            "syntax":       str(self.guiSyntax),
+            "lighttheme":   str(self.lightTheme),
+            "darktheme":    str(self.darkTheme),
+            "thememode":    self.themeMode.name,
             "icons":        str(self.iconTheme),
             "iconcoltree":  str(self.iconColTree),
             "iconcoldocs":  str(self.iconColDocs),
@@ -790,6 +798,7 @@ class Config:
             "margin":          str(self.textMargin),
             "tabwidth":        str(self.tabWidth),
             "cursorwidth":     str(self.cursorWidth),
+            "lineHighlight":   str(self.lineHighlight),
             "focuswidth":      str(self.focusWidth),
             "hidefocusfooter": str(self.hideFocusFooter),
             "justify":         str(self.doJustify),
@@ -833,6 +842,7 @@ class Config:
             "showsessiontime": str(self.showSessionTime),
             "viewcomments":    str(self.viewComments),
             "viewsynopsis":    str(self.viewSynopsis),
+            "viewnotes":       str(self.viewNotes),
             "searchcase":      str(self.searchCase),
             "searchword":      str(self.searchWord),
             "searchregex":     str(self.searchRegEx),

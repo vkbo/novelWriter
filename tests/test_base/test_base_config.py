@@ -131,15 +131,15 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
         assert tstConf.errorText().startswith("Could not load config file")
 
     # Change a few settings, save, reset, and reload
-    tstConf.guiTheme = "foo"
-    tstConf.guiSyntax = "bar"
+    tstConf.lightTheme = "foo"
+    tstConf.darkTheme = "bar"
     assert tstConf.saveConfig() is True
 
     newConf = Config()
     newConf.initConfig(confPath=fncPath, dataPath=fncPath)
     newConf.loadConfig()
-    assert newConf.guiTheme == "foo"
-    assert newConf.guiSyntax == "bar"
+    assert newConf.lightTheme == "foo"
+    assert newConf.darkTheme == "bar"
 
     # Test Correcting Quote Settings
     tstConf.fmtDQuoteOpen = '"'

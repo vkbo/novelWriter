@@ -55,7 +55,7 @@ edited from the **Project Word List** tool available from the **Tools** menu.
 .. note::
 
    Generally, spell checking dictionaries are collected from your operating system, but on Windows
-   they are not. See :ref:`docs_more_custom_dict` for how to add spell checking dictionaries on
+   they are not. See :ref:`docs_more_dictionaries` for how to add spell checking dictionaries on
    Windows.
 
 

@@ -24,7 +24,7 @@ import pytest
 
 from PyQt6.QtGui import QColor, QIcon
 
-from novelwriter.core.status import NWStatus, StatusEntry, _ShapeCache
+from novelwriter.core.status import CUSTOM_COL, NWStatus, StatusEntry, _ShapeCache
 from novelwriter.enum import nwStatusShape
 
 from tests.tools import C
@@ -38,11 +38,12 @@ def testCoreStatus_StatusEntry():
     """Test the StatusEntry class."""
     color = QColor(255, 0, 0)
     icon = NWStatus.createIcon(24, color, nwStatusShape.CIRCLE)
-    entry = StatusEntry("Test", color, nwStatusShape.CIRCLE, icon, 42)
+    entry = StatusEntry("Test", color, CUSTOM_COL, nwStatusShape.CIRCLE, icon, 42)
 
     # Check values
     assert entry.name == "Test"
     assert entry.color is color
+    assert entry.theme == CUSTOM_COL
     assert entry.shape == nwStatusShape.CIRCLE
     assert entry.icon is icon
     assert entry.count == 42
@@ -55,6 +56,7 @@ def testCoreStatus_StatusEntry():
     assert other.name == "Test"
     assert other.color is not color  # Not the same object
     assert other.color == color      # But same colours
+    assert entry.theme == CUSTOM_COL
     assert other.shape == nwStatusShape.CIRCLE
     assert other.icon is not icon    # Not the same icon, but a copy
     assert other.count == 42
@@ -73,14 +75,14 @@ def testCoreStatus_Internal(mockGUI, mockRnd):
     assert nStatus._newKey() == statusKeys[1]
 
     # Key collision, should move to key 3
-    nStatus.add(statusKeys[2], "Crash", (0, 0, 0), "SQUARE", 0)
+    nStatus.add(statusKeys[2], "Crash", "#000000", "SQUARE", 0)
     assert nStatus._newKey() == statusKeys[3]
 
     assert nImport._newKey() == importKeys[0]
     assert nImport._newKey() == importKeys[1]
 
     # Key collision, should move to key 3
-    nImport.add(importKeys[2], "Crash", (0, 0, 0), "SQUARE", 0)
+    nImport.add(importKeys[2], "Crash", "#000000", "SQUARE", 0)
     assert nImport._newKey() == importKeys[3]
 
     # Check Key
@@ -119,14 +121,14 @@ def testCoreStatus_Internal(mockGUI, mockRnd):
 def testCoreStatus_Iterator(mockGUI, mockRnd):
     """Test the iterator functions of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
-    nStatus.add(None, "New",      (100, 100, 100), "SQUARE", 0)
-    nStatus.add(None, "Note",     (200, 50,  0),   "CIRCLE", 1)
-    nStatus.add(None, "Draft",    (200, 150, 0),   "SQUARE", 2)
-    nStatus.add(None, "Finished", (50,  200, 0),   "CIRCLE", 3)
+    nStatus.add(None, "New",      "#646464", "SQUARE", 0)
+    nStatus.add(None, "Note",     "#ff3f00", "CIRCLE", 1)
+    nStatus.add(None, "Draft",    "#ffaf00", "SQUARE", 2)
+    nStatus.add(None, "Finished", "#3fff00", "CIRCLE", 3)
 
     # Direct access
     entry = nStatus[statusKeys[0]]
-    assert entry.color == QColor(100, 100, 100)
+    assert entry.color.getRgb() == (100, 100, 100, 255)
     assert entry.name == "New"
     assert entry.count == 0
     assert isinstance(entry.icon, QIcon)
@@ -146,8 +148,8 @@ def testCoreStatus_Iterator(mockGUI, mockRnd):
     ]
 
     # Content : Colours
-    assert [e.color for _, e in nStatus.iterItems()] == [
-        QColor(100, 100, 100), QColor(200, 50,  0), QColor(200, 150, 0), QColor(50,  200, 0)
+    assert [e.color.getRgb() for _, e in nStatus.iterItems()] == [
+        (100, 100, 100, 255), (255, 63,  0, 255), (255, 175, 0, 255), (63,  255, 0, 255)
     ]
 
     # Content : Shape
@@ -168,27 +170,31 @@ def testCoreStatus_Entries(mockGUI, mockRnd):
     # ===
 
     # Has a key
-    nStatus.add(statusKeys[0], "Entry 1", (200, 100, 50), "SQUARE", 0)
+    nStatus.add(statusKeys[0], "Entry 1", "200, 100, 50", "SQUARE", 0)
     assert nStatus[statusKeys[0]].name == "Entry 1"
-    assert nStatus[statusKeys[0]].color == QColor(200, 100, 50)
+    assert nStatus[statusKeys[0]].color.getRgb() == (200, 100, 50, 255)
+    assert nStatus[statusKeys[0]].theme == CUSTOM_COL
     assert nStatus[statusKeys[0]].shape == nwStatusShape.SQUARE
 
     # Doesn't have a key
-    nStatus.add(None, "Entry 2", (210, 110, 60), "SQUARE", 0)
+    nStatus.add(None, "Entry 2", "210, 110, 60", "SQUARE", 0)
     assert nStatus[statusKeys[1]].name == "Entry 2"
-    assert nStatus[statusKeys[1]].color == QColor(210, 110, 60)
+    assert nStatus[statusKeys[1]].color.getRgb() == (210, 110, 60, 255)
+    assert nStatus[statusKeys[1]].theme == CUSTOM_COL
     assert nStatus[statusKeys[1]].shape == nwStatusShape.SQUARE
 
     # Wrong colour spec, unknown shape
-    nStatus.add(None, "Entry 3", "what?", "", 0)  # type: ignore
+    nStatus.add(None, "Entry 3", "what?", "", 0)
     assert nStatus[statusKeys[2]].name == "Entry 3"
-    assert nStatus[statusKeys[2]].color == QColor(100, 100, 100)
+    assert nStatus[statusKeys[2]].color.getRgb() == (0, 0, 0, 255)
+    assert nStatus[statusKeys[2]].theme == CUSTOM_COL
     assert nStatus[statusKeys[2]].shape == nwStatusShape.SQUARE
 
-    # Wrong colour count
-    nStatus.add(None, "Entry 4", (10, 20), "CIRCLE", 0)  # type: ignore
+    # Wrong colour definition
+    nStatus.add(None, "Entry 4", "#stuff#", "CIRCLE", 0)
     assert nStatus[statusKeys[3]].name == "Entry 4"
-    assert nStatus[statusKeys[3]].color == QColor(100, 100, 100)
+    assert nStatus[statusKeys[3]].color.getRgb() == (0, 0, 0, 255)
+    assert nStatus[statusKeys[3]].theme == CUSTOM_COL
     assert nStatus[statusKeys[3]].shape == nwStatusShape.CIRCLE
 
     # Check
@@ -202,8 +208,6 @@ def testCoreStatus_Entries(mockGUI, mockRnd):
     assert nStatus.check("s987654") == statusKeys[0]
 
     # Name Access
-    # ===========
-
     assert nStatus[statusKeys[0]].name == "Entry 1"
     assert nStatus[statusKeys[1]].name == "Entry 2"
     assert nStatus[statusKeys[2]].name == "Entry 3"
@@ -211,17 +215,20 @@ def testCoreStatus_Entries(mockGUI, mockRnd):
     assert nStatus["blablabla"].name == "Entry 1"
 
     # Colour Access
-    # =============
+    assert nStatus[statusKeys[0]].color.getRgb() == (200, 100, 50, 255)
+    assert nStatus[statusKeys[1]].color.getRgb() == (210, 110, 60, 255)
+    assert nStatus[statusKeys[2]].color.getRgb() == (0, 0, 0, 255)
+    assert nStatus[statusKeys[3]].color.getRgb() == (0, 0, 0, 255)
+    assert nStatus["blablabla"].color.getRgb() == (200, 100, 50, 255)
 
-    assert nStatus[statusKeys[0]].color == QColor(200, 100, 50)
-    assert nStatus[statusKeys[1]].color == QColor(210, 110, 60)
-    assert nStatus[statusKeys[2]].color == QColor(100, 100, 100)
-    assert nStatus[statusKeys[3]].color == QColor(100, 100, 100)
-    assert nStatus["blablabla"].color == QColor(200, 100, 50)
+    # Theme Access
+    assert nStatus[statusKeys[0]].theme == CUSTOM_COL
+    assert nStatus[statusKeys[1]].theme == CUSTOM_COL
+    assert nStatus[statusKeys[2]].theme == CUSTOM_COL
+    assert nStatus[statusKeys[3]].theme == CUSTOM_COL
+    assert nStatus["blablabla"].theme == CUSTOM_COL
 
     # Icon Access
-    # ===========
-
     assert isinstance(nStatus[statusKeys[0]].icon, QIcon)
     assert isinstance(nStatus[statusKeys[1]].icon, QIcon)
     assert isinstance(nStatus[statusKeys[2]].icon, QIcon)
@@ -229,8 +236,6 @@ def testCoreStatus_Entries(mockGUI, mockRnd):
     assert isinstance(nStatus["blablabla"].icon, QIcon)
 
     # Shape Access
-    # ============
-
     assert nStatus[statusKeys[0]].shape == nwStatusShape.SQUARE
     assert nStatus[statusKeys[1]].shape == nwStatusShape.SQUARE
     assert nStatus[statusKeys[2]].shape == nwStatusShape.SQUARE
@@ -319,13 +324,32 @@ def testCoreStatus_Entries(mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreStatus_Pack(mockGUI, mockRnd):
+def testCoreStatus_RefreshIcons(mockGUIwithTheme, mockRnd):
+    """Test refreshing the icons of the NWStatus class."""
+    nStatus = NWStatus(NWStatus.STATUS)
+    nStatus.add(None, "New",      "default", "SQUARE", 0)
+    nStatus.add(None, "Note",     "red",     "CIRCLE", 0)
+    nStatus.add(None, "Draft",    "yellow",  "SQUARE", 0)
+    nStatus.add(None, "Finished", "green",   "SQUARE", 0)
+
+    beforeIcons = [nStatus[statusKeys[i]].icon for i in range(4)]
+
+    # Refreshing the icons should generate new ones
+    nStatus.refreshIcons()
+    afterIcons = [nStatus[statusKeys[i]].icon for i in range(4)]
+
+    for before, after in zip(beforeIcons, afterIcons, strict=False):
+        assert before is not after
+
+
+@pytest.mark.core
+def testCoreStatus_Pack(mockGUIwithTheme, mockRnd):
     """Test data packing of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
-    nStatus.add(None, "New",      (100, 100, 100), "SQUARE", 0)
-    nStatus.add(None, "Note",     (200, 50,  0),   "CIRCLE", 0)
-    nStatus.add(None, "Draft",    (200, 150, 0),   "SQUARE", 0)
-    nStatus.add(None, "Finished", (50,  200, 0),   "SQUARE", 0)
+    nStatus.add(None, "New",      "#646464", "SQUARE", 0)
+    nStatus.add(None, "Note",     "#c83200", "CIRCLE", 0)
+    nStatus.add(None, "Draft",    "#c89600", "SQUARE", 0)
+    nStatus.add(None, "Finished", "default", "SQUARE", 0)
 
     countTo = [3, 5, 7, 9]
     for i, n in enumerate(countTo):
@@ -337,33 +361,25 @@ def testCoreStatus_Pack(mockGUI, mockRnd):
         ("New", {
             "key": statusKeys[0],
             "count": "3",
-            "red": "100",
-            "green": "100",
-            "blue": "100",
+            "color": "#646464",
             "shape": "SQUARE",
         }),
         ("Note", {
             "key": statusKeys[1],
             "count": "5",
-            "red": "200",
-            "green": "50",
-            "blue": "0",
+            "color": "#c83200",
             "shape": "CIRCLE",
         }),
         ("Draft", {
             "key": statusKeys[2],
             "count": "7",
-            "red": "200",
-            "green": "150",
-            "blue": "0",
+            "color": "#c89600",
             "shape": "SQUARE",
         }),
         ("Finished", {
             "key": statusKeys[3],
             "count": "9",
-            "red": "50",
-            "green": "200",
-            "blue": "0",
+            "color": "default",
             "shape": "SQUARE",
         }),
     ]

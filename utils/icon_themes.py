@@ -33,6 +33,7 @@ from utils.common import ROOT_DIR
 UTILS = Path(__file__).parent
 ET.register_namespace("", "http://www.w3.org/2000/svg")
 ICONS = [
+    # Remember to also update tests/files/all_icons.json for test coverage
     "alert_error",
     "alert_info",
     "alert_question",
@@ -89,6 +90,10 @@ ICONS = [
     "sb_project",
     "sb_search",
     "sb_stats",
+
+    "theme_light",
+    "theme_dark",
+    "theme_auto",
 
     "add",
     "bookmarks",
