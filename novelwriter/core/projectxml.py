@@ -441,9 +441,9 @@ class ProjectXMLReader:
         for xEntry in xItem:
             if xEntry.tag == "entry":
                 key   = xEntry.attrib.get("key", None)
-                red   = checkInt(xEntry.attrib.get("red", 0), 0)    # Deprecated in 1.5 R6
-                green = checkInt(xEntry.attrib.get("green", 0), 0)  # Deprecated in 1.5 R6
-                blue  = checkInt(xEntry.attrib.get("blue", 0), 0)   # Deprecated in 1.5 R6
+                red   = checkInt(xEntry.attrib.get("red", 0), 0)    # Removed in 1.5 R6
+                green = checkInt(xEntry.attrib.get("green", 0), 0)  # Removed in 1.5 R6
+                blue  = checkInt(xEntry.attrib.get("blue", 0), 0)   # Removed in 1.5 R6
                 color = xEntry.attrib.get("color")  # Added in 1.5 R6
                 count = checkInt(xEntry.attrib.get("count", 0), 0)
                 shape = xEntry.attrib.get("shape", "")
