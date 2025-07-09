@@ -51,7 +51,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # RegEx
-RX_TEXT = re.compile(r"([\n\t])", re.UNICODE)
+RX_TEXT = re.compile(r"([\n\t])")
 
 # Types and Relationships
 OOXML_SCM = "http://schemas.openxmlformats.org"

@@ -38,8 +38,8 @@ from novelwriter.common import (
     fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass, isItemLayout,
     isItemType, isListInstance, isTitleTag, jsonEncode, makeFileNameSafe,
     minmax, numberToRoman, openExternalPath, processDialogSymbols,
-    readTextFile, simplified, transferCase, uniqueCompact, xmlElement,
-    xmlIndent, xmlSubElem, yesNo
+    readTextFile, simplified, transferCase, uniqueCompact, utf16CharMap,
+    xmlElement, xmlIndent, xmlSubElem, yesNo
 )
 from novelwriter.enum import nwItemClass
 
@@ -555,6 +555,14 @@ def testBaseCommon_encodeDecodeMimeHandles(monkeypatch):
     mimeData = QMimeData()
     encodeMimeHandles(mimeData, handles)
     assert decodeMimeHandles(mimeData) == handles
+
+
+@pytest.mark.base
+def testBaseCommon_utf16CharMap(monkeypatch):
+    """Test the utf16CharMap function."""
+    assert utf16CharMap("abc") == [0, 1, 2, 3]
+    assert utf16CharMap("a\u2014b\u2014c") == [0, 1, 2, 3, 4, 5]
+    assert utf16CharMap("a\U0001F605b\U0001F605c") == [0, 1, 3, 4, 6, 7]
 
 
 @pytest.mark.base

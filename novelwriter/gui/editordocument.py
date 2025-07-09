@@ -113,7 +113,7 @@ class GuiTextDocument(QTextDocument):
                         return cData, cType
         return "", ""
 
-    def spellErrorAtPos(self, pos: int) -> tuple[str, int, int, list[str]]:
+    def spellErrorAtPos(self, pos: int) -> tuple[str, int, list[str]]:
         """Check if there is a misspelled word at a given position in
         the document, and if so, return it.
         """
@@ -122,15 +122,11 @@ class GuiTextDocument(QTextDocument):
         block = cursor.block()
         data = block.userData()
         if block.isValid() and isinstance(data, TextBlockData):
-            text = block.text()
-            check = pos - block.position()
-            if check >= 0:
-                for cPos, cEnd in data.spellErrors:
-                    cLen = cEnd - cPos
-                    if cPos <= check <= cEnd:
-                        word = text[cPos:cEnd]
-                        return word, cPos, cLen, SHARED.spelling.suggestWords(word)
-        return "", -1, -1, []
+            if (check := pos - block.position()) >= 0:
+                for start, end, word in data.spellErrors:
+                    if start <= check <= end:
+                        return word, start, SHARED.spelling.suggestWords(word)
+        return "", -1, []
 
     def iterBlockByType(self, cType: int, maxCount: int = 1000) -> Iterable[QTextBlock]:
         """Iterate over all text blocks of a given type."""

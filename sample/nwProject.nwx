@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.8a1" hexVersion="0x020800a1" fileVersion="1.5" fileRevision="6" timeStamp="2025-06-24 17:12:20">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2236" autoCount="290" editTime="98026">
+<novelWriterXML appVersion="2.8a1" hexVersion="0x020800a1" fileVersion="1.5" fileRevision="6" timeStamp="2025-07-06 16:34:43">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2274" autoCount="301" editTime="99789">
     <name>Sample Project</name>
     <author>Jane Smith</author>
   </project>
@@ -9,8 +9,8 @@
     <language>en_GB</language>
     <spellChecking auto="yes">None</spellChecking>
     <lastHandle>
-      <entry key="editor">636b6aa9b697b</entry>
-      <entry key="viewer">636b6aa9b697b</entry>
+      <entry key="editor">f0260d04a8013</entry>
+      <entry key="viewer">f0260d04a8013</entry>
       <entry key="novel">7031beac91f75</entry>
       <entry key="outline">7031beac91f75</entry>
     </lastHandle>
@@ -20,7 +20,7 @@
       <entry key="C">D</entry>
     </autoReplace>
     <status>
-      <entry key="sf12341" count="8" color="faded" shape="STAR">New</entry>
+      <entry key="sf12341" count="9" color="#969896" shape="STAR">New</entry>
       <entry key="sf24ce6" count="2" color="red" shape="STAR">Notes</entry>
       <entry key="sc24b8f" count="3" color="yellow" shape="BARS_1">Started</entry>
       <entry key="s90e6c9" count="5" color="yellow" shape="BARS_2">1st Draft</entry>
@@ -36,7 +36,7 @@
       <entry key="i56be10" count="1" color="purple" shape="BLOCK_4">Main</entry>
     </importance>
   </settings>
-  <content items="31" novelWords="1016" notesWords="416" novelChars="5606" notesChars="2285">
+  <content items="32" novelWords="1049" notesWords="416" novelChars="5792" notesChars="2285">
     <item handle="7031beac91f75" parent="None" root="7031beac91f75" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="sc24b8f" import="ia857f0">Novel</name>
@@ -58,12 +58,16 @@
       <name status="sf24ce6" import="ia857f0" active="yes">Chapter One</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="3003" wordCount="530" paraCount="16" cursorPos="586" />
+      <meta expanded="no" heading="H3" charCount="3003" wordCount="530" paraCount="16" cursorPos="19" />
       <name status="s90e6c9" import="ia857f0" active="yes">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H3" charCount="548" wordCount="108" paraCount="3" cursorPos="650" />
       <name status="s90e6c9" import="ia857f0" active="yes">Another Scene</name>
+    </item>
+    <item handle="f0260d04a8013" parent="6a2d6d5f4f401" root="7031beac91f75" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="no" heading="H3" charCount="186" wordCount="33" paraCount="4" cursorPos="373" />
+      <name status="sf12341" import="ia857f0" active="yes">New Scene</name>
     </item>
     <item handle="ba8a28a246524" parent="7031beac91f75" root="7031beac91f75" order="4" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="no" heading="H2" charCount="617" wordCount="101" paraCount="3" cursorPos="1182" />
