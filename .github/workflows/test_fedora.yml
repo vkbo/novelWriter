@@ -14,7 +14,7 @@ jobs:
   testFedora:
     runs-on: ubuntu-latest
     container:
-      image: fedora-rawhide
+      image: fedora:rawhide
     steps:
       - name: Install Packages (dnf)
         run: |
