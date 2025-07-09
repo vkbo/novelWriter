@@ -20,17 +20,13 @@ jobs:
         run: |
           dnf -y update
           dnf -y install adobe-source-sans-pro-fonts hunspell-en hunspell-en-GB hunspell-en-US
-          dnf -y install enchant2-devel hunspell-devel qt6-qttools-devel qt6-qtsvg-devel sed
+          dnf -y install enchant2-devel git hunspell-devel qt6-qttools-devel qt6-qtsvg-devel
           dnf -y install python3-devel
       - name: Checkout Source
         uses: actions/checkout@v4
       - name: Install Dependencies (pip)
         run: |
           pip install -U -r requirements.txt -r tests/requirements.txt
-      # - name: Fedora specific modifications
-      #   run: |
-      #     sed -i 's/self.spellLanguage = "en"/self.spellLanguage = "en_US"/g' novelwriter/config.py
-      #     sed -i 's/spellcheck = en/spellcheck = en_US/g' tests/reference/baseConfig_novelwriter.conf
       - name: Run Build Commands
         run: |
           python pkgutils.py qtlrelease
