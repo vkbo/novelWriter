@@ -699,11 +699,12 @@ class NWConfigParser(ConfigParser):
     """Common: Adapted Config Parser
 
     This is a subclass of the standard config parser that adds type safe
-    helper functions, and support for lists.
+    helper functions, and support for lists. It also turns off
+    interpolation, which would require % symbols to be escaped (#2455).
     """
 
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__(interpolation=None)
         return
 
     def rdStr(self, section: str, option: str, default: str) -> str:

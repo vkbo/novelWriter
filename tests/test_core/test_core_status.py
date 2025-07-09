@@ -324,22 +324,54 @@ def testCoreStatus_Entries(mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreStatus_RefreshIcons(mockGUIwithTheme, mockRnd):
-    """Test refreshing the icons of the NWStatus class."""
+def testCoreStatus_RefreshIcons_Theme(mockGUIwithTheme, mockRnd):
+    """Test refreshing the icons with theme colours."""
     nStatus = NWStatus(NWStatus.STATUS)
     nStatus.add(None, "New",      "default", "SQUARE", 0)
     nStatus.add(None, "Note",     "red",     "CIRCLE", 0)
     nStatus.add(None, "Draft",    "yellow",  "SQUARE", 0)
     nStatus.add(None, "Finished", "green",   "SQUARE", 0)
 
-    beforeIcons = [nStatus[statusKeys[i]].icon for i in range(4)]
+    iconsA = [nStatus[statusKeys[i]].icon for i in range(4)]
+    themeA = [nStatus[statusKeys[i]].theme for i in range(4)]
 
     # Refreshing the icons should generate new ones
     nStatus.refreshIcons()
-    afterIcons = [nStatus[statusKeys[i]].icon for i in range(4)]
+    iconsB = [nStatus[statusKeys[i]].icon for i in range(4)]
+    themeB = [nStatus[statusKeys[i]].theme for i in range(4)]
 
-    for before, after in zip(beforeIcons, afterIcons, strict=False):
+    for before, after in zip(iconsA, iconsB, strict=False):
         assert before is not after
+
+    assert themeA == themeB
+
+
+@pytest.mark.core
+def testCoreStatus_RefreshIcons_Custom(mockGUIwithTheme, mockRnd):
+    """Test refreshing the icons with custom colours."""
+    nStatus = NWStatus(NWStatus.STATUS)
+    nStatus.add(None, "New",      "#707070", "SQUARE", 0)
+    nStatus.add(None, "Note",     "#ff0000", "CIRCLE", 0)
+    nStatus.add(None, "Draft",    "#ffff00", "SQUARE", 0)
+    nStatus.add(None, "Finished", "#00ff00", "SQUARE", 0)
+
+    iconsA = [nStatus[statusKeys[i]].icon for i in range(4)]
+    themeA = [nStatus[statusKeys[i]].theme for i in range(4)]
+    colorA = [nStatus[statusKeys[i]].color.getRgb() for i in range(4)]
+
+    # Refreshing the icons should generate new ones
+    nStatus.refreshIcons()
+    iconsB = [nStatus[statusKeys[i]].icon for i in range(4)]
+    themeB = [nStatus[statusKeys[i]].theme for i in range(4)]
+    colorB = [nStatus[statusKeys[i]].color.getRgb() for i in range(4)]
+
+    for before, after in zip(iconsA, iconsB, strict=False):
+        assert before is not after
+
+    # But they should have the same colour value (#2452)
+    assert themeA == [CUSTOM_COL, CUSTOM_COL, CUSTOM_COL, CUSTOM_COL]
+    assert themeB == [CUSTOM_COL, CUSTOM_COL, CUSTOM_COL, CUSTOM_COL]
+    assert colorA == colorB
 
 
 @pytest.mark.core

@@ -192,7 +192,8 @@ class NWStatus:
     def refreshIcons(self) -> None:
         """Refresh all icons."""
         for entry in self._store.values():
-            entry.color = SHARED.theme.parseColor(entry.theme)
+            if entry.theme != CUSTOM_COL:
+                entry.color = SHARED.theme.parseColor(entry.theme)
             entry.icon = NWStatus.createIcon(self._height, entry.color, entry.shape)
         return
 
