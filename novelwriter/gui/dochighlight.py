@@ -36,11 +36,12 @@ from PyQt6.QtGui import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt
+from novelwriter.common import checkInt, utf16CharMap
 from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.enum import nwComment
 from novelwriter.text.comments import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
+from novelwriter.types import QtTextUserProperty
 
 logger = logging.getLogger(__name__)
 
@@ -308,27 +309,37 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         if self._tHandle is None or not text:
             return
 
-        xOff = 0
-        hRules = None
+        blockLen = self.currentBlock().length()
+        utf16Map = None
+        if blockLen > len(text) + 1:
+            # If the lengths are different, the line contains 4 byte
+            # Unicode characters, and we must use a map between Python
+            # string indices and the UTF-16 indices used by Qt, where a
+            # 4 byte character occupies two slots. See #2449.
+            utf16Map = utf16CharMap(text)
+
+        offset = 0
+        rules = None
         if text.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(BLOCK_META)
             index = SHARED.project.index
-            isValid, bits, pos = index.scanThis(text)
+            isValid, bits, loc = index.scanThis(text)
             isGood = index.checkThese(bits, self._tHandle)
             if isValid:
                 for n, bit in enumerate(bits):
-                    xPos = pos[n]
-                    xLen = len(bit)
+                    pos = utf16Map[loc[n]] if utf16Map else loc[n]
+                    length = utf16Map[loc[n] + len(bit)] - pos if utf16Map else len(bit)
                     if n == 0 and isGood[n]:
-                        self.setFormat(xPos, xLen, self._hStyles["keyword"])
+                        self.setFormat(pos, length, self._hStyles["keyword"])
                     elif isGood[n] and not self._isInactive:
-                        one, two = index.parseValue(bit)
-                        self.setFormat(xPos, len(one), self._hStyles["tag"])
-                        if two:
-                            yPos = xPos + len(bit) - len(two)
-                            self.setFormat(yPos, len(two), self._hStyles["optional"])
+                        a, b = index.parseValue(bit)
+                        aLen = utf16Map[loc[n] + len(a)] - pos if utf16Map else len(a)
+                        self.setFormat(pos, aLen, self._hStyles["tag"])
+                        if b:
+                            bLen = utf16Map[loc[n] + len(b)] - pos if utf16Map else len(b)
+                            self.setFormat(pos + length - bLen, bLen, self._hStyles["optional"])
                     elif not self._isInactive:
-                        self.setFormat(xPos, xLen, self._hStyles["invalid"])
+                        self.setFormat(pos, length, self._hStyles["invalid"])
 
             # We never want to run the spell checker on keyword/values,
             # so we force a return here
@@ -339,98 +350,118 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
             if text.startswith("# "):  # Heading 1
                 self.setFormat(0, 1, self._hStyles["head1h"])
-                self.setFormat(1, len(text), self._hStyles["header1"])
+                self.setFormat(1, blockLen, self._hStyles["header1"])
 
             elif text.startswith("## "):  # Heading 2
                 self.setFormat(0, 2, self._hStyles["head2h"])
-                self.setFormat(2, len(text), self._hStyles["header2"])
+                self.setFormat(2, blockLen, self._hStyles["header2"])
 
             elif text.startswith("### "):  # Heading 3
                 self.setFormat(0, 3, self._hStyles["head3h"])
-                self.setFormat(3, len(text), self._hStyles["header3"])
+                self.setFormat(3, blockLen, self._hStyles["header3"])
 
             elif text.startswith("#### "):  # Heading 4
                 self.setFormat(0, 4, self._hStyles["head4h"])
-                self.setFormat(4, len(text), self._hStyles["header4"])
+                self.setFormat(4, blockLen, self._hStyles["header4"])
 
             elif text.startswith("#! "):  # Title
                 self.setFormat(0, 2, self._hStyles["head1h"])
-                self.setFormat(2, len(text), self._hStyles["header1"])
+                self.setFormat(2, blockLen, self._hStyles["header1"])
 
             elif text.startswith("##! "):  # Unnumbered
                 self.setFormat(0, 3, self._hStyles["head2h"])
-                self.setFormat(3, len(text), self._hStyles["header2"])
+                self.setFormat(3, blockLen, self._hStyles["header2"])
 
             elif text.startswith("###! "):  # Alternative Scene
                 self.setFormat(0, 4, self._hStyles["head3h"])
-                self.setFormat(4, len(text), self._hStyles["header3"])
+                self.setFormat(4, blockLen, self._hStyles["header3"])
 
         elif text.startswith("%"):  # Comments
             self.setCurrentBlockState(BLOCK_TEXT)
-            hRules = self._cmnRules
+            rules = self._cmnRules
 
-            cStyle, cMod, _, cDot, cPos = processComment(text)
-            cLen = len(text) - cPos
-            xOff = cPos
-            if cStyle == nwComment.PLAIN:
-                self.setFormat(0, cLen, self._hStyles["hidden"])
-            elif cStyle == nwComment.IGNORE:
-                self.setFormat(0, cLen, self._hStyles["strike"])
+            style, mod, _, dot, pos = processComment(text)
+            offset = pos
+            if utf16Map:
+                dot = utf16Map[dot]
+                pos = utf16Map[pos]
+            length = blockLen - pos
+            if style == nwComment.PLAIN:
+                self.setFormat(0, length, self._hStyles["hidden"])
+            elif style == nwComment.IGNORE:
+                self.setFormat(0, length, self._hStyles["strike"])
                 return  # No more processing for these
-            elif cMod:
-                self.setFormat(0, cDot, self._hStyles["modifier"])
-                self.setFormat(cDot, cPos - cDot, self._hStyles["value"])
-                self.setFormat(cPos, cLen, self._hStyles["note"])
+            elif mod:
+                self.setFormat(0, dot, self._hStyles["modifier"])
+                self.setFormat(dot, pos - dot, self._hStyles["value"])
+                self.setFormat(pos, length, self._hStyles["note"])
             else:
-                self.setFormat(0, cPos, self._hStyles["modifier"])
-                self.setFormat(cPos, cLen, self._hStyles["note"])
+                self.setFormat(0, pos, self._hStyles["modifier"])
+                self.setFormat(pos, length, self._hStyles["note"])
 
         elif text.startswith("["):  # Special Command
             self.setCurrentBlockState(BLOCK_TEXT)
-            hRules = self._txtRules if self._isNovel else self._minRules
+            rules = self._txtRules if self._isNovel else self._minRules
 
-            sText = text.rstrip().lower()
-            if sText in ("[newpage]", "[new page]", "[vspace]"):
-                self.setFormat(0, len(text), self._hStyles["code"])
+            check = text.rstrip().lower()
+            if check in ("[newpage]", "[new page]", "[vspace]"):
+                self.setFormat(0, blockLen, self._hStyles["code"])
                 return
-            elif sText.startswith("[vspace:") and sText.endswith("]"):
-                tLen = len(sText)
-                tVal = checkInt(sText[8:-1], 0)
-                cVal = "value" if tVal > 0 else "invalid"
+            elif check.startswith("[vspace:") and check.endswith("]"):
+                value = checkInt(check[8:-1], 0)
+                style = "value" if value > 0 else "invalid"
                 self.setFormat(0, 8, self._hStyles["code"])
-                self.setFormat(8, tLen-9, self._hStyles[cVal])
-                self.setFormat(tLen-1, tLen, self._hStyles["code"])
+                self.setFormat(8, blockLen-10, self._hStyles[style])
+                self.setFormat(blockLen-2, blockLen, self._hStyles["code"])
                 return
 
         else:  # Text Paragraph
             self.setCurrentBlockState(BLOCK_TEXT)
-            hRules = self._txtRules if self._isNovel else self._minRules
+            rules = self._txtRules if self._isNovel else self._minRules
             if self._isNovel and self._dialogParser.enabled:
-                for pos, end in self._dialogParser(text):
-                    length = end - pos
-                    self.setFormat(pos, length, self._hStyles["dialog"])
+                if utf16Map:
+                    for pos, end in self._dialogParser(text):
+                        pos = utf16Map[pos]
+                        end = utf16Map[end]
+                        self.setFormat(pos, end - pos, self._hStyles["dialog"])
+                else:
+                    for pos, end in self._dialogParser(text):
+                        self.setFormat(pos, end - pos, self._hStyles["dialog"])
 
-        if hRules:
-            for rX, hRule in hRules:
-                for res in re.finditer(rX, text[xOff:]):
-                    for xM, hFmt in hRule.items():
-                        xPos = res.start(xM) + xOff
-                        xEnd = res.end(xM) + xOff
-                        for x in range(xPos, xEnd):
-                            cFmt = self.format(x)
-                            if cFmt.fontStyleName() != "markup":
-                                cFmt.merge(hFmt)
-                                self.setFormat(x, 1, cFmt)
+        if rules:
+            if utf16Map:
+                for rX, hRule in rules:
+                    for res in re.finditer(rX, text[offset:]):
+                        for x, hFmt in hRule.items():
+                            pos = res.start(x) + offset
+                            end = res.end(x) + offset
+                            for x in range(pos, end):
+                                m = utf16Map[x]
+                                cFmt = self.format(m)
+                                if not cFmt.property(QtTextUserProperty):
+                                    cFmt.merge(hFmt)
+                                    self.setFormat(m, utf16Map[x+1] - m, cFmt)
+            else:
+                for rX, hRule in rules:
+                    for res in re.finditer(rX, text[offset:]):
+                        for x, hFmt in hRule.items():
+                            pos = res.start(x) + offset
+                            end = res.end(x) + offset
+                            for x in range(pos, end):
+                                cFmt = self.format(x)
+                                if not cFmt.property(QtTextUserProperty):
+                                    cFmt.merge(hFmt)
+                                    self.setFormat(x, 1, cFmt)
 
         data = self.currentBlockUserData()
         if not isinstance(data, TextBlockData):
             data = TextBlockData()
             self.setCurrentBlockUserData(data)
 
-        data.processText(text, xOff)
+        data.processText(text, offset)
         if self._spellCheck:
-            for xPos, xEnd in data.spellCheck():
-                for x in range(xPos, xEnd):
+            for pos, end, _ in data.spellCheck(utf16Map):
+                for x in range(pos, end):
                     cFmt = self.format(x)
                     cFmt.merge(self._spellErr)
                     self.setFormat(x, 1, cFmt)
@@ -447,7 +478,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     ) -> None:
         """Generate a highlighter character format."""
         charFormat = QTextCharFormat()
-        charFormat.setFontStyleName(name)
+        blockMerge = name == "markup"
+        charFormat.setProperty(QtTextUserProperty, blockMerge)
 
         if style:
             styles = style.split(",")
@@ -486,7 +518,7 @@ class TextBlockData(QTextBlockUserData):
         self._text = ""
         self._offset = 0
         self._metaData: list[tuple[int, int, str, str]] = []
-        self._spellErrors: list[tuple[int, int]] = []
+        self._spellErrors: list[tuple[int, int, str]] = []
         return
 
     @property
@@ -495,7 +527,7 @@ class TextBlockData(QTextBlockUserData):
         return self._metaData
 
     @property
-    def spellErrors(self) -> list[tuple[int, int]]:
+    def spellErrors(self) -> list[tuple[int, int, str]]:
         """Return spell error data from last check."""
         return self._spellErrors
 
@@ -518,22 +550,26 @@ class TextBlockData(QTextBlockUserData):
                     text = f"{text[:s]}{pad}{text[e:]}"
                     self._metaData.append((s, e, res.group(0), "url"))
 
-        self._text = text.replace("\u02bc", "'")
+        self._text = text.replace("\u02bc", "'").replace("_", " ")
         self._offset = offset
 
         return
 
-    def spellCheck(self) -> list[tuple[int, int]]:
+    def spellCheck(self, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
         """Run the spell checker and cache the result, and return the
         list of spell check errors.
         """
-        self._spellErrors = []
-        checker = SHARED.spelling
-        for res in RX_WORDS.finditer(self._text.replace("_", " "), self._offset):
-            if (
-                (word := res.group(0))
-                and not (word.isnumeric() or word.isupper() or checker.checkWord(word))
-            ):
-                self._spellErrors.append((res.start(0), res.end(0)))
-
+        spell = SHARED.spelling
+        if utf16Map:
+            self._spellErrors = [
+                (utf16Map[r.start(0)], utf16Map[r.end(0)], w)
+                for r in RX_WORDS.finditer(self._text, self._offset)
+                if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
+            ]
+        else:
+            self._spellErrors = [
+                (r.start(0), r.end(0), w)
+                for r in RX_WORDS.finditer(self._text, self._offset)
+                if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
+            ]
         return self._spellErrors

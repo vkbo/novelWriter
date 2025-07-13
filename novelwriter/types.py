@@ -54,6 +54,8 @@ QtPageBreakBefore = QTextFormat.PageBreakFlag.PageBreak_AlwaysBefore
 QtPageBreakAfter = QTextFormat.PageBreakFlag.PageBreak_AlwaysAfter
 QtPageBreakAuto = QTextFormat.PageBreakFlag.PageBreak_Auto
 
+QtTextUserProperty = QTextFormat.Property.UserProperty
+
 QtPropLineHeight = 1  # QTextBlockFormat.LineHeightTypes.ProportionalHeight
 
 # Qt Painter Types

@@ -1202,13 +1202,13 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Spell Checking
         if SHARED.project.data.spellCheck:
-            word, cPos, cLen, suggest = self._qDocument.spellErrorAtPos(pCursor.position())
-            if word and cPos >= 0 and cLen > 0:
+            word, offset, suggest = self._qDocument.spellErrorAtPos(pCursor.position())
+            if word and offset >= 0:
                 logger.debug("Word '%s' is misspelled", word)
                 block = pCursor.block()
                 sCursor = self.textCursor()
-                sCursor.setPosition(block.position() + cPos)
-                sCursor.movePosition(QtMoveRight, QtKeepAnchor, cLen)
+                sCursor.setPosition(block.position() + offset)
+                sCursor.movePosition(QtMoveRight, QtKeepAnchor, len(word))
                 if suggest:
                     ctxMenu.addSeparator()
                     qtAddAction(ctxMenu, self.tr("Spelling Suggestion(s)"))
@@ -2294,20 +2294,22 @@ class TextAutoReplace:
         Returns True if anything was changed.
         """
         pos = cursor.positionInBlock()
-        length = len(text)
+        apos = cursor.position()
+        block = cursor.block()
+        length = block.length() - 1
         if length < 1 or pos-1 > length:
             return False
 
-        delete, insert = self._determine(text, pos)
-        if insert == "":
-            return False
+        cursor.movePosition(QtMoveLeft, QtKeepAnchor, min(4, pos))
+        last = cursor.selectedText()
+        delete, insert = self._determine(last, pos)
 
         check = insert
         if self._doPadBefore and check in self._padBefore:
             if not (check == ":" and length > 1 and text[0] == "@"):
                 delete = max(delete, 1)
-                chkPos = pos - delete - 1
-                if chkPos >= 0 and text[chkPos].isspace():
+                chkPos = len(last) - delete - 1
+                if chkPos >= 0 and last[chkPos].isspace():
                     # Strip existing space before inserting a new (#1061)
                     delete += 1
                 insert = self._padChar + insert
@@ -2318,6 +2320,7 @@ class TextAutoReplace:
                 insert = insert + self._padChar
 
         if delete > 0:
+            cursor.setPosition(apos)
             cursor.movePosition(QtMoveLeft, QtKeepAnchor, delete)
             cursor.insertText(insert)
             return True
@@ -2326,13 +2329,10 @@ class TextAutoReplace:
 
     def _determine(self, text: str, pos: int) -> tuple[int, str]:
         """Determine what to replace, if anything."""
-        t1 = text[pos-1:pos]
-        t2 = text[pos-2:pos]
-        t3 = text[pos-3:pos]
-        t4 = text[pos-4:pos]
-        if t1 == "":
-            # Return early if there is nothing to check
-            return 0, ""
+        t1 = text[-1:]
+        t2 = text[-2:]
+        t3 = text[-3:]
+        t4 = text[-4:]
 
         leading = t2[:1].isspace()
         if self._replaceDQuote:

@@ -514,31 +514,35 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     # Run SpellCheck
     # ==============
     SHARED.project.data.setSpellCheck(True)
+    LORAX = "Lorax\U0001F03A"
 
     cursor = docEditor.textCursor()
     cursor.setPosition(16)
     data = cursor.block().userData()
     assert cursor.block().text().startswith("Lorem")
     assert isinstance(data, TextBlockData)
-    data._spellErrors = [(0, 5)]
+    data._spellErrors = [(0, 5, "Lorem")]
 
     # No known position
-    assert docEditor._qDocument.spellErrorAtPos(-1) == ("", -1, -1, [])
+    assert docEditor._qDocument.spellErrorAtPos(-1) == ("", -1, [])
 
     # With Suggestion
     with monkeypatch.context() as mp:
-        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: ["Lorax"])
+        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [LORAX])
 
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
         actions = [x.text() for x in ctxMenu.actions() if x.text()]
         assert "Spelling Suggestion(s)" in actions
-        assert f"{nwUnicode.U_ENDASH} Lorax" in actions
+        assert f"{nwUnicode.U_ENDASH} {LORAX}" in actions
         ctxMenu.actions()[7].trigger()
         QApplication.processEvents()
-        assert docEditor.getText() == text.replace("Lorem", "Lorax", 1)
+        assert docEditor.getText() == text.replace("Lorem", LORAX, 1)
         ctxMenu.setObjectName("")
         ctxMenu.deleteLater()
+
+    # Update Entry
+    data._spellErrors = [(0, 7, LORAX)]
 
     # Without Suggestion
     with monkeypatch.context() as mp:
@@ -548,7 +552,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
         assert ctxMenu is not None
         actions = [x.text() for x in ctxMenu.actions() if x.text()]
         assert f"{nwUnicode.U_ENDASH} No Suggestions" in actions
-        assert docEditor.getText() == text.replace("Lorem", "Lorax", 1)
+        assert docEditor.getText() == text.replace("Lorem", LORAX, 1)
         ctxMenu.setObjectName("")
         ctxMenu.deleteLater()
 
@@ -562,11 +566,11 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
         assert "Ignore Word" in actions
         assert "Add Word to Dictionary" in actions
 
-        assert "Lorax" not in SHARED.spelling._userDict
+        assert LORAX not in SHARED.spelling._userDict
         ctxMenu.actions()[7].trigger()  # Ignore
-        assert "Lorax" not in SHARED.spelling._userDict
+        assert LORAX not in SHARED.spelling._userDict
         ctxMenu.actions()[8].trigger()  # Add
-        assert "Lorax" in SHARED.spelling._userDict
+        assert LORAX in SHARED.spelling._userDict
         ctxMenu.setObjectName("")
         ctxMenu.deleteLater()
 
