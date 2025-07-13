@@ -408,12 +408,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, blockLen, self._hStyles["code"])
                 return
             elif check.startswith("[vspace:") and check.endswith("]"):
-                length = len(check)
                 value = checkInt(check[8:-1], 0)
                 style = "value" if value > 0 else "invalid"
                 self.setFormat(0, 8, self._hStyles["code"])
-                self.setFormat(8, length-9, self._hStyles[style])
-                self.setFormat(length-1, length, self._hStyles["code"])
+                self.setFormat(8, blockLen-10, self._hStyles[style])
+                self.setFormat(blockLen-2, blockLen, self._hStyles["code"])
                 return
 
         else:  # Text Paragraph
