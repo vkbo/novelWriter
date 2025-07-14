@@ -613,7 +613,7 @@ def testGuiTheme_CheckTheme(theme):
 
     structure = {
         "Main": [
-            "name", "mode", "description", "author",  # The rest are not required
+            "name", "mode", "author",  # The rest are not required
         ],
         "Base": [
             "base", "default", "faded", "red", "orange", "yellow", "green",

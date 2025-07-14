@@ -49,12 +49,11 @@ A colour theme ``.conf`` file consists of the following settings:
    :caption: The theme file for the "Default Light Theme"
 
    [Main]
-   name        = Default Light Theme
-   mode        = light
-   description = The novelWriter standard light theme
-   author      = Veronica Berglyd Olsen
-   credit      = Veronica Berglyd Olsen
-   url         = https://github.com/vkbo/novelWriter
+   name   = Default Light Theme
+   mode   = light
+   author = Veronica Berglyd Olsen
+   credit = Veronica Berglyd Olsen
+   url    = https://github.com/vkbo/novelWriter
 
    [Base]
    base    = #fcfcfc
@@ -175,8 +174,8 @@ There are several ways to enter colour values:
 .. versionadded:: 2.8
    The ``[Syntax]`` section was moved into the main theme file. Previously, these settings were in
    their own file. The ``[Icons]`` section was renamed to ``[Base]``. Added the ``line`` setting.
-   Dropped the ``license`` and ``licenseurl`` settings. The ``description`` and ``author`` fields
-   are now required if the theme is included in the app, but not for user themes.
+   Dropped the ``license``, ``licenseurl``, and ``description`` settings. The  ``author`` field
+   is now required if the theme is included in the app, but not for user themes.
 
 
 Icon Themes
