@@ -65,11 +65,17 @@ The following icon themes are bundles with novelWriter:
 
 ## Colour Themes
 
-Some colour themes included with novelWriter were adapted from the following sources:
+Colour themes included with novelWriter were adapted from the following sources:
 
+* **Aura** theme by Dalton Menezes
+* **B2T** themes by Bram de Haan
+* **B4T** themes by Bram de Haan
 * **Dracula** theme by Zeno Rocha
 * **Espresso** theme by Sainnhe Park and Antoine Cotten
-* **Noctis** themes by Liviu Schera, and contributors
+* **Everforest** themes by Sainnhe Park
+* **New Moon** theme by Tania Rascia
+* **Noctis** themes by Liviu Schera and contributors
+* **Nord** theme by Sven Greb
 * **Owl** themes by Sarah Drasner
 * **Primer** themes by GitHub Inc and Myian
 * **Snazzy Light** theme by Florian Reuschel
@@ -79,9 +85,17 @@ Some colour themes included with novelWriter were adapted from the following sou
 
 Other themes were created for novelWriter:
 
+* **Aura** theme variations by Myian
 * **Blue Streak** themes by Veronica Berglyd Olsen
+* **Castle** themes by Myian
+* **Chalky Soil** theme by Myian
+* **Chernozem** theme by Myian
 * **Cyberpunk Night** theme by Anders Lemvigh
+* **Floral** themes by Myian
+* **Full Moon** theme by Myian
 * **LCARS** theme by Veronica Berglyd Olsen
+* **Nordlicht** theme by Myian
+* **Ruby** themes by Myian
 
 ## Fonts
 
