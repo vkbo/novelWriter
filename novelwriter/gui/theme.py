@@ -66,12 +66,11 @@ class ThemeEntry:
 
 class ThemeMeta:
 
-    name:        str = ""
-    mode:        str = ""
-    description: str = ""
-    author:      str = ""
-    credit:      str = ""
-    url:         str = ""
+    name:   str = ""
+    mode:   str = ""
+    author: str = ""
+    credit: str = ""
+    url:    str = ""
 
 
 class IconsMeta:
@@ -299,12 +298,11 @@ class GuiTheme:
         sec = "Main"
         meta = ThemeMeta()
         if parser.has_section(sec):
-            meta.name        = parser.get(sec, "name", fallback="")
-            meta.mode        = parser.get(sec, "mode", fallback="light")
-            meta.description = parser.get(sec, "description", fallback="")
-            meta.author      = parser.get(sec, "author", fallback="")
-            meta.credit      = parser.get(sec, "credit", fallback="")
-            meta.url         = parser.get(sec, "url", fallback="")
+            meta.name   = parser.get(sec, "name", fallback="")
+            meta.mode   = parser.get(sec, "mode", fallback="light")
+            meta.author = parser.get(sec, "author", fallback="")
+            meta.credit = parser.get(sec, "credit", fallback="")
+            meta.url    = parser.get(sec, "url", fallback="")
 
         self._meta = meta
 
