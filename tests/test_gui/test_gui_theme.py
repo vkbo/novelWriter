@@ -209,11 +209,11 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
 
     # Check a few values
     assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.Window).getRgb()        == (54, 54, 54, 255)
+        QPalette.ColorRole.Window).getRgb() == (54, 54, 54, 255)
     assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.WindowText).getRgb()    == (204, 204, 204, 255)
+        QPalette.ColorRole.WindowText).getRgb() == (204, 204, 204, 255)
     assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.Base).getRgb()          == (62, 62, 62, 255)
+        QPalette.ColorRole.Base).getRgb() == (62, 62, 62, 255)
     assert mainTheme._guiPalette.color(
         QPalette.ColorRole.AlternateBase).getRgb() == (78, 78, 78, 255)
 
@@ -304,7 +304,7 @@ def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
 
     # Load working theme file
     assert iconCache.loadTheme("material_rounded_normal") is True
-    assert iconCache.themeMeta.name == "Material Symbols - Rounded Medium"
+    assert iconCache.themeMeta.name == "Material Symbols - Rounded"
 
     # Load with project colour override
     purple = iconCache._svgColors["purple"]
