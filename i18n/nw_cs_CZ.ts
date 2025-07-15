@@ -378,7 +378,7 @@
     <message>
       <location filename="../novelwriter/constants.py" line="124" />
       <source>Heading 2 (Chapter)</source>
-      <translation>Nadpis 2 (Kapitola)</translation>
+      <translation>Nadpis 2 a Kapitola)</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="125" />
@@ -4681,17 +4681,17 @@
     <message>
       <location filename="../novelwriter/tools/welcome.py" line="624" />
       <source>Add {0} chapter documents</source>
-      <translation>Přidat dokumenty kapitoly {0}</translation>
+      <translation>Přidat dokumentu kapitoly {0}</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/welcome.py" line="633" />
       <source>Add {0} scene documents (to each chapter)</source>
-      <translation>Přidat dokumenty scény {0} (do každé kapitoly)</translation>
+      <translation>Přidat dokumentu scény {0} (do každé kapitoly)</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/welcome.py" line="661" />
       <source>Add a folder for plot notes</source>
-      <translation>Přidání složky pro poznámky k příběhu</translation>
+      <translation>Přidat složku pro poznámky k příběhu</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/welcome.py" line="662" />
