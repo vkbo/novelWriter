@@ -171,11 +171,15 @@ if __name__ == "__main__":
     # =================
 
     # Build Icons
+    styles = ", ".join([
+        "all", "default", "optional", "free", "non_free",
+        *utils.icon_themes.ICON_SOURCES.keys()
+    ])
     cmdIcons = parsers.add_parser(
-        "icons", help="Build icon theme files from source."
+        "icons", help="Build icon theme files from upstream sources."
     )
-    cmdIcons.add_argument("sources", help="Working directory for sources.")
-    cmdIcons.add_argument("style", help="What icon style to build.")
+    cmdIcons.add_argument("style", help=f"What icon style to build: {styles}")
+    cmdIcons.add_argument("--work-dir", help="Working directory.", default="build_icons")
     cmdIcons.set_defaults(func=utils.icon_themes.main)
 
     # Import Translations
@@ -275,9 +279,9 @@ if __name__ == "__main__":
     # See https://github.com/pypa/manylinux
     # See https://python-appimage.readthedocs.io/en/latest/#available-python-appimages
     cmdBuildAppImage = parsers.add_parser("build-appimage", help="Build an AppImage.")
-    cmdBuildAppImage.add_argument("linux", help="Manylinux version, e.g. manylinux_2_28.")
-    cmdBuildAppImage.add_argument("arch", help="Architecture, e.g. x86_64.")
-    cmdBuildAppImage.add_argument("python", help="Python version, e.g. 3.13.")
+    cmdBuildAppImage.add_argument("linux", help="Manylinux version, e.g. manylinux_2_28")
+    cmdBuildAppImage.add_argument("arch", help="Architecture, e.g. x86_64")
+    cmdBuildAppImage.add_argument("python", help="Python version, e.g. 3.13")
     cmdBuildAppImage.set_defaults(func=utils.build_appimage.appImage)
 
     # Build Windows Inno Setup Installer
