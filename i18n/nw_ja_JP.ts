@@ -1444,27 +1444,27 @@
   <context>
     <name>GuiDocViewFooter</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="892" />
+      <location filename="../novelwriter/gui/docviewer.py" line="894" />
       <source>Show/Hide Viewer Panel</source>
       <translation>ビューアーパネルの表示/非表示</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="896" />
+      <location filename="../novelwriter/gui/docviewer.py" line="898" />
       <source>Comments</source>
       <translation>コメント</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="902" />
+      <location filename="../novelwriter/gui/docviewer.py" line="904" />
       <source>Show Comments</source>
       <translation>コメントを表示</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="906" />
+      <location filename="../novelwriter/gui/docviewer.py" line="908" />
       <source>Synopsis</source>
       <translation>あらすじ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="912" />
+      <location filename="../novelwriter/gui/docviewer.py" line="914" />
       <source>Show Synopsis Comments</source>
       <translation>あらすじコメントを表示</translation>
     </message>
@@ -1472,32 +1472,32 @@
   <context>
     <name>GuiDocViewHeader</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="658" />
+      <location filename="../novelwriter/gui/docviewer.py" line="660" />
       <source>Outline</source>
       <translation>アウトライン</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="663" />
+      <location filename="../novelwriter/gui/docviewer.py" line="665" />
       <source>Go Backward</source>
       <translation>戻る</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="668" />
+      <location filename="../novelwriter/gui/docviewer.py" line="670" />
       <source>Go Forward</source>
       <translation>進む</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="673" />
+      <location filename="../novelwriter/gui/docviewer.py" line="675" />
       <source>Open in Editor</source>
       <translation>エディターで開く</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="678" />
+      <location filename="../novelwriter/gui/docviewer.py" line="680" />
       <source>Reload</source>
       <translation>リロード</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="683" />
+      <location filename="../novelwriter/gui/docviewer.py" line="685" />
       <source>Close</source>
       <translation>閉じる</translation>
     </message>
@@ -1505,27 +1505,27 @@
   <context>
     <name>GuiDocViewer</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="247" />
+      <location filename="../novelwriter/gui/docviewer.py" line="249" />
       <source>An error occurred while generating the preview.</source>
       <translation>プレビューの生成中にエラーが発生しました。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="408" />
+      <location filename="../novelwriter/gui/docviewer.py" line="410" />
       <source>Copy</source>
       <translation>コピー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="412" />
+      <location filename="../novelwriter/gui/docviewer.py" line="414" />
       <source>Select All</source>
       <translation>すべて選択</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="415" />
+      <location filename="../novelwriter/gui/docviewer.py" line="417" />
       <source>Select Word</source>
       <translation>単語を選択</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="420" />
+      <location filename="../novelwriter/gui/docviewer.py" line="422" />
       <source>Select Paragraph</source>
       <translation>段落を選択</translation>
     </message>
@@ -2616,7 +2616,7 @@
   <context>
     <name>GuiNovelTree</name>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="610" />
+      <location filename="../novelwriter/gui/noveltree.py" line="611" />
       <source>No meta data</source>
       <translation>メタデータなし</translation>
     </message>
@@ -2934,7 +2934,7 @@
       <translation>バックアップストレージの場所</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="900" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="919" />
       <location filename="../novelwriter/dialogs/preferences.py" line="375" />
       <source>Path: {0}</source>
       <translation>パス: {0}</translation>
@@ -3144,229 +3144,229 @@
       <translation>テキストのハイライト</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="604" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="605" />
       <source>None</source>
       <translation>なし</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="605" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="606" />
       <source>Single Quotes</source>
       <translation>シングルクォート</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="606" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="607" />
       <source>Double Quotes</source>
       <translation>ダブルクォート</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="607" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="608" />
       <source>Both</source>
       <translation>両方</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="610" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="611" />
       <source>Highlight dialogue</source>
       <translation>ダイアログのハイライト</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="611" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="612" />
       <source>Applies to the selected quote styles.</source>
       <translation>選択したクォートスタイルに適用されます。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="627" />
-      <source>Alternative dialogue symbols</source>
-      <translation>代替ダイアログ記号</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="628" />
-      <source>Custom highlighting of dialogue text.</source>
-      <translation>ダイアログテキストのカスタムハイライト。</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="634" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="619" />
       <source>Allow open-ended dialogue</source>
       <translation>閉じないダイアログを許可</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="635" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="620" />
       <source>Highlight dialogue line with no closing quote.</source>
       <translation>終了引用符の無いダイアログ行を強調表示します。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="644" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="637" />
+      <source>Alternative dialogue symbols</source>
+      <translation>代替ダイアログ記号</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/preferences.py" line="638" />
+      <source>Custom highlighting of dialogue text.</source>
+      <translation>ダイアログテキストのカスタムハイライト。</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/preferences.py" line="659" />
       <source>Dialogue line symbols</source>
       <translation>ダイアログ行記号</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="645" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="660" />
       <source>Lines starting with any of these symbols are dialogue.</source>
       <translation>これらの記号で始まる行はダイアログとなります。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="659" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="676" />
       <source>Narrator break symbol</source>
       <translation>ナレーター区切り記号</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="660" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="677" />
       <source>Symbol to indicate a narrator break in dialogue.</source>
       <translation>ダイアログ内のナレーターの区切りを示すシンボルです。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="663" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="680" />
       <source>Alternating dialogue/narration symbol</source>
       <translation>ダイアログ/ナレーションの切替記号</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="664" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="681" />
       <source>Alternates dialogue highlighting within any paragraph.</source>
       <translation>任意の段落内の会話の強調表示を切り替えます。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="670" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="688" />
       <source>Add highlight colour to emphasised text</source>
       <translation>強調テキストにハイライト色を追加</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="678" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="671" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="697" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="689" />
       <source>Applies to the document editor only.</source>
       <translation>ドキュメントエディターにのみ適用されます。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="677" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="696" />
       <source>Highlight multiple or trailing spaces</source>
       <translation>複数または末尾のスペースをハイライト表示</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="684" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="703" />
       <source>Text Automation</source>
       <translation>テキストの自動化</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="694" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="713" />
       <source>Auto-replace text as you type</source>
       <translation>入力時にテキストを自動的に置き換え</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="695" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="714" />
       <source>Allow the editor to replace symbols as you type.</source>
       <translation>入力時にエディタが記号を置き換えることを許可します。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="703" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="722" />
       <source>Auto-replace single quotes</source>
       <translation>シングルクォートの自動置換</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="713" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="704" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="732" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="723" />
       <source>Try to guess which is an opening or a closing quote.</source>
       <translation>引用符が開始と終了のどちらかを推測する</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="712" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="731" />
       <source>Auto-replace double quotes</source>
       <translation>ダブルクォートの自動置換</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="721" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="740" />
       <source>Auto-replace dashes</source>
       <translation>ダッシュの自動置換</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="722" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="741" />
       <source>Double and triple hyphens become short and long dashes.</source>
       <translation>二重および三重のハイフンはenおよびemダッシュに置き換えらます。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="730" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="749" />
       <source>Auto-replace dots</source>
       <translation>ドットの自動置換</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="731" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="750" />
       <source>Three consecutive dots become ellipsis.</source>
       <translation>３つ連続したドットは省略記号に置き換えられます。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="740" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="759" />
       <source>Insert non-breaking space before</source>
       <translation>ノーブレークスペースを前に挿入</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="741" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="760" />
       <source>Automatically add space before any of these symbols.</source>
       <translation>これらの記号の前にスペースを自動的に追加します。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="750" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="769" />
       <source>Insert non-breaking space after</source>
       <translation>ノーブレークスペースを後に挿入</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="751" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="770" />
       <source>Automatically add space after any of these symbols.</source>
       <translation>これらの記号の後にスペースを自動的に追加します。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="759" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="778" />
       <source>Use thin space instead</source>
       <translation>細いスペースを代わりに使用</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="760" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="779" />
       <source>Inserts a thin space instead of a regular space.</source>
       <translation>通常のスペースの代わりに細いスペースを挿入します。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="766" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="785" />
       <source>Quotation Style</source>
       <translation>クォーテーションスタイル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="781" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="800" />
       <source>Single quote open style</source>
       <translation>シングルクォートオープンスタイル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="782" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="801" />
       <source>The symbol to use for a leading single quote.</source>
       <translation>先頭のシングルクォートに使用する記号です。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="795" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="814" />
       <source>Single quote close style</source>
       <translation>シングルクォートクローズスタイル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="796" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="815" />
       <source>The symbol to use for a trailing single quote.</source>
       <translation>末尾のシングルクォートに使用する記号です。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="810" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="829" />
       <source>Double quote open style</source>
       <translation>ダブルクォートオープンスタイル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="811" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="830" />
       <source>The symbol to use for a leading double quote.</source>
       <translation>先頭のダブルクォートに使用する記号です。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="824" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="843" />
       <source>Double quote close style</source>
       <translation>シングルクォートクローズスタイル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="825" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="844" />
       <source>The symbol to use for a trailing double quote.</source>
       <translation>末尾のダブルクォートに使用する記号です。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="896" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="915" />
       <source>Backup Directory</source>
       <translation>バックアップディレクトリー</translation>
     </message>
@@ -4470,12 +4470,12 @@
       <translation>選択</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="603" />
+      <location filename="../novelwriter/tools/manuscript.py" line="599" />
       <source>Title</source>
       <translation>タイトル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="604" />
+      <location filename="../novelwriter/tools/manuscript.py" line="600" />
       <source>Hidden</source>
       <translation>非表示</translation>
     </message>
@@ -4549,13 +4549,13 @@
       <translation>非表示</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="884" />
+      <location filename="../novelwriter/tools/manussettings.py" line="887" />
       <location filename="../novelwriter/tools/manussettings.py" line="674" />
       <source>Editing: {0}</source>
       <translation>編集中: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="881" />
+      <location filename="../novelwriter/tools/manussettings.py" line="884" />
       <location filename="../novelwriter/tools/manussettings.py" line="674" />
       <source>None</source>
       <translation>なし</translation>
@@ -4838,27 +4838,27 @@
   <context>
     <name>_PreviewWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="746" />
+      <location filename="../novelwriter/tools/manuscript.py" line="743" />
       <source>Press the "Preview" button to generate ...</source>
       <translation>"プレビュー" ボタンを押して生成します ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="841" />
+      <location filename="../novelwriter/tools/manuscript.py" line="838" />
       <source>Processing ...</source>
       <translation>処理中…</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="851" />
+      <location filename="../novelwriter/tools/manuscript.py" line="848" />
       <source>Done</source>
       <translation>完了</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="910" />
+      <location filename="../novelwriter/tools/manuscript.py" line="907" />
       <source>Built</source>
       <translation>ビルドされた</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="914" />
+      <location filename="../novelwriter/tools/manuscript.py" line="911" />
       <source>No Preview</source>
       <translation>プレビューなし</translation>
     </message>

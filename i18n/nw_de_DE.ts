@@ -1444,27 +1444,27 @@
   <context>
     <name>GuiDocViewFooter</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="892" />
+      <location filename="../novelwriter/gui/docviewer.py" line="894" />
       <source>Show/Hide Viewer Panel</source>
       <translation>Ansichtsbereich ein-/ausblenden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="896" />
+      <location filename="../novelwriter/gui/docviewer.py" line="898" />
       <source>Comments</source>
       <translation>Kommentare</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="902" />
+      <location filename="../novelwriter/gui/docviewer.py" line="904" />
       <source>Show Comments</source>
       <translation>Kommentare anzeigen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="906" />
+      <location filename="../novelwriter/gui/docviewer.py" line="908" />
       <source>Synopsis</source>
       <translation>Zusammenfassung</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="912" />
+      <location filename="../novelwriter/gui/docviewer.py" line="914" />
       <source>Show Synopsis Comments</source>
       <translation>Zusammenfassung anzeigen</translation>
     </message>
@@ -1472,32 +1472,32 @@
   <context>
     <name>GuiDocViewHeader</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="658" />
+      <location filename="../novelwriter/gui/docviewer.py" line="660" />
       <source>Outline</source>
       <translation>Gliederung</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="663" />
+      <location filename="../novelwriter/gui/docviewer.py" line="665" />
       <source>Go Backward</source>
       <translation>Zurück</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="668" />
+      <location filename="../novelwriter/gui/docviewer.py" line="670" />
       <source>Go Forward</source>
       <translation>Vor</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="673" />
+      <location filename="../novelwriter/gui/docviewer.py" line="675" />
       <source>Open in Editor</source>
       <translation>Im Editor öffnen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="678" />
+      <location filename="../novelwriter/gui/docviewer.py" line="680" />
       <source>Reload</source>
       <translation>Aktualisieren</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="683" />
+      <location filename="../novelwriter/gui/docviewer.py" line="685" />
       <source>Close</source>
       <translation>Schließen</translation>
     </message>
@@ -1505,27 +1505,27 @@
   <context>
     <name>GuiDocViewer</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="247" />
+      <location filename="../novelwriter/gui/docviewer.py" line="249" />
       <source>An error occurred while generating the preview.</source>
       <translation>Fehler beim Erstellen der Vorschau.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="408" />
+      <location filename="../novelwriter/gui/docviewer.py" line="410" />
       <source>Copy</source>
       <translation>Kopieren</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="412" />
+      <location filename="../novelwriter/gui/docviewer.py" line="414" />
       <source>Select All</source>
       <translation>Alles markieren</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="415" />
+      <location filename="../novelwriter/gui/docviewer.py" line="417" />
       <source>Select Word</source>
       <translation>Wort markieren</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="420" />
+      <location filename="../novelwriter/gui/docviewer.py" line="422" />
       <source>Select Paragraph</source>
       <translation>Absatz markieren</translation>
     </message>
@@ -2616,7 +2616,7 @@
   <context>
     <name>GuiNovelTree</name>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="610" />
+      <location filename="../novelwriter/gui/noveltree.py" line="611" />
       <source>No meta data</source>
       <translation>Keine Meta-Daten</translation>
     </message>
@@ -2934,7 +2934,7 @@
       <translation>Verzeichnis für Backups</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="900" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="919" />
       <location filename="../novelwriter/dialogs/preferences.py" line="375" />
       <source>Path: {0}</source>
       <translation>Pfad: {0}</translation>
@@ -3144,229 +3144,229 @@
       <translation>Hervorhebung</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="604" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="605" />
       <source>None</source>
       <translation>Keine</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="605" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="606" />
       <source>Single Quotes</source>
       <translation>Einfache Anführungszeichen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="606" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="607" />
       <source>Double Quotes</source>
       <translation>Doppelte Anführungszeichen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="607" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="608" />
       <source>Both</source>
       <translation>Beide</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="610" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="611" />
       <source>Highlight dialogue</source>
       <translation>Wörtliche Rede hervorheben</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="611" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="612" />
       <source>Applies to the selected quote styles.</source>
       <translation>Wird für die ausgewählten Anführungszeichen angewendet.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="627" />
-      <source>Alternative dialogue symbols</source>
-      <translation>Alternative Zeichen für wörtliche Rede</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="628" />
-      <source>Custom highlighting of dialogue text.</source>
-      <translation>Benutzerdefinierte Hervorhebung von wörtlicher Rede.</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="634" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="619" />
       <source>Allow open-ended dialogue</source>
       <translation>Nicht geschlossene Anführungszeichen erlauben</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="635" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="620" />
       <source>Highlight dialogue line with no closing quote.</source>
       <translation>Wörtliche Rede ohne schließendes Anführungszeichen hervorheben.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="644" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="637" />
+      <source>Alternative dialogue symbols</source>
+      <translation>Alternative Zeichen für wörtliche Rede</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/preferences.py" line="638" />
+      <source>Custom highlighting of dialogue text.</source>
+      <translation>Benutzerdefinierte Hervorhebung von wörtlicher Rede.</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/preferences.py" line="659" />
       <source>Dialogue line symbols</source>
       <translation>Zeichen für Dialogzeile</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="645" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="660" />
       <source>Lines starting with any of these symbols are dialogue.</source>
       <translation>Zeilen, die mit einem dieser Zeichen beginnen, werden als wörtliche Rede behandeln.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="659" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="676" />
       <source>Narrator break symbol</source>
       <translation>Zeichen für Erzähleinschub</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="660" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="677" />
       <source>Symbol to indicate a narrator break in dialogue.</source>
       <translation>Zeichen für einen Erzähleinschub innerhalb von wörtlicher Rede.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="663" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="680" />
       <source>Alternating dialogue/narration symbol</source>
       <translation>Wechseln zwischen wörtlicher Rede und Erzählung</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="664" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="681" />
       <source>Alternates dialogue highlighting within any paragraph.</source>
       <translation>Dieses Zeichen wechselt zwischen wörtlicher Rede und Erzählung innerhalb eines Absatzes.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="670" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="688" />
       <source>Add highlight colour to emphasised text</source>
       <translation>Formatierten Text hervorheben</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="678" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="671" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="697" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="689" />
       <source>Applies to the document editor only.</source>
       <translation>Gilt nur für den Editor.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="677" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="696" />
       <source>Highlight multiple or trailing spaces</source>
       <translation>Mehrere oder nachfolgende Leerzeichen hervorheben</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="684" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="703" />
       <source>Text Automation</source>
       <translation>Automatisierung</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="694" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="713" />
       <source>Auto-replace text as you type</source>
       <translation>Text automatisch ersetzen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="695" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="714" />
       <source>Allow the editor to replace symbols as you type.</source>
       <translation>Ersetzen von Zeichen während der Eingabe.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="703" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="722" />
       <source>Auto-replace single quotes</source>
       <translation>Einfache Anführungszeichen ersetzen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="713" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="704" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="732" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="723" />
       <source>Try to guess which is an opening or a closing quote.</source>
       <translation>Öffnende und schließende Anführungszeichen werden automatisch erkannt.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="712" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="731" />
       <source>Auto-replace double quotes</source>
       <translation>Doppelte Anführungszeichen ersetzen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="721" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="740" />
       <source>Auto-replace dashes</source>
       <translation>Bindestriche ersetzen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="722" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="741" />
       <source>Double and triple hyphens become short and long dashes.</source>
       <translation>Doppelte und dreifache Bindestriche werden zu Gedankenstrichen und Geviertstrichen umgewandelt.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="730" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="749" />
       <source>Auto-replace dots</source>
       <translation>Punkte ersetzen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="731" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="750" />
       <source>Three consecutive dots become ellipsis.</source>
       <translation>Drei aufeinander folgende Punkte werden zu Auslassungspunkten umgewandelt.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="740" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="759" />
       <source>Insert non-breaking space before</source>
       <translation>Geschütztes Leerzeichen einfügen vor</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="741" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="760" />
       <source>Automatically add space before any of these symbols.</source>
       <translation>Vor diesen Zeichen wird automatisch ein Leerzeichen eingefügt.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="750" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="769" />
       <source>Insert non-breaking space after</source>
       <translation>Geschütztes Leerzeichen einfügen nach</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="751" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="770" />
       <source>Automatically add space after any of these symbols.</source>
       <translation>Nach diesen Zeichen wird automatisch ein Leerzeichen eingefügt.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="759" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="778" />
       <source>Use thin space instead</source>
       <translation>Schmales Leerzeichen verwenden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="760" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="779" />
       <source>Inserts a thin space instead of a regular space.</source>
       <translation>Schmales Leerzeichen anstelle eines normalen Leerzeichens verwenden.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="766" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="785" />
       <source>Quotation Style</source>
       <translation>Anführungszeichen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="781" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="800" />
       <source>Single quote open style</source>
       <translation>Einfaches Anführungszeichen öffnend</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="782" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="801" />
       <source>The symbol to use for a leading single quote.</source>
       <translation>Beginn von wörtlicher Rede mit einfachen Anführungszeichen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="795" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="814" />
       <source>Single quote close style</source>
       <translation>Einfaches Anführungszeichen schließend</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="796" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="815" />
       <source>The symbol to use for a trailing single quote.</source>
       <translation>Ende von wörtlicher Rede mit einfachen Anführungszeichen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="810" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="829" />
       <source>Double quote open style</source>
       <translation>Doppeltes Anführungszeichen öffnend</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="811" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="830" />
       <source>The symbol to use for a leading double quote.</source>
       <translation>Beginn von wörtlicher Rede mit doppelten Anführungszeichen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="824" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="843" />
       <source>Double quote close style</source>
       <translation>Doppeltes Anführungszeichen schließend</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="825" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="844" />
       <source>The symbol to use for a trailing double quote.</source>
       <translation>Ende von wörtlicher Rede mit doppelten Anführungszeichen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="896" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="915" />
       <source>Backup Directory</source>
       <translation>Backup-Verzeichnis</translation>
     </message>
@@ -4470,12 +4470,12 @@
       <translation>Auswahl</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="603" />
+      <location filename="../novelwriter/tools/manuscript.py" line="599" />
       <source>Title</source>
       <translation>Titel</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="604" />
+      <location filename="../novelwriter/tools/manuscript.py" line="600" />
       <source>Hidden</source>
       <translation>Ausgeblendet</translation>
     </message>
@@ -4549,13 +4549,13 @@
       <translation>Ausblenden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="884" />
+      <location filename="../novelwriter/tools/manussettings.py" line="887" />
       <location filename="../novelwriter/tools/manussettings.py" line="674" />
       <source>Editing: {0}</source>
       <translation>Bearbeite: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="881" />
+      <location filename="../novelwriter/tools/manussettings.py" line="884" />
       <location filename="../novelwriter/tools/manussettings.py" line="674" />
       <source>None</source>
       <translation>Keine</translation>
@@ -4838,27 +4838,27 @@
   <context>
     <name>_PreviewWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="746" />
+      <location filename="../novelwriter/tools/manuscript.py" line="743" />
       <source>Press the "Preview" button to generate ...</source>
       <translation>Zum Generieren den "Vorschau"-Button anklicken ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="841" />
+      <location filename="../novelwriter/tools/manuscript.py" line="838" />
       <source>Processing ...</source>
       <translation>In Bearbeitung ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="851" />
+      <location filename="../novelwriter/tools/manuscript.py" line="848" />
       <source>Done</source>
       <translation>Fertig</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="910" />
+      <location filename="../novelwriter/tools/manuscript.py" line="907" />
       <source>Built</source>
       <translation>Erstellt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="914" />
+      <location filename="../novelwriter/tools/manuscript.py" line="911" />
       <source>No Preview</source>
       <translation>Keine Vorschau</translation>
     </message>
