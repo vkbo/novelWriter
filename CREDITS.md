@@ -57,11 +57,15 @@ The following libraries are dependencies of novelWriter:
 
 ## Icon Themes
 
-The following icon themes are bundles with novelWriter:
+The default icon theme is a subset of icons from:
 
-* **Material Symbols** icons by Google Inc (Apache 2.0)
-* **Remix** icons by RemixIcon (Apache 2.0)
-* **Font Awesome** icons by Fonticons Inc (CC BY 4.0)
+* **Material Symbols** by Google Inc (Apache 2.0)
+
+Additional icon themes may or may not be bundled with novelWriter, depending on license
+constraints. These themes include a subset of icons from:
+
+* **Font Awesome** by Fonticons Inc (CC BY 4.0)
+* **Remix** by RemixIcon (Apache 2.0 w/non-free clause)
 
 ## Colour Themes
 
