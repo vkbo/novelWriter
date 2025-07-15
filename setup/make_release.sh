@@ -18,6 +18,7 @@ fi
 source $ENVPATH/bin/activate
 pip3 install -r requirements.txt -r docs/requirements.txt
 python3 pkgutils.py build-assets
+python3 pkgutils.py icons optional
 deactivate
 
 echo ""

@@ -20,6 +20,10 @@ setup.iss
 i18n/*.qm
 i18n/*.qph
 
+# Icons Themes Except Material Symbols
+/novelwriter/assets/icons/*.icons
+!/novelwriter/assets/icons/material_*.icons
+
 # Documentation
 /docs/build/
 /docs/source/locales/**/*.mo

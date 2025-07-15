@@ -1,5 +1,27 @@
 # novelWriter Changelog
 
+## Version 2.7.4 [2025-07-15]
+
+### Release Notes
+
+This is a patch release that updates the Czech and French translations, and makes some changes to
+the available Material Symbols icon themes. Additional icon themes are no longer automatically
+included in all release packages due to license constraints.
+
+### Detailed Changelog
+
+**Internationalisation**
+
+* The Czech and French translations are now complete. PR #2469.
+
+**Packaging**
+
+* Only the Material Symbols icons are included by default in packages. Other icon themes are
+  included depending on licensing restrictions for free and non-free requirements. The Material
+  Symbols Bold themes have been dropped, and a Sharp theme added. Issue #2462. PR #2467.
+
+----
+
 ## Version 2.7.3 [2025-07-07]
 
 ### Release Notes

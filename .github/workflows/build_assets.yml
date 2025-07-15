@@ -26,6 +26,7 @@ jobs:
       - name: Build Assets
         run: |
           python pkgutils.py build-assets
+          python pkgutils.py icons optional
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -35,5 +36,6 @@ jobs:
             novelwriter/assets/manual*.pdf
             novelwriter/assets/sample.zip
             novelwriter/assets/i18n/*.qm
+            novelwriter/assets/icons/*.icons
           if-no-files-found: error
           retention-days: 14

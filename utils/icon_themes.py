@@ -23,7 +23,8 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
-import sys
+import urllib.request
+import zipfile
 
 from pathlib import Path
 from xml.etree import ElementTree as ET
@@ -32,6 +33,17 @@ from utils.common import ROOT_DIR
 
 UTILS = Path(__file__).parent
 ET.register_namespace("", "http://www.w3.org/2000/svg")
+
+ICON_SOURCES = {
+    "material":     "https://github.com/google/material-design-icons.git",
+    "font_awesome": "https://github.com/FortAwesome/Font-Awesome/archive/refs/tags/6.7.2.zip",
+    "remix":        "https://github.com/Remix-Design/RemixIcon/archive/refs/tags/v4.6.0.zip",
+}
+ICON_EXTRACT = {
+    "material":     "material-design-icons",
+    "font_awesome": "Font-Awesome-6.7.2",
+    "remix":        "RemixIcon-4.6.0",
+}
 ICONS = [
     # Remember to also update tests/files/all_icons.json for test coverage
     "alert_error",
@@ -188,21 +200,33 @@ def _writeThemeFile(
     return
 
 
-def _cloneRepo(repoPath: Path, repoUrl: str) -> None:
+def _updateRepo(path: Path, name: str) -> None:
     """Clone or update a local repo of icons."""
-    print(f"Updating: {repoUrl}")
-    if not repoPath.is_dir():
-        subprocess.call(["git", "clone", repoUrl, "--depth", "50"], cwd=repoPath.parent)
+    print(f"Updating: {ICON_SOURCES[name]}")
+    if not path.is_dir():
+        subprocess.call(["git", "clone", ICON_SOURCES[name], "--depth", "1"], cwd=path.parent)
     else:
-        subprocess.call(["git", "pull"], cwd=repoPath)
+        subprocess.call(["git", "pull"], cwd=path)
+    print("")
+    return
+
+
+def _downloadIconPack(path: Path, name: str) -> None:
+    """Download and extract icon pack releases."""
+    print(f"Downloading: {ICON_SOURCES[name]}")
+    zipFile = path / f"{name}.zip"
+    urllib.request.urlretrieve(ICON_SOURCES[name], zipFile)
+    print(f"Extracting: {zipFile.name}")
+    with zipfile.ZipFile(zipFile, "r") as inFile:
+        inFile.extractall(path)
     print("")
     return
 
 
 def processMaterialIcons(workDir: Path, iconsDir: Path, jobs: dict) -> None:
     """Process material icons of a given spec and write output file."""
-    srcRepo = workDir / "material-design-icons"
-    _cloneRepo(srcRepo, "https://github.com/google/material-design-icons.git")
+    srcRepo = workDir / ICON_EXTRACT["material"]
+    _updateRepo(srcRepo, "material")
 
     for file, job in jobs.items():
         name: str    = job["name"]
@@ -238,8 +262,9 @@ def processMaterialIcons(workDir: Path, iconsDir: Path, jobs: dict) -> None:
 
 def processFontAwesome(workDir: Path, iconsDir: Path, jobs: dict) -> None:
     """Process Font Awesome icons of a given spec and write output file."""
-    srcRepo = workDir / "Font-Awesome"
-    _cloneRepo(srcRepo, "https://github.com/FortAwesome/Font-Awesome.git")
+    srcRepo = workDir / ICON_EXTRACT["font_awesome"]
+    if not srcRepo.is_dir():
+        _downloadIconPack(workDir, "font_awesome")
 
     for file, job in jobs.items():
         name: str = job["name"]
@@ -283,8 +308,9 @@ def processFontAwesome(workDir: Path, iconsDir: Path, jobs: dict) -> None:
 
 def processRemix(workDir: Path, iconsDir: Path, jobs: dict) -> None:
     """Process Remix icons of a given spec and write output file."""
-    srcRepo = workDir / "RemixIcon"
-    _cloneRepo(srcRepo, "https://github.com/Remix-Design/RemixIcon.git")
+    srcRepo = workDir / ICON_EXTRACT["remix"]
+    if not srcRepo.is_dir():
+        _downloadIconPack(workDir, "remix")
 
     for file, job in jobs.items():
         name: str = job["name"]
@@ -331,15 +357,12 @@ def main(args: argparse.Namespace) -> None:
     print("=================")
     print("")
 
-    workDir = Path(args.sources).absolute()
-    if not workDir.is_dir():
-        print(f"Source directory not found: {workDir}")
-        sys.exit(1)
-
+    workDir = Path(args.work_dir).absolute()
+    workDir.mkdir(exist_ok=True)
     iconsDir = ROOT_DIR / "novelwriter" / "assets" / "icons"
 
     style = args.style
-    if style in ("all", "material"):
+    if style in ("all", "default", "material"):
         processMaterialIcons(workDir, iconsDir, {
             "material_rounded_thin": {
                 "name": "Material Symbols - Rounded Thin",
@@ -348,16 +371,10 @@ def main(args: argparse.Namespace) -> None:
                 "weight": 200,
             },
             "material_rounded_normal": {
-                "name": "Material Symbols - Rounded Medium",
+                "name": "Material Symbols - Rounded",
                 "style": "rounded",
                 "filled": False,
                 "weight": 400,
-            },
-            "material_rounded_bold": {
-                "name": "Material Symbols - Rounded Bold",
-                "style": "rounded",
-                "filled": False,
-                "weight": 600,
             },
             "material_filled_thin": {
                 "name": "Material Symbols - Filled Thin",
@@ -366,27 +383,33 @@ def main(args: argparse.Namespace) -> None:
                 "weight": 200,
             },
             "material_filled_normal": {
-                "name": "Material Symbols - Filled Medium",
+                "name": "Material Symbols - Filled",
                 "style": "rounded",
                 "filled": True,
                 "weight": 400,
             },
-            "material_filled_bold": {
-                "name": "Material Symbols - Filled Bold",
-                "style": "rounded",
-                "filled": True,
-                "weight": 600,
+            "material_sharp_thin": {
+                "name": "Material Symbols - Sharp Thin",
+                "style": "sharp",
+                "filled": False,
+                "weight": 200,
+            },
+            "material_sharp_normal": {
+                "name": "Material Symbols - Sharp",
+                "style": "sharp",
+                "filled": False,
+                "weight": 400,
             },
         })
 
-    if style in ("all", "fa"):
+    if style in ("all", "optional", "free", "font_awesome"):
         processFontAwesome(workDir, iconsDir, {
             "font_awesome": {
                 "name": "Font Awesome 6",
             },
         })
 
-    if style in ("all", "remix"):
+    if style in ("all", "optional", "non_free", "remix"):
         processRemix(workDir, iconsDir, {
             "remix_outline": {
                 "name": "Remix Icon - Outline",

@@ -24,6 +24,7 @@ echo " Building Dependencies"
 echo "================================================================================"
 echo ""
 python3 pkgutils.py build-assets
+python3 pkgutils.py icons optional
 
 echo ""
 echo " Building Packages"
