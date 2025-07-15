@@ -45,6 +45,7 @@ ICON_EXTRACT = {
     "remix":        "RemixIcon-4.6.0",
 }
 ICONS = [
+    # Remember to also update tests/files/all_icons.json for test coverage
     "alert_error",
     "alert_info",
     "alert_question",
@@ -101,6 +102,10 @@ ICONS = [
     "sb_project",
     "sb_search",
     "sb_stats",
+
+    "theme_light",
+    "theme_dark",
+    "theme_auto",
 
     "add",
     "bookmarks",

@@ -228,11 +228,11 @@ class GuiDocViewer(QTextBrowser):
         qDoc.setTheme(self._docTheme)
         qDoc.initDocument()
         qDoc.setKeywords(True)
-        qDoc.setCommentType(nwComment.NOTE, CONFIG.viewComments)
-        qDoc.setCommentType(nwComment.STORY, CONFIG.viewComments)
         qDoc.setCommentType(nwComment.PLAIN, CONFIG.viewComments)
         qDoc.setCommentType(nwComment.SYNOPSIS, CONFIG.viewSynopsis)
         qDoc.setCommentType(nwComment.SHORT, CONFIG.viewSynopsis)
+        qDoc.setCommentType(nwComment.STORY, CONFIG.viewNotes)
+        qDoc.setCommentType(nwComment.NOTE, CONFIG.viewNotes)
 
         # Be extra careful here to prevent crashes when first opening a
         # project as a crash here leaves no way of recovering.
@@ -913,12 +913,23 @@ class GuiDocViewFooter(QWidget):
         self.showSynopsis.toggled.connect(self._doToggleSynopsis)
         self.showSynopsis.setToolTip(self.tr("Show Synopsis Comments"))
 
+        # Show Notes
+        self.showNotes = QToolButton(self)
+        self.showNotes.setText(self.tr("Notes"))
+        self.showNotes.setCheckable(True)
+        self.showNotes.setChecked(CONFIG.viewNotes)
+        self.showNotes.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self.showNotes.setIconSize(iSz)
+        self.showNotes.toggled.connect(self._doToggleNotes)
+        self.showNotes.setToolTip(self.tr("Show Notes"))
+
         # Assemble Layout
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.showHide, 0)
         self.outerBox.addStretch(1)
         self.outerBox.addWidget(self.showComments, 0)
         self.outerBox.addWidget(self.showSynopsis, 0)
+        self.outerBox.addWidget(self.showNotes, 0)
         self.outerBox.setSpacing(4)
         self.setLayout(self.outerBox)
 
@@ -944,6 +955,7 @@ class GuiDocViewFooter(QWidget):
         self.setFont(SHARED.theme.guiFont)
         self.showComments.setFont(SHARED.theme.guiFontSmall)
         self.showSynopsis.setFont(SHARED.theme.guiFontSmall)
+        self.showNotes.setFont(SHARED.theme.guiFontSmall)
         return
 
     def updateTheme(self) -> None:
@@ -955,11 +967,13 @@ class GuiDocViewFooter(QWidget):
         self.showHide.setThemeIcon("panel")
         self.showComments.setIcon(bulletIcon)
         self.showSynopsis.setIcon(bulletIcon)
+        self.showNotes.setIcon(bulletIcon)
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.showHide.setStyleSheet(buttonStyle)
         self.showComments.setStyleSheet(buttonStyle)
         self.showSynopsis.setStyleSheet(buttonStyle)
+        self.showNotes.setStyleSheet(buttonStyle)
 
         self.matchColors()
 
@@ -992,5 +1006,12 @@ class GuiDocViewFooter(QWidget):
     def _doToggleSynopsis(self, state: bool) -> None:
         """Toggle the view synopsis button and reload the document."""
         CONFIG.viewSynopsis = state
+        self.docViewer.reloadText()
+        return
+
+    @pyqtSlot(bool)
+    def _doToggleNotes(self, state: bool) -> None:
+        """Toggle the view notes button and reload the document."""
+        CONFIG.viewNotes = state
         self.docViewer.reloadText()
         return

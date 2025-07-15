@@ -55,19 +55,47 @@ The following libraries are dependencies of novelWriter:
 * **Enchant** by Dom Lachowicz
 * **PyEnchant** by Dimitri Merejkowsky
 
-## Assets
+## Icon Themes
 
-Some of the assets bundled with novelWriter were adapted from the following sources:
+The following icon themes are bundles with novelWriter:
 
 * **Material Symbols** icons by Google Inc (Apache 2.0)
 * **Remix** icons by RemixIcon (Apache 2.0)
 * **Font Awesome** icons by Fonticons Inc (CC BY 4.0)
-* **Tomorrow** syntax themes by Chris Kempson (MIT License)
-* **Owl** syntax themes by Sarah Drasner (MIT License)
-* **Solarized** themes by Ethan Schoonover (MIT License)
-* **Cyberpunk Night** theme by Anders Lemvigh (CC BY-SA 4.0)
-* **Dracula** theme by Zeno Rocha (MIT License)
-* **Snazzy Light** theme by Florian Reuschel (MIT License)
+
+## Colour Themes
+
+Colour themes included with novelWriter were adapted from the following sources:
+
+* **Aura** theme by Dalton Menezes
+* **B2T** themes by Bram de Haan
+* **B4T** themes by Bram de Haan
+* **Dracula** theme by Zeno Rocha
+* **Espresso** theme by Sainnhe Park and Antoine Cotten
+* **Everforest** themes by Sainnhe Park
+* **New Moon** theme by Tania Rascia
+* **Noctis** themes by Liviu Schera and contributors
+* **Nord** theme by Sven Greb
+* **Owl** themes by Sarah Drasner
+* **Primer** themes by GitHub Inc and Myian
+* **Snazzy Light** theme by Florian Reuschel
+* **Solarized** themes by Ethan Schoonover
+* **Tango** themes by the Tango Desktop Project
+* **Tomorrow** themes by Chris Kempson
+
+Other themes were created for novelWriter:
+
+* **Aura** theme variations by Myian
+* **Blue Streak** themes by Veronica Berglyd Olsen
+* **Castle** themes by Myian
+* **Chalky Soil** theme by Myian
+* **Chernozem** theme by Myian
+* **Cyberpunk Night** theme by Anders Lemvigh
+* **Floral** themes by Myian
+* **Full Moon** theme by Myian
+* **LCARS** theme by Veronica Berglyd Olsen
+* **Nordlicht** theme by Myian
+* **Ruby** themes by Myian
 
 ## Fonts
 

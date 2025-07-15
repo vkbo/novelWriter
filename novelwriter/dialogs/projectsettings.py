@@ -33,14 +33,14 @@ from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QCloseEvent, QColor
 from PyQt6.QtWidgets import (
     QAbstractItemView, QApplication, QColorDialog, QDialogButtonBox,
-    QFileDialog, QGridLayout, QHBoxLayout, QLineEdit, QMenu, QStackedWidget,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QFileDialog, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
+    QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter, qtAddAction, qtLambda, simplified
 from novelwriter.constants import nwLabels, trConst
-from novelwriter.core.status import NWStatus, StatusEntry
+from novelwriter.core.status import CUSTOM_COL, NWStatus, StatusEntry
 from novelwriter.enum import nwStatusShape
 from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollableForm
 from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton
@@ -326,6 +326,7 @@ class _StatusPage(NFixedPage):
         self._changed = False
         self._color = QColor(100, 100, 100)
         self._shape = nwStatusShape.SQUARE
+        self._theme = CUSTOM_COL
         self._icons = {}
 
         self._iPx = SHARED.theme.baseIconHeight
@@ -384,11 +385,26 @@ class _StatusPage(NFixedPage):
         self.exportButton.clicked.connect(self._exportLabels)
 
         # Edit Form
-        self.labelText = QLineEdit(self)
-        self.labelText.setMaxLength(40)
-        self.labelText.setPlaceholderText(self.tr("Select item to edit"))
-        self.labelText.setEnabled(False)
-        self.labelText.textEdited.connect(self._onNameEdit)
+        self.editName = QLineEdit(self)
+        self.editName.setMaxLength(40)
+        self.editName.setPlaceholderText(self.tr("Select item to edit"))
+        self.editName.setEnabled(False)
+        self.editName.textEdited.connect(self._onNameEdit)
+
+        self.labelName = QLabel(self.tr("Label"), self)
+        self.labelName.setBuddy(self.editName)
+
+        # Icon Colours
+        self.iconColor = NComboBox(self)
+        self.iconColor.setMinimumWidth(200)
+        self.iconColor.setEnabled(False)
+        self.iconColor.addItem(self.tr("Custom"), CUSTOM_COL)
+        for key, label in nwLabels.THEME_COLORS.items():
+            self.iconColor.addItem(trConst(label), key)
+        self.iconColor.currentIndexChanged.connect(self._onThemeSelect)
+
+        self.labelColor = QLabel(self.tr("Colour"), self)
+        self.labelColor.setBuddy(self.iconColor)
 
         buttonStyle = (
             "QToolButton {padding: 0 4px;} "
@@ -425,6 +441,9 @@ class _StatusPage(NFixedPage):
         self.shapeButton.setStyleSheet(buttonStyle)
         self.shapeButton.setEnabled(False)
 
+        self.labelShape = QLabel(self.tr("Shape"), self)
+        self.labelShape.setBuddy(self.iconColor)
+
         # Assemble
         self.listControls = QVBoxLayout()
         self.listControls.addWidget(self.addButton)
@@ -435,10 +454,15 @@ class _StatusPage(NFixedPage):
         self.listControls.addWidget(self.importButton)
         self.listControls.addWidget(self.exportButton)
 
-        self.editBox = QHBoxLayout()
-        self.editBox.addWidget(self.labelText, 1)
-        self.editBox.addWidget(self.colorButton, 0)
-        self.editBox.addWidget(self.shapeButton, 0)
+        self.editBox = QGridLayout()
+        self.editBox.addWidget(self.labelName, 0, 0)
+        self.editBox.addWidget(self.editName, 0, 1, 1, 5)
+        self.editBox.addWidget(self.labelColor, 1, 0)
+        self.editBox.addWidget(self.iconColor, 1, 1)
+        self.editBox.addWidget(self.colorButton, 1, 2)
+        self.editBox.addWidget(self.labelShape, 1, 3)
+        self.editBox.addWidget(self.shapeButton, 1, 4)
+        self.editBox.setColumnStretch(5, 1)
 
         self.innerBox = QGridLayout()
         self.innerBox.addWidget(self.listBox, 0, 0)
@@ -496,11 +520,20 @@ class _StatusPage(NFixedPage):
             self._changed = True
         return
 
+    @pyqtSlot(int)
+    def _onThemeSelect(self, index: int) -> None:
+        """Update the colour handling on theme selection change."""
+        self._theme = str(self.iconColor.currentData())
+        self._setButtonIcons()
+        self._updateIcon()
+        return
+
     @pyqtSlot()
     def _onColorSelect(self) -> None:
         """Open a dialog to select the status icon colour."""
         if (color := QColorDialog.getColor(self._color, self, self.trSelColor)).isValid():
             self._color = color
+            self._theme = CUSTOM_COL
             self._setButtonIcons()
             self._updateIcon()
         return
@@ -511,7 +544,8 @@ class _StatusPage(NFixedPage):
         color = QColor(100, 100, 100)
         shape = nwStatusShape.SQUARE
         icon = NWStatus.createIcon(self._iPx, color, shape)
-        self._addItem(None, StatusEntry(self.tr("New Item"), color, shape, icon, 0))
+        theme = str(self.iconColor.currentData())
+        self._addItem(None, StatusEntry(self.tr("New Item"), color, theme, shape, icon, 0))
         self._changed = True
         return
 
@@ -537,22 +571,26 @@ class _StatusPage(NFixedPage):
             entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
             self._color = entry.color
             self._shape = entry.shape
+            self._theme = entry.theme
             self._setButtonIcons()
 
-            self.labelText.setText(entry.name)
-            self.labelText.selectAll()
-            self.labelText.setFocus()
+            self.editName.setText(entry.name)
+            self.editName.selectAll()
+            self.editName.setFocus()
 
-            self.labelText.setEnabled(True)
+            self.editName.setEnabled(True)
+            self.iconColor.setEnabled(True)
             self.colorButton.setEnabled(True)
             self.shapeButton.setEnabled(True)
         else:
             self._color = QColor(100, 100, 100)
             self._shape = nwStatusShape.SQUARE
+            self._theme = CUSTOM_COL
             self._setButtonIcons()
-            self.labelText.setText("")
+            self.editName.setText("")
 
-            self.labelText.setEnabled(False)
+            self.editName.setEnabled(False)
+            self.iconColor.setEnabled(False)
             self.colorButton.setEnabled(False)
             self.shapeButton.setEnabled(False)
         return
@@ -608,10 +646,11 @@ class _StatusPage(NFixedPage):
     def _updateIcon(self) -> None:
         """Apply changes made to a status icon."""
         if item := self._getSelectedItem():
-            icon = NWStatus.createIcon(self._iPx, self._color, self._shape)
+            icon = NWStatus.createIcon(self._iPx, self._pickColor(), self._shape)
             entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
             entry.color = self._color
             entry.shape = self._shape
+            entry.theme = self._theme
             entry.icon = icon
             item.setIcon(self.C_LABEL, icon)
             self._changed = True
@@ -658,10 +697,17 @@ class _StatusPage(NFixedPage):
 
     def _setButtonIcons(self) -> None:
         """Set the colour of the colour button."""
-        icon = NWStatus.createIcon(self._iPx, self._color, nwStatusShape.SQUARE)
+        icon = NWStatus.createIcon(self._iPx, self._pickColor(), nwStatusShape.SQUARE)
+        self.iconColor.setCurrentData(self._theme, CUSTOM_COL)
         self.colorButton.setIcon(icon)
         self.shapeButton.setIcon(self._icons[self._shape])
         return
+
+    def _pickColor(self) -> QColor:
+        """Get the correct colour value based on selections."""
+        if self._theme == CUSTOM_COL:
+            return self._color
+        return SHARED.theme.getBaseColor(self._theme)
 
 
 class _ReplacePage(NFixedPage):

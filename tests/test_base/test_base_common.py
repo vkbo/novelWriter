@@ -38,9 +38,10 @@ from novelwriter.common import (
     fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass, isItemLayout,
     isItemType, isListInstance, isTitleTag, jsonEncode, makeFileNameSafe,
     minmax, numberToRoman, openExternalPath, processDialogSymbols,
-    readTextFile, simplified, transferCase, uniqueCompact, xmlElement,
-    xmlIndent, xmlSubElem, yesNo
+    readTextFile, simplified, transferCase, uniqueCompact, utf16CharMap,
+    xmlElement, xmlIndent, xmlSubElem, yesNo
 )
+from novelwriter.enum import nwItemClass
 
 from tests.mocked import causeOSError
 from tests.tools import writeFile
@@ -557,6 +558,14 @@ def testBaseCommon_encodeDecodeMimeHandles(monkeypatch):
 
 
 @pytest.mark.base
+def testBaseCommon_utf16CharMap(monkeypatch):
+    """Test the utf16CharMap function."""
+    assert utf16CharMap("abc") == [0, 1, 2, 3]
+    assert utf16CharMap("a\u2014b\u2014c") == [0, 1, 2, 3, 4, 5]
+    assert utf16CharMap("a\U0001F605b\U0001F605c") == [0, 1, 3, 4, 6, 7]
+
+
+@pytest.mark.base
 def testBaseCommon_jsonEncode():
     """Test the jsonEncode function."""
     # Wrong type
@@ -804,6 +813,7 @@ def testBaseCommon_NWConfigParser(fncPath):
         "list1 = a, b, c\n"
         "list2 = 17, 18, 19\n"
         "float1 = 4.2\n"
+        "enum1 = NOVEL\n"
         f"path1 = {fncPath}\n"
     ))
 
@@ -875,3 +885,7 @@ def testBaseCommon_NWConfigParser(fncPath):
 
     assert cfgParser.rdIntList("nope", "list2", [1]) == [1]
     assert cfgParser.rdIntList("main", "blabla", [1]) == [1]
+
+    # Read Enum
+    assert cfgParser.rdEnum("main", "enum1", nwItemClass.NO_CLASS) == nwItemClass.NOVEL
+    assert cfgParser.rdEnum("main", "blabla", nwItemClass.NO_CLASS) == nwItemClass.NO_CLASS

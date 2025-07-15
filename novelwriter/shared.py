@@ -25,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
+import re
 
 from enum import Enum
 from pathlib import Path
@@ -32,8 +33,8 @@ from time import time
 from typing import TYPE_CHECKING, TypeVar
 
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, QTimer, QUrl, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QDesktopServices, QFont
-from PyQt6.QtWidgets import QFileDialog, QFontDialog, QMessageBox, QWidget
+from PyQt6.QtGui import QDesktopServices, QFont, QScreen
+from PyQt6.QtWidgets import QApplication, QFileDialog, QFontDialog, QMessageBox, QWidget
 
 from novelwriter.common import formatFileFilter
 from novelwriter.constants import nwFiles
@@ -41,6 +42,8 @@ from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.enum import nwChange, nwItemClass
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from novelwriter.core.project import NWProject
     from novelwriter.core.status import T_StatusKind
     from novelwriter.gui.theme import GuiTheme
@@ -49,6 +52,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 NWWidget = TypeVar("NWWidget", bound=QWidget)
+
+RX_HTML = re.compile(r"<.*?>")
 
 
 class SharedData(QObject):
@@ -150,6 +155,11 @@ class SharedData(QObject):
         """Return the last alert message."""
         return self._lastAlert
 
+    @property
+    def mainScreen(self) -> QScreen | None:
+        """Return the screen of the main window."""
+        return QApplication.screenAt(self.mainGui.rect().center())
+
     ##
     #  Setters
     ##
@@ -170,6 +180,7 @@ class SharedData(QObject):
         is created.
         """
         self._theme = theme
+        self._theme.initThemes()
         return
 
     def initSharedData(self, gui: GuiMain) -> None:
@@ -376,7 +387,7 @@ class SharedData(QObject):
         alert.setAlertType(_GuiAlert.INFO, False)
         self._lastAlert = alert.logMessage
         if log:
-            logger.info(self._lastAlert, stacklevel=2)
+            self._logMessage(self._lastAlert, logger.info)
         alert.exec()
         return
 
@@ -387,7 +398,7 @@ class SharedData(QObject):
         alert.setAlertType(_GuiAlert.WARN, False)
         self._lastAlert = alert.logMessage
         if log:
-            logger.warning(self._lastAlert, stacklevel=2)
+            self._logMessage(self._lastAlert, logger.warning)
         alert.exec()
         return
 
@@ -401,7 +412,7 @@ class SharedData(QObject):
             alert.setException(exc)
         self._lastAlert = alert.logMessage
         if log:
-            logger.error(self._lastAlert, stacklevel=2)
+            self._logMessage(self._lastAlert, logger.error)
         alert.exec()
         return
 
@@ -418,6 +429,12 @@ class SharedData(QObject):
     ##
     #  Internal Functions
     ##
+
+    def _logMessage(self, message: str, log: Callable) -> None:
+        """Print message to log."""
+        for text in message.split("<br>"):
+            log(RX_HTML.sub("", text), stacklevel=3)
+        return
 
     def _resetProject(self) -> None:
         """Create a new project and spell checking instance."""

@@ -37,13 +37,14 @@ class RegExPatterns:
 
     # Static RegExes
     _rxUrl     = re.compile(nwRegEx.URL, re.ASCII)
-    _rxWords   = re.compile(nwRegEx.WORDS, re.UNICODE)
-    _rxBreak   = re.compile(nwRegEx.BREAK, re.UNICODE)
-    _rxItalic  = re.compile(nwRegEx.FMT_EI, re.UNICODE)
-    _rxBold    = re.compile(nwRegEx.FMT_EB, re.UNICODE)
-    _rxStrike  = re.compile(nwRegEx.FMT_ST, re.UNICODE)
-    _rxSCPlain = re.compile(nwRegEx.FMT_SC, re.UNICODE)
-    _rxSCValue = re.compile(nwRegEx.FMT_SV, re.UNICODE)
+    _rxWords   = re.compile(nwRegEx.WORDS)
+    _rxBreak   = re.compile(nwRegEx.BREAK)
+    _rxItalic  = re.compile(nwRegEx.FMT_EI)
+    _rxBold    = re.compile(nwRegEx.FMT_EB)
+    _rxStrike  = re.compile(nwRegEx.FMT_ST)
+    _rxMark    = re.compile(nwRegEx.FMT_HL)
+    _rxSCPlain = re.compile(nwRegEx.FMT_SC)
+    _rxSCValue = re.compile(nwRegEx.FMT_SV)
 
     @property
     def url(self) -> re.Pattern:
@@ -74,6 +75,11 @@ class RegExPatterns:
     def markdownStrike(self) -> re.Pattern:
         """Markdown strikethrough style."""
         return self._rxStrike
+
+    @property
+    def markdownMark(self) -> re.Pattern:
+        """Markdown highlight style."""
+        return self._rxMark
 
     @property
     def shortcodePlain(self) -> re.Pattern:
@@ -108,7 +114,7 @@ class RegExPatterns:
                     rx.append(f"(?:{qO}[^{qO}]+{qC})")
                 if CONFIG.allowOpenDial:
                     rx.append(f"(?:{qO}.+?$)")
-            return re.compile("|".join(rx), re.UNICODE)
+            return re.compile("|".join(rx))
         return None
 
     @property
@@ -118,7 +124,7 @@ class RegExPatterns:
             qO = re.escape(compact(CONFIG.altDialogOpen))
             qC = re.escape(compact(CONFIG.altDialogClose))
             qB = r"\B" if (qO == qC or qC in self.AMBIGUOUS) else ""
-            return re.compile(f"{qO}.*?{qC}{qB}", re.UNICODE)
+            return re.compile(f"{qO}.*?{qC}{qB}")
         return None
 
 
@@ -163,8 +169,8 @@ class DialogParser:
         # Build narrator break RegExes
         if narrator := CONFIG.narratorBreak.strip()[:1]:
             punct = re.escape(".,:;!?")
-            self._breakD = re.compile(f"{narrator}.*?(?:{narrator}[{punct}]?|$)", re.UNICODE)
-            self._breakQ = re.compile(f"{narrator}.*?(?:{narrator}[{punct}]?)", re.UNICODE)
+            self._breakD = re.compile(f"{narrator}.*?(?:{narrator}[{punct}]?|$)")
+            self._breakQ = re.compile(f"{narrator}.*?(?:{narrator}[{punct}]?)")
             self._narrator = narrator
             self._mode = f" {narrator}"
 

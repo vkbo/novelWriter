@@ -20,344 +20,402 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import sys
+import json
 
+from configparser import ConfigParser
 from pathlib import Path
+from unittest.mock import MagicMock, Mock
 
 import pytest
 
-from PyQt6.QtGui import QColor, QIcon, QPalette, QPixmap
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QPalette, QPixmap, QStyleHints
 
-from novelwriter import CONFIG, SHARED
-from novelwriter.common import NWConfigParser
-from novelwriter.config import DEF_GUI
+from novelwriter import CONFIG
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS
 from novelwriter.constants import nwLabels
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
-from novelwriter.gui.theme import _listConf
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwTheme
+from novelwriter.gui.theme import (
+    STYLES_BIG_TOOLBUTTON, STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON, GuiTheme,
+    ThemeMeta, _listContent
+)
 
 from tests.mocked import causeOSError
-from tests.tools import writeFile
 
 
 @pytest.mark.gui
-def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
-    """Test the theme class init."""
-    mainTheme = SHARED.theme
+def testGuiTheme_ParseColor():
+    """Test the colour parsing."""
+    theme = GuiTheme()
 
-    # Methods
-    # =======
+    # Pre-Populate
+    theme._qColors["red"] = QColor(255, 0, 0)
+    theme._qColors["green"] = QColor(0, 255, 0)
+    theme._qColors["blue"] = QColor(0, 0, 255)
+    theme._qColors["grey"] = QColor(127, 127, 127)
 
-    mSize = mainTheme.getTextWidth("m")
-    assert mSize > 0
-    assert mainTheme.getTextWidth("m", mainTheme.guiFont) == mSize
+    # By Name
+    assert theme.parseColor("red").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("green").getRgb() == (0, 255, 0, 255)
+    assert theme.parseColor("blue").getRgb() == (0, 0, 255, 255)
+    assert theme.parseColor("bob").getRgb() == (0, 0, 0, 255)
 
-    # Scan for Themes
-    # ===============
+    # CSS Format
+    assert theme.parseColor("#ff0000").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("#ff00007f").getRgb() == (255, 0, 0, 127)
+    assert theme.parseColor("#ff00").getRgb() == (0, 0, 0, 255)  # Too short -> ignored
+    assert theme.parseColor("#ff00007f15").getRgb() == (0, 0, 0, 255)  # Too long -> ignored
 
-    result = {}
-    _listConf({}, Path("not_a_path"), ".conf")
-    assert result == {}
+    # Name + Alpha
+    assert theme.parseColor("red:255").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("red:127").getRgb() == (255, 0, 0, 127)
+    assert theme.parseColor("red:512").getRgb() == (255, 0, 0, 255)  # Value truncated
 
-    themeOne = tstPaths.cnfDir / "themes" / "themeone.conf"
-    themeTwo = tstPaths.cnfDir / "themes" / "themetwo.conf"
-    writeFile(themeOne, "# Stuff")
-    writeFile(themeTwo, "# Stuff")
+    # Name + Lighter
+    assert theme.parseColor("grey:L100").getRgb() == (127, 127, 127, 255)
+    assert theme.parseColor("grey:L150").getRgb() == (190, 190, 190, 255)
+    assert theme.parseColor("grey:L50").getRgb() == (63, 63, 63, 255)
 
-    _listConf(result, tstPaths.cnfDir / "themes", ".conf")
-    assert result["themeone"] == themeOne
-    assert result["themetwo"] == themeTwo
+    # Name + Darker
+    assert theme.parseColor("grey:D100").getRgb() == (127, 127, 127, 255)
+    assert theme.parseColor("grey:D150").getRgb() == (85, 85, 85, 255)
+    assert theme.parseColor("grey:D50").getRgb() == (254, 254, 254, 255)
 
-    # Parse Colours
-    # =============
-
-    parser = NWConfigParser()
-    parser["Palette"] = {
-        "colour1": "100, 150, 200",            # Valid
-        "colour2": "100, 150, 200, 250",       # With alpha
-        "colour3": "100, 150, 200, 250, 300",  # Too many values
-        "colour4": "250, 250",                 # Missing blue
-        "colour5": "-10, 127, 300",            # Invalid red and blue
-        "colour6": "bob, 127, 255",            # Invalid red
-    }
-
-    # Test the parser for several valid and invalid values
-    assert mainTheme._parseColor(parser, "Palette", "colour1").getRgb() == (100, 150, 200, 255)
-    assert mainTheme._parseColor(parser, "Palette", "colour2").getRgb() == (100, 150, 200, 250)
-    assert mainTheme._parseColor(parser, "Palette", "colour3").getRgb() == (100, 150, 200, 250)
-    assert mainTheme._parseColor(parser, "Palette", "colour4").getRgb() == (250, 250, 0, 255)
-    assert mainTheme._parseColor(parser, "Palette", "colour5").getRgb() == (0, 0, 0, 0)
-    assert mainTheme._parseColor(parser, "Palette", "colour6").getRgb() == (0, 127, 255, 255)
-
-    # The palette should load with the parsed values
-    mainTheme._setPalette(parser, "Palette", "colour1", QPalette.ColorRole.Window)
-    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (100, 150, 200, 255)
-    mainTheme._setPalette(parser, "Palette", "colour2", QPalette.ColorRole.Window)
-    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (100, 150, 200, 250)
-    mainTheme._setPalette(parser, "Palette", "colour3", QPalette.ColorRole.Window)
-    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (100, 150, 200, 250)
-    mainTheme._setPalette(parser, "Palette", "colour4", QPalette.ColorRole.Window)
-    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (250, 250, 0, 255)
-    mainTheme._setPalette(parser, "Palette", "colour5", QPalette.ColorRole.Window)
-    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (0, 0, 0, 0)
-    mainTheme._setPalette(parser, "Palette", "colour6", QPalette.ColorRole.Window)
-    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (0, 127, 255, 255)
-
-    # Non-existing value should return default colour
-    mainTheme._setPalette(parser, "Palette", "stuff", QPalette.ColorRole.Window)
-    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (0, 0, 0, 255)
-
-    # qtbot.stop()
+    # Values
+    assert theme.parseColor("255, 0, 0").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("255, 0, 0, 255").getRgb() == (255, 0, 0, 255)
+    assert theme.parseColor("255, 0, 0, 127").getRgb() == (255, 0, 0, 127)
+    assert theme.parseColor("255, 0, 0, 127, 42").getRgb() == (255, 0, 0, 127)  # Truncated
 
 
 @pytest.mark.gui
-def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
-    """Test the theme part of the class."""
-    mainTheme = SHARED.theme
+def testGuiTheme_ScanThemes(monkeypatch):
+    """Test the themes scanning."""
+    theme = GuiTheme()
 
-    # List Themes
+    # Load built-in themes
+    files = []
+    _listContent(files, CONFIG.assetPath("themes"), ".conf")
+    assert len(files) > 0
+
+    # Block reading theme files
+    with monkeypatch.context() as mp:
+        mp.setattr(ConfigParser, "read", causeOSError)
+        theme._scanThemes(files)
+        assert theme.colourThemes == {}
+
+    # Read all themes correctly
+    theme._scanThemes(files)
+    assert len(theme.colourThemes) > 0
+
+    dark = theme.colourThemes[DEF_GUI_DARK]
+    light = theme.colourThemes[DEF_GUI_LIGHT]
+
+    assert dark.name == "Default Dark Theme"
+    assert dark.dark is True
+    assert light.name == "Default Light Theme"
+    assert light.dark is False
+
+
+@pytest.mark.gui
+def testGuiTheme_LoadThemes(monkeypatch):
+    """Test loading themes."""
+    theme = GuiTheme()
+    theme.iconCache = MagicMock()
+    CONFIG.lightTheme = DEF_GUI_LIGHT
+    CONFIG.darkTheme = DEF_GUI_DARK
+
+    # Load built-in themes
+    files = []
+    _listContent(files, CONFIG.assetPath("themes"), ".conf")
+    theme._scanThemes(files)
+    assert DEF_GUI_LIGHT in theme._allThemes
+    assert DEF_GUI_DARK in theme._allThemes
+    assert theme._currentTheme == ""
+
+    # Load light theme
+    CONFIG.themeMode = nwTheme.LIGHT
+    theme.loadTheme()
+    assert theme._currentTheme == DEF_GUI_LIGHT
+
+    # Load dark theme
+    CONFIG.themeMode = nwTheme.DARK
+    theme.loadTheme()
+    assert theme._currentTheme == DEF_GUI_DARK
+
+    # Let auto switch back to light, then dark
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "verQtValue", 0x060500)
+        mp.setattr(QStyleHints, "colorScheme", lambda *a: Qt.ColorScheme.Light)
+        CONFIG.themeMode = nwTheme.AUTO
+        theme.loadTheme()
+        assert theme._currentTheme == DEF_GUI_LIGHT
+
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "verQtValue", 0x060500)
+        mp.setattr(QStyleHints, "colorScheme", lambda *a: Qt.ColorScheme.Dark)
+        CONFIG.themeMode = nwTheme.AUTO
+        theme.loadTheme()
+        assert theme._currentTheme == DEF_GUI_DARK
+
+    # Error Cases
     # ===========
 
-    # Block the reading of the files
+    # Invalid light theme
+    CONFIG.lightTheme = "not_a_theme"
+    CONFIG.themeMode = nwTheme.LIGHT
+    theme.loadTheme()
+    assert theme._currentTheme == DEF_GUI_LIGHT
+
+    # Invalid dark theme
+    CONFIG.darkTheme = "not_a_theme"
+    CONFIG.themeMode = nwTheme.DARK
+    theme.loadTheme()
+    assert theme._currentTheme == DEF_GUI_DARK
+
+    # Clear meta and check exit early cases
+    theme._meta = ThemeMeta()
+    assert theme._meta.name == ""
+
+    # Reload dark should not load anything
+    CONFIG.darkTheme = DEF_GUI_DARK
+    CONFIG.themeMode = nwTheme.DARK
+    theme.loadTheme()
+    assert theme._meta.name == ""
+
+    # Force reload, but fail parsing
     with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert mainTheme.listThemes() == []
+        mp.setattr(ConfigParser, "read", causeOSError)
+        CONFIG.darkTheme = DEF_GUI_DARK
+        CONFIG.themeMode = nwTheme.DARK
+        theme.loadTheme(force=True)
+        assert theme._meta.name == ""
 
-    # Load the theme info, default themes first
-    themesList = mainTheme.listThemes()
-    assert themesList[0] == ("default_dark", "Default Dark Theme")
-    assert themesList[1] == ("default_light", "Default Light Theme")
-    assert themesList[2] == ("cyberpunk_night", "Cyberpunk Night")
-    assert themesList[3] == ("dracula", "Dracula")
+    # Invalid theme, and defaults are missing
+    del theme._allThemes[DEF_GUI_DARK]
+    del theme._allThemes[DEF_GUI_LIGHT]
 
-    # A second call should returned the cached list
-    assert mainTheme.listThemes() == mainTheme._themeList
+    CONFIG.lightTheme = "not_a_theme"
+    CONFIG.themeMode = nwTheme.LIGHT
+    theme.loadTheme(force=True)
+    assert theme._meta.name == ""
 
-    # Check handling of broken theme settings
-    CONFIG.guiTheme = "not_a_theme"
-    availThemes = mainTheme._availThemes
-    mainTheme._availThemes = {}
-    assert mainTheme.loadTheme() is False
-    mainTheme._availThemes = availThemes
+    CONFIG.darkTheme = "not_a_theme"
+    CONFIG.themeMode = nwTheme.DARK
+    theme.loadTheme(force=True)
+    assert theme._meta.name == ""
 
-    # Check handling of unreadable file
-    CONFIG.guiTheme = DEF_GUI
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert mainTheme.loadTheme() is False
 
-    # Load Default Theme
-    # ==================
+@pytest.mark.gui
+def testGuiTheme_SpecialColors(tstPaths):
+    """Test handling special cases for colours."""
+    theme = GuiTheme()
+    theme.iconCache = MagicMock()
 
-    if sys.platform != "win32":
-        # Set a mock colour for the window background
-        mainTheme._guiPalette.color(QPalette.ColorRole.Window).setRgb(0, 0, 0, 0)
-
-    # Load the default theme
-    CONFIG.guiTheme = DEF_GUI
-    assert mainTheme.loadTheme() is True
-
-    # This should load a standard palette
-    wCol = QPalette().color(QPalette.ColorRole.Window).getRgb()
-    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == wCol
-
-    # Mock Dark Theme
-    # ===============
-
-    mockTheme: Path = tstPaths.cnfDir / "themes" / "test.conf"
-    mockTheme.write_text(
+    testTheme: Path = tstPaths.cnfDir / "themes" / "test.conf"
+    testTheme.write_text(
         "[Main]\n"
         "name = Test\n"
+        "mode = light\n"
+        "\n"
+        "[Base]\n"
+        "default = #cccccc\n"
+        "faded   = #949494\n"
+        "red     = #ff0000\n"
+        "orange  = #ff7f00\n"
+        "yellow  = #ffff00\n"
+        "green   = #00ff00\n"
+        "cyan    = #00ffff\n"
+        "blue    = #0000ff\n"
+        "purple  = #ff00ff\n"
+        "\n"
+        "[Project]\n"
+        "root    = blue\n"
+        "folder  = yellow\n"
+        "file    = default\n"
+        "title   = green\n"
+        "chapter = red\n"
+        "scene   = blue\n"
+        "note    = yellow\n"
         "\n"
         "[Palette]\n"
-        "window = 0, 0, 0\n"
-        "text = 255, 255, 255\n"
+        "window  = #000000\n"
+        "text    = #ffffff\n"
     )
-    mainTheme._availThemes["test"] = mockTheme
+    theme._scanThemes([testTheme])
+    assert len(theme.colourThemes) == 1
+    CONFIG.themeMode = nwTheme.LIGHT
+    CONFIG.lightTheme = "test"
 
-    CONFIG.guiTheme = "test"
-    assert mainTheme.loadTheme() is True
-    assert mainTheme._guiPalette.window().color().getRgb() == (0, 0, 0, 255)
-    assert mainTheme._guiPalette.text().color().getRgb() == (255, 255, 255, 255)
-    assert mainTheme._guiPalette.light().color().getRgb() == (57, 57, 57, 255)
-    assert mainTheme.isDarkTheme is True
+    # Load theme
+    theme.loadTheme()
 
-    # Load Default Light Theme
-    # ========================
+    # Since window is black, a lighter version should be generated
+    assert theme._guiPalette.light().color().getRgb() == (57, 57, 57, 255)
 
-    CONFIG.guiTheme = "default_light"
-    assert mainTheme.loadTheme() is True
+    # Reload with project override to red
+    CONFIG.iconColTree = "red"
+    CONFIG.iconColDocs = True
+    theme.loadTheme(force=True)
 
-    # Check a few values
-    assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.Window
-    ).getRgb() == (239, 239, 239, 255)
-    assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.WindowText
-    ).getRgb() == (0, 0, 0, 255)
-    assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.Base
-    ).getRgb() == (255, 255, 255, 255)
-    assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.AlternateBase
-    ).getRgb() == (224, 224, 224, 255)
+    assert theme.getBaseColor("root").getRgb() == (255, 0, 0, 255)
+    assert theme.getBaseColor("folder").getRgb() == (255, 0, 0, 255)
+    assert theme.getBaseColor("file").getRgb() == (204, 204, 204, 255)
+    assert theme.getBaseColor("title").getRgb() == (0, 255, 0, 255)
+    assert theme.getBaseColor("chapter").getRgb() == (255, 0, 0, 255)
+    assert theme.getBaseColor("scene").getRgb() == (0, 0, 255, 255)
+    assert theme.getBaseColor("note").getRgb() == (255, 255, 0, 255)
 
-    # Load Default Dark Theme
-    # =======================
+    assert theme.getRawBaseColor("root") == b"#ff0000"
+    assert theme.getRawBaseColor("folder") == b"#ff0000"
+    assert theme.getRawBaseColor("file") == b"#cccccc"
+    assert theme.getRawBaseColor("title") == b"#00ff00"
+    assert theme.getRawBaseColor("chapter") == b"#ff0000"
+    assert theme.getRawBaseColor("scene") == b"#0000ff"
+    assert theme.getRawBaseColor("note") == b"#ffff00"
 
-    CONFIG.guiTheme = "default_dark"
-    assert mainTheme.loadTheme() is True
-
-    # Check a few values
-    assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.Window).getRgb() == (54, 54, 54, 255)
-    assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.WindowText).getRgb() == (204, 204, 204, 255)
-    assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.Base).getRgb() == (62, 62, 62, 255)
-    assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.AlternateBase).getRgb() == (78, 78, 78, 255)
-
-    # qtbot.stop()
-
-
-@pytest.mark.gui
-def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
-    """Test the syntax part of the class."""
-    mainTheme = SHARED.theme
-
-    # List Themes
-    # ===========
-
-    # Block the reading of the files
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert mainTheme.listThemes() == []
-
-    # Load the syntax info
-    syntaxList = mainTheme.listSyntax()
-    assert syntaxList[0] == ("default_dark", "Default Dark")
-    assert syntaxList[1] == ("default_light", "Default Light")
-
-    # A second call should returned the cached list
-    assert mainTheme.listSyntax() == mainTheme._syntaxList
-
-    # Check handling of broken theme settings
-    availSyntax = mainTheme._availSyntax
-    mainTheme._availSyntax = {}
-    CONFIG.guiSyntax = "not_a_syntax"
-    assert mainTheme.loadSyntax() is False
-    mainTheme._availSyntax = availSyntax
-
-    # Check handling of unreadable file
-    CONFIG.guiSyntax = "default_light"
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert mainTheme.loadSyntax() is False
-
-    # Load Default Light Syntax
-    # =========================
-
-    # Load the default syntax
-    CONFIG.guiSyntax = "default_light"
-    assert mainTheme.loadSyntax() is True
-
-    # Check some values
-    assert mainTheme.syntaxMeta.name == "Default Light"
-    assert mainTheme.syntaxTheme.back == QColor(255, 255, 255)
-    assert mainTheme.syntaxTheme.text == QColor(0, 0, 0)
-    assert mainTheme.syntaxTheme.link == QColor(0, 0, 200)
-
-    # Load Default Dark Theme
-    # =======================
-
-    # Load the default syntax
-    CONFIG.guiSyntax = "default_dark"
-    assert mainTheme.loadSyntax() is True
-
-    # Check some values
-    assert mainTheme.syntaxMeta.name == "Default Dark"
-    assert mainTheme.syntaxTheme.back == QColor(42, 42, 42)
-    assert mainTheme.syntaxTheme.text == QColor(204, 204, 204)
-    assert mainTheme.syntaxTheme.link == QColor(102, 153, 204)
-
-    # qtbot.stop()
-
-
-@pytest.mark.gui
-def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
-    """Test the icon cache class."""
-    iconCache = SHARED.theme.iconCache
-
-    # Load Theme
-    # ==========
-
-    # Invalid theme name
-    availThemes = iconCache._availThemes
-    iconCache._availThemes = {}
-    assert iconCache.loadTheme("not_a_theme") is False
-    iconCache._availThemes = availThemes
-
-    # Check handling of unreadable file
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert iconCache.loadTheme("material_rounded_normal") is False
-
-    # Load working theme file
-    assert iconCache.loadTheme("material_rounded_normal") is True
-    assert iconCache.themeMeta.name == "Material Symbols - Rounded"
-
-    # Load with project colour override
-    purple = iconCache._svgColors["purple"]
-    assert iconCache._svgColors["root"] != purple
-    assert iconCache._svgColors["folder"] != purple
-    assert iconCache._svgColors["file"] != purple
-    assert iconCache._svgColors["title"] != purple
-    assert iconCache._svgColors["chapter"] != purple
-    assert iconCache._svgColors["scene"] != purple
-    assert iconCache._svgColors["note"] != purple
-
+    # Reload with project override to purple, also for docs
     CONFIG.iconColTree = "purple"
-    assert iconCache.loadTheme("material_rounded_normal") is True
-    assert iconCache._svgColors["root"] == purple
-    assert iconCache._svgColors["folder"] == purple
-    assert iconCache._svgColors["file"] == purple
-    assert iconCache._svgColors["title"] == purple
-    assert iconCache._svgColors["chapter"] == purple
-    assert iconCache._svgColors["scene"] == purple
-    assert iconCache._svgColors["note"] == purple
+    CONFIG.iconColDocs = False
+    theme.loadTheme(force=True)
 
-    # Change some colours
-    iconCache.setIconColor("root", QColor(255, 255, 255))
-    assert iconCache._svgColors["root"] != purple
-    assert iconCache._svgColors["root"] == b"#ffffff"
+    assert theme.getBaseColor("root").getRgb() == (255, 0, 255, 255)
+    assert theme.getBaseColor("folder").getRgb() == (255, 0, 255, 255)
+    assert theme.getBaseColor("file").getRgb() == (255, 0, 255, 255)
+    assert theme.getBaseColor("title").getRgb() == (255, 0, 255, 255)
+    assert theme.getBaseColor("chapter").getRgb() == (255, 0, 255, 255)
+    assert theme.getBaseColor("scene").getRgb() == (255, 0, 255, 255)
+    assert theme.getBaseColor("note").getRgb() == (255, 0, 255, 255)
 
-    # List Themes
-    # ===========
-
-    # Load error returns empty list
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        themes = iconCache.listThemes()
-        assert themes == []
-
-    # Successful read
-    themes = iconCache.listThemes()
-    assert len(themes) > 1
-    assert "material_rounded_normal" in dict(themes)
-
-    # Load error doesn't matter on second read since list is cached
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert iconCache.listThemes() == themes
-
-    # qtbot.stop()
+    assert theme.getRawBaseColor("root") == b"#ff00ff"
+    assert theme.getRawBaseColor("folder") == b"#ff00ff"
+    assert theme.getRawBaseColor("file") == b"#ff00ff"
+    assert theme.getRawBaseColor("title") == b"#ff00ff"
+    assert theme.getRawBaseColor("chapter") == b"#ff00ff"
+    assert theme.getRawBaseColor("scene") == b"#ff00ff"
+    assert theme.getRawBaseColor("note") == b"#ff00ff"
 
 
 @pytest.mark.gui
-def testGuiTheme_LoadIcons(qtbot, nwGUI):
+def testGuiTheme_Methods(monkeypatch):
+    """Test other themes methods."""
+    theme = GuiTheme()
+    theme.iconCache = MagicMock()
+    CONFIG.darkTheme = DEF_GUI_DARK
+    CONFIG.themeMode = nwTheme.DARK
+
+    # Init theme
+    assert theme.colourThemes == {}
+    theme.initThemes()
+    assert theme._meta.name == "Default Dark Theme"
+
+    # Text width
+    theme.guiFont = QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont)
+    assert theme.getTextWidth("MMMMM") > theme.getTextWidth("MMM")
+    font = QFont(theme.guiFont)
+    font.setPointSizeF(0.5*font.pointSizeF())
+    assert theme.getTextWidth("MMMMM", font) < theme.getTextWidth("MMMMM")
+
+    # Detect desktop mode Qt 6.5+
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "verQtValue", 0x060500)
+
+        mp.setattr(QStyleHints, "colorScheme", lambda *a: Qt.ColorScheme.Light)
+        assert theme.isDesktopDarkMode() is False
+
+        mp.setattr(QStyleHints, "colorScheme", lambda *a: Qt.ColorScheme.Dark)
+        assert theme.isDesktopDarkMode() is True
+
+    # Detect desktop mode Qt 6.4
+    mockWhite = Mock()
+    mockWhite.color.return_value = QColor(255, 255, 255)
+
+    mockBlack = Mock()
+    mockBlack.color.return_value = QColor(0, 0, 0)
+
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "verQtValue", 0x060400)
+
+        mp.setattr(QPalette, "window", lambda *a: mockWhite)
+        mp.setattr(QPalette, "windowText", lambda *a: mockBlack)
+        assert theme.isDesktopDarkMode() is False
+
+        mp.setattr(QPalette, "window", lambda *a: mockBlack)
+        mp.setattr(QPalette, "windowText", lambda *a: mockWhite)
+        assert theme.isDesktopDarkMode() is True
+
+    # Stylesheets
+    assert theme.getStyleSheet(STYLES_FLAT_TABS) != ""
+    assert theme.getStyleSheet(STYLES_MIN_TOOLBUTTON) != ""
+    assert theme.getStyleSheet(STYLES_BIG_TOOLBUTTON) != ""
+    assert theme.getStyleSheet("stuff") == ""
+
+
+@pytest.mark.gui
+def testGuiTheme_ScanIcons(monkeypatch):
+    """Test the icon theme scanning."""
+    theme = GuiTheme()
+
+    # Load built-in themes
+    files = []
+    _listContent(files, CONFIG.assetPath("icons"), ".icons")
+    assert len(files) > 0
+
+    # Block reading theme files
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        theme.iconCache._scanThemes(files)
+        assert theme.iconCache.iconThemes == {}
+
+    # Read all themes correctly
+    theme.iconCache._scanThemes(files)
+    assert len(theme.iconCache.iconThemes) > 0
+
+
+@pytest.mark.gui
+def testGuiTheme_IconThemes(monkeypatch):
+    """Test loading icon theme."""
+    CONFIG.lightTheme = DEF_GUI_LIGHT
+    CONFIG.themeMode = nwTheme.LIGHT
+    CONFIG.iconTheme = DEF_ICONS
+
+    theme = GuiTheme()
+
+    # Init should load default theme
+    theme.initThemes()
+    assert theme.iconCache._meta.name == "Material Symbols - Rounded"
+    assert DEF_ICONS in theme.iconCache.iconThemes
+
+    # Load default theme directly
+    theme.iconCache._meta = ThemeMeta()
+    theme.iconCache.loadTheme("DEF_ICONS")
+    assert theme.iconCache._meta.name == "Material Symbols - Rounded"
+
+    # Failed loading should load nothing
+    theme.iconCache._meta = ThemeMeta()
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        theme.iconCache.loadTheme("DEF_ICONS")
+        assert theme.iconCache._meta.name == ""
+
+    # Reload with non-existent theme should reload default
+    theme.iconCache._meta = ThemeMeta()
+    theme.iconCache.loadTheme("not_a_theme")
+    assert theme.iconCache._meta.name == "Material Symbols - Rounded"
+
+    # If default theme is missing, load nothing
+    del theme.iconCache._allThemes[DEF_ICONS]
+    theme.iconCache._meta = ThemeMeta()
+    theme.iconCache.loadTheme("not_a_theme")
+    assert theme.iconCache._meta.name == ""
+
+
+@pytest.mark.gui
+def testGuiTheme_LoadIcons():
     """Test the icon cache class."""
-    iconCache = SHARED.theme.iconCache
-    assert iconCache.loadTheme("material_rounded_normal") is True
+    theme = GuiTheme()
+    theme.initThemes()
+    iconCache = theme.iconCache
 
     # Load Icons
     # ==========
@@ -455,14 +513,13 @@ def testGuiTheme_LoadIcons(qtbot, nwGUI):
         nwItemType.NO_TYPE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H0"
     ) == iconCache._noIcon
 
-    # qtbot.stop()
-
 
 @pytest.mark.gui
-def testGuiTheme_LoadDecorations(qtbot, monkeypatch, nwGUI):
+def testGuiTheme_LoadDecorations(monkeypatch):
     """Test the icon cache class."""
-    iconCache = SHARED.theme.iconCache
-    assert iconCache.loadTheme("material_rounded_normal") is True
+    theme = GuiTheme()
+    theme.initThemes()
+    iconCache = theme.iconCache
 
     # Load Decorations
     # ================
@@ -520,4 +577,114 @@ def testGuiTheme_LoadDecorations(qtbot, monkeypatch, nwGUI):
     assert iconCache.getHeaderDecorationNarrow(5)  == iconCache._headerDecNarrow[5]
     assert iconCache.getHeaderDecorationNarrow(6)  == iconCache._headerDecNarrow[5]
 
-    # qtbot.stop()
+
+THEMES = []
+_listContent(THEMES, CONFIG.assetPath("themes"), ".conf")
+
+
+@pytest.mark.gui
+@pytest.mark.parametrize("theme", [a.stem for a in THEMES])
+def testGuiTheme_CheckTheme(theme):
+    """Test loading all themes."""
+    themes = GuiTheme()
+    themes.iconCache = MagicMock()
+    themes._scanThemes(THEMES)
+
+    assert theme in themes.colourThemes
+    current = themes.colourThemes[theme]
+    if current.dark:
+        CONFIG.darkTheme = theme
+        CONFIG.themeMode = nwTheme.DARK
+    else:
+        CONFIG.lightTheme = theme
+        CONFIG.themeMode = nwTheme.LIGHT
+
+    # Check loading
+    themes.loadTheme()
+    assert themes._meta.name == current.name
+    assert themes.isDarkTheme == current.dark
+
+    # Check completeness
+    parser = ConfigParser()
+    parser.read(current.path, encoding="utf-8")
+
+    sections = ["Main", "Base", "Project", "Palette", "GUI", "Syntax"]
+    assert sorted(parser.sections()) == sorted(sections)
+
+    structure = {
+        "Main": [
+            "name", "mode", "author",  # The rest are not required
+        ],
+        "Base": [
+            "base", "default", "faded", "red", "orange", "yellow", "green",
+            "cyan", "blue", "purple",
+        ],
+        "Project": [
+            "root", "folder", "file", "title", "chapter", "scene", "note",
+            "active", "inactive", "disabled",
+        ],
+        "Palette": [
+            "window", "windowtext", "base", "alternatebase", "text",
+            "tooltipbase", "tooltiptext", "button", "buttontext", "brighttext",
+            "highlight", "highlightedtext", "link", "linkvisited", "accent",
+        ],
+        "GUI": [
+            "helptext", "fadedtext", "errortext",
+        ],
+        "Syntax": [
+            "background", "text", "line", "link", "headertext", "headertag",
+            "emphasis", "dialog", "altdialog", "hidden", "note", "shortcode",
+            "keyword", "tag", "value", "optional", "spellcheckline",
+            "errorline", "replacetag", "modifier", "texthighlight",
+        ],
+    }
+    optional = ["credit", "url"]
+    missing = []
+    for section, options in structure.items():
+        missing.extend(opt for opt in options if opt not in parser[section])
+    assert missing == [], "Missing options in theme file"
+
+    # Check deprecated
+    deprecated = []
+    for section in sections:
+        deprecated.extend(
+            opt for opt in parser[section]
+            if opt not in structure[section] and opt not in optional
+        )
+    assert deprecated == [], "Deprecated options in theme file"
+
+
+ICONS = []
+_listContent(ICONS, CONFIG.assetPath("icons"), ".icons")
+
+
+@pytest.mark.gui
+@pytest.mark.parametrize("icons", [a.stem for a in ICONS])
+def testGuiTheme_CheckIcons(icons, tstPaths):
+    """Test loading all icons."""
+    keysFile: Path = tstPaths.filesDir / "all_icons.json"
+    iconKeys = json.loads(keysFile.read_text(encoding="utf-8"))
+    assert isinstance(iconKeys, list)
+
+    CONFIG.lightTheme = DEF_GUI_LIGHT
+    CONFIG.themeMode = nwTheme.LIGHT
+
+    themes = GuiTheme()
+    themes.initThemes()
+    iconCache = themes.iconCache
+
+    assert icons in iconCache.iconThemes
+    current = iconCache.iconThemes[icons]
+    CONFIG.iconTheme = icons
+
+    # Check loading
+    iconCache.loadTheme(icons)
+    assert iconCache._meta.name == current.name
+
+    # Check completeness
+    missing = [key for key in iconKeys if key not in iconCache._svgData]
+    assert missing == [], "Missing keys in icons file"
+
+    # Check deprecated
+    deprecated = [key for key in iconCache._svgData if key not in iconKeys]
+    assert deprecated == [], "Deprecated keys in icons file"

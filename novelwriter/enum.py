@@ -92,35 +92,36 @@ class nwDocAction(Enum):
     MD_ITALIC = 6
     MD_BOLD   = 7
     MD_STRIKE = 8
-    S_QUOTE   = 9
-    D_QUOTE   = 10
-    SEL_ALL   = 11
-    SEL_PARA  = 12
-    BLOCK_H1  = 13
-    BLOCK_H2  = 14
-    BLOCK_H3  = 15
-    BLOCK_H4  = 16
-    BLOCK_COM = 17
-    BLOCK_IGN = 18
-    BLOCK_TXT = 19
-    BLOCK_TTL = 20
-    BLOCK_UNN = 21
-    BLOCK_HSC = 22
-    REPL_SNG  = 23
-    REPL_DBL  = 24
-    RM_BREAKS = 25
-    ALIGN_L   = 26
-    ALIGN_C   = 27
-    ALIGN_R   = 28
-    INDENT_L  = 29
-    INDENT_R  = 30
-    SC_ITALIC = 31
-    SC_BOLD   = 32
-    SC_STRIKE = 33
-    SC_ULINE  = 34
-    SC_MARK   = 35
-    SC_SUP    = 36
-    SC_SUB    = 37
+    MD_MARK   = 9
+    S_QUOTE   = 10
+    D_QUOTE   = 11
+    SEL_ALL   = 12
+    SEL_PARA  = 13
+    BLOCK_H1  = 14
+    BLOCK_H2  = 15
+    BLOCK_H3  = 16
+    BLOCK_H4  = 17
+    BLOCK_COM = 18
+    BLOCK_IGN = 19
+    BLOCK_TXT = 20
+    BLOCK_TTL = 21
+    BLOCK_UNN = 22
+    BLOCK_HSC = 23
+    REPL_SNG  = 24
+    REPL_DBL  = 25
+    RM_BREAKS = 26
+    ALIGN_L   = 27
+    ALIGN_C   = 28
+    ALIGN_R   = 29
+    INDENT_L  = 30
+    INDENT_R  = 31
+    SC_ITALIC = 32
+    SC_BOLD   = 33
+    SC_STRIKE = 34
+    SC_ULINE  = 35
+    SC_MARK   = 36
+    SC_SUP    = 37
+    SC_SUB    = 38
 
 
 class nwDocInsert(Enum):
@@ -154,6 +155,13 @@ class nwFocus(Enum):
     TREE     = 1
     DOCUMENT = 2
     OUTLINE  = 3
+
+
+class nwTheme(Enum):
+
+    AUTO  = 0
+    LIGHT = 1
+    DARK  = 2
 
 
 class nwOutline(Enum):

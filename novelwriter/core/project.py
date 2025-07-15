@@ -483,14 +483,14 @@ class NWProject:
 
     def setDefaultStatusImport(self) -> None:
         """Set the default status and importance values."""
-        self._data.itemStatus.add(None, self.tr("New"),      (120, 120, 120), "STAR", 0)
-        self._data.itemStatus.add(None, self.tr("Note"),     (205, 171, 143), "TRIANGLE", 0)
-        self._data.itemStatus.add(None, self.tr("Draft"),    (143, 240, 164), "CIRCLE_T", 0)
-        self._data.itemStatus.add(None, self.tr("Finished"), (249, 240, 107), "STAR", 0)
-        self._data.itemImport.add(None, self.tr("New"),      (120, 120, 120), "SQUARE", 0)
-        self._data.itemImport.add(None, self.tr("Minor"),    (220, 138, 221), "BLOCK_2", 0)
-        self._data.itemImport.add(None, self.tr("Major"),    (220, 138, 221), "BLOCK_3", 0)
-        self._data.itemImport.add(None, self.tr("Main"),     (220, 138, 221), "BLOCK_4", 0)
+        self._data.itemStatus.add(None, self.tr("New"), "faded", "STAR", 0)
+        self._data.itemStatus.add(None, self.tr("Note"), "red", "TRIANGLE", 0)
+        self._data.itemStatus.add(None, self.tr("Draft"), "yellow", "CIRCLE_T", 0)
+        self._data.itemStatus.add(None, self.tr("Finished"), "green", "STAR", 0)
+        self._data.itemImport.add(None, self.tr("New"), "purple", "SQUARE", 0)
+        self._data.itemImport.add(None, self.tr("Minor"), "purple", "BLOCK_2", 0)
+        self._data.itemImport.add(None, self.tr("Major"), "purple", "BLOCK_3", 0)
+        self._data.itemImport.add(None, self.tr("Main"), "purple", "BLOCK_4", 0)
         return
 
     def setProjectLang(self, language: str | None) -> None:
@@ -545,6 +545,12 @@ class NWProject:
             self._data.itemImport.update(update)
             SHARED.emitStatusLabelsChanged(self, kind)
             self._tree.refreshAllItems()
+        return
+
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        self._data.itemStatus.refreshIcons()
+        self._data.itemImport.refreshIcons()
         return
 
     def localLookup(self, word: str | int) -> str:

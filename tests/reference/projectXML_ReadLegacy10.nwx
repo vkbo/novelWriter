@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.7b1" hexVersion="0x020700b1" fileVersion="1.5" fileRevision="5" timeStamp="2020-05-28 09:59:15">
+<novelWriterXML appVersion="2.7b1" hexVersion="0x020700b1" fileVersion="1.5" fileRevision="6" timeStamp="2020-05-28 09:59:15">
   <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="0" autoCount="0" editTime="1000">
     <name>Sample Project</name>
     <author>Jay Doh</author>
@@ -20,19 +20,19 @@
       <entry key="C">D</entry>
     </autoReplace>
     <status>
-      <entry key="s000000" count="0" red="100" green="100" blue="100" shape="SQUARE">New</entry>
-      <entry key="s000001" count="0" red="200" green="50" blue="0" shape="SQUARE">Notes</entry>
-      <entry key="s000002" count="0" red="182" green="60" blue="0" shape="SQUARE">Started</entry>
-      <entry key="s000003" count="0" red="193" green="129" blue="0" shape="SQUARE">1st Draft</entry>
-      <entry key="s000004" count="0" red="193" green="129" blue="0" shape="SQUARE">2nd Draft</entry>
-      <entry key="s000005" count="0" red="193" green="129" blue="0" shape="SQUARE">3rd Draft</entry>
-      <entry key="s000006" count="0" red="58" green="180" blue="58" shape="SQUARE">Finished</entry>
+      <entry key="s000000" count="0" color="#646464" shape="SQUARE">New</entry>
+      <entry key="s000001" count="0" color="#c83200" shape="SQUARE">Notes</entry>
+      <entry key="s000002" count="0" color="#b63c00" shape="SQUARE">Started</entry>
+      <entry key="s000003" count="0" color="#c18100" shape="SQUARE">1st Draft</entry>
+      <entry key="s000004" count="0" color="#c18100" shape="SQUARE">2nd Draft</entry>
+      <entry key="s000005" count="0" color="#c18100" shape="SQUARE">3rd Draft</entry>
+      <entry key="s000006" count="0" color="#3ab43a" shape="SQUARE">Finished</entry>
     </status>
     <importance>
-      <entry key="i000007" count="0" red="100" green="100" blue="100" shape="SQUARE">None</entry>
-      <entry key="i000008" count="0" red="0" green="122" blue="188" shape="SQUARE">Minor</entry>
-      <entry key="i000009" count="0" red="21" green="0" blue="180" shape="SQUARE">Major</entry>
-      <entry key="i00000a" count="0" red="117" green="0" blue="175" shape="SQUARE">Main</entry>
+      <entry key="i000007" count="0" color="#646464" shape="SQUARE">None</entry>
+      <entry key="i000008" count="0" color="#007abc" shape="SQUARE">Minor</entry>
+      <entry key="i000009" count="0" color="#1500b4" shape="SQUARE">Major</entry>
+      <entry key="i00000a" count="0" color="#7500af" shape="SQUARE">Main</entry>
     </importance>
   </settings>
   <content items="22" novelWords="0" notesWords="0" novelChars="0" notesChars="0">

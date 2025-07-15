@@ -29,7 +29,15 @@ from enum import Flag, IntEnum
 
 from PyQt6.QtGui import QColor
 
-ESCAPES = {r"\*": "*", r"\~": "~", r"\_": "_", r"\[": "[", r"\]": "]", r"\ ": ""}
+ESCAPES = {
+    r"\*": "*",
+    r"\~": "~",
+    r"\=": "=",
+    r"\_": "_",
+    r"\[": "[",
+    r"\]": "]",
+    r"\ ": "",
+}
 RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
 
 
