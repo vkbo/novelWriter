@@ -678,7 +678,7 @@ def testGuiTheme_CheckIcons(icons, tstPaths):
     CONFIG.iconTheme = icons
 
     # Check loading
-    iconCache.loadTheme(icons)
+    themes.loadTheme(force=True)
     assert iconCache._meta.name == current.name
 
     # Check completeness
