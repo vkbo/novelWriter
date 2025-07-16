@@ -37,7 +37,7 @@ T_HANDLE = "0123456789abc"
 @pytest.fixture()
 def syntax(nwGUI):
     """Create a syntax object for use with testing."""
-    CONFIG.lightTheme = "tomorrow"
+    CONFIG.lightTheme = "default_light"
     CONFIG.themeMode = nwTheme.LIGHT
 
     CONFIG.dialogStyle = 3
@@ -48,8 +48,8 @@ def syntax(nwGUI):
 
     theme = SHARED.theme
     theme.loadTheme(force=True)
-    assert theme._guiPalette.base().color().getRgb() == (0xff, 0xff, 0xff, 0xff)
-    assert theme.syntaxTheme.text.getRgb() == (0x4d, 0x4d, 0x4c, 0xff)
+    assert theme._guiPalette.base().color().getRgb() == (0xfc, 0xfc, 0xfc, 0xff)
+    assert theme.syntaxTheme.text.getRgb() == (0x30, 0x30, 0x30, 0xff)
 
     doc = QTextDocument()
     syntax = GuiDocHighlighter(doc)
