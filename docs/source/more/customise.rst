@@ -110,18 +110,18 @@ A colour theme ``.conf`` file consists of the following settings:
    headertag      = green:L135
    emphasis       = orange
    dialog         = blue
-   altdialog      = blue
+   altdialog      = red
    note           = yellow:D125
    hidden         = faded
-   shortcode      = green
+   shortcode      = blue
    keyword        = red
    tag            = green
-   value          = blue
-   optional       = green
+   value          = green
+   optional       = blue
    spellcheckline = red
    errorline      = green
    replacetag     = green
-   modifier       = green
+   modifier       = blue
    texthighlight  = yellow:72
 
 
