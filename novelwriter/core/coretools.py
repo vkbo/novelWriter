@@ -327,10 +327,13 @@ class DocSearch:
         self._regEx = re.compile(self._buildPattern(search), self._opts)
         logger.debug("Searching with pattern '%s'", self._regEx.pattern)
         storage = project.storage
+        SHARED.initMainProgress(len(project.tree))
         for item in project.tree:
+            SHARED.incMainProgress()
             if item.isFileType():
                 results, capped = self.searchText(storage.getDocumentText(item.itemHandle))
                 yield item, results, capped
+        SHARED.clearMainProgress()
         return
 
     def searchText(self, text: str) -> tuple[list[tuple[int, int, str]], bool]:
