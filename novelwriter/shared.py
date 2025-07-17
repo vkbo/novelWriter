@@ -269,10 +269,11 @@ class SharedData(QObject):
         self._idleRefTime = currTime
         return
 
-    def startMainProgress(self, maximum: int) -> None:
+    def initMainProgress(self, maximum: int) -> None:
         """Start a session for the main progress bar."""
         if gui := self._gui:
             gui.mainProgress.setMaximum(maximum)
+            gui.mainProgress.setValue(0)
         return
 
     def updateMainProgress(self, value: int) -> None:
@@ -281,11 +282,16 @@ class SharedData(QObject):
             gui.mainProgress.setValue(value)
         return
 
-    def clearMainProgress(self) -> None:
+    def incMainProgress(self) -> None:
+        """Increment the value for the main progress bar."""
+        if gui := self._gui:
+            gui.mainProgress.setValue(gui.mainProgress.value() + 1)
+        return
+
+    def clearMainProgress(self, delay: float = 1.0) -> None:
         """Clear the main progress bar."""
         if gui := self._gui:
-            gui.mainProgress.setMaximum(100)
-            gui.mainProgress.setValue(0)
+            QTimer.singleShot(int(delay*1000), gui.mainProgress.reset)
         return
 
     def newStatusMessage(self, message: str) -> None:
