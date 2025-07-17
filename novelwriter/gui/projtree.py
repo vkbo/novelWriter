@@ -667,7 +667,7 @@ class GuiProjectTree(QTreeView):
                     if itemType == nwItemType.FILE:
                         if tHandle := SHARED.project.newFile(newLabel, sHandle, sPos):
                             if copyDoc:
-                                SHARED.project.copyFileContent(tHandle, copyDoc)
+                                SHARED.project.copyFileContent(tHandle, copyDoc, newLabel)
                             elif hLevel > 0:
                                 SHARED.project.writeNewFile(tHandle, hLevel, not nNote)
                             SHARED.project.index.reIndexHandle(tHandle)

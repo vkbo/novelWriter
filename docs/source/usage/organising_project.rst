@@ -166,6 +166,9 @@ a character note template, you can add a **Templates** root folder to your proje
 added to this root folder will show up in the **Add Item** menu in the project tree toolbar. When
 selected, a new document is created with its content copied from the chosen template.
 
+If the first line of the template file is a title line, the title text will be replaced with the
+text of the document label when it is first created.
+
 .. versionadded:: 2.3
 
 
