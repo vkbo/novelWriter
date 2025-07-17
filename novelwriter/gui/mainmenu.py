@@ -318,6 +318,7 @@ class GuiMainMenu(QMenuBar):
         self.aFocusTree.triggered.connect(
             lambda: self.requestFocusChange.emit(nwFocus.TREE)
         )
+        self.mainGui.addAction(self.aFocusTree)
 
         # View > Document Editor
         self.aFocusDocument = qtAddAction(self.viewMenu, self.tr("Go to Document"))
@@ -332,6 +333,7 @@ class GuiMainMenu(QMenuBar):
         self.aFocusOutline.triggered.connect(
             lambda: self.requestFocusChange.emit(nwFocus.OUTLINE)
         )
+        self.mainGui.addAction(self.aFocusOutline)
 
         # View > Separator
         self.viewMenu.addSeparator()

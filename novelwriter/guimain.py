@@ -166,9 +166,9 @@ class GuiMain(QMainWindow):
         self.splitMain.addWidget(self.splitDocs)
         self.splitMain.setOpaqueResize(False)
         self.splitMain.setHandleWidth(4)
-        self.splitMain.setSizes(CONFIG.mainPanePos)
+        self.splitMain.setSizes([max(s, 100) for s in CONFIG.mainPanePos])
         self.splitMain.setCollapsible(0, False)
-        self.splitMain.setCollapsible(0, False)
+        self.splitMain.setCollapsible(1, False)
         self.splitMain.setStretchFactor(1, 0)
         self.splitMain.setStretchFactor(1, 1)
 
@@ -1060,16 +1060,16 @@ class GuiMain(QMainWindow):
             fP = self.projView.treeHasFocus()
             fN = self.novelView.treeHasFocus()
 
-            self._changeView(nwView.EDITOR)
+            self._changeView(nwView.EDITOR, exitFocus=True)
             if (vM and ((vP and fP) or (vN and not fN))) or (not vM and vN):
-                self._changeView(nwView.NOVEL)
+                self._changeView(nwView.NOVEL, exitFocus=True)
                 self.novelView.setTreeFocus()
             else:
-                self._changeView(nwView.PROJECT)
+                self._changeView(nwView.PROJECT, exitFocus=True)
                 self.projView.setTreeFocus()
 
         elif paneNo == nwFocus.DOCUMENT:
-            self._changeView(nwView.EDITOR)
+            self._changeView(nwView.EDITOR, exitFocus=True)
             hasViewer = self.splitView.isVisible()
             if hasViewer and self.docEditor.anyFocus():
                 self.docViewer.setFocus()
@@ -1079,7 +1079,7 @@ class GuiMain(QMainWindow):
                 self.docEditor.setFocus()
 
         elif paneNo == nwFocus.OUTLINE:
-            self._changeView(nwView.OUTLINE)
+            self._changeView(nwView.OUTLINE, exitFocus=True)
             self.outlineView.setTreeFocus()
 
         return
@@ -1191,8 +1191,11 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot(nwView)
-    def _changeView(self, view: nwView) -> None:
+    def _changeView(self, view: nwView, exitFocus: bool = False) -> None:
         """Handle the requested change of view from the GuiViewBar."""
+        if exitFocus:
+            SHARED.setFocusMode(False)
+
         if view == nwView.EDITOR:
             # Only change the main stack, but not the project stack
             self.mainStack.setCurrentWidget(self.splitMain)
