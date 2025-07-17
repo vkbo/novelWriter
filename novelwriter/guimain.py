@@ -45,6 +45,7 @@ from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView
+from novelwriter.extensions.progressbars import NProgressSimple
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
@@ -69,14 +70,10 @@ logger = logging.getLogger(__name__)
 class GuiMain(QMainWindow):
     """Main GUI Window
 
-    The Main GUI window class. It is the entry point of the
-    application, and holds all runtime objects aside from the main
-    Config instance, which is created before the Main GUI.
-
-    The Main GUI is split up into GUI components, assembled in the init
-    function. Also, the project instance and theme instance are created
-    here. These should be passed around to all other objects who need
-    them and new instances of them should generally not be created.
+    The Main GUI window class is the entry point of the application. It
+    is split up into GUI components, assembled in the init function.
+    Tools and dialog windows are created on demand, but may be cached by
+    the Qt library and reused unless explicitly freed after use.
     """
 
     def __init__(self) -> None:
@@ -185,6 +182,10 @@ class GuiMain(QMainWindow):
         self.splitView.setVisible(False)
         self.docEditor.closeSearch()
 
+        # Progress Bar
+        self.mainProgress = NProgressSimple(self)
+        self.mainProgress.setFixedHeight(2)
+
         # Assemble Main Window Elements
         self.mainBox = QHBoxLayout()
         self.mainBox.addWidget(self.sideBar)
@@ -192,8 +193,14 @@ class GuiMain(QMainWindow):
         self.mainBox.setContentsMargins(0, 0, 0, 0)
         self.mainBox.setSpacing(0)
 
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addLayout(self.mainBox)
+        self.outerBox.addWidget(self.mainProgress)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.outerBox.setSpacing(0)
+
         self.mainWidget = QWidget(self)
-        self.mainWidget.setLayout(self.mainBox)
+        self.mainWidget.setLayout(self.outerBox)
 
         self.setMenuBar(self.mainMenu)
         self.setCentralWidget(self.mainWidget)
