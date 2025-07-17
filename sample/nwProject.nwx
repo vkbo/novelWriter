@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.8a2" hexVersion="0x020800a2" fileVersion="1.5" fileRevision="6" timeStamp="2025-07-16 16:35:53">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2283" autoCount="304" editTime="100296">
+<novelWriterXML appVersion="2.8a2" hexVersion="0x020800a2" fileVersion="1.5" fileRevision="6" timeStamp="2025-07-17 15:43:44">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2284" autoCount="304" editTime="100347">
     <name>Sample Project</name>
     <author>Jane Smith</author>
   </project>
@@ -42,19 +42,19 @@
       <name status="sc24b8f" import="ia857f0">Novel</name>
     </item>
     <item handle="53b69b83cdafc" parent="7031beac91f75" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="148" wordCount="29" paraCount="4" cursorPos="178" />
+      <meta expanded="no" heading="H1" charCount="148" wordCount="29" paraCount="4" cursorPos="80" />
       <name status="sc24b8f" import="ia857f0" active="yes">Title Page</name>
     </item>
     <item handle="974e400180a99" parent="7031beac91f75" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H0" charCount="233" wordCount="47" paraCount="2" cursorPos="194" />
+      <meta expanded="no" heading="H0" charCount="233" wordCount="47" paraCount="2" cursorPos="21" />
       <name status="sf12341" import="ia857f0" active="yes">Page</name>
     </item>
     <item handle="edca4be2fcaf8" parent="7031beac91f75" root="7031beac91f75" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="26" wordCount="6" paraCount="1" cursorPos="36" />
+      <meta expanded="no" heading="H1" charCount="26" wordCount="6" paraCount="1" cursorPos="11" />
       <name status="s90e6c9" import="ia857f0" active="yes">Part One</name>
     </item>
     <item handle="6a2d6d5f4f401" parent="7031beac91f75" root="7031beac91f75" order="3" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="yes" heading="H2" charCount="95" wordCount="18" paraCount="1" cursorPos="47" />
+      <meta expanded="yes" heading="H2" charCount="95" wordCount="18" paraCount="1" cursorPos="16" />
       <name status="sf24ce6" import="ia857f0" active="yes">Chapter One</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
@@ -62,19 +62,19 @@
       <name status="s90e6c9" import="ia857f0" active="yes">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="548" wordCount="108" paraCount="3" cursorPos="650" />
+      <meta expanded="no" heading="H3" charCount="548" wordCount="108" paraCount="3" cursorPos="18" />
       <name status="s90e6c9" import="ia857f0" active="yes">Another Scene</name>
     </item>
     <item handle="ba8a28a246524" parent="7031beac91f75" root="7031beac91f75" order="4" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="617" wordCount="101" paraCount="3" cursorPos="1182" />
+      <meta expanded="no" heading="H2" charCount="617" wordCount="101" paraCount="3" cursorPos="413" />
       <name status="s78ea90" import="ia857f0" active="yes">Interlude</name>
     </item>
     <item handle="96b68994dfa3d" parent="7031beac91f75" root="7031beac91f75" order="5" type="FILE" class="NOVEL" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="1909" wordCount="346" paraCount="7" cursorPos="1940" />
+      <meta expanded="no" heading="H1" charCount="1909" wordCount="346" paraCount="7" cursorPos="22" />
       <name status="sf24ce6" import="ia857f0" active="no">A Note on Structure</name>
     </item>
     <item handle="88706ddc78b1b" parent="7031beac91f75" root="7031beac91f75" order="6" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="yes" heading="H2" charCount="139" wordCount="28" paraCount="1" cursorPos="356" />
+      <meta expanded="yes" heading="H2" charCount="139" wordCount="28" paraCount="1" cursorPos="238" />
       <name status="s90e6c9" import="ia857f0" active="yes">Chapter Two</name>
     </item>
     <item handle="ae7339df26ded" parent="88706ddc78b1b" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
@@ -86,11 +86,11 @@
       <name status="sf12341" import="ia857f0">Sequel</name>
     </item>
     <item handle="bacb7059e3083" parent="e5e47ebf63b1c" root="e5e47ebf63b1c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="27" wordCount="5" paraCount="1" cursorPos="41" />
+      <meta expanded="no" heading="H1" charCount="27" wordCount="5" paraCount="1" cursorPos="99" />
       <name status="sc24b8f" import="ia857f0" active="yes">Title Page</name>
     </item>
     <item handle="a520879ca0b45" parent="e5e47ebf63b1c" root="e5e47ebf63b1c" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="299" wordCount="55" paraCount="2" cursorPos="29" />
+      <meta expanded="no" heading="H2" charCount="299" wordCount="55" paraCount="2" cursorPos="385" />
       <name status="s8ae72a" import="ia857f0" active="yes">Chapter One</name>
     </item>
     <item handle="f6622b4617424" parent="None" root="f6622b4617424" order="2" type="ROOT" class="CHARACTER">
@@ -102,11 +102,11 @@
       <name status="sf12341" import="ia857f0">Main Characters</name>
     </item>
     <item handle="14298de4d9524" parent="f7e2d9f330615" root="f6622b4617424" order="0" type="FILE" class="CHARACTER" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="49" wordCount="9" paraCount="1" cursorPos="40" />
+      <meta expanded="no" heading="H1" charCount="49" wordCount="9" paraCount="1" cursorPos="101" />
       <name status="sf12341" import="i2d7a54" active="yes">John Smith</name>
     </item>
     <item handle="bb2c23b3c42cc" parent="f7e2d9f330615" root="f6622b4617424" order="1" type="FILE" class="CHARACTER" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="55" wordCount="9" paraCount="1" cursorPos="40" />
+      <meta expanded="no" heading="H1" charCount="55" wordCount="9" paraCount="1" cursorPos="106" />
       <name status="sf12341" import="i56be10" active="yes">Jane Smith</name>
     </item>
     <item handle="15c4492bd5107" parent="None" root="15c4492bd5107" order="3" type="ROOT" class="WORLD">
@@ -118,7 +118,7 @@
       <name status="sf12341" import="i2d7a54" active="yes">Earth</name>
     </item>
     <item handle="f1471bef9f2ae" parent="15c4492bd5107" root="15c4492bd5107" order="1" type="FILE" class="WORLD" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="115" wordCount="24" paraCount="1" cursorPos="0" />
+      <meta expanded="no" heading="H1" charCount="115" wordCount="24" paraCount="1" cursorPos="133" />
       <name status="sf12341" import="i4a1d39" active="yes">Space</name>
     </item>
     <item handle="5eaea4e8cdee8" parent="15c4492bd5107" root="15c4492bd5107" order="2" type="FILE" class="WORLD" layout="NOTE">
