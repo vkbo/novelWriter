@@ -280,12 +280,14 @@ class SharedData(QObject):
         """Update the value for the main progress bar."""
         if gui := self._gui:
             gui.mainProgress.setValue(value)
+            QApplication.processEvents()
         return
 
     def incMainProgress(self) -> None:
         """Increment the value for the main progress bar."""
         if gui := self._gui:
             gui.mainProgress.setValue(gui.mainProgress.value() + 1)
+            QApplication.processEvents()
         return
 
     def clearMainProgress(self, delay: float = 1.0) -> None:
