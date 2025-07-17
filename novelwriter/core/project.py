@@ -224,7 +224,7 @@ class NWProject:
 
         return True
 
-    def copyFileContent(self, tHandle: str, sHandle: str) -> bool:
+    def copyFileContent(self, tHandle: str, sHandle: str, newTitle: str | None = None) -> bool:
         """Copy content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
@@ -239,6 +239,14 @@ class NWProject:
 
         logger.debug("Populating '%s' with text from '%s'", tHandle, sHandle)
         text = self._storage.getDocumentText(sHandle)
+        if (
+            newTitle and (lines := text.split("\n")) and lines
+            and lines[0].startswith(("# ", "## ", "### ", "#### ", "#! ", "##! ", "###! "))
+        ):
+            prefix, _, _ = lines[0].partition(" ")
+            lines[0] = f"{prefix} {newTitle}"
+            text = "\n".join(lines)
+
         self._storage.getDocument(tHandle).writeDocument(text)
         sItem.setLayout(tItem.itemLayout)
         self._index.reIndexHandle(tHandle)
