@@ -147,14 +147,17 @@ class Index:
     def rebuild(self) -> None:
         """Rebuild the entire index from scratch."""
         self.clear()
+        SHARED.initMainProgress(len(self._project.tree))
         for nwItem in self._project.tree:
             if nwItem.isFileType():
                 text = self._project.storage.getDocumentText(nwItem.itemHandle)
                 self.scanText(nwItem.itemHandle, text, blockSignal=True)
+            SHARED.incMainProgress()
         self._indexBroken = False
         SHARED.emitIndexAvailable(self._project)
         for tHandle in self._novelModels:
             self.refreshNovelModel(tHandle)
+        SHARED.clearMainProgress()
         return
 
     def deleteHandle(self, tHandle: str) -> None:

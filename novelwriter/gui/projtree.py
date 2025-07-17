@@ -718,8 +718,14 @@ class GuiProjectTree(QTreeView):
         else:
             return False
 
+        SHARED.initMainProgress(len(items))
+        self.setEnabled(False)
         for sHandle in items:
+            SHARED.incMainProgress()
             docMerger.appendText(sHandle, True, mLabel)
+
+        self.setEnabled(True)
+        SHARED.clearMainProgress()
 
         if not docMerger.writeTargetDoc():
             SHARED.error(
@@ -764,7 +770,10 @@ class GuiProjectTree(QTreeView):
             docSplit.setParentItem(tItem.itemParent)
 
         docSplit.splitDocument(headerList, text)
+        SHARED.initMainProgress(len(docSplit))
+        self.setEnabled(False)
         for writeOk in docSplit.writeDocuments(docHierarchy):
+            SHARED.incMainProgress()
             if not writeOk:
                 SHARED.error(
                     self.tr("Could not write document content."),
@@ -773,6 +782,9 @@ class GuiProjectTree(QTreeView):
 
         if data.get("moveToTrash", False):
             self.processDeleteRequest([tHandle], False)
+
+        self.setEnabled(True)
+        SHARED.clearMainProgress()
 
         return True
 
@@ -786,10 +798,12 @@ class GuiProjectTree(QTreeView):
             else:
                 question = self.tr("Do you want to duplicate this item and all child items?")
             if SHARED.question(question):
+                self.setEnabled(False)
                 docDup = DocDuplicator(SHARED.project)
                 dHandles = docDup.duplicate(itemTree)
                 if len(dHandles) != len(itemTree):
                     SHARED.warn(self.tr("Could not duplicate all items."))
+                self.setEnabled(True)
         self.restoreExpandedState()
         return
 
@@ -912,17 +926,23 @@ class GuiProjectTree(QTreeView):
                 if not SHARED.question(self.tr("Permanently delete selected item(s)?")):
                     logger.info("Action cancelled by user")
                     return
+
+                self.setEnabled(False)
                 for index in indices:
                     if node := model.node(index):
                         for child in reversed(node.allChildren()):
                             SHARED.project.removeItem(child.item.itemHandle)
                         SHARED.project.removeItem(node.item.itemHandle)
+                self.setEnabled(True)
 
             elif trashNode := SHARED.project.tree.trash:
                 if askFirst and not SHARED.question(self.tr("Move selected item(s) to Trash?")):
                     logger.info("Action cancelled by user")
                     return
+
+                self.setEnabled(False)
                 model.multiMove(indices, model.indexFromNode(trashNode))
+                self.setEnabled(True)
 
         return
 

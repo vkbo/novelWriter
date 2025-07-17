@@ -213,7 +213,7 @@ def testGuiTheme_SpecialColors(tstPaths):
     theme.iconCache = MagicMock()
 
     testTheme: Path = tstPaths.cnfDir / "themes" / "test.conf"
-    testTheme.write_text(
+    testTheme.write_text((
         "[Main]\n"
         "name = Test\n"
         "mode = light\n"
@@ -241,7 +241,7 @@ def testGuiTheme_SpecialColors(tstPaths):
         "[Palette]\n"
         "window  = #000000\n"
         "text    = #ffffff\n"
-    )
+    ), encoding="utf-8")
     theme._scanThemes([testTheme])
     assert len(theme.colourThemes) == 1
     CONFIG.themeMode = nwTheme.LIGHT

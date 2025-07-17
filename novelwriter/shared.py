@@ -269,6 +269,26 @@ class SharedData(QObject):
         self._idleRefTime = currTime
         return
 
+    def initMainProgress(self, maximum: int, inclusive: bool = False) -> None:
+        """Start a session for the main progress bar."""
+        if gui := self._gui:
+            gui.mainProgress.setMaximum(maximum - (1 if inclusive else 0))
+            gui.mainProgress.setValue(0)
+        return
+
+    def incMainProgress(self) -> None:
+        """Increment the value for the main progress bar."""
+        if gui := self._gui:
+            gui.mainProgress.setValue(gui.mainProgress.value() + 1)
+            QApplication.processEvents()
+        return
+
+    def clearMainProgress(self, delay: float = 1.0) -> None:
+        """Clear the main progress bar."""
+        if gui := self._gui:
+            QTimer.singleShot(int(delay*1000), gui.mainProgress.reset)
+        return
+
     def newStatusMessage(self, message: str) -> None:
         """Request a new status message. This is a callable function for
         core classes that cannot emit signals on their own.

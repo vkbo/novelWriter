@@ -33,6 +33,7 @@ class MockGuiMain(QWidget):
         self.mainStatus = MagicMock()
         self.docEditor = MagicMock()
         self.docViewer = MagicMock()
+        self.mainProgress = MagicMock()
         self.projPath = ""
         return
 
