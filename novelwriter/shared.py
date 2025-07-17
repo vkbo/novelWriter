@@ -269,18 +269,11 @@ class SharedData(QObject):
         self._idleRefTime = currTime
         return
 
-    def initMainProgress(self, maximum: int) -> None:
+    def initMainProgress(self, maximum: int, inclusive: bool = False) -> None:
         """Start a session for the main progress bar."""
         if gui := self._gui:
-            gui.mainProgress.setMaximum(maximum)
+            gui.mainProgress.setMaximum(maximum - (1 if inclusive else 0))
             gui.mainProgress.setValue(0)
-        return
-
-    def updateMainProgress(self, value: int) -> None:
-        """Update the value for the main progress bar."""
-        if gui := self._gui:
-            gui.mainProgress.setValue(value)
-            QApplication.processEvents()
         return
 
     def incMainProgress(self) -> None:

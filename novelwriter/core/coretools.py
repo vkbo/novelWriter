@@ -160,6 +160,10 @@ class DocSplitter:
 
         return
 
+    def __len__(self) -> int:
+        """The length of the split job."""
+        return len(self._rawData)
+
     ##
     #  Methods
     ##
@@ -270,7 +274,9 @@ class DocDuplicator:
         after = True
         if items:
             hMap: dict[str, str | None] = {t: None for t in items}
+            SHARED.initMainProgress(len(items))
             for tHandle in items:
+                SHARED.incMainProgress()
                 if oldItem := self._project.tree[tHandle]:
                     pHandle = hMap.get(oldItem.itemParent or "") or oldItem.itemParent
                     if newItem := self._project.tree.duplicate(tHandle, pHandle, after):
@@ -282,6 +288,7 @@ class DocDuplicator:
                     after = False
                 else:
                     break
+            SHARED.clearMainProgress()
         return result
 
 

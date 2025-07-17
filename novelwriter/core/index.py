@@ -147,7 +147,7 @@ class Index:
     def rebuild(self) -> None:
         """Rebuild the entire index from scratch."""
         self.clear()
-        SHARED.initMainProgress(len(self._project.tree) - 1)
+        SHARED.initMainProgress(len(self._project.tree))
         for nwItem in self._project.tree:
             if nwItem.isFileType():
                 text = self._project.storage.getDocumentText(nwItem.itemHandle)
