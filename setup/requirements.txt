@@ -1,2 +1,2 @@
-setuptools
+setuptools>=77.0
 twine
