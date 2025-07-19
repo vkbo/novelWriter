@@ -33,4 +33,5 @@ if __name__ == "__main__":
     if args.k:
         cmd += ["-k", args.k]
 
+    print("Calling:", " ".join(cmd))
     subprocess.call(cmd, env=env)
