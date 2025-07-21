@@ -71,7 +71,7 @@ constraints. These themes include a subset of icons from:
 
 Colour themes included with novelWriter were adapted from the following sources:
 
-* **Aura** theme by Dalton Menezes
+* **Aura** themes by Dalton Menezes
 * **B2T** themes by Bram de Haan
 * **B4T** themes by Bram de Haan
 * **Dracula** theme by Zeno Rocha
@@ -89,7 +89,7 @@ Colour themes included with novelWriter were adapted from the following sources:
 
 Other themes were created for novelWriter:
 
-* **Aura** theme variations by Myian
+* **Aura (Bright)** theme by Myian
 * **Blue Streak** themes by Veronica Berglyd Olsen
 * **Castle** themes by Myian
 * **Chalky Soil** theme by Myian
