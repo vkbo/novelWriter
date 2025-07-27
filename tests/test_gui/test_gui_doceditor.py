@@ -2370,12 +2370,16 @@ def testGuiEditor_TextAutoReplaceSymbols():
     assert ar._determine(*prep('>>"')) == (1, nwUnicode.U_LDQUO)
     assert ar._determine(*prep('_"')) == (1, nwUnicode.U_LDQUO)
     assert ar._determine(*prep(' _"')) == (1, nwUnicode.U_LDQUO)
+    assert ar._determine(*prep('\u00a0_"')) == (1, nwUnicode.U_LDQUO)
     assert ar._determine(*prep('**"')) == (1, nwUnicode.U_LDQUO)
     assert ar._determine(*prep(' **"')) == (1, nwUnicode.U_LDQUO)
+    assert ar._determine(*prep('\u00a0**"')) == (1, nwUnicode.U_LDQUO)
     assert ar._determine(*prep('=="')) == (1, nwUnicode.U_LDQUO)
     assert ar._determine(*prep(' =="')) == (1, nwUnicode.U_LDQUO)
+    assert ar._determine(*prep('\u00a0=="')) == (1, nwUnicode.U_LDQUO)
     assert ar._determine(*prep('~~"')) == (1, nwUnicode.U_LDQUO)
     assert ar._determine(*prep(' ~~"')) == (1, nwUnicode.U_LDQUO)
+    assert ar._determine(*prep('\u00a0~~"')) == (1, nwUnicode.U_LDQUO)
 
     # Double Quote Close
     assert ar._determine(*prep('Stuff"')) == (1, nwUnicode.U_RDQUO)
@@ -2387,12 +2391,16 @@ def testGuiEditor_TextAutoReplaceSymbols():
     assert ar._determine(*prep(">>'")) == (1, nwUnicode.U_LSQUO)
     assert ar._determine(*prep("_'")) == (1, nwUnicode.U_LSQUO)
     assert ar._determine(*prep(" _'")) == (1, nwUnicode.U_LSQUO)
+    assert ar._determine(*prep("\u00a0_'")) == (1, nwUnicode.U_LSQUO)
     assert ar._determine(*prep("**'")) == (1, nwUnicode.U_LSQUO)
     assert ar._determine(*prep(" **'")) == (1, nwUnicode.U_LSQUO)
+    assert ar._determine(*prep("\u00a0**'")) == (1, nwUnicode.U_LSQUO)
     assert ar._determine(*prep("=='")) == (1, nwUnicode.U_LSQUO)
     assert ar._determine(*prep(" =='")) == (1, nwUnicode.U_LSQUO)
+    assert ar._determine(*prep("\u00a0=='")) == (1, nwUnicode.U_LSQUO)
     assert ar._determine(*prep("~~'")) == (1, nwUnicode.U_LSQUO)
     assert ar._determine(*prep(" ~~'")) == (1, nwUnicode.U_LSQUO)
+    assert ar._determine(*prep("\u00a0~~'")) == (1, nwUnicode.U_LSQUO)
 
     # Single Quote Close
     assert ar._determine(*prep("Stuff'")) == (1, nwUnicode.U_RSQUO)
