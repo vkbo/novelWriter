@@ -2293,16 +2293,16 @@ class TextAutoReplace:
         """Auto-replace text elements based on main configuration.
         Returns True if anything was changed.
         """
-        pos = cursor.positionInBlock()
-        apos = cursor.position()
+        aPos = cursor.position()
+        bPos = cursor.positionInBlock()
         block = cursor.block()
         length = block.length() - 1
-        if length < 1 or pos-1 > length:
+        if length < 1 or bPos-1 > length:
             return False
 
-        cursor.movePosition(QtMoveLeft, QtKeepAnchor, min(4, pos))
+        cursor.movePosition(QtMoveLeft, QtKeepAnchor, min(4, bPos))
         last = cursor.selectedText()
-        delete, insert = self._determine(last, pos)
+        delete, insert = self._determine(last, bPos)
 
         check = insert
         if self._doPadBefore and check in self._padBefore:
@@ -2320,7 +2320,7 @@ class TextAutoReplace:
                 insert = insert + self._padChar
 
         if delete > 0:
-            cursor.setPosition(apos)
+            cursor.setPosition(aPos)
             cursor.movePosition(QtMoveLeft, QtKeepAnchor, delete)
             cursor.insertText(insert)
             return True
@@ -2365,13 +2365,13 @@ class TextAutoReplace:
             elif pos == 3 and t3 == ">>'":
                 return 1, self._quoteSO
             elif pos == 2 and t2 == "_'":
-                return 1, self._quoteDO
+                return 1, self._quoteSO
             elif t3 == " _'":
-                return 1, self._quoteDO
+                return 1, self._quoteSO
             elif pos == 3 and t3 in ("**'", "=='", "~~'"):
-                return 1, self._quoteDO
+                return 1, self._quoteSO
             elif t4 in (" **'", " =='", " ~~'"):
-                return 1, self._quoteDO
+                return 1, self._quoteSO
             else:
                 return 1, self._quoteSC
 
