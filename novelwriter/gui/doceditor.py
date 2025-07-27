@@ -2335,33 +2335,47 @@ class TextAutoReplace:
         t4 = text[-4:]
 
         leading = t2[:1].isspace()
-        if self._replaceDQuote:
-            if leading and t2.endswith('"'):
+        if self._replaceDQuote and t1 == '"':
+            if pos == 1:
                 return 1, self._quoteDO
-            elif t1 == '"':
-                if pos == 1:
-                    return 1, self._quoteDO
-                elif pos == 2 and t2 == '>"':
-                    return 1, self._quoteDO
-                elif pos == 3 and t3 == '>>"':
-                    return 1, self._quoteDO
-                else:
-                    return 1, self._quoteDC
+            elif leading and t2.endswith('"'):
+                return 1, self._quoteDO
+            elif pos == 2 and t2 == '>"':
+                return 1, self._quoteDO
+            elif pos == 3 and t3 == '>>"':
+                return 1, self._quoteDO
+            elif pos == 2 and t2 == '_"':
+                return 1, self._quoteDO
+            elif t3 == ' _"':
+                return 1, self._quoteDO
+            elif pos == 3 and t3 in ('**"', '=="', '~~"'):
+                return 1, self._quoteDO
+            elif t4 in (' **"', ' =="', ' ~~"'):
+                return 1, self._quoteDO
+            else:
+                return 1, self._quoteDC
 
-        if self._replaceSQuote:
-            if leading and t2.endswith("'"):
+        if self._replaceSQuote and t1 == "'":
+            if pos == 1:
                 return 1, self._quoteSO
-            elif t1 == "'":
-                if pos == 1:
-                    return 1, self._quoteSO
-                elif pos == 2 and t2 == ">'":
-                    return 1, self._quoteSO
-                elif pos == 3 and t3 == ">>'":
-                    return 1, self._quoteSO
-                else:
-                    return 1, self._quoteSC
+            elif leading and t2.endswith("'"):
+                return 1, self._quoteSO
+            elif pos == 2 and t2 == ">'":
+                return 1, self._quoteSO
+            elif pos == 3 and t3 == ">>'":
+                return 1, self._quoteSO
+            elif pos == 2 and t2 == "_'":
+                return 1, self._quoteDO
+            elif t3 == " _'":
+                return 1, self._quoteDO
+            elif pos == 3 and t3 in ("**'", "=='", "~~'"):
+                return 1, self._quoteDO
+            elif t4 in (" **'", " =='", " ~~'"):
+                return 1, self._quoteDO
+            else:
+                return 1, self._quoteSC
 
-        if self._replaceDash:
+        if self._replaceDash and t1 == "-":
             if t4 == "----":
                 return 4, "\u2015"  # Horizontal bar
             elif t3 == "---":
