@@ -2293,16 +2293,16 @@ class TextAutoReplace:
         """Auto-replace text elements based on main configuration.
         Returns True if anything was changed.
         """
-        pos = cursor.positionInBlock()
-        apos = cursor.position()
+        aPos = cursor.position()
+        bPos = cursor.positionInBlock()
         block = cursor.block()
         length = block.length() - 1
-        if length < 1 or pos-1 > length:
+        if length < 1 or bPos-1 > length:
             return False
 
-        cursor.movePosition(QtMoveLeft, QtKeepAnchor, min(4, pos))
+        cursor.movePosition(QtMoveLeft, QtKeepAnchor, min(4, bPos))
         last = cursor.selectedText()
-        delete, insert = self._determine(last, pos)
+        delete, insert = self._determine(last, bPos)
 
         check = insert
         if self._doPadBefore and check in self._padBefore:
@@ -2320,7 +2320,7 @@ class TextAutoReplace:
                 insert = insert + self._padChar
 
         if delete > 0:
-            cursor.setPosition(apos)
+            cursor.setPosition(aPos)
             cursor.movePosition(QtMoveLeft, QtKeepAnchor, delete)
             cursor.insertText(insert)
             return True
@@ -2334,34 +2334,50 @@ class TextAutoReplace:
         t3 = text[-3:]
         t4 = text[-4:]
 
-        leading = t2[:1].isspace()
-        if self._replaceDQuote:
-            if leading and t2.endswith('"'):
+        if self._replaceDQuote and t1 == '"':
+            # Process Double Quote
+            if pos == 1:
                 return 1, self._quoteDO
-            elif t1 == '"':
-                if pos == 1:
-                    return 1, self._quoteDO
-                elif pos == 2 and t2 == '>"':
-                    return 1, self._quoteDO
-                elif pos == 3 and t3 == '>>"':
-                    return 1, self._quoteDO
-                else:
-                    return 1, self._quoteDC
+            elif t2[:1].isspace() and t2.endswith('"'):
+                return 1, self._quoteDO
+            elif pos == 2 and t2 == '>"':
+                return 1, self._quoteDO
+            elif pos == 3 and t3 == '>>"':
+                return 1, self._quoteDO
+            elif pos == 2 and t2 == '_"':
+                return 1, self._quoteDO
+            elif t3[:1].isspace() and t3.endswith('_"'):
+                return 1, self._quoteDO
+            elif pos == 3 and t3 in ('**"', '=="', '~~"'):
+                return 1, self._quoteDO
+            elif t4[:1].isspace() and t4.endswith(('**"', '=="', '~~"')):
+                return 1, self._quoteDO
+            else:
+                return 1, self._quoteDC
 
-        if self._replaceSQuote:
-            if leading and t2.endswith("'"):
+        if self._replaceSQuote and t1 == "'":
+            # Process Single Quote
+            if pos == 1:
                 return 1, self._quoteSO
-            elif t1 == "'":
-                if pos == 1:
-                    return 1, self._quoteSO
-                elif pos == 2 and t2 == ">'":
-                    return 1, self._quoteSO
-                elif pos == 3 and t3 == ">>'":
-                    return 1, self._quoteSO
-                else:
-                    return 1, self._quoteSC
+            elif t2[:1].isspace() and t2.endswith("'"):
+                return 1, self._quoteSO
+            elif pos == 2 and t2 == ">'":
+                return 1, self._quoteSO
+            elif pos == 3 and t3 == ">>'":
+                return 1, self._quoteSO
+            elif pos == 2 and t2 == "_'":
+                return 1, self._quoteSO
+            elif t3[:1].isspace() and t3.endswith("_'"):
+                return 1, self._quoteSO
+            elif pos == 3 and t3 in ("**'", "=='", "~~'"):
+                return 1, self._quoteSO
+            elif t4[:1].isspace() and t4.endswith(("**'", "=='", "~~'")):
+                return 1, self._quoteSO
+            else:
+                return 1, self._quoteSC
 
-        if self._replaceDash:
+        if self._replaceDash and t1 == "-":
+            # Process Dashes
             if t4 == "----":
                 return 4, "\u2015"  # Horizontal bar
             elif t3 == "---":
@@ -2374,6 +2390,7 @@ class TextAutoReplace:
                 return 2, "\u2015"  # Horizontal bar
 
         if self._replaceDots and t3 == "...":
+            # Process Dots
             return 3, "\u2026"  # Ellipsis
 
         if t1 == "\u2028":  # Line separator
