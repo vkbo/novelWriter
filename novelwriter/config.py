@@ -86,7 +86,7 @@ class Config:
         "spellLanguage", "stopWhenIdle", "tabWidth", "textFont", "textMargin", "textWidth",
         "themeMode", "useCharCount", "userIdleTime", "verPyQtString", "verPyQtValue",
         "verPyString", "verQtString", "verQtValue", "viewComments", "viewNotes", "viewPanePos",
-        "viewSynopsis", "welcomeWinSize",
+        "viewSynopsis", "welcomeWinSize", "vim_mode",
     )
 
     LANG_NW   = 1
@@ -164,6 +164,7 @@ class Config:
         self.lastNotes    = "0x0"          # The latest release notes that have been shown
         self.nativeFont   = True           # Use native font dialog
         self.useCharCount = False          # Use character count as primary count
+        self.vim_mode     = True # DEBUG TEMP HARDCODED
 
         # Icons
         self.iconTheme   = DEF_ICONS    # Icons theme

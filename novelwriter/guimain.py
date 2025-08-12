@@ -51,6 +51,7 @@ from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
 from novelwriter.gui.itemdetails import GuiItemDetails
 from novelwriter.gui.mainmenu import GuiMainMenu
+from novelwriter.gui.vimstate import VimState, Mode
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectView
@@ -181,6 +182,11 @@ class GuiMain(QMainWindow):
         # Editor / Viewer Default State
         self.splitView.setVisible(False)
         self.docEditor.closeSearch()
+
+        # Vim state for vim mode
+        self.vim = VimState()
+        self.vim.enabled = CONFIG.vim_mode
+        self.docEditor.setVimModeState(self.vim)
 
         # Progress Bar
         self.mainProgress = NProgressSimple(self)
@@ -1326,6 +1332,9 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _keyPressEscape(self) -> None:
         """Process an escape keypress in the main window."""
+        if self.vim.enabled:
+            self.vim.set_mode(Mode.NORMAL)
+
         if self.docEditor.searchVisible():
             self.docEditor.closeSearch()
         elif SHARED.focusMode:

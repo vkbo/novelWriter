@@ -70,6 +70,7 @@ from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
 from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
 from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
+from novelwriter.gui.vimstate import VimState, Mode
 from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
@@ -229,6 +230,8 @@ class GuiDocEditor(QPlainTextEdit):
         self.closeSearch = self.docSearch.closeSearch
         self.searchVisible = self.docSearch.isVisible
         self.changeFocusState = self.docHeader.changeFocusState
+
+        # TODO get vim state from mainWindow
 
         # Finalise
         self.updateSyntaxColors()
@@ -617,6 +620,9 @@ class GuiDocEditor(QPlainTextEdit):
     #  Setters
     ##
 
+    def setVimModeState(self, vimState: VimState) -> None:
+        self.vim = vimState
+
     def setDocumentChanged(self, state: bool) -> None:
         """Keep track of the document changed variable, and emit the
         document change signal.
@@ -940,6 +946,57 @@ class GuiDocEditor(QPlainTextEdit):
           * We also handle automatic scrolling here.
         """
         self._lastActive = time()
+
+
+        # -----  BEGIN VIM MODE  -----
+        if self.vim.enabled:
+            # --- INSERT mode ---
+            if self.vim.mode == Mode.INSERT:
+                super().keyPressEvent(event) 
+                return # Normal typing
+            # --- NORMAL mode ---
+            if event.key() == Qt.Key.Key_I:
+                self.vim.set_mode(Mode.INSERT)
+                return
+
+            key = event.text() # Any other key in NORMAL mode
+            if not key: # Ignore keys that aren't "printable"
+                super().keyPressEvent(event)
+                return
+
+            # Otherwise we treat them as vim keys
+            """Handle the simplest Vim commands: hjkl and dd."""
+            self.vim.command += key
+            # Handle function 
+            command_text = self.vim.command
+            text_cursor = self.textCursor()
+
+            # dd  (delete current line)
+            if command_text == "d":
+                self.vim.pending_operator = "d"
+                return
+            elif command_text == "d" and self.vim.pending_operator == "d":
+                text_cursor.select(text_cursor.SelectionType.LineUnderCursor)
+                text_cursor.removeSelectedText()
+                self.setTextCursor(text_cursor)  
+                self.vim.reset_command()
+                return
+
+            # hjkl  (single-step navigation)
+            if command_text == "h":
+                text_cursor.movePosition(text_cursor.MoveOperation.Left)
+            elif command_text == "j":
+                text_cursor.movePosition(text_cursor.MoveOperation.Down)
+            elif command_text == "k":
+                text_cursor.movePosition(text_cursor.MoveOperation.Up)
+            elif command_text == "l":
+                text_cursor.movePosition(text_cursor.MoveOperation.Right)
+
+            self.setTextCursor(text_cursor)
+            self.vim.reset_command()
+            return
+        # -----  END VIM MODE  -----
+
         if self.docSearch.anyFocus() and event.key() in self.ENTER_KEYS:
             return
         elif event == QKeySequence.StandardKey.Redo:
