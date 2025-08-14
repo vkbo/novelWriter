@@ -62,7 +62,7 @@ from novelwriter.constants import (
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
     nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
-    nwItemType
+    nwItemType, nwVimMode,
 )
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -70,7 +70,6 @@ from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
 from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
 from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.gui.vimstate import VimState, Mode
 from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
@@ -231,7 +230,10 @@ class GuiDocEditor(QPlainTextEdit):
         self.searchVisible = self.docSearch.isVisible
         self.changeFocusState = self.docHeader.changeFocusState
 
-        # TODO get vim state from mainWindow
+        # Vim state for vim mode
+        self.vim = VimState()
+        self.vim.enabled = CONFIG.vim_mode
+        self.vim.set_mode(nwVimMode.NORMAL)
 
         # Finalise
         self.updateSyntaxColors()
@@ -620,8 +622,9 @@ class GuiDocEditor(QPlainTextEdit):
     #  Setters
     ##
 
-    def setVimModeState(self, vimState: VimState) -> None:
-        self.vim = vimState
+    def setVimMode(self, mode: nwVimMode) -> None:
+        if self.vim.enabled:
+            self.vim.mode = mode
 
     def setDocumentChanged(self, state: bool) -> None:
         """Keep track of the document changed variable, and emit the
@@ -951,12 +954,12 @@ class GuiDocEditor(QPlainTextEdit):
         # -----  BEGIN VIM MODE  -----
         if self.vim.enabled:
             # --- INSERT mode ---
-            if self.vim.mode == Mode.INSERT:
+            if self.vim.mode == nwVimMode.INSERT:
                 super().keyPressEvent(event) 
                 return # Normal typing
             # --- NORMAL mode ---
             if event.key() == Qt.Key.Key_I:
-                self.vim.set_mode(Mode.INSERT)
+                self.vim.set_mode(nwVimMode.INSERT)
                 return
 
             key = event.text() # Any other key in NORMAL mode
@@ -3362,3 +3365,28 @@ class GuiDocEditFooter(QWidget):
             text = self._trMainCount.format("0", "+0")
         self.wordsText.setText(text)
         return
+
+
+class VimState:
+    """Minimal Vim state machine."""
+    __slots__ = (
+        "mode",
+        "command",
+        "enabled",
+        "pending_operator",
+    )
+
+    def __init__(self) -> None:
+        self.enabled: bool = True
+        self.mode: nwVimMode = nwVimMode.NORMAL
+        self.command: str = ""
+        self.pending_operator: str = ""   # stores first key of two-part commands (e.g. 'd' in 'dd')
+
+    def reset_command(self) -> None:
+        """Clear everything that makes up a single Vim command."""
+        self.command = ""
+        self.pending_operator = ""
+
+    def set_mode(self, new_mode: nwVimMode) -> None:
+        self.mode = new_mode
+        self.reset_command()
