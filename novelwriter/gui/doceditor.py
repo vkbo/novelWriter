@@ -624,7 +624,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def setVimMode(self, mode: nwVimMode) -> None:
         if self.vim.enabled:
-            self.vim.mode = mode
+            self.vim.set_mode(mode)
 
     def setDocumentChanged(self, state: bool) -> None:
         """Keep track of the document changed variable, and emit the
@@ -950,55 +950,8 @@ class GuiDocEditor(QPlainTextEdit):
         """
         self._lastActive = time()
 
-
-        # -----  BEGIN VIM MODE  -----
-        if self.vim.enabled:
-            # --- INSERT mode ---
-            if self.vim.mode == nwVimMode.INSERT:
-                super().keyPressEvent(event) 
-                return # Normal typing
-            # --- NORMAL mode ---
-            if event.key() == Qt.Key.Key_I:
-                self.vim.set_mode(nwVimMode.INSERT)
-                return
-
-            key = event.text() # Any other key in NORMAL mode
-            if not key: # Ignore keys that aren't "printable"
-                super().keyPressEvent(event)
-                return
-
-            # Otherwise we treat them as vim keys
-            """Handle the simplest Vim commands: hjkl and dd."""
-            self.vim.command += key
-            # Handle function 
-            command_text = self.vim.command
-            text_cursor = self.textCursor()
-
-            # dd  (delete current line)
-            if command_text == "d":
-                self.vim.pending_operator = "d"
-                return
-            elif command_text == "d" and self.vim.pending_operator == "d":
-                text_cursor.select(text_cursor.SelectionType.LineUnderCursor)
-                text_cursor.removeSelectedText()
-                self.setTextCursor(text_cursor)  
-                self.vim.reset_command()
-                return
-
-            # hjkl  (single-step navigation)
-            if command_text == "h":
-                text_cursor.movePosition(text_cursor.MoveOperation.Left)
-            elif command_text == "j":
-                text_cursor.movePosition(text_cursor.MoveOperation.Down)
-            elif command_text == "k":
-                text_cursor.movePosition(text_cursor.MoveOperation.Up)
-            elif command_text == "l":
-                text_cursor.movePosition(text_cursor.MoveOperation.Right)
-
-            self.setTextCursor(text_cursor)
-            self.vim.reset_command()
+        if self._handleVimKeyPress(event):
             return
-        # -----  END VIM MODE  -----
 
         if self.docSearch.anyFocus() and event.key() in self.ENTER_KEYS:
             return
@@ -1027,6 +980,58 @@ class GuiDocEditor(QPlainTextEdit):
             super().keyPressEvent(event)
 
         return
+
+    def _handleVimKeyPress(self, event: QKeyEvent) -> bool:
+        if not self.vim.enabled:
+            return False
+
+        # Handle modes
+        # --- INSERT mode ---
+        if self.vim.mode == nwVimMode.INSERT:
+            super().keyPressEvent(event) 
+            return True # Normal typing
+        # --- NORMAL mode ---
+        if event.key() == Qt.Key.Key_I:
+            self.vim.set_mode(nwVimMode.INSERT)
+            return True
+
+        # Handle vim normal mode commands
+        key = event.text() 
+        cursor = self.textCursor()
+
+        if key in self.vim.PREFIX_KEYS:
+            self.vim.push_command_key(key)
+        else:
+            self.vim.set_command(key)
+
+        if self.vim.command() == "d":
+            return True # Leave command enqueued
+        elif self.vim.command() == "dd":
+            # dd  (delete current line)
+            cursor.beginEditBlock()
+            cursor.select(cursor.SelectionType.LineUnderCursor)
+            cursor.removeSelectedText()
+            cursor.endEditBlock()
+            cursor.setPosition(cursor.selectionEnd())
+            self.setTextCursor(cursor)
+            self.vim.reset_command()
+            return True
+
+        # hjkl  (single-step navigation)
+        if self.vim.command() == "h":
+            cursor.movePosition(cursor.MoveOperation.Left)
+        elif self.vim.command() == "j":
+            cursor.movePosition(cursor.MoveOperation.Down)
+        elif self.vim.command() == "k":
+            cursor.movePosition(cursor.MoveOperation.Up)
+        elif self.vim.command() == "l":
+            cursor.movePosition(cursor.MoveOperation.Right)
+        else:
+            return True # Normal mode, unmapped keys do nothing
+
+        self.setTextCursor(cursor)
+        self.vim.reset_command()
+        return True
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         """Overload drag enter event to handle dragged items."""
@@ -3371,22 +3376,30 @@ class VimState:
     """Minimal Vim state machine."""
     __slots__ = (
         "mode",
-        "command",
+        "_command",
         "enabled",
-        "pending_operator",
+        "PREFIX_KEYS",
     )
 
     def __init__(self) -> None:
         self.enabled: bool = True
         self.mode: nwVimMode = nwVimMode.NORMAL
-        self.command: str = ""
-        self.pending_operator: str = ""   # stores first key of two-part commands (e.g. 'd' in 'dd')
+        self._command: str = ""
+        self.PREFIX_KEYS = ["d",]
 
     def reset_command(self) -> None:
-        """Clear everything that makes up a single Vim command."""
-        self.command = ""
-        self.pending_operator = ""
+        self._command = ""
 
     def set_mode(self, new_mode: nwVimMode) -> None:
         self.mode = new_mode
         self.reset_command()
+
+    def push_command_key(self, key: str) -> None:
+        self._command += key
+
+    def set_command(self, key: str) -> None:
+        self._command = key
+
+    def command(self) -> str:
+        return self._command
+
