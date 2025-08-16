@@ -62,7 +62,7 @@ from novelwriter.constants import (
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
     nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
-    nwItemType
+    nwItemType, nwVimMode
 )
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -229,6 +229,11 @@ class GuiDocEditor(QPlainTextEdit):
         self.closeSearch = self.docSearch.closeSearch
         self.searchVisible = self.docSearch.isVisible
         self.changeFocusState = self.docHeader.changeFocusState
+
+        # Vim state for vim mode
+        self.vim = VimState()
+        self.vim.enabled = CONFIG.vimMode
+        self.vim.setMode(nwVimMode.NORMAL)
 
         # Finalise
         self.updateSyntaxColors()
@@ -617,6 +622,10 @@ class GuiDocEditor(QPlainTextEdit):
     #  Setters
     ##
 
+    def setVimMode(self, mode: nwVimMode) -> None:
+        if self.vim.enabled:
+            self.vim.setMode(mode)
+
     def setDocumentChanged(self, state: bool) -> None:
         """Keep track of the document changed variable, and emit the
         document change signal.
@@ -940,6 +949,10 @@ class GuiDocEditor(QPlainTextEdit):
           * We also handle automatic scrolling here.
         """
         self._lastActive = time()
+
+        if self._handleVimKeyPress(event):
+            return
+
         if self.docSearch.anyFocus() and event.key() in self.ENTER_KEYS:
             return
         elif event == QKeySequence.StandardKey.Redo:
@@ -967,6 +980,127 @@ class GuiDocEditor(QPlainTextEdit):
             super().keyPressEvent(event)
 
         return
+
+    def _handleVimKeyPress(self, event: QKeyEvent) -> bool:
+        if not self.vim.enabled:
+            return False
+
+        # Handle modes
+        # --- INSERT mode ---
+        if self.vim.mode == nwVimMode.INSERT:
+            super().keyPressEvent(event) 
+            return True # Normal typing
+        # --- NORMAL mode ---
+        if event.key() == Qt.Key.Key_I:
+            self.vim.setMode(nwVimMode.INSERT)
+            return True
+
+        # Handle vim normal mode commands
+        key = event.text() 
+        cursor = self.textCursor()
+
+        if key in self.vim.PREFIX_KEYS:
+            self.vim.pushCommand_key(key)
+        else:
+            self.vim.setCommand(key)
+
+        if self.vim.command() in self.vim.PREFIX_KEYS:
+            return True # Leave command enqueued
+
+        if self.vim.command() == "dd":
+            # dd  (delete current line)
+            cursor.beginEditBlock()
+            cursor.select(cursor.SelectionType.LineUnderCursor)
+            cursor.removeSelectedText()
+            cursor.endEditBlock()
+            cursor.setPosition(cursor.selectionEnd())
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "x":
+            cursor.beginEditBlock()
+            cursor.deleteChar()
+            cursor.endEditBlock()
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "gg":
+            cursor.movePosition(cursor.MoveOperation.Start)
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "G":
+            cursor.movePosition(cursor.MoveOperation.End)
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "yy":
+            cursor.select(cursor.SelectionType.LineUnderCursor)
+            self.vim.yankToInternal(cursor.selectedText())
+            cursor.clearSelection()
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "p":
+            text = self.vim.pasteFromInternal()
+            if text:
+                cursor.beginEditBlock()
+                cursor.movePosition(cursor.MoveOperation.EndOfLine)
+                cursor.insertText("\n" + text)
+                cursor.endEditBlock()
+                self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "P":
+            text = self.vim.pasteFromInternal()
+            if text:
+                cursor.beginEditBlock()
+                cursor.movePosition(cursor.MoveOperation.StartOfLine)
+                cursor.insertText(text + "\n")
+                cursor.endEditBlock()
+                self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "o":
+            cursor.beginEditBlock()
+            cursor.movePosition(cursor.MoveOperation.EndOfLine)
+            cursor.insertText("\n")
+            cursor.endEditBlock()
+            self.setTextCursor(cursor)
+            self.vim.setMode(nwVimMode.INSERT)
+            return True
+
+        if self.vim.command() == "O":
+            cursor.beginEditBlock()
+            cursor.movePosition(cursor.MoveOperation.StartOfLine)
+            cursor.insertText("\n")
+            cursor.movePosition(cursor.MoveOperation.Up)
+            cursor.endEditBlock()
+            self.setTextCursor(cursor)
+            self.vim.setMode(nwVimMode.INSERT)
+
+        # hjkl  (single-step navigation)
+        if self.vim.command() == "h":
+            cursor.movePosition(cursor.MoveOperation.Left)
+        elif self.vim.command() == "j":
+            cursor.movePosition(cursor.MoveOperation.Down)
+        elif self.vim.command() == "k":
+            cursor.movePosition(cursor.MoveOperation.Up)
+        elif self.vim.command() == "l":
+            cursor.movePosition(cursor.MoveOperation.Right)
+        else:
+            return True # Normal mode, unmapped keys do nothing
+
+        self.setTextCursor(cursor)
+        self.vim.resetCommand()
+        return True
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         """Overload drag enter event to handle dragged items."""
@@ -3305,3 +3439,45 @@ class GuiDocEditFooter(QWidget):
             text = self._trMainCount.format("0", "+0")
         self.wordsText.setText(text)
         return
+
+
+class VimState:
+    """Minimal Vim state machine."""
+    __slots__ = (
+        "mode",
+        "_command",
+        "enabled",
+        "PREFIX_KEYS",
+        "_internalClipboard",
+    )
+
+    def __init__(self) -> None:
+        self.enabled: bool = True
+        self.mode: nwVimMode = nwVimMode.NORMAL
+        self._command: str = ""
+        self.PREFIX_KEYS = ["d","y","g"]
+        self._internalClipboard = ""
+
+    def resetCommand(self) -> None:
+        self._command = ""
+
+    def setMode(self, new_mode: nwVimMode) -> None:
+        self.mode = new_mode
+        self.resetCommand()
+
+    def pushCommand_key(self, key: str) -> None:
+        self._command += key
+
+    def setCommand(self, key: str) -> None:
+        self._command = key
+
+    def command(self) -> str:
+        return self._command
+
+    def yankToInternal(self, text: str) -> None:
+        self._internalClipboard = text
+
+    def pasteFromInternal(self) -> str:
+        text = self._internalClipboard
+        self._internalClipboard = ""
+        return text
