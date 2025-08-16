@@ -62,7 +62,7 @@ from novelwriter.constants import (
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
     nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
-    nwItemType, nwVimMode,
+    nwItemType, nwVimMode
 )
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -232,8 +232,8 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Vim state for vim mode
         self.vim = VimState()
-        self.vim.enabled = CONFIG.vim_mode
-        self.vim.set_mode(nwVimMode.NORMAL)
+        self.vim.enabled = CONFIG.vimMode
+        self.vim.setMode(nwVimMode.NORMAL)
 
         # Finalise
         self.updateSyntaxColors()
@@ -624,7 +624,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def setVimMode(self, mode: nwVimMode) -> None:
         if self.vim.enabled:
-            self.vim.set_mode(mode)
+            self.vim.setMode(mode)
 
     def setDocumentChanged(self, state: bool) -> None:
         """Keep track of the document changed variable, and emit the
@@ -992,7 +992,7 @@ class GuiDocEditor(QPlainTextEdit):
             return True # Normal typing
         # --- NORMAL mode ---
         if event.key() == Qt.Key.Key_I:
-            self.vim.set_mode(nwVimMode.INSERT)
+            self.vim.setMode(nwVimMode.INSERT)
             return True
 
         # Handle vim normal mode commands
@@ -1000,9 +1000,9 @@ class GuiDocEditor(QPlainTextEdit):
         cursor = self.textCursor()
 
         if key in self.vim.PREFIX_KEYS:
-            self.vim.push_command_key(key)
+            self.vim.pushCommand_key(key)
         else:
-            self.vim.set_command(key)
+            self.vim.setCommand(key)
 
         if self.vim.command() == "d":
             return True # Leave command enqueued
@@ -1014,7 +1014,7 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.endEditBlock()
             cursor.setPosition(cursor.selectionEnd())
             self.setTextCursor(cursor)
-            self.vim.reset_command()
+            self.vim.resetCommand()
             return True
 
         # hjkl  (single-step navigation)
@@ -1030,7 +1030,7 @@ class GuiDocEditor(QPlainTextEdit):
             return True # Normal mode, unmapped keys do nothing
 
         self.setTextCursor(cursor)
-        self.vim.reset_command()
+        self.vim.resetCommand()
         return True
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
@@ -3387,17 +3387,17 @@ class VimState:
         self._command: str = ""
         self.PREFIX_KEYS = ["d",]
 
-    def reset_command(self) -> None:
+    def resetCommand(self) -> None:
         self._command = ""
 
-    def set_mode(self, new_mode: nwVimMode) -> None:
+    def setMode(self, new_mode: nwVimMode) -> None:
         self.mode = new_mode
-        self.reset_command()
+        self.resetCommand()
 
-    def push_command_key(self, key: str) -> None:
+    def pushCommand_key(self, key: str) -> None:
         self._command += key
 
-    def set_command(self, key: str) -> None:
+    def setCommand(self, key: str) -> None:
         self._command = key
 
     def command(self) -> str:
