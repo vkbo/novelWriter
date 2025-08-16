@@ -164,7 +164,7 @@ class Config:
         self.lastNotes    = "0x0"          # The latest release notes that have been shown
         self.nativeFont   = True           # Use native font dialog
         self.useCharCount = False          # Use character count as primary count
-        self.vim_mode     = True # DEBUG TEMP HARDCODED
+        self.vim_mode     = False # DEBUG TEMP HARDCODED
 
         # Icons
         self.iconTheme   = DEF_ICONS    # Icons theme
