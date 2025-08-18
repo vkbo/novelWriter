@@ -124,7 +124,6 @@ markers = [
     "base: Base classes tests",
     "core: Core classes tests",
     "gui: GUI classes tests",
-    "serial",
 ]
 
 [tool.coverage.run]
