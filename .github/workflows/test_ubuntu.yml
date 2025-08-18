@@ -1,0 +1,46 @@
+name: Ubuntu
+
+on:
+  push:
+    branches:
+      - main
+      - release
+  pull_request:
+    branches:
+      - main
+      - release
+
+jobs:
+  testLinux:
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Python Setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+      - name: Install Packages (apt)
+        run: |
+          sudo apt update
+          sudo apt install libenchant-2-dev qttools5-dev-tools
+      - name: Checkout Source
+        uses: actions/checkout@v4
+      - name: Install Dependencies (pip)
+        run: |
+          pip install -U -r requirements.txt -r tests/requirements.txt
+      - name: Run Build Commands
+        run: |
+          python pkgutils.py qtlrelease
+          python pkgutils.py sample
+      - name: Run Tests
+        run: |
+          export QT_QPA_PLATFORM=offscreen
+          python -m pytest -v --cov=novelwriter --timeout=60
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
