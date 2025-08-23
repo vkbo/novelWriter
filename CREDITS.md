@@ -100,7 +100,7 @@ Other themes were created for novelWriter:
 * **Full Moon** theme by Myian
 * **LCARS** theme by Veronica Berglyd Olsen
 * **Nordlicht** theme by Myian
-* **Otium** theme by Myian
+* **Otium** themes by Myian
 * **Paragon** theme by Myian
 * **Ruby** themes by Myian
 * **Selenium** themes by Myian
