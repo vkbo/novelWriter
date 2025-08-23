@@ -18,6 +18,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     env = os.environ.copy()
+    env["QT_SCALE_FACTOR"] = "1.0"
     cmd = [sys.executable, "-m", "pytest", "-vv"]
 
     if args.o:
