@@ -1011,6 +1011,7 @@ class GuiDocEditor(QPlainTextEdit):
             # dd  (delete current line)
             cursor.beginEditBlock()
             cursor.select(cursor.SelectionType.LineUnderCursor)
+            self.vim.yankToInternal(cursor.selectedText())
             cursor.removeSelectedText()
             cursor.endEditBlock()
             cursor.setPosition(cursor.selectionEnd())
@@ -1019,9 +1020,9 @@ class GuiDocEditor(QPlainTextEdit):
             return True
 
         if self.vim.command() == "x":
-            cursor.beginEditBlock()
-            cursor.deleteChar()
-            cursor.endEditBlock()
+            cursor.movePosition(cursor.MoveOperation.Right, cursor.MoveMode.KeepAnchor, 1)
+            self.vim.yankToInternal(cursor.selectedText())
+            cursor.removeSelectedText()
             self.setTextCursor(cursor)
             self.vim.resetCommand()
             return True
@@ -1085,6 +1086,17 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.endEditBlock()
             self.setTextCursor(cursor)
             self.vim.setMode(nwVimMode.INSERT)
+
+        if self.vim.command() == "$":
+            cursor.movePosition(cursor.MoveOperation.EndOfLine)
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "u":
+            self.docAction(nwDocAction.UNDO)
+            self.vim.resetCommand()
+            return True
 
         # hjkl  (single-step navigation)
         if self.vim.command() == "h":
@@ -3479,5 +3491,4 @@ class VimState:
 
     def pasteFromInternal(self) -> str:
         text = self._internalClipboard
-        self._internalClipboard = ""
         return text
