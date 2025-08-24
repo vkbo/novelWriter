@@ -141,7 +141,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
-            rxRule = re.compile(r"[ ]{2,}|[ ]*$", re.UNICODE)
+            rxRule = re.compile(r"\s{2,}")
             hlRule = {
                 0: self._hStyles["mspaces"],
             }
@@ -150,7 +150,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self._cmnRules.append((rxRule, hlRule))
 
         # Non-Breaking Spaces
-        rxRule = re.compile(f"[{nwUnicode.U_NBSP}{nwUnicode.U_THNBSP}]+", re.UNICODE)
+        rxRule = re.compile(f"[{nwUnicode.U_NBSP}{nwUnicode.U_THNBSP}]+")
         hlRule = {
             0: self._hStyles["nobreak"],
         }
@@ -239,7 +239,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._cmnRules.append((rxRule, hlRule))
 
         # Alignment Tags
-        rxRule = re.compile(r"(^>{1,2}|<{1,2}$)", re.UNICODE)
+        rxRule = re.compile(r"(^>{1,2}|<{1,2}$)")
         hlRule = {
             1: self._hStyles["markup"],
         }
@@ -247,7 +247,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._txtRules.append((rxRule, hlRule))
 
         # Auto-Replace Tags
-        rxRule = re.compile(r"<(\S+?)>", re.UNICODE)
+        rxRule = re.compile(r"<(\S+?)>")
         hlRule = {
             0: self._hStyles["replace"],
         }

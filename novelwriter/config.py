@@ -202,7 +202,7 @@ class Config:
         self.doJustify       = False    # Justify text
         self.showTabsNSpaces = False    # Show tabs and spaces in editor
         self.showLineEndings = False    # Show line endings in editor
-        self.showMultiSpaces = True     # Highlight multiple spaces in the text
+        self.showMultiSpaces = False    # Highlight multiple spaces in the text
 
         self.doReplace       = True     # Enable auto-replace as you type
         self.doReplaceSQuote = True     # Smart single quotes
