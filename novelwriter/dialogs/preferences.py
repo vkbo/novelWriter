@@ -701,7 +701,7 @@ class GuiPreferences(NDialog):
         self.showMultiSpaces = NSwitch(self)
         self.showMultiSpaces.setChecked(CONFIG.showMultiSpaces)
         self.mainForm.addRow(
-            self.tr("Highlight multiple or trailing spaces"), self.showMultiSpaces,
+            self.tr("Highlight multiple spaces between words"), self.showMultiSpaces,
             self.tr("Applies to the document editor only.")
         )
 
