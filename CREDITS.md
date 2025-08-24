@@ -82,7 +82,7 @@ Colour themes included with novelWriter were adapted from the following sources:
 * **Noctis** themes by Liviu Schera and contributors
 * **Nord** theme by Sven Greb
 * **Owl** themes by Sarah Drasner
-* **Primer** themes by GitHub Inc. and Myian
+* **Primer** themes by GitHub, Inc. and Myian
 * **Snazzy Light** theme by Florian Reuschel
 * **Solarized** themes by Ethan Schoonover
 * **Tango** themes by the Tango Desktop Project
@@ -100,7 +100,7 @@ Other themes were created for novelWriter:
 * **Full Moon** theme by Myian
 * **LCARS** theme by Veronica Berglyd Olsen
 * **Nordlicht** theme by Myian
-* **Otium** theme by Myian
+* **Otium** themes by Myian
 * **Paragon** theme by Myian
 * **Ruby** themes by Myian
 * **Selenium** themes by Myian
