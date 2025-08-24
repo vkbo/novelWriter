@@ -537,6 +537,11 @@ def testBaseCommon_fontMatcher(monkeypatch):
     nonsense = QFont("nonesense", 10)
     assert fontMatcher(nonsense) is nonsense
 
+    # Style is reset
+    nonsense.setStyleName("blabla")
+    assert nonsense.styleName() == "blabla"
+    assert fontMatcher(nonsense).styleName() == ""
+
     # General font
     if len(QFontDatabase.families()) > 1:
         fontOne = QFont(QFontDatabase.families()[0])
