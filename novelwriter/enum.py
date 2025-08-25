@@ -236,4 +236,3 @@ class nwStatusShape(Enum):
 class nwVimMode(Enum):
     NORMAL = 0
     INSERT = 1
-    VISUAL = 2
