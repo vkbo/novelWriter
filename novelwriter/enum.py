@@ -232,3 +232,7 @@ class nwStatusShape(Enum):
     BLOCK_2  = 17
     BLOCK_3  = 18
     BLOCK_4  = 19
+
+class nwVimMode(Enum):
+    NORMAL = 0
+    INSERT = 1
