@@ -233,7 +233,8 @@ class GuiDocEditor(QPlainTextEdit):
         # Vim state for vim mode
         self.vim = VimState()
         self.vim.enabled = CONFIG.vimMode
-        self.setVimMode(nwVimMode.NORMAL)
+        if self.vim.enabled:
+            self.setVimMode(nwVimMode.NORMAL)
 
         # Finalise
         self.updateSyntaxColors()
@@ -3419,7 +3420,6 @@ class GuiDocEditFooter(QWidget):
         self.vimStatus.setAutoFillBackground(True)
         self.vimStatus.setFixedHeight(fPx)
         self.vimStatus.setAlignment(QtAlignLeftTop)
-        self.vimStatus.setText(self.tr("NORMAL"))
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
