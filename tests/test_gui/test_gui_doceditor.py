@@ -2563,3 +2563,19 @@ def testGuiEditor_Vim_MotionsAndInsert(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
     lines = docEditor.getText().splitlines()
     assert lines[0].endswith("END")
+
+    # 'o' open new line BELOW
+    reset_and_get_text()
+    qtbot.keyClick(docEditor, "o")
+    qtbot.keyClicks(docEditor, "below")
+    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+    lines = docEditor.getText().splitlines()
+    assert "below" in lines[1]  # inserted after Line1
+
+    # 'O' open new line ABOVE
+    reset_and_get_text()
+    qtbot.keyClick(docEditor, "O")
+    qtbot.keyClicks(docEditor, "above")
+    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+    lines = docEditor.getText().splitlines()
+    assert "above" in lines[0]  # inserted before Line1
