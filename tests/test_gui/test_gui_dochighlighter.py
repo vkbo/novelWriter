@@ -45,6 +45,7 @@ def syntax(nwGUI):
     CONFIG.fmtDQuoteClose = "\u201d"
     CONFIG.altDialogOpen = "::"
     CONFIG.altDialogClose = "::"
+    CONFIG.showMultiSpaces = True
 
     theme = SHARED.theme
     theme.loadTheme(force=True)
