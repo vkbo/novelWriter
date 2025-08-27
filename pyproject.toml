@@ -66,23 +66,26 @@ preview = true
 
 # Rules: https://docs.astral.sh/ruff/rules
 select = [
-    "A",    # flake8-builtins (A)
-    "ANN",  # flake8-annotations (ANN)
-    "B",    # flake8-bugbear (B)
-    "E",    # pycodestyle (E)
-    "F",    # Pyflakes (F)
-    "FA",   # flake8-future-annotations (FA)
-    "PERF", # Perflint (PERF)
-    "PLC",  # Pylint Convention (PLC)
-    "PLE",  # Pylint Error (PLE)
-    "PLW",  # Pylint Warning (PLW)
-    "Q",    # flake8-quotes (Q)
-    "RUF",  # Ruff-specific rules (RUF)
-    "SLF",  # flake8-self (SLF)
-    "SLOT", # flake8-slots (SLOT)
-    "TC",   # flake8-type-checking (TC)
-    "UP",   # pyupgrade (UP)
-    "W",    # pycodestyle (W)
+    "A",      # flake8-builtins (A)
+    "ANN",    # flake8-annotations (ANN)
+    "B",      # flake8-bugbear (B)
+    "D",      # pydocstyle (D)
+    "E",      # pycodestyle (E)
+    "F",      # Pyflakes (F)
+    "FA",     # flake8-future-annotations (FA)
+    "PERF",   # Perflint (PERF)
+    "PLC",    # Pylint Convention (PLC)
+    "PLE",    # Pylint Error (PLE)
+    "PLW",    # Pylint Warning (PLW)
+    "Q",      # flake8-quotes (Q)
+    "RUF",    # Ruff-specific rules (RUF)
+    "SLF",    # flake8-self (SLF)
+    "SLOT",   # flake8-slots (SLOT)
+    "TC",     # flake8-type-checking (TC)
+    "UP",     # pyupgrade (UP)
+    "W",      # pycodestyle (W)
+    "RET",    # flake8-return (RET)
+    "PLR17",  # Refactor (PLR) - Only PLR17xx
 ]
 ignore = [
     "ANN401",  # any-type
@@ -100,11 +103,27 @@ ignore = [
     "RUF015",  # unnecessary-iterable-allocation-for-first-element
     "UP015",   # redundant-open-modes
     "UP030",   # format-literals
+    "D107",    # undocumented-public-init
+    "D205",    # missing-blank-line-after-summary
+    "D105",    # undocumented-magic-method
+    "RET505",  # superfluous-else-return
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["ANN", "SLF", "TC", "PLC2701"]
+"tests/*" = ["ANN", "SLF", "TC", "PLC2701", "D101", "D102"]
 "utils/*" = ["ANN", "SLF", "TC"]
+
+[tool.ruff.lint.pydocstyle]
+ignore-decorators = [
+    "abc.abstractmethod",
+    "property",
+    "PyQt6.QtCore.pyqtProperty",
+    "typing.overload",
+    "pytest.fixture",
+]
+
+[tool.ruff.lint.pylint]
+max-nested-blocks = 10
 
 [tool.ruff.format]
 quote-style = "double"
@@ -114,7 +133,6 @@ include = ["novelwriter"]
 exclude = ["**/__pycache__"]
 
 reportIncompatibleMethodOverride = false
-
 pythonVersion = "3.10"
 
 [tool.pytest.ini_options]
