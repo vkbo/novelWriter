@@ -2482,3 +2482,33 @@ def testGuiEditor_TextAutoReplaceProcess():
     ar.initSettings()
     assert ar.process(*prep('Text "')) is True
     assert doc.toRawText() == "Text «\u202f"
+
+
+@pytest.mark.gui
+def testGuiEditor_Vim_EnableVimMode(qtbot, nwGUI, projPath, mockRnd):
+    """Test that enabling CONFIG.vimMode activates vim behavior."""
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc)
+
+    docEditor = nwGUI.docEditor
+    docEditor.setPlainText("HelloWorld")
+
+    # Enable vim mode
+    CONFIG.vimMode = True
+
+    original_text = docEditor.getText()
+
+    # Normal mode: hjkl should NOT change text
+    for key in "hjkl":
+        qtbot.keyClick(docEditor, key)
+        assert docEditor.getText() == original_text
+
+    # Enter insert mode with "i"
+    qtbot.keyClick(docEditor, "i")
+    qtbot.keyClicks(docEditor, "TEST")
+    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+
+    # Text must have changed now
+    new_text = docEditor.getText()
+    assert new_text != original_text
+    assert "TEST" in new_text
