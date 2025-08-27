@@ -2512,3 +2512,54 @@ def testGuiEditor_Vim_EnableVimMode(qtbot, nwGUI, projPath, mockRnd):
     new_text = docEditor.getText()
     assert new_text != original_text
     assert "TEST" in new_text
+
+
+@pytest.mark.gui
+def testGuiEditor_Vim_MotionsAndInsert(qtbot, nwGUI, projPath, mockRnd):
+    """Test vim hjkl movements and insert commands (i, I, A)."""
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc)
+
+    docEditor = nwGUI.docEditor
+    docEditor.setPlainText("Line1\nLine2\nLine3")
+
+    # Enable vim mode
+    CONFIG.vimMode = True
+
+    def reset_and_get_text():
+        """Helper: reset to known text state."""
+        docEditor.setPlainText("Line1\nLine2\nLine3")
+        return docEditor.getText()
+
+    original_text = reset_and_get_text()
+
+    # NORMAL MODE: hjkl should NOT modify text
+    for key in "hjkl":
+        qtbot.keyClick(docEditor, key)
+        assert docEditor.getText() == original_text
+
+    # --- Insert mode tests ---
+    # 'i' insert before cursor
+    reset_and_get_text()
+    qtbot.keyClick(docEditor, "i")
+    qtbot.keyClicks(docEditor, "X")
+    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+    assert "X" in docEditor.getText()
+
+    # 'I' insert at beginning of line
+    reset_and_get_text()
+    qtbot.keyClick(docEditor, "h") # Move forward 1
+    qtbot.keyClick(docEditor, "h") # Move forward 1
+    qtbot.keyClick(docEditor, "I")
+    qtbot.keyClicks(docEditor, "START")
+    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+    lines = docEditor.getText().splitlines()
+    assert lines[0].startswith("START")
+
+    # 'A' append at end of line
+    reset_and_get_text()
+    qtbot.keyClick(docEditor, "A")
+    qtbot.keyClicks(docEditor, "END")
+    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+    lines = docEditor.getText().splitlines()
+    assert lines[0].endswith("END")
