@@ -2489,6 +2489,7 @@ def testGuiEditor_Vim_EnableVimMode(qtbot, nwGUI, projPath, mockRnd):
     """Test that enabling CONFIG.vimMode activates vim behavior."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
+    inputDelay = 2
 
     docEditor = nwGUI.docEditor
     docEditor.setPlainText("HelloWorld")
@@ -2500,12 +2501,12 @@ def testGuiEditor_Vim_EnableVimMode(qtbot, nwGUI, projPath, mockRnd):
 
     # Normal mode: hjkl should NOT change text
     for key in "hjkl":
-        qtbot.keyClick(docEditor, key)
+        qtbot.keyClick(docEditor, key, delay=inputDelay)
         assert docEditor.getText() == original_text
 
     # Enter insert mode with "i"
-    qtbot.keyClick(docEditor, "i")
-    qtbot.keyClicks(docEditor, "TEST")
+    qtbot.keyClick(docEditor, "i", delay=inputDelay)
+    qtbot.keyClicks(docEditor, "TEST", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
 
     # Text must have changed now
@@ -2519,6 +2520,7 @@ def testGuiEditor_Vim_MotionsAndInsert(qtbot, nwGUI, projPath, mockRnd):
     """Test vim hjkl movements and insert commands (i, I, A)."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
+    inputDelay = 2 
 
     docEditor = nwGUI.docEditor
     docEditor.setPlainText("Line1\nLine2\nLine3")
@@ -2541,41 +2543,41 @@ def testGuiEditor_Vim_MotionsAndInsert(qtbot, nwGUI, projPath, mockRnd):
     # --- Insert mode tests ---
     # 'i' insert before cursor
     reset_and_get_text()
-    qtbot.keyClick(docEditor, "i")
-    qtbot.keyClicks(docEditor, "X")
+    qtbot.keyClick(docEditor, "i", delay=inputDelay)
+    qtbot.keyClicks(docEditor, "X", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
     assert "X" in docEditor.getText()
 
     # 'I' insert at beginning of line
     reset_and_get_text()
-    qtbot.keyClick(docEditor, "h") # Move forward 1
-    qtbot.keyClick(docEditor, "h") # Move forward 1
-    qtbot.keyClick(docEditor, "I")
-    qtbot.keyClicks(docEditor, "START")
+    qtbot.keyClick(docEditor, "h", delay=inputDelay) # Move forward 1
+    qtbot.keyClick(docEditor, "h", delay=inputDelay) # Move forward 1
+    qtbot.keyClick(docEditor, "I", delay=inputDelay)
+    qtbot.keyClicks(docEditor, "START", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
     lines = docEditor.getText().splitlines()
     assert lines[0].startswith("START")
 
     # 'A' append at end of line
     reset_and_get_text()
-    qtbot.keyClick(docEditor, "A")
-    qtbot.keyClicks(docEditor, "END")
+    qtbot.keyClick(docEditor, "A", delay=inputDelay)
+    qtbot.keyClicks(docEditor, "END", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
     lines = docEditor.getText().splitlines()
     assert lines[0].endswith("END")
 
     # 'o' open new line BELOW
     reset_and_get_text()
-    qtbot.keyClick(docEditor, "o")
-    qtbot.keyClicks(docEditor, "below")
+    qtbot.keyClick(docEditor, "o", delay=inputDelay)
+    qtbot.keyClicks(docEditor, "below", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
     lines = docEditor.getText().splitlines()
     assert "below" in lines[1]  # inserted after Line1
 
     # 'O' open new line ABOVE
     reset_and_get_text()
-    qtbot.keyClick(docEditor, "O")
-    qtbot.keyClicks(docEditor, "above")
+    qtbot.keyClick(docEditor, "O", delay=inputDelay)
+    qtbot.keyClicks(docEditor, "above", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
     lines = docEditor.getText().splitlines()
     assert "above" in lines[0]  # inserted before Line1
@@ -2584,6 +2586,7 @@ def testGuiEditor_Vim_MotionsAndInsert(qtbot, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     """Test vim delete (dd, x), yank (yy) and paste (p, P) commands."""
+    inputDelay = 2 
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
 
@@ -2597,14 +2600,14 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     # --- dd: delete entire line ---
     reset_text()
     docEditor.setCursorPosition(docEditor.getText().find("Line2"))
-    qtbot.keyClicks(docEditor, "dd")
+    qtbot.keyClicks(docEditor, "dd", delay=inputDelay)
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line1", "Line3"]
 
     # --- x: delete single character ---
     reset_text()
     docEditor.setCursorPosition(0)
-    qtbot.keyClicks(docEditor, "x")
+    qtbot.keyClicks(docEditor, "x", delay=inputDelay)
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines[0] == "ine1"  # 'L' deleted
 
@@ -2612,8 +2615,8 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     reset_text()
     line2_pos = docEditor.getText().find("Line2")
     docEditor.setCursorPosition(line2_pos)
-    qtbot.keyClicks(docEditor, "yy") # yank Line2
-    qtbot.keyClicks(docEditor, "p")  # paste after Line2
+    qtbot.keyClicks(docEditor, "yy", delay=inputDelay) # yank Line2
+    qtbot.keyClicks(docEditor, "p", delay=inputDelay)  # paste after Line2
 
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line1", "Line2", "Line2", "Line3"]
@@ -2624,9 +2627,9 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     docEditor.setCursorPosition(line2_pos)
     line3_pos = docEditor.getText().find("Line3")
     docEditor.setCursorPosition(line3_pos)
-    qtbot.keyClicks(docEditor, "yy")  # yank Line3
+    qtbot.keyClicks(docEditor, "yy", delay=inputDelay)  # yank Line3
     docEditor.setCursorPosition(line2_pos)
-    qtbot.keyClicks(docEditor, "P")   # paste before Line2
+    qtbot.keyClicks(docEditor, "P", delay=inputDelay)   # paste before Line2
 
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line1", "Line3", "Line2", "Line3"]
