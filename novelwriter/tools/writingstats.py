@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -54,7 +54,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiWritingStats(NToolDialog):
-    """GUI Tools: Writing Statistics
+    """GUI Tools: Writing Statistics.
 
     Displays data from the NWSessionLog object.
     """
@@ -311,11 +311,8 @@ class GuiWritingStats(NToolDialog):
 
         logger.debug("Ready: GuiWritingStats")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiWritingStats")
-        return
 
     def populateGUI(self) -> None:
         """Populate list box with data from the log file."""
@@ -323,7 +320,6 @@ class GuiWritingStats(NToolDialog):
         self._loadLogFile()
         self._updateListBox()
         QApplication.restoreOverrideCursor()
-        return
 
     ##
     #  Events
@@ -333,7 +329,6 @@ class GuiWritingStats(NToolDialog):
         """Capture the user closing the window."""
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -376,8 +371,6 @@ class GuiWritingStats(NToolDialog):
         pOptions.saveSettings()
 
         self.close()
-
-        return
 
     def _saveData(self, dataFmt: int) -> bool:
         """Save the content of the list box to a file."""
@@ -497,8 +490,6 @@ class GuiWritingStats(NToolDialog):
         self.novelWords.setText(f"{ttNovel:n}")
         self.notesWords.setText(f"{ttNotes:n}")
         self.totalWords.setText(f"{ttWords:n}")
-
-        return
 
     ##
     #  Private Slots
@@ -622,5 +613,3 @@ class GuiWritingStats(NToolDialog):
             self.timeFilter += sDiff
 
         self.labelFilter.setText(formatTime(round(self.timeFilter)))
-
-        return

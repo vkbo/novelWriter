@@ -22,7 +22,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -63,6 +63,13 @@ DEF_TREECOL = "theme"
 
 
 class Config:
+    """User Config.
+
+    The main user config. The state of the config is stored in the
+    novelwriter.conf file between sessions. Most of the settings can be
+    modified by the user in the Preferences dialog, but some just record
+    various states of the GUI.
+    """
 
     __slots__ = (
         "_appPath", "_appRoot", "_backPath", "_backupPath", "_confPath", "_dLocale", "_dShortDate",
@@ -301,8 +308,6 @@ class Config:
         # Packages
         self.hasEnchant = False  # The pyenchant package
 
-        return
-
     ##
     #  Properties
     ##
@@ -351,7 +356,6 @@ class Config:
     def setLastAuthor(self, value: str) -> None:
         """Set tle last used author name."""
         self._lastAuthor = simplified(value)
-        return
 
     def setMainWinSize(self, width: int, height: int) -> None:
         """Set the size of the main window, but only if the change is
@@ -363,17 +367,14 @@ class Config:
             self.mainWinSize[0] = width
         if abs(self.mainWinSize[1] - height) > 5:
             self.mainWinSize[1] = height
-        return
 
     def setWelcomeWinSize(self, width: int, height: int) -> None:
         """Set the size of the Preferences dialog window."""
         self.welcomeWinSize = [width, height]
-        return
 
     def setPreferencesWinSize(self, width: int, height: int) -> None:
         """Set the size of the Preferences dialog window."""
         self.prefsWinSize = [width, height]
-        return
 
     def setLastPath(self, key: str, path: str | Path) -> None:
         """Set the last used path. Only the folder is saved, so if the
@@ -385,12 +386,10 @@ class Config:
                 path = path.parent
             if path.is_dir():
                 self._recentPaths.setPath(key, path)
-        return
 
     def setBackupPath(self, path: Path | str) -> None:
         """Set the current backup path."""
         self._backupPath = checkPath(path, self._backPath)
-        return
 
     def setGuiFont(self, value: QFont | str | None) -> None:
         """Update the GUI's font style from settings."""
@@ -411,7 +410,6 @@ class Config:
             self.guiFont = fontMatcher(font)
             logger.debug("Main font set to: %s", describeFont(font))
         QApplication.setFont(self.guiFont)
-        return
 
     def setTextFont(self, value: QFont | str | None) -> None:
         """Set the text font if it exists. If it doesn't, or is None,
@@ -437,14 +435,13 @@ class Config:
                 font = QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont)
             self.textFont = fontMatcher(font)
             logger.debug("Text font set to: %s", describeFont(self.textFont))
-        return
 
     ##
     #  Methods
     ##
 
     def homePath(self) -> Path:
-        """The user's home folder."""
+        """Return the user's home folder."""
         return self._homePath
 
     def dataPath(self, target: str | None = None) -> Path:
@@ -526,7 +523,6 @@ class Config:
         """Send a message to the splash screen."""
         if self._splash:
             self._splash.showStatus(message)
-        return
 
     ##
     #  Config Actions
@@ -569,8 +565,6 @@ class Config:
 
         logger.debug("Config instance initialised")
 
-        return
-
     def initLocalisation(self, nwApp: QApplication) -> None:
         """Initialise the localisation of the GUI."""
         self.splashMessage("Loading localisation ...")
@@ -597,8 +591,6 @@ class Config:
                         logger.debug("Loaded: %s.qm", lngFile)
                         nwApp.installTranslator(qTrans)
                         self._qtTrans[lngFile] = qTrans
-
-        return
 
     def loadConfig(self, splash: NSplashScreen | None = None) -> bool:
         """Load preferences from file and replace default settings."""
@@ -873,7 +865,6 @@ class Config:
     def finishStartup(self) -> None:
         """Call after startup is complete."""
         self._splash = None
-        return
 
     ##
     #  Internal Functions
@@ -895,7 +886,6 @@ class Config:
         else:
             self.hasEnchant = True
             logger.debug("Checking package 'pyenchant': OK")
-        return
 
     def _prepareFont(self, font: QFont, kind: str) -> None:
         """Check Unicode availability in font. This also initialises any
@@ -906,16 +896,15 @@ class Config:
         for char in nwUnicode.UI_SYMBOLS:
             if not metrics.inFont(char):  # type: ignore
                 logger.warning("No glyph U+%04x in font", ord(char))  # pragma: no cover
-        return
 
 
 class RecentProjects:
+    """A record of recently opened projects."""
 
     def __init__(self, config: Config) -> None:
         self._conf = config
         self._data: dict[str, dict[str, str | int]] = {}
         self._map: dict[str, str] = {}
-        return
 
     def loadCache(self) -> bool:
         """Load the cache file for recent projects."""
@@ -977,14 +966,12 @@ class RecentProjects:
             self.saveCache()
         except Exception:
             pass
-        return
 
     def remove(self, path: str | Path) -> None:
         """Try to remove a path from the recent projects cache."""
         if self._data.pop(str(path), None) is not None:
             logger.debug("Removed recent: %s", path)
             self.saveCache()
-        return
 
     def _setEntry(
         self, puuid: str, path: str, title: str, words: int, chars: int, saved: int
@@ -999,24 +986,22 @@ class RecentProjects:
         }
         if puuid:
             self._map[puuid] = path
-        return
 
 
 class RecentPaths:
+    """A record of recently used file paths."""
 
     KEYS: Final[list[str]] = ["default", "project", "import", "outline", "stats"]
 
     def __init__(self, config: Config) -> None:
         self._conf = config
         self._data = {}
-        return
 
     def setPath(self, key: str, path: Path | str) -> None:
         """Set a path for a given key, and save the cache."""
         if key in self.KEYS:
             self._data[key] = str(path)
         self.saveCache()
-        return
 
     def getPath(self, key: str) -> str | None:
         """Get a path for a given key, or return None."""

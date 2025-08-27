@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -48,6 +48,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiWordList(NDialog):
+    """GUI: User Dictionary Edit Tool."""
 
     newWordListReady = pyqtSignal()
 
@@ -128,11 +129,8 @@ class GuiWordList(NDialog):
 
         logger.debug("Ready: GuiWordList")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiWordList")
-        return
 
     ##
     #  Events
@@ -143,7 +141,6 @@ class GuiWordList(NDialog):
         self._saveGuiSettings()
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -159,14 +156,12 @@ class GuiWordList(NDialog):
         if items := self.listBox.findItems(word, Qt.MatchFlag.MatchExactly):
             self.listBox.setCurrentItem(items[0])
             self.listBox.scrollToItem(items[0], QAbstractItemView.ScrollHint.PositionAtCenter)
-        return
 
     @pyqtSlot()
     def _doDelete(self) -> None:
         """Delete the selected items."""
         for item in self.listBox.selectedItems():
             self.listBox.takeItem(self.listBox.row(item))
-        return
 
     @pyqtSlot()
     def _doSave(self) -> None:
@@ -178,7 +173,6 @@ class GuiWordList(NDialog):
         self.newWordListReady.emit()
         QApplication.processEvents()
         self.close()
-        return
 
     @pyqtSlot()
     def _importWords(self) -> None:
@@ -213,7 +207,6 @@ class GuiWordList(NDialog):
                     fo.write("\n".join(self._listWords()))
             except Exception as exc:
                 SHARED.error("Could not write file.", exc=exc)
-        return
 
     ##
     #  Internal Functions
@@ -226,7 +219,6 @@ class GuiWordList(NDialog):
         self.listBox.clear()
         for word in userDict:
             self.listBox.addItem(word)
-        return
 
     def _saveGuiSettings(self) -> None:
         """Save GUI settings."""
@@ -234,14 +226,12 @@ class GuiWordList(NDialog):
         pOptions = SHARED.project.options
         pOptions.setValue("GuiWordList", "winWidth",  self.width())
         pOptions.setValue("GuiWordList", "winHeight", self.height())
-        return
 
     def _addWord(self, word: str) -> None:
         """Add a single word to the list."""
         if word and not self.listBox.findItems(word, Qt.MatchFlag.MatchExactly):
             self.listBox.addItem(word)
             self._changed = True
-        return
 
     def _listWords(self) -> list[str]:
         """List all words in the list box."""

@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import pytest
@@ -35,11 +35,9 @@ class MockWidget(QWidget):
     def __init__(self):
         super().__init__(None)
         self.count = 0
-        return
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         self.count += 1
-        return
 
 
 @pytest.mark.gui

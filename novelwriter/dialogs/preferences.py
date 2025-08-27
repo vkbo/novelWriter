@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -50,6 +50,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiPreferences(NDialog):
+    """GUI: Preferences Dialog."""
 
     newPreferencesReady = pyqtSignal(bool, bool, bool, bool)
 
@@ -125,11 +126,8 @@ class GuiPreferences(NDialog):
 
         logger.debug("Ready: GuiPreferences")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiPreferences")
-        return
 
     def buildForm(self) -> None:
         """Build the settings form."""
@@ -856,8 +854,6 @@ class GuiPreferences(NDialog):
         self.mainForm.finalise()
         self.sidebar.setSelected(1)
 
-        return
-
     ##
     #  Events
     ##
@@ -868,7 +864,6 @@ class GuiPreferences(NDialog):
         self._saveWindowSize()
         event.accept()
         self.softDelete()
-        return
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Overload keyPressEvent and only accept escape. The main
@@ -878,7 +873,6 @@ class GuiPreferences(NDialog):
         if event.matches(QKeySequence.StandardKey.Cancel):
             self.close()
         event.ignore()
-        return
 
     ##
     #  Private Slots
@@ -888,13 +882,11 @@ class GuiPreferences(NDialog):
     def _sidebarClicked(self, section: int) -> None:
         """Process a user request to switch page."""
         self.mainForm.scrollToSection(section)
-        return
 
     @pyqtSlot()
     def _gotoSearch(self) -> None:
         """Go to the setting indicated by the search text."""
         self.mainForm.scrollToLabel(self.searchText.text().strip())
-        return
 
     @pyqtSlot()
     def _selectGuiFont(self) -> None:
@@ -904,7 +896,6 @@ class GuiPreferences(NDialog):
             self.guiFont.setText(describeFont(font))
             self.guiFont.setCursorPosition(0)
             self._guiFont = font
-        return
 
     @pyqtSlot()
     def _selectTextFont(self) -> None:
@@ -914,7 +905,6 @@ class GuiPreferences(NDialog):
             self.textFont.setText(describeFont(font))
             self.textFont.setCursorPosition(0)
             self._textFont = font
-        return
 
     @pyqtSlot()
     def _backupFolder(self) -> None:
@@ -925,13 +915,11 @@ class GuiPreferences(NDialog):
         ):
             self.backupPath = path
             self.mainForm.setHelpText("backupPath", self.tr("Path: {0}").format(path))
-        return
 
     @pyqtSlot(bool)
     def _toggledBackupOnClose(self, state: bool) -> None:
         """Toggle switch that depends on the backup on close switch."""
         self.askBeforeBackup.setEnabled(state)
-        return
 
     @pyqtSlot(str)
     def _insertDialogLineSymbol(self, symbol: str) -> None:
@@ -939,7 +927,6 @@ class GuiPreferences(NDialog):
         current = self.dialogLine.text()
         values = processDialogSymbols(f"{current} {symbol}")
         self.dialogLine.setText(" ".join(values))
-        return
 
     @pyqtSlot(bool)
     def _toggleAutoReplaceMain(self, state: bool) -> None:
@@ -949,7 +936,6 @@ class GuiPreferences(NDialog):
         self.doReplaceDash.setEnabled(state)
         self.doReplaceDots.setEnabled(state)
         self.fmtPadThin.setEnabled(state)
-        return
 
     @pyqtSlot()
     def _changeSingleQuoteOpen(self) -> None:
@@ -957,7 +943,6 @@ class GuiPreferences(NDialog):
         quote, status = GuiQuoteSelect.getQuote(self, current=self.fmtSQuoteOpen.text())
         if status:
             self.fmtSQuoteOpen.setText(quote)
-        return
 
     @pyqtSlot()
     def _changeSingleQuoteClose(self) -> None:
@@ -965,7 +950,6 @@ class GuiPreferences(NDialog):
         quote, status = GuiQuoteSelect.getQuote(self, current=self.fmtSQuoteClose.text())
         if status:
             self.fmtSQuoteClose.setText(quote)
-        return
 
     @pyqtSlot()
     def _changeDoubleQuoteOpen(self) -> None:
@@ -973,7 +957,6 @@ class GuiPreferences(NDialog):
         quote, status = GuiQuoteSelect.getQuote(self, current=self.fmtDQuoteOpen.text())
         if status:
             self.fmtDQuoteOpen.setText(quote)
-        return
 
     @pyqtSlot()
     def _changeDoubleQuoteClose(self) -> None:
@@ -981,7 +964,6 @@ class GuiPreferences(NDialog):
         quote, status = GuiQuoteSelect.getQuote(self, current=self.fmtDQuoteClose.text())
         if status:
             self.fmtDQuoteClose.setText(quote)
-        return
 
     ##
     #  Internal Functions
@@ -990,7 +972,6 @@ class GuiPreferences(NDialog):
     def _saveWindowSize(self) -> None:
         """Save the dialog window size."""
         CONFIG.setPreferencesWinSize(self.width(), self.height())
-        return
 
     def _doSave(self) -> None:
         """Save the values set in the form."""
@@ -1134,5 +1115,3 @@ class GuiPreferences(NDialog):
         self.newPreferencesReady.emit(needsRestart, refreshTree, updateTheme, updateSyntax)
 
         self.close()
-
-        return

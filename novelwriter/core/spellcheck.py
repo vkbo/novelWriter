@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 
 class NWSpellEnchant:
-    """Core: Enchant Spell Checking Wrapper
+    """Core: Enchant Spell Checking Wrapper.
 
     This is a rapper class for Enchant to keep the API consistent
     between spell check tools.
@@ -57,11 +57,9 @@ class NWSpellEnchant:
         self._language = None
         self._broker = None
         logger.debug("Ready: NWSpellEnchant")
-        return
 
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: NWSpellEnchant")
-        return
 
     ##
     #  Properties
@@ -106,21 +104,19 @@ class NWSpellEnchant:
             for word in self._userDict:
                 self._enchant.add_to_session(word)
 
-        return
-
     ##
     #  Methods
     ##
 
     def checkWord(self, word: str) -> bool:
-        """Wrapper function for pyenchant."""
+        """Forward check to pyenchant."""
         try:
             return bool(self._enchant.check(word))
         except Exception:
             return True
 
     def suggestWords(self, word: str) -> list[str]:
-        """Wrapper function for pyenchant."""
+        """Ask pyenchant for suggestions."""
         try:
             return self._enchant.suggest(word)
         except Exception:
@@ -172,24 +168,29 @@ class FakeEnchant:
         self.tag = ""
         self.provider = FakeProvider()
 
-        return
-
     def check(self, word: str) -> bool:
+        """Return True for all words."""
         return True
 
     def suggest(self, word: str) -> list[str]:
+        """Return an empty suggestion list."""
         return []
 
     def add_to_session(self, word: str) -> None:
+        """Do nothing."""
         return
 
 
 class UserDictionary:
+    """Core: User Word Dictionary.
+
+    This class holds all the user's own words for spell checking
+    purposes. The dictionary is per-project.
+    """
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
         self._words = set()
-        return
 
     def __contains__(self, word: str) -> bool:
         return word in self._words
@@ -219,7 +220,6 @@ class UserDictionary:
             except Exception:
                 logger.error("Failed to load user dictionary")
                 logException()
-        return
 
     def save(self) -> None:
         """Save the user's dictionary."""
@@ -232,4 +232,3 @@ class UserDictionary:
             except Exception:
                 logger.error("Failed to save user dictionary")
                 logException()
-        return

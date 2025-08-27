@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -45,6 +45,12 @@ logger = logging.getLogger(__name__)
 
 
 class GuiDictionaries(NNonBlockingDialog):
+    """GUI: Spell Check Dictionary Tool.
+
+    A helper tool for downloading and extracting dictionaries to a
+    location where Enchant can find them. This tool is only needed on
+    Windows.
+    """
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -123,11 +129,8 @@ class GuiDictionaries(NNonBlockingDialog):
 
         logger.debug("Ready: GuiDictionaries")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiDictionaries")
-        return
 
     def initDialog(self) -> bool:
         """Prepare and check that we can proceed."""
@@ -164,7 +167,6 @@ class GuiDictionaries(NNonBlockingDialog):
         """Capture the user closing the window."""
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -182,7 +184,6 @@ class GuiDictionaries(NNonBlockingDialog):
         if soxFile:
             path = Path(soxFile).absolute()
             self.huInput.setText(str(path))
-        return
 
     @pyqtSlot()
     def _doImportHunspell(self) -> None:
@@ -202,14 +203,12 @@ class GuiDictionaries(NNonBlockingDialog):
                     self._appendLog(formatException(exc), err=True)
             else:
                 self._appendLog(procErr, err=True)
-        return
 
     @pyqtSlot()
     def _doOpenInstallLocation(self) -> None:
         """Open the dictionary folder."""
         if not openExternalPath(Path(self.inPath.text())):
             SHARED.error("Path not found.")
-        return
 
     ##
     #  Internal Functions
@@ -247,4 +246,3 @@ class GuiDictionaries(NNonBlockingDialog):
         cursor.movePosition(QTextCursor.MoveOperation.End)
         cursor.deleteChar()
         self.infoBox.setTextCursor(cursor)
-        return

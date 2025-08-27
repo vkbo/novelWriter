@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -40,7 +40,7 @@ from tests.tools import clearLogHandlers
 
 @pytest.mark.base
 def testBaseInit_Launch(caplog, monkeypatch, fncPath):
-    """Check launching the main GUI. This test """
+    """Check launching the main GUI."""
     monkeypatch.setattr(NSplashScreen, "finish", lambda *a: None)
     monkeypatch.setattr("novelwriter.splash.sleep", lambda *a: None)
     monkeypatch.setattr("novelwriter._createApp", lambda *a: Mock())

@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -57,6 +57,7 @@ BLOCK_TITLE = 4
 
 
 class GuiDocHighlighter(QSyntaxHighlighter):
+    """GUI: Editor Syntax Highlighter."""
 
     __slots__ = (
         "_cmnRules", "_dialogParser", "_hStyles", "_isInactive", "_isNovel",
@@ -84,8 +85,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.initHighlighter()
 
         logger.debug("Ready: GuiDocHighlighter")
-
-        return
 
     def initHighlighter(self) -> None:
         """Initialise the syntax highlighter, setting all the colour
@@ -255,8 +254,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._txtRules.append((rxRule, hlRule))
         self._cmnRules.append((rxRule, hlRule))
 
-        return
-
     ##
     #  Setters
     ##
@@ -264,7 +261,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     def setSpellCheck(self, state: bool) -> None:
         """Enable/disable the real time spell checker."""
         self._spellCheck = state
-        return
 
     def setHandle(self, tHandle: str) -> None:
         """Set the handle of the currently highlighted document."""
@@ -275,7 +271,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self._isNovel = item.isDocumentLayout()
             self._isInactive = item.isInactiveClass()
         logger.debug("Syntax highlighter enabled for item '%s'", tHandle)
-        return
 
     ##
     #  Methods
@@ -293,7 +288,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 if block.userState() & cType > 0:
                     self.rehighlightBlock(block)
             logger.debug("Document highlighted in %.3f ms" % (1000*(time() - tStart)))
-        return
 
     ##
     #  Highlight Block
@@ -506,10 +500,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         self._hStyles[name] = charFormat
 
-        return
-
 
 class TextBlockData(QTextBlockUserData):
+    """Custom QTextBlock Data.
+
+    Custom data stored in a single text block. The spell check state is
+    cached here and used when correcting misspelled text.
+    """
 
     __slots__ = ("_metaData", "_offset", "_spellErrors", "_text")
 
@@ -519,7 +516,6 @@ class TextBlockData(QTextBlockUserData):
         self._offset = 0
         self._metaData: list[tuple[int, int, str, str]] = []
         self._spellErrors: list[tuple[int, int, str]] = []
-        return
 
     @property
     def metaData(self) -> list[tuple[int, int, str, str]]:
@@ -552,8 +548,6 @@ class TextBlockData(QTextBlockUserData):
 
         self._text = text.replace("\u02bc", "'").replace("_", " ")
         self._offset = offset
-
-        return
 
     def spellCheck(self, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
         """Run the spell checker and cache the result, and return the

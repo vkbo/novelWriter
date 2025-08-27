@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -62,7 +62,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiBuildSettings(NToolDialog):
-    """GUI Tools: Manuscript Build Settings Dialog
+    """GUI Tools: Manuscript Build Settings Dialog.
 
     The main tool for configuring manuscript builds. It's a GUI tool for
     editing JSON build definitions, wrapped as a BuildSettings object.
@@ -153,11 +153,8 @@ class GuiBuildSettings(NToolDialog):
 
         logger.debug("Ready: GuiBuildSettings")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiBuildSettings")
-        return
 
     def loadContent(self) -> None:
         """Populate the child widgets."""
@@ -165,7 +162,6 @@ class GuiBuildSettings(NToolDialog):
         self.optTabSelect.loadContent()
         self.optTabHeadings.loadContent()
         self.optTabFormatting.loadContent()
-        return
 
     ##
     #  Properties
@@ -190,7 +186,6 @@ class GuiBuildSettings(NToolDialog):
         self._saveSettings()
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -206,7 +201,6 @@ class GuiBuildSettings(NToolDialog):
         elif pageId >= self.OPT_FORMATTING:
             self.toolStack.setCurrentWidget(self.optTabFormatting)
             self.optTabFormatting.scrollToSection(pageId)
-        return
 
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
@@ -222,7 +216,6 @@ class GuiBuildSettings(NToolDialog):
         elif role == QtRoleReject:
             self._build.resetChangedState()
             self.close()
-        return
 
     ##
     #  Internal Functions
@@ -238,7 +231,6 @@ class GuiBuildSettings(NToolDialog):
             ).format(self._build.name)):
                 self._emitBuildData()
             self._build.resetChangedState()
-        return
 
     def _saveSettings(self) -> None:
         """Save the various user settings."""
@@ -250,20 +242,17 @@ class GuiBuildSettings(NToolDialog):
         pOptions.setValue("GuiBuildSettings", "treeWidth", treeWidth)
         pOptions.setValue("GuiBuildSettings", "filterWidth", filterWidth)
         pOptions.saveSettings()
-        return
 
     def _applyChanges(self) -> None:
         """Apply all settings changes to the build object."""
         self._build.setName(self.editBuildName.text())
         self.optTabHeadings.saveContent()
         self.optTabFormatting.saveContent()
-        return
 
     def _emitBuildData(self) -> None:
         """Assemble the build data and emit the signal."""
         self.newSettingsReady.emit(self._build)
         self._build.resetChangedState()
-        return
 
 
 class _FilterTab(NFixedPage):
@@ -382,13 +371,10 @@ class _FilterTab(NFixedPage):
 
         self.setCentralWidget(self.mainSplit)
 
-        return
-
     def loadContent(self) -> None:
         """Populate the widgets."""
         self._populateTree()
         self._populateFilters()
-        return
 
     def mainSplitSizes(self) -> tuple[int, int]:
         """Extract the sizes of the main splitter."""
@@ -409,7 +395,6 @@ class _FilterTab(NFixedPage):
         elif key.startswith("root:"):
             self._build.setAllowRoot(key[5:], state)
             self._populateTree()
-        return
 
     ##
     #  Internal Functions
@@ -453,8 +438,6 @@ class _FilterTab(NFixedPage):
 
         self._setTreeItemMode()
 
-        return
-
     def _populateFilters(self) -> None:
         """Populate the filter options switches."""
         self.filterOpt.clear()
@@ -489,8 +472,6 @@ class _FilterTab(NFixedPage):
                     default=self._build.isRootAllowed(tHandle)
                 )
 
-        return
-
     def _setSelectedMode(self, mode: int) -> None:
         """Set the mode for the selected items."""
         items = self.optTree.selectedItems()
@@ -511,8 +492,6 @@ class _FilterTab(NFixedPage):
 
         self._setTreeItemMode()
 
-        return
-
     def _setTreeItemMode(self) -> None:
         """Update the filtered mode icon on all items."""
         filtered = self._build.buildItemFilter(SHARED.project)
@@ -529,11 +508,10 @@ class _FilterTab(NFixedPage):
                 item.setToolTip(self.C_STATUS, self._trIncluded)
             else:
                 item.setIcon(self.C_STATUS, self._statusFlags[self.F_NONE])
-        return
 
     def _scanChildren(self, item: QTreeWidgetItem | None, items: list) -> list[QTreeWidgetItem]:
-        """This is a recursive function returning all items in a tree
-        starting at a given QTreeWidgetItem.
+        """Recursively return all items in a tree starting at a given
+        QTreeWidgetItem.
         """
         if isinstance(item, QTreeWidgetItem):
             items.append(item)
@@ -791,8 +769,6 @@ class _HeadingsTab(NScrollablePage):
 
         self.setCentralLayout(self.outerBox)
 
-        return
-
     def loadContent(self) -> None:
         """Populate the widgets."""
         def fmtBreak(text: str) -> str:
@@ -821,7 +797,6 @@ class _HeadingsTab(NScrollablePage):
         self.breakPart.setChecked(self._build.getBool("headings.breakPart"))
         self.breakChapter.setChecked(self._build.getBool("headings.breakChapter"))
         self.breakScene.setChecked(self._build.getBool("headings.breakScene"))
-        return
 
     def saveContent(self) -> None:
         """Save choices back into build object."""
@@ -841,7 +816,6 @@ class _HeadingsTab(NScrollablePage):
         self._build.setValue("headings.breakPart", self.breakPart.isChecked())
         self._build.setValue("headings.breakChapter", self.breakChapter.isChecked())
         self._build.setValue("headings.breakScene", self.breakScene.isChecked())
-        return
 
     ##
     #  Internal Functions
@@ -853,7 +827,6 @@ class _HeadingsTab(NScrollablePage):
             cursor = self.editTextBox.textCursor()
             cursor.insertText(text)
             self.editTextBox.setFocus()
-        return
 
     def _editHeading(self, heading: int) -> None:
         """Populate the form with a specific heading format."""
@@ -885,8 +858,6 @@ class _HeadingsTab(NScrollablePage):
 
         self.editTextBox.setPlainText(text.replace(nwUnicode.U_LBREAK, "\n"))
         self.lblEditForm.setText(self.tr("Editing: {0}").format(label))
-
-        return
 
     ##
     #  Private Slots
@@ -934,7 +905,6 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
         self._fmtSymbol.setForeground(syntax.head)
         self._fmtFormat = QTextCharFormat()
         self._fmtFormat.setForeground(syntax.emph)
-        return
 
     def highlightBlock(self, text: str) -> None:
         """Add syntax highlighting to the text block."""
@@ -947,7 +917,6 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
                 ddots = heading.find(":")
                 if ddots > 0:
                     self.setFormat(pos + ddots, 1, self._fmtSymbol)
-        return
 
 
 class _FormattingTab(NScrollableForm):
@@ -960,8 +929,6 @@ class _FormattingTab(NScrollableForm):
 
         self.setHelpTextStyle(SHARED.theme.helpText)
         self.buildForm()
-
-        return
 
     def buildForm(self) -> None:
         """Build the formatting form."""
@@ -1290,8 +1257,6 @@ class _FormattingTab(NScrollableForm):
         # Finalise
         self.finalise()
 
-        return
-
     def loadContent(self) -> None:
         """Populate the widgets."""
         # Text Content
@@ -1391,8 +1356,6 @@ class _FormattingTab(NScrollableForm):
         self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
         self.htmlPreserveTabs.setChecked(self._build.getBool("html.preserveTabs"))
 
-        return
-
     def saveContent(self) -> None:
         """Save choices back into build object."""
         # Text Content
@@ -1458,8 +1421,6 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
         self._build.setValue("html.preserveTabs", self.htmlPreserveTabs.isChecked())
 
-        return
-
     ##
     #  Private Slots
     ##
@@ -1472,11 +1433,10 @@ class _FormattingTab(NScrollableForm):
             self._textFont = fontMatcher(font)
             self.textFont.setText(describeFont(self._textFont))
             self.textFont.setCursorPosition(0)
-        return
 
     @pyqtSlot(int)
     def _changeUnit(self, index: int) -> None:
-        """The current unit change, so recalculate sizes."""
+        """Process current unit change to recalculate sizes."""
         newUnit = self.pageUnit.itemData(index)
         newScale = nwLabels.UNIT_SCALE.get(newUnit, 1.0)
         reScale = self._unitScale/newScale
@@ -1531,11 +1491,9 @@ class _FormattingTab(NScrollableForm):
         self._unitScale = newScale
         self._changePageSize(self.pageSize.currentIndex())
 
-        return
-
     @pyqtSlot(int)
     def _changePageSize(self, index: int) -> None:
-        """The page size has changed."""
+        """Process page size change."""
         w, h = nwLabels.PAPER_SIZE[self.pageSize.itemData(index)] if index >= 0 else (-1.0, -1.0)
         if w > 0.0 and h > 0.0:
             self.pageWidth.blockSignals(True)
@@ -1544,23 +1502,20 @@ class _FormattingTab(NScrollableForm):
             self.pageHeight.blockSignals(True)
             self.pageHeight.setValue(h/self._unitScale)
             self.pageHeight.blockSignals(False)
-        return
 
     @pyqtSlot()
     def _pageSizeValueChanged(self) -> None:
-        """The user has changed the page size spin boxes, so we flip
-        the page size box to Custom.
+        """Process that the user has changed the page size spin boxes,
+        so we flip the page size box to Custom.
         """
         index = self.pageSize.findData("Custom")
         if index >= 0:
             self.pageSize.setCurrentIndex(index)
-        return
 
     def _resetPageHeader(self) -> None:
         """Reset the ODT header format to default."""
         self.odtPageHeader.setText(nwHeadFmt.DOC_AUTO)
         self.odtPageHeader.setCursorPosition(0)
-        return
 
     ##
     #  Internal Functions
@@ -1573,4 +1528,3 @@ class _FormattingTab(NScrollableForm):
             current.append(keyword)
         verified = set(x for x in current if x in nwKeyWords.VALID_KEYS)
         self.ignoredKeywords.setText(", ".join(verified))
-        return

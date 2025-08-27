@@ -8,7 +8,7 @@ not yet have a qtbase_xx.qm file shipped with Qt.
 
 If a qtbase_xx.qm file already exists, do not add a translation for the
 entries generated from this file.
-"""
+"""  # noqa
 
 from PyQt6.QtCore import QT_TRANSLATE_NOOP
 

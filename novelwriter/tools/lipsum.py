@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiLipsum(NDialog):
+    """GUI: Lorem Ipsum Text Tool."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -111,11 +112,8 @@ class GuiLipsum(NDialog):
 
         logger.debug("Ready: GuiLipsum")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiLipsum")
-        return
 
     @property
     def lipsumText(self) -> str:
@@ -145,4 +143,3 @@ class GuiLipsum(NDialog):
         pCount = self.paraCount.value()
         self._lipsumText = "\n\n".join(lipsumText[0:pCount]) + "\n\n"
         self.close()
-        return

@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import argparse
@@ -25,7 +25,7 @@ import argparse
 
 def runPyinstaller() -> None:
     """Run the pyinstaller."""
-    import PyInstaller.__main__
+    import PyInstaller.__main__  # type: ignore
 
     build = ["novelWriter.py", "--clean", "--windowed", "--onedir", "--noconfirm"]
     build += ["--name", "novelwriter"]
@@ -35,10 +35,7 @@ def runPyinstaller() -> None:
     build += ["--add-data", "novelwriter/assets:assets"]
     PyInstaller.__main__.run(build)
 
-    return
-
 
 def main(args: argparse.Namespace) -> None:
     """Entry point function."""
     runPyinstaller()
-    return
