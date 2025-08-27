@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from math import ceil
@@ -37,7 +37,7 @@ from novelwriter.types import (
 
 
 class NProgressCircle(QProgressBar):
-    """Extension: Circular Progress Widget
+    """Extension: Circular Progress Widget.
 
     A custom widget that paints a circular progress indicator instead of
     a straight bar. It is also possible to set custom text for iṫ.
@@ -64,7 +64,6 @@ class NProgressCircle(QProgressBar):
         self.setSizePolicy(QtSizeFixed, QtSizeFixed)
         self.setFixedWidth(size)
         self.setFixedHeight(size)
-        return
 
     def setColors(
         self, back: QColor | None = None, track: QColor | None = None,
@@ -80,16 +79,14 @@ class NProgressCircle(QProgressBar):
             self._bPen = QPen(QBrush(track), self._point, QtSolidLine, QtRoundCap)
         if isinstance(text, QColor):
             self._tColor = text
-        return
 
     def setCentreText(self, text: str | None) -> None:
         """Replace the progress text with a custom string."""
         self._text = text
         self.setValue(self.value())  # Triggers a redraw
-        return
 
     def paintEvent(self, event: QPaintEvent) -> None:
-        """Custom painter for the progress bar."""
+        """Paint the progress bar."""
         progress = 100.0*self.value()/self.maximum()
         angle = ceil(16*3.6*progress)
         painter = QPainter(self)
@@ -103,21 +100,19 @@ class NProgressCircle(QProgressBar):
         painter.drawArc(self._cRect, 90*16, -angle)
         painter.setPen(self._tColor)
         painter.drawText(self._cRect, QtAlignCenter, self._text or f"{progress:.1f} %")
-        return
 
 
 class NProgressSimple(QProgressBar):
-    """Extension: Simple Progress Widget
+    """Extension: Simple Progress Widget.
 
     A custom widget that paints a plain bar with no other styling.
     """
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
-        return
 
     def paintEvent(self, event: QPaintEvent) -> None:
-        """Custom painter for the progress bar."""
+        """Paint the progress bar."""
         if (value := self.value()) > 0:
             progress = ceil(self.width()*float(value)/self.maximum())
             painter = QPainter(self)
@@ -125,4 +120,3 @@ class NProgressSimple(QProgressBar):
             painter.setPen(self.palette().highlight().color())
             painter.setBrush(self.palette().highlight())
             painter.drawRect(0, 0, progress, self.height())
-        return

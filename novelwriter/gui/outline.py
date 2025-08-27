@@ -24,7 +24,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import csv
@@ -58,6 +58,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiOutlineView(QWidget):
+    """GUI: Project Outline Panel."""
 
     loadDocumentTagRequest = pyqtSignal(str, Enum)
     openDocumentRequest = pyqtSignal(str, Enum, str, bool)
@@ -96,8 +97,6 @@ class GuiOutlineView(QWidget):
         # Function Mappings
         self.getSelectedHandle = self.outlineTree.getSelectedHandle
 
-        return
-
     ##
     #  Methods
     ##
@@ -109,24 +108,20 @@ class GuiOutlineView(QWidget):
         self.outlineTree.refreshTree(
             rootHandle=SHARED.project.data.getLastHandle("outline"), overRide=True
         )
-        return
 
     def initSettings(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
         self.outlineTree.initSettings()
         self.outlineData.initSettings()
-        return
 
     def refreshTree(self) -> None:
         """Refresh the current tree."""
         self.outlineTree.refreshTree(rootHandle=SHARED.project.data.getLastHandle("outline"))
-        return
 
     def clearOutline(self) -> None:
         """Clear project-related GUI content."""
         self.outlineData.clearDetails()
         self.outlineBar.setEnabled(False)
-        return
 
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
@@ -142,8 +137,6 @@ class GuiOutlineView(QWidget):
         self.outlineBar.setEnabled(True)
         self.outlineData.loadGuiSettings()
 
-        return
-
     def closeProjectTasks(self) -> None:
         """Run closing project tasks."""
         if self.outlineTree.wasRendered:
@@ -152,7 +145,6 @@ class GuiOutlineView(QWidget):
         self.outlineTree.closeProjectTasks()
         self.outlineData.updateClasses()
         self.clearOutline()
-        return
 
     def splitSizes(self) -> list[int]:
         """Get the sizes of the splitter widget."""
@@ -175,7 +167,6 @@ class GuiOutlineView(QWidget):
         """Handle tasks whenever a root folders changes."""
         self.outlineBar.populateNovelList()
         self.outlineData.updateClasses()
-        return
 
     ##
     #  Private Slots
@@ -188,23 +179,21 @@ class GuiOutlineView(QWidget):
         of columns has changed.
         """
         self.outlineBar.setColumnHiddenState(self.outlineTree.hiddenColumns)
-        return
 
     @pyqtSlot(str)
     def _tagClicked(self, link: str) -> None:
         """Capture the click of a tag in the details panel."""
         if link:
             self.loadDocumentTagRequest.emit(link, nwDocMode.VIEW)
-        return
 
     @pyqtSlot(str)
     def _rootItemChanged(self, tHandle: str) -> None:
         """Handle root novel changed or needs to be refreshed."""
         self.outlineTree.refreshTree(rootHandle=(tHandle or None), overRide=True)
-        return
 
 
 class GuiOutlineToolBar(QToolBar):
+    """GUI: Project Outline Panel ToolBar."""
 
     loadNovelRootRequest = pyqtSignal(str)
     outlineExportRequest = pyqtSignal()
@@ -263,8 +252,6 @@ class GuiOutlineToolBar(QToolBar):
 
         logger.debug("Ready: GuiOutlineToolBar")
 
-        return
-
     ##
     #  Methods
     ##
@@ -278,22 +265,18 @@ class GuiOutlineToolBar(QToolBar):
         self.tbColumns.setIcon(SHARED.theme.getIcon("more_vertical"))
         self.tbColumns.setStyleSheet("QToolButton::menu-indicator {image: none;}")
         self.novelLabel.setTextColors(color=self.palette().windowText().color())
-        return
 
     def populateNovelList(self) -> None:
         """Reload the content of the novel list."""
         self.novelValue.refreshNovelList()
-        return
 
     def setCurrentRoot(self, rootHandle: str | None) -> None:
         """Set the current active root handle."""
         self.novelValue.setHandle(rootHandle)
-        return
 
     def setColumnHiddenState(self, hiddenState: dict[nwOutline, bool]) -> None:
         """Forward the change of column hidden states to the menu."""
         self.mColumns.setHiddenState(hiddenState)
-        return
 
     ##
     #  Private Slots
@@ -303,22 +286,20 @@ class GuiOutlineToolBar(QToolBar):
     def _novelValueChanged(self, tHandle: str) -> None:
         """Emit a signal containing the handle of the selected item."""
         self.loadNovelRootRequest.emit(tHandle)
-        return
 
     @pyqtSlot()
     def _refreshRequested(self) -> None:
         """Emit a signal containing the handle of the selected item."""
         self.loadNovelRootRequest.emit(self.novelValue.handle)
-        return
 
     @pyqtSlot()
     def _exportRequested(self) -> None:
         """Emit a signal that an export of the outline was requested."""
         self.outlineExportRequest.emit()
-        return
 
 
 class GuiOutlineTree(QTreeWidget):
+    """GUI: Project Outline Panel Tree."""
 
     DEF_WIDTH: Final[dict[nwOutline, int]] = {
         nwOutline.TITLE:   200,
@@ -422,8 +403,6 @@ class GuiOutlineTree(QTreeWidget):
 
         logger.debug("Ready: GuiOutlineTree")
 
-        return
-
     ##
     #  Properties
     ##
@@ -451,7 +430,6 @@ class GuiOutlineTree(QTreeWidget):
             self.setHorizontalScrollBarPolicy(QtScrollAlwaysOff)
         else:
             self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
-        return
 
     def clearContent(self) -> None:
         """Clear the tree and header and set the default values for the
@@ -474,8 +452,6 @@ class GuiOutlineTree(QTreeWidget):
 
         self._treeNCols = len(self._treeOrder)
 
-        return
-
     def updateTheme(self) -> None:
         """Update theme elements."""
         iType = nwItemType.FILE
@@ -488,15 +464,14 @@ class GuiOutlineTree(QTreeWidget):
             "H3": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H3"),
             "H4": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H4"),
         }
-        return
 
     def refreshTree(
         self, rootHandle: str | None = None,
         overRide: bool = False, novelChanged: bool = False
     ) -> None:
-        """Called whenever the Outline tab is activated and controls
-        what data to load, and if necessary, force a rebuild of the
-        tree.
+        """Refresh the outline tree. Called whenever the Outline tab is
+        activated and controls what data to load, and if necessary,
+        force a rebuild of the tree.
         """
         # If it's the first time, we always build
         if self._firstView or (self._firstView and overRide):
@@ -518,11 +493,10 @@ class GuiOutlineTree(QTreeWidget):
         return
 
     def closeProjectTasks(self) -> None:
-        """Called before a project is closed."""
+        """Call before a project is closed."""
         self._saveHeaderState()
         self.clearContent()
         self._firstView = True
-        return
 
     def getSelectedHandle(self) -> tuple[str | None, str | None]:
         """Get the currently selected handle. If multiple items are
@@ -546,7 +520,6 @@ class GuiOutlineTree(QTreeWidget):
         if hItem in self._colIdx:
             self.setColumnHidden(self._colIdx[hItem], not isChecked)
             self._saveHeaderState()
-        return
 
     @pyqtSlot()
     def exportOutline(self) -> None:
@@ -562,7 +535,6 @@ class GuiOutlineTree(QTreeWidget):
                 writer.writerows(
                     self._dumpNovelData(self.outlineView.outlineBar.novelValue.handle)
                 )
-        return
 
     ##
     #  Private Slots
@@ -577,7 +549,6 @@ class GuiOutlineTree(QTreeWidget):
         tHandle, sTitle = self.getSelectedHandle()
         if tHandle:
             self.outlineView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "", True)
-        return
 
     @pyqtSlot()
     def _onItemSelectionChanged(self) -> None:
@@ -588,7 +559,6 @@ class GuiOutlineTree(QTreeWidget):
             tHandle = items[0].data(self._colIdx[nwOutline.TITLE], self.D_HANDLE)
             sTitle = items[0].data(self._colIdx[nwOutline.TITLE], self.D_TITLE)
             self.activeItemChanged.emit(tHandle, sTitle)
-        return
 
     @pyqtSlot(int, int, int)
     def _columnMoved(self, logIdx: int, oldVisualIdx: int, newVisualIdx: int) -> None:
@@ -597,7 +567,6 @@ class GuiOutlineTree(QTreeWidget):
         """
         self._treeOrder.insert(newVisualIdx, self._treeOrder.pop(oldVisualIdx))
         self._saveHeaderState()
-        return
 
     ##
     #  Internal Functions
@@ -637,8 +606,6 @@ class GuiOutlineTree(QTreeWidget):
 
         self.hiddenStateChanged.emit()
 
-        return
-
     def _saveHeaderState(self) -> None:
         """Save the state of the main tree header, that is, column
         order, column width and column hidden state. We don't want to
@@ -661,7 +628,6 @@ class GuiOutlineTree(QTreeWidget):
             pOptions = SHARED.project.options
             pOptions.setValue("GuiOutline", "columnState", colState)
             pOptions.saveSettings()
-        return
 
     def _populateTree(self, rootHandle: str | None) -> None:
         """Build the tree based on the project index, and the header
@@ -746,8 +712,6 @@ class GuiOutlineTree(QTreeWidget):
         self._lastBuild = time()
         logger.debug("Project outline built in %.3f ms", 1000.0*(time() - tStart))
 
-        return
-
     def _dumpNovelData(self, rootHandle: str | None) -> list[list[str | int]]:
         """Dump all novel data into a table."""
         sLabel = SHARED.project.localLookup("Story Structure")
@@ -821,6 +785,7 @@ class GuiOutlineTree(QTreeWidget):
 
 
 class GuiOutlineHeaderMenu(QMenu):
+    """GUI: Project Outline Panel Header Selection Menu."""
 
     columnToggled = pyqtSignal(bool, Enum)
 
@@ -844,8 +809,6 @@ class GuiOutlineHeaderMenu(QMenu):
             )
             self.addAction(self.actionMap[hItem])
 
-        return
-
     def setHiddenState(self, hiddenState: dict[nwOutline, bool]) -> None:
         """Overwrite the checked state of the columns as the inverse of
         the hidden state. Skip the TITLE column as it cannot be hidden.
@@ -859,10 +822,9 @@ class GuiOutlineHeaderMenu(QMenu):
 
         self.acceptToggle = True
 
-        return
-
 
 class GuiOutlineDetails(QScrollArea):
+    """GUI: Project Outline Panel Details View."""
 
     LVL_MAP: Final[dict[str, str]] = {
         "H1": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Title"),
@@ -1007,8 +969,6 @@ class GuiOutlineDetails(QScrollArea):
 
         logger.debug("Ready: GuiOutlineDetails")
 
-        return
-
     def initSettings(self) -> None:
         """Set or update outline settings."""
         if CONFIG.hideVScroll:
@@ -1020,7 +980,6 @@ class GuiOutlineDetails(QScrollArea):
         else:
             self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
         self.updateClasses()
-        return
 
     def loadGuiSettings(self) -> None:
         """Run open project tasks."""
@@ -1031,7 +990,6 @@ class GuiOutlineDetails(QScrollArea):
             pOptions.getInt("GuiOutlineDetails", "detailsWidth", width//3),
             pOptions.getInt("GuiOutlineDetails", "tagsWidth", 2*width//3),
         ])
-        return
 
     def saveGuiSettings(self) -> None:
         """Run close project tasks."""
@@ -1040,7 +998,6 @@ class GuiOutlineDetails(QScrollArea):
         pOptions = SHARED.project.options
         pOptions.setValue("GuiOutlineDetails", "detailsWidth", mainSplit[0])
         pOptions.setValue("GuiOutlineDetails", "tagsWidth", mainSplit[1])
-        return
 
     def clearDetails(self) -> None:
         """Clear all the data labels."""
@@ -1057,7 +1014,6 @@ class GuiOutlineDetails(QScrollArea):
             value.clear()
 
         self.updateClasses()
-        return
 
     ##
     #  Slots
@@ -1090,8 +1046,6 @@ class GuiOutlineDetails(QScrollArea):
             for key, (_, value) in self.tagValues.items():
                 value.setText(self._formatTags(novRefs, key))
 
-        return
-
     @pyqtSlot()
     def updateClasses(self) -> None:
         """Update the visibility status of class details."""
@@ -1102,7 +1056,6 @@ class GuiOutlineDetails(QScrollArea):
                 label, value = self.tagValues[key]
                 label.setVisible(visible)
                 value.setVisible(visible)
-        return
 
     @staticmethod
     def _formatTags(refs: dict[str, list[str]], key: str) -> str:

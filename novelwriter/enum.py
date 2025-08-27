@@ -20,12 +20,13 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 
 from enum import Enum
 
 
 class nwItemType(Enum):
+    """Enum: Project Item Types."""
 
     NO_TYPE = 0
     ROOT    = 1
@@ -34,6 +35,7 @@ class nwItemType(Enum):
 
 
 class nwItemClass(Enum):
+    """Enum: Project Item Classes."""
 
     NO_CLASS  = 0
     NOVEL     = 1
@@ -50,6 +52,7 @@ class nwItemClass(Enum):
 
 
 class nwItemLayout(Enum):
+    """A project item's layout."""
 
     NO_LAYOUT = 0
     DOCUMENT  = 1
@@ -57,6 +60,7 @@ class nwItemLayout(Enum):
 
 
 class nwComment(Enum):
+    """Types of text comments."""
 
     PLAIN    = 0
     IGNORE   = 1
@@ -69,6 +73,7 @@ class nwComment(Enum):
 
 
 class nwChange(Enum):
+    """Change request modes."""
 
     CREATE = 0
     UPDATE = 1
@@ -76,12 +81,14 @@ class nwChange(Enum):
 
 
 class nwDocMode(Enum):
+    """Document open modes."""
 
     VIEW = 0
     EDIT = 1
 
 
 class nwDocAction(Enum):
+    """Document actions."""
 
     NO_ACTION = 0
     UNDO      = 1
@@ -125,6 +132,7 @@ class nwDocAction(Enum):
 
 
 class nwDocInsert(Enum):
+    """Document insert actions."""
 
     NO_INSERT = 0
     QUOTE_LS  = 1
@@ -142,6 +150,7 @@ class nwDocInsert(Enum):
 
 
 class nwView(Enum):
+    """Main GUI view modes."""
 
     EDITOR  = 0
     PROJECT = 1
@@ -151,6 +160,7 @@ class nwView(Enum):
 
 
 class nwFocus(Enum):
+    """Main GUI panel focus."""
 
     TREE     = 1
     DOCUMENT = 2
@@ -158,6 +168,7 @@ class nwFocus(Enum):
 
 
 class nwTheme(Enum):
+    """GUI theme colour modes."""
 
     AUTO  = 0
     LIGHT = 1
@@ -165,6 +176,7 @@ class nwTheme(Enum):
 
 
 class nwOutline(Enum):
+    """Enum: Project Outline Columns."""
 
     TITLE   = 0
     LEVEL   = 1
@@ -189,6 +201,7 @@ class nwOutline(Enum):
 
 
 class nwNovelExtra(Enum):
+    """Enum: Novel View Extra Columns."""
 
     HIDDEN = 0
     POV    = 1
@@ -197,6 +210,7 @@ class nwNovelExtra(Enum):
 
 
 class nwBuildFmt(Enum):
+    """Enum: Manuscript Document Formats."""
 
     ODT    = 0
     FODT   = 1
@@ -211,6 +225,7 @@ class nwBuildFmt(Enum):
 
 
 class nwStatusShape(Enum):
+    """Enum: Status/Importance Icon Shapes."""
 
     SQUARE   = 0
     TRIANGLE = 1

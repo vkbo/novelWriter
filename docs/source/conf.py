@@ -1,7 +1,7 @@
 """
 Configuration file for the Sphinx documentation builder.
 Documentation: http://www.sphinx-doc.org/en/master/config
-"""
+"""  # noqa
 
 # -- Imports -----------------------------------------------------------------
 

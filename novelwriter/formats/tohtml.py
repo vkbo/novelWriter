@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -77,7 +77,7 @@ HTML_NONE = (0, "")
 
 
 class ToHtml(Tokenizer):
-    """Core: HTML Document Writer
+    """Core: HTML Document Writer.
 
     Extend the Tokenizer class to writer HTML output. This class is
     also used by the Document Viewer, and Manuscript Build Preview.
@@ -90,7 +90,6 @@ class ToHtml(Tokenizer):
         self._usedNotes: dict[str, int] = {}
         self._usedFields: list[tuple[int, str]] = []
         self.setReplaceUnicode(False)
-        return
 
     ##
     #  Setters
@@ -101,7 +100,6 @@ class ToHtml(Tokenizer):
         class tags.
         """
         self._cssStyles = cssStyles
-        return
 
     def setReplaceUnicode(self, doReplace: bool) -> None:
         """Set the translation map to either minimal or full unicode for
@@ -114,7 +112,6 @@ class ToHtml(Tokenizer):
         if doReplace:
             # Extend to all relevant Unicode characters
             self._trMap.update(str.maketrans(nwHtmlUnicode.U_TO_H))
-        return
 
     ##
     #  Class Methods
@@ -130,7 +127,6 @@ class ToHtml(Tokenizer):
         """
         super().doPreProcessing()
         self._text = self._text.translate(self._trMap)
-        return
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into an HTML document."""
@@ -237,8 +233,6 @@ class ToHtml(Tokenizer):
 
         self._pages.append("".join(lines))
 
-        return
-
     def closeDocument(self) -> None:
         """Run close document tasks."""
         # Replace fields if there are stats available
@@ -264,8 +258,6 @@ class ToHtml(Tokenizer):
             lines.append("</ol>\n")
 
             self._pages.append("".join(lines))
-
-        return
 
     def saveDocument(self, path: Path) -> None:
         """Save the data to an HTML file."""
@@ -309,14 +301,11 @@ class ToHtml(Tokenizer):
 
         logger.info("Wrote file: %s", path)
 
-        return
-
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = "&nbsp;") -> None:
         """Replace tabs with spaces in the html."""
         tabSpace = spaceChar*nSpaces
         pages = [aLine.replace("\t", tabSpace) for aLine in self._pages]
         self._pages = pages
-        return
 
     def getStyleSheet(self) -> list[str]:
         """Generate a stylesheet for the current settings."""

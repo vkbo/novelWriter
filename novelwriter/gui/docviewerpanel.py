@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -49,6 +49,10 @@ logger = logging.getLogger(__name__)
 
 
 class GuiDocViewerPanel(QWidget):
+    """GUI: Document Viewer Panel.
+
+    The panel of project meta data below the viewer.
+    """
 
     openDocumentRequest = pyqtSignal(str, Enum, str, bool)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
@@ -96,8 +100,6 @@ class GuiDocViewerPanel(QWidget):
 
         logger.debug("Ready: GuiDocViewerPanel")
 
-        return
-
     ##
     #  Methods
     ##
@@ -113,7 +115,6 @@ class GuiDocViewerPanel(QWidget):
             for tab in self.kwTabs.values():
                 tab.updateTheme()
             self._loadAllTags()
-        return
 
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
@@ -124,7 +125,6 @@ class GuiDocViewerPanel(QWidget):
             for key, value in colWidths.items():
                 if key in self.kwTabs and isinstance(value, list):
                     self.kwTabs[key].setColumnWidths(value)
-        return
 
     def closeProjectTasks(self) -> None:
         """Run close project tasks."""
@@ -133,7 +133,6 @@ class GuiDocViewerPanel(QWidget):
         hideInactive = self.aInactive.isChecked()
         SHARED.project.options.setValue("GuiDocViewerPanel", "colWidths", colWidths)
         SHARED.project.options.setValue("GuiDocViewerPanel", "hideInactive", hideInactive)
-        return
 
     ##
     #  Public Slots
@@ -145,7 +144,6 @@ class GuiDocViewerPanel(QWidget):
         self.tabBackRefs.clearContent()
         for cTab in self.kwTabs.values():
             cTab.clearContent()
-        return
 
     @pyqtSlot()
     def indexHasAppeared(self) -> None:
@@ -153,7 +151,6 @@ class GuiDocViewerPanel(QWidget):
         self._loadAllTags()
         self._updateTabVisibility()
         self.updateHandle(self._lastHandle)
-        return
 
     @pyqtSlot(str, Enum)
     def onProjectItemChanged(self, tHandle: str, change: nwChange) -> None:
@@ -168,14 +165,12 @@ class GuiDocViewerPanel(QWidget):
                 else:
                     self.kwTabs[tClass].removeEntry(key)
         self._updateTabVisibility()
-        return
 
     @pyqtSlot(str)
     def updateHandle(self, tHandle: str | None) -> None:
         """Update the document handle."""
         self._lastHandle = tHandle
         self.tabBackRefs.refreshContent(tHandle or None)
-        return
 
     @pyqtSlot(list, list)
     def updateChangedTags(self, updated: list[str], deleted: list[str]) -> None:
@@ -191,14 +186,12 @@ class GuiDocViewerPanel(QWidget):
             else:
                 logger.warning("Could not remove tag '%s' from view panel", key)
         self._updateTabVisibility()
-        return
 
     @pyqtSlot(str)
     def updateStatusLabels(self, kind: str) -> None:
         """Update the importance labels."""
         if kind == "i":
             self._loadAllTags()
-        return
 
     ##
     #  Private Slots
@@ -212,7 +205,6 @@ class GuiDocViewerPanel(QWidget):
             cTab.clearContent()
         self._loadAllTags()
         self._updateTabVisibility()
-        return
 
     ##
     #  Internal Functions
@@ -222,7 +214,6 @@ class GuiDocViewerPanel(QWidget):
         """Hide class tabs with no content."""
         for tClass, cTab in self.kwTabs.items():
             self.mainTabs.setTabVisible(self.idTabs[tClass], cTab.countEntries() > 0)
-        return
 
     def _loadAllTags(self) -> None:
         """Load all tags into the tabs."""
@@ -230,7 +221,6 @@ class GuiDocViewerPanel(QWidget):
         for key, name, tClass, iItem, hItem in data:
             if tClass in self.kwTabs and iItem and hItem:
                 self.kwTabs[tClass].addUpdateEntry(key, name, iItem, hItem)
-        return
 
 
 class _ViewPanelBackRefs(QTreeWidget):
@@ -278,8 +268,6 @@ class _ViewPanelBackRefs(QTreeWidget):
         self.clicked.connect(self._treeItemClicked)
         self.doubleClicked.connect(self._treeItemDoubleClicked)
 
-        return
-
     def updateTheme(self) -> None:
         """Update theme elements."""
         self._editIcon = SHARED.theme.getIcon("edit", "green")
@@ -288,13 +276,11 @@ class _ViewPanelBackRefs(QTreeWidget):
             if item := self.topLevelItem(i):
                 item.setIcon(self.C_EDIT, self._editIcon)
                 item.setIcon(self.C_VIEW, self._viewIcon)
-        return
 
     def clearContent(self) -> None:
         """Clear the widget."""
         self.clear()
         self._treeMap = {}
-        return
 
     def refreshContent(self, dHandle: str | None) -> None:
         """Update the content."""
@@ -303,7 +289,6 @@ class _ViewPanelBackRefs(QTreeWidget):
             refs = SHARED.project.index.getBackReferenceList(dHandle)
             for tHandle, (sTitle, hItem) in refs.items():
                 self._setTreeItemValues(tHandle, sTitle, hItem)
-        return
 
     def refreshDocument(self, tHandle: str) -> None:
         """Refresh document meta data."""
@@ -311,7 +296,6 @@ class _ViewPanelBackRefs(QTreeWidget):
             for sTitle, hItem in iItem.items():
                 if f"{tHandle}:{sTitle}" in self._treeMap:
                     self._setTreeItemValues(tHandle, sTitle, hItem)
-        return
 
     ##
     #  Private Slots
@@ -325,7 +309,6 @@ class _ViewPanelBackRefs(QTreeWidget):
             self._parent.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "", True)
         elif index.column() == self.C_VIEW:
             self._parent.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", True)
-        return
 
     @pyqtSlot("QModelIndex")
     def _treeItemDoubleClicked(self, index: QModelIndex) -> None:
@@ -333,7 +316,6 @@ class _ViewPanelBackRefs(QTreeWidget):
         tHandle = index.siblingAtColumn(self.C_DATA).data(self.D_HANDLE)
         if index.column() not in (self.C_EDIT, self.C_VIEW):
             self._parent.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", True)
-        return
 
     ##
     #  Internal Functions
@@ -361,8 +343,6 @@ class _ViewPanelBackRefs(QTreeWidget):
             if tKey not in self._treeMap:
                 self.addTopLevelItem(trItem)
                 self._treeMap[tKey] = trItem
-
-        return
 
 
 class _ViewPanelKeyWords(QTreeWidget):
@@ -418,14 +398,11 @@ class _ViewPanelKeyWords(QTreeWidget):
         self.clicked.connect(self._treeItemClicked)
         self.doubleClicked.connect(self._treeItemDoubleClicked)
 
-        return
-
     def updateTheme(self) -> None:
         """Update theme elements."""
         self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[self._class], "root")
         self._editIcon = SHARED.theme.getIcon("edit", "green")
         self._viewIcon = SHARED.theme.getIcon("view", "blue")
-        return
 
     def countEntries(self) -> int:
         """Return the number of items in the list."""
@@ -435,7 +412,6 @@ class _ViewPanelKeyWords(QTreeWidget):
         """Clear the list."""
         self._treeMap = {}
         self.clear()
-        return
 
     def addUpdateEntry(self, tag: str, name: str, iItem: IndexNode, hItem: IndexHeading) -> None:
         """Add a new entry, or update an existing one."""
@@ -470,8 +446,6 @@ class _ViewPanelKeyWords(QTreeWidget):
             self.addTopLevelItem(trItem)
             self._treeMap[tag] = trItem
 
-        return
-
     def removeEntry(self, tag: str) -> bool:
         """Remove a tag from the list."""
         if tag in self._treeMap:
@@ -487,7 +461,6 @@ class _ViewPanelKeyWords(QTreeWidget):
             self.setColumnWidth(self.C_IMPORT, checkInt(widths[1], 100))
             self.setColumnWidth(self.C_DOC,    checkInt(widths[2], 100))
             self.setColumnWidth(self.C_TITLE,  checkInt(widths[3], 100))
-        return
 
     def getColumnWidths(self) -> list[int]:
         """Get the widths of the user-adjustable columns."""
@@ -510,7 +483,6 @@ class _ViewPanelKeyWords(QTreeWidget):
             self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.EDIT)
         elif index.column() == self.C_VIEW:
             self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
-        return
 
     @pyqtSlot("QModelIndex")
     def _treeItemDoubleClicked(self, index: QModelIndex) -> None:
@@ -518,4 +490,3 @@ class _ViewPanelKeyWords(QTreeWidget):
         tag = index.siblingAtColumn(self.C_DATA).data(self.D_TAG)
         if index.column() not in (self.C_EDIT, self.C_VIEW):
             self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
-        return

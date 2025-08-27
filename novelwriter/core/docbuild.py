@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -53,7 +53,7 @@ logger = logging.getLogger(__name__)
 
 
 class NWBuildDocument:
-    """Core: Manuscript Document Build Class
+    """Core: Manuscript Document Build Class.
 
     This is the core tool that assembles a project and outputs a
     manuscript, based on a build definition object (BuildSettings).
@@ -72,7 +72,6 @@ class NWBuildDocument:
         self._cache = None
         self._count = False
         self._outline = False
-        return
 
     ##
     #  Properties
@@ -106,7 +105,6 @@ class NWBuildDocument:
     def addDocument(self, tHandle: str) -> None:
         """Add a document to the build queue manually."""
         self._queue.append(tHandle)
-        return
 
     def queueAll(self) -> None:
         """Queue all document as defined by the build settings."""
@@ -115,7 +113,6 @@ class NWBuildDocument:
         for item in self._project.tree:
             if filtered.get(item.itemHandle, False):
                 self._queue.append(item.itemHandle)
-        return
 
     def iterBuildPreview(self, newPage: bool) -> Iterable[tuple[int, bool]]:
         """Build a preview QTextDocument."""
@@ -131,7 +128,7 @@ class NWBuildDocument:
         return
 
     def iterBuildDocument(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:
-        """Wrapper for builders based on format."""
+        """Select a builder based on format."""
         self._error = None
         self._cache = None
 
@@ -341,11 +338,9 @@ class NWBuildDocument:
                 scale*self._build.getFloat("format.rightMargin"),
             )
 
-        filtered = self._build.buildItemFilter(
+        return self._build.buildItemFilter(
             self._project, withRoots=self._build.getBool("text.addNoteHeadings")
         )
-
-        return filtered
 
     def _doBuild(self, bldObj: Tokenizer, tHandle: str, convert: bool = True) -> bool:
         """Build a single document and add it to the build object."""

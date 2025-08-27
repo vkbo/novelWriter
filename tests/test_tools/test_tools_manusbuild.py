@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from pathlib import Path
@@ -143,7 +143,6 @@ def testToolManuscriptBuild_Main(
     def mockOpenUrl(url: QUrl) -> None:
         nonlocal lastUrl
         lastUrl = url.toString()
-        return
 
     with monkeypatch.context() as mp:
         mp.setattr(QDesktopServices, "openUrl", mockOpenUrl)

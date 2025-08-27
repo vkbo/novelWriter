@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -70,8 +70,6 @@ def resetConfigVars():
     CONFIG.emphLabels = True
     CONFIG.lineHighlight = True
 
-    return
-
 
 ##
 #  Auto Fixtures
@@ -88,7 +86,6 @@ def sessionFixture():
     (_TMP_ROOT / "manual.pdf").touch()
     (_SRC_ROOT / "novelwriter" / "assets"/ "manual.pdf").touch()
     (_SRC_ROOT / "novelwriter" / "assets"/ "manual_fr.pdf").touch()
-    return
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -106,8 +103,6 @@ def functionFixture(qtbot):
     CONFIG.initConfig(confPath=_TMP_CONF, dataPath=_TMP_CONF)
     resetConfigVars()
     logging.getLogger("novelwriter").setLevel(logging.INFO)
-
-    return
 
 
 ##
@@ -251,13 +246,11 @@ def prjLipsum():
     if dstDir.exists():
         shutil.rmtree(dstDir)
 
-    return
-
 
 @pytest.fixture(scope="session")
 def ipsumText():
     """Return five paragraphs of Lorem Ipsum text."""
-    thatIpsum = [(
+    return [(
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc maximus justo non dictum co"
         "mmodo. Curabitur lacinia tempor orci vel luctus. Phasellus porta metus eu massa luctus, e"
         "get euismod risus rhoncus. Vestibulum sed arcu nisi. Maecenas pretium facilisis velit, ve"
@@ -305,4 +298,3 @@ def ipsumText():
         " a nisl. Etiam eget tristique dui. Nulla sed mi finibus, venenatis tellus non, maximus en"
         "im."
     )]
-    return thatIpsum

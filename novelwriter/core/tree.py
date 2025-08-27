@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -50,7 +50,7 @@ MAX_DEPTH = 999  # Cap of tree traversing for loops (recursion limit)
 
 
 class NWTree:
-    """Core: Project Tree Data Class
+    """Core: Project Tree Data Class.
 
     Only one instance of this class should exist in the project class.
     This class holds all the project items of the project as instances
@@ -71,18 +71,16 @@ class NWTree:
         self._trash = None
         self._ready = False
         logger.debug("Ready: NWTree")
-        return
 
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: NWTree")
-        return
 
     def __len__(self) -> int:
-        """The number of items in the project."""
+        """Return the number of items in the project."""
         return len(self._items)
 
     def __bool__(self) -> bool:
-        """True if there are any items in the project."""
+        """Return True if there are any items in the project."""
         return bool(self._items)
 
     def __getitem__(self, tHandle: str | None) -> NWItem | None:
@@ -95,7 +93,7 @@ class NWTree:
         return None
 
     def __contains__(self, tHandle: str) -> bool:
-        """Checks if a handle exists in the tree."""
+        """Check if a handle exists in the tree."""
         return tHandle in self._items
 
     def __iter__(self) -> Iterator[NWItem]:
@@ -142,7 +140,6 @@ class NWTree:
         self._trash = None
         oldModel.deleteLater()
         del oldModel
-        return
 
     def add(self, item: NWItem, pos: int = -1) -> bool:
         """Add a project item into the project tree."""
@@ -260,8 +257,6 @@ class NWTree:
         self._model.endInsertRows()
         self._model.layoutChanged.emit()
 
-        return
-
     def pickParent(self, sNode: ProjectNode, hLevel: int, isNote: bool) -> tuple[str | None, int]:
         """Pick an appropriate parent handle for adding a new item."""
         if sNode.item.isFolderType() or sNode.item.isRootType():
@@ -299,7 +294,6 @@ class NWTree:
                 indexE = self._model.indexFromNode(node, 3)
                 self._model.dataChanged.emit(indexS, indexE)
                 self._itemChange(node.item, nwChange.UPDATE)
-        return
 
     def refreshAllItems(self) -> None:
         """Refresh all items in the tree."""
@@ -309,13 +303,11 @@ class NWTree:
         self._model.root.refresh()
         self._model.root.updateCount(propagate=False)
         self._model.layoutChanged.emit()
-        return
 
     def novelStructureChanged(self, tHandle: str) -> None:
         """Emit a novel structure change signal."""
         if self._ready:
             SHARED.novelStructureChanged.emit(tHandle)
-        return
 
     def checkConsistency(self, prefix: str) -> tuple[int, int]:
         """Check the project tree consistency. Also check the content
@@ -496,7 +488,6 @@ class NWTree:
         SHARED.emitProjectItemChanged(self._project, tHandle, change)
         if item.isRootType():
             SHARED.emitRootFolderChanged(self._project, tHandle, change)
-        return
 
     def _getTrashNode(self) -> ProjectNode | None:
         """Get the trash node. If it doesn't exist, create it."""

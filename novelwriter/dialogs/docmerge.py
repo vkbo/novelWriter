@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiDocMerge(NDialog):
+    """GUI: Document Merge Tool."""
 
     D_HANDLE = QtUserRole
 
@@ -110,11 +111,8 @@ class GuiDocMerge(NDialog):
 
         logger.debug("Ready: GuiDocMerge")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiDocMerge")
-        return
 
     def data(self) -> dict:
         """Return the user's choices."""
@@ -150,7 +148,6 @@ class GuiDocMerge(NDialog):
         if sHandle := self._data.get("sHandle"):
             itemList = self._data.get("origItems", [])
             self._loadContent(sHandle, itemList)
-        return
 
     ##
     #  Internal Functions
@@ -170,4 +167,3 @@ class GuiDocMerge(NDialog):
                 item.setData(self.D_HANDLE, tHandle)
                 item.setCheckState(Qt.CheckState.Checked)
                 self.listBox.addItem(item)
-        return

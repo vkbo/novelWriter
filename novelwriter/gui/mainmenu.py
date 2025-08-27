@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -82,8 +82,6 @@ class GuiMainMenu(QMenuBar):
 
         logger.debug("Ready: GuiMainMenu")
 
-        return
-
     ##
     #  Public Slots
     ##
@@ -92,7 +90,6 @@ class GuiMainMenu(QMenuBar):
     def setSpellCheckState(self, state: bool) -> None:
         """Forward spell check check state to its action."""
         self.aSpellCheck.setChecked(state)
-        return
 
     ##
     #  Private Slots
@@ -105,21 +102,18 @@ class GuiMainMenu(QMenuBar):
         decision, just pass a None to the function and let it decide.
         """
         self.mainGui.docEditor.toggleSpellCheck(None)
-        return
 
     @pyqtSlot()
     def _openUserManualFile(self) -> None:
         """Open the documentation in PDF format."""
         if isinstance(CONFIG.pdfDocs, Path):
             openExternalPath(CONFIG.pdfDocs)
-        return
 
     @pyqtSlot(str)
     def _changeSpelling(self, language: str) -> None:
         """Change the spell check language."""
         SHARED.project.data.setSpellLang(language)
         SHARED.updateSpellCheckLanguage()
-        return
 
     ##
     #  Internal Functions
@@ -188,8 +182,6 @@ class GuiMainMenu(QMenuBar):
         self.aExitNW.triggered.connect(qtLambda(self.mainGui.closeMain))
         self.mainGui.addAction(self.aExitNW)
 
-        return
-
     def _buildDocumentMenu(self) -> None:
         """Assemble the Document menu."""
         # Document
@@ -235,8 +227,6 @@ class GuiMainMenu(QMenuBar):
         # Document > Import From File
         self.aImportFile = qtAddAction(self.docuMenu, self.tr("Import Text from File"))
         self.aImportFile.triggered.connect(qtLambda(self.mainGui.importDocument))
-
-        return
 
     def _buildEditMenu(self) -> None:
         """Assemble the Edit menu."""
@@ -305,8 +295,6 @@ class GuiMainMenu(QMenuBar):
         )
         self.mainGui.addAction(self.aSelectPar)
 
-        return
-
     def _buildViewMenu(self) -> None:
         """Assemble the View menu."""
         # View
@@ -366,8 +354,6 @@ class GuiMainMenu(QMenuBar):
         self.aFullScreen.setShortcut("F11")
         self.aFullScreen.triggered.connect(self.mainGui.toggleFullScreenMode)
         self.mainGui.addAction(self.aFullScreen)
-
-        return
 
     def _buildInsertMenu(self) -> None:
         """Assemble the Insert menu."""
@@ -646,8 +632,6 @@ class GuiMainMenu(QMenuBar):
             lambda: self.requestDocInsert.emit(nwDocInsert.FOOTNOTE)
         )
 
-        return
-
     def _buildFormatMenu(self) -> None:
         """Assemble the Format menu."""
         # Format
@@ -901,8 +885,6 @@ class GuiMainMenu(QMenuBar):
             lambda: self.requestDocAction.emit(nwDocAction.RM_BREAKS)
         )
 
-        return
-
     def _buildSearchMenu(self) -> None:
         """Assemble the Search menu."""
         # Search
@@ -947,8 +929,6 @@ class GuiMainMenu(QMenuBar):
         self.aFindProj = qtAddAction(self.srcMenu, self.tr("Find in Project"))
         self.aFindProj.setShortcut("Ctrl+Shift+F")
         self.aFindProj.triggered.connect(qtLambda(self.requestViewChange.emit, nwView.SEARCH))
-
-        return
 
     def _buildToolsMenu(self) -> None:
         """Assemble the Tools menu."""
@@ -1019,8 +999,6 @@ class GuiMainMenu(QMenuBar):
         self.aPreferences.triggered.connect(self.mainGui.showPreferencesDialog)
         self.mainGui.addAction(self.aPreferences)
 
-        return
-
     def _buildHelpMenu(self) -> None:
         """Assemble the Help menu."""
         # Help
@@ -1066,5 +1044,3 @@ class GuiMainMenu(QMenuBar):
         # Document > Main Website
         self.aWebsite = qtAddAction(self.helpMenu, self.tr("The novelWriter Website"))
         self.aWebsite.triggered.connect(qtLambda(SHARED.openWebsite, nwConst.URL_WEB))
-
-        return
