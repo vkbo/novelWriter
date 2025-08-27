@@ -282,7 +282,7 @@ class DocDuplicator:
 
 
 class DocSearch:
-    """Tool> Search Documents.
+    """Tool: Search Documents.
 
     A global document search class.
     """
