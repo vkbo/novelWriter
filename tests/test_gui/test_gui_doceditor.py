@@ -2579,3 +2579,55 @@ def testGuiEditor_Vim_MotionsAndInsert(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
     lines = docEditor.getText().splitlines()
     assert "above" in lines[0]  # inserted before Line1
+
+
+@pytest.mark.gui
+def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
+    """Test vim delete (dd, x), yank (yy) and paste (p, P) commands."""
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc)
+
+    docEditor = nwGUI.docEditor
+    CONFIG.vimMode = True
+
+    def reset_text():
+        docEditor.setPlainText("Line1\nLine2\nLine3")
+        return docEditor.getText()
+
+    # --- dd: delete entire line ---
+    reset_text()
+    docEditor.setCursorPosition(docEditor.getText().find("Line2"))
+    qtbot.keyClicks(docEditor, "dd")
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines == ["Line1", "Line3"]
+
+    # --- x: delete single character ---
+    reset_text()
+    docEditor.setCursorPosition(0)
+    qtbot.keyClicks(docEditor, "x")
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines[0] == "ine1"  # 'L' deleted
+
+    # --- p: paste after current line ---
+    reset_text()
+    line2_pos = docEditor.getText().find("Line2")
+    docEditor.setCursorPosition(line2_pos)
+    qtbot.keyClicks(docEditor, "yy") # yank Line2
+    qtbot.keyClicks(docEditor, "p")  # paste after Line2
+
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines == ["Line1", "Line2", "Line2", "Line3"]
+
+    # --- P: paste before current line (using Line3) ---
+    reset_text()
+    line2_pos = docEditor.getText().find("Line2")
+    docEditor.setCursorPosition(line2_pos)
+    line3_pos = docEditor.getText().find("Line3")
+    docEditor.setCursorPosition(line3_pos)
+    qtbot.keyClicks(docEditor, "yy")  # yank Line3
+    docEditor.setCursorPosition(line2_pos)
+    qtbot.keyClicks(docEditor, "P")   # paste before Line2
+
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines == ["Line1", "Line3", "Line2", "Line3"]
+
