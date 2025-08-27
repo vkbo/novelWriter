@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import time
@@ -794,7 +794,6 @@ def testBaseCommon_openExternalPath(monkeypatch, tstPaths):
     def mockOpenUrl(url: QUrl) -> None:
         nonlocal lastUrl
         lastUrl = url.toString()
-        return
 
     monkeypatch.setattr(QDesktopServices, "openUrl", mockOpenUrl)
     assert openExternalPath(Path("/foo/bar")) is False

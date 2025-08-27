@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import shutil
@@ -669,7 +669,6 @@ def testCoreTools_ProjectBuilderCopyPlain(monkeypatch, caplog, mockGUI, prjLipsu
 @pytest.mark.core
 def testCoreTools_ProjectBuilderCopyZipped(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     """Create a new project copied from existing zipped project."""
-
     # Create a project
     origPath = fncPath / "original"
     srcProject = NWProject()
