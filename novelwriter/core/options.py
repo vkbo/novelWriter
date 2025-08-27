@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -80,7 +80,7 @@ VALID_MAP: dict[str, set[str]] = {
 
 
 class OptionState:
-    """Core: GUI Options Storage
+    """Core: GUI Options Storage.
 
     A class for storing the state of the GUI. The data is stored per
     project. Settings that should be project-independent are stored in
@@ -90,7 +90,6 @@ class OptionState:
     def __init__(self, project: NWProject) -> None:
         self._project = project
         self._state = {}
-        return
 
     ##
     #  Load and Save Cache

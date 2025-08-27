@@ -76,19 +76,24 @@ select = [
     "PERF",   # Perflint (PERF)
     "PLC",    # Pylint Convention (PLC)
     "PLE",    # Pylint Error (PLE)
+    "PLR17",  # Refactor (PLR) - Only PLR17xx
     "PLW",    # Pylint Warning (PLW)
     "Q",      # flake8-quotes (Q)
+    "RET",    # flake8-return (RET)
     "RUF",    # Ruff-specific rules (RUF)
     "SLF",    # flake8-self (SLF)
     "SLOT",   # flake8-slots (SLOT)
     "TC",     # flake8-type-checking (TC)
     "UP",     # pyupgrade (UP)
     "W",      # pycodestyle (W)
-    "RET",    # flake8-return (RET)
-    "PLR17",  # Refactor (PLR) - Only PLR17xx
 ]
 ignore = [
     "ANN401",  # any-type
+    "D105",    # undocumented-magic-method
+    "D107",    # undocumented-public-init
+    "D203",    # incorrect-blank-line-before-class
+    "D205",    # missing-blank-line-after-summary
+    "D213",    # multi-line-summary-second-line
     "E221",    # multiple-spaces-before-operator
     "E226",    # missing-whitespace-around-arithmetic-operator
     "E228",    # missing-whitespace-around-modulo-operator
@@ -98,15 +103,12 @@ ignore = [
     "PLC1901", # compare-to-empty-string
     "PLW0108", # unnecessary-lambda
     "PLW2901", # redefined-loop-name
+    "RET505",  # superfluous-else-return
     "RUF001",  # ambiguous-unicode-character-string
     "RUF002",  # ambiguous-unicode-character-docstring
     "RUF015",  # unnecessary-iterable-allocation-for-first-element
     "UP015",   # redundant-open-modes
     "UP030",   # format-literals
-    "D107",    # undocumented-public-init
-    "D205",    # missing-blank-line-after-summary
-    "D105",    # undocumented-magic-method
-    "RET505",  # superfluous-else-return
 ]
 
 [tool.ruff.lint.per-file-ignores]

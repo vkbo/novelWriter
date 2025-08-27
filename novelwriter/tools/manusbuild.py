@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -54,7 +54,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiManuscriptBuild(NDialog):
-    """GUI Tools: Manuscript Build Dialog
+    """GUI Tools: Manuscript Build Dialog.
 
     This is the tool for running the build itself. It can be accessed
     independently of the Manuscript Build Tool.
@@ -244,11 +244,8 @@ class GuiManuscriptBuild(NDialog):
 
         logger.debug("Ready: GuiManuscriptBuild")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiManuscriptBuild")
-        return
 
     ##
     #  Events
@@ -261,7 +258,6 @@ class GuiManuscriptBuild(NDialog):
         self._saveSettings()
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -278,7 +274,6 @@ class GuiManuscriptBuild(NDialog):
                 self._openOutputFolder()
         elif role == QtRoleReject:
             self.close()
-        return
 
     @pyqtSlot()
     def _doSelectPath(self) -> None:
@@ -290,7 +285,6 @@ class GuiManuscriptBuild(NDialog):
         )
         if savePath:
             self.buildPath.setText(savePath)
-        return
 
     @pyqtSlot()
     def _doResetBuildName(self) -> None:
@@ -298,13 +292,11 @@ class GuiManuscriptBuild(NDialog):
         bName = f"{SHARED.project.data.name} - {self._build.name}"
         self.buildName.setText(bName)
         self._build.setLastBuildName(bName)
-        return
 
     @pyqtSlot()
     def _resetProgress(self) -> None:
         """Set the progress bar back to 0."""
         self.buildProgress.setValue(0)
-        return
 
     ##
     #  Internal Functions
@@ -371,7 +363,6 @@ class GuiManuscriptBuild(NDialog):
         pOptions.setValue("GuiManuscriptBuild", "fmtWidth", mainSplit[0])
         pOptions.setValue("GuiManuscriptBuild", "sumWidth", mainSplit[1])
         pOptions.saveSettings()
-        return
 
     def _populateContentList(self) -> None:
         """Build the content list."""
@@ -396,9 +387,6 @@ class GuiManuscriptBuild(NDialog):
                 item.setIcon(nwItem.getMainIcon())
                 self.listContent.addItem(item)
 
-        return
-
     def _openOutputFolder(self) -> None:
         """Open the build folder in the system's file explorer."""
         openExternalPath(Path(self.buildPath.text()))
-        return

@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -57,6 +57,7 @@ logger = logging.getLogger(__name__)
 
 
 class NWProjectState(Enum):
+    """The state of the loaded project."""
 
     UNKNOWN  = 0
     LOCKED   = 1
@@ -65,6 +66,11 @@ class NWProjectState(Enum):
 
 
 class NWProject:
+    """Core: novelWriter Project Class.
+
+    This class is the parent class of the project, and holds instances
+    of project data, the project tree, and the project index.
+    """
 
     __slots__ = (
         "_changed", "_data", "_index", "_langData", "_options", "_session",
@@ -92,17 +98,13 @@ class NWProject:
 
         logger.debug("Ready: NWProject")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: NWProject")
-        return
 
     def clear(self) -> None:
         """Clear the project."""
         self._tree.clear()
         self._index.clear()
-        return
 
     ##
     #  Properties
@@ -263,7 +265,6 @@ class NWProject:
             if rHandle and (tHandle := SHARED.project.newFile(tag.title(), rHandle)):
                 self.writeNewFile(tHandle, 1, False, f"@tag: {tag}\n\n")
                 self._tree.refreshItems([tHandle])
-        return
 
     ##
     #  Project Methods
@@ -441,7 +442,6 @@ class NWProject:
         self._tree.writeToCFile()
         self._session.appendSession(idleTime)
         self._storage.closeSession()
-        return
 
     def backupProject(self, doNotify: bool) -> bool:
         """Create a zip file of the entire project."""
@@ -499,7 +499,6 @@ class NWProject:
         self._data.itemImport.add(None, self.tr("Minor"), "purple", "BLOCK_2", 0)
         self._data.itemImport.add(None, self.tr("Major"), "purple", "BLOCK_3", 0)
         self._data.itemImport.add(None, self.tr("Main"), "purple", "BLOCK_4", 0)
-        return
 
     def setProjectLang(self, language: str | None) -> None:
         """Set the project-specific language."""
@@ -508,7 +507,6 @@ class NWProject:
             self._data.setLanguage(language)
             self._loadProjectLocalisation()
             self.setProjectChanged(True)
-        return
 
     def setProjectChanged(self, status: bool) -> bool:
         """Toggle the project changed flag, and propagate the
@@ -527,7 +525,6 @@ class NWProject:
         """Update the total word and character count values."""
         wNovel, wNotes, cNovel, cNotes = self._tree.sumCounts()
         self._data.setCurrCounts(wNovel=wNovel, wNotes=wNotes, cNovel=cNovel, cNotes=cNotes)
-        return
 
     def countStatus(self) -> None:
         """Count how many times the various status flags are used in the
@@ -541,7 +538,6 @@ class NWProject:
                 self._data.itemStatus.increment(nwItem.itemStatus)
             else:
                 self._data.itemImport.increment(nwItem.itemImport)
-        return
 
     def updateStatus(self, kind: T_StatusKind, update: T_UpdateEntry) -> None:
         """Update status or import entries."""
@@ -553,13 +549,11 @@ class NWProject:
             self._data.itemImport.update(update)
             SHARED.emitStatusLabelsChanged(self, kind)
             self._tree.refreshAllItems()
-        return
 
     def updateTheme(self) -> None:
         """Update theme elements."""
         self._data.itemStatus.refreshIcons()
         self._data.itemImport.refreshIcons()
-        return
 
     def localLookup(self, word: str | int) -> str:
         """Look up a word or number in the translation map for the

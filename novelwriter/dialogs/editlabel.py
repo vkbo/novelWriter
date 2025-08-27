@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiEditLabel(NDialog):
+    """GUI: Edit Item Label Dialog."""
 
     def __init__(self, parent: QWidget, text: str = "") -> None:
         super().__init__(parent=parent)
@@ -72,11 +73,8 @@ class GuiEditLabel(NDialog):
 
         logger.debug("Ready: GuiEditLabel")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiEditLabel")
-        return
 
     @property
     def itemLabel(self) -> str:

@@ -23,7 +23,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -128,7 +128,7 @@ FONT_WEIGHT_MAP = {"400": "normal", "700": "bold"}
 
 
 class ToOdt(Tokenizer):
-    """Core: Open Document Writer
+    """Core: Open Document Writer.
 
     Extend the Tokenizer class to writer Open Document files. The output
     should conform to the 1.3 Extended standard.
@@ -189,8 +189,6 @@ class ToOdt(Tokenizer):
         self._mDocLeft   = "2.000cm"
         self._mDocRight  = "2.000cm"
 
-        return
-
     ##
     #  Setters
     ##
@@ -205,20 +203,18 @@ class ToOdt(Tokenizer):
         self._mDocBtm    = f"{bottom/10.0:.3f}cm"
         self._mDocLeft   = f"{left/10.0:.3f}cm"
         self._mDocRight  = f"{right/10.0:.3f}cm"
-        return
 
     def setHeaderFormat(self, value: str, offset: int) -> None:
         """Set the document header format."""
         self._headerFormat = value.strip()
         self._pageOffset = offset
-        return
 
     ##
     #  Class Methods
     ##
 
     def initDocument(self) -> None:
-        """Initialises a new open document XML tree."""
+        """Initialise a new open document XML tree."""
         super().initDocument()
 
         # Initialise Variables
@@ -325,8 +321,6 @@ class ToOdt(Tokenizer):
         self._useableStyles()
         self._writeHeader()
 
-        return
-
     def doConvert(self) -> None:
         """Convert the list of text tokens into XML elements."""
         xText = self._xText
@@ -395,8 +389,6 @@ class ToOdt(Tokenizer):
             elif tType == BlockTyp.KEYWORD:
                 self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
 
-        return
-
     def closeDocument(self) -> None:
         """Add additional collected information to the XML."""
         for style in self._autoPara.values():
@@ -412,7 +404,6 @@ class ToOdt(Tokenizer):
                     _mkTag("text", "name"): f"Manuscript{key[:1].upper()}{key[1:]}",
                 })
             self._xText.insert(0, xFields)
-        return
 
     def saveDocument(self, path: Path) -> None:
         """Save the data to an .fodt or .odt file."""
@@ -455,8 +446,6 @@ class ToOdt(Tokenizer):
                 xmlToZip("styles.xml", self._dStyl, outZip)
 
         logger.info("Wrote file: %s", path)
-
-        return
 
     ##
     #  Internal Functions
@@ -670,7 +659,7 @@ class ToOdt(Tokenizer):
         return None
 
     def _emToCm(self, value: float) -> str:
-        """Converts an em value to centimetres."""
+        """Convert an em value to centimetres."""
         return f"{value*self._fontSize*2.54/72.0:.3f}cm"
 
     def _emToPt(self, scale: float) -> str:
@@ -704,8 +693,6 @@ class ToOdt(Tokenizer):
             _mkTag("fo", "margin-right"): "0.000cm",
             _mkTag("fo", "margin-bottom"): self._emToCm(0.5),
         })
-
-        return
 
     def _defaultStyles(self) -> None:
         """Set the default styles."""
@@ -782,8 +769,6 @@ class ToOdt(Tokenizer):
         ET.SubElement(xStyl, _mkTag("number", "number"), attrib={
             _mkTag("number", "min-integer-digits"): "1",
         })
-
-        return
 
     def _useableStyles(self) -> None:
         """Set the usable styles."""
@@ -954,8 +939,6 @@ class ToOdt(Tokenizer):
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
-        return
-
     def _writeHeader(self) -> None:
         """Write the header elements."""
         xPage = ET.SubElement(self._xMast, _mkTag("style", "master-page"), attrib={
@@ -993,8 +976,6 @@ class ToOdt(Tokenizer):
             _mkTag("text", "style-name"): "Header"
         })
 
-        return
-
 
 # Auto-Style Classes
 # ==================
@@ -1004,6 +985,7 @@ class ODTParagraphStyle:
     exporter. Only the used settings are exposed here to keep the class
     minimal and fast.
     """
+
     VALID_ALIGN: Final[list[str]]  = ["start", "center", "end", "justify", "left", "right"]
     VALID_BREAK: Final[list[str]]  = ["auto", "page", "even-page", "odd-page", "inherit"]
     VALID_LEVEL: Final[list[str]]  = ["1", "2", "3", "4"]
@@ -1046,8 +1028,6 @@ class ODTParagraphStyle:
             "opacity":     ["loext", None],
         }
 
-        return
-
     @property
     def name(self) -> str:
         return self._name
@@ -1059,7 +1039,6 @@ class ODTParagraphStyle:
     def setName(self, name: str) -> None:
         """Set the paragraph style name."""
         self._name = name
-        return
 
     ##
     #  Attribute Setters
@@ -1068,17 +1047,14 @@ class ODTParagraphStyle:
     def setDisplayName(self, value: str | None) -> None:
         """Set style display name."""
         self._mAttr["display-name"][1] = value
-        return
 
     def setParentStyleName(self, value: str | None) -> None:
         """Set parent style name."""
         self._mAttr["parent-style-name"][1] = value
-        return
 
     def setNextStyleName(self, value: str | None) -> None:
         """Set next style name."""
         self._mAttr["next-style-name"][1] = value
-        return
 
     def setOutlineLevel(self, value: str | None) -> None:
         """Set paragraph outline level."""
@@ -1086,7 +1062,6 @@ class ODTParagraphStyle:
             self._mAttr["default-outline-level"][1] = value
         else:
             self._mAttr["default-outline-level"][1] = None
-        return
 
     def setClass(self, value: str | None) -> None:
         """Set paragraph class."""
@@ -1094,7 +1069,6 @@ class ODTParagraphStyle:
             self._mAttr["class"][1] = value
         else:
             self._mAttr["class"][1] = None
-        return
 
     ##
     #  Paragraph Setters
@@ -1103,32 +1077,26 @@ class ODTParagraphStyle:
     def setMarginTop(self, value: str | None) -> None:
         """Set paragraph top margin."""
         self._pAttr["margin-top"][1] = value
-        return
 
     def setMarginBottom(self, value: str | None) -> None:
         """Set paragraph bottom margin."""
         self._pAttr["margin-bottom"][1] = value
-        return
 
     def setMarginLeft(self, value: str | None) -> None:
         """Set paragraph left margin."""
         self._pAttr["margin-left"][1] = value
-        return
 
     def setMarginRight(self, value: str | None) -> None:
         """Set paragraph right margin."""
         self._pAttr["margin-right"][1] = value
-        return
 
     def setTextIndent(self, value: str | None) -> None:
         """Set text indentation."""
         self._pAttr["text-indent"][1] = value
-        return
 
     def setLineHeight(self, value: str | None) -> None:
         """Set line height."""
         self._pAttr["line-height"][1] = value
-        return
 
     def setTextAlign(self, value: str | None) -> None:
         """Set paragraph text alignment."""
@@ -1136,7 +1104,6 @@ class ODTParagraphStyle:
             self._pAttr["text-align"][1] = value
         else:
             self._pAttr["text-align"][1] = None
-        return
 
     def setBreakBefore(self, value: str | None) -> None:
         """Set page break before policy."""
@@ -1144,7 +1111,6 @@ class ODTParagraphStyle:
             self._pAttr["break-before"][1] = value
         else:
             self._pAttr["break-before"][1] = None
-        return
 
     def setBreakAfter(self, value: str | None) -> None:
         """Set page break after policy."""
@@ -1152,7 +1118,6 @@ class ODTParagraphStyle:
             self._pAttr["break-after"][1] = value
         else:
             self._pAttr["break-after"][1] = None
-        return
 
     ##
     #  Text Setters
@@ -1161,17 +1126,14 @@ class ODTParagraphStyle:
     def setFontName(self, value: str | None) -> None:
         """Set font name."""
         self._tAttr["font-name"][1] = value
-        return
 
     def setFontFamily(self, value: str | None) -> None:
         """Set font family."""
         self._tAttr["font-family"][1] = value
-        return
 
     def setFontSize(self, value: str | None) -> None:
         """Set font size."""
         self._tAttr["font-size"][1] = value
-        return
 
     def setFontWeight(self, value: str | None) -> None:
         """Set font weight."""
@@ -1179,7 +1141,6 @@ class ODTParagraphStyle:
             self._tAttr["font-weight"][1] = value
         else:
             self._tAttr["font-weight"][1] = None
-        return
 
     def setColor(self, value: QColor | None) -> None:
         """Set text colour."""
@@ -1189,7 +1150,6 @@ class ODTParagraphStyle:
         else:
             self._tAttr["color"][1] = None
             self._tAttr["opacity"][1] = None
-        return
 
     ##
     #  Methods
@@ -1233,14 +1193,13 @@ class ODTParagraphStyle:
         if attr := {_mkTag(n, m): v for m, (n, v) in self._tAttr.items() if v}:
             ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=attr)
 
-        return
-
 
 class ODTTextStyle:
     """Wrapper class for the text style setting used by the exporter.
     Only the used settings are exposed here to keep the class minimal
     and fast.
     """
+
     VALID_WEIGHT: Final[list[str]] = ["normal", "bold", *FONT_WEIGHT_NUM]
     VALID_STYLE: Final[list[str]]  = ["normal", "italic", "oblique"]
     VALID_POS: Final[list[str]]    = ["super", "sub"]
@@ -1263,7 +1222,6 @@ class ODTTextStyle:
             "text-underline-width":    ["style", None],
             "text-underline-color":    ["style", None],
         }
-        return
 
     @property
     def name(self) -> str:
@@ -1279,7 +1237,6 @@ class ODTTextStyle:
             self._tAttr["font-weight"][1] = value
         else:
             self._tAttr["font-weight"][1] = None
-        return
 
     def setFontStyle(self, value: str | None) -> None:
         """Set text font style."""
@@ -1287,7 +1244,6 @@ class ODTTextStyle:
             self._tAttr["font-style"][1] = value
         else:
             self._tAttr["font-style"][1] = None
-        return
 
     def setColor(self, value: QColor | None) -> None:
         """Set text colour."""
@@ -1295,7 +1251,6 @@ class ODTTextStyle:
             self._tAttr["color"][1] = value.name(QtHexRgb)
         else:
             self._tAttr["color"][1] = None
-        return
 
     def setBackgroundColor(self, value: QColor | None) -> None:
         """Set text background colour."""
@@ -1303,7 +1258,6 @@ class ODTTextStyle:
             self._tAttr["background-color"][1] = value.name(QtHexRgb)
         else:
             self._tAttr["background-color"][1] = None
-        return
 
     def setTextPosition(self, value: str | None) -> None:
         """Set text vertical position."""
@@ -1311,7 +1265,6 @@ class ODTTextStyle:
             self._tAttr["text-position"][1] = f"{value} 58%"
         else:
             self._tAttr["text-position"][1] = None
-        return
 
     def setStrikeStyle(self, value: str | None) -> None:
         """Set text line-trough style."""
@@ -1319,7 +1272,6 @@ class ODTTextStyle:
             self._tAttr["text-line-through-style"][1] = value
         else:
             self._tAttr["text-line-through-style"][1] = None
-        return
 
     def setStrikeType(self, value: str | None) -> None:
         """Set text line-through type."""
@@ -1327,7 +1279,6 @@ class ODTTextStyle:
             self._tAttr["text-line-through-type"][1] = value
         else:
             self._tAttr["text-line-through-type"][1] = None
-        return
 
     def setUnderlineStyle(self, value: str | None) -> None:
         """Set text underline style."""
@@ -1335,7 +1286,6 @@ class ODTTextStyle:
             self._tAttr["text-underline-style"][1] = value
         else:
             self._tAttr["text-underline-style"][1] = None
-        return
 
     def setUnderlineWidth(self, value: str | None) -> None:
         """Set text underline width."""
@@ -1343,7 +1293,6 @@ class ODTTextStyle:
             self._tAttr["text-underline-width"][1] = value
         else:
             self._tAttr["text-underline-width"][1] = None
-        return
 
     def setUnderlineColor(self, value: str | None) -> None:
         """Set text underline colour."""
@@ -1351,7 +1300,6 @@ class ODTTextStyle:
             self._tAttr["text-underline-color"][1] = value
         else:
             self._tAttr["text-underline-color"][1] = None
-        return
 
     ##
     #  Methods
@@ -1365,7 +1313,6 @@ class ODTTextStyle:
         })
         if attr := {_mkTag(n, m): v for m, (n, v) in self._tAttr.items() if v}:
             ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=attr)
-        return
 
 
 # XML Complex Element Helper Class
@@ -1378,7 +1325,9 @@ X_SPAN_SING = 3
 
 
 class XMLParagraph:
-    """This is a helper class to manage the text content of a single
+    """ODT Text Paragraph.
+
+    This is a helper class to manage the text content of a single
     XML element using mixed content tags.
 
     Rules:
@@ -1408,8 +1357,6 @@ class XMLParagraph:
         self._rawTxt = ""
         self._xRoot.text = ""
 
-        return
-
     def appendText(self, text: str) -> None:
         """Append text to the XML element. We do this one character at
         the time in order to be able to process line breaks, tabs and
@@ -1424,7 +1371,7 @@ class XMLParagraph:
             if c == " ":
                 nSpaces += 1
                 continue
-            elif nSpaces > 0:
+            if nSpaces > 0:
                 self._processSpaces(nSpaces)
                 nSpaces = 0
 
@@ -1468,8 +1415,6 @@ class XMLParagraph:
             # Handle trailing spaces
             self._processSpaces(nSpaces)
 
-        return
-
     def appendSpan(self, text: str, style: str, link: str) -> None:
         """Append a text span to the XML element. The span is always
         closed since we do not produce nested spans (like Libre Office).
@@ -1491,7 +1436,6 @@ class XMLParagraph:
         self._nState = X_SPAN_TEXT
         self.appendText(text)
         self._nState = X_ROOT_TAIL
-        return
 
     def appendNode(self, xNode: ET.Element | None) -> None:
         """Append an XML node to the paragraph. We only check for the
@@ -1504,7 +1448,6 @@ class XMLParagraph:
             self._xTail = xNode
             self._xTail.tail = ""
             self._nState = X_ROOT_TAIL
-        return
 
     def checkError(self) -> tuple[int, str]:
         """Check that the number of characters written matches the
@@ -1575,5 +1518,3 @@ class XMLParagraph:
                 self._xSing.tail = ""
                 self._nState = X_SPAN_SING
                 self._chrPos += nSpaces - 1
-
-        return

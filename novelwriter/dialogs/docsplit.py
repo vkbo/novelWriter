@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiDocSplit(NDialog):
+    """GUI: Document Split Tool."""
 
     LINE_ROLE  = QtUserRole
     LEVEL_ROLE = QtUserRole + 1
@@ -139,11 +140,8 @@ class GuiDocSplit(NDialog):
 
         logger.debug("Ready: GuiDocSplit")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiDocSplit")
-        return
 
     def data(self) -> tuple[dict, list[str]]:
         """Return the user's choices. Also save the users options for
@@ -197,7 +195,6 @@ class GuiDocSplit(NDialog):
         """Reload the content of the list box."""
         if sHandle := self._data.get("sHandle"):
             self._loadContent(sHandle)
-        return
 
     ##
     #  Internal Functions

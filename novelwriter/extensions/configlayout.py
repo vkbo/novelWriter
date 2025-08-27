@@ -24,7 +24,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from PyQt6.QtGui import QColor, QFont, QPalette, QPixmap
@@ -39,7 +39,7 @@ DEFAULT_SCALE = 0.9
 
 
 class NFixedPage(QFrame):
-    """Extension: Fixed Page Widget
+    """Extension: Fixed Page Widget.
 
     A custom widget that holds a layout. This is just a wrapper around a
     QFrame that sets the same frame style as the other Page widgets.
@@ -49,23 +49,20 @@ class NFixedPage(QFrame):
         super().__init__(parent=parent)
         self.setFrameShadow(QFrame.Shadow.Sunken)
         self.setFrameShape(QFrame.Shape.StyledPanel)
-        return
 
     def setCentralLayout(self, layout: QLayout) -> None:
         """Set a layout as the central object."""
         self.setLayout(layout)
-        return
 
     def setCentralWidget(self, widget: QWidget) -> None:
         """Set a layout as the central object."""
         layout = QHBoxLayout()
         layout.addWidget(widget)
         self.setLayout(layout)
-        return
 
 
 class NScrollablePage(QScrollArea):
-    """Extension: Scrollable Page Widget
+    """Extension: Scrollable Page Widget.
 
     A custom widget that holds a layout within a scrollable area.
     """
@@ -79,16 +76,14 @@ class NScrollablePage(QScrollArea):
         self.setVerticalScrollBarPolicy(QtScrollAsNeeded)
         self.setFrameShadow(QFrame.Shadow.Sunken)
         self.setFrameShape(QFrame.Shape.StyledPanel)
-        return
 
     def setCentralLayout(self, layout: QLayout) -> None:
         """Set the central layout of the scroll page."""
         self._widget.setLayout(layout)
-        return
 
 
 class NScrollableForm(QScrollArea):
-    """Extension: Scrollable Form Widget
+    """Extension: Scrollable Form Widget.
 
     A custom widget that creates a form within a scrollable area.
     """
@@ -117,8 +112,6 @@ class NScrollableForm(QScrollArea):
         self.setFrameShadow(QFrame.Shadow.Sunken)
         self.setFrameShape(QFrame.Shape.StyledPanel)
 
-        return
-
     ##
     #  Properties
     ##
@@ -135,18 +128,15 @@ class NScrollableForm(QScrollArea):
         """Set the text color for the help text."""
         self._helpCol = color
         self._fontScale = scale
-        return
 
     def setHelpText(self, key: str, text: str) -> None:
         """Set the text for the help label."""
         if qHelp := self._editable.get(key):
             qHelp.setText(text)
-        return
 
     def setRowIndent(self, indent: int) -> None:
         """Set the indentation of each row."""
         self._indent = max(indent, 0)
-        return
 
     ##
     #  Methods
@@ -158,7 +148,6 @@ class NScrollableForm(QScrollArea):
             yPos = self._sections[identifier].pos().y() - 8
             if vBar := self.verticalScrollBar():
                 vBar.setValue(yPos)
-        return
 
     def scrollToLabel(self, label: str) -> None:
         """Scroll to the requested label."""
@@ -166,7 +155,6 @@ class NScrollableForm(QScrollArea):
             yPos = self._index[label].pos().y() - 8
             if vBar := self.verticalScrollBar():
                 vBar.setValue(yPos)
-        return
 
     def addGroupLabel(self, label: str, identifier: int | None = None) -> None:
         """Add a text label to separate groups of settings."""
@@ -178,7 +166,6 @@ class NScrollableForm(QScrollArea):
         self._first = False
         if identifier is not None:
             self._sections[identifier] = qLabel
-        return
 
     def addRow(
         self,
@@ -252,17 +239,14 @@ class NScrollableForm(QScrollArea):
             self._index[label.strip()] = qWidget
         qLabel.setAccessibleName(text)
 
-        return
-
     def finalise(self) -> None:
         """Finalise the layout when the form is built."""
         self._layout.addSpacing(20)
         self._layout.addStretch(1)
-        return
 
 
 class NColorLabel(QLabel):
-    """Extension: A Coloured Label
+    """Extension: A Coloured Label.
 
     A custom widget that draws a label in a specific colour, and
     optionally at a specific size, and word wrapped.
@@ -298,21 +282,17 @@ class NColorLabel(QLabel):
         self.setWordWrap(wrap)
         self.setColorState(True)
 
-        return
-
     def setTextColors(self, *, color: QColor | None = None, faded: QColor | None = None) -> None:
         """Set or update the text colours."""
         self._color = color or self._color
         self._faded = faded or self._faded
         self._refeshTextColor()
-        return
 
     def setColorState(self, state: bool) -> None:
         """Change the colour state."""
         if self._state is not state:
             self._state = state
             self._refeshTextColor()
-        return
 
     def _refeshTextColor(self) -> None:
         """Refresh the colour of the text on the label."""
@@ -322,11 +302,10 @@ class NColorLabel(QLabel):
             self._color if self._state else self._faded,
         )
         self.setPalette(palette)
-        return
 
 
 class NWrappedWidgetBox(QHBoxLayout):
-    """Extension: A Text-Wrapped Widget Box
+    """Extension: A Text-Wrapped Widget Box.
 
     A custom layout box where a widget is wrapped in text labels on
     either side within a layout box. The widget is inserted at the {0}
@@ -341,4 +320,3 @@ class NWrappedWidgetBox(QHBoxLayout):
         self.addWidget(widget)
         if after:
             self.addWidget(QLabel(after.lstrip()))
-        return

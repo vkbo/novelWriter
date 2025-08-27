@@ -25,7 +25,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -61,7 +61,9 @@ logger = logging.getLogger(__name__)
 
 
 class GuiProjectView(QWidget):
-    """This is a wrapper class holding all the elements of the project
+    """GUI: Project View.
+
+    This is a wrapper class holding all the elements of the project
     tree. The core object is the project tree itself. Most methods
     available are mapped through to the project tree class.
     """
@@ -130,8 +132,6 @@ class GuiProjectView(QWidget):
         # Function Mappings
         self.getSelectedHandle = self.projTree.getSelectedHandle
 
-        return
-
     ##
     #  Methods
     ##
@@ -139,19 +139,16 @@ class GuiProjectView(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         self.projBar.updateTheme()
-        return
 
     def initSettings(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
         self.projTree.initSettings()
-        return
 
     def closeProjectTasks(self) -> None:
         """Clear project-related GUI content."""
         self.projBar.clearContent()
         self.projBar.setEnabled(False)
         self.projTree.clearTree()
-        return
 
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
@@ -159,26 +156,23 @@ class GuiProjectView(QWidget):
         self.projBar.buildTemplatesMenu()
         self.projBar.buildQuickLinksMenu()
         self.projBar.setEnabled(True)
-        return
 
     def setTreeFocus(self) -> None:
         """Forward the set focus call to the tree widget."""
         self.projTree.setFocus()
-        return
 
     def treeHasFocus(self) -> bool:
         """Check if the project tree has focus."""
         return self.projTree.hasFocus()
 
     def connectMenuActions(self, rename: QAction, delete: QAction, trash: QAction) -> None:
-        """Main menu actions passed to the project tree."""
+        """Connect main menu actions passed to the project tree."""
         self.projTree.addAction(rename)
         self.projTree.addAction(delete)
         self.projTree.addAction(trash)
         rename.triggered.connect(self.renameTreeItem)
         delete.triggered.connect(self.projTree.processDeleteRequest)
         trash.triggered.connect(self.projTree.emptyTrash)
-        return
 
     ##
     #  Public Slots
@@ -197,41 +191,36 @@ class GuiProjectView(QWidget):
             if dlgOk:
                 nwItem.setName(newLabel)
                 nwItem.notifyToRefresh()
-        return
 
     @pyqtSlot(str, bool)
     def setSelectedHandle(self, tHandle: str, doScroll: bool = False) -> None:
         """Select an item and optionally scroll it into view."""
         self.projTree.setSelectedHandle(tHandle, doScroll=doScroll)
-        return
 
     @pyqtSlot(str)
     def setActiveHandle(self, tHandle: str | None) -> None:
         """Highlight the active handle."""
         self.projTree.setActiveHandle(tHandle)
-        return
 
     @pyqtSlot(str, Enum)
     def onProjectItemChanged(self, tHandle: str, change: nwChange) -> None:
         """Refresh other content when project item changed."""
         self.projBar.processTemplateDocuments(tHandle)
-        return
 
     @pyqtSlot(str)
     def createFileFromTemplate(self, tHandle: str) -> None:
         """Create a new document from a template."""
         logger.debug("Template selected: '%s'", tHandle)
         self.projTree.newTreeItem(nwItemType.FILE, copyDoc=tHandle)
-        return
 
     @pyqtSlot(str, Enum)
     def updateRootItem(self, tHandle: str, change: nwChange) -> None:
         """Process root item changes."""
         self.projBar.buildQuickLinksMenu()
-        return
 
 
 class GuiProjectToolBar(QWidget):
+    """GUI> Project View ToolBar."""
 
     newDocumentFromTemplate = pyqtSignal(str)
 
@@ -351,8 +340,6 @@ class GuiProjectToolBar(QWidget):
 
         logger.debug("Ready: GuiProjectToolBar")
 
-        return
-
     ##
     #  Methods
     ##
@@ -383,13 +370,10 @@ class GuiProjectToolBar(QWidget):
         self.buildQuickLinksMenu()
         self._buildRootMenu()
 
-        return
-
     def clearContent(self) -> None:
         """Clear dynamic content on the tool bar."""
         self.mQuick.clear()
         self.mTemplates.clearMenu()
-        return
 
     def buildQuickLinksMenu(self) -> None:
         """Build the quick link menu."""
@@ -402,14 +386,12 @@ class GuiProjectToolBar(QWidget):
             action.triggered.connect(
                 qtLambda(self.projView.setSelectedHandle, tHandle, doScroll=True)
             )
-        return
 
     def buildTemplatesMenu(self) -> None:
         """Build the templates menu."""
         for tHandle, _ in SHARED.project.tree.iterRoots(nwItemClass.TEMPLATE):
             for dHandle in SHARED.project.tree.subTree(tHandle):
                 self.processTemplateDocuments(dHandle)
-        return
 
     def processTemplateDocuments(self, tHandle: str) -> None:
         """Process change in tree items to update menu content."""
@@ -418,7 +400,6 @@ class GuiProjectToolBar(QWidget):
                 self.mTemplates.addUpdate(tHandle, item.itemName, item.getMainIcon())
             elif tHandle in self.mTemplates:
                 self.mTemplates.remove(tHandle)
-        return
 
     ##
     #  Public Slots
@@ -436,7 +417,6 @@ class GuiProjectToolBar(QWidget):
         self.aAddChap.setVisible(allowDoc)
         self.aAddPart.setVisible(allowDoc)
         self.aAddEmpty.setVisible(allowDoc)
-        return
 
     ##
     #  Internal Functions
@@ -451,7 +431,6 @@ class GuiProjectToolBar(QWidget):
                 qtLambda(self.projTree.newTreeItem, nwItemType.ROOT, itemClass)
             )
             self.mAddRoot.addAction(aNew)
-            return
 
         self.mAddRoot.clear()
         addClass(nwItemClass.NOVEL)
@@ -467,10 +446,9 @@ class GuiProjectToolBar(QWidget):
         addClass(nwItemClass.ARCHIVE)
         addClass(nwItemClass.TEMPLATE)
 
-        return
-
 
 class GuiProjectTree(QTreeView):
+    """GUI: Project View Tree."""
 
     def __init__(self, projView: GuiProjectView) -> None:
         super().__init__(parent=projView)
@@ -520,8 +498,6 @@ class GuiProjectTree(QTreeView):
 
         logger.debug("Ready: GuiProjectTree")
 
-        return
-
     def initSettings(self) -> None:
         """Set or update tree widget settings."""
         if CONFIG.hideVScroll:
@@ -532,7 +508,6 @@ class GuiProjectTree(QTreeView):
             self.setHorizontalScrollBarPolicy(QtScrollAlwaysOff)
         else:
             self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
-        return
 
     ##
     #  External Methods
@@ -541,7 +516,6 @@ class GuiProjectTree(QTreeView):
     def setActiveHandle(self, tHandle: str | None) -> None:
         """Set the handle to be highlighted."""
         self._actHandle = tHandle
-        return
 
     def getSelectedHandle(self) -> str | None:
         """Get the currently selected handle."""
@@ -556,7 +530,6 @@ class GuiProjectTree(QTreeView):
     def clearTree(self) -> None:
         """Clear the tree view."""
         self.setModel(None)
-        return
 
     def loadModel(self) -> None:
         """Load and prepare a new project model."""
@@ -583,8 +556,6 @@ class GuiProjectTree(QTreeView):
 
         self.restoreExpandedState()
 
-        return
-
     def restoreExpandedState(self) -> None:
         """Expand all nodes that were previously expanded."""
         if model := self._getModel():
@@ -592,7 +563,6 @@ class GuiProjectTree(QTreeView):
             for index in model.allExpanded():
                 self.setExpanded(index, True)
             self.blockSignals(False)
-        return
 
     def setSelectedHandle(self, tHandle: str | None, doScroll: bool = False) -> None:
         """Set a specific handle as the selected item."""
@@ -601,7 +571,6 @@ class GuiProjectTree(QTreeView):
             if doScroll:
                 self.scrollTo(index, QAbstractItemView.ScrollHint.PositionAtCenter)
             self.projView.selectedItemChanged.emit(tHandle)
-        return
 
     def newTreeItem(
         self, itemType: nwItemType, itemClass: nwItemClass | None = None,
@@ -805,7 +774,6 @@ class GuiProjectTree(QTreeView):
                     SHARED.warn(self.tr("Could not duplicate all items."))
                 self.setEnabled(True)
         self.restoreExpandedState()
-        return
 
     ##
     #  Events and Overloads
@@ -825,14 +793,12 @@ class GuiProjectTree(QTreeView):
                 self.projView.openDocumentRequest.emit(
                     node.item.itemHandle, nwDocMode.VIEW, "", False
                 )
-        return
 
     def drawRow(self, painter: QPainter, opt: QStyleOptionViewItem, index: QModelIndex) -> None:
         """Draw a box on the active row."""
         if (node := self._getNode(index)) and node.item.itemHandle == self._actHandle:
             painter.fillRect(opt.rect, self.palette().alternateBase())
         super().drawRow(painter, opt, index)
-        return
 
     ##
     #  Public Slots
@@ -843,14 +809,12 @@ class GuiProjectTree(QTreeView):
         """Move an item up in the tree."""
         if model := self._getModel():
             model.internalMove(self.currentIndex(), -1)
-        return
 
     @pyqtSlot()
     def moveItemDown(self) -> None:
         """Move an item down in the tree."""
         if model := self._getModel():
             model.internalMove(self.currentIndex(), 1)
-        return
 
     @pyqtSlot()
     def goToSiblingUp(self) -> None:
@@ -858,7 +822,6 @@ class GuiProjectTree(QTreeView):
         if (node := self._getNode(self.currentIndex())) and (parent := node.parent()):
             if (move := parent.child(node.row() - 1)) and (model := self._getModel()):
                 self.setCurrentIndex(model.indexFromNode(move))
-        return
 
     @pyqtSlot()
     def goToSiblingDown(self) -> None:
@@ -866,7 +829,6 @@ class GuiProjectTree(QTreeView):
         if (node := self._getNode(self.currentIndex())) and (parent := node.parent()):
             if (move := parent.child(node.row() + 1)) and (model := self._getModel()):
                 self.setCurrentIndex(model.indexFromNode(move))
-        return
 
     @pyqtSlot()
     def goToParent(self) -> None:
@@ -877,7 +839,6 @@ class GuiProjectTree(QTreeView):
             and (parent := node.parent())
         ):
             self.setCurrentIndex(model.indexFromNode(parent))
-        return
 
     @pyqtSlot()
     def goToFirstChild(self) -> None:
@@ -888,13 +849,11 @@ class GuiProjectTree(QTreeView):
             and (child := node.child(0))
         ):
             self.setCurrentIndex(model.indexFromNode(child))
-        return
 
     @pyqtSlot(QModelIndex)
     def expandFromIndex(self, index: QModelIndex) -> None:
         """Expand all nodes from index."""
         self.expandRecursively(index)
-        return
 
     @pyqtSlot(QModelIndex)
     def collapseFromIndex(self, index: QModelIndex) -> None:
@@ -902,7 +861,6 @@ class GuiProjectTree(QTreeView):
         if (model := self._getModel()) and (node := model.node(index)):
             for child in node.allChildren():
                 self.setExpanded(model.indexFromNode(child), False)
-        return
 
     @pyqtSlot()
     def processDeleteRequest(
@@ -968,9 +926,7 @@ class GuiProjectTree(QTreeView):
     @pyqtSlot()
     @pyqtSlot("QPoint")
     def openContextMenu(self, point: QPoint | None = None) -> None:
-        """The user right clicked an element in the project tree, so we
-        open a context menu in-place.
-        """
+        """Open a context menu in-place where the user clicked."""
         if model := self._getModel():
             if point is None:
                 point = self.visualRect(self.currentIndex()).center()
@@ -987,7 +943,6 @@ class GuiProjectTree(QTreeView):
                     if viewport := self.viewport():
                         ctxMenu.exec(viewport.mapToGlobal(point))
                     ctxMenu.setParent(None)
-        return
 
     ##
     #  Private Slots
@@ -995,10 +950,9 @@ class GuiProjectTree(QTreeView):
 
     @pyqtSlot(QModelIndex, QModelIndex)
     def _onSelectionChange(self, current: QModelIndex, previous: QModelIndex) -> None:
-        """The user changed which item is selected."""
+        """Process user changing which item is selected."""
         if node := self._getNode(current):
             self.projView.selectedItemChanged.emit(node.item.itemHandle)
-        return
 
     @pyqtSlot(QModelIndex)
     def _onDoubleClick(self, index: QModelIndex) -> None:
@@ -1012,21 +966,18 @@ class GuiProjectTree(QTreeView):
                 )
             else:
                 self.setExpanded(index, not self.isExpanded(index))
-        return
 
     @pyqtSlot(QModelIndex)
     def _onNodeCollapsed(self, index: QModelIndex) -> None:
         """Capture a node collapse, and pass it to the model."""
         if node := self._getNode(index):
             node.setExpanded(False)
-        return
 
     @pyqtSlot(QModelIndex)
     def _onNodeExpanded(self, index: QModelIndex) -> None:
         """Capture a node expand, and pass it to the model."""
         if node := self._getNode(index):
             node.setExpanded(True)
-        return
 
     ##
     #  Internal Functions
@@ -1038,7 +989,6 @@ class GuiProjectTree(QTreeView):
         if model := self.selectionModel():
             # Selection model can be None (#2173)
             model.clearCurrentIndex()
-        return
 
     def _selectedRows(self) -> list[QModelIndex]:
         """Return all column 0 indexes."""
@@ -1066,7 +1016,6 @@ class _UpdatableMenu(QMenu):
         self._map: dict[str, QAction] = {}
         self.setTitle(self.tr("From Template"))
         self.triggered.connect(self._actionTriggered)
-        return
 
     def __contains__(self, tHandle: str) -> bool:
         """Look up a handle in the menu."""
@@ -1088,7 +1037,6 @@ class _UpdatableMenu(QMenu):
             self.addAction(action)
             self._map[tHandle] = action
         self.setActionsVisible(True)
-        return
 
     def remove(self, tHandle: str) -> None:
         """Remove a template item."""
@@ -1096,19 +1044,16 @@ class _UpdatableMenu(QMenu):
             self.removeAction(action)
         if not self._map:
             self.setActionsVisible(False)
-        return
 
     def clearMenu(self) -> None:
         """Clear all menu content."""
         self._map.clear()
         self.clear()
-        return
 
     def setActionsVisible(self, value: bool) -> None:
         """Set the visibility of root action."""
         if action := self.menuAction():
             action.setVisible(value)
-        return
 
     ##
     #  Private Slots
@@ -1118,7 +1063,6 @@ class _UpdatableMenu(QMenu):
     def _actionTriggered(self, action: QAction) -> None:
         """Translate the menu trigger into an item trigger."""
         self.menuItemTriggered.emit(str(action.data()))
-        return
 
 
 class _TreeContextMenu(QMenu):
@@ -1139,11 +1083,9 @@ class _TreeContextMenu(QMenu):
         self._indices = indices
         self._children = node.childCount() > 0
         logger.debug("Ready: _TreeContextMenu")
-        return
 
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: _TreeContextMenu")
-        return
 
     ##
     #  Methods
@@ -1155,7 +1097,6 @@ class _TreeContextMenu(QMenu):
         action.triggered.connect(self._tree.emptyTrash)
         if self._children:
             self._expandCollapse()
-        return
 
     def buildSingleSelectMenu(self) -> None:
         """Build the single-select menu."""
@@ -1191,15 +1132,12 @@ class _TreeContextMenu(QMenu):
         action.triggered.connect(qtLambda(self._tree.duplicateFromHandle, self._handle))
         self._deleteOrTrash()
 
-        return
-
     def buildMultiSelectMenu(self) -> None:
         """Build the multi-select menu."""
         self._itemActive()
         self._itemStatusImport(True)
         self.addSeparator()
         self._deleteOrTrash()
-        return
 
     ##
     #  Menu Builders
@@ -1217,7 +1155,6 @@ class _TreeContextMenu(QMenu):
             self._view.openDocumentRequest.emit,
             self._handle, nwDocMode.VIEW, "", False
         ))
-        return
 
     def _itemCreation(self) -> None:
         """Add create item actions."""
@@ -1228,7 +1165,6 @@ class _TreeContextMenu(QMenu):
         menu.addAction(self._view.projBar.aAddEmpty)
         menu.addAction(self._view.projBar.aAddNote)
         menu.addAction(self._view.projBar.aAddFolder)
-        return
 
     def _itemHeader(self) -> None:
         """Check if there is a header that can be used for rename."""
@@ -1238,7 +1174,6 @@ class _TreeContextMenu(QMenu):
             action.triggered.connect(
                 qtLambda(self._view.renameTreeItem, self._handle, hItem.title)
             )
-        return
 
     def _itemActive(self) -> None:
         """Add Active/Inactive actions."""
@@ -1253,7 +1188,6 @@ class _TreeContextMenu(QMenu):
         else:
             action = qtAddAction(self, self.tr("Toggle Active"))
             action.triggered.connect(self._toggleItemActive)
-        return
 
     def _itemStatusImport(self, multi: bool) -> None:
         """Add actions for changing status or importance."""
@@ -1295,7 +1229,6 @@ class _TreeContextMenu(QMenu):
                 self._view.projectSettingsRequest.emit,
                 GuiProjectSettings.PAGE_IMPORT
             ))
-        return
 
     def _itemTransform(self, isFile: bool, isFolder: bool) -> None:
         """Add actions for the Transform menu."""
@@ -1338,15 +1271,12 @@ class _TreeContextMenu(QMenu):
             action = qtAddAction(menu, self.tr("Split Document by Headings"))
             action.triggered.connect(qtLambda(self._tree.splitDocument, self._handle))
 
-        return
-
     def _expandCollapse(self) -> None:
         """Add actions for expand and collapse."""
         action = qtAddAction(self, self.tr("Expand All"))
         action.triggered.connect(qtLambda(self._tree.expandFromIndex, self._indices[0]))
         action = qtAddAction(self, self.tr("Collapse All"))
         action.triggered.connect(qtLambda(self._tree.collapseFromIndex, self._indices[0]))
-        return
 
     def _deleteOrTrash(self) -> None:
         """Add move to Trash action."""
@@ -1359,7 +1289,6 @@ class _TreeContextMenu(QMenu):
             text = self.tr("Move to Trash")
         action = qtAddAction(self, text)
         action.triggered.connect(self._tree.processDeleteRequest)
-        return
 
     ##
     #  Private Slots
@@ -1371,7 +1300,6 @@ class _TreeContextMenu(QMenu):
         if self._item.isFileType():
             self._item.setActive(not self._item.isActive)
             self._item.notifyToRefresh()
-        return
 
     ##
     #  Internal Functions
@@ -1385,13 +1313,11 @@ class _TreeContextMenu(QMenu):
                 node.item.setActive(state)
                 refresh.append(node.item.itemHandle)
         SHARED.project.tree.refreshItems(refresh)
-        return
 
     def _changeItemStatus(self, key: str) -> None:
         """Set a new status value of an item."""
         self._item.setStatus(key)
         self._item.notifyToRefresh()
-        return
 
     def _iterSetItemStatus(self, key: str) -> None:
         """Change the status value for multiple items."""
@@ -1401,13 +1327,11 @@ class _TreeContextMenu(QMenu):
                 node.item.setStatus(key)
                 refresh.append(node.item.itemHandle)
         SHARED.project.tree.refreshItems(refresh)
-        return
 
     def _changeItemImport(self, key: str) -> None:
         """Set a new importance value of an item."""
         self._item.setImport(key)
         self._item.notifyToRefresh()
-        return
 
     def _iterSetItemImport(self, key: str) -> None:
         """Change the status value for multiple items."""
@@ -1417,7 +1341,6 @@ class _TreeContextMenu(QMenu):
                 node.item.setImport(key)
                 refresh.append(node.item.itemHandle)
         SHARED.project.tree.refreshItems(refresh)
-        return
 
     def _changeItemLayout(self, itemLayout: nwItemLayout) -> None:
         """Set a new item layout value of an item."""
@@ -1428,7 +1351,6 @@ class _TreeContextMenu(QMenu):
         elif itemLayout == nwItemLayout.NOTE:
             self._item.setLayout(nwItemLayout.NOTE)
             self._item.notifyToRefresh()
-        return
 
     def _convertFolderToFile(self, itemLayout: nwItemLayout) -> None:
         """Convert a folder to a note or document."""
@@ -1448,4 +1370,3 @@ class _TreeContextMenu(QMenu):
                 self._item.notifyToRefresh()
             else:
                 logger.info("Folder conversion cancelled")
-        return

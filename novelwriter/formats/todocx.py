@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -100,7 +100,7 @@ def _wText(parent: ET.Element, text: str) -> ET.Element:
 
 
 def _mmToSz(value: float) -> int:
-    """Convert millimetres to internal margin size units"""
+    """Convert millimetres to internal margin size units."""
     return int(value*20.0*72.0/25.4)
 
 
@@ -143,6 +143,7 @@ S_FNOTE = "FootnoteText"
 
 
 class DocXXmlRel(NamedTuple):
+    """DocX XML Rel Data."""
 
     rId: str
     relType: str
@@ -150,6 +151,7 @@ class DocXXmlRel(NamedTuple):
 
 
 class DocXXmlFile(NamedTuple):
+    """DocX XML File Data."""
 
     xml: ET.Element
     path: str
@@ -157,6 +159,7 @@ class DocXXmlFile(NamedTuple):
 
 
 class DocXParStyle(NamedTuple):
+    """DocX XML Paragraph Style Data."""
 
     name: str
     styleId: str
@@ -176,7 +179,7 @@ class DocXParStyle(NamedTuple):
 
 
 class ToDocX(Tokenizer):
-    """Core: DocX Document Writer
+    """Core: DocX Document Writer.
 
     Extend the Tokenizer class to writer DocX Document files.
     """
@@ -202,8 +205,6 @@ class ToDocX(Tokenizer):
         self._usedNotes: dict[str, int] = {}
         self._usedFields: list[tuple[ET.Element, str]] = []
 
-        return
-
     ##
     #  Setters
     ##
@@ -214,25 +215,22 @@ class ToDocX(Tokenizer):
         """Set the document page size and margins in millimetres."""
         self._pageSize = QSize(_mmToSz(width), _mmToSz(height))
         self._pageMargins = QMargins(_mmToSz(left), _mmToSz(top), _mmToSz(right), _mmToSz(bottom))
-        return
 
     def setHeaderFormat(self, value: str, offset: int) -> None:
         """Set the document header format."""
         self._headerFormat = value.strip()
         self._pageOffset = offset
-        return
 
     ##
     #  Class Methods
     ##
 
     def initDocument(self) -> None:
-        """Initialises the DocX document structure."""
+        """Initialise the DocX document structure."""
         super().initDocument()
         self._fontFamily = self._textFont.family()
         self._fontSize = self._textFont.pointSizeF()
         self._generateStyles()
-        return
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into XML elements."""
@@ -302,8 +300,6 @@ class ToDocX(Tokenizer):
             elif tType == BlockTyp.KEYWORD:
                 self._processFragments(par, S_META, tText, tFormat)
 
-        return
-
     def closeDocument(self) -> None:
         """Generate all the XML."""
         self._coreXml()
@@ -321,8 +317,6 @@ class ToDocX(Tokenizer):
         self._settingsXml()
         if self._usedNotes:
             self._footnotesXml()
-
-        return
 
     def saveDocument(self, path: Path) -> None:
         """Save the data to a .docx file."""
@@ -372,8 +366,6 @@ class ToDocX(Tokenizer):
             for name, rel in self._files.items():
                 xmlToZip(f"{rel.path}/{name}", rel.xml, outZip)
             xmlToZip("[Content_Types].xml", dTypes, outZip)
-
-        return
 
     ##
     #  Internal Functions
@@ -453,8 +445,6 @@ class ToDocX(Tokenizer):
 
         if temp := text[fStart:]:
             par.addContent(self._textRunToXml(temp, xFmt, fClass, fLink))
-
-        return
 
     def _textRunToXml(self, text: str | None, fmt: int, fClass: str, fLink: str) -> ET.Element:
         """Encode the text run into XML."""
@@ -667,8 +657,6 @@ class ToDocX(Tokenizer):
         # Add to Cache
         for style in styles:
             self._styles[style.styleId] = style
-
-        return
 
     def _nextRelId(self) -> str:
         """Generate the next unique rId."""
@@ -1054,6 +1042,10 @@ class ToDocX(Tokenizer):
 
 
 class DocXParagraph:
+    """DocX Text Paragraph.
+
+    This class holds a single paragraph of a DocX document.
+    """
 
     __slots__ = (
         "_bottomMargin", "_breakAfter", "_breakBefore", "_content",
@@ -1073,7 +1065,6 @@ class DocXParagraph:
         self._breakBefore = False
         self._breakAfter = False
         self._footnoteRef = False
-        return
 
     ##
     #  Properties
@@ -1091,53 +1082,43 @@ class DocXParagraph:
     def setStyle(self, style: DocXParStyle | None) -> None:
         """Set the paragraph style."""
         self._style = style
-        return
 
     def setAlignment(self, value: str) -> None:
         """Set paragraph alignment."""
         if value in ("left", "center", "right", "both"):
             self._textAlign = value
-        return
 
     def setMarginTop(self, value: float) -> None:
         """Set margin above in pt."""
         self._topMargin = value
-        return
 
     def setMarginBottom(self, value: float) -> None:
         """Set margin below in pt."""
         self._bottomMargin = value
-        return
 
     def setMarginLeft(self, value: float) -> None:
         """Set margin left in pt."""
         self._leftMargin = value
-        return
 
     def setMarginRight(self, value: float) -> None:
         """Set margin right in pt."""
         self._rightMargin = value
-        return
 
     def setIndentFirst(self, state: bool) -> None:
         """Set first line indent."""
         self._indentFirst = state
-        return
 
     def setPageBreakBefore(self, state: bool) -> None:
         """Set page break before flag."""
         self._breakBefore = state
-        return
 
     def setPageBreakAfter(self, state: bool) -> None:
         """Set page break after flag."""
         self._breakAfter = state
-        return
 
     def setIsFootnote(self, state: bool) -> None:
         """Set is footnote flag."""
         self._footnoteRef = state
-        return
 
     ##
     #  Methods
@@ -1146,10 +1127,9 @@ class DocXParagraph:
     def addContent(self, run: ET.Element) -> None:
         """Add a run segment to the paragraph."""
         self._content.append(run)
-        return
 
     def toXml(self, body: ET.Element) -> None:
-        """Called after all content is set."""
+        """Generate the XML. Call after all content is set."""
         if style := self._style:
             xP = xmlSubElem(body, _wTag("p"))
 
@@ -1191,5 +1171,3 @@ class DocXParagraph:
             if self._breakAfter:
                 xR = xmlSubElem(xP, _wTag("r"))
                 xmlSubElem(xR, _wTag("br"), attrib={_wTag("type"): "page"})
-
-        return
