@@ -86,7 +86,7 @@ class Config:
         "spellLanguage", "stopWhenIdle", "tabWidth", "textFont", "textMargin", "textWidth",
         "themeMode", "useCharCount", "userIdleTime", "verPyQtString", "verPyQtValue",
         "verPyString", "verQtString", "verQtValue", "viewComments", "viewNotes", "viewPanePos",
-        "viewSynopsis", "welcomeWinSize", "vimMode",
+        "viewSynopsis", "vimMode", "welcomeWinSize",
     )
 
     LANG_NW   = 1
