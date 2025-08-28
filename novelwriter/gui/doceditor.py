@@ -232,8 +232,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Vim state for vim mode
         self.vim = VimState()
-        self.vim.enabled = CONFIG.vimMode
-        if self.vim.enabled:
+        if CONFIG.vimModeEnabled:
             self.setVimMode(nwVimMode.NORMAL)
 
         # Finalise
@@ -611,7 +610,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def setVimMode(self, mode: nwVimMode) -> None:
         """Change the vim mode."""
-        if self.vim.enabled:
+        if CONFIG.vimModeEnabled:
             if mode == nwVimMode.NORMAL:
                 cursor = self.textCursor()
                 cursor.clearSelection()
@@ -973,7 +972,7 @@ class GuiDocEditor(QPlainTextEdit):
         If vim mode is not enabled, it returns false and typing
         behaves as normal.
         """
-        if not self.vim.enabled:
+        if not CONFIG.vimModeEnabled:
             return False
 
         # --- INSERT mode, bypass ---
@@ -1486,7 +1485,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     @pyqtSlot()
     def _updateVimModeStatusBar(self, modeName: str) -> None:
-        if self.vim.enabled:
+        if CONFIG.vimModeEnabled:
             self.docFooter.updateVimModeStatusBar(modeName)
 
     @pyqtSlot()
@@ -3463,11 +3462,9 @@ class VimState:
         "_mode",
         "_normalCommand",
         "_visualCommand",
-        "enabled",
     )
 
     def __init__(self) -> None:
-        self.enabled: bool = True
         self.PREFIX_KEYS = ["d", "y", "g"]
         self.VISUAL_PREFIX_KEYS = ["y", "g"]
         self._mode: nwVimMode = nwVimMode.NORMAL

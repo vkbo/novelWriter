@@ -2495,7 +2495,7 @@ def testGuiEditor_Vim_EnableVimMode(qtbot, nwGUI, projPath, mockRnd):
     docEditor.setPlainText("HelloWorld")
 
     # Enable vim mode
-    CONFIG.vimMode = True
+    CONFIG.vimModeEnabled = True
 
     original_text = docEditor.getText()
 
@@ -2526,7 +2526,7 @@ def testGuiEditor_Vim_MotionsAndInsert(qtbot, nwGUI, projPath, mockRnd):
     docEditor.setPlainText("Line1\nLine2\nLine3")
 
     # Enable vim mode
-    CONFIG.vimMode = True
+    CONFIG.vimModeEnabled = True
 
     def reset_and_get_text():
         """Reset test text."""
@@ -2591,7 +2591,7 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc)
 
     docEditor = nwGUI.docEditor
-    CONFIG.vimMode = True
+    CONFIG.vimModeEnabled = True
 
     def reset_text():
         docEditor.setPlainText("Line1\nLine2\nLine3")
