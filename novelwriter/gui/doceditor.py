@@ -610,6 +610,7 @@ class GuiDocEditor(QPlainTextEdit):
     ##
 
     def setVimMode(self, mode: nwVimMode) -> None:
+        """Change the vim mode."""
         if self.vim.enabled:
             if mode == nwVimMode.NORMAL:
                 cursor = self.textCursor()
@@ -956,6 +957,7 @@ class GuiDocEditor(QPlainTextEdit):
             nPos = self.cursorRect().topLeft().y()
             kMod = event.modifiers()
             okMod = kMod in (QtModNone, QtModShift)
+
             okKey = event.key() not in self.MOVE_KEYS
             if nPos != cPos and okMod and okKey and (viewport := self.viewport()):
                 mPos = CONFIG.autoScrollPos*0.01 * viewport.height()
@@ -967,6 +969,10 @@ class GuiDocEditor(QPlainTextEdit):
         return
 
     def _handleVimKeyPress(self, event: QKeyEvent) -> bool:
+        """Handle key events for Vim mode.
+        If vim mode is not enabled, it returns false and typing
+        behaves as normal.
+        """
         if not self.vim.enabled:
             return False
 
@@ -978,7 +984,6 @@ class GuiDocEditor(QPlainTextEdit):
         # --- NORMAL mode, mode switching ---
         if event.text() == "i":
             self.setVimMode(nwVimMode.INSERT)
-            return True
         elif event.text() == "I":
             cursor = self.textCursor()
             cursor.movePosition(cursor.MoveOperation.StartOfLine)
@@ -3444,12 +3449,13 @@ class GuiDocEditFooter(QWidget):
         self.wordsText.setText(text)
 
     def updateVimModeStatusBar(self, modeName: str) -> None:
+        """Update the vim Mode status information."""
         self.vimStatus.setText(self.tr(modeName))
-        return
 
 
 class VimState:
     """Minimal Vim state machine."""
+
     __slots__ = (
         "PREFIX_KEYS",
         "VISUAL_PREFIX_KEYS",
@@ -3470,37 +3476,44 @@ class VimState:
         self._internalClipboard = ""
 
     def resetCommand(self) -> None:
+        """Reset internal vim command."""
         self._normalCommand = ""
         self._visualCommand = ""
 
     def setMode(self, new_mode: nwVimMode) -> None:
+        """Switch vim mode."""
         self._mode = new_mode
         self.resetCommand()
 
     def getMode(self) -> nwVimMode:
+        """Return current vim mode."""
         return self._mode
 
     def pushCommandKey(self, key: str) -> None:
+        """Push key to the current command building stack."""
         if self._mode is nwVimMode.NORMAL:
             self._normalCommand += key
         elif self._mode in (nwVimMode.VISUAL, nwVimMode.VLINE):
             self._visualCommand += key
 
     def setCommand(self, key: str) -> None:
+        """Set the state of the current vim command."""
         if self._mode is nwVimMode.NORMAL:
             self._normalCommand = key
         elif self._mode in (nwVimMode.VISUAL, nwVimMode.VLINE):
             self._visualCommand = key
 
     def command(self) -> str:
+        """Return the current vim command."""
         if self._mode in (nwVimMode.VISUAL, nwVimMode.VLINE):
             return self._visualCommand
         else:
             return self._normalCommand
 
     def yankToInternal(self, text: str) -> None:
+        """Put text into internal vim buffer."""
         self._internalClipboard = text
 
     def pasteFromInternal(self) -> str:
-        text = self._internalClipboard
-        return text
+        """Paste from the internal vim clipboard."""
+        return self._internalClipboard

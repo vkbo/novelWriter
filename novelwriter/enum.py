@@ -250,6 +250,8 @@ class nwStatusShape(Enum):
 
 
 class nwVimMode(Enum):
+    """Enum: Vim mode different modes."""
+
     NORMAL = 0
     INSERT = 1
     VISUAL = 2
