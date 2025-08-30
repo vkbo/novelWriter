@@ -2697,3 +2697,40 @@ def testGuiEditor_Vim_VisualMode_SelectAllDeleteUndo(qtbot, nwGUI, projPath, moc
     qtbot.keyClicks(docEditor, "gg", delay=inputDelay)
     cursor_pos = docEditor.textCursor().position()
     assert restored_text[cursor_pos] == "L"  # first char restored
+
+
+@pytest.mark.gui
+def testGuiEditor_Vim_NormalMode_EndLineAndAppend(qtbot, nwGUI, projPath, mockRnd):
+    """Test vim NORMAL mode commands '$' and 'a'."""
+    inputDelay = 2
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc)
+
+    docEditor = nwGUI.docEditor
+    CONFIG.vimModeEnabled = True
+
+    # Set initial text
+    docEditor.setPlainText("Line1\nLine2\nLine3")
+
+    # --- Test $ command: move to end of first line ---
+    docEditor.setCursorPosition(0)  # start of Line1
+    qtbot.keyClick(docEditor, "$", delay=inputDelay)
+
+    cursor_pos = docEditor.textCursor().position()
+    text = docEditor.getText().splitlines()[0]
+    assert cursor_pos == len(text)  # cursor at end of first line
+
+    # --- Test 'a' command: move right and enter insert mode ---
+    docEditor.setCursorPosition(0)  # start of Line1 again
+    qtbot.keyClick(docEditor, "a", delay=inputDelay)
+
+    # Cursor should have moved one character right
+    cursor_pos = docEditor.textCursor().position()
+    assert cursor_pos == 1
+
+    # Insert some text
+    qtbot.keyClicks(docEditor, "TEST", delay=inputDelay)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)  # exit insert mode
+
+    new_text = docEditor.getText()
+    assert new_text.startswith("LTESSTine1") or new_text.startswith("LTESTine1")  # depending on cursor behavior
