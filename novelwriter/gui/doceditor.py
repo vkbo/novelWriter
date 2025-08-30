@@ -935,7 +935,8 @@ class GuiDocEditor(QPlainTextEdit):
         """
         self._lastActive = time()
 
-        if self._handleVimKeyPress(event):
+        if CONFIG.vimModeEnabled:
+            self._handleVimKeyPress(event)
             return
 
         if self.docSearch.anyFocus() and event.key() in self.ENTER_KEYS:
@@ -972,8 +973,6 @@ class GuiDocEditor(QPlainTextEdit):
         If vim mode is not enabled, it returns false and typing
         behaves as normal.
         """
-        if not CONFIG.vimModeEnabled:
-            return False
 
         # --- INSERT mode, bypass ---
         if self.vim.getMode() == nwVimMode.INSERT:
