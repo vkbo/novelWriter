@@ -2656,7 +2656,7 @@ def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(docEditor, "k", delay=inputDelay)
     qtbot.keyClick(docEditor, "l", delay=inputDelay)
     qtbot.keyClick(docEditor, "v", delay=inputDelay)
-    qtbot.keyClicks(docEditor, "yy", delay=inputDelay)
+    qtbot.keyClicks(docEditor, "y", delay=inputDelay)
     qtbot.keyClick(docEditor, "p", delay=inputDelay)
 
     text = docEditor.getText()
@@ -2664,6 +2664,20 @@ def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     # Assert that something was yanked (here likely "Line3" or just "n")
     assert "Line3" in text or text.endswith("n")
 
+    # --- Linewise visual mode (V) with yank and paste ---
+    reset_text()
+    # Move to Line2
+    line2_pos = docEditor.getText().find("Line2")
+    docEditor.setCursorPosition(line2_pos)
+    qtbot.keyClick(docEditor, "V", delay=inputDelay)  # linewise visual mode
+
+    qtbot.keyClick(docEditor, "y", delay=inputDelay)  # yank Line2
+    qtbot.keyClick(docEditor, "j", delay=inputDelay)  # move to Line3
+    qtbot.keyClick(docEditor, "p", delay=inputDelay)  # paste Line2 after Line3
+
+    lines = docEditor.getText().splitlines()
+    # Assert Line2 got duplicated after Line3
+    assert lines == ["Line1", "Line2", "Line3", "Line2"]
 
 @pytest.mark.gui
 def testGuiEditor_Vim_VisualMode_SelectAllDeleteUndo(qtbot, nwGUI, projPath, mockRnd):

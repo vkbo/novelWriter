@@ -1026,7 +1026,7 @@ class GuiDocEditor(QPlainTextEdit):
                 self.setVimMode(nwVimMode.NORMAL)
                 return True
 
-            if self.vim.command() == "yy":
+            if self.vim.command() == "y":
                 self.vim.yankToInternal(cursor.selectedText())
                 cursor.clearSelection()
                 self.setTextCursor(cursor)
@@ -3472,7 +3472,7 @@ class VimState:
 
     def __init__(self) -> None:
         self.PREFIX_KEYS = ["d", "y", "g"]
-        self.VISUAL_PREFIX_KEYS = ["y", "g"]
+        self.VISUAL_PREFIX_KEYS = ["g"]
         self._mode: nwVimMode = nwVimMode.NORMAL
         self._normalCommand: str = ""
         self._visualCommand: str = ""
