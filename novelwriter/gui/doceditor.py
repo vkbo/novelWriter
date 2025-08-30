@@ -1026,6 +1026,13 @@ class GuiDocEditor(QPlainTextEdit):
                 self.setVimMode(nwVimMode.NORMAL)
                 return True
 
+            if self.vim.command() == "yy":
+                self.vim.yankToInternal(cursor.selectedText())
+                cursor.clearSelection()
+                self.setTextCursor(cursor)
+                self.setVimMode(nwVimMode.NORMAL)
+                return True
+
             if event.text() == "u":
                 self.docAction(nwDocAction.UNDO)
                 self.setVimMode(nwVimMode.NORMAL)

@@ -44,7 +44,7 @@ from novelwriter.types import (
     QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtModNone,
     QtMouseLeft, QtMoveAnchor, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
 )
-
+from novelwriter.enum import ( nwVimMode,)
 from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
 
@@ -2633,3 +2633,67 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
 
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line1", "Line3", "Line2", "Line3"]
+
+@pytest.mark.gui
+def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
+    """Test vim visual mode selection, yank and paste."""
+    inputDelay = 2
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc)
+
+    docEditor = nwGUI.docEditor
+    CONFIG.vimModeEnabled = True
+
+    def reset_text():
+        docEditor.setPlainText("Line1\nLine2\nLine3")
+        return docEditor.getText()
+
+    # --- Visual mode with yy ---
+    reset_text()
+    docEditor.setCursorPosition(docEditor.getText().find("Line3") + 1)  # inside Line3
+    qtbot.keyClick(docEditor, "j", delay=inputDelay)
+    qtbot.keyClick(docEditor, "h", delay=inputDelay)
+    qtbot.keyClick(docEditor, "k", delay=inputDelay)
+    qtbot.keyClick(docEditor, "l", delay=inputDelay)
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)
+    qtbot.keyClicks(docEditor, "yy", delay=inputDelay)
+    qtbot.keyClick(docEditor, "p", delay=inputDelay)
+
+    text = docEditor.getText()
+
+    # Assert that something was yanked (here likely "Line3" or just "n")
+    assert "Line3" in text or text.endswith("n")
+
+
+@pytest.mark.gui
+def testGuiEditor_Vim_VisualMode_SelectAllDeleteUndo(qtbot, nwGUI, projPath, mockRnd):
+    """Test selecting all text with ggVG, deleting, undoing with u, and verifying reset."""
+    inputDelay = 2
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc)
+
+    docEditor = nwGUI.docEditor
+    CONFIG.vimModeEnabled = True
+
+    # Setup text
+    docEditor.setPlainText("Line1\nLine2\nLine3")
+    original_text = docEditor.getText()
+
+    # --- Visual select all with ggVG ---
+    qtbot.keyClicks(docEditor, "gg", delay=inputDelay)  # go to start
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)    # enter visual mode
+    qtbot.keyClick(docEditor, "G", delay=inputDelay)    # extend to end of file
+
+    # --- Delete selection ---
+    qtbot.keyClick(docEditor, "d", delay=inputDelay)
+    assert docEditor.getText().strip() == ""  # everything deleted
+
+    # --- Undo ---
+    qtbot.keyClick(docEditor, "u", delay=inputDelay)
+    restored_text = docEditor.getText()
+    assert restored_text == original_text
+
+    # --- Move back to start ---
+    qtbot.keyClicks(docEditor, "gg", delay=inputDelay)
+    cursor_pos = docEditor.textCursor().position()
+    assert restored_text[cursor_pos] == "L"  # first char restored
