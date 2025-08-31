@@ -151,7 +151,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Completer
         self._completer = CommandCompleter(self)
-        self._completer.complete.connect(self._insertCompletion)
+        self._completer.insertText.connect(self._insertCompletion)
 
         # Create Custom Document
         self._qDocument = GuiTextDocument(self)
@@ -2088,7 +2088,7 @@ class CommandCompleter(QMenu):
 
     __slots__ = ("_parent",)
 
-    complete = pyqtSignal(int, int, str)
+    insertText = pyqtSignal(int, int, str)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -2195,7 +2195,7 @@ class CommandCompleter(QMenu):
 
     def _emitComplete(self, pos: int, length: int, value: str) -> None:
         """Emit the signal to indicate a selection has been made."""
-        self.complete.emit(pos, length, value)
+        self.insertText.emit(pos, length, value)
         return
 
 
