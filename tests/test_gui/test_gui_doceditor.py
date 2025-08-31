@@ -2699,7 +2699,7 @@ def testGuiEditor_Vim_VisualMode_SelectAllDeleteUndo(qtbot, nwGUI, projPath, moc
     original_text = docEditor.getText()
 
     # --- Visual select all with ggVG ---
-    qtbot.keyClicks(docEditor, "g", delay=inputDelay)  
+    qtbot.keyClicks(docEditor, "g", delay=inputDelay)
     qtbot.keyClicks(docEditor, "g", delay=inputDelay)   # go to start
     qtbot.keyClick(docEditor, "v", delay=inputDelay)    # enter visual mode
     qtbot.keyClick(docEditor, "G", delay=inputDelay)    # extend to end of file
@@ -2740,7 +2740,7 @@ def testGuiEditor_Vim_VlineMode_SelectAllDeleteUndo(qtbot, nwGUI, projPath, mock
     qtbot.keyClick(docEditor, "l", delay=inputDelay)
 
     # --- Visual select all with ggVG ---
-    qtbot.keyClicks(docEditor, "g", delay=inputDelay) 
+    qtbot.keyClicks(docEditor, "g", delay=inputDelay)
     qtbot.keyClicks(docEditor, "g", delay=inputDelay)   # go to start
     qtbot.keyClick(docEditor, "V", delay=inputDelay)    # enter vline mode
     qtbot.keyClick(docEditor, "G", delay=inputDelay)    # extend to end of file
@@ -2792,14 +2792,17 @@ def testGuiEditor_Vim_NormalMode_EndLineAndAppend(qtbot, nwGUI, projPath, mockRn
 
     # Insert some text
     qtbot.keyClicks(docEditor, "TEST", delay=inputDelay)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)  # exit insert mode
+    qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)
 
     new_text = docEditor.getText()
-    assert new_text.startswith("LTESSTine1") or new_text.startswith("LTESTine1")  # depending on cursor behavior
+    assert new_text.startswith("LTESSTine1") or new_text.startswith("LTESTine1")
+
 
 @pytest.mark.gui
 def testGuiEditor_Vim_AllMotions(qtbot, nwGUI, projPath, mockRnd):
-    """Test all currently supported vim motions in Normal, Insert, Visual, and Visual Line modes."""
+    """Test all currently supported vim motions in
+    Normal, Insert, Visual, and Visual Line modes.
+    """
     inputDelay = 2
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
@@ -2830,10 +2833,9 @@ def testGuiEditor_Vim_AllMotions(qtbot, nwGUI, projPath, mockRnd):
     assert cursor_pos == len("Hello World")
 
     reset_text()
-    qtbot.keyClick(docEditor, "g", delay=inputDelay) 
+    qtbot.keyClick(docEditor, "g", delay=inputDelay)
     qtbot.keyClick(docEditor, "g", delay=inputDelay)  # top of buffer
     assert docEditor.textCursor().position() == 0
-
 
     reset_text()
     qtbot.keyClick(docEditor, "G", delay=inputDelay)  # bottom of buffer
@@ -2898,4 +2900,3 @@ def testGuiEditor_Vim_AllMotions(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(docEditor, "G", delay=inputDelay)  # extend to EOF
     qtbot.keyClick(docEditor, "d", delay=inputDelay)  # delete all
     assert docEditor.getText().strip() == ""
-
