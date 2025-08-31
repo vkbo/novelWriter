@@ -232,8 +232,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Vim state for vim mode
         self.vim = VimState()
-        if CONFIG.vimModeEnabled:
-            self.setVimMode(nwVimMode.NORMAL)
+        self.setVimMode(nwVimMode.NORMAL)
 
         # Finalise
         self.updateSyntaxColors()
@@ -3471,6 +3470,7 @@ class VimState:
         self._normalCommand: str = ""
         self._visualCommand: str = ""
         self._internalClipboard = ""
+        self.setMode(nwVimMode.NORMAL)
 
     def resetCommand(self) -> None:
         """Reset internal vim command."""
