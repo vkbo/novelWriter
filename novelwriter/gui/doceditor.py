@@ -2086,10 +2086,13 @@ class CommandCompleter(QMenu):
     called on every keystroke on a line starting with @ or %.
     """
 
+    __slots__ = ("_parent",)
+
     complete = pyqtSignal(int, int, str)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
+        self._parent = parent
         return
 
     def updateMetaText(self, text: str, pos: int) -> bool:
@@ -2176,15 +2179,14 @@ class CommandCompleter(QMenu):
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Capture keypresses and forward most of them to the editor."""
-        parent = self.parent()
         if event.key() in (
             Qt.Key.Key_Up, Qt.Key.Key_Down, Qt.Key.Key_Return,
             Qt.Key.Key_Enter, Qt.Key.Key_Escape
         ):
             super().keyPressEvent(event)
-        elif isinstance(parent, GuiDocEditor):
+        else:
             self.close()  # Close to release the event lock before forwarding the key press (#2510)
-            parent.keyPressEvent(event)
+            self._parent.keyPressEvent(event)
         return
 
     ##
