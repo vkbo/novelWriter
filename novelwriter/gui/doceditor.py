@@ -973,7 +973,6 @@ class GuiDocEditor(QPlainTextEdit):
         If vim mode is not enabled, it returns false and typing
         behaves as normal.
         """
-
         # --- INSERT mode, bypass ---
         if self.vim.getMode() == nwVimMode.INSERT:
             super().keyPressEvent(event)
@@ -1030,11 +1029,6 @@ class GuiDocEditor(QPlainTextEdit):
                 self.vim.yankToInternal(cursor.selectedText())
                 cursor.clearSelection()
                 self.setTextCursor(cursor)
-                self.setVimMode(nwVimMode.NORMAL)
-                return True
-
-            if event.text() == "u":
-                self.docAction(nwDocAction.UNDO)
                 self.setVimMode(nwVimMode.NORMAL)
                 return True
 
