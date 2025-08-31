@@ -164,14 +164,14 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
     # ===============
 
     mockTheme: Path = tstPaths.cnfDir / "themes" / "test.conf"
-    mockTheme.write_text(
+    mockTheme.write_text((
         "[Main]\n"
         "name = Test\n"
         "\n"
         "[Palette]\n"
         "window = 0, 0, 0\n"
         "text = 255, 255, 255\n"
-    )
+    ), encoding="utf-8")
     mainTheme._availThemes["test"] = mockTheme
 
     CONFIG.guiTheme = "test"
