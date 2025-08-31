@@ -812,13 +812,13 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI, projPath, fncPath, mockRnd)
     # Handle broken index on project open
     nwGUI.closeProject()
     idxPath: Path = projPath / "meta" / nwFiles.INDEX_FILE
-    assert idxPath.read_text() != "{}"
-    idxPath.write_text("{}")
-    assert idxPath.read_text() == "{}"
+    assert idxPath.read_text(encoding="utf-8") != "{}"
+    idxPath.write_text("{}", encoding="utf-8")
+    assert idxPath.read_text(encoding="utf-8") == "{}"
 
     nwGUI.openProject(projPath)
     nwGUI.saveProject()
-    assert idxPath.read_text() != "{}"
+    assert idxPath.read_text(encoding="utf-8") != "{}"
     assert nwGUI.docEditor.docHandle == C.hSceneDoc
     assert nwGUI.docViewer.docHandle == C.hTitlePage
 

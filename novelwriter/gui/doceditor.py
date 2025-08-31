@@ -151,7 +151,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Completer
         self._completer = CommandCompleter(self)
-        self._completer.complete.connect(self._insertCompletion)
+        self._completer.insertText.connect(self._insertCompletion)
 
         # Create Custom Document
         self._qDocument = GuiTextDocument(self)
@@ -1080,6 +1080,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
+
             if text and text[0] in "@%" and added + removed == 1:
                 # Only run on single character changes, or it will trigger
                 # at unwanted times when other changes are made to the document
@@ -1094,10 +1095,6 @@ class GuiDocEditor(QPlainTextEdit):
                         point = self.cursorRect().bottomRight()
                         self._completer.move(viewport.mapToGlobal(point))
                         self._completer.show()
-                    else:
-                        self._completer.close()
-            else:
-                self._completer.close()
 
             if self._doReplace and added == 1:
                 cursor = self.textCursor()
@@ -1121,7 +1118,7 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.setPosition(check, QtMoveAnchor)
             cursor.setPosition(check + length, QtKeepAnchor)
             cursor.insertText(text)
-            self._completer.hide()
+            self._completer.close()
         return
 
     @pyqtSlot()
@@ -2089,10 +2086,13 @@ class CommandCompleter(QMenu):
     called on every keystroke on a line starting with @ or %.
     """
 
-    complete = pyqtSignal(int, int, str)
+    __slots__ = ("_parent",)
+
+    insertText = pyqtSignal(int, int, str)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
+        self._parent = parent
         return
 
     def updateMetaText(self, text: str, pos: int) -> bool:
@@ -2179,14 +2179,14 @@ class CommandCompleter(QMenu):
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Capture keypresses and forward most of them to the editor."""
-        parent = self.parent()
         if event.key() in (
             Qt.Key.Key_Up, Qt.Key.Key_Down, Qt.Key.Key_Return,
             Qt.Key.Key_Enter, Qt.Key.Key_Escape
         ):
             super().keyPressEvent(event)
-        elif isinstance(parent, GuiDocEditor):
-            parent.keyPressEvent(event)
+        else:
+            self.close()  # Close to release the event lock before forwarding the key press (#2510)
+            self._parent.keyPressEvent(event)
         return
 
     ##
@@ -2195,7 +2195,7 @@ class CommandCompleter(QMenu):
 
     def _emitComplete(self, pos: int, length: int, value: str) -> None:
         """Emit the signal to indicate a selection has been made."""
-        self.complete.emit(pos, length, value)
+        self.insertText.emit(pos, length, value)
         return
 
 
