@@ -1080,6 +1080,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
+
             if text and text[0] in "@%" and added + removed == 1:
                 # Only run on single character changes, or it will trigger
                 # at unwanted times when other changes are made to the document
@@ -1094,10 +1095,6 @@ class GuiDocEditor(QPlainTextEdit):
                         point = self.cursorRect().bottomRight()
                         self._completer.move(viewport.mapToGlobal(point))
                         self._completer.show()
-                    else:
-                        self._completer.close()
-            else:
-                self._completer.close()
 
             if self._doReplace and added == 1:
                 cursor = self.textCursor()
@@ -1121,7 +1118,7 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.setPosition(check, QtMoveAnchor)
             cursor.setPosition(check + length, QtKeepAnchor)
             cursor.insertText(text)
-            self._completer.hide()
+            self._completer.close()
         return
 
     @pyqtSlot()
@@ -2186,6 +2183,7 @@ class CommandCompleter(QMenu):
         ):
             super().keyPressEvent(event)
         elif isinstance(parent, GuiDocEditor):
+            self.close()  # Close to release the event lock before forwarding the key press (#2510)
             parent.keyPressEvent(event)
         return
 
