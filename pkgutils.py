@@ -23,7 +23,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import argparse
@@ -50,7 +50,6 @@ OS_WIN = sys.platform.startswith("win32")
 def printVersion(args: argparse.Namespace) -> None:
     """Print the novelWriter version and exit."""
     print(extractVersion(beQuiet=True)[0], end=None)
-    return
 
 
 def installPackages(args: argparse.Namespace) -> None:
@@ -78,8 +77,6 @@ def installPackages(args: argparse.Namespace) -> None:
             print("Failed with error:")
             print(str(exc))
             sys.exit(1)
-
-    return
 
 
 def cleanBuildDirs(args: argparse.Namespace) -> None:
@@ -111,8 +108,6 @@ def cleanBuildDirs(args: argparse.Namespace) -> None:
 
     print("")
 
-    return
-
 
 def genMacOSPlist(args: argparse.Namespace) -> None:
     """Set necessary values for .plist file for MacOS build."""
@@ -133,8 +128,6 @@ def genMacOSPlist(args: argparse.Namespace) -> None:
 
     print(f"Writing Info.plist to {outDir}/Info.plist")
     writeFile(outDir / "Info.plist", plistXML)
-
-    return
 
 
 if __name__ == "__main__":

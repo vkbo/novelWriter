@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -53,7 +53,6 @@ def mockVersion(monkeypatch):
     """Mock the version info to prevent diff from failing."""
     monkeypatch.setattr("novelwriter.core.projectxml.__version__", "2.7b1")
     monkeypatch.setattr("novelwriter.core.projectxml.__hexversion__", "0x020700b1")
-    return
 
 
 @pytest.mark.core

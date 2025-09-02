@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -45,6 +45,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiSideBar(QWidget):
+    """GUI: Main Window SideBar."""
 
     requestViewChange = pyqtSignal(nwView)
 
@@ -126,8 +127,6 @@ class GuiSideBar(QWidget):
 
         logger.debug("Ready: GuiSideBar")
 
-        return
-
     def updateTheme(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_BIG_TOOLBUTTON)
@@ -153,8 +152,6 @@ class GuiSideBar(QWidget):
 
         self._setThemeModeIcon()
 
-        return
-
     ##
     #  Private Slots
     ##
@@ -171,7 +168,6 @@ class GuiSideBar(QWidget):
                 CONFIG.themeMode = nwTheme.AUTO
         self.mainGui.checkThemeUpdate()
         self._setThemeModeIcon()
-        return
 
     ##
     #  Internal Functions
@@ -181,7 +177,6 @@ class GuiSideBar(QWidget):
         """Set the theme button icon."""
         self.tbTheme.setThemeIcon(nwLabels.THEME_MODE_ICON[CONFIG.themeMode])
         self.tbTheme.setToolTip(trConst(nwLabels.THEME_MODE_LABEL[CONFIG.themeMode]))
-        return
 
 
 class _PopRightMenu(QMenu):

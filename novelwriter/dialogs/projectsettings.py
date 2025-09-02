@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import csv
@@ -55,6 +55,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiProjectSettings(NDialog):
+    """GUI: Project Settings DIalog."""
 
     PAGE_SETTINGS = 0
     PAGE_STATUS   = 1
@@ -137,11 +138,8 @@ class GuiProjectSettings(NDialog):
 
         logger.debug("Ready: GuiProjectSettings")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiProjectSettings")
-        return
 
     ##
     #  Events
@@ -152,7 +150,6 @@ class GuiProjectSettings(NDialog):
         self._saveSettings()
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -169,7 +166,6 @@ class GuiProjectSettings(NDialog):
             self.mainStack.setCurrentWidget(self.importPage)
         elif pageId == self.PAGE_REPLACE:
             self.mainStack.setCurrentWidget(self.replacePage)
-        return
 
     @pyqtSlot()
     def _doSave(self) -> None:
@@ -203,8 +199,6 @@ class GuiProjectSettings(NDialog):
         QApplication.processEvents()
         self.close()
 
-        return
-
     ##
     #  Internal Functions
     ##
@@ -222,8 +216,6 @@ class GuiProjectSettings(NDialog):
         options.setValue("GuiProjectSettings", "statusColW", statusColW)
         options.setValue("GuiProjectSettings", "importColW", importColW)
         options.setValue("GuiProjectSettings", "replaceColW", replaceColW)
-
-        return
 
 
 class _SettingsPage(NScrollableForm):
@@ -294,8 +286,6 @@ class _SettingsPage(NScrollableForm):
         )
 
         self.finalise()
-
-        return
 
 
 class _StatusPage(NFixedPage):
@@ -478,8 +468,6 @@ class _StatusPage(NFixedPage):
         self.setCentralLayout(self.outerBox)
         self._setButtonIcons()
 
-        return
-
     @property
     def changed(self) -> bool:
         """The user changed these settings."""
@@ -518,7 +506,6 @@ class _StatusPage(NFixedPage):
             entry.name = name
             item.setText(self.C_LABEL, name)
             self._changed = True
-        return
 
     @pyqtSlot(int)
     def _onThemeSelect(self, index: int) -> None:
@@ -526,7 +513,6 @@ class _StatusPage(NFixedPage):
         self._theme = str(self.iconColor.currentData())
         self._setButtonIcons()
         self._updateIcon()
-        return
 
     @pyqtSlot()
     def _onColorSelect(self) -> None:
@@ -536,7 +522,6 @@ class _StatusPage(NFixedPage):
             self._theme = CUSTOM_COL
             self._setButtonIcons()
             self._updateIcon()
-        return
 
     @pyqtSlot()
     def _onItemCreate(self) -> None:
@@ -547,7 +532,6 @@ class _StatusPage(NFixedPage):
         theme = str(self.iconColor.currentData())
         self._addItem(None, StatusEntry(self.tr("New Item"), color, theme, shape, icon, 0))
         self._changed = True
-        return
 
     @pyqtSlot()
     def _onItemDelete(self) -> None:
@@ -560,7 +544,6 @@ class _StatusPage(NFixedPage):
             else:
                 self.listBox.takeTopLevelItem(iRow)
                 self._changed = True
-        return
 
     @pyqtSlot()
     def _onSelectionChanged(self) -> None:
@@ -593,7 +576,6 @@ class _StatusPage(NFixedPage):
             self.iconColor.setEnabled(False)
             self.colorButton.setEnabled(False)
             self.shapeButton.setEnabled(False)
-        return
 
     @pyqtSlot()
     def _importLabels(self) -> None:
@@ -630,7 +612,6 @@ class _StatusPage(NFixedPage):
                             writer.writerow([entry.shape.name, entry.color.name(), entry.name])
             except Exception as exc:
                 SHARED.error("Could not write file.", exc=exc)
-        return
 
     ##
     #  Internal Functions
@@ -641,7 +622,6 @@ class _StatusPage(NFixedPage):
         self._shape = shape
         self._setButtonIcons()
         self._updateIcon()
-        return
 
     def _updateIcon(self) -> None:
         """Apply changes made to a status icon."""
@@ -654,7 +634,6 @@ class _StatusPage(NFixedPage):
             entry.icon = icon
             item.setIcon(self.C_LABEL, icon)
             self._changed = True
-        return
 
     def _addItem(self, key: str | None, entry: StatusEntry) -> None:
         """Add a status item to the list."""
@@ -665,7 +644,6 @@ class _StatusPage(NFixedPage):
         item.setData(self.C_DATA, self.D_KEY, key)
         item.setData(self.C_DATA, self.D_ENTRY, entry)
         self.listBox.addTopLevelItem(item)
-        return
 
     def _moveItem(self, step: int) -> None:
         """Move and item up or down step."""
@@ -678,7 +656,6 @@ class _StatusPage(NFixedPage):
                 self.listBox.clearSelection()
                 cItem.setSelected(True)
                 self._changed = True
-        return
 
     def _getSelectedItem(self) -> QTreeWidgetItem | None:
         """Get the currently selected item."""
@@ -701,7 +678,6 @@ class _StatusPage(NFixedPage):
         self.iconColor.setCurrentData(self._theme, CUSTOM_COL)
         self.colorButton.setIcon(icon)
         self.shapeButton.setIcon(self._icons[self._shape])
-        return
 
     def _pickColor(self) -> QColor:
         """Get the correct colour value based on selections."""
@@ -789,8 +765,6 @@ class _ReplacePage(NFixedPage):
 
         self.setCentralLayout(self.outerBox)
 
-        return
-
     @property
     def changed(self) -> bool:
         """The user changed these settings."""
@@ -823,7 +797,6 @@ class _ReplacePage(NFixedPage):
         if (item := self._getSelectedItem()) and (key := self._stripKey(text)):
             item.setText(self.C_KEY, f"<{key}>")
             self._changed = True
-        return
 
     @pyqtSlot(str)
     def _onValueEdit(self, text: str) -> None:
@@ -831,7 +804,6 @@ class _ReplacePage(NFixedPage):
         if item := self._getSelectedItem():
             item.setText(self.C_REPL, text)
             self._changed = True
-        return
 
     @pyqtSlot()
     def _onSelectionChanged(self) -> None:
@@ -850,14 +822,12 @@ class _ReplacePage(NFixedPage):
             self.editValue.setText("")
             self.editKey.setEnabled(False)
             self.editValue.setEnabled(False)
-        return
 
     @pyqtSlot()
     def _onEntryCreated(self) -> None:
         """Add a new list entry."""
         key = f"<keyword{self.listBox.topLevelItemCount() + 1:d}>"
         self.listBox.addTopLevelItem(QTreeWidgetItem([key, ""]))
-        return
 
     @pyqtSlot()
     def _onEntryDeleted(self) -> None:
@@ -865,7 +835,6 @@ class _ReplacePage(NFixedPage):
         if item := self._getSelectedItem():
             self.listBox.takeTopLevelItem(self.listBox.indexOfTopLevelItem(item))
             self._changed = True
-        return
 
     ##
     #  Internal Functions

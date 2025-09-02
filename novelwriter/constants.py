@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from typing import Final
@@ -34,16 +34,17 @@ from novelwriter.enum import (
 
 
 def trConst(text: str) -> str:
-    """Wrapper function for locally translating constants."""
+    """Translate a constant."""
     return QCoreApplication.translate("Constant", text)
 
 
 def trStats(text: str) -> str:
-    """Wrapper function for locally translating stats constants."""
+    """Translate a stats constants."""
     return QCoreApplication.translate("Stats", text)
 
 
 class nwConst:
+    """Various Constants."""
 
     # Date and Time Formats
     FMT_TSTAMP = "%Y-%m-%d %H:%M:%S"  # Default format
@@ -70,6 +71,7 @@ class nwConst:
 
 
 class nwRegEx:
+    """Common RegExes."""
 
     URL    = r"https?://(?:www\.|(?!www))[\w/()@:%_\+-.~#?&=]+"
     WORDS  = r"\b[^\s\-\+\/–—\[\]:]+\b"
@@ -83,6 +85,7 @@ class nwRegEx:
 
 
 class nwShortcode:
+    """Document ShortCodes."""
 
     BOLD_O   = "[b]"
     BOLD_C   = "[/b]"
@@ -112,6 +115,7 @@ class nwShortcode:
 
 
 class nwStyles:
+    """Style Settings for Headings."""
 
     H_VALID = ("H0", "H1", "H2", "H3", "H4")
     H_LEVEL: Final[dict[str, int]] = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
@@ -143,6 +147,7 @@ class nwStyles:
 
 
 class nwFiles:
+    """novelWriter Files."""
 
     # Config Files
     CONF_FILE   = "novelwriter.conf"
@@ -163,6 +168,7 @@ class nwFiles:
 
 
 class nwKeyWords:
+    """Meta Data KeyWord Constants."""
 
     TAG_KEY     = "@tag"
     POV_KEY     = "@pov"
@@ -210,6 +216,7 @@ class nwKeyWords:
 
 
 class nwLists:
+    """Various Lists."""
 
     USER_CLASSES: Final[list[nwItemClass]] = [
         nwItemClass.CHARACTER,
@@ -223,6 +230,7 @@ class nwLists:
 
 
 class nwStats:
+    """Text Statistics."""
 
     CHARS        = "allChars"
     CHARS_TEXT   = "textChars"
@@ -246,6 +254,7 @@ class nwStats:
 
 
 class nwLabels:
+    """Various Common GUI Labels."""
 
     CLASS_NAME: Final[dict[nwItemClass, str]] = {
         nwItemClass.NO_CLASS:  QT_TRANSLATE_NOOP("Constant", "None"),
@@ -472,6 +481,7 @@ class nwLabels:
 
 
 class nwHeadFmt:
+    """Manuscript Header Formats."""
 
     BR         = "{BR}"
     TITLE      = "{Title}"
@@ -498,8 +508,10 @@ class nwHeadFmt:
 
 class nwQuotes:
     """Allowed quotation marks.
+
     Source: https://en.wikipedia.org/wiki/Quotation_mark
     """
+
     SYMBOLS: Final[dict[str, str]] = {
         "\u0027": QT_TRANSLATE_NOOP("Constant", "Straight single quotation mark"),
         "\u0022": QT_TRANSLATE_NOOP("Constant", "Straight double quotation mark"),
@@ -541,6 +553,7 @@ class nwQuotes:
 
 class nwUnicode:
     """Supported unicode character constants and their HTML equivalents."""
+
     # Unicode Constants
     # =================
 
@@ -672,6 +685,7 @@ class nwUnicode:
 
 
 class nwHtmlUnicode:
+    """Unicode to HTML Map."""
 
     U_TO_H: Final[dict[str, str]] = {
         # Quotes

@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import argparse
@@ -61,12 +61,9 @@ def updateDocsTranslationSources(args: argparse.Namespace) -> None:
     print("Done")
     print("")
 
-    return
-
 
 def buildHtmlDocs(args: argparse.Namespace | None = None) -> None:
     """Build the documentation files."""
-
     print("")
     print("Building HTML Docs")
     print("==================")
@@ -105,12 +102,9 @@ def buildHtmlDocs(args: argparse.Namespace | None = None) -> None:
 
     print("")
 
-    return
-
 
 def buildPdfDocAssets(args: argparse.Namespace | None = None) -> None:
     """Build the documentation PDF files."""
-
     print("")
     print("Building Docs Manuals")
     print("=====================")
@@ -146,5 +140,3 @@ def buildPdfDocAssets(args: argparse.Namespace | None = None) -> None:
             raise Exception(f"Build returned error code {ex}")
 
     print("")
-
-    return

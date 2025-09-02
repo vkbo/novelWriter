@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import re
@@ -32,6 +32,7 @@ from novelwriter.constants import nwRegEx, nwUnicode
 
 
 class RegExPatterns:
+    """Compiled RegEx Patterns."""
 
     AMBIGUOUS = (nwUnicode.U_APOS, nwUnicode.U_RSQUO)
 
@@ -132,6 +133,7 @@ REGEX_PATTERNS = RegExPatterns()
 
 
 class DialogParser:
+    """A callable parser for finding dialog regions in text."""
 
     __slots__ = (
         "_alternate", "_breakD", "_breakQ", "_dialog", "_enabled", "_mode",
@@ -147,7 +149,6 @@ class DialogParser:
         self._breakD = None
         self._breakQ = None
         self._mode = ""
-        return
 
     @property
     def enabled(self) -> bool:
@@ -173,8 +174,6 @@ class DialogParser:
             self._breakQ = re.compile(f"{narrator}.*?(?:{narrator}[{punct}]?)")
             self._narrator = narrator
             self._mode = f" {narrator}"
-
-        return
 
     def __call__(self, text: str) -> list[tuple[int, int]]:
         """Caller wrapper for dialogue processing."""

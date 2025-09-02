@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -45,6 +45,11 @@ API_URL = "https://api.github.com/repos/vkbo/novelwriter/releases/latest"
 
 
 class VersionInfoWidget(QWidget):
+    """Custom: version Info Label.
+
+    A custom widget that will show a clickable area for contacting
+    GitHub and pulling the latest release version info.
+    """
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -75,8 +80,6 @@ class VersionInfoWidget(QWidget):
 
         self.setLayout(self._layout)
 
-        return
-
     ##
     #  Private Slots
     ##
@@ -93,7 +96,6 @@ class VersionInfoWidget(QWidget):
             lookup = _Retriever()
             lookup.signals.dataReady.connect(self._updateReleaseInfo)
             SHARED.runInThreadPool(lookup)
-        return
 
     ##
     #  Private Slots
@@ -109,7 +111,6 @@ class VersionInfoWidget(QWidget):
             ))
         else:
             self._lblRelease.setText(self._trLatest.format(reason or self.tr("Failed")))
-        return
 
 
 class _Retriever(QRunnable):
@@ -117,7 +118,6 @@ class _Retriever(QRunnable):
     def __init__(self) -> None:
         super().__init__()
         self.signals = _RetrieverSignal()
-        return
 
     @pyqtSlot()
     def run(self) -> None:
@@ -140,7 +140,6 @@ class _Retriever(QRunnable):
         except Exception as e:
             logger.error("Failed to retrieve release info")
             self.signals.dataReady.emit("", str(e))
-        return
 
 
 class _RetrieverSignal(QObject):

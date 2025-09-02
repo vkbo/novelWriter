@@ -22,7 +22,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -72,7 +72,7 @@ class XMLReadState(Enum):
 
 
 class ProjectXMLReader:
-    """Core: Project XML Reader
+    """Core: Project XML Reader.
 
     All data is read into a NWProjectData instance, which must be
     provided.
@@ -124,7 +124,6 @@ class ProjectXMLReader:
         self._appVersion = ""
         self._hexVersion = 0x0
         self._timeStamp = ""
-        return
 
     ##
     #  Properties
@@ -254,8 +253,6 @@ class ProjectXMLReader:
                 elif xItem.tag == "editTime":  # Moved to attribute in 1.5
                     data.setEditTime(xItem.text)
 
-        return
-
     def _parseProjectSettings(self, xSection: ET.Element, data: NWProjectData) -> None:
         """Parse the settings section of the XML file."""
         logger.debug("Parsing <settings> section")
@@ -293,8 +290,6 @@ class ProjectXMLReader:
                     data.setInitCounts(wNovel=xItem.text)
                 elif xItem.tag == "notesWordCount":  # Moved to content attribute in 1.5
                     data.setInitCounts(wNotes=xItem.text)
-
-        return
 
     def _parseProjectContent(
         self, xSection: ET.Element, data: NWProjectData, content: list
@@ -355,8 +350,6 @@ class ProjectXMLReader:
                 "metaAttr": meta,
                 "nameAttr": name,
             })
-
-        return
 
     def _parseProjectContentLegacy(
         self, xSection: ET.Element, data: NWProjectData, content: list
@@ -434,8 +427,6 @@ class ProjectXMLReader:
                 "nameAttr": name,
             })
 
-        return
-
     def _parseStatusImport(self, xItem: ET.Element, sObject: NWStatus) -> None:
         """Parse a status or importance entry."""
         for xEntry in xItem:
@@ -450,7 +441,6 @@ class ProjectXMLReader:
                 if color is None:
                     color = f"{red}, {green}, {blue}"
                 sObject.add(key, xEntry.text or "", color, shape, count)
-        return
 
     def _parseDictKeyText(self, xItem: ET.Element) -> dict:
         """Parse a dictionary stored with key as an attribute and the
@@ -470,7 +460,7 @@ class ProjectXMLReader:
 
 
 class ProjectXMLWriter:
-    """Core: Project XML Writer
+    """Core: Project XML Writer.
 
     The project writer class will only write a file according to the
     very latest spec.
@@ -479,7 +469,6 @@ class ProjectXMLWriter:
     def __init__(self, path: str | Path) -> None:
         self._path = Path(path)
         self._error = None
-        return
 
     ##
     #  Properties
@@ -580,7 +569,6 @@ class ProjectXMLWriter:
         """Pack a single value into an XML element."""
         xItem = ET.SubElement(xParent, name, attrib=attrib or {})
         xItem.text = str(value) or ""
-        return
 
     def _packDictKeyValue(self, xParent: ET.Element, name: str, data: dict) -> None:
         """Pack the entries of a dictionary into an XML element."""
@@ -589,4 +577,3 @@ class ProjectXMLWriter:
             if len(key) > 0:
                 xEntry = ET.SubElement(xItem, "entry", attrib={"key": key})
                 xEntry.text = str(value) or ""
-        return

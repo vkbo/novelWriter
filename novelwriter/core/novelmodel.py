@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -54,6 +54,7 @@ T_NodeData = str | QIcon | QPixmap | Qt.AlignmentFlag | None
 
 
 class NovelModel(QAbstractTableModel):
+    """Core: Novel Model CLass."""
 
     __slots__ = ("_columns", "_extraKey", "_extraLabel", "_more", "_rows")
 
@@ -64,11 +65,9 @@ class NovelModel(QAbstractTableModel):
         self._columns = 3
         self._extraKey = ""
         self._extraLabel = ""
-        return
 
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: NovelModel")
-        return
 
     ##
     #  Properties
@@ -102,7 +101,6 @@ class NovelModel(QAbstractTableModel):
                 self._columns = 4
                 self._extraKey = nwKeyWords.PLOT_KEY
                 self._extraLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY])
-        return
 
     ##
     #  Model Interface
@@ -147,7 +145,6 @@ class NovelModel(QAbstractTableModel):
     def clear(self) -> None:
         """Clear the model."""
         self._rows.clear()
-        return
 
     def append(self, node: IndexNode) -> None:
         """Append a node to the model."""
@@ -155,7 +152,6 @@ class NovelModel(QAbstractTableModel):
         for key, head in node.items():
             if key != "T0000":
                 self._rows.append(self._generateEntry(handle, key, head))
-        return
 
     def refresh(self, node: IndexNode) -> bool:
         """Refresh an index node."""

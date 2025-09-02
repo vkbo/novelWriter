@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -58,6 +58,7 @@ STYLES_BIG_TOOLBUTTON = "bigToolButton"
 
 @dataclass
 class ThemeEntry:
+    """Theme data."""
 
     name: str
     dark: bool
@@ -65,6 +66,7 @@ class ThemeEntry:
 
 
 class ThemeMeta:
+    """Theme meta data."""
 
     name:   str = ""
     mode:   str = ""
@@ -74,6 +76,7 @@ class ThemeMeta:
 
 
 class IconsMeta:
+    """Icon theme meta data."""
 
     name:    str = ""
     author:  str = ""
@@ -81,6 +84,7 @@ class IconsMeta:
 
 
 class SyntaxColors:
+    """Colours for the syntax highlighter."""
 
     back:   QColor = QColor(255, 255, 255)
     text:   QColor = QColor(0, 0, 0)
@@ -106,7 +110,7 @@ class SyntaxColors:
 
 
 class GuiTheme:
-    """Gui Theme Class
+    """Gui Theme Class.
 
     Handles the look and feel of novelWriter.
     """
@@ -190,8 +194,6 @@ class GuiTheme:
         logger.debug("Text 'N' Height: %d", self.textNHeight)
         logger.debug("Text 'N' Width: %d", self.textNWidth)
 
-        return
-
     ##
     #  Properties
     ##
@@ -206,7 +208,7 @@ class GuiTheme:
     ##
 
     def getTextWidth(self, text: str, font: QFont | None = None) -> int:
-        """Returns the width needed to contain a given piece of text in
+        """Return the width needed to contain a given piece of text in
         pixels.
         """
         if isinstance(font, QFont):
@@ -237,8 +239,6 @@ class GuiTheme:
 
         self.iconCache.initIcons()
         self.loadTheme()
-
-        return
 
     def isDesktopDarkMode(self) -> bool:
         """Check if the desktop is in dark mode."""
@@ -507,7 +507,6 @@ class GuiTheme:
         """Set the colour for a named colour."""
         self._qColors[key] = QColor(color)
         self._svgColors[key] = color.name(QColor.NameFormat.HexRgb).encode("utf-8")
-        return
 
     def _resetTheme(self) -> None:
         """Reset GUI colours to default values."""
@@ -559,8 +558,6 @@ class GuiTheme:
         self._setBaseColor("inactive", red)
         self._setBaseColor("disabled", faded)
 
-        return
-
     def _readColor(self, parser: ConfigParser, section: str, name: str) -> QColor:
         """Parse a colour value from a config string."""
         return self.parseColor(parser.get(section, name, fallback="default"))
@@ -570,7 +567,6 @@ class GuiTheme:
     ) -> None:
         """Set a palette colour value from a config string."""
         self._guiPalette.setBrush(value, self._readColor(parser, section, name))
-        return
 
     def _buildStyleSheets(self, palette: QPalette) -> None:
         """Build default style sheets."""
@@ -602,8 +598,6 @@ class GuiTheme:
             "QToolButton::menu-indicator {image: none;} "
         )
 
-        return
-
     def _scanThemes(self, files: list[Path]) -> None:
         """Scan the GUI themes folder and list all themes."""
         parser = ConfigParser()
@@ -630,8 +624,6 @@ class GuiTheme:
             key, name, dark, item = data[lookup]
             logger.debug("Checking theme config '%s'", key)
             self._allThemes[key] = ThemeEntry(name, dark, item)
-
-        return
 
 
 class GuiIcons:
@@ -672,8 +664,6 @@ class GuiIcons:
         # None Icon
         self._noIcon = QIcon(str(CONFIG.assetPath("icons") / "none.svg"))
 
-        return
-
     def clear(self) -> None:
         """Clear the icon cache."""
         self._svgData = {}
@@ -681,7 +671,6 @@ class GuiIcons:
         self._headerDec = []
         self._headerDecNarrow = []
         self._meta = ThemeMeta()
-        return
 
     ##
     #  Properties
@@ -703,7 +692,6 @@ class GuiIcons:
         _listContent(icons, CONFIG.assetPath("icons"), ".icons")
         _listContent(icons, CONFIG.dataPath("icons"), ".icons")
         self._scanThemes(icons)
-        return
 
     def loadTheme(self, theme: str) -> None:
         """Update the theme map. This is more of an init, since many of
@@ -781,7 +769,7 @@ class GuiIcons:
         self, tType: nwItemType, tClass: nwItemClass, tLayout: nwItemLayout, hLevel: str = "H0"
     ) -> QIcon:
         """Get the correct icon for a project item based on type, class
-        and heading level
+        and heading level.
         """
         name = None
         color = "default"
@@ -942,8 +930,6 @@ class GuiIcons:
             logger.debug("Checking icon theme '%s'", key)
             self._allThemes[key] = ThemeEntry(name, False, item)
 
-        return
-
 
 # Module Functions
 # ================
@@ -952,4 +938,3 @@ def _listContent(data: list[Path], path: Path, extension: str) -> None:
     """List files of a specific type and extend the list."""
     if path.is_dir():
         data.extend(n for n in path.iterdir() if n.is_file() and n.suffix == extension)
-    return
