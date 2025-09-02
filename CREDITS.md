@@ -74,6 +74,7 @@ Colour themes included with novelWriter were adapted from the following sources:
 * **Aura** themes by Dalton Menezes
 * **B2T** themes by Bram de Haan
 * **B4T** themes by Bram de Haan
+* **Catppuccin** themes by Catppuccin Org
 * **Dracula** theme by Zeno Rocha
 * **Espresso** theme by Sainnhe Park and Antoine Cotten
 * **Everforest** themes by Sainnhe Park
