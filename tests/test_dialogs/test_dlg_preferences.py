@@ -279,7 +279,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.altDialogOpen.setText("%")  # Symbol also tests for #2455
     prefs.altDialogClose.setText("%")  # Symbol also tests for #2455
     prefs.highlightEmph.setChecked(False)
-    prefs.showMultiSpaces.setChecked(False)
+    prefs.showMultiSpaces.setChecked(True)
 
     prefs._insertDialogLineSymbol(nwUnicode.U_ENDASH)
     assert prefs.dialogLine.text() == f"{nwUnicode.U_ENDASH} {nwUnicode.U_EMDASH}"
@@ -292,7 +292,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.altDialogOpen == ""
     assert CONFIG.altDialogClose == ""
     assert CONFIG.highlightEmph is True
-    assert CONFIG.showMultiSpaces is True
+    assert CONFIG.showMultiSpaces is False
 
     # Text Automation
     prefs.doReplaceSQuote.setChecked(False)
@@ -413,7 +413,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.altDialogOpen == "%"
     assert CONFIG.altDialogClose == "%"
     assert CONFIG.highlightEmph is False
-    assert CONFIG.showMultiSpaces is False
+    assert CONFIG.showMultiSpaces is True
 
     # Text Automation
     assert CONFIG.doReplace is False
