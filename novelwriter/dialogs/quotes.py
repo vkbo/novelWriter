@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -43,6 +43,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiQuoteSelect(NDialog):
+    """GUI: Quote Selector Dialog."""
 
     _selected = ""
 
@@ -108,11 +109,8 @@ class GuiQuoteSelect(NDialog):
 
         logger.debug("Ready: GuiQuoteSelect")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiQuoteSelect")
-        return
 
     @property
     def selectedQuote(self) -> str:
@@ -140,4 +138,3 @@ class GuiQuoteSelect(NDialog):
             quote = items[0].data(self.D_KEY)
             self.previewLabel.setText(quote)
             self._selected = quote
-        return

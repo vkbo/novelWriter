@@ -23,7 +23,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -50,7 +50,7 @@ NOTE_TYPES: list[T_NoteTypes] = ["footnotes", "comments"]
 
 
 class IndexNode:
-    """Core: Single Index Item Node Class
+    """Core: Single Index Item Node Class.
 
     This object represents the index data of a project item (NWItem).
     It holds a record of all the headings in the text, and the meta data
@@ -68,7 +68,6 @@ class IndexNode:
         self._headings: dict[str, IndexHeading] = {TT_NONE: IndexHeading(self._cache, TT_NONE)}
         self._notes: dict[str, set[str]] = {}
         self._count = 0
-        return
 
     def __repr__(self) -> str:
         return f"<IndexNode handle='{self._handle}'>"
@@ -107,39 +106,33 @@ class IndexNode:
         if TT_NONE in self._headings:
             self._headings.pop(TT_NONE)
         self._headings[tHeading.key] = tHeading
-        return
 
     def setHeadingCounts(self, sTitle: str, cCount: int, wCount: int, pCount: int) -> None:
         """Set the character, word and paragraph count of a heading."""
         if sTitle in self._headings:
             self._headings[sTitle].setCounts([cCount, wCount, pCount])
-        return
 
     def setHeadingComment(self, sTitle: str, comment: nwComment, key: str, text: str) -> None:
         """Set the comment text of a heading."""
         if sTitle in self._headings:
             self._headings[sTitle].setComment(comment.name, key, text)
-        return
 
     def setHeadingTag(self, sTitle: str, tag: str) -> None:
         """Set the tag of a heading."""
         if sTitle in self._headings:
             self._headings[sTitle].setTag(tag)
-        return
 
     def addHeadingRef(self, sTitle: str, tags: list[str], keyword: str) -> None:
         """Add a reference key and all its types to a heading."""
         if sTitle in self._headings:
             for tag in tags:
                 self._headings[sTitle].addReference(tag, keyword)
-        return
 
     def addNoteKey(self, style: T_NoteTypes, key: str) -> None:
         """Add a note key to the index."""
         if style not in self._notes:
             self._notes[style] = set()
         self._notes[style].add(key)
-        return
 
     ##
     #  Data Methods
@@ -195,11 +188,10 @@ class IndexNode:
                     self._notes[style] = set(keys)
             else:
                 raise KeyError("Index node contains an invalid key")
-        return
 
 
 class IndexHeading:
-    """Core: Single Index Heading Class
+    """Core: Single Index Heading Class.
 
     This object represents a section of text in a project item
     associated with a single (valid) heading. It holds a separate record
@@ -224,7 +216,6 @@ class IndexHeading:
         self._tag = ""
         self._refs: dict[str, set[str]] = {}
         self._comments: dict[str, str] = {}
-        return
 
     def __repr__(self) -> str:
         return f"<IndexHeading key='{self._key}'>"
@@ -289,12 +280,10 @@ class IndexHeading:
         """Set the level of the heading if it's a valid value."""
         if level in nwStyles.H_VALID:
             self._level = level
-        return
 
     def setLine(self, line: int) -> None:
         """Set the line number of a heading."""
         self._line = max(0, checkInt(line, 0))
-        return
 
     def setCounts(self, counts: Sequence[int]) -> None:
         """Set the character, word and paragraph count. Make sure the
@@ -306,7 +295,6 @@ class IndexHeading:
                 max(0, checkInt(counts[1], 0)),
                 max(0, checkInt(counts[2], 0)),
             )
-        return
 
     def setComment(self, comment: str, key: str, text: str) -> None:
         """Set the text for a comment and make sure it is a string."""
@@ -319,12 +307,10 @@ class IndexHeading:
             case "note" if key:
                 self._cache.note.add(key)
                 self._comments[f"note.{key}"] = str(text)
-        return
 
     def setTag(self, tag: str) -> None:
         """Set the tag for references, and make sure it is a string."""
         self._tag = str(tag).lower()
-        return
 
     def addReference(self, tag: str, keyword: str) -> None:
         """Add a record of a reference tag, and what keyword types it is
@@ -335,7 +321,6 @@ class IndexHeading:
             if tag not in self._refs:
                 self._refs[tag] = set()
             self._refs[tag].add(keyword)
-        return
 
     ##
     #  Getters
@@ -409,4 +394,3 @@ class IndexHeading:
                 self.setComment(comment, compact(kind), str(entry))
             else:
                 raise KeyError("Unknown key in heading entry")
-        return

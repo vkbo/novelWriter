@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -135,7 +135,7 @@ def checkPath(value: Any, default: Path) -> Path:
 
 def isHandle(value: Any) -> TypeGuard[str]:
     """Check if a string is a valid novelWriter handle.
-    Note: This is case sensitive. Must be lower case!
+    Note: This is case sensitive. Must be lower case.
     """
     if not isinstance(value, str):
         return False
@@ -219,7 +219,7 @@ def firstFloat(*args: Any) -> float:
 ##
 
 def formatInt(value: int) -> str:
-    """Formats an integer with k, M, G etc."""
+    """Format an integer with k, M, G etc."""
     if not isinstance(value, int):
         return "ERR"
 
@@ -464,21 +464,21 @@ def fontMatcher(font: QFont) -> QFont:
 
 
 def qtLambda(func: Callable, *args: Any, **kwargs: Any) -> Callable:
-    """A replacement for Python lambdas that works for Qt slots."""
+    """A replacement for Python lambdas that works for Qt slots."""  # noqa: D401
     def wrapper(*a_: Any) -> None:
         func(*args, **kwargs)
     return wrapper
 
 
 def qtAddAction(parent: QWidget, label: str) -> QAction:
-    """Helper to add action to widget and always return the action."""
+    """Helper to add action to widget and always return the action."""  # noqa: D401
     action = QAction(label, parent)
     parent.addAction(action)
     return action
 
 
 def qtAddMenu(parent: QMenuBar | QMenu, label: str) -> QMenu:
-    """Helper to add menu to menu and always return the menu."""
+    """Helper to add menu to menu and always return the menu."""  # noqa: D401
     menu = QMenu(label, parent)
     parent.addMenu(menu)
     return menu
@@ -487,7 +487,6 @@ def qtAddMenu(parent: QMenuBar | QMenu, label: str) -> QMenu:
 def encodeMimeHandles(mimeData: QMimeData, handles: list[str]) -> None:
     """Encode handles into a mime data object."""
     mimeData.setData(nwConst.MIME_HANDLE, b"|".join(h.encode() for h in handles))
-    return
 
 
 def decodeMimeHandles(mimeData: QMimeData) -> list[str]:
@@ -536,7 +535,7 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
         elif first in ("{", "["):
             n += 1
             indent = "\n"+"  "*n
-            if n > nmax and nmax > 0:
+            if n > nmax > 0:
                 buffer.append(chunk)
             else:
                 buffer.append(chunk[0] + indent + chunk[1:])
@@ -544,13 +543,13 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
         elif first in ("}", "]"):
             n -= 1
             indent = "\n"+"  "*n
-            if n >= nmax and nmax > 0:
+            if n >= nmax > 0:
                 buffer.append(chunk)
             else:
                 buffer.append(indent + chunk)
 
         elif first == ",":
-            if n > nmax and nmax > 0:
+            if n > nmax > 0:
                 buffer.append(chunk)
             else:
                 buffer.append(chunk[0] + indent + chunk[1:].lstrip())
@@ -568,7 +567,7 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
 def xmlIndent(xml: ET.Element | ET.ElementTree) -> None:
     """A modified version of the XML indent function in the standard
     library. It behaves more closely to how the one from lxml does.
-    """
+    """  # noqa: D401
     tree = xml.getroot() if isinstance(xml, ET.ElementTree) else xml
     if not isinstance(tree, ET.Element):
         return
@@ -598,8 +597,6 @@ def xmlIndent(xml: ET.Element | ET.ElementTree) -> None:
         if last is not None:
             last.tail = indentations[level]
 
-        return
-
     if len(tree):
         indentChildren(tree, 0)
     tree.tail = "\n"
@@ -614,7 +611,7 @@ def xmlElement(
     attrib: dict | None = None,
     tail: str | None = None,
 ) -> ET.Element:
-    """A custom implementation of Element with more arguments."""
+    """A custom implementation of Element with more arguments."""  # noqa: D401
     xSub = ET.Element(tag, attrib=attrib or {})
     if text is not None:
         if isinstance(text, bool):
@@ -634,7 +631,7 @@ def xmlSubElem(
     attrib: dict | None = None,
     tail: str | None = None,
 ) -> ET.Element:
-    """A custom implementation of SubElement with more arguments."""
+    """A custom implementation of SubElement with more arguments."""  # noqa: D401
     xSub = ET.SubElement(parent, tag, attrib=attrib or {})
     if text is not None:
         if isinstance(text, bool):
@@ -665,6 +662,7 @@ def readTextFile(path: str | Path) -> str:
 
 def makeFileNameSafe(text: str) -> str:
     """Return a filename-safe string.
+
     See: https://unicode.org/reports/tr15/#Norm_Forms
     """
     text = unicodedata.normalize("NFKC", text).strip()
@@ -697,7 +695,7 @@ _T_Enum = TypeVar("_T_Enum", bound=Enum)
 
 
 class NWConfigParser(ConfigParser):
-    """Common: Adapted Config Parser
+    """Common: Adapted Config Parser.
 
     This is a subclass of the standard config parser that adds type safe
     helper functions, and support for lists. It also turns off
@@ -706,7 +704,6 @@ class NWConfigParser(ConfigParser):
 
     def __init__(self) -> None:
         super().__init__(interpolation=None)
-        return
 
     def rdStr(self, section: str, option: str, default: str) -> str:
         """Read string value."""

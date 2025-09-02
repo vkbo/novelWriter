@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -47,6 +47,7 @@ logger = logging.getLogger(__name__)
 
 
 class NWStorageOpen(Enum):
+    """The status of a storage location."""
 
     UNKOWN    = 0
     NOT_FOUND = 1
@@ -56,6 +57,7 @@ class NWStorageOpen(Enum):
 
 
 class NWStorageCreate(Enum):
+    """The status of a new storage location."""
 
     NOT_EMPTY = 0
     OS_ERROR  = 1
@@ -63,7 +65,7 @@ class NWStorageCreate(Enum):
 
 
 class NWStorage:
-    """Core: Project Storage Class
+    """Core: Project Storage Class.
 
     The class that handles all paths related to the project storage.
     """
@@ -81,7 +83,6 @@ class NWStorage:
         self._openMode = self.MODE_INACTIVE
         self._ready = False
         self._exception = None
-        return
 
     def clear(self) -> None:
         """Reset internal variables."""
@@ -90,7 +91,6 @@ class NWStorage:
         self._lockFilePath = None
         self._openMode = self.MODE_INACTIVE
         self._ready = False
-        return
 
     ##
     #  Properties
@@ -252,13 +252,11 @@ class NWStorage:
         """Lock the session when the project is successfully opened."""
         if self._ready:
             self._writeLockFile()
-        return
 
     def closeSession(self) -> None:
         """Run tasks related to closing the session."""
         self._clearLockFile()
         self.clear()
-        return
 
     ##
     #  Content Access Methods
@@ -394,7 +392,7 @@ class NWStorage:
 
 
 class _LegacyStorage:
-    """Core: Legacy Storage Converter Utils
+    """Core: Legacy Storage Converter Utils.
 
     A class with various functions to convert old file formats and
     file/folder layouts to the current project format.
@@ -402,7 +400,6 @@ class _LegacyStorage:
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
-        return
 
     def legacyDataFolder(self, path: Path, child: Path) -> None:
         """Handle the content of a legacy data folder from a version 1.0
@@ -483,8 +480,6 @@ class _LegacyStorage:
                     logger.info("Deleted: %s", item)
                 except Exception as exc:
                     logger.warning("Failed to delete: %s", item, exc_info=exc)
-
-        return
 
     ##
     #  Internal Functions

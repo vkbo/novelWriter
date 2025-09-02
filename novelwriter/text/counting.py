@@ -22,7 +22,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import re
@@ -74,9 +74,11 @@ def preProcessText(text: str, keepHeaders: bool = True) -> list[str]:
 
 
 def standardCounter(text: str) -> tuple[int, int, int]:
-    """A counter that counts paragraphs, words and characters.
-    This is the standard counter that includes headings in the word and
-    character counts.
+    """Return a standard count.
+
+    A counter that counts paragraphs, words and characters. This is the
+    standard counter that includes headings in the word and character
+    counts.
     """
     cCount = 0
     wCount = 0
@@ -124,7 +126,9 @@ def standardCounter(text: str) -> tuple[int, int, int]:
 
 
 def bodyTextCounter(text: str) -> tuple[int, int, int]:
-    """A counter that counts body text words, characters, and characters
+    """Return a body text count.
+
+    A counter that counts body text words, characters, and characters
     without white spaces.
     """
     wCount = 0

@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 
 class ToRaw(Tokenizer):
-    """Core: Raw novelWriter Text Writer
+    """Core: Raw novelWriter Text Writer.
 
     A class that will collect the minimally altered original source text
     and write it to either a text or JSON file.
@@ -51,7 +51,6 @@ class ToRaw(Tokenizer):
         super().__init__(project)
         self._keepRaw = True
         self._noTokens = True
-        return
 
     def doConvert(self) -> None:
         """No conversion to perform."""
@@ -86,10 +85,7 @@ class ToRaw(Tokenizer):
 
         logger.info("Wrote file: %s", path)
 
-        return
-
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = " ") -> None:
         """Replace tabs with spaces."""
         spaces = spaceChar*nSpaces
         self._raw = [p.replace("\t", spaces) for p in self._raw]
-        return

@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from urllib.error import HTTPError
@@ -44,7 +44,6 @@ class MockDesktopServices:
     @staticmethod
     def openUrl(url):
         MockDesktopServices.url = url
-        return
 
 
 class MockData:
@@ -61,8 +60,7 @@ class MockPayload:
         return
 
     def read(self):
-        data = MockData()
-        return data
+        return MockData()
 
 
 class MockHTTPError:

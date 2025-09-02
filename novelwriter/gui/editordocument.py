@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -42,6 +42,11 @@ logger = logging.getLogger(__name__)
 
 
 class GuiTextDocument(QTextDocument):
+    """Custom: Modified QTextDocument.
+
+    A special text document format that incorporates a few additional
+    features including spell checking.
+    """
 
     def __init__(self, parent: QObject) -> None:
         super().__init__(parent=parent)
@@ -52,11 +57,8 @@ class GuiTextDocument(QTextDocument):
 
         logger.debug("Ready: GuiTextDocument")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiTextDocument")
-        return
 
     ##
     #  Properties
@@ -95,8 +97,6 @@ class GuiTextDocument(QTextDocument):
 
         logger.debug("Loaded %d text blocks in %.3f ms", count, 1000*(tMid - tStart))
         logger.debug("Highlighted document in %.3f ms", 1000*(tEnd - tMid))
-
-        return
 
     def metaDataAtPos(self, pos: int) -> tuple[str, str]:
         """Check if there is meta data available at a given position in
@@ -146,4 +146,3 @@ class GuiTextDocument(QTextDocument):
     def setSpellCheckState(self, state: bool) -> None:
         """Set the spell check state of the syntax highlighter."""
         self._syntax.setSpellCheck(state)
-        return

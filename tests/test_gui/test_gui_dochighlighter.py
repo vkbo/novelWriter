@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import pytest
@@ -45,6 +45,7 @@ def syntax(nwGUI):
     CONFIG.fmtDQuoteClose = "\u201d"
     CONFIG.altDialogOpen = "::"
     CONFIG.altDialogClose = "::"
+    CONFIG.showMultiSpaces = True
 
     theme = SHARED.theme
     theme.loadTheme(force=True)

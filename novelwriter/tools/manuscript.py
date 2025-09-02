@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -66,7 +66,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiManuscript(NToolDialog):
-    """GUI Tools: Manuscript Tool
+    """GUI Tools: Manuscript Tool.
 
     The dialog displays all the users build definitions, a preview panel
     for the manuscript, and can trigger the actual build dialog to build
@@ -251,11 +251,8 @@ class GuiManuscript(NToolDialog):
 
         logger.debug("Ready: GuiManuscript")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiManuscript")
-        return
 
     def loadContent(self) -> None:
         """Load dialog content from project data."""
@@ -271,8 +268,6 @@ class GuiManuscript(NToolDialog):
         if selected in self._buildMap:
             self.buildList.setCurrentItem(self._buildMap[selected])
             QTimer.singleShot(200, self._generatePreview)
-
-        return
 
     ##
     #  Events
@@ -290,7 +285,6 @@ class GuiManuscript(NToolDialog):
                 obj.close()
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -302,14 +296,12 @@ class GuiManuscript(NToolDialog):
         build = BuildSettings()
         build.setName(self.tr("My Manuscript"))
         self._openSettingsDialog(build)
-        return
 
     @pyqtSlot()
     def _editSelectedBuild(self) -> None:
         """Edit the currently selected build settings entry."""
         if build := self._getSelectedBuild():
             self._openSettingsDialog(build)
-        return
 
     @pyqtSlot()
     def _copySelectedBuild(self) -> None:
@@ -320,14 +312,12 @@ class GuiManuscript(NToolDialog):
             self._updateBuildsList()
             if item := self._buildMap.get(new.buildID):
                 item.setSelected(True)
-        return
 
     @pyqtSlot("QListWidgetItem*", "QListWidgetItem*")
     def _updateBuildDetails(self, current: QListWidgetItem, previous: QListWidgetItem) -> None:
         """Process change of build selection to update the details."""
         if current and (build := self._builds.getBuild(current.data(self.D_KEY))):
             self.buildDetails.updateInfo(build)
-        return
 
     @pyqtSlot()
     def _deleteSelectedBuild(self) -> None:
@@ -338,7 +328,6 @@ class GuiManuscript(NToolDialog):
                     dialog.close()
                 self._builds.removeBuild(build.buildID)
                 self._updateBuildsList()
-        return
 
     @pyqtSlot(BuildSettings)
     def _processNewSettings(self, build: BuildSettings) -> None:
@@ -347,7 +336,6 @@ class GuiManuscript(NToolDialog):
         self._updateBuildItem(build)
         if (current := self.buildList.currentItem()) and current.data(self.D_KEY) == build.buildID:
             self._updateBuildDetails(current, current)
-        return
 
     @pyqtSlot()
     def _generatePreview(self) -> None:
@@ -399,15 +387,12 @@ class GuiManuscript(NToolDialog):
             if build.changed:
                 self._builds.setBuild(build)
 
-        return
-
     @pyqtSlot()
     def _printDocument(self) -> None:
         """Open the print preview dialog."""
         preview = QPrintPreviewDialog(self)
         preview.paintRequested.connect(self.docPreview.printPreview)
         preview.exec()
-        return
 
     ##
     #  Internal Functions
@@ -456,8 +441,6 @@ class GuiManuscript(NToolDialog):
         pOptions.setValue("GuiManuscript", "showNewPage", showNewPage)
         pOptions.saveSettings()
 
-        return
-
     def _openSettingsDialog(self, build: BuildSettings) -> None:
         """Open the build settings dialog."""
         if dialog := self._findSettingsDialog(build.buildID):
@@ -482,7 +465,6 @@ class GuiManuscript(NToolDialog):
             bItem.setData(self.D_KEY, key)
             self.buildList.addItem(bItem)
             self._buildMap[key] = bItem
-        return
 
     def _updateBuildItem(self, build: BuildSettings) -> None:
         """Update the entry of a specific build item."""
@@ -490,7 +472,6 @@ class GuiManuscript(NToolDialog):
             item.setText(build.name)
         else:  # Probably a new item
             self._updateBuildsList()
-        return
 
     def _findSettingsDialog(self, buildID: str) -> GuiBuildSettings | None:
         """Return an open build settings dialog for a given build, if
@@ -521,8 +502,6 @@ class _DetailsWidget(QWidget):
         self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.outerBox)
 
-        return
-
     ##
     #  Getters
     ##
@@ -547,7 +526,6 @@ class _DetailsWidget(QWidget):
     def setColumnWidth(self, value: int) -> None:
         """Set the width of the first column."""
         self.listView.setColumnWidth(0, value)
-        return
 
     def setExpandedState(self, state: list[bool]) -> None:
         """Set the expanded state of each top level item."""
@@ -556,7 +534,6 @@ class _DetailsWidget(QWidget):
             item = self.listView.topLevelItem(i)
             if isinstance(item, QTreeWidgetItem):
                 item.setExpanded((state[i] if i < count else True) and item.childCount() > 0)
-        return
 
     ##
     #  Methods
@@ -637,8 +614,6 @@ class _DetailsWidget(QWidget):
         # Restore expanded state
         self.setExpandedState(expanded)
 
-        return
-
 
 class _OutlineWidget(QWidget):
 
@@ -662,8 +637,6 @@ class _OutlineWidget(QWidget):
         self.outerBox.addWidget(self.listView)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.outerBox)
-
-        return
 
     def updateOutline(self, data: dict[str, str]) -> None:
         """Update the outline."""
@@ -705,8 +678,6 @@ class _OutlineWidget(QWidget):
             self.listView.setIndentation(SHARED.theme.baseIconHeight if indent else 4)
             self._outline = data
 
-        return
-
     ##
     #  Private Slots
     ##
@@ -714,7 +685,6 @@ class _OutlineWidget(QWidget):
     def _onItemClick(self, item: QTreeWidgetItem) -> None:
         """Process tree item click."""
         self.outlineEntryClicked.emit(str(item.data(0, self.D_LINE)))
-        return
 
 
 class _PreviewWidget(QTextBrowser):
@@ -787,8 +757,6 @@ class _PreviewWidget(QTextBrowser):
         self.ageTimer.timeout.connect(self._updateBuildAge)
         self.ageTimer.start()
 
-        return
-
     ##
     #  Setters
     ##
@@ -797,7 +765,6 @@ class _PreviewWidget(QTextBrowser):
         """Set the build name for the document label."""
         self._buildName = name
         self._updateBuildAge()
-        return
 
     def setTextFont(self, font: QFont) -> None:
         """Set the text font properties and then reset for sub-widgets.
@@ -807,7 +774,6 @@ class _PreviewWidget(QTextBrowser):
         self.setFont(font)
         self.buildProgress.setFont(SHARED.theme.guiFont)
         self.ageLabel.setFont(SHARED.theme.guiFontSmall)
-        return
 
     ##
     #  Methods
@@ -823,13 +789,11 @@ class _PreviewWidget(QTextBrowser):
             self._scrollPos = vBar.value()
         self.setPlaceholderText("")
         self.clear()
-        return
 
     def buildStep(self, value: int) -> None:
         """Update the progress bar value."""
         self.buildProgress.setValue(value)
         QApplication.processEvents()
-        return
 
     def setContent(self, document: QTextDocument) -> None:
         """Set the content of the preview widget."""
@@ -850,8 +814,6 @@ class _PreviewWidget(QTextBrowser):
         QApplication.processEvents()
         QTimer.singleShot(300, self._postUpdate)
 
-        return
-
     ##
     #  Events
     ##
@@ -860,7 +822,6 @@ class _PreviewWidget(QTextBrowser):
         """Capture resize and update the document margins."""
         super().resizeEvent(event)
         self._updateDocMargins()
-        return
 
     ##
     #  Public Slots
@@ -874,14 +835,12 @@ class _PreviewWidget(QTextBrowser):
             printer.setPageOrientation(QPageLayout.Orientation.Portrait)
             document.print(printer)
             QApplication.restoreOverrideCursor()
-        return
 
     @pyqtSlot(str)
     def navigateTo(self, anchor: str) -> None:
         """Go to a specific #link in the document."""
         logger.debug("Moving to anchor '#%s'", anchor)
         self.setSource(QUrl(f"#{anchor}"))
-        return
 
     ##
     #  Private Slots
@@ -896,7 +855,6 @@ class _PreviewWidget(QTextBrowser):
                 self.navigateTo(link.lstrip("#"))
             elif link.startswith("http"):
                 QDesktopServices.openUrl(QUrl(url))
-        return
 
     @pyqtSlot()
     def _updateBuildAge(self) -> None:
@@ -909,7 +867,6 @@ class _PreviewWidget(QTextBrowser):
             ))
         else:
             self.ageLabel.setText("<b>{0}</b>".format(self.tr("No Preview")))
-        return
 
     @pyqtSlot()
     def _postUpdate(self) -> None:
@@ -917,7 +874,6 @@ class _PreviewWidget(QTextBrowser):
         self.buildProgress.setVisible(False)
         if vBar := self.verticalScrollBar():
             vBar.setValue(self._scrollPos)
-        return
 
     ##
     #  Internal Functions
@@ -936,7 +892,6 @@ class _PreviewWidget(QTextBrowser):
         self.ageLabel.setGeometry(tB, tB, vW, tH)
         self.setViewportMargins(0, tH, 0, 0)
         self.buildProgress.move((vW-pS)//2, (vH-pS)//2)
-        return
 
 
 class _StatsWidget(QWidget):
@@ -969,8 +924,6 @@ class _StatsWidget(QWidget):
 
         self._toggleView(False)
 
-        return
-
     def updateStats(self, data: dict[str, int]) -> None:
         """Update the stats values from a Tokenizer stats dict."""
         # Minimal
@@ -992,8 +945,6 @@ class _StatsWidget(QWidget):
         self.maxHeadWordChars.setText(f"{data.get(nwStats.WCHARS_TITLE, 0):n}")
         self.maxTextWordChars.setText(f"{data.get(nwStats.WCHARS_TEXT, 0):n}")
 
-        return
-
     ##
     #  Private Slots
     ##
@@ -1013,7 +964,6 @@ class _StatsWidget(QWidget):
         self.minWidget.adjustSize()
         self.mainStack.adjustSize()
         self.adjustSize()
-        return
 
     ##
     #  Internal Functions
@@ -1105,5 +1055,3 @@ class _StatsWidget(QWidget):
 
         self.minWidget.setLayout(self.minLayout)
         self.maxWidget.setLayout(self.maxLayout)
-
-        return

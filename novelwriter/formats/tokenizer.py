@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -55,6 +55,7 @@ logger = logging.getLogger(__name__)
 
 
 class ComStyle(NamedTuple):
+    """Comment style info."""
 
     label: str = ""
     labelClass: str = ""
@@ -92,7 +93,7 @@ B_EMPTY: T_Block = (BlockTyp.EMPTY, "", "", [], BlockFmt.NONE)
 
 
 class Tokenizer(ABC):
-    """Core: Text Tokenizer Abstract Base Class
+    """Core: Text Tokenizer Abstract Base Class.
 
     This is the base class for all document build classes. It parses the
     novelWriter markup format and generates a registry of tokens and
@@ -224,8 +225,6 @@ class Tokenizer(ABC):
         self._dialogParser = DialogParser()
         self._dialogParser.initParser()
 
-        return
-
     ##
     #  Properties
     ##
@@ -253,94 +252,78 @@ class Tokenizer(ABC):
         """Set language for the document."""
         if language:
             self._dLocale = QLocale(language)
-        return
 
     def setTheme(self, theme: TextDocumentTheme) -> None:
         """Set the document colour theme."""
         self._theme = theme
-        return
 
     def setPartitionFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the partition format pattern."""
         self._fmtPart = hFormat.strip()
         self._hidePart = hide
-        return
 
     def setChapterFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the chapter format pattern."""
         self._fmtChapter = hFormat.strip()
         self._hideChapter = hide
-        return
 
     def setUnNumberedFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the unnumbered format pattern."""
         self._fmtUnNum = hFormat.strip()
         self._hideUnNum = hide
-        return
 
     def setSceneFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the scene format pattern and hidden status."""
         self._fmtScene = hFormat.strip()
         self._hideScene = hide
-        return
 
     def setHardSceneFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the hard scene format pattern and hidden status."""
         self._fmtHScene = hFormat.strip()
         self._hideHScene = hide
-        return
 
     def setSectionFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the section format pattern and hidden status."""
         self._fmtSection = hFormat.strip()
         self._hideSection = hide
-        return
 
     def setTitleStyle(self, center: bool, pageBreak: bool) -> None:
         """Set the title heading style."""
         self._titleStyle = BlockFmt.CENTRE if center else BlockFmt.NONE
         self._titleStyle |= BlockFmt.PBB if pageBreak else BlockFmt.NONE
-        return
 
     def setPartitionStyle(self, center: bool, pageBreak: bool) -> None:
         """Set the partition heading style."""
         self._partStyle = BlockFmt.CENTRE if center else BlockFmt.NONE
         self._partStyle |= BlockFmt.PBB if pageBreak else BlockFmt.NONE
-        return
 
     def setChapterStyle(self, center: bool, pageBreak: bool) -> None:
         """Set the chapter heading style."""
         self._chapterStyle = BlockFmt.CENTRE if center else BlockFmt.NONE
         self._chapterStyle |= BlockFmt.PBB if pageBreak else BlockFmt.NONE
-        return
 
     def setSceneStyle(self, center: bool, pageBreak: bool) -> None:
         """Set the scene heading style."""
         self._sceneStyle = BlockFmt.CENTRE if center else BlockFmt.NONE
         self._sceneStyle |= BlockFmt.PBB if pageBreak else BlockFmt.NONE
-        return
 
     def setTextFont(self, font: QFont) -> None:
         """Set the build font."""
         self._textFont = fontMatcher(font)
-        return
 
     def setLineHeight(self, height: float) -> None:
         """Set the line height between 0.5 and 5.0."""
         self._lineHeight = min(max(float(height), 0.5), 5.0)
-        return
 
     def setHeadingStyles(self, color: bool, scale: bool, bold: bool) -> None:
         """Set text style for headings."""
         self._colorHeads = color
         self._scaleHeads = scale
         self._boldHeads = bold
-        return
 
     def setBlockIndent(self, indent: float) -> None:
         """Set the block indent between 0.0 and 10.0."""
         self._blockIndent = min(max(float(indent), 0.0), 10.0)
-        return
 
     def setFirstLineIndent(self, state: bool, indent: float, first: bool) -> None:
         """Set first line indent and whether to also indent first
@@ -349,67 +332,54 @@ class Tokenizer(ABC):
         self._firstIndent = state
         self._firstWidth = indent
         self._indentFirst = first
-        return
 
     def setJustify(self, state: bool) -> None:
         """Enable or disable text justification."""
         self._doJustify = state
-        return
 
     def setDialogHighlight(self, state: bool) -> None:
         """Enable or disable dialogue highlighting."""
         self._hlightDialog = state
-        return
 
     def setTitleMargins(self, upper: float, lower: float) -> None:
         """Set the upper and lower title margin."""
         self._marginTitle = (float(upper), float(lower))
-        return
 
     def setHead1Margins(self, upper: float, lower: float) -> None:
         """Set the upper and lower heading 1 margin."""
         self._marginHead1 = (float(upper), float(lower))
-        return
 
     def setHead2Margins(self, upper: float, lower: float) -> None:
         """Set the upper and lower heading 2 margin."""
         self._marginHead2 = (float(upper), float(lower))
-        return
 
     def setHead3Margins(self, upper: float, lower: float) -> None:
         """Set the upper and lower heading 3 margin."""
         self._marginHead3 = (float(upper), float(lower))
-        return
 
     def setHead4Margins(self, upper: float, lower: float) -> None:
         """Set the upper and lower heading 4 margin."""
         self._marginHead4 = (float(upper), float(lower))
-        return
 
     def setTextMargins(self, upper: float, lower: float) -> None:
         """Set the upper and lower text margin."""
         self._marginText = (float(upper), float(lower))
-        return
 
     def setMetaMargins(self, upper: float, lower: float) -> None:
         """Set the upper and lower meta text margin."""
         self._marginMeta = (float(upper), float(lower))
-        return
 
     def setSeparatorMargins(self, upper: float, lower: float) -> None:
         """Set the upper and lower meta text margin."""
         self._marginSep = (float(upper), float(lower))
-        return
 
     def setLinkHeadings(self, state: bool) -> None:
         """Enable or disable adding an anchor before headings."""
         self._linkHeadings = state
-        return
 
     def setBodyText(self, state: bool) -> None:
         """Include body text in build."""
         self._doBodyText = state
-        return
 
     def setCommentType(self, comment: nwComment, state: bool) -> None:
         """Toggle the inclusion og certain comment types."""
@@ -417,22 +387,18 @@ class Tokenizer(ABC):
             self._doComments.add(comment)
         else:
             self._doComments.discard(comment)
-        return
 
     def setKeywords(self, state: bool) -> None:
         """Include keywords in build."""
         self._doKeywords = state
-        return
 
     def setIgnoredKeywords(self, keywords: str) -> None:
         """Comma separated string of keywords to ignore."""
         self._skipKeywords = set(x.lower().strip() for x in keywords.split(","))
-        return
 
     def setKeepLineBreaks(self, state: bool) -> None:
         """Keep line breaks in paragraphs."""
         self._keepBreaks = state
-        return
 
     ##
     #  Class Methods
@@ -460,12 +426,10 @@ class Tokenizer(ABC):
         self._classes["tag"] = self._theme.tag
         self._classes["keyword"] = self._theme.keyword
         self._classes["optional"] = self._theme.optional
-        return
 
     def setBreakNext(self) -> None:
         """Set a page break for next block."""
         self._breakNext = True
-        return
 
     def addRootHeading(self, tHandle: str) -> None:
         """Add a heading at the start of a new root folder."""
@@ -491,8 +455,6 @@ class Tokenizer(ABC):
             if self._keepRaw:
                 self._raw.append(f"#! {title}\n\n")
 
-        return
-
     def setText(self, tHandle: str, text: str | None = None) -> None:
         """Set the text for the tokenizer from a handle. If text is not
         set, it's is loaded from the file.
@@ -503,7 +465,6 @@ class Tokenizer(ABC):
             self._text = text or self._project.storage.getDocumentText(tHandle)
             self._handle = tHandle
             self._isNovel = nwItem.itemLayout == nwItemLayout.DOCUMENT
-        return
 
     def doPreProcessing(self) -> None:
         """Run pre-processing jobs before the text is tokenized."""
@@ -512,7 +473,6 @@ class Tokenizer(ABC):
             replace = {f"<{k}>": v for k, v in entry.items()}
             rxRep = re.compile("|".join([re.escape(k) for k in replace]), flags=re.DOTALL)
             self._text = rxRep.sub(lambda x: replace[x.group(0)], self._text)
-        return
 
     def tokenizeText(self) -> None:
         """Scan the text for either lines starting with specific
@@ -590,13 +550,13 @@ class Tokenizer(ABC):
                     self._breakNext = True
                     continue
 
-                elif sLine == "[vspace]":
+                if sLine == "[vspace]":
                     tBlocks.append(
                         (BlockTyp.SKIP, "", "", [], tStyle)
                     )
                     continue
 
-                elif sLine.startswith("[vspace:") and sLine.endswith("]"):
+                if sLine.startswith("[vspace:") and sLine.endswith("]"):
                     nSkip = checkInt(sLine[8:-1], 0)
                     if nSkip >= 1:
                         tBlocks.append(
@@ -962,8 +922,6 @@ class Tokenizer(ABC):
             text = tText.replace(nwHeadFmt.BR, " ").replace("&amp;", "&")
             self._outline[tKey] = f"{prefix}|{text}"
 
-        return
-
     def countStats(self) -> None:
         """Count stats on the tokenized text."""
         titleCount = self._counts.get(nwStats.TITLES, 0)
@@ -1038,8 +996,6 @@ class Tokenizer(ABC):
         self._counts[nwStats.WCHARS_ALL] = allWordChars
         self._counts[nwStats.WCHARS_TEXT] = textWordChars
         self._counts[nwStats.WCHARS_TITLE] = titleWordChars
-
-        return
 
     ##
     #  Internal Functions
@@ -1182,6 +1138,12 @@ class Tokenizer(ABC):
 
 
 class HeadingFormatter:
+    """Core: Format Text Headings.
+
+    This class holds the various chapter and scene counters and can
+    apply the Build Settings header format settings based on internal
+    counter state.
+    """
 
     def __init__(
         self,
@@ -1195,35 +1157,29 @@ class HeadingFormatter:
         self._chapter = chapter
         self._scene = scene
         self._absolute = absolute
-        return
 
     def setHandle(self, tHandle: str | None) -> None:
         """Set the handle currently being processed."""
         self._handle = tHandle
-        return
 
     def incChapter(self) -> None:
         """Increment the chapter counter."""
         self._chapter += 1
-        return
 
     def incScene(self) -> None:
         """Increment the scene counters."""
         self._scene += 1
         self._absolute += 1
-        return
 
     def resetAll(self) -> None:
         """Reset all counters."""
         self._chapter = 0
         self._scene = 0
         self._absolute = 0
-        return
 
     def resetScene(self) -> None:
         """Reset the chapter scene counter."""
         self._scene = 0
-        return
 
     def apply(self, hFormat: str, text: str, nHead: int) -> str:
         """Apply formatting to a specific heading."""
