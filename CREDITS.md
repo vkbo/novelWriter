@@ -84,6 +84,7 @@ Colour themes included with novelWriter were adapted from the following sources:
 * **Nord** theme by Sven Greb
 * **Owl** themes by Sarah Drasner
 * **Primer** themes by GitHub, Inc. and Myian
+* **Rosé Pine** themes by Rosé Pine
 * **Snazzy Light** theme by Florian Reuschel
 * **Solarized** themes by Ethan Schoonover
 * **Tango** themes by the Tango Desktop Project
