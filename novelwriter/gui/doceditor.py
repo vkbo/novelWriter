@@ -44,8 +44,8 @@ from PyQt6.QtCore import (
 )
 from PyQt6.QtGui import (
     QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
-    QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent, QShortcut,
-    QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QKeySequence, QInputMethodEvent, QMouseEvent, QPalette, QPixmap, QResizeEvent,
+    QShortcut, QTextBlock, QTextCursor, QTextDocument, QTextOption,
 )
 from PyQt6.QtWidgets import (
     QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
@@ -1016,6 +1016,29 @@ class GuiDocEditor(QPlainTextEdit):
         self.updateDocMargins()
         super().resizeEvent(event)
         return
+
+    def inputMethodEvent(self, event: QInputMethodEvent) -> None:
+        """Handle text being input from CJK input methods"""
+        super().inputMethodEvent(event)
+        if event.commitString():
+            self.ensureCursorVisible()
+            if self._completer.isVisible():
+                rect = self.cursorRect()
+                pos = self.mapToGlobal(rect.bottomLeft())
+                self._completer.move(pos)
+
+    def inputMethodQuery(self, query: Qt.InputMethodQuery):
+        """Adjust completion windows for CJK input methods to consider
+        the viewport margins.
+        """
+        if query == Qt.InputMethodQuery.ImCursorRectangle:
+            rect = self.cursorRect()
+            vM = self.viewportMargins()
+            rect.translate(vM.left(), vM.top())
+
+            return rect
+
+        return super().inputMethodQuery(query)
 
     ##
     #  Public Slots
