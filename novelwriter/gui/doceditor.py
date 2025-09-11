@@ -39,13 +39,14 @@ from enum import Enum, IntFlag
 from time import time
 
 from PyQt6.QtCore import (
-    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, QVariant,
-    pyqtSignal, pyqtSlot
+    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
+    pyqtSlot
 )
 from PyQt6.QtGui import (
-    QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
-    QKeySequence, QInputMethodEvent, QMouseEvent, QPalette, QPixmap, QResizeEvent,
-    QShortcut, QTextBlock, QTextCursor, QTextDocument, QTextOption,
+    QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent,
+    QInputMethodEvent, QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap,
+    QResizeEvent, QShortcut, QTextBlock, QTextCursor, QTextDocument,
+    QTextOption
 )
 from PyQt6.QtWidgets import (
     QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
@@ -1027,7 +1028,7 @@ class GuiDocEditor(QPlainTextEdit):
                 pos = self.mapToGlobal(rect.bottomLeft())
                 self._completer.move(pos)
 
-    def inputMethodQuery(self, query: Qt.InputMethodQuery) -> QVariant:
+    def inputMethodQuery(self, query: Qt.InputMethodQuery) -> object:
         """Adjust completion windows for CJK input methods to consider
         the viewport margins.
         """
