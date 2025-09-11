@@ -39,8 +39,8 @@ from enum import Enum, IntFlag
 from time import time
 
 from PyQt6.QtCore import (
-    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
-    pyqtSlot
+    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, QVariant,
+    pyqtSignal, pyqtSlot
 )
 from PyQt6.QtGui import (
     QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
@@ -1018,7 +1018,7 @@ class GuiDocEditor(QPlainTextEdit):
         return
 
     def inputMethodEvent(self, event: QInputMethodEvent) -> None:
-        """Handle text being input from CJK input methods"""
+        """Handle text being input from CJK input methods."""
         super().inputMethodEvent(event)
         if event.commitString():
             self.ensureCursorVisible()
@@ -1027,7 +1027,7 @@ class GuiDocEditor(QPlainTextEdit):
                 pos = self.mapToGlobal(rect.bottomLeft())
                 self._completer.move(pos)
 
-    def inputMethodQuery(self, query: Qt.InputMethodQuery):
+    def inputMethodQuery(self, query: Qt.InputMethodQuery) -> QVariant:
         """Adjust completion windows for CJK input methods to consider
         the viewport margins.
         """
