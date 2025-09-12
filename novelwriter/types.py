@@ -110,6 +110,8 @@ QtMoveAnchor = QTextCursor.MoveMode.MoveAnchor
 QtMoveLeft = QTextCursor.MoveOperation.Left
 QtMoveRight = QTextCursor.MoveOperation.Right
 
+QtImCursorRectangle = Qt.InputMethodQuery.ImCursorRectangle
+
 # Size Policy
 
 QtSizeExpanding = QSizePolicy.Policy.Expanding

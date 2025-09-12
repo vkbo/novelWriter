@@ -39,8 +39,8 @@ from enum import Enum, IntFlag
 from time import time
 
 from PyQt6.QtCore import (
-    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
-    pyqtSlot
+    QObject, QPoint, QRect, QRegularExpression, QRunnable, Qt, QTimer,
+    QVariant, pyqtSignal, pyqtSlot
 )
 from PyQt6.QtGui import (
     QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent,
@@ -75,8 +75,9 @@ from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
-    QtAlignRight, QtKeepAnchor, QtModCtrl, QtModNone, QtModShift, QtMouseLeft,
-    QtMoveAnchor, QtMoveLeft, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
+    QtAlignRight, QtImCursorRectangle, QtKeepAnchor, QtModCtrl, QtModNone,
+    QtModShift, QtMouseLeft, QtMoveAnchor, QtMoveLeft, QtMoveRight,
+    QtScrollAlwaysOff, QtScrollAsNeeded
 )
 
 logger = logging.getLogger(__name__)
@@ -1028,17 +1029,15 @@ class GuiDocEditor(QPlainTextEdit):
                 pos = self.mapToGlobal(rect.bottomLeft())
                 self._completer.move(pos)
 
-    def inputMethodQuery(self, query: Qt.InputMethodQuery) -> object:
+    def inputMethodQuery(self, query: Qt.InputMethodQuery) -> QRect | QVariant:
         """Adjust completion windows for CJK input methods to consider
         the viewport margins.
         """
-        if query == Qt.InputMethodQuery.ImCursorRectangle:
+        if query == QtImCursorRectangle:
             rect = self.cursorRect()
             vM = self.viewportMargins()
             rect.translate(vM.left(), vM.top())
-
             return rect
-
         return super().inputMethodQuery(query)
 
     ##
