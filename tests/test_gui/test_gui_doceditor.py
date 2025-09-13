@@ -1942,18 +1942,18 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
         "%Note.Consistency: \n"
     )
 
-    # CJK completer reposition (#2267)
+    # CJK completer reposition (#2267 and #2517)
     qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
     assert completer.isVisible() is True
     completer.move(0, 0)
-    assert completer.pos().x() == 0
-    assert completer.pos().y() == 0
+    assert completer.pos().x() == 0  # Completer menu at 0
+    assert completer.pos().y() == 0  # Completer menu at 0
 
     event = QInputMethodEvent()
-    event.setCommitString("Ping")
+    event.setCommitString("Text")
     docEditor.inputMethodEvent(event)
-    assert completer.pos().x() > 0  # Should have moved
-    assert completer.pos().y() > 0  # Should have moved
+    assert completer.pos().x() > 0  # Completer should have moved
+    assert completer.pos().y() > 0  # Completer should have moved
 
     # qtbot.stop()
 
