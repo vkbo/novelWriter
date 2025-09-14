@@ -2079,6 +2079,7 @@ class CommandCompleter(QMenu):
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
+        self._parent = parent
 
     def updateMetaText(self, text: str, pos: int) -> bool:
         """Update the menu options based on the line of text."""
