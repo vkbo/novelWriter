@@ -93,14 +93,14 @@ def copySourceCode(dst: Path) -> None:
 
 def copyPackageFiles(dst: Path, oldLicense: bool = False) -> None:
     """Copy files needed for packaging."""
-    copyFiles = ["LICENSE.md", "LICENSE-Apache-2.0.txt", "CREDITS.md", "pyproject.toml"]
+    copyFiles = ["LICENSE.md", "setup/LICENSE-Apache-2.0.txt", "CREDITS.md", "pyproject.toml"]
     for copyFile in copyFiles:
         shutil.copyfile(copyFile, dst / copyFile)
         print("Copied:", copyFile, flush=True)
 
     writeFile(dst / "MANIFEST.in", (
         "include LICENSE.md\n"
-        "include LICENSE-Apache-2.0.txt\n"
+        "include setup/LICENSE-Apache-2.0.txt\n"
         "include CREDITS.md\n"
         "recursive-include novelwriter/assets *\n"
     ))
