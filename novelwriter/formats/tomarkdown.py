@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -29,7 +29,7 @@ from typing import TYPE_CHECKING
 
 from novelwriter.constants import nwUnicode
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
-from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.formats.tokenizer import COMMENT_BLOCKS, Tokenizer
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -79,7 +79,7 @@ EXT_MD = {
 
 
 class ToMarkdown(Tokenizer):
-    """Core: Markdown Document Writer
+    """Core: Markdown Document Writer.
 
     Extend the Tokenizer class to writer Markdown output. It supports
     both Standard Markdown and Extended Markdown. The class also
@@ -91,7 +91,6 @@ class ToMarkdown(Tokenizer):
         self._extended = extended
         self._usedNotes: dict[str, int] = {}
         self._usedFields: list[tuple[int, str]] = []
-        return
 
     ##
     #  Class Methods
@@ -144,7 +143,7 @@ class ToMarkdown(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 lines.append(f"{cSkip}\n\n")
 
-            elif tType == BlockTyp.COMMENT:
+            elif tType in COMMENT_BLOCKS:
                 lines.append(f"{self._formatText(tText, tFormat, mTags)}\n\n")
 
             elif tType == BlockTyp.KEYWORD:
@@ -152,8 +151,6 @@ class ToMarkdown(Tokenizer):
                 lines.append(f"{self._formatText(tText, tFormat, mTags)}{end}")
 
         self._pages.append("".join(lines))
-
-        return
 
     def closeDocument(self) -> None:
         """Run close document tasks."""
@@ -181,20 +178,16 @@ class ToMarkdown(Tokenizer):
             lines.append("\n")
             self._pages.append("".join(lines))
 
-        return
-
     def saveDocument(self, path: Path) -> None:
         """Save the data to a plain text file."""
         with open(path, mode="w", encoding="utf-8") as outFile:
             outFile.write("".join(self._pages))
         logger.info("Wrote file: %s", path)
-        return
 
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = " ") -> None:
         """Replace tabs with spaces."""
         spaces = spaceChar*nSpaces
         self._pages = [p.replace("\t", spaces) for p in self._pages]
-        return
 
     ##
     #  Internal Functions

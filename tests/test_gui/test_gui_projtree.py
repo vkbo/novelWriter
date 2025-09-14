@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -1454,7 +1454,7 @@ def testGuiProjTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwNewCharacter = project.tree[hNewCharacter]
     assert nwNewCharacter is not None
     assert nwNewCharacter.itemName == "Note"
-    assert project.storage.getDocument(hNewCharacter).readDocument() == "# Jane\n\n@tag: Jane\n\n"
+    assert project.storage.getDocument(hNewCharacter).readDocument() == "# Note\n\n@tag: Jane\n\n"
 
     # Clearing the menu and rebuilding it should work
     projBar.mTemplates.clearMenu()

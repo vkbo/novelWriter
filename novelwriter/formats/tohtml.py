@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -32,7 +32,7 @@ from typing import TYPE_CHECKING
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHtmlUnicode, nwStyles
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
-from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.formats.tokenizer import COMMENT_BLOCKS, Tokenizer
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS, QtHexRgb
 
 if TYPE_CHECKING:
@@ -77,7 +77,7 @@ HTML_NONE = (0, "")
 
 
 class ToHtml(Tokenizer):
-    """Core: HTML Document Writer
+    """Core: HTML Document Writer.
 
     Extend the Tokenizer class to writer HTML output. This class is
     also used by the Document Viewer, and Manuscript Build Preview.
@@ -90,7 +90,6 @@ class ToHtml(Tokenizer):
         self._usedNotes: dict[str, int] = {}
         self._usedFields: list[tuple[int, str]] = []
         self.setReplaceUnicode(False)
-        return
 
     ##
     #  Setters
@@ -101,7 +100,6 @@ class ToHtml(Tokenizer):
         class tags.
         """
         self._cssStyles = cssStyles
-        return
 
     def setReplaceUnicode(self, doReplace: bool) -> None:
         """Set the translation map to either minimal or full unicode for
@@ -114,7 +112,6 @@ class ToHtml(Tokenizer):
         if doReplace:
             # Extend to all relevant Unicode characters
             self._trMap.update(str.maketrans(nwHtmlUnicode.U_TO_H))
-        return
 
     ##
     #  Class Methods
@@ -130,7 +127,6 @@ class ToHtml(Tokenizer):
         """
         super().doPreProcessing()
         self._text = self._text.translate(self._trMap)
-        return
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into an HTML document."""
@@ -159,34 +155,33 @@ class ToHtml(Tokenizer):
                 # If we don't have formatting, we can do a plain replace
                 tText = tText.replace("<", "&lt;").replace(">", "&gt;")
 
-            # Styles
+            # Inline Styles
             aStyle = []
-            if self._cssStyles:
-                if tStyle & BlockFmt.LEFT:
-                    aStyle.append("text-align: left;")
-                elif tStyle & BlockFmt.RIGHT:
-                    aStyle.append("text-align: right;")
-                elif tStyle & BlockFmt.CENTRE:
-                    aStyle.append("text-align: center;")
-                elif tStyle & BlockFmt.JUSTIFY:
-                    aStyle.append("text-align: justify;")
+            if tStyle & BlockFmt.LEFT:
+                aStyle.append("text-align: left;")
+            elif tStyle & BlockFmt.RIGHT:
+                aStyle.append("text-align: right;")
+            elif tStyle & BlockFmt.CENTRE:
+                aStyle.append("text-align: center;")
+            elif tStyle & BlockFmt.JUSTIFY:
+                aStyle.append("text-align: justify;")
 
-                if tStyle & BlockFmt.PBB:
-                    aStyle.append("page-break-before: always;")
-                if tStyle & BlockFmt.PBA:
-                    aStyle.append("page-break-after: always;")
+            if tStyle & BlockFmt.PBB:
+                aStyle.append("page-break-before: always;")
+            if tStyle & BlockFmt.PBA:
+                aStyle.append("page-break-after: always;")
 
-                if tStyle & BlockFmt.Z_BTM:
-                    aStyle.append("margin-bottom: 0;")
-                if tStyle & BlockFmt.Z_TOP:
-                    aStyle.append("margin-top: 0;")
+            if tStyle & BlockFmt.Z_BTM:
+                aStyle.append("margin-bottom: 0;")
+            if tStyle & BlockFmt.Z_TOP:
+                aStyle.append("margin-top: 0;")
 
-                if tStyle & BlockFmt.IND_L:
-                    aStyle.append(f"margin-left: {self._blockIndent:.2f}em;")
-                if tStyle & BlockFmt.IND_R:
-                    aStyle.append(f"margin-right: {self._blockIndent:.2f}em;")
-                if tStyle & BlockFmt.IND_T:
-                    aStyle.append(f"text-indent: {self._firstWidth:.2f}em;")
+            if tStyle & BlockFmt.IND_L:
+                aStyle.append(f"margin-left: {self._blockIndent:.2f}em;")
+            if tStyle & BlockFmt.IND_R:
+                aStyle.append(f"margin-right: {self._blockIndent:.2f}em;")
+            if tStyle & BlockFmt.IND_T:
+                aStyle.append(f"text-indent: {self._firstWidth:.2f}em;")
 
             if aStyle:
                 stVals = " ".join(aStyle)
@@ -229,7 +224,7 @@ class ToHtml(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 lines.append(f"<p{hStyle}>&nbsp;</p>\n")
 
-            elif tType == BlockTyp.COMMENT:
+            elif tType in COMMENT_BLOCKS:
                 lines.append(f"<p class='comment'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
             elif tType == BlockTyp.KEYWORD:
@@ -237,8 +232,6 @@ class ToHtml(Tokenizer):
                 lines.append(f"<p class='{tClass}'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
         self._pages.append("".join(lines))
-
-        return
 
     def closeDocument(self) -> None:
         """Run close document tasks."""
@@ -266,8 +259,6 @@ class ToHtml(Tokenizer):
 
             self._pages.append("".join(lines))
 
-        return
-
     def saveDocument(self, path: Path) -> None:
         """Save the data to an HTML file."""
         if path.suffix.lower() == ".json":
@@ -288,37 +279,33 @@ class ToHtml(Tokenizer):
                 json.dump(data, fObj, indent=2)
 
         else:
+            html = []
+            html.append("<!DOCTYPE html>")
+            html.append("<html>")
+            html.append("<head>")
+            html.append(f"<title>{self._project.data.name:s}</title>")
+            html.append("<meta charset='utf-8'>")
+            if self._cssStyles:
+                html.append("<meta name='viewport' content='width=device-width, initial-scale=1'>")
+                html.append("<style>")
+                html.extend(self.getStyleSheet())
+                html.append("</style>")
+            html.append("</head>")
+            html.append("<body>")
+            html.append(("".join(self._pages)).replace("\t", "&#09;").rstrip())
+            html.append("</body>")
+            html.append("</html>\n")
+
             with open(path, mode="w", encoding="utf-8") as fObj:
-                fObj.write((
-                    "<!DOCTYPE html>\n"
-                    "<html>\n"
-                    "<head>\n"
-                    "<meta charset='utf-8'>\n"
-                    "<title>{title:s}</title>\n"
-                    "<style>\n"
-                    "{style:s}\n"
-                    "</style>\n"
-                    "</head>\n"
-                    "<body>\n"
-                    "{body:s}\n"
-                    "</body>\n"
-                    "</html>\n"
-                ).format(
-                    title=self._project.data.name,
-                    style="\n".join(self.getStyleSheet()),
-                    body=("".join(self._pages)).replace("\t", "&#09;").rstrip(),
-                ))
+                fObj.write("\n".join(html))
 
         logger.info("Wrote file: %s", path)
-
-        return
 
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = "&nbsp;") -> None:
         """Replace tabs with spaces in the html."""
         tabSpace = spaceChar*nSpaces
         pages = [aLine.replace("\t", tabSpace) for aLine in self._pages]
         self._pages = pages
-        return
 
     def getStyleSheet(self) -> list[str]:
         """Generate a stylesheet for the current settings."""
@@ -410,7 +397,11 @@ class ToHtml(Tokenizer):
         # isn't already open, and only closed if it has previously been opened.
         tags: list[tuple[int, str]] = []
         state = dict.fromkeys(HTML_OPENER, False)
+        plain = not self._cssStyles
         for pos, fmt, data in tFmt:
+            if plain and fmt in (TextFmt.COL_B, TextFmt.COL_E):
+                # We ignore colour tags if CSS is off
+                continue
             if m := HTML_OPENER.get(fmt):
                 if not state.get(fmt, True):
                     if fmt == TextFmt.COL_B and (color := self._classes.get(data)):

@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import argparse
@@ -60,8 +60,6 @@ def prepareCode(outDir: Path) -> None:
     print("Done")
     print("")
 
-    return
-
 
 def embedPython(bldDir: Path, outDir: Path) -> None:
     """Embed Python library."""
@@ -82,8 +80,6 @@ def embedPython(bldDir: Path, outDir: Path) -> None:
     print("Done")
     print("")
 
-    return
-
 
 def installRequirements(libDir: Path) -> None:
     """Install dependencies."""
@@ -93,7 +89,6 @@ def installRequirements(libDir: Path) -> None:
     ])
     print("Done")
     print("")
-    return
 
 
 def main(args: argparse.Namespace) -> None:
@@ -157,5 +152,3 @@ def main(args: argparse.Namespace) -> None:
     print("")
     print("Done")
     print("")
-
-    return

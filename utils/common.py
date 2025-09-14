@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import shutil
@@ -88,7 +88,6 @@ def copySourceCode(dst: Path) -> None:
         if item.is_file():
             shutil.copyfile(item, dst / relSrc)
             print("Copied:", relSrc, flush=True)
-    return
 
 
 def copyPackageFiles(dst: Path, oldLicense: bool = False) -> None:
@@ -118,8 +117,6 @@ def copyPackageFiles(dst: Path, oldLicense: bool = False) -> None:
         text = "\n".join(new)
     writeFile(dst / "pyproject.toml", text)
 
-    return
-
 
 def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
     """Copy a file produced by one of the build functions to the upload
@@ -129,7 +126,6 @@ def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
     uplDir.mkdir(exist_ok=True)
     srcPath = Path(srcPath)
     shutil.copyfile(srcPath, uplDir / (dstName or srcPath.name))
-    return
 
 
 def makeCheckSum(sumFile: str, cwd: Path | None = None) -> str:
@@ -178,9 +174,7 @@ def appdataXml() -> str:
     """Generate the appdata XML content."""
     raw = readFile(SETUP_DIR / "description_short.txt")
     desc = " ".join(raw.strip().splitlines()).strip()
-    xml = readFile(SETUP_DIR / "novelwriter.appdata.xml")
-    xml = xml.format(description=desc)
-    return xml
+    return readFile(SETUP_DIR / "novelwriter.appdata.xml").format(description=desc)
 
 
 def readFile(file: Path) -> str:
@@ -201,7 +195,6 @@ def freshFolder(path: Path) -> None:
         print("Removing:", str(path), flush=True)
         shutil.rmtree(path)
     path.mkdir()
-    return
 
 
 def systemCall(cmd: list, cwd: Path | str | None = None, env: dict | None = None) -> int:
@@ -217,7 +210,7 @@ def systemCall(cmd: list, cwd: Path | str | None = None, env: dict | None = None
 
 
 def removeRedundantQt(qtBase: Path) -> None:
-    """Delete Qt files that are not needed"""
+    """Delete Qt files that are not needed."""
 
     def unlinkIfFound(file: Path) -> None:
         if file.is_file():
@@ -278,5 +271,3 @@ def removeRedundantQt(qtBase: Path) -> None:
     deleteFolder(qt6Dir / "qml")
     deleteFolder(plugDir / "qmlls")
     deleteFolder(plugDir / "qmllint")
-
-    return

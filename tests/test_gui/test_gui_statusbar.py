@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import time
@@ -31,7 +31,7 @@ from tests.tools import C, buildTestProject
 
 @pytest.mark.gui
 def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
-    """Test the the various features of the status bar."""
+    """Test the various features of the status bar."""
     buildTestProject(nwGUI, projPath)
     cHandle = SHARED.project.newFile("A Note", C.hCharRoot)
     newDoc = SHARED.project.storage.getDocument(cHandle)

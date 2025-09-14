@@ -1,11 +1,12 @@
 %%~name: Prologue
 %%~path: b3643d0f92e32/88d59a277361b
 %%~kind: NOVEL/DOCUMENT
-%%~hash: 377a72ba340ff458a00d98af745e9fa0c79fb26c
-%%~date: Unknown/2024-10-25 19:16:49
+%%~hash: d43324a30d3f1e5608711ca71515dee429b30925
+%%~date: Unknown/2025-06-19 21:01:07
 ##! Prologue
 
-% Synopsis: Explanation from the lipsum.com website.
+%Synopsis: Explanation from the lipsum.com website.
+%Note.Purpose: Introduction
 
 _Lorem Ipsum_ is simply dummy text[footnote:f9kgf] of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
 

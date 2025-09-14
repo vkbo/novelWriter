@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import re
@@ -29,7 +29,15 @@ from enum import Flag, IntEnum
 
 from PyQt6.QtGui import QColor
 
-ESCAPES = {r"\*": "*", r"\~": "~", r"\_": "_", r"\[": "[", r"\]": "]", r"\ ": ""}
+ESCAPES = {
+    r"\*": "*",
+    r"\~": "~",
+    r"\=": "=",
+    r"\_": "_",
+    r"\[": "[",
+    r"\]": "]",
+    r"\ ": "",
+}
 RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
 
 

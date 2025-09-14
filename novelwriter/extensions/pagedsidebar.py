@@ -22,7 +22,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from PyQt6.QtCore import QPoint, QRectF, QSize, Qt, pyqtSignal, pyqtSlot
@@ -39,7 +39,7 @@ from novelwriter.types import (
 
 
 class NPagedSideBar(QToolBar):
-    """Extensions: Paged Side Bar
+    """Extensions: Paged Side Bar.
 
     A side bar widget that holds buttons that mimic tabs. It is designed
     to be used in combination with a QStackedWidget for options panels.
@@ -65,8 +65,6 @@ class NPagedSideBar(QToolBar):
         stretch.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
         self._stretchAction = self.addWidget(stretch)
 
-        return
-
     def button(self, buttonId: int) -> _PagedToolButton:
         """Return a specific button."""
         return self._buttons[buttonId]
@@ -74,14 +72,12 @@ class NPagedSideBar(QToolBar):
     def setLabelColor(self, color: QColor) -> None:
         """Set the text color for the labels."""
         self._labelCol = color
-        return
 
     def addLabel(self, text: str) -> None:
         """Add a new label to the toolbar."""
         label = _NPagedToolLabel(self, self._labelCol)
         label.setText(text)
         self.insertWidget(self._stretchAction, label)
-        return
 
     def addButton(self, text: str, buttonId: int = -1) -> None:
         """Add a new button to the toolbar."""
@@ -90,13 +86,11 @@ class NPagedSideBar(QToolBar):
         self.insertWidget(self._stretchAction, button)
         self._group.addButton(button, id=buttonId)
         self._buttons[buttonId] = button
-        return
 
     def setSelected(self, buttonId: int) -> None:
         """Set the selected button."""
         if button := self._group.button(buttonId):
             button.setChecked(True)
-        return
 
     ##
     #  Private Slots
@@ -104,11 +98,10 @@ class NPagedSideBar(QToolBar):
 
     @pyqtSlot("QAbstractButton*")
     def _buttonClicked(self, button: QAbstractButton) -> None:
-        """A button was clicked in the group, emit its id."""
+        """Handle a button click in the group and emit its id."""
         buttonId = self._group.id(button)
         if buttonId != -1:
             self.buttonClicked.emit(buttonId)
-        return
 
 
 class _PagedToolButton(QToolButton):
@@ -126,8 +119,6 @@ class _PagedToolButton(QToolButton):
         self._tM = (self._bH - fH)//2
         self._aH = 2*fH//7
         self.setFixedHeight(self._bH)
-
-        return
 
     def sizeHint(self) -> QSize:
         """Return a size hint that includes the arrow."""
@@ -156,7 +147,7 @@ class _PagedToolButton(QToolButton):
 
         if self.isChecked():
             painter.setBrush(palette.highlight())
-            painter.setOpacity(0.35)
+            painter.setOpacity(0.8)
             painter.drawRoundedRect(0, 0, width, height, 4, 4)
             textCol = palette.highlightedText().color()
         else:
@@ -180,8 +171,6 @@ class _PagedToolButton(QToolButton):
         ]))
         painter.end()
 
-        return
-
 
 class _NPagedToolLabel(QLabel):
 
@@ -199,8 +188,6 @@ class _NPagedToolLabel(QLabel):
 
         self._textCol = textColor or self.palette().text().color()
 
-        return
-
     def paintEvent(self, event: QPaintEvent) -> None:
         """Overload the paint event to draw a simple, left aligned text
         label that matches the button style.
@@ -215,5 +202,3 @@ class _NPagedToolLabel(QLabel):
         painter.setOpacity(1.0)
         painter.drawText(QRectF(4, self._tM, tW, tH), QtAlignLeft, self.text())
         painter.end()
-
-        return

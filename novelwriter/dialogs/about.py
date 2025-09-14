@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -45,6 +45,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiAbout(NDialog):
+    """GUI: About novelWriter Dialog."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -109,11 +110,8 @@ class GuiAbout(NDialog):
 
         logger.debug("Ready: GuiAbout")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiAbout")
-        return
 
     ##
     #  Events
@@ -123,7 +121,6 @@ class GuiAbout(NDialog):
         """Capture the close event and perform cleanup."""
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Internal Functions
@@ -135,7 +132,6 @@ class GuiAbout(NDialog):
             self.txtCredits.setHtml(html)
         else:
             self.txtCredits.setHtml("Error loading credits text ...")
-        return
 
     def _setStyleSheet(self) -> None:
         """Set stylesheet text document."""
@@ -143,4 +139,3 @@ class GuiAbout(NDialog):
         self.txtCredits.setStyleSheet(
             f"QTextBrowser {{border: none; background: {baseCol};}} "
         )
-        return

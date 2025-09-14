@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -37,7 +37,7 @@ from PyQt6.QtPrintSupport import QPrinter
 from novelwriter import __version__
 from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
-from novelwriter.formats.tokenizer import HEADINGS, Tokenizer
+from novelwriter.formats.tokenizer import HEADING_BLOCKS, META_BLOCKS, Tokenizer
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
     QtKeepAnchor, QtMoveAnchor, QtPageBreakAfter, QtPageBreakAuto,
@@ -56,6 +56,7 @@ T_TextStyle = tuple[QTextBlockFormat, QTextCharFormat]
 
 
 def newBlock(cursor: QTextCursor, bFmt: QTextBlockFormat) -> None:
+    """Insert a new block if not at the beginning of the document."""
     if cursor.position() > 0:
         cursor.insertBlock(bFmt)
     else:
@@ -63,7 +64,7 @@ def newBlock(cursor: QTextCursor, bFmt: QTextBlockFormat) -> None:
 
 
 class ToQTextDocument(Tokenizer):
-    """Core: QTextDocument Writer
+    """Core: QTextDocument Writer.
 
     Extend the Tokenizer class to generate a QTextDocument output. This
     is intended for usage in the document viewer and build tool preview.
@@ -92,8 +93,6 @@ class ToQTextDocument(Tokenizer):
         self._pageSize = QPageSize(QPageSize.PageSizeId.A4)
         self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
 
-        return
-
     ##
     #  Properties
     ##
@@ -113,17 +112,14 @@ class ToQTextDocument(Tokenizer):
         """Set the document page size and margins in millimetres."""
         self._pageSize = QPageSize(QSizeF(width, height), QPageSize.Unit.Millimeter)
         self._pageMargins = QMarginsF(left, top, right, bottom)
-        return
 
     def setShowNewPage(self, state: bool) -> None:
         """Add markers for page breaks."""
         self._newPage = state
-        return
 
     def disableAnchors(self) -> None:
         """Disable anchors for when writing to file."""
         self._anchors = False
-        return
 
     ##
     #  Class Methods
@@ -200,8 +196,6 @@ class ToQTextDocument(Tokenizer):
 
         self._init = True
 
-        return
-
     def doConvert(self) -> None:
         """Write text tokens into the document."""
         if not self._init:
@@ -214,7 +208,7 @@ class ToQTextDocument(Tokenizer):
         for tType, tMeta, tText, tFormat, tStyle in self._blocks:
 
             bFmt = QTextBlockFormat(self._blockFmt)
-            if tType in (BlockTyp.COMMENT, BlockTyp.KEYWORD):
+            if tType in META_BLOCKS:
                 bFmt.setTopMargin(self._mMeta[0])
                 bFmt.setBottomMargin(self._mMeta[1])
             elif tType == BlockTyp.SEP:
@@ -248,16 +242,20 @@ class ToQTextDocument(Tokenizer):
             if tStyle & BlockFmt.IND_T:
                 bFmt.setTextIndent(self._tIndent)
 
-            if tType in (BlockTyp.TEXT, BlockTyp.COMMENT, BlockTyp.KEYWORD):
+            if tType == BlockTyp.TEXT:
                 newBlock(cursor, bFmt)
                 self._insertFragments(tText, tFormat, cursor, self._charFmt)
 
-            elif tType in HEADINGS:
+            elif tType in HEADING_BLOCKS:
                 bFmt, cFmt = self._genHeadStyle(tType, tMeta, bFmt)
                 for tPart in tText.split("\n"):
                     newBlock(cursor, bFmt)
                     cursor.insertText(tPart, cFmt)
                     bFmt.setPageBreakPolicy(QtPageBreakAuto)
+
+            elif tType in META_BLOCKS:
+                newBlock(cursor, bFmt)
+                self._insertFragments(tText, tFormat, cursor, self._charFmt)
 
             elif tType == BlockTyp.SEP:
                 newBlock(cursor, bFmt)
@@ -293,8 +291,6 @@ class ToQTextDocument(Tokenizer):
         self._document.setPageSize(printer.pageRect(QPrinter.Unit.DevicePixel).size())
         self._document.print(printer)
 
-        return
-
     def closeDocument(self) -> None:
         """Run close document tasks."""
         self._document.blockSignals(True)
@@ -328,8 +324,6 @@ class ToQTextDocument(Tokenizer):
                     self._insertFragments(*content, cursor, self._charFmt)
 
         self._document.blockSignals(False)
-
-        return
 
     ##
     #  Internal Functions
@@ -435,8 +429,6 @@ class ToQTextDocument(Tokenizer):
         # Insert whatever is left in the buffer
         cursor.insertText(stripEscape(temp[start:]), cFmt)
 
-        return
-
     def _insertNewPageMarker(self, cursor: QTextCursor) -> None:
         """Insert a new page marker."""
         if self._newPage:
@@ -470,8 +462,6 @@ class ToQTextDocument(Tokenizer):
             cursor.insertText(self._project.localLookup("New Page"), cFmt)
             if root := self._document.rootFrame():
                 cursor.swap(root.lastCursorPosition())
-
-        return
 
     def _genHeadStyle(self, hType: BlockTyp, hKey: str, rFmt: QTextBlockFormat) -> T_TextStyle:
         """Generate a heading style set."""

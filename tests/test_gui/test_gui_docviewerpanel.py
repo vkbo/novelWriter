@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import pytest
@@ -224,7 +224,7 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
 
     # Update Labels
     assert charTab.topLevelItem(0).text(charTab.C_IMPORT) == "New"
-    SHARED.project.data.itemImport.add(C.iNew, "Stuff", (100, 100, 100), "SQUARE", 0)
+    SHARED.project.data.itemImport.add(C.iNew, "Stuff", "#646464", "SQUARE", 0)
     viewPanel.updateStatusLabels("i")
     assert charTab.topLevelItem(0).text(charTab.C_IMPORT) == "Stuff"
 

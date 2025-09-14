@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -222,12 +222,24 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
         "</p>\n"
     )
 
-    # Keywords
+
+@pytest.mark.core
+def testFmtToHtml_ConvertMeta(mockGUI):
+    """Test meta data formats in the ToHtml class."""
+    project = NWProject()
+    html = ToHtml(project)
+    html.initDocument()
+    html._isNovel = True
+    html._isFirst = True
+
+    # Keywords Disabled
+    html.setKeywords(False)
     html._text = "@char: Bod, Jane\n"
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == ""
 
+    # Keywords Enabled
     html.setKeywords(True)
     html._text = "@char: Bod, Jane\n"
     html.tokenizeText()
@@ -239,7 +251,8 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
         "<span style='color: #4271ae'><a href='#tag_jane'>Jane</a></span></p>\n"
     )
 
-    # Tags
+    # Tags w/Colour
+    html.setStyles(True)
     html._text = "@tag: Bod\n"
     html.tokenizeText()
     html.doConvert()
@@ -257,7 +270,25 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
         "<span style='color: #4271ae'>Nobody Owens</span></p>\n"
     )
 
-    # Multiple Keywords
+    # Tags wo/Colour
+    html.setStyles(False)
+    html._text = "@tag: Bod\n"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<p class='meta meta-tag'><strong>Tag:</strong> <a name='tag_bod'>Bod</a></p>\n"
+    )
+
+    html._text = "@tag: Bod | Nobody Owens\n"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<p class='meta meta-tag'><strong>Tag:</strong> "
+        "<a name='tag_bod'>Bod</a> | Nobody Owens</p>\n"
+    )
+
+    # Multiple Keywords w/Colour
+    html.setStyles(True)
     html._isFirst = False
     html.setKeywords(True)
     html._text = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
@@ -274,6 +305,23 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
         "<p class='meta meta-location' style='margin-top: 0;'>"
         "<strong><span style='color: #f5871f'>Locations:</span></strong> "
         "<span style='color: #4271ae'><a href='#tag_europe'>Europe</a></span></p>\n"
+    )
+
+    # Multiple Keywords wo/Colour
+    html.setStyles(False)
+    html._isFirst = False
+    html.setKeywords(True)
+    html._text = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == (
+        "<h1 style='page-break-before: always;'>Chapter</h1>\n"
+        "<p class='meta meta-pov' style='margin-bottom: 0;'>"
+        "<strong>Point of View:</strong> <a href='#tag_bod'>Bod</a></p>\n"
+        "<p class='meta meta-plot' style='margin-bottom: 0; margin-top: 0;'>"
+        "<strong>Plot:</strong> <a href='#tag_main'>Main</a></p>\n"
+        "<p class='meta meta-location' style='margin-top: 0;'>"
+        "<strong>Locations:</strong> <a href='#tag_europe'>Europe</a></p>\n"
     )
 
 
@@ -485,17 +533,6 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     # =========
 
     html.setLinkHeadings(False)
-
-    # Align Left
-    html.setStyles(False)
-    html._blocks = [
-        (BlockTyp.PART, tMeta, "A Title", [], BlockFmt.LEFT),
-    ]
-    html.doConvert()
-    assert html._pages[-1] == (
-        "<h1 class='title'>A Title</h1>\n"
-    )
-
     html.setStyles(True)
 
     # Align Left
@@ -709,33 +746,57 @@ def testFmtToHtml_Save(mockGUI, fncPath):
 
     # Check Files
     # ===========
-
-    # HTML
     hStyle = html.getStyleSheet()
-    htmlDoc = (
+
+    # HTML w/Styles
+    html.setStyles(True)
+    htmlDocCSS = (
         "<!DOCTYPE html>\n"
         "<html>\n"
         "<head>\n"
-        "<meta charset='utf-8'>\n"
         "<title></title>\n"
+        "<meta charset='utf-8'>\n"
+        "<meta name='viewport' content='width=device-width, initial-scale=1'>\n"
         "<style>\n"
-        "{htmlStyle:s}\n"
+        "{style}\n"
         "</style>\n"
         "</head>\n"
         "<body>\n"
-        "{bodyText:s}\n"
+        "{body}\n"
         "</body>\n"
         "</html>\n"
     ).format(
-        htmlStyle="\n".join(hStyle),
-        bodyText="".join(resText).rstrip()
+        style="\n".join(hStyle),
+        body="".join(resText).rstrip()
     )
 
     saveFile = fncPath / "outFile.htm"
     html.saveDocument(saveFile)
-    assert saveFile.read_text(encoding="utf-8") == htmlDoc
+    assert saveFile.read_text(encoding="utf-8") == htmlDocCSS
 
-    # JSON + HTML
+    # HTML wo/Styles
+    html.setStyles(False)
+    htmlDocCSS = (
+        "<!DOCTYPE html>\n"
+        "<html>\n"
+        "<head>\n"
+        "<title></title>\n"
+        "<meta charset='utf-8'>\n"
+        "</head>\n"
+        "<body>\n"
+        "{body}\n"
+        "</body>\n"
+        "</html>\n"
+    ).format(
+        body="".join(resText).rstrip()
+    )
+
+    saveFile = fncPath / "outFile.htm"
+    html.saveDocument(saveFile)
+    assert saveFile.read_text(encoding="utf-8") == htmlDocCSS
+
+    # JSON + HTML w/Styles
+    html.setStyles(True)
     saveFile = fncPath / "outFile.json"
     html.saveDocument(saveFile)
     data = json.loads(saveFile.read_text(encoding="utf-8"))

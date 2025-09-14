@@ -23,7 +23,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -52,7 +52,9 @@ logger = logging.getLogger(__name__)
 
 
 class DocMerger:
-    """Document tool for merging a set of documents into a single new
+    """Tool: Merge Documents.
+
+    Document tool for merging a set of documents into a single new
     document. The parameters are defined by the user using the
     GuiDocMerge dialog.
     """
@@ -62,7 +64,6 @@ class DocMerger:
         self._error = ""
         self._target = None
         self._text = []
-        return
 
     @property
     def targetHandle(self) -> str | None:
@@ -85,7 +86,6 @@ class DocMerger:
         """
         self._target = self._project.tree[tHandle]
         self._text = []
-        return
 
     def newTargetDoc(self, sHandle: str, label: str) -> None:
         """Create a brand new target document based on a source handle
@@ -101,7 +101,6 @@ class DocMerger:
                 nwItem.notifyToRefresh()
                 self._target = nwItem
                 self._text = []
-        return
 
     def appendText(self, sHandle: str, addComment: bool, cmtPrefix: str) -> None:
         """Append text from an existing document to the text buffer."""
@@ -112,7 +111,6 @@ class DocMerger:
                 status, _ = item.getImportStatus()
                 text = f"% {cmtPrefix} {info}: {item.itemName} [{status}]\n\n{text}"
             self._text.append(text)
-        return
 
     def writeTargetDoc(self) -> bool:
         """Write the accumulated text into the designated target
@@ -158,7 +156,8 @@ class DocSplitter:
             self._srcHandle = sHandle
             self._srcItem = srcItem
 
-        return
+    def __len__(self) -> int:
+        return len(self._rawData)
 
     ##
     #  Methods
@@ -174,7 +173,6 @@ class DocSplitter:
         """
         self._parHandle = pHandle
         self._inFolder = False
-        return
 
     def newParentFolder(self, pHandle: str, folderLabel: str) -> None:
         """Create a new folder that will be the top level parent item
@@ -188,7 +186,6 @@ class DocSplitter:
                 nwItem.notifyToRefresh()
             self._parHandle = nHandle
             self._inFolder = True
-        return
 
     def splitDocument(self, splitData: list, splitText: list[str]) -> None:
         """Loop through the split data record and perform the split job
@@ -200,12 +197,9 @@ class DocSplitter:
             chunk = buffer[lineNo:]
             buffer = buffer[:lineNo]
             self._rawData.insert(0, (chunk, hLevel, hLabel))
-        return
 
     def writeDocuments(self, docHierarchy: bool) -> Iterable[bool]:
-        """An iterator that will write each document in the buffer, and
-        return its new handle, parent handle, and sibling handle.
-        """
+        """Write each document in the buffer and yield if successful."""
         if self._srcHandle and self._srcItem and self._parHandle:
             pHandle = self._parHandle
             hHandle = [self._parHandle, None, None, None, None]
@@ -256,7 +250,6 @@ class DocDuplicator:
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
-        return
 
     ##
     #  Methods
@@ -270,7 +263,9 @@ class DocDuplicator:
         after = True
         if items:
             hMap: dict[str, str | None] = {t: None for t in items}
+            SHARED.initMainProgress(len(items))
             for tHandle in items:
+                SHARED.incMainProgress()
                 if oldItem := self._project.tree[tHandle]:
                     pHandle = hMap.get(oldItem.itemParent or "") or oldItem.itemParent
                     if newItem := self._project.tree.duplicate(tHandle, pHandle, after):
@@ -282,17 +277,21 @@ class DocDuplicator:
                     after = False
                 else:
                     break
+            SHARED.clearMainProgress()
         return result
 
 
 class DocSearch:
+    """Tool: Search Documents.
+
+    A global document search class.
+    """
 
     def __init__(self) -> None:
         self._regEx = re.compile(r"")
-        self._opts = re.UNICODE | re.IGNORECASE
+        self._opts = re.IGNORECASE
         self._words = False
         self._escape = True
-        return
 
     ##
     #  Methods
@@ -300,32 +299,30 @@ class DocSearch:
 
     def setCaseSensitive(self, state: bool) -> None:
         """Set the case sensitive search flag."""
-        self._opts = re.UNICODE
-        if not state:
-            self._opts |= re.IGNORECASE
-        return
+        self._opts = 0 if state else re.IGNORECASE
 
     def setWholeWords(self, state: bool) -> None:
         """Set the whole words search flag."""
         self._words = state
-        return
 
     def setUserRegEx(self, state: bool) -> None:
         """Set the escape flag to the opposite state."""
         self._escape = not state
-        return
 
     def iterSearch(
         self, project: NWProject, search: str
     ) -> Iterable[tuple[NWItem, list[tuple[int, int, str]], bool]]:
-        """Iteratively search through documents in a project."""
+        """Iterate through documents in a project and apply search."""
         self._regEx = re.compile(self._buildPattern(search), self._opts)
         logger.debug("Searching with pattern '%s'", self._regEx.pattern)
         storage = project.storage
+        SHARED.initMainProgress(len(project.tree))
         for item in project.tree:
+            SHARED.incMainProgress()
             if item.isFileType():
                 results, capped = self.searchText(storage.getDocumentText(item.itemHandle))
                 yield item, results, capped
+        SHARED.clearMainProgress()
         return
 
     def searchText(self, text: str) -> tuple[list[tuple[int, int, str]], bool]:
@@ -368,7 +365,6 @@ class ProjectBuilder:
     def __init__(self) -> None:
         self._path = None
         self.tr = partial(QCoreApplication.translate, "ProjectBuilder")
-        return
 
     @property
     def projPath(self) -> Path | None:
@@ -609,6 +605,6 @@ class ProjectBuilder:
         project.data.setSaveCount(0)
         project.data.setAutoCount(0)
         project.data.setEditTime(0)
+        project.index.rebuild()
         project.saveProject()
         project.closeProject()
-        return

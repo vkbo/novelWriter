@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import pytest
@@ -43,12 +43,10 @@ class MockWheelEvent(QWheelEvent):
             Qt.ScrollPhase.ScrollUpdate, False
         )
         self.ignored = False
-        return
 
     def ignore(self):
         super().ignore()
         self.ignored = True
-        return
 
 
 @pytest.mark.gui

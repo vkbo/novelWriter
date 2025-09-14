@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import argparse
@@ -45,6 +45,7 @@ ICON_EXTRACT = {
     "remix":        "RemixIcon-4.6.0",
 }
 ICONS = [
+    # Remember to also update tests/files/all_icons.json for test coverage
     "alert_error",
     "alert_info",
     "alert_question",
@@ -101,6 +102,10 @@ ICONS = [
     "sb_project",
     "sb_search",
     "sb_stats",
+
+    "theme_light",
+    "theme_dark",
+    "theme_auto",
 
     "add",
     "bookmarks",
@@ -192,7 +197,6 @@ def _writeThemeFile(
             out.write(f"icon:{key:<15s} = {_fixXml(svg)}\n")
         print(f"- Wrote: {len(icons)} icons")
         print(f"- Target: {path.relative_to(UTILS.parent)}")
-    return
 
 
 def _updateRepo(path: Path, name: str) -> None:
@@ -203,7 +207,6 @@ def _updateRepo(path: Path, name: str) -> None:
     else:
         subprocess.call(["git", "pull"], cwd=path)
     print("")
-    return
 
 
 def _downloadIconPack(path: Path, name: str) -> None:
@@ -215,7 +218,6 @@ def _downloadIconPack(path: Path, name: str) -> None:
     with zipfile.ZipFile(zipFile, "r") as inFile:
         inFile.extractall(path)
     print("")
-    return
 
 
 def processMaterialIcons(workDir: Path, iconsDir: Path, jobs: dict) -> None:
@@ -251,8 +253,6 @@ def processMaterialIcons(workDir: Path, iconsDir: Path, jobs: dict) -> None:
         _writeThemeFile(target, name, "Google Inc", "Apache 2.0", icons)
 
     print("")
-
-    return
 
 
 def processFontAwesome(workDir: Path, iconsDir: Path, jobs: dict) -> None:
@@ -298,8 +298,6 @@ def processFontAwesome(workDir: Path, iconsDir: Path, jobs: dict) -> None:
 
     print("")
 
-    return
-
 
 def processRemix(workDir: Path, iconsDir: Path, jobs: dict) -> None:
     """Process Remix icons of a given spec and write output file."""
@@ -341,8 +339,6 @@ def processRemix(workDir: Path, iconsDir: Path, jobs: dict) -> None:
         _writeThemeFile(target, name, "Remix Icon", "Apache 2.0", icons)
 
     print("")
-
-    return
 
 
 def main(args: argparse.Namespace) -> None:
@@ -418,5 +414,3 @@ def main(args: argparse.Namespace) -> None:
 
     print("Done")
     print("")
-
-    return

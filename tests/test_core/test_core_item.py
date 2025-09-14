@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import copy
@@ -491,8 +491,7 @@ def testCoreItem_LayoutSetter(mockGUI):
 
 @pytest.mark.core
 def testCoreItem_ClassDefaults(mockGUI):
-    """Test the setter for the default values.
-    """
+    """Test the setter for the default values."""
     project = NWProject()
     item = NWItem(project, "0000000000000")
 
@@ -547,8 +546,8 @@ def testCoreItem_ClassDefaults(mockGUI):
 def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
     """Test packing and unpacking entries for the NWItem class."""
     project = NWProject()
-    project.data.itemStatus.add(None, "New", (100, 100, 100), "SQUARE", 0)
-    project.data.itemImport.add(None, "New", (100, 100, 100), "SQUARE", 0)
+    project.data.itemStatus.add(None, "New", "#646464", "SQUARE", 0)
+    project.data.itemImport.add(None, "New", "#646464", "SQUARE", 0)
 
     # Invalid
     item = NWItem(project, "0000000000000")

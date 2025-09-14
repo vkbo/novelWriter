@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from shutil import copyfile
@@ -100,6 +100,7 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     bHandle = "0000000000011"
     cHandle = "0000000000012"
     dHandle = "0000000000013"
+    eHandle = "0000000000014"
     xHandle = "1234567890abc"
 
     # Invalid call
@@ -111,11 +112,13 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     assert project.newFile("Hello", aHandle) == bHandle
     assert project.newFile("Jane", C.hCharRoot) == cHandle
     assert project.newFile("John", C.hCharRoot) == dHandle
+    assert project.newFile("Mike", C.hCharRoot) == eHandle
 
     assert aHandle in project.tree
     assert bHandle in project.tree
     assert cHandle in project.tree
     assert dHandle in project.tree
+    assert eHandle in project.tree
 
     # Write to file, failed
     assert project.writeNewFile("blabla", 1, True) is False         # Not a handle
@@ -150,6 +153,10 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     dText = project.storage.getDocument(dHandle).readDocument()
 
     assert dText == cText
+
+    # Copy file content, and update title
+    assert project.copyFileContent(eHandle, cHandle, "Lars") is True
+    assert project.storage.getDocument(eHandle).readDocument() == "# Lars\n\nHi Jane\n\n"
 
     # Save, close and check
     assert project.projChanged is True

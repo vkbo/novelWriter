@@ -101,6 +101,7 @@ Text Formatting Shortcuts
    ":kbd:`Ctrl+B`",       "Format selected text, or word under cursor, with bold"
    ":kbd:`Ctrl+D`",       "Format selected text, or word under cursor, with strike through"
    ":kbd:`Ctrl+I`",       "Format selected text, or word under cursor, with italic"
+   ":kbd:`Ctrl+M`",       "Highlight selected text, or word under cursor"
    ":kbd:`Ctrl+Shift+/`", "Remove format for block or selected text"
    ":kbd:`Ctrl+Shift+D`", "Toggle ignored text format for block or selected text"
 

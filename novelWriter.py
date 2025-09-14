@@ -2,7 +2,7 @@
 """
 novelWriter – Start Script
 ==========================
-"""
+"""  # noqa
 import os
 import sys
 

@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from PyQt6.QtCore import Qt
@@ -53,6 +53,8 @@ QtVAlignSuper = QTextCharFormat.VerticalAlignment.AlignSuperScript
 QtPageBreakBefore = QTextFormat.PageBreakFlag.PageBreak_AlwaysBefore
 QtPageBreakAfter = QTextFormat.PageBreakFlag.PageBreak_AlwaysAfter
 QtPageBreakAuto = QTextFormat.PageBreakFlag.PageBreak_Auto
+
+QtTextUserProperty = QTextFormat.Property.UserProperty
 
 QtPropLineHeight = 1  # QTextBlockFormat.LineHeightTypes.ProportionalHeight
 
@@ -128,6 +130,7 @@ QtHeaderFixed = QHeaderView.ResizeMode.Fixed
 
 # Scroll Bar Policy
 
+QtScrollAlwaysOn = Qt.ScrollBarPolicy.ScrollBarAlwaysOn
 QtScrollAlwaysOff = Qt.ScrollBarPolicy.ScrollBarAlwaysOff
 QtScrollAsNeeded = Qt.ScrollBarPolicy.ScrollBarAsNeeded
 

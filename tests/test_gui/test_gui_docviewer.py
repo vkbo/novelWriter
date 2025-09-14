@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -223,16 +223,22 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     CONFIG.showFullPath = True
 
     # Document footer show/hide synopsis
-    assert nwGUI.viewDocument("f96ec11c6a3da") is True
+    nwGUI.viewDocument("f96ec11c6a3da")
     assert len(docViewer.toPlainText()) == 4314
     docViewer.docFooter._doToggleSynopsis(False)
     assert len(docViewer.toPlainText()) == 4098
 
     # Document footer show/hide comments
-    assert nwGUI.viewDocument("846352075de7d") is True
+    nwGUI.viewDocument("846352075de7d")
     assert len(docViewer.toPlainText()) == 683
     docViewer.docFooter._doToggleComments(False)
     assert len(docViewer.toPlainText()) == 634
+
+    # Document footer show/hide notes
+    nwGUI.viewDocument("88d59a277361b")
+    assert len(docViewer.toPlainText()) == 900
+    docViewer.docFooter._doToggleNotes(False)
+    assert len(docViewer.toPlainText()) == 871
 
     # Crash the HTML rendering
     with monkeypatch.context() as mp:

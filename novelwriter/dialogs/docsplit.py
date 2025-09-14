@@ -21,20 +21,20 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
 
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import (
-    QAbstractItemView, QComboBox, QDialogButtonBox, QGridLayout, QLabel,
-    QListWidget, QListWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView, QDialogButtonBox, QGridLayout, QLabel, QListWidget,
+    QListWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import SHARED
 from novelwriter.extensions.configlayout import NColorLabel
-from novelwriter.extensions.modified import NDialog
+from novelwriter.extensions.modified import NComboBox, NDialog
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import QtAccepted, QtDialogCancel, QtDialogOk, QtUserRole
 
@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiDocSplit(NDialog):
+    """GUI: Document Split Tool."""
 
     LINE_ROLE  = QtUserRole
     LEVEL_ROLE = QtUserRole + 1
@@ -79,7 +80,7 @@ class GuiDocSplit(NDialog):
         self.listBox.setMinimumWidth(400)
         self.listBox.setMinimumHeight(180)
 
-        self.splitLevel = QComboBox(self)
+        self.splitLevel = NComboBox(self)
         self.splitLevel.addItem(self.tr("Split on Heading Level 1 (Partition)"),  1)
         self.splitLevel.addItem(self.tr("Split up to Heading Level 2 (Chapter)"), 2)
         self.splitLevel.addItem(self.tr("Split up to Heading Level 3 (Scene)"),   3)
@@ -139,11 +140,8 @@ class GuiDocSplit(NDialog):
 
         logger.debug("Ready: GuiDocSplit")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiDocSplit")
-        return
 
     def data(self) -> tuple[dict, list[str]]:
         """Return the user's choices. Also save the users options for
@@ -197,7 +195,6 @@ class GuiDocSplit(NDialog):
         """Reload the content of the list box."""
         if sHandle := self._data.get("sHandle"):
             self._loadContent(sHandle)
-        return
 
     ##
     #  Internal Functions

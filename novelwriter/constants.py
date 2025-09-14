@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from typing import Final
@@ -28,21 +28,23 @@ from typing import Final
 from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
 from novelwriter.enum import (
-    nwBuildFmt, nwComment, nwItemClass, nwItemLayout, nwOutline, nwStatusShape
+    nwBuildFmt, nwComment, nwItemClass, nwItemLayout, nwOutline, nwStatusShape,
+    nwTheme
 )
 
 
 def trConst(text: str) -> str:
-    """Wrapper function for locally translating constants."""
+    """Translate a constant."""
     return QCoreApplication.translate("Constant", text)
 
 
 def trStats(text: str) -> str:
-    """Wrapper function for locally translating stats constants."""
+    """Translate a stats constants."""
     return QCoreApplication.translate("Stats", text)
 
 
 class nwConst:
+    """Various Constants."""
 
     # Date and Time Formats
     FMT_TSTAMP = "%Y-%m-%d %H:%M:%S"  # Default format
@@ -69,6 +71,7 @@ class nwConst:
 
 
 class nwRegEx:
+    """Common RegExes."""
 
     URL    = r"https?://(?:www\.|(?!www))[\w/()@:%_\+-.~#?&=]+"
     WORDS  = r"\b[^\s\-\+\/–—\[\]:]+\b"
@@ -76,11 +79,13 @@ class nwRegEx:
     FMT_EI = r"(?<![\w\\])(_)(?![\s_])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_EB = r"(?<![\w\\])(\*{2})(?![\s\*])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_ST = r"(?<![\w\\])(~{2})(?![\s~])(.+?)(?<![\s\\])(\1)(?!\w)"
+    FMT_HL = r"(?<![\w\\])(={2})(?![\s=])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_SC = r"(?i)(?<!\\)(\[(?:b|/b|i|/i|s|/s|u|/u|m|/m|sup|/sup|sub|/sub|br)\])"
     FMT_SV = r"(?i)(?<!\\)(\[(?:footnote|field):)(.+?)(?<!\\)(\])"
 
 
 class nwShortcode:
+    """Document ShortCodes."""
 
     BOLD_O   = "[b]"
     BOLD_C   = "[/b]"
@@ -110,6 +115,7 @@ class nwShortcode:
 
 
 class nwStyles:
+    """Style Settings for Headings."""
 
     H_VALID = ("H0", "H1", "H2", "H3", "H4")
     H_LEVEL: Final[dict[str, int]] = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
@@ -141,6 +147,7 @@ class nwStyles:
 
 
 class nwFiles:
+    """novelWriter Files."""
 
     # Config Files
     CONF_FILE   = "novelwriter.conf"
@@ -161,6 +168,7 @@ class nwFiles:
 
 
 class nwKeyWords:
+    """Meta Data KeyWord Constants."""
 
     TAG_KEY     = "@tag"
     POV_KEY     = "@pov"
@@ -208,6 +216,7 @@ class nwKeyWords:
 
 
 class nwLists:
+    """Various Lists."""
 
     USER_CLASSES: Final[list[nwItemClass]] = [
         nwItemClass.CHARACTER,
@@ -221,6 +230,7 @@ class nwLists:
 
 
 class nwStats:
+    """Text Statistics."""
 
     CHARS        = "allChars"
     CHARS_TEXT   = "textChars"
@@ -244,6 +254,7 @@ class nwStats:
 
 
 class nwLabels:
+    """Various Common GUI Labels."""
 
     CLASS_NAME: Final[dict[nwItemClass, str]] = {
         nwItemClass.NO_CLASS:  QT_TRANSLATE_NOOP("Constant", "None"),
@@ -446,20 +457,31 @@ class nwLabels:
         "Custom": (-1.0, -1.0),
     }
     THEME_COLORS: Final[dict[str, str]] = {
-        "theme":   QT_TRANSLATE_NOOP("Constant", "Theme Colours"),
         "default": QT_TRANSLATE_NOOP("Constant", "Foreground Colour"),
+        "base":    QT_TRANSLATE_NOOP("Constant", "Background Colour"),
         "faded":   QT_TRANSLATE_NOOP("Constant", "Faded Colour"),
         "red":     QT_TRANSLATE_NOOP("Constant", "Red"),
         "orange":  QT_TRANSLATE_NOOP("Constant", "Orange"),
         "yellow":  QT_TRANSLATE_NOOP("Constant", "Yellow"),
         "green":   QT_TRANSLATE_NOOP("Constant", "Green"),
-        "aqua":    QT_TRANSLATE_NOOP("Constant", "Aqua"),
+        "cyan":    QT_TRANSLATE_NOOP("Constant", "Cyan"),
         "blue":    QT_TRANSLATE_NOOP("Constant", "Blue"),
         "purple":  QT_TRANSLATE_NOOP("Constant", "Purple"),
+    }
+    THEME_MODE_ICON: Final[dict[nwTheme, str]] = {
+        nwTheme.AUTO:  "theme_auto",
+        nwTheme.LIGHT: "theme_light",
+        nwTheme.DARK:  "theme_dark",
+    }
+    THEME_MODE_LABEL: Final[dict[nwTheme, str]] = {
+        nwTheme.AUTO:  QT_TRANSLATE_NOOP("Constant", "System Theme"),
+        nwTheme.LIGHT: QT_TRANSLATE_NOOP("Constant", "Light Theme"),
+        nwTheme.DARK:  QT_TRANSLATE_NOOP("Constant", "Dark Theme"),
     }
 
 
 class nwHeadFmt:
+    """Manuscript Header Formats."""
 
     BR         = "{BR}"
     TITLE      = "{Title}"
@@ -486,8 +508,10 @@ class nwHeadFmt:
 
 class nwQuotes:
     """Allowed quotation marks.
+
     Source: https://en.wikipedia.org/wiki/Quotation_mark
     """
+
     SYMBOLS: Final[dict[str, str]] = {
         "\u0027": QT_TRANSLATE_NOOP("Constant", "Straight single quotation mark"),
         "\u0022": QT_TRANSLATE_NOOP("Constant", "Straight double quotation mark"),
@@ -529,6 +553,7 @@ class nwQuotes:
 
 class nwUnicode:
     """Supported unicode character constants and their HTML equivalents."""
+
     # Unicode Constants
     # =================
 
@@ -660,6 +685,7 @@ class nwUnicode:
 
 
 class nwHtmlUnicode:
+    """Unicode to HTML Map."""
 
     U_TO_H: Final[dict[str, str]] = {
         # Quotes

@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -27,12 +27,11 @@ from shutil import copyfile
 
 import pytest
 
-from PyQt6.QtGui import QColor
-
 from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
+from novelwriter.core.status import CUSTOM_COL
 from novelwriter.enum import nwStatusShape
 
 from tests.mocked import causeOSError
@@ -54,7 +53,6 @@ def mockVersion(monkeypatch):
     """Mock the version info to prevent diff from failing."""
     monkeypatch.setattr("novelwriter.core.projectxml.__version__", "2.7b1")
     monkeypatch.setattr("novelwriter.core.projectxml.__hexversion__", "0x020700b1")
-    return
 
 
 @pytest.mark.core
@@ -137,7 +135,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     assert xmlReader.state == XMLReadState.PARSED_OK
     assert xmlReader.xmlRoot == "novelWriterXML"
     assert xmlReader.xmlVersion == 0x0105
-    assert xmlReader.xmlRevision == 5
+    assert xmlReader.xmlRevision == 6
     assert xmlReader.appVersion == "2.7b1"
     assert xmlReader.hexVersion == 0x020700b1
 
@@ -173,19 +171,31 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     assert data.itemImport["i2d7a54"].name == "Major"
     assert data.itemImport["i56be10"].name == "Main"
 
-    assert data.itemStatus["sf12341"].color == QColor(100, 100, 100)
-    assert data.itemStatus["sf24ce6"].color == QColor(200, 50, 0)
-    assert data.itemStatus["sc24b8f"].color == QColor(182, 60, 0)
-    assert data.itemStatus["s90e6c9"].color == QColor(193, 129, 0)
-    assert data.itemStatus["sd51c5b"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s8ae72a"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s78ea90"].color == QColor(58, 180, 58)
+    assert data.itemStatus["sf12341"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemStatus["sf24ce6"].color.getRgb() == (200, 50, 0, 255)
+    assert data.itemStatus["sc24b8f"].color.getRgb() == (182, 60, 0, 255)
+    assert data.itemStatus["s90e6c9"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["sd51c5b"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s8ae72a"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s78ea90"].color.getRgb() == (58, 180, 58, 255)
 
-    assert data.itemImport["ia857f0"].color == QColor(100, 100, 100)
-    assert data.itemImport["i4a1d39"].color == QColor(220, 138, 221)
-    assert data.itemImport["icfb3a5"].color == QColor(220, 138, 221)
-    assert data.itemImport["i2d7a54"].color == QColor(220, 138, 221)
-    assert data.itemImport["i56be10"].color == QColor(220, 138, 221)
+    assert data.itemImport["ia857f0"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemImport["icfb3a5"].color.getRgb() == (220, 138, 221, 255)
+    assert data.itemImport["i2d7a54"].color.getRgb() == (220, 138, 221, 255)
+    assert data.itemImport["i56be10"].color.getRgb() == (220, 138, 221, 255)
+
+    assert data.itemStatus["sf12341"].theme == CUSTOM_COL
+    assert data.itemStatus["sf24ce6"].theme == CUSTOM_COL
+    assert data.itemStatus["sc24b8f"].theme == CUSTOM_COL
+    assert data.itemStatus["s90e6c9"].theme == CUSTOM_COL
+    assert data.itemStatus["sd51c5b"].theme == CUSTOM_COL
+    assert data.itemStatus["s8ae72a"].theme == CUSTOM_COL
+    assert data.itemStatus["s78ea90"].theme == CUSTOM_COL
+
+    assert data.itemImport["ia857f0"].theme == CUSTOM_COL
+    assert data.itemImport["icfb3a5"].theme == CUSTOM_COL
+    assert data.itemImport["i2d7a54"].theme == CUSTOM_COL
+    assert data.itemImport["i56be10"].theme == CUSTOM_COL
 
     assert data.itemStatus["sf12341"].shape == nwStatusShape.SQUARE
     assert data.itemStatus["sf24ce6"].shape == nwStatusShape.SQUARE
@@ -305,18 +315,31 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.itemImport["i000009"].name == "Major"
     assert data.itemImport["i00000a"].name == "Main"
 
-    assert data.itemStatus["s000000"].color == QColor(100, 100, 100)
-    assert data.itemStatus["s000001"].color == QColor(200, 50, 0)
-    assert data.itemStatus["s000002"].color == QColor(182, 60, 0)
-    assert data.itemStatus["s000003"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s000004"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s000005"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s000006"].color == QColor(58, 180, 58)
+    assert data.itemStatus["s000000"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemStatus["s000001"].color.getRgb() == (200, 50, 0, 255)
+    assert data.itemStatus["s000002"].color.getRgb() == (182, 60, 0, 255)
+    assert data.itemStatus["s000003"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s000004"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s000005"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s000006"].color.getRgb() == (58, 180, 58, 255)
 
-    assert data.itemImport["i000007"].color == QColor(100, 100, 100)
-    assert data.itemImport["i000008"].color == QColor(0, 122, 188)
-    assert data.itemImport["i000009"].color == QColor(21, 0, 180)
-    assert data.itemImport["i00000a"].color == QColor(117, 0, 175)
+    assert data.itemImport["i000007"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemImport["i000008"].color.getRgb() == (0, 122, 188, 255)
+    assert data.itemImport["i000009"].color.getRgb() == (21, 0, 180, 255)
+    assert data.itemImport["i00000a"].color.getRgb() == (117, 0, 175, 255)
+
+    assert data.itemStatus["s000000"].theme == CUSTOM_COL
+    assert data.itemStatus["s000001"].theme == CUSTOM_COL
+    assert data.itemStatus["s000002"].theme == CUSTOM_COL
+    assert data.itemStatus["s000003"].theme == CUSTOM_COL
+    assert data.itemStatus["s000004"].theme == CUSTOM_COL
+    assert data.itemStatus["s000005"].theme == CUSTOM_COL
+    assert data.itemStatus["s000006"].theme == CUSTOM_COL
+
+    assert data.itemImport["i000007"].theme == CUSTOM_COL
+    assert data.itemImport["i000008"].theme == CUSTOM_COL
+    assert data.itemImport["i000009"].theme == CUSTOM_COL
+    assert data.itemImport["i00000a"].theme == CUSTOM_COL
 
     assert data.itemStatus["s000000"].shape == nwStatusShape.SQUARE
     assert data.itemStatus["s000001"].shape == nwStatusShape.SQUARE
@@ -450,18 +473,31 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.itemImport["i000009"].name == "Major"
     assert data.itemImport["i00000a"].name == "Main"
 
-    assert data.itemStatus["s000000"].color == QColor(100, 100, 100)
-    assert data.itemStatus["s000001"].color == QColor(200, 50, 0)
-    assert data.itemStatus["s000002"].color == QColor(182, 60, 0)
-    assert data.itemStatus["s000003"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s000004"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s000005"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s000006"].color == QColor(58, 180, 58)
+    assert data.itemStatus["s000000"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemStatus["s000001"].color.getRgb() == (200, 50, 0, 255)
+    assert data.itemStatus["s000002"].color.getRgb() == (182, 60, 0, 255)
+    assert data.itemStatus["s000003"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s000004"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s000005"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s000006"].color.getRgb() == (58, 180, 58, 255)
 
-    assert data.itemImport["i000007"].color == QColor(100, 100, 100)
-    assert data.itemImport["i000008"].color == QColor(0, 122, 188)
-    assert data.itemImport["i000009"].color == QColor(21, 0, 180)
-    assert data.itemImport["i00000a"].color == QColor(117, 0, 175)
+    assert data.itemImport["i000007"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemImport["i000008"].color.getRgb() == (0, 122, 188, 255)
+    assert data.itemImport["i000009"].color.getRgb() == (21, 0, 180, 255)
+    assert data.itemImport["i00000a"].color.getRgb() == (117, 0, 175, 255)
+
+    assert data.itemStatus["s000000"].theme == CUSTOM_COL
+    assert data.itemStatus["s000001"].theme == CUSTOM_COL
+    assert data.itemStatus["s000002"].theme == CUSTOM_COL
+    assert data.itemStatus["s000003"].theme == CUSTOM_COL
+    assert data.itemStatus["s000004"].theme == CUSTOM_COL
+    assert data.itemStatus["s000005"].theme == CUSTOM_COL
+    assert data.itemStatus["s000006"].theme == CUSTOM_COL
+
+    assert data.itemImport["i000007"].theme == CUSTOM_COL
+    assert data.itemImport["i000008"].theme == CUSTOM_COL
+    assert data.itemImport["i000009"].theme == CUSTOM_COL
+    assert data.itemImport["i00000a"].theme == CUSTOM_COL
 
     assert data.itemStatus["s000000"].shape == nwStatusShape.SQUARE
     assert data.itemStatus["s000001"].shape == nwStatusShape.SQUARE
@@ -595,18 +631,31 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.itemImport["i000009"].name == "Major"
     assert data.itemImport["i00000a"].name == "Main"
 
-    assert data.itemStatus["s000000"].color == QColor(100, 100, 100)
-    assert data.itemStatus["s000001"].color == QColor(200, 50, 0)
-    assert data.itemStatus["s000002"].color == QColor(182, 60, 0)
-    assert data.itemStatus["s000003"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s000004"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s000005"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s000006"].color == QColor(58, 180, 58)
+    assert data.itemStatus["s000000"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemStatus["s000001"].color.getRgb() == (200, 50, 0, 255)
+    assert data.itemStatus["s000002"].color.getRgb() == (182, 60, 0, 255)
+    assert data.itemStatus["s000003"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s000004"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s000005"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s000006"].color.getRgb() == (58, 180, 58, 255)
 
-    assert data.itemImport["i000007"].color == QColor(100, 100, 100)
-    assert data.itemImport["i000008"].color == QColor(0, 122, 188)
-    assert data.itemImport["i000009"].color == QColor(21, 0, 180)
-    assert data.itemImport["i00000a"].color == QColor(117, 0, 175)
+    assert data.itemImport["i000007"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemImport["i000008"].color.getRgb() == (0, 122, 188, 255)
+    assert data.itemImport["i000009"].color.getRgb() == (21, 0, 180, 255)
+    assert data.itemImport["i00000a"].color.getRgb() == (117, 0, 175, 255)
+
+    assert data.itemStatus["s000000"].theme == CUSTOM_COL
+    assert data.itemStatus["s000001"].theme == CUSTOM_COL
+    assert data.itemStatus["s000002"].theme == CUSTOM_COL
+    assert data.itemStatus["s000003"].theme == CUSTOM_COL
+    assert data.itemStatus["s000004"].theme == CUSTOM_COL
+    assert data.itemStatus["s000005"].theme == CUSTOM_COL
+    assert data.itemStatus["s000006"].theme == CUSTOM_COL
+
+    assert data.itemImport["i000007"].theme == CUSTOM_COL
+    assert data.itemImport["i000008"].theme == CUSTOM_COL
+    assert data.itemImport["i000009"].theme == CUSTOM_COL
+    assert data.itemImport["i00000a"].theme == CUSTOM_COL
 
     assert data.itemStatus["s000000"].shape == nwStatusShape.SQUARE
     assert data.itemStatus["s000001"].shape == nwStatusShape.SQUARE
@@ -743,18 +792,31 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.itemImport["i000009"].name == "Major"
     assert data.itemImport["i00000a"].name == "Main"
 
-    assert data.itemStatus["s000000"].color == QColor(100, 100, 100)
-    assert data.itemStatus["s000001"].color == QColor(200, 50, 0)
-    assert data.itemStatus["s000002"].color == QColor(182, 60, 0)
-    assert data.itemStatus["s000003"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s000004"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s000005"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s000006"].color == QColor(58, 180, 58)
+    assert data.itemStatus["s000000"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemStatus["s000001"].color.getRgb() == (200, 50, 0, 255)
+    assert data.itemStatus["s000002"].color.getRgb() == (182, 60, 0, 255)
+    assert data.itemStatus["s000003"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s000004"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s000005"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s000006"].color.getRgb() == (58, 180, 58, 255)
 
-    assert data.itemImport["i000007"].color == QColor(100, 100, 100)
-    assert data.itemImport["i000008"].color == QColor(0, 122, 188)
-    assert data.itemImport["i000009"].color == QColor(21, 0, 180)
-    assert data.itemImport["i00000a"].color == QColor(117, 0, 175)
+    assert data.itemImport["i000007"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemImport["i000008"].color.getRgb() == (0, 122, 188, 255)
+    assert data.itemImport["i000009"].color.getRgb() == (21, 0, 180, 255)
+    assert data.itemImport["i00000a"].color.getRgb() == (117, 0, 175, 255)
+
+    assert data.itemStatus["s000000"].theme == CUSTOM_COL
+    assert data.itemStatus["s000001"].theme == CUSTOM_COL
+    assert data.itemStatus["s000002"].theme == CUSTOM_COL
+    assert data.itemStatus["s000003"].theme == CUSTOM_COL
+    assert data.itemStatus["s000004"].theme == CUSTOM_COL
+    assert data.itemStatus["s000005"].theme == CUSTOM_COL
+    assert data.itemStatus["s000006"].theme == CUSTOM_COL
+
+    assert data.itemImport["i000007"].theme == CUSTOM_COL
+    assert data.itemImport["i000008"].theme == CUSTOM_COL
+    assert data.itemImport["i000009"].theme == CUSTOM_COL
+    assert data.itemImport["i00000a"].theme == CUSTOM_COL
 
     assert data.itemStatus["s000000"].shape == nwStatusShape.SQUARE
     assert data.itemStatus["s000001"].shape == nwStatusShape.SQUARE
@@ -891,18 +953,31 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.itemImport["i2d7a54"].name == "Major"
     assert data.itemImport["i56be10"].name == "Main"
 
-    assert data.itemStatus["sf12341"].color == QColor(100, 100, 100)
-    assert data.itemStatus["sf24ce6"].color == QColor(200, 50, 0)
-    assert data.itemStatus["sc24b8f"].color == QColor(182, 60, 0)
-    assert data.itemStatus["s90e6c9"].color == QColor(193, 129, 0)
-    assert data.itemStatus["sd51c5b"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s8ae72a"].color == QColor(193, 129, 0)
-    assert data.itemStatus["s78ea90"].color == QColor(58, 180, 58)
+    assert data.itemStatus["sf12341"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemStatus["sf24ce6"].color.getRgb() == (200, 50, 0, 255)
+    assert data.itemStatus["sc24b8f"].color.getRgb() == (182, 60, 0, 255)
+    assert data.itemStatus["s90e6c9"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["sd51c5b"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s8ae72a"].color.getRgb() == (193, 129, 0, 255)
+    assert data.itemStatus["s78ea90"].color.getRgb() == (58, 180, 58, 255)
 
-    assert data.itemImport["ia857f0"].color == QColor(100, 100, 100)
-    assert data.itemImport["icfb3a5"].color == QColor(0, 122, 188)
-    assert data.itemImport["i2d7a54"].color == QColor(21, 0, 180)
-    assert data.itemImport["i56be10"].color == QColor(117, 0, 175)
+    assert data.itemImport["ia857f0"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemImport["icfb3a5"].color.getRgb() == (0, 122, 188, 255)
+    assert data.itemImport["i2d7a54"].color.getRgb() == (21, 0, 180, 255)
+    assert data.itemImport["i56be10"].color.getRgb() == (117, 0, 175, 255)
+
+    assert data.itemStatus["sf12341"].theme == CUSTOM_COL
+    assert data.itemStatus["sf24ce6"].theme == CUSTOM_COL
+    assert data.itemStatus["sc24b8f"].theme == CUSTOM_COL
+    assert data.itemStatus["s90e6c9"].theme == CUSTOM_COL
+    assert data.itemStatus["sd51c5b"].theme == CUSTOM_COL
+    assert data.itemStatus["s8ae72a"].theme == CUSTOM_COL
+    assert data.itemStatus["s78ea90"].theme == CUSTOM_COL
+
+    assert data.itemImport["ia857f0"].theme == CUSTOM_COL
+    assert data.itemImport["icfb3a5"].theme == CUSTOM_COL
+    assert data.itemImport["i2d7a54"].theme == CUSTOM_COL
+    assert data.itemImport["i56be10"].theme == CUSTOM_COL
 
     assert data.itemStatus["sf12341"].shape == nwStatusShape.SQUARE
     assert data.itemStatus["sf24ce6"].shape == nwStatusShape.SQUARE
