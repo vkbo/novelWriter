@@ -27,8 +27,8 @@ import pytest
 from PyQt6.QtCore import QEvent, QMimeData, QPointF, Qt, QThreadPool, QUrl
 from PyQt6.QtGui import (
     QAction, QClipboard, QDesktopServices, QDragEnterEvent, QDragMoveEvent,
-    QDropEvent, QFont, QMouseEvent, QTextBlock, QTextCursor, QTextDocument,
-    QTextOption
+    QDropEvent, QFont, QInputMethodEvent, QMouseEvent, QTextBlock, QTextCursor,
+    QTextDocument, QTextOption
 )
 from PyQt6.QtWidgets import QApplication, QMenu, QPlainTextEdit
 
@@ -1952,6 +1952,19 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
         "%Story.Resolution: \n"
         "%Note.Consistency: \n"
     )
+
+    # CJK completer reposition (#2267 and #2517)
+    qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
+    assert completer.isVisible() is True
+    completer.move(0, 0)
+    assert completer.pos().x() == 0  # Completer menu at 0
+    assert completer.pos().y() == 0  # Completer menu at 0
+
+    event = QInputMethodEvent()
+    event.setCommitString("Text")
+    docEditor.inputMethodEvent(event)
+    assert completer.pos().x() > 0  # Completer should have moved
+    assert completer.pos().y() > 0  # Completer should have moved
 
     # qtbot.stop()
 

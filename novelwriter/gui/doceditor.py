@@ -39,13 +39,14 @@ from enum import Enum, IntFlag
 from time import time
 
 from PyQt6.QtCore import (
-    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
-    pyqtSlot
+    QObject, QPoint, QRect, QRegularExpression, QRunnable, Qt, QTimer,
+    QVariant, pyqtSignal, pyqtSlot
 )
 from PyQt6.QtGui import (
-    QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
-    QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent, QShortcut,
-    QTextBlock, QTextCursor, QTextDocument, QTextFormat, QTextOption
+    QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent,
+    QInputMethodEvent, QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap,
+    QResizeEvent, QShortcut, QTextBlock, QTextCursor, QTextDocument,
+    QTextFormat, QTextOption
 )
 from PyQt6.QtWidgets import (
     QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
@@ -74,9 +75,9 @@ from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
-    QtAlignRight, QtKeepAnchor, QtModCtrl, QtModNone, QtModShift, QtMouseLeft,
-    QtMoveAnchor, QtMoveLeft, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded,
-    QtTransparent
+    QtAlignRight, QtImCursorRectangle, QtKeepAnchor, QtModCtrl, QtModNone,
+    QtModShift, QtMouseLeft, QtMoveAnchor, QtMoveLeft, QtMoveRight,
+    QtScrollAlwaysOff, QtScrollAsNeeded, QtTransparent
 )
 
 logger = logging.getLogger(__name__)
@@ -154,7 +155,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Completer
         self._completer = CommandCompleter(self)
-        self._completer.complete.connect(self._insertCompletion)
+        self._completer.insertText.connect(self._insertCompletion)
 
         # Create Custom Document
         self._qDocument = GuiTextDocument(self)
@@ -905,7 +906,7 @@ class GuiDocEditor(QPlainTextEdit):
         return True
 
     ##
-    #  Document Events and Maintenance
+    #  Events and Overloads
     ##
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
@@ -1003,6 +1004,26 @@ class GuiDocEditor(QPlainTextEdit):
         self.updateDocMargins()
         super().resizeEvent(event)
 
+    def inputMethodEvent(self, event: QInputMethodEvent) -> None:
+        """Handle text being input from CJK input methods."""
+        super().inputMethodEvent(event)
+        if event.commitString():
+            # See issues #2267 and #2517
+            self.ensureCursorVisible()
+            self._completerToCursor()
+
+    def inputMethodQuery(self, query: Qt.InputMethodQuery) -> QRect | QVariant:
+        """Adjust completion windows for CJK input methods to consider
+        the viewport margins.
+        """
+        if query == QtImCursorRectangle:
+            # See issues #2267 and #2517
+            vM = self.viewportMargins()
+            rect = self.cursorRect()
+            rect.translate(vM.left(), vM.top())
+            return rect
+        return super().inputMethodQuery(query)
+
     ##
     #  Public Slots
     ##
@@ -1062,24 +1083,20 @@ class GuiDocEditor(QPlainTextEdit):
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
+
             if text and text[0] in "@%" and added + removed == 1:
                 # Only run on single character changes, or it will trigger
                 # at unwanted times when other changes are made to the document
                 cursor = self.textCursor()
                 bPos = cursor.positionInBlock()
-                if bPos > 0 and (viewport := self.viewport()):
+                if bPos > 0:
                     if text[0] == "@":
                         show = self._completer.updateMetaText(text, bPos)
                     else:
                         show = self._completer.updateCommentText(text, bPos)
                     if show:
-                        point = self.cursorRect().bottomRight()
-                        self._completer.move(viewport.mapToGlobal(point))
                         self._completer.show()
-                    else:
-                        self._completer.close()
-            else:
-                self._completer.close()
+                        self._completerToCursor()
 
             if self._doReplace and added == 1:
                 cursor = self.textCursor()
@@ -1104,7 +1121,7 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.setPosition(check, QtMoveAnchor)
             cursor.setPosition(check + length, QtKeepAnchor)
             cursor.insertText(text)
-            self._completer.hide()
+            self._completer.close()
 
     @pyqtSlot()
     def _openContextFromCursor(self) -> None:
@@ -1866,6 +1883,12 @@ class GuiDocEditor(QPlainTextEdit):
     #  Internal Functions
     ##
 
+    def _completerToCursor(self) -> None:
+        """Make sure the completer menu is positioned by the cursor."""
+        if self._completer.isVisible() and (viewport := self.viewport()):
+            point = self.cursorRect().bottomLeft()
+            self._completer.move(viewport.mapToGlobal(point))
+
     def _correctWord(self, cursor: QTextCursor, word: str) -> None:
         """Slot for the spell check context menu triggering the
         replacement of a word with the word from the dictionary.
@@ -2050,10 +2073,13 @@ class CommandCompleter(QMenu):
     called on every keystroke on a line starting with @ or %.
     """
 
-    complete = pyqtSignal(int, int, str)
+    __slots__ = ("_parent",)
+
+    insertText = pyqtSignal(int, int, str)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
+        self._parent = parent
 
     def updateMetaText(self, text: str, pos: int) -> bool:
         """Update the menu options based on the line of text."""
@@ -2139,14 +2165,14 @@ class CommandCompleter(QMenu):
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Capture keypresses and forward most of them to the editor."""
-        parent = self.parent()
         if event.key() in (
             Qt.Key.Key_Up, Qt.Key.Key_Down, Qt.Key.Key_Return,
             Qt.Key.Key_Enter, Qt.Key.Key_Escape
         ):
             super().keyPressEvent(event)
-        elif isinstance(parent, GuiDocEditor):
-            parent.keyPressEvent(event)
+        else:
+            self.close()  # Close to release the event lock before forwarding the key press (#2510)
+            self._parent.keyPressEvent(event)
 
     ##
     #  Internal Functions
@@ -2154,7 +2180,7 @@ class CommandCompleter(QMenu):
 
     def _emitComplete(self, pos: int, length: int, value: str) -> None:
         """Emit the signal to indicate a selection has been made."""
-        self.complete.emit(pos, length, value)
+        self.insertText.emit(pos, length, value)
 
 
 class BackgroundWordCounter(QRunnable):
