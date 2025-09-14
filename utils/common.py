@@ -91,27 +91,31 @@ def copySourceCode(dst: Path) -> None:
     return
 
 
-def copyPackageFiles(dst: Path, setupPy: bool = False) -> None:
+def copyPackageFiles(dst: Path, oldLicense: bool = False) -> None:
     """Copy files needed for packaging."""
-    copyFiles = ["LICENSE.md", "CREDITS.md", "pyproject.toml"]
+    copyFiles = ["LICENSE.md", "setup/LICENSE-Apache-2.0.txt", "CREDITS.md", "pyproject.toml"]
     for copyFile in copyFiles:
         shutil.copyfile(copyFile, dst / copyFile)
         print("Copied:", copyFile, flush=True)
 
     writeFile(dst / "MANIFEST.in", (
         "include LICENSE.md\n"
+        "include setup/LICENSE-Apache-2.0.txt\n"
         "include CREDITS.md\n"
         "recursive-include novelwriter/assets *\n"
     ))
 
-    if setupPy:
-        writeFile(dst / "setup.py", (
-            "import setuptools\n"
-            "setuptools.setup()\n"
-        ))
-
     text = readFile(ROOT_DIR / "pyproject.toml")
     text = text.replace("setup/description_pypi.md", "data/description_short.txt")
+    if oldLicense:
+        new = []
+        for line in text.splitlines():
+            if line.startswith("license = "):
+                line = 'license = {text = "GPL-3.0-or-later AND Apache-2.0 AND CC-BY-4.0"}'
+            if line.startswith("license-files = "):
+                continue
+            new.append(line)
+        text = "\n".join(new)
     writeFile(dst / "pyproject.toml", text)
 
     return

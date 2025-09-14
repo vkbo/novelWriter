@@ -8,7 +8,7 @@ jobs:
 
   buildWin64:
     needs: buildAssets
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - name: Python Setup
         uses: actions/setup-python@v5

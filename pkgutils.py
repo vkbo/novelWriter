@@ -267,8 +267,7 @@ if __name__ == "__main__":
     cmdBuildUbuntu = parsers.add_parser(
         "build-ubuntu", help=(
             "Build a .deb package for Debian and Ubuntu. "
-            "Add --sign to sign package. "
-            "Add --first to set build number to 0."
+            "Add --sign to sign package."
         )
     )
     cmdBuildUbuntu.add_argument("--sign", action="store_true", help="Sign the package.")
