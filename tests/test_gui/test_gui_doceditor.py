@@ -2677,6 +2677,7 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     assert lines[2] == "Line1"
     assert lines[3] == "Line3"
 
+
 @pytest.mark.gui
 def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     """Test vim visual mode selection, yank and paste."""
@@ -2799,7 +2800,7 @@ def testGuiEditor_Vim_VisualMode_SelectAllDeleteUndo(qtbot, nwGUI, projPath, moc
     # --- Visual select all with Gvgg ---
     qtbot.keyClick(docEditor, "G", delay=inputDelay)    # end of file
     qtbot.keyClick(docEditor, "v", delay=inputDelay)    # enter visual mode
-    qtbot.keyClicks(docEditor, "g", delay=inputDelay)   
+    qtbot.keyClicks(docEditor, "g", delay=inputDelay)
     qtbot.keyClicks(docEditor, "g", delay=inputDelay)   # extend select to start
 
     # --- Delete selection ---
@@ -2936,7 +2937,7 @@ def testGuiEditor_Vim_AllMotions(qtbot, nwGUI, projPath, mockRnd):
     assert docEditor.textCursor().position() == 0
 
     qtbot.keyClick(docEditor, "z", delay=inputDelay)
-    qtbot.keyClick(docEditor, "z", delay=inputDelay)  # center view 
+    qtbot.keyClick(docEditor, "z", delay=inputDelay)  # center view
 
     reset_text()
     qtbot.keyClick(docEditor, "G", delay=inputDelay)  # bottom of buffer

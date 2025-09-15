@@ -3525,8 +3525,8 @@ class VimState:
 
     __slots__ = (
         "PREFIX_KEYS",
-        "VISUAL_PREFIX_KEYS",
         "SUFFIX_KEYS",
+        "VISUAL_PREFIX_KEYS",
         "_internalClipboard",
         "_mode",
         "_normalCommand",
