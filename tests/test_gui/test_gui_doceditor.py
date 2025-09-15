@@ -44,6 +44,7 @@ from novelwriter.types import (
     QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtModNone,
     QtMouseLeft, QtMoveAnchor, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
 )
+
 from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
 
