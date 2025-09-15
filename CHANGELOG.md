@@ -1,5 +1,28 @@
 # novelWriter Changelog
 
+## Version 2.7.5 [2025-09-14]
+
+### Release Notes
+
+This is a patch release that fixes an issue related to crashes when using the completer menu under
+certain conditions, and improves positioning of the input box for CJK languages.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixes an issue where the app would crash of deleting the `@` character with the completer menu
+  visible and the text margins of the editor set to "justified". This is likely crashing due to
+  some unhandled corner case in the Qt library, but the implementation of the completer menu in
+  novelWriter uses a small hack to bypass some intended behaviour of the menu. Extra steps have
+  been added to the implementation that seems to avoid the crash. Issue #2510. PR #2511.
+* Fixes an issue where the input box that shows up when typing CJK languages were covering the text
+  due to an incorrect offset of the box location. The incorrect offset is caused by the text
+  margins not being taken into account. Fix by @Euophrys based on solution by @Jack-name.
+  Issues #2267 and #2517. PR #2518.
+
+----
+
 ## Version 2.7.4 [2025-07-15]
 
 ### Release Notes
