@@ -2647,6 +2647,35 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line1", "Line3", "Line2", "Line3"]
 
+    # --- w: move forward by word ---
+    reset_text()
+    docEditor.setCursorPosition(0)  # start of "Line1"
+    qtbot.keyClicks(docEditor, "w", delay=inputDelay)
+    cursor_pos = docEditor.textCursor().position()
+    # Cursor should now be at end of "Line1"
+    expected_pos = docEditor.getText().find("Line1") + len("Line1")
+    assert cursor_pos == expected_pos
+
+    # --- dw: delete word (from "Line1" up to next word boundary) ---
+    reset_text()
+    docEditor.setCursorPosition(0)  # start of "Line1"
+    qtbot.keyClicks(docEditor, "dw", delay=inputDelay)
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines == ["Line2", "Line3"]
+
+    # --- yw: yank word (yank "Line1") ---
+    reset_text()
+    docEditor.setCursorPosition(0)  # start of "Line1"
+    qtbot.keyClicks(docEditor, "yw", delay=inputDelay)
+    # Move to start of Line2 and paste
+    docEditor.setCursorPosition(docEditor.getText().find("Line2"))
+    qtbot.keyClicks(docEditor, "p", delay=inputDelay)
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    # After paste, first line remains Line1, second line is "Line1Line2"
+    assert lines[0] == "Line1"
+    assert lines[1] == "Line2"
+    assert lines[2] == "Line1"
+    assert lines[3] == "Line3"
 
 @pytest.mark.gui
 def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
@@ -2696,6 +2725,41 @@ def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     # Assert Line2 got duplicated after Line3
     assert lines == ["Line1", "Line2", "Line3", "Line2"]
 
+    # --- Visual mode with w motion ---
+    reset_text()
+    docEditor.setCursorPosition(0)  # start of Line1
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)  # enter visual mode
+    qtbot.keyClicks(docEditor, "w", delay=inputDelay)  # move by word
+    cursor_pos = docEditor.textCursor().position()
+    expected_pos = docEditor.getText().find("Line1") + len("Line1")
+    assert cursor_pos == expected_pos
+
+    # --- '0': move to start of line ---
+    reset_text()
+    # Put cursor somewhere inside Line2
+    line2_pos = docEditor.getText().find("Line2") + 3  # middle of "Line2"
+    docEditor.setCursorPosition(line2_pos)
+    qtbot.keyClicks(docEditor, "0", delay=inputDelay)
+    cursor_pos = docEditor.textCursor().position()
+    # Start of Line2
+    expected_pos = docEditor.getText().find("Line2")
+    assert cursor_pos == expected_pos
+
+    # --- No-op command 'a': nothing happens ---
+    reset_text()
+    # Put cursor somewhere inside Line3
+    line3_pos = docEditor.getText().find("Line3") + 2
+    docEditor.setCursorPosition(line3_pos)
+    text_before = docEditor.getText()
+    cursor_before = docEditor.textCursor().position()
+    qtbot.keyClicks(docEditor, "a", delay=inputDelay)
+    text_after = docEditor.getText()
+    cursor_after = docEditor.textCursor().position()
+
+    # Nothing should have changed
+    assert text_after == text_before
+    assert cursor_after == cursor_before
+
 
 @pytest.mark.gui
 def testGuiEditor_Vim_VisualMode_SelectAllDeleteUndo(qtbot, nwGUI, projPath, mockRnd):
@@ -2716,6 +2780,27 @@ def testGuiEditor_Vim_VisualMode_SelectAllDeleteUndo(qtbot, nwGUI, projPath, moc
     qtbot.keyClicks(docEditor, "g", delay=inputDelay)   # go to start
     qtbot.keyClick(docEditor, "v", delay=inputDelay)    # enter visual mode
     qtbot.keyClick(docEditor, "G", delay=inputDelay)    # extend to end of file
+
+    # --- Delete selection ---
+    qtbot.keyClick(docEditor, "d", delay=inputDelay)
+    assert docEditor.getText().strip() == ""  # everything deleted
+
+    # --- Undo ---
+    qtbot.keyClick(docEditor, "u", delay=inputDelay)
+    restored_text = docEditor.getText()
+    assert restored_text == original_text
+
+    # --- Move back to start ---
+    qtbot.keyClicks(docEditor, "g", delay=inputDelay)
+    qtbot.keyClicks(docEditor, "g", delay=inputDelay)
+    cursor_pos = docEditor.textCursor().position()
+    assert restored_text[cursor_pos] == "L"  # first char restored
+
+    # --- Visual select all with Gvgg ---
+    qtbot.keyClick(docEditor, "G", delay=inputDelay)    # end of file
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)    # enter visual mode
+    qtbot.keyClicks(docEditor, "g", delay=inputDelay)   
+    qtbot.keyClicks(docEditor, "g", delay=inputDelay)   # extend select to start
 
     # --- Delete selection ---
     qtbot.keyClick(docEditor, "d", delay=inputDelay)
@@ -2849,6 +2934,9 @@ def testGuiEditor_Vim_AllMotions(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(docEditor, "g", delay=inputDelay)
     qtbot.keyClick(docEditor, "g", delay=inputDelay)  # top of buffer
     assert docEditor.textCursor().position() == 0
+
+    qtbot.keyClick(docEditor, "z", delay=inputDelay)
+    qtbot.keyClick(docEditor, "z", delay=inputDelay)  # center view 
 
     reset_text()
     qtbot.keyClick(docEditor, "G", delay=inputDelay)  # bottom of buffer

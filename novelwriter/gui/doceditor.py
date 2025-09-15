@@ -1011,8 +1011,6 @@ class GuiDocEditor(QPlainTextEdit):
                 self.vim.pushCommandKey(key)
             else:
                 self.vim.setCommand(key)
-            if self.vim.command() in self.vim.VISUAL_PREFIX_KEYS:
-                return True  # Leave command enqueued
 
         # --- VISUAL / VISUALLINE mode ---
         if self.vim.getMode() in (nwVimMode.VISUAL, nwVimMode.VLINE):
@@ -1032,6 +1030,21 @@ class GuiDocEditor(QPlainTextEdit):
                 self.setVimMode(nwVimMode.NORMAL)
                 return True
 
+            if self.vim.command() == "w":
+                move_mode = cursor.MoveMode.KeepAnchor
+                cursor.movePosition(cursor.MoveOperation.NextWord, move_mode)
+                self.setTextCursor(cursor)
+                self.vim.resetCommand()
+                return True
+
+            if self.vim.command() == "gg":
+                print("gg visual")
+                move_mode = cursor.MoveMode.KeepAnchor
+                cursor.movePosition(cursor.MoveOperation.Start, move_mode)
+                self.setTextCursor(cursor)
+                self.vim.resetCommand()
+                return True
+
             # Handle motions (extend selection)
             move_mode = cursor.MoveMode.KeepAnchor
             if self.vim.command() == "h":
@@ -1046,8 +1059,6 @@ class GuiDocEditor(QPlainTextEdit):
                 cursor.movePosition(cursor.MoveOperation.EndOfLine, move_mode)
             elif self.vim.command() == "0":
                 cursor.movePosition(cursor.MoveOperation.StartOfLine, move_mode)
-            elif self.vim.command() == "gg":
-                cursor.movePosition(cursor.MoveOperation.Start, move_mode)
             elif self.vim.command() == "G":
                 cursor.movePosition(cursor.MoveOperation.End, move_mode)
             else:
@@ -1060,10 +1071,10 @@ class GuiDocEditor(QPlainTextEdit):
         if self.vim.getMode() is nwVimMode.NORMAL:
             if key in self.vim.PREFIX_KEYS:
                 self.vim.pushCommandKey(key)
+            elif key in self.vim.SUFFIX_KEYS:
+                self.vim.pushCommandKey(key)
             else:
                 self.vim.setCommand(key)
-            if self.vim.command() in self.vim.PREFIX_KEYS:
-                return True  # Leave command enqueued
 
         if self.vim.command() == "dd":
             cursor.beginEditBlock()
@@ -1080,6 +1091,32 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.movePosition(cursor.MoveOperation.Right, cursor.MoveMode.KeepAnchor, 1)
             self.vim.yankToInternal(cursor.selectedText())
             cursor.removeSelectedText()
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "w":
+            cursor.movePosition(cursor.MoveOperation.NextWord)
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "dw":
+            cursor.beginEditBlock()
+            cursor.movePosition(cursor.MoveOperation.NextWord, cursor.MoveMode.KeepAnchor)
+            self.vim.yankToInternal(cursor.selectedText())
+            cursor.removeSelectedText()
+            cursor.endEditBlock()
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "yw":
+            cursor.beginEditBlock()
+            cursor.movePosition(cursor.MoveOperation.NextWord, cursor.MoveMode.KeepAnchor)
+            self.vim.yankToInternal(cursor.selectedText())
+            cursor.clearSelection()
+            cursor.endEditBlock()
             self.setTextCursor(cursor)
             self.vim.resetCommand()
             return True
@@ -1166,6 +1203,12 @@ class GuiDocEditor(QPlainTextEdit):
 
         if self.vim.command() == "u":
             self.docAction(nwDocAction.UNDO)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "zz":
+            self.centerCursor()
+            self.setTextCursor(cursor)
             self.vim.resetCommand()
             return True
 
@@ -3483,6 +3526,7 @@ class VimState:
     __slots__ = (
         "PREFIX_KEYS",
         "VISUAL_PREFIX_KEYS",
+        "SUFFIX_KEYS",
         "_internalClipboard",
         "_mode",
         "_normalCommand",
@@ -3490,8 +3534,9 @@ class VimState:
     )
 
     def __init__(self) -> None:
-        self.PREFIX_KEYS = ["d", "y", "g"]
+        self.PREFIX_KEYS = ["d", "y", "g", "z"]
         self.VISUAL_PREFIX_KEYS = ["g"]
+        self.SUFFIX_KEYS = ["w"]
         self._mode: nwVimMode = nwVimMode.NORMAL
         self._normalCommand: str = ""
         self._visualCommand: str = ""
