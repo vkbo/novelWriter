@@ -968,17 +968,8 @@ class GuiDocEditor(QPlainTextEdit):
 
         return
 
-    def _handleVimKeyPress(self, event: QKeyEvent) -> bool:
-        """Handle key events for Vim mode.
-        If vim mode is not enabled, it returns false and typing
-        behaves as normal.
-        """
-        # --- INSERT mode, bypass ---
-        if self.vim.getMode() == nwVimMode.INSERT:
-            super().keyPressEvent(event)
-            return True  # Normal typing
-
-        # --- NORMAL mode, mode switching ---
+    def _handleVimNormalModeModeSwitching(self, event: QKeyEvent) -> bool:
+        """Handle key events for Vim mode switching in NORMAL mode."""
         if event.text() == "i":
             self.setVimMode(nwVimMode.INSERT)
         elif event.text() == "I":
@@ -1001,93 +992,12 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.select(cursor.SelectionType.LineUnderCursor)
             self.setTextCursor(cursor)
             return True
+        return False  # Not a mode switching motion
 
+    def _handleVimNormalMode(self, event: QKeyEvent) -> bool:
+        """Handle key events for Vim mode NORMAL mode motions."""
         key = event.text()
         cursor = self.textCursor()
-
-        # -- VISUAL mode PREFIX
-        if self.vim.getMode() in (nwVimMode.VISUAL, nwVimMode.VLINE):
-            if key in self.vim.VISUAL_PREFIX_KEYS:
-                self.vim.pushCommandKey(key)
-            else:
-                self.vim.setCommand(key)
-
-        # --- VISUAL / VISUALLINE mode ---
-        if self.vim.getMode() in (nwVimMode.VISUAL, nwVimMode.VLINE):
-            if self.vim.command() in ("d", "x"):
-                cursor.beginEditBlock()
-                self.vim.yankToInternal(cursor.selectedText())
-                cursor.removeSelectedText()
-                cursor.endEditBlock()
-                self.setTextCursor(cursor)
-                self.setVimMode(nwVimMode.NORMAL)
-                return True
-
-            if self.vim.command() == "y":
-                self.vim.yankToInternal(cursor.selectedText())
-                cursor.clearSelection()
-                self.setTextCursor(cursor)
-                self.setVimMode(nwVimMode.NORMAL)
-                return True
-
-            if self.vim.command() == "w":
-                move_mode = cursor.MoveMode.KeepAnchor
-                cursor.movePosition(cursor.MoveOperation.NextWord, move_mode)
-                self.setTextCursor(cursor)
-                self.vim.resetCommand()
-                return True
-
-            if self.vim.command() == "b":
-                move_mode = cursor.MoveMode.KeepAnchor
-                cursor.movePosition(cursor.MoveOperation.PreviousWord, move_mode)
-                self.setTextCursor(cursor)
-                self.vim.resetCommand()
-                return True
-
-            if self.vim.command() == "e":
-                move_mode = cursor.MoveMode.KeepAnchor
-                orig_pos = cursor.position()
-                cursor.movePosition(cursor.MoveOperation.EndOfWord, move_mode)
-
-                if cursor.position() == orig_pos:
-                    text_len = len(self.toPlainText())
-                    if orig_pos < text_len:
-                        cursor.movePosition(cursor.MoveOperation.NextCharacter, move_mode)
-                        cursor.movePosition(cursor.MoveOperation.EndOfWord, move_mode)
-
-                self.setTextCursor(cursor)
-                self.vim.resetCommand()
-                return True
-
-            if self.vim.command() == "gg":
-                move_mode = cursor.MoveMode.KeepAnchor
-                cursor.movePosition(cursor.MoveOperation.Start, move_mode)
-                self.setTextCursor(cursor)
-                self.vim.resetCommand()
-                return True
-
-            # Handle motions (extend selection)
-            move_mode = cursor.MoveMode.KeepAnchor
-            if self.vim.command() == "h":
-                cursor.movePosition(cursor.MoveOperation.Left, move_mode)
-            elif self.vim.command() == "l":
-                cursor.movePosition(cursor.MoveOperation.Right, move_mode)
-            elif self.vim.command() == "j":
-                cursor.movePosition(cursor.MoveOperation.Down, move_mode)
-            elif self.vim.command() == "k":
-                cursor.movePosition(cursor.MoveOperation.Up, move_mode)
-            elif self.vim.command() == "$":
-                cursor.movePosition(cursor.MoveOperation.EndOfLine, move_mode)
-            elif self.vim.command() == "0":
-                cursor.movePosition(cursor.MoveOperation.StartOfLine, move_mode)
-            elif self.vim.command() == "G":
-                cursor.movePosition(cursor.MoveOperation.End, move_mode)
-            else:
-                return True
-            self.setTextCursor(cursor)
-            return True
-
-        # --- NORMAL mode, commands
         # -- NORMAL mode PREFIX
         if self.vim.getMode() is nwVimMode.NORMAL:
             if key in self.vim.PREFIX_KEYS:
@@ -1259,18 +1169,135 @@ class GuiDocEditor(QPlainTextEdit):
         # hjkl  (single-step navigation)
         if self.vim.command() == "h":
             cursor.movePosition(cursor.MoveOperation.Left)
-        elif self.vim.command() == "j":
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+        if self.vim.command() == "j":
             cursor.movePosition(cursor.MoveOperation.Down)
-        elif self.vim.command() == "k":
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+        if self.vim.command() == "k":
             cursor.movePosition(cursor.MoveOperation.Up)
-        elif self.vim.command() == "l":
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+        if self.vim.command() == "l":
             cursor.movePosition(cursor.MoveOperation.Right)
-        else:
-            return True  # Normal mode, unmapped keys do nothing
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
 
-        self.setTextCursor(cursor)
-        self.vim.resetCommand()
-        return True
+        return False  # Not a Normal mode motion
+
+    def _handleVimVisualMode(self, event: QKeyEvent) -> bool:
+        """Handle key events for Vim mode VISUAL and VLINE mode motions."""
+        key = event.text()
+        cursor = self.textCursor()
+        # -- VISUAL mode PREFIX
+        if self.vim.getMode() in (nwVimMode.VISUAL, nwVimMode.VLINE):
+            if key in self.vim.VISUAL_PREFIX_KEYS:
+                self.vim.pushCommandKey(key)
+            else:
+                # If adding none repeating visual mode motions,
+                # need to add a suffix case, see normal mode.
+                self.vim.setCommand(key)
+
+        # --- VISUAL / VISUALLINE mode ---
+        if self.vim.getMode() in (nwVimMode.VISUAL, nwVimMode.VLINE):
+            if self.vim.command() in ("d", "x"):
+                cursor.beginEditBlock()
+                self.vim.yankToInternal(cursor.selectedText())
+                cursor.removeSelectedText()
+                cursor.endEditBlock()
+                self.setTextCursor(cursor)
+                self.setVimMode(nwVimMode.NORMAL)
+                return True
+
+            if self.vim.command() == "y":
+                self.vim.yankToInternal(cursor.selectedText())
+                cursor.clearSelection()
+                self.setTextCursor(cursor)
+                self.setVimMode(nwVimMode.NORMAL)
+                return True
+
+            if self.vim.command() == "w":
+                move_mode = cursor.MoveMode.KeepAnchor
+                cursor.movePosition(cursor.MoveOperation.NextWord, move_mode)
+                self.setTextCursor(cursor)
+                self.vim.resetCommand()
+                return True
+
+            if self.vim.command() == "b":
+                move_mode = cursor.MoveMode.KeepAnchor
+                cursor.movePosition(cursor.MoveOperation.PreviousWord, move_mode)
+                self.setTextCursor(cursor)
+                self.vim.resetCommand()
+                return True
+
+            if self.vim.command() == "e":
+                move_mode = cursor.MoveMode.KeepAnchor
+                orig_pos = cursor.position()
+                cursor.movePosition(cursor.MoveOperation.EndOfWord, move_mode)
+
+                if cursor.position() == orig_pos:
+                    text_len = len(self.toPlainText())
+                    if orig_pos < text_len:
+                        cursor.movePosition(cursor.MoveOperation.NextCharacter, move_mode)
+                        cursor.movePosition(cursor.MoveOperation.EndOfWord, move_mode)
+
+                self.setTextCursor(cursor)
+                self.vim.resetCommand()
+                return True
+
+            if self.vim.command() == "gg":
+                move_mode = cursor.MoveMode.KeepAnchor
+                cursor.movePosition(cursor.MoveOperation.Start, move_mode)
+                self.setTextCursor(cursor)
+                self.vim.resetCommand()
+                return True
+
+            # Handle motions (extend selection)
+            move_mode = cursor.MoveMode.KeepAnchor
+            if self.vim.command() == "h":
+                cursor.movePosition(cursor.MoveOperation.Left, move_mode)
+            elif self.vim.command() == "l":
+                cursor.movePosition(cursor.MoveOperation.Right, move_mode)
+            elif self.vim.command() == "j":
+                cursor.movePosition(cursor.MoveOperation.Down, move_mode)
+            elif self.vim.command() == "k":
+                cursor.movePosition(cursor.MoveOperation.Up, move_mode)
+            elif self.vim.command() == "$":
+                cursor.movePosition(cursor.MoveOperation.EndOfLine, move_mode)
+            elif self.vim.command() == "0":
+                cursor.movePosition(cursor.MoveOperation.StartOfLine, move_mode)
+            elif self.vim.command() == "G":
+                cursor.movePosition(cursor.MoveOperation.End, move_mode)
+            else:
+                return True
+            self.setTextCursor(cursor)
+            return True
+
+        return False  # Not a Visual mode motion
+
+    def _handleVimKeyPress(self, event: QKeyEvent) -> None:
+        """Handle key events for Vim mode.
+        If vim mode is not enabled, typing behaves as normal.
+        """
+        # --- INSERT mode, bypass ---
+        if self.vim.getMode() == nwVimMode.INSERT:
+            super().keyPressEvent(event)
+            return  # Normal typing
+
+        wasAModeSwitchMotion = self._handleVimNormalModeModeSwitching(event)
+        if wasAModeSwitchMotion:
+            return
+
+        wasAVisualModeMotion = self._handleVimVisualMode(event)
+        if wasAVisualModeMotion:
+            return
+
+        wasANormalModeMotion = self._handleVimNormalMode(event)
+        if wasANormalModeMotion:
+            return
+
+        return
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         """Overload drag enter event to handle dragged items."""
