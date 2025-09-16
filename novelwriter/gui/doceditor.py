@@ -1037,8 +1037,29 @@ class GuiDocEditor(QPlainTextEdit):
                 self.vim.resetCommand()
                 return True
 
+            if self.vim.command() == "b":
+                move_mode = cursor.MoveMode.KeepAnchor
+                cursor.movePosition(cursor.MoveOperation.PreviousWord, move_mode)
+                self.setTextCursor(cursor)
+                self.vim.resetCommand()
+                return True
+
+            if self.vim.command() == "e":
+                move_mode = cursor.MoveMode.KeepAnchor
+                orig_pos = cursor.position()
+                cursor.movePosition(cursor.MoveOperation.EndOfWord, move_mode)
+
+                if cursor.position() == orig_pos:
+                    text_len = len(self.toPlainText())
+                    if orig_pos < text_len:
+                        cursor.movePosition(cursor.MoveOperation.NextCharacter, move_mode)
+                        cursor.movePosition(cursor.MoveOperation.EndOfWord, move_mode)
+
+                self.setTextCursor(cursor)
+                self.vim.resetCommand()
+                return True
+
             if self.vim.command() == "gg":
-                print("gg visual")
                 move_mode = cursor.MoveMode.KeepAnchor
                 cursor.movePosition(cursor.MoveOperation.Start, move_mode)
                 self.setTextCursor(cursor)
@@ -1097,6 +1118,29 @@ class GuiDocEditor(QPlainTextEdit):
 
         if self.vim.command() == "w":
             cursor.movePosition(cursor.MoveOperation.NextWord)
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "b":
+            cursor.movePosition(cursor.MoveOperation.PreviousWord)
+            self.setTextCursor(cursor)
+            self.vim.resetCommand()
+            return True
+
+        if self.vim.command() == "e":
+            # Try to move to end of the current word
+            orig_pos = cursor.position()
+            cursor.movePosition(cursor.MoveOperation.EndOfWord)
+
+            # If we didn't move (we were already at end of a word),
+            # step forward one character (if possible) and then move to the next EndOfWord.
+            if cursor.position() == orig_pos:
+                text_len = len(self.toPlainText())
+                if orig_pos < text_len:
+                    cursor.movePosition(cursor.MoveOperation.NextCharacter)
+                    cursor.movePosition(cursor.MoveOperation.EndOfWord)
+
             self.setTextCursor(cursor)
             self.vim.resetCommand()
             return True

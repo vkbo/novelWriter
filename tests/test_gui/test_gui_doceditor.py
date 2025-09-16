@@ -2596,6 +2596,34 @@ def testGuiEditor_Vim_MotionsAndInsert(qtbot, nwGUI, projPath, mockRnd):
     lines = docEditor.getText().splitlines()
     assert "above" in lines[0]  # inserted before Line1
 
+    # --- b: move to beginning of word ---
+    reset_and_get_text()
+    # Place cursor inside "Line2"
+    start_pos = docEditor.getText().find("Line2") + 2  # inside the word
+    docEditor.setCursorPosition(start_pos)
+    qtbot.keyClicks(docEditor, "b", delay=inputDelay)
+    cursor_pos = docEditor.textCursor().position()
+    expected_pos = docEditor.getText().find("Line2")  # beginning of "Line2"
+    assert cursor_pos == expected_pos
+
+    # --- e: move to end of current word ---
+    reset_and_get_text()
+    start_pos = docEditor.getText().find("Line1")  # start of "Line1"
+    docEditor.setCursorPosition(start_pos)
+    qtbot.keyClicks(docEditor, "e", delay=inputDelay)
+    cursor_pos = docEditor.textCursor().position()
+    expected_pos = docEditor.getText().find("Line1") + len("Line1")
+    assert cursor_pos == expected_pos
+
+    # --- e: move to end of next word when already at end ---
+    docEditor.setPlainText("Line1 lineExtra Line2 Line3")
+    end_pos = docEditor.getText().find("Line1") + len("Line1")
+    docEditor.setCursorPosition(end_pos)
+    qtbot.keyClicks(docEditor, "e", delay=inputDelay)
+    cursor_pos = docEditor.textCursor().position()
+    expected_pos = docEditor.getText().find("lineExtra") + len("lineExtra")
+    assert cursor_pos == expected_pos
+
 
 @pytest.mark.gui
 def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
@@ -2761,6 +2789,33 @@ def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     # Nothing should have changed
     assert text_after == text_before
     assert cursor_after == cursor_before
+
+    reset_text()
+    start_pos = docEditor.getText().find("Line2") + 2  # inside "Line2"
+    docEditor.setCursorPosition(start_pos)
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)   # enter visual mode
+    qtbot.keyClicks(docEditor, "b", delay=inputDelay)
+    selected = docEditor.textCursor().selectedText()
+    # Should have selected from inside "Line2" back to its start
+    assert selected == "Li"
+
+    reset_text()
+    start_pos = docEditor.getText().find("Line1")      # start of "Line1"
+    docEditor.setCursorPosition(start_pos)
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)   # enter visual mode
+    qtbot.keyClicks(docEditor, "e", delay=inputDelay)
+    selected = docEditor.textCursor().selectedText()
+    # Should have selected "Line1"
+    assert selected == "Line1"
+
+    docEditor.setPlainText("Line1 lineExtra Line2 Line3")
+    end_pos = docEditor.getText().find("Line1") + len("Line1") - 1
+    docEditor.setCursorPosition(end_pos)
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)   # enter visual mode
+    qtbot.keyClicks(docEditor, "e", delay=inputDelay)
+    selected = docEditor.textCursor().selectedText().strip()
+    # Should have selected whitespace + "lineExtra"
+    assert "lineExtra" in selected
 
 
 @pytest.mark.gui
