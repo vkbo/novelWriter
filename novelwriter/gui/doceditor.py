@@ -81,7 +81,7 @@ from novelwriter.types import (
     QtMoveEndOfLine, QtMoveEndOfWord, QtMoveLeft, QtMoveNextChar,
     QtMoveNextWord, QtMovePreviousWord, QtMoveRight, QtMoveStart,
     QtMoveStartOfLine, QtMoveUp, QtScrollAlwaysOff, QtScrollAsNeeded,
-    QtSelectBlock, QtSelectDocument, QtSelectWord, QtTransparent
+    QtSelectBlock, QtSelectDocument, QtSelectLine, QtSelectWord, QtTransparent
 )
 
 logger = logging.getLogger(__name__)
@@ -1928,7 +1928,7 @@ class GuiDocEditor(QPlainTextEdit):
         elif text == "V":
             self.setVimMode(nwVimMode.VLINE)
             cursor = self.textCursor()
-            cursor.select(QTextCursor.SelectionType.LineUnderCursor)
+            cursor.select(QtSelectLine)
             self.setTextCursor(cursor)
             return True
         return False  # Not a mode switching motion
@@ -1948,7 +1948,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         if self._vim.command == "dd":
             cursor.beginEditBlock()
-            cursor.select(QTextCursor.SelectionType.LineUnderCursor)
+            cursor.select(QtSelectLine)
             self._vim.yankToInternal(cursor.selectedText())
             cursor.removeSelectedText()
             cursor.endEditBlock()
@@ -2027,7 +2027,7 @@ class GuiDocEditor(QPlainTextEdit):
             return True
 
         if self._vim.command == "yy":
-            cursor.select(QTextCursor.SelectionType.LineUnderCursor)
+            cursor.select(QtSelectLine)
             self._vim.yankToInternal(cursor.selectedText())
             cursor.clearSelection()
             self.setTextCursor(cursor)

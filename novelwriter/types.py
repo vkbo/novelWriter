@@ -124,6 +124,7 @@ QtMoveEndOfWord = QTextCursor.MoveOperation.EndOfWord
 QtMoveNextChar = QTextCursor.MoveOperation.NextCharacter
 
 QtSelectWord = QTextCursor.SelectionType.WordUnderCursor
+QtSelectLine = QTextCursor.SelectionType.LineUnderCursor
 QtSelectBlock = QTextCursor.SelectionType.BlockUnderCursor
 QtSelectDocument = QTextCursor.SelectionType.Document
 
