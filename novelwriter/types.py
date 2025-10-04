@@ -111,6 +111,16 @@ QtKeepAnchor = QTextCursor.MoveMode.KeepAnchor
 QtMoveAnchor = QTextCursor.MoveMode.MoveAnchor
 QtMoveLeft = QTextCursor.MoveOperation.Left
 QtMoveRight = QTextCursor.MoveOperation.Right
+QtMoveUp = QTextCursor.MoveOperation.Up
+QtMoveDown = QTextCursor.MoveOperation.Down
+QtMoveEndOfLine = QTextCursor.MoveOperation.EndOfLine
+QtMoveStartOfLine = QTextCursor.MoveOperation.StartOfLine
+QtMoveEnd = QTextCursor.MoveOperation.End
+QtMoveStart = QTextCursor.MoveOperation.Start
+QtMoveNextWord = QTextCursor.MoveOperation.NextWord
+QtMovePreviousWord = QTextCursor.MoveOperation.PreviousWord
+QtMoveEndOfWord = QTextCursor.MoveOperation.EndOfWord
+QtMoveNextChar = QTextCursor.MoveOperation.NextCharacter
 
 QtImCursorRectangle = Qt.InputMethodQuery.ImCursorRectangle
 

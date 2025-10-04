@@ -40,7 +40,7 @@ from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, s
 from novelwriter.formats.tokenizer import HEADING_BLOCKS, META_BLOCKS, Tokenizer
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
-    QtKeepAnchor, QtMoveAnchor, QtPageBreakAfter, QtPageBreakAuto,
+    QtKeepAnchor, QtMoveAnchor, QtMoveEnd, QtPageBreakAfter, QtPageBreakAuto,
     QtPageBreakBefore, QtPropLineHeight, QtTransparent, QtVAlignNormal,
     QtVAlignSub, QtVAlignSuper
 )
@@ -203,7 +203,7 @@ class ToQTextDocument(Tokenizer):
 
         self._document.blockSignals(True)
         cursor = QTextCursor(self._document)
-        cursor.movePosition(QTextCursor.MoveOperation.End)
+        cursor.movePosition(QtMoveEnd)
 
         for tType, tMeta, tText, tFormat, tStyle in self._blocks:
 
@@ -307,7 +307,7 @@ class ToQTextDocument(Tokenizer):
         # Add footnotes
         if self._usedNotes:
             cursor = QTextCursor(self._document)
-            cursor.movePosition(QTextCursor.MoveOperation.End)
+            cursor.movePosition(QtMoveEnd)
 
             bFmt, cFmt = self._genHeadStyle(BlockTyp.HEAD4, "", self._blockFmt)
             newBlock(cursor, bFmt)

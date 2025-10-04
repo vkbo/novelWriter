@@ -26,10 +26,10 @@ from __future__ import annotations
 import logging
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
 from PyQt6.QtCore import pyqtSlot
-from PyQt6.QtGui import QCloseEvent, QTextCursor
 from PyQt6.QtWidgets import (
     QApplication, QDialogButtonBox, QFileDialog, QFrame, QHBoxLayout, QLabel,
     QLineEdit, QPlainTextEdit, QPushButton, QVBoxLayout, QWidget
@@ -39,7 +39,10 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter, formatInt, getFileSize, openExternalPath
 from novelwriter.error import formatException
 from novelwriter.extensions.modified import NIconToolButton, NNonBlockingDialog
-from novelwriter.types import QtDialogClose, QtHexArgb
+from novelwriter.types import QtDialogClose, QtHexArgb, QtMoveEnd
+
+if TYPE_CHECKING:
+    from PyQt6.QtGui import QCloseEvent
 
 logger = logging.getLogger(__name__)
 
@@ -238,11 +241,11 @@ class GuiDictionaries(NNonBlockingDialog):
     def _appendLog(self, text: str, err: bool = False) -> None:
         """Append a line to the log output."""
         cursor = self.infoBox.textCursor()
-        cursor.movePosition(QTextCursor.MoveOperation.End)
+        cursor.movePosition(QtMoveEnd)
         if cursor.position() > 0:
             cursor.insertText("\n")
         textCol = SHARED.theme.errorText if err else self.palette().text().color()
         cursor.insertHtml(f"<font style='color: {textCol.name(QtHexArgb)}'>{text}</font>")
-        cursor.movePosition(QTextCursor.MoveOperation.End)
+        cursor.movePosition(QtMoveEnd)
         cursor.deleteChar()
         self.infoBox.setTextCursor(cursor)
