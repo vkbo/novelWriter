@@ -77,7 +77,8 @@ from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
     QtAlignRight, QtImCursorRectangle, QtKeepAnchor, QtModCtrl, QtModNone,
     QtModShift, QtMouseLeft, QtMoveAnchor, QtMoveLeft, QtMoveRight,
-    QtScrollAlwaysOff, QtScrollAsNeeded, QtTransparent
+    QtScrollAlwaysOff, QtScrollAsNeeded, QtSelectBlock, QtSelectDocument,
+    QtSelectWord, QtTransparent
 )
 
 logger = logging.getLogger(__name__)
@@ -672,7 +673,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.spellCheckStateChanged.emit(state)
         self.spellCheckDocument()
 
-        logger.debug("Spell check is set to '%s'", str(state))
+        logger.debug("Spell check is set to '%s'", state)
 
     def spellCheckDocument(self) -> None:
         """Rerun the highlighter to update spell checking status of the
@@ -731,9 +732,9 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.D_QUOTE:
             self._wrapSelection(CONFIG.fmtDQuoteOpen, CONFIG.fmtDQuoteClose)
         elif action == nwDocAction.SEL_ALL:
-            self._makeSelection(QTextCursor.SelectionType.Document)
+            self._makeSelection(QtSelectDocument)
         elif action == nwDocAction.SEL_PARA:
-            self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor)
+            self._makeSelection(QtSelectBlock)
         elif action == nwDocAction.BLOCK_H1:
             self._formatBlock(nwDocAction.BLOCK_H1)
         elif action == nwDocAction.BLOCK_H2:
@@ -785,7 +786,7 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.SC_SUB:
             self._wrapSelection(nwShortcode.SUB_O, nwShortcode.SUB_C)
         else:
-            logger.debug("Unknown or unsupported document action '%s'", str(action))
+            logger.debug("Unknown or unsupported document action '%s'", action)
             self._allowAutoReplace(True)
             return False
 
@@ -1174,13 +1175,9 @@ class GuiDocEditor(QPlainTextEdit):
         action = qtAddAction(ctxMenu, self.tr("Select All"))
         action.triggered.connect(qtLambda(self.docAction, nwDocAction.SEL_ALL))
         action = qtAddAction(ctxMenu, self.tr("Select Word"))
-        action.triggered.connect(qtLambda(
-            self._makePosSelection, QTextCursor.SelectionType.WordUnderCursor, pos,
-        ))
+        action.triggered.connect(qtLambda(self._makePosSelection, QtSelectWord, pos))
         action = qtAddAction(ctxMenu, self.tr("Select Paragraph"))
-        action.triggered.connect(qtLambda(
-            self._makePosSelection, QTextCursor.SelectionType.BlockUnderCursor, pos
-        ))
+        action.triggered.connect(qtLambda(self._makePosSelection, QtSelectBlock, pos))
 
         # Spell Checking
         if SHARED.project.data.spellCheck:
@@ -1750,7 +1747,7 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.BLOCK_TXT:
             text = temp
         else:
-            logger.error("Unknown or unsupported block format requested: '%s'", str(action))
+            logger.error("Unknown or unsupported block format requested: '%s'", action)
             return nwDocAction.NO_ACTION, "", 0
 
         return action, text, offset
@@ -1760,7 +1757,7 @@ class GuiDocEditor(QPlainTextEdit):
         cursor = self.textCursor()
         block = cursor.block()
         if not block.isValid():
-            logger.debug("Invalid block selected for action '%s'", str(action))
+            logger.debug("Invalid block selected for action '%s'", action)
             return False
 
         action, text, offset = self._processBlockFormat(action, block.text())
@@ -1770,7 +1767,7 @@ class GuiDocEditor(QPlainTextEdit):
         pos = cursor.position()
 
         cursor.beginEditBlock()
-        self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor, cursor)
+        self._makeSelection(QtSelectBlock, cursor)
         cursor.insertText(text)
         cursor.endEditBlock()
 
@@ -1798,7 +1795,7 @@ class GuiDocEditor(QPlainTextEdit):
             if pAction != nwDocAction.NO_ACTION and blockText.strip():
                 action = pAction  # First block decides further actions
                 cursor.setPosition(block.position())
-                self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor, cursor)
+                self._makeSelection(QtSelectBlock, cursor)
                 cursor.insertText(text)
                 toggle = False
 
@@ -1818,7 +1815,7 @@ class GuiDocEditor(QPlainTextEdit):
         """Strip line breaks within paragraphs in the selected text."""
         cursor = self.textCursor()
         if not cursor.hasSelection():
-            cursor.select(QTextCursor.SelectionType.Document)
+            cursor.select(QtSelectDocument)
 
         rS = 0
         rE = self._qDocument.characterCount()
@@ -2035,10 +2032,10 @@ class GuiDocEditor(QPlainTextEdit):
         cursor.clearSelection()
         cursor.select(mode)
 
-        if mode == QTextCursor.SelectionType.WordUnderCursor:
+        if mode == QtSelectWord:
             cursor = self._autoSelect()
 
-        elif mode == QTextCursor.SelectionType.BlockUnderCursor:
+        elif mode == QtSelectBlock:
             # This selection mode also selects the preceding paragraph
             # separator, which we want to avoid.
             posS = cursor.selectionStart()

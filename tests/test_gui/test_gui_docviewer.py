@@ -27,7 +27,7 @@ import pytest
 from PyQt6.QtCore import QEvent, QMimeData, QPointF, Qt, QUrl
 from PyQt6.QtGui import (
     QAction, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent,
-    QMouseEvent, QTextCursor
+    QMouseEvent
 )
 from PyQt6.QtWidgets import QApplication, QMenu, QTextBrowser
 
@@ -35,7 +35,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
 from novelwriter.enum import nwChange, nwDocAction
 from novelwriter.formats.toqdoc import ToQTextDocument
-from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle
+from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle, QtSelectBlock, QtSelectWord
 
 from tests.mocked import causeException
 from tests.tools import C, buildTestProject
@@ -89,7 +89,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     cursor = docViewer.textCursor()
     cursor.setPosition(100)
     docViewer.setTextCursor(cursor)
-    docViewer._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docViewer._makeSelection(QtSelectWord)
 
     clipboard = QApplication.clipboard()
     assert clipboard is not None
@@ -117,9 +117,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     cursor.clearSelection()
     docViewer.setTextCursor(cursor)
 
-    docViewer._makePosSelection(
-        QTextCursor.SelectionType.BlockUnderCursor, docViewer.cursorRect().center()
-    )
+    docViewer._makePosSelection(QtSelectBlock, docViewer.cursorRect().center())
     cursor = docViewer.textCursor()
     assert cursor.selectedText() == (
         "Synopsis: Aenean ut placerat velit. Etiam laoreet ullamcorper risus, "
@@ -159,7 +157,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     cursor = docViewer.textCursor()
     cursor.setPosition(27)
     docViewer.setTextCursor(cursor)
-    docViewer._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docViewer._makeSelection(QtSelectWord)
     with monkeypatch.context() as mp:
         mp.setattr(QMenu, "exec", mockExec)
         docViewer._openContextMenu(docViewer.cursorRect().center())
@@ -169,7 +167,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     cursor = docViewer.textCursor()
     cursor.setPosition(27)
     docViewer.setTextCursor(cursor)
-    docViewer._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docViewer._makeSelection(QtSelectWord)
     rect = docViewer.cursorRect()
     docViewer._linkClicked(QUrl("#tag_bod"))
     assert docViewer.docHandle == "4c4f28287af27"
