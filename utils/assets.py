@@ -154,6 +154,14 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
     print("")
 
 
+def getLReleaseExec() -> str | None:
+    """Look for the lrelease executable."""
+    for entry in ["lrelease-qt6", "lrelease"]:
+        if subprocess.call(f"type {entry}", shell=True) == 0:
+            return entry
+    return None
+
+
 def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
     """Build the lang.qm files for Qt Linguist."""
     print("")
@@ -178,7 +186,10 @@ def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
     print("")
 
     try:
-        subprocess.call(["lrelease", "-verbose", *srcList])
+        if lrelease := getLReleaseExec():
+            subprocess.call([lrelease, "-verbose", *srcList])
+        else:
+            raise FileNotFoundError("No lrelease executable found")
     except Exception as exc:
         print("Qt Linguist tools seem to be missing")
         print("On Debian/Ubuntu, install: qttools5-dev-tools")

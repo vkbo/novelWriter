@@ -1,4 +1,4 @@
-name: Linux
+name: Fedora
 
 on:
   push:
@@ -11,22 +11,17 @@ on:
       - release
 
 jobs:
-  testLinux:
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
-      fail-fast: false
+  testFedora:
     runs-on: ubuntu-latest
+    container:
+      image: fedora:rawhide
     steps:
-      - name: Python Setup
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-      - name: Install Packages (apt)
+      - name: Install Packages (dnf)
         run: |
-          sudo apt update
-          sudo apt install libenchant-2-dev qttools5-dev-tools
+          dnf -y update
+          dnf -y install adobe-source-sans-pro-fonts hunspell-en hunspell-en-GB hunspell-en-US
+          dnf -y install enchant2-devel git hunspell-devel qt6-qttools-devel qt6-qtsvg-devel
+          dnf -y install python3-devel
       - name: Checkout Source
         uses: actions/checkout@v4
       - name: Install Dependencies (pip)
