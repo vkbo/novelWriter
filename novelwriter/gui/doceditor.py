@@ -619,8 +619,9 @@ class GuiDocEditor(QPlainTextEdit):
                 cursor = self.textCursor()
                 cursor.clearSelection()
                 self.setTextCursor(cursor)
-            self._vim.setMode(mode)
-            self._updateVimModeStatusBar(mode.name)
+            if self._vim.mode != mode:
+                self._vim.setMode(mode)
+                self.docFooter.updateVimModeStatusBar(mode)
 
     def setDocumentChanged(self, state: bool) -> None:
         """Keep track of the document changed variable, and emit the
@@ -1281,12 +1282,6 @@ class GuiDocEditor(QPlainTextEdit):
         else:
             self._timerSel.stop()
             self.docFooter.updateMainCount(0, False)
-
-    @pyqtSlot()
-    def _updateVimModeStatusBar(self, modeName: str) -> None:
-        """Update the editor footer."""
-        if CONFIG.vimMode:
-            self.docFooter.updateVimModeStatusBar(modeName)
 
     @pyqtSlot()
     def _runSelCounter(self) -> None:
@@ -3464,8 +3459,9 @@ class GuiDocEditFooter(QWidget):
         self.outerBox.addWidget(self.statusIcon)
         self.outerBox.addWidget(self.statusText)
         self.outerBox.addStretch(1)
-        self.outerBox.addSpacing(2)  # TODO when not maximized spacing issues
+        self.outerBox.addSpacing(6)
         self.outerBox.addWidget(self.vimStatus)
+        self.outerBox.addSpacing(6)
         self.outerBox.addWidget(self.linesIcon)
         self.outerBox.addWidget(self.linesText)
         self.outerBox.addSpacing(6)
@@ -3578,9 +3574,17 @@ class GuiDocEditFooter(QWidget):
             text = self._trMainCount.format("0", "+0")
         self.wordsText.setText(text)
 
-    def updateVimModeStatusBar(self, modeName: str) -> None:
+    def updateVimModeStatusBar(self, vimMode: nwVimMode) -> None:
         """Update the vim Mode status information."""
-        self.vimStatus.setText(self.tr(modeName))
+        match vimMode:
+            case nwVimMode.NORMAL:
+                self.vimStatus.setText(self.tr("NORMAL"))
+            case nwVimMode.INSERT:
+                self.vimStatus.setText(self.tr("INSERT"))
+            case nwVimMode.VISUAL:
+                self.vimStatus.setText(self.tr("VISUAL"))
+            case nwVimMode.VLINE:
+                self.vimStatus.setText(self.tr("VLINE"))
 
 
 class VimState:
