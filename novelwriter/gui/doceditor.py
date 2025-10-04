@@ -13,6 +13,7 @@ Rewritten: 2020-10-07 [1.0b3]  BackgroundWordCounter
 Created:   2023-11-06 [2.2b1]  MetaCompleter
 Created:   2023-11-07 [2.2b1]  GuiDocToolBar
 Extended:  2025-05-18 [2.7rc1] CommandCompleter
+Created:   2025-08-12 [2.8b1]  VimState
 
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
@@ -2108,7 +2109,7 @@ class GuiDocEditor(QPlainTextEdit):
             self._vim.resetCommand()
             return True
 
-        # hjkl (single-step navigation)
+        # Single-step navigation
         if self._vim.command == "h":
             cursor.movePosition(QtMoveLeft)
             self.setTextCursor(cursor)
