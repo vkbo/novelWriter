@@ -76,8 +76,8 @@ from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
-    QtAlignRight, QtImCursorRectangle, QtKeepAnchor, QtModCtrl, QtModNone,
-    QtModShift, QtMouseLeft, QtMoveAnchor, QtMoveDown, QtMoveEnd,
+    QtAlignRight, QtBlack, QtImCursorRectangle, QtKeepAnchor, QtModCtrl,
+    QtModNone, QtModShift, QtMouseLeft, QtMoveAnchor, QtMoveDown, QtMoveEnd,
     QtMoveEndOfLine, QtMoveEndOfWord, QtMoveLeft, QtMoveNextChar,
     QtMoveNextWord, QtMovePreviousWord, QtMoveRight, QtMoveStart,
     QtMoveStartOfLine, QtMoveUp, QtScrollAlwaysOff, QtScrollAsNeeded,
@@ -619,9 +619,8 @@ class GuiDocEditor(QPlainTextEdit):
                 cursor = self.textCursor()
                 cursor.clearSelection()
                 self.setTextCursor(cursor)
-            if self._vim.mode != mode:
-                self._vim.setMode(mode)
-                self.docFooter.updateVimModeStatusBar(mode)
+            self._vim.setMode(mode)
+            self.docFooter.updateVimModeStatusBar(mode)
 
     def setDocumentChanged(self, state: bool) -> None:
         """Keep track of the document changed variable, and emit the
@@ -3452,6 +3451,9 @@ class GuiDocEditFooter(QWidget):
         self.vimStatus.setAutoFillBackground(True)
         self.vimStatus.setFixedHeight(fPx)
         self.vimStatus.setAlignment(QtAlignLeftTop)
+        self._vimMode: nwVimMode | None = None
+        self._vimColor = SHARED.theme.getBaseColor("base")
+        self._vimModes = {}
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
@@ -3509,6 +3511,13 @@ class GuiDocEditFooter(QWidget):
         self.linesIcon.setPixmap(SHARED.theme.getPixmap("lines", (iPx, iPx)))
         self.wordsIcon.setPixmap(SHARED.theme.getPixmap("stats", (iPx, iPx)))
         self.matchColors()
+        self._vimColor = SHARED.theme.getBaseColor("base")
+        self._vimModes = {
+            nwVimMode.NORMAL: (self.tr("NORMAL"), SHARED.theme.getBaseColor("green")),
+            nwVimMode.INSERT: (self.tr("INSERT"), SHARED.theme.getBaseColor("blue")),
+            nwVimMode.VISUAL: (self.tr("VISUAL"), SHARED.theme.getBaseColor("orange")),
+            nwVimMode.VLINE:  (self.tr("V-LINE"), SHARED.theme.getBaseColor("orange")),
+        }
 
     def matchColors(self) -> None:
         """Update the colours of the widget to match those of the syntax
@@ -3576,15 +3585,14 @@ class GuiDocEditFooter(QWidget):
 
     def updateVimModeStatusBar(self, vimMode: nwVimMode) -> None:
         """Update the vim Mode status information."""
-        match vimMode:
-            case nwVimMode.NORMAL:
-                self.vimStatus.setText(self.tr("NORMAL"))
-            case nwVimMode.INSERT:
-                self.vimStatus.setText(self.tr("INSERT"))
-            case nwVimMode.VISUAL:
-                self.vimStatus.setText(self.tr("VISUAL"))
-            case nwVimMode.VLINE:
-                self.vimStatus.setText(self.tr("VLINE"))
+        if vimMode != self._vimMode:
+            text, color = self._vimModes.get(vimMode, ("", QtBlack))
+            palette = self.vimStatus.palette()
+            palette.setColor(QPalette.ColorRole.WindowText, self._vimColor)
+            palette.setColor(QPalette.ColorRole.Window, color)
+            self.vimStatus.setText(f" {text} ")
+            self.vimStatus.setPalette(palette)
+            self._vimMode = vimMode
 
 
 class VimState:
