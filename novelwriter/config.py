@@ -634,6 +634,7 @@ class Config:
         self.lastNotes    = conf.rdStr(sec, "lastnotes", self.lastNotes)
         self.nativeFont   = conf.rdBool(sec, "nativefont", self.nativeFont)
         self.useCharCount = conf.rdBool(sec, "usecharcount", self.useCharCount)
+        self.vimMode      = conf.rdBool(sec, "vimmode", self.vimMode)
 
         # Sizes
         sec = "Sizes"
@@ -762,6 +763,7 @@ class Config:
             "lastnotes":    str(self.lastNotes),
             "nativefont":   str(self.nativeFont),
             "usecharcount": str(self.useCharCount),
+            "vimmode":      str(self.vimMode),
         }
 
         conf["Sizes"] = {
