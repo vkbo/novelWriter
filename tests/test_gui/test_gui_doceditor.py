@@ -42,7 +42,8 @@ from novelwriter.gui.dochighlight import TextBlockData
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
     QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtModNone,
-    QtMouseLeft, QtMoveAnchor, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
+    QtMouseLeft, QtMoveAnchor, QtMoveRight, QtScrollAlwaysOff,
+    QtScrollAsNeeded, QtSelectDocument, QtSelectWord
 )
 
 from tests.mocked import causeOSError
@@ -58,7 +59,7 @@ def getMenuForPos(editor: GuiDocEditor, pos: int, select: bool = False) -> QMenu
     cursor = editor.textCursor()
     cursor.setPosition(pos)
     if select:
-        cursor.select(QTextCursor.SelectionType.WordUnderCursor)
+        cursor.select(QtSelectWord)
     editor.setTextCursor(cursor)
     editor._openContextFromCursor()
     for obj in editor.children():
@@ -1239,7 +1240,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     docEditor.setCursorPosition(45)
     assert len(docEditor._selectedBlocks(cursor)) == 0
 
-    cursor.select(QTextCursor.SelectionType.Document)
+    cursor.select(QtSelectDocument)
     assert len(docEditor._selectedBlocks(cursor)) == 15
 
     # Remove All
@@ -2093,7 +2094,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Select the Word "est"
     docEditor.setCursorPosition(663)
-    docEditor._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docEditor._makeSelection(QtSelectWord)
     cursor = docEditor.textCursor()
     assert cursor.selectedText() == "est"
 
@@ -2223,7 +2224,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Close search and select "est" again
     docSearch.cancelSearch.activate(QAction.ActionEvent.Trigger)
     docEditor.setCursorPosition(663)
-    docEditor._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docEditor._makeSelection(QtSelectWord)
     cursor = docEditor.textCursor()
     assert cursor.selectedText() == "est"
 

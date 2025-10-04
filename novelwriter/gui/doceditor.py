@@ -81,7 +81,7 @@ from novelwriter.types import (
     QtMoveEndOfLine, QtMoveEndOfWord, QtMoveLeft, QtMoveNextChar,
     QtMoveNextWord, QtMovePreviousWord, QtMoveRight, QtMoveStart,
     QtMoveStartOfLine, QtMoveUp, QtScrollAlwaysOff, QtScrollAsNeeded,
-    QtTransparent
+    QtSelectBlock, QtSelectDocument, QtSelectWord, QtTransparent
 )
 
 logger = logging.getLogger(__name__)
@@ -749,9 +749,9 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.D_QUOTE:
             self._wrapSelection(CONFIG.fmtDQuoteOpen, CONFIG.fmtDQuoteClose)
         elif action == nwDocAction.SEL_ALL:
-            self._makeSelection(QTextCursor.SelectionType.Document)
+            self._makeSelection(QtSelectDocument)
         elif action == nwDocAction.SEL_PARA:
-            self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor)
+            self._makeSelection(QtSelectBlock)
         elif action == nwDocAction.BLOCK_H1:
             self._formatBlock(nwDocAction.BLOCK_H1)
         elif action == nwDocAction.BLOCK_H2:
@@ -1198,13 +1198,9 @@ class GuiDocEditor(QPlainTextEdit):
         action = qtAddAction(ctxMenu, self.tr("Select All"))
         action.triggered.connect(qtLambda(self.docAction, nwDocAction.SEL_ALL))
         action = qtAddAction(ctxMenu, self.tr("Select Word"))
-        action.triggered.connect(qtLambda(
-            self._makePosSelection, QTextCursor.SelectionType.WordUnderCursor, pos,
-        ))
+        action.triggered.connect(qtLambda(self._makePosSelection, QtSelectWord, pos))
         action = qtAddAction(ctxMenu, self.tr("Select Paragraph"))
-        action.triggered.connect(qtLambda(
-            self._makePosSelection, QTextCursor.SelectionType.BlockUnderCursor, pos
-        ))
+        action.triggered.connect(qtLambda(self._makePosSelection, QtSelectBlock, pos))
 
         # Spell Checking
         if SHARED.project.data.spellCheck:
@@ -1800,7 +1796,7 @@ class GuiDocEditor(QPlainTextEdit):
         pos = cursor.position()
 
         cursor.beginEditBlock()
-        self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor, cursor)
+        self._makeSelection(QtSelectBlock, cursor)
         cursor.insertText(text)
         cursor.endEditBlock()
 
@@ -1828,7 +1824,7 @@ class GuiDocEditor(QPlainTextEdit):
             if pAction != nwDocAction.NO_ACTION and blockText.strip():
                 action = pAction  # First block decides further actions
                 cursor.setPosition(block.position())
-                self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor, cursor)
+                self._makeSelection(QtSelectBlock, cursor)
                 cursor.insertText(text)
                 toggle = False
 
@@ -1848,7 +1844,7 @@ class GuiDocEditor(QPlainTextEdit):
         """Strip line breaks within paragraphs in the selected text."""
         cursor = self.textCursor()
         if not cursor.hasSelection():
-            cursor.select(QTextCursor.SelectionType.Document)
+            cursor.select(QtSelectDocument)
 
         rS = 0
         rE = self._qDocument.characterCount()
@@ -2387,10 +2383,10 @@ class GuiDocEditor(QPlainTextEdit):
         cursor.clearSelection()
         cursor.select(mode)
 
-        if mode == QTextCursor.SelectionType.WordUnderCursor:
+        if mode == QtSelectWord:
             cursor = self._autoSelect()
 
-        elif mode == QTextCursor.SelectionType.BlockUnderCursor:
+        elif mode == QtSelectBlock:
             # This selection mode also selects the preceding paragraph
             # separator, which we want to avoid.
             posS = cursor.selectionStart()

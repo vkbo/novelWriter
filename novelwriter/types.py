@@ -109,6 +109,7 @@ QtRoleReject = QDialogButtonBox.ButtonRole.RejectRole
 
 QtKeepAnchor = QTextCursor.MoveMode.KeepAnchor
 QtMoveAnchor = QTextCursor.MoveMode.MoveAnchor
+
 QtMoveLeft = QTextCursor.MoveOperation.Left
 QtMoveRight = QTextCursor.MoveOperation.Right
 QtMoveUp = QTextCursor.MoveOperation.Up
@@ -121,6 +122,10 @@ QtMoveNextWord = QTextCursor.MoveOperation.NextWord
 QtMovePreviousWord = QTextCursor.MoveOperation.PreviousWord
 QtMoveEndOfWord = QTextCursor.MoveOperation.EndOfWord
 QtMoveNextChar = QTextCursor.MoveOperation.NextCharacter
+
+QtSelectWord = QTextCursor.SelectionType.WordUnderCursor
+QtSelectBlock = QTextCursor.SelectionType.BlockUnderCursor
+QtSelectDocument = QTextCursor.SelectionType.Document
 
 QtImCursorRectangle = Qt.InputMethodQuery.ImCursorRectangle
 
