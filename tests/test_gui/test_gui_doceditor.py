@@ -2500,7 +2500,6 @@ def testGuiEditor_TextAutoReplaceProcess():
 @pytest.mark.gui
 def testGuiEditor_Vim_EnableVimMode(qtbot, nwGUI, projPath, mockRnd):
     """Test that enabling CONFIG.vimMode activates vim behavior."""
-    # --- Setup ----
     inputDelay = 2
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
@@ -2508,12 +2507,11 @@ def testGuiEditor_Vim_EnableVimMode(qtbot, nwGUI, projPath, mockRnd):
     docEditor = nwGUI.docEditor
     CONFIG.vimMode = True
 
-    def reset_text():
+    def resetText():
         """Reset test text."""
         docEditor.setPlainText("Line1\nLine2\nLine3")
         return docEditor.getText()
-    original_text = reset_text()
-    # ---------
+    original_text = resetText()
 
     # Normal mode: hjkl should NOT change text
     for key in "hjkl":
@@ -2534,7 +2532,6 @@ def testGuiEditor_Vim_EnableVimMode(qtbot, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiEditor_Vim_InsertMode(qtbot, nwGUI, projPath, mockRnd):
     """Test vim hjkl movements and insert commands (i, I, A)."""
-    # --- Setup ----
     inputDelay = 2
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
@@ -2542,22 +2539,23 @@ def testGuiEditor_Vim_InsertMode(qtbot, nwGUI, projPath, mockRnd):
     docEditor = nwGUI.docEditor
     CONFIG.vimMode = True
 
-    def reset_text():
+    def resetText():
         """Reset test text."""
         docEditor.setPlainText("Line1\nLine2\nLine3")
         return docEditor.getText()
-    # ---------
 
-    # --- Insert mode tests ---
-    # 'i' insert before cursor
-    reset_text()
+    # Insert Mode
+    # ===========
+
+    # i: Insert before cursor
+    resetText()
     qtbot.keyClick(docEditor, "i", delay=inputDelay)
     qtbot.keyClicks(docEditor, "X", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
     assert "X" in docEditor.getText()
 
-    # 'I' insert at beginning of line
-    reset_text()
+    # I: Insert at beginning of line
+    resetText()
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
     qtbot.keyClick(docEditor, "h", delay=inputDelay)  # Move forward 1
     qtbot.keyClick(docEditor, "h", delay=inputDelay)  # Move forward 1
@@ -2567,52 +2565,58 @@ def testGuiEditor_Vim_InsertMode(qtbot, nwGUI, projPath, mockRnd):
     lines = docEditor.getText().splitlines()
     assert lines[0].startswith("START")
 
-    # 'A' append at end of line
-    reset_text()
+    # A: Append at end of line
+    resetText()
     qtbot.keyClick(docEditor, "A", delay=inputDelay)
     qtbot.keyClicks(docEditor, "END", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
     lines = docEditor.getText().splitlines()
     assert lines[0].endswith("END")
 
-    # 'o' open new line BELOW
-    reset_text()
+    # o: Open new line below
+    resetText()
     qtbot.keyClick(docEditor, "o", delay=inputDelay)
     qtbot.keyClicks(docEditor, "below", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
     lines = docEditor.getText().splitlines()
-    assert "below" in lines[1]  # inserted after Line1
+    assert "below" in lines[1]  # Inserted after Line1
 
-    # 'O' open new line ABOVE
-    reset_text()
+    # O: Open new line above
+    resetText()
     qtbot.keyClick(docEditor, "O", delay=inputDelay)
     qtbot.keyClicks(docEditor, "above", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
     lines = docEditor.getText().splitlines()
-    assert "above" in lines[0]  # inserted before Line1
+    assert "above" in lines[0]  # Inserted before Line1
 
-    # --- INSERT MODE MOTIONS ---
-    reset_text()
-    qtbot.keyClick(docEditor, "i", delay=inputDelay)  # insert before cursor
+    # INSERT MODE MOTIONS
+    # ===================
+
+    # i: Insert before cursor
+    resetText()
+    qtbot.keyClick(docEditor, "i", delay=inputDelay)
     qtbot.keyClicks(docEditor, "TEST", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)
     assert "TEST" in docEditor.getText()
 
-    reset_text()
-    qtbot.keyClick(docEditor, "a", delay=inputDelay)  # append after cursor
+    # aX: Append after cursor
+    resetText()
+    qtbot.keyClick(docEditor, "a", delay=inputDelay)
     qtbot.keyClicks(docEditor, "X", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)
     assert "X" in docEditor.getText()
 
-    reset_text()
-    qtbot.keyClick(docEditor, "o", delay=inputDelay)  # new line below
+    # New line below
+    resetText()
+    qtbot.keyClick(docEditor, "o", delay=inputDelay)
     qtbot.keyClicks(docEditor, "below", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)
     lines = docEditor.getText().splitlines()
     assert "below" in lines[1]
 
-    reset_text()
-    qtbot.keyClick(docEditor, "O", delay=inputDelay)  # new line above
+    # New line above
+    resetText()
+    qtbot.keyClick(docEditor, "O", delay=inputDelay)
     qtbot.keyClicks(docEditor, "above", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)
     lines = docEditor.getText().splitlines()
@@ -2622,7 +2626,6 @@ def testGuiEditor_Vim_InsertMode(qtbot, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     """Test vim delete (dd, x), yank (yy) and paste (p, P) commands."""
-    # --- Setup ----
     inputDelay = 2
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
@@ -2630,57 +2633,56 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     docEditor = nwGUI.docEditor
     CONFIG.vimMode = True
 
-    def reset_text():
+    def resetText():
         """Reset test text."""
         docEditor.setPlainText("Line1\nLine2\nLine3")
         return docEditor.getText()
-    # ---------
 
-    # --- dd: delete entire line ---
-    reset_text()
+    # dd: Delete entire line
+    resetText()
     docEditor.setCursorPosition(docEditor.getText().find("Line2"))
     qtbot.keyClicks(docEditor, "dd", delay=inputDelay)
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line1", "Line3"]
 
-    # --- x: delete single character ---
-    reset_text()
+    # x: Delete single character
+    resetText()
     docEditor.setCursorPosition(0)
     qtbot.keyClicks(docEditor, "x", delay=inputDelay)
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines[0] == "ine1"  # 'L' deleted
 
-    # --- p: paste after current line ---
-    reset_text()
+    # p: Paste after current line
+    resetText()
     line2_pos = docEditor.getText().find("Line2")
     docEditor.setCursorPosition(line2_pos)
-    qtbot.keyClicks(docEditor, "yy", delay=inputDelay)  # yank Line2
-    qtbot.keyClicks(docEditor, "p", delay=inputDelay)  # paste after Line2
+    qtbot.keyClicks(docEditor, "yy", delay=inputDelay)  # Yank Line2
+    qtbot.keyClicks(docEditor, "p", delay=inputDelay)  # Paste after Line2
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line1", "Line2", "Line2", "Line3"]
 
-    # --- P: paste before current line (using Line3) ---
-    reset_text()
+    # P: Paste before current line (using Line3)
+    resetText()
     line2_pos = docEditor.getText().find("Line2")
     docEditor.setCursorPosition(line2_pos)
     line3_pos = docEditor.getText().find("Line3")
     docEditor.setCursorPosition(line3_pos)
-    qtbot.keyClicks(docEditor, "yy", delay=inputDelay)  # yank Line3
+    qtbot.keyClicks(docEditor, "yy", delay=inputDelay)  # Yank Line3
     docEditor.setCursorPosition(line2_pos)
-    qtbot.keyClicks(docEditor, "P", delay=inputDelay)   # paste before Line2
+    qtbot.keyClicks(docEditor, "P", delay=inputDelay)   # Paste before Line2
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line1", "Line3", "Line2", "Line3"]
 
-    # --- dw: delete word (from "Line1" up to next word boundary) ---
-    reset_text()
-    docEditor.setCursorPosition(0)  # start of "Line1"
+    # dw: Delete word (from Line1 up to next word boundary)
+    resetText()
+    docEditor.setCursorPosition(0)  # Start of Line1
     qtbot.keyClicks(docEditor, "dw", delay=inputDelay)
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line2", "Line3"]
 
-    # --- yw: yank word (yank "Line1") ---
-    reset_text()
-    docEditor.setCursorPosition(0)  # start of "Line1"
+    # yw: Yank word (yank Line1)
+    resetText()
+    docEditor.setCursorPosition(0)  # Start of Line1
     qtbot.keyClicks(docEditor, "yw", delay=inputDelay)
     # Move to start of Line2 and paste
     docEditor.setCursorPosition(docEditor.getText().find("Line2"))
@@ -2695,7 +2697,6 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     """Test vim visual mode selection, yank and paste."""
-    # --- Setup ----
     inputDelay = 2
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
@@ -2703,16 +2704,15 @@ def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     docEditor = nwGUI.docEditor
     CONFIG.vimMode = True
 
-    def reset_text():
+    def resetText():
         """Reset test text."""
         docEditor.setPlainText("Line1\nLine2\nLine3")
         return docEditor.getText()
-    original_text = reset_text()
-    # ---------
+    original_text = resetText()
 
-    # --- Visual mode with yy ---
-    reset_text()
-    docEditor.setCursorPosition(docEditor.getText().find("Line3") + 1)  # inside Line3
+    # Visual mode with yy
+    resetText()
+    docEditor.setCursorPosition(docEditor.getText().find("Line3") + 1)  # Inside Line3
     qtbot.keyClick(docEditor, "v", delay=inputDelay)
     qtbot.keyClick(docEditor, "j", delay=inputDelay)
     qtbot.keyClick(docEditor, "h", delay=inputDelay)
@@ -2723,43 +2723,44 @@ def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     text = docEditor.getText()
     assert "Line3" in text or text.endswith("n")
 
-    # --- Linewise visual mode (V) with yank and paste ---
-    reset_text()
+    # Line-wise visual mode (V) with yank and paste
+    resetText()
     line2_pos = docEditor.getText().find("Line2")
     docEditor.setCursorPosition(line2_pos)
-    qtbot.keyClick(docEditor, "V", delay=inputDelay)  # linewise visual mode
+    qtbot.keyClick(docEditor, "V", delay=inputDelay)  # Line-wise visual mode
     qtbot.keyClick(docEditor, "j", delay=inputDelay)
     qtbot.keyClick(docEditor, "h", delay=inputDelay)
     qtbot.keyClick(docEditor, "k", delay=inputDelay)
     qtbot.keyClick(docEditor, "l", delay=inputDelay)
-    qtbot.keyClick(docEditor, "y", delay=inputDelay)  # yank Line2
-    qtbot.keyClick(docEditor, "j", delay=inputDelay)  # move to Line3
-    qtbot.keyClick(docEditor, "p", delay=inputDelay)  # paste Line2 after Line3
+    qtbot.keyClick(docEditor, "y", delay=inputDelay)  # Yank Line2
+    qtbot.keyClick(docEditor, "j", delay=inputDelay)  # Move to Line3
+    qtbot.keyClick(docEditor, "p", delay=inputDelay)  # Paste Line2 after Line3
 
     lines = docEditor.getText().splitlines()
     assert lines == ["Line1", "Line2", "Line3", "Line2"]
 
-    # --- Visual mode with w motion ---
-    reset_text()
+    # Visual mode with w motion
+    resetText()
     docEditor.setCursorPosition(0)  # start of Line1
-    qtbot.keyClick(docEditor, "v", delay=inputDelay)  # enter visual mode
-    qtbot.keyClicks(docEditor, "w", delay=inputDelay)  # move by word
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)  # Enter visual mode
+    qtbot.keyClicks(docEditor, "w", delay=inputDelay)  # Move by word
     cursor_pos = docEditor.textCursor().position()
     expected_pos = docEditor.getText().find("Line1") + len("Line1")
     assert cursor_pos == expected_pos
 
-    # --- '0': move to start of line ---
-    reset_text()
-    line2_pos = docEditor.getText().find("Line2") + 3  # middle of "Line2"
+    # 0: Move to start of line
+    resetText()
+    line2_pos = docEditor.getText().find("Line2") + 3  # Middle of Line2
     docEditor.setCursorPosition(line2_pos)
     qtbot.keyClicks(docEditor, "0", delay=inputDelay)
     cursor_pos = docEditor.textCursor().position()
+
     # Start of Line2
     expected_pos = docEditor.getText().find("Line2")
     assert cursor_pos == expected_pos
 
-    # --- No-op command 'a': nothing happens ---
-    reset_text()
+    # No-op command 'a': nothing happens
+    resetText()
     line3_pos = docEditor.getText().find("Line3") + 2
     docEditor.setCursorPosition(line3_pos)
     text_before = docEditor.getText()
@@ -2772,19 +2773,20 @@ def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     assert text_after == text_before
     assert cursor_after == cursor_before
 
-    reset_text()
-    start_pos = docEditor.getText().find("Line2") + 2  # inside "Line2"
+    resetText()
+    start_pos = docEditor.getText().find("Line2") + 2  # Inside "Line2"
     docEditor.setCursorPosition(start_pos)
-    qtbot.keyClick(docEditor, "v", delay=inputDelay)   # enter visual mode
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)  # Enter visual mode
     qtbot.keyClicks(docEditor, "b", delay=inputDelay)
     selected = docEditor.textCursor().selectedText()
+
     # Should have selected from inside "Line2" back to its start
     assert selected == "Li"
 
-    reset_text()
-    start_pos = docEditor.getText().find("Line1")      # start of "Line1"
+    resetText()
+    start_pos = docEditor.getText().find("Line1")  # Start of "Line1"
     docEditor.setCursorPosition(start_pos)
-    qtbot.keyClick(docEditor, "v", delay=inputDelay)   # enter visual mode
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)  # Enter visual mode
     qtbot.keyClicks(docEditor, "e", delay=inputDelay)
     selected = docEditor.textCursor().selectedText()
     # Should have selected "Line1"
@@ -2793,92 +2795,91 @@ def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     docEditor.setPlainText("Line1 lineExtra Line2 Line3")
     end_pos = docEditor.getText().find("Line1") + len("Line1") - 1
     docEditor.setCursorPosition(end_pos)
-    qtbot.keyClick(docEditor, "v", delay=inputDelay)   # enter visual mode
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)   # Enter visual mode
     qtbot.keyClicks(docEditor, "e", delay=inputDelay)
     selected = docEditor.textCursor().selectedText().strip()
     # Should have selected whitespace + "lineExtra"
     assert "lineExtra" in selected
 
-    reset_text()
-    # --- Visual select all with ggVG ---
+    resetText()
+    # Visual select all with ggVG
     qtbot.keyClicks(docEditor, "g", delay=inputDelay)
-    qtbot.keyClicks(docEditor, "g", delay=inputDelay)   # go to start
-    qtbot.keyClick(docEditor, "v", delay=inputDelay)    # enter visual mode
-    qtbot.keyClick(docEditor, "G", delay=inputDelay)    # extend to end of file
+    qtbot.keyClicks(docEditor, "g", delay=inputDelay)  # Go to start
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)   # Enter visual mode
+    qtbot.keyClick(docEditor, "G", delay=inputDelay)   # Extend to end of file
 
-    # --- Delete selection ---
+    # Delete selection
     qtbot.keyClick(docEditor, "d", delay=inputDelay)
-    assert docEditor.getText().strip() == ""  # everything deleted
+    assert docEditor.getText().strip() == ""  # Everything deleted
 
-    # --- Undo ---
+    # Undo
     qtbot.keyClick(docEditor, "u", delay=inputDelay)
     restored_text = docEditor.getText()
     assert restored_text == original_text
 
-    # --- Move back to start ---
+    # Move back to start
     qtbot.keyClicks(docEditor, "g", delay=inputDelay)
     qtbot.keyClicks(docEditor, "g", delay=inputDelay)
     cursor_pos = docEditor.textCursor().position()
-    assert restored_text[cursor_pos] == "L"  # first char restored
+    assert restored_text[cursor_pos] == "L"  # First char restored
 
-    # --- Visual select all with Gvgg ---
-    qtbot.keyClick(docEditor, "G", delay=inputDelay)    # end of file
-    qtbot.keyClick(docEditor, "v", delay=inputDelay)    # enter visual mode
+    # Visual select all with Gvgg
+    qtbot.keyClick(docEditor, "G", delay=inputDelay)  # End of file
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)  # Enter visual mode
     qtbot.keyClicks(docEditor, "g", delay=inputDelay)
-    qtbot.keyClicks(docEditor, "g", delay=inputDelay)   # extend select to start
+    qtbot.keyClicks(docEditor, "g", delay=inputDelay)  # Extend select to start
 
-    # --- Delete selection ---
+    # Delete selection
     qtbot.keyClick(docEditor, "d", delay=inputDelay)
-    assert docEditor.getText().strip() == ""  # everything deleted
+    assert docEditor.getText().strip() == ""  # Everything deleted
 
-    # --- Undo ---
+    # Undo
     qtbot.keyClick(docEditor, "u", delay=inputDelay)
     restored_text = docEditor.getText()
     assert restored_text == original_text
 
-    # --- Move back to start ---
+    # Move back to start
     qtbot.keyClicks(docEditor, "g", delay=inputDelay)
     qtbot.keyClicks(docEditor, "g", delay=inputDelay)
     cursor_pos = docEditor.textCursor().position()
-    assert restored_text[cursor_pos] == "L"  # first char restored
+    assert restored_text[cursor_pos] == "L"  # First char restored
 
-    # --- VISUAL MODE MOTIONS ---
-    reset_text()
-    qtbot.keyClick(docEditor, "v", delay=inputDelay)  # enter visual
-    qtbot.keyClick(docEditor, "l", delay=inputDelay)  # extend selection
-    qtbot.keyClick(docEditor, "y", delay=inputDelay)  # yank selection
-    qtbot.keyClick(docEditor, "p", delay=inputDelay)  # paste it
+    # VISUAL MODE MOTIONS
+    resetText()
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)  # Enter visual
+    qtbot.keyClick(docEditor, "l", delay=inputDelay)  # Extend selection
+    qtbot.keyClick(docEditor, "y", delay=inputDelay)  # Yank selection
+    qtbot.keyClick(docEditor, "p", delay=inputDelay)  # Paste it
     assert "Li" in docEditor.getText()
 
-    reset_text()
+    resetText()
     qtbot.keyClick(docEditor, "v", delay=inputDelay)
-    qtbot.keyClick(docEditor, "$", delay=inputDelay)  # extend to EOL
-    qtbot.keyClick(docEditor, "d", delay=inputDelay)  # delete
+    qtbot.keyClick(docEditor, "$", delay=inputDelay)  # Extend to EOL
+    qtbot.keyClick(docEditor, "d", delay=inputDelay)  # Delete
     line0 = docEditor.getText().splitlines()[0]
     assert line0.strip() == ""  # first line emptied
 
-    # --- VISUAL LINE MODE MOTIONS ---
-    reset_text()
+    # VISUAL LINE MODE MOTIONS
+    resetText()
     line2_pos = docEditor.getText().find("Line2")
     docEditor.setCursorPosition(line2_pos)
-    qtbot.keyClick(docEditor, "V", delay=inputDelay)  # vline mode
-    qtbot.keyClick(docEditor, "j", delay=inputDelay)  # extend
-    qtbot.keyClick(docEditor, "y", delay=inputDelay)  # yank
-    qtbot.keyClick(docEditor, "p", delay=inputDelay)  # paste
+    qtbot.keyClick(docEditor, "V", delay=inputDelay)  # Vline mode
+    qtbot.keyClick(docEditor, "j", delay=inputDelay)  # Extend
+    qtbot.keyClick(docEditor, "y", delay=inputDelay)  # Yank
+    qtbot.keyClick(docEditor, "p", delay=inputDelay)  # Paste
     lines = docEditor.getText().splitlines()
     assert lines.count("Line2") > 1
 
-    reset_text()
-    qtbot.keyClick(docEditor, "V", delay=inputDelay)  # vline select
-    qtbot.keyClick(docEditor, "G", delay=inputDelay)  # extend to EOF
-    qtbot.keyClick(docEditor, "d", delay=inputDelay)  # delete all
+    resetText()
+    qtbot.keyClick(docEditor, "V", delay=inputDelay)  # Vline select
+    qtbot.keyClick(docEditor, "G", delay=inputDelay)  # Extend to EOF
+    qtbot.keyClick(docEditor, "d", delay=inputDelay)  # Delete all
     assert docEditor.getText().strip() == ""
 
 
 @pytest.mark.gui
 def testGuiEditor_Vim_NormalMode(qtbot, nwGUI, projPath, mockRnd):
     """Test vim NORMAL mode commands."""
-    # --- Setup ----
     inputDelay = 2
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
@@ -2886,96 +2887,95 @@ def testGuiEditor_Vim_NormalMode(qtbot, nwGUI, projPath, mockRnd):
     docEditor = nwGUI.docEditor
     CONFIG.vimMode = True
 
-    def reset_text():
+    def resetText():
         """Reset test text."""
         docEditor.setPlainText("Line1\nLine2\nLine3")
         return docEditor.getText()
-    original_text = reset_text()
-    # ---------
+    originalText = resetText()
 
     # NORMAL MODE: hjkl should NOT modify text
     for key in "hjkl":
         qtbot.keyClick(docEditor, key)
-        assert docEditor.getText() == original_text
+        assert docEditor.getText() == originalText
 
-    # --- b: move to beginning of word ---
-    reset_text()
-    start_pos = docEditor.getText().find("Line2") + 2  # inside the word
+    # b: Move to beginning of word
+    resetText()
+    start_pos = docEditor.getText().find("Line2") + 2  # Inside the word
     docEditor.setCursorPosition(start_pos)
     qtbot.keyClicks(docEditor, "b", delay=inputDelay)
-    cursor_pos = docEditor.textCursor().position()
-    expected_pos = docEditor.getText().find("Line2")  # beginning of "Line2"
-    assert cursor_pos == expected_pos
+    cursorPos = docEditor.textCursor().position()
+    expectedPos = docEditor.getText().find("Line2")  # Beginning of Line2
+    assert cursorPos == expectedPos
 
-    # --- e: move to end of current word ---
-    reset_text()
-    start_pos = docEditor.getText().find("Line1")  # start of "Line1"
+    # e: Move to end of current word
+    resetText()
+    start_pos = docEditor.getText().find("Line1")  # Start of Line1
     docEditor.setCursorPosition(start_pos)
     qtbot.keyClicks(docEditor, "e", delay=inputDelay)
-    cursor_pos = docEditor.textCursor().position()
-    expected_pos = docEditor.getText().find("Line1") + len("Line1")
-    assert cursor_pos == expected_pos
+    cursorPos = docEditor.textCursor().position()
+    expectedPos = docEditor.getText().find("Line1") + len("Line1")
+    assert cursorPos == expectedPos
 
-    # --- e: move to end of next word when already at end ---
+    # e: Move to end of next word when already at end
     docEditor.setPlainText("Line1 lineExtra Line2 Line3")
     end_pos = docEditor.getText().find("Line1") + len("Line1")
     docEditor.setCursorPosition(end_pos)
     qtbot.keyClicks(docEditor, "e", delay=inputDelay)
-    cursor_pos = docEditor.textCursor().position()
-    expected_pos = docEditor.getText().find("lineExtra") + len("lineExtra")
-    assert cursor_pos == expected_pos
+    cursorPos = docEditor.textCursor().position()
+    expectedPos = docEditor.getText().find("lineExtra") + len("lineExtra")
+    assert cursorPos == expectedPos
 
-    # --- Test $ command: move to end of first line ---
-    docEditor.setCursorPosition(0)  # start of Line1
+    # $: Move to end of first line
+    docEditor.setCursorPosition(0)  # Start of Line1
     qtbot.keyClick(docEditor, "$", delay=inputDelay)
-    cursor_pos = docEditor.textCursor().position()
+    cursorPos = docEditor.textCursor().position()
     text = docEditor.getText().splitlines()[0]
-    assert cursor_pos == len(text)  # cursor at end of first line
+    assert cursorPos == len(text)  # Cursor at end of first line
 
-    # --- Test 'a' command: move right and enter insert mode ---
-    docEditor.setCursorPosition(0)  # start of Line1 again
+    # a: Move right and enter insert mode
+    docEditor.setCursorPosition(0)  # Start of Line1 again
     qtbot.keyClick(docEditor, "a", delay=inputDelay)
     # Cursor should have moved one character right
-    cursor_pos = docEditor.textCursor().position()
-    assert cursor_pos == 1
+    cursorPos = docEditor.textCursor().position()
+    assert cursorPos == 1
     # Insert some text
     qtbot.keyClicks(docEditor, "TEST", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)
-    new_text = docEditor.getText()
-    assert new_text.startswith("LTESSTine1") or new_text.startswith("LTESTine1")
+    newText = docEditor.getText()
+    assert newText.startswith("LTESSTine1") or newText.startswith("LTESTine1")
 
-    # --- w: move forward by word ---
-    reset_text()
-    docEditor.setCursorPosition(0)  # start of "Line1"
+    # w: Move forward by word
+    resetText()
+    docEditor.setCursorPosition(0)  # Start of "Line1"
     qtbot.keyClicks(docEditor, "w", delay=inputDelay)
-    cursor_pos = docEditor.textCursor().position()
+    cursorPos = docEditor.textCursor().position()
     # Cursor should now be at end of "Line1"
-    expected_pos = docEditor.getText().find("Line1") + len("Line1")
-    assert cursor_pos == expected_pos
+    expectedPos = docEditor.getText().find("Line1") + len("Line1")
+    assert cursorPos == expectedPos
 
-    # --- NORMAL MODE MOTIONS ---
-    reset_text()
-    qtbot.keyClick(docEditor, "l", delay=inputDelay)  # move right
+    # NORMAL MODE MOTIONS
+    resetText()
+    qtbot.keyClick(docEditor, "l", delay=inputDelay)  # Move right
     assert docEditor.textCursor().position() == 1
 
-    reset_text()
-    qtbot.keyClick(docEditor, "0", delay=inputDelay)  # beginning of line
+    resetText()
+    qtbot.keyClick(docEditor, "0", delay=inputDelay)  # Beginning of line
     assert docEditor.textCursor().position() == 0
 
-    reset_text()
-    qtbot.keyClick(docEditor, "$", delay=inputDelay)  # end of line
-    cursor_pos = docEditor.textCursor().position()
-    assert cursor_pos == len("Line1")
+    resetText()
+    qtbot.keyClick(docEditor, "$", delay=inputDelay)  # End of line
+    cursorPos = docEditor.textCursor().position()
+    assert cursorPos == len("Line1")
 
-    reset_text()
+    resetText()
     qtbot.keyClick(docEditor, "g", delay=inputDelay)
-    qtbot.keyClick(docEditor, "g", delay=inputDelay)  # top of buffer
+    qtbot.keyClick(docEditor, "g", delay=inputDelay)  # Top of buffer
     assert docEditor.textCursor().position() == 0
 
     qtbot.keyClick(docEditor, "z", delay=inputDelay)
-    qtbot.keyClick(docEditor, "z", delay=inputDelay)  # center view
+    qtbot.keyClick(docEditor, "z", delay=inputDelay)  # Center view
 
-    reset_text()
-    qtbot.keyClick(docEditor, "G", delay=inputDelay)  # bottom of buffer
-    cursor_pos = docEditor.textCursor().position()
-    assert cursor_pos == len(docEditor.getText())
+    resetText()
+    qtbot.keyClick(docEditor, "G", delay=inputDelay)  # Bottom of buffer
+    cursorPos = docEditor.textCursor().position()
+    assert cursorPos == len(docEditor.getText())
