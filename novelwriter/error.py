@@ -171,7 +171,7 @@ def exceptionHandler(exType: type, exValue: BaseException, exTrace: TracebackTyp
 
     from PyQt6.QtWidgets import QApplication
 
-    logger.critical("%s: %s", exType.__name__, str(exValue))
+    logger.critical("%s: %s", exType.__name__, exValue)
     print_tb(exTrace)
 
     try:

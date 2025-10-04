@@ -89,7 +89,7 @@ class NWTree:
         """
         if tHandle and tHandle in self._items:
             return self._items[tHandle]
-        logger.error("No tree item with handle '%s'", str(tHandle))
+        logger.error("No tree item with handle '%s'", tHandle)
         return None
 
     def __contains__(self, tHandle: str) -> bool:
