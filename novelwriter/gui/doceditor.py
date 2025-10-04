@@ -1926,15 +1926,13 @@ class GuiDocEditor(QPlainTextEdit):
         elif text == "v":
             self.setVimMode(nwVimMode.VISUAL)
             cursor = self.textCursor()
-            self._visualAnchor = cursor.position()
             cursor.movePosition(QtMoveRight, QtKeepAnchor, 1)
             self.setTextCursor(cursor)
             return True
         elif text == "V":
             self.setVimMode(nwVimMode.VLINE)
             cursor = self.textCursor()
-            self._visualAnchor = cursor.anchor()
-            cursor.select(cursor.SelectionType.LineUnderCursor)
+            cursor.select(QTextCursor.SelectionType.LineUnderCursor)
             self.setTextCursor(cursor)
             return True
         return False  # Not a mode switching motion
@@ -1954,7 +1952,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         if self._vim.command == "dd":
             cursor.beginEditBlock()
-            cursor.select(cursor.SelectionType.LineUnderCursor)
+            cursor.select(QTextCursor.SelectionType.LineUnderCursor)
             self._vim.yankToInternal(cursor.selectedText())
             cursor.removeSelectedText()
             cursor.endEditBlock()
@@ -2033,7 +2031,7 @@ class GuiDocEditor(QPlainTextEdit):
             return True
 
         if self._vim.command == "yy":
-            cursor.select(cursor.SelectionType.LineUnderCursor)
+            cursor.select(QTextCursor.SelectionType.LineUnderCursor)
             self._vim.yankToInternal(cursor.selectedText())
             cursor.clearSelection()
             self.setTextCursor(cursor)
