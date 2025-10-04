@@ -2506,7 +2506,7 @@ def testGuiEditor_Vim_EnableVimMode(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc)
 
     docEditor = nwGUI.docEditor
-    CONFIG.vimModeEnabled = True
+    CONFIG.vimMode = True
 
     def reset_text():
         """Reset test text."""
@@ -2540,7 +2540,7 @@ def testGuiEditor_Vim_InsertMode(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc)
 
     docEditor = nwGUI.docEditor
-    CONFIG.vimModeEnabled = True
+    CONFIG.vimMode = True
 
     def reset_text():
         """Reset test text."""
@@ -2628,7 +2628,7 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc)
 
     docEditor = nwGUI.docEditor
-    CONFIG.vimModeEnabled = True
+    CONFIG.vimMode = True
 
     def reset_text():
         """Reset test text."""
@@ -2701,7 +2701,7 @@ def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc)
 
     docEditor = nwGUI.docEditor
-    CONFIG.vimModeEnabled = True
+    CONFIG.vimMode = True
 
     def reset_text():
         """Reset test text."""
@@ -2884,7 +2884,7 @@ def testGuiEditor_Vim_NormalMode(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc)
 
     docEditor = nwGUI.docEditor
-    CONFIG.vimModeEnabled = True
+    CONFIG.vimMode = True
 
     def reset_text():
         """Reset test text."""

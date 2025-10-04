@@ -104,7 +104,7 @@ class GuiDocEditor(QPlainTextEdit):
     __slots__ = (
         "_autoReplace", "_completer", "_doReplace", "_docChanged", "_docHandle", "_followTag1",
         "_followTag2", "_keyContext", "_lastActive", "_lastEdit", "_lastFind", "_nwDocument",
-        "_nwItem", "_qDocument", "_timerDoc", "_timerSel", "_vpMargin", "_wCounterDoc",
+        "_nwItem", "_qDocument", "_timerDoc", "_timerSel", "_vim", "_vpMargin", "_wCounterDoc",
         "_wCounterSel",
     )
 
@@ -231,8 +231,8 @@ class GuiDocEditor(QPlainTextEdit):
         self.searchVisible = self.docSearch.isVisible
         self.changeFocusState = self.docHeader.changeFocusState
 
-        # Vim state for vim mode
-        self.vim = VimState()
+        # Vim State for vimMode
+        self._vim = VimState()
         self.setVimMode(nwVimMode.NORMAL)
 
         # Finalise
@@ -610,12 +610,12 @@ class GuiDocEditor(QPlainTextEdit):
 
     def setVimMode(self, mode: nwVimMode) -> None:
         """Change the vim mode."""
-        if CONFIG.vimModeEnabled:
+        if CONFIG.vimMode:
             if mode == nwVimMode.NORMAL:
                 cursor = self.textCursor()
                 cursor.clearSelection()
                 self.setTextCursor(cursor)
-            self.vim.setMode(mode)
+            self._vim.setMode(mode)
             self._updateVimModeStatusBar(mode.name)
 
     def setDocumentChanged(self, state: bool) -> None:
@@ -935,7 +935,7 @@ class GuiDocEditor(QPlainTextEdit):
         """
         self._lastActive = time()
 
-        if CONFIG.vimModeEnabled:
+        if CONFIG.vimMode:
             self._handleVimKeyPress(event)
             return
 
@@ -970,22 +970,22 @@ class GuiDocEditor(QPlainTextEdit):
 
     def _handleVimNormalModeModeSwitching(self, event: QKeyEvent) -> bool:
         """Handle key events for Vim mode switching in NORMAL mode."""
-        if event.text() == "i":
+        if (text := event.text()) == "i":
             self.setVimMode(nwVimMode.INSERT)
-        elif event.text() == "I":
+        elif text == "I":
             cursor = self.textCursor()
             cursor.movePosition(cursor.MoveOperation.StartOfLine)
             self.setTextCursor(cursor)
             self.setVimMode(nwVimMode.INSERT)
             return True
-        elif event.text() == "v":
+        elif text == "v":
             self.setVimMode(nwVimMode.VISUAL)
             cursor = self.textCursor()
             self._visualAnchor = cursor.position()
             cursor.movePosition(cursor.MoveOperation.Right, cursor.MoveMode.KeepAnchor, 1)
             self.setTextCursor(cursor)
             return True
-        elif event.text() == "V":
+        elif text == "V":
             self.setVimMode(nwVimMode.VLINE)
             cursor = self.textCursor()
             self._visualAnchor = cursor.anchor()
@@ -999,125 +999,123 @@ class GuiDocEditor(QPlainTextEdit):
         key = event.text()
         cursor = self.textCursor()
         # -- NORMAL mode PREFIX
-        if self.vim.getMode() is nwVimMode.NORMAL:
-            if key in self.vim.PREFIX_KEYS:
-                self.vim.pushCommandKey(key)
-            elif key in self.vim.SUFFIX_KEYS:
-                self.vim.pushCommandKey(key)
+        if self._vim.getMode() == nwVimMode.NORMAL:
+            if key in self._vim.PREFIX_KEYS:
+                self._vim.pushCommandKey(key)
+            elif key in self._vim.SUFFIX_KEYS:
+                self._vim.pushCommandKey(key)
             else:
-                self.vim.setCommand(key)
+                self._vim.setCommand(key)
 
-        if self.vim.command() == "dd":
+        if self._vim.command() == "dd":
             cursor.beginEditBlock()
             cursor.select(cursor.SelectionType.LineUnderCursor)
-            self.vim.yankToInternal(cursor.selectedText())
+            self._vim.yankToInternal(cursor.selectedText())
             cursor.removeSelectedText()
             cursor.endEditBlock()
             cursor.setPosition(cursor.selectionEnd())
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "x":
+        if self._vim.command() == "x":
             cursor.movePosition(cursor.MoveOperation.Right, cursor.MoveMode.KeepAnchor, 1)
-            self.vim.yankToInternal(cursor.selectedText())
+            self._vim.yankToInternal(cursor.selectedText())
             cursor.removeSelectedText()
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "w":
+        if self._vim.command() == "w":
             cursor.movePosition(cursor.MoveOperation.NextWord)
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "b":
+        if self._vim.command() == "b":
             cursor.movePosition(cursor.MoveOperation.PreviousWord)
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "e":
+        if self._vim.command() == "e":
             # Try to move to end of the current word
-            orig_pos = cursor.position()
+            origPos = cursor.position()
             cursor.movePosition(cursor.MoveOperation.EndOfWord)
 
             # If we didn't move (we were already at end of a word),
             # step forward one character (if possible) and then move to the next EndOfWord.
-            if cursor.position() == orig_pos:
-                text_len = len(self.toPlainText())
-                if orig_pos < text_len:
+            if cursor.position() == origPos:
+                textLen = len(self.toPlainText())
+                if origPos < textLen:
                     cursor.movePosition(cursor.MoveOperation.NextCharacter)
                     cursor.movePosition(cursor.MoveOperation.EndOfWord)
 
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "dw":
+        if self._vim.command() == "dw":
             cursor.beginEditBlock()
             cursor.movePosition(cursor.MoveOperation.NextWord, cursor.MoveMode.KeepAnchor)
-            self.vim.yankToInternal(cursor.selectedText())
+            self._vim.yankToInternal(cursor.selectedText())
             cursor.removeSelectedText()
             cursor.endEditBlock()
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "yw":
+        if self._vim.command() == "yw":
             cursor.beginEditBlock()
             cursor.movePosition(cursor.MoveOperation.NextWord, cursor.MoveMode.KeepAnchor)
-            self.vim.yankToInternal(cursor.selectedText())
+            self._vim.yankToInternal(cursor.selectedText())
             cursor.clearSelection()
             cursor.endEditBlock()
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "gg":
+        if self._vim.command() == "gg":
             cursor.movePosition(cursor.MoveOperation.Start)
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "G":
+        if self._vim.command() == "G":
             cursor.movePosition(cursor.MoveOperation.End)
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "yy":
+        if self._vim.command() == "yy":
             cursor.select(cursor.SelectionType.LineUnderCursor)
-            self.vim.yankToInternal(cursor.selectedText())
+            self._vim.yankToInternal(cursor.selectedText())
             cursor.clearSelection()
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "p":
-            text = self.vim.pasteFromInternal()
-            if text:
+        if self._vim.command() == "p":
+            if text := self._vim.pasteFromInternal():
                 cursor.beginEditBlock()
                 cursor.movePosition(cursor.MoveOperation.EndOfLine)
                 cursor.insertText("\n" + text)
                 cursor.endEditBlock()
                 self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "P":
-            text = self.vim.pasteFromInternal()
-            if text:
+        if self._vim.command() == "P":
+            if text := self._vim.pasteFromInternal():
                 cursor.beginEditBlock()
                 cursor.movePosition(cursor.MoveOperation.StartOfLine)
                 cursor.insertText(text + "\n")
                 cursor.endEditBlock()
                 self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "o":
+        if self._vim.command() == "o":
             cursor.beginEditBlock()
             cursor.movePosition(cursor.MoveOperation.EndOfLine)
             cursor.insertText("\n")
@@ -1126,7 +1124,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.setVimMode(nwVimMode.INSERT)
             return True
 
-        if self.vim.command() == "O":
+        if self._vim.command() == "O":
             cursor.beginEditBlock()
             cursor.movePosition(cursor.MoveOperation.StartOfLine)
             cursor.insertText("\n")
@@ -1135,54 +1133,54 @@ class GuiDocEditor(QPlainTextEdit):
             self.setTextCursor(cursor)
             self.setVimMode(nwVimMode.INSERT)
 
-        if self.vim.command() == "$":
+        if self._vim.command() == "$":
             cursor.movePosition(cursor.MoveOperation.EndOfLine)
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "a":
+        if self._vim.command() == "a":
             cursor.movePosition(cursor.MoveOperation.Right)
             self.setTextCursor(cursor)
             self.setVimMode(nwVimMode.INSERT)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "A":
+        if self._vim.command() == "A":
             cursor.movePosition(cursor.MoveOperation.EndOfLine)
             self.setTextCursor(cursor)
             self.setVimMode(nwVimMode.INSERT)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "u":
+        if self._vim.command() == "u":
             self.docAction(nwDocAction.UNDO)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        if self.vim.command() == "zz":
+        if self._vim.command() == "zz":
             self.centerCursor()
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
             return True
 
-        # hjkl  (single-step navigation)
-        if self.vim.command() == "h":
+        # hjkl (single-step navigation)
+        if self._vim.command() == "h":
             cursor.movePosition(cursor.MoveOperation.Left)
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
-        if self.vim.command() == "j":
+            self._vim.resetCommand()
+        if self._vim.command() == "j":
             cursor.movePosition(cursor.MoveOperation.Down)
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
-        if self.vim.command() == "k":
+            self._vim.resetCommand()
+        if self._vim.command() == "k":
             cursor.movePosition(cursor.MoveOperation.Up)
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
-        if self.vim.command() == "l":
+            self._vim.resetCommand()
+        if self._vim.command() == "l":
             cursor.movePosition(cursor.MoveOperation.Right)
             self.setTextCursor(cursor)
-            self.vim.resetCommand()
+            self._vim.resetCommand()
 
         return False  # Not a Normal mode motion
 
@@ -1191,84 +1189,78 @@ class GuiDocEditor(QPlainTextEdit):
         key = event.text()
         cursor = self.textCursor()
         # -- VISUAL mode PREFIX
-        if self.vim.getMode() in (nwVimMode.VISUAL, nwVimMode.VLINE):
-            if key in self.vim.VISUAL_PREFIX_KEYS:
-                self.vim.pushCommandKey(key)
+        if self._vim.getMode() in (nwVimMode.VISUAL, nwVimMode.VLINE):
+            if key in self._vim.VISUAL_PREFIX_KEYS:
+                self._vim.pushCommandKey(key)
             else:
                 # If adding none repeating visual mode motions,
                 # need to add a suffix case, see normal mode.
-                self.vim.setCommand(key)
+                self._vim.setCommand(key)
 
         # --- VISUAL / VISUALLINE mode ---
-        if self.vim.getMode() in (nwVimMode.VISUAL, nwVimMode.VLINE):
-            if self.vim.command() in ("d", "x"):
+        if self._vim.getMode() in (nwVimMode.VISUAL, nwVimMode.VLINE):
+            if self._vim.command() in ("d", "x"):
                 cursor.beginEditBlock()
-                self.vim.yankToInternal(cursor.selectedText())
+                self._vim.yankToInternal(cursor.selectedText())
                 cursor.removeSelectedText()
                 cursor.endEditBlock()
                 self.setTextCursor(cursor)
                 self.setVimMode(nwVimMode.NORMAL)
                 return True
 
-            if self.vim.command() == "y":
-                self.vim.yankToInternal(cursor.selectedText())
+            if self._vim.command() == "y":
+                self._vim.yankToInternal(cursor.selectedText())
                 cursor.clearSelection()
                 self.setTextCursor(cursor)
                 self.setVimMode(nwVimMode.NORMAL)
                 return True
 
-            if self.vim.command() == "w":
-                move_mode = cursor.MoveMode.KeepAnchor
-                cursor.movePosition(cursor.MoveOperation.NextWord, move_mode)
+            if self._vim.command() == "w":
+                cursor.movePosition(QTextCursor.MoveOperation.NextWord, QtKeepAnchor)
                 self.setTextCursor(cursor)
-                self.vim.resetCommand()
+                self._vim.resetCommand()
                 return True
 
-            if self.vim.command() == "b":
-                move_mode = cursor.MoveMode.KeepAnchor
-                cursor.movePosition(cursor.MoveOperation.PreviousWord, move_mode)
+            if self._vim.command() == "b":
+                cursor.movePosition(QTextCursor.MoveOperation.PreviousWord, QtKeepAnchor)
                 self.setTextCursor(cursor)
-                self.vim.resetCommand()
+                self._vim.resetCommand()
                 return True
 
-            if self.vim.command() == "e":
-                move_mode = cursor.MoveMode.KeepAnchor
-                orig_pos = cursor.position()
-                cursor.movePosition(cursor.MoveOperation.EndOfWord, move_mode)
-
-                if cursor.position() == orig_pos:
-                    text_len = len(self.toPlainText())
-                    if orig_pos < text_len:
-                        cursor.movePosition(cursor.MoveOperation.NextCharacter, move_mode)
-                        cursor.movePosition(cursor.MoveOperation.EndOfWord, move_mode)
+            if self._vim.command() == "e":
+                origPos = cursor.position()
+                cursor.movePosition(QTextCursor.MoveOperation.EndOfWord, QtKeepAnchor)
+                if cursor.position() == origPos:
+                    textLen = len(self.toPlainText())
+                    if origPos < textLen:
+                        cursor.movePosition(QTextCursor.MoveOperation.NextCharacter, QtKeepAnchor)
+                        cursor.movePosition(QTextCursor.MoveOperation.EndOfWord, QtKeepAnchor)
 
                 self.setTextCursor(cursor)
-                self.vim.resetCommand()
+                self._vim.resetCommand()
                 return True
 
-            if self.vim.command() == "gg":
-                move_mode = cursor.MoveMode.KeepAnchor
-                cursor.movePosition(cursor.MoveOperation.Start, move_mode)
+            if self._vim.command() == "gg":
+                cursor.movePosition(cursor.MoveOperation.Start, QtKeepAnchor)
                 self.setTextCursor(cursor)
-                self.vim.resetCommand()
+                self._vim.resetCommand()
                 return True
 
             # Handle motions (extend selection)
-            move_mode = cursor.MoveMode.KeepAnchor
-            if self.vim.command() == "h":
-                cursor.movePosition(cursor.MoveOperation.Left, move_mode)
-            elif self.vim.command() == "l":
-                cursor.movePosition(cursor.MoveOperation.Right, move_mode)
-            elif self.vim.command() == "j":
-                cursor.movePosition(cursor.MoveOperation.Down, move_mode)
-            elif self.vim.command() == "k":
-                cursor.movePosition(cursor.MoveOperation.Up, move_mode)
-            elif self.vim.command() == "$":
-                cursor.movePosition(cursor.MoveOperation.EndOfLine, move_mode)
-            elif self.vim.command() == "0":
-                cursor.movePosition(cursor.MoveOperation.StartOfLine, move_mode)
-            elif self.vim.command() == "G":
-                cursor.movePosition(cursor.MoveOperation.End, move_mode)
+            if self._vim.command() == "h":
+                cursor.movePosition(QTextCursor.MoveOperation.Left, QtKeepAnchor)
+            elif self._vim.command() == "l":
+                cursor.movePosition(QTextCursor.MoveOperation.Right, QtKeepAnchor)
+            elif self._vim.command() == "j":
+                cursor.movePosition(QTextCursor.MoveOperation.Down, QtKeepAnchor)
+            elif self._vim.command() == "k":
+                cursor.movePosition(QTextCursor.MoveOperation.Up, QtKeepAnchor)
+            elif self._vim.command() == "$":
+                cursor.movePosition(QTextCursor.MoveOperation.EndOfLine, QtKeepAnchor)
+            elif self._vim.command() == "0":
+                cursor.movePosition(QTextCursor.MoveOperation.StartOfLine, QtKeepAnchor)
+            elif self._vim.command() == "G":
+                cursor.movePosition(QTextCursor.MoveOperation.End, QtKeepAnchor)
             else:
                 return True
             self.setTextCursor(cursor)
@@ -1281,20 +1273,17 @@ class GuiDocEditor(QPlainTextEdit):
         If vim mode is not enabled, typing behaves as normal.
         """
         # --- INSERT mode, bypass ---
-        if self.vim.getMode() == nwVimMode.INSERT:
+        if self._vim.getMode() == nwVimMode.INSERT:
             super().keyPressEvent(event)
             return  # Normal typing
 
-        wasAModeSwitchMotion = self._handleVimNormalModeModeSwitching(event)
-        if wasAModeSwitchMotion:
+        if self._handleVimNormalModeModeSwitching(event):
             return
 
-        wasAVisualModeMotion = self._handleVimVisualMode(event)
-        if wasAVisualModeMotion:
+        if self._handleVimVisualMode(event):
             return
 
-        wasANormalModeMotion = self._handleVimNormalMode(event)
-        if wasANormalModeMotion:
+        if self._handleVimNormalMode(event):
             return
 
         return
@@ -1615,7 +1604,8 @@ class GuiDocEditor(QPlainTextEdit):
 
     @pyqtSlot()
     def _updateVimModeStatusBar(self, modeName: str) -> None:
-        if CONFIG.vimModeEnabled:
+        """Update the editor footer."""
+        if CONFIG.vimMode:
             self.docFooter.updateVimModeStatusBar(modeName)
 
     @pyqtSlot()
@@ -3594,23 +3584,16 @@ class GuiDocEditFooter(QWidget):
 class VimState:
     """Minimal Vim state machine."""
 
-    __slots__ = (
-        "PREFIX_KEYS",
-        "SUFFIX_KEYS",
-        "VISUAL_PREFIX_KEYS",
-        "_internalClipboard",
-        "_mode",
-        "_normalCommand",
-        "_visualCommand",
-    )
+    __slots__ = ("_internalClipboard", "_mode", "_normalCommand", "_visualCommand")
+
+    PREFIX_KEYS = "dygz"
+    VISUAL_PREFIX_KEYS = "g"
+    SUFFIX_KEYS = "w"
 
     def __init__(self) -> None:
-        self.PREFIX_KEYS = ["d", "y", "g", "z"]
-        self.VISUAL_PREFIX_KEYS = ["g"]
-        self.SUFFIX_KEYS = ["w"]
         self._mode: nwVimMode = nwVimMode.NORMAL
-        self._normalCommand: str = ""
-        self._visualCommand: str = ""
+        self._normalCommand = ""
+        self._visualCommand = ""
         self._internalClipboard = ""
         self.setMode(nwVimMode.NORMAL)
 
@@ -3619,9 +3602,10 @@ class VimState:
         self._normalCommand = ""
         self._visualCommand = ""
 
-    def setMode(self, new_mode: nwVimMode) -> None:
+    def setMode(self, newMode: nwVimMode) -> None:
         """Switch vim mode."""
-        self._mode = new_mode
+        logger.debug("Vim Mode changed to %s", newMode.name)
+        self._mode = newMode
         self.resetCommand()
 
     def getMode(self) -> nwVimMode:
