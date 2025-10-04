@@ -53,7 +53,8 @@ from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
     QtAlignCenterTop, QtKeepAnchor, QtMouseLeft, QtMoveAnchor,
-    QtScrollAlwaysOff, QtScrollAsNeeded
+    QtScrollAlwaysOff, QtScrollAsNeeded, QtSelectBlock, QtSelectDocument,
+    QtSelectWord
 )
 
 logger = logging.getLogger(__name__)
@@ -287,9 +288,9 @@ class GuiDocViewer(QTextBrowser):
         elif action == nwDocAction.COPY:
             self.copy()
         elif action == nwDocAction.SEL_ALL:
-            self._makeSelection(QTextCursor.SelectionType.Document)
+            self._makeSelection(QtSelectDocument)
         elif action == nwDocAction.SEL_PARA:
-            self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor)
+            self._makeSelection(QtSelectBlock)
         else:
             logger.debug("Unknown or unsupported document action '%s'", action)
             return False
@@ -400,14 +401,10 @@ class GuiDocViewer(QTextBrowser):
         action.triggered.connect(qtLambda(self.docAction, nwDocAction.SEL_ALL))
 
         action = qtAddAction(ctxMenu, self.tr("Select Word"))
-        action.triggered.connect(qtLambda(
-            self._makePosSelection, QTextCursor.SelectionType.WordUnderCursor, point
-        ))
+        action.triggered.connect(qtLambda(self._makePosSelection, QtSelectWord, point))
 
         action = qtAddAction(ctxMenu, self.tr("Select Paragraph"))
-        action.triggered.connect(qtLambda(
-            self._makePosSelection, QTextCursor.SelectionType.BlockUnderCursor, point
-        ))
+        action.triggered.connect(qtLambda(self._makePosSelection, QtSelectBlock, point))
 
         # Open the context menu
         if viewport := self.viewport():
@@ -466,7 +463,7 @@ class GuiDocViewer(QTextBrowser):
         cursor.clearSelection()
         cursor.select(selType)
 
-        if selType == QTextCursor.SelectionType.BlockUnderCursor:
+        if selType == QtSelectBlock:
             # This selection mode also selects the preceding paragraph
             # separator, which we want to avoid.
             posS = cursor.selectionStart()
