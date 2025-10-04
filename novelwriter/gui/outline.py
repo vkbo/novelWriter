@@ -586,7 +586,7 @@ class GuiOutlineTree(QTreeWidget):
         try:
             for name, (hidden, width) in colState.items():
                 if name not in nwOutline.__members__:
-                    logger.warning("Ignored unknown outline column '%s'", str(name))
+                    logger.warning("Ignored unknown outline column '%s'", name)
                     continue
                 tmpOrder.append(nwOutline[name])
                 tmpHidden[nwOutline[name]] = hidden

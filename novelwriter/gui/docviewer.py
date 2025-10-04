@@ -291,7 +291,7 @@ class GuiDocViewer(QTextBrowser):
         elif action == nwDocAction.SEL_PARA:
             self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor)
         else:
-            logger.debug("Unknown or unsupported document action '%s'", str(action))
+            logger.debug("Unknown or unsupported document action '%s'", action)
             return False
         return True
 
