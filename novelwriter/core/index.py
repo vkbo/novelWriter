@@ -33,8 +33,10 @@ from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
 
-from novelwriter import SHARED
-from novelwriter.common import isHandle, isItemClass, isTitleTag, jsonEncode
+from novelwriter import SHARED, __hexversion__
+from novelwriter.common import (
+    formatTimeStamp, isHandle, isItemClass, isTitleTag, jsonCombine, jsonEncode
+)
 from novelwriter.constants import nwFiles, nwKeyWords, nwStyles
 from novelwriter.core.indexdata import NOTE_TYPES, TT_NONE, IndexHeading, IndexNode, T_NoteTypes
 from novelwriter.core.novelmodel import NovelModel
@@ -82,6 +84,11 @@ class Index:
     a rebuild of the index data.
     """
 
+    __slots__ = (
+        "_indexBroken", "_indexChange", "_indexUpgrade", "_itemIndex", "_novelExtra",
+        "_novelModels", "_project", "_rootChange", "_tagsIndex",
+    )
+
     def __init__(self, project: NWProject) -> None:
 
         self._project = project
@@ -90,6 +97,7 @@ class Index:
         self._tagsIndex = TagsIndex()
         self._itemIndex = ItemIndex(project, self._tagsIndex)
         self._indexBroken = False
+        self._indexUpgrade = False
 
         # Models
         self._novelModels: dict[str, NovelModel] = {}
@@ -109,6 +117,10 @@ class Index:
     @property
     def indexBroken(self) -> bool:
         return self._indexBroken
+
+    @property
+    def indexUpgrade(self) -> bool:
+        return self._indexUpgrade
 
     ##
     #  Getters
@@ -241,6 +253,8 @@ class Index:
                 return False
 
             try:
+                meta = data.get("novelWriter.meta", {})
+                self._indexUpgrade = meta.get("version") != __hexversion__
                 self._tagsIndex.unpackData(data["novelWriter.tagsIndex"])
                 self._itemIndex.unpackData(data["novelWriter.itemIndex"])
             except Exception:
@@ -273,23 +287,22 @@ class Index:
             return False
 
         logger.debug("Saving index file")
-        tStart = time()
+        start = time()
 
         try:
-            tagsIndex = jsonEncode(self._tagsIndex.packData(), n=1, nmax=2)
-            itemIndex = jsonEncode(self._itemIndex.packData(), n=1, nmax=4)
+            meta = {"version": __hexversion__, "timestamp": formatTimeStamp(start)}
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
-                outFile.write("{\n")
-                outFile.write(f'  "novelWriter.tagsIndex": {tagsIndex},\n')
-                outFile.write(f'  "novelWriter.itemIndex": {itemIndex}\n')
-                outFile.write("}\n")
-
+                outFile.write(jsonCombine({
+                    "novelWriter.meta": jsonEncode(meta, n=1),
+                    "novelWriter.tagsIndex": jsonEncode(self._tagsIndex.packData(), n=1, nmax=2),
+                    "novelWriter.itemIndex": jsonEncode(self._itemIndex.packData(), n=1, nmax=4),
+                }))
         except Exception:
             logger.error("Failed to save index file")
             logException()
             return False
 
-        logger.debug("Index saved in %.3f ms", (time() - tStart)*1000)
+        logger.debug("Index saved in %.3f ms", (time() - start)*1000)
 
         return True
 
