@@ -32,7 +32,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QInputDialog, QMessageBox
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import CONFIG, SHARED, __hexversion__
+from novelwriter.common import jsonEncode
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.constants import nwFiles
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -825,11 +826,11 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI, projPath, fncPath, mockRnd)
     nwGUI.viewDocument(C.hTitlePage)
 
     # Handle broken index on project open
+    idxData = jsonEncode({"novelWriter.meta": {"version": __hexversion__}})
     nwGUI.closeProject()
     idxPath: Path = projPath / "meta" / nwFiles.INDEX_FILE
     assert idxPath.read_text(encoding="utf-8") != "{}"
-    idxPath.write_text("{}", encoding="utf-8")
-    assert idxPath.read_text(encoding="utf-8") == "{}"
+    idxPath.write_text(idxData, encoding="utf-8")
 
     nwGUI.openProject(projPath)
     nwGUI.saveProject()
