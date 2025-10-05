@@ -713,7 +713,7 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     cHandle = SHARED.project.newFile("Jane", C.hCharRoot)
     newDoc = SHARED.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# Jane\n\n@tag: Jane\n\n")
-    nwGUI.rebuildIndex(beQuiet=True)
+    nwGUI.rebuildIndex()
 
     assert SHARED.focusMode is False
 
