@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Python Setup
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
           architecture: x64
@@ -23,7 +23,7 @@ jobs:
         run: |
           brew install enchant
       - name: Checkout Source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Dependencies (pip)
         run: |
           pip install -U pyobjc -r requirements.txt -r tests/requirements.txt
