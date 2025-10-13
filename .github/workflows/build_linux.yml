@@ -17,7 +17,7 @@ jobs:
       LINUX_ARCH: "x86_64"
     steps:
       - name: Python Setup
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
           architecture: x64
@@ -31,7 +31,7 @@ jobs:
         run: pip install python-appimage setuptools
 
       - name: Checkout Source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download Artifacts
         uses: actions/download-artifact@v4

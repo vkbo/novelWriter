@@ -14,12 +14,12 @@ jobs:
   testLinux:
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
       - name: Python Setup
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
@@ -28,7 +28,7 @@ jobs:
           sudo apt update
           sudo apt install libenchant-2-dev qttools5-dev-tools
       - name: Checkout Source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Dependencies (pip)
         run: |
           pip install -U -r requirements.txt -r tests/requirements.txt
