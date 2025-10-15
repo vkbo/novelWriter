@@ -6,8 +6,8 @@ Introduction
 
 .. _Markdown: https://en.wikipedia.org/wiki/Markdown
 
-In a nutshell, novelWriter is a plain text editor that lets you organise one or more novels and
-associated notes as many smaller documents. You can at any time generate standard document formats
+In a nutshell, novelWriter is a plain text editor that lets you organise one or more novels, and
+associated notes, as many smaller documents. You can at any time generate standard document formats
 from these plain text documents. Whether it is an outline of your story, a draft, a complete
 manuscript, or even a collection of your character notes or other notes.
 
@@ -51,7 +51,7 @@ comments, and an auto-complete menu can help you here too. More about this later
    writing. It is also *not* a full-featured Markdown editor.
 
    In addition, novelWriter is not intended as a tool for organising research for writing, and
-   therefore lacks formatting features you may need for this purpose. The notes feature in is
+   therefore lacks formatting features you may need for this purpose. The notes feature is
    mainly intended for character profiles and plot outlines. It is recommended to use a proper
    note-taking tool for research. This is anyway more practical as you may use the same research
    for multiple projects.
