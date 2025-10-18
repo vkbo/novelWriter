@@ -29,10 +29,12 @@ dynamic = ["version"]
 
 [dependency-groups]
 dev = [
+    { include-group = "build" },
     { include-group = "docs" },
     { include-group = "test" },
     { include-group = "lint" },
 ]
+build = ["build", "setuptools>=77.0.3"]
 docs = [
     "docutils>=0.17.1",
     "pygments>=2.7",
@@ -59,8 +61,8 @@ novelwriter = "novelwriter:main"
 [tool.setuptools.dynamic]
 version = { attr = "novelwriter.__init__.__version__" }
 
-[tool.setuptools]
-packages = ["novelwriter"]
+[tool.setuptools.packages.find]
+include = ["novelwriter*"]
 
 [tool.isort]
 py_version = "310"

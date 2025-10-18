@@ -4,6 +4,8 @@ Section: text
 Priority: optional
 Build-Depends:
   dh-python,
+  pybuild-plugin-pyproject,
+  python3-build,
   python3-setuptools,
   python3-all,
   debhelper (>= 9),
