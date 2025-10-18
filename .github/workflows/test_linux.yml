@@ -14,37 +14,42 @@ jobs:
   testLinux:
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version:
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+          - "3.14"
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
-      - name: Python Setup
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-
-      - name: Install Packages (apt)
+      - name: Install System Packages
         run: |
           sudo apt update
           sudo apt install qttools5-dev-tools
 
+      - name: Install UV and Python
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
       - name: Checkout Source
         uses: actions/checkout@v5
 
-      - name: Install UV
-        uses: astral-sh/setup-uv@v6
+      - name: Sync UV
+        run: |
+          uv sync --no-dev --group test
 
       - name: Run Build Commands
         run: |
-          uv run --no-dev pkgutils.py qtlrelease
-          uv run --no-dev pkgutils.py sample
+          uv run --no-sync pkgutils.py qtlrelease
+          uv run --no-sync pkgutils.py sample
 
       - name: Run Tests
         run: |
           export QT_QPA_PLATFORM=offscreen
-          uv run --no-dev --group test coverage run -m pytest -v --timeout=60
-          uv run --no-dev --group test coverage xml
+          uv run --no-sync coverage run -m pytest -v --timeout=60
+          uv run --no-sync coverage xml
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5
