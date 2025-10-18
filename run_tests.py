@@ -23,9 +23,9 @@ if __name__ == "__main__":
     env["QT_SCALE_FACTOR"] = "1.0"
 
     if args.r or args.t or args.u:
-        cmd = [sys.executable, "-m"]
+        cmd = ["coverage", "run", "-m"]
     else:
-        cmd = ["coverage", "-m"]
+        cmd = [sys.executable, "-m"]
 
     cmd += ["pytest", "-vv"]
     if args.o:

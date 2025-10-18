@@ -37,13 +37,13 @@ jobs:
 
       - name: Run Build Commands
         run: |
-          uv run --group test pkgutils.py qtlrelease
-          uv run --group test pkgutils.py sample
+          uv run --no-dev pkgutils.py qtlrelease
+          uv run --no-dev pkgutils.py sample
 
       - name: Run Tests
         run: |
           export QT_QPA_PLATFORM=offscreen
-          uv run --group test coverage -m pytest -v --timeout=60
+          uv run --no-dev --group test coverage run -m pytest -v --timeout=60
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5
