@@ -57,10 +57,10 @@ Issues = "https://github.com/vkbo/novelWriter/issues"
 novelwriter = "novelwriter:main"
 
 [tool.setuptools.dynamic]
-version = { attr = "novelwriter.__version__" }
+version = { attr = "novelwriter.__init__.__version__" }
 
-[tool.setuptools.packages.find]
-include = ["novelwriter*"]
+[tool.setuptools]
+packages = ["novelwriter"]
 
 [tool.isort]
 py_version = "310"
