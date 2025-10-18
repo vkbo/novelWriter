@@ -29,12 +29,10 @@ dynamic = ["version"]
 
 [dependency-groups]
 dev = [
-    { include-group = "build" },
     { include-group = "docs" },
     { include-group = "test" },
     { include-group = "lint" },
 ]
-build = ["setuptools>=77.0.3"]
 docs = [
     "docutils>=0.17.1",
     "pygments>=2.7",
@@ -47,7 +45,7 @@ docs = [
 ]
 test = ["coverage>=7.2.0", "pytest-qt", "pytest-timeout", "pytest>=6.0.0"]
 lint = ["isort", "pyright", "ruff"]
-macos = ["pyobjc", { include-group = "build" }]
+macos = ["pyobjc"]
 
 [project.urls]
 Homepage = "https://novelwriter.io"
