@@ -23,23 +23,28 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
+
       - name: Install Packages (apt)
         run: |
           sudo apt update
           sudo apt install libenchant-2-dev qttools5-dev-tools
+
       - name: Checkout Source
         uses: actions/checkout@v5
-      - name: Install Dependencies (pip)
-        run: |
-          pip install -U -r requirements.txt -r tests/requirements.txt
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v6
+
       - name: Run Build Commands
         run: |
-          python pkgutils.py qtlrelease
-          python pkgutils.py sample
+          uv run --group test pkgutils.py qtlrelease
+          uv run --group test pkgutils.py sample
+
       - name: Run Tests
         run: |
           export QT_QPA_PLATFORM=offscreen
-          python -m pytest -v --cov=novelwriter --timeout=60
+          uv run --group test coverage -m pytest -v --timeout=60
+
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5
         env:
