@@ -160,6 +160,7 @@ markers = [
 
 [tool.coverage.run]
 branch = false
+source = ["novelwriter"]
 
 [tool.coverage.report]
 precision = 2
