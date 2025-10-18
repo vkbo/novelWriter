@@ -44,8 +44,10 @@ jobs:
         run: |
           export QT_QPA_PLATFORM=offscreen
           uv run --no-dev --group test coverage run -m pytest -v --timeout=60
+          uv run --no-dev --group test coverage xml
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
