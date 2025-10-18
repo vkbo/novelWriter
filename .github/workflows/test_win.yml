@@ -24,11 +24,10 @@ jobs:
 
       - name: Sync UV
         run: |
-          uv sync --verbose --no-dev --group test
+          uv sync --no-dev --group test
 
       - name: Run Tests
         run: |
-          $env:QT_QPA_PLATFORM=offscreen
           uv run --no-sync coverage run -m pytest -v --timeout=60
           uv run --no-sync coverage xml
 
