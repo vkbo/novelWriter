@@ -4,11 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "novelWriter"
-authors = [
-    {name = "Veronica Berglyd Olsen", email = "code@vkbo.net"},
-]
+authors = [{ name = "Veronica Berglyd Olsen", email = "code@vkbo.net" }]
 description = "A plain text editor for planning and writing novels"
-readme = {file = "setup/description_pypi.md", content-type = "text/markdown"}
+readme = { file = "setup/description_pypi.md", content-type = "text/markdown" }
 license = "GPL-3.0-or-later AND Apache-2.0 AND CC-BY-4.0"
 license-files = ["LICENSE.md", "setup/LICENSE-Apache-2.0.txt"]
 classifiers = [
@@ -26,11 +24,27 @@ classifiers = [
     "Topic :: Text Editors",
 ]
 requires-python = ">=3.10"
-dependencies = [
-    "pyqt6>=6.4",
-    "pyenchant>=3.0.0",
-]
+dependencies = ["pyqt6>=6.4", "pyenchant>=3.0.0"]
 dynamic = ["version"]
+
+[dependency-groups]
+dev = [
+    { include-group = "docs" },
+    { include-group = "test" },
+    { include-group = "lint" },
+]
+docs = [
+    "docutils>=0.17.1",
+    "pygments>=2.7",
+    "sphinx-book-theme",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "sphinx-favicon",
+    "sphinx-intl",
+    "sphinx>=5.0",
+]
+test = ["coverage>=7.2.0", "pytest-qt", "pytest-timeout", "pytest>=6.0.0"]
+lint = ["isort", "pyright", "ruff"]
 
 [project.urls]
 Homepage = "https://novelwriter.io"
@@ -42,13 +56,13 @@ Issues = "https://github.com/vkbo/novelWriter/issues"
 novelwriter = "novelwriter:main"
 
 [tool.setuptools.dynamic]
-version = {attr = "novelwriter.__version__"}
+version = { attr = "novelwriter.__version__" }
 
 [tool.setuptools.packages.find]
 include = ["novelwriter*"]
 
 [tool.isort]
-py_version="310"
+py_version = "310"
 line_length = 99
 wrap_length = 79
 multi_line_output = 5
@@ -64,26 +78,26 @@ preview = true
 
 # Rules: https://docs.astral.sh/ruff/rules
 select = [
-    "A",      # flake8-builtins (A)
-    "ANN",    # flake8-annotations (ANN)
-    "B",      # flake8-bugbear (B)
-    "D",      # pydocstyle (D)
-    "E",      # pycodestyle (E)
-    "F",      # Pyflakes (F)
-    "FA",     # flake8-future-annotations (FA)
-    "PERF",   # Perflint (PERF)
-    "PLC",    # Pylint Convention (PLC)
-    "PLE",    # Pylint Error (PLE)
-    "PLR17",  # Refactor (PLR) - Only PLR17xx
-    "PLW",    # Pylint Warning (PLW)
-    "Q",      # flake8-quotes (Q)
-    "RET",    # flake8-return (RET)
-    "RUF",    # Ruff-specific rules (RUF)
-    "SLF",    # flake8-self (SLF)
-    "SLOT",   # flake8-slots (SLOT)
-    "TC",     # flake8-type-checking (TC)
-    "UP",     # pyupgrade (UP)
-    "W",      # pycodestyle (W)
+    "A",     # flake8-builtins (A)
+    "ANN",   # flake8-annotations (ANN)
+    "B",     # flake8-bugbear (B)
+    "D",     # pydocstyle (D)
+    "E",     # pycodestyle (E)
+    "F",     # Pyflakes (F)
+    "FA",    # flake8-future-annotations (FA)
+    "PERF",  # Perflint (PERF)
+    "PLC",   # Pylint Convention (PLC)
+    "PLE",   # Pylint Error (PLE)
+    "PLR17", # Refactor (PLR) - Only PLR17xx
+    "PLW",   # Pylint Warning (PLW)
+    "Q",     # flake8-quotes (Q)
+    "RET",   # flake8-return (RET)
+    "RUF",   # Ruff-specific rules (RUF)
+    "SLF",   # flake8-self (SLF)
+    "SLOT",  # flake8-slots (SLOT)
+    "TC",    # flake8-type-checking (TC)
+    "UP",    # pyupgrade (UP)
+    "W",     # pycodestyle (W)
 ]
 ignore = [
     "ANN401",  # any-type
@@ -149,6 +163,4 @@ branch = false
 
 [tool.coverage.report]
 precision = 2
-exclude_also = [
-    "if TYPE_CHECKING:"
-]
+exclude_also = ["if TYPE_CHECKING:"]
