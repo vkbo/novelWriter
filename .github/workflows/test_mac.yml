@@ -24,7 +24,7 @@ jobs:
 
       - name: Sync UV
         run: |
-          uv sync --no-dev --group test --group macos --python-platform x86_64-apple-darwin
+          uv sync --verbose --no-dev --group test --group macos --python-platform x86_64-apple-darwin
 
       - name: Run Tests
         run: |

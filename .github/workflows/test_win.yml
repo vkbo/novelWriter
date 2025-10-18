@@ -24,7 +24,7 @@ jobs:
 
       - name: Sync UV
         run: |
-          uv sync --no-dev --group test
+          uv sync --verbose --no-dev --group test
 
       - name: Run Tests
         run: |
