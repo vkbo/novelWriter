@@ -10,10 +10,9 @@ readme = { file = "setup/description_pypi.md", content-type = "text/markdown" }
 license = "GPL-3.0-or-later AND Apache-2.0 AND CC-BY-4.0"
 license-files = ["LICENSE.md", "setup/LICENSE-Apache-2.0.txt"]
 dynamic = ["version"]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -153,7 +152,7 @@ include = ["novelwriter"]
 exclude = ["**/__pycache__"]
 
 reportIncompatibleMethodOverride = false
-pythonVersion = "3.10"
+pythonVersion = "3.11"
 
 [tool.pytest.ini_options]
 log_level = "DEBUG"
