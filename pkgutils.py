@@ -40,7 +40,10 @@ import utils.build_windows
 import utils.docs
 import utils.icon_themes
 
-from utils.common import ROOT_DIR, SETUP_DIR, extractVersion, readFile, stripVersion, writeFile
+from utils.common import (
+    ROOT_DIR, SETUP_DIR, extractReqs, extractVersion, readFile, stripVersion,
+    writeFile
+)
 
 OS_LINUX = sys.platform.startswith("linux")
 OS_DARWIN = sys.platform.startswith("darwin")
@@ -61,7 +64,7 @@ def installPackages(args: argparse.Namespace) -> None:
     print("=======================")
     print("")
 
-    installQueue = ["pip", "-r requirements.txt"]
+    installQueue = ["pip", *extractReqs(["app"])]
     if args.mac:
         installQueue.append("pyobjc")
     elif args.win:
@@ -128,6 +131,15 @@ def genMacOSPlist(args: argparse.Namespace) -> None:
 
     print(f"Writing Info.plist to {outDir}/Info.plist")
     writeFile(outDir / "Info.plist", plistXML)
+
+
+def genReqFiles(args: argparse.Namespace) -> None:
+    """Generate requirements.txt file from pyproject.toml."""
+    select = [s.strip().lower() for s in args.groups] if args.groups else ["app"]
+    (ROOT_DIR / "requirements.txt").write_text(
+        "\n".join(extractReqs(select)),
+        encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":
@@ -222,7 +234,7 @@ if __name__ == "__main__":
     cmdBuildHtmlDocs = parsers.add_parser(
         "docs-html", help="Build the HTML docs."
     )
-    cmdBuildHtmlDocs.add_argument("lang", nargs="+")
+    cmdBuildHtmlDocs.add_argument("lang", nargs="+", help="Language codes to generate docs for.")
     cmdBuildHtmlDocs.set_defaults(func=utils.docs.buildHtmlDocs)
 
     # Build Sample
@@ -295,10 +307,23 @@ if __name__ == "__main__":
     cmdBuildClean.set_defaults(func=cleanBuildDirs)
 
     # Generate MacOS PList File
-    cmdBuildMacOSPlist = parsers.add_parser(
+    cmdGenMacOSPlist = parsers.add_parser(
         "gen-plist", help="Generate an Info.plist for use in a MacOS Bundle."
     )
-    cmdBuildMacOSPlist.set_defaults(func=genMacOSPlist)
+    cmdGenMacOSPlist.set_defaults(func=genMacOSPlist)
+
+    # Generate Requirement File
+    cmdGenReq = parsers.add_parser(
+        "gen-req", help="Generate a requirements.txt file for pip."
+    )
+    cmdGenReq.add_argument(
+        "groups", nargs="*", help=(
+            "Groups to generate for, or 'all' to generate for all groups. "
+            "Use 'app' to generate for just the core application. "
+            "Defaults to app dependencies."
+        )
+    )
+    cmdGenReq.set_defaults(func=genReqFiles)
 
     args = parser.parse_args()
     args.func(args)

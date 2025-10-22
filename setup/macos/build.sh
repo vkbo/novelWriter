@@ -1,7 +1,7 @@
 #! /bin/bash
 
 if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
-    echo "Not enouch input arguments"
+    echo "Not enough input arguments"
     exit 1
 fi
 
@@ -108,6 +108,7 @@ conda install -c conda-forge enchant hunspell-en --yes
 
 # Install dependencies
 echo "Installing Python dependencies ..."
+python3 pkgutils.py gen-req
 pip install -r "$SRC_DIR/requirements.txt"
 
 # Leave conda env

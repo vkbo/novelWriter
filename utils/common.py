@@ -26,8 +26,22 @@ import sys
 
 from pathlib import Path
 
+import tomllib
+
 ROOT_DIR = Path(__file__).parent.parent
 SETUP_DIR = ROOT_DIR / "setup"
+
+
+def extractReqs(groups: list[str]) -> list[str]:
+    """Generate requirements.txt file from pyproject.toml."""
+    data = tomllib.loads((ROOT_DIR / "pyproject.toml").read_text(encoding="utf-8"))
+    reqs = []
+    if "app" in groups or "all" in groups:
+        reqs += data["project"]["dependencies"]
+    for group in data["dependency-groups"]:
+        if group in groups or "all" in groups:
+            reqs += [d for d in data["dependency-groups"][group] if isinstance(d, str)]
+    return reqs
 
 
 def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
