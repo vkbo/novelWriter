@@ -47,19 +47,19 @@ must be at least 3.0 to work with Windows. On Linux, 2.0 also works fine.
 
 If you install novelWriter from PyPi, these dependencies should be installed automatically.
 
-If you run it from source, and want to install dependencies using ``pip``, you must first generate
-the ``requirements.txt`` file:
+You can run novelWriter directly from source with uv_:
+
+.. code-block:: bash
+
+   uv run novelwriter
+
+If you prefer to install dependencies using ``pip``, you must first generate the
+``requirements.txt`` file:
 
 .. code-block:: bash
 
    python pkgutils.py gen-req
    pip install -r requirements.txt
-
-Otherwise you can run novelWriter with uv_:
-
-.. code-block:: bash
-
-   uv run novelwriter
 
 .. note::
 

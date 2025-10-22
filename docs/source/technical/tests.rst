@@ -35,7 +35,7 @@ You can disable the rendering of the GUI by setting the flag ``QT_QPA_PLATFORM=o
 Dependencies
 ------------
 
-To run generate the requirements file and install using ``pip``, run:
+To generate the requirements file and install dependencies using ``pip``, run:
 
 .. code-block:: bash
 
