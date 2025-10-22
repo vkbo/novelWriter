@@ -32,7 +32,7 @@ SETUP_DIR = ROOT_DIR / "setup"
 
 
 def extractReqs(groups: list[str]) -> list[str]:
-    """Generate requirements.txt file from pyproject.toml."""
+    """Extract dependency groups from pyproject.toml."""
     data = tomllib.loads((ROOT_DIR / "pyproject.toml").read_text(encoding="utf-8"))
     reqs = []
     if "app" in groups or "all" in groups:
