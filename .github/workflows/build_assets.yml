@@ -18,6 +18,7 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.13"
+          enable-cache: true
 
       - name: Sync UV
         run: |
@@ -25,8 +26,8 @@ jobs:
 
       - name: Build Assets
         run: |
-          uv run --no-sync pkgutils.py qtlrelease
-          uv run --no-sync pkgutils.py sample
+          uv run --no-sync pkgutils.py build-assets
+          uv run --no-sync pkgutils.py icons optional
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
