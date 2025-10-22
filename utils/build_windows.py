@@ -30,7 +30,7 @@ import zipfile
 from pathlib import Path
 
 from utils.common import (
-    ROOT_DIR, SETUP_DIR, copySourceCode, extractVersion, readFile,
+    ROOT_DIR, SETUP_DIR, copySourceCode, extractReqs, extractVersion, readFile,
     removeRedundantQt, systemCall, writeFile
 )
 
@@ -45,7 +45,6 @@ def prepareCode(outDir: Path) -> None:
     files = [
         ROOT_DIR / "CREDITS.md",
         ROOT_DIR / "LICENSE.md",
-        ROOT_DIR / "requirements.txt",
         SETUP_DIR / "iss_license.txt",
         SETUP_DIR / "windows" / "novelWriter.ico",
         SETUP_DIR / "windows" / "novelWriter.exe",
@@ -85,7 +84,7 @@ def installRequirements(libDir: Path) -> None:
     """Install dependencies."""
     print("Install dependencies ...")
     systemCall([
-        sys.executable, "-m", "pip", "install", "-r", "requirements.txt", "--target", libDir
+        sys.executable, "-m", "pip", "install", *extractReqs(["app"]), "--target", libDir
     ])
     print("Done")
     print("")
