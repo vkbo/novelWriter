@@ -1,5 +1,0 @@
--r requirements.txt
--r requirements-dev.txt
--r docs/requirements.txt
--r setup/requirements.txt
--r tests/requirements.txt

@@ -615,7 +615,7 @@ class GuiTheme:
                     lookup = f"{prefix}{name} {key}"
                     keys.append(lookup)
                     data[lookup] = (file.stem, name, mode == "dark", file)
-            except Exception:  # noqa: PERF203
+            except Exception:
                 logger.error("Could not read file: %s", file)
                 logException()
 

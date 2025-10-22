@@ -1,5 +1,0 @@
-coverage>=7.2.0
-pytest-cov
-pytest-qt
-pytest-timeout
-pytest>=6.0.0

@@ -7,6 +7,7 @@ Running from Source
 .. _GitHub: https://github.com/vkbo/novelWriter/releases
 .. _PyPi: https://pypi.org/project/novelWriter/
 .. _Sphinx Docs: https://www.sphinx-doc.org/
+.. _uv: https://docs.astral.sh/uv/
 
 This chapter describes various ways of running novelWriter directly from the source code, and how
 to build the various components like the translation files and documentation.
@@ -28,6 +29,7 @@ by running:
 
 .. _docs_technical_source_depend:
 
+
 Dependencies
 ============
 
@@ -43,11 +45,20 @@ The following Python packages are needed to run all features of novelWriter:
 If you want spell checking, you must install the ``PyEnchant`` package. The spell check library
 must be at least 3.0 to work with Windows. On Linux, 2.0 also works fine.
 
-If you install from PyPi, these dependencies should be installed automatically. If you install from
-source, dependencies can still be installed from PyPi with:
+If you install novelWriter from PyPi, these dependencies should be installed automatically.
+
+You can run novelWriter directly from source with uv_:
 
 .. code-block:: bash
 
+   uv run novelwriter
+
+If you prefer to install dependencies using ``pip``, you must first generate the
+``requirements.txt`` file:
+
+.. code-block:: bash
+
+   python pkgutils.py gen-req
    pip install -r requirements.txt
 
 .. note::
@@ -136,18 +147,26 @@ running:
 Building the Documentation
 ==========================
 
-A local copy of this documentation can be generated as HTML. This requires installing some Python
-packages from PyPi:
+A local copy of this documentation can be generated as HTML.
+
+If you're using ``pip``, you must first generate the ``requirements.txt`` file:
 
 .. code-block:: bash
 
-   pip install -r docs/requirements.txt
+   python pkgutils.py gen-req docs
+   pip install -r requirements.txt
 
 The documentation can then be built from the root folder in the source code by running:
 
 .. code-block:: bash
 
    make -C docs html
+
+Or you can run directly with uv_:
+
+.. code-block:: bash
+
+   uv run make -C docs html
 
 If successful, the documentation should be available in the ``docs/build/html`` folder and you can
 open the ``index.html`` file in your browser.

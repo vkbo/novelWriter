@@ -49,9 +49,9 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "2.8a2"
-__hexversion__ = "0x020800a2"
-__date__       = "2025-07-16"
+__version__    = "2.8a3"
+__hexversion__ = "0x020800a3"
+__date__       = "2025-10-18"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 
@@ -206,9 +206,9 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     # Check Packages and Versions
     errorData = []
     errorCode = 0
-    if sys.hexversion < 0x030a00f0:
+    if sys.hexversion < 0x030b00f0:
         errorData.append(
-            f"At least Python 3.10 is required, found {CONFIG.verPyString}"
+            f"At least Python 3.11 is required, found {CONFIG.verPyString}"
         )
         errorCode |= 0x04
     if CONFIG.verQtValue < 0x060400:
