@@ -10,8 +10,8 @@ echo ""
 echo " Building Dependencies"
 echo "================================================================================"
 echo ""
-python3 pkgutils.py build-assets
-python3 pkgutils.py icons optional
+uv run pkgutils.py build-assets
+uv run pkgutils.py icons optional
 
 echo ""
 echo " Building Packages"
