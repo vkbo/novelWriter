@@ -29,7 +29,6 @@ from __future__ import annotations
 import argparse
 import datetime
 import shutil
-import subprocess
 import sys
 
 import utils.assets
@@ -53,33 +52,6 @@ OS_WIN = sys.platform.startswith("win32")
 def printVersion(args: argparse.Namespace) -> None:
     """Print the novelWriter version and exit."""
     print(extractVersion(beQuiet=True)[0], end=None)
-
-
-def installPackages(args: argparse.Namespace) -> None:
-    """Install package dependencies both for this script and for running
-    novelWriter itself.
-    """
-    print("")
-    print("Installing Dependencies")
-    print("=======================")
-    print("")
-
-    installQueue = ["pip", *extractReqs(["app"])]
-    if args.mac:
-        installQueue.append("pyobjc")
-    elif args.win:
-        installQueue.append("pywin32")
-
-    pyCmd = [sys.executable, "-m"]
-    pipCmd = ["pip", "install", "--user", "--upgrade"]
-    for stepCmd in installQueue:
-        pkgCmd = stepCmd.split(" ")
-        try:
-            subprocess.call(pyCmd + pipCmd + pkgCmd)
-        except Exception as exc:
-            print("Failed with error:")
-            print(str(exc))
-            sys.exit(1)
 
 
 def cleanBuildDirs(args: argparse.Namespace) -> None:
@@ -159,18 +131,6 @@ if __name__ == "__main__":
         "version", help="Print the novelWriter version."
     )
     cmdVersion.set_defaults(func=printVersion)
-
-    # General
-    # =======
-
-    # Pip Install
-    cmdPipInstall = parsers.add_parser(
-        "pip", help="Install all package dependencies for novelWriter using pip."
-    )
-    cmdPipInstall.add_argument("--linux", action="store_true", help="For Linux.", default=OS_LINUX)
-    cmdPipInstall.add_argument("--mac", action="store_true", help="For MacOS.", default=OS_DARWIN)
-    cmdPipInstall.add_argument("--win", action="store_true", help="For Windows.", default=OS_WIN)
-    cmdPipInstall.set_defaults(func=installPackages)
 
     # Additional Builds
     # =================
@@ -320,7 +280,7 @@ if __name__ == "__main__":
         "groups", nargs="*", help=(
             "Groups to generate for, or 'all' to generate for all groups. "
             "Use 'app' to generate for just the core application. "
-            "Defaults to app dependencies."
+            "Defaults to 'app' if none are specified."
         )
     )
     cmdGenReq.set_defaults(func=genReqFiles)
