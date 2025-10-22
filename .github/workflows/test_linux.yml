@@ -40,7 +40,7 @@ jobs:
         run: |
           uv sync --no-dev --group test
 
-      - name: Run Build Commands
+      - name: Build Assets
         run: |
           uv run --no-sync pkgutils.py qtlrelease
           uv run --no-sync pkgutils.py sample

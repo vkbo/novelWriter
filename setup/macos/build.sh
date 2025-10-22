@@ -109,7 +109,6 @@ conda install -c conda-forge enchant hunspell-en --yes
 # Install dependencies
 echo "Installing Python dependencies ..."
 pip install -r "$SRC_DIR/requirements.txt"
-pip install pyenchant==3.3.0rc1
 
 # Leave conda env
 conda deactivate

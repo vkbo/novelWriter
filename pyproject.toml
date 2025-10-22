@@ -9,6 +9,8 @@ description = "A plain text editor for planning and writing novels"
 readme = { file = "setup/description_pypi.md", content-type = "text/markdown" }
 license = "GPL-3.0-or-later AND Apache-2.0 AND CC-BY-4.0"
 license-files = ["LICENSE.md", "setup/LICENSE-Apache-2.0.txt"]
+dynamic = ["version"]
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
@@ -23,9 +25,10 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Text Editors",
 ]
-requires-python = ">=3.10"
-dependencies = ["pyqt6>=6.4", "pyenchant>=3.0.0"]
-dynamic = ["version"]
+dependencies = [
+    "pyqt6>=6.4",
+    "pyenchant>=3.3.0", # 3.3 is needed for MacOS AARCH64 builds
+]
 
 [dependency-groups]
 dev = [
