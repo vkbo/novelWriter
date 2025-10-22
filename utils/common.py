@@ -23,10 +23,9 @@ from __future__ import annotations
 import shutil
 import subprocess
 import sys
+import tomllib
 
 from pathlib import Path
-
-import tomllib
 
 ROOT_DIR = Path(__file__).parent.parent
 SETUP_DIR = ROOT_DIR / "setup"
