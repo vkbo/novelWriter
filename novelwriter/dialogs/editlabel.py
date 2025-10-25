@@ -27,8 +27,10 @@ import logging
 
 from PyQt6.QtWidgets import QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit, QVBoxLayout, QWidget
 
+from novelwriter import SHARED
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NDialog
-from novelwriter.types import QtAccepted, QtDialogCancel, QtDialogOk
+from novelwriter.types import QtAccepted
 
 logger = logging.getLogger(__name__)
 
@@ -54,9 +56,15 @@ class GuiEditLabel(NDialog):
         self.lblValue.setBuddy(self.lblValue)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnOk = SHARED.theme.getStandardButton(nwStandardButton.OK, self)
+        self.btnOk.clicked.connect(self.accept)
+
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.reject)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnOk, QDialogButtonBox.ButtonRole.AcceptRole)
+        self.btnBox.addButton(self.btnCancel, QDialogButtonBox.ButtonRole.RejectRole)
 
         # Assemble
         self.innerBox = QHBoxLayout()
@@ -67,7 +75,7 @@ class GuiEditLabel(NDialog):
         self.outerBox = QVBoxLayout()
         self.outerBox.setSpacing(12)
         self.outerBox.addLayout(self.innerBox, 1)
-        self.outerBox.addWidget(self.buttonBox, 0)
+        self.outerBox.addWidget(self.btnBox, 0)
 
         self.setLayout(self.outerBox)
 

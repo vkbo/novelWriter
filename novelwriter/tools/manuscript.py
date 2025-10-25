@@ -36,9 +36,9 @@ from PyQt6.QtGui import (
 from PyQt6.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt6.QtWidgets import (
     QAbstractItemView, QApplication, QFormLayout, QGridLayout, QHBoxLayout,
-    QLabel, QListWidget, QListWidgetItem, QPushButton, QSplitter,
-    QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget
+    QLabel, QListWidget, QListWidgetItem, QSplitter, QStackedWidget,
+    QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -46,6 +46,7 @@ from novelwriter.common import fuzzyTime, qtLambda
 from novelwriter.constants import nwHeadFmt, nwLabels, nwStats, nwUnicode, trStats
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
 from novelwriter.extensions.progressbars import NProgressCircle
 from novelwriter.extensions.switch import NSwitch
@@ -171,16 +172,16 @@ class GuiManuscript(NToolDialog):
         # Process Controls
         # ================
 
-        self.btnPreview = QPushButton(self.tr("Preview"), self)
+        self.btnPreview = SHARED.theme.getStandardButton(nwStandardButton.PREVIEW, self)
         self.btnPreview.clicked.connect(self._generatePreview)
 
-        self.btnPrint = QPushButton(self.tr("Print"), self)
+        self.btnPrint = SHARED.theme.getStandardButton(nwStandardButton.PRINT, self)
         self.btnPrint.clicked.connect(self._printDocument)
 
-        self.btnBuild = QPushButton(self.tr("Build"), self)
+        self.btnBuild = SHARED.theme.getStandardButton(nwStandardButton.BUILD, self)
         self.btnBuild.clicked.connect(self._buildManuscript)
 
-        self.btnClose = QPushButton(self.tr("Close"), self)
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
         self.btnClose.clicked.connect(qtLambda(self.close))
 
         self.processBox = QGridLayout()

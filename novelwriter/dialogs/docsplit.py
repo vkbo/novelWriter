@@ -33,10 +33,11 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import SHARED
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NComboBox, NDialog
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAccepted, QtDialogCancel, QtDialogOk, QtUserRole
+from novelwriter.types import QtAccepted, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -117,9 +118,15 @@ class GuiDocSplit(NDialog):
         self.optBox.setColumnStretch(3, 1)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnOk = SHARED.theme.getStandardButton(nwStandardButton.OK, self)
+        self.btnOk.clicked.connect(self.accept)
+
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.reject)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnOk, QDialogButtonBox.ButtonRole.AcceptRole)
+        self.btnBox.addButton(self.btnCancel, QDialogButtonBox.ButtonRole.RejectRole)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -132,7 +139,7 @@ class GuiDocSplit(NDialog):
         self.outerBox.addSpacing(8)
         self.outerBox.addLayout(self.optBox)
         self.outerBox.addSpacing(12)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
         self.setLayout(self.outerBox)
 
         # Load Content

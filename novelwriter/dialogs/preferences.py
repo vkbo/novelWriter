@@ -38,13 +38,14 @@ from novelwriter.common import compact, describeFont, processDialogSymbols, uniq
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS, DEF_TREECOL
 from novelwriter.constants import nwLabels, nwQuotes, nwUnicode, trConst
 from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel, NScrollableForm
 from novelwriter.extensions.modified import (
     NComboBox, NDialog, NDoubleSpinBox, NIconToolButton, NSpinBox
 )
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignCenter, QtDialogCancel, QtDialogSave
+from novelwriter.types import QtAlignCenter
 
 logger = logging.getLogger(__name__)
 
@@ -89,9 +90,15 @@ class GuiPreferences(NDialog):
         self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogCancel, self)
-        self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnSave = SHARED.theme.getStandardButton(nwStandardButton.SAVE, self)
+        self.btnSave.clicked.connect(self._doSave)
+
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.reject)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnSave, QDialogButtonBox.ButtonRole.AcceptRole)
+        self.btnBox.addButton(self.btnCancel, QDialogButtonBox.ButtonRole.RejectRole)
 
         # Assemble
         self.searchBox = QHBoxLayout()
@@ -107,7 +114,7 @@ class GuiPreferences(NDialog):
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.searchBox)
         self.outerBox.addLayout(self.mainBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
         self.outerBox.setSpacing(8)
 
         self.setLayout(self.outerBox)

@@ -39,13 +39,11 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, checkIntTuple, formatTime, minmax, qtLambda
 from novelwriter.constants import nwConst
+from novelwriter.enum import nwStandardButton
 from novelwriter.error import formatException
-from novelwriter.extensions.modified import NToolDialog
+from novelwriter.extensions.modified import NPushButton, NToolDialog
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import (
-    QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle, QtDecoration,
-    QtDialogClose, QtRoleAction
-)
+from novelwriter.types import QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle, QtDecoration
 
 if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
@@ -182,6 +180,7 @@ class GuiWritingStats(NToolDialog):
 
         # Filter Options
         iPx = SHARED.theme.baseIconHeight
+        bSz = SHARED.theme.buttonIconSize
 
         self.filterForm = QGridLayout(self)
         self.filterForm.setRowStretch(6, 1)
@@ -276,6 +275,10 @@ class GuiWritingStats(NToolDialog):
         self.optsBox.addWidget(self.histMax, 0)
 
         # Buttons
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.clicked.connect(self._doClose)
+        self.btnClose.setAutoDefault(False)
+
         self.saveJSON = QAction(self.tr("JSON Data File (.json)"), self)
         self.saveJSON.triggered.connect(qtLambda(self._saveData, self.FMT_JSON))
 
@@ -286,17 +289,13 @@ class GuiWritingStats(NToolDialog):
         self.saveMenu.addAction(self.saveJSON)
         self.saveMenu.addAction(self.saveCSV)
 
-        self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.btnSave = NPushButton(self, self.tr("Save As"), bSz, "btn_save", "blue")
+        self.btnSave.setAutoDefault(False)
+        self.btnSave.setMenu(self.saveMenu)
 
-        self.btnClose = self.buttonBox.addButton(QtDialogClose)
-        if self.btnClose:
-            self.btnClose.setAutoDefault(False)
-
-        self.btnSave = self.buttonBox.addButton(self.tr("Save As"), QtRoleAction)
-        if self.btnSave:
-            self.btnSave.setAutoDefault(False)
-            self.btnSave.setMenu(self.saveMenu)
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnClose, QDialogButtonBox.ButtonRole.RejectRole)
+        self.btnBox.addButton(self.btnSave, QDialogButtonBox.ButtonRole.ActionRole)
 
         # Assemble
         self.outerBox = QGridLayout()
@@ -304,7 +303,7 @@ class GuiWritingStats(NToolDialog):
         self.outerBox.addLayout(self.optsBox,   1, 0, 1, 2)
         self.outerBox.addWidget(self.infoBox,   2, 0)
         self.outerBox.addWidget(self.filterBox, 2, 1)
-        self.outerBox.addWidget(self.buttonBox, 3, 0, 1, 2)
+        self.outerBox.addWidget(self.btnBox,    3, 0, 1, 2)
         self.outerBox.setRowStretch(0, 1)
 
         self.setLayout(self.outerBox)

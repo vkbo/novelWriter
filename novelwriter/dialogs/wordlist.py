@@ -37,9 +37,9 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter
 from novelwriter.core.spellcheck import UserDictionary
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog, NIconToolButton
-from novelwriter.types import QtDialogClose, QtDialogSave
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
@@ -110,9 +110,15 @@ class GuiWordList(NDialog):
         self.editBox.addWidget(self.delButton, 0)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogClose, self)
-        self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnSave = SHARED.theme.getStandardButton(nwStandardButton.SAVE, self)
+        self.btnSave.clicked.connect(self._doSave)
+
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.clicked.connect(self.reject)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnSave, QDialogButtonBox.ButtonRole.AcceptRole)
+        self.btnBox.addButton(self.btnClose, QDialogButtonBox.ButtonRole.RejectRole)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -120,7 +126,7 @@ class GuiWordList(NDialog):
         self.outerBox.addWidget(self.listBox, 1)
         self.outerBox.addLayout(self.editBox, 0)
         self.outerBox.addSpacing(12)
-        self.outerBox.addWidget(self.buttonBox, 0)
+        self.outerBox.addWidget(self.btnBox, 0)
         self.outerBox.setSpacing(4)
 
         self.setLayout(self.outerBox)

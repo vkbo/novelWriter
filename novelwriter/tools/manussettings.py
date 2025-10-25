@@ -40,6 +40,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import describeFont, fontMatcher, qtAddAction, qtLambda
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwUnicode, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import (
     NColorLabel, NFixedPage, NScrollableForm, NScrollablePage
 )
@@ -50,9 +51,8 @@ from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.types import (
-    QtAlignCenter, QtAlignLeft, QtDialogApply, QtDialogClose, QtDialogSave,
-    QtHeaderFixed, QtHeaderStretch, QtRoleAccept, QtRoleApply, QtRoleReject,
-    QtUserRole
+    QtAlignCenter, QtAlignLeft, QtHeaderFixed, QtHeaderStretch, QtRoleAccept,
+    QtRoleApply, QtRoleReject, QtUserRole
 )
 
 if TYPE_CHECKING:
@@ -125,8 +125,15 @@ class GuiBuildSettings(NToolDialog):
         self.toolStack.addWidget(self.optTabFormatting)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogApply | QtDialogSave | QtDialogClose, self)
-        self.buttonBox.clicked.connect(self._dialogButtonClicked)
+        self.btnApply = SHARED.theme.getStandardButton(nwStandardButton.APPLY, self)
+        self.btnSave = SHARED.theme.getStandardButton(nwStandardButton.SAVE, self)
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnApply, QDialogButtonBox.ButtonRole.ApplyRole)
+        self.btnBox.addButton(self.btnSave, QDialogButtonBox.ButtonRole.AcceptRole)
+        self.btnBox.addButton(self.btnCancel, QDialogButtonBox.ButtonRole.RejectRole)
+        self.btnBox.clicked.connect(self._dialogButtonClicked)
 
         # Assemble
         self.topBox = QHBoxLayout()
@@ -143,7 +150,7 @@ class GuiBuildSettings(NToolDialog):
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.topBox)
         self.outerBox.addLayout(self.mainBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
         self.outerBox.setSpacing(12)
 
         self.setLayout(self.outerBox)
@@ -205,7 +212,7 @@ class GuiBuildSettings(NToolDialog):
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
-        role = self.buttonBox.buttonRole(button)
+        role = self.btnBox.buttonRole(button)
         if role == QtRoleApply:
             self._applyChanges()
             self._emitBuildData()

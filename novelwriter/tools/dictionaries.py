@@ -37,9 +37,10 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter, formatInt, getFileSize, openExternalPath
+from novelwriter.enum import nwStandardButton
 from novelwriter.error import formatException
 from novelwriter.extensions.modified import NIconToolButton, NNonBlockingDialog
-from novelwriter.types import QtDialogClose, QtHexArgb
+from novelwriter.types import QtHexArgb
 
 logger = logging.getLogger(__name__)
 
@@ -110,8 +111,11 @@ class GuiDictionaries(NNonBlockingDialog):
         self.infoBox.setFrameStyle(QFrame.Shape.NoFrame)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogClose, self)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.clicked.connect(self.reject)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnClose, QDialogButtonBox.ButtonRole.AcceptRole)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -123,7 +127,7 @@ class GuiDictionaries(NNonBlockingDialog):
         self.outerBox.addLayout(self.inBox, 0)
         self.outerBox.addWidget(self.infoBox, 1)
         self.outerBox.addSpacing(8)
-        self.outerBox.addWidget(self.buttonBox, 0)
+        self.outerBox.addWidget(self.btnBox, 0)
 
         self.setLayout(self.outerBox)
 
