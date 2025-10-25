@@ -31,19 +31,20 @@ from dataclasses import dataclass
 from math import ceil
 from typing import TYPE_CHECKING, Final
 
-from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication, QSize, Qt
 from PyQt6.QtGui import (
     QColor, QFont, QFontDatabase, QFontMetrics, QGuiApplication, QIcon,
     QPainter, QPainterPath, QPalette, QPixmap
 )
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication, QWidget
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, minmax
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS, DEF_TREECOL
 from novelwriter.constants import nwLabels
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwTheme
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwStandardButton, nwTheme
 from novelwriter.error import logException
+from novelwriter.extensions.modified import NPushButton
 from novelwriter.types import QtBlack, QtHexArgb, QtPaintAntiAlias, QtTransparent
 
 if TYPE_CHECKING:
@@ -54,6 +55,19 @@ logger = logging.getLogger(__name__)
 STYLES_FLAT_TABS = "flatTabWidget"
 STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
+
+STANDARD_BUTTONS = {
+    nwStandardButton.OK:     (QT_TRANSLATE_NOOP("Button", "OK"), "bullet-on", "blue"),
+    nwStandardButton.CANCEL: (QT_TRANSLATE_NOOP("Button", "Cancel"), "cancel", "red"),
+    nwStandardButton.YES:    (QT_TRANSLATE_NOOP("Button", "Yes"), "bullet-on", "green"),
+    nwStandardButton.NO:     (QT_TRANSLATE_NOOP("Button", "No"), "bullet-on", "red"),
+    nwStandardButton.OPEN:   (QT_TRANSLATE_NOOP("Button", "Open"), "open", "blue"),
+    nwStandardButton.CLOSE:  (QT_TRANSLATE_NOOP("Button", "Close"), "close", "default"),
+    nwStandardButton.BROWSE: (QT_TRANSLATE_NOOP("Button", "Browse"), "browse", "yellow"),
+    nwStandardButton.LIST:   (QT_TRANSLATE_NOOP("Button", "List"), "list", "blue"),
+    nwStandardButton.NEW:    (QT_TRANSLATE_NOOP("Button", "New"), "add", "green"),
+    nwStandardButton.CREATE: (QT_TRANSLATE_NOOP("Button", "Create"), "star", "yellow"),
+}
 
 
 @dataclass
@@ -120,9 +134,9 @@ class GuiTheme:
         "_qColors", "_styleSheets", "_svgColors", "_syntaxList", "accentCol", "baseButtonHeight",
         "baseIconHeight", "baseIconSize", "buttonIconSize", "errorText", "fadedText",
         "fontPixelSize", "fontPointSize", "getDecoration", "getHeaderDecoration",
-        "getHeaderDecorationNarrow", "getIcon", "getItemIcon", "getPixmap", "getToggleIcon",
-        "guiFont", "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall", "helpText",
-        "iconCache", "isDarkTheme", "syntaxTheme", "textNHeight", "textNWidth",
+        "getHeaderDecorationNarrow", "getIcon", "getItemIcon", "getPixmap", "getStandardButton",
+        "getToggleIcon", "guiFont", "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall",
+        "helpText", "iconCache", "isDarkTheme", "syntaxTheme", "textNHeight", "textNWidth",
     )
 
     def __init__(self) -> None:
@@ -153,6 +167,7 @@ class GuiTheme:
         self.getItemIcon = self.iconCache.getItemIcon
         self.getToggleIcon = self.iconCache.getToggleIcon
         self.getDecoration = self.iconCache.getDecoration
+        self.getStandardButton = self.iconCache.getStandardButton
         self.getHeaderDecoration = self.iconCache.getHeaderDecoration
         self.getHeaderDecorationNarrow = self.iconCache.getHeaderDecorationNarrow
 
@@ -807,6 +822,14 @@ class GuiIcons:
         """
         w, h = size
         return self.getIcon(name, color, w, h).pixmap(w, h, QIcon.Mode.Normal)
+
+    def getStandardButton(self, button: nwStandardButton, parent: QWidget) -> NPushButton:
+        """Return a standard button with icon and text."""
+        text, icon, color = STANDARD_BUTTONS.get(button, ("", "", ""))
+        return NPushButton(
+            parent, QCoreApplication.translate("Button", text),
+            self._theme.buttonIconSize, icon, color
+        )
 
     def getDecoration(self, name: str, w: int | None = None, h: int | None = None) -> QPixmap:
         """Load graphical decoration element based on the decoration

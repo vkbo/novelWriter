@@ -247,3 +247,18 @@ class nwStatusShape(Enum):
     BLOCK_2  = 17
     BLOCK_3  = 18
     BLOCK_4  = 19
+
+
+class nwStandardButton(Enum):
+    """Enum: Standard Dialog Buttons."""
+
+    OK     = 0
+    CANCEL = 1
+    YES    = 2
+    NO     = 3
+    OPEN   = 4
+    CLOSE  = 5
+    BROWSE = 6
+    LIST   = 7
+    NEW    = 8
+    CREATE = 9
