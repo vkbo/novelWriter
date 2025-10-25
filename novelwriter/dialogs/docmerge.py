@@ -37,7 +37,7 @@ from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAccepted, QtUserRole
+from novelwriter.types import QtAccepted, QtRoleAccept, QtRoleReject, QtRoleReset, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -96,9 +96,9 @@ class GuiDocMerge(NDialog):
         self.btnReset.clicked.connect(self._resetList)
 
         self.btnBox = QDialogButtonBox(self)
-        self.btnBox.addButton(self.btnOk, QDialogButtonBox.ButtonRole.AcceptRole)
-        self.btnBox.addButton(self.btnCancel, QDialogButtonBox.ButtonRole.RejectRole)
-        self.btnBox.addButton(self.btnReset, QDialogButtonBox.ButtonRole.ResetRole)
+        self.btnBox.addButton(self.btnOk, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
+        self.btnBox.addButton(self.btnReset, QtRoleReset)
 
         # Assemble
         self.outerBox = QVBoxLayout()

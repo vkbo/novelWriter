@@ -37,7 +37,7 @@ from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NComboBox, NDialog
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAccepted, QtUserRole
+from novelwriter.types import QtAccepted, QtRoleAccept, QtRoleReject, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -125,8 +125,8 @@ class GuiDocSplit(NDialog):
         self.btnCancel.clicked.connect(self.reject)
 
         self.btnBox = QDialogButtonBox(self)
-        self.btnBox.addButton(self.btnOk, QDialogButtonBox.ButtonRole.AcceptRole)
-        self.btnBox.addButton(self.btnCancel, QDialogButtonBox.ButtonRole.RejectRole)
+        self.btnBox.addButton(self.btnOk, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Assemble
         self.outerBox = QVBoxLayout()

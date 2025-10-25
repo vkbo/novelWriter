@@ -40,7 +40,7 @@ from novelwriter.common import formatFileFilter, formatInt, getFileSize, openExt
 from novelwriter.enum import nwStandardButton
 from novelwriter.error import formatException
 from novelwriter.extensions.modified import NIconToolButton, NNonBlockingDialog
-from novelwriter.types import QtHexArgb
+from novelwriter.types import QtHexArgb, QtRoleReject
 
 logger = logging.getLogger(__name__)
 
@@ -115,7 +115,7 @@ class GuiDictionaries(NNonBlockingDialog):
         self.btnClose.clicked.connect(self.reject)
 
         self.btnBox = QDialogButtonBox(self)
-        self.btnBox.addButton(self.btnClose, QDialogButtonBox.ButtonRole.AcceptRole)
+        self.btnBox.addButton(self.btnClose, QtRoleReject)
 
         # Assemble
         self.outerBox = QVBoxLayout()

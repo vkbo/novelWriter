@@ -36,7 +36,10 @@ from novelwriter import SHARED
 from novelwriter.constants import nwQuotes, trConst
 from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NDialog
-from novelwriter.types import QtAccepted, QtAlignCenter, QtAlignTop, QtUserRole
+from novelwriter.types import (
+    QtAccepted, QtAlignCenter, QtAlignTop, QtRoleAccept, QtRoleReject,
+    QtUserRole
+)
 
 logger = logging.getLogger(__name__)
 
@@ -97,8 +100,8 @@ class GuiQuoteSelect(NDialog):
         self.btnCancel.clicked.connect(self.reject)
 
         self.btnBox = QDialogButtonBox(self)
-        self.btnBox.addButton(self.btnOk, QDialogButtonBox.ButtonRole.AcceptRole)
-        self.btnBox.addButton(self.btnCancel, QDialogButtonBox.ButtonRole.RejectRole)
+        self.btnBox.addButton(self.btnOk, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Assemble
         self.labelBox.addWidget(self.previewLabel, 0, QtAlignTop)

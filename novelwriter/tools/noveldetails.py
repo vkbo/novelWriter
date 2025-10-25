@@ -44,7 +44,7 @@ from novelwriter.extensions.modified import NNonBlockingDialog
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignRight, QtDecoration
+from novelwriter.types import QtAlignRight, QtDecoration, QtRoleReject
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
@@ -107,7 +107,7 @@ class GuiNovelDetails(NNonBlockingDialog):
         self.btnClose.clicked.connect(self.reject)
 
         self.btnBox = QDialogButtonBox(self)
-        self.btnBox.addButton(self.btnClose, QDialogButtonBox.ButtonRole.RejectRole)
+        self.btnBox.addButton(self.btnClose, QtRoleReject)
 
         # Assemble
         self.topBox = QHBoxLayout()

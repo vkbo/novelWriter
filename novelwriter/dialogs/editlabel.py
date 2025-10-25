@@ -30,7 +30,7 @@ from PyQt6.QtWidgets import QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit, QV
 from novelwriter import SHARED
 from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NDialog
-from novelwriter.types import QtAccepted
+from novelwriter.types import QtAccepted, QtRoleAccept, QtRoleReject
 
 logger = logging.getLogger(__name__)
 
@@ -63,8 +63,8 @@ class GuiEditLabel(NDialog):
         self.btnCancel.clicked.connect(self.reject)
 
         self.btnBox = QDialogButtonBox(self)
-        self.btnBox.addButton(self.btnOk, QDialogButtonBox.ButtonRole.AcceptRole)
-        self.btnBox.addButton(self.btnCancel, QDialogButtonBox.ButtonRole.RejectRole)
+        self.btnBox.addButton(self.btnOk, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Assemble
         self.innerBox = QHBoxLayout()

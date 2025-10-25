@@ -43,7 +43,10 @@ from novelwriter.enum import nwStandardButton
 from novelwriter.error import formatException
 from novelwriter.extensions.modified import NPushButton, NToolDialog
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle, QtDecoration
+from novelwriter.types import (
+    QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle, QtDecoration,
+    QtRoleAction, QtRoleReject
+)
 
 if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
@@ -294,8 +297,8 @@ class GuiWritingStats(NToolDialog):
         self.btnSave.setMenu(self.saveMenu)
 
         self.btnBox = QDialogButtonBox(self)
-        self.btnBox.addButton(self.btnClose, QDialogButtonBox.ButtonRole.RejectRole)
-        self.btnBox.addButton(self.btnSave, QDialogButtonBox.ButtonRole.ActionRole)
+        self.btnBox.addButton(self.btnSave, QtRoleAction)
+        self.btnBox.addButton(self.btnClose, QtRoleReject)
 
         # Assemble
         self.outerBox = QGridLayout()

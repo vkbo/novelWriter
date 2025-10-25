@@ -46,7 +46,10 @@ from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScroll
 from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtSizeMinimum, QtSizeMinimumExpanding, QtUserRole
+from novelwriter.types import (
+    QtRoleAccept, QtRoleReject, QtSizeMinimum, QtSizeMinimumExpanding,
+    QtUserRole
+)
 
 logger = logging.getLogger(__name__)
 
@@ -99,8 +102,8 @@ class GuiProjectSettings(NDialog):
         self.btnCancel.clicked.connect(self.reject)
 
         self.btnBox = QDialogButtonBox(self)
-        self.btnBox.addButton(self.btnSave, QDialogButtonBox.ButtonRole.AcceptRole)
-        self.btnBox.addButton(self.btnCancel, QDialogButtonBox.ButtonRole.RejectRole)
+        self.btnBox.addButton(self.btnSave, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Content
         SHARED.project.countStatus()

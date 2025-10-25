@@ -40,6 +40,7 @@ from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog, NIconToolButton
+from novelwriter.types import QtRoleAccept, QtRoleReject
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
@@ -117,8 +118,8 @@ class GuiWordList(NDialog):
         self.btnClose.clicked.connect(self.reject)
 
         self.btnBox = QDialogButtonBox(self)
-        self.btnBox.addButton(self.btnSave, QDialogButtonBox.ButtonRole.AcceptRole)
-        self.btnBox.addButton(self.btnClose, QDialogButtonBox.ButtonRole.RejectRole)
+        self.btnBox.addButton(self.btnSave, QtRoleAccept)
+        self.btnBox.addButton(self.btnClose, QtRoleReject)
 
         # Assemble
         self.outerBox = QVBoxLayout()

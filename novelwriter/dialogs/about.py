@@ -37,7 +37,7 @@ from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.versioninfo import VersionInfoWidget
-from novelwriter.types import QtAlignRightTop, QtHexArgb
+from novelwriter.types import QtAlignRightTop, QtHexArgb, QtRoleReject
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
@@ -87,7 +87,7 @@ class GuiAbout(NDialog):
         self.btnClose.clicked.connect(self.reject)
 
         self.btnBox = QDialogButtonBox(self)
-        self.btnBox.addButton(self.btnClose, QDialogButtonBox.ButtonRole.RejectRole)
+        self.btnBox.addButton(self.btnClose, QtRoleReject)
 
         # Assemble
         self.innerBox = QVBoxLayout()

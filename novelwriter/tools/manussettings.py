@@ -127,12 +127,12 @@ class GuiBuildSettings(NToolDialog):
         # Buttons
         self.btnApply = SHARED.theme.getStandardButton(nwStandardButton.APPLY, self)
         self.btnSave = SHARED.theme.getStandardButton(nwStandardButton.SAVE, self)
-        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
 
         self.btnBox = QDialogButtonBox(self)
-        self.btnBox.addButton(self.btnApply, QDialogButtonBox.ButtonRole.ApplyRole)
-        self.btnBox.addButton(self.btnSave, QDialogButtonBox.ButtonRole.AcceptRole)
-        self.btnBox.addButton(self.btnCancel, QDialogButtonBox.ButtonRole.RejectRole)
+        self.btnBox.addButton(self.btnApply, QtRoleApply)
+        self.btnBox.addButton(self.btnSave, QtRoleAccept)
+        self.btnBox.addButton(self.btnClose, QtRoleReject)
         self.btnBox.clicked.connect(self._dialogButtonClicked)
 
         # Assemble
