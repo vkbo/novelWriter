@@ -32,7 +32,7 @@ from PyQt6.QtCore import QTimer, pyqtSlot
 from PyQt6.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialogButtonBox, QFileDialog,
     QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
-    QPushButton, QSplitter, QVBoxLayout, QWidget
+    QSplitter, QVBoxLayout, QWidget
 )
 
 from novelwriter import SHARED
@@ -40,10 +40,10 @@ from novelwriter.common import makeFileNameSafe, openExternalPath
 from novelwriter.constants import nwLabels
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.item import NWItem
-from novelwriter.enum import nwBuildFmt
-from novelwriter.extensions.modified import NDialog, NIconToolButton
+from novelwriter.enum import nwBuildFmt, nwStandardButton
+from novelwriter.extensions.modified import NDialog, NIconToolButton, NPushButton
 from novelwriter.extensions.progressbars import NProgressSimple
-from novelwriter.types import QtAlignCenter, QtDialogClose, QtRoleAction, QtRoleReject, QtUserRole
+from novelwriter.types import QtAlignCenter, QtRoleAction, QtRoleReject, QtUserRole
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
@@ -178,25 +178,19 @@ class GuiManuscriptBuild(NDialog):
         self.buildBox.setVerticalSpacing(4)
 
         # Dialog Buttons
-        self.buttonBox = QDialogButtonBox(self)
-
-        self.btnOpen = QPushButton(
-            SHARED.theme.getIcon("browse", "yellow"), self.tr("Open Folder"), self
-        )
-        self.btnOpen.setIconSize(bSz)
+        self.btnOpen = NPushButton(self, self.tr("Open Folder"), bSz, "browse", "yellow")
         self.btnOpen.setAutoDefault(False)
-        self.buttonBox.addButton(self.btnOpen, QtRoleAction)
 
-        self.btnBuild = QPushButton(
-            SHARED.theme.getIcon("sb_build", "blue"), self.tr("&Build"), self
-        )
-        self.btnBuild.setIconSize(bSz)
+        self.btnBuild = SHARED.theme.getStandardButton(nwStandardButton.BUILD, self)
         self.btnBuild.setAutoDefault(True)
-        self.buttonBox.addButton(self.btnBuild, QtRoleAction)
 
-        self.btnClose = self.buttonBox.addButton(QtDialogClose)
-        if self.btnClose:
-            self.btnClose.setAutoDefault(False)
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.setAutoDefault(False)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnOpen, QtRoleAction)
+        self.btnBox.addButton(self.btnBuild, QtRoleAction)
+        self.btnBox.addButton(self.btnClose, QtRoleReject)
 
         # Assemble GUI
         # ============
@@ -223,7 +217,7 @@ class GuiManuscriptBuild(NDialog):
         self.outerBox.addSpacing(4)
         self.outerBox.addLayout(self.buildBox, 0)
         self.outerBox.addSpacing(16)
-        self.outerBox.addWidget(self.buttonBox, 0)
+        self.outerBox.addWidget(self.btnBox, 0)
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
@@ -239,7 +233,7 @@ class GuiManuscriptBuild(NDialog):
         # Signals
         self.btnReset.clicked.connect(self._doResetBuildName)
         self.btnBrowse.clicked.connect(self._doSelectPath)
-        self.buttonBox.clicked.connect(self._dialogButtonClicked)
+        self.btnBox.clicked.connect(self._dialogButtonClicked)
         self.listFormats.itemSelectionChanged.connect(self._resetProgress)
 
         logger.debug("Ready: GuiManuscriptBuild")
@@ -266,7 +260,7 @@ class GuiManuscriptBuild(NDialog):
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
-        role = self.buttonBox.buttonRole(button)
+        role = self.btnBox.buttonRole(button)
         if role == QtRoleAction:
             if button == self.btnBuild:
                 self._runBuild()

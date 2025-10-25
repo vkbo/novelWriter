@@ -93,17 +93,11 @@ QtMouseMiddle = Qt.MouseButton.MiddleButton
 QtAccepted = QDialog.DialogCode.Accepted
 QtRejected = QDialog.DialogCode.Rejected
 
-QtDialogApply = QDialogButtonBox.StandardButton.Apply
-QtDialogCancel = QDialogButtonBox.StandardButton.Cancel
-QtDialogClose = QDialogButtonBox.StandardButton.Close
-QtDialogOk = QDialogButtonBox.StandardButton.Ok
-QtDialogReset = QDialogButtonBox.StandardButton.Reset
-QtDialogSave = QDialogButtonBox.StandardButton.Save
-
 QtRoleAccept = QDialogButtonBox.ButtonRole.AcceptRole
 QtRoleAction = QDialogButtonBox.ButtonRole.ActionRole
 QtRoleApply = QDialogButtonBox.ButtonRole.ApplyRole
 QtRoleReject = QDialogButtonBox.ButtonRole.RejectRole
+QtRoleReset = QDialogButtonBox.ButtonRole.ResetRole
 
 # Cursor Types
 

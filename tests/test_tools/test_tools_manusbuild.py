@@ -26,15 +26,15 @@ import pytest
 
 from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QDesktopServices
-from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QMessageBox
+from PyQt6.QtWidgets import QFileDialog, QListWidgetItem
 from pytestqt.qtbot import QtBot
 
 from novelwriter.constants import nwLabels
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.enum import nwBuildFmt
 from novelwriter.guimain import GuiMain
+from novelwriter.shared import _GuiAlert
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
-from novelwriter.types import QtDialogClose
 
 from tests.tools import buildTestProject
 
@@ -94,9 +94,7 @@ def testToolManuscriptBuild_Main(
         assert (fncPath / "TestBuild").with_suffix(nwLabels.BUILD_EXT[fmt]).exists()
         lastFmt = fmt
 
-    button = manus.buttonBox.button(QtDialogClose)
-    assert button is not None
-    manus._dialogButtonClicked(button)
+    manus._dialogButtonClicked(manus.btnClose)
     manus.deleteLater()
 
     assert build.lastBuildName == "TestBuild"
@@ -134,7 +132,7 @@ def testToolManuscriptBuild_Main(
     manus.buildPath.setText(str(fncPath))
     manus.buildName.setText("TestBuild")
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert manus._runBuild() is False
 
     # Test that the open button works
@@ -150,7 +148,5 @@ def testToolManuscriptBuild_Main(
         assert lastUrl.startswith("file://")
 
     # Finish
-    button = manus.buttonBox.button(QtDialogClose)
-    assert button is not None
-    manus._dialogButtonClicked(button)
+    manus._dialogButtonClicked(manus.btnClose)
     # qtbot.stop()

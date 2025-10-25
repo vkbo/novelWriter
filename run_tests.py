@@ -25,7 +25,10 @@ if __name__ == "__main__":
     env["QT_SCALE_FACTOR"] = "1.0"
 
     if args.r or args.t or args.u:
-        cmd = ["coverage", "run", "-m"]
+        cmd = ["coverage", "run"]
+        if args.lf or args.sw:
+            cmd += ["--append"]
+        cmd += ["-m"]
     else:
         cmd = [sys.executable, "-m"]
 

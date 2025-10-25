@@ -41,13 +41,13 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter, qtAddAction, qtLambda, simplified
 from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.status import CUSTOM_COL, NWStatus, StatusEntry
-from novelwriter.enum import nwStatusShape
+from novelwriter.enum import nwStandardButton, nwStatusShape
 from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollableForm
 from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import (
-    QtDialogCancel, QtDialogSave, QtSizeMinimum, QtSizeMinimumExpanding,
+    QtRoleAccept, QtRoleReject, QtSizeMinimum, QtSizeMinimumExpanding,
     QtUserRole
 )
 
@@ -95,9 +95,15 @@ class GuiProjectSettings(NDialog):
         self.sidebar.buttonClicked.connect(self._sidebarClicked)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogCancel, self)
-        self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnSave = SHARED.theme.getStandardButton(nwStandardButton.SAVE, self)
+        self.btnSave.clicked.connect(self._doSave)
+
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.reject)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnSave, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Content
         SHARED.project.countStatus()
@@ -126,7 +132,7 @@ class GuiProjectSettings(NDialog):
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.topBox)
         self.outerBox.addLayout(self.mainBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
         self.outerBox.setSpacing(8)
 
         self.setLayout(self.outerBox)

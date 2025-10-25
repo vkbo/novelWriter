@@ -22,8 +22,11 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
+from PyQt6.QtCore import QSize
 from PyQt6.QtGui import QFont, QIcon, QPixmap
 from PyQt6.QtWidgets import QWidget
+
+from novelwriter.extensions.modified import NPushButton
 
 
 class MockGuiMain(QWidget):
@@ -71,6 +74,9 @@ class MockTheme:
 
     def getHeaderDecoration(self, *a) -> QPixmap:
         return QPixmap()
+
+    def getStandardButton(self, *a) -> NPushButton:
+        return NPushButton(None, "", QSize(1, 1))  # type: ignore
 
     def getIcon(self, *a) -> QIcon:
         return QIcon()

@@ -31,19 +31,20 @@ from dataclasses import dataclass
 from math import ceil
 from typing import TYPE_CHECKING, Final
 
-from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication, QSize, Qt
 from PyQt6.QtGui import (
     QColor, QFont, QFontDatabase, QFontMetrics, QGuiApplication, QIcon,
     QPainter, QPainterPath, QPalette, QPixmap
 )
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication, QWidget
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, minmax
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS, DEF_TREECOL
 from novelwriter.constants import nwLabels
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwTheme
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwStandardButton, nwTheme
 from novelwriter.error import logException
+from novelwriter.extensions.modified import NPushButton
 from novelwriter.types import QtBlack, QtHexArgb, QtPaintAntiAlias, QtTransparent
 
 if TYPE_CHECKING:
@@ -54,6 +55,26 @@ logger = logging.getLogger(__name__)
 STYLES_FLAT_TABS = "flatTabWidget"
 STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
+
+STANDARD_BUTTONS = {
+    nwStandardButton.OK:      (QT_TRANSLATE_NOOP("Button", "OK"), "btn_ok", "blue"),
+    nwStandardButton.CANCEL:  (QT_TRANSLATE_NOOP("Button", "Cancel"), "btn_cancel", "red"),
+    nwStandardButton.YES:     (QT_TRANSLATE_NOOP("Button", "&Yes"), "btn_yes", "green"),
+    nwStandardButton.NO:      (QT_TRANSLATE_NOOP("Button", "&No"), "btn_no", "red"),
+    nwStandardButton.OPEN:    (QT_TRANSLATE_NOOP("Button", "Open"), "btn_open", "blue"),
+    nwStandardButton.CLOSE:   (QT_TRANSLATE_NOOP("Button", "Close"), "btn_close", "faded"),
+    nwStandardButton.SAVE:    (QT_TRANSLATE_NOOP("Button", "Save"), "btn_save", "blue"),
+    nwStandardButton.BROWSE:  (QT_TRANSLATE_NOOP("Button", "Browse"), "btn_browse", "yellow"),
+    nwStandardButton.LIST:    (QT_TRANSLATE_NOOP("Button", "List"), "btn_list", "blue"),
+    nwStandardButton.NEW:     (QT_TRANSLATE_NOOP("Button", "New"), "btn_new", "green"),
+    nwStandardButton.CREATE:  (QT_TRANSLATE_NOOP("Button", "Create"), "btn_create", "yellow"),
+    nwStandardButton.RESET:   (QT_TRANSLATE_NOOP("Button", "Reset"), "btn_reset", "green"),
+    nwStandardButton.INSERT:  (QT_TRANSLATE_NOOP("Button", "Insert"), "btn_insert", "blue"),
+    nwStandardButton.APPLY:   (QT_TRANSLATE_NOOP("Button", "Apply"), "btn_apply", "blue"),
+    nwStandardButton.BUILD:   (QT_TRANSLATE_NOOP("Button", "Build"), "btn_build", "blue"),
+    nwStandardButton.PRINT:   (QT_TRANSLATE_NOOP("Button", "Print"), "btn_print", "blue"),
+    nwStandardButton.PREVIEW: (QT_TRANSLATE_NOOP("Button", "Preview"), "btn_preview", "blue"),
+}
 
 
 @dataclass
@@ -120,9 +141,9 @@ class GuiTheme:
         "_qColors", "_styleSheets", "_svgColors", "_syntaxList", "accentCol", "baseButtonHeight",
         "baseIconHeight", "baseIconSize", "buttonIconSize", "errorText", "fadedText",
         "fontPixelSize", "fontPointSize", "getDecoration", "getHeaderDecoration",
-        "getHeaderDecorationNarrow", "getIcon", "getItemIcon", "getPixmap", "getToggleIcon",
-        "guiFont", "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall", "helpText",
-        "iconCache", "isDarkTheme", "syntaxTheme", "textNHeight", "textNWidth",
+        "getHeaderDecorationNarrow", "getIcon", "getItemIcon", "getPixmap", "getStandardButton",
+        "getToggleIcon", "guiFont", "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall",
+        "helpText", "iconCache", "isDarkTheme", "syntaxTheme", "textNHeight", "textNWidth",
     )
 
     def __init__(self) -> None:
@@ -153,6 +174,7 @@ class GuiTheme:
         self.getItemIcon = self.iconCache.getItemIcon
         self.getToggleIcon = self.iconCache.getToggleIcon
         self.getDecoration = self.iconCache.getDecoration
+        self.getStandardButton = self.iconCache.getStandardButton
         self.getHeaderDecoration = self.iconCache.getHeaderDecoration
         self.getHeaderDecorationNarrow = self.iconCache.getHeaderDecorationNarrow
 
@@ -807,6 +829,14 @@ class GuiIcons:
         """
         w, h = size
         return self.getIcon(name, color, w, h).pixmap(w, h, QIcon.Mode.Normal)
+
+    def getStandardButton(self, button: nwStandardButton, parent: QWidget) -> NPushButton:
+        """Return a standard button with icon and text."""
+        text, icon, color = STANDARD_BUTTONS.get(button, ("", "", ""))
+        return NPushButton(
+            parent, QCoreApplication.translate("Button", text),
+            self._theme.buttonIconSize, icon, color
+        )
 
     def getDecoration(self, name: str, w: int | None = None, h: int | None = None) -> QPixmap:
         """Load graphical decoration element based on the decoration

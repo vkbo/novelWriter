@@ -32,10 +32,12 @@ from PyQt6.QtWidgets import (
     QListWidgetItem, QVBoxLayout, QWidget
 )
 
+from novelwriter import SHARED
 from novelwriter.constants import nwQuotes, trConst
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NDialog
 from novelwriter.types import (
-    QtAccepted, QtAlignCenter, QtAlignTop, QtDialogCancel, QtDialogOk,
+    QtAccepted, QtAlignCenter, QtAlignTop, QtRoleAccept, QtRoleReject,
     QtUserRole
 )
 
@@ -91,9 +93,15 @@ class GuiQuoteSelect(NDialog):
         self.listBox.setMinimumHeight(150)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnOk = SHARED.theme.getStandardButton(nwStandardButton.OK, self)
+        self.btnOk.clicked.connect(self.accept)
+
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.reject)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnOk, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Assemble
         self.labelBox.addWidget(self.previewLabel, 0, QtAlignTop)
@@ -103,7 +111,7 @@ class GuiQuoteSelect(NDialog):
         self.innerBox.addWidget(self.listBox)
 
         self.outerBox.addLayout(self.innerBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
 
         self.setLayout(self.outerBox)
 

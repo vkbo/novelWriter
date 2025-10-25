@@ -31,8 +31,8 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
-    QApplication, QComboBox, QDialog, QDoubleSpinBox, QLabel, QSpinBox,
-    QToolButton, QTreeView, QWidget
+    QApplication, QComboBox, QDialog, QDoubleSpinBox, QLabel, QPushButton,
+    QSpinBox, QToolButton, QTreeView, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -197,6 +197,29 @@ class NDoubleSpinBox(QDoubleSpinBox):
             super().wheelEvent(event)
         else:
             event.ignore()
+
+
+class NPushButton(QPushButton):
+    """Custom: Modified QPushButton.
+
+    A quicker way to create a push button using the app theme.
+    """
+
+    def __init__(
+        self, parent: QWidget, text: str, iconSize: QSize,
+        icon: str | None = None, color: str | None = None
+    ) -> None:
+        super().__init__(parent=parent)
+        self._icon = icon
+        self._color = color
+        self.setText(text)
+        self.setIconSize(iconSize)
+        self.refreshIcon()
+
+    def refreshIcon(self) -> None:
+        """Reload the theme icon."""
+        if self._icon:
+            self.setIcon(SHARED.theme.getIcon(self._icon, self._color))
 
 
 class NIconToolButton(QToolButton):
