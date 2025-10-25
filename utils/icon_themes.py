@@ -107,6 +107,18 @@ ICONS = [
     "theme_dark",
     "theme_auto",
 
+    "btn_ok",
+    "btn_cancel",
+    "btn_yes",
+    "btn_no",
+    "btn_open",
+    "btn_close",
+    "btn_browse",
+    "btn_list",
+    "btn_new",
+    "btn_create",
+    "btn_reset",
+
     "add",
     "bookmarks",
     "browse",
@@ -142,7 +154,6 @@ ICONS = [
     "more_arrow",
     "more_vertical",
     "noncheckable",
-    "open",
     "panel",
     "pin",
     "project_copy",
@@ -151,7 +162,6 @@ ICONS = [
     "remove",
     "revert",
     "settings",
-    "star",
     "stats",
     "text",
     "timer_off",
@@ -288,6 +298,8 @@ def processFontAwesome(workDir: Path, iconsDir: Path, jobs: dict) -> None:
                 viewbox = [int(x) for x in svg.get("viewBox", "").split()]
                 viewbox = [viewbox[2]//2 - 256, 0, 512, 512]
                 svg.set("viewBox", " ".join(str(x) for x in viewbox))
+                for elem in svg.iter():
+                    elem.attrib.pop("fill", None)
                 icons[key] = svg
             else:
                 print(f"Not Found: {icon}.svg")
