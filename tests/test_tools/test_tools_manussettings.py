@@ -33,7 +33,6 @@ from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.tools.manussettings import (
     GuiBuildSettings, _FilterTab, _FormattingTab, _HeadingsTab
 )
-from novelwriter.types import QtDialogApply, QtDialogClose, QtDialogSave
 
 from tests.tools import C, buildTestProject
 
@@ -78,9 +77,7 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     # Capture Apply button
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        button = bSettings.buttonBox.button(QtDialogApply)
-        assert button is not None
-        bSettings._dialogButtonClicked(button)
+        bSettings._dialogButtonClicked(bSettings.btnApply)
 
     assert triggered
 
@@ -89,9 +86,7 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        button = bSettings.buttonBox.button(QtDialogSave)
-        assert button is not None
-        bSettings._dialogButtonClicked(button)
+        bSettings._dialogButtonClicked(bSettings.btnSave)
 
     assert triggered
 
@@ -109,9 +104,7 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     assert triggered
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -326,9 +319,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     ]
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -505,9 +496,7 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     assert sBuild.getBool("headings.hideSection") is True
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -579,9 +568,7 @@ def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
     assert sBuild.getBool("text.addNoteHeadings") is True
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -657,9 +644,7 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
         assert fmtTab._textFont == font
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -703,9 +688,7 @@ def testToolBuildSettings_FormatFirstLineIndent(monkeypatch, qtbot, nwGUI):
     assert sBuild.getBool("format.indentFirstPar") is True
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -761,9 +744,7 @@ def testToolBuildSettings_FormatPageLayout(monkeypatch, qtbot, nwGUI):
     assert fmtTab.rightMargin.value() == 1.5
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -832,7 +813,5 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert fmtTab.odtPageHeader.text() == nwHeadFmt.DOC_AUTO
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()

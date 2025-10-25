@@ -35,7 +35,6 @@ from novelwriter.enum import nwBuildFmt
 from novelwriter.guimain import GuiMain
 from novelwriter.shared import _GuiAlert
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
-from novelwriter.types import QtDialogClose
 
 from tests.tools import buildTestProject
 
@@ -95,9 +94,7 @@ def testToolManuscriptBuild_Main(
         assert (fncPath / "TestBuild").with_suffix(nwLabels.BUILD_EXT[fmt]).exists()
         lastFmt = fmt
 
-    button = manus.buttonBox.button(QtDialogClose)
-    assert button is not None
-    manus._dialogButtonClicked(button)
+    manus._dialogButtonClicked(manus.btnClose)
     manus.deleteLater()
 
     assert build.lastBuildName == "TestBuild"
@@ -151,7 +148,5 @@ def testToolManuscriptBuild_Main(
         assert lastUrl.startswith("file://")
 
     # Finish
-    button = manus.buttonBox.button(QtDialogClose)
-    assert button is not None
-    manus._dialogButtonClicked(button)
+    manus._dialogButtonClicked(manus.btnClose)
     # qtbot.stop()
