@@ -252,14 +252,20 @@ class nwStatusShape(Enum):
 class nwStandardButton(Enum):
     """Enum: Standard Dialog Buttons."""
 
-    OK     = 0
-    CANCEL = 1
-    YES    = 2
-    NO     = 3
-    OPEN   = 4
-    CLOSE  = 5
-    BROWSE = 6
-    LIST   = 7
-    NEW    = 8
-    CREATE = 9
-    RESET  = 10
+    OK      = 0
+    CANCEL  = 1
+    YES     = 2
+    NO      = 3
+    OPEN    = 4
+    CLOSE   = 5
+    SAVE    = 6
+    BROWSE  = 7
+    LIST    = 8
+    NEW     = 9
+    CREATE  = 10
+    RESET   = 11
+    INSERT  = 12
+    APPLY   = 13
+    BUILD   = 14
+    PRINT   = 15
+    PREVIEW = 16
