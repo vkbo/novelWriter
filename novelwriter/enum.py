@@ -262,3 +262,4 @@ class nwStandardButton(Enum):
     LIST   = 7
     NEW    = 8
     CREATE = 9
+    RESET  = 10

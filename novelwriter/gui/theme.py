@@ -57,16 +57,17 @@ STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
 
 STANDARD_BUTTONS = {
-    nwStandardButton.OK:     (QT_TRANSLATE_NOOP("Button", "OK"), "bullet-on", "blue"),
-    nwStandardButton.CANCEL: (QT_TRANSLATE_NOOP("Button", "Cancel"), "cancel", "red"),
-    nwStandardButton.YES:    (QT_TRANSLATE_NOOP("Button", "Yes"), "bullet-on", "green"),
-    nwStandardButton.NO:     (QT_TRANSLATE_NOOP("Button", "No"), "bullet-on", "red"),
-    nwStandardButton.OPEN:   (QT_TRANSLATE_NOOP("Button", "Open"), "open", "blue"),
-    nwStandardButton.CLOSE:  (QT_TRANSLATE_NOOP("Button", "Close"), "close", "default"),
-    nwStandardButton.BROWSE: (QT_TRANSLATE_NOOP("Button", "Browse"), "browse", "yellow"),
-    nwStandardButton.LIST:   (QT_TRANSLATE_NOOP("Button", "List"), "list", "blue"),
-    nwStandardButton.NEW:    (QT_TRANSLATE_NOOP("Button", "New"), "add", "green"),
-    nwStandardButton.CREATE: (QT_TRANSLATE_NOOP("Button", "Create"), "star", "yellow"),
+    nwStandardButton.OK:     (QT_TRANSLATE_NOOP("Button", "OK"), "btn_ok", "blue"),
+    nwStandardButton.CANCEL: (QT_TRANSLATE_NOOP("Button", "Cancel"), "btn_cancel", "red"),
+    nwStandardButton.YES:    (QT_TRANSLATE_NOOP("Button", "Yes"), "btn_yes", "green"),
+    nwStandardButton.NO:     (QT_TRANSLATE_NOOP("Button", "No"), "btn_no", "red"),
+    nwStandardButton.OPEN:   (QT_TRANSLATE_NOOP("Button", "Open"), "btn_open", "blue"),
+    nwStandardButton.CLOSE:  (QT_TRANSLATE_NOOP("Button", "Close"), "btn_close", "red"),
+    nwStandardButton.BROWSE: (QT_TRANSLATE_NOOP("Button", "Browse"), "btn_browse", "yellow"),
+    nwStandardButton.LIST:   (QT_TRANSLATE_NOOP("Button", "List"), "btn_list", "blue"),
+    nwStandardButton.NEW:    (QT_TRANSLATE_NOOP("Button", "New"), "btn_new", "green"),
+    nwStandardButton.CREATE: (QT_TRANSLATE_NOOP("Button", "Create"), "btn_create", "yellow"),
+    nwStandardButton.RESET:  (QT_TRANSLATE_NOOP("Button", "Reset"), "btn_reset", "green"),
 }
 
 
