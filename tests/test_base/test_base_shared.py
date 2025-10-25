@@ -20,6 +20,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
 from __future__ import annotations
 
+import sys
+
 from unittest.mock import MagicMock
 
 import pytest
@@ -218,7 +220,8 @@ def testBaseSharedData_GuiAlert():
     # Alert: Info
     alert.setAlertType(_GuiAlert.INFO, False)
     assert hasattr(alert, "_btnOk")
-    assert alert.windowTitle() == "Information"
+    if sys.platform != "darwin":  # Not set on MacOS
+        assert alert.windowTitle() == "Information"
     alert._btnOk.click()
     assert alert.finalState is True
     alert._state = False
@@ -226,7 +229,8 @@ def testBaseSharedData_GuiAlert():
     # Alert: Warning
     alert.setAlertType(_GuiAlert.WARN, False)
     assert hasattr(alert, "_btnOk")
-    assert alert.windowTitle() == "Warning"
+    if sys.platform != "darwin":  # Not set on MacOS
+        assert alert.windowTitle() == "Warning"
     alert._btnOk.click()
     assert alert.finalState is True
     alert._state = False
@@ -234,7 +238,8 @@ def testBaseSharedData_GuiAlert():
     # Alert: Error
     alert.setAlertType(_GuiAlert.ERROR, False)
     assert hasattr(alert, "_btnOk")
-    assert alert.windowTitle() == "Error"
+    if sys.platform != "darwin":  # Not set on MacOS
+        assert alert.windowTitle() == "Error"
     alert._btnOk.click()
     assert alert.finalState is True
     alert._state = False
@@ -243,7 +248,8 @@ def testBaseSharedData_GuiAlert():
     alert.setAlertType(_GuiAlert.ASK, True)
     assert hasattr(alert, "_btnYes")
     assert hasattr(alert, "_btnNo")
-    assert alert.windowTitle() == "Question"
+    if sys.platform != "darwin":  # Not set on MacOS
+        assert alert.windowTitle() == "Question"
     alert._btnYes.click()
     assert alert.finalState is True
     alert._btnNo.click()

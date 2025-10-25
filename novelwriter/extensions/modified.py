@@ -210,12 +210,11 @@ class NPushButton(QPushButton):
         icon: str | None = None, color: str | None = None
     ) -> None:
         super().__init__(parent=parent)
-        self.setText(text)
-        self.setIconSize(iconSize)
         self._icon = icon
         self._color = color
-        if icon:
-            self.refreshIcon()
+        self.setText(text)
+        self.setIconSize(iconSize)
+        self.refreshIcon()
 
     def refreshIcon(self) -> None:
         """Reload the theme icon."""
