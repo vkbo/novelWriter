@@ -26,13 +26,14 @@ import pytest
 
 from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QDesktopServices
-from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QMessageBox
+from PyQt6.QtWidgets import QFileDialog, QListWidgetItem
 from pytestqt.qtbot import QtBot
 
 from novelwriter.constants import nwLabels
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.enum import nwBuildFmt
 from novelwriter.guimain import GuiMain
+from novelwriter.shared import _GuiAlert
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.types import QtDialogClose
 
@@ -134,7 +135,7 @@ def testToolManuscriptBuild_Main(
     manus.buildPath.setText(str(fncPath))
     manus.buildName.setText("TestBuild")
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert manus._runBuild() is False
 
     # Test that the open button works

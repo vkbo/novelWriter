@@ -34,7 +34,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QDesktopServices, QFont, QScreen
-from PyQt6.QtWidgets import QApplication, QDialog, QFileDialog, QFontDialog, QMessageBox, QWidget
+from PyQt6.QtWidgets import QApplication, QFileDialog, QFontDialog, QMessageBox, QWidget
 
 from novelwriter.common import formatFileFilter
 from novelwriter.constants import nwFiles
@@ -536,4 +536,4 @@ class _GuiAlert(QMessageBox):
     def _onReject(self) -> None:
         """Process rejected state."""
         self._state = False
-        self.setResult(QDialog.DialogCode.Rejected)
+        self.close()

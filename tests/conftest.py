@@ -157,9 +157,11 @@ def projPath(fncPath):
 def mockGUI(qtbot, monkeypatch):
     """Create a mock instance of novelWriter's main GUI class."""
     from novelwriter.gui.theme import GuiTheme
+    from novelwriter.shared import _GuiAlert
 
     monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
+    monkeypatch.setattr(_GuiAlert, "exec", lambda *a: None)
+    monkeypatch.setattr(_GuiAlert, "finalState", True)
     gui = MockGuiMain()
     theme = GuiTheme()
     monkeypatch.setattr(SHARED, "_gui", gui)
@@ -182,9 +184,11 @@ def nwGUI(qtbot, monkeypatch, functionFixture):
     """Create an instance of the novelWriter GUI."""
     from novelwriter.gui.theme import GuiTheme
     from novelwriter.guimain import GuiMain
+    from novelwriter.shared import _GuiAlert
 
     monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
+    monkeypatch.setattr(_GuiAlert, "exec", lambda *a: None)
+    monkeypatch.setattr(_GuiAlert, "finalState", True)
 
     CONFIG.loadConfig()
     SHARED.initTheme(GuiTheme())

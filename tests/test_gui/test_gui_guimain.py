@@ -30,7 +30,7 @@ import pytest
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette
-from PyQt6.QtWidgets import QInputDialog, QMessageBox
+from PyQt6.QtWidgets import QInputDialog
 
 from novelwriter import CONFIG, SHARED, __hexversion__
 from novelwriter.common import jsonEncode
@@ -42,6 +42,7 @@ from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
+from novelwriter.shared import _GuiAlert
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.types import QtModCtrl, QtModShift
 
@@ -104,7 +105,7 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
 
     # Check that closes can be blocked
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert nwGUI.openProject(projPath) is True
         assert nwGUI.closeMain() is False
     nwGUI.closeProject()
@@ -841,7 +842,7 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI, projPath, fncPath, mockRnd)
     # Block closing
     assert SHARED.hasProject is True
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert nwGUI.openProject(projPath) is False
         assert SHARED.hasProject is True
 
@@ -854,7 +855,7 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI, projPath, fncPath, mockRnd)
     shutil.copyfile(lockBack, lockPath)
 
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert nwGUI.openProject(projPath) is False
 
     assert nwGUI.openProject(projPath) is True
