@@ -158,6 +158,8 @@ class GuiProjectSearch(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiProjectSearch")
+
         palette = QApplication.palette()
         colBase = palette.base().color().name(QtHexArgb)
         colFocus = palette.highlight().color().name(QtHexArgb)

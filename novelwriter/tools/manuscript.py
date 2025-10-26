@@ -263,16 +263,18 @@ class GuiManuscript(NToolDialog):
 
     def updateTheme(self, *, init: bool = False) -> None:
         """Update theme elements."""
-        self.tbAdd.setThemeIcon("add", "green")
-        self.tbDel.setThemeIcon("remove", "red")
-        self.tbCopy.setThemeIcon("copy", "blue")
-        self.tbEdit.setThemeIcon("edit", "green")
+        logger.debug("Theme Update: GuiManuscript, init=%s", init)
 
         if not init:
             self.btnPreview.updateIcon()
             self.btnPrint.updateIcon()
             self.btnBuild.updateIcon()
             self.btnClose.updateIcon()
+
+        self.tbAdd.setThemeIcon("add", "green")
+        self.tbDel.setThemeIcon("remove", "red")
+        self.tbCopy.setThemeIcon("copy", "blue")
+        self.tbEdit.setThemeIcon("edit", "green")
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbAdd.setStyleSheet(buttonStyle)
@@ -641,6 +643,7 @@ class _DetailsWidget(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         if self._build:
+            logger.debug("Theme Update: _DetailsWidget")
             self.updateInfo(self._build)
 
 
@@ -709,6 +712,7 @@ class _OutlineWidget(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: _OutlineWidget")
         self.updateOutline(self._outline, force=True)
 
     ##
@@ -845,6 +849,8 @@ class _PreviewWidget(QTextBrowser):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: _PreviewWidget")
+
         palette = QApplication.palette()
         palette.setColor(QPalette.ColorRole.Window, palette.toolTipBase().color())
         palette.setColor(QPalette.ColorRole.WindowText, palette.toolTipText().color())
@@ -984,6 +990,7 @@ class _StatsWidget(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: _StatsWidget")
         self.toggleButton.setThemeIcon("unfold")
 
     ##

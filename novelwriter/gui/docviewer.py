@@ -141,6 +141,7 @@ class GuiDocViewer(QTextBrowser):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiDocViewer")
         self.docHeader.updateTheme()
         self.docFooter.updateTheme()
 
@@ -724,6 +725,8 @@ class GuiDocViewHeader(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiDocViewHeader")
+
         self.outlineButton.setThemeIcon("list", "blue")
         self.backButton.setThemeIcon("chevron_left", "blue")
         self.forwardButton.setThemeIcon("chevron_right", "blue")
@@ -910,7 +913,8 @@ class GuiDocViewFooter(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        # Icons
+        logger.debug("Theme Update: GuiDocViewFooter")
+
         fPx = int(0.9*SHARED.theme.fontPixelSize)
         bulletIcon = SHARED.theme.getToggleIcon("bullet", (fPx, fPx), "blue")
 

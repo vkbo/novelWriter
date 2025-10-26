@@ -133,6 +133,8 @@ class GuiMainStatus(QStatusBar):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiMainStatus")
+
         iPx = SHARED.theme.baseIconHeight
         self.langIcon.setPixmap(SHARED.theme.getPixmap("language", (iPx, iPx)))
         self.statsIcon.setPixmap(SHARED.theme.getPixmap("stats", (iPx, iPx)))

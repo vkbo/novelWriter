@@ -173,6 +173,8 @@ class GuiBuildSettings(NToolDialog):
 
     def updateTheme(self, *, init: bool = False) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiBuildSettings, init=%s", init)
+
         if not init:
             self.btnApply.updateIcon()
             self.btnSave.updateIcon()
@@ -405,6 +407,8 @@ class _FilterTab(NFixedPage):
 
     def updateTheme(self, *, init: bool = False) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: _FilterTab, init=%s", init)
+
         if not init:
             self._statusFlags[self.F_FILTERED] = SHARED.theme.getIcon("filter", "orange")
             self._statusFlags[self.F_INCLUDED] = SHARED.theme.getIcon("pin", "blue")
@@ -805,6 +809,8 @@ class _HeadingsTab(NScrollablePage):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: _HeadingsTab")
+
         self.btnPart.setThemeIcon("edit", "green")
         self.btnChapter.setThemeIcon("edit", "green")
         self.btnUnnumbered.setThemeIcon("edit", "green")
@@ -1310,12 +1316,13 @@ class _FormattingTab(NScrollableForm):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        iPx = SHARED.theme.baseIconHeight
+        logger.debug("Theme Update: _FormattingTab")
 
         self.ignoredKeywordsButton.setThemeIcon("add", "green")
         self.btnTextFont.setThemeIcon("font")
         self.btnPageHeader.setThemeIcon("revert", "green")
 
+        iPx = SHARED.theme.baseIconHeight
         self.pixT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
         self.pixB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
         self.pixL.setPixmap(SHARED.theme.getPixmap("margin_left", (iPx, iPx)))

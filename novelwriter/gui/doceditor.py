@@ -292,6 +292,8 @@ class GuiDocEditor(QPlainTextEdit):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiDocEditor")
+
         self.docSearch.updateTheme()
         self.docHeader.updateTheme()
         self.docFooter.updateTheme()
@@ -2478,8 +2480,9 @@ class GuiDocToolBar(QWidget):
 
     def updateTheme(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
-        syntax = SHARED.theme.syntaxTheme
+        logger.debug("Theme Update: GuiDocToolBar")
 
+        syntax = SHARED.theme.syntaxTheme
         palette = self.palette()
         palette.setColor(QPalette.ColorRole.Window, syntax.back)
         palette.setColor(QPalette.ColorRole.WindowText, syntax.text)
@@ -2716,8 +2719,9 @@ class GuiDocEditSearch(QFrame):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        palette = QApplication.palette()
+        logger.debug("Theme Update: GuiDocEditSearch")
 
+        palette = QApplication.palette()
         self.setPalette(palette)
         self.searchBox.setPalette(palette)
         self.replaceBox.setPalette(palette)
@@ -2961,6 +2965,8 @@ class GuiDocEditHeader(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiDocEditHeader")
+
         self.tbButton.setThemeIcon("fmt_toolbar", "blue")
         self.outlineButton.setThemeIcon("list", "blue")
         self.searchButton.setThemeIcon("search", "blue")
@@ -3150,6 +3156,8 @@ class GuiDocEditFooter(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiDocEditFooter")
+
         iPx = round(0.9*SHARED.theme.baseIconHeight)
         self.linesIcon.setPixmap(SHARED.theme.getPixmap("lines", (iPx, iPx)))
         self.wordsIcon.setPixmap(SHARED.theme.getPixmap("stats", (iPx, iPx)))

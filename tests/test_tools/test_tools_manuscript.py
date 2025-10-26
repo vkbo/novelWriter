@@ -72,6 +72,9 @@ def testToolManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
         manus.btnPreview.click()
     assert manus.docPreview.toPlainText().strip() == allText
 
+    # Trigger a theme update, which is only a visual refresh, but it shouldn't crash
+    manus.updateTheme()
+
     nwGUI.closeProject()  # This should auto-close the manuscript tool
 
     # qtbot.stop()
@@ -147,6 +150,9 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
     new = manus._getSelectedBuild()
     assert new is not None
     assert new.name == "Test Build 2"
+
+    # Trigger a theme update, which should propagate to settings
+    manus.updateTheme()
 
     # Close the dialog should also close the child dialogs
     manus.btnClose.click()
