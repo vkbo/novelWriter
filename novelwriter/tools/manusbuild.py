@@ -43,7 +43,7 @@ from novelwriter.core.item import NWItem
 from novelwriter.enum import nwBuildFmt, nwStandardButton
 from novelwriter.extensions.modified import NDialog, NIconToolButton, NPushButton
 from novelwriter.extensions.progressbars import NProgressSimple
-from novelwriter.types import QtAlignCenter, QtRoleAction, QtRoleReject, QtUserRole
+from novelwriter.types import QtAlignCenter, QtRoleAction, QtRoleDestruct, QtRoleReject, QtUserRole
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
@@ -190,7 +190,7 @@ class GuiManuscriptBuild(NDialog):
         self.btnBox = QDialogButtonBox(self)
         self.btnBox.addButton(self.btnOpen, QtRoleAction)
         self.btnBox.addButton(self.btnBuild, QtRoleAction)
-        self.btnBox.addButton(self.btnClose, QtRoleReject)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
 
         # Assemble GUI
         # ============

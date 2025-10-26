@@ -45,7 +45,7 @@ from novelwriter.extensions.modified import NPushButton, NToolDialog
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import (
     QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle, QtDecoration,
-    QtRoleAction, QtRoleReject
+    QtRoleAction, QtRoleDestruct
 )
 
 if TYPE_CHECKING:
@@ -298,7 +298,7 @@ class GuiWritingStats(NToolDialog):
 
         self.btnBox = QDialogButtonBox(self)
         self.btnBox.addButton(self.btnSave, QtRoleAction)
-        self.btnBox.addButton(self.btnClose, QtRoleReject)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
 
         # Assemble
         self.outerBox = QGridLayout()

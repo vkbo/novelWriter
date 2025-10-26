@@ -52,7 +52,7 @@ from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.types import (
     QtAlignCenter, QtAlignLeft, QtHeaderFixed, QtHeaderStretch, QtRoleAccept,
-    QtRoleApply, QtRoleReject, QtUserRole
+    QtRoleApply, QtRoleDestruct, QtRoleReject, QtUserRole
 )
 
 if TYPE_CHECKING:
@@ -132,7 +132,7 @@ class GuiBuildSettings(NToolDialog):
         self.btnBox = QDialogButtonBox(self)
         self.btnBox.addButton(self.btnApply, QtRoleApply)
         self.btnBox.addButton(self.btnSave, QtRoleAccept)
-        self.btnBox.addButton(self.btnClose, QtRoleReject)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
         self.btnBox.clicked.connect(self._dialogButtonClicked)
 
         # Assemble
