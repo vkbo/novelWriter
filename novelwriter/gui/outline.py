@@ -103,6 +103,8 @@ class GuiOutlineView(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiOutlineView")
+
         self.outlineBar.updateTheme()
         self.outlineTree.updateTheme()
         self.outlineTree.refreshTree(
@@ -258,6 +260,8 @@ class GuiOutlineToolBar(QToolBar):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiOutlineToolBar")
+
         self.setStyleSheet("QToolBar {border: 0px;}")
         self.novelValue.refreshNovelList()
         self.aRefresh.setIcon(SHARED.theme.getIcon("refresh", "green"))
@@ -454,6 +458,8 @@ class GuiOutlineTree(QTreeWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiOutlineTree")
+
         iType = nwItemType.FILE
         iClass = nwItemClass.NO_CLASS
         iLayout = nwItemLayout.DOCUMENT

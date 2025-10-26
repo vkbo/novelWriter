@@ -106,6 +106,8 @@ class GuiDocViewerPanel(QWidget):
 
     def updateTheme(self, updateTabs: bool = True) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiDocViewerPanel")
+
         self.optsButton.setThemeIcon("more_vertical")
         self.optsButton.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON))
         self.mainTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
@@ -270,6 +272,8 @@ class _ViewPanelBackRefs(QTreeWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: _ViewPanelBackRefs")
+
         self._editIcon = SHARED.theme.getIcon("edit", "green")
         self._viewIcon = SHARED.theme.getIcon("view", "blue")
         for i in range(self.topLevelItemCount()):
@@ -400,6 +404,8 @@ class _ViewPanelKeyWords(QTreeWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: _ViewPanelKeyWords")
+
         self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[self._class], "root")
         self._editIcon = SHARED.theme.getIcon("edit", "green")
         self._viewIcon = SHARED.theme.getIcon("view", "blue")

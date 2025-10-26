@@ -138,6 +138,7 @@ class GuiProjectView(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiProjectView")
         self.projBar.updateTheme()
 
     def initSettings(self) -> None:
@@ -346,6 +347,8 @@ class GuiProjectToolBar(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiProjectToolBar")
+
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbQuick.setStyleSheet(buttonStyle)
         self.tbMoveU.setStyleSheet(buttonStyle)

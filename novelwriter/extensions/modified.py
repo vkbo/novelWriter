@@ -125,14 +125,16 @@ class NComboBox(QComboBox):
     window of many widgets.
     """
 
-    def __init__(self, parent: QWidget | None = None, maxItems: int = 15) -> None:
+    def __init__(
+        self, parent: QWidget | None = None, maxItems: int = 15, scrollable: bool = False
+    ) -> None:
         super().__init__(parent=parent)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setMaxVisibleItems(maxItems)
-
-        # The style sheet disables Fusion style pop-up mode on some platforms
-        # and allows for scrolling of long lists of items
-        self.setStyleSheet("QComboBox {combobox-popup: 0;}")
+        if scrollable:
+            # The style sheet disables Fusion style pop-up mode on some
+            # platforms and allows for scrolling of long lists of items
+            self.setStyleSheet("QComboBox {combobox-popup: 0;}")
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         """Only capture the mouse wheel if the widget has focus."""
@@ -214,10 +216,10 @@ class NPushButton(QPushButton):
         self._color = color
         self.setText(text)
         self.setIconSize(iconSize)
-        self.refreshIcon()
+        self.updateIcon()
 
-    def refreshIcon(self) -> None:
-        """Reload the theme icon."""
+    def updateIcon(self) -> None:
+        """Update the theme icon."""
         if self._icon:
             self.setIcon(SHARED.theme.getIcon(self._icon, self._color))
 
@@ -239,9 +241,9 @@ class NIconToolButton(QToolButton):
         if icon:
             self.setThemeIcon(icon, color)
 
-    def setThemeIcon(self, iconKey: str, color: str | None = None) -> None:
+    def setThemeIcon(self, icon: str, color: str | None = None) -> None:
         """Set an icon from the current theme."""
-        self.setIcon(SHARED.theme.getIcon(iconKey, color))
+        self.setIcon(SHARED.theme.getIcon(icon, color))
 
 
 class NIconToggleButton(QToolButton):
@@ -260,10 +262,10 @@ class NIconToggleButton(QToolButton):
         if icon:
             self.setThemeIcon(icon)
 
-    def setThemeIcon(self, iconKey: str) -> None:
+    def setThemeIcon(self, icon: str) -> None:
         """Set an icon from the current theme."""
-        iconSize = self.iconSize()
-        self.setIcon(SHARED.theme.getToggleIcon(iconKey, (iconSize.width(), iconSize.height())))
+        size = self.iconSize()
+        self.setIcon(SHARED.theme.getToggleIcon(icon, (size.width(), size.height())))
 
 
 class NClickableLabel(QLabel):

@@ -129,8 +129,9 @@ class GuiSideBar(QWidget):
 
     def updateTheme(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
-        buttonStyle = SHARED.theme.getStyleSheet(STYLES_BIG_TOOLBUTTON)
+        logger.debug("Theme Update: GuiSideBar")
 
+        buttonStyle = SHARED.theme.getStyleSheet(STYLES_BIG_TOOLBUTTON)
         self.tbProject.setStyleSheet(buttonStyle)
         self.tbNovel.setStyleSheet(buttonStyle)
         self.tbSearch.setStyleSheet(buttonStyle)
