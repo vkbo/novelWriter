@@ -158,7 +158,7 @@ class GuiPreferences(NDialog):
         self.mainForm.addGroupLabel(title, section)
 
         # Display Language
-        self.guiLocale = NComboBox(self)
+        self.guiLocale = NComboBox(self, scrollable=True)
         self.guiLocale.setMinimumWidth(200)
         for lang, name in CONFIG.listLanguages(CONFIG.LANG_NW):
             self.guiLocale.addItem(name, lang)
@@ -170,9 +170,9 @@ class GuiPreferences(NDialog):
         )
 
         # Colour Theme
-        self.lightTheme = NComboBox(self)
+        self.lightTheme = NComboBox(self, scrollable=True)
         self.lightTheme.setMinimumWidth(200)
-        self.darkTheme = NComboBox(self)
+        self.darkTheme = NComboBox(self, scrollable=True)
         self.darkTheme.setMinimumWidth(200)
         for key, theme in SHARED.theme.colourThemes.items():
             if theme.dark:
@@ -193,7 +193,7 @@ class GuiPreferences(NDialog):
         )
 
         # Icon Theme
-        self.iconTheme = NComboBox(self)
+        self.iconTheme = NComboBox(self, scrollable=True)
         self.iconTheme.setMinimumWidth(200)
         for key, theme in SHARED.theme.iconCache.iconThemes.items():
             self.iconTheme.addItem(theme.name, key)
@@ -511,7 +511,7 @@ class GuiPreferences(NDialog):
         self.mainForm.addGroupLabel(title, section)
 
         # Spell Checking
-        self.spellLanguage = NComboBox(self)
+        self.spellLanguage = NComboBox(self, scrollable=True)
         self.spellLanguage.setMinimumWidth(200)
 
         if CONFIG.hasEnchant:

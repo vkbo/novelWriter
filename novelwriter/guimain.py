@@ -910,6 +910,9 @@ class GuiMain(QMainWindow):
         self.mainStatus.updateTheme()
         SHARED.project.tree.refreshAllItems()
 
+        if dialog := SHARED.findTopLevelWidget(GuiManuscript):
+            dialog.updateTheme()
+
         if syntax:
             self.docEditor.updateSyntaxColors()
 
