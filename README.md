@@ -12,11 +12,7 @@ novelWriter is a plain text editor designed for writing novels assembled from ma
 documents. It uses a minimal formatting syntax inspired by Markdown, and adds a meta data syntax
 for comments, synopsis, and cross-referencing. It's designed to be a simple text editor that allows
 for easy organisation of text and notes, using human readable text files as storage for robustness.
-
-The project storage is suitable for version control software, and also well suited for file
-synchronisation tools. All text is saved as plain text files with a meta data header. The core
-project structure is stored in a single project XML file. Other meta data is primarily saved as
-JSON files.
+The project format is well suited both for version control software and file synchronisation tools.
 
 For more details, and how to install and use novelWriter, please see the main website and
 documentation.
@@ -42,9 +38,9 @@ documentation.
 
 ## Implementation
 
-novelWriter is written with Python and Qt6 with PyQt6 Python binding. It is released on Linux,
-Windows and MacOS. It can in principle run on any Operating System that also supports Qt, PyQt and
-Python.
+novelWriter is written in Python and uses Qt6 with PyQt6 Python binding as the UI framework. It is
+released on Linux, Windows and MacOS. It can in principle run on any Operating System that also
+supports Qt, PyQt and Python.
 
 <p align="center">
   <img width="80%" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/screenshot.png">
@@ -57,7 +53,7 @@ Please don't make feature pull requests without first having discussed them with
 You can make a feature request in the [issues tracker](https://github.com/vkbo/novelWriter/issues),
 or if the idea isn't fully formed, start a [discussion](https://github.com/vkbo/novelWriter/discussions).
 Please also don't make pull requests to reformat or rewrite existing code unless there is a very
-good reason for doing so.
+good reason for doing so. Please do not submit AI generated content.
 
 Fixes and patches are welcome. Contributions related to packaging and installing novelWriter will
 also be appreciated, but please make an issue or a discussion topic first. Before contributing any
