@@ -72,6 +72,9 @@ class NPagedSideBar(QToolBar):
     def setLabelColor(self, color: QColor) -> None:
         """Set the text color for the labels."""
         self._labelCol = color
+        for widget in self.children():
+            if isinstance(widget, _NPagedToolLabel):
+                widget.setTextColor(color)
 
     def addLabel(self, text: str) -> None:
         """Add a new label to the toolbar."""
@@ -186,6 +189,10 @@ class _NPagedToolLabel(QLabel):
         self._tM = (self._bH - fH)//2
         self.setFixedHeight(self._bH)
 
+        self._textCol = textColor or self.palette().text().color()
+
+    def setTextColor(self, textColor: QColor | None = None) -> None:
+        """Set a new text colour."""
         self._textCol = textColor or self.palette().text().color()
 
     def paintEvent(self, event: QPaintEvent) -> None:

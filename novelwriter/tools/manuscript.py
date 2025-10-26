@@ -286,6 +286,10 @@ class GuiManuscript(NToolDialog):
         self.buildOutline.updateTheme()
         self.docPreview.updateTheme()
 
+        for obj in SHARED.mainGui.children():
+            if isinstance(obj, GuiBuildSettings):
+                obj.updateTheme()
+
     ##
     #  Events
     ##

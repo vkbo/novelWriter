@@ -125,14 +125,16 @@ class NComboBox(QComboBox):
     window of many widgets.
     """
 
-    def __init__(self, parent: QWidget | None = None, maxItems: int = 15) -> None:
+    def __init__(
+        self, parent: QWidget | None = None, maxItems: int = 15, scrollable: bool = True
+    ) -> None:
         super().__init__(parent=parent)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setMaxVisibleItems(maxItems)
-
-        # The style sheet disables Fusion style pop-up mode on some platforms
-        # and allows for scrolling of long lists of items
-        self.setStyleSheet("QComboBox {combobox-popup: 0;}")
+        if not scrollable:
+            # The style sheet disables Fusion style pop-up mode on some
+            # platforms and allows for scrolling of long lists of items
+            self.setStyleSheet("QComboBox {combobox-popup: 0;}")
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         """Only capture the mouse wheel if the widget has focus."""
