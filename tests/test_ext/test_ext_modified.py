@@ -22,12 +22,13 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt6.QtCore import QEvent, QPoint, QPointF, Qt
+from PyQt6.QtCore import QEvent, QPoint, QPointF, QSize, Qt
 from PyQt6.QtGui import QKeyEvent, QMouseEvent, QStandardItem, QStandardItemModel, QWheelEvent
 from PyQt6.QtWidgets import QWidget
 
 from novelwriter.extensions.modified import (
-    NClickableLabel, NComboBox, NDialog, NDoubleSpinBox, NSpinBox, NTreeView
+    NClickableLabel, NComboBox, NDialog, NDoubleSpinBox, NIconToggleButton,
+    NIconToolButton, NSpinBox, NTreeView
 )
 from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
 
@@ -168,7 +169,7 @@ def testExtModified_NDoubleSpinBox(qtbot, monkeypatch):
 
 
 @pytest.mark.gui
-def testExtModified_NClickableLabel(qtbot, monkeypatch):
+def testExtModified_NClickableLabel(qtbot):
     """Test the NClickableLabel class."""
     widget = NClickableLabel()
     dialog = SimpleDialog(widget)
@@ -181,3 +182,23 @@ def testExtModified_NClickableLabel(qtbot, monkeypatch):
 
     with qtbot.waitSignal(widget.mouseClicked):
         widget.mousePressEvent(event)
+
+
+@pytest.mark.gui
+def testExtModified_ToolButtons(qtbot):
+    """Test the NIconToolButton and NIconToggleButton classes."""
+    dialog = SimpleDialog(None)
+
+    size = QSize(16, 16)
+    button1 = NIconToolButton(dialog, size, "add", "green")
+    button2 = NIconToggleButton(dialog, size, "bullet")
+
+    assert button1.iconSize() == size
+    assert button2.iconSize() == size
+
+    assert button1.icon().isNull() is False
+    assert button2.icon().isNull() is False
+
+    dialog.addWidget(button1)
+    dialog.addWidget(button2)
+    dialog.show()

@@ -241,9 +241,9 @@ class NIconToolButton(QToolButton):
         if icon:
             self.setThemeIcon(icon, color)
 
-    def setThemeIcon(self, iconKey: str, color: str | None = None) -> None:
+    def setThemeIcon(self, icon: str, color: str | None = None) -> None:
         """Set an icon from the current theme."""
-        self.setIcon(SHARED.theme.getIcon(iconKey, color))
+        self.setIcon(SHARED.theme.getIcon(icon, color))
 
 
 class NIconToggleButton(QToolButton):
@@ -262,10 +262,10 @@ class NIconToggleButton(QToolButton):
         if icon:
             self.setThemeIcon(icon)
 
-    def setThemeIcon(self, iconKey: str) -> None:
+    def setThemeIcon(self, icon: str) -> None:
         """Set an icon from the current theme."""
         size = self.iconSize()
-        self.setIcon(SHARED.theme.getToggleIcon(iconKey, (size.width(), size.height())))
+        self.setIcon(SHARED.theme.getToggleIcon(icon, (size.width(), size.height())))
 
 
 class NClickableLabel(QLabel):

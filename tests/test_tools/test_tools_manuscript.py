@@ -152,7 +152,7 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
     assert new.name == "Test Build 2"
 
     # Trigger a theme update, which should propagate to settings
-    manus.updateTheme()
+    nwGUI.refreshThemeColors()
 
     # Close the dialog should also close the child dialogs
     manus.btnClose.click()
