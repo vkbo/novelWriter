@@ -258,7 +258,7 @@ class _OpenProjectPage(QWidget):
 
         # Info / Tool
         self.aMissing = QAction(self)
-        self.aMissing.setIcon(SHARED.theme.getIcon("alert_warn", "orange"))
+        self.aMissing.setIcon(SHARED.theme.getIcon("alert_warn", "warning"))
         self.aMissing.setToolTip(self.tr("The project path is not reachable."))
 
         self.selectedPath = QLineEdit(self)
@@ -534,7 +534,7 @@ class _NewProjectForm(QWidget):
         self.projPath = QLineEdit(self)
         self.projPath.setReadOnly(True)
 
-        self.browsePath = NIconToolButton(self, iSz, "browse")
+        self.browsePath = NIconToolButton(self, iSz, "browse", "systemio")
         self.browsePath.clicked.connect(self._doBrowse)
 
         self.pathBox = QHBoxLayout()
@@ -545,20 +545,20 @@ class _NewProjectForm(QWidget):
         self.projFill = QLineEdit(self)
         self.projFill.setReadOnly(True)
 
-        self.browseFill = NIconToolButton(self, iSz, "document_add", "blue")
+        self.browseFill = NIconToolButton(self, iSz, "document_add", "add")
 
         self.fillMenu = QMenu(self.browseFill)
 
         self.fillBlank = qtAddAction(self.fillMenu, self.tr("Create a fresh project"))
-        self.fillBlank.setIcon(SHARED.theme.getIcon("document"))
+        self.fillBlank.setIcon(SHARED.theme.getIcon("document", "file"))
         self.fillBlank.triggered.connect(self._setFillBlank)
 
         self.fillSample = qtAddAction(self.fillMenu, self.tr("Create an example project"))
-        self.fillSample.setIcon(SHARED.theme.getIcon("document_add", "blue"))
+        self.fillSample.setIcon(SHARED.theme.getIcon("document_add", "add"))
         self.fillSample.triggered.connect(self._setFillSample)
 
         self.fillCopy = qtAddAction(self.fillMenu, self.tr("Copy an existing project"))
-        self.fillCopy.setIcon(SHARED.theme.getIcon("project_copy", "green"))
+        self.fillCopy.setIcon(SHARED.theme.getIcon("project_copy", "action"))
         self.fillCopy.triggered.connect(self._setFillCopy)
 
         self.browseFill.setMenu(self.fillMenu)

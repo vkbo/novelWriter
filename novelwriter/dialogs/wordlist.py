@@ -75,11 +75,11 @@ class GuiWordList(NDialog):
             scale=NColorLabel.HEADER_SCALE
         )
 
-        self.importButton = NIconToolButton(self, iSz, "import", "green")
+        self.importButton = NIconToolButton(self, iSz, "import", "apply")
         self.importButton.setToolTip(self.tr("Import words from text file"))
         self.importButton.clicked.connect(self._importWords)
 
-        self.exportButton = NIconToolButton(self, iSz, "export", "blue")
+        self.exportButton = NIconToolButton(self, iSz, "export", "action")
         self.exportButton.setToolTip(self.tr("Export words to text file"))
         self.exportButton.clicked.connect(self._exportWords)
 
@@ -97,11 +97,11 @@ class GuiWordList(NDialog):
         # Add/Remove Form
         self.newEntry = QLineEdit(self)
 
-        self.addButton = NIconToolButton(self, iSz, "add", "green")
+        self.addButton = NIconToolButton(self, iSz, "add", "add")
         self.addButton.setToolTip(self.tr("Add Word"))
         self.addButton.clicked.connect(self._doAdd)
 
-        self.delButton = NIconToolButton(self, iSz, "remove", "red")
+        self.delButton = NIconToolButton(self, iSz, "remove", "remove")
         self.delButton.setToolTip(self.tr("Remove Word"))
         self.delButton.clicked.connect(self._doDelete)
 

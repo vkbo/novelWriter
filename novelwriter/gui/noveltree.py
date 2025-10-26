@@ -247,9 +247,9 @@ class GuiNovelToolBar(QWidget):
         """Update theme elements."""
         logger.debug("Theme Update: GuiNovelToolBar")
 
-        self.tbNovel.setThemeIcon("cls_novel", "red")
-        self.tbRefresh.setThemeIcon("refresh", "green")
-        self.tbMore.setThemeIcon("more_vertical")
+        self.tbNovel.setThemeIcon("cls_novel", "root")
+        self.tbRefresh.setThemeIcon("refresh", "change")
+        self.tbMore.setThemeIcon("more_vertical", "default")
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbNovel.setStyleSheet(buttonStyle)

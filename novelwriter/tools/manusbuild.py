@@ -43,7 +43,7 @@ from novelwriter.core.item import NWItem
 from novelwriter.enum import nwBuildFmt, nwStandardButton
 from novelwriter.extensions.modified import NDialog, NIconToolButton, NPushButton
 from novelwriter.extensions.progressbars import NProgressSimple
-from novelwriter.types import QtAlignCenter, QtRoleAction, QtRoleDestruct, QtRoleReject, QtUserRole
+from novelwriter.types import QtAlignCenter, QtRoleAction, QtRoleDestruct, QtUserRole
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
@@ -143,7 +143,7 @@ class GuiManuscriptBuild(NDialog):
         # Build Path
         self.lblPath = QLabel(self.tr("Path"), self)
         self.buildPath = QLineEdit(self)
-        self.btnBrowse = NIconToolButton(self, iSz, "browse")
+        self.btnBrowse = NIconToolButton(self, iSz, "browse", "systemio")
 
         self.pathBox = QHBoxLayout()
         self.pathBox.addWidget(self.buildPath)
@@ -153,7 +153,7 @@ class GuiManuscriptBuild(NDialog):
         # Build Name
         self.lblName = QLabel(self.tr("File Name"), self)
         self.buildName = QLineEdit(self)
-        self.btnReset = NIconToolButton(self, iSz, "revert", "green")
+        self.btnReset = NIconToolButton(self, iSz, "revert", "reset")
         self.btnReset.setToolTip(self.tr("Reset file name to default"))
 
         self.nameBox = QHBoxLayout()
@@ -178,7 +178,7 @@ class GuiManuscriptBuild(NDialog):
         self.buildBox.setVerticalSpacing(4)
 
         # Dialog Buttons
-        self.btnOpen = NPushButton(self, self.tr("Open Folder"), bSz, "browse", "yellow")
+        self.btnOpen = NPushButton(self, self.tr("Open Folder"), bSz, "browse", "systemio")
         self.btnOpen.setAutoDefault(False)
 
         self.btnBuild = SHARED.theme.getStandardButton(nwStandardButton.BUILD, self)
@@ -260,13 +260,11 @@ class GuiManuscriptBuild(NDialog):
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
-        role = self.btnBox.buttonRole(button)
-        if role == QtRoleAction:
-            if button == self.btnBuild:
-                self._runBuild()
-            elif button == self.btnOpen:
-                self._openOutputFolder()
-        elif role == QtRoleReject:
+        if button == self.btnBuild:
+            self._runBuild()
+        elif button == self.btnOpen:
+            self._openOutputFolder()
+        elif button == self.btnClose:
             self.close()
 
     @pyqtSlot()

@@ -421,36 +421,36 @@ def testGuiTheme_LoadIcons():
     # ==========
 
     # Load an unknown icon
-    qIcon = iconCache.getIcon("stuff")
+    qIcon = iconCache.getIcon("stuff", "tool")
     assert isinstance(qIcon, QIcon)
     assert qIcon == iconCache._noIcon
 
     # Load an icon, it is likely already cached
-    qIcon = iconCache.getIcon("add")
+    qIcon = iconCache.getIcon("add", "tool")
     assert isinstance(qIcon, QIcon)
     assert qIcon.isNull() is False
 
     # Load it as a pixmap with a size
     # If this part of the test fails, you may need to set the
     # environment variable: QT_SCALE_FACTOR=1
-    qPix = iconCache.getPixmap("add", (50, 50))
+    qPix = iconCache.getPixmap("add", (50, 50), "tool")
     assert isinstance(qPix, QPixmap)
     assert qPix.isNull() is False
     assert qPix.width() == 50, "If this fails, make sure QT_SCALE_FACTOR=1"
     assert qPix.height() == 50, "If this fails, make sure QT_SCALE_FACTOR=1"
 
     # Load app icon
-    qIcon = iconCache.getIcon("novelwriter")
+    qIcon = iconCache.getIcon("novelwriter", "tool")
     assert isinstance(qIcon, QIcon)
     assert qIcon != iconCache._noIcon
 
     # Load mime icon
-    qIcon = iconCache.getIcon("proj_nwx")
+    qIcon = iconCache.getIcon("proj_nwx", "tool")
     assert isinstance(qIcon, QIcon)
     assert qIcon != iconCache._noIcon
 
     # Toggle icon
-    qIcon = iconCache.getToggleIcon("bullet", (24, 24))
+    qIcon = iconCache.getToggleIcon("bullet", (24, 24), "tool")
     assert isinstance(qIcon, QIcon)
     assert qIcon != iconCache._noIcon
     pOn = qIcon.pixmap(24, 24, QIcon.Mode.Normal, QIcon.State.On)
@@ -458,7 +458,7 @@ def testGuiTheme_LoadIcons():
     assert pOn != pOff
 
     # Unknown toggle icon
-    qIcon = iconCache.getToggleIcon("stuff", (24, 24))
+    qIcon = iconCache.getToggleIcon("stuff", (24, 24), "tool")
     assert isinstance(qIcon, QIcon)
     assert qIcon == iconCache._noIcon
 
@@ -610,7 +610,7 @@ def testGuiTheme_CheckTheme(theme):
     parser = ConfigParser()
     parser.read(current.path, encoding="utf-8")
 
-    sections = ["Main", "Base", "Project", "Palette", "GUI", "Syntax"]
+    sections = ["Main", "Base", "Project", "Icon", "Palette", "GUI", "Syntax"]
     assert sorted(parser.sections()) == sorted(sections)
 
     structure = {
@@ -624,6 +624,11 @@ def testGuiTheme_CheckTheme(theme):
         "Project": [
             "root", "folder", "file", "title", "chapter", "scene", "note",
             "active", "inactive", "disabled",
+        ],
+        "Icon": [
+            "tool", "sidebar", "accept", "reject", "action", "altaction",
+            "apply", "create", "destroy", "reset", "add", "change", "remove",
+            "shortcode", "markdown", "systemio", "info", "warning", "error",
         ],
         "Palette": [
             "window", "windowtext", "base", "alternatebase", "text",
