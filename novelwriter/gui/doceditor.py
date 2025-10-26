@@ -2590,7 +2590,7 @@ class GuiDocEditSearch(QFrame):
         # Buttons
         # =======
 
-        self.showReplace = NIconToggleButton(self, iSz, "unfold")
+        self.showReplace = NIconToggleButton(self, iSz)
         self.showReplace.toggled.connect(self._doToggleReplace)
 
         self.searchButton = NIconToolButton(self, iSz)
@@ -2732,6 +2732,7 @@ class GuiDocEditSearch(QFrame):
         self.cancelSearch.setIcon(SHARED.theme.getIcon("search_cancel"))
         self.searchButton.setThemeIcon("search", "green")
         self.replaceButton.setThemeIcon("search_replace", "green")
+        self.showReplace.setThemeIcon("unfold")
 
         # Set stylesheets
         self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")

@@ -214,10 +214,10 @@ class NPushButton(QPushButton):
         self._color = color
         self.setText(text)
         self.setIconSize(iconSize)
-        self.refreshIcon()
+        self.updateIcon()
 
-    def refreshIcon(self) -> None:
-        """Reload the theme icon."""
+    def updateIcon(self) -> None:
+        """Update the theme icon."""
         if self._icon:
             self.setIcon(SHARED.theme.getIcon(self._icon, self._color))
 
@@ -262,8 +262,8 @@ class NIconToggleButton(QToolButton):
 
     def setThemeIcon(self, iconKey: str) -> None:
         """Set an icon from the current theme."""
-        iconSize = self.iconSize()
-        self.setIcon(SHARED.theme.getToggleIcon(iconKey, (iconSize.width(), iconSize.height())))
+        size = self.iconSize()
+        self.setIcon(SHARED.theme.getToggleIcon(iconKey, (size.width(), size.height())))
 
 
 class NClickableLabel(QLabel):
