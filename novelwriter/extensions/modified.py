@@ -126,12 +126,12 @@ class NComboBox(QComboBox):
     """
 
     def __init__(
-        self, parent: QWidget | None = None, maxItems: int = 15, scrollable: bool = True
+        self, parent: QWidget | None = None, maxItems: int = 15, scrollable: bool = False
     ) -> None:
         super().__init__(parent=parent)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setMaxVisibleItems(maxItems)
-        if not scrollable:
+        if scrollable:
             # The style sheet disables Fusion style pop-up mode on some
             # platforms and allows for scrolling of long lists of items
             self.setStyleSheet("QComboBox {combobox-popup: 0;}")
