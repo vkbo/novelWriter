@@ -32,7 +32,7 @@ from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.gui.theme import ThemeEntry
-from novelwriter.types import QtDialogCancel, QtDialogSave, QtModNone
+from novelwriter.types import QtModNone
 
 KEY_DELAY = 1
 
@@ -118,16 +118,12 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     # Check Save Button
     prefs.show()
     with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-        button = prefs.buttonBox.button(QtDialogSave)
-        assert button is not None
-        button.click()
+        prefs.btnSave.click()
         assert len(signal.args) == 4
 
     # Check Close Button
     prefs.show()
-    button = prefs.buttonBox.button(QtDialogCancel)
-    assert button is not None
-    button.click()
+    prefs.btnCancel.click()
     assert prefs.isHidden() is True
 
     # Close Using Escape Key
@@ -342,9 +338,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     with monkeypatch.context() as mp:
         mp.setattr(QFontDatabase, "families", lambda *a: ["TestFont"])
         with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-            button = prefs.buttonBox.button(QtDialogSave)
-            assert button is not None
-            button.click()
+            prefs.btnSave.click()
             assert signal.args == [True, True, True, True]
 
     # Check Settings

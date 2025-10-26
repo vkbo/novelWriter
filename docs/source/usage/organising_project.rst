@@ -15,7 +15,7 @@ side of the main window.
 
 Each line in the project tree shows the name of each item, its word count (or alternatively
 character count), an icon for :ref:`docs_usage_project_active`, and a custom icon for
-:ref:`docs_usage_project_status` of each item. These latter two are covered alter in this section.
+:ref:`docs_usage_project_status` of each item. These latter two are covered later in this section.
 
 You can add, view and edit documents in the project tree by right-clicking on them. Some features
 are also located in the buttons along the top, next to the **Project Content** label.
@@ -47,8 +47,8 @@ Root Folder Types
 
 **Novel** (Story)
    This is where you put the documents that are part of your story. You can create multiple Novel
-   folders if you wish, but various parts of the application assumes each Novel folder belong to
-   one novel.
+   folders if you wish, but various parts of the application assumes each Novel folder belongs to
+   only one novel.
 
    The Novel folder is somewhat special in that it can contain documents for chapters, scenes and
    story partitions. How this is indicated is covered in the section :ref:`docs_usage_headings`.

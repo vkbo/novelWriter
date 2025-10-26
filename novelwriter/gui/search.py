@@ -107,7 +107,7 @@ class GuiProjectSearch(QWidget):
 
         # Search Box
         self.searchAction = QAction("", self)
-        self.searchAction.setIcon(SHARED.theme.getIcon("search", "blue"))
+        self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
         self.searchAction.triggered.connect(self._processSearch)
 
         self.searchText = QLineEdit(self)
@@ -158,6 +158,8 @@ class GuiProjectSearch(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiProjectSearch")
+
         palette = QApplication.palette()
         colBase = palette.base().color().name(QtHexArgb)
         colFocus = palette.highlight().color().name(QtHexArgb)
@@ -168,10 +170,10 @@ class GuiProjectSearch(QWidget):
             f"QLineEdit:focus {{border: 1px solid {colFocus};}} "
         )
 
-        self.searchAction.setIcon(SHARED.theme.getIcon("search", "blue"))
-        self.toggleCase.setIcon(SHARED.theme.getIcon("search_case"))
-        self.toggleWord.setIcon(SHARED.theme.getIcon("search_word"))
-        self.toggleRegEx.setIcon(SHARED.theme.getIcon("search_regex"))
+        self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
+        self.toggleCase.setIcon(SHARED.theme.getIcon("search_case", "tool"))
+        self.toggleWord.setIcon(SHARED.theme.getIcon("search_word", "tool"))
+        self.toggleRegEx.setIcon(SHARED.theme.getIcon("search_regex", "tool"))
 
     def processReturn(self) -> None:
         """Process a return keypress forwarded from the main GUI."""

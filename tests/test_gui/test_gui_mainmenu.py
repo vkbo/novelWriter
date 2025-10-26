@@ -25,12 +25,13 @@ from unittest.mock import MagicMock
 import pytest
 
 from PyQt6.QtGui import QAction, QDesktopServices, QTextBlock
-from PyQt6.QtWidgets import QFileDialog, QMessageBox
+from PyQt6.QtWidgets import QFileDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwShortcode, nwStats, nwUnicode
 from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.shared import _GuiAlert
 from novelwriter.types import QtKeepAnchor, QtMoveRight, QtSelectWord
 
 from tests.tools import C, buildTestProject, writeFile
@@ -575,7 +576,7 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
 
     # The document isn't empty, so the message box should pop
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a, **k: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert not nwGUI.importDocument()
         assert docEditor.getText() == "Bar"
 

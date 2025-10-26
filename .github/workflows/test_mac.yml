@@ -14,24 +14,30 @@ jobs:
   testMac:
     runs-on: macos-latest
     steps:
-      - name: Python Setup
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-          architecture: x64
-      - name: Install Packages (brew)
+      - name: Checkout Source
+        uses: actions/checkout@v5
+
+      - name: Install System Packages
         run: |
           brew install enchant
-      - name: Checkout Source
-        uses: actions/checkout@v4
-      - name: Install Dependencies (pip)
+
+      - name: Install UV and Python
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+
+      - name: Sync UV
         run: |
-          pip install -U pyobjc -r requirements.txt -r tests/requirements.txt
+          uv sync --no-dev --group test --group macos
+
       - name: Run Tests
         run: |
           export QT_QPA_PLATFORM=offscreen
-          python -m pytest -v --cov=novelwriter --timeout=60
+          uv run --no-sync coverage run -m pytest -v --timeout=60
+          uv run --no-sync coverage xml
+
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true

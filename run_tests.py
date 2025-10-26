@@ -3,6 +3,7 @@
 
 import argparse
 import os
+import shlex
 import subprocess
 import sys
 
@@ -12,27 +13,44 @@ if __name__ == "__main__":
     parser.add_argument("-o", action="store_true", help="Run off screen")
     parser.add_argument("-r", action="store_true", help="Generate reports")
     parser.add_argument("-t", action="store_true", help="Generate terminal report")
-    parser.add_argument("-m", help="Test modules")
-    parser.add_argument("-k", help="Test filters")
+    parser.add_argument("-u", action="store_true", help="Generate uncovered terminal report")
+    parser.add_argument("-lf", action="store_true", help="Re-run failed tests")
+    parser.add_argument("-sw", action="store_true", help="Run tests stepwise")
+    parser.add_argument("-m", help="Test modules", metavar="MARKEXPR")
+    parser.add_argument("-k", help="Test filters", metavar="EXPRESSION")
 
     args = parser.parse_args()
 
     env = os.environ.copy()
     env["QT_SCALE_FACTOR"] = "1.0"
-    cmd = [sys.executable, "-m", "pytest", "-vv"]
 
+    if args.r or args.t or args.u:
+        cmd = ["coverage", "run"]
+        if args.lf or args.sw:
+            cmd += ["--append"]
+        cmd += ["-m"]
+    else:
+        cmd = [sys.executable, "-m"]
+
+    cmd += ["pytest", "-vv"]
     if args.o:
         env["QT_QPA_PLATFORM"] = "offscreen"
-    if args.r or args.t:
-        cmd += ["--cov=novelwriter"]
-    if args.r:
-        cmd += ["--cov-report=xml", "--cov-report=html"]
-    if args.t:
-        cmd += ["--cov-report=term"]
+    if args.lf:
+        cmd += ["--last-failed"]
+    if args.sw:
+        cmd += ["--stepwise"]
     if args.m:
         cmd += ["-m", args.m]
     if args.k:
         cmd += ["-k", args.k]
 
-    print("Calling:", " ".join(cmd))
+    print("Calling:", shlex.join(cmd))
     subprocess.call(cmd, env=env)
+
+    if args.r:
+        subprocess.call(["coverage", "xml"])
+        subprocess.call(["coverage", "html"])
+    if args.t and not args.u:
+        subprocess.call(["coverage", "report"])
+    if args.u:
+        subprocess.call(["coverage", "report", "--skip-covered "])

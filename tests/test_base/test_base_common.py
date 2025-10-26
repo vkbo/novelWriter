@@ -36,10 +36,10 @@ from novelwriter.common import (
     describeFont, elide, encodeMimeHandles, firstFloat, fontMatcher,
     formatFileFilter, formatInt, formatTime, formatTimeStamp, formatVersion,
     fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass, isItemLayout,
-    isItemType, isListInstance, isTitleTag, jsonEncode, makeFileNameSafe,
-    minmax, numberToRoman, openExternalPath, processDialogSymbols,
-    readTextFile, simplified, transferCase, uniqueCompact, utf16CharMap,
-    xmlElement, xmlIndent, xmlSubElem, yesNo
+    isItemType, isListInstance, isTitleTag, jsonCombine, jsonEncode,
+    makeFileNameSafe, minmax, numberToRoman, openExternalPath,
+    processDialogSymbols, readTextFile, simplified, transferCase,
+    uniqueCompact, utf16CharMap, xmlElement, xmlIndent, xmlSubElem, yesNo
 )
 from novelwriter.enum import nwItemClass
 
@@ -648,6 +648,17 @@ def testBaseCommon_jsonEncode():
         '  "seven": [],\n'
         '  "eight": {}\n'
         '}'
+    )
+
+
+@pytest.mark.base
+def testBaseCommon_jsonCombine():
+    """Test the jsonCombine function."""
+    assert jsonCombine({"a": "[1, 2]", "b": "[3, 4]"}) == (
+        '{\n'
+        '  "a": [1, 2],\n'
+        '  "b": [3, 4]\n'
+        '}\n'
     )
 
 

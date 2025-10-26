@@ -31,19 +31,20 @@ from dataclasses import dataclass
 from math import ceil
 from typing import TYPE_CHECKING, Final
 
-from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication, QSize, Qt
 from PyQt6.QtGui import (
     QColor, QFont, QFontDatabase, QFontMetrics, QGuiApplication, QIcon,
     QPainter, QPainterPath, QPalette, QPixmap
 )
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication, QWidget
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, minmax
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS, DEF_TREECOL
 from novelwriter.constants import nwLabels
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwTheme
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwStandardButton, nwTheme
 from novelwriter.error import logException
+from novelwriter.extensions.modified import NPushButton
 from novelwriter.types import QtBlack, QtHexArgb, QtPaintAntiAlias, QtTransparent
 
 if TYPE_CHECKING:
@@ -54,6 +55,26 @@ logger = logging.getLogger(__name__)
 STYLES_FLAT_TABS = "flatTabWidget"
 STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
+
+STANDARD_BUTTONS = {
+    nwStandardButton.OK:      (QT_TRANSLATE_NOOP("Button", "OK"), "btn_ok", "action"),
+    nwStandardButton.CANCEL:  (QT_TRANSLATE_NOOP("Button", "Cancel"), "btn_cancel", "reject"),
+    nwStandardButton.YES:     (QT_TRANSLATE_NOOP("Button", "&Yes"), "btn_yes", "accept"),
+    nwStandardButton.NO:      (QT_TRANSLATE_NOOP("Button", "&No"), "btn_no", "reject"),
+    nwStandardButton.OPEN:    (QT_TRANSLATE_NOOP("Button", "Open"), "btn_open", "action"),
+    nwStandardButton.CLOSE:   (QT_TRANSLATE_NOOP("Button", "Close"), "btn_close", "destroy"),
+    nwStandardButton.SAVE:    (QT_TRANSLATE_NOOP("Button", "Save"), "btn_save", "action"),
+    nwStandardButton.BROWSE:  (QT_TRANSLATE_NOOP("Button", "Browse"), "btn_browse", "systemio"),
+    nwStandardButton.LIST:    (QT_TRANSLATE_NOOP("Button", "List"), "btn_list", "action"),
+    nwStandardButton.NEW:     (QT_TRANSLATE_NOOP("Button", "New"), "btn_new", "apply"),
+    nwStandardButton.CREATE:  (QT_TRANSLATE_NOOP("Button", "Create"), "btn_create", "create"),
+    nwStandardButton.RESET:   (QT_TRANSLATE_NOOP("Button", "Reset"), "btn_reset", "reset"),
+    nwStandardButton.INSERT:  (QT_TRANSLATE_NOOP("Button", "Insert"), "btn_insert", "action"),
+    nwStandardButton.APPLY:   (QT_TRANSLATE_NOOP("Button", "Apply"), "btn_apply", "apply"),
+    nwStandardButton.BUILD:   (QT_TRANSLATE_NOOP("Button", "Build"), "btn_build", "action"),
+    nwStandardButton.PRINT:   (QT_TRANSLATE_NOOP("Button", "Print"), "btn_print", "action"),
+    nwStandardButton.PREVIEW: (QT_TRANSLATE_NOOP("Button", "Preview"), "btn_preview", "action"),
+}
 
 
 @dataclass
@@ -93,6 +114,7 @@ class SyntaxColors:
     head:   QColor = QColor(0, 0, 0)
     headH:  QColor = QColor(0, 0, 0)
     emph:   QColor = QColor(0, 0, 0)
+    space:  QColor = QColor(0, 0, 0)
     dialN:  QColor = QColor(0, 0, 0)
     dialA:  QColor = QColor(0, 0, 0)
     hidden: QColor = QColor(0, 0, 0)
@@ -120,9 +142,9 @@ class GuiTheme:
         "_qColors", "_styleSheets", "_svgColors", "_syntaxList", "accentCol", "baseButtonHeight",
         "baseIconHeight", "baseIconSize", "buttonIconSize", "errorText", "fadedText",
         "fontPixelSize", "fontPointSize", "getDecoration", "getHeaderDecoration",
-        "getHeaderDecorationNarrow", "getIcon", "getItemIcon", "getPixmap", "getToggleIcon",
-        "guiFont", "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall", "helpText",
-        "iconCache", "isDarkTheme", "syntaxTheme", "textNHeight", "textNWidth",
+        "getHeaderDecorationNarrow", "getIcon", "getItemIcon", "getPixmap", "getStandardButton",
+        "getToggleIcon", "guiFont", "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall",
+        "helpText", "iconCache", "isDarkTheme", "syntaxTheme", "textNHeight", "textNWidth",
     )
 
     def __init__(self) -> None:
@@ -153,6 +175,7 @@ class GuiTheme:
         self.getItemIcon = self.iconCache.getItemIcon
         self.getToggleIcon = self.iconCache.getToggleIcon
         self.getDecoration = self.iconCache.getDecoration
+        self.getStandardButton = self.iconCache.getStandardButton
         self.getHeaderDecoration = self.iconCache.getHeaderDecoration
         self.getHeaderDecorationNarrow = self.iconCache.getHeaderDecorationNarrow
 
@@ -334,6 +357,29 @@ class GuiTheme:
             self._setBaseColor("inactive", self._readColor(parser, sec, "inactive"))
             self._setBaseColor("disabled", self._readColor(parser, sec, "disabled"))
 
+        # Icon
+        sec = "Icon"
+        if parser.has_section(sec):
+            self._setBaseColor("tool",      self._readColor(parser, sec, "tool"))
+            self._setBaseColor("sidebar",   self._readColor(parser, sec, "sidebar"))
+            self._setBaseColor("accept",    self._readColor(parser, sec, "accept"))
+            self._setBaseColor("reject",    self._readColor(parser, sec, "reject"))
+            self._setBaseColor("action",    self._readColor(parser, sec, "action"))
+            self._setBaseColor("altaction", self._readColor(parser, sec, "altaction"))
+            self._setBaseColor("apply",     self._readColor(parser, sec, "apply"))
+            self._setBaseColor("create",    self._readColor(parser, sec, "create"))
+            self._setBaseColor("destroy",   self._readColor(parser, sec, "destroy"))
+            self._setBaseColor("reset",     self._readColor(parser, sec, "reset"))
+            self._setBaseColor("add",       self._readColor(parser, sec, "add"))
+            self._setBaseColor("change",    self._readColor(parser, sec, "change"))
+            self._setBaseColor("remove",    self._readColor(parser, sec, "remove"))
+            self._setBaseColor("shortcode", self._readColor(parser, sec, "shortcode"))
+            self._setBaseColor("markdown",  self._readColor(parser, sec, "markdown"))
+            self._setBaseColor("systemio",  self._readColor(parser, sec, "systemio"))
+            self._setBaseColor("info",      self._readColor(parser, sec, "info"))
+            self._setBaseColor("warning",   self._readColor(parser, sec, "warning"))
+            self._setBaseColor("error",     self._readColor(parser, sec, "error"))
+
         # Palette
         sec = "Palette"
         if parser.has_section(sec):
@@ -371,6 +417,7 @@ class GuiTheme:
             self.syntaxTheme.head   = self._readColor(parser, sec, "headertext")
             self.syntaxTheme.headH  = self._readColor(parser, sec, "headertag")
             self.syntaxTheme.emph   = self._readColor(parser, sec, "emphasis")
+            self.syntaxTheme.space  = self._readColor(parser, sec, "whitespace")
             self.syntaxTheme.dialN  = self._readColor(parser, sec, "dialog")
             self.syntaxTheme.dialA  = self._readColor(parser, sec, "altdialog")
             self.syntaxTheme.hidden = self._readColor(parser, sec, "hidden")
@@ -615,7 +662,7 @@ class GuiTheme:
                     lookup = f"{prefix}{name} {key}"
                     keys.append(lookup)
                     data[lookup] = (file.stem, name, mode == "dark", file)
-            except Exception:  # noqa: PERF203
+            except Exception:
                 logger.error("Could not read file: %s", file)
                 logException()
 
@@ -743,7 +790,7 @@ class GuiIcons:
     #  Access Functions
     ##
 
-    def getIcon(self, name: str, color: str | None = None, w: int = 24, h: int = 24) -> QIcon:
+    def getIcon(self, name: str, color: str, w: int = 24, h: int = 24) -> QIcon:
         """Return an icon from the icon buffer, or load it."""
         variant = f"{name}-{color}" if color else name
         if (key := f"{variant}-{w}x{h}") in self._qIcons:
@@ -754,7 +801,7 @@ class GuiIcons:
             logger.debug("Icon: %s", key)
             return icon
 
-    def getToggleIcon(self, name: str, size: tuple[int, int], color: str | None = None) -> QIcon:
+    def getToggleIcon(self, name: str, size: tuple[int, int], color: str) -> QIcon:
         """Return a toggle icon from the icon buffer, or load it."""
         if name in self.TOGGLE_ICON_KEYS:
             pOne = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], size, color)
@@ -806,7 +853,15 @@ class GuiIcons:
         doesn't exist, return an empty QPixmap.
         """
         w, h = size
-        return self.getIcon(name, color, w, h).pixmap(w, h, QIcon.Mode.Normal)
+        return self.getIcon(name, color or "default", w, h).pixmap(w, h, QIcon.Mode.Normal)
+
+    def getStandardButton(self, button: nwStandardButton, parent: QWidget) -> NPushButton:
+        """Return a standard button with icon and text."""
+        text, icon, color = STANDARD_BUTTONS.get(button, ("", "", ""))
+        return NPushButton(
+            parent, QCoreApplication.translate("Button", text),
+            self._theme.buttonIconSize, icon, color
+        )
 
     def getDecoration(self, name: str, w: int | None = None, h: int | None = None) -> QPixmap:
         """Load graphical decoration element based on the decoration

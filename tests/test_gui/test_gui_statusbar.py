@@ -36,7 +36,7 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     cHandle = SHARED.project.newFile("A Note", C.hCharRoot)
     newDoc = SHARED.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# A Note\n\n")
-    nwGUI.rebuildIndex(beQuiet=True)
+    nwGUI.rebuildIndex()
 
     status = nwGUI.mainStatus
 

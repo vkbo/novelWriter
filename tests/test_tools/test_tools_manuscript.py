@@ -37,7 +37,6 @@ from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.manussettings import GuiBuildSettings
-from novelwriter.types import QtDialogApply, QtDialogSave
 
 from tests.tools import C, buildTestProject
 
@@ -72,6 +71,9 @@ def testToolManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     with qtbot.waitSignal(document.contentsChanged):
         manus.btnPreview.click()
     assert manus.docPreview.toPlainText().strip() == allText
+
+    # Trigger a theme update, which is only a visual refresh, but it shouldn't crash
+    manus.updateTheme()
 
     nwGUI.closeProject()  # This should auto-close the manuscript tool
 
@@ -115,9 +117,7 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        button = bSettings.buttonBox.button(QtDialogSave)
-        assert button is not None
-        button.click()
+        bSettings.btnSave.click()
 
     assert isinstance(build, BuildSettings)
     assert build.name == "Test Build"
@@ -136,9 +136,7 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        button = bSettings.buttonBox.button(QtDialogApply)
-        assert button is not None
-        button.click()  # Should leave the dialog open
+        bSettings.btnApply.click()  # Should leave the dialog open
 
     assert isinstance(build, BuildSettings)
     assert build.name == "Test Build"
@@ -152,6 +150,9 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
     new = manus._getSelectedBuild()
     assert new is not None
     assert new.name == "Test Build 2"
+
+    # Trigger a theme update, which should propagate to settings
+    nwGUI.refreshThemeColors()
 
     # Close the dialog should also close the child dialogs
     manus.btnClose.click()

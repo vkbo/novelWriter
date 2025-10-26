@@ -111,7 +111,6 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
     print("")
 
     sources = list((ROOT_DIR / "novelwriter").glob("**/*.py"))
-    sources.insert(0, ROOT_DIR / "i18n" / "qtbase.py")
     for source in sources:
         print(source.relative_to(ROOT_DIR))
 

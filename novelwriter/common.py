@@ -560,6 +560,12 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
     return "".join(buffer)
 
 
+def jsonCombine(data: dict[str, str]) -> str:
+    """Combine multiple already packed JSON strings."""
+    payload = ",\n".join(f'  "{k}": {v}' for k, v in data.items())
+    return f"{{\n{payload}\n}}\n"
+
+
 ##
 #  XML Helpers
 ##
