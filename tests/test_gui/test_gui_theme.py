@@ -626,9 +626,9 @@ def testGuiTheme_CheckTheme(theme):
             "active", "inactive", "disabled",
         ],
         "Icon": [
-            "tool", "accept", "reject", "action", "altaction", "apply",
-            "create", "destroy", "reset", "add", "change", "remove",
-            "scformat", "mdformat", "systemio", "info", "warning", "error",
+            "tool", "sidebar", "accept", "reject", "action", "altaction",
+            "apply", "create", "destroy", "reset", "add", "change", "remove",
+            "shortcode", "markdown", "systemio", "info", "warning", "error",
         ],
         "Palette": [
             "window", "windowtext", "base", "alternatebase", "text",
