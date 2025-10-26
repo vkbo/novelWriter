@@ -51,17 +51,6 @@ Python.
 </p>
 
 
-## Working With the Source
-
-This project uses [uv](https://docs.astral.sh/uv/) as its main developer tool. That means the
-`pyproject.toml` file handles almost everything aside from a few OS-specific packaging tasks.
-
-In order to run novelWriter directly from checked out source, simply call from the root folder:
-
-```bash
-uv run novelwriter
-```
-
 ## Project Contributions
 
 Please don't make feature pull requests without first having discussed them with the maintainer.
