@@ -361,6 +361,7 @@ class GuiTheme:
         sec = "Icon"
         if parser.has_section(sec):
             self._setBaseColor("tool",      self._readColor(parser, sec, "tool"))
+            self._setBaseColor("sidebar",   self._readColor(parser, sec, "sidebar"))
             self._setBaseColor("accept",    self._readColor(parser, sec, "accept"))
             self._setBaseColor("reject",    self._readColor(parser, sec, "reject"))
             self._setBaseColor("action",    self._readColor(parser, sec, "action"))
@@ -372,8 +373,8 @@ class GuiTheme:
             self._setBaseColor("add",       self._readColor(parser, sec, "add"))
             self._setBaseColor("change",    self._readColor(parser, sec, "change"))
             self._setBaseColor("remove",    self._readColor(parser, sec, "remove"))
-            self._setBaseColor("scformat",  self._readColor(parser, sec, "scformat"))
-            self._setBaseColor("mdformat",  self._readColor(parser, sec, "mdformat"))
+            self._setBaseColor("shortcode", self._readColor(parser, sec, "shortcode"))
+            self._setBaseColor("markdown",  self._readColor(parser, sec, "markdown"))
             self._setBaseColor("systemio",  self._readColor(parser, sec, "systemio"))
             self._setBaseColor("info",      self._readColor(parser, sec, "info"))
             self._setBaseColor("warning",   self._readColor(parser, sec, "warning"))
