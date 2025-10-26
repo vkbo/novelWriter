@@ -29,6 +29,7 @@ documentation.
 * PyPi Project: [pypi.org/project/novelWriter](https://pypi.org/project/novelWriter)
 * Social Media: [fosstodon.org/@novelwriter](https://fosstodon.org/@novelwriter)
 
+
 ## Sponsors
 
 <table style="border: none;">
@@ -37,6 +38,7 @@ documentation.
   <td>Free code signing on Windows provided by <a href="https://about.signpath.io/">SignPath.io</a>, certificate by <a href="https://signpath.org/">SignPath Foundation</a>.</td>
 </tr>
 </table>
+
 
 ## Implementation
 
@@ -48,12 +50,25 @@ Python.
   <img width="80%" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/screenshot.png">
 </p>
 
+
+## Working With the Source
+
+This project uses [uv](https://docs.astral.sh/uv/) as its main developer tool. That means the
+`pyproject.toml` file handles almost everything aside from a few OS-specific packaging tasks.
+
+In order to run novelWriter directly from checked out source, simply call from the root folder:
+
+```bash
+uv run novelwriter
+```
+
 ## Project Contributions
 
 Please don't make feature pull requests without first having discussed them with the maintainer.
 You can make a feature request in the [issues tracker](https://github.com/vkbo/novelWriter/issues),
 or if the idea isn't fully formed, start a [discussion](https://github.com/vkbo/novelWriter/discussions).
-Please also don't make pull requests to reformat or rewrite existing code unless there is a very good reason for doing so.
+Please also don't make pull requests to reformat or rewrite existing code unless there is a very
+good reason for doing so.
 
 Fixes and patches are welcome. Contributions related to packaging and installing novelWriter will
 also be appreciated, but please make an issue or a discussion topic first. Before contributing any
@@ -66,12 +81,14 @@ Project credits are available in [CREDITS.md](https://github.com/vkbo/novelWrite
 the `release` branch. So if you're submitting a fix to a current release, **including changes to
 documentation**, they must be made to the `release` branch.
 
+
 ### Translations
 
 New translations are always welcome. This project uses Crowdin to maintain translations, and you
 can contribute translations at the [Crowdin project page](https://crowdin.com/project/novelwriter).
 If you have any questions, feel free to post them to the
 [Translations of novelWriter](https://github.com/vkbo/novelWriter/issues/93) issue thread.
+
 
 ## Licence
 

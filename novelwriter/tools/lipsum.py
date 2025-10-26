@@ -37,7 +37,7 @@ from novelwriter.common import readTextFile
 from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeft, QtAlignRight, QtRoleApply, QtRoleReject
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtRoleApply, QtRoleDestruct
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +102,7 @@ class GuiLipsum(NDialog):
 
         self.btnBox = QDialogButtonBox(self)
         self.btnBox.addButton(self.btnInsert, QtRoleApply)
-        self.btnBox.addButton(self.btnClose, QtRoleReject)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
 
         # Assemble
         self.outerBox = QVBoxLayout()

@@ -96,6 +96,7 @@ QtRejected = QDialog.DialogCode.Rejected
 QtRoleAccept = QDialogButtonBox.ButtonRole.AcceptRole
 QtRoleAction = QDialogButtonBox.ButtonRole.ActionRole
 QtRoleApply = QDialogButtonBox.ButtonRole.ApplyRole
+QtRoleDestruct = QDialogButtonBox.ButtonRole.DestructiveRole
 QtRoleReject = QDialogButtonBox.ButtonRole.RejectRole
 QtRoleReset = QDialogButtonBox.ButtonRole.ResetRole
 
