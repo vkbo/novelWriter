@@ -142,14 +142,14 @@ class GuiSideBar(QWidget):
         self.tbTheme.setStyleSheet(buttonStyle)
         self.tbSettings.setStyleSheet(buttonStyle)
 
-        self.tbProject.setThemeIcon("sb_project")
-        self.tbNovel.setThemeIcon("sb_novel")
-        self.tbSearch.setThemeIcon("sb_search")
-        self.tbOutline.setThemeIcon("sb_outline")
-        self.tbBuild.setThemeIcon("sb_build")
-        self.tbDetails.setThemeIcon("sb_details")
-        self.tbStats.setThemeIcon("sb_stats")
-        self.tbSettings.setThemeIcon("settings")
+        self.tbProject.setThemeIcon("sb_project", "default")
+        self.tbNovel.setThemeIcon("sb_novel", "default")
+        self.tbSearch.setThemeIcon("sb_search", "default")
+        self.tbOutline.setThemeIcon("sb_outline", "default")
+        self.tbBuild.setThemeIcon("sb_build", "default")
+        self.tbDetails.setThemeIcon("sb_details", "default")
+        self.tbStats.setThemeIcon("sb_stats", "default")
+        self.tbSettings.setThemeIcon("settings", "default")
 
         self._setThemeModeIcon()
 
@@ -176,7 +176,7 @@ class GuiSideBar(QWidget):
 
     def _setThemeModeIcon(self) -> None:
         """Set the theme button icon."""
-        self.tbTheme.setThemeIcon(nwLabels.THEME_MODE_ICON[CONFIG.themeMode])
+        self.tbTheme.setThemeIcon(nwLabels.THEME_MODE_ICON[CONFIG.themeMode], "default")
         self.tbTheme.setToolTip(trConst(nwLabels.THEME_MODE_LABEL[CONFIG.themeMode]))
 
 

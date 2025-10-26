@@ -57,23 +57,23 @@ STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
 
 STANDARD_BUTTONS = {
-    nwStandardButton.OK:      (QT_TRANSLATE_NOOP("Button", "OK"), "btn_ok", "blue"),
-    nwStandardButton.CANCEL:  (QT_TRANSLATE_NOOP("Button", "Cancel"), "btn_cancel", "red"),
-    nwStandardButton.YES:     (QT_TRANSLATE_NOOP("Button", "&Yes"), "btn_yes", "green"),
-    nwStandardButton.NO:      (QT_TRANSLATE_NOOP("Button", "&No"), "btn_no", "red"),
-    nwStandardButton.OPEN:    (QT_TRANSLATE_NOOP("Button", "Open"), "btn_open", "blue"),
-    nwStandardButton.CLOSE:   (QT_TRANSLATE_NOOP("Button", "Close"), "btn_close", "faded"),
-    nwStandardButton.SAVE:    (QT_TRANSLATE_NOOP("Button", "Save"), "btn_save", "blue"),
-    nwStandardButton.BROWSE:  (QT_TRANSLATE_NOOP("Button", "Browse"), "btn_browse", "yellow"),
-    nwStandardButton.LIST:    (QT_TRANSLATE_NOOP("Button", "List"), "btn_list", "blue"),
-    nwStandardButton.NEW:     (QT_TRANSLATE_NOOP("Button", "New"), "btn_new", "green"),
-    nwStandardButton.CREATE:  (QT_TRANSLATE_NOOP("Button", "Create"), "btn_create", "yellow"),
-    nwStandardButton.RESET:   (QT_TRANSLATE_NOOP("Button", "Reset"), "btn_reset", "green"),
-    nwStandardButton.INSERT:  (QT_TRANSLATE_NOOP("Button", "Insert"), "btn_insert", "blue"),
-    nwStandardButton.APPLY:   (QT_TRANSLATE_NOOP("Button", "Apply"), "btn_apply", "blue"),
-    nwStandardButton.BUILD:   (QT_TRANSLATE_NOOP("Button", "Build"), "btn_build", "blue"),
-    nwStandardButton.PRINT:   (QT_TRANSLATE_NOOP("Button", "Print"), "btn_print", "blue"),
-    nwStandardButton.PREVIEW: (QT_TRANSLATE_NOOP("Button", "Preview"), "btn_preview", "blue"),
+    nwStandardButton.OK:      (QT_TRANSLATE_NOOP("Button", "OK"), "btn_ok", "action"),
+    nwStandardButton.CANCEL:  (QT_TRANSLATE_NOOP("Button", "Cancel"), "btn_cancel", "reject"),
+    nwStandardButton.YES:     (QT_TRANSLATE_NOOP("Button", "&Yes"), "btn_yes", "accept"),
+    nwStandardButton.NO:      (QT_TRANSLATE_NOOP("Button", "&No"), "btn_no", "reject"),
+    nwStandardButton.OPEN:    (QT_TRANSLATE_NOOP("Button", "Open"), "btn_open", "action"),
+    nwStandardButton.CLOSE:   (QT_TRANSLATE_NOOP("Button", "Close"), "btn_close", "destroy"),
+    nwStandardButton.SAVE:    (QT_TRANSLATE_NOOP("Button", "Save"), "btn_save", "action"),
+    nwStandardButton.BROWSE:  (QT_TRANSLATE_NOOP("Button", "Browse"), "btn_browse", "systemio"),
+    nwStandardButton.LIST:    (QT_TRANSLATE_NOOP("Button", "List"), "btn_list", "action"),
+    nwStandardButton.NEW:     (QT_TRANSLATE_NOOP("Button", "New"), "btn_new", "apply"),
+    nwStandardButton.CREATE:  (QT_TRANSLATE_NOOP("Button", "Create"), "btn_create", "create"),
+    nwStandardButton.RESET:   (QT_TRANSLATE_NOOP("Button", "Reset"), "btn_reset", "reset"),
+    nwStandardButton.INSERT:  (QT_TRANSLATE_NOOP("Button", "Insert"), "btn_insert", "action"),
+    nwStandardButton.APPLY:   (QT_TRANSLATE_NOOP("Button", "Apply"), "btn_apply", "apply"),
+    nwStandardButton.BUILD:   (QT_TRANSLATE_NOOP("Button", "Build"), "btn_build", "action"),
+    nwStandardButton.PRINT:   (QT_TRANSLATE_NOOP("Button", "Print"), "btn_print", "action"),
+    nwStandardButton.PREVIEW: (QT_TRANSLATE_NOOP("Button", "Preview"), "btn_preview", "action"),
 }
 
 
@@ -356,6 +356,28 @@ class GuiTheme:
             self._setBaseColor("active",   self._readColor(parser, sec, "active"))
             self._setBaseColor("inactive", self._readColor(parser, sec, "inactive"))
             self._setBaseColor("disabled", self._readColor(parser, sec, "disabled"))
+
+        # Icon
+        sec = "Icon"
+        if parser.has_section(sec):
+            self._setBaseColor("tool",      self._readColor(parser, sec, "tool"))
+            self._setBaseColor("accept",    self._readColor(parser, sec, "accept"))
+            self._setBaseColor("reject",    self._readColor(parser, sec, "reject"))
+            self._setBaseColor("action",    self._readColor(parser, sec, "action"))
+            self._setBaseColor("altaction", self._readColor(parser, sec, "altaction"))
+            self._setBaseColor("apply",     self._readColor(parser, sec, "apply"))
+            self._setBaseColor("create",    self._readColor(parser, sec, "create"))
+            self._setBaseColor("destroy",   self._readColor(parser, sec, "destroy"))
+            self._setBaseColor("reset",     self._readColor(parser, sec, "reset"))
+            self._setBaseColor("add",       self._readColor(parser, sec, "add"))
+            self._setBaseColor("change",    self._readColor(parser, sec, "change"))
+            self._setBaseColor("remove",    self._readColor(parser, sec, "remove"))
+            self._setBaseColor("scformat",  self._readColor(parser, sec, "scformat"))
+            self._setBaseColor("mdformat",  self._readColor(parser, sec, "mdformat"))
+            self._setBaseColor("systemio",  self._readColor(parser, sec, "systemio"))
+            self._setBaseColor("info",      self._readColor(parser, sec, "info"))
+            self._setBaseColor("warning",   self._readColor(parser, sec, "warning"))
+            self._setBaseColor("error",     self._readColor(parser, sec, "error"))
 
         # Palette
         sec = "Palette"
@@ -767,7 +789,7 @@ class GuiIcons:
     #  Access Functions
     ##
 
-    def getIcon(self, name: str, color: str | None = None, w: int = 24, h: int = 24) -> QIcon:
+    def getIcon(self, name: str, color: str, w: int = 24, h: int = 24) -> QIcon:
         """Return an icon from the icon buffer, or load it."""
         variant = f"{name}-{color}" if color else name
         if (key := f"{variant}-{w}x{h}") in self._qIcons:
@@ -778,7 +800,7 @@ class GuiIcons:
             logger.debug("Icon: %s", key)
             return icon
 
-    def getToggleIcon(self, name: str, size: tuple[int, int], color: str | None = None) -> QIcon:
+    def getToggleIcon(self, name: str, size: tuple[int, int], color: str) -> QIcon:
         """Return a toggle icon from the icon buffer, or load it."""
         if name in self.TOGGLE_ICON_KEYS:
             pOne = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], size, color)
@@ -830,7 +852,7 @@ class GuiIcons:
         doesn't exist, return an empty QPixmap.
         """
         w, h = size
-        return self.getIcon(name, color, w, h).pixmap(w, h, QIcon.Mode.Normal)
+        return self.getIcon(name, color or "default", w, h).pixmap(w, h, QIcon.Mode.Normal)
 
     def getStandardButton(self, button: nwStandardButton, parent: QWidget) -> NPushButton:
         """Return a standard button with icon and text."""

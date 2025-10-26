@@ -52,7 +52,7 @@ from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.types import (
     QtAlignCenter, QtAlignLeft, QtHeaderFixed, QtHeaderStretch, QtRoleAccept,
-    QtRoleApply, QtRoleDestruct, QtRoleReject, QtUserRole
+    QtRoleApply, QtRoleDestruct, QtUserRole
 )
 
 if TYPE_CHECKING:
@@ -229,15 +229,14 @@ class GuiBuildSettings(NToolDialog):
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
-        role = self.btnBox.buttonRole(button)
-        if role == QtRoleApply:
+        if button == self.btnApply:
             self._applyChanges()
             self._emitBuildData()
-        elif role == QtRoleAccept:
+        elif button == self.btnSave:
             self._applyChanges()
             self._emitBuildData()
             self.close()
-        elif role == QtRoleReject:
+        elif button == self.btnClose:
             self._build.resetChangedState()
             self.close()
 
@@ -302,9 +301,9 @@ class _FilterTab(NFixedPage):
 
         self._statusFlags: dict[int, QIcon] = {
             self.F_NONE:     QIcon(),
-            self.F_FILTERED: SHARED.theme.getIcon("filter", "orange"),
-            self.F_INCLUDED: SHARED.theme.getIcon("pin", "blue"),
-            self.F_EXCLUDED: SHARED.theme.getIcon("exclude", "red"),
+            self.F_FILTERED: SHARED.theme.getIcon("filter", "altaction"),
+            self.F_INCLUDED: SHARED.theme.getIcon("pin", "action"),
+            self.F_EXCLUDED: SHARED.theme.getIcon("exclude", "reject"),
         }
 
         self._trIncluded = self.tr("Included in manuscript")
@@ -410,14 +409,14 @@ class _FilterTab(NFixedPage):
         logger.debug("Theme Update: _FilterTab, init=%s", init)
 
         if not init:
-            self._statusFlags[self.F_FILTERED] = SHARED.theme.getIcon("filter", "orange")
-            self._statusFlags[self.F_INCLUDED] = SHARED.theme.getIcon("pin", "blue")
-            self._statusFlags[self.F_EXCLUDED] = SHARED.theme.getIcon("exclude", "red")
+            self._statusFlags[self.F_FILTERED] = SHARED.theme.getIcon("filter", "altaction")
+            self._statusFlags[self.F_INCLUDED] = SHARED.theme.getIcon("pin", "action")
+            self._statusFlags[self.F_EXCLUDED] = SHARED.theme.getIcon("exclude", "reject")
             self.loadContent()
 
         self.includedButton.setIcon(self._statusFlags[self.F_INCLUDED])
         self.excludedButton.setIcon(self._statusFlags[self.F_EXCLUDED])
-        self.resetButton.setThemeIcon("revert", "green")
+        self.resetButton.setThemeIcon("revert", "reset")
 
     ##
     #  Slots
@@ -492,7 +491,7 @@ class _FilterTab(NFixedPage):
             default=self._build.getBool("filter.includeNotes")
         )
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("unchecked", "red"),
+            SHARED.theme.getIcon("unchecked", "reject"),
             self._build.getLabel("filter.includeInactive"),
             "doc:filter.includeInactive",
             default=self._build.getBool("filter.includeInactive")
@@ -811,12 +810,12 @@ class _HeadingsTab(NScrollablePage):
         """Update theme elements."""
         logger.debug("Theme Update: _HeadingsTab")
 
-        self.btnPart.setThemeIcon("edit", "green")
-        self.btnChapter.setThemeIcon("edit", "green")
-        self.btnUnnumbered.setThemeIcon("edit", "green")
-        self.btnScene.setThemeIcon("edit", "green")
-        self.btnAScene.setThemeIcon("edit", "green")
-        self.btnSection.setThemeIcon("edit", "green")
+        self.btnPart.setThemeIcon("edit", "change")
+        self.btnChapter.setThemeIcon("edit", "change")
+        self.btnUnnumbered.setThemeIcon("edit", "change")
+        self.btnScene.setThemeIcon("edit", "change")
+        self.btnAScene.setThemeIcon("edit", "change")
+        self.btnSection.setThemeIcon("edit", "change")
 
         self.formSyntax.initHighlighter()
         self.formSyntax.rehighlight()
@@ -1318,9 +1317,9 @@ class _FormattingTab(NScrollableForm):
         """Update theme elements."""
         logger.debug("Theme Update: _FormattingTab")
 
-        self.ignoredKeywordsButton.setThemeIcon("add", "green")
-        self.btnTextFont.setThemeIcon("font")
-        self.btnPageHeader.setThemeIcon("revert", "green")
+        self.ignoredKeywordsButton.setThemeIcon("add", "add")
+        self.btnTextFont.setThemeIcon("font", "tool")
+        self.btnPageHeader.setThemeIcon("revert", "reset")
 
         iPx = SHARED.theme.baseIconHeight
         self.pixT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))

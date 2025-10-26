@@ -271,10 +271,10 @@ class GuiManuscript(NToolDialog):
             self.btnBuild.updateIcon()
             self.btnClose.updateIcon()
 
-        self.tbAdd.setThemeIcon("add", "green")
-        self.tbDel.setThemeIcon("remove", "red")
-        self.tbCopy.setThemeIcon("copy", "blue")
-        self.tbEdit.setThemeIcon("edit", "green")
+        self.tbAdd.setThemeIcon("add", "add")
+        self.tbDel.setThemeIcon("remove", "remove")
+        self.tbCopy.setThemeIcon("copy", "accept")
+        self.tbEdit.setThemeIcon("edit", "change")
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbAdd.setStyleSheet(buttonStyle)
@@ -484,7 +484,7 @@ class GuiManuscript(NToolDialog):
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
-            bItem.setIcon(SHARED.theme.getIcon("build_settings", "blue"))
+            bItem.setIcon(SHARED.theme.getIcon("build_settings", "action"))
             bItem.setData(self.D_KEY, key)
             self.buildList.addItem(bItem)
             self._buildMap[key] = bItem
@@ -574,8 +574,8 @@ class _DetailsWidget(QWidget):
 
         self.listView.clear()
 
-        on = SHARED.theme.getIcon("bullet-on", "blue")
-        off = SHARED.theme.getIcon("bullet-off", "blue")
+        on = SHARED.theme.getIcon("bullet-on", "action")
+        off = SHARED.theme.getIcon("bullet-off", "action")
 
         # Name
         item = QTreeWidgetItem()
@@ -991,7 +991,7 @@ class _StatsWidget(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         logger.debug("Theme Update: _StatsWidget")
-        self.toggleButton.setThemeIcon("unfold")
+        self.toggleButton.setThemeIcon("unfold", "default")
 
     ##
     #  Private Slots

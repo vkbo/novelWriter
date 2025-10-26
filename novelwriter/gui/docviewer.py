@@ -727,12 +727,12 @@ class GuiDocViewHeader(QWidget):
         """Update theme elements."""
         logger.debug("Theme Update: GuiDocViewHeader")
 
-        self.outlineButton.setThemeIcon("list", "blue")
-        self.backButton.setThemeIcon("chevron_left", "blue")
-        self.forwardButton.setThemeIcon("chevron_right", "blue")
-        self.editButton.setThemeIcon("edit", "green")
-        self.refreshButton.setThemeIcon("refresh", "green")
-        self.closeButton.setThemeIcon("close", "red")
+        self.outlineButton.setThemeIcon("list", "action")
+        self.backButton.setThemeIcon("chevron_left", "action")
+        self.forwardButton.setThemeIcon("chevron_right", "action")
+        self.editButton.setThemeIcon("edit", "change")
+        self.refreshButton.setThemeIcon("refresh", "change")
+        self.closeButton.setThemeIcon("close", "reject")
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.outlineButton.setStyleSheet(buttonStyle)
@@ -916,9 +916,9 @@ class GuiDocViewFooter(QWidget):
         logger.debug("Theme Update: GuiDocViewFooter")
 
         fPx = int(0.9*SHARED.theme.fontPixelSize)
-        bulletIcon = SHARED.theme.getToggleIcon("bullet", (fPx, fPx), "blue")
+        bulletIcon = SHARED.theme.getToggleIcon("bullet", (fPx, fPx), "action")
 
-        self.showHide.setThemeIcon("panel")
+        self.showHide.setThemeIcon("panel", "default")
         self.showComments.setIcon(bulletIcon)
         self.showSynopsis.setIcon(bulletIcon)
         self.showNotes.setIcon(bulletIcon)

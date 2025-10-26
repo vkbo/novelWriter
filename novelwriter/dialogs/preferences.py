@@ -71,7 +71,7 @@ class GuiPreferences(NDialog):
         )
 
         # Search Box
-        self.searchAction = QAction(SHARED.theme.getIcon("search"), "")
+        self.searchAction = QAction(SHARED.theme.getIcon("search", "apply"), "")
         self.searchAction.triggered.connect(self._gotoSearch)
 
         self.searchText = QLineEdit(self)
@@ -211,7 +211,7 @@ class GuiPreferences(NDialog):
         self.guiFont.setMinimumWidth(162)
         self.guiFont.setText(describeFont(self._guiFont))
         self.guiFont.setCursorPosition(0)
-        self.guiFontButton = NIconToolButton(self, iSz, "font")
+        self.guiFontButton = NIconToolButton(self, iSz, "font", "tool")
         self.guiFontButton.clicked.connect(self._selectGuiFont)
         self.mainForm.addRow(
             self.tr("Application font"), self.guiFont,
@@ -265,7 +265,7 @@ class GuiPreferences(NDialog):
         self.textFont.setMinimumWidth(162)
         self.textFont.setText(describeFont(CONFIG.textFont))
         self.textFont.setCursorPosition(0)
-        self.textFontButton = NIconToolButton(self, iSz, "font")
+        self.textFontButton = NIconToolButton(self, iSz, "font", "tool")
         self.textFontButton.clicked.connect(self._selectTextFont)
         self.mainForm.addRow(
             self.tr("Document font"), self.textFont,
@@ -373,7 +373,9 @@ class GuiPreferences(NDialog):
 
         # Backup Path
         self.backupPath = CONFIG.backupPath()
-        self.backupGetPath = QPushButton(SHARED.theme.getIcon("browse"), self.tr("Browse"), self)
+        self.backupGetPath = QPushButton(
+            SHARED.theme.getIcon("browse", "systemio"), self.tr("Browse"), self
+        )
         self.backupGetPath.setIconSize(iSz)
         self.backupGetPath.clicked.connect(self._backupFolder)
         self.mainForm.addRow(
@@ -665,7 +667,7 @@ class GuiPreferences(NDialog):
         self.dialogLine.setAlignment(QtAlignCenter)
         self.dialogLine.setText(" ".join(CONFIG.dialogLine))
 
-        self.dialogLineButton = NIconToolButton(self, iSz, "add", "green")
+        self.dialogLineButton = NIconToolButton(self, iSz, "add", "add")
         self.dialogLineButton.setMenu(self.mnLineSymbols)
 
         self.mainForm.addRow(
@@ -807,7 +809,7 @@ class GuiPreferences(NDialog):
         self.fmtSQuoteOpen.setFixedWidth(boxFixed)
         self.fmtSQuoteOpen.setAlignment(QtAlignCenter)
         self.fmtSQuoteOpen.setText(CONFIG.fmtSQuoteOpen)
-        self.btnSQuoteOpen = NIconToolButton(self, iSz, "quote")
+        self.btnSQuoteOpen = NIconToolButton(self, iSz, "quote", "tool")
         self.btnSQuoteOpen.clicked.connect(self._changeSingleQuoteOpen)
         self.mainForm.addRow(
             self.tr("Single quote open style"), self.fmtSQuoteOpen,
@@ -821,7 +823,7 @@ class GuiPreferences(NDialog):
         self.fmtSQuoteClose.setFixedWidth(boxFixed)
         self.fmtSQuoteClose.setAlignment(QtAlignCenter)
         self.fmtSQuoteClose.setText(CONFIG.fmtSQuoteClose)
-        self.btnSQuoteClose = NIconToolButton(self, iSz, "quote")
+        self.btnSQuoteClose = NIconToolButton(self, iSz, "quote", "tool")
         self.btnSQuoteClose.clicked.connect(self._changeSingleQuoteClose)
         self.mainForm.addRow(
             self.tr("Single quote close style"), self.fmtSQuoteClose,
@@ -836,7 +838,7 @@ class GuiPreferences(NDialog):
         self.fmtDQuoteOpen.setFixedWidth(boxFixed)
         self.fmtDQuoteOpen.setAlignment(QtAlignCenter)
         self.fmtDQuoteOpen.setText(CONFIG.fmtDQuoteOpen)
-        self.btnDQuoteOpen = NIconToolButton(self, iSz, "quote")
+        self.btnDQuoteOpen = NIconToolButton(self, iSz, "quote", "tool")
         self.btnDQuoteOpen.clicked.connect(self._changeDoubleQuoteOpen)
         self.mainForm.addRow(
             self.tr("Double quote open style"), self.fmtDQuoteOpen,
@@ -850,7 +852,7 @@ class GuiPreferences(NDialog):
         self.fmtDQuoteClose.setFixedWidth(boxFixed)
         self.fmtDQuoteClose.setAlignment(QtAlignCenter)
         self.fmtDQuoteClose.setText(CONFIG.fmtDQuoteClose)
-        self.btnDQuoteClose = NIconToolButton(self, iSz, "quote")
+        self.btnDQuoteClose = NIconToolButton(self, iSz, "quote", "tool")
         self.btnDQuoteClose.clicked.connect(self._changeDoubleQuoteClose)
         self.mainForm.addRow(
             self.tr("Double quote close style"), self.fmtDQuoteClose,

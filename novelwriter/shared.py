@@ -514,16 +514,16 @@ class _GuiAlert(QMessageBox):
 
         pSz = 2*self._theme.baseIconHeight
         if level == self.INFO:
-            self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz), "blue"))
+            self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz), "info"))
             self.setWindowTitle(self.tr("Information"))
         elif level == self.WARN:
-            self.setIconPixmap(self._theme.getPixmap("alert_warn", (pSz, pSz), "orange"))
+            self.setIconPixmap(self._theme.getPixmap("alert_warn", (pSz, pSz), "warning"))
             self.setWindowTitle(self.tr("Warning"))
         elif level == self.ERROR:
-            self.setIconPixmap(self._theme.getPixmap("alert_error", (pSz, pSz), "red"))
+            self.setIconPixmap(self._theme.getPixmap("alert_error", (pSz, pSz), "error"))
             self.setWindowTitle(self.tr("Error"))
         elif level == self.ASK:
-            self.setIconPixmap(self._theme.getPixmap("alert_question", (pSz, pSz), "blue"))
+            self.setIconPixmap(self._theme.getPixmap("alert_question", (pSz, pSz), "info"))
             self.setWindowTitle(self.tr("Question"))
 
     @pyqtSlot()

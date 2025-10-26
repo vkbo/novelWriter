@@ -220,7 +220,7 @@ class NPushButton(QPushButton):
 
     def updateIcon(self) -> None:
         """Update the theme icon."""
-        if self._icon:
+        if self._icon and self._color:
             self.setIcon(SHARED.theme.getIcon(self._icon, self._color))
 
 
@@ -238,10 +238,10 @@ class NIconToolButton(QToolButton):
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.setIconSize(iconSize)
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
-        if icon:
+        if icon and color:
             self.setThemeIcon(icon, color)
 
-    def setThemeIcon(self, icon: str, color: str | None = None) -> None:
+    def setThemeIcon(self, icon: str, color: str) -> None:
         """Set an icon from the current theme."""
         self.setIcon(SHARED.theme.getIcon(icon, color))
 
@@ -252,20 +252,23 @@ class NIconToggleButton(QToolButton):
     A quicker way to create a toggle button using the app theme.
     """
 
-    def __init__(self, parent: QWidget, iconSize: QSize, icon: str | None = None) -> None:
+    def __init__(
+        self, parent: QWidget, iconSize: QSize,
+        icon: str | None = None, color: str | None = None
+    ) -> None:
         super().__init__(parent=parent)
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.setIconSize(iconSize)
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self.setCheckable(True)
         self.setStyleSheet("border: none; background: transparent;")
-        if icon:
-            self.setThemeIcon(icon)
+        if icon and color:
+            self.setThemeIcon(icon, color)
 
-    def setThemeIcon(self, icon: str) -> None:
+    def setThemeIcon(self, icon: str, color: str) -> None:
         """Set an icon from the current theme."""
         size = self.iconSize()
-        self.setIcon(SHARED.theme.getToggleIcon(icon, (size.width(), size.height())))
+        self.setIcon(SHARED.theme.getToggleIcon(icon, (size.width(), size.height()), color))
 
 
 class NClickableLabel(QLabel):

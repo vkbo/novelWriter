@@ -185,13 +185,13 @@ def testExtModified_NClickableLabel(qtbot):
 
 
 @pytest.mark.gui
-def testExtModified_ToolButtons(qtbot):
+def testExtModified_ToolButtons(qtbot, mockGUI):
     """Test the NIconToolButton and NIconToggleButton classes."""
     dialog = SimpleDialog(None)
 
     size = QSize(16, 16)
-    button1 = NIconToolButton(dialog, size, "add", "green")
-    button2 = NIconToggleButton(dialog, size, "bullet")
+    button1 = NIconToolButton(dialog, size, "add", "add")
+    button2 = NIconToggleButton(dialog, size, "bullet", "action")
 
     assert button1.iconSize() == size
     assert button2.iconSize() == size
