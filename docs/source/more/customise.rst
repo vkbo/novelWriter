@@ -109,6 +109,7 @@ A colour theme ``.conf`` file consists of the following settings:
    headertext     = green
    headertag      = green:L135
    emphasis       = orange
+   whitespace     = orange:64
    dialog         = blue
    altdialog      = red
    note           = yellow:D125
@@ -173,9 +174,10 @@ There are several ways to enter colour values:
 
 .. versionadded:: 2.8
    The ``[Syntax]`` section was moved into the main theme file. Previously, these settings were in
-   their own file. The ``[Icons]`` section was renamed to ``[Base]``. Added the ``line`` setting.
-   Dropped the ``license``, ``licenseurl``, and ``description`` settings. The  ``author`` field
-   is now required if the theme is included in the app, but not for user themes.
+   their own file. The ``[Icons]`` section was renamed to ``[Base]``. Added the ``line`` and
+   ``whitespace`` settings. Dropped the ``license``, ``licenseurl``, and ``description`` settings.
+   The  ``author`` field is now required if the theme is included in the app, but not for user
+   themes.
 
 
 Icon Themes

@@ -635,9 +635,10 @@ def testGuiTheme_CheckTheme(theme):
         ],
         "Syntax": [
             "background", "text", "line", "link", "headertext", "headertag",
-            "emphasis", "dialog", "altdialog", "hidden", "note", "shortcode",
-            "keyword", "tag", "value", "optional", "spellcheckline",
-            "errorline", "replacetag", "modifier", "texthighlight",
+            "emphasis", "whitespace", "dialog", "altdialog", "hidden", "note",
+            "shortcode", "keyword", "tag", "value", "optional",
+            "spellcheckline", "errorline", "replacetag", "modifier",
+            "texthighlight",
         ],
     }
     optional = ["credit", "url"]
