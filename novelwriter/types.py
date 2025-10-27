@@ -24,10 +24,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor, QFont, QPainter, QTextCharFormat, QTextCursor, QTextFormat
+from PyQt6.QtGui import (
+    QColor, QFont, QPainter, QPalette, QTextCharFormat, QTextCursor,
+    QTextFormat
+)
 from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QHeaderView, QSizePolicy, QStyle
 
-# Qt Alignment Flags
+# Alignment Flags
 
 QtAlignAbsolute = Qt.AlignmentFlag.AlignAbsolute
 QtAlignCenter = Qt.AlignmentFlag.AlignCenter
@@ -48,7 +51,7 @@ QtVAlignNormal = QTextCharFormat.VerticalAlignment.AlignNormal
 QtVAlignSub = QTextCharFormat.VerticalAlignment.AlignSubScript
 QtVAlignSuper = QTextCharFormat.VerticalAlignment.AlignSuperScript
 
-# Qt Text Formats
+# Text Formats
 
 QtPageBreakBefore = QTextFormat.PageBreakFlag.PageBreak_AlwaysBefore
 QtPageBreakAfter = QTextFormat.PageBreakFlag.PageBreak_AlwaysAfter
@@ -58,7 +61,7 @@ QtTextUserProperty = QTextFormat.Property.UserProperty
 
 QtPropLineHeight = 1  # QTextBlockFormat.LineHeightTypes.ProportionalHeight
 
-# Qt Painter Types
+# Painter Types
 
 QtTransparent = QColor(0, 0, 0, 0)
 QtBlack = QColor(0, 0, 0)
@@ -70,10 +73,14 @@ QtPaintAntiAlias = QPainter.RenderHint.Antialiasing
 QtMouseOver = QStyle.StateFlag.State_MouseOver
 QtSelected = QStyle.StateFlag.State_Selected
 
-# Qt Colour Types
+# Colour Types
 
 QtHexRgb = QColor.NameFormat.HexRgb
 QtHexArgb = QColor.NameFormat.HexArgb
+
+QtColActive = QPalette.ColorGroup.Active
+QtColInactive = QPalette.ColorGroup.Inactive
+QtColDisabled = QPalette.ColorGroup.Disabled
 
 # Qt Tree and Table Types
 

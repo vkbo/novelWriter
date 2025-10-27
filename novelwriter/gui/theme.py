@@ -45,7 +45,10 @@ from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwStandardButton, nwTheme
 from novelwriter.error import logException
 from novelwriter.extensions.modified import NPushButton
-from novelwriter.types import QtBlack, QtHexArgb, QtPaintAntiAlias, QtTransparent
+from novelwriter.types import (
+    QtBlack, QtColActive, QtColDisabled, QtColInactive, QtHexArgb,
+    QtPaintAntiAlias, QtTransparent
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -438,10 +441,6 @@ class GuiTheme:
         text = self._guiPalette.text().color()
         window = self._guiPalette.window().color()
         highlight = self._guiPalette.highlight().color()
-
-        QtColActive = QPalette.ColorGroup.Active
-        QtColInactive = QPalette.ColorGroup.Inactive
-        QtColDisabled = QPalette.ColorGroup.Disabled
 
         if window.lightnessF() < 0.15:
             # If window is too dark, we need a lighter ref colour for shades
