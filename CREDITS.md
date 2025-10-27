@@ -74,6 +74,7 @@ Colour themes included with novelWriter were adapted from the following sources:
 * **Aura** themes by Dalton Menezes
 * **B2T** themes by Bram de Haan
 * **B4T** themes by Bram de Haan
+* **Catppuccin** themes by Catppuccin Org
 * **Dracula** theme by Zeno Rocha
 * **Espresso** theme by Sainnhe Park and Antoine Cotten
 * **Everforest** themes by Sainnhe Park
@@ -82,7 +83,8 @@ Colour themes included with novelWriter were adapted from the following sources:
 * **Noctis** themes by Liviu Schera and contributors
 * **Nord** theme by Sven Greb
 * **Owl** themes by Sarah Drasner
-* **Primer** themes by GitHub Inc. and Myian
+* **Primer** themes by GitHub, Inc. and Myian
+* **Rosé Pine** themes by Rosé Pine
 * **Snazzy Light** theme by Florian Reuschel
 * **Solarized** themes by Ethan Schoonover
 * **Tango** themes by the Tango Desktop Project
@@ -98,9 +100,10 @@ Other themes were created for novelWriter:
 * **Cyberpunk Night** theme by Anders Lemvigh
 * **Floral** themes by Myian
 * **Full Moon** theme by Myian
+* **Jewel Case** themes by Myian
 * **LCARS** theme by Veronica Berglyd Olsen
 * **Nordlicht** theme by Myian
-* **Otium** theme by Myian
+* **Otium** themes by Myian
 * **Paragon** theme by Myian
 * **Ruby** themes by Myian
 * **Selenium** themes by Myian
