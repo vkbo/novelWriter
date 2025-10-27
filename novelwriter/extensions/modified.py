@@ -125,16 +125,11 @@ class NComboBox(QComboBox):
     window of many widgets.
     """
 
-    def __init__(
-        self, parent: QWidget | None = None, maxItems: int = 15, scrollable: bool = False
-    ) -> None:
+    def __init__(self, parent: QWidget | None = None, maxItems: int = 15) -> None:
         super().__init__(parent=parent)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setMaxVisibleItems(maxItems)
-        if scrollable:
-            # The style sheet disables Fusion style pop-up mode on some
-            # platforms and allows for scrolling of long lists of items
-            self.setStyleSheet("QComboBox {combobox-popup: 0;}")
+        self.updateStyle()
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         """Only capture the mouse wheel if the widget has focus."""
@@ -147,6 +142,12 @@ class NComboBox(QComboBox):
         """Set the current index from data, with a fallback."""
         idx = self.findData(data)
         self.setCurrentIndex(self.findData(default) if idx < 0 else idx)
+
+    def updateStyle(self) -> None:
+        """Update the style sheet."""
+        # The style sheet disables Fusion style pop-up mode on some
+        # platforms and allows for scrolling of long lists of items
+        self.setStyleSheet("QComboBox {combobox-popup: 0;}")
 
 
 class NSpinBox(QSpinBox):

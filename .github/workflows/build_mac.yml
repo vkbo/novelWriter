@@ -5,10 +5,14 @@ on: workflow_dispatch
 jobs:
   buildAssets:
     uses: ./.github/workflows/build_assets.yml
+    permissions:
+      contents: read
 
   buildMac-AMD64:
     needs: buildAssets
     runs-on: macos-latest
+    permissions:
+      contents: read
     env:
       PYTHON_VERSION: "3.13"
       PACKAGE_ARCH: x86_64
@@ -40,6 +44,8 @@ jobs:
   buildMac-M1:
     needs: buildAssets
     runs-on: macos-latest
+    permissions:
+      contents: read
     env:
       PYTHON_VERSION: "3.13"
       PACKAGE_ARCH: aarch64

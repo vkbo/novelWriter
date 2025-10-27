@@ -5,12 +5,16 @@ on: workflow_dispatch
 jobs:
   buildAssets:
     uses: ./.github/workflows/build_assets.yml
+    permissions:
+      contents: read
 
   buildLinux-AppImage:
     needs: buildAssets
     # Needs to stay on 22.04 as long as we're using manylinux_2_28
     # as libxcb-cursor0 in 22.04 supports glibc >= 2.17
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
     env:
       PYTHON_VERSION: "3.13"
       LINUX_TAG: "manylinux_2_28"
