@@ -273,7 +273,7 @@ class GuiManuscript(NToolDialog):
 
         self.tbAdd.setThemeIcon("add", "add")
         self.tbDel.setThemeIcon("remove", "remove")
-        self.tbCopy.setThemeIcon("copy", "accept")
+        self.tbCopy.setThemeIcon("copy", "action")
         self.tbEdit.setThemeIcon("edit", "change")
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
