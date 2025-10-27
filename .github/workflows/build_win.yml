@@ -9,6 +9,8 @@ jobs:
   buildWin64:
     needs: buildAssets
     runs-on: windows-2022
+    permissions:
+      contents: read
     steps:
       - name: Python Setup
         uses: actions/setup-python@v6

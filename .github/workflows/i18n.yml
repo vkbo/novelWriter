@@ -8,6 +8,8 @@ on:
 jobs:
   buildI18n:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Python Setup
         uses: actions/setup-python@v6

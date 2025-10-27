@@ -9,6 +9,8 @@ jobs:
   buildMac-AMD64:
     needs: buildAssets
     runs-on: macos-latest
+    permissions:
+      contents: read
     env:
       PYTHON_VERSION: "3.13"
       PACKAGE_ARCH: x86_64
@@ -40,6 +42,8 @@ jobs:
   buildMac-M1:
     needs: buildAssets
     runs-on: macos-latest
+    permissions:
+      contents: read
     env:
       PYTHON_VERSION: "3.13"
       PACKAGE_ARCH: aarch64
