@@ -249,7 +249,10 @@ class GuiTheme:
 
     def getRawBaseColor(self, name: str) -> bytes:
         """Return a base color."""
-        return self._svgColors.get(name, self._svgColors.get("default", b"#000000"))
+        if color := self._svgColors.get(name):
+            return color
+        logger.warning("No colour named '%s'", name)
+        return self._svgColors.get("default", b"#000000")
 
     ##
     #  Theme Methods
@@ -583,6 +586,8 @@ class GuiTheme:
         self.iconCache.clear()
         self._svgColors = {}
         self._qColors = {}
+
+        # Base
         self._setBaseColor("base",     base)
         self._setBaseColor("default",  default)
         self._setBaseColor("faded",    faded)
@@ -593,6 +598,8 @@ class GuiTheme:
         self._setBaseColor("cyan",     cyan)
         self._setBaseColor("blue",     blue)
         self._setBaseColor("purple",   purple)
+
+        # Project
         self._setBaseColor("root",     blue)
         self._setBaseColor("folder",   yellow)
         self._setBaseColor("file",     default)
@@ -603,6 +610,27 @@ class GuiTheme:
         self._setBaseColor("active",   green)
         self._setBaseColor("inactive", red)
         self._setBaseColor("disabled", faded)
+
+        # Icon
+        self._setBaseColor("tool",      default)
+        self._setBaseColor("sidebar",   default)
+        self._setBaseColor("accept",    green)
+        self._setBaseColor("reject",    red)
+        self._setBaseColor("action",    blue)
+        self._setBaseColor("altaction", orange)
+        self._setBaseColor("apply",     green)
+        self._setBaseColor("create",    yellow)
+        self._setBaseColor("destroy",   faded)
+        self._setBaseColor("reset",     green)
+        self._setBaseColor("add",       green)
+        self._setBaseColor("change",    green)
+        self._setBaseColor("remove",    red)
+        self._setBaseColor("shortcode", default)
+        self._setBaseColor("markdown",  orange)
+        self._setBaseColor("systemio",  yellow)
+        self._setBaseColor("info",      blue)
+        self._setBaseColor("warning",   orange)
+        self._setBaseColor("error",     red)
 
     def _readColor(self, parser: ConfigParser, section: str, name: str) -> QColor:
         """Parse a colour value from a config string."""
