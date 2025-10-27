@@ -2489,17 +2489,17 @@ class GuiDocToolBar(QWidget):
         palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
 
-        self.tbBoldMD.setThemeIcon("fmt_bold", "mdformat")
-        self.tbItalicMD.setThemeIcon("fmt_italic", "mdformat")
-        self.tbStrikeMD.setThemeIcon("fmt_strike", "mdformat")
-        self.tbMarkMD.setThemeIcon("fmt_mark", "mdformat")
-        self.tbBold.setThemeIcon("fmt_bold", "scformat")
-        self.tbItalic.setThemeIcon("fmt_italic", "scformat")
-        self.tbStrike.setThemeIcon("fmt_strike", "scformat")
-        self.tbUnderline.setThemeIcon("fmt_underline", "scformat")
-        self.tbMark.setThemeIcon("fmt_mark", "scformat")
-        self.tbSuperscript.setThemeIcon("fmt_superscript", "scformat")
-        self.tbSubscript.setThemeIcon("fmt_subscript", "scformat")
+        self.tbBoldMD.setThemeIcon("fmt_bold", "markdown")
+        self.tbItalicMD.setThemeIcon("fmt_italic", "markdown")
+        self.tbStrikeMD.setThemeIcon("fmt_strike", "markdown")
+        self.tbMarkMD.setThemeIcon("fmt_mark", "markdown")
+        self.tbBold.setThemeIcon("fmt_bold", "shortcode")
+        self.tbItalic.setThemeIcon("fmt_italic", "shortcode")
+        self.tbStrike.setThemeIcon("fmt_strike", "shortcode")
+        self.tbUnderline.setThemeIcon("fmt_underline", "shortcode")
+        self.tbMark.setThemeIcon("fmt_mark", "shortcode")
+        self.tbSuperscript.setThemeIcon("fmt_superscript", "shortcode")
+        self.tbSubscript.setThemeIcon("fmt_subscript", "shortcode")
 
 
 class GuiDocEditSearch(QFrame):
