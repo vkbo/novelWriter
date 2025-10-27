@@ -257,7 +257,7 @@ class _SettingsPage(NScrollableForm):
 
         # Project Language
         projLang = data.language or CONFIG.guiLocale
-        self.projLang = NComboBox(self, scrollable=True)
+        self.projLang = NComboBox(self)
         self.projLang.setMinimumWidth(200)
         for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
             self.projLang.addItem(language, tag)
@@ -269,7 +269,7 @@ class _SettingsPage(NScrollableForm):
         )
 
         # Spell Check Language
-        self.spellLang = NComboBox(self, scrollable=True)
+        self.spellLang = NComboBox(self)
         self.spellLang.setMinimumWidth(200)
         self.spellLang.addItem(self.tr("Default"), "None")
         if CONFIG.hasEnchant:

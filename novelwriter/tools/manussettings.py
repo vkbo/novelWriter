@@ -1329,6 +1329,9 @@ class _FormattingTab(NScrollableForm):
         self.pixH.setPixmap(SHARED.theme.getPixmap("fit_height", (iPx, iPx)))
         self.pixW.setPixmap(SHARED.theme.getPixmap("fit_width", (iPx, iPx)))
 
+        self.pageSize.updateStyle()
+        self.pageUnit.updateStyle()
+
     def loadContent(self) -> None:
         """Populate the widgets."""
         # Text Content
