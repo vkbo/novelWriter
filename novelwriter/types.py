@@ -93,24 +93,26 @@ QtMouseMiddle = Qt.MouseButton.MiddleButton
 QtAccepted = QDialog.DialogCode.Accepted
 QtRejected = QDialog.DialogCode.Rejected
 
-QtDialogApply = QDialogButtonBox.StandardButton.Apply
-QtDialogCancel = QDialogButtonBox.StandardButton.Cancel
-QtDialogClose = QDialogButtonBox.StandardButton.Close
-QtDialogOk = QDialogButtonBox.StandardButton.Ok
-QtDialogReset = QDialogButtonBox.StandardButton.Reset
-QtDialogSave = QDialogButtonBox.StandardButton.Save
-
 QtRoleAccept = QDialogButtonBox.ButtonRole.AcceptRole
 QtRoleAction = QDialogButtonBox.ButtonRole.ActionRole
 QtRoleApply = QDialogButtonBox.ButtonRole.ApplyRole
+QtRoleDestruct = QDialogButtonBox.ButtonRole.DestructiveRole
 QtRoleReject = QDialogButtonBox.ButtonRole.RejectRole
+QtRoleReset = QDialogButtonBox.ButtonRole.ResetRole
 
 # Cursor Types
 
 QtKeepAnchor = QTextCursor.MoveMode.KeepAnchor
 QtMoveAnchor = QTextCursor.MoveMode.MoveAnchor
+
 QtMoveLeft = QTextCursor.MoveOperation.Left
 QtMoveRight = QTextCursor.MoveOperation.Right
+
+QtSelectWord = QTextCursor.SelectionType.WordUnderCursor
+QtSelectBlock = QTextCursor.SelectionType.BlockUnderCursor
+QtSelectDocument = QTextCursor.SelectionType.Document
+
+QtImCursorRectangle = Qt.InputMethodQuery.ImCursorRectangle
 
 # Size Policy
 

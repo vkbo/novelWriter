@@ -53,7 +53,8 @@ from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
     QtAlignCenterTop, QtKeepAnchor, QtMouseLeft, QtMoveAnchor,
-    QtScrollAlwaysOff, QtScrollAsNeeded
+    QtScrollAlwaysOff, QtScrollAsNeeded, QtSelectBlock, QtSelectDocument,
+    QtSelectWord
 )
 
 logger = logging.getLogger(__name__)
@@ -140,6 +141,7 @@ class GuiDocViewer(QTextBrowser):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiDocViewer")
         self.docHeader.updateTheme()
         self.docFooter.updateTheme()
 
@@ -287,11 +289,11 @@ class GuiDocViewer(QTextBrowser):
         elif action == nwDocAction.COPY:
             self.copy()
         elif action == nwDocAction.SEL_ALL:
-            self._makeSelection(QTextCursor.SelectionType.Document)
+            self._makeSelection(QtSelectDocument)
         elif action == nwDocAction.SEL_PARA:
-            self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor)
+            self._makeSelection(QtSelectBlock)
         else:
-            logger.debug("Unknown or unsupported document action '%s'", str(action))
+            logger.debug("Unknown or unsupported document action '%s'", action)
             return False
         return True
 
@@ -400,14 +402,10 @@ class GuiDocViewer(QTextBrowser):
         action.triggered.connect(qtLambda(self.docAction, nwDocAction.SEL_ALL))
 
         action = qtAddAction(ctxMenu, self.tr("Select Word"))
-        action.triggered.connect(qtLambda(
-            self._makePosSelection, QTextCursor.SelectionType.WordUnderCursor, point
-        ))
+        action.triggered.connect(qtLambda(self._makePosSelection, QtSelectWord, point))
 
         action = qtAddAction(ctxMenu, self.tr("Select Paragraph"))
-        action.triggered.connect(qtLambda(
-            self._makePosSelection, QTextCursor.SelectionType.BlockUnderCursor, point
-        ))
+        action.triggered.connect(qtLambda(self._makePosSelection, QtSelectBlock, point))
 
         # Open the context menu
         if viewport := self.viewport():
@@ -466,7 +464,7 @@ class GuiDocViewer(QTextBrowser):
         cursor.clearSelection()
         cursor.select(selType)
 
-        if selType == QTextCursor.SelectionType.BlockUnderCursor:
+        if selType == QtSelectBlock:
             # This selection mode also selects the preceding paragraph
             # separator, which we want to avoid.
             posS = cursor.selectionStart()
@@ -727,12 +725,14 @@ class GuiDocViewHeader(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self.outlineButton.setThemeIcon("list", "blue")
-        self.backButton.setThemeIcon("chevron_left", "blue")
-        self.forwardButton.setThemeIcon("chevron_right", "blue")
-        self.editButton.setThemeIcon("edit", "green")
-        self.refreshButton.setThemeIcon("refresh", "green")
-        self.closeButton.setThemeIcon("close", "red")
+        logger.debug("Theme Update: GuiDocViewHeader")
+
+        self.outlineButton.setThemeIcon("list", "action")
+        self.backButton.setThemeIcon("chevron_left", "action")
+        self.forwardButton.setThemeIcon("chevron_right", "action")
+        self.editButton.setThemeIcon("edit", "change")
+        self.refreshButton.setThemeIcon("refresh", "change")
+        self.closeButton.setThemeIcon("close", "reject")
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.outlineButton.setStyleSheet(buttonStyle)
@@ -913,11 +913,12 @@ class GuiDocViewFooter(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        # Icons
-        fPx = int(0.9*SHARED.theme.fontPixelSize)
-        bulletIcon = SHARED.theme.getToggleIcon("bullet", (fPx, fPx), "blue")
+        logger.debug("Theme Update: GuiDocViewFooter")
 
-        self.showHide.setThemeIcon("panel")
+        fPx = int(0.9*SHARED.theme.fontPixelSize)
+        bulletIcon = SHARED.theme.getToggleIcon("bullet", (fPx, fPx), "action")
+
+        self.showHide.setThemeIcon("panel", "default")
         self.showComments.setIcon(bulletIcon)
         self.showSynopsis.setIcon(bulletIcon)
         self.showNotes.setIcon(bulletIcon)

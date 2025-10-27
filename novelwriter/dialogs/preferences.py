@@ -38,13 +38,14 @@ from novelwriter.common import compact, describeFont, processDialogSymbols, uniq
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS, DEF_TREECOL
 from novelwriter.constants import nwLabels, nwQuotes, nwUnicode, trConst
 from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel, NScrollableForm
 from novelwriter.extensions.modified import (
     NComboBox, NDialog, NDoubleSpinBox, NIconToolButton, NSpinBox
 )
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignCenter, QtDialogCancel, QtDialogSave
+from novelwriter.types import QtAlignCenter, QtRoleAccept, QtRoleReject
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +71,7 @@ class GuiPreferences(NDialog):
         )
 
         # Search Box
-        self.searchAction = QAction(SHARED.theme.getIcon("search"), "")
+        self.searchAction = QAction(SHARED.theme.getIcon("search", "apply"), "")
         self.searchAction.triggered.connect(self._gotoSearch)
 
         self.searchText = QLineEdit(self)
@@ -89,9 +90,15 @@ class GuiPreferences(NDialog):
         self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogCancel, self)
-        self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnSave = SHARED.theme.getStandardButton(nwStandardButton.SAVE, self)
+        self.btnSave.clicked.connect(self._doSave)
+
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.reject)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnSave, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Assemble
         self.searchBox = QHBoxLayout()
@@ -107,7 +114,7 @@ class GuiPreferences(NDialog):
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.searchBox)
         self.outerBox.addLayout(self.mainBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
         self.outerBox.setSpacing(8)
 
         self.setLayout(self.outerBox)
@@ -151,7 +158,7 @@ class GuiPreferences(NDialog):
         self.mainForm.addGroupLabel(title, section)
 
         # Display Language
-        self.guiLocale = NComboBox(self)
+        self.guiLocale = NComboBox(self, scrollable=True)
         self.guiLocale.setMinimumWidth(200)
         for lang, name in CONFIG.listLanguages(CONFIG.LANG_NW):
             self.guiLocale.addItem(name, lang)
@@ -163,9 +170,9 @@ class GuiPreferences(NDialog):
         )
 
         # Colour Theme
-        self.lightTheme = NComboBox(self)
+        self.lightTheme = NComboBox(self, scrollable=True)
         self.lightTheme.setMinimumWidth(200)
-        self.darkTheme = NComboBox(self)
+        self.darkTheme = NComboBox(self, scrollable=True)
         self.darkTheme.setMinimumWidth(200)
         for key, theme in SHARED.theme.colourThemes.items():
             if theme.dark:
@@ -186,7 +193,7 @@ class GuiPreferences(NDialog):
         )
 
         # Icon Theme
-        self.iconTheme = NComboBox(self)
+        self.iconTheme = NComboBox(self, scrollable=True)
         self.iconTheme.setMinimumWidth(200)
         for key, theme in SHARED.theme.iconCache.iconThemes.items():
             self.iconTheme.addItem(theme.name, key)
@@ -204,7 +211,7 @@ class GuiPreferences(NDialog):
         self.guiFont.setMinimumWidth(162)
         self.guiFont.setText(describeFont(self._guiFont))
         self.guiFont.setCursorPosition(0)
-        self.guiFontButton = NIconToolButton(self, iSz, "font")
+        self.guiFontButton = NIconToolButton(self, iSz, "font", "tool")
         self.guiFontButton.clicked.connect(self._selectGuiFont)
         self.mainForm.addRow(
             self.tr("Application font"), self.guiFont,
@@ -258,7 +265,7 @@ class GuiPreferences(NDialog):
         self.textFont.setMinimumWidth(162)
         self.textFont.setText(describeFont(CONFIG.textFont))
         self.textFont.setCursorPosition(0)
-        self.textFontButton = NIconToolButton(self, iSz, "font")
+        self.textFontButton = NIconToolButton(self, iSz, "font", "tool")
         self.textFontButton.clicked.connect(self._selectTextFont)
         self.mainForm.addRow(
             self.tr("Document font"), self.textFont,
@@ -366,7 +373,9 @@ class GuiPreferences(NDialog):
 
         # Backup Path
         self.backupPath = CONFIG.backupPath()
-        self.backupGetPath = QPushButton(SHARED.theme.getIcon("browse"), self.tr("Browse"), self)
+        self.backupGetPath = QPushButton(
+            SHARED.theme.getIcon("browse", "systemio"), self.tr("Browse"), self
+        )
         self.backupGetPath.setIconSize(iSz)
         self.backupGetPath.clicked.connect(self._backupFolder)
         self.mainForm.addRow(
@@ -504,7 +513,7 @@ class GuiPreferences(NDialog):
         self.mainForm.addGroupLabel(title, section)
 
         # Spell Checking
-        self.spellLanguage = NComboBox(self)
+        self.spellLanguage = NComboBox(self, scrollable=True)
         self.spellLanguage.setMinimumWidth(200)
 
         if CONFIG.hasEnchant:
@@ -658,7 +667,7 @@ class GuiPreferences(NDialog):
         self.dialogLine.setAlignment(QtAlignCenter)
         self.dialogLine.setText(" ".join(CONFIG.dialogLine))
 
-        self.dialogLineButton = NIconToolButton(self, iSz, "add", "green")
+        self.dialogLineButton = NIconToolButton(self, iSz, "add", "add")
         self.dialogLineButton.setMenu(self.mnLineSymbols)
 
         self.mainForm.addRow(
@@ -800,7 +809,7 @@ class GuiPreferences(NDialog):
         self.fmtSQuoteOpen.setFixedWidth(boxFixed)
         self.fmtSQuoteOpen.setAlignment(QtAlignCenter)
         self.fmtSQuoteOpen.setText(CONFIG.fmtSQuoteOpen)
-        self.btnSQuoteOpen = NIconToolButton(self, iSz, "quote")
+        self.btnSQuoteOpen = NIconToolButton(self, iSz, "quote", "tool")
         self.btnSQuoteOpen.clicked.connect(self._changeSingleQuoteOpen)
         self.mainForm.addRow(
             self.tr("Single quote open style"), self.fmtSQuoteOpen,
@@ -814,7 +823,7 @@ class GuiPreferences(NDialog):
         self.fmtSQuoteClose.setFixedWidth(boxFixed)
         self.fmtSQuoteClose.setAlignment(QtAlignCenter)
         self.fmtSQuoteClose.setText(CONFIG.fmtSQuoteClose)
-        self.btnSQuoteClose = NIconToolButton(self, iSz, "quote")
+        self.btnSQuoteClose = NIconToolButton(self, iSz, "quote", "tool")
         self.btnSQuoteClose.clicked.connect(self._changeSingleQuoteClose)
         self.mainForm.addRow(
             self.tr("Single quote close style"), self.fmtSQuoteClose,
@@ -829,7 +838,7 @@ class GuiPreferences(NDialog):
         self.fmtDQuoteOpen.setFixedWidth(boxFixed)
         self.fmtDQuoteOpen.setAlignment(QtAlignCenter)
         self.fmtDQuoteOpen.setText(CONFIG.fmtDQuoteOpen)
-        self.btnDQuoteOpen = NIconToolButton(self, iSz, "quote")
+        self.btnDQuoteOpen = NIconToolButton(self, iSz, "quote", "tool")
         self.btnDQuoteOpen.clicked.connect(self._changeDoubleQuoteOpen)
         self.mainForm.addRow(
             self.tr("Double quote open style"), self.fmtDQuoteOpen,
@@ -843,7 +852,7 @@ class GuiPreferences(NDialog):
         self.fmtDQuoteClose.setFixedWidth(boxFixed)
         self.fmtDQuoteClose.setAlignment(QtAlignCenter)
         self.fmtDQuoteClose.setText(CONFIG.fmtDQuoteClose)
-        self.btnDQuoteClose = NIconToolButton(self, iSz, "quote")
+        self.btnDQuoteClose = NIconToolButton(self, iSz, "quote", "tool")
         self.btnDQuoteClose.clicked.connect(self._changeDoubleQuoteClose)
         self.mainForm.addRow(
             self.tr("Double quote close style"), self.fmtDQuoteClose,

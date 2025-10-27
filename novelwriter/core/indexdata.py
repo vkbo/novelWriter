@@ -300,13 +300,13 @@ class IndexHeading:
         """Set the text for a comment and make sure it is a string."""
         match comment.lower():
             case "short" | "synopsis" | "summary":
-                self._comments["summary"] = str(text)
+                self._appendCommentText("summary", text)
             case "story" if key:
                 self._cache.story.add(key)
-                self._comments[f"story.{key}"] = str(text)
+                self._appendCommentText(f"story.{key}", text)
             case "note" if key:
                 self._cache.note.add(key)
-                self._comments[f"note.{key}"] = str(text)
+                self._appendCommentText(f"note.{key}", text)
 
     def setTag(self, tag: str) -> None:
         """Set the tag for references, and make sure it is a string."""
@@ -371,6 +371,7 @@ class IndexHeading:
 
     def unpackData(self, data: dict) -> None:
         """Unpack a heading entry from a dictionary."""
+        self._comments = {}  # These are accumulative and should be reset here
         for key, entry in data.items():
             if key == "meta":
                 self.setLevel(entry.get("level", "H0"))
@@ -394,3 +395,13 @@ class IndexHeading:
                 self.setComment(comment, compact(kind), str(entry))
             else:
                 raise KeyError("Unknown key in heading entry")
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _appendCommentText(self, key: str, text: str) -> None:
+        """Append text to a comment."""
+        if current := self._comments.get(key):
+            text = f"{current:s}\n\n{text:s}"
+        self._comments[key] = str(text)

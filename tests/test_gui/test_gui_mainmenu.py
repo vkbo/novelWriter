@@ -24,14 +24,15 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt6.QtGui import QAction, QDesktopServices, QTextBlock, QTextCursor
-from PyQt6.QtWidgets import QFileDialog, QMessageBox
+from PyQt6.QtGui import QAction, QDesktopServices, QTextBlock
+from PyQt6.QtWidgets import QFileDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwShortcode, nwStats, nwUnicode
 from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.gui.doceditor import GuiDocEditor
-from novelwriter.types import QtKeepAnchor, QtMoveRight
+from novelwriter.shared import _GuiAlert
+from novelwriter.types import QtKeepAnchor, QtMoveRight, QtSelectWord
 
 from tests.tools import C, buildTestProject, writeFile
 
@@ -188,7 +189,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Cut, Copy and Paste
     docEditor.setCursorPosition(x)
-    docEditor._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docEditor._makeSelection(QtSelectWord)
 
     mainMenu.aEditCut.activate(QAction.ActionEvent.Trigger)
     assert docEditor.getText()[x:x+50] == (
@@ -201,7 +202,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     )
 
     docEditor.setCursorPosition(x)
-    docEditor._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docEditor._makeSelection(QtSelectWord)
 
     mainMenu.aEditCopy.activate(QAction.ActionEvent.Trigger)
     assert docEditor.getText()[x:x+50] == (
@@ -575,7 +576,7 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
 
     # The document isn't empty, so the message box should pop
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a, **k: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert not nwGUI.importDocument()
         assert docEditor.getText() == "Bar"
 

@@ -12,6 +12,8 @@ just make a pull request directly.
 * Bugfixes for new or existing bugs. Please also report new bugs in the issue tracker even if you
   also provide a fix. It makes it easier to keep track of what has been fixed and when.
 * Translations made via the [Crowdin project page](https://crowdin.com/project/novelwriter).
+* Translations of the documentation. These need to use Sphinx i18n tooling. Please start a
+  discussion before beginning such work as it requires some coordination.
 * Improvements to the documentation. Particularly if the documentation is unclear. Please don't
   make any larger changes to the documentation without discussing them with the maintainer first.
 * Adaptations, installation or packaging features targeting specific operating systems.
@@ -21,6 +23,34 @@ just make a pull request directly.
 * Make a pull request that restructures or reformats existing code. If you think some part of the
   code could be improved, please make an issue thread or start a discussion. The same applies to
   any text document in the repository.
+* Make pull requests with AI generated code. This is not a project suitable for vibe coding.
+  Outright slop will result in the account being blocked.
+
+This project uses [uv](https://docs.astral.sh/uv/) as its main developer tool. In order to run
+novelWriter directly from checked out source, simply call from the root folder:
+
+```bash
+uv run novelwriter
+```
+
+Many tasks like building assets from source are handled by the `pkgutils.py` helper tool.
+
+```bash
+uv run pkgutils.py --help
+```
+
+The translation files needed at runtime can be built with:
+
+```bash
+uv run pkgutils.py qtlrelease
+```
+
+Material design icons are included with the source. Optional icon themes can be built with:
+
+```bash
+uv run pkgutils.py icons optional
+```
+
 
 ## Picking the Correct Branch for a Pull Request
 
@@ -33,6 +63,11 @@ New features are only accepted on full releases, so a feature pull request must 
 `main` branch. However, if the `main` branch is very close to a new full release, pull requests may
 not be merged until the release is completed.
 
+This project uses GitHub milestones to plan releases, and only pull requests included in the
+current release cycle will be merged to `main`. Milestone tickets are not set in stone and are
+often moved between them.
+
+
 ## Pull Request Check List
 
 Make sure the pull request follows these rules:
@@ -41,31 +76,44 @@ Make sure the pull request follows these rules:
   own fork from the current `main` branch. Do not make pull requests from your copy of the `main`
   branch.
 * Please provide a description of the changes in the pull request under the summary section of the
-  pull request template, and reference any related issues by providing the issue number.
+  pull request template, and reference any related issues by providing the issue number. Do not
+  post links to issue numbers as that breaks the integration. Stating the issue number is enough.
 * Do not change the version number.
 * Do not submit files that were not actively changed but have otherwise been modified. This is
-  mostly an issue with translation files. The language tool may update all files in the `i18n`
-  folder.
+  particularly an issue with autoformatting.
+
 
 ## General Rules
 
 These are the guidelines for the project. The source code of novelWriter broadly follows the
 [PEP8](https://www.python.org/dev/peps/pep-0008) style guide, but with a few exceptions.
 
+The project uses [ruff](https://docs.astral.sh/ruff/) for linting, but the auto-formatter should
+not be used at this point. It also uses [isort](https://pycqa.github.io/isort) for import sorting.
+The latter can be auto-formatted and the settings are defined in ``pyproject.toml`.
+
+
 ### Tests
 
 * New code must not break any existing tests.
 * New code must come with tests that cover the code in full. If the code has branches that only
-  runs on some OSes, they must be covered when test are run on that OS. The test suite runs on
-  Linux, Windows and MacOS.
+  runs on some OSes, they only need to be covered when test are run on that OS. The test suite runs
+  on Linux, Windows and MacOS.
+
+A helper script is provided for running tests. It simplifies coverage reporting and a few other
+things. Run the following to see all details:
+
+```bash
+uv run run_tests.py --help
+```
+
 
 ### Code Formatting
 
-* Do not run automatic formatting tools like `black` or `ruff` on the code. Auto-formatting using
-  `ruff` is planned, but there are a couple of features missing in it, so it is currently only used
-  for linting. Auto-formatting with `isort` is configured in `pyproject.toml` and can be used.
-* The pull request code *must* pass the `ruff` linting rules specified in `pyproject.toml`.
+* The pull request code *must* pass the `ruff` and `isort` linting rules specified in
+  `pyproject.toml`.
 * In general, do not make large scale formatting changes to the code.
+
 
 ### Type Annotations
 
@@ -77,12 +125,14 @@ These are the guidelines for the project. The source code of novelWriter broadly
 * Do not use deprecated capitalised annotations like `Dict`, `List`, `Tuple`, etc.
 * Type annotated code must be runnable on all supported Python versions.
 
+
 ### Internationalisation
 
 * All comments and docstrings in the code must be in English.
 * All text presented to the user must be wrapped in calls to Qt's translation framework, and the
   spelling of this text *must* be UK English. US English spelling is not allowed for these strings.
 * Commit descriptions and pull requests must also be in English.
+
 
 ### Line Length
 
@@ -91,6 +141,7 @@ These are the guidelines for the project. The source code of novelWriter broadly
   avoided by going to 99, then that is generally preferable. Readability has priority.
 * For text files, the text should be wrapped at 99 character. The exception is Markdown image tags
   and URLs which can run past that limit.
+
 
 ### Spaces, Indentation and Alignment
 
@@ -101,9 +152,11 @@ These are the guidelines for the project. The source code of novelWriter broadly
   rule is relaxed a bit here. Alignment is allowed when populating large dictionaries or setting
   many class attributes. It does improve readability in such cases, but should not be overused.
 
+
 ### General Code Rules
 
 * Use f-string style for string formatting as the first choice, and `.format` functions if there is
   a good reason for it. Do not use `%` style formatting except for logging output. For logging, `%`
   must be used (it's a limitation in the logging library unfortunately).
-* Functions should be on camelCase form for consistency with the Qt library code.
+* Functions should be on camelCase form for consistency with the Qt library code. This also goes
+  for variable names for the sake of internal consistency.

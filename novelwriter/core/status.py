@@ -183,7 +183,7 @@ class NWStatus:
             icon = NWStatus.createIcon(self._height, color, shape)
             return StatusEntry(simplified(data[2]), color, theme, shape, icon)
         except Exception:
-            logger.error("Could not parse entry %s", str(data))
+            logger.error("Could not parse entry %s", data)
         return None
 
     def refreshIcons(self) -> None:

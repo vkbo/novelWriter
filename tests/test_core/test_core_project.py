@@ -25,13 +25,12 @@ from zipfile import ZipFile
 
 import pytest
 
-from PyQt6.QtWidgets import QMessageBox
-
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwFiles
 from novelwriter.core.project import NWProject, NWProjectState
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.enum import nwItemClass
+from novelwriter.shared import _GuiAlert
 
 from tests.mocked import causeOSError
 from tests.tools import XML_IGNORE, C, buildTestProject, cmpFiles
@@ -274,14 +273,14 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     # Won't convert legacy file
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.WAS_LEGACY))
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert project.openProject(fncPath, clearLock=True) is False
         assert "The file format of your project is about to be" in SHARED.lastAlert
 
     # Won't open project from newer version
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: 0x99999999))
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert project.openProject(fncPath, clearLock=True) is False
         assert "This project was saved by a newer version" in SHARED.lastAlert
 

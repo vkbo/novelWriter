@@ -27,8 +27,8 @@ import pytest
 from PyQt6.QtCore import QEvent, QMimeData, QPointF, Qt, QThreadPool, QUrl
 from PyQt6.QtGui import (
     QAction, QClipboard, QDesktopServices, QDragEnterEvent, QDragMoveEvent,
-    QDropEvent, QFont, QMouseEvent, QTextBlock, QTextCursor, QTextDocument,
-    QTextOption
+    QDropEvent, QFont, QInputMethodEvent, QMouseEvent, QTextBlock, QTextCursor,
+    QTextDocument, QTextOption
 )
 from PyQt6.QtWidgets import QApplication, QMenu, QPlainTextEdit
 
@@ -42,7 +42,8 @@ from novelwriter.gui.dochighlight import TextBlockData
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
     QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtModNone,
-    QtMouseLeft, QtMoveAnchor, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
+    QtMouseLeft, QtMoveAnchor, QtMoveRight, QtScrollAlwaysOff,
+    QtScrollAsNeeded, QtSelectDocument, QtSelectWord
 )
 
 from tests.mocked import causeOSError
@@ -58,7 +59,7 @@ def getMenuForPos(editor: GuiDocEditor, pos: int, select: bool = False) -> QMenu
     cursor = editor.textCursor()
     cursor.setPosition(pos)
     if select:
-        cursor.select(QTextCursor.SelectionType.WordUnderCursor)
+        cursor.select(QtSelectWord)
     editor.setTextCursor(cursor)
     editor._openContextFromCursor()
     for obj in editor.children():
@@ -1239,7 +1240,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     docEditor.setCursorPosition(45)
     assert len(docEditor._selectedBlocks(cursor)) == 0
 
-    cursor.select(QTextCursor.SelectionType.Document)
+    cursor.select(QtSelectDocument)
     assert len(docEditor._selectedBlocks(cursor)) == 15
 
     # Remove All
@@ -1953,6 +1954,19 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
         "%Note.Consistency: \n"
     )
 
+    # CJK completer reposition (#2267 and #2517)
+    qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
+    assert completer.isVisible() is True
+    completer.move(0, 0)
+    assert completer.pos().x() == 0  # Completer menu at 0
+    assert completer.pos().y() == 0  # Completer menu at 0
+
+    event = QInputMethodEvent()
+    event.setCommitString("Text")
+    docEditor.inputMethodEvent(event)
+    assert completer.pos().x() > 0  # Completer should have moved
+    assert completer.pos().y() > 0  # Completer should have moved
+
     # qtbot.stop()
 
 
@@ -2080,7 +2094,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Select the Word "est"
     docEditor.setCursorPosition(663)
-    docEditor._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docEditor._makeSelection(QtSelectWord)
     cursor = docEditor.textCursor()
     assert cursor.selectedText() == "est"
 
@@ -2210,7 +2224,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Close search and select "est" again
     docSearch.cancelSearch.activate(QAction.ActionEvent.Trigger)
     docEditor.setCursorPosition(663)
-    docEditor._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docEditor._makeSelection(QtSelectWord)
     cursor = docEditor.textCursor()
     assert cursor.selectedText() == "est"
 

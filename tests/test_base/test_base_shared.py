@@ -20,16 +20,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
 from __future__ import annotations
 
+import sys
+
 from unittest.mock import MagicMock
 
 import pytest
 
 from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QDesktopServices
-from PyQt6.QtWidgets import QFileDialog, QMessageBox, QWidget
+from PyQt6.QtWidgets import QFileDialog, QWidget
 
 from novelwriter.core.project import NWProject
-from novelwriter.shared import SharedData
+from novelwriter.shared import SharedData, _GuiAlert
 
 from tests.mocked import MockGuiMain, MockTheme
 from tests.tools import buildTestProject
@@ -143,10 +145,10 @@ def testBaseSharedData_Projects(monkeypatch, caplog, fncPath):
 
 
 @pytest.mark.base
-def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog):
+def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog, mockGUI):
     """Test SharedData class alert helper functions."""
-    monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
+    monkeypatch.setattr(_GuiAlert, "exec", lambda *a: None)
+    monkeypatch.setattr(_GuiAlert, "finalState", True)
 
     shared = SharedData()
 
@@ -188,3 +190,67 @@ def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog):
     # Question box
     assert shared.question("Why?") is True
     assert shared.lastAlert == "Why?"
+
+
+@pytest.mark.base
+def testBaseSharedData_GuiAlert():
+    """Test the _GuiAlert class."""
+    alert = _GuiAlert(None, MockTheme())  # type: ignore
+
+    # Default states
+    assert alert.logMessage == ""
+    assert alert.finalState is False
+
+    # Populate message
+    text = "one"
+    info = "two"
+    details = "three"
+    alert.setMessage(text, info, details)
+    assert alert.logMessage == f"{text} {info} {details}"
+    assert alert.text() == text
+    assert alert.informativeText() == info
+    assert alert.detailedText() == details
+
+    # Populate exception
+    exc = Exception("oops")
+    alert.setException(exc)
+    assert alert.logMessage == f"{text} {info} {details}"
+    assert alert.informativeText() == f"{info}<br><b>Exception</b>: {exc!s}"
+
+    # Alert: Info
+    alert.setAlertType(_GuiAlert.INFO, False)
+    assert hasattr(alert, "_btnOk")
+    if sys.platform != "darwin":  # Not set on MacOS
+        assert alert.windowTitle() == "Information"
+    alert._btnOk.click()
+    assert alert.finalState is True
+    alert._state = False
+
+    # Alert: Warning
+    alert.setAlertType(_GuiAlert.WARN, False)
+    assert hasattr(alert, "_btnOk")
+    if sys.platform != "darwin":  # Not set on MacOS
+        assert alert.windowTitle() == "Warning"
+    alert._btnOk.click()
+    assert alert.finalState is True
+    alert._state = False
+
+    # Alert: Error
+    alert.setAlertType(_GuiAlert.ERROR, False)
+    assert hasattr(alert, "_btnOk")
+    if sys.platform != "darwin":  # Not set on MacOS
+        assert alert.windowTitle() == "Error"
+    alert._btnOk.click()
+    assert alert.finalState is True
+    alert._state = False
+
+    # Alert: Question
+    alert.setAlertType(_GuiAlert.ASK, True)
+    assert hasattr(alert, "_btnYes")
+    assert hasattr(alert, "_btnNo")
+    if sys.platform != "darwin":  # Not set on MacOS
+        assert alert.windowTitle() == "Question"
+    alert._btnYes.click()
+    assert alert.finalState is True
+    alert._btnNo.click()
+    assert alert.finalState is False

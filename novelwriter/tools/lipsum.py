@@ -34,9 +34,10 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import readTextFile
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeft, QtAlignRight, QtDialogClose, QtRoleAction
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtRoleApply, QtRoleDestruct
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +59,7 @@ class GuiLipsum(NDialog):
 
         # Icon
         self.docIcon = QLabel(self)
-        self.docIcon.setPixmap(SHARED.theme.getPixmap("text", (64, 64), "blue"))
+        self.docIcon.setPixmap(SHARED.theme.getPixmap("text", (64, 64), "info"))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.setSpacing(4)
@@ -91,22 +92,22 @@ class GuiLipsum(NDialog):
         self.innerBox.addLayout(self.formBox)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnInsert = SHARED.theme.getStandardButton(nwStandardButton.INSERT, self)
+        self.btnInsert.clicked.connect(self._doInsert)
+        self.btnInsert.setAutoDefault(False)
 
-        self.btnClose = self.buttonBox.addButton(QtDialogClose)
-        if self.btnClose:
-            self.btnClose.setAutoDefault(False)
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.clicked.connect(self.reject)
+        self.btnClose.setAutoDefault(False)
 
-        self.btnInsert = self.buttonBox.addButton(self.tr("Insert"), QtRoleAction)
-        if self.btnInsert:
-            self.btnInsert.clicked.connect(self._doInsert)
-            self.btnInsert.setAutoDefault(False)
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnInsert, QtRoleApply)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
 
         # Assemble
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.innerBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
         self.outerBox.setSpacing(16)
         self.setLayout(self.outerBox)
 

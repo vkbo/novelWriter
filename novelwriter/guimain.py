@@ -497,7 +497,8 @@ class GuiMain(QMainWindow):
 
         # Check if we need to rebuild the index
         if SHARED.project.index.indexBroken:
-            SHARED.info(self.tr("The project index is outdated or broken. Rebuilding index."))
+            if not SHARED.project.index.indexUpgrade:
+                SHARED.warn(self.tr("The project index is broken. Rebuilding index."))
             self.rebuildIndex()
 
         # Make sure the changed status is set to false on things opened
@@ -729,7 +730,7 @@ class GuiMain(QMainWindow):
 
         return
 
-    def rebuildIndex(self, beQuiet: bool = False) -> None:
+    def rebuildIndex(self) -> None:
         """Rebuild the entire index."""
         if SHARED.hasProject:
             logger.info("Rebuilding index ...")
@@ -746,8 +747,7 @@ class GuiMain(QMainWindow):
             self._updateStatusWordCount()
             QApplication.restoreOverrideCursor()
 
-            if not beQuiet:
-                SHARED.info(self.tr("The project index has been successfully rebuilt."))
+            SHARED.info(self.tr("The project index has been successfully rebuilt."))
 
     ##
     #  Main Dialogs
@@ -909,6 +909,9 @@ class GuiMain(QMainWindow):
         self.itemDetails.updateTheme()
         self.mainStatus.updateTheme()
         SHARED.project.tree.refreshAllItems()
+
+        if dialog := SHARED.findTopLevelWidget(GuiManuscript):
+            dialog.updateTheme()
 
         if syntax:
             self.docEditor.updateSyntaxColors()

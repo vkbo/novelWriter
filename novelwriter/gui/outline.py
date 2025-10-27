@@ -103,6 +103,8 @@ class GuiOutlineView(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiOutlineView")
+
         self.outlineBar.updateTheme()
         self.outlineTree.updateTheme()
         self.outlineTree.refreshTree(
@@ -258,11 +260,13 @@ class GuiOutlineToolBar(QToolBar):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiOutlineToolBar")
+
         self.setStyleSheet("QToolBar {border: 0px;}")
         self.novelValue.refreshNovelList()
-        self.aRefresh.setIcon(SHARED.theme.getIcon("refresh", "green"))
-        self.aExport.setIcon(SHARED.theme.getIcon("export", "blue"))
-        self.tbColumns.setIcon(SHARED.theme.getIcon("more_vertical"))
+        self.aRefresh.setIcon(SHARED.theme.getIcon("refresh", "change"))
+        self.aExport.setIcon(SHARED.theme.getIcon("export", "action"))
+        self.tbColumns.setIcon(SHARED.theme.getIcon("more_vertical", "default"))
         self.tbColumns.setStyleSheet("QToolButton::menu-indicator {image: none;}")
         self.novelLabel.setTextColors(color=self.palette().windowText().color())
 
@@ -454,6 +458,8 @@ class GuiOutlineTree(QTreeWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiOutlineTree")
+
         iType = nwItemType.FILE
         iClass = nwItemClass.NO_CLASS
         iLayout = nwItemLayout.DOCUMENT
@@ -586,7 +592,7 @@ class GuiOutlineTree(QTreeWidget):
         try:
             for name, (hidden, width) in colState.items():
                 if name not in nwOutline.__members__:
-                    logger.warning("Ignored unknown outline column '%s'", str(name))
+                    logger.warning("Ignored unknown outline column '%s'", name)
                     continue
                 tmpOrder.append(nwOutline[name])
                 tmpHidden[nwOutline[name]] = hidden

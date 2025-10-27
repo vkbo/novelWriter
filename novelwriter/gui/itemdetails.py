@@ -216,6 +216,7 @@ class GuiItemDetails(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiItemDetails")
         self.updateViewBox(self._handle)
 
     def updateViewBox(self, tHandle: str | None) -> None:

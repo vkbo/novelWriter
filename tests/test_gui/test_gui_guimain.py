@@ -30,9 +30,10 @@ import pytest
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette
-from PyQt6.QtWidgets import QInputDialog, QMessageBox
+from PyQt6.QtWidgets import QInputDialog
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import CONFIG, SHARED, __hexversion__
+from novelwriter.common import jsonEncode
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.constants import nwFiles
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -41,6 +42,7 @@ from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
+from novelwriter.shared import _GuiAlert
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.types import QtModCtrl, QtModShift
 
@@ -103,7 +105,7 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
 
     # Check that closes can be blocked
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert nwGUI.openProject(projPath) is True
         assert nwGUI.closeMain() is False
     nwGUI.closeProject()
@@ -713,7 +715,7 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     cHandle = SHARED.project.newFile("Jane", C.hCharRoot)
     newDoc = SHARED.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# Jane\n\n@tag: Jane\n\n")
-    nwGUI.rebuildIndex(beQuiet=True)
+    nwGUI.rebuildIndex()
 
     assert SHARED.focusMode is False
 
@@ -825,11 +827,11 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI, projPath, fncPath, mockRnd)
     nwGUI.viewDocument(C.hTitlePage)
 
     # Handle broken index on project open
+    idxData = jsonEncode({"novelWriter.meta": {"version": __hexversion__}})
     nwGUI.closeProject()
     idxPath: Path = projPath / "meta" / nwFiles.INDEX_FILE
     assert idxPath.read_text(encoding="utf-8") != "{}"
-    idxPath.write_text("{}", encoding="utf-8")
-    assert idxPath.read_text(encoding="utf-8") == "{}"
+    idxPath.write_text(idxData, encoding="utf-8")
 
     nwGUI.openProject(projPath)
     nwGUI.saveProject()
@@ -840,7 +842,7 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI, projPath, fncPath, mockRnd)
     # Block closing
     assert SHARED.hasProject is True
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert nwGUI.openProject(projPath) is False
         assert SHARED.hasProject is True
 
@@ -853,7 +855,7 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI, projPath, fncPath, mockRnd)
     shutil.copyfile(lockBack, lockPath)
 
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert nwGUI.openProject(projPath) is False
 
     assert nwGUI.openProject(projPath) is True

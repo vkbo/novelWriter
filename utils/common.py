@@ -23,11 +23,24 @@ from __future__ import annotations
 import shutil
 import subprocess
 import sys
+import tomllib
 
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).parent.parent
 SETUP_DIR = ROOT_DIR / "setup"
+
+
+def extractReqs(groups: list[str]) -> list[str]:
+    """Extract dependency groups from pyproject.toml."""
+    data = tomllib.loads((ROOT_DIR / "pyproject.toml").read_text(encoding="utf-8"))
+    reqs = []
+    if "app" in groups or "all" in groups:
+        reqs += data["project"]["dependencies"]
+    for group in data["dependency-groups"]:
+        if group in groups or "all" in groups:
+            reqs += [d for d in data["dependency-groups"][group] if isinstance(d, str)]
+    return reqs
 
 
 def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
@@ -90,27 +103,36 @@ def copySourceCode(dst: Path) -> None:
             print("Copied:", relSrc, flush=True)
 
 
-def copyPackageFiles(dst: Path, setupPy: bool = False) -> None:
+def copyPackageFiles(dst: Path, oldLicense: bool = False) -> None:
     """Copy files needed for packaging."""
-    copyFiles = ["LICENSE.md", "CREDITS.md", "pyproject.toml"]
+    copyFiles = [
+        ROOT_DIR / "LICENSE.md",
+        SETUP_DIR / "LICENSE-Apache-2.0.txt",
+        ROOT_DIR / "CREDITS.md",
+        ROOT_DIR / "pyproject.toml",
+    ]
     for copyFile in copyFiles:
-        shutil.copyfile(copyFile, dst / copyFile)
+        shutil.copyfile(copyFile, dst / copyFile.name)
         print("Copied:", copyFile, flush=True)
 
     writeFile(dst / "MANIFEST.in", (
         "include LICENSE.md\n"
+        "include LICENSE-Apache-2.0.txt\n"
         "include CREDITS.md\n"
         "recursive-include novelwriter/assets *\n"
     ))
 
-    if setupPy:
-        writeFile(dst / "setup.py", (
-            "import setuptools\n"
-            "setuptools.setup()\n"
-        ))
-
     text = readFile(ROOT_DIR / "pyproject.toml")
     text = text.replace("setup/description_pypi.md", "data/description_short.txt")
+    if oldLicense:
+        new = []
+        for line in text.splitlines():
+            if line.startswith("license = "):
+                line = 'license = {text = "GPL-3.0-or-later AND Apache-2.0 AND CC-BY-4.0"}'
+            if line.startswith("license-files = "):
+                continue
+            new.append(line)
+        text = "\n".join(new)
     writeFile(dst / "pyproject.toml", text)
 
 

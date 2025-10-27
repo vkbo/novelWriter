@@ -39,13 +39,14 @@ from enum import Enum, IntFlag
 from time import time
 
 from PyQt6.QtCore import (
-    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
-    pyqtSlot
+    QObject, QPoint, QRect, QRegularExpression, QRunnable, Qt, QTimer,
+    QVariant, pyqtSignal, pyqtSlot
 )
 from PyQt6.QtGui import (
-    QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent, QKeyEvent,
-    QKeySequence, QMouseEvent, QPalette, QPixmap, QResizeEvent, QShortcut,
-    QTextBlock, QTextCursor, QTextDocument, QTextFormat, QTextOption
+    QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent,
+    QInputMethodEvent, QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap,
+    QResizeEvent, QShortcut, QTextBlock, QTextCursor, QTextDocument,
+    QTextFormat, QTextOption
 )
 from PyQt6.QtWidgets import (
     QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
@@ -74,9 +75,10 @@ from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
-    QtAlignRight, QtKeepAnchor, QtModCtrl, QtModNone, QtModShift, QtMouseLeft,
-    QtMoveAnchor, QtMoveLeft, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded,
-    QtTransparent
+    QtAlignRight, QtImCursorRectangle, QtKeepAnchor, QtModCtrl, QtModNone,
+    QtModShift, QtMouseLeft, QtMoveAnchor, QtMoveLeft, QtMoveRight,
+    QtScrollAlwaysOff, QtScrollAsNeeded, QtSelectBlock, QtSelectDocument,
+    QtSelectWord, QtTransparent
 )
 
 logger = logging.getLogger(__name__)
@@ -154,7 +156,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Completer
         self._completer = CommandCompleter(self)
-        self._completer.complete.connect(self._insertCompletion)
+        self._completer.insertText.connect(self._insertCompletion)
 
         # Create Custom Document
         self._qDocument = GuiTextDocument(self)
@@ -290,6 +292,8 @@ class GuiDocEditor(QPlainTextEdit):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiDocEditor")
+
         self.docSearch.updateTheme()
         self.docHeader.updateTheme()
         self.docFooter.updateTheme()
@@ -671,7 +675,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.spellCheckStateChanged.emit(state)
         self.spellCheckDocument()
 
-        logger.debug("Spell check is set to '%s'", str(state))
+        logger.debug("Spell check is set to '%s'", state)
 
     def spellCheckDocument(self) -> None:
         """Rerun the highlighter to update spell checking status of the
@@ -730,9 +734,9 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.D_QUOTE:
             self._wrapSelection(CONFIG.fmtDQuoteOpen, CONFIG.fmtDQuoteClose)
         elif action == nwDocAction.SEL_ALL:
-            self._makeSelection(QTextCursor.SelectionType.Document)
+            self._makeSelection(QtSelectDocument)
         elif action == nwDocAction.SEL_PARA:
-            self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor)
+            self._makeSelection(QtSelectBlock)
         elif action == nwDocAction.BLOCK_H1:
             self._formatBlock(nwDocAction.BLOCK_H1)
         elif action == nwDocAction.BLOCK_H2:
@@ -784,7 +788,7 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.SC_SUB:
             self._wrapSelection(nwShortcode.SUB_O, nwShortcode.SUB_C)
         else:
-            logger.debug("Unknown or unsupported document action '%s'", str(action))
+            logger.debug("Unknown or unsupported document action '%s'", action)
             self._allowAutoReplace(True)
             return False
 
@@ -905,7 +909,7 @@ class GuiDocEditor(QPlainTextEdit):
         return True
 
     ##
-    #  Document Events and Maintenance
+    #  Events and Overloads
     ##
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
@@ -1003,6 +1007,26 @@ class GuiDocEditor(QPlainTextEdit):
         self.updateDocMargins()
         super().resizeEvent(event)
 
+    def inputMethodEvent(self, event: QInputMethodEvent) -> None:
+        """Handle text being input from CJK input methods."""
+        super().inputMethodEvent(event)
+        if event.commitString():
+            # See issues #2267 and #2517
+            self.ensureCursorVisible()
+            self._completerToCursor()
+
+    def inputMethodQuery(self, query: Qt.InputMethodQuery) -> QRect | QVariant:
+        """Adjust completion windows for CJK input methods to consider
+        the viewport margins.
+        """
+        if query == QtImCursorRectangle:
+            # See issues #2267 and #2517
+            vM = self.viewportMargins()
+            rect = self.cursorRect()
+            rect.translate(vM.left(), vM.top())
+            return rect
+        return super().inputMethodQuery(query)
+
     ##
     #  Public Slots
     ##
@@ -1062,24 +1086,20 @@ class GuiDocEditor(QPlainTextEdit):
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
+
             if text and text[0] in "@%" and added + removed == 1:
                 # Only run on single character changes, or it will trigger
                 # at unwanted times when other changes are made to the document
                 cursor = self.textCursor()
                 bPos = cursor.positionInBlock()
-                if bPos > 0 and (viewport := self.viewport()):
+                if bPos > 0:
                     if text[0] == "@":
                         show = self._completer.updateMetaText(text, bPos)
                     else:
                         show = self._completer.updateCommentText(text, bPos)
                     if show:
-                        point = self.cursorRect().bottomRight()
-                        self._completer.move(viewport.mapToGlobal(point))
                         self._completer.show()
-                    else:
-                        self._completer.close()
-            else:
-                self._completer.close()
+                        self._completerToCursor()
 
             if self._doReplace and added == 1:
                 cursor = self.textCursor()
@@ -1104,7 +1124,7 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.setPosition(check, QtMoveAnchor)
             cursor.setPosition(check + length, QtKeepAnchor)
             cursor.insertText(text)
-            self._completer.hide()
+            self._completer.close()
 
     @pyqtSlot()
     def _openContextFromCursor(self) -> None:
@@ -1157,13 +1177,9 @@ class GuiDocEditor(QPlainTextEdit):
         action = qtAddAction(ctxMenu, self.tr("Select All"))
         action.triggered.connect(qtLambda(self.docAction, nwDocAction.SEL_ALL))
         action = qtAddAction(ctxMenu, self.tr("Select Word"))
-        action.triggered.connect(qtLambda(
-            self._makePosSelection, QTextCursor.SelectionType.WordUnderCursor, pos,
-        ))
+        action.triggered.connect(qtLambda(self._makePosSelection, QtSelectWord, pos))
         action = qtAddAction(ctxMenu, self.tr("Select Paragraph"))
-        action.triggered.connect(qtLambda(
-            self._makePosSelection, QTextCursor.SelectionType.BlockUnderCursor, pos
-        ))
+        action.triggered.connect(qtLambda(self._makePosSelection, QtSelectBlock, pos))
 
         # Spell Checking
         if SHARED.project.data.spellCheck:
@@ -1733,7 +1749,7 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.BLOCK_TXT:
             text = temp
         else:
-            logger.error("Unknown or unsupported block format requested: '%s'", str(action))
+            logger.error("Unknown or unsupported block format requested: '%s'", action)
             return nwDocAction.NO_ACTION, "", 0
 
         return action, text, offset
@@ -1743,7 +1759,7 @@ class GuiDocEditor(QPlainTextEdit):
         cursor = self.textCursor()
         block = cursor.block()
         if not block.isValid():
-            logger.debug("Invalid block selected for action '%s'", str(action))
+            logger.debug("Invalid block selected for action '%s'", action)
             return False
 
         action, text, offset = self._processBlockFormat(action, block.text())
@@ -1753,7 +1769,7 @@ class GuiDocEditor(QPlainTextEdit):
         pos = cursor.position()
 
         cursor.beginEditBlock()
-        self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor, cursor)
+        self._makeSelection(QtSelectBlock, cursor)
         cursor.insertText(text)
         cursor.endEditBlock()
 
@@ -1781,7 +1797,7 @@ class GuiDocEditor(QPlainTextEdit):
             if pAction != nwDocAction.NO_ACTION and blockText.strip():
                 action = pAction  # First block decides further actions
                 cursor.setPosition(block.position())
-                self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor, cursor)
+                self._makeSelection(QtSelectBlock, cursor)
                 cursor.insertText(text)
                 toggle = False
 
@@ -1801,7 +1817,7 @@ class GuiDocEditor(QPlainTextEdit):
         """Strip line breaks within paragraphs in the selected text."""
         cursor = self.textCursor()
         if not cursor.hasSelection():
-            cursor.select(QTextCursor.SelectionType.Document)
+            cursor.select(QtSelectDocument)
 
         rS = 0
         rE = self._qDocument.characterCount()
@@ -1865,6 +1881,12 @@ class GuiDocEditor(QPlainTextEdit):
     ##
     #  Internal Functions
     ##
+
+    def _completerToCursor(self) -> None:
+        """Make sure the completer menu is positioned by the cursor."""
+        if self._completer.isVisible() and (viewport := self.viewport()):
+            point = self.cursorRect().bottomLeft()
+            self._completer.move(viewport.mapToGlobal(point))
 
     def _correctWord(self, cursor: QTextCursor, word: str) -> None:
         """Slot for the spell check context menu triggering the
@@ -2012,10 +2034,10 @@ class GuiDocEditor(QPlainTextEdit):
         cursor.clearSelection()
         cursor.select(mode)
 
-        if mode == QTextCursor.SelectionType.WordUnderCursor:
+        if mode == QtSelectWord:
             cursor = self._autoSelect()
 
-        elif mode == QTextCursor.SelectionType.BlockUnderCursor:
+        elif mode == QtSelectBlock:
             # This selection mode also selects the preceding paragraph
             # separator, which we want to avoid.
             posS = cursor.selectionStart()
@@ -2050,10 +2072,13 @@ class CommandCompleter(QMenu):
     called on every keystroke on a line starting with @ or %.
     """
 
-    complete = pyqtSignal(int, int, str)
+    __slots__ = ("_parent",)
+
+    insertText = pyqtSignal(int, int, str)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
+        self._parent = parent
 
     def updateMetaText(self, text: str, pos: int) -> bool:
         """Update the menu options based on the line of text."""
@@ -2139,14 +2164,14 @@ class CommandCompleter(QMenu):
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Capture keypresses and forward most of them to the editor."""
-        parent = self.parent()
         if event.key() in (
             Qt.Key.Key_Up, Qt.Key.Key_Down, Qt.Key.Key_Return,
             Qt.Key.Key_Enter, Qt.Key.Key_Escape
         ):
             super().keyPressEvent(event)
-        elif isinstance(parent, GuiDocEditor):
-            parent.keyPressEvent(event)
+        else:
+            self.close()  # Close to release the event lock before forwarding the key press (#2510)
+            self._parent.keyPressEvent(event)
 
     ##
     #  Internal Functions
@@ -2154,7 +2179,7 @@ class CommandCompleter(QMenu):
 
     def _emitComplete(self, pos: int, length: int, value: str) -> None:
         """Emit the signal to indicate a selection has been made."""
-        self.complete.emit(pos, length, value)
+        self.insertText.emit(pos, length, value)
 
 
 class BackgroundWordCounter(QRunnable):
@@ -2455,25 +2480,26 @@ class GuiDocToolBar(QWidget):
 
     def updateTheme(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
-        syntax = SHARED.theme.syntaxTheme
+        logger.debug("Theme Update: GuiDocToolBar")
 
+        syntax = SHARED.theme.syntaxTheme
         palette = self.palette()
         palette.setColor(QPalette.ColorRole.Window, syntax.back)
         palette.setColor(QPalette.ColorRole.WindowText, syntax.text)
         palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
 
-        self.tbBoldMD.setThemeIcon("fmt_bold", "orange")
-        self.tbItalicMD.setThemeIcon("fmt_italic", "orange")
-        self.tbStrikeMD.setThemeIcon("fmt_strike", "orange")
-        self.tbMarkMD.setThemeIcon("fmt_mark", "orange")
-        self.tbBold.setThemeIcon("fmt_bold")
-        self.tbItalic.setThemeIcon("fmt_italic")
-        self.tbStrike.setThemeIcon("fmt_strike")
-        self.tbUnderline.setThemeIcon("fmt_underline")
-        self.tbMark.setThemeIcon("fmt_mark")
-        self.tbSuperscript.setThemeIcon("fmt_superscript")
-        self.tbSubscript.setThemeIcon("fmt_subscript")
+        self.tbBoldMD.setThemeIcon("fmt_bold", "mdformat")
+        self.tbItalicMD.setThemeIcon("fmt_italic", "mdformat")
+        self.tbStrikeMD.setThemeIcon("fmt_strike", "mdformat")
+        self.tbMarkMD.setThemeIcon("fmt_mark", "mdformat")
+        self.tbBold.setThemeIcon("fmt_bold", "scformat")
+        self.tbItalic.setThemeIcon("fmt_italic", "scformat")
+        self.tbStrike.setThemeIcon("fmt_strike", "scformat")
+        self.tbUnderline.setThemeIcon("fmt_underline", "scformat")
+        self.tbMark.setThemeIcon("fmt_mark", "scformat")
+        self.tbSuperscript.setThemeIcon("fmt_superscript", "scformat")
+        self.tbSubscript.setThemeIcon("fmt_subscript", "scformat")
 
 
 class GuiDocEditSearch(QFrame):
@@ -2567,7 +2593,7 @@ class GuiDocEditSearch(QFrame):
         # Buttons
         # =======
 
-        self.showReplace = NIconToggleButton(self, iSz, "unfold")
+        self.showReplace = NIconToggleButton(self, iSz)
         self.showReplace.toggled.connect(self._doToggleReplace)
 
         self.searchButton = NIconToolButton(self, iSz)
@@ -2693,22 +2719,24 @@ class GuiDocEditSearch(QFrame):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        palette = QApplication.palette()
+        logger.debug("Theme Update: GuiDocEditSearch")
 
+        palette = QApplication.palette()
         self.setPalette(palette)
         self.searchBox.setPalette(palette)
         self.replaceBox.setPalette(palette)
 
         # Set icons
-        self.toggleCase.setIcon(SHARED.theme.getIcon("search_case"))
-        self.toggleWord.setIcon(SHARED.theme.getIcon("search_word"))
-        self.toggleRegEx.setIcon(SHARED.theme.getIcon("search_regex"))
-        self.toggleLoop.setIcon(SHARED.theme.getIcon("search_loop"))
-        self.toggleProject.setIcon(SHARED.theme.getIcon("search_project"))
-        self.toggleMatchCap.setIcon(SHARED.theme.getIcon("search_preserve"))
-        self.cancelSearch.setIcon(SHARED.theme.getIcon("search_cancel"))
-        self.searchButton.setThemeIcon("search", "green")
-        self.replaceButton.setThemeIcon("search_replace", "green")
+        self.toggleCase.setIcon(SHARED.theme.getIcon("search_case", "tool"))
+        self.toggleWord.setIcon(SHARED.theme.getIcon("search_word", "tool"))
+        self.toggleRegEx.setIcon(SHARED.theme.getIcon("search_regex", "tool"))
+        self.toggleLoop.setIcon(SHARED.theme.getIcon("search_loop", "tool"))
+        self.toggleProject.setIcon(SHARED.theme.getIcon("search_project", "tool"))
+        self.toggleMatchCap.setIcon(SHARED.theme.getIcon("search_preserve", "tool"))
+        self.cancelSearch.setIcon(SHARED.theme.getIcon("search_cancel", "tool"))
+        self.searchButton.setThemeIcon("search", "action")
+        self.replaceButton.setThemeIcon("search_replace", "apply")
+        self.showReplace.setThemeIcon("unfold", "default")
 
         # Set stylesheets
         self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
@@ -2937,11 +2965,13 @@ class GuiDocEditHeader(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self.tbButton.setThemeIcon("fmt_toolbar", "blue")
-        self.outlineButton.setThemeIcon("list", "blue")
-        self.searchButton.setThemeIcon("search", "blue")
-        self.minmaxButton.setThemeIcon("maximise", "blue")
-        self.closeButton.setThemeIcon("close", "red")
+        logger.debug("Theme Update: GuiDocEditHeader")
+
+        self.tbButton.setThemeIcon("fmt_toolbar", "action")
+        self.outlineButton.setThemeIcon("list", "action")
+        self.searchButton.setThemeIcon("search", "action")
+        self.minmaxButton.setThemeIcon("maximise", "action")
+        self.closeButton.setThemeIcon("close", "reject")
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbButton.setStyleSheet(buttonStyle)
@@ -3007,7 +3037,7 @@ class GuiDocEditHeader(QWidget):
     @pyqtSlot(bool)
     def _focusModeChanged(self, focusMode: bool) -> None:
         """Update minimise/maximise icon of the Focus Mode button."""
-        self.minmaxButton.setThemeIcon("minimise" if focusMode else "maximise", "blue")
+        self.minmaxButton.setThemeIcon("minimise" if focusMode else "maximise", "action")
 
     ##
     #  Events
@@ -3126,6 +3156,8 @@ class GuiDocEditFooter(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiDocEditFooter")
+
         iPx = round(0.9*SHARED.theme.baseIconHeight)
         self.linesIcon.setPixmap(SHARED.theme.getPixmap("lines", (iPx, iPx)))
         self.wordsIcon.setPixmap(SHARED.theme.getPixmap("stats", (iPx, iPx)))

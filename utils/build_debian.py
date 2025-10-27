@@ -36,7 +36,7 @@ SIGN_KEY = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
 
 def makeDebianPackage(
     signKey: str | None = None, sourceBuild: bool = False, distName: str = "unstable",
-    buildName: str = "", forLaunchpad: bool = False
+    buildName: str = "", forLaunchpad: bool = False, oldLicense: bool = False,
 ) -> str:
     """Build a Debian package."""
     print("")
@@ -96,7 +96,7 @@ def makeDebianPackage(
     print("Copying or generating additional files ...")
     print("")
 
-    copyPackageFiles(outDir, setupPy=True)
+    copyPackageFiles(outDir, oldLicense=oldLicense)
 
     # Copy/Write Debian Files
     # =======================
@@ -180,14 +180,15 @@ def launchpad(args: argparse.Namespace) -> None:
         bldNum = "0"
 
     distLoop = [
-        ("24.04", "noble"),
-        ("25.04", "plucky"),
-        ("25.10", "questing"),
+        ("24.04", "noble", True),
+        ("25.04", "plucky", True),
+        ("25.10", "questing", False),
+        ("26.04", "resolute", False),
     ]
 
     print("Building Ubuntu packages for:")
     print("")
-    for distNum, codeName in distLoop:
+    for distNum, codeName, _ in distLoop:
         print(f" * Ubuntu {distNum} {codeName.title()}")
     print("")
 
@@ -197,7 +198,7 @@ def launchpad(args: argparse.Namespace) -> None:
     print("")
 
     dputCmd = []
-    for distNum, codeName in distLoop:
+    for distNum, codeName, oldLicense in distLoop:
         buildName = f"ubuntu{distNum}.{bldNum}"
         dCmd = makeDebianPackage(
             signKey=signKey,
@@ -205,6 +206,7 @@ def launchpad(args: argparse.Namespace) -> None:
             distName=codeName,
             buildName=buildName,
             forLaunchpad=True,
+            oldLicense=oldLicense,
         )
         dputCmd.append(dCmd)
 
