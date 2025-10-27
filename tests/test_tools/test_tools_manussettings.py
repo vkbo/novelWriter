@@ -69,7 +69,7 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     triggered = False
 
     @pyqtSlot(BuildSettings)
-    def _testNewSettingsReady(new: BuildSettings):
+    def _testNewSettingsReady(new: BuildSettings, refresh: bool):
         nonlocal triggered
         assert new.buildID == build.buildID
         triggered = True

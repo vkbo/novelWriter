@@ -92,10 +92,10 @@ class GuiManuscript(NToolDialog):
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
 
-        pOptions = SHARED.project.options
+        options = SHARED.project.options
         self.resize(
-            pOptions.getInt("GuiManuscript", "winWidth", 900),
-            pOptions.getInt("GuiManuscript", "winHeight", 600),
+            options.getInt("GuiManuscript", "winWidth", 900),
+            options.getInt("GuiManuscript", "winHeight", 600),
         )
 
         # Build Controls
@@ -142,7 +142,7 @@ class GuiManuscript(NToolDialog):
         # ============
 
         self.buildDetails = _DetailsWidget(self)
-        self.buildDetails.setColumnWidth(pOptions.getInt("GuiManuscript", "detailsWidth", 100))
+        self.buildDetails.setColumnWidth(options.getInt("GuiManuscript", "detailsWidth", 100))
 
         self.buildOutline = _OutlineWidget(self)
 
@@ -154,8 +154,8 @@ class GuiManuscript(NToolDialog):
         self.buildSplit.addWidget(self.buildList)
         self.buildSplit.addWidget(self.detailsTabs)
         self.buildSplit.setSizes([
-            pOptions.getInt("GuiManuscript", "listHeight", 50),
-            pOptions.getInt("GuiManuscript", "detailsHeight", 50),
+            options.getInt("GuiManuscript", "listHeight", 50),
+            options.getInt("GuiManuscript", "detailsHeight", 50),
         ])
 
         # Process Controls
@@ -183,7 +183,7 @@ class GuiManuscript(NToolDialog):
         # ===============
 
         self.swtNewPage = NSwitch(self, height=iPx)
-        self.swtNewPage.setChecked(pOptions.getBool("GuiManuscript", "showNewPage", True))
+        self.swtNewPage.setChecked(options.getBool("GuiManuscript", "showNewPage", True))
         self.swtNewPage.clicked.connect(self._generatePreview)
 
         self.lblNewPage = QLabel(self.tr("Show Page Breaks"), self)
@@ -226,8 +226,8 @@ class GuiManuscript(NToolDialog):
         self.mainSplit.setStretchFactor(0, 0)
         self.mainSplit.setStretchFactor(1, 1)
         self.mainSplit.setSizes([
-            pOptions.getInt("GuiManuscript", "optsWidth", 225),
-            pOptions.getInt("GuiManuscript", "viewWidth", 675),
+            options.getInt("GuiManuscript", "optsWidth", 225),
+            options.getInt("GuiManuscript", "viewWidth", 675),
         ])
 
         self.outerBox = QVBoxLayout()
@@ -352,13 +352,16 @@ class GuiManuscript(NToolDialog):
                 self._builds.removeBuild(build.buildID)
                 self._updateBuildsList()
 
-    @pyqtSlot(BuildSettings)
-    def _processNewSettings(self, build: BuildSettings) -> None:
+    @pyqtSlot(BuildSettings, bool)
+    def _processNewSettings(self, build: BuildSettings, refreshPreview: bool) -> None:
         """Process new build settings from the settings dialog."""
         self._builds.setBuild(build)
         self._updateBuildItem(build)
-        if (current := self.buildList.currentItem()) and current.data(self.D_KEY) == build.buildID:
-            self._updateBuildDetails(current, current)
+        if refreshPreview:
+            self.buildList.setCurrentItem(self._buildMap[build.buildID])
+            self._generatePreview()
+        elif (item := self.buildList.currentItem()) and item.data(self.D_KEY) == build.buildID:
+            self._updateBuildDetails(item, item)
 
     @pyqtSlot()
     def _generatePreview(self) -> None:

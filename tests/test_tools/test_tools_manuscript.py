@@ -108,10 +108,11 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
     bSettings = SHARED.findTopLevelWidget(GuiBuildSettings)
     assert isinstance(bSettings, GuiBuildSettings)
     bSettings.editBuildName.setText("Test Build")
+    bSettings.swtAutoPreview.setChecked(False)
     build = None
 
     @pyqtSlot(BuildSettings)
-    def _testNewSettingsReady(new: BuildSettings):
+    def _testNewSettingsReady(new: BuildSettings, refresh: bool):
         nonlocal build
         build = new
 
@@ -150,6 +151,22 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
     new = manus._getSelectedBuild()
     assert new is not None
     assert new.name == "Test Build 2"
+
+    # Processing first build with refresh should change selection
+    manus.docPreview._docTime = 0
+    manus._processNewSettings(build, True)
+    assert manus.docPreview._docTime > 0  # Refreshed
+    current = manus._getSelectedBuild()
+    assert current is not None
+    assert current.name == "Test Build"
+
+    # Processing new build without refresh should keep selection
+    manus.docPreview._docTime = 0
+    manus._processNewSettings(new, False)
+    assert manus.docPreview._docTime == 0  # No refresh
+    current = manus._getSelectedBuild()
+    assert current is not None
+    assert current.name == "Test Build"
 
     # Trigger a theme update, which should propagate to settings
     nwGUI.refreshThemeColors()

@@ -72,7 +72,7 @@ class GuiBuildSettings(NToolDialog):
     OPT_HEADINGS   = 2
     OPT_FORMATTING = 10
 
-    newSettingsReady = pyqtSignal(BuildSettings)
+    newSettingsReady = pyqtSignal(BuildSettings, bool)
 
     def __init__(self, parent: GuiMain, build: BuildSettings) -> None:
         super().__init__(parent=parent)
@@ -86,6 +86,7 @@ class GuiBuildSettings(NToolDialog):
         self.setWindowTitle(self.tr("Manuscript Build Settings"))
         self.setMinimumSize(700, 400)
 
+        iPx = SHARED.theme.baseIconHeight
         options = SHARED.project.options
         self.resize(
             options.getInt("GuiBuildSettings", "winWidth", 750),
@@ -124,6 +125,13 @@ class GuiBuildSettings(NToolDialog):
         self.toolStack.addWidget(self.optTabHeadings)
         self.toolStack.addWidget(self.optTabFormatting)
 
+        # Preview
+        self.swtAutoPreview = NSwitch(self, height=iPx)
+        self.swtAutoPreview.setChecked(options.getBool("GuiBuildSettings", "autoPreview", True))
+
+        self.lblAutoPreview = QLabel(self.tr("Auro-Update Preview"), self)
+        self.lblAutoPreview.setBuddy(self.swtAutoPreview)
+
         # Buttons
         self.btnApply = SHARED.theme.getStandardButton(nwStandardButton.APPLY, self)
         self.btnSave = SHARED.theme.getStandardButton(nwStandardButton.SAVE, self)
@@ -147,10 +155,17 @@ class GuiBuildSettings(NToolDialog):
         self.mainBox.addWidget(self.toolStack)
         self.mainBox.setContentsMargins(0, 0, 0, 0)
 
+        self.bottomBox = QHBoxLayout()
+        self.bottomBox.addWidget(self.lblAutoPreview, 0)
+        self.bottomBox.addWidget(self.swtAutoPreview, 0)
+        self.bottomBox.addSpacing(8)
+        self.bottomBox.addWidget(self.btnBox, 1)
+        self.bottomBox.setContentsMargins(0, 0, 0, 0)
+
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.topBox)
         self.outerBox.addLayout(self.mainBox)
-        self.outerBox.addWidget(self.btnBox)
+        self.outerBox.addLayout(self.bottomBox)
         self.outerBox.setSpacing(12)
 
         self.setLayout(self.outerBox)
@@ -259,12 +274,13 @@ class GuiBuildSettings(NToolDialog):
         """Save the various user settings."""
         treeWidth, filterWidth = self.optTabSelect.mainSplitSizes()
         logger.debug("Saving State: GuiBuildSettings")
-        pOptions = SHARED.project.options
-        pOptions.setValue("GuiBuildSettings", "winWidth", self.width())
-        pOptions.setValue("GuiBuildSettings", "winHeight", self.height())
-        pOptions.setValue("GuiBuildSettings", "treeWidth", treeWidth)
-        pOptions.setValue("GuiBuildSettings", "filterWidth", filterWidth)
-        pOptions.saveSettings()
+        options = SHARED.project.options
+        options.setValue("GuiBuildSettings", "winWidth", self.width())
+        options.setValue("GuiBuildSettings", "winHeight", self.height())
+        options.setValue("GuiBuildSettings", "treeWidth", treeWidth)
+        options.setValue("GuiBuildSettings", "filterWidth", filterWidth)
+        options.setValue("GuiBuildSettings", "autoPreview", self.swtAutoPreview.isChecked())
+        options.saveSettings()
 
     def _applyChanges(self) -> None:
         """Apply all settings changes to the build object."""
@@ -274,7 +290,7 @@ class GuiBuildSettings(NToolDialog):
 
     def _emitBuildData(self) -> None:
         """Assemble the build data and emit the signal."""
-        self.newSettingsReady.emit(self._build)
+        self.newSettingsReady.emit(self._build, self.swtAutoPreview.isChecked())
         self._build.resetChangedState()
 
 

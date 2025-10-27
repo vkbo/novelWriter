@@ -56,7 +56,7 @@ VALID_MAP: dict[str, set[str]] = {
     "GuiWordList": {"winWidth", "winHeight"},
     "GuiNovelView": {"lastCol", "lastColSize"},
     "GuiBuildSettings": {
-        "winWidth", "winHeight", "treeWidth", "filterWidth",
+        "winWidth", "winHeight", "treeWidth", "filterWidth", "autoPreview",
     },
     "GuiManuscript": {
         "winWidth", "winHeight", "optsWidth", "viewWidth", "listHeight",
