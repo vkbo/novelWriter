@@ -5,6 +5,8 @@ on: workflow_dispatch
 jobs:
   buildAssets:
     uses: ./.github/workflows/build_assets.yml
+    permissions:
+      contents: read
 
   buildMac-AMD64:
     needs: buildAssets

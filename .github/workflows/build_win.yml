@@ -5,6 +5,8 @@ on: workflow_dispatch
 jobs:
   buildAssets:
     uses: ./.github/workflows/build_assets.yml
+    permissions:
+      contents: read
 
   buildWin64:
     needs: buildAssets
