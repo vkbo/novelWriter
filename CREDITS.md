@@ -100,6 +100,7 @@ Other themes were created for novelWriter:
 * **Cyberpunk Night** theme by Anders Lemvigh
 * **Floral** themes by Myian
 * **Full Moon** theme by Myian
+* **Jewel Case** themes by Myian
 * **LCARS** theme by Veronica Berglyd Olsen
 * **Nordlicht** theme by Myian
 * **Otium** themes by Myian
