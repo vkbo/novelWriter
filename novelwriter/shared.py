@@ -512,7 +512,7 @@ class _GuiAlert(QMessageBox):
             self._btnOk.clicked.connect(self._onAccept)
             self.addButton(self._btnOk, QMessageBox.ButtonRole.AcceptRole)
 
-        pSz = 2*self._theme.baseIconHeight
+        pSz = 2*self._theme.fontPixelSize
         if level == self.INFO:
             self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz), "info"))
             self.setWindowTitle(self.tr("Information"))

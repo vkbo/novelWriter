@@ -27,7 +27,7 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QEvent, QPoint, QSize, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QEvent, QPoint, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QMenu, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
@@ -56,8 +56,7 @@ class GuiSideBar(QWidget):
 
         self.mainGui = mainGui
 
-        iPx = int(1.25*SHARED.theme.baseButtonHeight)
-        iSz = QSize(iPx, iPx)
+        iSz = SHARED.theme.sidebarIconSize
 
         self.setContentsMargins(0, 0, 0, 0)
         self.installEventFilter(StatusTipFilter(self.mainGui))

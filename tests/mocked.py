@@ -62,6 +62,7 @@ class MockTheme:
 
     def __init__(self):
         self.baseIconHeight = 20
+        self.fontPixelSize = 20
         self.guiFont = QFont()
         self.guiFontB = QFont()
         self.guiFontBU = QFont()
