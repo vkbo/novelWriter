@@ -993,6 +993,7 @@ class GuiMainMenu(QMenuBar):
         self.aPreferences.triggered.connect(self.mainGui.showPreferencesDialog)
         self.mainGui.addAction(self.aPreferences)
 
+    @pyqtSlot()
     def updateSpellCheckLanguages(self) -> None:
         """Update the list of available spell check languages."""
         self.mSelectLanguage.clear()
