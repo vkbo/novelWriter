@@ -91,6 +91,18 @@ class GuiMainMenu(QMenuBar):
         """Forward spell check check state to its action."""
         self.aSpellCheck.setChecked(state)
 
+    @pyqtSlot()
+    def updateSpellCheckLanguages(self) -> None:
+        """Update the list of available spell check languages."""
+        self.mSelectLanguage.clear()
+        languages = SHARED.spelling.listDictionaries()
+        languages.insert(0, ("None", self.tr("Default")))
+        for tag, language in languages:
+            aSpell = QAction(self.mSelectLanguage)
+            aSpell.setText(language)
+            aSpell.triggered.connect(qtLambda(self._changeSpelling, tag))
+            self.mSelectLanguage.addAction(aSpell)
+
     ##
     #  Private Slots
     ##
@@ -992,18 +1004,6 @@ class GuiMainMenu(QMenuBar):
         self.aPreferences.setMenuRole(QAction.MenuRole.PreferencesRole)
         self.aPreferences.triggered.connect(self.mainGui.showPreferencesDialog)
         self.mainGui.addAction(self.aPreferences)
-
-    @pyqtSlot()
-    def updateSpellCheckLanguages(self) -> None:
-        """Update the list of available spell check languages."""
-        self.mSelectLanguage.clear()
-        languages = SHARED.spelling.listDictionaries()
-        languages.insert(0, ("None", self.tr("Default")))
-        for tag, language in languages:
-            aSpell = QAction(self.mSelectLanguage)
-            aSpell.setText(language)
-            aSpell.triggered.connect(qtLambda(self._changeSpelling, tag))
-            self.mSelectLanguage.addAction(aSpell)
 
     def _buildHelpMenu(self) -> None:
         """Assemble the Help menu."""
