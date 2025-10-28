@@ -832,11 +832,7 @@ class GuiMain(QMainWindow):
             SHARED.error(self.tr("Could not initialise the dialog."))
             return
             
-        # Update the spell check languages menu when the dialog is closed
-        def onDialogFinished():
-            self.mainMenu.updateSpellCheckLanguages()
-            
-        dialog.finished.connect(onDialogFinished)
+        dialog.finished.connect(self.mainMenu.updateSpellCheckLanguages)
 
     ##
     #  Main Window Actions
