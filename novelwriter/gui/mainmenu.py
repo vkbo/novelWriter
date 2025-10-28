@@ -91,6 +91,18 @@ class GuiMainMenu(QMenuBar):
         """Forward spell check check state to its action."""
         self.aSpellCheck.setChecked(state)
 
+    @pyqtSlot()
+    def updateSpellCheckLanguages(self) -> None:
+        """Update the list of available spell check languages."""
+        self.mSelectLanguage.clear()
+        languages = SHARED.spelling.listDictionaries()
+        languages.insert(0, ("None", self.tr("Default")))
+        for tag, language in languages:
+            aSpell = QAction(self.mSelectLanguage)
+            aSpell.setText(language)
+            aSpell.triggered.connect(qtLambda(self._changeSpelling, tag))
+            self.mSelectLanguage.addAction(aSpell)
+
     ##
     #  Private Slots
     ##
@@ -944,13 +956,7 @@ class GuiMainMenu(QMenuBar):
         self.mainGui.addAction(self.aSpellCheck)
 
         self.mSelectLanguage = qtAddMenu(self.toolsMenu, self.tr("Spell Check Language"))
-        languages = SHARED.spelling.listDictionaries()
-        languages.insert(0, ("None", self.tr("Default")))
-        for tag, language in languages:
-            aSpell = QAction(self.mSelectLanguage)
-            aSpell.setText(language)
-            aSpell.triggered.connect(qtLambda(self._changeSpelling, tag))
-            self.mSelectLanguage.addAction(aSpell)
+        self.updateSpellCheckLanguages()
 
         # Tools > Re-Run Spell Check
         self.aReRunSpell = qtAddAction(self.toolsMenu, self.tr("Re-Run Spell Check"))
