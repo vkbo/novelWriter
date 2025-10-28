@@ -824,12 +824,19 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot()
     def showDictionariesDialog(self) -> None:
-        """Show the download dictionaries dialog."""
+        """Show the download dictionaries dialog and update language list when closed."""
         dialog = GuiDictionaries(self)
         dialog.activateDialog()
         if not dialog.initDialog():
             dialog.close()
             SHARED.error(self.tr("Could not initialise the dialog."))
+            return
+            
+        # Update the spell check languages menu when the dialog is closed
+        def onDialogFinished():
+            self.mainMenu.updateSpellCheckLanguages()
+            
+        dialog.finished.connect(onDialogFinished)
 
     ##
     #  Main Window Actions
