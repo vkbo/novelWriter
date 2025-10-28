@@ -107,7 +107,7 @@ careful when using this version on live writing projects, and make sure you take
 * Improve logging formatting by stripping HTML content. PR #2402.
 * Cleaned up and improved pkgutils CLI tool. PR #2541.
 * The project now uses UV as the primary dependency handling tool for development. PR #2540.
-* Fixed the tests helper script for HighDPI monitors. PR #2496.
+* Fixed the run_tests helper script for HighDPI monitors. PR #2496.
 
 ----
 
@@ -5904,7 +5904,7 @@ helpful feedback and issue reports for the new features added in this, and previ
   more fault tolerant, and will automatically rebuild a corrupt index loaded from cache. PR #140.
 * The way that dialog options (which options were selected last time a dialog was open) has been
   rewritten. All data is now stored in a single JSON file in the project meta folder. PR #175.
-* Since the config class is instanciated before the GUI, error reporting to the user was tricky. An
+* Since the config class is instantiated before the GUI, error reporting to the user was tricky. An
   error cache has now been added to allow non-critical errors to be displayed after the GUI is
   built. PR #176.
 * All source files now have the minimal GPLv3 license note at the top. PR #188.
@@ -5968,7 +5968,7 @@ helpful feedback and issue reports for the new features added in this, and previ
 * Added keyboard shortcuts and menu entries for formatting headers, comments, and removing block
   formats. PR #155.
 * Disable re-highlighting of open file when resizing window. This is potentially a slow process if
-  the spell checker is on and the file is large. There is no need to do this just for reflowing
+  the spell checker is on and the file is large. There is no need to do this just for re-flowing
   text, so it is now disabled on resize events. Issue #150, PR #153.
 * Improved the speed of the syntax highlighter by about 40% by not using regular expressions for
   highlighting block formats and by skipping empty lines entirely. PR #154.
@@ -6254,7 +6254,7 @@ helpful feedback and issue reports for the new features added in this, and previ
 
 **Code Improvements**
 
-* Spell checking is now handled by a standard class that can be subclassed to support different
+* Spell checking is now handled by a standard class that can be sub-classed to support different
   spell check tools. This was done because pyenchant is no longer maintained and having a standard
   wrapper makes it easier to support other tools. PR #31.
 
