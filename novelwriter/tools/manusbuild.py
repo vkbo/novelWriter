@@ -76,7 +76,7 @@ class GuiManuscriptBuild(NDialog):
         self.setMinimumHeight(300)
 
         iSz = SHARED.theme.baseIconSize
-        bSz = SHARED.theme.buttonIconSize
+        bSz = SHARED.theme.toolButtonIconSize
 
         pOptions = SHARED.project.options
         self.resize(

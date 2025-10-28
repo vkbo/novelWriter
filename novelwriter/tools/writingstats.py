@@ -183,7 +183,7 @@ class GuiWritingStats(NToolDialog):
 
         # Filter Options
         iPx = SHARED.theme.baseIconHeight
-        bSz = SHARED.theme.buttonIconSize
+        bSz = SHARED.theme.toolButtonIconSize
 
         self.filterForm = QGridLayout(self)
         self.filterForm.setRowStretch(6, 1)
