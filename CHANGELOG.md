@@ -77,10 +77,12 @@ careful when using this version on live writing projects, and make sure you take
 * Primer Dark and Primer Light themes added by @HeyMyian. Issue #2376. PRs #2377 and #2419.
 * Horizon, Otium, Paragon, Selenium, Sepia, Sultana, Vivid, Warpgate, and Waterlily themes added by
   @HeyMyian. Issue #2407. PR #2495.
+* Aura, B2T Garden, B2T Suburb, B4T Classic-O, B4T Modern-C, Everforest, New Moon, Full Moon, Nord,
+  Nordlicht, Castle, Chernozem, Chalky Soil, Floral, Ruby themes added by @HeyMyian. PR #2450.
 * Blue Streak themes added. PR #2388.
 * LCARS theme added. PR #2399.
 * Espresso and Noctis themes added. PR #2422.
-* Various improvements to existing and new themes by @vkbo. PRs #2396, #2418 and #2475.
+* Various improvements to existing and new themes by @vkbo. PRs #2396, #2418, #2475 and #2481.
 * Various improvements to existing and new themes by @HeyMyian. PRs #2506 and #2494.
 
 **Packaging**
