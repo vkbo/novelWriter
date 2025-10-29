@@ -44,14 +44,14 @@ careful when using this version on live writing projects, and make sure you take
   PR #2478.
 * The auto-replace feature in the editor is now better at detecting opening and closing quotes when
   used in relation to markdown style markup. Issue #2488. PR #2489.
-* The application window is not blocked from resizing itself to a size larger than the screen when
+* The application window is now blocked from resizing itself to a size larger than the screen when
   opened on a smaller screen than it was previously opened on. Like for instance when it was
   connected to an external screen from a laptop. Issue #2354. PR #2369.
 * Improved the CSS styling of HTML manuscript documents. Issue #2358. PR #2404.
 * Trailing spaces are no longer highlighted in the editor with an error underline. Multiple spaces
   between words still are. Issue #2501. PR #2505.
 * The rebuild index dialog is no longer showed if the index is rebuilt due to index structure
-  changes when a project is opened for the first time in a newer version of novelWriter. It was
+  changes when a project is opened for the first time in a newer version of novelWriter. This was
   confusing to some users who thought the dialog indicated an error. Issue #2513. PR #2537.
 * A switch on the Manuscript Build Settings dialog now allows for automatic preview of the build
   when Apply or Save is clicked. Issue #2486. PR #2553.
@@ -62,22 +62,22 @@ careful when using this version on live writing projects, and make sure you take
 
 * The GUI and syntax themes have been merged into a single theme, which means there are no longer
   separate settings for the general GUI and the document colour theme. Issue #2335. PR #2373.
-* There are now two GUI theme settings in Preferences, one for light and one for dark theme. A new
-  button on the sidebar allows you to switch between them, or it can be set in auto mode that
+* There are now two GUI theme settings in Preferences, one for light and one for dark mode. A new
+  button on the sidebar allows you to switch between them, or it can be set to auto mode that
   follows the operating system's light/dark mode. Issues #1173 and #2487.
   PRs #2373 and #2545.
 * More themeable settings have been added. The document active flag, the theme base colour, and the
   new GUI accent colour (if Qt version is high enough) is now available. Issue #2382. PR #2384.
 * The highlighting colour for special white spaces, like non-breaking spaces, can now be set in the
   theme. Previously it used the emphasis colour. Issue #2547. PR #2548.
-* The Welcome dialog now follows the theme colours. Issue #2379. PR #2380.
-* The dialog buttons now uses icons from the selected theme, not from the host OS. Issues #2498,
+* The Welcome dialog background now follows the theme colours. Issue #2379. PR #2380.
+* The dialog buttons now use icons from the selected theme, not from the host OS. Issues #2498,
   #2551 and #2561. PRs #2544, #2546, #2553, #2557 and #2563.
 * Added semantic categories for icon colours which can be defined in the colour theme. PR #2549.
 * Primer Dark and Primer Light themes added by @HeyMyian. Issue #2376. PRs #2377 and #2419.
 * Horizon, Otium, Paragon, Selenium, Sepia, Sultana, Vivid, Warpgate, and Waterlily themes added by
   @HeyMyian. Issue #2407. PR #2495.
-* Blue Streak theme added. PR #2388.
+* Blue Streak themes added. PR #2388.
 * LCARS theme added. PR #2399.
 * Espresso and Noctis themes added. PR #2422.
 * Various improvements to existing and new themes by @vkbo. PRs #2396, #2418 and #2475.
@@ -87,7 +87,7 @@ careful when using this version on live writing projects, and make sure you take
 
 * The license info for novelWriter has been updated to include `GPL-3.0-or-later`, `Apache-2.0`,
   and `CC-BY-4.0`. Issue #2444. PR #2446.
-* Update Debian package build and add Qt6 plugin for WebP images. PR #2401.
+* Updated Debian package build and added Qt6 plugin for WebP images as a dependency. PR #2401.
 
 **Documentation**
 
@@ -97,14 +97,14 @@ careful when using this version on live writing projects, and make sure you take
 
 **Code Maintenance**
 
-* Improve linting and add more mapped Qt constants. PR #2536.
-* Add test coverage of the theme files to ensure they are up to date. PR #2378.
-* Update credits and license information of icon themes. PR #2474.
+* Improved linting and added more mapped Qt constants. PR #2536.
+* Added test coverage of the theme files to ensure they are up to date. PR #2378.
+* Updated credits and license information of icon themes. PR #2474.
 * Some fields have been dropped from icon and colour themes. PRs #2466 and #2423.
 * Changed a few default settings in config, added automatic rebuild of the index in new projects,
   and fixed tests. PR #2395.
 * Added test coverage and support for Python 3.14. PR #2538.
-* Improve logging formatting by stripping HTML content. PR #2402.
+* Improved logging formatting by stripping HTML content. PR #2402.
 * Cleaned up and improved pkgutils CLI tool. PR #2541.
 * The project now uses UV as the primary dependency handling tool for development. PR #2540.
 * Fixed the run_tests helper script for HighDPI monitors. PR #2496.
@@ -122,12 +122,12 @@ certain conditions, and improves positioning of the input box for CJK languages.
 
 **Bugfixes**
 
-* Fixes an issue where the app would crash of deleting the `@` character with the completer menu
+* Fixed an issue where the app would crash of deleting the `@` character with the completer menu
   visible and the text margins of the editor set to "justified". This is likely crashing due to
   some unhandled corner case in the Qt library, but the implementation of the completer menu in
   novelWriter uses a small hack to bypass some intended behaviour of the menu. Extra steps have
   been added to the implementation that seems to avoid the crash. Issue #2510. PR #2511.
-* Fixes an issue where the input box that shows up when typing CJK languages were covering the text
+* Fixed an issue where the input box that shows up when typing CJK languages were covering the text
   due to an incorrect offset of the box location. The incorrect offset is caused by the text
   margins not being taken into account. Fix by @Euophrys based on solution by @Jack-name.
   Issues #2267 and #2517. PR #2518.
