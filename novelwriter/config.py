@@ -93,7 +93,7 @@ class Config:
         "spellLanguage", "stopWhenIdle", "tabWidth", "textFont", "textMargin", "textWidth",
         "themeMode", "useCharCount", "userIdleTime", "verPyQtString", "verPyQtValue",
         "verPyString", "verQtString", "verQtValue", "viewComments", "viewNotes", "viewPanePos",
-        "viewSynopsis", "welcomeWinSize",
+        "viewSynopsis", "vimMode", "welcomeWinSize",
     )
 
     LANG_NW   = 1
@@ -109,7 +109,6 @@ class Config:
         # Set Application Variables
         self.appName   = "novelWriter"
         self.appHandle = "novelwriter"
-
         # Set Paths
         confRoot = Path(QStandardPaths.writableLocation(
             QStandardPaths.StandardLocation.ConfigLocation)
@@ -171,6 +170,7 @@ class Config:
         self.lastNotes    = "0x0"          # The latest release notes that have been shown
         self.nativeFont   = True           # Use native font dialog
         self.useCharCount = False          # Use character count as primary count
+        self.vimMode      = False          # Enable Vim mode
 
         # Icons
         self.iconTheme   = DEF_ICONS    # Icons theme
@@ -634,6 +634,7 @@ class Config:
         self.lastNotes    = conf.rdStr(sec, "lastnotes", self.lastNotes)
         self.nativeFont   = conf.rdBool(sec, "nativefont", self.nativeFont)
         self.useCharCount = conf.rdBool(sec, "usecharcount", self.useCharCount)
+        self.vimMode      = conf.rdBool(sec, "vimmode", self.vimMode)
 
         # Sizes
         sec = "Sizes"
@@ -762,6 +763,7 @@ class Config:
             "lastnotes":    str(self.lastNotes),
             "nativefont":   str(self.nativeFont),
             "usecharcount": str(self.useCharCount),
+            "vimmode":      str(self.vimMode),
         }
 
         conf["Sizes"] = {
