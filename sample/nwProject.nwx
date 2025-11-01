@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.8b1" hexVersion="0x020800b1" fileVersion="1.5" fileRevision="6" timeStamp="2025-11-01 20:44:34">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2297" autoCount="377" editTime="105432">
+<novelWriterXML appVersion="2.8b1" hexVersion="0x020800b1" fileVersion="1.5" fileRevision="6" timeStamp="2025-11-01 22:08:11">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2302" autoCount="417" editTime="108299">
     <name>Sample Project</name>
     <author>Jane Smith</author>
   </project>
@@ -10,7 +10,7 @@
     <spellChecking auto="yes">None</spellChecking>
     <lastHandle>
       <entry key="editor">636b6aa9b697b</entry>
-      <entry key="viewer">636b6aa9b697b</entry>
+      <entry key="viewer">d8a090b75c1ad</entry>
       <entry key="novel">7031beac91f75</entry>
       <entry key="outline">7031beac91f75</entry>
     </lastHandle>
@@ -27,17 +27,17 @@
       <entry key="sd51c5b" count="2" color="yellow" shape="BARS_3">2nd Draft</entry>
       <entry key="s8ae72a" count="0" color="yellow" shape="BARS_4">3rd Draft</entry>
       <entry key="s78ea90" count="1" color="green" shape="STAR">Finished</entry>
-      <entry key="s936325" count="10" color="blue" shape="DIAMOND">Sample</entry>
+      <entry key="s936325" count="17" color="blue" shape="DIAMOND">Sample</entry>
     </status>
     <importance>
-      <entry key="ia857f0" count="9" color="faded" shape="STAR">None</entry>
+      <entry key="ia857f0" count="12" color="faded" shape="STAR">None</entry>
       <entry key="i4a1d39" count="1" color="purple" shape="BLOCK_1">Background</entry>
-      <entry key="icfb3a5" count="3" color="purple" shape="BLOCK_2">Minor</entry>
+      <entry key="icfb3a5" count="2" color="purple" shape="BLOCK_2">Minor</entry>
       <entry key="i2d7a54" count="2" color="purple" shape="BLOCK_3">Major</entry>
-      <entry key="i56be10" count="2" color="purple" shape="BLOCK_4">Main</entry>
+      <entry key="i56be10" count="1" color="purple" shape="BLOCK_4">Main</entry>
     </importance>
   </settings>
-  <content items="46" novelWords="10767" notesWords="601" novelChars="60842" notesChars="3343">
+  <content items="54" novelWords="15139" notesWords="737" novelChars="83550" notesChars="4181">
     <item handle="7031beac91f75" parent="None" root="7031beac91f75" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="sc24b8f" import="ia857f0">Novel</name>
@@ -87,11 +87,11 @@
       <name status="sd51c5b" import="ia857f0" active="yes">We Found John!</name>
     </item>
     <item handle="e5e47ebf63b1c" parent="None" root="e5e47ebf63b1c" order="1" type="ROOT" class="NOVEL">
-      <meta expanded="yes" />
+      <meta expanded="no" />
       <name status="s936325" import="ia857f0">Moby-Dick (Sample)</name>
     </item>
     <item handle="bacb7059e3083" parent="e5e47ebf63b1c" root="e5e47ebf63b1c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="808" wordCount="132" paraCount="7" cursorPos="8" />
+      <meta expanded="no" heading="H1" charCount="809" wordCount="132" paraCount="7" cursorPos="864" />
       <name status="s936325" import="ia857f0" active="yes">Title Page</name>
     </item>
     <item handle="a520879ca0b45" parent="e5e47ebf63b1c" root="e5e47ebf63b1c" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
@@ -103,7 +103,7 @@
       <name status="s936325" import="ia857f0" active="yes">The Carpet-Bag</name>
     </item>
     <item handle="122475a2cc894" parent="None" root="122475a2cc894" order="2" type="ROOT" class="NOVEL">
-      <meta expanded="yes" />
+      <meta expanded="no" />
       <name status="s936325" import="ia857f0">Frankenstein (Sample)</name>
     </item>
     <item handle="c8a65470bd828" parent="122475a2cc894" root="122475a2cc894" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
@@ -119,14 +119,42 @@
       <name status="s936325" import="ia857f0" active="yes">Letter I</name>
     </item>
     <item handle="1c1c84e6f8707" parent="122475a2cc894" root="122475a2cc894" order="3" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="10173" wordCount="1779" paraCount="11" cursorPos="52" />
+      <meta expanded="no" heading="H2" charCount="10173" wordCount="1779" paraCount="11" cursorPos="1600" />
       <name status="s936325" import="ia857f0" active="yes">Chapter One</name>
     </item>
     <item handle="77d367b66713c" parent="122475a2cc894" root="122475a2cc894" order="4" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="12719" wordCount="2210" paraCount="16" cursorPos="2434" />
+      <meta expanded="no" heading="H2" charCount="12719" wordCount="2210" paraCount="16" cursorPos="12885" />
       <name status="s936325" import="ia857f0" active="yes">Chapter Two</name>
     </item>
-    <item handle="f6622b4617424" parent="None" root="f6622b4617424" order="3" type="ROOT" class="CHARACTER">
+    <item handle="d2d81f4831814" parent="None" root="d2d81f4831814" order="3" type="ROOT" class="NOVEL">
+      <meta expanded="no" />
+      <name status="s936325" import="ia857f0">Alice in Wonderland (Sample)</name>
+    </item>
+    <item handle="e994f7528cbfa" parent="d2d81f4831814" root="d2d81f4831814" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="no" heading="H1" charCount="535" wordCount="94" paraCount="3" cursorPos="568" />
+      <name status="s936325" import="ia857f0" active="yes">Title Page</name>
+    </item>
+    <item handle="806f17f87c4ff" parent="d2d81f4831814" root="d2d81f4831814" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="yes" heading="H2" charCount="20" wordCount="3" paraCount="0" cursorPos="24" />
+      <name status="s936325" import="ia857f0" active="yes">Down the Rabbit-Hole</name>
+    </item>
+    <item handle="b15d3642b4cdd" parent="806f17f87c4ff" root="d2d81f4831814" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="no" heading="H3" charCount="8494" wordCount="1626" paraCount="17" cursorPos="87" />
+      <name status="s936325" import="ia857f0" active="yes">Alice getting very tired</name>
+    </item>
+    <item handle="4f30ee54cca20" parent="806f17f87c4ff" root="d2d81f4831814" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="no" heading="H3" charCount="2759" wordCount="529" paraCount="7" cursorPos="72" />
+      <name status="s936325" import="ia857f0" active="yes">What a curious feeling!</name>
+    </item>
+    <item handle="41d90278407a6" parent="d2d81f4831814" root="d2d81f4831814" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="yes" heading="H2" charCount="17" wordCount="4" paraCount="0" cursorPos="21" />
+      <name status="s936325" import="ia857f0" active="yes">The Pool of Tears</name>
+    </item>
+    <item handle="d8a090b75c1ad" parent="41d90278407a6" root="d2d81f4831814" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="no" heading="H3" charCount="10882" wordCount="2116" paraCount="26" cursorPos="73" />
+      <name status="s936325" import="ia857f0" active="yes">Curiouser and curiouser!</name>
+    </item>
+    <item handle="f6622b4617424" parent="None" root="f6622b4617424" order="4" type="ROOT" class="CHARACTER">
       <meta expanded="yes" />
       <name status="sf12341" import="ia857f0">Characters</name>
     </item>
@@ -142,27 +170,23 @@
       <meta expanded="no" heading="H1" charCount="487" wordCount="89" paraCount="2" cursorPos="650" />
       <name status="sf12341" import="i2d7a54" active="yes">John and Bob Smith</name>
     </item>
-    <item handle="f77cb185cfdf3" parent="f6622b4617424" root="f6622b4617424" order="1" type="FOLDER" class="CHARACTER">
-      <meta expanded="yes" />
-      <name status="sf12341" import="ia857f0">Moby-Dick Characters</name>
+    <item handle="e67ca0619ed51" parent="f6622b4617424" root="f6622b4617424" order="1" type="FOLDER" class="CHARACTER">
+      <meta expanded="no" />
+      <name status="sf12341" import="ia857f0">Samples</name>
     </item>
-    <item handle="ec7a93847b637" parent="f77cb185cfdf3" root="f6622b4617424" order="0" type="FILE" class="CHARACTER" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="7" wordCount="1" paraCount="0" cursorPos="0" />
-      <name status="sf12341" import="icfb3a5" active="yes">Ishmael</name>
+    <item handle="ec7a93847b637" parent="e67ca0619ed51" root="f6622b4617424" order="0" type="FILE" class="CHARACTER" layout="NOTE">
+      <meta expanded="no" heading="H1" charCount="84" wordCount="13" paraCount="1" cursorPos="108" />
+      <name status="sf12341" import="icfb3a5" active="yes">Moby-Dick</name>
     </item>
-    <item handle="d2722a8bf4734" parent="f6622b4617424" root="f6622b4617424" order="2" type="FILE" class="CHARACTER" layout="NOTE">
-      <meta expanded="yes" heading="H1" charCount="23" wordCount="2" paraCount="0" cursorPos="0" />
-      <name status="sf12341" import="ia857f0" active="yes">Frankenstein Characters</name>
+    <item handle="d2722a8bf4734" parent="e67ca0619ed51" root="f6622b4617424" order="1" type="FILE" class="CHARACTER" layout="NOTE">
+      <meta expanded="yes" heading="H1" charCount="716" wordCount="112" paraCount="2" cursorPos="805" />
+      <name status="sf12341" import="ia857f0" active="yes">Frankenstein</name>
     </item>
-    <item handle="3fcfe4ea06fa8" parent="d2722a8bf4734" root="f6622b4617424" order="0" type="FILE" class="CHARACTER" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="13" wordCount="2" paraCount="0" cursorPos="47" />
-      <name status="sf12341" import="icfb3a5" active="yes">Robert Walton</name>
+    <item handle="863bd7a331a1d" parent="e67ca0619ed51" root="f6622b4617424" order="2" type="FILE" class="CHARACTER" layout="NOTE">
+      <meta expanded="no" heading="H1" charCount="49" wordCount="9" paraCount="1" cursorPos="71" />
+      <name status="sf12341" import="ia857f0" active="yes">Alice in Wonderland</name>
     </item>
-    <item handle="0537edd07721f" parent="d2722a8bf4734" root="f6622b4617424" order="1" type="FILE" class="CHARACTER" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="19" wordCount="2" paraCount="0" cursorPos="65" />
-      <name status="sf12341" import="i56be10" active="yes">Victor Frankenstein</name>
-    </item>
-    <item handle="15c4492bd5107" parent="None" root="15c4492bd5107" order="4" type="ROOT" class="WORLD">
+    <item handle="15c4492bd5107" parent="None" root="15c4492bd5107" order="5" type="ROOT" class="WORLD">
       <meta expanded="yes" />
       <name status="sf12341" import="ia857f0">Locations</name>
     </item>
@@ -178,15 +202,23 @@
       <meta expanded="no" heading="H1" charCount="28" wordCount="6" paraCount="1" cursorPos="99" />
       <name status="sf12341" import="icfb3a5" active="yes">Mars</name>
     </item>
-    <item handle="bd8af932f893d" parent="15c4492bd5107" root="15c4492bd5107" order="3" type="FILE" class="WORLD" layout="NOTE">
+    <item handle="e1acb4555b0e5" parent="15c4492bd5107" root="15c4492bd5107" order="3" type="FOLDER" class="WORLD">
+      <meta expanded="no" />
+      <name status="sf12341" import="ia857f0">Samples</name>
+    </item>
+    <item handle="bd8af932f893d" parent="e1acb4555b0e5" root="15c4492bd5107" order="0" type="FILE" class="WORLD" layout="NOTE">
       <meta expanded="no" heading="H1" charCount="31" wordCount="4" paraCount="0" cursorPos="57" />
-      <name status="sf12341" import="ia857f0" active="yes">Moby-Dick Locations</name>
+      <name status="sf12341" import="ia857f0" active="yes">Moby-Dick</name>
     </item>
-    <item handle="e072c0dc9bf8e" parent="15c4492bd5107" root="15c4492bd5107" order="4" type="FILE" class="WORLD" layout="NOTE">
+    <item handle="e072c0dc9bf8e" parent="e1acb4555b0e5" root="15c4492bd5107" order="1" type="FILE" class="WORLD" layout="NOTE">
       <meta expanded="no" heading="H1" charCount="55" wordCount="7" paraCount="0" cursorPos="28" />
-      <name status="sf12341" import="ia857f0" active="yes">Frankenstein Locations</name>
+      <name status="sf12341" import="ia857f0" active="yes">Frankenstein</name>
     </item>
-    <item handle="6827118336ac1" parent="None" root="6827118336ac1" order="5" type="ROOT" class="ARCHIVE">
+    <item handle="9018b32805ca6" parent="e1acb4555b0e5" root="15c4492bd5107" order="2" type="FILE" class="WORLD" layout="NOTE">
+      <meta expanded="no" heading="H1" charCount="51" wordCount="9" paraCount="0" cursorPos="112" />
+      <name status="sf12341" import="ia857f0" active="yes">Alice in Wonderland</name>
+    </item>
+    <item handle="6827118336ac1" parent="None" root="6827118336ac1" order="6" type="ROOT" class="ARCHIVE">
       <meta expanded="yes" />
       <name status="sf12341" import="ia857f0">Archive</name>
     </item>
@@ -198,7 +230,7 @@
       <meta expanded="no" heading="H3" charCount="232" wordCount="42" paraCount="1" cursorPos="239" />
       <name status="s90e6c9" import="ia857f0" active="yes">Old File</name>
     </item>
-    <item handle="f4ed1ae756a1f" parent="None" root="f4ed1ae756a1f" order="6" type="ROOT" class="TEMPLATE">
+    <item handle="f4ed1ae756a1f" parent="None" root="f4ed1ae756a1f" order="7" type="ROOT" class="TEMPLATE">
       <meta expanded="yes" />
       <name status="sf12341" import="ia857f0">Templates</name>
     </item>
@@ -214,7 +246,7 @@
       <meta expanded="no" heading="H1" charCount="53" wordCount="7" paraCount="1" cursorPos="75" />
       <name status="sf12341" import="ia857f0" active="yes">Character Note</name>
     </item>
-    <item handle="98acd8c76c93a" parent="None" root="98acd8c76c93a" order="7" type="ROOT" class="TRASH">
+    <item handle="98acd8c76c93a" parent="None" root="98acd8c76c93a" order="8" type="ROOT" class="TRASH">
       <meta expanded="yes" />
       <name status="sf12341" import="ia857f0">Trash</name>
     </item>
