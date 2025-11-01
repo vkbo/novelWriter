@@ -603,8 +603,8 @@ class ProjectBuilder:
         if author := data.get("author", ""):
             project.data.setAuthor(author)
         if isSample:
-            project.data.setLastHandle("editor", "974e400180a99")
-            project.data.setLastHandle("viewer", "53b69b83cdafc")
+            project.data.setLastHandle("974e400180a99", "editor")
+            project.data.setLastHandle("53b69b83cdafc", "viewer")
 
         # Reset Items
         for item in project.tree:

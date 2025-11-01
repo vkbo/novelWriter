@@ -269,7 +269,7 @@ class NWProjectData:
             self._spellLang = checkStringNone(value, None)
             self._project.setProjectChanged(True)
 
-    def setLastHandle(self, value: T_LastHandle | None, component: str) -> None:
+    def setLastHandle(self, value: str | None, component: T_LastHandle) -> None:
         """Set a last used handle into the handle registry for a given
         component.
         """
