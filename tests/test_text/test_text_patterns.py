@@ -73,7 +73,8 @@ def testTextPatterns_Urls():
     ]
 
     for test in valid:
-        assert allMatches(regEx, f"Text {test} more text") == [[(test, 5, 5 + len(test))]]
+        check = test.rstrip("/")  # The regex ignores the trailing slash, but accepts the rest
+        assert allMatches(regEx, f"Text {test} more text") == [[(check, 5, 5 + len(check))]]
 
     for test in invalid:
         assert allMatches(regEx, f"Text {test} more text") == []

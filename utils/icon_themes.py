@@ -36,12 +36,12 @@ ET.register_namespace("", "http://www.w3.org/2000/svg")
 
 ICON_SOURCES = {
     "material":     "https://github.com/google/material-design-icons.git",
-    "font_awesome": "https://github.com/FortAwesome/Font-Awesome/archive/refs/tags/6.7.2.zip",
+    "font_awesome": "https://github.com/FortAwesome/Font-Awesome/archive/refs/tags/7.1.0.zip",
     "remix":        "https://github.com/Remix-Design/RemixIcon/archive/refs/tags/v4.6.0.zip",
 }
 ICON_EXTRACT = {
     "material":     "material-design-icons",
-    "font_awesome": "Font-Awesome-6.7.2",
+    "font_awesome": "Font-Awesome-7.1.0",
     "remix":        "RemixIcon-4.6.0",
 }
 ICONS = [
@@ -414,7 +414,7 @@ def main(args: argparse.Namespace) -> None:
     if style in ("all", "optional", "free", "font_awesome"):
         processFontAwesome(workDir, iconsDir, {
             "font_awesome": {
-                "name": "Font Awesome 6",
+                "name": "Font Awesome 7",
             },
         })
 
