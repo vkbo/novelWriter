@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.8b1" hexVersion="0x020800b1" fileVersion="1.5" fileRevision="6" timeStamp="2025-11-01 17:03:33">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2293" autoCount="376" editTime="105322">
+<novelWriterXML appVersion="2.8b1" hexVersion="0x020800b1" fileVersion="1.5" fileRevision="6" timeStamp="2025-11-01 20:44:34">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2297" autoCount="377" editTime="105432">
     <name>Sample Project</name>
     <author>Jane Smith</author>
   </project>
@@ -9,8 +9,8 @@
     <language>en_GB</language>
     <spellChecking auto="yes">None</spellChecking>
     <lastHandle>
-      <entry key="editor">974e400180a99</entry>
-      <entry key="viewer">53b69b83cdafc</entry>
+      <entry key="editor">636b6aa9b697b</entry>
+      <entry key="viewer">636b6aa9b697b</entry>
       <entry key="novel">7031beac91f75</entry>
       <entry key="outline">7031beac91f75</entry>
     </lastHandle>
@@ -37,13 +37,13 @@
       <entry key="i56be10" count="2" color="purple" shape="BLOCK_4">Main</entry>
     </importance>
   </settings>
-  <content items="46" novelWords="10748" notesWords="601" novelChars="60724" notesChars="3343">
+  <content items="46" novelWords="10767" notesWords="601" novelChars="60842" notesChars="3343">
     <item handle="7031beac91f75" parent="None" root="7031beac91f75" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="sc24b8f" import="ia857f0">Novel</name>
     </item>
     <item handle="53b69b83cdafc" parent="7031beac91f75" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="165" wordCount="31" paraCount="4" cursorPos="147" />
+      <meta expanded="no" heading="H1" charCount="283" wordCount="50" paraCount="5" cursorPos="413" />
       <name status="sc24b8f" import="ia857f0" active="yes">Title Page</name>
     </item>
     <item handle="974e400180a99" parent="7031beac91f75" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
