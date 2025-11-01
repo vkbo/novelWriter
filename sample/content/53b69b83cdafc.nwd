@@ -1,15 +1,14 @@
 %%~name: Title Page
 %%~path: 7031beac91f75/53b69b83cdafc
 %%~kind: NOVEL/DOCUMENT
-%%~hash: cd9853fcb97cd0ce39c61ca5e56ee22c592dd6a2
-%%~date: Unknown/2025-11-01 15:43:07
-
-%%~ The author’s address for the top of the manuscript cover page
+%%~hash: a01eebc30b29ded985f608d6d585cc7eecc06d71
+%%~date: Unknown/2025-11-01 16:59:33
+%%% The author’s address for the top of the manuscript cover page
 Jane Smith[br]
 42 Main Street[br]
 1234 Capital City <<
 
-%%~ This adds some vertical space between the address and the title
+%%% This adds some vertical space between the address and the title
 [vspace:5]
 
 #! My Novel
@@ -19,7 +18,7 @@ Jane Smith[br]
 >> This is the title page. <<
 >> It should be the first document of the project. <<
 
-%%~ You can select more stats form the Insert menu
-%%~ The actual numbers are included when you build your manuscript
+%%% You can select more stats form the Insert menu
+%%% The actual numbers are included when you build your manuscript
 >> Word Count: [field:textWords] <<
 >> Character Count: [field:textChars] <<

@@ -573,10 +573,10 @@ class Tokenizer(ABC):
                 # ========
                 # All style comments are processed and the exact type exact
                 # style extracted. Ignored comments on the '%~' format are
-                # skipped completely. So are %%~ comments, but this is an
+                # skipped completely. So are %%% comments, but this is an
                 # undocumented feature primarily used for the sample project
                 # that bypasses the strikethrough effect.
-                if aLine.startswith(("%~", "%%~")):
+                if aLine.startswith(("%~", "%%%")):
                     continue
 
                 cStyle, cKey, cText, _, _ = processComment(aLine)
