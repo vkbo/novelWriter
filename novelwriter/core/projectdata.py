@@ -26,7 +26,7 @@ from __future__ import annotations
 import logging
 import uuid
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from novelwriter.common import (
     checkBool, checkInt, checkStringNone, checkUuid, isHandle,
@@ -38,6 +38,8 @@ if TYPE_CHECKING:
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
+
+T_LastHandle = Literal["editor", "viewer", "novel", "outline"]
 
 
 class NWProjectData:
@@ -267,7 +269,7 @@ class NWProjectData:
             self._spellLang = checkStringNone(value, None)
             self._project.setProjectChanged(True)
 
-    def setLastHandle(self, value: str | None, component: str) -> None:
+    def setLastHandle(self, value: T_LastHandle | None, component: str) -> None:
         """Set a last used handle into the handle registry for a given
         component.
         """
