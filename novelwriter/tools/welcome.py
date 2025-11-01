@@ -53,6 +53,8 @@ from novelwriter.types import QtAlignLeft, QtAlignRightTop, QtHexArgb, QtScrollA
 logger = logging.getLogger(__name__)
 
 PANEL_ALPHA = 178
+SAMPLE_KEY = "%CREATE_SAMPLE%"
+SAMPLE_NAME = "Sample Project"
 
 
 class GuiWelcome(NDialog):
@@ -264,6 +266,7 @@ class _OpenProjectPage(QWidget):
         self.selectedPath = QLineEdit(self)
         self.selectedPath.setReadOnly(True)
         self.selectedPath.addAction(self.aMissing, QLineEdit.ActionPosition.TrailingPosition)
+        self._trPath = self.tr("Path")
 
         self.keyDelete = QShortcut(self)
         self.keyDelete.setKey("Del")
@@ -295,7 +298,7 @@ class _OpenProjectPage(QWidget):
     def openSelectedItem(self) -> None:
         """Open the currently selected project item."""
         if (selection := self.listWidget.selectedIndexes()) and (index := selection[0]).isValid():
-            self.openProjectRequest.emit(Path(str(index.data()[1])))
+            self._processOpenProjectRequest(str(index.data()[1]))
 
     ##
     #  Private Slots
@@ -304,19 +307,19 @@ class _OpenProjectPage(QWidget):
     @pyqtSlot(QModelIndex)
     def _projectClicked(self, index: QModelIndex) -> None:
         """Process single click on project item."""
-        path = self.tr("Path")
         value = index.data()[1] if index.isValid() else ""
-        text = f"{path}: {value}"
+        value = "" if value == SAMPLE_KEY else value
+        text = f"{self._trPath}: {value}"
         self.selectedPath.setText(text)
         self.selectedPath.setToolTip(text)
         self.selectedPath.setCursorPosition(0)
-        self.aMissing.setVisible(not (Path(value) / nwFiles.PROJ_FILE).is_file())
+        self.aMissing.setVisible(value != "" and not (Path(value) / nwFiles.PROJ_FILE).is_file())
 
     @pyqtSlot(QModelIndex)
     def _projectDoubleClicked(self, index: QModelIndex) -> None:
         """Process double click on project item."""
         if index.isValid():
-            self.openProjectRequest.emit(Path(str(index.data()[1])))
+            self._processOpenProjectRequest(str(index.data()[1]))
 
     @pyqtSlot()
     def _deleteSelectedItem(self) -> None:
@@ -345,6 +348,23 @@ class _OpenProjectPage(QWidget):
     ##
     #  Internal Functions
     ##
+
+    def _processOpenProjectRequest(self, path: str) -> None:
+        """Process an open project request which may involve create."""
+        if path == SAMPLE_KEY and (location := QFileDialog.getExistingDirectory(
+            self, self.tr("Select Folder"), str(CONFIG.homePath),
+            options=QFileDialog.Option.ShowDirsOnly,
+        )):
+            path = str(Path(location) / SAMPLE_NAME)
+            data = {
+                "name": SAMPLE_NAME,
+                "path": path,
+                "sample": True,
+            }
+            builder = ProjectBuilder()
+            builder.buildProject(data)
+
+        self.openProjectRequest.emit(Path(path))
 
     def _selectFirstItem(self) -> None:
         """Select the first item, if any are available."""
@@ -415,6 +435,8 @@ class _ProjectListModel(QAbstractListModel):
         for path, title, count, time in records:
             when = CONFIG.localDate(datetime.fromtimestamp(time))
             data.append((title, path, f"{opened}: {when}, {words}: {formatInt(count)}"))
+        if not data:
+            data.append((SAMPLE_NAME, SAMPLE_KEY, self.tr("Select to create an example project")))
         self._data = data
 
     def rowCount(self, parent: QModelIndex | None = None) -> int:
