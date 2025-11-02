@@ -43,7 +43,7 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles, qtAddAction, qtLambda
 from novelwriter.constants import nwConst, nwStyles, nwUnicode
-from novelwriter.enum import nwChange, nwComment, nwDocAction, nwDocMode, nwItemType
+from novelwriter.enum import nwChange, nwComment, nwDocAction, nwDocMode, nwItemType, nwState
 from novelwriter.error import logException
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -760,7 +760,7 @@ class GuiDocViewHeader(QWidget):
 
     def changeFocusState(self, state: bool) -> None:
         """Toggle focus state."""
-        self.itemTitle.setColorState(state)
+        self.itemTitle.setColorState(nwState.NORMAL if state else nwState.INACTIVE)
 
     def setHandle(self, tHandle: str) -> None:
         """Set the document title from the handle, or alternatively,
