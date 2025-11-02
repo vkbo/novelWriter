@@ -793,10 +793,13 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.SC_SUB and not noFormat:
             self._wrapSelection(nwShortcode.SUB_O, nwShortcode.SUB_C)
         else:
-            logger.debug("Unknown or unsupported document action '%s' for this block", action)
+            if noFormat:
+                logger.warning("Action '%s' not alowed on current block", action)
+                self.docHeader.flashError()
+                SHARED.newStatusMessage(self.tr("Cannot apply requested format on this line"))
+            else:
+                logger.error("Unknown action '%s' requested", action)
             self._allowAutoReplace(True)
-            self.docHeader.flashError()
-            SHARED.newStatusMessage(self.tr("Action not allowed"))
             return False
 
         self._allowAutoReplace(True)

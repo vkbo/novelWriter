@@ -36,7 +36,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout
+from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwState
 from novelwriter.gui.doceditor import GuiDocEditor, TextAutoReplace, _TagAction
 from novelwriter.gui.dochighlight import TextBlockData
 from novelwriter.text.counting import standardCounter
@@ -593,6 +593,13 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     text = "### A Scene\n\n{0}".format("\n\n".join(ipsumText))
     docEditor.replaceText(text)
     doc = docEditor.document()
+
+    # Check that the reset colour state works (used for action errors)
+    docEditor.changeFocusState(True)
+    assert docEditor.docHeader.itemTitle._state == nwState.NORMAL
+    docEditor.docHeader.itemTitle.setColorState(nwState.ERROR)
+    docEditor.docHeader._resetColourState()
+    assert docEditor.docHeader.itemTitle._state == nwState.NORMAL
 
     # Select/Cut/Copy/Paste/Undo/Redo
     # ===============================
