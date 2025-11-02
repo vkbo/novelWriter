@@ -269,3 +269,11 @@ class nwStandardButton(Enum):
     BUILD   = 14
     PRINT   = 15
     PREVIEW = 16
+
+
+class nwState(Enum):
+    """Enum: Object state values."""
+
+    NORMAL   = 0
+    INACTIVE = 1
+    ERROR    = 2

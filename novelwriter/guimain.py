@@ -261,7 +261,6 @@ class GuiMain(QMainWindow):
         self.docEditor.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
         self.docEditor.spellCheckStateChanged.connect(self.mainMenu.setSpellCheckState)
         self.docEditor.toggleFocusModeRequest.connect(self.toggleFocusMode)
-        self.docEditor.updateStatusMessage.connect(self.mainStatus.setStatusMessage)
 
         self.docViewer.closeDocumentRequest.connect(self.closeDocViewer)
         self.docViewer.documentLoaded.connect(self.docViewerPanel.updateHandle)

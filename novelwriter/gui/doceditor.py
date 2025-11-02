@@ -63,7 +63,7 @@ from novelwriter.constants import (
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
     nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
-    nwItemType
+    nwItemType, nwState
 )
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -128,7 +128,6 @@ class GuiDocEditor(QPlainTextEdit):
     requestProjectItemSelected = pyqtSignal(str, bool)
     spellCheckStateChanged = pyqtSignal(bool)
     toggleFocusModeRequest = pyqtSignal()
-    updateStatusMessage = pyqtSignal(str)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -451,7 +450,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Finalise
         QApplication.restoreOverrideCursor()
-        self.updateStatusMessage.emit(
+        SHARED.newStatusMessage(
             self.tr("Opened Document: {0}").format(self._nwItem.itemName)
         )
 
@@ -506,7 +505,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.docTextChanged.emit(self._docHandle, self._lastEdit)
         SHARED.project.index.scanText(tHandle, text)
 
-        self.updateStatusMessage.emit(self.tr("Saved Document: {0}").format(self._nwItem.itemName))
+        SHARED.newStatusMessage(self.tr("Saved Document: {0}").format(self._nwItem.itemName))
 
         return True
 
@@ -687,7 +686,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument.syntaxHighlighter.rehighlight()
         QApplication.restoreOverrideCursor()
         logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
-        self.updateStatusMessage.emit(self.tr("Spell check complete"))
+        SHARED.newStatusMessage(self.tr("Spell check complete"))
 
     ##
     #  General Class Methods
@@ -796,6 +795,8 @@ class GuiDocEditor(QPlainTextEdit):
         else:
             logger.debug("Unknown or unsupported document action '%s' for this block", action)
             self._allowAutoReplace(True)
+            self.docHeader.flashError()
+            SHARED.newStatusMessage(self.tr("Action not allowed"))
             return False
 
         self._allowAutoReplace(True)
@@ -2863,6 +2864,7 @@ class GuiDocEditHeader(QWidget):
 
         self._docHandle = None
         self._docOutline: dict[int, str] = {}
+        self._state = nwState.NORMAL
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
@@ -2871,7 +2873,7 @@ class GuiDocEditHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = NColorLabel("", self, faded=SHARED.theme.fadedText)
+        self.itemTitle = NColorLabel("", self)
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
@@ -2999,12 +3001,20 @@ class GuiDocEditHeader(QWidget):
         palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
         self.itemTitle.setTextColors(
-            color=palette.windowText().color(), faded=SHARED.theme.fadedText
+            color=palette.windowText().color(),
+            faded=SHARED.theme.fadedText,
+            error=SHARED.theme.errorText,
         )
 
     def changeFocusState(self, state: bool) -> None:
         """Toggle focus state."""
-        self.itemTitle.setColorState(state)
+        self._state = nwState.NORMAL if state else nwState.INACTIVE
+        self.itemTitle.setColorState(self._state)
+
+    def flashError(self) -> None:
+        """Flash a red colour for the header for a moment."""
+        self.itemTitle.setColorState(nwState.ERROR)
+        QTimer.singleShot(250, self._resetColourState)
 
     def setHandle(self, tHandle: str) -> None:
         """Set the document title from the handle, or alternatively, set
@@ -3044,6 +3054,11 @@ class GuiDocEditHeader(QWidget):
     def _focusModeChanged(self, focusMode: bool) -> None:
         """Update minimise/maximise icon of the Focus Mode button."""
         self.minmaxButton.setThemeIcon("minimise" if focusMode else "maximise", "action")
+
+    @pyqtSlot()
+    def _resetColourState(self) -> None:
+        """Reset the colour state of the header title."""
+        self.itemTitle.setColorState(self._state)
 
     ##
     #  Events
