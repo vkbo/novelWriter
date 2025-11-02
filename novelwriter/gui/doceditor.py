@@ -710,6 +710,12 @@ class GuiDocEditor(QPlainTextEdit):
 
         logger.debug("Requesting action: %s", action.name)
 
+        cursor = self.textCursor()
+        noFormat = (
+            (block := cursor.block()).isValid() and (text := block.text())
+            and text.startswith(("@", "# ", "## ", "### ", "#### ", "#! ", "##! ", "###! "))
+        )
+
         self._allowAutoReplace(False)
         if action == nwDocAction.UNDO:
             self.undo()
@@ -721,13 +727,13 @@ class GuiDocEditor(QPlainTextEdit):
             self.copy()
         elif action == nwDocAction.PASTE:
             self.paste()
-        elif action == nwDocAction.MD_ITALIC:
+        elif action == nwDocAction.MD_ITALIC and not noFormat:
             self._toggleFormat(1, "_")
-        elif action == nwDocAction.MD_BOLD:
+        elif action == nwDocAction.MD_BOLD and not noFormat:
             self._toggleFormat(2, "*")
-        elif action == nwDocAction.MD_STRIKE:
+        elif action == nwDocAction.MD_STRIKE and not noFormat:
             self._toggleFormat(2, "~")
-        elif action == nwDocAction.MD_MARK:
+        elif action == nwDocAction.MD_MARK and not noFormat:
             self._toggleFormat(2, "=")
         elif action == nwDocAction.S_QUOTE:
             self._wrapSelection(CONFIG.fmtSQuoteOpen, CONFIG.fmtSQuoteClose)
@@ -763,32 +769,32 @@ class GuiDocEditor(QPlainTextEdit):
             self._replaceQuotes('"', CONFIG.fmtDQuoteOpen, CONFIG.fmtDQuoteClose)
         elif action == nwDocAction.RM_BREAKS:
             self._removeInParLineBreaks()
-        elif action == nwDocAction.ALIGN_L:
+        elif action == nwDocAction.ALIGN_L and not noFormat:
             self._formatBlock(nwDocAction.ALIGN_L)
-        elif action == nwDocAction.ALIGN_C:
+        elif action == nwDocAction.ALIGN_C and not noFormat:
             self._formatBlock(nwDocAction.ALIGN_C)
-        elif action == nwDocAction.ALIGN_R:
+        elif action == nwDocAction.ALIGN_R and not noFormat:
             self._formatBlock(nwDocAction.ALIGN_R)
-        elif action == nwDocAction.INDENT_L:
+        elif action == nwDocAction.INDENT_L and not noFormat:
             self._formatBlock(nwDocAction.INDENT_L)
-        elif action == nwDocAction.INDENT_R:
+        elif action == nwDocAction.INDENT_R and not noFormat:
             self._formatBlock(nwDocAction.INDENT_R)
-        elif action == nwDocAction.SC_ITALIC:
+        elif action == nwDocAction.SC_ITALIC and not noFormat:
             self._wrapSelection(nwShortcode.ITALIC_O, nwShortcode.ITALIC_C)
-        elif action == nwDocAction.SC_BOLD:
+        elif action == nwDocAction.SC_BOLD and not noFormat:
             self._wrapSelection(nwShortcode.BOLD_O, nwShortcode.BOLD_C)
-        elif action == nwDocAction.SC_STRIKE:
+        elif action == nwDocAction.SC_STRIKE and not noFormat:
             self._wrapSelection(nwShortcode.STRIKE_O, nwShortcode.STRIKE_C)
-        elif action == nwDocAction.SC_ULINE:
+        elif action == nwDocAction.SC_ULINE and not noFormat:
             self._wrapSelection(nwShortcode.ULINE_O, nwShortcode.ULINE_C)
-        elif action == nwDocAction.SC_MARK:
+        elif action == nwDocAction.SC_MARK and not noFormat:
             self._wrapSelection(nwShortcode.MARK_O, nwShortcode.MARK_C)
-        elif action == nwDocAction.SC_SUP:
+        elif action == nwDocAction.SC_SUP and not noFormat:
             self._wrapSelection(nwShortcode.SUP_O, nwShortcode.SUP_C)
-        elif action == nwDocAction.SC_SUB:
+        elif action == nwDocAction.SC_SUB and not noFormat:
             self._wrapSelection(nwShortcode.SUB_O, nwShortcode.SUB_C)
         else:
-            logger.debug("Unknown or unsupported document action '%s'", action)
+            logger.debug("Unknown or unsupported document action '%s' for this block", action)
             self._allowAutoReplace(True)
             return False
 

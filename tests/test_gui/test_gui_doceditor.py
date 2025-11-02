@@ -666,12 +666,18 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.MD_ITALIC) is False
+
     # Strong
     docEditor.setCursorPosition(50)
     assert docEditor.docAction(nwDocAction.MD_BOLD) is True
     assert docEditor.getText() == text.replace("consectetur", "**consectetur**")
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.MD_BOLD) is False
 
     # Strikeout
     docEditor.setCursorPosition(50)
@@ -680,12 +686,18 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.MD_STRIKE) is False
+
     # Mark
     docEditor.setCursorPosition(50)
     assert docEditor.docAction(nwDocAction.MD_MARK) is True
     assert docEditor.getText() == text.replace("consectetur", "==consectetur==")
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.MD_MARK) is False
 
     # Redo
     assert docEditor.docAction(nwDocAction.REDO) is True
@@ -706,12 +718,18 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_ITALIC) is False
+
     # Bold
     docEditor.setCursorPosition(46)
     assert docEditor.docAction(nwDocAction.SC_BOLD) is True
     assert docEditor.getText() == text.replace("consectetur", "[b]consectetur[/b]")
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_BOLD) is False
 
     # Strikethrough
     docEditor.setCursorPosition(46)
@@ -720,12 +738,18 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_STRIKE) is False
+
     # Underline
     docEditor.setCursorPosition(46)
     assert docEditor.docAction(nwDocAction.SC_ULINE) is True
     assert docEditor.getText() == text.replace("consectetur", "[u]consectetur[/u]")
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_ULINE) is False
 
     # Mark
     docEditor.setCursorPosition(46)
@@ -734,6 +758,9 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_MARK) is False
+
     # Superscript
     docEditor.setCursorPosition(46)
     assert docEditor.docAction(nwDocAction.SC_SUP) is True
@@ -741,12 +768,18 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_SUP) is False
+
     # Subscript
     docEditor.setCursorPosition(46)
     assert docEditor.docAction(nwDocAction.SC_SUB) is True
     assert docEditor.getText() == text.replace("consectetur", "[sub]consectetur[/sub]")
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_SUB) is False
 
     # Quotes
     # ======
@@ -837,25 +870,40 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.ALIGN_L) is True
     assert docEditor.getText() == "#### Scene Title\n\nScene text. <<\n\n"
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.ALIGN_L) is False
+
     # Align Right
     docEditor.setCursorPosition(20)
     assert docEditor.docAction(nwDocAction.ALIGN_R) is True
     assert docEditor.getText() == "#### Scene Title\n\n>> Scene text.\n\n"
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.ALIGN_R) is False
 
     # Align Centre
     docEditor.setCursorPosition(20)
     assert docEditor.docAction(nwDocAction.ALIGN_C) is True
     assert docEditor.getText() == "#### Scene Title\n\n>> Scene text. <<\n\n"
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.ALIGN_C) is False
+
     # Indent Left
     docEditor.setCursorPosition(20)
     assert docEditor.docAction(nwDocAction.INDENT_L) is True
     assert docEditor.getText() == "#### Scene Title\n\n> Scene text.\n\n"
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.INDENT_L) is False
+
     # Indent Right
     docEditor.setCursorPosition(20)
     assert docEditor.docAction(nwDocAction.INDENT_R) is True
     assert docEditor.getText() == "#### Scene Title\n\n> Scene text. <\n\n"
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.INDENT_R) is False
 
     # Text (Reset)
     docEditor.setCursorPosition(20)
