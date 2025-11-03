@@ -343,13 +343,6 @@ class GuiMain(QMainWindow):
             logger.info("Command line path: %s", cmdOpen)
             self.openProject(cmdOpen)
 
-        # Add a small delay for the window coordinates to be ready
-        # before showing any dialogs
-        QTimer.singleShot(50, self.showPostLaunchDialogs)
-
-    @pyqtSlot()
-    def showPostLaunchDialogs(self) -> None:
-        """Show post launch dialogs."""
         if not SHARED.hasProject:
             self.showWelcomeDialog()
 
@@ -756,6 +749,8 @@ class GuiMain(QMainWindow):
     def showWelcomeDialog(self) -> None:
         """Open the welcome dialog."""
         dialog = GuiWelcome(self)
+        if CONFIG.moveMainWin:
+            dialog.centreOnParent(SHARED.mainScreen)
         dialog.openProjectRequest.connect(self._openProjectFromWelcome)
         dialog.exec()
 
@@ -1311,6 +1306,8 @@ class GuiMain(QMainWindow):
             width = minmax(size[0], 900, availSize.width())
             height = minmax(size[1], 500, availSize.height())
             self.resize(width, height)
+            if width != size[0] or height != size[1] or CONFIG.moveMainWin:
+                self.move(screen.geometry().center() - self.rect().center())
 
     def _updateWindowTitle(self, projName: str | None = None) -> None:
         """Set the window title and add the project's name."""

@@ -363,6 +363,14 @@ class GuiPreferences(NDialog):
             self.tr("Only applies when a project is open.")
         )
 
+        # Centre main window on startup
+        self.moveMainWin = NSwitch(self)
+        self.moveMainWin.setChecked(CONFIG.moveMainWin)
+        self.mainForm.addRow(
+            self.tr("Centre window on startup"), self.moveMainWin,
+            self.tr("Applies to main window and welcome dialog.")
+        )
+
         # Project Backup
         # ==============
 
@@ -1037,6 +1045,7 @@ class GuiPreferences(NDialog):
         CONFIG.autoSaveDoc   = self.autoSaveDoc.value()
         CONFIG.autoSaveProj  = self.autoSaveProj.value()
         CONFIG.askBeforeExit = self.askBeforeExit.isChecked()
+        CONFIG.moveMainWin   = self.moveMainWin.isChecked()
 
         # Project Backup
         CONFIG.setBackupPath(self.backupPath)
