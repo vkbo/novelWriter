@@ -111,7 +111,6 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     nwGUI.closeProject()
 
     # Check that latest release info is set
-    nwGUI.showPostLaunchDialogs()
     assert CONFIG.lastNotes != "0x0"
 
     # Set some config error

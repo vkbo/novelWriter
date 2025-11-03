@@ -202,10 +202,12 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.autoSaveDoc.stepUp()
     prefs.autoSaveProj.stepUp()
     prefs.askBeforeExit.setChecked(False)
+    prefs.moveMainWin.setChecked(False)
 
     assert CONFIG.autoSaveDoc == 30
     assert CONFIG.autoSaveProj == 60
     assert CONFIG.askBeforeExit is True
+    assert CONFIG.moveMainWin is True
 
     # Project Backup
     with monkeypatch.context() as mp:
@@ -367,6 +369,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.autoSaveDoc == 31
     assert CONFIG.autoSaveProj == 61
     assert CONFIG.askBeforeExit is False
+    assert CONFIG.moveMainWin is False
 
     # Project Backup
     assert CONFIG._backupPath == tstPaths.testDir
