@@ -749,8 +749,8 @@ class GuiMain(QMainWindow):
     def showWelcomeDialog(self) -> None:
         """Open the welcome dialog."""
         dialog = GuiWelcome(self)
-        if CONFIG.moveMainWin:
-            dialog.centreOnParent(SHARED.mainScreen)
+        if CONFIG.moveMainWin and (screen := SHARED.mainScreen):
+            dialog.move(screen.geometry().center() - dialog.rect().center())
         dialog.openProjectRequest.connect(self._openProjectFromWelcome)
         dialog.exec()
 
