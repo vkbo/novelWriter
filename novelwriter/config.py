@@ -84,7 +84,7 @@ class Config:
         "fmtSQuoteOpen", "focusWidth", "guiFont", "guiLocale", "hasEnchant", "hideFocusFooter",
         "hideHScroll", "hideVScroll", "highlightEmph", "hostName", "iconColDocs", "iconColTree",
         "iconTheme", "incNotesWCount", "isDebug", "kernelVer", "lastNotes", "lightTheme",
-        "lineHighlight", "mainPanePos", "mainWinSize", "memInfo", "narratorBreak",
+        "lineHighlight", "mainPanePos", "mainWinSize", "memInfo", "moveMainWin", "narratorBreak",
         "narratorDialog", "nativeFont", "osDarwin", "osLinux", "osType", "osUnknown", "osWindows",
         "outlinePanePos", "prefsWinSize", "scrollPastEnd", "searchCase", "searchLoop",
         "searchMatchCap", "searchNextFile", "searchProjCase", "searchProjRegEx", "searchProjWord",
@@ -184,6 +184,7 @@ class Config:
         self.mainPanePos    = [300, 800]   # Last position of the main window splitter
         self.viewPanePos    = [500, 150]   # Last position of the document viewer splitter
         self.outlinePanePos = [500, 150]   # Last position of the outline panel splitter
+        self.moveMainWin    = True         # Move main window to the screen middle on startup
 
         # Project Settings
         self.autoSaveProj    = 60     # Interval for auto-saving project, in seconds
@@ -643,6 +644,7 @@ class Config:
         self.mainPanePos    = conf.rdIntList(sec, "mainpane", self.mainPanePos)
         self.viewPanePos    = conf.rdIntList(sec, "viewpane", self.viewPanePos)
         self.outlinePanePos = conf.rdIntList(sec, "outlinepane", self.outlinePanePos)
+        self.moveMainWin    = conf.rdBool(sec, "movemainwin", self.moveMainWin)
 
         # Project
         sec = "Project"
@@ -771,6 +773,7 @@ class Config:
             "mainpane":    self._packList(self.mainPanePos),
             "viewpane":    self._packList(self.viewPanePos),
             "outlinepane": self._packList(self.outlinePanePos),
+            "movemainwin": str(self.moveMainWin),
         }
 
         conf["Project"] = {

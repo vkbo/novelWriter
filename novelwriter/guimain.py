@@ -1311,6 +1311,8 @@ class GuiMain(QMainWindow):
             width = minmax(size[0], 900, availSize.width())
             height = minmax(size[1], 500, availSize.height())
             self.resize(width, height)
+            if width != size[0] or height != size[1] or CONFIG.moveMainWin:
+                self.move(screen.geometry().center() - self.rect().center())
 
     def _updateWindowTitle(self, projName: str | None = None) -> None:
         """Set the window title and add the project's name."""
