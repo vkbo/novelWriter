@@ -466,6 +466,8 @@ class _GuiAlert(QMessageBox):
         self._theme = theme
         self._message = ""
         self._state = False
+        if isinstance(parent, QWidget):
+            self.move(parent.geometry().center() - self.rect().center())
         logger.debug("Ready: _GuiAlert")
 
     def __del__(self) -> None:  # pragma: no cover
