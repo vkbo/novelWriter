@@ -29,8 +29,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QModelIndex, QObject, QSize, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QScreen
+from PyQt6.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
     QApplication, QComboBox, QDialog, QDoubleSpinBox, QLabel, QPushButton,
     QSpinBox, QToolButton, QTreeView, QWidget
@@ -63,12 +62,6 @@ class NDialog(QDialog):
         """Overload the reject slot and also call close."""
         super().reject()
         self.close()
-
-    def centreOnParent(self, parent: QObject | None) -> None:
-        """Centre the dialog on a parent widget or screen."""
-        target = parent or self.parent()
-        if isinstance(target, QWidget | QScreen):
-            self.move(target.geometry().center() - self.rect().center())
 
 
 class NToolDialog(NDialog):
