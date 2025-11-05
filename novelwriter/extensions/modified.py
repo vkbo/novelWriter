@@ -224,6 +224,10 @@ class NPushButton(QPushButton):
         if self._icon and self._color:
             self.setIcon(SHARED.theme.getIcon(self._icon, self._color))
 
+    def setText(self, text: str) -> None:
+        """Overload the text setter to add padding."""
+        return super().setText(f" {text}")
+
 
 class NIconToolButton(QToolButton):
     """Custom: Modified QToolButton.
