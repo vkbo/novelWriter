@@ -310,7 +310,7 @@ class SharedData(QObject):
         )
         return Path(selected) if selected else None
 
-    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool | None]:
+    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool]:
         """Open the font dialog and select a font."""
         from novelwriter.extensions.modified import NFontDialog
 
