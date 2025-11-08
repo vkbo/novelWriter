@@ -42,7 +42,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import fuzzyTime, qtLambda
+from novelwriter.common import fuzzyTime
 from novelwriter.constants import nwHeadFmt, nwLabels, nwStats, nwUnicode, trStats
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
@@ -171,7 +171,7 @@ class GuiManuscript(NToolDialog):
         self.btnBuild.clicked.connect(self._buildManuscript)
 
         self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
-        self.btnClose.clicked.connect(qtLambda(self.close))
+        self.btnClose.clicked.connect(self.closeDialog)
 
         self.processBox = QGridLayout()
         self.processBox.addWidget(self.btnPreview, 0, 0)

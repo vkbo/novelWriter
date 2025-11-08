@@ -279,7 +279,7 @@ class GuiWritingStats(NToolDialog):
 
         # Buttons
         self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
-        self.btnClose.clicked.connect(self._doClose)
+        self.btnClose.clicked.connect(self.closeDialog)
         self.btnClose.setAutoDefault(False)
 
         self.saveJSON = QAction(self.tr("JSON Data File (.json)"), self)
@@ -329,15 +329,15 @@ class GuiWritingStats(NToolDialog):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """Capture the user closing the window."""
+        self._saveSettings()
         event.accept()
         self.softDelete()
 
     ##
-    #  Private Slots
+    #  Internal Functions
     ##
 
-    @pyqtSlot()
-    def _doClose(self) -> None:
+    def _saveSettings(self) -> None:
         """Save the state of the window, clear cache, end close."""
         self.logData = []
 
@@ -371,8 +371,6 @@ class GuiWritingStats(NToolDialog):
         pOptions.setValue("GuiWritingStats", "showIdleTime", showIdleTime)
         pOptions.setValue("GuiWritingStats", "histMax",      histMax)
         pOptions.saveSettings()
-
-        self.close()
 
     def _saveData(self, dataFmt: int) -> bool:
         """Save the content of the list box to a file."""
@@ -444,10 +442,6 @@ class GuiWritingStats(NToolDialog):
             )
 
         return wSuccess
-
-    ##
-    #  Internal Functions
-    ##
 
     def _loadLogFile(self) -> None:
         """Load the content of the log file into a buffer."""

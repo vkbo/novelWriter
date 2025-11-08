@@ -70,9 +70,9 @@ class NDialog(QDialog):
         self.setParent(None)  # type: ignore
 
     @pyqtSlot()
-    def reject(self) -> None:
-        """Overload the reject slot and also call close."""
-        super().reject()
+    def closeDialog(self) -> None:
+        """Close the dialog."""
+        self.setResult(0)
         self.close()
 
 
