@@ -20,15 +20,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
 from __future__ import annotations
 
+from unittest.mock import Mock
+
 import pytest
 
 from PyQt6.QtCore import QEvent, QPoint, QPointF, QSize, Qt
-from PyQt6.QtGui import QKeyEvent, QMouseEvent, QStandardItem, QStandardItemModel, QWheelEvent
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtGui import (
+    QFont, QKeyEvent, QMouseEvent, QStandardItem, QStandardItemModel,
+    QWheelEvent
+)
+from PyQt6.QtWidgets import QFontDialog, QWidget
 
 from novelwriter.extensions.modified import (
-    NClickableLabel, NComboBox, NDialog, NDoubleSpinBox, NIconToggleButton,
-    NIconToolButton, NSpinBox, NTreeView
+    NClickableLabel, NComboBox, NDialog, NDoubleSpinBox, NFontDialog,
+    NIconToggleButton, NIconToolButton, NSpinBox, NTreeView
 )
 from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
 
@@ -63,6 +68,34 @@ def testExtModified_NDialog(qtbot, monkeypatch):
     with qtbot.waitSignal(dialog.rejected, timeout=1000):
         dialog.keyPressEvent(QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModNone))
         assert dialog.result() == QtRejected
+
+
+def testExtModified_NFontDialog(qtbot, monkeypatch, nwGUI):
+    """Test the NFontDialog class."""
+    current = QFont()
+    other = QFont()
+    widget = QWidget()
+    dialog = NFontDialog(current, widget)
+    assert dialog.parent() is widget
+
+    # Test native dialog
+    mockNative = Mock()
+    mockNative.return_value = (other, True)
+    with monkeypatch.context() as mp:
+        mp.setattr(QFontDialog, "getFont", mockNative)
+        font, result = NFontDialog.selectFont(current, widget, "Title", True)
+        mockNative.assert_called_once_with(current, widget, "Title")
+        assert font is other
+        assert result is True
+
+    # Test custom dialog
+    with monkeypatch.context() as mp:
+        mp.setattr(NFontDialog, "exec", lambda *a: None)
+        mp.setattr(NFontDialog, "selectedFont", lambda *a: other)
+        mp.setattr(NFontDialog, "result", lambda *a: 1)
+        font, result = NFontDialog.selectFont(current, widget, "Title", False)
+        assert font is other
+        assert result is True
 
 
 @pytest.mark.gui
