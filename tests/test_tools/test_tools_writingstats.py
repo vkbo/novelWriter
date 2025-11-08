@@ -602,5 +602,5 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     # qtbot.stop()
 
-    sessLog._doClose()
+    sessLog.closeDialog()
     nwGUI.closeProject()
