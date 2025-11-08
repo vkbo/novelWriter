@@ -29,6 +29,8 @@ from shutil import copyfile
 
 import pytest
 
+from PyQt6.QtCore import QRect
+
 from novelwriter import CONFIG
 from novelwriter.config import Config, RecentPaths, RecentProjects
 from novelwriter.constants import nwFiles
@@ -251,41 +253,44 @@ def testBaseConfig_Methods(fncPath):
 @pytest.mark.base
 def testBaseConfig_SettersGetters(fncPath):
     """Set various sizes and positions."""
-    tstConf = Config()
-    tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
+    conf = Config()
+    conf.initConfig(confPath=fncPath, dataPath=fncPath)
 
     # Setter + Getter Combos
     # ======================
 
     # Window Size
-    tstConf.setMainWinSize(1205, 655)
-    assert tstConf.mainWinSize == [1200, 650]
+    conf.setMainWinSize(1205, 655)
+    assert conf.mainWinSize == [1200, 650]
 
-    tstConf.setMainWinSize(70, 70)
-    assert tstConf.mainWinSize == [70, 70]
-    assert tstConf.mainWinSize == [70, 70]
+    conf.setMainWinSize(70, 70)
+    assert conf.mainWinSize == [70, 70]
 
-    tstConf.setMainWinSize(1200, 650)
+    conf.setMainWinSize(1200, 650)
 
     # Welcome Window Size
-    tstConf.setWelcomeWinSize(70, 70)
-    assert tstConf.welcomeWinSize == [70, 70]
-    assert tstConf.welcomeWinSize == [70, 70]
+    conf.setWelcomeWinSize(70, 70)
+    assert conf.welcomeWinSize == [70, 70]
 
-    tstConf.setWelcomeWinSize(800, 500)
+    conf.setWelcomeWinSize(800, 500)
 
     # Preferences Size
-    tstConf.setPreferencesWinSize(70, 70)
-    assert tstConf.prefsWinSize == [70, 70]
-    assert tstConf.prefsWinSize == [70, 70]
+    conf.setPreferencesWinSize(70, 70)
+    assert conf.prefsWinSize == [70, 70]
 
-    tstConf.setPreferencesWinSize(700, 615)
+    conf.setPreferencesWinSize(700, 615)
+
+    # Font Dialog Size
+    conf.setFontWinSize(QRect(0, 0, 70, 70))
+    assert conf.fontWinSize == [70, 70]
+
+    conf.setFontWinSize(QRect(0, 0, 700, 550))
 
     # Getters Only
     # ============
 
-    assert tstConf.getTextWidth(False) == 700
-    assert tstConf.getTextWidth(True) == 800
+    assert conf.getTextWidth(False) == 700
+    assert conf.getTextWidth(True) == 800
 
 
 @pytest.mark.base
