@@ -40,7 +40,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatInt, makeFileNameSafe, qtAddAction, qtLambda
+from novelwriter.common import formatInt, makeFileNameSafe, qtAddAction
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.enum import nwItemClass, nwStandardButton
@@ -114,7 +114,7 @@ class GuiWelcome(NDialog):
         self.btnBrowse.clicked.connect(self._browseForProject)
 
         self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
-        self.btnCancel.clicked.connect(qtLambda(self.close))
+        self.btnCancel.clicked.connect(self.closeDialog)
 
         self.btnCreate = SHARED.theme.getStandardButton(nwStandardButton.CREATE, self)
         self.btnCreate.clicked.connect(self.tabNew.createNewProject)
