@@ -3,11 +3,18 @@ novelWriter – Custom Widget: Modified Widgets
 =============================================
 
 File History:
-Created: 2024-02-01 [2.3b1] NComboBox
-Created: 2024-02-01 [2.3b1] NSpinBox
-Created: 2024-02-01 [2.3b1] NDoubleSpinBox
-Created: 2024-05-01 [2.5b1] NToolDialog
-Created: 2024-05-01 [2.5b1] NNonBlockingDialog
+Created: 2024-02-01 [2.3b1]  NComboBox
+Created: 2024-02-01 [2.3b1]  NSpinBox
+Created: 2024-02-01 [2.3b1]  NDoubleSpinBox
+Created: 2024-03-20 [2.4b1]  NIconToolButton
+Created: 2024-04-01 [2.4rc1] NIconToggleButton
+Created: 2024-05-01 [2.5b1]  NToolDialog
+Created: 2024-05-01 [2.5b1]  NNonBlockingDialog
+Created: 2024-05-27 [2.5rc1] NDialog
+Created: 2024-12-29 [2.6rc1] NClickableLabel
+Created: 2025-02-22 [2.7b1]  NTreeView
+Created: 2025-10-25 [2.8b1]  NPushButton
+Created: 2025-11-08 [2.8rc1] NFontDialog
 
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
@@ -27,23 +34,28 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
 from __future__ import annotations
 
+import logging
+
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
-    QApplication, QComboBox, QDialog, QDoubleSpinBox, QLabel, QPushButton,
-    QSpinBox, QToolButton, QTreeView, QWidget
+    QApplication, QComboBox, QDialog, QDialogButtonBox, QDoubleSpinBox,
+    QFontDialog, QLabel, QPushButton, QSpinBox, QToolButton, QTreeView, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.types import QtMouseLeft, QtMouseMiddle
+from novelwriter.enum import nwStandardButton
+from novelwriter.types import QtMouseLeft, QtMouseMiddle, QtRoleAccept, QtRoleReject
 
 if TYPE_CHECKING:
     from enum import Enum
 
-    from PyQt6.QtGui import QMouseEvent, QWheelEvent
+    from PyQt6.QtGui import QFont, QMouseEvent, QWheelEvent
 
     from novelwriter.guimain import GuiMain
+
+logger = logging.getLogger(__name__)
 
 
 class NDialog(QDialog):
@@ -96,6 +108,52 @@ class NNonBlockingDialog(NDialog):
             self.activateWindow()
         self.raise_()
         QApplication.processEvents()
+
+
+class NFontDialog(QFontDialog):
+    """Custom: Modified Font Dialog.
+
+    An overload of the Qt font dialog that remembers its previous size.
+    """
+
+    def __init__(self, initial: QFont, parent: QWidget) -> None:
+        super().__init__(initial, parent)
+
+        # Look for the button box and replace the buttons
+        if dlgBox := self.findChild(QDialogButtonBox):
+            self.btnOk = SHARED.theme.getStandardButton(nwStandardButton.OK, self)
+            self.btnOk.clicked.connect(self.accept)
+
+            self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+            self.btnCancel.clicked.connect(self.reject)
+
+            dlgBox.clear()
+            dlgBox.addButton(self.btnOk, QtRoleAccept)
+            dlgBox.addButton(self.btnCancel, QtRoleReject)
+
+        logger.debug("Ready: NFontDialog")
+
+    def __del__(self) -> None:  # pragma: no cover
+        logger.debug("Delete: NFontDialog")
+
+    @staticmethod
+    def selectFont(font: QFont, parent: QWidget, title: str, native: bool) -> tuple[QFont, bool]:
+        """Open the dialog and select a font."""
+        if native:
+            # If we're using the native dialog, let Qt handle it
+            font, result = QFontDialog.getFont(font, parent, title)
+            return font, bool(result)
+
+        # Execute the custom dialog
+        dialog = NFontDialog(font, parent)
+        dialog.setOption(QFontDialog.FontDialogOption.DontUseNativeDialog, True)
+        dialog.setWindowTitle(title)
+        dialog.resize(*CONFIG.fontWinSize)
+
+        dialog.exec()
+        CONFIG.setFontWinSize(dialog.geometry())
+
+        return dialog.selectedFont(), dialog.result() == 1
 
 
 class NTreeView(QTreeView):

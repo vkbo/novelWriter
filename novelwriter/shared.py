@@ -34,7 +34,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QDesktopServices, QFont, QScreen
-from PyQt6.QtWidgets import QApplication, QFileDialog, QFontDialog, QMessageBox, QWidget
+from PyQt6.QtWidgets import QApplication, QFileDialog, QMessageBox, QWidget
 
 from novelwriter.common import formatFileFilter
 from novelwriter.constants import nwFiles
@@ -310,12 +310,11 @@ class SharedData(QObject):
         )
         return Path(selected) if selected else None
 
-    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool | None]:
+    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool]:
         """Open the font dialog and select a font."""
-        kwargs = {}
-        if not native:
-            kwargs["options"] = QFontDialog.FontDialogOption.DontUseNativeDialog
-        return QFontDialog.getFont(current, self.mainGui, self.tr("Select Font"), **kwargs)
+        from novelwriter.extensions.modified import NFontDialog
+
+        return NFontDialog.selectFont(current, self.mainGui, self.tr("Select Font"), native)
 
     def findTopLevelWidget(self, kind: type[NWWidget]) -> NWWidget | None:
         """Find a top level widget."""

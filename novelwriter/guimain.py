@@ -854,7 +854,7 @@ class GuiMain(QMainWindow):
         wFull = Qt.WindowState.WindowFullScreen
         if self.windowState() & wFull != wFull:
             # Ignore window size if in full screen mode
-            CONFIG.setMainWinSize(self.width(), self.height())
+            CONFIG.setMainWinSize(self.geometry())
 
         if SHARED.hasProject:
             self.closeProject(True)

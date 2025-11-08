@@ -35,7 +35,8 @@ from typing import TYPE_CHECKING, Final
 
 from PyQt6.QtCore import (
     PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QDate,
-    QDateTime, QLibraryInfo, QLocale, QStandardPaths, QSysInfo, QTranslator
+    QDateTime, QLibraryInfo, QLocale, QRect, QStandardPaths, QSysInfo,
+    QTranslator
 )
 from PyQt6.QtGui import QFont, QFontDatabase, QFontMetrics
 from PyQt6.QtWidgets import QApplication
@@ -81,17 +82,17 @@ class Config:
         "dialogLine", "dialogStyle", "doJustify", "doReplace", "doReplaceDQuote", "doReplaceDash",
         "doReplaceDots", "doReplaceSQuote", "emphLabels", "fmtApostrophe", "fmtDQuoteClose",
         "fmtDQuoteOpen", "fmtPadAfter", "fmtPadBefore", "fmtPadThin", "fmtSQuoteClose",
-        "fmtSQuoteOpen", "focusWidth", "guiFont", "guiLocale", "hasEnchant", "hideFocusFooter",
-        "hideHScroll", "hideVScroll", "highlightEmph", "hostName", "iconColDocs", "iconColTree",
-        "iconTheme", "incNotesWCount", "isDebug", "kernelVer", "lastNotes", "lightTheme",
-        "lineHighlight", "mainPanePos", "mainWinSize", "memInfo", "moveMainWin", "narratorBreak",
-        "narratorDialog", "nativeFont", "osDarwin", "osLinux", "osType", "osUnknown", "osWindows",
-        "outlinePanePos", "prefsWinSize", "scrollPastEnd", "searchCase", "searchLoop",
-        "searchMatchCap", "searchNextFile", "searchProjCase", "searchProjRegEx", "searchProjWord",
-        "searchRegEx", "searchWord", "showEditToolBar", "showFullPath", "showLineEndings",
-        "showMultiSpaces", "showSessionTime", "showTabsNSpaces", "showViewerPanel",
-        "spellLanguage", "stopWhenIdle", "tabWidth", "textFont", "textMargin", "textWidth",
-        "themeMode", "useCharCount", "userIdleTime", "verPyQtString", "verPyQtValue",
+        "fmtSQuoteOpen", "focusWidth", "fontWinSize", "guiFont", "guiLocale", "hasEnchant",
+        "hideFocusFooter", "hideHScroll", "hideVScroll", "highlightEmph", "hostName",
+        "iconColDocs", "iconColTree", "iconTheme", "incNotesWCount", "isDebug", "kernelVer",
+        "lastNotes", "lightTheme", "lineHighlight", "mainPanePos", "mainWinSize", "memInfo",
+        "moveMainWin", "narratorBreak", "narratorDialog", "nativeFont", "osDarwin", "osLinux",
+        "osType", "osUnknown", "osWindows", "outlinePanePos", "prefsWinSize", "scrollPastEnd",
+        "searchCase", "searchLoop", "searchMatchCap", "searchNextFile", "searchProjCase",
+        "searchProjRegEx", "searchProjWord", "searchRegEx", "searchWord", "showEditToolBar",
+        "showFullPath", "showLineEndings", "showMultiSpaces", "showSessionTime", "showTabsNSpaces",
+        "showViewerPanel", "spellLanguage", "stopWhenIdle", "tabWidth", "textFont", "textMargin",
+        "textWidth", "themeMode", "useCharCount", "userIdleTime", "verPyQtString", "verPyQtValue",
         "verPyString", "verQtString", "verQtValue", "viewComments", "viewNotes", "viewPanePos",
         "viewSynopsis", "welcomeWinSize",
     )
@@ -181,6 +182,7 @@ class Config:
         self.mainWinSize    = [1200, 650]  # Last size of the main GUI window
         self.welcomeWinSize = [800, 550]   # Last size of the welcome window
         self.prefsWinSize   = [700, 615]   # Last size of the Preferences dialog
+        self.fontWinSize    = [700, 550]   # Last size of the Font dialog
         self.mainPanePos    = [300, 800]   # Last position of the main window splitter
         self.viewPanePos    = [500, 150]   # Last position of the document viewer splitter
         self.outlinePanePos = [500, 150]   # Last position of the outline panel splitter
@@ -357,24 +359,30 @@ class Config:
         """Set tle last used author name."""
         self._lastAuthor = simplified(value)
 
-    def setMainWinSize(self, width: int, height: int) -> None:
+    def setMainWinSize(self, geometry: QRect) -> None:
         """Set the size of the main window, but only if the change is
         larger than 5 pixels. The OS window manager will sometimes
         adjust it a bit, and we don't want the main window to shrink or
         grow each time the app is opened.
         """
+        width = geometry.width()
+        height = geometry.height()
         if abs(self.mainWinSize[0] - width) > 5:
             self.mainWinSize[0] = width
         if abs(self.mainWinSize[1] - height) > 5:
             self.mainWinSize[1] = height
 
-    def setWelcomeWinSize(self, width: int, height: int) -> None:
+    def setWelcomeWinSize(self, geometry: QRect) -> None:
         """Set the size of the Preferences dialog window."""
-        self.welcomeWinSize = [width, height]
+        self.welcomeWinSize = [geometry.width(), geometry.height()]
 
-    def setPreferencesWinSize(self, width: int, height: int) -> None:
+    def setPreferencesWinSize(self, geometry: QRect) -> None:
         """Set the size of the Preferences dialog window."""
-        self.prefsWinSize = [width, height]
+        self.prefsWinSize = [geometry.width(), geometry.height()]
+
+    def setFontWinSize(self, geometry: QRect) -> None:
+        """Set the size of the Font dialog window."""
+        self.fontWinSize = [geometry.width(), geometry.height()]
 
     def setLastPath(self, key: str, path: str | Path) -> None:
         """Set the last used path. Only the folder is saved, so if the
@@ -641,6 +649,7 @@ class Config:
         self.mainWinSize    = conf.rdIntList(sec, "mainwindow", self.mainWinSize)
         self.welcomeWinSize = conf.rdIntList(sec, "welcome", self.welcomeWinSize)
         self.prefsWinSize   = conf.rdIntList(sec, "preferences", self.prefsWinSize)
+        self.fontWinSize    = conf.rdIntList(sec, "fontselect", self.fontWinSize)
         self.mainPanePos    = conf.rdIntList(sec, "mainpane", self.mainPanePos)
         self.viewPanePos    = conf.rdIntList(sec, "viewpane", self.viewPanePos)
         self.outlinePanePos = conf.rdIntList(sec, "outlinepane", self.outlinePanePos)
@@ -770,6 +779,7 @@ class Config:
             "mainwindow":  self._packList(self.mainWinSize),
             "welcome":     self._packList(self.welcomeWinSize),
             "preferences": self._packList(self.prefsWinSize),
+            "fontselect":  self._packList(self.fontWinSize),
             "mainpane":    self._packList(self.mainPanePos),
             "viewpane":    self._packList(self.viewPanePos),
             "outlinepane": self._packList(self.outlinePanePos),
