@@ -46,53 +46,53 @@ def testBaseConfig_Constructor(monkeypatch):
     # Linux
     with monkeypatch.context() as mp:
         mp.setattr("sys.platform", "linux")
-        tstConf = Config()
-        assert tstConf.osLinux is True
-        assert tstConf.osDarwin is False
-        assert tstConf.osWindows is False
-        assert tstConf.osUnknown is False
+        conf = Config()
+        assert conf.osLinux is True
+        assert conf.osDarwin is False
+        assert conf.osWindows is False
+        assert conf.osUnknown is False
 
     # MacOS
     with monkeypatch.context() as mp:
         mp.setattr("sys.platform", "darwin")
-        tstConf = Config()
-        assert tstConf.osLinux is False
-        assert tstConf.osDarwin is True
-        assert tstConf.osWindows is False
-        assert tstConf.osUnknown is False
+        conf = Config()
+        assert conf.osLinux is False
+        assert conf.osDarwin is True
+        assert conf.osWindows is False
+        assert conf.osUnknown is False
 
     # Windows
     with monkeypatch.context() as mp:
         mp.setattr("sys.platform", "win32")
-        tstConf = Config()
-        assert tstConf.osLinux is False
-        assert tstConf.osDarwin is False
-        assert tstConf.osWindows is True
-        assert tstConf.osUnknown is False
+        conf = Config()
+        assert conf.osLinux is False
+        assert conf.osDarwin is False
+        assert conf.osWindows is True
+        assert conf.osUnknown is False
 
     # Cygwin
     with monkeypatch.context() as mp:
         mp.setattr("sys.platform", "cygwin")
-        tstConf = Config()
-        assert tstConf.osLinux is False
-        assert tstConf.osDarwin is False
-        assert tstConf.osWindows is True
-        assert tstConf.osUnknown is False
+        conf = Config()
+        assert conf.osLinux is False
+        assert conf.osDarwin is False
+        assert conf.osWindows is True
+        assert conf.osUnknown is False
 
     # Other
     with monkeypatch.context() as mp:
         mp.setattr("sys.platform", "some_other_os")
-        tstConf = Config()
-        assert tstConf.osLinux is False
-        assert tstConf.osDarwin is False
-        assert tstConf.osWindows is False
-        assert tstConf.osUnknown is True
+        conf = Config()
+        assert conf.osLinux is False
+        assert conf.osDarwin is False
+        assert conf.osWindows is False
+        assert conf.osUnknown is True
 
 
 @pytest.mark.base
 def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
     """Test config initialisation."""
-    tstConf = Config()
+    conf = Config()
 
     confFile = fncPath / nwFiles.CONF_FILE
     testFile = tstPaths.outDir / "baseConfig_novelwriter.conf"
@@ -103,10 +103,10 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
         confFile.unlink()
 
     # Running init + load against a new path should write a new config file
-    tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
-    assert tstConf._confPath == fncPath
-    assert tstConf._dataPath == fncPath
-    tstConf.loadConfig()
+    conf.initConfig(confPath=fncPath, dataPath=fncPath)
+    assert conf._confPath == fncPath
+    assert conf._dataPath == fncPath
+    conf.loadConfig()
     assert confFile.exists()
 
     # Check that we have a default file
@@ -116,26 +116,26 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
         "lastpath", "backuppath", "font", "textfont"
     )
     assert cmpFiles(testFile, compFile, ignoreStart=ignore)
-    tstConf.errorText()  # This clears the error cache
+    conf.errorText()  # This clears the error cache
 
     # Block saving the file
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert tstConf.saveConfig() is False
-        assert tstConf.hasError is True
-        assert tstConf.errorText().startswith("Could not save config file")
+        assert conf.saveConfig() is False
+        assert conf.hasError is True
+        assert conf.errorText().startswith("Could not save config file")
 
     # Block loading the file
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert tstConf.loadConfig() is False
-        assert tstConf.hasError is True
-        assert tstConf.errorText().startswith("Could not load config file")
+        assert conf.loadConfig() is False
+        assert conf.hasError is True
+        assert conf.errorText().startswith("Could not load config file")
 
     # Change a few settings, save, reset, and reload
-    tstConf.lightTheme = "foo"
-    tstConf.darkTheme = "bar"
-    assert tstConf.saveConfig() is True
+    conf.lightTheme = "foo"
+    conf.darkTheme = "bar"
+    assert conf.saveConfig() is True
 
     newConf = Config()
     newConf.initConfig(confPath=fncPath, dataPath=fncPath)
@@ -144,13 +144,13 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
     assert newConf.darkTheme == "bar"
 
     # Test Correcting Quote Settings
-    tstConf.fmtDQuoteOpen = '"'
-    tstConf.fmtDQuoteClose = '"'
-    tstConf.fmtSQuoteOpen = "'"
-    tstConf.fmtSQuoteClose = "'"
-    tstConf.doReplaceDQuote = True
-    tstConf.doReplaceSQuote = True
-    assert tstConf.saveConfig() is True
+    conf.fmtDQuoteOpen = '"'
+    conf.fmtDQuoteClose = '"'
+    conf.fmtSQuoteOpen = "'"
+    conf.fmtSQuoteClose = "'"
+    conf.doReplaceDQuote = True
+    conf.doReplaceSQuote = True
+    assert conf.saveConfig() is True
 
     assert newConf.loadConfig() is True
     assert newConf.doReplaceDQuote is False
@@ -160,36 +160,36 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
 @pytest.mark.base
 def testBaseConfig_Localisation(fncPath, tstPaths):
     """Test localisation."""
-    tstConf = Config()
-    tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
+    conf = Config()
+    conf.initConfig(confPath=fncPath, dataPath=fncPath)
 
     # Localisation
     # ============
 
     i18nDir = fncPath / "i18n"
     i18nDir.mkdir()
-    tstConf._nwLangPath = i18nDir
+    conf._nwLangPath = i18nDir
 
     copyfile(tstPaths.filesDir / "nw_en_GB.qm", i18nDir / "nw_en_GB.qm")
     writeFile(i18nDir / "nw_en_GB.ts", "")
     writeFile(i18nDir / "nw_abcd.qm", "")
 
     tstApp = MockApp()
-    tstConf.initLocalisation(tstApp)  # type: ignore
+    conf.initLocalisation(tstApp)  # type: ignore
 
     # Check Lists
-    languages = tstConf.listLanguages(tstConf.LANG_NW)
+    languages = conf.listLanguages(conf.LANG_NW)
     assert languages == [("en_GB", "British English")]
-    languages = tstConf.listLanguages(tstConf.LANG_PROJ)
+    languages = conf.listLanguages(conf.LANG_PROJ)
     assert languages == [("en_GB", "British English")]
-    languages = tstConf.listLanguages(None)  # type: ignore
+    languages = conf.listLanguages(None)  # type: ignore
     assert languages == []
 
     # Add Language
     copyfile(tstPaths.filesDir / "nw_en_GB.qm", i18nDir / "nw_fr.qm")
     writeFile(i18nDir / "nw_fr.ts", "")
 
-    languages = tstConf.listLanguages(tstConf.LANG_NW)
+    languages = conf.listLanguages(conf.LANG_NW)
     assert languages == [("en_GB", "British English"), ("fr", "Français")]
 
     # Date Formats
@@ -204,45 +204,45 @@ def testBaseConfig_Localisation(fncPath, tstPaths):
 @pytest.mark.base
 def testBaseConfig_Methods(fncPath):
     """Check class methods."""
-    tstConf = Config()
-    tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
+    conf = Config()
+    conf.initConfig(confPath=fncPath, dataPath=fncPath)
 
     # Home Path
-    assert tstConf.homePath() == Path.home().absolute()
+    assert conf.homePath() == Path.home().absolute()
 
     # Data Path
-    assert tstConf.dataPath() == fncPath
-    assert tstConf.dataPath("stuff") == fncPath / "stuff"
+    assert conf.dataPath() == fncPath
+    assert conf.dataPath("stuff") == fncPath / "stuff"
 
     # Assets Path
-    appPath = tstConf._appPath
-    assert tstConf.assetPath() == appPath / "assets"
-    assert tstConf.assetPath("stuff") == appPath / "assets" / "stuff"
+    appPath = conf._appPath
+    assert conf.assetPath() == appPath / "assets"
+    assert conf.assetPath("stuff") == appPath / "assets" / "stuff"
 
     # Last Path
-    assert tstConf.lastPath("project") == Path.home().absolute()
+    assert conf.lastPath("project") == Path.home().absolute()
 
     tmpStuff = fncPath / "stuff"
     tmpStuff.mkdir()
-    tstConf.setLastPath("project", tmpStuff)
-    assert tstConf.lastPath("project") == tmpStuff
+    conf.setLastPath("project", tmpStuff)
+    assert conf.lastPath("project") == tmpStuff
 
     fileStuff = tmpStuff / "more_stuff.txt"
     fileStuff.write_text("Stuff")
-    tstConf.setLastPath("project", fileStuff)
-    assert tstConf.lastPath("project") == tmpStuff
+    conf.setLastPath("project", fileStuff)
+    assert conf.lastPath("project") == tmpStuff
 
     fileStuff.unlink()
     tmpStuff.rmdir()
-    assert tstConf.lastPath("project") == Path.home().absolute()
+    assert conf.lastPath("project") == Path.home().absolute()
 
     # Backup Path
-    assert tstConf.backupPath() == tstConf._backPath
-    tstConf.setBackupPath(fncPath)
-    assert tstConf.backupPath() == fncPath
+    assert conf.backupPath() == conf._backPath
+    conf.setBackupPath(fncPath)
+    assert conf.backupPath() == fncPath
 
     # Recent Projects
-    assert isinstance(tstConf.recentProjects, RecentProjects)
+    assert isinstance(conf.recentProjects, RecentProjects)
 
     # Last Author
     assert CONFIG.lastAuthor == ""
@@ -296,21 +296,21 @@ def testBaseConfig_SettersGetters(fncPath):
 @pytest.mark.base
 def testBaseConfig_Internal(monkeypatch, fncPath):
     """Check internal functions."""
-    tstConf = Config()
-    tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
+    conf = Config()
+    conf.initConfig(confPath=fncPath, dataPath=fncPath)
 
     # Function _packList
-    assert tstConf._packList(["A", 1, 2.0, None, False]) == "A, 1, 2.0, None, False"
+    assert conf._packList(["A", 1, 2.0, None, False]) == "A, 1, 2.0, None, False"
 
     # Function _checkOptionalPackages
     # (Assumes enchant package exists and is importable)
-    tstConf._checkOptionalPackages()
-    assert tstConf.hasEnchant is True
+    conf._checkOptionalPackages()
+    assert conf.hasEnchant is True
 
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "enchant", None)
-        tstConf._checkOptionalPackages()
-        assert tstConf.hasEnchant is False
+        conf._checkOptionalPackages()
+        assert conf.hasEnchant is False
 
 
 @pytest.mark.base
