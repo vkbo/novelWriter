@@ -27,23 +27,29 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
 from __future__ import annotations
 
+import logging
+
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
-    QApplication, QComboBox, QDialog, QDoubleSpinBox, QLabel, QPushButton,
-    QSpinBox, QToolButton, QTreeView, QWidget
+    QApplication, QComboBox, QDialog, QDialogButtonBox, QDoubleSpinBox,
+    QFontDialog, QGridLayout, QLabel, QPushButton, QSpinBox, QToolButton,
+    QTreeView, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.types import QtMouseLeft, QtMouseMiddle
+from novelwriter.enum import nwStandardButton
+from novelwriter.types import QtMouseLeft, QtMouseMiddle, QtRoleAccept, QtRoleReject
 
 if TYPE_CHECKING:
     from enum import Enum
 
-    from PyQt6.QtGui import QMouseEvent, QWheelEvent
+    from PyQt6.QtGui import QFont, QMouseEvent, QWheelEvent
 
     from novelwriter.guimain import GuiMain
+
+logger = logging.getLogger(__name__)
 
 
 class NDialog(QDialog):
@@ -96,6 +102,54 @@ class NNonBlockingDialog(NDialog):
             self.activateWindow()
         self.raise_()
         QApplication.processEvents()
+
+
+class NFontDialog(QFontDialog):
+    """Custom: Modified Font Dialog.
+
+    An overload of the Qt font dialog that remembers its previous size.
+    """
+
+    def __init__(self, initial: QFont, parent: QWidget) -> None:
+        super().__init__(initial, parent)
+
+        self.btnOk = SHARED.theme.getStandardButton(nwStandardButton.OK, self)
+        self.btnOk.clicked.connect(self.accept)
+
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.reject)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnOk, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
+
+        if isinstance(layout := self.layout(), QGridLayout):
+            layout.addWidget(self.btnBox, layout.rowCount(), 0, 1, layout.columnCount())
+
+        logger.debug("Ready: NFontDialog")
+
+    def __del__(self) -> None:  # pragma: no cover
+        logger.debug("Delete: NFontDialog")
+
+    @staticmethod
+    def selectFont(font: QFont, parent: QWidget, title: str, native: bool) -> tuple[QFont, bool]:
+        """Open the dialog and select a font."""
+        if native:
+            # If we're using the native dialog, let Qt handle it
+            font, result = QFontDialog.getFont(font, parent, title)
+            return font, bool(result)
+
+        # Execute the custom dialog
+        dialog = NFontDialog(font, parent)
+        dialog.setOption(QFontDialog.FontDialogOption.DontUseNativeDialog, True)
+        dialog.setOption(QFontDialog.FontDialogOption.NoButtons, True)
+        dialog.setWindowTitle(title)
+        dialog.resize(*CONFIG.fontWinSize)
+
+        dialog.exec()
+        CONFIG.setFontWinSize(dialog.geometry())
+
+        return dialog.selectedFont(), dialog.result() == 1
 
 
 class NTreeView(QTreeView):
