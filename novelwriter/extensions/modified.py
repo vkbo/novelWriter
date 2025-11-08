@@ -3,11 +3,18 @@ novelWriter – Custom Widget: Modified Widgets
 =============================================
 
 File History:
-Created: 2024-02-01 [2.3b1] NComboBox
-Created: 2024-02-01 [2.3b1] NSpinBox
-Created: 2024-02-01 [2.3b1] NDoubleSpinBox
-Created: 2024-05-01 [2.5b1] NToolDialog
-Created: 2024-05-01 [2.5b1] NNonBlockingDialog
+Created: 2024-02-01 [2.3b1]  NComboBox
+Created: 2024-02-01 [2.3b1]  NSpinBox
+Created: 2024-02-01 [2.3b1]  NDoubleSpinBox
+Created: 2024-03-20 [2.4b1]  NIconToolButton
+Created: 2024-04-01 [2.4rc1] NIconToggleButton
+Created: 2024-05-01 [2.5b1]  NToolDialog
+Created: 2024-05-01 [2.5b1]  NNonBlockingDialog
+Created: 2024-05-27 [2.5rc1] NDialog
+Created: 2024-12-29 [2.6rc1] NClickableLabel
+Created: 2025-02-22 [2.7b1]  NTreeView
+Created: 2025-10-25 [2.8b1]  NPushButton
+Created: 2025-11-08 [2.8rc1] NFontDialog
 
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
