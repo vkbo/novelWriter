@@ -260,25 +260,25 @@ def testBaseConfig_SettersGetters(fncPath):
     # ======================
 
     # Window Size
-    conf.setMainWinSize(1205, 655)
+    conf.setMainWinSize(QRect(0, 0, 1205, 655))
     assert conf.mainWinSize == [1200, 650]
 
-    conf.setMainWinSize(70, 70)
+    conf.setMainWinSize(QRect(0, 0, 70, 70))
     assert conf.mainWinSize == [70, 70]
 
-    conf.setMainWinSize(1200, 650)
+    conf.setMainWinSize(QRect(0, 0, 1200, 650))
 
     # Welcome Window Size
-    conf.setWelcomeWinSize(70, 70)
+    conf.setWelcomeWinSize(QRect(0, 0, 70, 70))
     assert conf.welcomeWinSize == [70, 70]
 
-    conf.setWelcomeWinSize(800, 500)
+    conf.setWelcomeWinSize(QRect(0, 0, 800, 500))
 
     # Preferences Size
-    conf.setPreferencesWinSize(70, 70)
+    conf.setPreferencesWinSize(QRect(0, 0, 70, 70))
     assert conf.prefsWinSize == [70, 70]
 
-    conf.setPreferencesWinSize(700, 615)
+    conf.setPreferencesWinSize(QRect(0, 0, 700, 615))
 
     # Font Dialog Size
     conf.setFontWinSize(QRect(0, 0, 70, 70))

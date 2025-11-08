@@ -359,24 +359,26 @@ class Config:
         """Set tle last used author name."""
         self._lastAuthor = simplified(value)
 
-    def setMainWinSize(self, width: int, height: int) -> None:
+    def setMainWinSize(self, geometry: QRect) -> None:
         """Set the size of the main window, but only if the change is
         larger than 5 pixels. The OS window manager will sometimes
         adjust it a bit, and we don't want the main window to shrink or
         grow each time the app is opened.
         """
+        width = geometry.width()
+        height = geometry.height()
         if abs(self.mainWinSize[0] - width) > 5:
             self.mainWinSize[0] = width
         if abs(self.mainWinSize[1] - height) > 5:
             self.mainWinSize[1] = height
 
-    def setWelcomeWinSize(self, width: int, height: int) -> None:
+    def setWelcomeWinSize(self, geometry: QRect) -> None:
         """Set the size of the Preferences dialog window."""
-        self.welcomeWinSize = [width, height]
+        self.welcomeWinSize = [geometry.width(), geometry.height()]
 
-    def setPreferencesWinSize(self, width: int, height: int) -> None:
+    def setPreferencesWinSize(self, geometry: QRect) -> None:
         """Set the size of the Preferences dialog window."""
-        self.prefsWinSize = [width, height]
+        self.prefsWinSize = [geometry.width(), geometry.height()]
 
     def setFontWinSize(self, geometry: QRect) -> None:
         """Set the size of the Font dialog window."""

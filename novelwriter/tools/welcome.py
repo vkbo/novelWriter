@@ -223,7 +223,7 @@ class GuiWelcome(NDialog):
     def _saveSettings(self) -> None:
         """Save the user GUI settings."""
         logger.debug("Saving State: GuiWelcome")
-        CONFIG.setWelcomeWinSize(self.width(), self.height())
+        CONFIG.setWelcomeWinSize(self.geometry())
 
     def _setButtonVisibility(self) -> None:
         """Change the visibility of the dialog buttons."""

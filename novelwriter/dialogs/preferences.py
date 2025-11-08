@@ -988,7 +988,7 @@ class GuiPreferences(NDialog):
 
     def _saveWindowSize(self) -> None:
         """Save the dialog window size."""
-        CONFIG.setPreferencesWinSize(self.width(), self.height())
+        CONFIG.setPreferencesWinSize(self.geometry())
 
     def _doSave(self) -> None:
         """Save the values set in the form."""
