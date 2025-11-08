@@ -41,8 +41,7 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
     QApplication, QComboBox, QDialog, QDialogButtonBox, QDoubleSpinBox,
-    QFontDialog, QGridLayout, QLabel, QPushButton, QSpinBox, QToolButton,
-    QTreeView, QWidget
+    QFontDialog, QLabel, QPushButton, QSpinBox, QToolButton, QTreeView, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -120,18 +119,17 @@ class NFontDialog(QFontDialog):
     def __init__(self, initial: QFont, parent: QWidget) -> None:
         super().__init__(initial, parent)
 
-        self.btnOk = SHARED.theme.getStandardButton(nwStandardButton.OK, self)
-        self.btnOk.clicked.connect(self.accept)
+        # Look for the button box and replace the buttons
+        if dlgBox := self.findChild(QDialogButtonBox):
+            self.btnOk = SHARED.theme.getStandardButton(nwStandardButton.OK, self)
+            self.btnOk.clicked.connect(self.accept)
 
-        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
-        self.btnCancel.clicked.connect(self.reject)
+            self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+            self.btnCancel.clicked.connect(self.reject)
 
-        self.btnBox = QDialogButtonBox(self)
-        self.btnBox.addButton(self.btnOk, QtRoleAccept)
-        self.btnBox.addButton(self.btnCancel, QtRoleReject)
-
-        if isinstance(layout := self.layout(), QGridLayout):
-            layout.addWidget(self.btnBox, layout.rowCount(), 0, 1, layout.columnCount())
+            dlgBox.clear()
+            dlgBox.addButton(self.btnOk, QtRoleAccept)
+            dlgBox.addButton(self.btnCancel, QtRoleReject)
 
         logger.debug("Ready: NFontDialog")
 
@@ -149,7 +147,6 @@ class NFontDialog(QFontDialog):
         # Execute the custom dialog
         dialog = NFontDialog(font, parent)
         dialog.setOption(QFontDialog.FontDialogOption.DontUseNativeDialog, True)
-        dialog.setOption(QFontDialog.FontDialogOption.NoButtons, True)
         dialog.setWindowTitle(title)
         dialog.resize(*CONFIG.fontWinSize)
 
