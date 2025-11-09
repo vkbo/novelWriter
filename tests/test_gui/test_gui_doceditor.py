@@ -2685,6 +2685,14 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line2", "Line3"]
 
+
+    # d$: Delete line 
+    resetText()
+    docEditor.setCursorPosition(0)  # Start of Line1
+    qtbot.keyClicks(docEditor, "d$", delay=inputDelay)
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines == ["Line2", "Line3"]
+
     # de: Delete word (from Line1 up to end of word boundary)
     resetText()
     line2_pos = docEditor.getText().find("Line2")
@@ -2984,6 +2992,9 @@ def testGuiEditor_Vim_NormalMode(qtbot, nwGUI, projPath, mockRnd):
     assert docEditor.textCursor().position() == 0
 
     resetText()
+    docEditor.setCursorPosition(0)  # Start of Line1
+    qtbot.keyClick(docEditor, "h", delay=inputDelay) 
+    qtbot.keyClick(docEditor, "l", delay=inputDelay)  # Move otherwise "$" is somehow not captured always
     qtbot.keyClick(docEditor, "$", delay=inputDelay)  # End of line
     cursorPos = docEditor.textCursor().position()
     assert cursorPos == len("Line1")

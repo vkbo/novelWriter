@@ -2027,6 +2027,16 @@ class GuiDocEditor(QPlainTextEdit):
             self._vim.resetCommand()
             return True
 
+        if self._vim.command == "d$":
+            cursor.beginEditBlock()
+            cursor.movePosition(QtMoveEndOfLine, QtKeepAnchor)
+            self._vim.yankToInternal(cursor.selectedText())
+            cursor.removeSelectedText()
+            cursor.endEditBlock()
+            self.setTextCursor(cursor)
+            self._vim.resetCommand()
+            return True
+
         if self._vim.command == "yw":
             cursor.beginEditBlock()
             cursor.movePosition(QtMoveNextWord, QtKeepAnchor)
@@ -3638,7 +3648,7 @@ class VimState:
 
     PREFIX_KEYS = "dygz"
     VISUAL_PREFIX_KEYS = "g"
-    SUFFIX_KEYS = "web"
+    SUFFIX_KEYS = "web$"
 
     def __init__(self) -> None:
         self._mode: nwVimMode = nwVimMode.NORMAL
