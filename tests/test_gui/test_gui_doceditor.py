@@ -2690,11 +2690,7 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     CONFIG.vimMode = True
 
     def resetText():
-        """Reset test text to:
-            Line1
-            Line2
-            Line3
-        """
+        """Reset test text."""
         docEditor.setPlainText("Line1\nLine2\nLine3")
         return docEditor.getText()
 
@@ -2740,8 +2736,7 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line2", "Line3"]
 
-
-    # d$: Delete line 
+    # d$: Delete line
     resetText()
     docEditor.setCursorPosition(0)  # Start of Line1
     qtbot.keyClicks(docEditor, "d$", delay=inputDelay)
@@ -2759,7 +2754,7 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     # db: Delete word back (from Line2 up to end of word boundary)
     resetText()
     docEditor.setCursorPosition(0)  # Start of Line1
-    qtbot.keyClicks(docEditor, "w", delay=inputDelay) # End of line1
+    qtbot.keyClicks(docEditor, "w", delay=inputDelay)  # End of line1
     qtbot.keyClicks(docEditor, "db", delay=inputDelay)
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line2", "Line3"]
@@ -3048,8 +3043,11 @@ def testGuiEditor_Vim_NormalMode(qtbot, nwGUI, projPath, mockRnd):
 
     resetText()
     docEditor.setCursorPosition(0)  # Start of Line1
-    qtbot.keyClick(docEditor, "h", delay=inputDelay) 
-    qtbot.keyClick(docEditor, "l", delay=inputDelay)  # Move otherwise "$" is somehow not captured always
+    qtbot.keyClick(docEditor, "h", delay=inputDelay)
+
+    # Move otherwise "$" is somehow not captured always
+    qtbot.keyClick(docEditor, "l", delay=inputDelay)
+
     qtbot.keyClick(docEditor, "$", delay=inputDelay)  # End of line
     cursorPos = docEditor.textCursor().position()
     assert cursorPos == len("Line1")
