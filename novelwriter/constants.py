@@ -73,7 +73,7 @@ class nwConst:
 class nwRegEx:
     """Common RegExes."""
 
-    URL    = r"https?://(?:www\.|(?!www))[\w/()@:%_\+-.~#?&=]+"
+    URL    = r"\bhttps?://(?:www\.|(?!www))[\w/()@:%_\+-.~#?&=]+\b"
     WORDS  = r"\b[^\s\-\+\/–—\[\]:]+\b"
     BREAK  = r"(?i)(?<!\\)(\[br\]\n?)"
     FMT_EI = r"(?<![\w\\])(_)(?![\s_])(.+?)(?<![\s\\])(\1)(?!\w)"

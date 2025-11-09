@@ -34,7 +34,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QDesktopServices, QFont, QScreen
-from PyQt6.QtWidgets import QApplication, QFileDialog, QFontDialog, QMessageBox, QWidget
+from PyQt6.QtWidgets import QApplication, QFileDialog, QMessageBox, QWidget
 
 from novelwriter.common import formatFileFilter
 from novelwriter.constants import nwFiles
@@ -283,15 +283,11 @@ class SharedData(QObject):
             QTimer.singleShot(int(delay*1000), gui.mainProgress.reset)
 
     def newStatusMessage(self, message: str) -> None:
-        """Request a new status message. This is a callable function for
-        core classes that cannot emit signals on their own.
-        """
+        """Request a new status message."""
         self.projectStatusMessage.emit(message)
 
     def setGlobalProjectState(self, state: bool) -> None:
-        """Change the global project status. This is a callable function
-        for core classes that cannot emit signals on their own.
-        """
+        """Change the global project status."""
         self.projectStatusChanged.emit(state)
 
     def runInThreadPool(self, runnable: QRunnable, priority: int = 0) -> None:
@@ -314,12 +310,11 @@ class SharedData(QObject):
         )
         return Path(selected) if selected else None
 
-    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool | None]:
+    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool]:
         """Open the font dialog and select a font."""
-        kwargs = {}
-        if not native:
-            kwargs["options"] = QFontDialog.FontDialogOption.DontUseNativeDialog
-        return QFontDialog.getFont(current, self.mainGui, self.tr("Select Font"), **kwargs)
+        from novelwriter.extensions.modified import NFontDialog
+
+        return NFontDialog.selectFont(current, self.mainGui, self.tr("Select Font"), native)
 
     def findTopLevelWidget(self, kind: type[NWWidget]) -> NWWidget | None:
         """Find a top level widget."""
@@ -512,7 +507,7 @@ class _GuiAlert(QMessageBox):
             self._btnOk.clicked.connect(self._onAccept)
             self.addButton(self._btnOk, QMessageBox.ButtonRole.AcceptRole)
 
-        pSz = 2*self._theme.baseIconHeight
+        pSz = 2*self._theme.fontPixelSize
         if level == self.INFO:
             self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz), "info"))
             self.setWindowTitle(self.tr("Information"))

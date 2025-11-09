@@ -32,6 +32,10 @@ jobs:
         run: |
           uv sync --no-dev --group test --group macos
 
+      - name: Build Assets
+        run: |
+          uv run --no-sync pkgutils.py sample
+
       - name: Run Tests
         run: |
           export QT_QPA_PLATFORM=offscreen

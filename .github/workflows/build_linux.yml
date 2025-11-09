@@ -4,58 +4,13 @@ on: workflow_dispatch
 
 jobs:
   buildAssets:
-    uses: ./.github/workflows/build_assets.yml
+    uses: ./.github/workflows/part_assets.yml
     permissions:
       contents: read
 
   buildLinux-AppImage:
     needs: buildAssets
-    # Needs to stay on 22.04 as long as we're using manylinux_2_28
-    # as libxcb-cursor0 in 22.04 supports glibc >= 2.17
-    runs-on: ubuntu-22.04
+    uses: ./.github/workflows/part_appimage.yml
+    secrets: inherit
     permissions:
       contents: read
-    env:
-      PYTHON_VERSION: "3.13"
-      LINUX_TAG: "manylinux_2_28"
-      LINUX_ARCH: "x86_64"
-    steps:
-      - name: Python Setup
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          architecture: x64
-
-      - name: Install Packages (apt)
-        run: |
-          sudo apt update
-          sudo apt install libxcb-cursor0
-
-      - name: Install Packages (pip)
-        run: pip install python-appimage setuptools
-
-      - name: Checkout Source
-        uses: actions/checkout@v5
-
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: nw-assets
-          path: novelwriter/assets
-
-      - name: Build AppImage
-        id: build
-        run: |
-          wget https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$LINUX_ARCH.AppImage
-          chmod +x appimagetool-$LINUX_ARCH.AppImage
-          export APPIMAGE_TOOL_EXEC="$(pwd)/appimagetool-$LINUX_ARCH.AppImage"
-          echo "BUILD_VERSION=$(python pkgutils.py version)" >> $GITHUB_OUTPUT
-          python pkgutils.py build-appimage $LINUX_TAG $LINUX_ARCH $PYTHON_VERSION
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: novelWriter-${{ steps.build.outputs.BUILD_VERSION }}-Linux-AppImage
-          path: dist_appimage/*.AppImage*
-          if-no-files-found: error
-          retention-days: 14

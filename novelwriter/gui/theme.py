@@ -45,7 +45,10 @@ from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwStandardButton, nwTheme
 from novelwriter.error import logException
 from novelwriter.extensions.modified import NPushButton
-from novelwriter.types import QtBlack, QtHexArgb, QtPaintAntiAlias, QtTransparent
+from novelwriter.types import (
+    QtBlack, QtColActive, QtColDisabled, QtColInactive, QtHexArgb,
+    QtPaintAntiAlias, QtTransparent
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -140,11 +143,12 @@ class GuiTheme:
     __slots__ = (
         "_allThemes", "_currentTheme", "_darkThemes", "_guiPalette", "_lightThemes", "_meta",
         "_qColors", "_styleSheets", "_svgColors", "_syntaxList", "accentCol", "baseButtonHeight",
-        "baseIconHeight", "baseIconSize", "buttonIconSize", "errorText", "fadedText",
-        "fontPixelSize", "fontPointSize", "getDecoration", "getHeaderDecoration",
-        "getHeaderDecorationNarrow", "getIcon", "getItemIcon", "getPixmap", "getStandardButton",
-        "getToggleIcon", "guiFont", "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall",
-        "helpText", "iconCache", "isDarkTheme", "syntaxTheme", "textNHeight", "textNWidth",
+        "baseIconHeight", "baseIconSize", "errorText", "fadedText", "fontPixelSize",
+        "fontPointSize", "getDecoration", "getHeaderDecoration", "getHeaderDecorationNarrow",
+        "getIcon", "getItemIcon", "getPixmap", "getStandardButton", "getToggleIcon", "guiFont",
+        "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall", "helpText", "iconCache",
+        "isDarkTheme", "pushButtonIconSize", "sidebarIconSize", "syntaxTheme", "textNHeight",
+        "textNWidth", "toolButtonIconSize",
     )
 
     def __init__(self) -> None:
@@ -180,6 +184,11 @@ class GuiTheme:
         self.getHeaderDecorationNarrow = self.iconCache.getHeaderDecorationNarrow
 
         # Fonts
+        sSmaller = 10.0/11.0
+        sLarger = 12.0/11.0
+        sLarge = 15.0/11.0
+        sXLarge = 19.0/11.0
+
         self.guiFont = QApplication.font()
         self.guiFontB = QApplication.font()
         self.guiFontB.setBold(True)
@@ -187,35 +196,42 @@ class GuiTheme:
         self.guiFontBU.setBold(True)
         self.guiFontBU.setUnderline(True)
         self.guiFontSmall = QApplication.font()
-        self.guiFontSmall.setPointSizeF(0.9*self.guiFont.pointSizeF())
+        self.guiFontSmall.setPointSizeF(sSmaller*self.guiFont.pointSizeF())
 
         qMetric = QFontMetrics(self.guiFont)
         fHeight = qMetric.height()
         fAscent = qMetric.ascent()
+
         self.fontPointSize = self.guiFont.pointSizeF()
-        self.fontPixelSize = round(fHeight)
-        self.baseIconHeight = round(fAscent)
-        self.baseButtonHeight = round(1.35*fAscent)
+        self.fontPixelSize = fHeight
+        self.baseIconHeight = fAscent
+        self.baseButtonHeight = round(sLarge*fAscent)
+
+        self.baseIconSize = QSize(fAscent, fAscent)
+        self.sidebarIconSize = QSize(round(sXLarge*fAscent), round(sXLarge*fAscent))
+        self.toolButtonIconSize = QSize(round(sSmaller*fAscent), round(sSmaller*fAscent))
+        self.pushButtonIconSize = QSize(round(sLarger*fAscent), round(sLarger*fAscent))
+
         self.textNHeight = qMetric.boundingRect("N").height()
         self.textNWidth = qMetric.boundingRect("N").width()
 
-        self.baseIconSize = QSize(self.baseIconHeight, self.baseIconHeight)
-        self.buttonIconSize = QSize(int(0.9*self.baseIconHeight), int(0.9*self.baseIconHeight))
-
         # Monospace Font
         self.guiFontFixed = QFont()
-        self.guiFontFixed.setPointSizeF(0.95*self.fontPointSize)
+        self.guiFontFixed.setPointSizeF(sSmaller*self.fontPointSize)
         self.guiFontFixed.setFamily(
             QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont).family()
         )
 
         logger.debug("GUI Font Family: %s", self.guiFont.family())
-        logger.debug("GUI Font Point Size: %.2f", self.fontPointSize)
-        logger.debug("GUI Font Pixel Size: %d", self.fontPixelSize)
-        logger.debug("GUI Base Icon Height: %d", self.baseIconHeight)
-        logger.debug("GUI Base Button Height: %d", self.baseButtonHeight)
-        logger.debug("Text 'N' Height: %d", self.textNHeight)
-        logger.debug("Text 'N' Width: %d", self.textNWidth)
+        logger.debug("GUI Font Point Size: %.2f pt", self.fontPointSize)
+        logger.debug("GUI Font Pixel Size: %d px", self.fontPixelSize)
+        logger.debug("GUI Base Icon Height: %d px", self.baseIconHeight)
+        logger.debug("GUI Base Button Height: %d px", self.baseButtonHeight)
+        logger.debug("GUI Sidebar Icon Height: %s px", self.sidebarIconSize.height())
+        logger.debug("GUI ToolButton Icon Height: %s px", self.toolButtonIconSize.height())
+        logger.debug("GUI PushButton Icon Height: %s px", self.pushButtonIconSize.height())
+        logger.debug("Text 'N' Height: %d px", self.textNHeight)
+        logger.debug("Text 'N' Width: %d px", self.textNWidth)
 
     ##
     #  Properties
@@ -246,7 +262,10 @@ class GuiTheme:
 
     def getRawBaseColor(self, name: str) -> bytes:
         """Return a base color."""
-        return self._svgColors.get(name, self._svgColors.get("default", b"#000000"))
+        if color := self._svgColors.get(name):
+            return color
+        logger.warning("No colour named '%s'", name)
+        return self._svgColors.get("default", b"#000000")
 
     ##
     #  Theme Methods
@@ -439,10 +458,6 @@ class GuiTheme:
         window = self._guiPalette.window().color()
         highlight = self._guiPalette.highlight().color()
 
-        QtColActive = QPalette.ColorGroup.Active
-        QtColInactive = QPalette.ColorGroup.Inactive
-        QtColDisabled = QPalette.ColorGroup.Disabled
-
         if window.lightnessF() < 0.15:
             # If window is too dark, we need a lighter ref colour for shades
             ref = QColor.fromHslF(window.hueF(), window.saturationF(), 0.15, window.alphaF())
@@ -584,6 +599,8 @@ class GuiTheme:
         self.iconCache.clear()
         self._svgColors = {}
         self._qColors = {}
+
+        # Base
         self._setBaseColor("base",     base)
         self._setBaseColor("default",  default)
         self._setBaseColor("faded",    faded)
@@ -594,6 +611,8 @@ class GuiTheme:
         self._setBaseColor("cyan",     cyan)
         self._setBaseColor("blue",     blue)
         self._setBaseColor("purple",   purple)
+
+        # Project
         self._setBaseColor("root",     blue)
         self._setBaseColor("folder",   yellow)
         self._setBaseColor("file",     default)
@@ -604,6 +623,27 @@ class GuiTheme:
         self._setBaseColor("active",   green)
         self._setBaseColor("inactive", red)
         self._setBaseColor("disabled", faded)
+
+        # Icon
+        self._setBaseColor("tool",      default)
+        self._setBaseColor("sidebar",   default)
+        self._setBaseColor("accept",    green)
+        self._setBaseColor("reject",    red)
+        self._setBaseColor("action",    blue)
+        self._setBaseColor("altaction", orange)
+        self._setBaseColor("apply",     green)
+        self._setBaseColor("create",    yellow)
+        self._setBaseColor("destroy",   faded)
+        self._setBaseColor("reset",     green)
+        self._setBaseColor("add",       green)
+        self._setBaseColor("change",    green)
+        self._setBaseColor("remove",    red)
+        self._setBaseColor("shortcode", default)
+        self._setBaseColor("markdown",  orange)
+        self._setBaseColor("systemio",  yellow)
+        self._setBaseColor("info",      blue)
+        self._setBaseColor("warning",   orange)
+        self._setBaseColor("error",     red)
 
     def _readColor(self, parser: ConfigParser, section: str, name: str) -> QColor:
         """Parse a colour value from a config string."""
@@ -860,7 +900,7 @@ class GuiIcons:
         text, icon, color = STANDARD_BUTTONS.get(button, ("", "", ""))
         return NPushButton(
             parent, QCoreApplication.translate("Button", text),
-            self._theme.buttonIconSize, icon, color
+            self._theme.pushButtonIconSize, icon, color
         )
 
     def getDecoration(self, name: str, w: int | None = None, h: int | None = None) -> QPixmap:

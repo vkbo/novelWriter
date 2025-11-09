@@ -75,7 +75,7 @@ class StatusLED(QAbstractButton):
         """Draw the LED."""
         painter = QPainter(self)
         painter.setRenderHint(QtPaintAntiAlias, True)
-        painter.setPen(self.palette().text().color())
+        painter.setPen(self.palette().light().color())
         painter.setBrush(self._color)
         painter.setOpacity(1.0)
         painter.drawEllipse(1, 1, self.width() - 2, self.height() - 2)

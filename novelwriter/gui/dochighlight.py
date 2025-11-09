@@ -138,7 +138,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
-            rxRule = re.compile(r"\s{2,}")
+            rxRule = re.compile(r"[ ]{2,}")
             hlRule = {
                 0: self._hStyles["mspaces"],
             }

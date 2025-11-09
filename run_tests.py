@@ -53,4 +53,4 @@ if __name__ == "__main__":
     if args.t and not args.u:
         subprocess.call(["coverage", "report"])
     if args.u:
-        subprocess.call(["coverage", "report", "--skip-covered "])
+        subprocess.call(["coverage", "report", "--skip-covered"])

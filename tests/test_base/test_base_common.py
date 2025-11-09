@@ -815,8 +815,8 @@ def testBaseCommon_openExternalPath(monkeypatch, tstPaths):
 @pytest.mark.base
 def testBaseCommon_NWConfigParser(fncPath):
     """Test the NWConfigParser subclass."""
-    tstConf = fncPath / "test.cfg"
-    writeFile(tstConf, (
+    conf = fncPath / "test.cfg"
+    writeFile(conf, (
         "[main]\n"
         "stropt = value\n"
         "intopt1 = 42\n"
@@ -832,75 +832,75 @@ def testBaseCommon_NWConfigParser(fncPath):
         f"path1 = {fncPath}\n"
     ))
 
-    cfgParser = NWConfigParser()
-    cfgParser.read(tstConf)
+    parser = NWConfigParser()
+    parser.read(conf)
 
     # Readers
     # =======
 
     # Read String
-    assert cfgParser.rdStr("main", "stropt",   "stuff") == "value"
-    assert cfgParser.rdStr("main", "boolopt1", "stuff") == "true"
-    assert cfgParser.rdStr("main", "intopt1",  "stuff") == "42"
+    assert parser.rdStr("main", "stropt",   "stuff") == "value"
+    assert parser.rdStr("main", "boolopt1", "stuff") == "true"
+    assert parser.rdStr("main", "intopt1",  "stuff") == "42"
 
-    assert cfgParser.rdStr("nope", "stropt",   "stuff") == "stuff"
-    assert cfgParser.rdStr("main", "blabla",   "stuff") == "stuff"
+    assert parser.rdStr("nope", "stropt",   "stuff") == "stuff"
+    assert parser.rdStr("main", "blabla",   "stuff") == "stuff"
 
     # Read Boolean
-    assert cfgParser.rdBool("main", "boolopt1", None) is True   # type: ignore
-    assert cfgParser.rdBool("main", "boolopt2", None) is True   # type: ignore
-    assert cfgParser.rdBool("main", "boolopt3", None) is True   # type: ignore
-    assert cfgParser.rdBool("main", "boolopt4", None) is False  # type: ignore
-    assert cfgParser.rdBool("main", "intopt1",  None) is None   # type: ignore
+    assert parser.rdBool("main", "boolopt1", None) is True   # type: ignore
+    assert parser.rdBool("main", "boolopt2", None) is True   # type: ignore
+    assert parser.rdBool("main", "boolopt3", None) is True   # type: ignore
+    assert parser.rdBool("main", "boolopt4", None) is False  # type: ignore
+    assert parser.rdBool("main", "intopt1",  None) is None   # type: ignore
 
-    assert cfgParser.rdBool("nope", "boolopt1", None) is None   # type: ignore
-    assert cfgParser.rdBool("main", "blabla",   None) is None   # type: ignore
+    assert parser.rdBool("nope", "boolopt1", None) is None   # type: ignore
+    assert parser.rdBool("main", "blabla",   None) is None   # type: ignore
 
     # Read Integer
-    assert cfgParser.rdInt("main", "intopt1", 13) == 42
-    assert cfgParser.rdInt("main", "intopt2", 13) == 13
-    assert cfgParser.rdInt("main", "stropt",  13) == 13
+    assert parser.rdInt("main", "intopt1", 13) == 42
+    assert parser.rdInt("main", "intopt2", 13) == 13
+    assert parser.rdInt("main", "stropt",  13) == 13
 
-    assert cfgParser.rdInt("nope", "intopt1", 13) == 13
-    assert cfgParser.rdInt("main", "blabla",  13) == 13
+    assert parser.rdInt("nope", "intopt1", 13) == 13
+    assert parser.rdInt("main", "blabla",  13) == 13
 
     # Read Float
-    assert cfgParser.rdFlt("main", "intopt1", 13.0) == 42.0
-    assert cfgParser.rdFlt("main", "float1",  13.0) == 4.2
-    assert cfgParser.rdFlt("main", "stropt",  13.0) == 13.0
+    assert parser.rdFlt("main", "intopt1", 13.0) == 42.0
+    assert parser.rdFlt("main", "float1",  13.0) == 4.2
+    assert parser.rdFlt("main", "stropt",  13.0) == 13.0
 
-    assert cfgParser.rdFlt("nope", "intopt1", 13.0) == 13.0
-    assert cfgParser.rdFlt("main", "blabla",  13.0) == 13.0
+    assert parser.rdFlt("nope", "intopt1", 13.0) == 13.0
+    assert parser.rdFlt("main", "blabla",  13.0) == 13.0
 
     # Read Path
-    assert cfgParser.rdPath("main", "path1", Path.home()) == fncPath
+    assert parser.rdPath("main", "path1", Path.home()) == fncPath
 
     # Read String List
-    assert cfgParser.rdStrList("main", "list1", []) == []
-    assert cfgParser.rdStrList("main", "list1", ["x"]) == ["a"]
-    assert cfgParser.rdStrList("main", "list1", ["x", "y"]) == ["a", "b"]
-    assert cfgParser.rdStrList("main", "list1", ["x", "y", "z"]) == ["a", "b", "c"]
-    assert cfgParser.rdStrList("main", "list1", ["x", "y", "z", "w"]) == ["a", "b", "c", "w"]
+    assert parser.rdStrList("main", "list1", []) == []
+    assert parser.rdStrList("main", "list1", ["x"]) == ["a"]
+    assert parser.rdStrList("main", "list1", ["x", "y"]) == ["a", "b"]
+    assert parser.rdStrList("main", "list1", ["x", "y", "z"]) == ["a", "b", "c"]
+    assert parser.rdStrList("main", "list1", ["x", "y", "z", "w"]) == ["a", "b", "c", "w"]
 
-    assert cfgParser.rdStrList("main", "stropt", ["x"]) == ["value"]
-    assert cfgParser.rdStrList("main", "intopt1", ["x"]) == ["42"]
+    assert parser.rdStrList("main", "stropt", ["x"]) == ["value"]
+    assert parser.rdStrList("main", "intopt1", ["x"]) == ["42"]
 
-    assert cfgParser.rdStrList("nope", "list1", ["x"]) == ["x"]
-    assert cfgParser.rdStrList("main", "blabla", ["x"]) == ["x"]
+    assert parser.rdStrList("nope", "list1", ["x"]) == ["x"]
+    assert parser.rdStrList("main", "blabla", ["x"]) == ["x"]
 
     # Read Integer List
-    assert cfgParser.rdIntList("main", "list2", []) == []
-    assert cfgParser.rdIntList("main", "list2", [1]) == [17]
-    assert cfgParser.rdIntList("main", "list2", [1, 2]) == [17, 18]
-    assert cfgParser.rdIntList("main", "list2", [1, 2, 3]) == [17, 18, 19]
-    assert cfgParser.rdIntList("main", "list2", [1, 2, 3, 4]) == [17, 18, 19, 4]
+    assert parser.rdIntList("main", "list2", []) == []
+    assert parser.rdIntList("main", "list2", [1]) == [17]
+    assert parser.rdIntList("main", "list2", [1, 2]) == [17, 18]
+    assert parser.rdIntList("main", "list2", [1, 2, 3]) == [17, 18, 19]
+    assert parser.rdIntList("main", "list2", [1, 2, 3, 4]) == [17, 18, 19, 4]
 
-    assert cfgParser.rdIntList("main", "stropt", [1]) == [1]
-    assert cfgParser.rdIntList("main", "boolopt1", [1]) == [1]
+    assert parser.rdIntList("main", "stropt", [1]) == [1]
+    assert parser.rdIntList("main", "boolopt1", [1]) == [1]
 
-    assert cfgParser.rdIntList("nope", "list2", [1]) == [1]
-    assert cfgParser.rdIntList("main", "blabla", [1]) == [1]
+    assert parser.rdIntList("nope", "list2", [1]) == [1]
+    assert parser.rdIntList("main", "blabla", [1]) == [1]
 
     # Read Enum
-    assert cfgParser.rdEnum("main", "enum1", nwItemClass.NO_CLASS) == nwItemClass.NOVEL
-    assert cfgParser.rdEnum("main", "blabla", nwItemClass.NO_CLASS) == nwItemClass.NO_CLASS
+    assert parser.rdEnum("main", "enum1", nwItemClass.NO_CLASS) == nwItemClass.NOVEL
+    assert parser.rdEnum("main", "blabla", nwItemClass.NO_CLASS) == nwItemClass.NO_CLASS

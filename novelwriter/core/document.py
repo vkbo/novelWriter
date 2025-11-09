@@ -227,8 +227,11 @@ class NWDocument:
             self._hashError = True
             return False
 
+        if text and not text.endswith("\n"):
+            text += "\n"
+
         currTime = formatTimeStamp(time())
-        writeHash = hashlib.sha1(text.encode()).hexdigest()
+        writeHash = hashlib.sha1(text.encode(encoding="utf-8")).hexdigest()
         createdDate = self._docMeta.get("created", "Unknown")
         updatedDate = self._docMeta.get("updated", "Unknown")
         if writeHash != self._lastHash:

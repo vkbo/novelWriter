@@ -24,12 +24,12 @@ import pytest
 
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtGui import QFont
-from PyQt6.QtWidgets import QFontDialog
 
 from novelwriter import SHARED
 from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
+from novelwriter.extensions.modified import NFontDialog
 from novelwriter.tools.manussettings import (
     GuiBuildSettings, _FilterTab, _FormattingTab, _HeadingsTab
 )
@@ -638,7 +638,7 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
         font = QFont()
         font.setFamily("Times")
         font.setPointSize(10)
-        mp.setattr(QFontDialog, "getFont", lambda *a, **k: (font, True))
+        mp.setattr(NFontDialog, "selectFont", lambda *a, **k: (font, True))
 
         fmtTab.btnTextFont.click()
         assert fmtTab._textFont == font
