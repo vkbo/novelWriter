@@ -2635,7 +2635,11 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     CONFIG.vimMode = True
 
     def resetText():
-        """Reset test text."""
+        """Reset test text to:
+            Line1
+            Line2
+            Line3
+        """
         docEditor.setPlainText("Line1\nLine2\nLine3")
         return docEditor.getText()
 
@@ -2678,6 +2682,22 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     resetText()
     docEditor.setCursorPosition(0)  # Start of Line1
     qtbot.keyClicks(docEditor, "dw", delay=inputDelay)
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines == ["Line2", "Line3"]
+
+    # de: Delete word (from Line1 up to end of word boundary)
+    resetText()
+    line2_pos = docEditor.getText().find("Line2")
+    docEditor.setCursorPosition(line2_pos)
+    qtbot.keyClicks(docEditor, "de", delay=inputDelay)
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines == ["Line1", "Line3"]
+
+    # db: Delete word back (from Line2 up to end of word boundary)
+    resetText()
+    docEditor.setCursorPosition(0)  # Start of Line1
+    qtbot.keyClicks(docEditor, "w", delay=inputDelay) # End of line1
+    qtbot.keyClicks(docEditor, "db", delay=inputDelay)
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line2", "Line3"]
 

@@ -51,6 +51,8 @@ This table shows the vim motions currently implemented in NovelWriter:
 | `b` | Normal / Visual | Move to previous word start |
 | `e` | Normal / Visual | Move to next word end |
 | `dw` | Normal | Delete from cursor to next word start |
+| `de` | Normal | Delete from cursor to next word end |
+| `db` | Normal | Delete from cursor to previous word start |
 | `yw` | Normal | Yank (copy) from cursor to next word start |
 | `gg` | Normal / Visual | Jump to first line |
 | `G` | Normal / Visual | Jump to last line |

@@ -2000,6 +2000,33 @@ class GuiDocEditor(QPlainTextEdit):
             self._vim.resetCommand()
             return True
 
+        if self._vim.command == "db":
+            cursor.beginEditBlock()
+            cursor.movePosition(QtMovePreviousWord, QtKeepAnchor)
+            self._vim.yankToInternal(cursor.selectedText())
+            cursor.removeSelectedText()
+            cursor.endEditBlock()
+            self.setTextCursor(cursor)
+            self._vim.resetCommand()
+            return True
+
+        if self._vim.command == "de":
+            cursor.beginEditBlock()
+            # Extend selection to end of current/next word
+            origPos = cursor.position()
+            cursor.movePosition(QtMoveEndOfWord, QtKeepAnchor)
+            if cursor.position() == origPos:               # already at end-of-word
+                textLen = len(self.toPlainText())
+                if origPos < textLen:
+                    cursor.movePosition(QtMoveNextChar, QtKeepAnchor)
+                    cursor.movePosition(QtMoveEndOfWord, QtKeepAnchor)
+            self._vim.yankToInternal(cursor.selectedText())
+            cursor.removeSelectedText()
+            cursor.endEditBlock()
+            self.setTextCursor(cursor)
+            self._vim.resetCommand()
+            return True
+
         if self._vim.command == "yw":
             cursor.beginEditBlock()
             cursor.movePosition(QtMoveNextWord, QtKeepAnchor)
@@ -3611,7 +3638,7 @@ class VimState:
 
     PREFIX_KEYS = "dygz"
     VISUAL_PREFIX_KEYS = "g"
-    SUFFIX_KEYS = "w"
+    SUFFIX_KEYS = "web"
 
     def __init__(self) -> None:
         self._mode: nwVimMode = nwVimMode.NORMAL
