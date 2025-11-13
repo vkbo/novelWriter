@@ -488,8 +488,19 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     CONFIG.fmtPadAfter = "\u201c"
     docEditor.initEditor()
 
-    for c in 'Some "double quoted text with spaces padded".':
+    for c in 'Some "double quoted text with spaces padded". Ok?':
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
+
+    # Check that we can insert a line break in the text without
+    # triggering the padding (Issue #2586)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
+
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
 

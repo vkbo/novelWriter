@@ -2280,7 +2280,7 @@ class TextAutoReplace:
         delete, insert = self._determine(last, bPos)
 
         check = insert
-        if self._doPadBefore and check in self._padBefore:
+        if self._doPadBefore and check and check in self._padBefore:
             if not (check == ":" and length > 1 and text[0] == "@"):
                 delete = max(delete, 1)
                 chkPos = len(last) - delete - 1
@@ -2289,7 +2289,7 @@ class TextAutoReplace:
                     delete += 1
                 insert = self._padChar + insert
 
-        if self._doPadAfter and check in self._padAfter:
+        if self._doPadAfter and check and check in self._padAfter:
             if not (check == ":" and length > 1 and text[0] == "@"):
                 delete = max(delete, 1)
                 insert = insert + self._padChar
