@@ -75,7 +75,7 @@ VALID_MAP: dict[str, set[str]] = {
     },
     "GuiOutlineDetails": {
         "detailsWidth", "tagsWidth",
-    }
+    },
 }
 
 

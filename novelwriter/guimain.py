@@ -263,7 +263,6 @@ class GuiMain(QMainWindow):
         self.docEditor.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
         self.docEditor.spellCheckStateChanged.connect(self.mainMenu.setSpellCheckState)
         self.docEditor.toggleFocusModeRequest.connect(self.toggleFocusMode)
-        self.docEditor.updateStatusMessage.connect(self.mainStatus.setStatusMessage)
 
         self.docViewer.closeDocumentRequest.connect(self.closeDocViewer)
         self.docViewer.documentLoaded.connect(self.docViewerPanel.updateHandle)
@@ -346,13 +345,6 @@ class GuiMain(QMainWindow):
             logger.info("Command line path: %s", cmdOpen)
             self.openProject(cmdOpen)
 
-        # Add a small delay for the window coordinates to be ready
-        # before showing any dialogs
-        QTimer.singleShot(50, self.showPostLaunchDialogs)
-
-    @pyqtSlot()
-    def showPostLaunchDialogs(self) -> None:
-        """Show post launch dialogs."""
         if not SHARED.hasProject:
             self.showWelcomeDialog()
 
@@ -759,6 +751,8 @@ class GuiMain(QMainWindow):
     def showWelcomeDialog(self) -> None:
         """Open the welcome dialog."""
         dialog = GuiWelcome(self)
+        if CONFIG.moveMainWin and (screen := SHARED.mainScreen):
+            dialog.move(screen.geometry().center() - dialog.rect().center())
         dialog.openProjectRequest.connect(self._openProjectFromWelcome)
         dialog.exec()
 
@@ -826,12 +820,17 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot()
     def showDictionariesDialog(self) -> None:
-        """Show the download dictionaries dialog."""
+        """Show the download dictionaries dialog and update language
+        list when closed.
+        """
         dialog = GuiDictionaries(self)
         dialog.activateDialog()
         if not dialog.initDialog():
             dialog.close()
             SHARED.error(self.tr("Could not initialise the dialog."))
+            return
+
+        dialog.finished.connect(self.mainMenu.updateSpellCheckLanguages)
 
     ##
     #  Main Window Actions
@@ -857,7 +856,7 @@ class GuiMain(QMainWindow):
         wFull = Qt.WindowState.WindowFullScreen
         if self.windowState() & wFull != wFull:
             # Ignore window size if in full screen mode
-            CONFIG.setMainWinSize(self.width(), self.height())
+            CONFIG.setMainWinSize(self.geometry())
 
         if SHARED.hasProject:
             self.closeProject(True)
@@ -1313,6 +1312,8 @@ class GuiMain(QMainWindow):
             width = minmax(size[0], 900, availSize.width())
             height = minmax(size[1], 500, availSize.height())
             self.resize(width, height)
+            if width != size[0] or height != size[1] or CONFIG.moveMainWin:
+                self.move(screen.geometry().center() - self.rect().center())
 
     def _updateWindowTitle(self, projName: str | None = None) -> None:
         """Set the window title and add the project's name."""

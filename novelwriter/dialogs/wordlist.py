@@ -115,7 +115,7 @@ class GuiWordList(NDialog):
         self.btnSave.clicked.connect(self._doSave)
 
         self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
-        self.btnClose.clicked.connect(self.reject)
+        self.btnClose.clicked.connect(self.closeDialog)
 
         self.btnBox = QDialogButtonBox(self)
         self.btnBox.addButton(self.btnSave, QtRoleAccept)

@@ -99,7 +99,7 @@ class GuiProjectSettings(NDialog):
         self.btnSave.clicked.connect(self._doSave)
 
         self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
-        self.btnCancel.clicked.connect(self.reject)
+        self.btnCancel.clicked.connect(self.closeDialog)
 
         self.btnBox = QDialogButtonBox(self)
         self.btnBox.addButton(self.btnSave, QtRoleAccept)

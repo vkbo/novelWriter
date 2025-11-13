@@ -94,7 +94,7 @@ class GuiPreferences(NDialog):
         self.btnSave.clicked.connect(self._doSave)
 
         self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
-        self.btnCancel.clicked.connect(self.reject)
+        self.btnCancel.clicked.connect(self.closeDialog)
 
         self.btnBox = QDialogButtonBox(self)
         self.btnBox.addButton(self.btnSave, QtRoleAccept)
@@ -361,6 +361,14 @@ class GuiPreferences(NDialog):
         self.mainForm.addRow(
             self.tr("Ask before exiting novelWriter"), self.askBeforeExit,
             self.tr("Only applies when a project is open.")
+        )
+
+        # Centre main window on startup
+        self.moveMainWin = NSwitch(self)
+        self.moveMainWin.setChecked(CONFIG.moveMainWin)
+        self.mainForm.addRow(
+            self.tr("Centre window on startup"), self.moveMainWin,
+            self.tr("Applies to main window and welcome dialog.")
         )
 
         # Project Backup
@@ -980,7 +988,7 @@ class GuiPreferences(NDialog):
 
     def _saveWindowSize(self) -> None:
         """Save the dialog window size."""
-        CONFIG.setPreferencesWinSize(self.width(), self.height())
+        CONFIG.setPreferencesWinSize(self.geometry())
 
     def _doSave(self) -> None:
         """Save the values set in the form."""
@@ -1037,6 +1045,7 @@ class GuiPreferences(NDialog):
         CONFIG.autoSaveDoc   = self.autoSaveDoc.value()
         CONFIG.autoSaveProj  = self.autoSaveProj.value()
         CONFIG.askBeforeExit = self.askBeforeExit.isChecked()
+        CONFIG.moveMainWin   = self.moveMainWin.isChecked()
 
         # Project Backup
         CONFIG.setBackupPath(self.backupPath)

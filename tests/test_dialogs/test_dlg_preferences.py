@@ -24,13 +24,14 @@ import pytest
 
 from PyQt6.QtCore import QEvent, Qt
 from PyQt6.QtGui import QAction, QFont, QFontDatabase, QKeyEvent
-from PyQt6.QtWidgets import QFileDialog, QFontDialog
+from PyQt6.QtWidgets import QFileDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_TREECOL
 from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.extensions.modified import NFontDialog
 from novelwriter.gui.theme import ThemeEntry
 from novelwriter.types import QtModNone
 
@@ -160,7 +161,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.lightTheme.setCurrentIndex(prefs.lightTheme.findData("theme1"))
     prefs.darkTheme.setCurrentIndex(prefs.darkTheme.findData("theme3"))
     with monkeypatch.context() as mp:
-        mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
+        mp.setattr(NFontDialog, "selectFont", lambda *a, **k: (QFont(), True))
         prefs.nativeFont.setChecked(True)  # Use OS font dialog
         prefs.guiFontButton.click()
 
@@ -178,7 +179,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
 
     # Document Style
     with monkeypatch.context() as mp:
-        mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
+        mp.setattr(NFontDialog, "selectFont", lambda *a, **k: (QFont(), True))
         prefs.nativeFont.setChecked(False)  # Use Qt font dialog
         prefs.textFontButton.click()
 
@@ -202,10 +203,12 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.autoSaveDoc.stepUp()
     prefs.autoSaveProj.stepUp()
     prefs.askBeforeExit.setChecked(False)
+    prefs.moveMainWin.setChecked(False)
 
     assert CONFIG.autoSaveDoc == 30
     assert CONFIG.autoSaveProj == 60
     assert CONFIG.askBeforeExit is True
+    assert CONFIG.moveMainWin is True
 
     # Project Backup
     with monkeypatch.context() as mp:
@@ -367,6 +370,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.autoSaveDoc == 31
     assert CONFIG.autoSaveProj == 61
     assert CONFIG.askBeforeExit is False
+    assert CONFIG.moveMainWin is False
 
     # Project Backup
     assert CONFIG._backupPath == tstPaths.testDir

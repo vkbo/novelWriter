@@ -64,7 +64,7 @@ from novelwriter.constants import (
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import (
     nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
-    nwItemType, nwVimMode
+    nwItemType, nwState, nwVimMode
 )
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -131,7 +131,6 @@ class GuiDocEditor(QPlainTextEdit):
     requestProjectItemSelected = pyqtSignal(str, bool)
     spellCheckStateChanged = pyqtSignal(bool)
     toggleFocusModeRequest = pyqtSignal()
-    updateStatusMessage = pyqtSignal(str)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -458,7 +457,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Finalise
         QApplication.restoreOverrideCursor()
-        self.updateStatusMessage.emit(
+        SHARED.newStatusMessage(
             self.tr("Opened Document: {0}").format(self._nwItem.itemName)
         )
 
@@ -513,7 +512,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.docTextChanged.emit(self._docHandle, self._lastEdit)
         SHARED.project.index.scanText(tHandle, text)
 
-        self.updateStatusMessage.emit(self.tr("Saved Document: {0}").format(self._nwItem.itemName))
+        SHARED.newStatusMessage(self.tr("Saved Document: {0}").format(self._nwItem.itemName))
 
         return True
 
@@ -704,7 +703,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument.syntaxHighlighter.rehighlight()
         QApplication.restoreOverrideCursor()
         logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
-        self.updateStatusMessage.emit(self.tr("Spell check complete"))
+        SHARED.newStatusMessage(self.tr("Spell check complete"))
 
     ##
     #  General Class Methods
@@ -727,6 +726,12 @@ class GuiDocEditor(QPlainTextEdit):
 
         logger.debug("Requesting action: %s", action.name)
 
+        cursor = self.textCursor()
+        noFormat = (
+            (block := cursor.block()).isValid() and (text := block.text())
+            and text.startswith(("@", "# ", "## ", "### ", "#### ", "#! ", "##! ", "###! "))
+        )
+
         self._allowAutoReplace(False)
         if action == nwDocAction.UNDO:
             self.undo()
@@ -738,13 +743,13 @@ class GuiDocEditor(QPlainTextEdit):
             self.copy()
         elif action == nwDocAction.PASTE:
             self.paste()
-        elif action == nwDocAction.MD_ITALIC:
+        elif action == nwDocAction.MD_ITALIC and not noFormat:
             self._toggleFormat(1, "_")
-        elif action == nwDocAction.MD_BOLD:
+        elif action == nwDocAction.MD_BOLD and not noFormat:
             self._toggleFormat(2, "*")
-        elif action == nwDocAction.MD_STRIKE:
+        elif action == nwDocAction.MD_STRIKE and not noFormat:
             self._toggleFormat(2, "~")
-        elif action == nwDocAction.MD_MARK:
+        elif action == nwDocAction.MD_MARK and not noFormat:
             self._toggleFormat(2, "=")
         elif action == nwDocAction.S_QUOTE:
             self._wrapSelection(CONFIG.fmtSQuoteOpen, CONFIG.fmtSQuoteClose)
@@ -780,32 +785,37 @@ class GuiDocEditor(QPlainTextEdit):
             self._replaceQuotes('"', CONFIG.fmtDQuoteOpen, CONFIG.fmtDQuoteClose)
         elif action == nwDocAction.RM_BREAKS:
             self._removeInParLineBreaks()
-        elif action == nwDocAction.ALIGN_L:
+        elif action == nwDocAction.ALIGN_L and not noFormat:
             self._formatBlock(nwDocAction.ALIGN_L)
-        elif action == nwDocAction.ALIGN_C:
+        elif action == nwDocAction.ALIGN_C and not noFormat:
             self._formatBlock(nwDocAction.ALIGN_C)
-        elif action == nwDocAction.ALIGN_R:
+        elif action == nwDocAction.ALIGN_R and not noFormat:
             self._formatBlock(nwDocAction.ALIGN_R)
-        elif action == nwDocAction.INDENT_L:
+        elif action == nwDocAction.INDENT_L and not noFormat:
             self._formatBlock(nwDocAction.INDENT_L)
-        elif action == nwDocAction.INDENT_R:
+        elif action == nwDocAction.INDENT_R and not noFormat:
             self._formatBlock(nwDocAction.INDENT_R)
-        elif action == nwDocAction.SC_ITALIC:
+        elif action == nwDocAction.SC_ITALIC and not noFormat:
             self._wrapSelection(nwShortcode.ITALIC_O, nwShortcode.ITALIC_C)
-        elif action == nwDocAction.SC_BOLD:
+        elif action == nwDocAction.SC_BOLD and not noFormat:
             self._wrapSelection(nwShortcode.BOLD_O, nwShortcode.BOLD_C)
-        elif action == nwDocAction.SC_STRIKE:
+        elif action == nwDocAction.SC_STRIKE and not noFormat:
             self._wrapSelection(nwShortcode.STRIKE_O, nwShortcode.STRIKE_C)
-        elif action == nwDocAction.SC_ULINE:
+        elif action == nwDocAction.SC_ULINE and not noFormat:
             self._wrapSelection(nwShortcode.ULINE_O, nwShortcode.ULINE_C)
-        elif action == nwDocAction.SC_MARK:
+        elif action == nwDocAction.SC_MARK and not noFormat:
             self._wrapSelection(nwShortcode.MARK_O, nwShortcode.MARK_C)
-        elif action == nwDocAction.SC_SUP:
+        elif action == nwDocAction.SC_SUP and not noFormat:
             self._wrapSelection(nwShortcode.SUP_O, nwShortcode.SUP_C)
-        elif action == nwDocAction.SC_SUB:
+        elif action == nwDocAction.SC_SUB and not noFormat:
             self._wrapSelection(nwShortcode.SUB_O, nwShortcode.SUB_C)
         else:
-            logger.debug("Unknown or unsupported document action '%s'", action)
+            if noFormat:
+                logger.warning("Action '%s' not alowed on current block", action)
+                self.docHeader.flashError()
+                SHARED.newStatusMessage(self.tr("Cannot apply requested format on this line"))
+            else:
+                logger.error("Unknown action '%s' requested", action)
             self._allowAutoReplace(True)
             return False
 
@@ -2015,7 +2025,7 @@ class GuiDocEditor(QPlainTextEdit):
             # Extend selection to end of current/next word
             origPos = cursor.position()
             cursor.movePosition(QtMoveEndOfWord, QtKeepAnchor)
-            if cursor.position() == origPos:               # already at end-of-word
+            if cursor.position() == origPos:  # Already at end-of-word
                 textLen = len(self.toPlainText())
                 if origPos < textLen:
                     cursor.movePosition(QtMoveNextChar, QtKeepAnchor)
@@ -2871,17 +2881,17 @@ class GuiDocToolBar(QWidget):
         palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
 
-        self.tbBoldMD.setThemeIcon("fmt_bold", "mdformat")
-        self.tbItalicMD.setThemeIcon("fmt_italic", "mdformat")
-        self.tbStrikeMD.setThemeIcon("fmt_strike", "mdformat")
-        self.tbMarkMD.setThemeIcon("fmt_mark", "mdformat")
-        self.tbBold.setThemeIcon("fmt_bold", "scformat")
-        self.tbItalic.setThemeIcon("fmt_italic", "scformat")
-        self.tbStrike.setThemeIcon("fmt_strike", "scformat")
-        self.tbUnderline.setThemeIcon("fmt_underline", "scformat")
-        self.tbMark.setThemeIcon("fmt_mark", "scformat")
-        self.tbSuperscript.setThemeIcon("fmt_superscript", "scformat")
-        self.tbSubscript.setThemeIcon("fmt_subscript", "scformat")
+        self.tbBoldMD.setThemeIcon("fmt_bold", "markdown")
+        self.tbItalicMD.setThemeIcon("fmt_italic", "markdown")
+        self.tbStrikeMD.setThemeIcon("fmt_strike", "markdown")
+        self.tbMarkMD.setThemeIcon("fmt_mark", "markdown")
+        self.tbBold.setThemeIcon("fmt_bold", "shortcode")
+        self.tbItalic.setThemeIcon("fmt_italic", "shortcode")
+        self.tbStrike.setThemeIcon("fmt_strike", "shortcode")
+        self.tbUnderline.setThemeIcon("fmt_underline", "shortcode")
+        self.tbMark.setThemeIcon("fmt_mark", "shortcode")
+        self.tbSuperscript.setThemeIcon("fmt_superscript", "shortcode")
+        self.tbSubscript.setThemeIcon("fmt_subscript", "shortcode")
 
 
 class GuiDocEditSearch(QFrame):
@@ -3239,6 +3249,7 @@ class GuiDocEditHeader(QWidget):
 
         self._docHandle = None
         self._docOutline: dict[int, str] = {}
+        self._state = nwState.NORMAL
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
@@ -3247,7 +3258,7 @@ class GuiDocEditHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = NColorLabel("", self, faded=SHARED.theme.fadedText)
+        self.itemTitle = NColorLabel("", self)
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
@@ -3375,12 +3386,20 @@ class GuiDocEditHeader(QWidget):
         palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
         self.itemTitle.setTextColors(
-            color=palette.windowText().color(), faded=SHARED.theme.fadedText
+            color=palette.windowText().color(),
+            faded=SHARED.theme.fadedText,
+            error=SHARED.theme.errorText,
         )
 
     def changeFocusState(self, state: bool) -> None:
         """Toggle focus state."""
-        self.itemTitle.setColorState(state)
+        self._state = nwState.NORMAL if state else nwState.INACTIVE
+        self.itemTitle.setColorState(self._state)
+
+    def flashError(self) -> None:
+        """Flash a red colour for the header for a moment."""
+        self.itemTitle.setColorState(nwState.ERROR)
+        QTimer.singleShot(250, self._resetColourState)
 
     def setHandle(self, tHandle: str) -> None:
         """Set the document title from the handle, or alternatively, set
@@ -3420,6 +3439,11 @@ class GuiDocEditHeader(QWidget):
     def _focusModeChanged(self, focusMode: bool) -> None:
         """Update minimise/maximise icon of the Focus Mode button."""
         self.minmaxButton.setThemeIcon("minimise" if focusMode else "maximise", "action")
+
+    @pyqtSlot()
+    def _resetColourState(self) -> None:
+        """Reset the colour state of the header title."""
+        self.itemTitle.setColorState(self._state)
 
     ##
     #  Events

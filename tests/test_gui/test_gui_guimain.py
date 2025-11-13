@@ -37,7 +37,7 @@ from novelwriter.common import jsonEncode
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.constants import nwFiles
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemType, nwTheme, nwView
+from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemType, nwState, nwTheme, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.outline import GuiOutlineView
@@ -110,7 +110,7 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
         assert nwGUI.closeMain() is False
     nwGUI.closeProject()
 
-    # Check that latest release info updated
+    # Check that latest release info is set
     assert CONFIG.lastNotes != "0x0"
 
     # Set some config error
@@ -886,13 +886,13 @@ def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Simulate focus change to viewer
     nwGUI._appFocusChanged(None, nwGUI.docViewer)
-    assert nwGUI.docEditor.docHeader.itemTitle._state is False
-    assert nwGUI.docViewer.docHeader.itemTitle._state is True
+    assert nwGUI.docEditor.docHeader.itemTitle._state == nwState.INACTIVE
+    assert nwGUI.docViewer.docHeader.itemTitle._state == nwState.NORMAL
 
     # Simulate focus change to editor
     nwGUI._appFocusChanged(None, nwGUI.docEditor)
-    assert nwGUI.docEditor.docHeader.itemTitle._state is True
-    assert nwGUI.docViewer.docHeader.itemTitle._state is False
+    assert nwGUI.docEditor.docHeader.itemTitle._state == nwState.NORMAL
+    assert nwGUI.docViewer.docHeader.itemTitle._state == nwState.INACTIVE
 
     # Focus Tree
     # ==========
@@ -938,8 +938,8 @@ def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         mp.setattr(nwGUI.docEditor, "setFocus", mockEmitEditorFocus)
         mp.setattr(nwGUI.docViewer, "setFocus", mockEmitViewerFocus)
         nwGUI._switchFocus(nwFocus.DOCUMENT)
-        assert nwGUI.docEditor.docHeader.itemTitle._state is False
-        assert nwGUI.docViewer.docHeader.itemTitle._state is True
+        assert nwGUI.docEditor.docHeader.itemTitle._state == nwState.INACTIVE
+        assert nwGUI.docViewer.docHeader.itemTitle._state == nwState.NORMAL
 
     # Call again to switch to editor
     with monkeypatch.context() as mp:
@@ -948,8 +948,8 @@ def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         mp.setattr(nwGUI.docEditor, "setFocus", mockEmitEditorFocus)
         mp.setattr(nwGUI.docViewer, "setFocus", mockEmitViewerFocus)
         nwGUI._switchFocus(nwFocus.DOCUMENT)
-        assert nwGUI.docEditor.docHeader.itemTitle._state is True
-        assert nwGUI.docViewer.docHeader.itemTitle._state is False
+        assert nwGUI.docEditor.docHeader.itemTitle._state == nwState.NORMAL
+        assert nwGUI.docViewer.docHeader.itemTitle._state == nwState.INACTIVE
 
     # Default to editor
     with monkeypatch.context() as mp:
@@ -958,8 +958,8 @@ def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         mp.setattr(nwGUI.docEditor, "setFocus", mockEmitEditorFocus)
         mp.setattr(nwGUI.docViewer, "setFocus", mockEmitViewerFocus)
         nwGUI._switchFocus(nwFocus.DOCUMENT)
-        assert nwGUI.docEditor.docHeader.itemTitle._state is True
-        assert nwGUI.docViewer.docHeader.itemTitle._state is False
+        assert nwGUI.docEditor.docHeader.itemTitle._state == nwState.NORMAL
+        assert nwGUI.docViewer.docHeader.itemTitle._state == nwState.INACTIVE
 
     # Focus Outline
     # =============
