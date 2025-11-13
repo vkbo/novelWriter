@@ -83,6 +83,18 @@ vypyy" will have ypyy in command and thus not register yy.
 Expected behavior would be visual mode, yank, paste, yank line.
 This could be fixed by having a list of suffixes potentially.
 
+Not a bug but differing behavior from vim: the "e" command behaves
+a bit differently with regards to the last character of a word.
+The behavior is inconsistent with vim but functional and still logical 
+to use. The cursor is placed at the end of the word after the last
+character rather than on the last character.
+E.G: test 
+        ^ Cursor placed here in vim
+E.G: test 
+         ^ Cursor placed here in NovelWriter vim mode
+You will only really ever notice this behavior if you try to combine
+the "e" command with another, e.g "de" will not delete the last character
+but delete forward as it starts one character after the word boundary.
 
 ### Useful commands not yet added:
 - r, R : replace text

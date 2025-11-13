@@ -2701,6 +2701,15 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line1", "Line3"]
 
+    # de: Delete word already at end of word
+    resetText()
+    line2_pos = docEditor.getText().find("Line2")
+    end_pos = docEditor.getText().find("Line2") + len("Line2")
+    docEditor.setCursorPosition(end_pos)
+    qtbot.keyClicks(docEditor, "de", delay=inputDelay)
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines == ["Line1", "Line2"]
+
     # db: Delete word back (from Line2 up to end of word boundary)
     resetText()
     docEditor.setCursorPosition(0)  # Start of Line1
