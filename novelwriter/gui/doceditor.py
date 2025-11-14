@@ -951,8 +951,16 @@ class GuiDocEditor(QPlainTextEdit):
         """
         self._lastActive = time()
 
-        if CONFIG.vimMode:
-            self._handleVimKeyPress(event)
+        if CONFIG.vimMode and self._vim.mode != nwVimMode.INSERT:
+            # Process Vim modes
+            if self._handleVimNormalModeModeSwitching(event):
+                return
+
+            if self._vim.mode in (nwVimMode.VISUAL, nwVimMode.VLINE):
+                self._handleVimVisualMode(event)
+            else:
+                self._handleVimNormalMode(event)
+
             return
 
         if self.docSearch.anyFocus() and event.key() in self.ENTER_KEYS:
@@ -2004,7 +2012,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.setTextCursor(cursor)
             self._vim.resetCommand()
 
-        if command == "db":
+        elif command == "db":
             cursor.beginEditBlock()
             cursor.movePosition(QtMovePreviousWord, QtKeepAnchor)
             self._vim.yankToInternal(cursor.selectedText())
@@ -2013,7 +2021,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.setTextCursor(cursor)
             self._vim.resetCommand()
 
-        if command == "de":
+        elif command == "de":
             cursor.beginEditBlock()
             # Extend selection to end of current/next word
             origPos = cursor.position()
@@ -2029,7 +2037,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.setTextCursor(cursor)
             self._vim.resetCommand()
 
-        if command == "d$":
+        elif command == "d$":
             cursor.beginEditBlock()
             cursor.movePosition(QtMoveEndOfLine, QtKeepAnchor)
             self._vim.yankToInternal(cursor.selectedText())
@@ -2038,7 +2046,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.setTextCursor(cursor)
             self._vim.resetCommand()
 
-        if command == "yw":
+        elif command == "yw":
             cursor.beginEditBlock()
             cursor.movePosition(QtMoveNextWord, QtKeepAnchor)
             self._vim.yankToInternal(cursor.selectedText())
@@ -2057,7 +2065,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.setTextCursor(cursor)
             self._vim.resetCommand()
 
-        if command == "yy":
+        elif command == "yy":
             cursor.select(QtSelectLine)
             self._vim.yankToInternal(cursor.selectedText())
             cursor.clearSelection()
@@ -2229,25 +2237,6 @@ class GuiDocEditor(QPlainTextEdit):
         elif command == "G":
             cursor.movePosition(QtMoveEnd, QtKeepAnchor)
             self.setTextCursor(cursor)
-
-    def _handleVimKeyPress(self, event: QKeyEvent) -> None:
-        """Handle key events for Vim mode.
-        If vim mode is not enabled, typing behaves as normal.
-        """
-        # --- INSERT mode, bypass ---
-        if self._vim.mode == nwVimMode.INSERT:
-            super().keyPressEvent(event)
-            return  # Normal typing
-
-        if self._handleVimNormalModeModeSwitching(event):
-            return
-
-        if self._vim.mode in (nwVimMode.VISUAL, nwVimMode.VLINE):
-            self._handleVimVisualMode(event)
-        else:
-            self._handleVimNormalMode(event)
-
-        return
 
     ##
     #  Internal Functions
