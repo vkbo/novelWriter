@@ -236,7 +236,6 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Vim State for vimMode
         self._vim = VimState()
-        self.setVimMode(nwVimMode.NORMAL)
 
         # Finalise
         self.updateSyntaxColors()
@@ -394,6 +393,9 @@ class GuiDocEditor(QPlainTextEdit):
             self.docHeader.setHandle(self._docHandle)
         else:
             self.clearEditor()
+
+        # Refresh Vim Mode
+        self.setVimMode(nwVimMode.NORMAL)
 
     def loadText(self, tHandle: str, tLine: int | None = None) -> bool:
         """Load text from a document into the editor. If we have an I/O
@@ -622,6 +624,8 @@ class GuiDocEditor(QPlainTextEdit):
                 self.setTextCursor(cursor)
             self._vim.setMode(mode)
             self.docFooter.updateVimModeStatusBar(mode)
+        else:
+            self.docFooter.updateVimModeStatusBar(None)
 
     def setDocumentChanged(self, state: bool) -> None:
         """Keep track of the document changed variable, and emit the
@@ -956,7 +960,7 @@ class GuiDocEditor(QPlainTextEdit):
             if self._handleVimNormalModeModeSwitching(event):
                 return
 
-            if self._vim.mode in (nwVimMode.VISUAL, nwVimMode.VLINE):
+            if self._vim.mode in (nwVimMode.VISUAL, nwVimMode.V_LINE):
                 self._handleVimVisualMode(event)
             else:
                 self._handleVimNormalMode(event)
@@ -1940,7 +1944,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.setTextCursor(cursor)
             return True
         elif text == "V":
-            self.setVimMode(nwVimMode.VLINE)
+            self.setVimMode(nwVimMode.V_LINE)
             cursor = self.textCursor()
             cursor.select(QtSelectLine)
             self.setTextCursor(cursor)
@@ -3554,7 +3558,7 @@ class GuiDocEditFooter(QWidget):
             nwVimMode.NORMAL: (self.tr("NORMAL"), SHARED.theme.getBaseColor("green")),
             nwVimMode.INSERT: (self.tr("INSERT"), SHARED.theme.getBaseColor("blue")),
             nwVimMode.VISUAL: (self.tr("VISUAL"), SHARED.theme.getBaseColor("orange")),
-            nwVimMode.VLINE:  (self.tr("V-LINE"), SHARED.theme.getBaseColor("orange")),
+            nwVimMode.V_LINE: (self.tr("V-LINE"), SHARED.theme.getBaseColor("orange")),
         }
 
     def matchColors(self) -> None:
@@ -3621,16 +3625,21 @@ class GuiDocEditFooter(QWidget):
             text = self._trMainCount.format("0", "+0")
         self.wordsText.setText(text)
 
-    def updateVimModeStatusBar(self, vimMode: nwVimMode) -> None:
+    def updateVimModeStatusBar(self, mode: nwVimMode | None) -> None:
         """Update the vim Mode status information."""
-        if vimMode != self._vimMode:
-            text, color = self._vimModes.get(vimMode, ("", QtBlack))
+        if mode is None:
+            self.vimStatus.setText("")
+            self.vimStatus.setVisible(False)
+            self._vimMode = None
+        elif mode != self._vimMode:
+            text, color = self._vimModes.get(mode, ("", QtBlack))
             palette = self.vimStatus.palette()
             palette.setColor(QPalette.ColorRole.WindowText, self._vimColor)
             palette.setColor(QPalette.ColorRole.Window, color)
-            self.vimStatus.setText(f" {text} ")
+            self.vimStatus.setText(f"  {text}  ")
             self.vimStatus.setPalette(palette)
-            self._vimMode = vimMode
+            self.vimStatus.setVisible(True)
+            self._vimMode = mode
 
 
 class VimState:
@@ -3657,16 +3666,17 @@ class VimState:
     @property
     def command(self) -> str:
         """Return the current vim command."""
-        if self._mode in (nwVimMode.VISUAL, nwVimMode.VLINE):
+        if self._mode in (nwVimMode.VISUAL, nwVimMode.V_LINE):
             return self._visualCommand
         else:
             return self._normalCommand
 
-    def setMode(self, newMode: nwVimMode) -> None:
+    def setMode(self, mode: nwVimMode) -> None:
         """Switch vim mode."""
-        logger.debug("Vim Mode changed to %s", newMode.name)
-        self._mode = newMode
-        self.resetCommand()
+        if mode != self._mode:
+            logger.debug("Vim Mode changed to %s", mode.name)
+            self._mode = mode
+            self.resetCommand()
 
     def resetCommand(self) -> None:
         """Reset internal vim command."""
@@ -3677,14 +3687,14 @@ class VimState:
         """Push key to the current command building stack."""
         if self._mode is nwVimMode.NORMAL:
             self._normalCommand += key
-        elif self._mode in (nwVimMode.VISUAL, nwVimMode.VLINE):
+        elif self._mode in (nwVimMode.VISUAL, nwVimMode.V_LINE):
             self._visualCommand += key
 
     def setCommand(self, key: str) -> None:
         """Set the state of the current vim command."""
         if self._mode is nwVimMode.NORMAL:
             self._normalCommand = key
-        elif self._mode in (nwVimMode.VISUAL, nwVimMode.VLINE):
+        elif self._mode in (nwVimMode.VISUAL, nwVimMode.V_LINE):
             self._visualCommand = key
 
     def yankToInternal(self, text: str) -> None:

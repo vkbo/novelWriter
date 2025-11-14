@@ -566,6 +566,13 @@ class GuiPreferences(NDialog):
             self.tr("Highlight current line"), self.lineHighlight
         )
 
+        # Enable Vim Mode
+        self.vimMode = NSwitch(self)
+        self.vimMode.setChecked(CONFIG.vimMode)
+        self.mainForm.addRow(
+            self.tr("Enable Vim mode"), self.vimMode,
+        )
+
         # Show Tabs and Spaces
         self.showTabsNSpaces = NSwitch(self)
         self.showTabsNSpaces.setChecked(CONFIG.showTabsNSpaces)
@@ -1075,6 +1082,7 @@ class GuiPreferences(NDialog):
         CONFIG.lineHighlight   = lineHighlight
         CONFIG.showTabsNSpaces = self.showTabsNSpaces.isChecked()
         CONFIG.showLineEndings = self.showLineEndings.isChecked()
+        CONFIG.vimMode         = self.vimMode.isChecked()
 
         # Editor Scrolling
         CONFIG.autoScroll    = self.autoScroll.isChecked()
