@@ -44,7 +44,9 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView
+from novelwriter.enum import (
+    nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView, nwVimMode
+)
 from novelwriter.extensions.progressbars import NProgressSimple
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.docviewer import GuiDocViewer
@@ -1272,6 +1274,10 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _keyPressEscape(self) -> None:
         """Process an escape keypress in the main window."""
+        if CONFIG.vimMode:
+            self.docEditor.setVimMode(nwVimMode.NORMAL)
+            return
+
         if self.docEditor.searchVisible():
             self.docEditor.closeSearch()
         elif SHARED.focusMode:

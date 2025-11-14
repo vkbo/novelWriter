@@ -249,6 +249,15 @@ class nwStatusShape(Enum):
     BLOCK_4  = 19
 
 
+class nwVimMode(Enum):
+    """Enum: Vim mode different modes."""
+
+    NORMAL = 0
+    INSERT = 1
+    VISUAL = 2
+    VLINE  = 3
+
+
 class nwStandardButton(Enum):
     """Enum: Standard Dialog Buttons."""
 
