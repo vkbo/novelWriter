@@ -106,7 +106,9 @@ class GuiDocViewerPanel(QWidget):
 
     def updateTheme(self, updateTabs: bool = True) -> None:
         """Update theme elements."""
-        self.optsButton.setThemeIcon("more_vertical")
+        logger.debug("Theme Update: GuiDocViewerPanel")
+
+        self.optsButton.setThemeIcon("more_vertical", "default")
         self.optsButton.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON))
         self.mainTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
         if updateTabs:
@@ -261,8 +263,8 @@ class _ViewPanelBackRefs(QTreeWidget):
             header.setSectionsMovable(False)
 
         # Cache Icons Locally
-        self._editIcon = SHARED.theme.getIcon("edit", "green")
-        self._viewIcon = SHARED.theme.getIcon("view", "blue")
+        self._editIcon = SHARED.theme.getIcon("edit", "change")
+        self._viewIcon = SHARED.theme.getIcon("view", "action")
 
         # Signals
         self.clicked.connect(self._treeItemClicked)
@@ -270,8 +272,10 @@ class _ViewPanelBackRefs(QTreeWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self._editIcon = SHARED.theme.getIcon("edit", "green")
-        self._viewIcon = SHARED.theme.getIcon("view", "blue")
+        logger.debug("Theme Update: _ViewPanelBackRefs")
+
+        self._editIcon = SHARED.theme.getIcon("edit", "change")
+        self._viewIcon = SHARED.theme.getIcon("view", "action")
         for i in range(self.topLevelItemCount()):
             if item := self.topLevelItem(i):
                 item.setIcon(self.C_EDIT, self._editIcon)
@@ -400,9 +404,11 @@ class _ViewPanelKeyWords(QTreeWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: _ViewPanelKeyWords")
+
         self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[self._class], "root")
-        self._editIcon = SHARED.theme.getIcon("edit", "green")
-        self._viewIcon = SHARED.theme.getIcon("view", "blue")
+        self._editIcon = SHARED.theme.getIcon("edit", "change")
+        self._viewIcon = SHARED.theme.getIcon("view", "action")
 
     def countEntries(self) -> int:
         """Return the number of items in the list."""

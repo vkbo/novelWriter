@@ -61,7 +61,7 @@ class NovelModel(QAbstractTableModel):
     def __init__(self) -> None:
         super().__init__()
         self._rows: list[dict[int, T_NodeData]] = []
-        self._more = SHARED.theme.getIcon("more_arrow")
+        self._more = SHARED.theme.getIcon("more_arrow", "tool")
         self._columns = 3
         self._extraKey = ""
         self._extraLabel = ""

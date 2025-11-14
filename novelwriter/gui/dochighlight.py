@@ -94,8 +94,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         syntax = SHARED.theme.syntaxTheme
 
         colEmph = syntax.emph if CONFIG.highlightEmph else None
-        colBreak = QColor(syntax.emph)
-        colBreak.setAlpha(64)
 
         # Create Character Formats
         self._addCharFormat("text",      syntax.text)
@@ -112,7 +110,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._addCharFormat("strike",    syntax.hidden, "s")
         self._addCharFormat("mark",      syntax.mark, "bg")
         self._addCharFormat("mspaces",   syntax.error, "err")
-        self._addCharFormat("nobreak",   colBreak, "bg")
+        self._addCharFormat("nobreak",   syntax.space, "bg")
         self._addCharFormat("altdialog", syntax.dialA)
         self._addCharFormat("dialog",    syntax.dialN)
         self._addCharFormat("replace",   syntax.repTag)
@@ -140,7 +138,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
-            rxRule = re.compile(r"\s{2,}")
+            rxRule = re.compile(r"[ ]{2,}")
             hlRule = {
                 0: self._hStyles["mspaces"],
             }

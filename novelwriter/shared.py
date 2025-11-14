@@ -34,12 +34,12 @@ from typing import TYPE_CHECKING, TypeVar
 
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QDesktopServices, QFont, QScreen
-from PyQt6.QtWidgets import QApplication, QFileDialog, QFontDialog, QMessageBox, QWidget
+from PyQt6.QtWidgets import QApplication, QFileDialog, QMessageBox, QWidget
 
 from novelwriter.common import formatFileFilter
 from novelwriter.constants import nwFiles
 from novelwriter.core.spellcheck import NWSpellEnchant
-from novelwriter.enum import nwChange, nwItemClass
+from novelwriter.enum import nwChange, nwItemClass, nwStandardButton
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -283,15 +283,11 @@ class SharedData(QObject):
             QTimer.singleShot(int(delay*1000), gui.mainProgress.reset)
 
     def newStatusMessage(self, message: str) -> None:
-        """Request a new status message. This is a callable function for
-        core classes that cannot emit signals on their own.
-        """
+        """Request a new status message."""
         self.projectStatusMessage.emit(message)
 
     def setGlobalProjectState(self, state: bool) -> None:
-        """Change the global project status. This is a callable function
-        for core classes that cannot emit signals on their own.
-        """
+        """Change the global project status."""
         self.projectStatusChanged.emit(state)
 
     def runInThreadPool(self, runnable: QRunnable, priority: int = 0) -> None:
@@ -314,12 +310,11 @@ class SharedData(QObject):
         )
         return Path(selected) if selected else None
 
-    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool | None]:
+    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool]:
         """Open the font dialog and select a font."""
-        kwargs = {}
-        if not native:
-            kwargs["options"] = QFontDialog.FontDialogOption.DontUseNativeDialog
-        return QFontDialog.getFont(current, self.mainGui, self.tr("Select Font"), **kwargs)
+        from novelwriter.extensions.modified import NFontDialog
+
+        return NFontDialog.selectFont(current, self.mainGui, self.tr("Select Font"), native)
 
     def findTopLevelWidget(self, kind: type[NWWidget]) -> NWWidget | None:
         """Find a top level widget."""
@@ -422,7 +417,7 @@ class SharedData(QObject):
         alert.setAlertType(_GuiAlert.WARN if warn else _GuiAlert.ASK, True)
         self._lastAlert = alert.logMessage
         alert.exec()
-        return alert.result() == QMessageBox.StandardButton.Yes
+        return alert.finalState
 
     ##
     #  Internal Functions
@@ -469,6 +464,7 @@ class _GuiAlert(QMessageBox):
         super().__init__(parent=parent)
         self._theme = theme
         self._message = ""
+        self._state = False
         logger.debug("Ready: _GuiAlert")
 
     def __del__(self) -> None:  # pragma: no cover
@@ -477,6 +473,10 @@ class _GuiAlert(QMessageBox):
     @property
     def logMessage(self) -> str:
         return self._message
+
+    @property
+    def finalState(self) -> bool:
+        return self._state
 
     def setMessage(self, text: str, info: str, details: str) -> None:
         """Set the alert box message."""
@@ -496,19 +496,39 @@ class _GuiAlert(QMessageBox):
         Yes/No buttons or just an Ok button.
         """
         if isYesNo:
-            self.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            self._btnYes = self._theme.getStandardButton(nwStandardButton.YES, self)
+            self._btnYes.clicked.connect(self._onAccept)
+            self._btnNo  = self._theme.getStandardButton(nwStandardButton.NO, self)
+            self._btnNo.clicked.connect(self._onReject)
+            self.addButton(self._btnYes, QMessageBox.ButtonRole.YesRole)
+            self.addButton(self._btnNo, QMessageBox.ButtonRole.NoRole)
         else:
-            self.setStandardButtons(QMessageBox.StandardButton.Ok)
-        pSz = 2*self._theme.baseIconHeight
+            self._btnOk = self._theme.getStandardButton(nwStandardButton.OK, self)
+            self._btnOk.clicked.connect(self._onAccept)
+            self.addButton(self._btnOk, QMessageBox.ButtonRole.AcceptRole)
+
+        pSz = 2*self._theme.fontPixelSize
         if level == self.INFO:
-            self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz), "blue"))
+            self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz), "info"))
             self.setWindowTitle(self.tr("Information"))
         elif level == self.WARN:
-            self.setIconPixmap(self._theme.getPixmap("alert_warn", (pSz, pSz), "orange"))
+            self.setIconPixmap(self._theme.getPixmap("alert_warn", (pSz, pSz), "warning"))
             self.setWindowTitle(self.tr("Warning"))
         elif level == self.ERROR:
-            self.setIconPixmap(self._theme.getPixmap("alert_error", (pSz, pSz), "red"))
+            self.setIconPixmap(self._theme.getPixmap("alert_error", (pSz, pSz), "error"))
             self.setWindowTitle(self.tr("Error"))
         elif level == self.ASK:
-            self.setIconPixmap(self._theme.getPixmap("alert_question", (pSz, pSz), "blue"))
+            self.setIconPixmap(self._theme.getPixmap("alert_question", (pSz, pSz), "info"))
             self.setWindowTitle(self.tr("Question"))
+
+    @pyqtSlot()
+    def _onAccept(self) -> None:
+        """Process accepted state."""
+        self._state = True
+        self.close()
+
+    @pyqtSlot()
+    def _onReject(self) -> None:
+        """Process rejected state."""
+        self._state = False
+        self.close()

@@ -27,7 +27,7 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QEvent, QPoint, QSize, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QEvent, QPoint, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QMenu, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
@@ -56,8 +56,7 @@ class GuiSideBar(QWidget):
 
         self.mainGui = mainGui
 
-        iPx = int(1.25*SHARED.theme.baseButtonHeight)
-        iSz = QSize(iPx, iPx)
+        iSz = SHARED.theme.sidebarIconSize
 
         self.setContentsMargins(0, 0, 0, 0)
         self.installEventFilter(StatusTipFilter(self.mainGui))
@@ -129,8 +128,9 @@ class GuiSideBar(QWidget):
 
     def updateTheme(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
-        buttonStyle = SHARED.theme.getStyleSheet(STYLES_BIG_TOOLBUTTON)
+        logger.debug("Theme Update: GuiSideBar")
 
+        buttonStyle = SHARED.theme.getStyleSheet(STYLES_BIG_TOOLBUTTON)
         self.tbProject.setStyleSheet(buttonStyle)
         self.tbNovel.setStyleSheet(buttonStyle)
         self.tbSearch.setStyleSheet(buttonStyle)
@@ -141,14 +141,14 @@ class GuiSideBar(QWidget):
         self.tbTheme.setStyleSheet(buttonStyle)
         self.tbSettings.setStyleSheet(buttonStyle)
 
-        self.tbProject.setThemeIcon("sb_project")
-        self.tbNovel.setThemeIcon("sb_novel")
-        self.tbSearch.setThemeIcon("sb_search")
-        self.tbOutline.setThemeIcon("sb_outline")
-        self.tbBuild.setThemeIcon("sb_build")
-        self.tbDetails.setThemeIcon("sb_details")
-        self.tbStats.setThemeIcon("sb_stats")
-        self.tbSettings.setThemeIcon("settings")
+        self.tbProject.setThemeIcon("sb_project", "sidebar")
+        self.tbNovel.setThemeIcon("sb_novel", "sidebar")
+        self.tbSearch.setThemeIcon("sb_search", "sidebar")
+        self.tbOutline.setThemeIcon("sb_outline", "sidebar")
+        self.tbBuild.setThemeIcon("sb_build", "sidebar")
+        self.tbDetails.setThemeIcon("sb_details", "sidebar")
+        self.tbStats.setThemeIcon("sb_stats", "sidebar")
+        self.tbSettings.setThemeIcon("settings", "sidebar")
 
         self._setThemeModeIcon()
 
@@ -175,7 +175,7 @@ class GuiSideBar(QWidget):
 
     def _setThemeModeIcon(self) -> None:
         """Set the theme button icon."""
-        self.tbTheme.setThemeIcon(nwLabels.THEME_MODE_ICON[CONFIG.themeMode])
+        self.tbTheme.setThemeIcon(nwLabels.THEME_MODE_ICON[CONFIG.themeMode], "sidebar")
         self.tbTheme.setToolTip(trConst(nwLabels.THEME_MODE_LABEL[CONFIG.themeMode]))
 
 

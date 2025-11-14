@@ -183,6 +183,7 @@ def launchpad(args: argparse.Namespace) -> None:
         ("24.04", "noble", True),
         ("25.04", "plucky", True),
         ("25.10", "questing", False),
+        ("26.04", "resolute", False),
     ]
 
     print("Building Ubuntu packages for:")

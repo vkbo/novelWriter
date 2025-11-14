@@ -1,11 +1,13 @@
-%%~name: Page
+%%~name: Introduction
 %%~path: 7031beac91f75/974e400180a99
 %%~kind: NOVEL/DOCUMENT
-%%~hash: a0b0719e19763bf505bcf797bea0968c505c9b4a
-%%~date: Unknown/2023-11-06 11:19:33
+%%~hash: 244e672a4f50556bf98aa077e7422cd66b076ab7
+%%~date: Unknown/2025-11-01 15:42:22
 [newpage]
 [vspace:2]
 
-This is a plain page with some text on it.
+This is an example project that should help to demonstrate some of the features of novelWriter. Please see the documentation at https://novelwriter.io/ for much more information.
 
-If you want the text to start on a fresh page, add the [newpage] code above the text. You can also add empty paragraphs with the [vspace] code. The above code adds two empty paragraphs before the text starts.
+novelWriter is a plain text editor. This means that the editor doesn’t show you the formatting of the text. It assumes that you don’t generally want to format your text as you write, aside from indicating where you want the text to have some **added** _emphasis_. For those occasions where you _do_ need added formatting features, there are [i]shortcodes[/i] that provide some additional options aside from the basic formatting. These are available from the Format menu, and the main ones also available as tool buttons in the toolbar that pops out when you press the first icon in the editor header.
+
+Generally, page breaks are made on headings, and you can choose which headings get page breaks in the Manuscript Build tool (F5). If you want other text to start on a fresh page, add the [newpage] code above the text like is done on this page.

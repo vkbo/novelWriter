@@ -41,13 +41,13 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter, qtAddAction, qtLambda, simplified
 from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.status import CUSTOM_COL, NWStatus, StatusEntry
-from novelwriter.enum import nwStatusShape
+from novelwriter.enum import nwStandardButton, nwStatusShape
 from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollableForm
 from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import (
-    QtDialogCancel, QtDialogSave, QtSizeMinimum, QtSizeMinimumExpanding,
+    QtRoleAccept, QtRoleReject, QtSizeMinimum, QtSizeMinimumExpanding,
     QtUserRole
 )
 
@@ -95,9 +95,15 @@ class GuiProjectSettings(NDialog):
         self.sidebar.buttonClicked.connect(self._sidebarClicked)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogCancel, self)
-        self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnSave = SHARED.theme.getStandardButton(nwStandardButton.SAVE, self)
+        self.btnSave.clicked.connect(self._doSave)
+
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.closeDialog)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnSave, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Content
         SHARED.project.countStatus()
@@ -126,7 +132,7 @@ class GuiProjectSettings(NDialog):
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.topBox)
         self.outerBox.addLayout(self.mainBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
         self.outerBox.setSpacing(8)
 
         self.setLayout(self.outerBox)
@@ -350,27 +356,27 @@ class _StatusPage(NFixedPage):
             self._addItem(key, StatusEntry.duplicate(entry))
 
         # List Controls
-        self.addButton = NIconToolButton(self, iSz, "add", "green")
+        self.addButton = NIconToolButton(self, iSz, "add", "add")
         self.addButton.setToolTip(self.tr("Add Label"))
         self.addButton.clicked.connect(self._onItemCreate)
 
-        self.delButton = NIconToolButton(self, iSz, "remove", "red")
+        self.delButton = NIconToolButton(self, iSz, "remove", "remove")
         self.delButton.setToolTip(self.tr("Delete Label"))
         self.delButton.clicked.connect(self._onItemDelete)
 
-        self.upButton = NIconToolButton(self, iSz, "chevron_up", "blue")
+        self.upButton = NIconToolButton(self, iSz, "chevron_up", "action")
         self.upButton.setToolTip(self.tr("Move Up"))
         self.upButton.clicked.connect(qtLambda(self._moveItem, -1))
 
-        self.downButton = NIconToolButton(self, iSz, "chevron_down", "blue")
+        self.downButton = NIconToolButton(self, iSz, "chevron_down", "action")
         self.downButton.setToolTip(self.tr("Move Down"))
         self.downButton.clicked.connect(qtLambda(self._moveItem, 1))
 
-        self.importButton = NIconToolButton(self, iSz, "import", "green")
+        self.importButton = NIconToolButton(self, iSz, "import", "apply")
         self.importButton.setToolTip(self.tr("Import Labels"))
         self.importButton.clicked.connect(self._importLabels)
 
-        self.exportButton = NIconToolButton(self, iSz, "export", "blue")
+        self.exportButton = NIconToolButton(self, iSz, "export", "action")
         self.exportButton.setToolTip(self.tr("Export Labels"))
         self.exportButton.clicked.connect(self._exportLabels)
 
@@ -723,10 +729,10 @@ class _ReplacePage(NFixedPage):
         self.listBox.setSortingEnabled(True)
 
         # List Controls
-        self.addButton = NIconToolButton(self, iSz, "add", "green")
+        self.addButton = NIconToolButton(self, iSz, "add", "add")
         self.addButton.clicked.connect(self._onEntryCreated)
 
-        self.delButton = NIconToolButton(self, iSz, "remove", "red")
+        self.delButton = NIconToolButton(self, iSz, "remove", "remove")
         self.delButton.clicked.connect(self._onEntryDeleted)
 
         # Edit Form

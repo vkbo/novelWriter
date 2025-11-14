@@ -13,6 +13,7 @@ setup.iss
 /setup/macos/Info.plist
 /setup/windows/build
 .venv
+/uv.lock
 
 # Translations
 /novelwriter/assets/i18n/*.qm

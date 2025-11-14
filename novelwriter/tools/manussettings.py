@@ -40,6 +40,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import describeFont, fontMatcher, qtAddAction, qtLambda
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwUnicode, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import (
     NColorLabel, NFixedPage, NScrollableForm, NScrollablePage
 )
@@ -50,9 +51,8 @@ from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.types import (
-    QtAlignCenter, QtAlignLeft, QtDialogApply, QtDialogClose, QtDialogSave,
-    QtHeaderFixed, QtHeaderStretch, QtRoleAccept, QtRoleApply, QtRoleReject,
-    QtUserRole
+    QtAlignCenter, QtAlignLeft, QtHeaderFixed, QtHeaderStretch, QtRoleAccept,
+    QtRoleApply, QtRoleDestruct, QtUserRole
 )
 
 if TYPE_CHECKING:
@@ -72,7 +72,7 @@ class GuiBuildSettings(NToolDialog):
     OPT_HEADINGS   = 2
     OPT_FORMATTING = 10
 
-    newSettingsReady = pyqtSignal(BuildSettings)
+    newSettingsReady = pyqtSignal(BuildSettings, bool)
 
     def __init__(self, parent: GuiMain, build: BuildSettings) -> None:
         super().__init__(parent=parent)
@@ -86,6 +86,7 @@ class GuiBuildSettings(NToolDialog):
         self.setWindowTitle(self.tr("Manuscript Build Settings"))
         self.setMinimumSize(700, 400)
 
+        iPx = SHARED.theme.baseIconHeight
         options = SHARED.project.options
         self.resize(
             options.getInt("GuiBuildSettings", "winWidth", 750),
@@ -124,9 +125,23 @@ class GuiBuildSettings(NToolDialog):
         self.toolStack.addWidget(self.optTabHeadings)
         self.toolStack.addWidget(self.optTabFormatting)
 
+        # Preview
+        self.swtAutoPreview = NSwitch(self, height=iPx)
+        self.swtAutoPreview.setChecked(options.getBool("GuiBuildSettings", "autoPreview", True))
+
+        self.lblAutoPreview = QLabel(self.tr("Auro-Update Preview"), self)
+        self.lblAutoPreview.setBuddy(self.swtAutoPreview)
+
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogApply | QtDialogSave | QtDialogClose, self)
-        self.buttonBox.clicked.connect(self._dialogButtonClicked)
+        self.btnApply = SHARED.theme.getStandardButton(nwStandardButton.APPLY, self)
+        self.btnSave = SHARED.theme.getStandardButton(nwStandardButton.SAVE, self)
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnApply, QtRoleApply)
+        self.btnBox.addButton(self.btnSave, QtRoleAccept)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
+        self.btnBox.clicked.connect(self._dialogButtonClicked)
 
         # Assemble
         self.topBox = QHBoxLayout()
@@ -140,13 +155,21 @@ class GuiBuildSettings(NToolDialog):
         self.mainBox.addWidget(self.toolStack)
         self.mainBox.setContentsMargins(0, 0, 0, 0)
 
+        self.bottomBox = QHBoxLayout()
+        self.bottomBox.addWidget(self.lblAutoPreview, 0)
+        self.bottomBox.addWidget(self.swtAutoPreview, 0)
+        self.bottomBox.addSpacing(8)
+        self.bottomBox.addWidget(self.btnBox, 1)
+        self.bottomBox.setContentsMargins(0, 0, 0, 0)
+
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.topBox)
         self.outerBox.addLayout(self.mainBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addLayout(self.bottomBox)
         self.outerBox.setSpacing(12)
 
         self.setLayout(self.outerBox)
+        self.updateTheme(init=True)
 
         # Set Default Tab
         self.sidebar.setSelected(self.OPT_FILTERS)
@@ -162,6 +185,22 @@ class GuiBuildSettings(NToolDialog):
         self.optTabSelect.loadContent()
         self.optTabHeadings.loadContent()
         self.optTabFormatting.loadContent()
+
+    def updateTheme(self, *, init: bool = False) -> None:
+        """Update theme elements."""
+        logger.debug("Theme Update: GuiBuildSettings, init=%s", init)
+
+        if not init:
+            self.btnApply.updateIcon()
+            self.btnSave.updateIcon()
+            self.btnClose.updateIcon()
+
+            self.optTabSelect.updateTheme()
+            self.optTabHeadings.updateTheme()
+            self.optTabFormatting.updateTheme()
+
+        self.titleLabel.setTextColors(color=SHARED.theme.helpText)
+        self.sidebar.setLabelColor(SHARED.theme.helpText)
 
     ##
     #  Properties
@@ -205,15 +244,14 @@ class GuiBuildSettings(NToolDialog):
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
-        role = self.buttonBox.buttonRole(button)
-        if role == QtRoleApply:
+        if button == self.btnApply:
             self._applyChanges()
             self._emitBuildData()
-        elif role == QtRoleAccept:
+        elif button == self.btnSave:
             self._applyChanges()
             self._emitBuildData()
             self.close()
-        elif role == QtRoleReject:
+        elif button == self.btnClose:
             self._build.resetChangedState()
             self.close()
 
@@ -236,12 +274,13 @@ class GuiBuildSettings(NToolDialog):
         """Save the various user settings."""
         treeWidth, filterWidth = self.optTabSelect.mainSplitSizes()
         logger.debug("Saving State: GuiBuildSettings")
-        pOptions = SHARED.project.options
-        pOptions.setValue("GuiBuildSettings", "winWidth", self.width())
-        pOptions.setValue("GuiBuildSettings", "winHeight", self.height())
-        pOptions.setValue("GuiBuildSettings", "treeWidth", treeWidth)
-        pOptions.setValue("GuiBuildSettings", "filterWidth", filterWidth)
-        pOptions.saveSettings()
+        options = SHARED.project.options
+        options.setValue("GuiBuildSettings", "winWidth", self.width())
+        options.setValue("GuiBuildSettings", "winHeight", self.height())
+        options.setValue("GuiBuildSettings", "treeWidth", treeWidth)
+        options.setValue("GuiBuildSettings", "filterWidth", filterWidth)
+        options.setValue("GuiBuildSettings", "autoPreview", self.swtAutoPreview.isChecked())
+        options.saveSettings()
 
     def _applyChanges(self) -> None:
         """Apply all settings changes to the build object."""
@@ -251,7 +290,7 @@ class GuiBuildSettings(NToolDialog):
 
     def _emitBuildData(self) -> None:
         """Assemble the build data and emit the signal."""
-        self.newSettingsReady.emit(self._build)
+        self.newSettingsReady.emit(self._build, self.swtAutoPreview.isChecked())
         self._build.resetChangedState()
 
 
@@ -278,9 +317,9 @@ class _FilterTab(NFixedPage):
 
         self._statusFlags: dict[int, QIcon] = {
             self.F_NONE:     QIcon(),
-            self.F_FILTERED: SHARED.theme.getIcon("filter", "orange"),
-            self.F_INCLUDED: SHARED.theme.getIcon("pin", "blue"),
-            self.F_EXCLUDED: SHARED.theme.getIcon("exclude", "red"),
+            self.F_FILTERED: SHARED.theme.getIcon("filter", "altaction"),
+            self.F_INCLUDED: SHARED.theme.getIcon("pin", "action"),
+            self.F_EXCLUDED: SHARED.theme.getIcon("exclude", "reject"),
         }
 
         self._trIncluded = self.tr("Included in manuscript")
@@ -319,15 +358,13 @@ class _FilterTab(NFixedPage):
 
         self.includedButton = NIconToolButton(self, iSz)
         self.includedButton.setToolTip(self.tr("Always included"))
-        self.includedButton.setIcon(self._statusFlags[self.F_INCLUDED])
         self.includedButton.clicked.connect(qtLambda(self._setSelectedMode, self.F_INCLUDED))
 
         self.excludedButton = NIconToolButton(self, iSz)
         self.excludedButton.setToolTip(self.tr("Always excluded"))
-        self.excludedButton.setIcon(self._statusFlags[self.F_EXCLUDED])
         self.excludedButton.clicked.connect(qtLambda(self._setSelectedMode, self.F_EXCLUDED))
 
-        self.resetButton = NIconToolButton(self, iSz, "revert", "green")
+        self.resetButton = NIconToolButton(self, iSz)
         self.resetButton.setToolTip(self.tr("Reset to default"))
         self.resetButton.clicked.connect(qtLambda(self._setSelectedMode, self.F_FILTERED))
 
@@ -369,6 +406,7 @@ class _FilterTab(NFixedPage):
             pOptions.getInt("GuiBuildSettings", "filterWidth", 300),
         ])
 
+        self.updateTheme(init=True)
         self.setCentralWidget(self.mainSplit)
 
     def loadContent(self) -> None:
@@ -381,6 +419,20 @@ class _FilterTab(NFixedPage):
         sizes = self.mainSplit.sizes()
         m, n = (sizes[0], sizes[1]) if len(sizes) >= 2 else (0, 0)
         return m, n
+
+    def updateTheme(self, *, init: bool = False) -> None:
+        """Update theme elements."""
+        logger.debug("Theme Update: _FilterTab, init=%s", init)
+
+        if not init:
+            self._statusFlags[self.F_FILTERED] = SHARED.theme.getIcon("filter", "altaction")
+            self._statusFlags[self.F_INCLUDED] = SHARED.theme.getIcon("pin", "action")
+            self._statusFlags[self.F_EXCLUDED] = SHARED.theme.getIcon("exclude", "reject")
+            self.loadContent()
+
+        self.includedButton.setIcon(self._statusFlags[self.F_INCLUDED])
+        self.excludedButton.setIcon(self._statusFlags[self.F_EXCLUDED])
+        self.resetButton.setThemeIcon("revert", "reset")
 
     ##
     #  Slots
@@ -455,7 +507,7 @@ class _FilterTab(NFixedPage):
             default=self._build.getBool("filter.includeNotes")
         )
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("unchecked", "red"),
+            SHARED.theme.getIcon("unchecked", "reject"),
             self._build.getLabel("filter.includeInactive"),
             "doc:filter.includeInactive",
             default=self._build.getBool("filter.includeInactive")
@@ -548,7 +600,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblPart = QLabel(self._build.getLabel("headings.fmtPart"), self)
         self.fmtPart = QLineEdit("", self)
         self.fmtPart.setReadOnly(True)
-        self.btnPart = NIconToolButton(self, iSz, "edit", "green")
+        self.btnPart = NIconToolButton(self, iSz)
         self.btnPart.clicked.connect(qtLambda(self._editHeading, self.EDIT_TITLE))
         self.swtPart = NSwitch(self, height=iPx)
         self.hdePart = QLabel(trHide, self)
@@ -565,7 +617,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblChapter = QLabel(self._build.getLabel("headings.fmtChapter"), self)
         self.fmtChapter = QLineEdit("", self)
         self.fmtChapter.setReadOnly(True)
-        self.btnChapter = NIconToolButton(self, iSz, "edit", "green")
+        self.btnChapter = NIconToolButton(self, iSz)
         self.btnChapter.clicked.connect(qtLambda(self._editHeading, self.EDIT_CHAPTER))
         self.swtChapter = NSwitch(self, height=iPx)
         self.hdeChapter = QLabel(trHide, self)
@@ -582,7 +634,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblUnnumbered = QLabel(self._build.getLabel("headings.fmtUnnumbered"), self)
         self.fmtUnnumbered = QLineEdit("", self)
         self.fmtUnnumbered.setReadOnly(True)
-        self.btnUnnumbered = NIconToolButton(self, iSz, "edit", "green")
+        self.btnUnnumbered = NIconToolButton(self, iSz)
         self.btnUnnumbered.clicked.connect(qtLambda(self._editHeading, self.EDIT_UNNUM))
         self.swtUnnumbered = NSwitch(self, height=iPx)
         self.hdeUnnumbered = QLabel(trHide, self)
@@ -599,7 +651,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblScene = QLabel(self._build.getLabel("headings.fmtScene"), self)
         self.fmtScene = QLineEdit("", self)
         self.fmtScene.setReadOnly(True)
-        self.btnScene = NIconToolButton(self, iSz, "edit", "green")
+        self.btnScene = NIconToolButton(self, iSz)
         self.btnScene.clicked.connect(qtLambda(self._editHeading, self.EDIT_SCENE))
         self.swtScene = NSwitch(self, height=iPx)
         self.hdeScene = QLabel(trHide, self)
@@ -616,7 +668,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblAScene = QLabel(self._build.getLabel("headings.fmtAltScene"), self)
         self.fmtAScene = QLineEdit("", self)
         self.fmtAScene.setReadOnly(True)
-        self.btnAScene = NIconToolButton(self, iSz, "edit", "green")
+        self.btnAScene = NIconToolButton(self, iSz)
         self.btnAScene.clicked.connect(qtLambda(self._editHeading, self.EDIT_HSCENE))
         self.swtAScene = NSwitch(self, height=iPx)
         self.hdeAScene = QLabel(trHide, self)
@@ -633,7 +685,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblSection = QLabel(self._build.getLabel("headings.fmtSection"), self)
         self.fmtSection = QLineEdit("", self)
         self.fmtSection.setReadOnly(True)
-        self.btnSection = NIconToolButton(self, iSz, "edit", "green")
+        self.btnSection = NIconToolButton(self, iSz)
         self.btnSection.clicked.connect(qtLambda(self._editHeading, self.EDIT_SECTION))
         self.swtSection = NSwitch(self, height=iPx)
         self.hdeSection = QLabel(trHide, self)
@@ -767,7 +819,22 @@ class _HeadingsTab(NScrollablePage):
         self.outerBox.addLayout(self.layoutMatrix)
         self.outerBox.addStretch(1)
 
+        self.updateTheme()
         self.setCentralLayout(self.outerBox)
+
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        logger.debug("Theme Update: _HeadingsTab")
+
+        self.btnPart.setThemeIcon("edit", "change")
+        self.btnChapter.setThemeIcon("edit", "change")
+        self.btnUnnumbered.setThemeIcon("edit", "change")
+        self.btnScene.setThemeIcon("edit", "change")
+        self.btnAScene.setThemeIcon("edit", "change")
+        self.btnSection.setThemeIcon("edit", "change")
+
+        self.formSyntax.initHighlighter()
+        self.formSyntax.rehighlight()
 
     def loadContent(self) -> None:
         """Populate the widgets."""
@@ -900,10 +967,14 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
 
     def __init__(self, document: QTextDocument | None) -> None:
         super().__init__(document)
-        syntax = SHARED.theme.syntaxTheme
         self._fmtSymbol = QTextCharFormat()
-        self._fmtSymbol.setForeground(syntax.head)
         self._fmtFormat = QTextCharFormat()
+        self.initHighlighter()
+
+    def initHighlighter(self) -> None:
+        """Update theme elements."""
+        syntax = SHARED.theme.syntaxTheme
+        self._fmtSymbol.setForeground(syntax.head)
         self._fmtFormat.setForeground(syntax.emph)
 
     def highlightBlock(self, text: str) -> None:
@@ -929,6 +1000,7 @@ class _FormattingTab(NScrollableForm):
 
         self.setHelpTextStyle(SHARED.theme.helpText)
         self.buildForm()
+        self.updateTheme()
 
     def buildForm(self) -> None:
         """Build the formatting form."""
@@ -972,7 +1044,7 @@ class _FormattingTab(NScrollableForm):
                 lambda keyword=keyword: self._updateIgnoredKeywords(keyword)
             )
 
-        self.ignoredKeywordsButton = NIconToolButton(self, iSz, "add", "green")
+        self.ignoredKeywordsButton = NIconToolButton(self, iSz)
         self.ignoredKeywordsButton.setMenu(self.mnKeywords)
         self.addRow(
             self._build.getLabel("text.ignoredKeywords"), self.ignoredKeywords,
@@ -994,7 +1066,7 @@ class _FormattingTab(NScrollableForm):
         # Text Font
         self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
-        self.btnTextFont = NIconToolButton(self, iSz, "font")
+        self.btnTextFont = NIconToolButton(self, iSz)
         self.btnTextFont.clicked.connect(self._selectFont)
         self.addRow(
             self._build.getLabel("format.textFont"), self.textFont,
@@ -1053,12 +1125,12 @@ class _FormattingTab(NScrollableForm):
         self._sidebar.addButton(title, section)
         self.addGroupLabel(title, section)
 
-        pixT = SHARED.theme.getPixmap("margin_top", (iPx, iPx))
-        pixB = SHARED.theme.getPixmap("margin_bottom", (iPx, iPx))
-        pixL = SHARED.theme.getPixmap("margin_left", (iPx, iPx))
-        pixR = SHARED.theme.getPixmap("margin_right", (iPx, iPx))
-        pixH = SHARED.theme.getPixmap("fit_height", (iPx, iPx))
-        pixW = SHARED.theme.getPixmap("fit_width", (iPx, iPx))
+        self.pixT = QLabel(self)
+        self.pixB = QLabel(self)
+        self.pixL = QLabel(self)
+        self.pixR = QLabel(self)
+        self.pixH = QLabel(self)
+        self.pixW = QLabel(self)
 
         # Title
         self.titleMarginT = NDoubleSpinBox(self)
@@ -1069,7 +1141,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.titleMargin"),
-            [pixT, self.titleMarginT, 6, pixB, self.titleMarginB],
+            [self.pixT, self.titleMarginT, 6, self.pixB, self.titleMarginB],
             unit="em",
         )
 
@@ -1082,7 +1154,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.h1Margin"),
-            [pixT, self.h1MarginT, 6, pixB, self.h1MarginB],
+            [self.pixT, self.h1MarginT, 6, self.pixB, self.h1MarginB],
             unit="em",
         )
 
@@ -1095,7 +1167,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.h2Margin"),
-            [pixT, self.h2MarginT, 6, pixB, self.h2MarginB],
+            [self.pixT, self.h2MarginT, 6, self.pixB, self.h2MarginB],
             unit="em",
         )
 
@@ -1108,7 +1180,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.h3Margin"),
-            [pixT, self.h3MarginT, 6, pixB, self.h3MarginB],
+            [self.pixT, self.h3MarginT, 6, self.pixB, self.h3MarginB],
             unit="em",
         )
 
@@ -1121,7 +1193,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.h4Margin"),
-            [pixT, self.h4MarginT, 6, pixB, self.h4MarginB],
+            [self.pixT, self.h4MarginT, 6, self.pixB, self.h4MarginB],
             unit="em",
         )
 
@@ -1134,7 +1206,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.textMargin"),
-            [pixT, self.textMarginT, 6, pixB, self.textMarginB],
+            [self.pixT, self.textMarginT, 6, self.pixB, self.textMarginB],
             unit="em",
         )
 
@@ -1147,7 +1219,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.sepMargin"),
-            [pixT, self.sepMarginT, 6, pixB, self.sepMarginB],
+            [self.pixT, self.sepMarginT, 6, self.pixB, self.sepMarginB],
             unit="em",
         )
 
@@ -1181,7 +1253,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.pageSize"),
-            [self.pageSize, 6, pixW, self.pageWidth, 6, pixH, self.pageHeight],
+            [self.pageSize, 6, self.pixW, self.pageWidth, 6, self.pixH, self.pageHeight],
         )
 
         # Page Margins
@@ -1199,11 +1271,11 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.pageMargins"),
-            [pixT, self.topMargin, 6, pixB, self.bottomMargin],
+            [self.pixT, self.topMargin, 6, self.pixB, self.bottomMargin],
         )
         self.addRow(
             "",
-            [pixL, self.leftMargin, 6, pixR, self.rightMargin],
+            [self.pixL, self.leftMargin, 6, self.pixR, self.rightMargin],
         )
 
         # Open Document
@@ -1217,7 +1289,7 @@ class _FormattingTab(NScrollableForm):
         # Header
         self.odtPageHeader = QLineEdit(self)
         self.odtPageHeader.setMinimumWidth(200)
-        self.btnPageHeader = NIconToolButton(self, iSz, "revert", "green")
+        self.btnPageHeader = NIconToolButton(self, iSz)
         self.btnPageHeader.clicked.connect(self._resetPageHeader)
         self.addRow(
             self._build.getLabel("doc.pageHeader"), self.odtPageHeader,
@@ -1256,6 +1328,25 @@ class _FormattingTab(NScrollableForm):
 
         # Finalise
         self.finalise()
+
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        logger.debug("Theme Update: _FormattingTab")
+
+        self.ignoredKeywordsButton.setThemeIcon("add", "add")
+        self.btnTextFont.setThemeIcon("font", "tool")
+        self.btnPageHeader.setThemeIcon("revert", "reset")
+
+        iPx = SHARED.theme.baseIconHeight
+        self.pixT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
+        self.pixB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
+        self.pixL.setPixmap(SHARED.theme.getPixmap("margin_left", (iPx, iPx)))
+        self.pixR.setPixmap(SHARED.theme.getPixmap("margin_right", (iPx, iPx)))
+        self.pixH.setPixmap(SHARED.theme.getPixmap("fit_height", (iPx, iPx)))
+        self.pixW.setPixmap(SHARED.theme.getPixmap("fit_width", (iPx, iPx)))
+
+        self.pageSize.updateStyle()
+        self.pageUnit.updateStyle()
 
     def loadContent(self) -> None:
         """Populate the widgets."""

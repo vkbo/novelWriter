@@ -34,6 +34,7 @@ from PyQt6.QtWidgets import QComboBox
 from novelwriter import SHARED
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass
+from novelwriter.types import QtColDisabled
 
 if TYPE_CHECKING:
     from PyQt6.QtWidgets import QWidget
@@ -93,7 +94,9 @@ class NovelSelector(QComboBox):
     def updateTheme(self) -> None:
         """Update theme colours."""
         palette = self.palette()
-        palette.setBrush(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text, palette.text())
+        palette.setBrush(QtColDisabled, QPalette.ColorRole.Text, palette.text())
+        palette.setBrush(QtColDisabled, QPalette.ColorRole.WindowText, palette.windowText())
+        palette.setBrush(QtColDisabled, QPalette.ColorRole.ButtonText, palette.buttonText())
         self.setPalette(palette)
         self.refreshNovelList()
 
@@ -110,7 +113,7 @@ class NovelSelector(QComboBox):
         self._firstHandle = None
         self.clear()
 
-        icon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL], "blue")
+        icon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL], "root")
         for tHandle, nwItem in SHARED.project.tree.iterRoots(nwItemClass.NOVEL):
             if self._listFormat:
                 name = self._listFormat.format(nwItem.itemName)

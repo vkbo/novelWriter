@@ -138,6 +138,7 @@ class GuiProjectView(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiProjectView")
         self.projBar.updateTheme()
 
     def initSettings(self) -> None:
@@ -346,6 +347,8 @@ class GuiProjectToolBar(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiProjectToolBar")
+
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbQuick.setStyleSheet(buttonStyle)
         self.tbMoveU.setStyleSheet(buttonStyle)
@@ -353,11 +356,11 @@ class GuiProjectToolBar(QWidget):
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbMore.setStyleSheet(buttonStyle)
 
-        self.tbQuick.setThemeIcon("bookmarks", "blue")
-        self.tbMoveU.setThemeIcon("chevron_up", "blue")
-        self.tbMoveD.setThemeIcon("chevron_down", "blue")
-        self.tbAdd.setThemeIcon("add", "green")
-        self.tbMore.setThemeIcon("more_vertical")
+        self.tbQuick.setThemeIcon("bookmarks", "action")
+        self.tbMoveU.setThemeIcon("chevron_up", "action")
+        self.tbMoveD.setThemeIcon("chevron_down", "action")
+        self.tbAdd.setThemeIcon("add", "add")
+        self.tbMore.setThemeIcon("more_vertical", "default")
 
         self.aAddScene.setIcon(SHARED.theme.getIcon("prj_scene", "scene"))
         self.aAddChap.setIcon(SHARED.theme.getIcon("prj_chapter", "chapter"))
@@ -1180,10 +1183,10 @@ class _TreeContextMenu(QMenu):
         if len(self._indices) > 1:
             mSub = qtAddMenu(self, self.tr("Set Active to ..."))
             aOne = qtAddAction(mSub, self._tree.trActive)
-            aOne.setIcon(SHARED.theme.getIcon("checked", "green"))
+            aOne.setIcon(SHARED.theme.getIcon("checked", "accept"))
             aOne.triggered.connect(qtLambda(self._iterItemActive, True))
             aTwo = qtAddAction(mSub, self._tree.trInactive)
-            aTwo.setIcon(SHARED.theme.getIcon("unchecked", "red"))
+            aTwo.setIcon(SHARED.theme.getIcon("unchecked", "reject"))
             aTwo.triggered.connect(qtLambda(self._iterItemActive, False))
         else:
             action = qtAddAction(self, self.tr("Toggle Active"))

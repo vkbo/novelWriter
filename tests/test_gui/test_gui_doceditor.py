@@ -36,13 +36,14 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout
+from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwState
 from novelwriter.gui.doceditor import GuiDocEditor, TextAutoReplace, _TagAction
 from novelwriter.gui.dochighlight import TextBlockData
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
     QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtModNone,
-    QtMouseLeft, QtMoveAnchor, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
+    QtMouseLeft, QtMoveAnchor, QtMoveRight, QtScrollAlwaysOff,
+    QtScrollAsNeeded, QtSelectDocument, QtSelectWord
 )
 
 from tests.mocked import causeOSError
@@ -58,7 +59,7 @@ def getMenuForPos(editor: GuiDocEditor, pos: int, select: bool = False) -> QMenu
     cursor = editor.textCursor()
     cursor.setPosition(pos)
     if select:
-        cursor.select(QTextCursor.SelectionType.WordUnderCursor)
+        cursor.select(QtSelectWord)
     editor.setTextCursor(cursor)
     editor._openContextFromCursor()
     for obj in editor.children():
@@ -593,6 +594,13 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     docEditor.replaceText(text)
     doc = docEditor.document()
 
+    # Check that the reset colour state works (used for action errors)
+    docEditor.changeFocusState(True)
+    assert docEditor.docHeader.itemTitle._state == nwState.NORMAL
+    docEditor.docHeader.itemTitle.setColorState(nwState.ERROR)
+    docEditor.docHeader._resetColourState()
+    assert docEditor.docHeader.itemTitle._state == nwState.NORMAL
+
     # Select/Cut/Copy/Paste/Undo/Redo
     # ===============================
 
@@ -665,12 +673,18 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.MD_ITALIC) is False
+
     # Strong
     docEditor.setCursorPosition(50)
     assert docEditor.docAction(nwDocAction.MD_BOLD) is True
     assert docEditor.getText() == text.replace("consectetur", "**consectetur**")
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.MD_BOLD) is False
 
     # Strikeout
     docEditor.setCursorPosition(50)
@@ -679,12 +693,18 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.MD_STRIKE) is False
+
     # Mark
     docEditor.setCursorPosition(50)
     assert docEditor.docAction(nwDocAction.MD_MARK) is True
     assert docEditor.getText() == text.replace("consectetur", "==consectetur==")
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.MD_MARK) is False
 
     # Redo
     assert docEditor.docAction(nwDocAction.REDO) is True
@@ -705,12 +725,18 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_ITALIC) is False
+
     # Bold
     docEditor.setCursorPosition(46)
     assert docEditor.docAction(nwDocAction.SC_BOLD) is True
     assert docEditor.getText() == text.replace("consectetur", "[b]consectetur[/b]")
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_BOLD) is False
 
     # Strikethrough
     docEditor.setCursorPosition(46)
@@ -719,12 +745,18 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_STRIKE) is False
+
     # Underline
     docEditor.setCursorPosition(46)
     assert docEditor.docAction(nwDocAction.SC_ULINE) is True
     assert docEditor.getText() == text.replace("consectetur", "[u]consectetur[/u]")
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_ULINE) is False
 
     # Mark
     docEditor.setCursorPosition(46)
@@ -733,6 +765,9 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_MARK) is False
+
     # Superscript
     docEditor.setCursorPosition(46)
     assert docEditor.docAction(nwDocAction.SC_SUP) is True
@@ -740,12 +775,18 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_SUP) is False
+
     # Subscript
     docEditor.setCursorPosition(46)
     assert docEditor.docAction(nwDocAction.SC_SUB) is True
     assert docEditor.getText() == text.replace("consectetur", "[sub]consectetur[/sub]")
     assert docEditor.docAction(nwDocAction.UNDO) is True
     assert docEditor.getText() == text
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.SC_SUB) is False
 
     # Quotes
     # ======
@@ -836,25 +877,40 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.ALIGN_L) is True
     assert docEditor.getText() == "#### Scene Title\n\nScene text. <<\n\n"
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.ALIGN_L) is False
+
     # Align Right
     docEditor.setCursorPosition(20)
     assert docEditor.docAction(nwDocAction.ALIGN_R) is True
     assert docEditor.getText() == "#### Scene Title\n\n>> Scene text.\n\n"
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.ALIGN_R) is False
 
     # Align Centre
     docEditor.setCursorPosition(20)
     assert docEditor.docAction(nwDocAction.ALIGN_C) is True
     assert docEditor.getText() == "#### Scene Title\n\n>> Scene text. <<\n\n"
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.ALIGN_C) is False
+
     # Indent Left
     docEditor.setCursorPosition(20)
     assert docEditor.docAction(nwDocAction.INDENT_L) is True
     assert docEditor.getText() == "#### Scene Title\n\n> Scene text.\n\n"
 
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.INDENT_L) is False
+
     # Indent Right
     docEditor.setCursorPosition(20)
     assert docEditor.docAction(nwDocAction.INDENT_R) is True
     assert docEditor.getText() == "#### Scene Title\n\n> Scene text. <\n\n"
+
+    docEditor.setCursorPosition(0)  # Blocked on headings
+    assert docEditor.docAction(nwDocAction.INDENT_R) is False
 
     # Text (Reset)
     docEditor.setCursorPosition(20)
@@ -1239,7 +1295,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     docEditor.setCursorPosition(45)
     assert len(docEditor._selectedBlocks(cursor)) == 0
 
-    cursor.select(QTextCursor.SelectionType.Document)
+    cursor.select(QtSelectDocument)
     assert len(docEditor._selectedBlocks(cursor)) == 15
 
     # Remove All
@@ -2093,7 +2149,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Select the Word "est"
     docEditor.setCursorPosition(663)
-    docEditor._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docEditor._makeSelection(QtSelectWord)
     cursor = docEditor.textCursor()
     assert cursor.selectedText() == "est"
 
@@ -2223,7 +2279,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Close search and select "est" again
     docSearch.cancelSearch.activate(QAction.ActionEvent.Trigger)
     docEditor.setCursorPosition(663)
-    docEditor._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docEditor._makeSelection(QtSelectWord)
     cursor = docEditor.textCursor()
     assert cursor.selectedText() == "est"
 
@@ -2680,6 +2736,38 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line2", "Line3"]
 
+    # d$: Delete line
+    resetText()
+    docEditor.setCursorPosition(0)  # Start of Line1
+    qtbot.keyClicks(docEditor, "d$", delay=inputDelay)
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines == ["Line2", "Line3"]
+
+    # de: Delete word (from Line1 up to end of word boundary)
+    resetText()
+    line2_pos = docEditor.getText().find("Line2")
+    docEditor.setCursorPosition(line2_pos)
+    qtbot.keyClicks(docEditor, "de", delay=inputDelay)
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines == ["Line1", "Line3"]
+
+    # de: Delete word already at end of word
+    resetText()
+    line2_pos = docEditor.getText().find("Line2")
+    end_pos = docEditor.getText().find("Line2") + len("Line2")
+    docEditor.setCursorPosition(end_pos)
+    qtbot.keyClicks(docEditor, "de", delay=inputDelay)
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines == ["Line1", "Line2"]
+
+    # db: Delete word back (from Line2 up to end of word boundary)
+    resetText()
+    docEditor.setCursorPosition(0)  # Start of Line1
+    qtbot.keyClicks(docEditor, "w", delay=inputDelay)  # End of line1
+    qtbot.keyClicks(docEditor, "db", delay=inputDelay)
+    lines = list(filter(str.strip, docEditor.getText().splitlines()))
+    assert lines == ["Line2", "Line3"]
+
     # yw: Yank word (yank Line1)
     resetText()
     docEditor.setCursorPosition(0)  # Start of Line1
@@ -2963,6 +3051,12 @@ def testGuiEditor_Vim_NormalMode(qtbot, nwGUI, projPath, mockRnd):
     assert docEditor.textCursor().position() == 0
 
     resetText()
+    docEditor.setCursorPosition(0)  # Start of Line1
+    qtbot.keyClick(docEditor, "h", delay=inputDelay)
+
+    # Move otherwise "$" is somehow not captured always
+    qtbot.keyClick(docEditor, "l", delay=inputDelay)
+
     qtbot.keyClick(docEditor, "$", delay=inputDelay)  # End of line
     cursorPos = docEditor.textCursor().position()
     assert cursorPos == len("Line1")

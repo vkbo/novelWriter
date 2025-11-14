@@ -36,12 +36,12 @@ ET.register_namespace("", "http://www.w3.org/2000/svg")
 
 ICON_SOURCES = {
     "material":     "https://github.com/google/material-design-icons.git",
-    "font_awesome": "https://github.com/FortAwesome/Font-Awesome/archive/refs/tags/6.7.2.zip",
+    "font_awesome": "https://github.com/FortAwesome/Font-Awesome/archive/refs/tags/7.1.0.zip",
     "remix":        "https://github.com/Remix-Design/RemixIcon/archive/refs/tags/v4.6.0.zip",
 }
 ICON_EXTRACT = {
     "material":     "material-design-icons",
-    "font_awesome": "Font-Awesome-6.7.2",
+    "font_awesome": "Font-Awesome-7.1.0",
     "remix":        "RemixIcon-4.6.0",
 }
 ICONS = [
@@ -107,6 +107,24 @@ ICONS = [
     "theme_dark",
     "theme_auto",
 
+    "btn_ok",
+    "btn_cancel",
+    "btn_yes",
+    "btn_no",
+    "btn_open",
+    "btn_close",
+    "btn_save",
+    "btn_browse",
+    "btn_list",
+    "btn_new",
+    "btn_create",
+    "btn_reset",
+    "btn_insert",
+    "btn_apply",
+    "btn_build",
+    "btn_print",
+    "btn_preview",
+
     "add",
     "bookmarks",
     "browse",
@@ -142,7 +160,6 @@ ICONS = [
     "more_arrow",
     "more_vertical",
     "noncheckable",
-    "open",
     "panel",
     "pin",
     "project_copy",
@@ -151,7 +168,6 @@ ICONS = [
     "remove",
     "revert",
     "settings",
-    "star",
     "stats",
     "text",
     "timer_off",
@@ -288,6 +304,8 @@ def processFontAwesome(workDir: Path, iconsDir: Path, jobs: dict) -> None:
                 viewbox = [int(x) for x in svg.get("viewBox", "").split()]
                 viewbox = [viewbox[2]//2 - 256, 0, 512, 512]
                 svg.set("viewBox", " ".join(str(x) for x in viewbox))
+                for elem in svg.iter():
+                    elem.attrib.pop("fill", None)
                 icons[key] = svg
             else:
                 print(f"Not Found: {icon}.svg")
@@ -396,7 +414,7 @@ def main(args: argparse.Namespace) -> None:
     if style in ("all", "optional", "free", "font_awesome"):
         processFontAwesome(workDir, iconsDir, {
             "font_awesome": {
-                "name": "Font Awesome 6",
+                "name": "Font Awesome 7",
             },
         })
 

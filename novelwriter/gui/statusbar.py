@@ -133,6 +133,8 @@ class GuiMainStatus(QStatusBar):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiMainStatus")
+
         iPx = SHARED.theme.baseIconHeight
         self.langIcon.setPixmap(SHARED.theme.getPixmap("language", (iPx, iPx)))
         self.statsIcon.setPixmap(SHARED.theme.getPixmap("stats", (iPx, iPx)))
@@ -140,9 +142,9 @@ class GuiMainStatus(QStatusBar):
         self.idlePixmap = SHARED.theme.getPixmap("timer_off", (iPx, iPx))
         self.timeIcon.setPixmap(self.timePixmap)
 
-        colNone = SHARED.theme.getBaseColor("default").darker(150)
-        colSaved = SHARED.theme.getBaseColor("green").darker(150)
-        colUnsaved = SHARED.theme.getBaseColor("red").darker(150)
+        colNone = SHARED.theme.getBaseColor("default")
+        colSaved = SHARED.theme.getBaseColor("green")
+        colUnsaved = SHARED.theme.getBaseColor("red")
         self.docIcon.setColors(colNone, colSaved, colUnsaved)
         self.projIcon.setColors(colNone, colSaved, colUnsaved)
 

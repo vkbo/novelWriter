@@ -66,7 +66,7 @@ class C:
 def cmpFiles(
     fileOne: str | Path,
     fileTwo: str | Path,
-    ignoreLines: list | None = None,
+    ignoreLines: list[int] | None = None,
     ignoreStart: tuple | None = None
 ) -> bool:
     """Compare two files, with optional line ignore."""

@@ -552,6 +552,8 @@ class NWProject:
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: NWProject")
+
         self._data.itemStatus.refreshIcons()
         self._data.itemImport.refreshIcons()
 

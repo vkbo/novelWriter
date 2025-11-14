@@ -27,12 +27,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
 from __future__ import annotations
 
-from PyQt6.QtGui import QColor, QFont, QPalette, QPixmap
+from PyQt6.QtGui import QColor, QFont, QPalette
 from PyQt6.QtWidgets import (
     QAbstractButton, QFrame, QHBoxLayout, QLabel, QLayout, QScrollArea,
     QVBoxLayout, QWidget
 )
 
+from novelwriter.enum import nwState
 from novelwriter.types import QtScrollAsNeeded
 
 DEFAULT_SCALE = 0.9
@@ -170,7 +171,7 @@ class NScrollableForm(QScrollArea):
     def addRow(
         self,
         label: str | None,
-        widget: QWidget | list[QWidget | QPixmap | int],
+        widget: QWidget | list[QWidget | int],
         helpText: str = "",
         unit: str | None = None,
         button: QWidget | None = None,
@@ -187,10 +188,6 @@ class NScrollableForm(QScrollArea):
             for item in widget:
                 if isinstance(item, QWidget):
                     wBox.addWidget(item)
-                elif isinstance(item, QPixmap):
-                    icon = QLabel(self)
-                    icon.setPixmap(item)
-                    wBox.addWidget(icon)
                 elif isinstance(item, int):
                     wBox.addSpacing(item)
             qWidget = QWidget(self)
@@ -259,7 +256,7 @@ class NColorLabel(QLabel):
 
     def __init__(
         self, text: str, parent: QWidget, *,
-        color: QColor | None = None, faded: QColor | None = None,
+        color: QColor | None = None, faded: QColor | None = None, error: QColor | None = None,
         scale: float = HELP_SCALE, wrap: bool = False, indent: int = 0,
         bold: bool = False
     ) -> None:
@@ -268,6 +265,7 @@ class NColorLabel(QLabel):
         default = self.palette().windowText().color()
         self._color = color or default
         self._faded = faded or default
+        self._error = error or default
 
         font = self.font()
         font.setPointSizeF(scale*font.pointSizeF())
@@ -280,15 +278,19 @@ class NColorLabel(QLabel):
         self.setFont(font)
         self.setIndent(indent)
         self.setWordWrap(wrap)
-        self.setColorState(True)
+        self.setColorState(nwState.NORMAL)
 
-    def setTextColors(self, *, color: QColor | None = None, faded: QColor | None = None) -> None:
+    def setTextColors(
+        self, *, color: QColor | None = None,
+        faded: QColor | None = None, error: QColor | None = None
+    ) -> None:
         """Set or update the text colours."""
         self._color = color or self._color
         self._faded = faded or self._faded
+        self._error = error or self._error
         self._refeshTextColor()
 
-    def setColorState(self, state: bool) -> None:
+    def setColorState(self, state: nwState) -> None:
         """Change the colour state."""
         if self._state is not state:
             self._state = state
@@ -297,10 +299,13 @@ class NColorLabel(QLabel):
     def _refeshTextColor(self) -> None:
         """Refresh the colour of the text on the label."""
         palette = self.palette()
-        palette.setColor(
-            QPalette.ColorRole.WindowText,
-            self._color if self._state else self._faded,
-        )
+        match self._state:
+            case nwState.NORMAL:
+                palette.setColor(QPalette.ColorRole.WindowText, self._color)
+            case nwState.INACTIVE:
+                palette.setColor(QPalette.ColorRole.WindowText, self._faded)
+            case nwState.ERROR:
+                palette.setColor(QPalette.ColorRole.WindowText, self._error)
         self.setPalette(palette)
 
 

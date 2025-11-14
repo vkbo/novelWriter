@@ -79,6 +79,27 @@ A colour theme ``.conf`` file consists of the following settings:
    inactive = red
    disabled = faded
 
+   [Icon]
+   tool      = default
+   sidebar   = default
+   accept    = green
+   reject    = red
+   action    = blue
+   altaction = orange
+   apply     = green
+   create    = yellow
+   destroy   = faded
+   reset     = green
+   add       = green
+   change    = green
+   remove    = red
+   shortcode = default
+   markdown  = orange
+   systemio  = yellow
+   info      = blue
+   warning   = orange
+   error     = red
+
    [Palette]
    window          = base:D105
    windowtext      = default
@@ -109,6 +130,7 @@ A colour theme ``.conf`` file consists of the following settings:
    headertext     = green
    headertag      = green:L135
    emphasis       = orange
+   whitespace     = orange:64
    dialog         = blue
    altdialog      = red
    note           = yellow:D125
@@ -140,6 +162,7 @@ affects.
    "``[Main]``",    "Meta data about the theme, You must at least set ``name``, ``mode`` and ``author``, and ``mode`` must be either ``light`` or ``dark``."
    "``[Base]``",    "The base colours of the theme. These are also selectable colours in various places inside the app, like for icon colours in **Preferences**."
    "``[Project]``", "The colours used for icons and markers for the different project item types."
+   "``[Icon]``",    "The colours used for icons and buttons on the user interface. The names correspond to button and icon roles."
    "``[Palette]``", "The colours used for styling the user interface. The values correspond to the ColorRole_ values in the Qt library."
    "``[GUI]``",     "The colours used for styling additional elements of the user interface."
    "``[Syntax]``",  "The colours used for syntax highlighting in documents."
@@ -173,9 +196,10 @@ There are several ways to enter colour values:
 
 .. versionadded:: 2.8
    The ``[Syntax]`` section was moved into the main theme file. Previously, these settings were in
-   their own file. The ``[Icons]`` section was renamed to ``[Base]``. Added the ``line`` setting.
-   Dropped the ``license``, ``licenseurl``, and ``description`` settings. The  ``author`` field
-   is now required if the theme is included in the app, but not for user themes.
+   their own file. The ``[Icons]`` section was renamed to ``[Base]``, and a new ``[Icon]`` section
+   added for button and icon roles. Added the ``line`` and ``whitespace`` settings. Dropped the
+   ``license``, ``licenseurl``, and ``description`` settings. The  ``author`` field is now required
+   if the theme is included in the app, but not for user themes.
 
 
 Icon Themes

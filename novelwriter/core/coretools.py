@@ -594,17 +594,31 @@ class ProjectBuilder:
         """Open a project and reset/update its settings."""
         project = NWProject()
         project.openProject(path)
+        isSample = project.data.uuid == "e2be99af-f9bf-4403-857a-c3d1ac25abea"
+
+        # Project Data
         project.data.setUuid("")  # Creates a fresh uuid
         if name := data.get("name", ""):
             project.data.setName(name)
         if author := data.get("author", ""):
             project.data.setAuthor(author)
+        if isSample:
+            project.data.setLastHandle("974e400180a99", "editor")
+            project.data.setLastHandle("53b69b83cdafc", "viewer")
+
+        # Reset Items
+        for item in project.tree:
+            item.setCursorPos(0)
+            item.setExpanded(True)
+
+        # Settings
         project.data.setSpellCheck(True)
         project.data.setSpellLang(None)
         project.data.setDoBackup(True)
         project.data.setSaveCount(0)
         project.data.setAutoCount(0)
         project.data.setEditTime(0)
+
         project.index.rebuild()
         project.saveProject()
         project.closeProject()
