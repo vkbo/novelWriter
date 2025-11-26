@@ -566,13 +566,6 @@ class GuiPreferences(NDialog):
             self.tr("Highlight current line"), self.lineHighlight
         )
 
-        # Enable Vim Mode
-        self.vimMode = NSwitch(self)
-        self.vimMode.setChecked(CONFIG.vimMode)
-        self.mainForm.addRow(
-            self.tr("Enable Vim mode"), self.vimMode,
-        )
-
         # Show Tabs and Spaces
         self.showTabsNSpaces = NSwitch(self)
         self.showTabsNSpaces.setChecked(CONFIG.showTabsNSpaces)
@@ -875,6 +868,22 @@ class GuiPreferences(NDialog):
             button=self.btnDQuoteClose
         )
 
+        # Features
+        # ========
+
+        title = self.tr("Features")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
+
+        # Enable Vim Mode
+        self.vimMode = NSwitch(self)
+        self.vimMode.setChecked(CONFIG.vimMode)
+        self.mainForm.addRow(
+            self.tr("Enable Vim mode"), self.vimMode,
+            self.tr("Switch the editor to use Vim editor commands."),
+        )
+
         self.mainForm.finalise()
         self.sidebar.setSelected(1)
 
@@ -1082,7 +1091,6 @@ class GuiPreferences(NDialog):
         CONFIG.lineHighlight   = lineHighlight
         CONFIG.showTabsNSpaces = self.showTabsNSpaces.isChecked()
         CONFIG.showLineEndings = self.showLineEndings.isChecked()
-        CONFIG.vimMode         = self.vimMode.isChecked()
 
         # Editor Scrolling
         CONFIG.autoScroll    = self.autoScroll.isChecked()
@@ -1135,6 +1143,16 @@ class GuiPreferences(NDialog):
         CONFIG.fmtSQuoteClose = self.fmtSQuoteClose.text()
         CONFIG.fmtDQuoteOpen  = self.fmtDQuoteOpen.text()
         CONFIG.fmtDQuoteClose = self.fmtDQuoteClose.text()
+
+        # Features
+        vimMode = self.vimMode.isChecked()
+        if vimMode and not CONFIG.vimMode:
+            vimMode = SHARED.question([
+                self.tr("Are you sure you want to enable Vim mode?"),
+                self.tr("This changes how the editor accepts input."),
+            ])
+        self.vimMode.setChecked(vimMode)
+        CONFIG.vimMode = vimMode
 
         # Finalise
         CONFIG.saveConfig()
