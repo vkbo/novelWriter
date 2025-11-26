@@ -373,10 +373,10 @@ class GuiMain(QMainWindow):
             return True
 
         if not isYes:
-            msgYes = SHARED.question("{0}<br>{1}".format(
+            msgYes = SHARED.question([
                 self.tr("Close the current project?"),
-                self.tr("Changes are saved automatically.")
-            ))
+                self.tr("Changes are saved automatically."),
+            ])
             if not msgYes:
                 return False
 
@@ -838,10 +838,10 @@ class GuiMain(QMainWindow):
 
     def closeMain(self) -> bool:
         """Save everything, and close novelWriter."""
-        if SHARED.hasProject and CONFIG.askBeforeExit and not SHARED.question("{0}<br>{1}".format(
+        if SHARED.hasProject and CONFIG.askBeforeExit and not SHARED.question([
             self.tr("Do you want to exit novelWriter?"),
-            self.tr("Changes are saved automatically.")
-        )):
+            self.tr("Changes are saved automatically."),
+        ]):
             return False
 
         logger.info("Exiting novelWriter")

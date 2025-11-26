@@ -411,7 +411,7 @@ class SharedData(QObject):
             self._logMessage(self._lastAlert, logger.error)
         alert.exec()
 
-    def question(self, text: str, info: str = "", details: str = "", warn: bool = False) -> bool:
+    def question(self, text: T_Msg, info: str = "", details: str = "", warn: bool = False) -> bool:
         """Open a question box."""
         alert = _GuiAlert(self.mainGui, self.theme)
         alert.setMessage(text, info, details)
