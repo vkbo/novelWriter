@@ -838,12 +838,12 @@ class GuiDocEditor(QPlainTextEdit):
         """
         if isinstance(self._nwDocument, NWDocument):
             SHARED.info(
-                "<br>".join([
+                [
                     self.tr("Document Details"),
                     "–"*40,
                     self.tr("Created: {0}").format(self._nwDocument.createdDate),
                     self.tr("Updated: {0}").format(self._nwDocument.updatedDate),
-                ]),
+                ],
                 details=self.tr("File Location: {0}").format(self._nwDocument.fileLocation),
                 log=False
             )

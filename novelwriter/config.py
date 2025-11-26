@@ -43,7 +43,7 @@ from PyQt6.QtWidgets import QApplication
 
 from novelwriter.common import (
     NWConfigParser, checkInt, checkPath, describeFont, fontMatcher,
-    formatTimeStamp, processDialogSymbols, simplified
+    formatTimeStamp, joinLines, processDialogSymbols, simplified
 )
 from novelwriter.constants import nwFiles, nwQuotes, nwUnicode
 from novelwriter.enum import nwTheme
@@ -482,7 +482,7 @@ class Config:
         """Compile and return error messages from the initialisation of
         the Config class, and clear the error buffer.
         """
-        message = "<br>".join(self._errData)
+        message = joinLines(self._errData, "<br>")
         self._hasError = False
         self._errData = []
         return message

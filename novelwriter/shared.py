@@ -36,7 +36,7 @@ from PyQt6.QtCore import QObject, QRunnable, QThreadPool, QTimer, QUrl, pyqtSign
 from PyQt6.QtGui import QDesktopServices, QFont, QScreen
 from PyQt6.QtWidgets import QApplication, QFileDialog, QMessageBox, QWidget
 
-from novelwriter.common import formatFileFilter
+from novelwriter.common import appendIfSet, formatFileFilter, joinLines
 from novelwriter.constants import nwFiles
 from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.enum import nwChange, nwItemClass, nwStandardButton
@@ -52,6 +52,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 NWWidget = TypeVar("NWWidget", bound=QWidget)
+T_Msg = str | list[str]
 
 RX_HTML = re.compile(r"<.*?>")
 
@@ -93,7 +94,7 @@ class SharedData(QObject):
 
         # Settings
         self._lockedBy = None
-        self._lastAlert = ""
+        self._lastAlert = []
         self._idleTime = 0.0
         self._idleRefTime = time()
         self._focusMode = False
@@ -155,7 +156,7 @@ class SharedData(QObject):
         return self._idleTime
 
     @property
-    def lastAlert(self) -> str:
+    def lastAlert(self) -> list[str]:
         """Return the last alert message."""
         return self._lastAlert
 
@@ -377,7 +378,7 @@ class SharedData(QObject):
     #  Alert Boxes
     ##
 
-    def info(self, text: str, info: str = "", details: str = "", log: bool = True) -> None:
+    def info(self, text: T_Msg, info: str = "", details: str = "", log: bool = True) -> None:
         """Open an information alert box."""
         alert = _GuiAlert(self.mainGui, self.theme)
         alert.setMessage(text, info, details)
@@ -387,7 +388,7 @@ class SharedData(QObject):
             self._logMessage(self._lastAlert, logger.info)
         alert.exec()
 
-    def warn(self, text: str, info: str = "", details: str = "", log: bool = True) -> None:
+    def warn(self, text: T_Msg, info: str = "", details: str = "", log: bool = True) -> None:
         """Open a warning alert box."""
         alert = _GuiAlert(self.mainGui, self.theme)
         alert.setMessage(text, info, details)
@@ -397,7 +398,7 @@ class SharedData(QObject):
             self._logMessage(self._lastAlert, logger.warning)
         alert.exec()
 
-    def error(self, text: str, info: str = "", details: str = "", log: bool = True,
+    def error(self, text: T_Msg, info: str = "", details: str = "", log: bool = True,
               exc: Exception | None = None) -> None:
         """Open an error alert box."""
         alert = _GuiAlert(self.mainGui, self.theme)
@@ -423,9 +424,9 @@ class SharedData(QObject):
     #  Internal Functions
     ##
 
-    def _logMessage(self, message: str, log: Callable) -> None:
+    def _logMessage(self, message: list[str], log: Callable) -> None:
         """Print message to log."""
-        for text in message.split("<br>"):
+        for text in message:
             log(RX_HTML.sub("", text), stacklevel=3)
 
     def _resetProject(self) -> None:
@@ -463,7 +464,7 @@ class _GuiAlert(QMessageBox):
     def __init__(self, parent: QWidget, theme: GuiTheme) -> None:
         super().__init__(parent=parent)
         self._theme = theme
-        self._message = ""
+        self._message = []
         self._state = False
         logger.debug("Ready: _GuiAlert")
 
@@ -471,17 +472,19 @@ class _GuiAlert(QMessageBox):
         logger.debug("Delete: _GuiAlert")
 
     @property
-    def logMessage(self) -> str:
+    def logMessage(self) -> list[str]:
         return self._message
 
     @property
     def finalState(self) -> bool:
         return self._state
 
-    def setMessage(self, text: str, info: str, details: str) -> None:
+    def setMessage(self, text: T_Msg, info: str, details: str) -> None:
         """Set the alert box message."""
-        self._message = " ".join(filter(None, [text, info, details]))
-        self.setText(text)
+        self._message = text if isinstance(text, list) else [text]
+        appendIfSet(self._message, info)
+        appendIfSet(self._message, details)
+        self.setText(joinLines(text, "<br>"))
         self.setInformativeText(info)
         self.setDetailedText(details)
 
