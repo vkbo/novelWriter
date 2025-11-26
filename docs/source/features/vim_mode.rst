@@ -10,13 +10,22 @@ Vim_ is a keyboard-centric text editor. "Vim mode" refers to another editor impl
 ability to perform a subset of vim motions. This will allow you to write, select, edit, copy,
 paste, navigate, etc, efficiently by using keyboard commands.
 
-Vim is modal, three such modes have been implemented in novelWriter:
+Vim is modal. Three such modes have been implemented in novelWriter:
 
 - **Normal** mode is the default mode used to navigate text.
 - **Insert** mode is where you can write text like in a 'normal' text editor.
 - **Visual** mode is for selecting text, with:
+
   - **Visual** mode for per character selection.
-  - **V-line** mode for per-line selection.
+  - **V-Line** mode for per-line selection.
+
+The vim mode setting is found in the **Features** section of the **Preferences**.
+
+.. note::
+
+   Vim mode is an advanced feature. When you enable it, the text editor will behave very
+   differently than a standard text editor. A label in the footer of the editor will show which of
+   the vim modes it is in.
 
 
 Mode Switching
@@ -34,7 +43,7 @@ To switch between the various vim modes, these keystrokes implemented:
 You can exit visual mode back to normal mode by pressing :kbd:`Esc`, but all visual mode commands
 that logically "terminate" the visual mode usage will return you to normal mode.
 
-Fro instance, press :kbd:`V` to enter V-line mode, select next word with :kbd:`w`. press :kbd:`y`
+For instance, press :kbd:`V` to enter V-Line mode, select next word with :kbd:`w`. press :kbd:`y`
 to yank (copy), you are now automatically put back in normal mode as you have completed selecting
 your text.
 
