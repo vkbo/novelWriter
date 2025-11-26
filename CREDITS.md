@@ -6,9 +6,12 @@
 
 ## Contributors
 
+Major contributions were made by:
+
 * Early Concept: Marian Lückhof
 * Internationalisation: Bruno Meneguello
 * Setup and Packaging: Rachel Powers
+* Vim Mode: idealemu
 
 For other contributions, see the project's [Contributors](https://github.com/vkbo/novelWriter/graphs/contributors) page.
 
