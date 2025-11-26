@@ -45,7 +45,7 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     with monkeypatch.context() as mp:
         mp.setattr(enchant, "get_user_config_dir", lambda *a: causeException)
         nwGUI.showDictionariesDialog()
-        assert SHARED.lastAlert == "Could not initialise the dialog."
+        assert SHARED.lastAlert[0] == "Could not initialise the dialog."
 
     # Open the tool
     nwGUI.showDictionariesDialog()
@@ -57,16 +57,16 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     assert nwDicts.inPath.text() == str(enchPath)
 
     # Allow Open Dir
-    SHARED._lastAlert = ""
+    SHARED._lastAlert = []
     with monkeypatch.context() as mp:
         mp.setattr(QDesktopServices, "openUrl", lambda *a: None)
         nwDicts._doOpenInstallLocation()
-        assert SHARED.lastAlert == ""
+        assert SHARED.lastAlert == []
 
     # Fail Open Dir
     nwDicts.inPath.setText("/foo/bar")
     nwDicts._doOpenInstallLocation()
-    assert SHARED.lastAlert == "Path not found."
+    assert SHARED.lastAlert[0] == "Path not found."
     nwDicts.inPath.setText(str(fncPath))
 
     # Create Mock Dicts

@@ -589,6 +589,6 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
 
     mainMenu.aFileDetails.activate(QAction.ActionEvent.Trigger)
     path = str(projPath / "content" / "000000000000f.nwd")
-    assert SHARED.lastAlert.endswith(f"File Location: {path}")
+    assert SHARED.lastAlert[-1] == f"File Location: {path}"
 
     # qtbot.stop()

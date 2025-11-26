@@ -254,35 +254,35 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.NOT_NWX_FILE))
         assert project.openProject(fncPath, clearLock=True) is False
-        assert "Project file does not appear" in SHARED.lastAlert
+        assert "Project file does not appear" in SHARED.lastAlert[0]
 
     # Unknown project file version
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.UNKNOWN_VERSION))
         assert project.openProject(fncPath, clearLock=True) is False
-        assert "Unknown or unsupported novelWriter project file" in SHARED.lastAlert
+        assert "Unknown or unsupported novelWriter project file" in SHARED.lastAlert[0]
 
     # Other parse error
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.CANNOT_PARSE))
         assert project.openProject(fncPath, clearLock=True) is False
-        assert "Failed to parse project xml" in SHARED.lastAlert
+        assert "Failed to parse project xml" in SHARED.lastAlert[0]
 
     # Won't convert legacy file
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.WAS_LEGACY))
         mp.setattr(_GuiAlert, "finalState", False)
         assert project.openProject(fncPath, clearLock=True) is False
-        assert "The file format of your project is about to be" in SHARED.lastAlert
+        assert "The file format of your project is about to be" in SHARED.lastAlert[0]
 
     # Won't open project from newer version
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: 0x99999999))
         mp.setattr(_GuiAlert, "finalState", False)
         assert project.openProject(fncPath, clearLock=True) is False
-        assert "This project was saved by a newer version" in SHARED.lastAlert
+        assert "This project was saved by a newer version" in SHARED.lastAlert[0]
 
     # Fail checking items should still pass
     with monkeypatch.context() as mp:
@@ -295,7 +295,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         mp.setattr("novelwriter.core.index.Index.loadIndex", lambda *a: True)
         project.index._indexBroken = True
         assert project.openProject(fncPath, clearLock=True) is True
-        assert "The file format of your project is about to be" in SHARED.lastAlert
+        assert "The file format of your project is about to be" in SHARED.lastAlert[0]
         assert project.index._indexBroken is False
 
     project.closeProject()
