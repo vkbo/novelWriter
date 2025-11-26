@@ -1,103 +1,106 @@
-# Vim mode
+.. _docs_features_vim_mode:
 
-Vim is a keyboard-centric text editor. A vim mode refers
-to another editor implementing the ability to perform
-a subset of vim motions. This will allow you to write,
-select, edit, copy, paste, navigate, etc, efficiently
-all by using your keyboard.
+********
+Vim Mode
+********
+
+.. _Vim: https://www.vim.org/
+
+Vim_ is a keyboard-centric text editor. "Vim mode" refers to another editor implementing the
+ability to perform a subset of vim motions. This will allow you to write, select, edit, copy,
+paste, navigate, etc, efficiently by using keyboard commands.
+
+Vim is modal, three such modes have been implemented in novelWriter:
+
+- **Normal** mode is the default mode used to navigate text.
+- **Insert** mode is where you can write text like in a 'normal' text editor.
+- **Visual** mode is for selecting text, with:
+  - **Visual** mode for per character selection.
+  - **V-line** mode for per-line selection.
 
 
-Vim is modal, three such modes have been implemented
-in NovelWriter:
-- Normal mode: this is the default mode used to navigate text
-- Insert mode: where you can write text as in a 'normal' text editor
-- Visual mode: for selecting text
-    - Visual mode: per character selection
-    - V-line mode: per line selection
+Mode Switching
+==============
 
-## Mode switching
+To switch between the various vim modes, these keystrokes implemented:
 
-To switch between the various vim modes there are these
-keystrokes implemented (definitions provided below):
+.. csv-table::
+   :header: "From Mode", "To Mode", "Keystrokes"
 
-Normal mode -> Insert mode: 
-    - i, I, a, A, o, O
-Insert mode -> Normal mode:
-    - ESC (escape key)
-Normal mode -> Visual mode:
-    - v, V
+   "Normal", "Insert", ":kbd:`i`, :kbd:`I`, :kbd:`a`, :kbd:`A`, :kbd:`o`, :kbd:`O`"
+   "Insert", "Normal", ":kbd:`Esc`"
+   "Normal", "Visual", ":kbd:`v`, :kbd:`V`"
 
-You can exit visual mode back to normal mode by pressing
-escape, but all visual mode commands that logically 
-'terminate' the visual mode usage will return you to 
-normal mode.
-E.g: press "V" to enter V-line mode, select next word with "w"
-press "y" to yank (copy), you are now automatically put
-back in normal mode as you have completed selecting your text.
+You can exit visual mode back to normal mode by pressing :kbd:`Esc`, but all visual mode commands
+that logically "terminate" the visual mode usage will return you to normal mode.
 
-## Implemented keystrokes (vim motions)
+Fro instance, press :kbd:`V` to enter V-line mode, select next word with :kbd:`w`. press :kbd:`y`
+to yank (copy), you are now automatically put back in normal mode as you have completed selecting
+your text.
 
-This table shows the vim motions currently implemented in NovelWriter:
 
-| Motion | Mode(s) | Description |
-|--------|---------|-------------|
-| `i` | Normal → Insert | Enter insert mode |
-| `I` | Normal → Insert | Jump to first non-blank of line and enter insert |
-| `v` | Normal → Visual | Enter character-wise visual mode |
-| `V` | Normal → V-Line | Enter line-wise visual mode |
-| `dd` | Normal | Delete (cut) current line |
-| `x` | Normal | Delete character under cursor |
-| `w` | Normal / Visual | Move to next word start |
-| `b` | Normal / Visual | Move to previous word start |
-| `e` | Normal / Visual | Move to next word end |
-| `dw` | Normal | Delete from cursor to next word start |
-| `de` | Normal | Delete from cursor to next word end |
-| `db` | Normal | Delete from cursor to previous word start |
-| `d$` | Normal | Delete from cursor to end of line |
-| `yw` | Normal | Yank (copy) from cursor to next word start |
-| `gg` | Normal / Visual | Jump to first line |
-| `G` | Normal / Visual | Jump to last line |
-| `yy` | Normal | Yank current line |
-| `p` | Normal | Paste after current line |
-| `P` | Normal | Paste before current line |
-| `o` | Normal → Insert | Open new line below and enter insert |
-| `O` | Normal → Insert | Open new line above and enter insert |
-| `$` | Normal / Visual | Move to end of line |
-| `a` | Normal → Insert | Enter insert after cursor |
-| `A` | Normal → Insert | Enter insert at end of line |
-| `u` | Normal | Undo last change |
-| `zz` | Normal | Center cursor vertically |
-| `h` | Normal / Visual | Move left |
-| `j` | Normal / Visual | Move down |
-| `k` | Normal / Visual | Move up |
-| `l` | Normal / Visual | Move right |
-| `d` / `x` | Visual / V-Line | Delete selection |
-| `y` | Visual / V-Line | Yank selection |
-| `0` | Visual | Move to start of line (extend selection) |
+Implemented Keystrokes (Vim Motions)
+====================================
 
-### Known bugs 
+The table below shows the vim motions currently implemented in novelWriter.
 
-Currently "dd" on an empty line will no delete, but using "x" will.
+.. csv-table::
+   :header: "Motion", "Mode(s)", "Description"
 
-vypyy" will have ypyy in command and thus not register yy.
-Expected behavior would be visual mode, yank, paste, yank line.
-This could be fixed by having a list of suffixes potentially.
+   ":kbd:`i`",  "Normal → Insert", "Enter insert mode"
+   ":kbd:`I`",  "Normal → Insert", "Jump to first non-blank of line and enter insert"
+   ":kbd:`v`",  "Normal → Visual", "Enter character-wise visual mode"
+   ":kbd:`V`",  "Normal → V-Line", "Enter line-wise visual mode"
+   ":kbd:`dd`", "Normal",          "Delete (cut) current line"
+   ":kbd:`x`",  "Normal",          "Delete character under cursor"
+   ":kbd:`w`",  "Normal / Visual", "Move to next word start"
+   ":kbd:`b`",  "Normal / Visual", "Move to previous word start"
+   ":kbd:`e`",  "Normal / Visual", "Move to next word end"
+   ":kbd:`dw`", "Normal",          "Delete from cursor to next word start"
+   ":kbd:`de`", "Normal",          "Delete from cursor to next word end"
+   ":kbd:`db`", "Normal",          "Delete from cursor to previous word start"
+   ":kbd:`d$`", "Normal",          "Delete from cursor to end of line"
+   ":kbd:`yw`", "Normal",          "Yank (copy) from cursor to next word start"
+   ":kbd:`gg`", "Normal / Visual", "Jump to first line"
+   ":kbd:`G`",  "Normal / Visual", "Jump to last line"
+   ":kbd:`yy`", "Normal",          "Yank current line"
+   ":kbd:`p`",  "Normal",          "Paste after current line"
+   ":kbd:`P`",  "Normal",          "Paste before current line"
+   ":kbd:`o`",  "Normal → Insert", "Open new line below and enter insert"
+   ":kbd:`O`",  "Normal → Insert", "Open new line above and enter insert"
+   ":kbd:`$`",  "Normal / Visual", "Move to end of line"
+   ":kbd:`a`",  "Normal → Insert", "Enter insert after cursor"
+   ":kbd:`A`",  "Normal → Insert", "Enter insert at end of line"
+   ":kbd:`u`",  "Normal",          "Undo last change"
+   ":kbd:`zz`", "Normal",          "Centre cursor vertically"
+   ":kbd:`h`",  "Normal / Visual", "Move left"
+   ":kbd:`j`",  "Normal / Visual", "Move down"
+   ":kbd:`k`",  "Normal / Visual", "Move up"
+   ":kbd:`l`",  "Normal / Visual", "Move right"
+   ":kbd:`d`",  "Visual / V-Line", "Delete selection"
+   ":kbd:`x`",  "Visual / V-Line", "Delete selection"
+   ":kbd:`y`",  "Visual / V-Line", "Yank selection"
+   ":kbd:`0`",  "Visual",          "Move to start of line (extend selection)"
 
-Not a bug but differing behavior from vim: the "e" command behaves
-a bit differently with regards to the last character of a word.
-The behavior is inconsistent with vim but functional and still logical 
-to use. The cursor is placed at the end of the word after the last
-character rather than on the last character.
-E.G: test 
+
+Known Issues
+============
+
+* Currently, :kbd:`dd` on an empty line will not delete, but using :kbd:`x` will.
+* :kbd:`vypyy` will have :kbd:`ypyy` in command memory and thus not register :kbd:`yy`. Expected
+  behavior would be visual mode, yank, paste, yank line.
+* Differing behavior from vim: the :kbd:`e` command behaves a bit differently with regards to the
+  last character of a word. The behavior is inconsistent with vim but functional and still logical
+  to use. The cursor is placed at the end of the word after the last character rather than on the
+  last character.
+
+  .. code-block::
+
+     test
         ^ Cursor placed here in vim
-E.G: test 
-         ^ Cursor placed here in NovelWriter vim mode
-You will only really ever notice this behavior if you try to combine
-the "e" command with another, e.g "de" will not delete the last character
-but delete forward as it starts one character after the word boundary.
+     test
+         ^ Cursor placed here in novelWriter vim mode
 
-### Useful commands not yet added:
-- r, R : replace text
-- c : change, delete and enter insert mode
-- ciw : change in word, to "vedi", select current word, delete, then 
-enter insert mode.
+  You will only really ever notice this behavior if you try to combine the :kbd:`e` command with
+  another. For instance, :kbd:`de` will not delete the last character but delete forward as it
+  starts one character after the word boundary.
