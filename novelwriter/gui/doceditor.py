@@ -583,9 +583,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def isVimEscapable(self) -> bool:
         """Check if Escape keypress should be processed for Vim mode."""
-        if CONFIG.vimMode and self._vim.mode != nwVimMode.NORMAL:
-            return True
-        return False
+        return CONFIG.vimMode and self._vim.mode != nwVimMode.NORMAL
 
     ##
     #  Getters
