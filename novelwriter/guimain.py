@@ -1276,7 +1276,7 @@ class GuiMain(QMainWindow):
         """Process an escape keypress in the main window."""
         if self.docEditor.searchVisible():
             self.docEditor.closeSearch()
-        elif self.docEditor.isVimEscapable():
+        elif CONFIG.vimMode:
             self.docEditor.setVimMode(nwVimMode.NORMAL)
         elif SHARED.focusMode:
             SHARED.setFocusMode(False)

@@ -581,10 +581,6 @@ class GuiDocEditor(QPlainTextEdit):
         lM = max(self._vpMargin, fH)
         self.setViewportMargins(tM, uM, tM, lM)
 
-    def isVimEscapable(self) -> bool:
-        """Check if Escape keypress should be processed for Vim mode."""
-        return CONFIG.vimMode and self._vim.mode != nwVimMode.NORMAL
-
     ##
     #  Getters
     ##
