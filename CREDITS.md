@@ -6,7 +6,7 @@
 
 ## Contributors
 
-Major contributions were made by:
+Larger contributions were made by:
 
 * Early Concept: Marian Lückhof
 * Internationalisation: Bruno Meneguello
