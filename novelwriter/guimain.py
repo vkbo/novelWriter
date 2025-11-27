@@ -1274,12 +1274,10 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _keyPressEscape(self) -> None:
         """Process an escape keypress in the main window."""
-        if CONFIG.vimMode:
-            self.docEditor.setVimMode(nwVimMode.NORMAL)
-            return
-
         if self.docEditor.searchVisible():
             self.docEditor.closeSearch()
+        elif self.docEditor.isVimEscapable():
+            self.docEditor.setVimMode(nwVimMode.NORMAL)
         elif SHARED.focusMode:
             SHARED.setFocusMode(False)
 
