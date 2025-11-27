@@ -36,7 +36,9 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatFileFilter, formatInt, getFileSize, openExternalPath
+from novelwriter.common import (
+    formatFileFilter, formatInt, getFileSize, joinLines, openExternalPath
+)
 from novelwriter.enum import nwStandardButton
 from novelwriter.error import formatException
 from novelwriter.extensions.modified import NIconToolButton, NNonBlockingDialog
@@ -74,11 +76,11 @@ class GuiDictionaries(NNonBlockingDialog):
         # Hunspell Dictionaries
         loUrl = "https://extensions.libreoffice.org"
         ooUrl = "https://extensions.openoffice.org"
-        self.huInfo = QLabel("<br>".join([
+        self.huInfo = QLabel(joinLines([
             self.tr("Download a dictionary from one of the links, and add it below."),
             f"&nbsp;\u203a <a href='{loUrl}'>{loUrl}</a>",
             f"&nbsp;\u203a <a href='{ooUrl}'>{ooUrl}</a>",
-        ]), self)
+        ], "<br>"), self)
         self.huInfo.setOpenExternalLinks(True)
         self.huInfo.setWordWrap(True)
         self.huInput = QLineEdit(self)

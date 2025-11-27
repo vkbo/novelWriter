@@ -299,6 +299,19 @@ def uniqueCompact(text: str) -> str:
     return "".join(sorted(set(compact(text))))
 
 
+def joinLines(value: str | list[str], sep: str = "") -> str:
+    """Join a list of strings with a separator."""
+    if isinstance(value, list):
+        return sep.join(str(x) for x in value)
+    return str(value)
+
+
+def appendIfSet(data: list[_Type], value: _Type) -> None:
+    """Append value to list if value is set (truthy)."""
+    if value:
+        data.append(value)
+
+
 def processDialogSymbols(symbols: str) -> str:
     """Process dialogue line symbols."""
     result = ""

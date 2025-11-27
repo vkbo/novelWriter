@@ -157,39 +157,39 @@ def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog, mockGUI):
     shared.initTheme(mockTheme)  # type: ignore
     shared.initSharedData(mockGui)  # type: ignore
 
-    assert shared.lastAlert == ""
+    assert shared.lastAlert == []
 
     # Info box
     caplog.clear()
     shared.info("Hello World", info="foo", details="bar")
-    assert shared.lastAlert == "Hello World foo bar"
+    assert shared.lastAlert == ["Hello World", "foo", "bar"]
     assert caplog.text.strip().startswith("INFO")
-    assert caplog.text.strip().endswith("Hello World foo bar")
+    assert caplog.text.strip().endswith("bar")
 
     # Warning box
     caplog.clear()
     shared.warn("Oops!", info="foo", details="bar")
-    assert shared.lastAlert == "Oops! foo bar"
+    assert shared.lastAlert == ["Oops!", "foo", "bar"]
     assert caplog.text.strip().startswith("WARNING")
-    assert caplog.text.strip().endswith("Oops! foo bar")
+    assert caplog.text.strip().endswith("bar")
 
     # Error box
     caplog.clear()
     shared.error("Oh noes!", info="foo", details="bar")
-    assert shared.lastAlert == "Oh noes! foo bar"
+    assert shared.lastAlert == ["Oh noes!", "foo", "bar"]
     assert caplog.text.strip().startswith("ERROR")
-    assert caplog.text.strip().endswith("Oh noes! foo bar")
+    assert caplog.text.strip().endswith("bar")
 
     # Error box with exception
     caplog.clear()
     shared.error("Oh noes!", info="foo", details="bar", exc=Exception("Boom!"))
-    assert shared.lastAlert == "Oh noes! foo bar"
+    assert shared.lastAlert == ["Oh noes!", "foo", "bar"]
     assert caplog.text.strip().startswith("ERROR")
-    assert caplog.text.strip().endswith("Oh noes! foo bar")
+    assert caplog.text.strip().endswith("bar")
 
     # Question box
     assert shared.question("Why?") is True
-    assert shared.lastAlert == "Why?"
+    assert shared.lastAlert == ["Why?"]
 
 
 @pytest.mark.base
@@ -198,7 +198,7 @@ def testBaseSharedData_GuiAlert():
     alert = _GuiAlert(None, MockTheme())  # type: ignore
 
     # Default states
-    assert alert.logMessage == ""
+    assert alert.logMessage == []
     assert alert.finalState is False
 
     # Populate message
@@ -206,7 +206,7 @@ def testBaseSharedData_GuiAlert():
     info = "two"
     details = "three"
     alert.setMessage(text, info, details)
-    assert alert.logMessage == f"{text} {info} {details}"
+    assert alert.logMessage == [text, info, details]
     assert alert.text() == text
     assert alert.informativeText() == info
     assert alert.detailedText() == details
@@ -214,7 +214,7 @@ def testBaseSharedData_GuiAlert():
     # Populate exception
     exc = Exception("oops")
     alert.setException(exc)
-    assert alert.logMessage == f"{text} {info} {details}"
+    assert alert.logMessage == [text, info, details]
     assert alert.informativeText() == f"{info}<br><b>Exception</b>: {exc!s}"
 
     # Alert: Info

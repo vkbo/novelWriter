@@ -31,15 +31,16 @@ from PyQt6.QtCore import QMimeData, QUrl
 from PyQt6.QtGui import QDesktopServices, QFont, QFontDatabase, QFontInfo
 
 from novelwriter.common import (
-    NWConfigParser, checkBool, checkFloat, checkInt, checkIntTuple, checkPath,
-    checkString, checkStringNone, checkUuid, compact, decodeMimeHandles,
-    describeFont, elide, encodeMimeHandles, firstFloat, fontMatcher,
-    formatFileFilter, formatInt, formatTime, formatTimeStamp, formatVersion,
-    fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass, isItemLayout,
-    isItemType, isListInstance, isTitleTag, jsonCombine, jsonEncode,
-    makeFileNameSafe, minmax, numberToRoman, openExternalPath,
-    processDialogSymbols, readTextFile, simplified, transferCase,
-    uniqueCompact, utf16CharMap, xmlElement, xmlIndent, xmlSubElem, yesNo
+    NWConfigParser, appendIfSet, checkBool, checkFloat, checkInt,
+    checkIntTuple, checkPath, checkString, checkStringNone, checkUuid, compact,
+    decodeMimeHandles, describeFont, elide, encodeMimeHandles, firstFloat,
+    fontMatcher, formatFileFilter, formatInt, formatTime, formatTimeStamp,
+    formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
+    isItemLayout, isItemType, isListInstance, isTitleTag, joinLines,
+    jsonCombine, jsonEncode, makeFileNameSafe, minmax, numberToRoman,
+    openExternalPath, processDialogSymbols, readTextFile, simplified,
+    transferCase, uniqueCompact, utf16CharMap, xmlElement, xmlIndent,
+    xmlSubElem, yesNo
 )
 from novelwriter.enum import nwItemClass
 
@@ -377,6 +378,29 @@ def testBaseCommon_uniqueCompact():
     assert uniqueCompact("1\r2\r3") == "123"
     assert uniqueCompact("1\u00a02\u00a03") == "123"
     assert uniqueCompact("3 2 1") == "123"
+
+
+@pytest.mark.base
+def testBaseCommon_joinLines():
+    """Test the joinLines function."""
+    assert joinLines("abc") == "abc"
+    assert joinLines(["abc"]) == "abc"
+    assert joinLines(["a", "b", "c"]) == "abc"
+    assert joinLines("abc", "\n") == "abc"
+    assert joinLines(["abc"], "\n") == "abc"
+    assert joinLines(["a", "b", "c"], "\n") == "a\nb\nc"
+
+
+@pytest.mark.base
+def testBaseCommon_appendIfSet():
+    """Test the appendIfSet function."""
+    data = []
+    appendIfSet(data, "")
+    assert data == []
+    appendIfSet(data, "a")
+    assert data == ["a"]
+    appendIfSet(data, "b")
+    assert data == ["a", "b"]
 
 
 @pytest.mark.base

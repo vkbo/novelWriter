@@ -255,7 +255,7 @@ class nwVimMode(Enum):
     NORMAL = 0
     INSERT = 1
     VISUAL = 2
-    VLINE  = 3
+    V_LINE = 3
 
 
 class nwStandardButton(Enum):

@@ -611,7 +611,7 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
 
     # Deleting a used root raises an error
     projTree.processDeleteRequest([C.hNovelRoot])
-    assert SHARED.lastAlert == "Root folders can only be deleted when they are empty."
+    assert SHARED.lastAlert[0] == "Root folders can only be deleted when they are empty."
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
         "Chapter Folder", "Scene 1", "Scene 2", "Scene 3", "Scene 4",
@@ -703,7 +703,7 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
 
     # Emptying empty trash pops an alert
     projTree.emptyTrash()
-    assert SHARED.lastAlert == "The Trash folder is already empty."
+    assert SHARED.lastAlert[0] == "The Trash folder is already empty."
 
     # Trash can be deleted if empty
     projTree.processDeleteRequest([trash.item.itemHandle])
@@ -713,7 +713,7 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
 
     # Emptying trash when it doesn't exist, recreates it
     projTree.emptyTrash()
-    assert SHARED.lastAlert == "The Trash folder is already empty."
+    assert SHARED.lastAlert[0] == "The Trash folder is already empty."
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "Chapter Folder", "Plot", "Characters", "Trash",
     ]

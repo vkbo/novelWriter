@@ -337,6 +337,11 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.fmtDQuoteOpen == nwUnicode.U_LDQUO
     assert CONFIG.fmtDQuoteClose == nwUnicode.U_RDQUO
 
+    # Features
+    assert CONFIG.vimMode is False
+
+    prefs.vimMode.setChecked(True)
+
     # Save Settings
     with monkeypatch.context() as mp:
         mp.setattr(QFontDatabase, "families", lambda *a: ["TestFont"])
@@ -428,5 +433,12 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.fmtSQuoteClose == nwUnicode.U_RSAQUO
     assert CONFIG.fmtDQuoteOpen == nwUnicode.U_LAQUO
     assert CONFIG.fmtDQuoteClose == nwUnicode.U_RAQUO
+
+    # Features
+    assert CONFIG.vimMode is True  # Note that the question box answers "yes" in tests
+    assert SHARED.lastAlert == [
+        "Are you sure you want to enable Vim mode?",
+        "This changes how the editor accepts input.",
+    ]
 
     # qtbot.stop()

@@ -126,7 +126,7 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     welcome.close()
 
     # Config errors should be cleared
-    assert SHARED.lastAlert == "Foo"
+    assert SHARED.lastAlert == ["Foo"]
     assert CONFIG._hasError is False
 
     # qtbot.stop()
