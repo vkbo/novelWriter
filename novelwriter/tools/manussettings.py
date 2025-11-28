@@ -129,7 +129,7 @@ class GuiBuildSettings(NToolDialog):
         self.swtAutoPreview = NSwitch(self, height=iPx)
         self.swtAutoPreview.setChecked(options.getBool("GuiBuildSettings", "autoPreview", True))
 
-        self.lblAutoPreview = QLabel(self.tr("Auro-Update Preview"), self)
+        self.lblAutoPreview = QLabel(self.tr("Auto-Update Preview"), self)
         self.lblAutoPreview.setBuddy(self.swtAutoPreview)
 
         # Buttons

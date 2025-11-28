@@ -1121,7 +1121,7 @@
     </message>
     <message>
         <location filename="../novelwriter/tools/manussettings.py" line="132" />
-        <source>Auro-Update Preview</source>
+        <source>Auto-Update Preview</source>
         <translation type="unfinished" />
     </message>
     <message>
