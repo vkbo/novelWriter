@@ -752,7 +752,7 @@ def testFmtToHtml_Save(mockGUI, fncPath):
     html.setStyles(True)
     htmlDocCSS = (
         "<!DOCTYPE html>\n"
-        "<html>\n"
+        "<html lang='en-GB'>\n"
         "<head>\n"
         "<title></title>\n"
         "<meta charset='utf-8'>\n"
@@ -778,7 +778,7 @@ def testFmtToHtml_Save(mockGUI, fncPath):
     html.setStyles(False)
     htmlDocCSS = (
         "<!DOCTYPE html>\n"
-        "<html>\n"
+        "<html lang='en-GB'>\n"
         "<head>\n"
         "<title></title>\n"
         "<meta charset='utf-8'>\n"

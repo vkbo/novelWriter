@@ -30,8 +30,7 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QLocale
-
+from novelwriter.common import languageName
 from novelwriter.constants import nwFiles
 from novelwriter.error import logException
 
@@ -139,7 +138,7 @@ class NWSpellEnchant:
         try:
             import enchant
             tags = [x for x, _ in enchant.list_dicts()]
-            lang = [(x, f"{QLocale(x).nativeLanguageName().title()} [{x}]") for x in set(tags)]
+            lang = [(x, f"{languageName(x)} [{x}]") for x in set(tags)]
         except Exception:
             logger.error("Failed to list languages for enchant spell checking")
         return sorted(lang, key=lambda x: x[1])

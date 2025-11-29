@@ -28,11 +28,11 @@ import logging
 from datetime import datetime
 from time import time
 
-from PyQt6.QtCore import QLocale, pyqtSlot
+from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QApplication, QLabel, QStatusBar, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatTime
+from novelwriter.common import formatTime, languageName
 from novelwriter.constants import nwConst, nwLabels, nwStats, trStats
 from novelwriter.extensions.modified import NClickableLabel
 from novelwriter.extensions.statusled import StatusLED
@@ -208,7 +208,7 @@ class GuiMainStatus(QStatusBar):
             self.langText.setText(self.tr("None"))
             self.langText.setToolTip("")
         else:
-            self.langText.setText(QLocale(language).nativeLanguageName().title())
+            self.langText.setText(languageName(language))
             self.langText.setToolTip(f"{language} ({provider})" if provider else language)
 
     @pyqtSlot(bool)

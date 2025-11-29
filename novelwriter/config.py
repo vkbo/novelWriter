@@ -43,7 +43,7 @@ from PyQt6.QtWidgets import QApplication
 
 from novelwriter.common import (
     NWConfigParser, checkInt, checkPath, describeFont, fontMatcher,
-    formatTimeStamp, joinLines, processDialogSymbols, simplified
+    formatTimeStamp, joinLines, languageName, processDialogSymbols, simplified
 )
 from novelwriter.constants import nwFiles, nwQuotes, nwUnicode
 from novelwriter.enum import nwTheme
@@ -507,11 +507,11 @@ class Config:
         if lngSet == self.LANG_NW:
             fPre = "nw_"
             fExt = ".qm"
-            langList = {"en_GB": QLocale("en_GB").nativeLanguageName().title()}
+            langList = {"en_GB": languageName("en_GB")}
         elif lngSet == self.LANG_PROJ:
             fPre = "project_"
             fExt = ".json"
-            langList = {"en_GB": QLocale("en_GB").nativeLanguageName().title()}
+            langList = {"en_GB": languageName("en_GB")}
         else:
             return []
 
@@ -521,7 +521,7 @@ class Config:
                 continue
 
             qmLang = qmName[len(fPre):-len(fExt)]
-            qmName = QLocale(qmLang).nativeLanguageName().title()
+            qmName = languageName(qmLang)
             if qmLang and qmName and qmLang != "en_GB":
                 langList[qmLang] = qmName
 
