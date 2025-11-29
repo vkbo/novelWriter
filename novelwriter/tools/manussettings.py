@@ -27,7 +27,7 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QEvent, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QEvent, QLocale, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt6.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialogButtonBox, QFrame, QGridLayout,
@@ -37,7 +37,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import describeFont, fontMatcher, qtAddAction, qtLambda
+from novelwriter.common import describeFont, fontMatcher, processLangCode, qtAddAction, qtLambda
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwUnicode, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.enum import nwStandardButton
@@ -51,8 +51,8 @@ from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.types import (
-    QtAlignCenter, QtAlignLeft, QtHeaderFixed, QtHeaderStretch, QtRoleAccept,
-    QtRoleApply, QtRoleDestruct, QtUserRole
+    QtAlignCenter, QtAlignLeft, QtAlignRightMiddle, QtHeaderFixed,
+    QtHeaderStretch, QtRoleAccept, QtRoleApply, QtRoleDestruct, QtUserRole
 )
 
 if TYPE_CHECKING:
@@ -1287,21 +1287,21 @@ class _FormattingTab(NScrollableForm):
         self.addGroupLabel(title, section)
 
         # Header
-        self.odtPageHeader = QLineEdit(self)
-        self.odtPageHeader.setMinimumWidth(200)
+        self.pageHeader = QLineEdit(self)
+        self.pageHeader.setMinimumWidth(200)
         self.btnPageHeader = NIconToolButton(self, iSz)
         self.btnPageHeader.clicked.connect(self._resetPageHeader)
         self.addRow(
-            self._build.getLabel("doc.pageHeader"), self.odtPageHeader,
+            self._build.getLabel("doc.pageHeader"), self.pageHeader,
             button=self.btnPageHeader, stretch=(1, 1)
         )
 
-        self.odtPageCountOffset = NSpinBox(self)
-        self.odtPageCountOffset.setMinimum(0)
-        self.odtPageCountOffset.setMaximum(999)
-        self.odtPageCountOffset.setSingleStep(1)
-        self.odtPageCountOffset.setMinimumWidth(spW)
-        self.addRow(self._build.getLabel("doc.pageCountOffset"), self.odtPageCountOffset)
+        self.pageCountOffset = NSpinBox(self)
+        self.pageCountOffset.setMinimum(0)
+        self.pageCountOffset.setMaximum(999)
+        self.pageCountOffset.setSingleStep(1)
+        self.pageCountOffset.setMinimumWidth(spW)
+        self.addRow(self._build.getLabel("doc.pageCountOffset"), self.pageCountOffset)
 
         # Headings
         self.colorHeadings = NSwitch(self, height=iPx)
@@ -1311,6 +1311,20 @@ class _FormattingTab(NScrollableForm):
         self.addRow(self._build.getLabel("doc.colorHeadings"), self.colorHeadings)
         self.addRow(self._build.getLabel("doc.scaleHeadings"), self.scaleHeadings)
         self.addRow(self._build.getLabel("doc.boldHeadings"), self.boldHeadings)
+
+        # Meta Language
+        self.lblMetaLanguage = QLabel(self)
+        self.lblMetaLanguage.setAlignment(QtAlignRightMiddle)
+        self.lblMetaLanguage.setFixedWidth(200)
+
+        self.metaLanguage = QLineEdit(self)
+        self.metaLanguage.setAlignment(QtAlignCenter)
+        self.metaLanguage.setFixedWidth(80)
+        self.metaLanguage.textChanged.connect(self._refreshMetaLang)
+
+        self.addRow(
+            self._build.getLabel("doc.metaLanguage"), [self.lblMetaLanguage, 8, self.metaLanguage]
+        )
 
         # HTML Document
         # =============
@@ -1437,9 +1451,10 @@ class _FormattingTab(NScrollableForm):
         self.colorHeadings.setChecked(self._build.getBool("doc.colorHeadings"))
         self.scaleHeadings.setChecked(self._build.getBool("doc.scaleHeadings"))
         self.boldHeadings.setChecked(self._build.getBool("doc.boldHeadings"))
-        self.odtPageHeader.setText(self._build.getStr("doc.pageHeader"))
-        self.odtPageCountOffset.setValue(self._build.getInt("doc.pageCountOffset"))
-        self.odtPageHeader.setCursorPosition(0)
+        self.metaLanguage.setText(processLangCode(self._build.getStr("doc.metaLanguage")))
+        self.pageHeader.setText(self._build.getStr("doc.pageHeader"))
+        self.pageCountOffset.setValue(self._build.getInt("doc.pageCountOffset"))
+        self.pageHeader.setCursorPosition(0)
 
         # HTML Document
         # =============
@@ -1502,11 +1517,16 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.rightMargin", self.rightMargin.value())
 
         # Documents
+        metaLanguage = processLangCode(self.metaLanguage.text())
+
         self._build.setValue("doc.colorHeadings", self.colorHeadings.isChecked())
         self._build.setValue("doc.scaleHeadings", self.scaleHeadings.isChecked())
         self._build.setValue("doc.boldHeadings", self.boldHeadings.isChecked())
-        self._build.setValue("doc.pageHeader", self.odtPageHeader.text())
-        self._build.setValue("doc.pageCountOffset", self.odtPageCountOffset.value())
+        self._build.setValue("doc.metaLanguage", metaLanguage)
+        self._build.setValue("doc.pageHeader", self.pageHeader.text())
+        self._build.setValue("doc.pageCountOffset", self.pageCountOffset.value())
+
+        self.metaLanguage.setText(metaLanguage)
 
         # HTML Document
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
@@ -1603,10 +1623,17 @@ class _FormattingTab(NScrollableForm):
         if index >= 0:
             self.pageSize.setCurrentIndex(index)
 
+    @pyqtSlot()
     def _resetPageHeader(self) -> None:
-        """Reset the ODT header format to default."""
-        self.odtPageHeader.setText(nwHeadFmt.DOC_AUTO)
-        self.odtPageHeader.setCursorPosition(0)
+        """Reset the document header format to default."""
+        self.pageHeader.setText(nwHeadFmt.DOC_AUTO)
+        self.pageHeader.setCursorPosition(0)
+
+    @pyqtSlot()
+    def _refreshMetaLang(self) -> None:
+        """Update the meta language helper info."""
+        code = self.metaLanguage.text().strip()
+        self.lblMetaLanguage.setText(QLocale(code).nativeLanguageName().title())
 
     ##
     #  Internal Functions

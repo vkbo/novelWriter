@@ -121,6 +121,7 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "doc.colorHeadings":       (bool, True),
     "doc.scaleHeadings":       (bool, True),
     "doc.boldHeadings":        (bool, True),
+    "doc.metaLanguage":        (str, ""),
     "html.addStyles":          (bool, True),
     "html.preserveTabs":       (bool, False),
 }
@@ -187,6 +188,7 @@ SETTINGS_LABELS = {
     "doc.colorHeadings":       QT_TRANSLATE_NOOP("Builds", "Add Colours to Headings"),
     "doc.scaleHeadings":       QT_TRANSLATE_NOOP("Builds", "Increase Size of Headings"),
     "doc.boldHeadings":        QT_TRANSLATE_NOOP("Builds", "Bold Headings"),
+    "doc.metaLanguage":        QT_TRANSLATE_NOOP("Builds", "Override Document Language"),
 
     "html":                    QT_TRANSLATE_NOOP("Builds", "HTML Options"),
     "html.addStyles":          QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
