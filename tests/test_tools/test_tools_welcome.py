@@ -69,10 +69,27 @@ def testToolWelcome_Main(qtbot, monkeypatch, nwGUI, fncPath):
     assert selected[0] == SAMPLE_NAME
     assert selected[1] == SAMPLE_KEY
     welcome.tabOpen._selectFirstItem()
+
+    # A folder must be selected
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: None)
+        welcome.tabOpen._processOpenProjectRequest(SAMPLE_KEY)
+
+    assert SHARED.lastAlert[0] == "You must select a location for the example project."
+
+    # Successful
     with monkeypatch.context() as mp:
         mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: fncPath)
         welcome.tabOpen._processOpenProjectRequest(SAMPLE_KEY)
+
     assert (fncPath / SAMPLE_NAME).is_dir()
+
+    # But can't create a duplicate
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: fncPath)
+        welcome.tabOpen._processOpenProjectRequest(SAMPLE_KEY)
+
+    assert SHARED.lastAlert[0] == "The target folder already exists. Please choose another folder."
 
     # qtbot.stop()
     welcome.close()
