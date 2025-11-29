@@ -17,6 +17,9 @@ backups.
 * Fixed an issue where dialog state was no longer saved properly when they were closed for many
   dialogs. This may be due to a change in the Qt framework, or a bug from a previous release.
   PR #2585.
+* Fixed an issue where a confusing error would show up if the user cancelled the file dialog during
+  example project creation. A new dialog now tells you what the actual issue was and sends you back
+  to the welcome dialog. Issue #2590. PR #2592.
 
 **Features**
 
