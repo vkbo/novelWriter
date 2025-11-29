@@ -34,8 +34,8 @@ from PyQt6.QtCore import (
 )
 from PyQt6.QtGui import QAction, QCloseEvent, QFont, QPainter, QPaintEvent, QPen, QShortcut
 from PyQt6.QtWidgets import (
-    QApplication, QFileDialog, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
-    QListView, QMenu, QScrollArea, QStackedWidget, QStyledItemDelegate,
+    QApplication, QFormLayout, QHBoxLayout, QLabel, QLineEdit, QListView,
+    QMenu, QScrollArea, QStackedWidget, QStyledItemDelegate,
     QStyleOptionViewItem, QVBoxLayout, QWidget
 )
 
@@ -351,20 +351,22 @@ class _OpenProjectPage(QWidget):
 
     def _processOpenProjectRequest(self, path: str) -> None:
         """Process an open project request which may involve create."""
-        if path == SAMPLE_KEY and (location := QFileDialog.getExistingDirectory(
-            self, self.tr("Select Folder"), str(CONFIG.homePath),
-            options=QFileDialog.Option.ShowDirsOnly,
-        )):
-            path = str(Path(location) / SAMPLE_NAME)
-            data = {
-                "name": SAMPLE_NAME,
-                "path": path,
-                "sample": True,
-            }
-            builder = ProjectBuilder()
-            builder.buildProject(data)
-
-        self.openProjectRequest.emit(Path(path))
+        if path == SAMPLE_KEY:
+            if location := SHARED.getProjectFolder(self, CONFIG.homePath()):
+                sample = location / SAMPLE_NAME
+                data = {
+                    "name": SAMPLE_NAME,
+                    "path": sample,
+                    "sample": True,
+                }
+                builder = ProjectBuilder()
+                if builder.buildProject(data):
+                    self.openProjectRequest.emit(sample)
+            else:
+                SHARED.error(self.tr("You must select a location for the example project."))
+                return
+        else:
+            self.openProjectRequest.emit(Path(path))
 
     def _selectFirstItem(self) -> None:
         """Select the first item, if any are available."""
@@ -709,11 +711,8 @@ class _NewProjectForm(QWidget):
     @pyqtSlot()
     def _doBrowse(self) -> None:
         """Select a project folder."""
-        if path := QFileDialog.getExistingDirectory(
-            self, self.tr("Select Project Folder"),
-            str(self._basePath), options=QFileDialog.Option.ShowDirsOnly
-        ):
-            self._basePath = Path(path)
+        if path := SHARED.getProjectFolder(self, self._basePath):
+            self._basePath = path
             self._updateProjPath()
             CONFIG.setLastPath("project", path)
 
