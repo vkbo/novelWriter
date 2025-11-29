@@ -37,6 +37,8 @@ backups.
 * The spacing between icon and text in push buttons has been increased. PR #2582.
 * The font selection dialog now remembers its previous size, and uses the new standard push buttons
   instead of the Qt defaults. PR #2584.
+* It is now possible to override the manuscript language meta value for document formats that have
+  this. The IETF BCP 47 language tag is used. Issue #2328. PR #2593.
 
 ----
 
