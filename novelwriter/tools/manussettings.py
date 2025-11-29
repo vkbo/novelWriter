@@ -27,7 +27,7 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QEvent, QLocale, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QEvent, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt6.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialogButtonBox, QFrame, QGridLayout,
@@ -37,7 +37,10 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import describeFont, fontMatcher, processLangCode, qtAddAction, qtLambda
+from novelwriter.common import (
+    describeFont, fontMatcher, languageName, processLangCode, qtAddAction,
+    qtLambda
+)
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwUnicode, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.enum import nwStandardButton
@@ -1633,7 +1636,7 @@ class _FormattingTab(NScrollableForm):
     def _refreshMetaLang(self) -> None:
         """Update the meta language helper info."""
         code = self.metaLanguage.text().strip()
-        self.lblMetaLanguage.setText(QLocale(code).nativeLanguageName().title())
+        self.lblMetaLanguage.setText(languageName(code))
 
     ##
     #  Internal Functions

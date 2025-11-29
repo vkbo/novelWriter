@@ -327,6 +327,11 @@ def processLangCode(code: str) -> str:
     return QLocale(code).name().replace("_", "-") if code else ""
 
 
+def languageName(code: str) -> str:
+    """Return the local name of a language."""
+    return QLocale(code).nativeLanguageName().title()
+
+
 def elide(text: str, length: int) -> str:
     """Elide a piece of text to a maximum length."""
     if len(text) > (cut := max(4, length)):
