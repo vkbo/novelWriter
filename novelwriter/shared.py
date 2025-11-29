@@ -311,6 +311,14 @@ class SharedData(QObject):
         )
         return Path(selected) if selected else None
 
+    def getProjectFolder(self, parent: QWidget, path: str | Path | None = None) -> Path | None:
+        """Open the folder dialog and select a project folder."""
+        location = QFileDialog.getExistingDirectory(
+            parent, self.tr("Select Project Folder"), str(path),
+            options=QFileDialog.Option.ShowDirsOnly,
+        )
+        return Path(location) if location else None
+
     def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool]:
         """Open the font dialog and select a font."""
         from novelwriter.extensions.modified import NFontDialog
