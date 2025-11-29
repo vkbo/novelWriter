@@ -37,10 +37,10 @@ from novelwriter.common import (
     fontMatcher, formatFileFilter, formatInt, formatTime, formatTimeStamp,
     formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
     isItemLayout, isItemType, isListInstance, isTitleTag, joinLines,
-    jsonCombine, jsonEncode, makeFileNameSafe, minmax, numberToRoman,
-    openExternalPath, processDialogSymbols, readTextFile, simplified,
-    transferCase, uniqueCompact, utf16CharMap, xmlElement, xmlIndent,
-    xmlSubElem, yesNo
+    jsonCombine, jsonEncode, languageName, makeFileNameSafe, minmax,
+    numberToRoman, openExternalPath, processDialogSymbols, processLangCode,
+    readTextFile, simplified, transferCase, uniqueCompact, utf16CharMap,
+    xmlElement, xmlIndent, xmlSubElem, yesNo
 )
 from novelwriter.enum import nwItemClass
 
@@ -409,6 +409,21 @@ def testBaseCommon_processDialogSymbols():
     assert processDialogSymbols("abc") == ""
     assert processDialogSymbols("\u00ab\u00ab\u00bb\u00bb") == "\u00ab\u00bb"
     assert processDialogSymbols("-\u2013\u2014\u2015") == "\u2013\u2014\u2015"
+
+
+@pytest.mark.base
+def testBaseCommon_processLangCode():
+    """Test the processLangCode function."""
+    assert processLangCode("") == ""
+    assert processLangCode(" ") == ""
+    assert processLangCode("en") == "en-US"
+    assert processLangCode("en_gb") == "en-GB"
+
+
+@pytest.mark.base
+def testBaseCommon_languageName():
+    """Test the languageName function."""
+    assert languageName("en-GB") == "British English"
 
 
 @pytest.mark.base

@@ -774,8 +774,8 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
-    assert fmtTab.odtPageHeader.text() == nwHeadFmt.DOC_AUTO
-    assert fmtTab.odtPageCountOffset.value() == 0
+    assert fmtTab.pageHeader.text() == nwHeadFmt.DOC_AUTO
+    assert fmtTab.pageCountOffset.value() == 0
     assert fmtTab.colorHeadings.isChecked() is True
     assert fmtTab.scaleHeadings.isChecked() is True
     assert fmtTab.boldHeadings.isChecked() is True
@@ -784,8 +784,12 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert fmtTab.htmlPreserveTabs.isChecked() is False
 
     # Change Values
-    fmtTab.odtPageCountOffset.setValue(1)
-    fmtTab.odtPageHeader.setText("Stuff")
+    fmtTab.pageCountOffset.setValue(1)
+    fmtTab.pageHeader.setText("Stuff")
+    fmtTab.metaLanguage.setText("en-gb")
+
+    fmtTab._refreshMetaLang()
+    assert fmtTab.lblMetaLanguage.text() == "British English"
 
     # Toggle all
     fmtTab.colorHeadings.setChecked(False)
@@ -801,6 +805,7 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
 
     assert sBuild.getStr("doc.pageHeader") == "Stuff"
     assert sBuild.getInt("doc.pageCountOffset") == 1
+    assert sBuild.getStr("doc.metaLanguage") == "en-GB"
     assert sBuild.getBool("doc.colorHeadings") is False
     assert sBuild.getBool("doc.scaleHeadings") is False
     assert sBuild.getBool("doc.boldHeadings") is False
@@ -810,7 +815,7 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
 
     # Reset header format
     fmtTab.btnPageHeader.click()
-    assert fmtTab.odtPageHeader.text() == nwHeadFmt.DOC_AUTO
+    assert fmtTab.pageHeader.text() == nwHeadFmt.DOC_AUTO
 
     # Finish
     bSettings._dialogButtonClicked(bSettings.btnClose)

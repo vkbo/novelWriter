@@ -220,7 +220,7 @@ class NWBuildDocument:
         textFont.fromString(self._build.getStr("format.textFont"))
 
         bldObj.setTextFont(textFont)
-        bldObj.setLanguage(self._project.data.language)
+        bldObj.setLanguage(self._build.getStr("doc.metaLanguage") or self._project.data.language)
 
         bldObj.setPartitionFormat(
             self._build.getStr("headings.fmtPart"),

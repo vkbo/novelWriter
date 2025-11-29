@@ -37,7 +37,7 @@ from typing import TYPE_CHECKING, Any, Literal, TypeGuard, TypeVar
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 
-from PyQt6.QtCore import QCoreApplication, QMimeData, QUrl
+from PyQt6.QtCore import QCoreApplication, QLocale, QMimeData, QUrl
 from PyQt6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QFontInfo
 from PyQt6.QtWidgets import QMenu, QMenuBar, QWidget
 
@@ -319,6 +319,17 @@ def processDialogSymbols(symbols: str) -> str:
         if c in nwQuotes.ALLOWED:
             result += c
     return result
+
+
+def processLangCode(code: str) -> str:
+    """Validate a language code."""
+    code = code.strip()
+    return QLocale(code).name().replace("_", "-") if code else ""
+
+
+def languageName(code: str) -> str:
+    """Return the local name of a language."""
+    return QLocale(code).nativeLanguageName().title()
 
 
 def elide(text: str, length: int) -> str:
