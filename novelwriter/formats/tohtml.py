@@ -281,7 +281,7 @@ class ToHtml(Tokenizer):
         else:
             html = []
             html.append("<!DOCTYPE html>")
-            html.append("<html>")
+            html.append(f"<html lang='{self._dLocale.bcp47Name()}'>")
             html.append("<head>")
             html.append(f"<title>{self._project.data.name:s}</title>")
             html.append("<meta charset='utf-8'>")
