@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -28,11 +28,11 @@ import logging
 from datetime import datetime
 from time import time
 
-from PyQt6.QtCore import QLocale, pyqtSlot
+from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QApplication, QLabel, QStatusBar, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatTime
+from novelwriter.common import formatTime, languageName
 from novelwriter.constants import nwConst, nwLabels, nwStats, trStats
 from novelwriter.extensions.modified import NClickableLabel
 from novelwriter.extensions.statusled import StatusLED
@@ -41,6 +41,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiMainStatus(QStatusBar):
+    """GUI: Main Window Status Bar."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -112,8 +113,6 @@ class GuiMainStatus(QStatusBar):
         self.updateTheme()
         self.clearStatus()
 
-        return
-
     def initSettings(self) -> None:
         """Apply user settings."""
         if CONFIG.useCharCount:
@@ -122,7 +121,6 @@ class GuiMainStatus(QStatusBar):
         else:
             self._trStatsCount = trStats(nwLabels.STATS_DISPLAY[nwStats.WORDS])
             self._trStatsTip = self.tr("Total word count (session change)")
-        return
 
     def clearStatus(self) -> None:
         """Reset all widgets on the status bar to default values."""
@@ -132,10 +130,11 @@ class GuiMainStatus(QStatusBar):
         self.setProjectStatus(None)
         self.setDocumentStatus(None)
         self.updateTime()
-        return
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiMainStatus")
+
         iPx = SHARED.theme.baseIconHeight
         self.langIcon.setPixmap(SHARED.theme.getPixmap("language", (iPx, iPx)))
         self.statsIcon.setPixmap(SHARED.theme.getPixmap("stats", (iPx, iPx)))
@@ -143,13 +142,11 @@ class GuiMainStatus(QStatusBar):
         self.idlePixmap = SHARED.theme.getPixmap("timer_off", (iPx, iPx))
         self.timeIcon.setPixmap(self.timePixmap)
 
-        colNone = SHARED.theme.getIconColor("default").darker(150)
-        colSaved = SHARED.theme.getIconColor("green").darker(150)
-        colUnsaved = SHARED.theme.getIconColor("red").darker(150)
+        colNone = SHARED.theme.getBaseColor("default")
+        colSaved = SHARED.theme.getBaseColor("green")
+        colUnsaved = SHARED.theme.getBaseColor("red")
         self.docIcon.setColors(colNone, colSaved, colUnsaved)
         self.projIcon.setColors(colNone, colSaved, colUnsaved)
-
-        return
 
     ##
     #  Setters
@@ -158,17 +155,14 @@ class GuiMainStatus(QStatusBar):
     def setRefTime(self, refTime: float) -> None:
         """Set the reference time for the status bar clock."""
         self._refTime = refTime
-        return
 
     def setProjectStatus(self, state: bool | None) -> None:
         """Set the project status colour icon."""
         self.projIcon.setState(state)
-        return
 
     def setDocumentStatus(self, state: bool | None) -> None:
         """Set the document status colour icon."""
         self.docIcon.setState(state)
-        return
 
     def setUserIdle(self, idle: bool) -> None:
         """Change the idle status icon."""
@@ -180,13 +174,11 @@ class GuiMainStatus(QStatusBar):
             else:
                 self.timeIcon.setPixmap(self.timePixmap)
             self._userIdle = idle
-        return
 
     def setProjectStats(self, pWC: int, sWC: int) -> None:
         """Update the current project statistics."""
         self.statsText.setText(self._trStatsCount.format(f"{pWC:n}", f"{sWC:+n}"))
         self.statsText.setToolTip(self._trStatsTip)
-        return
 
     def updateTime(self, idleTime: float = 0.0) -> None:
         """Update the session clock."""
@@ -198,7 +190,6 @@ class GuiMainStatus(QStatusBar):
             else:
                 sessTime = round(time() - self._refTime)
             self.timeText.setText(formatTime(sessTime))
-        return
 
     ##
     #  Public Slots
@@ -209,7 +200,6 @@ class GuiMainStatus(QStatusBar):
         """Set the status bar message to display."""
         self.showMessage(message, nwConst.STATUS_MSG_TIMEOUT)
         QApplication.processEvents()
-        return
 
     @pyqtSlot(str, str)
     def setLanguage(self, language: str, provider: str) -> None:
@@ -218,21 +208,18 @@ class GuiMainStatus(QStatusBar):
             self.langText.setText(self.tr("None"))
             self.langText.setToolTip("")
         else:
-            self.langText.setText(QLocale(language).nativeLanguageName().title())
+            self.langText.setText(languageName(language))
             self.langText.setToolTip(f"{language} ({provider})" if provider else language)
-        return
 
     @pyqtSlot(bool)
     def updateProjectStatus(self, status: bool) -> None:
         """Update the project status."""
         self.setProjectStatus(not status)
-        return
 
     @pyqtSlot(bool)
     def updateDocumentStatus(self, status: bool) -> None:
         """Update the document status."""
         self.setDocumentStatus(not status)
-        return
 
     ##
     #  Private Slots
@@ -244,7 +231,6 @@ class GuiMainStatus(QStatusBar):
         state = not CONFIG.showSessionTime
         self.timeText.setVisible(state)
         CONFIG.showSessionTime = state
-        return
 
     ##
     #  Debug
@@ -279,4 +265,3 @@ class GuiMainStatus(QStatusBar):
         )
         self.showMessage(f"Debug [{stamp}] {message}", 6000)
         logger.debug("[MEMINFO] %s", message)
-        return

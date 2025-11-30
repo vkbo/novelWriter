@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -121,6 +121,7 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "doc.colorHeadings":       (bool, True),
     "doc.scaleHeadings":       (bool, True),
     "doc.boldHeadings":        (bool, True),
+    "doc.metaLanguage":        (str, ""),
     "html.addStyles":          (bool, True),
     "html.preserveTabs":       (bool, False),
 }
@@ -187,6 +188,7 @@ SETTINGS_LABELS = {
     "doc.colorHeadings":       QT_TRANSLATE_NOOP("Builds", "Add Colours to Headings"),
     "doc.scaleHeadings":       QT_TRANSLATE_NOOP("Builds", "Increase Size of Headings"),
     "doc.boldHeadings":        QT_TRANSLATE_NOOP("Builds", "Bold Headings"),
+    "doc.metaLanguage":        QT_TRANSLATE_NOOP("Builds", "Override Document Language"),
 
     "html":                    QT_TRANSLATE_NOOP("Builds", "HTML Options"),
     "html.addStyles":          QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
@@ -211,7 +213,7 @@ class FilterMode(Enum):
 
 
 class BuildSettings:
-    """Core: Build Settings Class
+    """Core: Build Settings Class.
 
     This class manages the build settings for a Manuscript build job.
     The settings can be packed/unpacked to/from a dictionary for JSON.
@@ -229,7 +231,6 @@ class BuildSettings:
         self._included = set()
         self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
         self._changed = False
-        return
 
     @classmethod
     def fromDict(cls, data: dict) -> BuildSettings:
@@ -315,7 +316,6 @@ class BuildSettings:
     def setName(self, name: str) -> None:
         """Set the build setting display name."""
         self._name = str(name)
-        return
 
     def setBuildID(self, value: str | uuid.UUID) -> None:
         """Set a UUID build ID."""
@@ -324,13 +324,11 @@ class BuildSettings:
             self._uuid = str(uuid.uuid4())
         elif value != self._uuid:
             self._uuid = value
-        return
 
     def setOrder(self, value: int) -> None:
         """Set the build order."""
         if isinstance(value, int):
             self._order = value
-        return
 
     def setLastBuildPath(self, path: Path | str | None) -> None:
         """Set the last used build path."""
@@ -341,41 +339,35 @@ class BuildSettings:
         else:
             self._path = CONFIG.homePath()
         self._changed = True
-        return
 
     def setLastBuildName(self, name: str) -> None:
         """Set the last used build name."""
         self._build = str(name).strip()
         self._changed = True
-        return
 
     def setLastFormat(self, value: nwBuildFmt) -> None:
         """Set the last used build format."""
         if isinstance(value, nwBuildFmt):
             self._format = value
             self._changed = True
-        return
 
     def setFiltered(self, tHandle: str) -> None:
         """Set an item as filtered."""
         self._excluded.discard(tHandle)
         self._included.discard(tHandle)
         self._changed = True
-        return
 
     def setIncluded(self, tHandle: str) -> None:
         """Set an item as explicitly included."""
         self._excluded.discard(tHandle)
         self._included.add(tHandle)
         self._changed = True
-        return
 
     def setExcluded(self, tHandle: str) -> None:
         """Set an item as explicitly excluded."""
         self._excluded.add(tHandle)
         self._included.discard(tHandle)
         self._changed = True
-        return
 
     def setAllowRoot(self, tHandle: str, state: bool) -> None:
         """Set a specific root folder as allowed or not."""
@@ -385,14 +377,12 @@ class BuildSettings:
         elif state is False:
             self._skipRoot.add(tHandle)
             self._changed = True
-        return
 
     def setValue(self, key: str, value: T_BuildValue) -> None:
         """Set a specific value for a build setting."""
         if (d := SETTINGS_TEMPLATE.get(key)) and len(d) == 2 and isinstance(value, d[0]):
             self._changed |= (value != self._settings[key])
             self._settings[key] = value
-        return
 
     ##
     #  Methods
@@ -463,7 +453,6 @@ class BuildSettings:
         called when the changes have been safely saved or passed on.
         """
         self._changed = False
-        return
 
     def pack(self) -> dict:
         """Pack all content into a JSON compatible dictionary."""
@@ -516,8 +505,6 @@ class BuildSettings:
 
         self._changed = False
 
-        return
-
     @classmethod
     def duplicate(cls, source: BuildSettings) -> BuildSettings:
         """Make a copy of another build."""
@@ -529,7 +516,7 @@ class BuildSettings:
 
 
 class BuildCollection:
-    """Core: Build Collection Class
+    """Core: Build Collection Class.
 
     This object holds all the build setting objects defined by the given
     project. The build settings are saved as a single JSON file in the
@@ -542,7 +529,6 @@ class BuildCollection:
         self._defaultBuild = ""
         self._builds: dict[str, BuildSettings] = {}
         self._loadCollection()
-        return
 
     def __len__(self) -> int:
         """Return the number of builds."""
@@ -581,21 +567,18 @@ class BuildCollection:
                 build.setOrder(i)
         self._lastBuild = lastBuild
         self._saveCollection()
-        return
 
     def setDefaultBuild(self, buildID: str) -> None:
         """Set the default build id."""
         if buildID != self._defaultBuild:
             self._defaultBuild = buildID
             self._saveCollection()
-        return
 
     def setBuild(self, build: BuildSettings) -> None:
         """Set build settings data in the collection."""
         if isinstance(build, BuildSettings):
             self._builds[build.buildID] = build
             self._saveCollection()
-        return
 
     ##
     #  Methods
@@ -605,7 +588,6 @@ class BuildCollection:
         """Remove a build from the collection."""
         self._builds.pop(buildID, None)
         self._saveCollection()
-        return
 
     def builds(self) -> Iterable[tuple[str, str]]:
         """Iterate over all available builds."""

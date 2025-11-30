@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import shutil
@@ -66,7 +66,7 @@ class C:
 def cmpFiles(
     fileOne: str | Path,
     fileTwo: str | Path,
-    ignoreLines: list | None = None,
+    ignoreLines: list[int] | None = None,
     ignoreStart: tuple | None = None
 ) -> bool:
     """Compare two files, with optional line ignore."""
@@ -124,7 +124,7 @@ def xmlToText(xElem):
 
 
 def readFile(fileName: str | Path):
-    """Returns the content of a file as a string."""
+    """Return the content of a file as a string."""
     with open(fileName, mode="r", encoding="utf-8") as inFile:
         return inFile.read()
 
@@ -153,8 +153,6 @@ def cleanProject(path: str | Path):
     tocFile = path / "ToC.txt"
     if tocFile.is_file():
         tocFile.unlink()
-
-    return
 
 
 def clearLogHandlers():
@@ -235,7 +233,6 @@ class SimpleDialog(QDialog):
         self.setLayout(layout)
         if widget:
             layout.addWidget(widget)
-        return
 
     @property
     def widget(self) -> QWidget | None:
@@ -246,4 +243,3 @@ class SimpleDialog(QDialog):
         layout = self.layout()
         assert layout is not None
         layout.addWidget(widget)
-        return

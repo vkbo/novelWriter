@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import argparse
@@ -155,17 +155,16 @@ def makeDebianPackage(
 
 
 def debian(args: argparse.Namespace) -> None:
-    """Build a .deb package"""
+    """Build a .deb package."""
     if sys.platform != "linux":
         print("ERROR: Command 'build-deb' can only be used on Linux")
         sys.exit(1)
     signKey = SIGN_KEY if args.sign else None
     makeDebianPackage(signKey)
-    return
 
 
 def launchpad(args: argparse.Namespace) -> None:
-    """Wrapper for building Debian packages for Launchpad."""
+    """Build Debian packages for Launchpad."""
     if sys.platform != "linux":
         print("ERROR: Command 'build-ubuntu' can only be used on Linux")
         sys.exit(1)
@@ -184,6 +183,7 @@ def launchpad(args: argparse.Namespace) -> None:
         ("24.04", "noble", True),
         ("25.04", "plucky", True),
         ("25.10", "questing", False),
+        ("26.04", "resolute", False),
     ]
 
     print("Building Ubuntu packages for:")
@@ -216,5 +216,3 @@ def launchpad(args: argparse.Namespace) -> None:
     for dCmd in dputCmd:
         print(f" > {dCmd}")
     print("")
-
-    return

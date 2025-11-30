@@ -1,11 +1,13 @@
 %%~name: Earth
 %%~path: 15c4492bd5107/b3e74dbc1f584
 %%~kind: WORLD/NOTE
-%%~hash: 87f520b4e80af8505af1b868ab25ec6d51b7ff48
-%%~date: Unknown/2023-08-25 16:52:05
+%%~hash: 7b331469a234eb1e531caca6eda93654b8183c8e
+%%~date: Unknown/2025-11-01 16:09:43
 # Earth
 
 @tag: Earth
 @location: Space
 
-Third planet from the sun, fairly dense, and with lots of people on it.
+%Short: Third planet from the sun.
+
+Defining locations in your story can be very helpful. Here we have a tag called “Earth” which is a place in “Space”.

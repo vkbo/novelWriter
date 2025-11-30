@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -36,16 +36,17 @@ from PyQt6.QtGui import (
 from PyQt6.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt6.QtWidgets import (
     QAbstractItemView, QApplication, QFormLayout, QGridLayout, QHBoxLayout,
-    QLabel, QListWidget, QListWidgetItem, QPushButton, QSplitter,
-    QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget
+    QLabel, QListWidget, QListWidgetItem, QSplitter, QStackedWidget,
+    QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import fuzzyTime, qtLambda
+from novelwriter.common import fuzzyTime
 from novelwriter.constants import nwHeadFmt, nwLabels, nwStats, nwUnicode, trStats
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
 from novelwriter.extensions.progressbars import NProgressCircle
 from novelwriter.extensions.switch import NSwitch
@@ -66,7 +67,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiManuscript(NToolDialog):
-    """GUI Tools: Manuscript Tool
+    """GUI Tools: Manuscript Tool.
 
     The dialog displays all the users build definitions, a preview panel
     for the manuscript, and can trigger the actual build dialog to build
@@ -91,39 +92,29 @@ class GuiManuscript(NToolDialog):
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
 
-        pOptions = SHARED.project.options
+        options = SHARED.project.options
         self.resize(
-            pOptions.getInt("GuiManuscript", "winWidth", 900),
-            pOptions.getInt("GuiManuscript", "winHeight", 600),
+            options.getInt("GuiManuscript", "winWidth", 900),
+            options.getInt("GuiManuscript", "winHeight", 600),
         )
 
         # Build Controls
         # ==============
 
-        qPalette = self.palette()
-        qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
-        self.setPalette(qPalette)
-
-        buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
-
-        self.tbAdd = NIconToolButton(self, iSz, "add", "green")
+        self.tbAdd = NIconToolButton(self, iSz)
         self.tbAdd.setToolTip(self.tr("Add New Build"))
-        self.tbAdd.setStyleSheet(buttonStyle)
         self.tbAdd.clicked.connect(self._createNewBuild)
 
-        self.tbDel = NIconToolButton(self, iSz, "remove", "red")
+        self.tbDel = NIconToolButton(self, iSz)
         self.tbDel.setToolTip(self.tr("Delete Selected Build"))
-        self.tbDel.setStyleSheet(buttonStyle)
         self.tbDel.clicked.connect(self._deleteSelectedBuild)
 
-        self.tbCopy = NIconToolButton(self, iSz, "copy", "blue")
+        self.tbCopy = NIconToolButton(self, iSz)
         self.tbCopy.setToolTip(self.tr("Duplicate Selected Build"))
-        self.tbCopy.setStyleSheet(buttonStyle)
         self.tbCopy.clicked.connect(self._copySelectedBuild)
 
-        self.tbEdit = NIconToolButton(self, iSz, "edit", "green")
+        self.tbEdit = NIconToolButton(self, iSz)
         self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
-        self.tbEdit.setStyleSheet(buttonStyle)
         self.tbEdit.clicked.connect(self._editSelectedBuild)
 
         self.lblBuilds = QLabel("<b>{0}</b>".format(self.tr("Builds")), self)
@@ -151,37 +142,36 @@ class GuiManuscript(NToolDialog):
         # ============
 
         self.buildDetails = _DetailsWidget(self)
-        self.buildDetails.setColumnWidth(pOptions.getInt("GuiManuscript", "detailsWidth", 100))
+        self.buildDetails.setColumnWidth(options.getInt("GuiManuscript", "detailsWidth", 100))
 
         self.buildOutline = _OutlineWidget(self)
 
         self.detailsTabs = QTabWidget(self)
         self.detailsTabs.addTab(self.buildDetails, self.tr("Details"))
         self.detailsTabs.addTab(self.buildOutline, self.tr("Outline"))
-        self.detailsTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
 
         self.buildSplit = QSplitter(Qt.Orientation.Vertical, self)
         self.buildSplit.addWidget(self.buildList)
         self.buildSplit.addWidget(self.detailsTabs)
         self.buildSplit.setSizes([
-            pOptions.getInt("GuiManuscript", "listHeight", 50),
-            pOptions.getInt("GuiManuscript", "detailsHeight", 50),
+            options.getInt("GuiManuscript", "listHeight", 50),
+            options.getInt("GuiManuscript", "detailsHeight", 50),
         ])
 
         # Process Controls
         # ================
 
-        self.btnPreview = QPushButton(self.tr("Preview"), self)
+        self.btnPreview = SHARED.theme.getStandardButton(nwStandardButton.PREVIEW, self)
         self.btnPreview.clicked.connect(self._generatePreview)
 
-        self.btnPrint = QPushButton(self.tr("Print"), self)
+        self.btnPrint = SHARED.theme.getStandardButton(nwStandardButton.PRINT, self)
         self.btnPrint.clicked.connect(self._printDocument)
 
-        self.btnBuild = QPushButton(self.tr("Build"), self)
+        self.btnBuild = SHARED.theme.getStandardButton(nwStandardButton.BUILD, self)
         self.btnBuild.clicked.connect(self._buildManuscript)
 
-        self.btnClose = QPushButton(self.tr("Close"), self)
-        self.btnClose.clicked.connect(qtLambda(self.close))
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.clicked.connect(self.closeDialog)
 
         self.processBox = QGridLayout()
         self.processBox.addWidget(self.btnPreview, 0, 0)
@@ -193,7 +183,7 @@ class GuiManuscript(NToolDialog):
         # ===============
 
         self.swtNewPage = NSwitch(self, height=iPx)
-        self.swtNewPage.setChecked(pOptions.getBool("GuiManuscript", "showNewPage", True))
+        self.swtNewPage.setChecked(options.getBool("GuiManuscript", "showNewPage", True))
         self.swtNewPage.clicked.connect(self._generatePreview)
 
         self.lblNewPage = QLabel(self.tr("Show Page Breaks"), self)
@@ -236,8 +226,8 @@ class GuiManuscript(NToolDialog):
         self.mainSplit.setStretchFactor(0, 0)
         self.mainSplit.setStretchFactor(1, 1)
         self.mainSplit.setSizes([
-            pOptions.getInt("GuiManuscript", "optsWidth", 225),
-            pOptions.getInt("GuiManuscript", "viewWidth", 675),
+            options.getInt("GuiManuscript", "optsWidth", 225),
+            options.getInt("GuiManuscript", "viewWidth", 675),
         ])
 
         self.outerBox = QVBoxLayout()
@@ -246,16 +236,15 @@ class GuiManuscript(NToolDialog):
         self.setLayout(self.outerBox)
         self.setSizeGripEnabled(True)
 
+        self.updateTheme(init=True)
+
         # Signals
         self.buildOutline.outlineEntryClicked.connect(self.docPreview.navigateTo)
 
         logger.debug("Ready: GuiManuscript")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiManuscript")
-        return
 
     def loadContent(self) -> None:
         """Load dialog content from project data."""
@@ -272,7 +261,36 @@ class GuiManuscript(NToolDialog):
             self.buildList.setCurrentItem(self._buildMap[selected])
             QTimer.singleShot(200, self._generatePreview)
 
-        return
+    def updateTheme(self, *, init: bool = False) -> None:
+        """Update theme elements."""
+        logger.debug("Theme Update: GuiManuscript, init=%s", init)
+
+        if not init:
+            self.btnPreview.updateIcon()
+            self.btnPrint.updateIcon()
+            self.btnBuild.updateIcon()
+            self.btnClose.updateIcon()
+
+        self.tbAdd.setThemeIcon("add", "add")
+        self.tbDel.setThemeIcon("remove", "remove")
+        self.tbCopy.setThemeIcon("copy", "action")
+        self.tbEdit.setThemeIcon("edit", "change")
+
+        buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
+        self.tbAdd.setStyleSheet(buttonStyle)
+        self.tbDel.setStyleSheet(buttonStyle)
+        self.tbCopy.setStyleSheet(buttonStyle)
+        self.tbEdit.setStyleSheet(buttonStyle)
+
+        self.detailsTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
+
+        self.buildDetails.updateTheme()
+        self.buildOutline.updateTheme()
+        self.docPreview.updateTheme()
+
+        for obj in SHARED.mainGui.children():
+            if isinstance(obj, GuiBuildSettings):
+                obj.updateTheme()
 
     ##
     #  Events
@@ -290,7 +308,6 @@ class GuiManuscript(NToolDialog):
                 obj.close()
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -302,14 +319,12 @@ class GuiManuscript(NToolDialog):
         build = BuildSettings()
         build.setName(self.tr("My Manuscript"))
         self._openSettingsDialog(build)
-        return
 
     @pyqtSlot()
     def _editSelectedBuild(self) -> None:
         """Edit the currently selected build settings entry."""
         if build := self._getSelectedBuild():
             self._openSettingsDialog(build)
-        return
 
     @pyqtSlot()
     def _copySelectedBuild(self) -> None:
@@ -320,14 +335,12 @@ class GuiManuscript(NToolDialog):
             self._updateBuildsList()
             if item := self._buildMap.get(new.buildID):
                 item.setSelected(True)
-        return
 
     @pyqtSlot("QListWidgetItem*", "QListWidgetItem*")
     def _updateBuildDetails(self, current: QListWidgetItem, previous: QListWidgetItem) -> None:
         """Process change of build selection to update the details."""
         if current and (build := self._builds.getBuild(current.data(self.D_KEY))):
             self.buildDetails.updateInfo(build)
-        return
 
     @pyqtSlot()
     def _deleteSelectedBuild(self) -> None:
@@ -338,16 +351,17 @@ class GuiManuscript(NToolDialog):
                     dialog.close()
                 self._builds.removeBuild(build.buildID)
                 self._updateBuildsList()
-        return
 
-    @pyqtSlot(BuildSettings)
-    def _processNewSettings(self, build: BuildSettings) -> None:
+    @pyqtSlot(BuildSettings, bool)
+    def _processNewSettings(self, build: BuildSettings, refreshPreview: bool) -> None:
         """Process new build settings from the settings dialog."""
         self._builds.setBuild(build)
         self._updateBuildItem(build)
-        if (current := self.buildList.currentItem()) and current.data(self.D_KEY) == build.buildID:
-            self._updateBuildDetails(current, current)
-        return
+        if refreshPreview:
+            self.buildList.setCurrentItem(self._buildMap[build.buildID])
+            self._generatePreview()
+        elif (item := self.buildList.currentItem()) and item.data(self.D_KEY) == build.buildID:
+            self._updateBuildDetails(item, item)
 
     @pyqtSlot()
     def _generatePreview(self) -> None:
@@ -399,15 +413,12 @@ class GuiManuscript(NToolDialog):
             if build.changed:
                 self._builds.setBuild(build)
 
-        return
-
     @pyqtSlot()
     def _printDocument(self) -> None:
         """Open the print preview dialog."""
         preview = QPrintPreviewDialog(self)
         preview.paintRequested.connect(self.docPreview.printPreview)
         preview.exec()
-        return
 
     ##
     #  Internal Functions
@@ -456,8 +467,6 @@ class GuiManuscript(NToolDialog):
         pOptions.setValue("GuiManuscript", "showNewPage", showNewPage)
         pOptions.saveSettings()
 
-        return
-
     def _openSettingsDialog(self, build: BuildSettings) -> None:
         """Open the build settings dialog."""
         if dialog := self._findSettingsDialog(build.buildID):
@@ -478,11 +487,10 @@ class GuiManuscript(NToolDialog):
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
-            bItem.setIcon(SHARED.theme.getIcon("build_settings", "blue"))
+            bItem.setIcon(SHARED.theme.getIcon("build_settings", "action"))
             bItem.setData(self.D_KEY, key)
             self.buildList.addItem(bItem)
             self._buildMap[key] = bItem
-        return
 
     def _updateBuildItem(self, build: BuildSettings) -> None:
         """Update the entry of a specific build item."""
@@ -490,7 +498,6 @@ class GuiManuscript(NToolDialog):
             item.setText(build.name)
         else:  # Probably a new item
             self._updateBuildsList()
-        return
 
     def _findSettingsDialog(self, buildID: str) -> GuiBuildSettings | None:
         """Return an open build settings dialog for a given build, if
@@ -508,6 +515,7 @@ class _DetailsWidget(QWidget):
         super().__init__(parent=parent)
 
         self._initExpanded = True
+        self._build = None
 
         # Tree Widget
         self.listView = QTreeWidget(self)
@@ -520,8 +528,6 @@ class _DetailsWidget(QWidget):
         self.outerBox.addWidget(self.listView)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.outerBox)
-
-        return
 
     ##
     #  Getters
@@ -547,7 +553,6 @@ class _DetailsWidget(QWidget):
     def setColumnWidth(self, value: int) -> None:
         """Set the width of the first column."""
         self.listView.setColumnWidth(0, value)
-        return
 
     def setExpandedState(self, state: list[bool]) -> None:
         """Set the expanded state of each top level item."""
@@ -556,7 +561,6 @@ class _DetailsWidget(QWidget):
             item = self.listView.topLevelItem(i)
             if isinstance(item, QTreeWidgetItem):
                 item.setExpanded((state[i] if i < count else True) and item.childCount() > 0)
-        return
 
     ##
     #  Methods
@@ -573,8 +577,8 @@ class _DetailsWidget(QWidget):
 
         self.listView.clear()
 
-        on = SHARED.theme.getIcon("bullet-on", "blue")
-        off = SHARED.theme.getIcon("bullet-off", "blue")
+        on = SHARED.theme.getIcon("bullet-on", "action")
+        off = SHARED.theme.getIcon("bullet-off", "action")
 
         # Name
         item = QTreeWidgetItem()
@@ -634,10 +638,16 @@ class _DetailsWidget(QWidget):
             sub.setIcon(1, on if build.getBool(key) else off)
             item.addChild(sub)
 
+        self._build = build
+
         # Restore expanded state
         self.setExpandedState(expanded)
 
-        return
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        if self._build:
+            logger.debug("Theme Update: _DetailsWidget")
+            self.updateInfo(self._build)
 
 
 class _OutlineWidget(QWidget):
@@ -663,11 +673,9 @@ class _OutlineWidget(QWidget):
         self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.outerBox)
 
-        return
-
-    def updateOutline(self, data: dict[str, str]) -> None:
+    def updateOutline(self, data: dict[str, str], *, force: bool = False) -> None:
         """Update the outline."""
-        if isinstance(data, dict) and data != self._outline:
+        if isinstance(data, dict) and (data != self._outline or force):
             self.listView.clear()
 
             tFont = self.font()
@@ -705,7 +713,10 @@ class _OutlineWidget(QWidget):
             self.listView.setIndentation(SHARED.theme.baseIconHeight if indent else 4)
             self._outline = data
 
-        return
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        logger.debug("Theme Update: _OutlineWidget")
+        self.updateOutline(self._outline, force=True)
 
     ##
     #  Private Slots
@@ -714,7 +725,6 @@ class _OutlineWidget(QWidget):
     def _onItemClick(self, item: QTreeWidgetItem) -> None:
         """Process tree item click."""
         self.outlineEntryClicked.emit(str(item.data(0, self.D_LINE)))
-        return
 
 
 class _PreviewWidget(QTextBrowser):
@@ -750,17 +760,12 @@ class _PreviewWidget(QTextBrowser):
         self.anchorClicked.connect(self._linkClicked)
 
         # Document Age
-        aPalette = self.palette()
-        aPalette.setColor(QPalette.ColorRole.Window, aPalette.toolTipBase().color())
-        aPalette.setColor(QPalette.ColorRole.WindowText, aPalette.toolTipText().color())
-
         aFont = self.font()
         aFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
 
         self.ageLabel = QLabel("", self)
         self.ageLabel.setIndent(0)
         self.ageLabel.setFont(aFont)
-        self.ageLabel.setPalette(aPalette)
         self.ageLabel.setAutoFillBackground(True)
         self.ageLabel.setAlignment(QtAlignCenter)
         self.ageLabel.setFixedHeight(int(2.1*SHARED.theme.fontPixelSize))
@@ -779,6 +784,7 @@ class _PreviewWidget(QTextBrowser):
         self._updateDocMargins()
         self._updateBuildAge()
 
+        self.updateTheme()
         self.setTextFont(CONFIG.textFont)
 
         # Age Timer
@@ -786,8 +792,6 @@ class _PreviewWidget(QTextBrowser):
         self.ageTimer.setInterval(10000)
         self.ageTimer.timeout.connect(self._updateBuildAge)
         self.ageTimer.start()
-
-        return
 
     ##
     #  Setters
@@ -797,7 +801,6 @@ class _PreviewWidget(QTextBrowser):
         """Set the build name for the document label."""
         self._buildName = name
         self._updateBuildAge()
-        return
 
     def setTextFont(self, font: QFont) -> None:
         """Set the text font properties and then reset for sub-widgets.
@@ -807,7 +810,6 @@ class _PreviewWidget(QTextBrowser):
         self.setFont(font)
         self.buildProgress.setFont(SHARED.theme.guiFont)
         self.ageLabel.setFont(SHARED.theme.guiFontSmall)
-        return
 
     ##
     #  Methods
@@ -823,13 +825,11 @@ class _PreviewWidget(QTextBrowser):
             self._scrollPos = vBar.value()
         self.setPlaceholderText("")
         self.clear()
-        return
 
     def buildStep(self, value: int) -> None:
         """Update the progress bar value."""
         self.buildProgress.setValue(value)
         QApplication.processEvents()
-        return
 
     def setContent(self, document: QTextDocument) -> None:
         """Set the content of the preview widget."""
@@ -850,7 +850,14 @@ class _PreviewWidget(QTextBrowser):
         QApplication.processEvents()
         QTimer.singleShot(300, self._postUpdate)
 
-        return
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        logger.debug("Theme Update: _PreviewWidget")
+
+        palette = QApplication.palette()
+        palette.setColor(QPalette.ColorRole.Window, palette.toolTipBase().color())
+        palette.setColor(QPalette.ColorRole.WindowText, palette.toolTipText().color())
+        self.ageLabel.setPalette(palette)
 
     ##
     #  Events
@@ -860,7 +867,6 @@ class _PreviewWidget(QTextBrowser):
         """Capture resize and update the document margins."""
         super().resizeEvent(event)
         self._updateDocMargins()
-        return
 
     ##
     #  Public Slots
@@ -874,14 +880,12 @@ class _PreviewWidget(QTextBrowser):
             printer.setPageOrientation(QPageLayout.Orientation.Portrait)
             document.print(printer)
             QApplication.restoreOverrideCursor()
-        return
 
     @pyqtSlot(str)
     def navigateTo(self, anchor: str) -> None:
         """Go to a specific #link in the document."""
         logger.debug("Moving to anchor '#%s'", anchor)
         self.setSource(QUrl(f"#{anchor}"))
-        return
 
     ##
     #  Private Slots
@@ -896,7 +900,6 @@ class _PreviewWidget(QTextBrowser):
                 self.navigateTo(link.lstrip("#"))
             elif link.startswith("http"):
                 QDesktopServices.openUrl(QUrl(url))
-        return
 
     @pyqtSlot()
     def _updateBuildAge(self) -> None:
@@ -909,7 +912,6 @@ class _PreviewWidget(QTextBrowser):
             ))
         else:
             self.ageLabel.setText("<b>{0}</b>".format(self.tr("No Preview")))
-        return
 
     @pyqtSlot()
     def _postUpdate(self) -> None:
@@ -917,7 +919,6 @@ class _PreviewWidget(QTextBrowser):
         self.buildProgress.setVisible(False)
         if vBar := self.verticalScrollBar():
             vBar.setValue(self._scrollPos)
-        return
 
     ##
     #  Internal Functions
@@ -936,7 +937,6 @@ class _PreviewWidget(QTextBrowser):
         self.ageLabel.setGeometry(tB, tB, vW, tH)
         self.setViewportMargins(0, tH, 0, 0)
         self.buildProgress.move((vW-pS)//2, (vH-pS)//2)
-        return
 
 
 class _StatsWidget(QWidget):
@@ -951,7 +951,7 @@ class _StatsWidget(QWidget):
         self.minWidget = QWidget(self)
         self.maxWidget = QWidget(self)
 
-        self.toggleButton = NIconToggleButton(self, SHARED.theme.baseIconSize, "unfold")
+        self.toggleButton = NIconToggleButton(self, SHARED.theme.baseIconSize)
         self.toggleButton.toggled.connect(self._toggleView)
 
         self._buildBottomPanel()
@@ -966,10 +966,9 @@ class _StatsWidget(QWidget):
         self.outerBox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerBox)
+        self.updateTheme()
 
         self._toggleView(False)
-
-        return
 
     def updateStats(self, data: dict[str, int]) -> None:
         """Update the stats values from a Tokenizer stats dict."""
@@ -992,7 +991,10 @@ class _StatsWidget(QWidget):
         self.maxHeadWordChars.setText(f"{data.get(nwStats.WCHARS_TITLE, 0):n}")
         self.maxTextWordChars.setText(f"{data.get(nwStats.WCHARS_TEXT, 0):n}")
 
-        return
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        logger.debug("Theme Update: _StatsWidget")
+        self.toggleButton.setThemeIcon("unfold", "default")
 
     ##
     #  Private Slots
@@ -1013,7 +1015,6 @@ class _StatsWidget(QWidget):
         self.minWidget.adjustSize()
         self.mainStack.adjustSize()
         self.adjustSize()
-        return
 
     ##
     #  Internal Functions
@@ -1105,5 +1106,3 @@ class _StatsWidget(QWidget):
 
         self.minWidget.setLayout(self.minLayout)
         self.maxWidget.setLayout(self.maxLayout)
-
-        return

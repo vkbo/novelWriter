@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import pytest
@@ -37,7 +37,7 @@ from tests.tools import buildTestProject
 
 @pytest.mark.gui
 def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncPath, projPath):
-    """test the word list editor."""
+    """Test the word list editor."""
     buildTestProject(nwGUI, projPath)
 
     monkeypatch.setattr(GuiWordList, "exec", lambda *a: None)

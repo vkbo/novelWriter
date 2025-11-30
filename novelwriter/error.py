@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -47,7 +47,6 @@ def logException() -> None:
     exType, exValue, _ = sys.exc_info()
     if exType is not None:
         logger.error(f"{exType.__name__}: {exValue!s}", stacklevel=2)
-    return
 
 
 def formatException(exc: BaseException) -> str:
@@ -58,6 +57,7 @@ def formatException(exc: BaseException) -> str:
 
 
 class NWErrorMessage(QDialog):
+    """GUI: Error Dialog."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -110,8 +110,6 @@ class NWErrorMessage(QDialog):
         self.setSizeGripEnabled(True)
         self.resize(800, 400)
 
-        return
-
     def setMessage(self, exType: type, exValue: BaseException, exTrace: TracebackType) -> None:
         """Generate a message and append session data, error info and
         error traceback.
@@ -143,7 +141,7 @@ class NWErrorMessage(QDialog):
             enchantVersion = "Unknown"
 
         try:
-            txtTrace = "\n".join(format_tb(exTrace))
+            trace = "\n".join(format_tb(exTrace))
             self.msgBody.setPlainText(
                 "Environment:\n"
                 f"novelWriter Version: {__version__}\n"
@@ -152,12 +150,10 @@ class NWErrorMessage(QDialog):
                 f"Qt: {QT_VERSION_STR}, PyQt: {PYQT_VERSION_STR}\n"
                 f"enchant: {enchantVersion}\n\n"
                 f"{exType.__name__}:\n{exValue!s}\n\n"
-                f"Traceback:\n{txtTrace}\n"
+                f"Traceback:\n{trace}\n"
             )
         except Exception:
             self.msgBody.setPlainText("Failed to generate error report ...")
-
-        return
 
     ##
     #  Slots
@@ -167,16 +163,15 @@ class NWErrorMessage(QDialog):
     def _doClose(self) -> None:
         """Close the dialog."""
         self.close()
-        return
 
 
 def exceptionHandler(exType: type, exValue: BaseException, exTrace: TracebackType) -> None:
-    """Function to catch unhandled global exceptions."""
+    """Catch unhandled global exceptions."""
     from traceback import print_tb
 
     from PyQt6.QtWidgets import QApplication
 
-    logger.critical("%s: %s", exType.__name__, str(exValue))
+    logger.critical("%s: %s", exType.__name__, exValue)
     print_tb(exTrace)
 
     try:

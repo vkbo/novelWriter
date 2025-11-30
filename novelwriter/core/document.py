@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import hashlib
@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 class NWDocument:
-    """Core: Document Class
+    """Core: Document Class.
 
     A Class wrapping a single novelWriter document file. It represents
     a project item of nwItemType FILE. The file is not guaranteed to
@@ -67,8 +67,6 @@ class NWDocument:
 
         if self._handle is not None:
             self._item = self._project.tree[tHandle]
-
-        return
 
     def __repr__(self) -> str:
         return f"<NWDocument handle={self._handle}>"
@@ -229,8 +227,11 @@ class NWDocument:
             self._hashError = True
             return False
 
+        if text and not text.endswith("\n"):
+            text += "\n"
+
         currTime = formatTimeStamp(time())
-        writeHash = hashlib.sha1(text.encode()).hexdigest()
+        writeHash = hashlib.sha1(text.encode(encoding="utf-8")).hexdigest()
         createdDate = self._docMeta.get("created", "Unknown")
         updatedDate = self._docMeta.get("updated", "Unknown")
         if writeHash != self._lastHash:
@@ -357,5 +358,3 @@ class NWDocument:
 
         else:
             logger.debug("Unknown meta data: '%s'", metaLine.strip())
-
-        return

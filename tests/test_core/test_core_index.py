@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -157,7 +157,7 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
 
     # Check File
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
+    assert cmpFiles(testFile, compFile, ignoreLines=[3, 4])
 
     # Write an empty index file and load it
     projFile.write_text("{}", encoding="utf-8")

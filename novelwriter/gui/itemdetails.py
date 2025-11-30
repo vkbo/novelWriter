@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -43,6 +43,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiItemDetails(QWidget):
+    """GUI: Project Item Details Panel."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -190,8 +191,6 @@ class GuiItemDetails(QWidget):
 
         logger.debug("Ready: GuiItemDetails")
 
-        return
-
     ###
     #  Class Methods
     ##
@@ -210,7 +209,6 @@ class GuiItemDetails(QWidget):
         self.cCountData.clear()
         self.wCountData.clear()
         self.pCountData.clear()
-        return
 
     def refreshDetails(self) -> None:
         """Reload the content of the details panel."""
@@ -218,8 +216,8 @@ class GuiItemDetails(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiItemDetails")
         self.updateViewBox(self._handle)
-        return
 
     def updateViewBox(self, tHandle: str | None) -> None:
         """Populate the details box from a given handle."""
@@ -233,14 +231,8 @@ class GuiItemDetails(QWidget):
         # Label
         # =====
 
-        if nwItem.isFileType():
-            if nwItem.isActive:
-                self.labelIcon.setPixmap(SHARED.theme.getPixmap("checked", (iPx, iPx), "green"))
-            else:
-                self.labelIcon.setPixmap(SHARED.theme.getPixmap("unchecked", (iPx, iPx), "red"))
-        else:
-            self.labelIcon.setPixmap(SHARED.theme.getPixmap("noncheckable", (iPx, iPx), "faded"))
-
+        _, icon = nwItem.getActiveStatus()
+        self.labelIcon.setPixmap(icon.pixmap(iPx, iPx))
         self.labelData.setText(elide(nwItem.itemName, 100))
 
         # Status
@@ -289,4 +281,3 @@ class GuiItemDetails(QWidget):
                 self.updateViewBox(tHandle)
             elif change == nwChange.DELETE:
                 self.updateViewBox(None)
-        return

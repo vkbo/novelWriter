@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from datetime import datetime
@@ -33,7 +33,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwFiles
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.enum import nwItemClass
-from novelwriter.tools.welcome import GuiWelcome
+from novelwriter.tools.welcome import SAMPLE_KEY, SAMPLE_NAME, GuiWelcome
 from novelwriter.types import QtMouseLeft
 
 
@@ -52,7 +52,7 @@ def testToolWelcome_Main(qtbot, monkeypatch, nwGUI, fncPath):
     welcome.btnNew.click()
     assert welcome.mainStack.currentIndex() == 1
 
-    # Revert to project lits
+    # Revert to project list
     welcome.btnList.click()
     assert welcome.mainStack.currentIndex() == 0
 
@@ -62,6 +62,34 @@ def testToolWelcome_Main(qtbot, monkeypatch, nwGUI, fncPath):
         with qtbot.waitSignal(welcome.openProjectRequest) as signal:
             welcome.btnBrowse.click()
         assert signal.args and signal.args[0] == fncPath
+
+    # Create sample project when list is empty
+    assert welcome.tabOpen.listModel.rowCount() == 1
+    selected = welcome.tabOpen.listModel.index(0, 0).data()
+    assert selected[0] == SAMPLE_NAME
+    assert selected[1] == SAMPLE_KEY
+    welcome.tabOpen._selectFirstItem()
+
+    # A folder must be selected
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: None)
+        welcome.tabOpen._processOpenProjectRequest(SAMPLE_KEY)
+
+    assert SHARED.lastAlert[0] == "You must select a location for the example project."
+
+    # Successful
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: fncPath)
+        welcome.tabOpen._processOpenProjectRequest(SAMPLE_KEY)
+
+    assert (fncPath / SAMPLE_NAME).is_dir()
+
+    # But can't create a duplicate
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: fncPath)
+        welcome.tabOpen._processOpenProjectRequest(SAMPLE_KEY)
+
+    assert SHARED.lastAlert[0] == "The target folder already exists. Please choose another folder."
 
     # qtbot.stop()
     welcome.close()

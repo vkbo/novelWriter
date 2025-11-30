@@ -17,23 +17,22 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import pytest
 
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtGui import QFont
-from PyQt6.QtWidgets import QFontDialog
 
 from novelwriter import SHARED
 from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
+from novelwriter.extensions.modified import NFontDialog
 from novelwriter.tools.manussettings import (
     GuiBuildSettings, _FilterTab, _FormattingTab, _HeadingsTab
 )
-from novelwriter.types import QtDialogApply, QtDialogClose, QtDialogSave
 
 from tests.tools import C, buildTestProject
 
@@ -70,7 +69,7 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     triggered = False
 
     @pyqtSlot(BuildSettings)
-    def _testNewSettingsReady(new: BuildSettings):
+    def _testNewSettingsReady(new: BuildSettings, refresh: bool):
         nonlocal triggered
         assert new.buildID == build.buildID
         triggered = True
@@ -78,9 +77,7 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     # Capture Apply button
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        button = bSettings.buttonBox.button(QtDialogApply)
-        assert button is not None
-        bSettings._dialogButtonClicked(button)
+        bSettings._dialogButtonClicked(bSettings.btnApply)
 
     assert triggered
 
@@ -89,9 +86,7 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        button = bSettings.buttonBox.button(QtDialogSave)
-        assert button is not None
-        bSettings._dialogButtonClicked(button)
+        bSettings._dialogButtonClicked(bSettings.btnSave)
 
     assert triggered
 
@@ -109,9 +104,7 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     assert triggered
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -326,9 +319,7 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     ]
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -505,9 +496,7 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     assert sBuild.getBool("headings.hideSection") is True
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -579,9 +568,7 @@ def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
     assert sBuild.getBool("text.addNoteHeadings") is True
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -651,15 +638,13 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
         font = QFont()
         font.setFamily("Times")
         font.setPointSize(10)
-        mp.setattr(QFontDialog, "getFont", lambda *a, **k: (font, True))
+        mp.setattr(NFontDialog, "selectFont", lambda *a, **k: (font, True))
 
         fmtTab.btnTextFont.click()
         assert fmtTab._textFont == font
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -703,9 +688,7 @@ def testToolBuildSettings_FormatFirstLineIndent(monkeypatch, qtbot, nwGUI):
     assert sBuild.getBool("format.indentFirstPar") is True
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -761,9 +744,7 @@ def testToolBuildSettings_FormatPageLayout(monkeypatch, qtbot, nwGUI):
     assert fmtTab.rightMargin.value() == 1.5
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
 
 
@@ -793,8 +774,8 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
-    assert fmtTab.odtPageHeader.text() == nwHeadFmt.DOC_AUTO
-    assert fmtTab.odtPageCountOffset.value() == 0
+    assert fmtTab.pageHeader.text() == nwHeadFmt.DOC_AUTO
+    assert fmtTab.pageCountOffset.value() == 0
     assert fmtTab.colorHeadings.isChecked() is True
     assert fmtTab.scaleHeadings.isChecked() is True
     assert fmtTab.boldHeadings.isChecked() is True
@@ -803,8 +784,12 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert fmtTab.htmlPreserveTabs.isChecked() is False
 
     # Change Values
-    fmtTab.odtPageCountOffset.setValue(1)
-    fmtTab.odtPageHeader.setText("Stuff")
+    fmtTab.pageCountOffset.setValue(1)
+    fmtTab.pageHeader.setText("Stuff")
+    fmtTab.metaLanguage.setText("en-gb")
+
+    fmtTab._refreshMetaLang()
+    assert fmtTab.lblMetaLanguage.text() == "British English"
 
     # Toggle all
     fmtTab.colorHeadings.setChecked(False)
@@ -820,6 +805,7 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
 
     assert sBuild.getStr("doc.pageHeader") == "Stuff"
     assert sBuild.getInt("doc.pageCountOffset") == 1
+    assert sBuild.getStr("doc.metaLanguage") == "en-GB"
     assert sBuild.getBool("doc.colorHeadings") is False
     assert sBuild.getBool("doc.scaleHeadings") is False
     assert sBuild.getBool("doc.boldHeadings") is False
@@ -829,10 +815,8 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
 
     # Reset header format
     fmtTab.btnPageHeader.click()
-    assert fmtTab.odtPageHeader.text() == nwHeadFmt.DOC_AUTO
+    assert fmtTab.pageHeader.text() == nwHeadFmt.DOC_AUTO
 
     # Finish
-    button = bSettings.buttonBox.button(QtDialogClose)
-    assert button is not None
-    bSettings._dialogButtonClicked(button)
+    bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()

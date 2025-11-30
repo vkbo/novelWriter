@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import sys
@@ -37,7 +37,6 @@ from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.manussettings import GuiBuildSettings
-from novelwriter.types import QtDialogApply, QtDialogSave
 
 from tests.tools import C, buildTestProject
 
@@ -73,6 +72,9 @@ def testToolManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
         manus.btnPreview.click()
     assert manus.docPreview.toPlainText().strip() == allText
 
+    # Trigger a theme update, which is only a visual refresh, but it shouldn't crash
+    manus.updateTheme()
+
     nwGUI.closeProject()  # This should auto-close the manuscript tool
 
     # qtbot.stop()
@@ -106,18 +108,17 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
     bSettings = SHARED.findTopLevelWidget(GuiBuildSettings)
     assert isinstance(bSettings, GuiBuildSettings)
     bSettings.editBuildName.setText("Test Build")
+    bSettings.swtAutoPreview.setChecked(False)
     build = None
 
     @pyqtSlot(BuildSettings)
-    def _testNewSettingsReady(new: BuildSettings):
+    def _testNewSettingsReady(new: BuildSettings, refresh: bool):
         nonlocal build
         build = new
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        button = bSettings.buttonBox.button(QtDialogSave)
-        assert button is not None
-        button.click()
+        bSettings.btnSave.click()
 
     assert isinstance(build, BuildSettings)
     assert build.name == "Test Build"
@@ -136,9 +137,7 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        button = bSettings.buttonBox.button(QtDialogApply)
-        assert button is not None
-        button.click()  # Should leave the dialog open
+        bSettings.btnApply.click()  # Should leave the dialog open
 
     assert isinstance(build, BuildSettings)
     assert build.name == "Test Build"
@@ -152,6 +151,25 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
     new = manus._getSelectedBuild()
     assert new is not None
     assert new.name == "Test Build 2"
+
+    # Processing first build with refresh should change selection
+    manus.docPreview._docTime = 0
+    manus._processNewSettings(build, True)
+    assert manus.docPreview._docTime > 0  # Refreshed
+    current = manus._getSelectedBuild()
+    assert current is not None
+    assert current.name == "Test Build"
+
+    # Processing new build without refresh should keep selection
+    manus.docPreview._docTime = 0
+    manus._processNewSettings(new, False)
+    assert manus.docPreview._docTime == 0  # No refresh
+    current = manus._getSelectedBuild()
+    assert current is not None
+    assert current.name == "Test Build"
+
+    # Trigger a theme update, which should propagate to settings
+    nwGUI.refreshThemeColors()
 
     # Close the dialog should also close the child dialogs
     manus.btnClose.click()

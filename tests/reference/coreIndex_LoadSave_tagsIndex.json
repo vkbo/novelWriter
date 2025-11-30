@@ -1,4 +1,8 @@
 {
+  "novelWriter.meta": {
+    "version": "0x020800a2",
+    "timestamp": "2025-10-05 17:06:58"
+  },
   "novelWriter.tagsIndex": {
     "bod": {"name": "Bod", "display": "Nobody Owens", "handle": "4c4f28287af27", "heading": "T0001", "class": "CHARACTER"},
     "main": {"name": "Main", "display": "Main", "handle": "2426c6f0ca922", "heading": "T0001", "class": "PLOT"},
@@ -18,7 +22,8 @@
     "88d59a277361b": {
       "T0001": {
         "meta": {"level": "H2", "title": "Prologue", "line": 1, "tag": "", "counts": [605, 94, 2]},
-        "summary": "Explanation from the lipsum.com website."
+        "summary": "Explanation from the lipsum.com website.",
+        "note.Purpose": "Introduction"
       },
       "document": {
         "footnotes": ["f9kgf"]
@@ -92,17 +97,20 @@
     "4c4f28287af27": {
       "T0001": {
         "meta": {"level": "H1", "title": "Nobody Owens", "line": 1, "tag": "bod", "counts": [1864, 284, 3]},
-        "refs": {"main": "@plot"}
+        "refs": {"main": "@plot"},
+        "summary": "The Hero"
       }
     },
     "2426c6f0ca922": {
       "T0001": {
-        "meta": {"level": "H1", "title": "Main Plot", "line": 1, "tag": "main", "counts": [1369, 195, 2]}
+        "meta": {"level": "H1", "title": "Main Plot", "line": 1, "tag": "main", "counts": [1369, 195, 2]},
+        "summary": "Where it all happens"
       }
     },
     "04468803b92e1": {
       "T0001": {
-        "meta": {"level": "H1", "title": "Ancient Europe", "line": 1, "tag": "europe", "counts": [1770, 259, 3]}
+        "meta": {"level": "H1", "title": "Ancient Europe", "line": 1, "tag": "europe", "counts": [1770, 259, 3]},
+        "summary": "A strange place"
       }
     }
   }

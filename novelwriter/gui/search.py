@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -50,6 +50,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiProjectSearch(QWidget):
+    """GUI: Project Search Panel."""
 
     C_NAME   = 0
     C_RESULT = 0
@@ -106,7 +107,7 @@ class GuiProjectSearch(QWidget):
 
         # Search Box
         self.searchAction = QAction("", self)
-        self.searchAction.setIcon(SHARED.theme.getIcon("search", "blue"))
+        self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
         self.searchAction.triggered.connect(self._processSearch)
 
         self.searchText = QLineEdit(self)
@@ -151,14 +152,14 @@ class GuiProjectSearch(QWidget):
 
         logger.debug("Ready: GuiProjectSearch")
 
-        return
-
     ##
     #  Methods
     ##
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiProjectSearch")
+
         palette = QApplication.palette()
         colBase = palette.base().color().name(QtHexArgb)
         colFocus = palette.highlight().color().name(QtHexArgb)
@@ -169,12 +170,10 @@ class GuiProjectSearch(QWidget):
             f"QLineEdit:focus {{border: 1px solid {colFocus};}} "
         )
 
-        self.searchAction.setIcon(SHARED.theme.getIcon("search", "blue"))
-        self.toggleCase.setIcon(SHARED.theme.getIcon("search_case"))
-        self.toggleWord.setIcon(SHARED.theme.getIcon("search_word"))
-        self.toggleRegEx.setIcon(SHARED.theme.getIcon("search_regex"))
-
-        return
+        self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
+        self.toggleCase.setIcon(SHARED.theme.getIcon("search_case", "tool"))
+        self.toggleWord.setIcon(SHARED.theme.getIcon("search_word", "tool"))
+        self.toggleRegEx.setIcon(SHARED.theme.getIcon("search_regex", "tool"))
 
     def processReturn(self) -> None:
         """Process a return keypress forwarded from the main GUI."""
@@ -189,7 +188,6 @@ class GuiProjectSearch(QWidget):
             self.openDocumentSelectRequest.emit(
                 str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1), False
             )
-        return
 
     def beginSearch(self, text: str = "") -> None:
         """Focus the search box and select its text, if any."""
@@ -198,20 +196,17 @@ class GuiProjectSearch(QWidget):
         if text:
             self.searchText.setText(text.partition("\n")[0])
             self.searchText.selectAll()
-        return
 
     def closeProjectTasks(self) -> None:
         """Run close project tasks."""
         self._map = {}
         self.searchText.clear()
         self.searchResult.clear()
-        return
 
     def refreshCurrentSearch(self) -> None:
         """Refresh the search if there is one."""
         if self.searchResult.topLevelItemCount() > 0:
             self._processSearch()
-        return
 
     ##
     #  Events
@@ -238,7 +233,6 @@ class GuiProjectSearch(QWidget):
             self.searchText.setFocus()
         else:
             super().keyPressEvent(event)
-        return
 
     ##
     #  Public Slots
@@ -252,7 +246,6 @@ class GuiProjectSearch(QWidget):
             results, capped = self._search.searchText(SHARED.mainGui.docEditor.getText())
             self._displayResultSet(SHARED.project.tree[tHandle], results, capped)
             logger.debug("Updated search for '%s' in %.3f ms", tHandle, 1000*(time() - start))
-        return
 
     ##
     #  Private Slots
@@ -278,7 +271,6 @@ class GuiProjectSearch(QWidget):
             self._time = time()
             QApplication.restoreOverrideCursor()
         self._blocked = False
-        return
 
     @pyqtSlot()
     def _searchResultSelected(self) -> None:
@@ -288,7 +280,6 @@ class GuiProjectSearch(QWidget):
                 self.selectedItemChanged.emit(str(data[0]))
             elif data := items[0].data(0, self.D_HANDLE):
                 self.selectedItemChanged.emit(str(data))
-        return
 
     @pyqtSlot("QTreeWidgetItem*", int)
     def _searchResultDoubleClicked(self, item: QTreeWidgetItem, column: int) -> None:
@@ -297,28 +288,24 @@ class GuiProjectSearch(QWidget):
             self.openDocumentSelectRequest.emit(
                 str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1), True
             )
-        return
 
     @pyqtSlot(bool)
     def _toggleCase(self, state: bool) -> None:
         """Enable/disable case sensitive mode."""
         CONFIG.searchProjCase = state
         self.refreshCurrentSearch()
-        return
 
     @pyqtSlot(bool)
     def _toggleWord(self, state: bool) -> None:
         """Enable/disable whole word search mode."""
         CONFIG.searchProjWord = state
         self.refreshCurrentSearch()
-        return
 
     @pyqtSlot(bool)
     def _toggleRegEx(self, state: bool) -> None:
         """Enable/disable regular expression search mode."""
         CONFIG.searchProjRegEx = state
         self.refreshCurrentSearch()
-        return
 
     ##
     #  Internal Functions
@@ -360,5 +347,3 @@ class GuiProjectSearch(QWidget):
                 self.searchResult.setFirstColumnSpanned(i, parent, True)
 
             QApplication.processEvents()
-
-        return

@@ -20,12 +20,13 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 
 from enum import Enum
 
 
 class nwItemType(Enum):
+    """Enum: Project Item Types."""
 
     NO_TYPE = 0
     ROOT    = 1
@@ -34,6 +35,7 @@ class nwItemType(Enum):
 
 
 class nwItemClass(Enum):
+    """Enum: Project Item Classes."""
 
     NO_CLASS  = 0
     NOVEL     = 1
@@ -50,6 +52,7 @@ class nwItemClass(Enum):
 
 
 class nwItemLayout(Enum):
+    """A project item's layout."""
 
     NO_LAYOUT = 0
     DOCUMENT  = 1
@@ -57,6 +60,7 @@ class nwItemLayout(Enum):
 
 
 class nwComment(Enum):
+    """Types of text comments."""
 
     PLAIN    = 0
     IGNORE   = 1
@@ -69,6 +73,7 @@ class nwComment(Enum):
 
 
 class nwChange(Enum):
+    """Change request modes."""
 
     CREATE = 0
     UPDATE = 1
@@ -76,12 +81,14 @@ class nwChange(Enum):
 
 
 class nwDocMode(Enum):
+    """Document open modes."""
 
     VIEW = 0
     EDIT = 1
 
 
 class nwDocAction(Enum):
+    """Document actions."""
 
     NO_ACTION = 0
     UNDO      = 1
@@ -92,38 +99,40 @@ class nwDocAction(Enum):
     MD_ITALIC = 6
     MD_BOLD   = 7
     MD_STRIKE = 8
-    S_QUOTE   = 9
-    D_QUOTE   = 10
-    SEL_ALL   = 11
-    SEL_PARA  = 12
-    BLOCK_H1  = 13
-    BLOCK_H2  = 14
-    BLOCK_H3  = 15
-    BLOCK_H4  = 16
-    BLOCK_COM = 17
-    BLOCK_IGN = 18
-    BLOCK_TXT = 19
-    BLOCK_TTL = 20
-    BLOCK_UNN = 21
-    BLOCK_HSC = 22
-    REPL_SNG  = 23
-    REPL_DBL  = 24
-    RM_BREAKS = 25
-    ALIGN_L   = 26
-    ALIGN_C   = 27
-    ALIGN_R   = 28
-    INDENT_L  = 29
-    INDENT_R  = 30
-    SC_ITALIC = 31
-    SC_BOLD   = 32
-    SC_STRIKE = 33
-    SC_ULINE  = 34
-    SC_MARK   = 35
-    SC_SUP    = 36
-    SC_SUB    = 37
+    MD_MARK   = 9
+    S_QUOTE   = 10
+    D_QUOTE   = 11
+    SEL_ALL   = 12
+    SEL_PARA  = 13
+    BLOCK_H1  = 14
+    BLOCK_H2  = 15
+    BLOCK_H3  = 16
+    BLOCK_H4  = 17
+    BLOCK_COM = 18
+    BLOCK_IGN = 19
+    BLOCK_TXT = 20
+    BLOCK_TTL = 21
+    BLOCK_UNN = 22
+    BLOCK_HSC = 23
+    REPL_SNG  = 24
+    REPL_DBL  = 25
+    RM_BREAKS = 26
+    ALIGN_L   = 27
+    ALIGN_C   = 28
+    ALIGN_R   = 29
+    INDENT_L  = 30
+    INDENT_R  = 31
+    SC_ITALIC = 32
+    SC_BOLD   = 33
+    SC_STRIKE = 34
+    SC_ULINE  = 35
+    SC_MARK   = 36
+    SC_SUP    = 37
+    SC_SUB    = 38
 
 
 class nwDocInsert(Enum):
+    """Document insert actions."""
 
     NO_INSERT = 0
     QUOTE_LS  = 1
@@ -141,6 +150,7 @@ class nwDocInsert(Enum):
 
 
 class nwView(Enum):
+    """Main GUI view modes."""
 
     EDITOR  = 0
     PROJECT = 1
@@ -150,13 +160,23 @@ class nwView(Enum):
 
 
 class nwFocus(Enum):
+    """Main GUI panel focus."""
 
     TREE     = 1
     DOCUMENT = 2
     OUTLINE  = 3
 
 
+class nwTheme(Enum):
+    """GUI theme colour modes."""
+
+    AUTO  = 0
+    LIGHT = 1
+    DARK  = 2
+
+
 class nwOutline(Enum):
+    """Enum: Project Outline Columns."""
 
     TITLE   = 0
     LEVEL   = 1
@@ -181,6 +201,7 @@ class nwOutline(Enum):
 
 
 class nwNovelExtra(Enum):
+    """Enum: Novel View Extra Columns."""
 
     HIDDEN = 0
     POV    = 1
@@ -189,6 +210,7 @@ class nwNovelExtra(Enum):
 
 
 class nwBuildFmt(Enum):
+    """Enum: Manuscript Document Formats."""
 
     ODT    = 0
     FODT   = 1
@@ -203,6 +225,7 @@ class nwBuildFmt(Enum):
 
 
 class nwStatusShape(Enum):
+    """Enum: Status/Importance Icon Shapes."""
 
     SQUARE   = 0
     TRIANGLE = 1
@@ -224,3 +247,42 @@ class nwStatusShape(Enum):
     BLOCK_2  = 17
     BLOCK_3  = 18
     BLOCK_4  = 19
+
+
+class nwVimMode(Enum):
+    """Enum: Vim mode different modes."""
+
+    NORMAL = 0
+    INSERT = 1
+    VISUAL = 2
+    V_LINE = 3
+
+
+class nwStandardButton(Enum):
+    """Enum: Standard Dialog Buttons."""
+
+    OK      = 0
+    CANCEL  = 1
+    YES     = 2
+    NO      = 3
+    OPEN    = 4
+    CLOSE   = 5
+    SAVE    = 6
+    BROWSE  = 7
+    LIST    = 8
+    NEW     = 9
+    CREATE  = 10
+    RESET   = 11
+    INSERT  = 12
+    APPLY   = 13
+    BUILD   = 14
+    PRINT   = 15
+    PREVIEW = 16
+
+
+class nwState(Enum):
+    """Enum: Object state values."""
+
+    NORMAL   = 0
+    INACTIVE = 1
+    ERROR    = 2

@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 
 class NWSessionLog:
-    """Core: Session JSON Lines Log File
+    """Core: Session JSON Lines Log File.
 
     The class that wraps the session log file, which is in JSON Lines
     format. That is, one JSON object per line.
@@ -52,7 +52,6 @@ class NWSessionLog:
     def __init__(self, project: NWProject) -> None:
         self._project = project
         self._start = 0.0
-        return
 
     ##
     #  Properties
@@ -70,7 +69,6 @@ class NWSessionLog:
     def startSession(self) -> None:
         """Start the writing session."""
         self._start = time()
-        return
 
     def appendSession(self, idleTime: float) -> bool:
         """Append session statistics to the sessions log file."""

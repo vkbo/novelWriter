@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -35,21 +35,23 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import compact, describeFont, processDialogSymbols, uniqueCompact
-from novelwriter.config import DEF_GUI, DEF_ICONS, DEF_SYNTAX, DEF_TREECOL
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS, DEF_TREECOL
 from novelwriter.constants import nwLabels, nwQuotes, nwUnicode, trConst
 from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel, NScrollableForm
 from novelwriter.extensions.modified import (
     NComboBox, NDialog, NDoubleSpinBox, NIconToolButton, NSpinBox
 )
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignCenter, QtDialogCancel, QtDialogSave
+from novelwriter.types import QtAlignCenter, QtRoleAccept, QtRoleReject
 
 logger = logging.getLogger(__name__)
 
 
 class GuiPreferences(NDialog):
+    """GUI: Preferences Dialog."""
 
     newPreferencesReady = pyqtSignal(bool, bool, bool, bool)
 
@@ -69,7 +71,7 @@ class GuiPreferences(NDialog):
         )
 
         # Search Box
-        self.searchAction = QAction(SHARED.theme.getIcon("search"), "")
+        self.searchAction = QAction(SHARED.theme.getIcon("search", "apply"), "")
         self.searchAction.triggered.connect(self._gotoSearch)
 
         self.searchText = QLineEdit(self)
@@ -88,9 +90,15 @@ class GuiPreferences(NDialog):
         self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogCancel, self)
-        self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnSave = SHARED.theme.getStandardButton(nwStandardButton.SAVE, self)
+        self.btnSave.clicked.connect(self._doSave)
+
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.closeDialog)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnSave, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Assemble
         self.searchBox = QHBoxLayout()
@@ -106,7 +114,7 @@ class GuiPreferences(NDialog):
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.searchBox)
         self.outerBox.addLayout(self.mainBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
         self.outerBox.setSpacing(8)
 
         self.setLayout(self.outerBox)
@@ -125,11 +133,8 @@ class GuiPreferences(NDialog):
 
         logger.debug("Ready: GuiPreferences")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiPreferences")
-        return
 
     def buildForm(self) -> None:
         """Build the settings form."""
@@ -165,22 +170,34 @@ class GuiPreferences(NDialog):
         )
 
         # Colour Theme
-        self.guiTheme = NComboBox(self)
-        self.guiTheme.setMinimumWidth(200)
-        for theme, name in SHARED.theme.listThemes():
-            self.guiTheme.addItem(name, theme)
-        self.guiTheme.setCurrentData(CONFIG.guiTheme, DEF_GUI)
+        self.lightTheme = NComboBox(self)
+        self.lightTheme.setMinimumWidth(200)
+        self.darkTheme = NComboBox(self)
+        self.darkTheme.setMinimumWidth(200)
+        for key, theme in SHARED.theme.colourThemes.items():
+            if theme.dark:
+                self.darkTheme.addItem(theme.name, key)
+            else:
+                self.lightTheme.addItem(theme.name, key)
+
+        self.lightTheme.setCurrentData(CONFIG.lightTheme, DEF_GUI_LIGHT)
+        self.darkTheme.setCurrentData(CONFIG.darkTheme, DEF_GUI_DARK)
 
         self.mainForm.addRow(
-            self.tr("Colour theme"), self.guiTheme,
-            self.tr("User interface colour theme."), stretch=(3, 2)
+            self.tr("Light colour theme"), self.lightTheme,
+            self.tr("You can change theme mode from the sidebar."), stretch=(3, 2)
+        )
+        self.mainForm.addRow(
+            self.tr("Dark colour theme"), self.darkTheme,
+            self.tr("You can change theme mode from the sidebar."), stretch=(3, 2)
         )
 
         # Icon Theme
         self.iconTheme = NComboBox(self)
         self.iconTheme.setMinimumWidth(200)
-        for theme, name in SHARED.theme.iconCache.listThemes():
-            self.iconTheme.addItem(name, theme)
+        for key, theme in SHARED.theme.iconCache.iconThemes.items():
+            self.iconTheme.addItem(theme.name, key)
+
         self.iconTheme.setCurrentData(CONFIG.iconTheme, DEF_ICONS)
 
         self.mainForm.addRow(
@@ -194,7 +211,7 @@ class GuiPreferences(NDialog):
         self.guiFont.setMinimumWidth(162)
         self.guiFont.setText(describeFont(self._guiFont))
         self.guiFont.setCursorPosition(0)
-        self.guiFontButton = NIconToolButton(self, iSz, "font")
+        self.guiFontButton = NIconToolButton(self, iSz, "font", "tool")
         self.guiFontButton.clicked.connect(self._selectGuiFont)
         self.mainForm.addRow(
             self.tr("Application font"), self.guiFont,
@@ -242,25 +259,13 @@ class GuiPreferences(NDialog):
         self.sidebar.addButton(title, section)
         self.mainForm.addGroupLabel(title, section)
 
-        # Document Colour Theme
-        self.guiSyntax = NComboBox(self)
-        self.guiSyntax.setMinimumWidth(200)
-        for syntax, name in SHARED.theme.listSyntax():
-            self.guiSyntax.addItem(name, syntax)
-        self.guiSyntax.setCurrentData(CONFIG.guiSyntax, DEF_SYNTAX)
-
-        self.mainForm.addRow(
-            self.tr("Document colour theme"), self.guiSyntax,
-            self.tr("Colour theme for the editor and viewer."), stretch=(3, 2)
-        )
-
         # Document Font Family
         self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
         self.textFont.setMinimumWidth(162)
         self.textFont.setText(describeFont(CONFIG.textFont))
         self.textFont.setCursorPosition(0)
-        self.textFontButton = NIconToolButton(self, iSz, "font")
+        self.textFontButton = NIconToolButton(self, iSz, "font", "tool")
         self.textFontButton.clicked.connect(self._selectTextFont)
         self.mainForm.addRow(
             self.tr("Document font"), self.textFont,
@@ -294,6 +299,7 @@ class GuiPreferences(NDialog):
         # Tree Icon Colours
         self.iconColTree = NComboBox(self)
         self.iconColTree.setMinimumWidth(200)
+        self.iconColTree.addItem(self.tr("Theme Colours"), DEF_TREECOL)
         for key, label in nwLabels.THEME_COLORS.items():
             self.iconColTree.addItem(trConst(label), key)
         self.iconColTree.setCurrentData(CONFIG.iconColTree, DEF_TREECOL)
@@ -357,6 +363,14 @@ class GuiPreferences(NDialog):
             self.tr("Only applies when a project is open.")
         )
 
+        # Centre main window on startup
+        self.moveMainWin = NSwitch(self)
+        self.moveMainWin.setChecked(CONFIG.moveMainWin)
+        self.mainForm.addRow(
+            self.tr("Centre window on startup"), self.moveMainWin,
+            self.tr("Applies to main window and welcome dialog.")
+        )
+
         # Project Backup
         # ==============
 
@@ -367,7 +381,9 @@ class GuiPreferences(NDialog):
 
         # Backup Path
         self.backupPath = CONFIG.backupPath()
-        self.backupGetPath = QPushButton(SHARED.theme.getIcon("browse"), self.tr("Browse"), self)
+        self.backupGetPath = QPushButton(
+            SHARED.theme.getIcon("browse", "systemio"), self.tr("Browse"), self
+        )
         self.backupGetPath.setIconSize(iSz)
         self.backupGetPath.clicked.connect(self._backupFolder)
         self.mainForm.addRow(
@@ -543,6 +559,13 @@ class GuiPreferences(NDialog):
             unit=self.tr("px")
         )
 
+        # Highlight Current Line
+        self.lineHighlight = NSwitch(self)
+        self.lineHighlight.setChecked(CONFIG.lineHighlight)
+        self.mainForm.addRow(
+            self.tr("Highlight current line"), self.lineHighlight
+        )
+
         # Show Tabs and Spaces
         self.showTabsNSpaces = NSwitch(self)
         self.showTabsNSpaces.setChecked(CONFIG.showTabsNSpaces)
@@ -652,7 +675,7 @@ class GuiPreferences(NDialog):
         self.dialogLine.setAlignment(QtAlignCenter)
         self.dialogLine.setText(" ".join(CONFIG.dialogLine))
 
-        self.dialogLineButton = NIconToolButton(self, iSz, "add", "green")
+        self.dialogLineButton = NIconToolButton(self, iSz, "add", "add")
         self.dialogLineButton.setMenu(self.mnLineSymbols)
 
         self.mainForm.addRow(
@@ -693,7 +716,7 @@ class GuiPreferences(NDialog):
         self.showMultiSpaces = NSwitch(self)
         self.showMultiSpaces.setChecked(CONFIG.showMultiSpaces)
         self.mainForm.addRow(
-            self.tr("Highlight multiple or trailing spaces"), self.showMultiSpaces,
+            self.tr("Highlight multiple spaces between words"), self.showMultiSpaces,
             self.tr("Applies to the document editor only.")
         )
 
@@ -794,7 +817,7 @@ class GuiPreferences(NDialog):
         self.fmtSQuoteOpen.setFixedWidth(boxFixed)
         self.fmtSQuoteOpen.setAlignment(QtAlignCenter)
         self.fmtSQuoteOpen.setText(CONFIG.fmtSQuoteOpen)
-        self.btnSQuoteOpen = NIconToolButton(self, iSz, "quote")
+        self.btnSQuoteOpen = NIconToolButton(self, iSz, "quote", "tool")
         self.btnSQuoteOpen.clicked.connect(self._changeSingleQuoteOpen)
         self.mainForm.addRow(
             self.tr("Single quote open style"), self.fmtSQuoteOpen,
@@ -808,7 +831,7 @@ class GuiPreferences(NDialog):
         self.fmtSQuoteClose.setFixedWidth(boxFixed)
         self.fmtSQuoteClose.setAlignment(QtAlignCenter)
         self.fmtSQuoteClose.setText(CONFIG.fmtSQuoteClose)
-        self.btnSQuoteClose = NIconToolButton(self, iSz, "quote")
+        self.btnSQuoteClose = NIconToolButton(self, iSz, "quote", "tool")
         self.btnSQuoteClose.clicked.connect(self._changeSingleQuoteClose)
         self.mainForm.addRow(
             self.tr("Single quote close style"), self.fmtSQuoteClose,
@@ -823,7 +846,7 @@ class GuiPreferences(NDialog):
         self.fmtDQuoteOpen.setFixedWidth(boxFixed)
         self.fmtDQuoteOpen.setAlignment(QtAlignCenter)
         self.fmtDQuoteOpen.setText(CONFIG.fmtDQuoteOpen)
-        self.btnDQuoteOpen = NIconToolButton(self, iSz, "quote")
+        self.btnDQuoteOpen = NIconToolButton(self, iSz, "quote", "tool")
         self.btnDQuoteOpen.clicked.connect(self._changeDoubleQuoteOpen)
         self.mainForm.addRow(
             self.tr("Double quote open style"), self.fmtDQuoteOpen,
@@ -837,7 +860,7 @@ class GuiPreferences(NDialog):
         self.fmtDQuoteClose.setFixedWidth(boxFixed)
         self.fmtDQuoteClose.setAlignment(QtAlignCenter)
         self.fmtDQuoteClose.setText(CONFIG.fmtDQuoteClose)
-        self.btnDQuoteClose = NIconToolButton(self, iSz, "quote")
+        self.btnDQuoteClose = NIconToolButton(self, iSz, "quote", "tool")
         self.btnDQuoteClose.clicked.connect(self._changeDoubleQuoteClose)
         self.mainForm.addRow(
             self.tr("Double quote close style"), self.fmtDQuoteClose,
@@ -845,10 +868,24 @@ class GuiPreferences(NDialog):
             button=self.btnDQuoteClose
         )
 
+        # Features
+        # ========
+
+        title = self.tr("Features")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
+
+        # Enable Vim Mode
+        self.vimMode = NSwitch(self)
+        self.vimMode.setChecked(CONFIG.vimMode)
+        self.mainForm.addRow(
+            self.tr("Enable Vim mode"), self.vimMode,
+            self.tr("Switch the editor to use Vim editor commands."),
+        )
+
         self.mainForm.finalise()
         self.sidebar.setSelected(1)
-
-        return
 
     ##
     #  Events
@@ -860,7 +897,6 @@ class GuiPreferences(NDialog):
         self._saveWindowSize()
         event.accept()
         self.softDelete()
-        return
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Overload keyPressEvent and only accept escape. The main
@@ -870,7 +906,6 @@ class GuiPreferences(NDialog):
         if event.matches(QKeySequence.StandardKey.Cancel):
             self.close()
         event.ignore()
-        return
 
     ##
     #  Private Slots
@@ -880,13 +915,11 @@ class GuiPreferences(NDialog):
     def _sidebarClicked(self, section: int) -> None:
         """Process a user request to switch page."""
         self.mainForm.scrollToSection(section)
-        return
 
     @pyqtSlot()
     def _gotoSearch(self) -> None:
         """Go to the setting indicated by the search text."""
         self.mainForm.scrollToLabel(self.searchText.text().strip())
-        return
 
     @pyqtSlot()
     def _selectGuiFont(self) -> None:
@@ -896,7 +929,6 @@ class GuiPreferences(NDialog):
             self.guiFont.setText(describeFont(font))
             self.guiFont.setCursorPosition(0)
             self._guiFont = font
-        return
 
     @pyqtSlot()
     def _selectTextFont(self) -> None:
@@ -906,7 +938,6 @@ class GuiPreferences(NDialog):
             self.textFont.setText(describeFont(font))
             self.textFont.setCursorPosition(0)
             self._textFont = font
-        return
 
     @pyqtSlot()
     def _backupFolder(self) -> None:
@@ -917,13 +948,11 @@ class GuiPreferences(NDialog):
         ):
             self.backupPath = path
             self.mainForm.setHelpText("backupPath", self.tr("Path: {0}").format(path))
-        return
 
     @pyqtSlot(bool)
     def _toggledBackupOnClose(self, state: bool) -> None:
         """Toggle switch that depends on the backup on close switch."""
         self.askBeforeBackup.setEnabled(state)
-        return
 
     @pyqtSlot(str)
     def _insertDialogLineSymbol(self, symbol: str) -> None:
@@ -931,7 +960,6 @@ class GuiPreferences(NDialog):
         current = self.dialogLine.text()
         values = processDialogSymbols(f"{current} {symbol}")
         self.dialogLine.setText(" ".join(values))
-        return
 
     @pyqtSlot(bool)
     def _toggleAutoReplaceMain(self, state: bool) -> None:
@@ -941,7 +969,6 @@ class GuiPreferences(NDialog):
         self.doReplaceDash.setEnabled(state)
         self.doReplaceDots.setEnabled(state)
         self.fmtPadThin.setEnabled(state)
-        return
 
     @pyqtSlot()
     def _changeSingleQuoteOpen(self) -> None:
@@ -949,7 +976,6 @@ class GuiPreferences(NDialog):
         quote, status = GuiQuoteSelect.getQuote(self, current=self.fmtSQuoteOpen.text())
         if status:
             self.fmtSQuoteOpen.setText(quote)
-        return
 
     @pyqtSlot()
     def _changeSingleQuoteClose(self) -> None:
@@ -957,7 +983,6 @@ class GuiPreferences(NDialog):
         quote, status = GuiQuoteSelect.getQuote(self, current=self.fmtSQuoteClose.text())
         if status:
             self.fmtSQuoteClose.setText(quote)
-        return
 
     @pyqtSlot()
     def _changeDoubleQuoteOpen(self) -> None:
@@ -965,7 +990,6 @@ class GuiPreferences(NDialog):
         quote, status = GuiQuoteSelect.getQuote(self, current=self.fmtDQuoteOpen.text())
         if status:
             self.fmtDQuoteOpen.setText(quote)
-        return
 
     @pyqtSlot()
     def _changeDoubleQuoteClose(self) -> None:
@@ -973,7 +997,6 @@ class GuiPreferences(NDialog):
         quote, status = GuiQuoteSelect.getQuote(self, current=self.fmtDQuoteClose.text())
         if status:
             self.fmtDQuoteClose.setText(quote)
-        return
 
     ##
     #  Internal Functions
@@ -981,8 +1004,7 @@ class GuiPreferences(NDialog):
 
     def _saveWindowSize(self) -> None:
         """Save the dialog window size."""
-        CONFIG.setPreferencesWinSize(self.width(), self.height())
-        return
+        CONFIG.setPreferencesWinSize(self.geometry())
 
     def _doSave(self) -> None:
         """Save the values set in the form."""
@@ -993,18 +1015,23 @@ class GuiPreferences(NDialog):
 
         # Appearance
         guiLocale    = self.guiLocale.currentData()
-        guiTheme     = self.guiTheme.currentData()
+        lightTheme   = self.lightTheme.currentData()
+        darkTheme    = self.darkTheme.currentData()
         iconTheme    = self.iconTheme.currentData()
         useCharCount = self.useCharCount.isChecked()
 
-        updateTheme  |= CONFIG.guiTheme != guiTheme
+        updateTheme  |= CONFIG.lightTheme != lightTheme
+        updateTheme  |= CONFIG.darkTheme != darkTheme
         updateTheme  |= CONFIG.iconTheme != iconTheme
         needsRestart |= CONFIG.guiLocale != guiLocale
         needsRestart |= CONFIG.guiFont != self._guiFont
         refreshTree  |= CONFIG.useCharCount != useCharCount
+        updateSyntax |= CONFIG.lightTheme != lightTheme
+        updateSyntax |= CONFIG.darkTheme != darkTheme
 
         CONFIG.guiLocale    = guiLocale
-        CONFIG.guiTheme     = guiTheme
+        CONFIG.lightTheme   = lightTheme
+        CONFIG.darkTheme    = darkTheme
         CONFIG.iconTheme    = iconTheme
         CONFIG.hideVScroll  = self.hideVScroll.isChecked()
         CONFIG.hideHScroll  = self.hideHScroll.isChecked()
@@ -1013,11 +1040,6 @@ class GuiPreferences(NDialog):
         CONFIG.setGuiFont(self._guiFont)
 
         # Document Style
-        guiSyntax = self.guiSyntax.currentData()
-
-        updateSyntax |= CONFIG.guiSyntax != guiSyntax
-
-        CONFIG.guiSyntax      = guiSyntax
         CONFIG.showFullPath   = self.showFullPath.isChecked()
         CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
         CONFIG.setTextFont(self._textFont)
@@ -1039,6 +1061,7 @@ class GuiPreferences(NDialog):
         CONFIG.autoSaveDoc   = self.autoSaveDoc.value()
         CONFIG.autoSaveProj  = self.autoSaveProj.value()
         CONFIG.askBeforeExit = self.askBeforeExit.isChecked()
+        CONFIG.moveMainWin   = self.moveMainWin.isChecked()
 
         # Project Backup
         CONFIG.setBackupPath(self.backupPath)
@@ -1058,9 +1081,14 @@ class GuiPreferences(NDialog):
         CONFIG.tabWidth        = self.tabWidth.value()
 
         # Text Editing
+        lineHighlight = self.lineHighlight.isChecked()
+
+        updateSyntax |= CONFIG.lineHighlight != lineHighlight
+
         CONFIG.spellLanguage   = self.spellLanguage.currentData()
         CONFIG.autoSelect      = self.autoSelect.isChecked()
         CONFIG.cursorWidth     = self.cursorWidth.value()
+        CONFIG.lineHighlight   = lineHighlight
         CONFIG.showTabsNSpaces = self.showTabsNSpaces.isChecked()
         CONFIG.showLineEndings = self.showLineEndings.isChecked()
 
@@ -1116,10 +1144,18 @@ class GuiPreferences(NDialog):
         CONFIG.fmtDQuoteOpen  = self.fmtDQuoteOpen.text()
         CONFIG.fmtDQuoteClose = self.fmtDQuoteClose.text()
 
+        # Features
+        vimMode = self.vimMode.isChecked()
+        if vimMode and not CONFIG.vimMode:
+            vimMode = SHARED.question([
+                self.tr("Are you sure you want to enable Vim mode?"),
+                self.tr("This changes how the editor accepts input."),
+            ])
+        self.vimMode.setChecked(vimMode)
+        CONFIG.vimMode = vimMode
+
         # Finalise
         CONFIG.saveConfig()
         self.newPreferencesReady.emit(needsRestart, refreshTree, updateTheme, updateSyntax)
 
         self.close()
-
-        return

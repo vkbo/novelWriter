@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import argparse
@@ -62,8 +62,6 @@ def buildSampleZip(args: argparse.Namespace | None = None) -> None:
     print(f"Built file: {dstSample}")
     print("")
 
-    return
-
 
 def importI18nUpdates(args: argparse.Namespace) -> None:
     """Import new translation files from a zip file."""
@@ -94,8 +92,6 @@ def importI18nUpdates(args: argparse.Namespace) -> None:
 
     print("")
 
-    return
-
 
 def updateTranslationSources(args: argparse.Namespace) -> None:
     """Build the lang.ts files for Qt Linguist."""
@@ -115,7 +111,6 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
     print("")
 
     sources = list((ROOT_DIR / "novelwriter").glob("**/*.py"))
-    sources.insert(0, ROOT_DIR / "i18n" / "qtbase.py")
     for source in sources:
         print(source.relative_to(ROOT_DIR))
 
@@ -156,8 +151,6 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
     )
 
     print("")
-
-    return
 
 
 def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
@@ -203,8 +196,6 @@ def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
 
     print("")
 
-    return
-
 
 def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
     """Remove assets built by this script."""
@@ -223,8 +214,6 @@ def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
 
     print("")
 
-    return
-
 
 def buildAllAssets(args: argparse.Namespace) -> None:
     """Build all assets."""
@@ -232,4 +221,3 @@ def buildAllAssets(args: argparse.Namespace) -> None:
     buildSampleZip()
     buildTranslationAssets()
     buildPdfDocAssets()
-    return

@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -27,7 +27,7 @@ import pytest
 from PyQt6.QtCore import QEvent, QMimeData, QPointF, Qt, QUrl
 from PyQt6.QtGui import (
     QAction, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent,
-    QMouseEvent, QTextCursor
+    QMouseEvent
 )
 from PyQt6.QtWidgets import QApplication, QMenu, QTextBrowser
 
@@ -35,7 +35,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
 from novelwriter.enum import nwChange, nwDocAction
 from novelwriter.formats.toqdoc import ToQTextDocument
-from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle
+from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle, QtSelectBlock, QtSelectWord
 
 from tests.mocked import causeException
 from tests.tools import C, buildTestProject
@@ -89,7 +89,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     cursor = docViewer.textCursor()
     cursor.setPosition(100)
     docViewer.setTextCursor(cursor)
-    docViewer._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docViewer._makeSelection(QtSelectWord)
 
     clipboard = QApplication.clipboard()
     assert clipboard is not None
@@ -117,9 +117,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     cursor.clearSelection()
     docViewer.setTextCursor(cursor)
 
-    docViewer._makePosSelection(
-        QTextCursor.SelectionType.BlockUnderCursor, docViewer.cursorRect().center()
-    )
+    docViewer._makePosSelection(QtSelectBlock, docViewer.cursorRect().center())
     cursor = docViewer.textCursor()
     assert cursor.selectedText() == (
         "Synopsis: Aenean ut placerat velit. Etiam laoreet ullamcorper risus, "
@@ -159,7 +157,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     cursor = docViewer.textCursor()
     cursor.setPosition(27)
     docViewer.setTextCursor(cursor)
-    docViewer._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docViewer._makeSelection(QtSelectWord)
     with monkeypatch.context() as mp:
         mp.setattr(QMenu, "exec", mockExec)
         docViewer._openContextMenu(docViewer.cursorRect().center())
@@ -169,7 +167,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     cursor = docViewer.textCursor()
     cursor.setPosition(27)
     docViewer.setTextCursor(cursor)
-    docViewer._makeSelection(QTextCursor.SelectionType.WordUnderCursor)
+    docViewer._makeSelection(QtSelectWord)
     rect = docViewer.cursorRect()
     docViewer._linkClicked(QUrl("#tag_bod"))
     assert docViewer.docHandle == "4c4f28287af27"
@@ -223,16 +221,22 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     CONFIG.showFullPath = True
 
     # Document footer show/hide synopsis
-    assert nwGUI.viewDocument("f96ec11c6a3da") is True
+    nwGUI.viewDocument("f96ec11c6a3da")
     assert len(docViewer.toPlainText()) == 4314
     docViewer.docFooter._doToggleSynopsis(False)
     assert len(docViewer.toPlainText()) == 4098
 
     # Document footer show/hide comments
-    assert nwGUI.viewDocument("846352075de7d") is True
+    nwGUI.viewDocument("846352075de7d")
     assert len(docViewer.toPlainText()) == 683
     docViewer.docFooter._doToggleComments(False)
     assert len(docViewer.toPlainText()) == 634
+
+    # Document footer show/hide notes
+    nwGUI.viewDocument("88d59a277361b")
+    assert len(docViewer.toPlainText()) == 900
+    docViewer.docFooter._doToggleNotes(False)
+    assert len(docViewer.toPlainText()) == 871
 
     # Crash the HTML rendering
     with monkeypatch.context() as mp:

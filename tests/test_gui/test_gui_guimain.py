@@ -17,28 +17,32 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import shutil
 
 from pathlib import Path
 from shutil import copyfile
+from unittest.mock import Mock
 
 import pytest
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette
-from PyQt6.QtWidgets import QInputDialog, QMessageBox
+from PyQt6.QtWidgets import QInputDialog
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import CONFIG, SHARED, __hexversion__
+from novelwriter.common import jsonEncode
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.constants import nwFiles
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemType, nwView
+from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemType, nwState, nwTheme, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
+from novelwriter.shared import _GuiAlert
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.types import QtModCtrl, QtModShift
 
@@ -101,12 +105,12 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
 
     # Check that closes can be blocked
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert nwGUI.openProject(projPath) is True
         assert nwGUI.closeMain() is False
     nwGUI.closeProject()
 
-    # Check that latest release info updated
+    # Check that latest release info is set
     assert CONFIG.lastNotes != "0x0"
 
     # Set some config error
@@ -122,7 +126,7 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     welcome.close()
 
     # Config errors should be cleared
-    assert SHARED.lastAlert == "Foo"
+    assert SHARED.lastAlert == ["Foo"]
     assert CONFIG._hasError is False
 
     # qtbot.stop()
@@ -179,20 +183,34 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiMain_UpdateTheme(qtbot, nwGUI):
     """Test updating the theme in the GUI."""
-    mainTheme = SHARED.theme
-    CONFIG.guiTheme = "default_dark"
-    CONFIG.guiSyntax = "default_dark"
-    mainTheme.loadTheme()
-    mainTheme.loadSyntax()
+    theme = SHARED.theme
+    CONFIG.themeMode = nwTheme.DARK
+    CONFIG.darkTheme = DEF_GUI_DARK
+    CONFIG.lightTheme = DEF_GUI_LIGHT
+    theme.loadTheme()
+    assert theme.isDarkTheme is True
+
     nwGUI._processConfigChanges(False, True, False, False)
     nwGUI._processConfigChanges(True, True, True, True)
 
+    # Check editor syntax
     syntax = SHARED.theme.syntaxTheme
-
     assert nwGUI.docEditor.palette().color(QPalette.ColorRole.Window) == syntax.back
     assert nwGUI.docEditor.docHeader.palette().color(QPalette.ColorRole.Window) == syntax.back
     assert nwGUI.docViewer.palette().color(QPalette.ColorRole.Window) == syntax.back
     assert nwGUI.docViewer.docHeader.palette().color(QPalette.ColorRole.Window) == syntax.back
+
+    # Update by check
+    CONFIG.themeMode = nwTheme.LIGHT
+    nwGUI.checkThemeUpdate()
+    assert theme.isDarkTheme is False
+
+    # Through change event
+    event = Mock()
+    event.type.return_value = 210
+    CONFIG.themeMode = nwTheme.DARK
+    nwGUI.changeEvent(event)
+    assert theme.isDarkTheme is True
 
     # qtbot.stop()
 
@@ -251,8 +269,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     # Change some settings
     CONFIG.hideHScroll = True
     CONFIG.hideVScroll = True
-    CONFIG.autoScrollPos = 80
-    CONFIG.autoScroll = True
+    CONFIG.autoScroll = False
 
     # Add a Character File
     nwGUI._changeView(nwView.PROJECT)
@@ -471,8 +488,19 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     CONFIG.fmtPadAfter = "\u201c"
     docEditor.initEditor()
 
-    for c in 'Some "double quoted text with spaces padded".':
+    for c in 'Some "double quoted text with spaces padded". Ok?':
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
+
+    # Check that we can insert a line break in the text without
+    # triggering the padding (Issue #2586)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
+
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
 
@@ -698,7 +726,7 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     cHandle = SHARED.project.newFile("Jane", C.hCharRoot)
     newDoc = SHARED.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# Jane\n\n@tag: Jane\n\n")
-    nwGUI.rebuildIndex(beQuiet=True)
+    nwGUI.rebuildIndex()
 
     assert SHARED.focusMode is False
 
@@ -810,11 +838,11 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI, projPath, fncPath, mockRnd)
     nwGUI.viewDocument(C.hTitlePage)
 
     # Handle broken index on project open
+    idxData = jsonEncode({"novelWriter.meta": {"version": __hexversion__}})
     nwGUI.closeProject()
     idxPath: Path = projPath / "meta" / nwFiles.INDEX_FILE
     assert idxPath.read_text(encoding="utf-8") != "{}"
-    idxPath.write_text("{}", encoding="utf-8")
-    assert idxPath.read_text(encoding="utf-8") == "{}"
+    idxPath.write_text(idxData, encoding="utf-8")
 
     nwGUI.openProject(projPath)
     nwGUI.saveProject()
@@ -825,7 +853,7 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI, projPath, fncPath, mockRnd)
     # Block closing
     assert SHARED.hasProject is True
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert nwGUI.openProject(projPath) is False
         assert SHARED.hasProject is True
 
@@ -838,7 +866,7 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI, projPath, fncPath, mockRnd)
     shutil.copyfile(lockBack, lockPath)
 
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         assert nwGUI.openProject(projPath) is False
 
     assert nwGUI.openProject(projPath) is True
@@ -869,13 +897,13 @@ def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Simulate focus change to viewer
     nwGUI._appFocusChanged(None, nwGUI.docViewer)
-    assert nwGUI.docEditor.docHeader.itemTitle._state is False
-    assert nwGUI.docViewer.docHeader.itemTitle._state is True
+    assert nwGUI.docEditor.docHeader.itemTitle._state == nwState.INACTIVE
+    assert nwGUI.docViewer.docHeader.itemTitle._state == nwState.NORMAL
 
     # Simulate focus change to editor
     nwGUI._appFocusChanged(None, nwGUI.docEditor)
-    assert nwGUI.docEditor.docHeader.itemTitle._state is True
-    assert nwGUI.docViewer.docHeader.itemTitle._state is False
+    assert nwGUI.docEditor.docHeader.itemTitle._state == nwState.NORMAL
+    assert nwGUI.docViewer.docHeader.itemTitle._state == nwState.INACTIVE
 
     # Focus Tree
     # ==========
@@ -921,8 +949,8 @@ def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         mp.setattr(nwGUI.docEditor, "setFocus", mockEmitEditorFocus)
         mp.setattr(nwGUI.docViewer, "setFocus", mockEmitViewerFocus)
         nwGUI._switchFocus(nwFocus.DOCUMENT)
-        assert nwGUI.docEditor.docHeader.itemTitle._state is False
-        assert nwGUI.docViewer.docHeader.itemTitle._state is True
+        assert nwGUI.docEditor.docHeader.itemTitle._state == nwState.INACTIVE
+        assert nwGUI.docViewer.docHeader.itemTitle._state == nwState.NORMAL
 
     # Call again to switch to editor
     with monkeypatch.context() as mp:
@@ -931,8 +959,8 @@ def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         mp.setattr(nwGUI.docEditor, "setFocus", mockEmitEditorFocus)
         mp.setattr(nwGUI.docViewer, "setFocus", mockEmitViewerFocus)
         nwGUI._switchFocus(nwFocus.DOCUMENT)
-        assert nwGUI.docEditor.docHeader.itemTitle._state is True
-        assert nwGUI.docViewer.docHeader.itemTitle._state is False
+        assert nwGUI.docEditor.docHeader.itemTitle._state == nwState.NORMAL
+        assert nwGUI.docViewer.docHeader.itemTitle._state == nwState.INACTIVE
 
     # Default to editor
     with monkeypatch.context() as mp:
@@ -941,8 +969,8 @@ def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         mp.setattr(nwGUI.docEditor, "setFocus", mockEmitEditorFocus)
         mp.setattr(nwGUI.docViewer, "setFocus", mockEmitViewerFocus)
         nwGUI._switchFocus(nwFocus.DOCUMENT)
-        assert nwGUI.docEditor.docHeader.itemTitle._state is True
-        assert nwGUI.docViewer.docHeader.itemTitle._state is False
+        assert nwGUI.docEditor.docHeader.itemTitle._state == nwState.NORMAL
+        assert nwGUI.docViewer.docHeader.itemTitle._state == nwState.INACTIVE
 
     # Focus Outline
     # =============

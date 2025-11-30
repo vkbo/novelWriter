@@ -3,11 +3,18 @@ novelWriter – Custom Widget: Modified Widgets
 =============================================
 
 File History:
-Created: 2024-02-01 [2.3b1] NComboBox
-Created: 2024-02-01 [2.3b1] NSpinBox
-Created: 2024-02-01 [2.3b1] NDoubleSpinBox
-Created: 2024-05-01 [2.5b1] NToolDialog
-Created: 2024-05-01 [2.5b1] NNonBlockingDialog
+Created: 2024-02-01 [2.3b1]  NComboBox
+Created: 2024-02-01 [2.3b1]  NSpinBox
+Created: 2024-02-01 [2.3b1]  NDoubleSpinBox
+Created: 2024-03-20 [2.4b1]  NIconToolButton
+Created: 2024-04-01 [2.4rc1] NIconToggleButton
+Created: 2024-05-01 [2.5b1]  NToolDialog
+Created: 2024-05-01 [2.5b1]  NNonBlockingDialog
+Created: 2024-05-27 [2.5rc1] NDialog
+Created: 2024-12-29 [2.6rc1] NClickableLabel
+Created: 2025-02-22 [2.7b1]  NTreeView
+Created: 2025-10-25 [2.8b1]  NPushButton
+Created: 2025-11-08 [2.8rc1] NFontDialog
 
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
@@ -24,29 +31,35 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
+
+import logging
 
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
-    QApplication, QComboBox, QDialog, QDoubleSpinBox, QLabel, QSpinBox,
-    QToolButton, QTreeView, QWidget
+    QApplication, QComboBox, QDialog, QDialogButtonBox, QDoubleSpinBox,
+    QFontDialog, QLabel, QPushButton, QSpinBox, QToolButton, QTreeView, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.types import QtMouseLeft, QtMouseMiddle
+from novelwriter.enum import nwStandardButton
+from novelwriter.types import QtMouseLeft, QtMouseMiddle, QtRoleAccept, QtRoleReject
 
 if TYPE_CHECKING:
     from enum import Enum
 
-    from PyQt6.QtGui import QMouseEvent, QWheelEvent
+    from PyQt6.QtGui import QFont, QMouseEvent, QWheelEvent
 
     from novelwriter.guimain import GuiMain
 
+logger = logging.getLogger(__name__)
+
 
 class NDialog(QDialog):
+    """Custom: Modified QDialog."""
 
     def softDelete(self) -> None:
         """Since calling deleteLater is sometimes not safe from Python,
@@ -55,53 +68,100 @@ class NDialog(QDialog):
         so that it gets garbage collected when it runs out of scope.
         """
         self.setParent(None)  # type: ignore
-        return
 
     @pyqtSlot()
-    def reject(self) -> None:
-        """Overload the reject slot and also call close."""
-        super().reject()
+    def closeDialog(self) -> None:
+        """Close the dialog."""
+        self.setResult(0)
         self.close()
-        return
 
 
 class NToolDialog(NDialog):
+    """Custom: Modified QDialog for Tools."""
 
     def __init__(self, parent: GuiMain) -> None:
         super().__init__(parent=parent)
         self.setModal(False)
         if CONFIG.osDarwin:
             self.setWindowFlag(Qt.WindowType.Tool)
-        return
 
     def activateDialog(self) -> None:
-        """Helper function to activate dialog on various systems."""
+        """Activate dialog on various operating systems."""
         self.show()
         if CONFIG.osWindows:
             self.activateWindow()
         self.raise_()
         QApplication.processEvents()
-        return
 
 
 class NNonBlockingDialog(NDialog):
+    """Custom: Modified Non-Blocking QDialog."""
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent=parent)
         self.setModal(True)
-        return
 
     def activateDialog(self) -> None:
-        """Helper function to activate dialog on various systems."""
+        """Activate dialog on various operating systems."""
         self.show()
         if CONFIG.osWindows:
             self.activateWindow()
         self.raise_()
         QApplication.processEvents()
-        return
+
+
+class NFontDialog(QFontDialog):
+    """Custom: Modified Font Dialog.
+
+    An overload of the Qt font dialog that remembers its previous size.
+    """
+
+    def __init__(self, initial: QFont, parent: QWidget) -> None:
+        super().__init__(initial, parent)
+
+        # Look for the button box and replace the buttons
+        if dlgBox := self.findChild(QDialogButtonBox):
+            self.btnOk = SHARED.theme.getStandardButton(nwStandardButton.OK, self)
+            self.btnOk.clicked.connect(self.accept)
+
+            self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+            self.btnCancel.clicked.connect(self.reject)
+
+            dlgBox.clear()
+            dlgBox.addButton(self.btnOk, QtRoleAccept)
+            dlgBox.addButton(self.btnCancel, QtRoleReject)
+
+        logger.debug("Ready: NFontDialog")
+
+    def __del__(self) -> None:  # pragma: no cover
+        logger.debug("Delete: NFontDialog")
+
+    @staticmethod
+    def selectFont(font: QFont, parent: QWidget, title: str, native: bool) -> tuple[QFont, bool]:
+        """Open the dialog and select a font."""
+        if native:
+            # If we're using the native dialog, let Qt handle it
+            font, result = QFontDialog.getFont(font, parent, title)
+            return font, bool(result)
+
+        # Execute the custom dialog
+        dialog = NFontDialog(font, parent)
+        dialog.setOption(QFontDialog.FontDialogOption.DontUseNativeDialog, True)
+        dialog.setWindowTitle(title)
+        dialog.resize(*CONFIG.fontWinSize)
+
+        dialog.exec()
+        CONFIG.setFontWinSize(dialog.geometry())
+
+        return dialog.selectedFont(), dialog.result() == 1
 
 
 class NTreeView(QTreeView):
+    """Custom: Modified QTreeView.
+
+    The main purpose is to provide the middleClicked signal that matches
+    clicked and doubleCLicked.
+    """
 
     middleClicked = pyqtSignal(QModelIndex)
 
@@ -116,42 +176,65 @@ class NTreeView(QTreeView):
 
 
 class NComboBox(QComboBox):
+    """Custom: Modified QComboBox.
 
-    def __init__(self, parent: QWidget | None = None) -> None:
+    The main purpose is to provide a combo box that doesn't scroll when
+    the mousewheel is active on it while scrolling through a scrollable
+    window of many widgets.
+    """
+
+    def __init__(self, parent: QWidget | None = None, maxItems: int = 15) -> None:
         super().__init__(parent=parent)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-        return
+        self.setMaxVisibleItems(maxItems)
+        self.updateStyle()
 
     def wheelEvent(self, event: QWheelEvent) -> None:
+        """Only capture the mouse wheel if the widget has focus."""
         if self.hasFocus():
             super().wheelEvent(event)
         else:
             event.ignore()
-        return
 
     def setCurrentData(self, data: str | int | Enum, default: str | int | Enum) -> None:
         """Set the current index from data, with a fallback."""
         idx = self.findData(data)
         self.setCurrentIndex(self.findData(default) if idx < 0 else idx)
-        return
+
+    def updateStyle(self) -> None:
+        """Update the style sheet."""
+        # The style sheet disables Fusion style pop-up mode on some
+        # platforms and allows for scrolling of long lists of items
+        self.setStyleSheet("QComboBox {combobox-popup: 0;}")
 
 
 class NSpinBox(QSpinBox):
+    """Custom: Modified QSpinBox.
+
+    The main purpose is to provide a spin box that doesn't scroll when
+    the mousewheel is active on it while scrolling through a scrollable
+    window of many widgets.
+    """
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent=parent)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-        return
 
     def wheelEvent(self, event: QWheelEvent) -> None:
+        """Only capture the mouse wheel if the widget has focus."""
         if self.hasFocus():
             super().wheelEvent(event)
         else:
             event.ignore()
-        return
 
 
 class NDoubleSpinBox(QDoubleSpinBox):
+    """Custom: Modified QDoubleSpinBox.
+
+    The main purpose is to provide a float spin box that doesn't scroll
+    when the mousewheel is active on it while scrolling through a
+    scrollable window of many widgets.
+    """
 
     def __init__(
         self,
@@ -168,17 +251,47 @@ class NDoubleSpinBox(QDoubleSpinBox):
         self.setMaximum(maxVal)
         self.setSingleStep(step)
         self.setDecimals(prec)
-        return
 
     def wheelEvent(self, event: QWheelEvent) -> None:
+        """Only capture the mouse wheel if the widget has focus."""
         if self.hasFocus():
             super().wheelEvent(event)
         else:
             event.ignore()
-        return
+
+
+class NPushButton(QPushButton):
+    """Custom: Modified QPushButton.
+
+    A quicker way to create a push button using the app theme.
+    """
+
+    def __init__(
+        self, parent: QWidget, text: str, iconSize: QSize,
+        icon: str | None = None, color: str | None = None
+    ) -> None:
+        super().__init__(parent=parent)
+        self._icon = icon
+        self._color = color
+        self.setText(text)
+        self.setIconSize(iconSize)
+        self.updateIcon()
+
+    def updateIcon(self) -> None:
+        """Update the theme icon."""
+        if self._icon and self._color:
+            self.setIcon(SHARED.theme.getIcon(self._icon, self._color))
+
+    def setText(self, text: str) -> None:
+        """Overload the text setter to add padding."""
+        return super().setText(f" {text}")
 
 
 class NIconToolButton(QToolButton):
+    """Custom: Modified QToolButton.
+
+    A quicker way to create a tool button using the app theme.
+    """
 
     def __init__(
         self, parent: QWidget, iconSize: QSize,
@@ -188,37 +301,41 @@ class NIconToolButton(QToolButton):
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.setIconSize(iconSize)
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
-        if icon:
+        if icon and color:
             self.setThemeIcon(icon, color)
-        return
 
-    def setThemeIcon(self, iconKey: str, color: str | None = None) -> None:
+    def setThemeIcon(self, icon: str, color: str) -> None:
         """Set an icon from the current theme."""
-        self.setIcon(SHARED.theme.getIcon(iconKey, color))
-        return
+        self.setIcon(SHARED.theme.getIcon(icon, color))
 
 
 class NIconToggleButton(QToolButton):
+    """Custom: Modified QToolButton.
 
-    def __init__(self, parent: QWidget, iconSize: QSize, icon: str | None = None) -> None:
+    A quicker way to create a toggle button using the app theme.
+    """
+
+    def __init__(
+        self, parent: QWidget, iconSize: QSize,
+        icon: str | None = None, color: str | None = None
+    ) -> None:
         super().__init__(parent=parent)
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.setIconSize(iconSize)
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self.setCheckable(True)
         self.setStyleSheet("border: none; background: transparent;")
-        if icon:
-            self.setThemeIcon(icon)
-        return
+        if icon and color:
+            self.setThemeIcon(icon, color)
 
-    def setThemeIcon(self, iconKey: str) -> None:
+    def setThemeIcon(self, icon: str, color: str) -> None:
         """Set an icon from the current theme."""
-        iconSize = self.iconSize()
-        self.setIcon(SHARED.theme.getToggleIcon(iconKey, (iconSize.width(), iconSize.height())))
-        return
+        size = self.iconSize()
+        self.setIcon(SHARED.theme.getToggleIcon(icon, (size.width(), size.height()), color))
 
 
 class NClickableLabel(QLabel):
+    """Custom: Clickable QLabel."""
 
     mouseClicked = pyqtSignal()
 

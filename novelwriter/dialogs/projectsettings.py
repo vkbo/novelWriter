@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import csv
@@ -33,21 +33,21 @@ from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QCloseEvent, QColor
 from PyQt6.QtWidgets import (
     QAbstractItemView, QApplication, QColorDialog, QDialogButtonBox,
-    QFileDialog, QGridLayout, QHBoxLayout, QLineEdit, QMenu, QStackedWidget,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QFileDialog, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
+    QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter, qtAddAction, qtLambda, simplified
 from novelwriter.constants import nwLabels, trConst
-from novelwriter.core.status import NWStatus, StatusEntry
-from novelwriter.enum import nwStatusShape
+from novelwriter.core.status import CUSTOM_COL, NWStatus, StatusEntry
+from novelwriter.enum import nwStandardButton, nwStatusShape
 from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollableForm
 from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import (
-    QtDialogCancel, QtDialogSave, QtSizeMinimum, QtSizeMinimumExpanding,
+    QtRoleAccept, QtRoleReject, QtSizeMinimum, QtSizeMinimumExpanding,
     QtUserRole
 )
 
@@ -55,6 +55,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiProjectSettings(NDialog):
+    """GUI: Project Settings DIalog."""
 
     PAGE_SETTINGS = 0
     PAGE_STATUS   = 1
@@ -94,9 +95,15 @@ class GuiProjectSettings(NDialog):
         self.sidebar.buttonClicked.connect(self._sidebarClicked)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogCancel, self)
-        self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnSave = SHARED.theme.getStandardButton(nwStandardButton.SAVE, self)
+        self.btnSave.clicked.connect(self._doSave)
+
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.closeDialog)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnSave, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Content
         SHARED.project.countStatus()
@@ -125,7 +132,7 @@ class GuiProjectSettings(NDialog):
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.topBox)
         self.outerBox.addLayout(self.mainBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
         self.outerBox.setSpacing(8)
 
         self.setLayout(self.outerBox)
@@ -137,11 +144,8 @@ class GuiProjectSettings(NDialog):
 
         logger.debug("Ready: GuiProjectSettings")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiProjectSettings")
-        return
 
     ##
     #  Events
@@ -152,7 +156,6 @@ class GuiProjectSettings(NDialog):
         self._saveSettings()
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -169,7 +172,6 @@ class GuiProjectSettings(NDialog):
             self.mainStack.setCurrentWidget(self.importPage)
         elif pageId == self.PAGE_REPLACE:
             self.mainStack.setCurrentWidget(self.replacePage)
-        return
 
     @pyqtSlot()
     def _doSave(self) -> None:
@@ -203,8 +205,6 @@ class GuiProjectSettings(NDialog):
         QApplication.processEvents()
         self.close()
 
-        return
-
     ##
     #  Internal Functions
     ##
@@ -222,8 +222,6 @@ class GuiProjectSettings(NDialog):
         options.setValue("GuiProjectSettings", "statusColW", statusColW)
         options.setValue("GuiProjectSettings", "importColW", importColW)
         options.setValue("GuiProjectSettings", "replaceColW", replaceColW)
-
-        return
 
 
 class _SettingsPage(NScrollableForm):
@@ -295,8 +293,6 @@ class _SettingsPage(NScrollableForm):
 
         self.finalise()
 
-        return
-
 
 class _StatusPage(NFixedPage):
 
@@ -326,6 +322,7 @@ class _StatusPage(NFixedPage):
         self._changed = False
         self._color = QColor(100, 100, 100)
         self._shape = nwStatusShape.SQUARE
+        self._theme = CUSTOM_COL
         self._icons = {}
 
         self._iPx = SHARED.theme.baseIconHeight
@@ -359,36 +356,51 @@ class _StatusPage(NFixedPage):
             self._addItem(key, StatusEntry.duplicate(entry))
 
         # List Controls
-        self.addButton = NIconToolButton(self, iSz, "add", "green")
+        self.addButton = NIconToolButton(self, iSz, "add", "add")
         self.addButton.setToolTip(self.tr("Add Label"))
         self.addButton.clicked.connect(self._onItemCreate)
 
-        self.delButton = NIconToolButton(self, iSz, "remove", "red")
+        self.delButton = NIconToolButton(self, iSz, "remove", "remove")
         self.delButton.setToolTip(self.tr("Delete Label"))
         self.delButton.clicked.connect(self._onItemDelete)
 
-        self.upButton = NIconToolButton(self, iSz, "chevron_up", "blue")
+        self.upButton = NIconToolButton(self, iSz, "chevron_up", "action")
         self.upButton.setToolTip(self.tr("Move Up"))
         self.upButton.clicked.connect(qtLambda(self._moveItem, -1))
 
-        self.downButton = NIconToolButton(self, iSz, "chevron_down", "blue")
+        self.downButton = NIconToolButton(self, iSz, "chevron_down", "action")
         self.downButton.setToolTip(self.tr("Move Down"))
         self.downButton.clicked.connect(qtLambda(self._moveItem, 1))
 
-        self.importButton = NIconToolButton(self, iSz, "import", "green")
+        self.importButton = NIconToolButton(self, iSz, "import", "apply")
         self.importButton.setToolTip(self.tr("Import Labels"))
         self.importButton.clicked.connect(self._importLabels)
 
-        self.exportButton = NIconToolButton(self, iSz, "export", "blue")
+        self.exportButton = NIconToolButton(self, iSz, "export", "action")
         self.exportButton.setToolTip(self.tr("Export Labels"))
         self.exportButton.clicked.connect(self._exportLabels)
 
         # Edit Form
-        self.labelText = QLineEdit(self)
-        self.labelText.setMaxLength(40)
-        self.labelText.setPlaceholderText(self.tr("Select item to edit"))
-        self.labelText.setEnabled(False)
-        self.labelText.textEdited.connect(self._onNameEdit)
+        self.editName = QLineEdit(self)
+        self.editName.setMaxLength(40)
+        self.editName.setPlaceholderText(self.tr("Select item to edit"))
+        self.editName.setEnabled(False)
+        self.editName.textEdited.connect(self._onNameEdit)
+
+        self.labelName = QLabel(self.tr("Label"), self)
+        self.labelName.setBuddy(self.editName)
+
+        # Icon Colours
+        self.iconColor = NComboBox(self)
+        self.iconColor.setMinimumWidth(200)
+        self.iconColor.setEnabled(False)
+        self.iconColor.addItem(self.tr("Custom"), CUSTOM_COL)
+        for key, label in nwLabels.THEME_COLORS.items():
+            self.iconColor.addItem(trConst(label), key)
+        self.iconColor.currentIndexChanged.connect(self._onThemeSelect)
+
+        self.labelColor = QLabel(self.tr("Colour"), self)
+        self.labelColor.setBuddy(self.iconColor)
 
         buttonStyle = (
             "QToolButton {padding: 0 4px;} "
@@ -425,6 +437,9 @@ class _StatusPage(NFixedPage):
         self.shapeButton.setStyleSheet(buttonStyle)
         self.shapeButton.setEnabled(False)
 
+        self.labelShape = QLabel(self.tr("Shape"), self)
+        self.labelShape.setBuddy(self.iconColor)
+
         # Assemble
         self.listControls = QVBoxLayout()
         self.listControls.addWidget(self.addButton)
@@ -435,10 +450,15 @@ class _StatusPage(NFixedPage):
         self.listControls.addWidget(self.importButton)
         self.listControls.addWidget(self.exportButton)
 
-        self.editBox = QHBoxLayout()
-        self.editBox.addWidget(self.labelText, 1)
-        self.editBox.addWidget(self.colorButton, 0)
-        self.editBox.addWidget(self.shapeButton, 0)
+        self.editBox = QGridLayout()
+        self.editBox.addWidget(self.labelName, 0, 0)
+        self.editBox.addWidget(self.editName, 0, 1, 1, 5)
+        self.editBox.addWidget(self.labelColor, 1, 0)
+        self.editBox.addWidget(self.iconColor, 1, 1)
+        self.editBox.addWidget(self.colorButton, 1, 2)
+        self.editBox.addWidget(self.labelShape, 1, 3)
+        self.editBox.addWidget(self.shapeButton, 1, 4)
+        self.editBox.setColumnStretch(5, 1)
 
         self.innerBox = QGridLayout()
         self.innerBox.addWidget(self.listBox, 0, 0)
@@ -453,8 +473,6 @@ class _StatusPage(NFixedPage):
 
         self.setCentralLayout(self.outerBox)
         self._setButtonIcons()
-
-        return
 
     @property
     def changed(self) -> bool:
@@ -494,16 +512,22 @@ class _StatusPage(NFixedPage):
             entry.name = name
             item.setText(self.C_LABEL, name)
             self._changed = True
-        return
+
+    @pyqtSlot(int)
+    def _onThemeSelect(self, index: int) -> None:
+        """Update the colour handling on theme selection change."""
+        self._theme = str(self.iconColor.currentData())
+        self._setButtonIcons()
+        self._updateIcon()
 
     @pyqtSlot()
     def _onColorSelect(self) -> None:
         """Open a dialog to select the status icon colour."""
         if (color := QColorDialog.getColor(self._color, self, self.trSelColor)).isValid():
             self._color = color
+            self._theme = CUSTOM_COL
             self._setButtonIcons()
             self._updateIcon()
-        return
 
     @pyqtSlot()
     def _onItemCreate(self) -> None:
@@ -511,9 +535,9 @@ class _StatusPage(NFixedPage):
         color = QColor(100, 100, 100)
         shape = nwStatusShape.SQUARE
         icon = NWStatus.createIcon(self._iPx, color, shape)
-        self._addItem(None, StatusEntry(self.tr("New Item"), color, shape, icon, 0))
+        theme = str(self.iconColor.currentData())
+        self._addItem(None, StatusEntry(self.tr("New Item"), color, theme, shape, icon, 0))
         self._changed = True
-        return
 
     @pyqtSlot()
     def _onItemDelete(self) -> None:
@@ -526,7 +550,6 @@ class _StatusPage(NFixedPage):
             else:
                 self.listBox.takeTopLevelItem(iRow)
                 self._changed = True
-        return
 
     @pyqtSlot()
     def _onSelectionChanged(self) -> None:
@@ -537,25 +560,28 @@ class _StatusPage(NFixedPage):
             entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
             self._color = entry.color
             self._shape = entry.shape
+            self._theme = entry.theme
             self._setButtonIcons()
 
-            self.labelText.setText(entry.name)
-            self.labelText.selectAll()
-            self.labelText.setFocus()
+            self.editName.setText(entry.name)
+            self.editName.selectAll()
+            self.editName.setFocus()
 
-            self.labelText.setEnabled(True)
+            self.editName.setEnabled(True)
+            self.iconColor.setEnabled(True)
             self.colorButton.setEnabled(True)
             self.shapeButton.setEnabled(True)
         else:
             self._color = QColor(100, 100, 100)
             self._shape = nwStatusShape.SQUARE
+            self._theme = CUSTOM_COL
             self._setButtonIcons()
-            self.labelText.setText("")
+            self.editName.setText("")
 
-            self.labelText.setEnabled(False)
+            self.editName.setEnabled(False)
+            self.iconColor.setEnabled(False)
             self.colorButton.setEnabled(False)
             self.shapeButton.setEnabled(False)
-        return
 
     @pyqtSlot()
     def _importLabels(self) -> None:
@@ -592,7 +618,6 @@ class _StatusPage(NFixedPage):
                             writer.writerow([entry.shape.name, entry.color.name(), entry.name])
             except Exception as exc:
                 SHARED.error("Could not write file.", exc=exc)
-        return
 
     ##
     #  Internal Functions
@@ -603,19 +628,18 @@ class _StatusPage(NFixedPage):
         self._shape = shape
         self._setButtonIcons()
         self._updateIcon()
-        return
 
     def _updateIcon(self) -> None:
         """Apply changes made to a status icon."""
         if item := self._getSelectedItem():
-            icon = NWStatus.createIcon(self._iPx, self._color, self._shape)
+            icon = NWStatus.createIcon(self._iPx, self._pickColor(), self._shape)
             entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
             entry.color = self._color
             entry.shape = self._shape
+            entry.theme = self._theme
             entry.icon = icon
             item.setIcon(self.C_LABEL, icon)
             self._changed = True
-        return
 
     def _addItem(self, key: str | None, entry: StatusEntry) -> None:
         """Add a status item to the list."""
@@ -626,7 +650,6 @@ class _StatusPage(NFixedPage):
         item.setData(self.C_DATA, self.D_KEY, key)
         item.setData(self.C_DATA, self.D_ENTRY, entry)
         self.listBox.addTopLevelItem(item)
-        return
 
     def _moveItem(self, step: int) -> None:
         """Move and item up or down step."""
@@ -639,7 +662,6 @@ class _StatusPage(NFixedPage):
                 self.listBox.clearSelection()
                 cItem.setSelected(True)
                 self._changed = True
-        return
 
     def _getSelectedItem(self) -> QTreeWidgetItem | None:
         """Get the currently selected item."""
@@ -658,10 +680,16 @@ class _StatusPage(NFixedPage):
 
     def _setButtonIcons(self) -> None:
         """Set the colour of the colour button."""
-        icon = NWStatus.createIcon(self._iPx, self._color, nwStatusShape.SQUARE)
+        icon = NWStatus.createIcon(self._iPx, self._pickColor(), nwStatusShape.SQUARE)
+        self.iconColor.setCurrentData(self._theme, CUSTOM_COL)
         self.colorButton.setIcon(icon)
         self.shapeButton.setIcon(self._icons[self._shape])
-        return
+
+    def _pickColor(self) -> QColor:
+        """Get the correct colour value based on selections."""
+        if self._theme == CUSTOM_COL:
+            return self._color
+        return SHARED.theme.getBaseColor(self._theme)
 
 
 class _ReplacePage(NFixedPage):
@@ -701,10 +729,10 @@ class _ReplacePage(NFixedPage):
         self.listBox.setSortingEnabled(True)
 
         # List Controls
-        self.addButton = NIconToolButton(self, iSz, "add", "green")
+        self.addButton = NIconToolButton(self, iSz, "add", "add")
         self.addButton.clicked.connect(self._onEntryCreated)
 
-        self.delButton = NIconToolButton(self, iSz, "remove", "red")
+        self.delButton = NIconToolButton(self, iSz, "remove", "remove")
         self.delButton.clicked.connect(self._onEntryDeleted)
 
         # Edit Form
@@ -743,8 +771,6 @@ class _ReplacePage(NFixedPage):
 
         self.setCentralLayout(self.outerBox)
 
-        return
-
     @property
     def changed(self) -> bool:
         """The user changed these settings."""
@@ -777,7 +803,6 @@ class _ReplacePage(NFixedPage):
         if (item := self._getSelectedItem()) and (key := self._stripKey(text)):
             item.setText(self.C_KEY, f"<{key}>")
             self._changed = True
-        return
 
     @pyqtSlot(str)
     def _onValueEdit(self, text: str) -> None:
@@ -785,7 +810,6 @@ class _ReplacePage(NFixedPage):
         if item := self._getSelectedItem():
             item.setText(self.C_REPL, text)
             self._changed = True
-        return
 
     @pyqtSlot()
     def _onSelectionChanged(self) -> None:
@@ -804,14 +828,12 @@ class _ReplacePage(NFixedPage):
             self.editValue.setText("")
             self.editKey.setEnabled(False)
             self.editValue.setEnabled(False)
-        return
 
     @pyqtSlot()
     def _onEntryCreated(self) -> None:
         """Add a new list entry."""
         key = f"<keyword{self.listBox.topLevelItemCount() + 1:d}>"
         self.listBox.addTopLevelItem(QTreeWidgetItem([key, ""]))
-        return
 
     @pyqtSlot()
     def _onEntryDeleted(self) -> None:
@@ -819,7 +841,6 @@ class _ReplacePage(NFixedPage):
         if item := self._getSelectedItem():
             self.listBox.takeTopLevelItem(self.listBox.indexOfTopLevelItem(item))
             self._changed = True
-        return
 
     ##
     #  Internal Functions

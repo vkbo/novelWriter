@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -38,12 +38,13 @@ from PyQt6.QtWidgets import (
 from novelwriter import SHARED
 from novelwriter.common import formatTime, numberToRoman
 from novelwriter.constants import nwUnicode
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollablePage
 from novelwriter.extensions.modified import NNonBlockingDialog
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignRight, QtDecoration, QtDialogClose
+from novelwriter.types import QtAlignRight, QtDecoration, QtRoleDestruct
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
@@ -52,6 +53,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiNovelDetails(NNonBlockingDialog):
+    """GUI: Novel Details Tool."""
 
     PAGE_OVERVIEW = 1
     PAGE_CONTENTS = 2
@@ -101,8 +103,11 @@ class GuiNovelDetails(NNonBlockingDialog):
         self.mainStack.addWidget(self.contentsPage)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogClose, self)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.clicked.connect(self.closeDialog)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
 
         # Assemble
         self.topBox = QHBoxLayout()
@@ -118,7 +123,7 @@ class GuiNovelDetails(NNonBlockingDialog):
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.topBox)
         self.outerBox.addLayout(self.mainBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
         self.outerBox.setSpacing(8)
 
         self.setLayout(self.outerBox)
@@ -130,11 +135,8 @@ class GuiNovelDetails(NNonBlockingDialog):
 
         logger.debug("Ready: GuiNovelDetails")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiNovelDetails")
-        return
 
     ##
     #  Methods
@@ -146,7 +148,6 @@ class GuiNovelDetails(NNonBlockingDialog):
             self.overviewPage.updateProjectData()
             self.overviewPage.novelValueChanged(handle)
             self.contentsPage.novelValueChanged(handle)
-        return
 
     ##
     #  Events
@@ -157,7 +158,6 @@ class GuiNovelDetails(NNonBlockingDialog):
         self._saveSettings()
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -170,7 +170,6 @@ class GuiNovelDetails(NNonBlockingDialog):
             self.mainStack.setCurrentWidget(self.overviewPage)
         elif pageId == self.PAGE_CONTENTS:
             self.mainStack.setCurrentWidget(self.contentsPage)
-        return
 
     ##
     #  Internal Functions
@@ -185,7 +184,6 @@ class GuiNovelDetails(NNonBlockingDialog):
         options.setValue("GuiNovelDetails", "winHeight", self.height())
         options.setValue("GuiNovelDetails", "novelRoot", novelRoot)
         self.contentsPage.saveSettings()
-        return
 
 
 class _OverviewPage(NScrollablePage):
@@ -248,8 +246,6 @@ class _OverviewPage(NScrollablePage):
 
         self.setCentralLayout(self.outerBox)
 
-        return
-
     ##
     #  Methods
     ##
@@ -266,7 +262,6 @@ class _OverviewPage(NScrollablePage):
         self.projWords.setText(f"{wcNovel + wcNotes:n}")
         self.projNovels.setText(f"{wcNovel:n}")
         self.projNotes.setText(f"{wcNotes:n}")
-        return
 
     ##
     #  Public Slots
@@ -285,8 +280,6 @@ class _OverviewPage(NScrollablePage):
         hCounts = project.index.getNovelTitleCounts(rootHandle=tHandle)
         self.novelChapters.setText(f"{hCounts[2]:n}")
         self.novelScenes.setText(f"{hCounts[3]:n}")
-
-        return
 
 
 class _ContentsPage(NFixedPage):
@@ -400,8 +393,6 @@ class _ContentsPage(NFixedPage):
 
         self.setCentralLayout(self.outerBox)
 
-        return
-
     def saveSettings(self) -> None:
         """Save the user GUI settings."""
         options = SHARED.project.options
@@ -413,7 +404,6 @@ class _ContentsPage(NFixedPage):
         options.setValue("GuiNovelDetails", "wordsPerPage", self.wpValue.value())
         options.setValue("GuiNovelDetails", "countFrom",    self.poValue.value())
         options.setValue("GuiNovelDetails", "clearDouble",  self.dblValue.isChecked())
-        return
 
     ##
     #  Public Slots
@@ -426,7 +416,6 @@ class _ContentsPage(NFixedPage):
             self._prepareData(tHandle)
             self._populateTree()
             self._currentRoot = tHandle
-        return
 
     ##
     #  Private Slots
@@ -496,8 +485,6 @@ class _ContentsPage(NFixedPage):
 
             self.tocTree.addTopLevelItem(newItem)
 
-        return
-
     ##
     #  Internal Functions
     ##
@@ -507,4 +494,3 @@ class _ContentsPage(NFixedPage):
         logger.debug("Populating ToC from handle '%s'", rootHandle)
         self._data = SHARED.project.index.getTableOfContents(rootHandle, 2)
         self._data.append(("", 0, self.tr("END"), 0))
-        return

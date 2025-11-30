@@ -24,7 +24,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -55,6 +55,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiNovelView(QWidget):
+    """GUI: Novel View Panel."""
 
     # Signals for user interaction with the novel tree
     selectedItemChanged = pyqtSignal(str)
@@ -82,28 +83,24 @@ class GuiNovelView(QWidget):
         self.getSelectedHandle = self.novelTree.getSelectedHandle
         self.refreshCurrentTree = self.novelBar.forceRefreshNovelTree
 
-        return
-
     ##
     #  Methods
     ##
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiNovelView")
         self.novelBar.updateTheme()
-        return
 
     def initSettings(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
         self.novelTree.initSettings()
-        return
 
     def clearNovelView(self) -> None:
         """Clear project-related GUI content."""
         self.novelBar.clearContent()
         self.novelBar.setEnabled(False)
         self.novelTree.clearContent()
-        return
 
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
@@ -125,8 +122,6 @@ class GuiNovelView(QWidget):
 
         self.novelTree.setLastColSize(lastColSize)
 
-        return
-
     def closeProjectTasks(self) -> None:
         """Run closing project tasks."""
         logger.debug("Saving State: GuiNovelView")
@@ -140,12 +135,9 @@ class GuiNovelView(QWidget):
 
         self.clearNovelView()
 
-        return
-
     def setTreeFocus(self) -> None:
         """Set the focus to the tree widget."""
         self.novelTree.setFocus()
-        return
 
     def treeHasFocus(self) -> bool:
         """Check if the novel tree has focus."""
@@ -159,22 +151,20 @@ class GuiNovelView(QWidget):
     def setCurrentNovel(self, rootHandle: str | None) -> None:
         """Set the current novel to display."""
         self.novelTree.setNovelModel(rootHandle)
-        return
 
     @pyqtSlot(str)
     def setActiveHandle(self, tHandle: str) -> None:
         """Highlight the rows associated with a given handle."""
         self.novelTree.setActiveHandle(tHandle)
-        return
 
     @pyqtSlot(str, Enum)
     def updateRootItem(self, tHandle: str, change: nwChange) -> None:
         """If any root item changes, rebuild the novel root menu."""
         self.novelBar.buildNovelRootMenu()
-        return
 
 
 class GuiNovelToolBar(QWidget):
+    """GUI: Novel View Panel ToolBar."""
 
     def __init__(self, novelView: GuiNovelView) -> None:
         super().__init__(parent=novelView)
@@ -249,20 +239,18 @@ class GuiNovelToolBar(QWidget):
 
         logger.debug("Ready: GuiNovelToolBar")
 
-        return
-
     ##
     #  Methods
     ##
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        # Icons
-        self.tbNovel.setThemeIcon("cls_novel", "red")
-        self.tbRefresh.setThemeIcon("refresh", "green")
-        self.tbMore.setThemeIcon("more_vertical")
+        logger.debug("Theme Update: GuiNovelToolBar")
 
-        # StyleSheets
+        self.tbNovel.setThemeIcon("cls_novel", "root")
+        self.tbRefresh.setThemeIcon("refresh", "change")
+        self.tbMore.setThemeIcon("more_vertical", "default")
+
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbNovel.setStyleSheet(buttonStyle)
         self.tbRefresh.setStyleSheet(buttonStyle)
@@ -277,20 +265,16 @@ class GuiNovelToolBar(QWidget):
 
         self.forceRefreshNovelTree()
 
-        return
-
     def clearContent(self) -> None:
         """Run clearing project tasks."""
         self.novelValue.clear()
         self.novelValue.setToolTip("")
-        return
 
     def buildNovelRootMenu(self) -> None:
         """Build the novel root menu."""
         self.novelValue.refreshNovelList()
         self.novelView.setCurrentNovel(self.novelValue.handle)
         self.tbNovel.setVisible(self.novelValue.count() > 1)
-        return
 
     def setCurrentRoot(self, rootHandle: str | None) -> None:
         """Set the current active root handle."""
@@ -300,7 +284,6 @@ class GuiNovelToolBar(QWidget):
         SHARED.project.data.setLastHandle(rootHandle, "novel")
         self.novelView.setCurrentNovel(rootHandle)
         self.novelView.novelTree.setAccessibleName(self.novelValue.currentText())
-        return
 
     def setLastColType(self, colType: nwNovelExtra, doRefresh: bool = True) -> None:
         """Set the last column type."""
@@ -309,7 +292,6 @@ class GuiNovelToolBar(QWidget):
         if doRefresh:
             self.forceRefreshNovelTree()
             self.novelView.novelTree.resizeColumns()
-        return
 
     def setActive(self, state: bool) -> None:
         """Set the widget active state, which enables automatic tree
@@ -322,7 +304,6 @@ class GuiNovelToolBar(QWidget):
             and self._refresh.get(handle, False)
         ):
             self._refreshNovelTree(self.novelValue.handle)
-        return
 
     ##
     #  Public Slots
@@ -335,7 +316,6 @@ class GuiNovelToolBar(QWidget):
             self.novelView.setCurrentNovel(tHandle)
             SHARED.project.index.refreshNovelModel(tHandle)
             self._refresh[tHandle] = False
-        return
 
     ##
     #  Private Slots
@@ -349,7 +329,6 @@ class GuiNovelToolBar(QWidget):
             self._refresh[tHandle] = False
         else:
             self._refresh[tHandle] = True
-        return
 
     @pyqtSlot()
     def _selectLastColumnSize(self) -> None:
@@ -361,7 +340,6 @@ class GuiNovelToolBar(QWidget):
         if isOk:
             self.novelView.novelTree.setLastColSize(newSize)
             self.novelView.novelTree.resizeColumns()
-        return
 
     ##
     #  Internal Functions
@@ -374,10 +352,10 @@ class GuiNovelToolBar(QWidget):
         aLast.setActionGroup(self.gLastCol)
         aLast.triggered.connect(qtLambda(self.setLastColType, colType))
         self.aLastCol[colType] = aLast
-        return
 
 
 class GuiNovelTree(NTreeView):
+    """GUI: Novel View Panel Tree."""
 
     def __init__(self, novelView: GuiNovelView) -> None:
         super().__init__(parent=novelView)
@@ -414,8 +392,6 @@ class GuiNovelTree(NTreeView):
 
         logger.debug("Ready: GuiNovelTree")
 
-        return
-
     def initSettings(self) -> None:
         """Set or update tree widget settings."""
         if CONFIG.hideVScroll:
@@ -426,7 +402,6 @@ class GuiNovelTree(NTreeView):
             self.setHorizontalScrollBarPolicy(QtScrollAlwaysOff)
         else:
             self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
-        return
 
     ##
     #  Properties
@@ -466,25 +441,21 @@ class GuiNovelTree(NTreeView):
                 self.resizeColumns()
         else:
             self.clearContent()
-        return
 
     def setActiveHandle(self, tHandle: str | None) -> None:
         """Set the handle to be highlighted."""
         self._actHandle = tHandle
         if viewport := self.viewport():
             viewport.repaint()
-        return
 
     def setLastColType(self, colType: nwNovelExtra) -> None:
         """Set the extra column type."""
         self._lastColType = colType
         SHARED.project.index.setNovelModelExtraColumn(colType)
-        return
 
     def setLastColSize(self, colSize: int) -> None:
         """Set the extra column size between 15% and 75%."""
         self._lastColSize = minmax(colSize, 15, 75)/100.0
-        return
 
     ##
     #  Class Methods
@@ -493,7 +464,6 @@ class GuiNovelTree(NTreeView):
     def clearContent(self) -> None:
         """Clear the tree view."""
         self.setModel(None)
-        return
 
     def resizeColumns(self) -> None:
         """Set the correct column sizes."""
@@ -506,7 +476,6 @@ class GuiNovelTree(NTreeView):
             if model.columns == 4:
                 header.setSectionResizeMode(3, QtHeaderToContents)
                 header.setMaximumSectionSize(int(self._lastColSize * vp.width()))
-        return
 
     ##
     #  Overloads
@@ -517,7 +486,6 @@ class GuiNovelTree(NTreeView):
         if (model := self._getModel()) and model.handle(index) == self._actHandle:
             painter.fillRect(opt.rect, self.palette().alternateBase())
         super().drawRow(painter, opt, index)
-        return
 
     ##
     #  Events
@@ -527,7 +495,6 @@ class GuiNovelTree(NTreeView):
         """Process size changed."""
         super().resizeEvent(event)
         self.resizeColumns()
-        return
 
     ##
     #  Private Slots
@@ -535,36 +502,33 @@ class GuiNovelTree(NTreeView):
 
     @pyqtSlot(QModelIndex)
     def _onSingleClick(self, index: QModelIndex) -> None:
-        """The user single-clicked an index."""
+        """Process user single-click on an index."""
         if index.isValid() and (model := self._getModel()):
             if (tHandle := model.handle(index)) and (sTitle := model.key(index)):
                 self.novelView.selectedItemChanged.emit(tHandle)
                 if index.column() == model.columnCount(index) - 1:
                     pos = self.mapToGlobal(self.visualRect(index).topRight())
                     self._popMetaBox(pos, tHandle, sTitle)
-        return
 
     @pyqtSlot(QModelIndex)
     def _onDoubleClick(self, index: QModelIndex) -> None:
-        """The user double-clicked an index."""
+        """Process user double-click on an index."""
         if (
             (model := self._getModel())
             and (tHandle := model.handle(index))
             and (sTitle := model.key(index))
         ):
             self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle, False)
-        return
 
     @pyqtSlot(QModelIndex)
     def _onMiddleClick(self, index: QModelIndex) -> None:
-        """The user middle-clicked an index."""
+        """Process user middle-click on an index."""
         if (
             (model := self._getModel())
             and (tHandle := model.handle(index))
             and (sTitle := model.key(index))
         ):
             self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, sTitle, False)
-        return
 
     ##
     #  Internal Functions
@@ -582,7 +546,6 @@ class GuiNovelTree(NTreeView):
             """Generate a reference list for a given reference key."""
             if tags := ", ".join(refs.get(key, [])):
                 lines.append(f"<b>{trConst(nwLabels.KEY_NAME[key])}:</b> {tags}")
-            return
 
         if head := SHARED.project.index.getItemHeading(tHandle, sTitle):
             logger.debug("Generating meta data tooltip for '%s:%s'", tHandle, sTitle)
@@ -610,4 +573,3 @@ class GuiNovelTree(NTreeView):
                 text = f"<p>{refs}</p>"
             if tooltip := (text + synopsis or self.tr("No meta data")):
                 QToolTip.showText(qPos, tooltip)
-        return

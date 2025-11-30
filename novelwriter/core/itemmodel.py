@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -66,7 +66,7 @@ T_NodeData = str | QIcon | QFont | Qt.AlignmentFlag | None
 
 
 class ProjectNode:
-    """Core: Project Model Node Class
+    """Core: Project Model Node Class.
 
     The project tree structure is saved as nodes in a tree, starting
     from a root node. This class makes up these nodes.
@@ -103,7 +103,6 @@ class ProjectNode:
         self._count = 0
         self.refresh()
         self.updateCount()
-        return
 
     def __repr__(self) -> str:
         return (
@@ -114,7 +113,7 @@ class ProjectNode:
         )
 
     def __bool__(self) -> bool:
-        """A node should always evaluate to True."""
+        # A node should always evaluate to True.
         return True
 
     ##
@@ -162,15 +161,12 @@ class ProjectNode:
         self._cache[C_STATUS_TIP] = sText
         self._cache[C_STATUS_ACCESS] = sText
 
-        return
-
     def updateCount(self, propagate: bool = True) -> None:
         """Update counts, and propagate upwards in the tree."""
         self._count = self._item.mainCount + sum(c._count for c in self._children)  # noqa: SLF001
         self._cache[C_COUNT_TEXT] = f"{self._count:n}"
         if propagate and (parent := self._parent):
             parent.updateCount()
-        return
 
     ##
     #  Data Access
@@ -223,7 +219,6 @@ class ProjectNode:
             self._children.append(child)
         self._refreshChildrenPos()
         self._item.notifyNovelStructureChange()
-        return
 
     def takeChild(self, pos: int) -> ProjectNode | None:
         """Remove a child item and return it."""
@@ -243,7 +238,6 @@ class ProjectNode:
             self._children.insert(target, node)
             self._refreshChildrenPos()
             self._item.notifyNovelStructureChange()
-        return
 
     def setExpanded(self, state: bool) -> None:
         """Set the node's expanded state."""
@@ -251,7 +245,6 @@ class ProjectNode:
             self._item.setExpanded(True)
         else:
             self._item.setExpanded(False)
-        return
 
     ##
     #  Internal Functions
@@ -262,14 +255,12 @@ class ProjectNode:
         for node in self._children:
             children.append(node)
             node._recursiveAppendChildren(children)  # noqa: SLF001
-        return
 
     def _refreshChildrenPos(self) -> None:
         """Update the row value on all children."""
         for n, child in enumerate(self._children):
             child._row = n  # noqa: SLF001
             child.item.setOrder(n)
-        return
 
     def _updateRelationships(self, child: ProjectNode) -> None:
         """Update a child item's relationships."""
@@ -282,11 +273,10 @@ class ProjectNode:
             child.item.setParent(None)
             child.item.setRoot(child.item.itemHandle)
             child.item.setClassDefaults(child.item.itemClass)
-        return
 
 
 class ProjectModel(QAbstractItemModel):
-    """Core: Project Model Class
+    """Core: Project Model Class.
 
     This class provides the interface for the tree widget used on the
     GUI. It implements the QModelIndex based interface required, adds
@@ -302,11 +292,9 @@ class ProjectModel(QAbstractItemModel):
         self._root = ProjectNode(NWItem(tree.project, INV_ROOT))
         self._root.item.setName("Invisible Root")
         logger.debug("Ready: ProjectModel")
-        return
 
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: ProjectModel")
-        return
 
     ##
     #  Properties
@@ -363,7 +351,7 @@ class ProjectModel(QAbstractItemModel):
     ##
 
     def supportedDropActions(self) -> Qt.DropAction:
-        """Return supported drop actions"""
+        """Return supported drop actions."""
         return Qt.DropAction.MoveAction
 
     def mimeTypes(self) -> list[str]:
@@ -445,7 +433,6 @@ class ProjectModel(QAbstractItemModel):
         self.beginInsertRows(parent, row, row)
         node.addChild(child, row)
         self.endInsertRows()
-        return
 
     def removeChild(self, parent: QModelIndex, pos: int) -> ProjectNode | None:
         """Remove a node from the model and return it."""
@@ -469,7 +456,6 @@ class ProjectModel(QAbstractItemModel):
                     self.beginMoveRows(index.parent(), pos, pos, index.parent(), end)
                     parent.moveChild(pos, new)
                     self.endMoveRows()
-        return
 
     def multiMove(self, indices: list[QModelIndex], target: QModelIndex, pos: int = -1) -> None:
         """Move multiple items to a new location."""
@@ -497,7 +483,6 @@ class ProjectModel(QAbstractItemModel):
                             node._updateRelationships(child)  # noqa: SLF001
                             child.item.notifyToRefresh()
                         node.item.notifyToRefresh()
-        return
 
     ##
     #  Other Methods
@@ -506,7 +491,6 @@ class ProjectModel(QAbstractItemModel):
     def clear(self) -> None:
         """Clear the project model."""
         self._root.children.clear()
-        return
 
     def allExpanded(self) -> list[QModelIndex]:
         """Return a list of all expanded items."""

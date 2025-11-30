@@ -23,13 +23,12 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import argparse
 import datetime
 import shutil
-import subprocess
 import sys
 
 import utils.assets
@@ -40,7 +39,10 @@ import utils.build_windows
 import utils.docs
 import utils.icon_themes
 
-from utils.common import ROOT_DIR, SETUP_DIR, extractVersion, readFile, stripVersion, writeFile
+from utils.common import (
+    ROOT_DIR, SETUP_DIR, extractReqs, extractVersion, readFile, stripVersion,
+    writeFile
+)
 
 OS_LINUX = sys.platform.startswith("linux")
 OS_DARWIN = sys.platform.startswith("darwin")
@@ -50,36 +52,6 @@ OS_WIN = sys.platform.startswith("win32")
 def printVersion(args: argparse.Namespace) -> None:
     """Print the novelWriter version and exit."""
     print(extractVersion(beQuiet=True)[0], end=None)
-    return
-
-
-def installPackages(args: argparse.Namespace) -> None:
-    """Install package dependencies both for this script and for running
-    novelWriter itself.
-    """
-    print("")
-    print("Installing Dependencies")
-    print("=======================")
-    print("")
-
-    installQueue = ["pip", "-r requirements.txt"]
-    if args.mac:
-        installQueue.append("pyobjc")
-    elif args.win:
-        installQueue.append("pywin32")
-
-    pyCmd = [sys.executable, "-m"]
-    pipCmd = ["pip", "install", "--user", "--upgrade"]
-    for stepCmd in installQueue:
-        pkgCmd = stepCmd.split(" ")
-        try:
-            subprocess.call(pyCmd + pipCmd + pkgCmd)
-        except Exception as exc:
-            print("Failed with error:")
-            print(str(exc))
-            sys.exit(1)
-
-    return
 
 
 def cleanBuildDirs(args: argparse.Namespace) -> None:
@@ -111,8 +83,6 @@ def cleanBuildDirs(args: argparse.Namespace) -> None:
 
     print("")
 
-    return
-
 
 def genMacOSPlist(args: argparse.Namespace) -> None:
     """Set necessary values for .plist file for MacOS build."""
@@ -134,7 +104,14 @@ def genMacOSPlist(args: argparse.Namespace) -> None:
     print(f"Writing Info.plist to {outDir}/Info.plist")
     writeFile(outDir / "Info.plist", plistXML)
 
-    return
+
+def genReqFiles(args: argparse.Namespace) -> None:
+    """Generate requirements.txt file from pyproject.toml."""
+    select = [s.strip().lower() for s in args.groups] if args.groups else ["app"]
+    (ROOT_DIR / "requirements.txt").write_text(
+        "\n".join(extractReqs(select)),
+        encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":
@@ -154,18 +131,6 @@ if __name__ == "__main__":
         "version", help="Print the novelWriter version."
     )
     cmdVersion.set_defaults(func=printVersion)
-
-    # General
-    # =======
-
-    # Pip Install
-    cmdPipInstall = parsers.add_parser(
-        "pip", help="Install all package dependencies for novelWriter using pip."
-    )
-    cmdPipInstall.add_argument("--linux", action="store_true", help="For Linux.", default=OS_LINUX)
-    cmdPipInstall.add_argument("--mac", action="store_true", help="For MacOS.", default=OS_DARWIN)
-    cmdPipInstall.add_argument("--win", action="store_true", help="For Windows.", default=OS_WIN)
-    cmdPipInstall.set_defaults(func=installPackages)
 
     # Additional Builds
     # =================
@@ -229,7 +194,7 @@ if __name__ == "__main__":
     cmdBuildHtmlDocs = parsers.add_parser(
         "docs-html", help="Build the HTML docs."
     )
-    cmdBuildHtmlDocs.add_argument("lang", nargs="+")
+    cmdBuildHtmlDocs.add_argument("lang", nargs="+", help="Language codes to generate docs for.")
     cmdBuildHtmlDocs.set_defaults(func=utils.docs.buildHtmlDocs)
 
     # Build Sample
@@ -302,10 +267,23 @@ if __name__ == "__main__":
     cmdBuildClean.set_defaults(func=cleanBuildDirs)
 
     # Generate MacOS PList File
-    cmdBuildMacOSPlist = parsers.add_parser(
+    cmdGenMacOSPlist = parsers.add_parser(
         "gen-plist", help="Generate an Info.plist for use in a MacOS Bundle."
     )
-    cmdBuildMacOSPlist.set_defaults(func=genMacOSPlist)
+    cmdGenMacOSPlist.set_defaults(func=genMacOSPlist)
+
+    # Generate Requirement File
+    cmdGenReq = parsers.add_parser(
+        "gen-req", help="Generate a requirements.txt file for pip."
+    )
+    cmdGenReq.add_argument(
+        "groups", nargs="*", help=(
+            "Groups to generate for, or 'all' to generate for all groups. "
+            "Use 'app' to generate for just the core application. "
+            "Defaults to 'app' if none are specified."
+        )
+    )
+    cmdGenReq.set_defaults(func=genReqFiles)
 
     args = parser.parse_args()
     args.func(args)

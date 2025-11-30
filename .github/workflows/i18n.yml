@@ -8,25 +8,30 @@ on:
 jobs:
   buildI18n:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Python Setup
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
           architecture: x64
-      - name: Install Packages (apt)
+
+      - name: Checkout Source
+        uses: actions/checkout@v5
+
+      - name: Install System Packages
         run: |
           sudo apt update
           sudo apt install qttools5-dev-tools
-      - name: Checkout Source
-        uses: actions/checkout@v4
+
       - name: Build Assets
         run: python pkgutils.py qtlrelease
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: nw-i18n
-          path: |
-            novelwriter/assets/i18n/*.qm
+          path: novelwriter/assets/i18n/*.qm
           if-no-files-found: error
           retention-days: 7

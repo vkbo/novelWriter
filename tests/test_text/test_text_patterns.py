@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import re
@@ -73,7 +73,8 @@ def testTextPatterns_Urls():
     ]
 
     for test in valid:
-        assert allMatches(regEx, f"Text {test} more text") == [[(test, 5, 5 + len(test))]]
+        check = test.rstrip("/")  # The regex ignores the trailing slash, but accepts the rest
+        assert allMatches(regEx, f"Text {test} more text") == [[(check, 5, 5 + len(check))]]
 
     for test in invalid:
         assert allMatches(regEx, f"Text {test} more text") == []
@@ -156,6 +157,15 @@ def testTextPatterns_Markdown():
     assert allMatches(regEx, "one ~~two~ three") == []
     assert allMatches(regEx, "one ~two~~ three") == []
     assert allMatches(regEx, "one~~two~~three") == []
+
+    # Mark
+    regEx = REGEX_PATTERNS.markdownMark
+    assert allMatches(regEx, "one ==two== three") == [
+        [("==two==", 4, 11), ("==", 4, 6), ("two", 6, 9), ("==", 9, 11)]
+    ]
+    assert allMatches(regEx, "one ==two= three") == []
+    assert allMatches(regEx, "one =two== three") == []
+    assert allMatches(regEx, "one==two==three") == []
 
 
 @pytest.mark.core

@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -26,7 +26,7 @@ import pytest
 
 from PyQt6.QtCore import QEvent, QItemSelectionModel, QModelIndex, QPointF
 from PyQt6.QtGui import QMouseEvent
-from PyQt6.QtWidgets import QMenu, QMessageBox
+from PyQt6.QtWidgets import QMenu
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.docmerge import GuiDocMerge
@@ -34,6 +34,7 @@ from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.gui.projtree import _TreeContextMenu
+from novelwriter.shared import _GuiAlert
 from novelwriter.types import (
     QtAccepted, QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected,
     QtScrollAlwaysOff, QtScrollAsNeeded
@@ -610,7 +611,7 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
 
     # Deleting a used root raises an error
     projTree.processDeleteRequest([C.hNovelRoot])
-    assert SHARED.lastAlert == "Root folders can only be deleted when they are empty."
+    assert SHARED.lastAlert[0] == "Root folders can only be deleted when they are empty."
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
         "Chapter Folder", "Scene 1", "Scene 2", "Scene 3", "Scene 4",
@@ -627,7 +628,7 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
 
     # User can cancel move to trash
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         projTree.processDeleteRequest(hScenes, askFirst=True)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
@@ -645,7 +646,7 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
 
     # User can block permanent deletion
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         projTree.processDeleteRequest(hScenes[0:2], askFirst=True)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
@@ -677,7 +678,7 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
 
     # Trash can be completely emptied, but user can block it
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
+        mp.setattr(_GuiAlert, "finalState", False)
         projTree.emptyTrash()
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "Chapter Folder", "Plot", "Characters", "Trash",
@@ -702,7 +703,7 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
 
     # Emptying empty trash pops an alert
     projTree.emptyTrash()
-    assert SHARED.lastAlert == "The Trash folder is already empty."
+    assert SHARED.lastAlert[0] == "The Trash folder is already empty."
 
     # Trash can be deleted if empty
     projTree.processDeleteRequest([trash.item.itemHandle])
@@ -712,7 +713,7 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
 
     # Emptying trash when it doesn't exist, recreates it
     projTree.emptyTrash()
-    assert SHARED.lastAlert == "The Trash folder is already empty."
+    assert SHARED.lastAlert[0] == "The Trash folder is already empty."
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "Chapter Folder", "Plot", "Characters", "Trash",
     ]
@@ -995,7 +996,7 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Duplicate title page, but select no
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QtRejected)
+        mp.setattr(_GuiAlert, "finalState", False)
         projTree.duplicateFromHandle(C.hTitlePage)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
@@ -1302,7 +1303,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Click no on the dialog
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QtRejected)
+        mp.setattr(_GuiAlert, "finalState", False)
         ctxMenu._convertFolderToFile(nwItemLayout.DOCUMENT)
         assert nodeOne.item.isFolderType()
 
@@ -1454,7 +1455,7 @@ def testGuiProjTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwNewCharacter = project.tree[hNewCharacter]
     assert nwNewCharacter is not None
     assert nwNewCharacter.itemName == "Note"
-    assert project.storage.getDocument(hNewCharacter).readDocument() == "# Jane\n\n@tag: Jane\n\n"
+    assert project.storage.getDocument(hNewCharacter).readDocument() == "# Note\n\n@tag: Jane\n\n"
 
     # Clearing the menu and rebuilding it should work
     projBar.mTemplates.clearMenu()

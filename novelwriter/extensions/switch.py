@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from PyQt6.QtCore import QPropertyAnimation, Qt, pyqtProperty, pyqtSlot  # pyright: ignore
@@ -32,6 +32,7 @@ from novelwriter.types import QtNoPen, QtPaintAntiAlias, QtSizeFixed
 
 
 class NSwitch(QAbstractButton):
+    """Custom: Toggle Switch."""
 
     __slots__ = ("_offset", "_rH", "_rR", "_xH", "_xR", "_xW")
 
@@ -48,11 +49,10 @@ class NSwitch(QAbstractButton):
         self.setSizePolicy(QtSizeFixed, QtSizeFixed)
         self.setFixedWidth(self._xW)
         self.setFixedHeight(self._xH)
+        self.setUpdatesEnabled(True)
         self._offset = self._xR
 
         self.clicked.connect(self._onClick)
-
-        return
 
     ##
     #  Properties
@@ -66,7 +66,6 @@ class NSwitch(QAbstractButton):
     def offset(self, offset: int) -> None:
         self._offset = offset
         self.update()
-        return
 
     ##
     #  Getters and Setters
@@ -76,7 +75,6 @@ class NSwitch(QAbstractButton):
         """Overload setChecked to also alter the offset."""
         super().setChecked(checked)
         self._offset = (self._xW - self._xR) if checked else self._xR
-        return
 
     ##
     #  Events
@@ -86,7 +84,6 @@ class NSwitch(QAbstractButton):
         """Overload resize to ensure correct offset."""
         super().resizeEvent(event)
         self._offset = (self._xW - self._xR) if self.isChecked() else self._xR
-        return
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Drawing the switch itself."""
@@ -97,7 +94,7 @@ class NSwitch(QAbstractButton):
         painter.setOpacity(1.0 if self.isEnabled() else 0.5)
 
         painter.setPen(palette.highlight().color() if self.hasFocus() else palette.mid().color())
-        painter.setBrush(palette.highlight() if self.isChecked() else palette.alternateBase())
+        painter.setBrush(SHARED.theme.accentCol if self.isChecked() else palette.alternateBase())
         painter.drawRoundedRect(0, 0, self._xW, self._xH, self._xR, self._xR)
 
         painter.setPen(QtNoPen)
@@ -106,13 +103,14 @@ class NSwitch(QAbstractButton):
 
         painter.end()
 
-        return
-
     def enterEvent(self, event: QEnterEvent) -> None:
         """Change the cursor when hovering the button."""
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         super().enterEvent(event)
-        return
+
+    ##
+    #  Internal Functions
+    ##
 
     @pyqtSlot(bool)
     def _onClick(self, checked: bool) -> None:
@@ -122,4 +120,3 @@ class NSwitch(QAbstractButton):
         anim.setStartValue(self._offset)
         anim.setEndValue((self._xW - self._xR) if checked else self._xR)
         anim.start()
-        return

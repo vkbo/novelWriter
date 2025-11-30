@@ -13,8 +13,8 @@ This is a list of hopefully helpful little tips on how to get the most out of no
    contribute, or start a discussion on the project's `Discussions Page`_.
 
 
-Managing the Project
-====================
+Your Project
+============
 
 .. dropdown:: How do I create a project from a template?
    :animate: fade-in-slide-down
@@ -41,6 +41,57 @@ Managing the Project
    The status or importance labels you have defined in a project can be exported from **Project
    Settings** from the respective configuration tabs. You can then import these labels in another
    project.
+
+.. dropdown:: How do I add introductory text to chapters?
+   :animate: fade-in-slide-down
+
+   Sometimes chapters have a short preface, like a brief piece of text or a quote to set the stage
+   before the first scene begins.
+
+   If you add separate files for chapters and scenes, the chapter file is the perfect place to add
+   such text. Separating chapter and scene files also allows you to make scene files child
+   documents of the chapter.
+
+.. dropdown:: How do I distinguishing between soft and hard scene breaks?
+   :animate: fade-in-slide-down
+
+   Depending on your writing style, you may need to separate between soft and hard scene breaks
+   within chapters. Like for instance if you switch point-of-view character often.
+
+   In such cases you may want to use different scene headings for hard and soft scene breaks. The
+   **Build Manuscript** tool will let you define a different format for scenes using the ``###``
+   and ``###!`` heading codes when you generate your manuscript. You can for instance add the
+   common "``* * *``" for hard breaks and select to hide soft scene breaks, which will just insert
+   an empty paragraph in their place. See :ref:`docs_ui_manuscript_settings` for more details.
+
+   .. versionadded:: 2.4
+
+.. dropdown:: How can I set the language for my manuscript?
+   :animate: fade-in-slide-down
+
+   The language set for manuscript documents like Open Document and Word Document is taken from
+   your project language setting in **Project Settings**. Only some languages are available here,
+   but you can override the language information by setting the "Override Document Language" value
+   in your Manuscript Build settings to a valid language code. The code uses the
+   `IETF BCP 47 language tag <https://en.wikipedia.org/wiki/IETF_language_tag>`__ format.
+
+   Examples: ``en`` for English, ``de`` for German, etc.
+
+   If you want to help add new languages to novelWriter, see: :ref:`docs_contributing`.
+
+   .. versionadded:: 2.8
+
+
+The Application
+===============
+
+.. dropdown:: How can I increase the line height?
+   :animate: fade-in-slide-down
+
+   Unfortunately, in this case, novelWriter uses the plain text editor component of the underlying
+   framework (called Qt) which doesn't support changing the line height. However, you can choose an
+   editor font with larger leading (the spacing between the lines). A good font for this case is
+   `Noto <https://fonts.google.com/noto>`__, which comes in both Sans-Serif and Serif.
 
 
 Layout Tricks
@@ -77,34 +128,6 @@ Layout Tricks
    adding ``<<`` to the end to left-align it. Aligned paragraphs are not indented.
 
    See :ref:`docs_usage_align_indent` for more details.
-
-
-Organising Your Text
-====================
-
-.. dropdown:: How do I add introductory text to chapters?
-   :animate: fade-in-slide-down
-
-   Sometimes chapters have a short preface, like a brief piece of text or a quote to set the stage
-   before the first scene begins.
-
-   If you add separate files for chapters and scenes, the chapter file is the perfect place to add
-   such text. Separating chapter and scene files also allows you to make scene files child
-   documents of the chapter.
-
-.. dropdown:: How do I distinguishing between soft and hard scene breaks?
-   :animate: fade-in-slide-down
-
-   Depending on your writing style, you may need to separate between soft and hard scene breaks
-   within chapters. Like for instance if you switch point-of-view character often.
-
-   In such cases you may want to use different scene headings for hard and soft scene breaks. The
-   **Build Manuscript** tool will let you define a different format for scenes using the ``###``
-   and ``###!`` heading codes when you generate your manuscript. You can for instance add the
-   common "``* * *``" for hard breaks and select to hide soft scene breaks, which will just insert
-   an empty paragraph in their place. See :ref:`docs_ui_manuscript_settings` for more details.
-
-   .. versionadded:: 2.4
 
 
 Other Tools

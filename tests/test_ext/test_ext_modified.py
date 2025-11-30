@@ -17,17 +17,23 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
+
+from unittest.mock import Mock
 
 import pytest
 
-from PyQt6.QtCore import QEvent, QPoint, QPointF, Qt
-from PyQt6.QtGui import QKeyEvent, QMouseEvent, QStandardItem, QStandardItemModel, QWheelEvent
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtCore import QEvent, QPoint, QPointF, QSize, Qt
+from PyQt6.QtGui import (
+    QFont, QKeyEvent, QMouseEvent, QStandardItem, QStandardItemModel,
+    QWheelEvent
+)
+from PyQt6.QtWidgets import QFontDialog, QWidget
 
 from novelwriter.extensions.modified import (
-    NClickableLabel, NComboBox, NDialog, NDoubleSpinBox, NSpinBox, NTreeView
+    NClickableLabel, NComboBox, NDialog, NDoubleSpinBox, NFontDialog,
+    NIconToggleButton, NIconToolButton, NSpinBox, NTreeView
 )
 from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
 
@@ -43,12 +49,10 @@ class MockWheelEvent(QWheelEvent):
             Qt.ScrollPhase.ScrollUpdate, False
         )
         self.ignored = False
-        return
 
     def ignore(self):
         super().ignore()
         self.ignored = True
-        return
 
 
 @pytest.mark.gui
@@ -64,6 +68,34 @@ def testExtModified_NDialog(qtbot, monkeypatch):
     with qtbot.waitSignal(dialog.rejected, timeout=1000):
         dialog.keyPressEvent(QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModNone))
         assert dialog.result() == QtRejected
+
+
+def testExtModified_NFontDialog(qtbot, monkeypatch, nwGUI):
+    """Test the NFontDialog class."""
+    current = QFont()
+    other = QFont()
+    widget = QWidget()
+    dialog = NFontDialog(current, widget)
+    assert dialog.parent() is widget
+
+    # Test native dialog
+    mockNative = Mock()
+    mockNative.return_value = (other, True)
+    with monkeypatch.context() as mp:
+        mp.setattr(QFontDialog, "getFont", mockNative)
+        font, result = NFontDialog.selectFont(current, widget, "Title", True)
+        mockNative.assert_called_once_with(current, widget, "Title")
+        assert font is other
+        assert result is True
+
+    # Test custom dialog
+    with monkeypatch.context() as mp:
+        mp.setattr(NFontDialog, "exec", lambda *a: None)
+        mp.setattr(NFontDialog, "selectedFont", lambda *a: other)
+        mp.setattr(NFontDialog, "result", lambda *a: 1)
+        font, result = NFontDialog.selectFont(current, widget, "Title", False)
+        assert font is other
+        assert result is True
 
 
 @pytest.mark.gui
@@ -170,7 +202,7 @@ def testExtModified_NDoubleSpinBox(qtbot, monkeypatch):
 
 
 @pytest.mark.gui
-def testExtModified_NClickableLabel(qtbot, monkeypatch):
+def testExtModified_NClickableLabel(qtbot):
     """Test the NClickableLabel class."""
     widget = NClickableLabel()
     dialog = SimpleDialog(widget)
@@ -183,3 +215,23 @@ def testExtModified_NClickableLabel(qtbot, monkeypatch):
 
     with qtbot.waitSignal(widget.mouseClicked):
         widget.mousePressEvent(event)
+
+
+@pytest.mark.gui
+def testExtModified_ToolButtons(qtbot, mockGUI):
+    """Test the NIconToolButton and NIconToggleButton classes."""
+    dialog = SimpleDialog(None)
+
+    size = QSize(16, 16)
+    button1 = NIconToolButton(dialog, size, "add", "add")
+    button2 = NIconToggleButton(dialog, size, "bullet", "action")
+
+    assert button1.iconSize() == size
+    assert button2.iconSize() == size
+
+    assert button1.icon().isNull() is False
+    assert button2.icon().isNull() is False
+
+    dialog.addWidget(button1)
+    dialog.addWidget(button2)
+    dialog.show()

@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import time
@@ -31,16 +31,18 @@ from PyQt6.QtCore import QMimeData, QUrl
 from PyQt6.QtGui import QDesktopServices, QFont, QFontDatabase, QFontInfo
 
 from novelwriter.common import (
-    NWConfigParser, checkBool, checkFloat, checkInt, checkIntTuple, checkPath,
-    checkString, checkStringNone, checkUuid, compact, decodeMimeHandles,
-    describeFont, elide, encodeMimeHandles, firstFloat, fontMatcher,
-    formatFileFilter, formatInt, formatTime, formatTimeStamp, formatVersion,
-    fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass, isItemLayout,
-    isItemType, isListInstance, isTitleTag, jsonEncode, makeFileNameSafe,
-    minmax, numberToRoman, openExternalPath, processDialogSymbols,
-    readTextFile, simplified, transferCase, uniqueCompact, xmlElement,
-    xmlIndent, xmlSubElem, yesNo
+    NWConfigParser, appendIfSet, checkBool, checkFloat, checkInt,
+    checkIntTuple, checkPath, checkString, checkStringNone, checkUuid, compact,
+    decodeMimeHandles, describeFont, elide, encodeMimeHandles, firstFloat,
+    fontMatcher, formatFileFilter, formatInt, formatTime, formatTimeStamp,
+    formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
+    isItemLayout, isItemType, isListInstance, isTitleTag, joinLines,
+    jsonCombine, jsonEncode, languageName, makeFileNameSafe, minmax,
+    numberToRoman, openExternalPath, processDialogSymbols, processLangCode,
+    readTextFile, simplified, transferCase, uniqueCompact, utf16CharMap,
+    xmlElement, xmlIndent, xmlSubElem, yesNo
 )
+from novelwriter.enum import nwItemClass
 
 from tests.mocked import causeOSError
 from tests.tools import writeFile
@@ -379,11 +381,49 @@ def testBaseCommon_uniqueCompact():
 
 
 @pytest.mark.base
+def testBaseCommon_joinLines():
+    """Test the joinLines function."""
+    assert joinLines("abc") == "abc"
+    assert joinLines(["abc"]) == "abc"
+    assert joinLines(["a", "b", "c"]) == "abc"
+    assert joinLines("abc", "\n") == "abc"
+    assert joinLines(["abc"], "\n") == "abc"
+    assert joinLines(["a", "b", "c"], "\n") == "a\nb\nc"
+
+
+@pytest.mark.base
+def testBaseCommon_appendIfSet():
+    """Test the appendIfSet function."""
+    data = []
+    appendIfSet(data, "")
+    assert data == []
+    appendIfSet(data, "a")
+    assert data == ["a"]
+    appendIfSet(data, "b")
+    assert data == ["a", "b"]
+
+
+@pytest.mark.base
 def testBaseCommon_processDialogSymbols():
     """Test the processDialogSymbols function."""
     assert processDialogSymbols("abc") == ""
     assert processDialogSymbols("\u00ab\u00ab\u00bb\u00bb") == "\u00ab\u00bb"
     assert processDialogSymbols("-\u2013\u2014\u2015") == "\u2013\u2014\u2015"
+
+
+@pytest.mark.base
+def testBaseCommon_processLangCode():
+    """Test the processLangCode function."""
+    assert processLangCode("") == ""
+    assert processLangCode(" ") == ""
+    assert processLangCode("en") == "en-US"
+    assert processLangCode("en_gb") == "en-GB"
+
+
+@pytest.mark.base
+def testBaseCommon_languageName():
+    """Test the languageName function."""
+    assert languageName("en-GB") == "British English"
 
 
 @pytest.mark.base
@@ -536,6 +576,11 @@ def testBaseCommon_fontMatcher(monkeypatch):
     nonsense = QFont("nonesense", 10)
     assert fontMatcher(nonsense) is nonsense
 
+    # Style is reset
+    nonsense.setStyleName("blabla")
+    assert nonsense.styleName() == "blabla"
+    assert fontMatcher(nonsense).styleName() == ""
+
     # General font
     if len(QFontDatabase.families()) > 1:
         fontOne = QFont(QFontDatabase.families()[0])
@@ -554,6 +599,14 @@ def testBaseCommon_encodeDecodeMimeHandles(monkeypatch):
     mimeData = QMimeData()
     encodeMimeHandles(mimeData, handles)
     assert decodeMimeHandles(mimeData) == handles
+
+
+@pytest.mark.base
+def testBaseCommon_utf16CharMap(monkeypatch):
+    """Test the utf16CharMap function."""
+    assert utf16CharMap("abc") == [0, 1, 2, 3]
+    assert utf16CharMap("a\u2014b\u2014c") == [0, 1, 2, 3, 4, 5]
+    assert utf16CharMap("a\U0001F605b\U0001F605c") == [0, 1, 3, 4, 6, 7]
 
 
 @pytest.mark.base
@@ -634,6 +687,17 @@ def testBaseCommon_jsonEncode():
         '  "seven": [],\n'
         '  "eight": {}\n'
         '}'
+    )
+
+
+@pytest.mark.base
+def testBaseCommon_jsonCombine():
+    """Test the jsonCombine function."""
+    assert jsonCombine({"a": "[1, 2]", "b": "[3, 4]"}) == (
+        '{\n'
+        '  "a": [1, 2],\n'
+        '  "b": [3, 4]\n'
+        '}\n'
     )
 
 
@@ -780,7 +844,6 @@ def testBaseCommon_openExternalPath(monkeypatch, tstPaths):
     def mockOpenUrl(url: QUrl) -> None:
         nonlocal lastUrl
         lastUrl = url.toString()
-        return
 
     monkeypatch.setattr(QDesktopServices, "openUrl", mockOpenUrl)
     assert openExternalPath(Path("/foo/bar")) is False
@@ -791,8 +854,8 @@ def testBaseCommon_openExternalPath(monkeypatch, tstPaths):
 @pytest.mark.base
 def testBaseCommon_NWConfigParser(fncPath):
     """Test the NWConfigParser subclass."""
-    tstConf = fncPath / "test.cfg"
-    writeFile(tstConf, (
+    conf = fncPath / "test.cfg"
+    writeFile(conf, (
         "[main]\n"
         "stropt = value\n"
         "intopt1 = 42\n"
@@ -804,74 +867,79 @@ def testBaseCommon_NWConfigParser(fncPath):
         "list1 = a, b, c\n"
         "list2 = 17, 18, 19\n"
         "float1 = 4.2\n"
+        "enum1 = NOVEL\n"
         f"path1 = {fncPath}\n"
     ))
 
-    cfgParser = NWConfigParser()
-    cfgParser.read(tstConf)
+    parser = NWConfigParser()
+    parser.read(conf)
 
     # Readers
     # =======
 
     # Read String
-    assert cfgParser.rdStr("main", "stropt",   "stuff") == "value"
-    assert cfgParser.rdStr("main", "boolopt1", "stuff") == "true"
-    assert cfgParser.rdStr("main", "intopt1",  "stuff") == "42"
+    assert parser.rdStr("main", "stropt",   "stuff") == "value"
+    assert parser.rdStr("main", "boolopt1", "stuff") == "true"
+    assert parser.rdStr("main", "intopt1",  "stuff") == "42"
 
-    assert cfgParser.rdStr("nope", "stropt",   "stuff") == "stuff"
-    assert cfgParser.rdStr("main", "blabla",   "stuff") == "stuff"
+    assert parser.rdStr("nope", "stropt",   "stuff") == "stuff"
+    assert parser.rdStr("main", "blabla",   "stuff") == "stuff"
 
     # Read Boolean
-    assert cfgParser.rdBool("main", "boolopt1", None) is True   # type: ignore
-    assert cfgParser.rdBool("main", "boolopt2", None) is True   # type: ignore
-    assert cfgParser.rdBool("main", "boolopt3", None) is True   # type: ignore
-    assert cfgParser.rdBool("main", "boolopt4", None) is False  # type: ignore
-    assert cfgParser.rdBool("main", "intopt1",  None) is None   # type: ignore
+    assert parser.rdBool("main", "boolopt1", None) is True   # type: ignore
+    assert parser.rdBool("main", "boolopt2", None) is True   # type: ignore
+    assert parser.rdBool("main", "boolopt3", None) is True   # type: ignore
+    assert parser.rdBool("main", "boolopt4", None) is False  # type: ignore
+    assert parser.rdBool("main", "intopt1",  None) is None   # type: ignore
 
-    assert cfgParser.rdBool("nope", "boolopt1", None) is None   # type: ignore
-    assert cfgParser.rdBool("main", "blabla",   None) is None   # type: ignore
+    assert parser.rdBool("nope", "boolopt1", None) is None   # type: ignore
+    assert parser.rdBool("main", "blabla",   None) is None   # type: ignore
 
     # Read Integer
-    assert cfgParser.rdInt("main", "intopt1", 13) == 42
-    assert cfgParser.rdInt("main", "intopt2", 13) == 13
-    assert cfgParser.rdInt("main", "stropt",  13) == 13
+    assert parser.rdInt("main", "intopt1", 13) == 42
+    assert parser.rdInt("main", "intopt2", 13) == 13
+    assert parser.rdInt("main", "stropt",  13) == 13
 
-    assert cfgParser.rdInt("nope", "intopt1", 13) == 13
-    assert cfgParser.rdInt("main", "blabla",  13) == 13
+    assert parser.rdInt("nope", "intopt1", 13) == 13
+    assert parser.rdInt("main", "blabla",  13) == 13
 
     # Read Float
-    assert cfgParser.rdFlt("main", "intopt1", 13.0) == 42.0
-    assert cfgParser.rdFlt("main", "float1",  13.0) == 4.2
-    assert cfgParser.rdFlt("main", "stropt",  13.0) == 13.0
+    assert parser.rdFlt("main", "intopt1", 13.0) == 42.0
+    assert parser.rdFlt("main", "float1",  13.0) == 4.2
+    assert parser.rdFlt("main", "stropt",  13.0) == 13.0
 
-    assert cfgParser.rdFlt("nope", "intopt1", 13.0) == 13.0
-    assert cfgParser.rdFlt("main", "blabla",  13.0) == 13.0
+    assert parser.rdFlt("nope", "intopt1", 13.0) == 13.0
+    assert parser.rdFlt("main", "blabla",  13.0) == 13.0
 
     # Read Path
-    assert cfgParser.rdPath("main", "path1", Path.home()) == fncPath
+    assert parser.rdPath("main", "path1", Path.home()) == fncPath
 
     # Read String List
-    assert cfgParser.rdStrList("main", "list1", []) == []
-    assert cfgParser.rdStrList("main", "list1", ["x"]) == ["a"]
-    assert cfgParser.rdStrList("main", "list1", ["x", "y"]) == ["a", "b"]
-    assert cfgParser.rdStrList("main", "list1", ["x", "y", "z"]) == ["a", "b", "c"]
-    assert cfgParser.rdStrList("main", "list1", ["x", "y", "z", "w"]) == ["a", "b", "c", "w"]
+    assert parser.rdStrList("main", "list1", []) == []
+    assert parser.rdStrList("main", "list1", ["x"]) == ["a"]
+    assert parser.rdStrList("main", "list1", ["x", "y"]) == ["a", "b"]
+    assert parser.rdStrList("main", "list1", ["x", "y", "z"]) == ["a", "b", "c"]
+    assert parser.rdStrList("main", "list1", ["x", "y", "z", "w"]) == ["a", "b", "c", "w"]
 
-    assert cfgParser.rdStrList("main", "stropt", ["x"]) == ["value"]
-    assert cfgParser.rdStrList("main", "intopt1", ["x"]) == ["42"]
+    assert parser.rdStrList("main", "stropt", ["x"]) == ["value"]
+    assert parser.rdStrList("main", "intopt1", ["x"]) == ["42"]
 
-    assert cfgParser.rdStrList("nope", "list1", ["x"]) == ["x"]
-    assert cfgParser.rdStrList("main", "blabla", ["x"]) == ["x"]
+    assert parser.rdStrList("nope", "list1", ["x"]) == ["x"]
+    assert parser.rdStrList("main", "blabla", ["x"]) == ["x"]
 
     # Read Integer List
-    assert cfgParser.rdIntList("main", "list2", []) == []
-    assert cfgParser.rdIntList("main", "list2", [1]) == [17]
-    assert cfgParser.rdIntList("main", "list2", [1, 2]) == [17, 18]
-    assert cfgParser.rdIntList("main", "list2", [1, 2, 3]) == [17, 18, 19]
-    assert cfgParser.rdIntList("main", "list2", [1, 2, 3, 4]) == [17, 18, 19, 4]
+    assert parser.rdIntList("main", "list2", []) == []
+    assert parser.rdIntList("main", "list2", [1]) == [17]
+    assert parser.rdIntList("main", "list2", [1, 2]) == [17, 18]
+    assert parser.rdIntList("main", "list2", [1, 2, 3]) == [17, 18, 19]
+    assert parser.rdIntList("main", "list2", [1, 2, 3, 4]) == [17, 18, 19, 4]
 
-    assert cfgParser.rdIntList("main", "stropt", [1]) == [1]
-    assert cfgParser.rdIntList("main", "boolopt1", [1]) == [1]
+    assert parser.rdIntList("main", "stropt", [1]) == [1]
+    assert parser.rdIntList("main", "boolopt1", [1]) == [1]
 
-    assert cfgParser.rdIntList("nope", "list2", [1]) == [1]
-    assert cfgParser.rdIntList("main", "blabla", [1]) == [1]
+    assert parser.rdIntList("nope", "list2", [1]) == [1]
+    assert parser.rdIntList("main", "blabla", [1]) == [1]
+
+    # Read Enum
+    assert parser.rdEnum("main", "enum1", nwItemClass.NO_CLASS) == nwItemClass.NOVEL
+    assert parser.rdEnum("main", "blabla", nwItemClass.NO_CLASS) == nwItemClass.NO_CLASS

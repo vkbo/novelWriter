@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import pytest
@@ -251,13 +251,17 @@ def testCoreIndexData_IndexHeading():
         "note.consitency": "Only explode once",
     }
 
+    # Append Synopsis
+    head.setComment(nwComment.SYNOPSIS.name, "", "How it started ...")
+    assert head.synopsis == "In the beginning ...\n\nHow it started ..."
+
     # Unpack KeyError
     with pytest.raises(KeyError, match="Unknown key in heading entry"):
         head.unpackData({"stuff": "more stuff"})
 
     # Unpack Comments
     head.unpackData({"summary": "How it started ..."})
-    assert head.synopsis == "How it started ..."
+    assert head.synopsis == "How it started ..."  # This resets the comments dictionary
 
 
 @pytest.mark.core

@@ -17,14 +17,14 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import sys
 
 import pytest
 
-from PyQt6.QtWidgets import QApplication, QDialog, QMessageBox
+from PyQt6.QtWidgets import QApplication, QDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.about import GuiAbout
@@ -49,8 +49,6 @@ LANG_DATA = CONFIG.listLanguages(CONFIG.LANG_NW)
 def testGuiI18n_Localisation(qtbot, monkeypatch, language, nwGUI, projPath):
     """Test loading the gui with a specific language."""
     monkeypatch.setattr(QDialog, "exec", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
 
     # Set the test language
     CONFIG.guiLocale = language

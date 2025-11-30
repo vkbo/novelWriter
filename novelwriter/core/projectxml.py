@@ -22,7 +22,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -46,7 +46,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 FILE_VERSION = "1.5"  # The current project file format version
-FILE_REVISION = "5"   # The current project file format revision
+FILE_REVISION = "6"   # The current project file format revision
 HEX_VERSION = 0x0105
 
 NUM_VERSION = {
@@ -72,7 +72,7 @@ class XMLReadState(Enum):
 
 
 class ProjectXMLReader:
-    """Core: Project XML Reader
+    """Core: Project XML Reader.
 
     All data is read into a NWProjectData instance, which must be
     provided.
@@ -111,6 +111,8 @@ class ProjectXMLReader:
                nodes. 2.5.
         Rev 5: Added novelChars and notesChars attributes to content
                node. 2.7 RC 1.
+        Rev 6: Replaced red, green and blue attributes with a single
+               color attribute. 2.8 Beta 1.
     """
 
     def __init__(self, path: str | Path) -> None:
@@ -122,7 +124,6 @@ class ProjectXMLReader:
         self._appVersion = ""
         self._hexVersion = 0x0
         self._timeStamp = ""
-        return
 
     ##
     #  Properties
@@ -252,8 +253,6 @@ class ProjectXMLReader:
                 elif xItem.tag == "editTime":  # Moved to attribute in 1.5
                     data.setEditTime(xItem.text)
 
-        return
-
     def _parseProjectSettings(self, xSection: ET.Element, data: NWProjectData) -> None:
         """Parse the settings section of the XML file."""
         logger.debug("Parsing <settings> section")
@@ -291,8 +290,6 @@ class ProjectXMLReader:
                     data.setInitCounts(wNovel=xItem.text)
                 elif xItem.tag == "notesWordCount":  # Moved to content attribute in 1.5
                     data.setInitCounts(wNotes=xItem.text)
-
-        return
 
     def _parseProjectContent(
         self, xSection: ET.Element, data: NWProjectData, content: list
@@ -353,8 +350,6 @@ class ProjectXMLReader:
                 "metaAttr": meta,
                 "nameAttr": name,
             })
-
-        return
 
     def _parseProjectContentLegacy(
         self, xSection: ET.Element, data: NWProjectData, content: list
@@ -432,20 +427,20 @@ class ProjectXMLReader:
                 "nameAttr": name,
             })
 
-        return
-
     def _parseStatusImport(self, xItem: ET.Element, sObject: NWStatus) -> None:
         """Parse a status or importance entry."""
         for xEntry in xItem:
             if xEntry.tag == "entry":
                 key   = xEntry.attrib.get("key", None)
-                red   = checkInt(xEntry.attrib.get("red", 0), 0)
-                green = checkInt(xEntry.attrib.get("green", 0), 0)
-                blue  = checkInt(xEntry.attrib.get("blue", 0), 0)
+                red   = checkInt(xEntry.attrib.get("red", 0), 0)    # Removed in 1.5 R6
+                green = checkInt(xEntry.attrib.get("green", 0), 0)  # Removed in 1.5 R6
+                blue  = checkInt(xEntry.attrib.get("blue", 0), 0)   # Removed in 1.5 R6
+                color = xEntry.attrib.get("color")  # Added in 1.5 R6
                 count = checkInt(xEntry.attrib.get("count", 0), 0)
                 shape = xEntry.attrib.get("shape", "")
-                sObject.add(key, xEntry.text or "", (red, green, blue), shape, count)
-        return
+                if color is None:
+                    color = f"{red}, {green}, {blue}"
+                sObject.add(key, xEntry.text or "", color, shape, count)
 
     def _parseDictKeyText(self, xItem: ET.Element) -> dict:
         """Parse a dictionary stored with key as an attribute and the
@@ -465,7 +460,7 @@ class ProjectXMLReader:
 
 
 class ProjectXMLWriter:
-    """Core: Project XML Writer
+    """Core: Project XML Writer.
 
     The project writer class will only write a file according to the
     very latest spec.
@@ -474,7 +469,6 @@ class ProjectXMLWriter:
     def __init__(self, path: str | Path) -> None:
         self._path = Path(path)
         self._error = None
-        return
 
     ##
     #  Properties
@@ -575,7 +569,6 @@ class ProjectXMLWriter:
         """Pack a single value into an XML element."""
         xItem = ET.SubElement(xParent, name, attrib=attrib or {})
         xItem.text = str(value) or ""
-        return
 
     def _packDictKeyValue(self, xParent: ET.Element, name: str, data: dict) -> None:
         """Pack the entries of a dictionary into an XML element."""
@@ -584,4 +577,3 @@ class ProjectXMLWriter:
             if len(key) > 0:
                 xEntry = ET.SubElement(xItem, "entry", attrib={"key": key})
                 xEntry.text = str(value) or ""
-        return

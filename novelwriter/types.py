@@ -20,14 +20,17 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor, QFont, QPainter, QTextCharFormat, QTextCursor, QTextFormat
+from PyQt6.QtGui import (
+    QColor, QFont, QPainter, QPalette, QTextCharFormat, QTextCursor,
+    QTextFormat
+)
 from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QHeaderView, QSizePolicy, QStyle
 
-# Qt Alignment Flags
+# Alignment Flags
 
 QtAlignAbsolute = Qt.AlignmentFlag.AlignAbsolute
 QtAlignCenter = Qt.AlignmentFlag.AlignCenter
@@ -48,15 +51,17 @@ QtVAlignNormal = QTextCharFormat.VerticalAlignment.AlignNormal
 QtVAlignSub = QTextCharFormat.VerticalAlignment.AlignSubScript
 QtVAlignSuper = QTextCharFormat.VerticalAlignment.AlignSuperScript
 
-# Qt Text Formats
+# Text Formats
 
 QtPageBreakBefore = QTextFormat.PageBreakFlag.PageBreak_AlwaysBefore
 QtPageBreakAfter = QTextFormat.PageBreakFlag.PageBreak_AlwaysAfter
 QtPageBreakAuto = QTextFormat.PageBreakFlag.PageBreak_Auto
 
+QtTextUserProperty = QTextFormat.Property.UserProperty
+
 QtPropLineHeight = 1  # QTextBlockFormat.LineHeightTypes.ProportionalHeight
 
-# Qt Painter Types
+# Painter Types
 
 QtTransparent = QColor(0, 0, 0, 0)
 QtBlack = QColor(0, 0, 0)
@@ -68,10 +73,14 @@ QtPaintAntiAlias = QPainter.RenderHint.Antialiasing
 QtMouseOver = QStyle.StateFlag.State_MouseOver
 QtSelected = QStyle.StateFlag.State_Selected
 
-# Qt Colour Types
+# Colour Types
 
 QtHexRgb = QColor.NameFormat.HexRgb
 QtHexArgb = QColor.NameFormat.HexArgb
+
+QtColActive = QPalette.ColorGroup.Active
+QtColInactive = QPalette.ColorGroup.Inactive
+QtColDisabled = QPalette.ColorGroup.Disabled
 
 # Qt Tree and Table Types
 
@@ -91,24 +100,35 @@ QtMouseMiddle = Qt.MouseButton.MiddleButton
 QtAccepted = QDialog.DialogCode.Accepted
 QtRejected = QDialog.DialogCode.Rejected
 
-QtDialogApply = QDialogButtonBox.StandardButton.Apply
-QtDialogCancel = QDialogButtonBox.StandardButton.Cancel
-QtDialogClose = QDialogButtonBox.StandardButton.Close
-QtDialogOk = QDialogButtonBox.StandardButton.Ok
-QtDialogReset = QDialogButtonBox.StandardButton.Reset
-QtDialogSave = QDialogButtonBox.StandardButton.Save
-
 QtRoleAccept = QDialogButtonBox.ButtonRole.AcceptRole
 QtRoleAction = QDialogButtonBox.ButtonRole.ActionRole
 QtRoleApply = QDialogButtonBox.ButtonRole.ApplyRole
+QtRoleDestruct = QDialogButtonBox.ButtonRole.DestructiveRole
 QtRoleReject = QDialogButtonBox.ButtonRole.RejectRole
+QtRoleReset = QDialogButtonBox.ButtonRole.ResetRole
 
 # Cursor Types
 
 QtKeepAnchor = QTextCursor.MoveMode.KeepAnchor
 QtMoveAnchor = QTextCursor.MoveMode.MoveAnchor
+
 QtMoveLeft = QTextCursor.MoveOperation.Left
 QtMoveRight = QTextCursor.MoveOperation.Right
+QtMoveUp = QTextCursor.MoveOperation.Up
+QtMoveDown = QTextCursor.MoveOperation.Down
+QtMoveEndOfLine = QTextCursor.MoveOperation.EndOfLine
+QtMoveStartOfLine = QTextCursor.MoveOperation.StartOfLine
+QtMoveEnd = QTextCursor.MoveOperation.End
+QtMoveStart = QTextCursor.MoveOperation.Start
+QtMoveNextWord = QTextCursor.MoveOperation.NextWord
+QtMovePreviousWord = QTextCursor.MoveOperation.PreviousWord
+QtMoveEndOfWord = QTextCursor.MoveOperation.EndOfWord
+QtMoveNextChar = QTextCursor.MoveOperation.NextCharacter
+
+QtSelectWord = QTextCursor.SelectionType.WordUnderCursor
+QtSelectLine = QTextCursor.SelectionType.LineUnderCursor
+QtSelectBlock = QTextCursor.SelectionType.BlockUnderCursor
+QtSelectDocument = QTextCursor.SelectionType.Document
 
 QtImCursorRectangle = Qt.InputMethodQuery.ImCursorRectangle
 
@@ -128,6 +148,7 @@ QtHeaderFixed = QHeaderView.ResizeMode.Fixed
 
 # Scroll Bar Policy
 
+QtScrollAlwaysOn = Qt.ScrollBarPolicy.ScrollBarAlwaysOn
 QtScrollAlwaysOff = Qt.ScrollBarPolicy.ScrollBarAlwaysOff
 QtScrollAsNeeded = Qt.ScrollBarPolicy.ScrollBarAsNeeded
 

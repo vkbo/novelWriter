@@ -17,7 +17,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -34,11 +34,14 @@ from PyQt6.QtWidgets import QMessageBox
 sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
+from novelwriter.enum import nwTheme
 
-from tests.mocked import MockGuiMain, MockTheme
+from tests.mocked import MockGuiMain
 from tests.tools import cleanProject
 
 _TST_ROOT = Path(__file__).parent
+_SRC_ROOT = _TST_ROOT.parent
 _TMP_ROOT = _TST_ROOT / "temp"
 _TMP_CONF = _TMP_ROOT / "conf"
 
@@ -59,7 +62,13 @@ def resetConfigVars():
     CONFIG._dLocale = QLocale("en_GB")
     CONFIG._manuals = {"manual": _TMP_ROOT / "manual.pdf"}
     CONFIG.guiLocale = "en_GB"
-    return
+    CONFIG.darkTheme = DEF_GUI_DARK
+    CONFIG.lightTheme = DEF_GUI_LIGHT
+    CONFIG.themeMode = nwTheme.LIGHT
+
+    # Enable a few settings to ensure better coverage
+    CONFIG.emphLabels = True
+    CONFIG.lineHighlight = True
 
 
 ##
@@ -75,7 +84,8 @@ def sessionFixture():
     _TMP_ROOT.mkdir()
     _TMP_CONF.mkdir()
     (_TMP_ROOT / "manual.pdf").touch()
-    return
+    (_SRC_ROOT / "novelwriter" / "assets"/ "manual.pdf").touch()
+    (_SRC_ROOT / "novelwriter" / "assets"/ "manual_fr.pdf").touch()
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -93,8 +103,6 @@ def functionFixture(qtbot):
     CONFIG.initConfig(confPath=_TMP_CONF, dataPath=_TMP_CONF)
     resetConfigVars()
     logging.getLogger("novelwriter").setLevel(logging.INFO)
-
-    return
 
 
 ##
@@ -148,13 +156,27 @@ def projPath(fncPath):
 @pytest.fixture(scope="function")
 def mockGUI(qtbot, monkeypatch):
     """Create a mock instance of novelWriter's main GUI class."""
+    from novelwriter.gui.theme import GuiTheme
+    from novelwriter.shared import _GuiAlert
+
     monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
+    monkeypatch.setattr(_GuiAlert, "exec", lambda *a: None)
+    monkeypatch.setattr(_GuiAlert, "finalState", True)
     gui = MockGuiMain()
-    theme = MockTheme()
+    theme = GuiTheme()
     monkeypatch.setattr(SHARED, "_gui", gui)
     monkeypatch.setattr(SHARED, "_theme", theme)
+
     return gui
+
+
+@pytest.fixture(scope="function")
+def mockGUIwithTheme(mockGUI):
+    """Create a mock instance of novelWriter's main GUI class with the
+    theme instance initialised.
+    """
+    SHARED.theme.initThemes()
+    return mockGUI
 
 
 @pytest.fixture(scope="function")
@@ -162,9 +184,11 @@ def nwGUI(qtbot, monkeypatch, functionFixture):
     """Create an instance of the novelWriter GUI."""
     from novelwriter.gui.theme import GuiTheme
     from novelwriter.guimain import GuiMain
+    from novelwriter.shared import _GuiAlert
 
     monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
+    monkeypatch.setattr(_GuiAlert, "exec", lambda *a: None)
+    monkeypatch.setattr(_GuiAlert, "finalState", True)
 
     CONFIG.loadConfig()
     SHARED.initTheme(GuiTheme())
@@ -226,13 +250,11 @@ def prjLipsum():
     if dstDir.exists():
         shutil.rmtree(dstDir)
 
-    return
-
 
 @pytest.fixture(scope="session")
 def ipsumText():
     """Return five paragraphs of Lorem Ipsum text."""
-    thatIpsum = [(
+    return [(
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc maximus justo non dictum co"
         "mmodo. Curabitur lacinia tempor orci vel luctus. Phasellus porta metus eu massa luctus, e"
         "get euismod risus rhoncus. Vestibulum sed arcu nisi. Maecenas pretium facilisis velit, ve"
@@ -280,4 +302,3 @@ def ipsumText():
         " a nisl. Etiam eget tristique dui. Nulla sed mi finibus, venenatis tellus non, maximus en"
         "im."
     )]
-    return thatIpsum

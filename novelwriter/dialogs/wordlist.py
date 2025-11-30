@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -37,9 +37,10 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter
 from novelwriter.core.spellcheck import UserDictionary
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog, NIconToolButton
-from novelwriter.types import QtDialogClose, QtDialogSave
+from novelwriter.types import QtRoleAccept, QtRoleDestruct
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
@@ -48,6 +49,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiWordList(NDialog):
+    """GUI: User Dictionary Edit Tool."""
 
     newWordListReady = pyqtSignal()
 
@@ -73,11 +75,11 @@ class GuiWordList(NDialog):
             scale=NColorLabel.HEADER_SCALE
         )
 
-        self.importButton = NIconToolButton(self, iSz, "import", "green")
+        self.importButton = NIconToolButton(self, iSz, "import", "apply")
         self.importButton.setToolTip(self.tr("Import words from text file"))
         self.importButton.clicked.connect(self._importWords)
 
-        self.exportButton = NIconToolButton(self, iSz, "export", "blue")
+        self.exportButton = NIconToolButton(self, iSz, "export", "action")
         self.exportButton.setToolTip(self.tr("Export words to text file"))
         self.exportButton.clicked.connect(self._exportWords)
 
@@ -95,11 +97,11 @@ class GuiWordList(NDialog):
         # Add/Remove Form
         self.newEntry = QLineEdit(self)
 
-        self.addButton = NIconToolButton(self, iSz, "add", "green")
+        self.addButton = NIconToolButton(self, iSz, "add", "add")
         self.addButton.setToolTip(self.tr("Add Word"))
         self.addButton.clicked.connect(self._doAdd)
 
-        self.delButton = NIconToolButton(self, iSz, "remove", "red")
+        self.delButton = NIconToolButton(self, iSz, "remove", "remove")
         self.delButton.setToolTip(self.tr("Remove Word"))
         self.delButton.clicked.connect(self._doDelete)
 
@@ -109,9 +111,15 @@ class GuiWordList(NDialog):
         self.editBox.addWidget(self.delButton, 0)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogClose, self)
-        self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnSave = SHARED.theme.getStandardButton(nwStandardButton.SAVE, self)
+        self.btnSave.clicked.connect(self._doSave)
+
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.clicked.connect(self.closeDialog)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnSave, QtRoleAccept)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -119,7 +127,7 @@ class GuiWordList(NDialog):
         self.outerBox.addWidget(self.listBox, 1)
         self.outerBox.addLayout(self.editBox, 0)
         self.outerBox.addSpacing(12)
-        self.outerBox.addWidget(self.buttonBox, 0)
+        self.outerBox.addWidget(self.btnBox, 0)
         self.outerBox.setSpacing(4)
 
         self.setLayout(self.outerBox)
@@ -128,11 +136,8 @@ class GuiWordList(NDialog):
 
         logger.debug("Ready: GuiWordList")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiWordList")
-        return
 
     ##
     #  Events
@@ -143,7 +148,6 @@ class GuiWordList(NDialog):
         self._saveGuiSettings()
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -159,14 +163,12 @@ class GuiWordList(NDialog):
         if items := self.listBox.findItems(word, Qt.MatchFlag.MatchExactly):
             self.listBox.setCurrentItem(items[0])
             self.listBox.scrollToItem(items[0], QAbstractItemView.ScrollHint.PositionAtCenter)
-        return
 
     @pyqtSlot()
     def _doDelete(self) -> None:
         """Delete the selected items."""
         for item in self.listBox.selectedItems():
             self.listBox.takeItem(self.listBox.row(item))
-        return
 
     @pyqtSlot()
     def _doSave(self) -> None:
@@ -178,7 +180,6 @@ class GuiWordList(NDialog):
         self.newWordListReady.emit()
         QApplication.processEvents()
         self.close()
-        return
 
     @pyqtSlot()
     def _importWords(self) -> None:
@@ -213,7 +214,6 @@ class GuiWordList(NDialog):
                     fo.write("\n".join(self._listWords()))
             except Exception as exc:
                 SHARED.error("Could not write file.", exc=exc)
-        return
 
     ##
     #  Internal Functions
@@ -226,7 +226,6 @@ class GuiWordList(NDialog):
         self.listBox.clear()
         for word in userDict:
             self.listBox.addItem(word)
-        return
 
     def _saveGuiSettings(self) -> None:
         """Save GUI settings."""
@@ -234,14 +233,12 @@ class GuiWordList(NDialog):
         pOptions = SHARED.project.options
         pOptions.setValue("GuiWordList", "winWidth",  self.width())
         pOptions.setValue("GuiWordList", "winHeight", self.height())
-        return
 
     def _addWord(self, word: str) -> None:
         """Add a single word to the list."""
         if word and not self.listBox.findItems(word, Qt.MatchFlag.MatchExactly):
             self.listBox.addItem(word)
             self._changed = True
-        return
 
     def _listWords(self) -> list[str]:
         """List all words in the list box."""

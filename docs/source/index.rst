@@ -68,6 +68,7 @@ storage for robustness.
    features/dialogue
    features/story_comments
    features/shortcuts
+   features/vim_mode
 
 .. toctree::
    :caption: In-Depth Topics
@@ -75,6 +76,7 @@ storage for robustness.
 
    more/counting
    more/typography
+   more/dictionaries
    more/customise
    more/handling_errors
    more/project_format

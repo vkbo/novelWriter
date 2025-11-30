@@ -21,10 +21,11 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
+import re
 
 from enum import Enum
 from pathlib import Path
@@ -32,15 +33,17 @@ from time import time
 from typing import TYPE_CHECKING, TypeVar
 
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, QTimer, QUrl, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QDesktopServices, QFont
-from PyQt6.QtWidgets import QFileDialog, QFontDialog, QMessageBox, QWidget
+from PyQt6.QtGui import QDesktopServices, QFont, QScreen
+from PyQt6.QtWidgets import QApplication, QFileDialog, QMessageBox, QWidget
 
-from novelwriter.common import formatFileFilter
+from novelwriter.common import appendIfSet, formatFileFilter, joinLines
 from novelwriter.constants import nwFiles
 from novelwriter.core.spellcheck import NWSpellEnchant
-from novelwriter.enum import nwChange, nwItemClass
+from novelwriter.enum import nwChange, nwItemClass, nwStandardButton
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from novelwriter.core.project import NWProject
     from novelwriter.core.status import T_StatusKind
     from novelwriter.gui.theme import GuiTheme
@@ -49,9 +52,18 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 NWWidget = TypeVar("NWWidget", bound=QWidget)
+T_Msg = str | list[str]
+
+RX_HTML = re.compile(r"<.*?>")
 
 
 class SharedData(QObject):
+    """Shared Data Singleton.
+
+    This is the class instantiated as the SHARED singleton. It holds
+    various globally needed data and pointers to important objects like
+    the main GUI, the current project, and the GUI theme.
+    """
 
     __slots__ = (
         "_gui", "_idleRefTime", "_idleTime", "_lastAlert", "_lockedBy",
@@ -82,7 +94,7 @@ class SharedData(QObject):
 
         # Settings
         self._lockedBy = None
-        self._lastAlert = ""
+        self._lastAlert = []
         self._idleTime = 0.0
         self._idleRefTime = time()
         self._focusMode = False
@@ -90,8 +102,6 @@ class SharedData(QObject):
         self._clock = QTimer(self)
         self._clock.setInterval(1000)
         self._clock.timeout.connect(lambda: self.mainClockTick.emit())
-
-        return
 
     ##
     #  Properties
@@ -146,9 +156,14 @@ class SharedData(QObject):
         return self._idleTime
 
     @property
-    def lastAlert(self) -> str:
+    def lastAlert(self) -> list[str]:
         """Return the last alert message."""
         return self._lastAlert
+
+    @property
+    def mainScreen(self) -> QScreen | None:
+        """Return the screen of the main window."""
+        return QApplication.screenAt(self.mainGui.rect().center())
 
     ##
     #  Setters
@@ -159,7 +174,6 @@ class SharedData(QObject):
         if state is not self._focusMode:
             self._focusMode = state
             self.focusModeChanged.emit(state)
-        return
 
     ##
     #  Methods
@@ -170,7 +184,7 @@ class SharedData(QObject):
         is created.
         """
         self._theme = theme
-        return
+        self._theme.initThemes()
 
     def initSharedData(self, gui: GuiMain) -> None:
         """Initialise the SharedData instance. This must be called as
@@ -183,7 +197,6 @@ class SharedData(QObject):
         logger.debug("Ready: SharedData")
         if pool := QThreadPool.globalInstance():
             logger.debug("Thread Pool Max Count: %d", pool.maxThreadCount())
-        return
 
     def closeDocument(self, tHandle: str | None = None) -> None:
         """Close the document editor, optionally a specific document."""
@@ -191,7 +204,6 @@ class SharedData(QObject):
             self.mainGui.closeDocument()
         if tHandle is None or tHandle == self.mainGui.docViewer.docHandle:
             self.mainGui.closeViewerPanel()
-        return
 
     def saveEditor(self, tHandle: str | None = None) -> None:
         """Save the editor content, optionally a specific document."""
@@ -202,7 +214,6 @@ class SharedData(QObject):
         ):
             logger.debug("Saving editor document before action")
             docEditor.saveText()
-        return
 
     def openProject(self, path: str | Path, clearLock: bool = False) -> bool:
         """Open a project."""
@@ -235,7 +246,6 @@ class SharedData(QObject):
         self.project.closeProject(self._idleTime)
         self._resetProject()
         self._resetIdleTimer()
-        return
 
     def updateSpellCheckLanguage(self, reload: bool = False) -> None:
         """Update the active spell check language from settings."""
@@ -245,7 +255,6 @@ class SharedData(QObject):
             self.spelling.setLanguage(language)
             _, provider = self.spelling.describeDict()
             self.spellLanguageChanged.emit(language, provider)
-        return
 
     def updateIdleTime(self, currTime: float, userIdle: bool) -> None:
         """Update the idle time record. If the userIdle flag is True,
@@ -256,27 +265,36 @@ class SharedData(QObject):
         if userIdle:
             self._idleTime += currTime - self._idleRefTime
         self._idleRefTime = currTime
-        return
+
+    def initMainProgress(self, maximum: int, inclusive: bool = False) -> None:
+        """Start a session for the main progress bar."""
+        if gui := self._gui:
+            gui.mainProgress.setMaximum(maximum - (1 if inclusive else 0))
+            gui.mainProgress.setValue(0)
+
+    def incMainProgress(self) -> None:
+        """Increment the value for the main progress bar."""
+        if gui := self._gui:
+            gui.mainProgress.setValue(gui.mainProgress.value() + 1)
+            QApplication.processEvents()
+
+    def clearMainProgress(self, delay: float = 1.0) -> None:
+        """Clear the main progress bar."""
+        if gui := self._gui:
+            QTimer.singleShot(int(delay*1000), gui.mainProgress.reset)
 
     def newStatusMessage(self, message: str) -> None:
-        """Request a new status message. This is a callable function for
-        core classes that cannot emit signals on their own.
-        """
+        """Request a new status message."""
         self.projectStatusMessage.emit(message)
-        return
 
     def setGlobalProjectState(self, state: bool) -> None:
-        """Change the global project status. This is a callable function
-        for core classes that cannot emit signals on their own.
-        """
+        """Change the global project status."""
         self.projectStatusChanged.emit(state)
-        return
 
     def runInThreadPool(self, runnable: QRunnable, priority: int = 0) -> None:
         """Queue a runnable in the application thread pool."""
         if pool := QThreadPool.globalInstance():
             pool.start(runnable, priority=priority)
-        return
 
     def getProjectPath(
         self, parent: QWidget,
@@ -293,12 +311,19 @@ class SharedData(QObject):
         )
         return Path(selected) if selected else None
 
-    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool | None]:
+    def getProjectFolder(self, parent: QWidget, path: str | Path | None = None) -> Path | None:
+        """Open the folder dialog and select a project folder."""
+        location = QFileDialog.getExistingDirectory(
+            parent, self.tr("Select Project Folder"), str(path),
+            options=QFileDialog.Option.ShowDirsOnly,
+        )
+        return Path(location) if location else None
+
+    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool]:
         """Open the font dialog and select a font."""
-        kwargs = {}
-        if not native:
-            kwargs["options"] = QFontDialog.FontDialogOption.DontUseNativeDialog
-        return QFontDialog.getFont(current, self.mainGui, self.tr("Select Font"), **kwargs)
+        from novelwriter.extensions.modified import NFontDialog
+
+        return NFontDialog.selectFont(current, self.mainGui, self.tr("Select Font"), native)
 
     def findTopLevelWidget(self, kind: type[NWWidget]) -> NWWidget | None:
         """Find a top level widget."""
@@ -315,13 +340,11 @@ class SharedData(QObject):
     def openWebsite(self, url: str) -> None:
         """Open a URL in the system's default browser."""
         QDesktopServices.openUrl(QUrl(url))
-        return
 
     @pyqtSlot(str, nwItemClass)
     def createNewNote(self, tag: str, itemClass: nwItemClass) -> None:
         """Process new note request."""
         self.project.createNewNote(tag, itemClass)
-        return
 
     ##
     #  Signal Proxies
@@ -333,65 +356,57 @@ class SharedData(QObject):
         """Emit the indexChangedTags signal."""
         if self._project and self._project.data.uuid == project.data.uuid:
             self.indexChangedTags.emit(updated, deleted)
-        return
 
     def emitIndexCleared(self, project: NWProject) -> None:
         """Emit the indexCleared signal."""
         if self._project and self._project.data.uuid == project.data.uuid:
             self.indexCleared.emit()
-        return
 
     def emitIndexAvailable(self, project: NWProject) -> None:
         """Emit the indexAvailable signal."""
         if self._project and self._project.data.uuid == project.data.uuid:
             self.indexAvailable.emit()
-        return
 
     def emitStatusLabelsChanged(self, project: NWProject, kind: T_StatusKind) -> None:
         """Emit the statusLabelsChanged signal."""
         if self._project and self._project.data.uuid == project.data.uuid:
             self.statusLabelsChanged.emit(kind)
-        return
 
     def emitProjectItemChanged(self, project: NWProject, handle: str, change: nwChange) -> None:
         """Emit the projectItemChanged signal."""
         if self._project and self._project.data.uuid == project.data.uuid:
             self.projectItemChanged.emit(handle, change)
-        return
 
     def emitRootFolderChanged(self, project: NWProject, handle: str, change: nwChange) -> None:
         """Emit the rootFolderChanged signal."""
         if self._project and self._project.data.uuid == project.data.uuid:
             self.rootFolderChanged.emit(handle, change)
-        return
 
     ##
     #  Alert Boxes
     ##
 
-    def info(self, text: str, info: str = "", details: str = "", log: bool = True) -> None:
+    def info(self, text: T_Msg, info: str = "", details: str = "", log: bool = True) -> None:
         """Open an information alert box."""
         alert = _GuiAlert(self.mainGui, self.theme)
         alert.setMessage(text, info, details)
         alert.setAlertType(_GuiAlert.INFO, False)
         self._lastAlert = alert.logMessage
         if log:
-            logger.info(self._lastAlert, stacklevel=2)
+            self._logMessage(self._lastAlert, logger.info)
         alert.exec()
-        return
 
-    def warn(self, text: str, info: str = "", details: str = "", log: bool = True) -> None:
+    def warn(self, text: T_Msg, info: str = "", details: str = "", log: bool = True) -> None:
         """Open a warning alert box."""
         alert = _GuiAlert(self.mainGui, self.theme)
         alert.setMessage(text, info, details)
         alert.setAlertType(_GuiAlert.WARN, False)
         self._lastAlert = alert.logMessage
         if log:
-            logger.warning(self._lastAlert, stacklevel=2)
+            self._logMessage(self._lastAlert, logger.warning)
         alert.exec()
-        return
 
-    def error(self, text: str, info: str = "", details: str = "", log: bool = True,
+    def error(self, text: T_Msg, info: str = "", details: str = "", log: bool = True,
               exc: Exception | None = None) -> None:
         """Open an error alert box."""
         alert = _GuiAlert(self.mainGui, self.theme)
@@ -401,23 +416,26 @@ class SharedData(QObject):
             alert.setException(exc)
         self._lastAlert = alert.logMessage
         if log:
-            logger.error(self._lastAlert, stacklevel=2)
+            self._logMessage(self._lastAlert, logger.error)
         alert.exec()
-        return
 
-    def question(self, text: str, info: str = "", details: str = "", warn: bool = False) -> bool:
+    def question(self, text: T_Msg, info: str = "", details: str = "", warn: bool = False) -> bool:
         """Open a question box."""
         alert = _GuiAlert(self.mainGui, self.theme)
         alert.setMessage(text, info, details)
         alert.setAlertType(_GuiAlert.WARN if warn else _GuiAlert.ASK, True)
         self._lastAlert = alert.logMessage
         alert.exec()
-        isYes = alert.result() == QMessageBox.StandardButton.Yes
-        return isYes
+        return alert.finalState
 
     ##
     #  Internal Functions
     ##
+
+    def _logMessage(self, message: list[str], log: Callable) -> None:
+        """Print message to log."""
+        for text in message:
+            log(RX_HTML.sub("", text), stacklevel=3)
 
     def _resetProject(self) -> None:
         """Create a new project and spell checking instance."""
@@ -430,13 +448,11 @@ class SharedData(QObject):
         self._spelling = NWSpellEnchant(self._project)
         self.updateSpellCheckLanguage()
         self._focusMode = False
-        return
 
     def _resetIdleTimer(self) -> None:
         """Reset the timer data for the idle timer."""
         self._idleRefTime = time()
         self._idleTime = 0.0
-        return
 
     def _closeToolDialogs(self) -> None:
         """Close all open tool dialogs."""
@@ -444,7 +460,6 @@ class SharedData(QObject):
         for widget in self.mainGui.children():
             if isinstance(widget, NToolDialog):
                 widget.close()
-        return
 
 
 class _GuiAlert(QMessageBox):
@@ -457,52 +472,74 @@ class _GuiAlert(QMessageBox):
     def __init__(self, parent: QWidget, theme: GuiTheme) -> None:
         super().__init__(parent=parent)
         self._theme = theme
-        self._message = ""
+        self._message = []
+        self._state = False
         logger.debug("Ready: _GuiAlert")
-        return
 
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: _GuiAlert")
-        return
 
     @property
-    def logMessage(self) -> str:
+    def logMessage(self) -> list[str]:
         return self._message
 
-    def setMessage(self, text: str, info: str, details: str) -> None:
+    @property
+    def finalState(self) -> bool:
+        return self._state
+
+    def setMessage(self, text: T_Msg, info: str, details: str) -> None:
         """Set the alert box message."""
-        self._message = " ".join(filter(None, [text, info, details]))
-        self.setText(text)
+        self._message = text if isinstance(text, list) else [text]
+        appendIfSet(self._message, info)
+        appendIfSet(self._message, details)
+        self.setText(joinLines(text, "<br>"))
         self.setInformativeText(info)
         self.setDetailedText(details)
-        return
 
     def setException(self, exception: Exception) -> None:
         """Add exception details."""
         info = self.informativeText()
         text = f"<b>{type(exception).__name__}</b>: {exception!s}"
         self.setInformativeText(f"{info}<br>{text}" if info else text)
-        return
 
     def setAlertType(self, level: int, isYesNo: bool) -> None:
         """Set the type of alert and whether the dialog should have
         Yes/No buttons or just an Ok button.
         """
         if isYesNo:
-            self.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            self._btnYes = self._theme.getStandardButton(nwStandardButton.YES, self)
+            self._btnYes.clicked.connect(self._onAccept)
+            self._btnNo  = self._theme.getStandardButton(nwStandardButton.NO, self)
+            self._btnNo.clicked.connect(self._onReject)
+            self.addButton(self._btnYes, QMessageBox.ButtonRole.YesRole)
+            self.addButton(self._btnNo, QMessageBox.ButtonRole.NoRole)
         else:
-            self.setStandardButtons(QMessageBox.StandardButton.Ok)
-        pSz = 2*self._theme.baseIconHeight
+            self._btnOk = self._theme.getStandardButton(nwStandardButton.OK, self)
+            self._btnOk.clicked.connect(self._onAccept)
+            self.addButton(self._btnOk, QMessageBox.ButtonRole.AcceptRole)
+
+        pSz = 2*self._theme.fontPixelSize
         if level == self.INFO:
-            self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz), "blue"))
+            self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz), "info"))
             self.setWindowTitle(self.tr("Information"))
         elif level == self.WARN:
-            self.setIconPixmap(self._theme.getPixmap("alert_warn", (pSz, pSz), "orange"))
+            self.setIconPixmap(self._theme.getPixmap("alert_warn", (pSz, pSz), "warning"))
             self.setWindowTitle(self.tr("Warning"))
         elif level == self.ERROR:
-            self.setIconPixmap(self._theme.getPixmap("alert_error", (pSz, pSz), "red"))
+            self.setIconPixmap(self._theme.getPixmap("alert_error", (pSz, pSz), "error"))
             self.setWindowTitle(self.tr("Error"))
         elif level == self.ASK:
-            self.setIconPixmap(self._theme.getPixmap("alert_question", (pSz, pSz), "blue"))
+            self.setIconPixmap(self._theme.getPixmap("alert_question", (pSz, pSz), "info"))
             self.setWindowTitle(self.tr("Question"))
-        return
+
+    @pyqtSlot()
+    def _onAccept(self) -> None:
+        """Process accepted state."""
+        self._state = True
+        self.close()
+
+    @pyqtSlot()
+    def _onReject(self) -> None:
+        """Process rejected state."""
+        self._state = False
+        self.close()

@@ -20,19 +20,20 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QEvent, QPoint, QSize, pyqtSignal
+from PyQt6.QtCore import QEvent, QPoint, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QMenu, QVBoxLayout, QWidget
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import qtLambda
-from novelwriter.enum import nwView
+from novelwriter.constants import nwLabels, trConst
+from novelwriter.enum import nwTheme, nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_BIG_TOOLBUTTON
@@ -44,6 +45,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiSideBar(QWidget):
+    """GUI: Main Window SideBar."""
 
     requestViewChange = pyqtSignal(nwView)
 
@@ -54,8 +56,7 @@ class GuiSideBar(QWidget):
 
         self.mainGui = mainGui
 
-        iPx = int(1.25*SHARED.theme.baseButtonHeight)
-        iSz = QSize(iPx, iPx)
+        iSz = SHARED.theme.sidebarIconSize
 
         self.setContentsMargins(0, 0, 0, 0)
         self.installEventFilter(StatusTipFilter(self.mainGui))
@@ -77,9 +78,9 @@ class GuiSideBar(QWidget):
         self.tbOutline.setToolTip("{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
         self.tbOutline.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.OUTLINE))
 
-        self.tbBuild = NIconToolButton(self, iSz)
-        self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Build Manuscript")))
-        self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
+        self.tbTheme = NIconToolButton(self, iSz)
+        self.tbTheme.setToolTip(self.tr("Switch Colour Theme"))
+        self.tbTheme.clicked.connect(self._cycleColurTheme)
 
         self.tbDetails = NIconToolButton(self, iSz)
         self.tbDetails.setToolTip("{0} [Shift+F6]".format(self.tr("Novel Details")))
@@ -88,6 +89,10 @@ class GuiSideBar(QWidget):
         self.tbStats = NIconToolButton(self, iSz)
         self.tbStats.setToolTip("{0} [F6]".format(self.tr("Writing Statistics")))
         self.tbStats.clicked.connect(self.mainGui.showWritingStatsDialog)
+
+        self.tbBuild = NIconToolButton(self, iSz)
+        self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Build Manuscript")))
+        self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
 
         # Settings Menu
         self.tbSettings = NIconToolButton(self, iSz)
@@ -111,6 +116,7 @@ class GuiSideBar(QWidget):
         self.outerBox.addStretch(1)
         self.outerBox.addWidget(self.tbDetails)
         self.outerBox.addWidget(self.tbStats)
+        self.outerBox.addWidget(self.tbTheme)
         self.outerBox.addWidget(self.tbSettings)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setSpacing(6)
@@ -120,12 +126,11 @@ class GuiSideBar(QWidget):
 
         logger.debug("Ready: GuiSideBar")
 
-        return
-
     def updateTheme(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
-        buttonStyle = SHARED.theme.getStyleSheet(STYLES_BIG_TOOLBUTTON)
+        logger.debug("Theme Update: GuiSideBar")
 
+        buttonStyle = SHARED.theme.getStyleSheet(STYLES_BIG_TOOLBUTTON)
         self.tbProject.setStyleSheet(buttonStyle)
         self.tbNovel.setStyleSheet(buttonStyle)
         self.tbSearch.setStyleSheet(buttonStyle)
@@ -133,18 +138,45 @@ class GuiSideBar(QWidget):
         self.tbBuild.setStyleSheet(buttonStyle)
         self.tbDetails.setStyleSheet(buttonStyle)
         self.tbStats.setStyleSheet(buttonStyle)
+        self.tbTheme.setStyleSheet(buttonStyle)
         self.tbSettings.setStyleSheet(buttonStyle)
 
-        self.tbProject.setThemeIcon("sb_project")
-        self.tbNovel.setThemeIcon("sb_novel")
-        self.tbSearch.setThemeIcon("sb_search")
-        self.tbOutline.setThemeIcon("sb_outline")
-        self.tbBuild.setThemeIcon("sb_build")
-        self.tbDetails.setThemeIcon("sb_details")
-        self.tbStats.setThemeIcon("sb_stats")
-        self.tbSettings.setThemeIcon("settings")
+        self.tbProject.setThemeIcon("sb_project", "sidebar")
+        self.tbNovel.setThemeIcon("sb_novel", "sidebar")
+        self.tbSearch.setThemeIcon("sb_search", "sidebar")
+        self.tbOutline.setThemeIcon("sb_outline", "sidebar")
+        self.tbBuild.setThemeIcon("sb_build", "sidebar")
+        self.tbDetails.setThemeIcon("sb_details", "sidebar")
+        self.tbStats.setThemeIcon("sb_stats", "sidebar")
+        self.tbSettings.setThemeIcon("settings", "sidebar")
 
-        return
+        self._setThemeModeIcon()
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _cycleColurTheme(self) -> None:
+        """Go to nex colour theme."""
+        match CONFIG.themeMode:
+            case nwTheme.AUTO:
+                CONFIG.themeMode = nwTheme.LIGHT
+            case nwTheme.LIGHT:
+                CONFIG.themeMode = nwTheme.DARK
+            case nwTheme.DARK:
+                CONFIG.themeMode = nwTheme.AUTO
+        self.mainGui.checkThemeUpdate()
+        self._setThemeModeIcon()
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _setThemeModeIcon(self) -> None:
+        """Set the theme button icon."""
+        self.tbTheme.setThemeIcon(nwLabels.THEME_MODE_ICON[CONFIG.themeMode], "sidebar")
+        self.tbTheme.setToolTip(trConst(nwLabels.THEME_MODE_LABEL[CONFIG.themeMode]))
 
 
 class _PopRightMenu(QMenu):

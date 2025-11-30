@@ -1,22 +1,22 @@
 [build-system]
-requires = ["setuptools >= 77.0.3"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "novelWriter"
-authors = [
-    {name = "Veronica Berglyd Olsen", email = "code@vkbo.net"},
-]
+authors = [{ name = "Veronica Berglyd Olsen", email = "code@vkbo.net" }]
 description = "A plain text editor for planning and writing novels"
-readme = {file = "setup/description_pypi.md", content-type = "text/markdown"}
+readme = { file = "setup/description_pypi.md", content-type = "text/markdown" }
 license = "GPL-3.0-or-later AND Apache-2.0 AND CC-BY-4.0"
 license-files = ["LICENSE.md", "setup/LICENSE-Apache-2.0.txt"]
+dynamic = ["version"]
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Development Status :: 5 - Production/Stable",
     "Operating System :: OS Independent",
@@ -24,12 +24,32 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Text Editors",
 ]
-requires-python = ">=3.10"
 dependencies = [
     "pyqt6>=6.4",
-    "pyenchant>=3.0.0",
+    "pyenchant>=3.3.0", # 3.3 is needed for MacOS AARCH64 builds
 ]
-dynamic = ["version"]
+
+[dependency-groups]
+dev = [
+    { include-group = "build" },
+    { include-group = "docs" },
+    { include-group = "test" },
+    { include-group = "lint" },
+]
+build = ["build", "setuptools>=77.0.3"]
+docs = [
+    "docutils>=0.17.1",
+    "pygments>=2.7",
+    "sphinx-book-theme",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "sphinx-favicon",
+    "sphinx-intl",
+    "sphinx>=5.0",
+]
+test = ["coverage>=7.2.0", "pytest-qt", "pytest-timeout", "pytest>=6.0.0"]
+lint = ["isort", "pyright", "ruff"]
+macos = ["pyobjc"]
 
 [project.urls]
 Homepage = "https://novelwriter.io"
@@ -41,13 +61,13 @@ Issues = "https://github.com/vkbo/novelWriter/issues"
 novelwriter = "novelwriter:main"
 
 [tool.setuptools.dynamic]
-version = {attr = "novelwriter.__version__"}
+version = { attr = "novelwriter.__init__.__version__" }
 
 [tool.setuptools.packages.find]
 include = ["novelwriter*"]
 
 [tool.isort]
-py_version="310"
+py_version = "311"
 line_length = 99
 wrap_length = 79
 multi_line_output = 5
@@ -63,26 +83,34 @@ preview = true
 
 # Rules: https://docs.astral.sh/ruff/rules
 select = [
-    "A",    # flake8-builtins (A)
-    "ANN",  # flake8-annotations (ANN)
-    "B",    # flake8-bugbear (B)
-    "E",    # pycodestyle (E)
-    "F",    # Pyflakes (F)
-    "FA",   # flake8-future-annotations (FA)
-    "PERF", # Perflint (PERF)
-    "PLC",  # Pylint Convention (PLC)
-    "PLE",  # Pylint Error (PLE)
-    "PLW",  # Pylint Warning (PLW)
-    "Q",    # flake8-quotes (Q)
-    "RUF",  # Ruff-specific rules (RUF)
-    "SLF",  # flake8-self (SLF)
-    "SLOT", # flake8-slots (SLOT)
-    "TC",   # flake8-type-checking (TC)
-    "UP",   # pyupgrade (UP)
-    "W",    # pycodestyle (W)
+    "A",     # flake8-builtins (A)
+    "ANN",   # flake8-annotations (ANN)
+    "B",     # flake8-bugbear (B)
+    "D",     # pydocstyle (D)
+    "E",     # pycodestyle (E)
+    "F",     # Pyflakes (F)
+    "FA",    # flake8-future-annotations (FA)
+    "PERF",  # Perflint (PERF)
+    "PLC",   # Pylint Convention (PLC)
+    "PLE",   # Pylint Error (PLE)
+    "PLR17", # Refactor (PLR) - Only PLR17xx
+    "PLW",   # Pylint Warning (PLW)
+    "Q",     # flake8-quotes (Q)
+    "RET",   # flake8-return (RET)
+    "RUF",   # Ruff-specific rules (RUF)
+    "SLF",   # flake8-self (SLF)
+    "SLOT",  # flake8-slots (SLOT)
+    "TC",    # flake8-type-checking (TC)
+    "UP",    # pyupgrade (UP)
+    "W",     # pycodestyle (W)
 ]
 ignore = [
     "ANN401",  # any-type
+    "D105",    # undocumented-magic-method
+    "D107",    # undocumented-public-init
+    "D203",    # incorrect-blank-line-before-class
+    "D205",    # missing-blank-line-after-summary
+    "D213",    # multi-line-summary-second-line
     "E221",    # multiple-spaces-before-operator
     "E226",    # missing-whitespace-around-arithmetic-operator
     "E228",    # missing-whitespace-around-modulo-operator
@@ -92,6 +120,7 @@ ignore = [
     "PLC1901", # compare-to-empty-string
     "PLW0108", # unnecessary-lambda
     "PLW2901", # redefined-loop-name
+    "RET505",  # superfluous-else-return
     "RUF001",  # ambiguous-unicode-character-string
     "RUF002",  # ambiguous-unicode-character-docstring
     "RUF015",  # unnecessary-iterable-allocation-for-first-element
@@ -100,8 +129,20 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["ANN", "SLF", "TC", "PLC2701"]
+"tests/*" = ["ANN", "SLF", "TC", "PLC2701", "D101", "D102"]
 "utils/*" = ["ANN", "SLF", "TC"]
+
+[tool.ruff.lint.pydocstyle]
+ignore-decorators = [
+    "abc.abstractmethod",
+    "property",
+    "PyQt6.QtCore.pyqtProperty",
+    "typing.overload",
+    "pytest.fixture",
+]
+
+[tool.ruff.lint.pylint]
+max-nested-blocks = 10
 
 [tool.ruff.format]
 quote-style = "double"
@@ -111,8 +152,7 @@ include = ["novelwriter"]
 exclude = ["**/__pycache__"]
 
 reportIncompatibleMethodOverride = false
-
-pythonVersion = "3.10"
+pythonVersion = "3.11"
 
 [tool.pytest.ini_options]
 log_level = "DEBUG"
@@ -121,14 +161,12 @@ markers = [
     "base: Base classes tests",
     "core: Core classes tests",
     "gui: GUI classes tests",
-    "serial",
 ]
 
 [tool.coverage.run]
 branch = false
+source = ["novelwriter"]
 
 [tool.coverage.report]
 precision = 2
-exclude_also = [
-    "if TYPE_CHECKING:"
-]
+exclude_also = ["if TYPE_CHECKING:"]

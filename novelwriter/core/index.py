@@ -22,7 +22,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -33,8 +33,10 @@ from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
 
-from novelwriter import SHARED
-from novelwriter.common import isHandle, isItemClass, isTitleTag, jsonEncode
+from novelwriter import SHARED, __hexversion__
+from novelwriter.common import (
+    formatTimeStamp, isHandle, isItemClass, isTitleTag, jsonCombine, jsonEncode
+)
 from novelwriter.constants import nwFiles, nwKeyWords, nwStyles
 from novelwriter.core.indexdata import NOTE_TYPES, TT_NONE, IndexHeading, IndexNode, T_NoteTypes
 from novelwriter.core.novelmodel import NovelModel
@@ -56,7 +58,7 @@ KEY_SOURCE = "0123456789bcdfghjklmnpqrstvwxz"
 
 
 class Index:
-    """Core: Project Index
+    """Core: Project Index.
 
     This class holds the entire index for a given project. The index
     contains the data that isn't stored in the project items themselves.
@@ -82,6 +84,11 @@ class Index:
     a rebuild of the index data.
     """
 
+    __slots__ = (
+        "_indexBroken", "_indexChange", "_indexUpgrade", "_itemIndex", "_novelExtra",
+        "_novelModels", "_project", "_rootChange", "_tagsIndex",
+    )
+
     def __init__(self, project: NWProject) -> None:
 
         self._project = project
@@ -90,6 +97,7 @@ class Index:
         self._tagsIndex = TagsIndex()
         self._itemIndex = ItemIndex(project, self._tagsIndex)
         self._indexBroken = False
+        self._indexUpgrade = False
 
         # Models
         self._novelModels: dict[str, NovelModel] = {}
@@ -98,8 +106,6 @@ class Index:
         # TimeStamps
         self._indexChange = 0.0
         self._rootChange = {}
-
-        return
 
     def __repr__(self) -> str:
         return f"<Index project='{self._project.data.name}'>"
@@ -111,6 +117,10 @@ class Index:
     @property
     def indexBroken(self) -> bool:
         return self._indexBroken
+
+    @property
+    def indexUpgrade(self) -> bool:
+        return self._indexUpgrade
 
     ##
     #  Getters
@@ -129,7 +139,6 @@ class Index:
     def setNovelModelExtraColumn(self, extra: nwNovelExtra) -> None:
         """Set the data content type of the novel model extra column."""
         self._novelExtra = extra
-        return
 
     ##
     #  Public Methods
@@ -142,20 +151,21 @@ class Index:
         self._indexChange = 0.0
         self._rootChange = {}
         SHARED.emitIndexCleared(self._project)
-        return
 
     def rebuild(self) -> None:
         """Rebuild the entire index from scratch."""
         self.clear()
+        SHARED.initMainProgress(len(self._project.tree))
         for nwItem in self._project.tree:
             if nwItem.isFileType():
                 text = self._project.storage.getDocumentText(nwItem.itemHandle)
                 self.scanText(nwItem.itemHandle, text, blockSignal=True)
+            SHARED.incMainProgress()
         self._indexBroken = False
         SHARED.emitIndexAvailable(self._project)
         for tHandle in self._novelModels:
             self.refreshNovelModel(tHandle)
-        return
+        SHARED.clearMainProgress()
 
     def deleteHandle(self, tHandle: str) -> None:
         """Delete all entries of a given document handle."""
@@ -165,7 +175,6 @@ class Index:
             del self._tagsIndex[tTag]
         del self._itemIndex[tHandle]
         SHARED.emitIndexChangedTags(self._project, [], delTags)
-        return
 
     def reIndexHandle(self, tHandle: str | None) -> None:
         """Put a file back into the index. This is used when files are
@@ -175,7 +184,6 @@ class Index:
         if tHandle and self._project.tree.checkType(tHandle, nwItemType.FILE):
             logger.debug("Re-indexing item '%s'", tHandle)
             self.scanText(tHandle, self._project.storage.getDocumentText(tHandle))
-        return
 
     def refreshHandle(self, tHandle: str) -> None:
         """Update the class for all tags of a handle."""
@@ -185,7 +193,6 @@ class Index:
                 self.deleteHandle(tHandle)
             else:
                 self._tagsIndex.updateClass(tHandle, item.itemClass.name)
-        return
 
     def indexChangedSince(self, checkTime: int | float) -> bool:
         """Check if the index has changed since a given time."""
@@ -208,7 +215,6 @@ class Index:
             model.setExtraColumn(self._novelExtra)
             self._appendSubTreeToModel(tHandle, model)
             model.endResetModel()
-        return
 
     def updateNovelModelData(self, nwItem: NWItem) -> bool:
         """Refresh a novel model."""
@@ -247,6 +253,8 @@ class Index:
                 return False
 
             try:
+                meta = data.get("novelWriter.meta", {})
+                self._indexUpgrade = meta.get("version") != __hexversion__
                 self._tagsIndex.unpackData(data["novelWriter.tagsIndex"])
                 self._itemIndex.unpackData(data["novelWriter.itemIndex"])
             except Exception:
@@ -279,23 +287,22 @@ class Index:
             return False
 
         logger.debug("Saving index file")
-        tStart = time()
+        start = time()
 
         try:
-            tagsIndex = jsonEncode(self._tagsIndex.packData(), n=1, nmax=2)
-            itemIndex = jsonEncode(self._itemIndex.packData(), n=1, nmax=4)
+            meta = {"version": __hexversion__, "timestamp": formatTimeStamp(start)}
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
-                outFile.write("{\n")
-                outFile.write(f'  "novelWriter.tagsIndex": {tagsIndex},\n')
-                outFile.write(f'  "novelWriter.itemIndex": {itemIndex}\n')
-                outFile.write("}\n")
-
+                outFile.write(jsonCombine({
+                    "novelWriter.meta": jsonEncode(meta, n=1),
+                    "novelWriter.tagsIndex": jsonEncode(self._tagsIndex.packData(), n=1, nmax=2),
+                    "novelWriter.itemIndex": jsonEncode(self._itemIndex.packData(), n=1, nmax=4),
+                }))
         except Exception:
             logger.error("Failed to save index file")
             logException()
             return False
 
-        logger.debug("Index saved in %.3f ms", (time() - tStart)*1000)
+        logger.debug("Index saved in %.3f ms", (time() - start)*1000)
 
         return True
 
@@ -425,8 +432,6 @@ class Index:
             if updated or deleted:
                 SHARED.emitIndexChangedTags(self._project, updated, deleted)
 
-        return
-
     def _scanInactive(self, nwItem: NWItem, text: str) -> None:
         """Scan an inactive document for meta data."""
         for line in text.splitlines():
@@ -435,7 +440,6 @@ class Index:
                 if hDepth != "H0":
                     nwItem.setMainHeading(hDepth)
                     break
-        return
 
     def _splitHeading(self, line: str) -> tuple[str, str]:
         """Split a heading into its heading level and text value."""
@@ -459,7 +463,6 @@ class Index:
         """Count text stats and save the counts to the index."""
         cC, wC, pC = standardCounter(text)
         self._itemIndex.setHeadingCounts(tHandle, sTitle, cC, wC, pC)
-        return
 
     def _indexKeyword(
         self, tHandle: str, line: str, sTitle: str, itemClass: nwItemClass, tags: dict[str, bool]
@@ -495,7 +498,6 @@ class Index:
             model.setExtraColumn(self._novelExtra)
             self._appendSubTreeToModel(tHandle, model)
             self._novelModels[tHandle] = model
-        return
 
     def _appendSubTreeToModel(self, tHandle: str, model: NovelModel) -> None:
         """Append all active novel documents to a novel model."""
@@ -506,7 +508,6 @@ class Index:
                 and node.item.isActive
             ):
                 model.append(node)
-        return
 
     ##
     #  Check @ Lines
@@ -680,14 +681,12 @@ class Index:
                     "words": hItem.wordCount,
                 }
 
-        result = [(
+        return [(
             tKey,
             tData[tKey]["level"],
             tData[tKey]["title"],
             tData[tKey]["words"]
         ) for tKey in tOrder]
-
-        return result
 
     def getCounts(self, tHandle: str, sTitle: str | None = None) -> tuple[int, int, int]:
         """Return the counts for a file, or a section of a file,
@@ -793,7 +792,7 @@ class Index:
 # =====================
 
 class TagsIndex:
-    """Core: Tags Index Wrapper Class
+    """Core: Tags Index Wrapper Class.
 
     A wrapper class that holds the reverse lookup tags index. This is
     just a simple wrapper around a single dictionary to keep tighter
@@ -804,14 +803,12 @@ class TagsIndex:
 
     def __init__(self) -> None:
         self._tags: dict[str, dict[str, str]] = {}
-        return
 
     def __contains__(self, tagKey: str) -> bool:
         return tagKey.lower() in self._tags
 
     def __delitem__(self, tagKey: str) -> None:
         self._tags.pop(tagKey.lower(), None)
-        return
 
     def __getitem__(self, tagKey: str) -> dict | None:
         return self._tags.get(tagKey.lower(), None)
@@ -823,7 +820,6 @@ class TagsIndex:
     def clear(self) -> None:
         """Clear the index."""
         self._tags = {}
-        return
 
     def items(self) -> ItemsView:
         """Return a dictionary view of all tags."""
@@ -839,7 +835,6 @@ class TagsIndex:
             "heading": sTitle,
             "class": className,
         }
-        return
 
     def tagName(self, tagKey: str, default: str = "") -> str:
         """Get the name of a given tag."""
@@ -879,7 +874,6 @@ class TagsIndex:
         for entry in self._tags.values():
             if entry.get("handle") == tHandle:
                 entry["class"] = className
-        return
 
     ##
     #  Pack/Unpack
@@ -922,11 +916,9 @@ class TagsIndex:
 
             self.add(name, display, handle, heading, className)
 
-        return
-
 
 class IndexCache:
-    """Core: Item Index Lookup Data Class
+    """Core: Item Index Lookup Data Class.
 
     A small data class passed between all objects of the Item Index
     which provides lookup capabilities and caching for shared data.
@@ -938,14 +930,13 @@ class IndexCache:
         self.tags: TagsIndex = tagsIndex
         self.story: set[str] = set()
         self.note: set[str] = set()
-        return
 
 
 # The Item Index Objects
 # ======================
 
 class ItemIndex:
-    """Core: Item Index Wrapper Class
+    """Core: Item Index Wrapper Class.
 
     A wrapper object holding the indexed items. This is a wrapper
     class around a single storage dictionary with a set of utility
@@ -960,14 +951,12 @@ class ItemIndex:
         self._project = project
         self._cache = IndexCache(tagsIndex)
         self._items: dict[str, IndexNode] = {}
-        return
 
     def __contains__(self, tHandle: str) -> bool:
         return tHandle in self._items
 
     def __delitem__(self, tHandle: str) -> None:
         self._items.pop(tHandle, None)
-        return
 
     def __getitem__(self, tHandle: str) -> IndexNode | None:
         return self._items.get(tHandle, None)
@@ -979,14 +968,12 @@ class ItemIndex:
     def clear(self) -> None:
         """Clear the index."""
         self._items = {}
-        return
 
     def add(self, tHandle: str, nwItem: NWItem) -> None:
         """Add a new item to the index. This will overwrite the item if
         it already exists.
         """
         self._items[tHandle] = IndexNode(self._cache, tHandle, nwItem)
-        return
 
     def allStoryKeys(self) -> set[str]:
         """Return all story structure keys."""
@@ -1061,7 +1048,6 @@ class ItemIndex:
         """
         if tHandle in self._items:
             self._items[tHandle].setHeadingCounts(sTitle, cC, wC, pC)
-        return
 
     def setHeadingComment(
         self, tHandle: str, sTitle: str,
@@ -1070,25 +1056,21 @@ class ItemIndex:
         """Set a story comment for a heading on a given item."""
         if tHandle in self._items:
             self._items[tHandle].setHeadingComment(sTitle, comment, key, text)
-        return
 
     def setHeadingTag(self, tHandle: str, sTitle: str, tagKey: str) -> None:
         """Set the main tag for a heading on a given item."""
         if tHandle in self._items:
             self._items[tHandle].setHeadingTag(sTitle, tagKey)
-        return
 
     def addHeadingRef(self, tHandle: str, sTitle: str, tagKeys: list[str], refType: str) -> None:
         """Set the reference tags for a heading on a given item."""
         if tHandle in self._items:
             self._items[tHandle].addHeadingRef(sTitle, tagKeys, refType)
-        return
 
     def addNoteKey(self, tHandle: str, style: T_NoteTypes, key: str) -> None:
         """Set notes key for a given item."""
         if tHandle in self._items:
             self._items[tHandle].addNoteKey(style, key)
-        return
 
     def genNewNoteKey(self, tHandle: str, style: T_NoteTypes) -> str:
         """Set notes key for a given item."""
@@ -1128,5 +1110,3 @@ class ItemIndex:
                 tItem = IndexNode(self._cache, tHandle, nwItem)
                 tItem.unpackData(tData)
                 self._items[tHandle] = tItem
-
-        return

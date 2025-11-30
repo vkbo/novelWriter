@@ -17,17 +17,30 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import shutil
 import subprocess
 import sys
+import tomllib
 
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).parent.parent
 SETUP_DIR = ROOT_DIR / "setup"
+
+
+def extractReqs(groups: list[str]) -> list[str]:
+    """Extract dependency groups from pyproject.toml."""
+    data = tomllib.loads((ROOT_DIR / "pyproject.toml").read_text(encoding="utf-8"))
+    reqs = []
+    if "app" in groups or "all" in groups:
+        reqs += data["project"]["dependencies"]
+    for group in data["dependency-groups"]:
+        if group in groups or "all" in groups:
+            reqs += [d for d in data["dependency-groups"][group] if isinstance(d, str)]
+    return reqs
 
 
 def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
@@ -88,19 +101,23 @@ def copySourceCode(dst: Path) -> None:
         if item.is_file():
             shutil.copyfile(item, dst / relSrc)
             print("Copied:", relSrc, flush=True)
-    return
 
 
 def copyPackageFiles(dst: Path, oldLicense: bool = False) -> None:
     """Copy files needed for packaging."""
-    copyFiles = ["LICENSE.md", "setup/LICENSE-Apache-2.0.txt", "CREDITS.md", "pyproject.toml"]
+    copyFiles = [
+        ROOT_DIR / "LICENSE.md",
+        SETUP_DIR / "LICENSE-Apache-2.0.txt",
+        ROOT_DIR / "CREDITS.md",
+        ROOT_DIR / "pyproject.toml",
+    ]
     for copyFile in copyFiles:
-        shutil.copyfile(copyFile, dst / copyFile)
+        shutil.copyfile(copyFile, dst / copyFile.name)
         print("Copied:", copyFile, flush=True)
 
     writeFile(dst / "MANIFEST.in", (
         "include LICENSE.md\n"
-        "include setup/LICENSE-Apache-2.0.txt\n"
+        "include LICENSE-Apache-2.0.txt\n"
         "include CREDITS.md\n"
         "recursive-include novelwriter/assets *\n"
     ))
@@ -118,8 +135,6 @@ def copyPackageFiles(dst: Path, oldLicense: bool = False) -> None:
         text = "\n".join(new)
     writeFile(dst / "pyproject.toml", text)
 
-    return
-
 
 def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
     """Copy a file produced by one of the build functions to the upload
@@ -129,7 +144,6 @@ def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
     uplDir.mkdir(exist_ok=True)
     srcPath = Path(srcPath)
     shutil.copyfile(srcPath, uplDir / (dstName or srcPath.name))
-    return
 
 
 def makeCheckSum(sumFile: str, cwd: Path | None = None) -> str:
@@ -178,9 +192,7 @@ def appdataXml() -> str:
     """Generate the appdata XML content."""
     raw = readFile(SETUP_DIR / "description_short.txt")
     desc = " ".join(raw.strip().splitlines()).strip()
-    xml = readFile(SETUP_DIR / "novelwriter.appdata.xml")
-    xml = xml.format(description=desc)
-    return xml
+    return readFile(SETUP_DIR / "novelwriter.appdata.xml").format(description=desc)
 
 
 def readFile(file: Path) -> str:
@@ -201,7 +213,6 @@ def freshFolder(path: Path) -> None:
         print("Removing:", str(path), flush=True)
         shutil.rmtree(path)
     path.mkdir()
-    return
 
 
 def systemCall(cmd: list, cwd: Path | str | None = None, env: dict | None = None) -> int:
@@ -217,7 +228,7 @@ def systemCall(cmd: list, cwd: Path | str | None = None, env: dict | None = None
 
 
 def removeRedundantQt(qtBase: Path) -> None:
-    """Delete Qt files that are not needed"""
+    """Delete Qt files that are not needed."""
 
     def unlinkIfFound(file: Path) -> None:
         if file.is_file():
@@ -278,5 +289,3 @@ def removeRedundantQt(qtBase: Path) -> None:
     deleteFolder(qt6Dir / "qml")
     deleteFolder(plugDir / "qmlls")
     deleteFolder(plugDir / "qmllint")
-
-    return

@@ -20,31 +20,43 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
 from PyQt6.QtCore import pyqtSlot
-from PyQt6.QtGui import QCloseEvent, QTextCursor
 from PyQt6.QtWidgets import (
     QApplication, QDialogButtonBox, QFileDialog, QFrame, QHBoxLayout, QLabel,
     QLineEdit, QPlainTextEdit, QPushButton, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatFileFilter, formatInt, getFileSize, openExternalPath
+from novelwriter.common import (
+    formatFileFilter, formatInt, getFileSize, joinLines, openExternalPath
+)
+from novelwriter.enum import nwStandardButton
 from novelwriter.error import formatException
 from novelwriter.extensions.modified import NIconToolButton, NNonBlockingDialog
-from novelwriter.types import QtDialogClose, QtHexArgb
+from novelwriter.types import QtHexArgb, QtMoveEnd, QtRoleDestruct
+
+if TYPE_CHECKING:
+    from PyQt6.QtGui import QCloseEvent
 
 logger = logging.getLogger(__name__)
 
 
 class GuiDictionaries(NNonBlockingDialog):
+    """GUI: Spell Check Dictionary Tool.
+
+    A helper tool for downloading and extracting dictionaries to a
+    location where Enchant can find them. This tool is only needed on
+    Windows.
+    """
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -64,18 +76,18 @@ class GuiDictionaries(NNonBlockingDialog):
         # Hunspell Dictionaries
         loUrl = "https://extensions.libreoffice.org"
         ooUrl = "https://extensions.openoffice.org"
-        self.huInfo = QLabel("<br>".join([
+        self.huInfo = QLabel(joinLines([
             self.tr("Download a dictionary from one of the links, and add it below."),
             f"&nbsp;\u203a <a href='{loUrl}'>{loUrl}</a>",
             f"&nbsp;\u203a <a href='{ooUrl}'>{ooUrl}</a>",
-        ]), self)
+        ], "<br>"), self)
         self.huInfo.setOpenExternalLinks(True)
         self.huInfo.setWordWrap(True)
         self.huInput = QLineEdit(self)
-        self.huBrowse = NIconToolButton(self, iSz, "browse")
+        self.huBrowse = NIconToolButton(self, iSz, "browse", "systemio")
         self.huBrowse.clicked.connect(self._doBrowseHunspell)
         self.huImport = QPushButton(self.tr("Add Dictionary"), self)
-        self.huImport.setIcon(SHARED.theme.getIcon("add", "green"))
+        self.huImport.setIcon(SHARED.theme.getIcon("add", "add"))
         self.huImport.clicked.connect(self._doImportHunspell)
 
         self.huPathBox = QHBoxLayout()
@@ -90,7 +102,7 @@ class GuiDictionaries(NNonBlockingDialog):
         self.inInfo = QLabel(self.tr("Dictionary install location"), self)
         self.inPath = QLineEdit(self)
         self.inPath.setReadOnly(True)
-        self.inBrowse = NIconToolButton(self, iSz, "browse")
+        self.inBrowse = NIconToolButton(self, iSz, "browse", "systemio")
         self.inBrowse.clicked.connect(self._doOpenInstallLocation)
 
         self.inBox = QHBoxLayout()
@@ -104,8 +116,11 @@ class GuiDictionaries(NNonBlockingDialog):
         self.infoBox.setFrameStyle(QFrame.Shape.NoFrame)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogClose, self)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.clicked.connect(self.closeDialog)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -117,17 +132,14 @@ class GuiDictionaries(NNonBlockingDialog):
         self.outerBox.addLayout(self.inBox, 0)
         self.outerBox.addWidget(self.infoBox, 1)
         self.outerBox.addSpacing(8)
-        self.outerBox.addWidget(self.buttonBox, 0)
+        self.outerBox.addWidget(self.btnBox, 0)
 
         self.setLayout(self.outerBox)
 
         logger.debug("Ready: GuiDictionaries")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiDictionaries")
-        return
 
     def initDialog(self) -> bool:
         """Prepare and check that we can proceed."""
@@ -164,7 +176,6 @@ class GuiDictionaries(NNonBlockingDialog):
         """Capture the user closing the window."""
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -182,7 +193,6 @@ class GuiDictionaries(NNonBlockingDialog):
         if soxFile:
             path = Path(soxFile).absolute()
             self.huInput.setText(str(path))
-        return
 
     @pyqtSlot()
     def _doImportHunspell(self) -> None:
@@ -202,14 +212,12 @@ class GuiDictionaries(NNonBlockingDialog):
                     self._appendLog(formatException(exc), err=True)
             else:
                 self._appendLog(procErr, err=True)
-        return
 
     @pyqtSlot()
     def _doOpenInstallLocation(self) -> None:
         """Open the dictionary folder."""
         if not openExternalPath(Path(self.inPath.text())):
             SHARED.error("Path not found.")
-        return
 
     ##
     #  Internal Functions
@@ -239,12 +247,11 @@ class GuiDictionaries(NNonBlockingDialog):
     def _appendLog(self, text: str, err: bool = False) -> None:
         """Append a line to the log output."""
         cursor = self.infoBox.textCursor()
-        cursor.movePosition(QTextCursor.MoveOperation.End)
+        cursor.movePosition(QtMoveEnd)
         if cursor.position() > 0:
             cursor.insertText("\n")
         textCol = SHARED.theme.errorText if err else self.palette().text().color()
         cursor.insertHtml(f"<font style='color: {textCol.name(QtHexArgb)}'>{text}</font>")
-        cursor.movePosition(QTextCursor.MoveOperation.End)
+        cursor.movePosition(QtMoveEnd)
         cursor.deleteChar()
         self.infoBox.setTextCursor(cursor)
-        return

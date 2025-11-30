@@ -17,21 +17,23 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import pytest
 
 from PyQt6.QtCore import QEvent, Qt
 from PyQt6.QtGui import QAction, QFont, QFontDatabase, QKeyEvent
-from PyQt6.QtWidgets import QFileDialog, QFontDialog
+from PyQt6.QtWidgets import QFileDialog
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.config import DEF_GUI
+from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_TREECOL
 from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
-from novelwriter.types import QtDialogCancel, QtDialogSave, QtModNone
+from novelwriter.extensions.modified import NFontDialog
+from novelwriter.gui.theme import ThemeEntry
+from novelwriter.types import QtModNone
 
 KEY_DELAY = 1
 
@@ -55,15 +57,11 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     assert "en_GB" in languages
 
     # Check GUI Themes
-    themes = [prefs.guiTheme.itemData(i) for i in range(prefs.guiTheme.count())]
-    assert len(themes) >= 5
-    assert DEF_GUI in themes
+    themes = [prefs.lightTheme.itemData(i) for i in range(prefs.lightTheme.count())]
+    assert DEF_GUI_LIGHT in themes
 
-    # Check GUI Syntax
-    syntax = [prefs.guiSyntax.itemData(i) for i in range(prefs.guiSyntax.count())]
-    assert len(syntax) >= 10
-    assert "default_dark" in syntax
-    assert "default_light" in syntax
+    themes = [prefs.darkTheme.itemData(i) for i in range(prefs.darkTheme.count())]
+    assert DEF_GUI_DARK in themes
 
     # Check Spell Checking
     spelling = [prefs.spellLanguage.itemData(i) for i in range(prefs.spellLanguage.count())]
@@ -121,16 +119,12 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     # Check Save Button
     prefs.show()
     with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-        button = prefs.buttonBox.button(QtDialogSave)
-        assert button is not None
-        button.click()
-        assert signal.args == [False, False, False, False]
+        prefs.btnSave.click()
+        assert len(signal.args) == 4
 
     # Check Close Button
     prefs.show()
-    button = prefs.buttonBox.button(QtDialogCancel)
-    assert button is not None
-    button.click()
+    prefs.btnCancel.click()
     assert prefs.isHidden() is True
 
     # Close Using Escape Key
@@ -151,6 +145,12 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     (fncPath / "nw_en_US.qm").touch()
     (fncPath / "project_en_US.json").touch()
     CONFIG._nwLangPath = fncPath
+    SHARED.theme._allThemes = {
+        "theme1": ThemeEntry(name="Theme 1", dark=False, path=fncPath),
+        "theme2": ThemeEntry(name="Theme 2", dark=False, path=fncPath),
+        "theme3": ThemeEntry(name="Theme 3", dark=True, path=fncPath),
+        "theme4": ThemeEntry(name="Theme 4", dark=True, path=fncPath),
+    }
 
     prefs = GuiPreferences(nwGUI)
     with qtbot.waitExposed(prefs):
@@ -158,9 +158,10 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
 
     # Appearance
     prefs.guiLocale.setCurrentIndex(prefs.guiLocale.findData("en_US"))
-    prefs.guiTheme.setCurrentIndex(prefs.guiTheme.findData("default_dark"))
+    prefs.lightTheme.setCurrentIndex(prefs.lightTheme.findData("theme1"))
+    prefs.darkTheme.setCurrentIndex(prefs.darkTheme.findData("theme3"))
     with monkeypatch.context() as mp:
-        mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
+        mp.setattr(NFontDialog, "selectFont", lambda *a, **k: (QFont(), True))
         prefs.nativeFont.setChecked(True)  # Use OS font dialog
         prefs.guiFontButton.click()
 
@@ -169,23 +170,22 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.useCharCount.setChecked(True)
 
     assert CONFIG.guiLocale != "en_US"
-    assert CONFIG.guiTheme != "default_dark"
+    assert CONFIG.lightTheme == "default_light"
+    assert CONFIG.darkTheme == "default_dark"
     assert CONFIG.guiFont.family() != ""
     assert CONFIG.hideVScroll is False
     assert CONFIG.hideHScroll is False
     assert CONFIG.useCharCount is False
 
     # Document Style
-    prefs.guiSyntax.setCurrentIndex(prefs.guiSyntax.findData("default_dark"))
     with monkeypatch.context() as mp:
-        mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
+        mp.setattr(NFontDialog, "selectFont", lambda *a, **k: (QFont(), True))
         prefs.nativeFont.setChecked(False)  # Use Qt font dialog
         prefs.textFontButton.click()
 
     prefs.showFullPath.setChecked(False)
     prefs.incNotesWCount.setChecked(False)
 
-    assert CONFIG.guiSyntax != "default_dark"
     assert CONFIG.textFont.family() != ""
     assert CONFIG.showFullPath is True
     assert CONFIG.incNotesWCount is True
@@ -195,7 +195,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.iconColDocs.setChecked(True)
     prefs.emphLabels.setChecked(False)
 
-    assert CONFIG.iconColTree == "theme"
+    assert CONFIG.iconColTree == DEF_TREECOL
     assert CONFIG.iconColDocs is False
     assert CONFIG.emphLabels is True
 
@@ -203,10 +203,12 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.autoSaveDoc.stepUp()
     prefs.autoSaveProj.stepUp()
     prefs.askBeforeExit.setChecked(False)
+    prefs.moveMainWin.setChecked(False)
 
     assert CONFIG.autoSaveDoc == 30
     assert CONFIG.autoSaveProj == 60
     assert CONFIG.askBeforeExit is True
+    assert CONFIG.moveMainWin is True
 
     # Project Backup
     with monkeypatch.context() as mp:
@@ -247,22 +249,24 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.spellLanguage.setCurrentIndex(prefs.spellLanguage.findData("de"))
     prefs.autoSelect.setChecked(False)
     prefs.cursorWidth.setValue(5)
+    prefs.lineHighlight.setChecked(False)
     prefs.showTabsNSpaces.setChecked(True)
     prefs.showLineEndings.setChecked(True)
 
     assert CONFIG.spellLanguage != "de"
     assert CONFIG.autoSelect is True
     assert CONFIG.cursorWidth == 1
+    assert CONFIG.lineHighlight is True
     assert CONFIG.showTabsNSpaces is False
     assert CONFIG.showLineEndings is False
 
     # Editor Scrolling
     prefs.scrollPastEnd.setChecked(False)
-    prefs.autoScroll.setChecked(True)
+    prefs.autoScroll.setChecked(False)
     prefs.autoScrollPos.stepUp()
 
     assert CONFIG.scrollPastEnd is True
-    assert CONFIG.autoScroll is False
+    assert CONFIG.autoScroll is True
     assert CONFIG.autoScrollPos == 30
 
     # Text Highlighting
@@ -274,7 +278,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.altDialogOpen.setText("%")  # Symbol also tests for #2455
     prefs.altDialogClose.setText("%")  # Symbol also tests for #2455
     prefs.highlightEmph.setChecked(False)
-    prefs.showMultiSpaces.setChecked(False)
+    prefs.showMultiSpaces.setChecked(True)
 
     prefs._insertDialogLineSymbol(nwUnicode.U_ENDASH)
     assert prefs.dialogLine.text() == f"{nwUnicode.U_ENDASH} {nwUnicode.U_EMDASH}"
@@ -287,7 +291,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.altDialogOpen == ""
     assert CONFIG.altDialogClose == ""
     assert CONFIG.highlightEmph is True
-    assert CONFIG.showMultiSpaces is True
+    assert CONFIG.showMultiSpaces is False
 
     # Text Automation
     prefs.doReplaceSQuote.setChecked(False)
@@ -333,13 +337,16 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.fmtDQuoteOpen == nwUnicode.U_LDQUO
     assert CONFIG.fmtDQuoteClose == nwUnicode.U_RDQUO
 
+    # Features
+    assert CONFIG.vimMode is False
+
+    prefs.vimMode.setChecked(True)
+
     # Save Settings
     with monkeypatch.context() as mp:
         mp.setattr(QFontDatabase, "families", lambda *a: ["TestFont"])
         with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-            button = prefs.buttonBox.button(QtDialogSave)
-            assert button is not None
-            button.click()
+            prefs.btnSave.click()
             assert signal.args == [True, True, True, True]
 
     # Check Settings
@@ -347,14 +354,14 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
 
     # Appearance
     assert CONFIG.guiLocale == "en_US"
-    assert CONFIG.guiTheme == "default_dark"
+    assert CONFIG.lightTheme == "theme1"
+    assert CONFIG.darkTheme == "theme3"
     assert CONFIG.guiFont == QFont()
     assert CONFIG.hideVScroll is True
     assert CONFIG.hideHScroll is True
     assert CONFIG.useCharCount is True
 
     # Document Style
-    assert CONFIG.guiSyntax == "default_dark"
     assert CONFIG.textFont == QFont()
     assert CONFIG.showFullPath is False
     assert CONFIG.incNotesWCount is False
@@ -368,6 +375,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.autoSaveDoc == 31
     assert CONFIG.autoSaveProj == 61
     assert CONFIG.askBeforeExit is False
+    assert CONFIG.moveMainWin is False
 
     # Project Backup
     assert CONFIG._backupPath == tstPaths.testDir
@@ -390,12 +398,13 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.spellLanguage == "de"
     assert CONFIG.autoSelect is False
     assert CONFIG.cursorWidth == 5
+    assert CONFIG.lineHighlight is False
     assert CONFIG.showTabsNSpaces is True
     assert CONFIG.showLineEndings is True
 
     # Editor Scrolling
     assert CONFIG.scrollPastEnd is False
-    assert CONFIG.autoScroll is True
+    assert CONFIG.autoScroll is False
     assert CONFIG.autoScrollPos == 31
 
     # Text Highlighting
@@ -407,7 +416,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.altDialogOpen == "%"
     assert CONFIG.altDialogClose == "%"
     assert CONFIG.highlightEmph is False
-    assert CONFIG.showMultiSpaces is False
+    assert CONFIG.showMultiSpaces is True
 
     # Text Automation
     assert CONFIG.doReplace is False
@@ -424,5 +433,12 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.fmtSQuoteClose == nwUnicode.U_RSAQUO
     assert CONFIG.fmtDQuoteOpen == nwUnicode.U_LAQUO
     assert CONFIG.fmtDQuoteClose == nwUnicode.U_RAQUO
+
+    # Features
+    assert CONFIG.vimMode is True  # Note that the question box answers "yes" in tests
+    assert SHARED.lastAlert == [
+        "Are you sure you want to enable Vim mode?",
+        "This changes how the editor accepts input.",
+    ]
 
     # qtbot.stop()

@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -31,12 +31,13 @@ import xml.etree.ElementTree as ET
 
 from configparser import ConfigParser
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, TypeGuard, TypeVar
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 
-from PyQt6.QtCore import QCoreApplication, QMimeData, QUrl
+from PyQt6.QtCore import QCoreApplication, QLocale, QMimeData, QUrl
 from PyQt6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QFontInfo
 from PyQt6.QtWidgets import QMenu, QMenuBar, QWidget
 
@@ -134,7 +135,7 @@ def checkPath(value: Any, default: Path) -> Path:
 
 def isHandle(value: Any) -> TypeGuard[str]:
     """Check if a string is a valid novelWriter handle.
-    Note: This is case sensitive. Must be lower case!
+    Note: This is case sensitive. Must be lower case.
     """
     if not isinstance(value, str):
         return False
@@ -218,7 +219,7 @@ def firstFloat(*args: Any) -> float:
 ##
 
 def formatInt(value: int) -> str:
-    """Formats an integer with k, M, G etc."""
+    """Format an integer with k, M, G etc."""
     if not isinstance(value, int):
         return "ERR"
 
@@ -298,6 +299,19 @@ def uniqueCompact(text: str) -> str:
     return "".join(sorted(set(compact(text))))
 
 
+def joinLines(value: str | list[str], sep: str = "") -> str:
+    """Join a list of strings with a separator."""
+    if isinstance(value, list):
+        return sep.join(str(x) for x in value)
+    return str(value)
+
+
+def appendIfSet(data: list[_Type], value: _Type) -> None:
+    """Append value to list if value is set (truthy)."""
+    if value:
+        data.append(value)
+
+
 def processDialogSymbols(symbols: str) -> str:
     """Process dialogue line symbols."""
     result = ""
@@ -305,6 +319,17 @@ def processDialogSymbols(symbols: str) -> str:
         if c in nwQuotes.ALLOWED:
             result += c
     return result
+
+
+def processLangCode(code: str) -> str:
+    """Validate a language code."""
+    code = code.strip()
+    return QLocale(code).name().replace("_", "-") if code else ""
+
+
+def languageName(code: str) -> str:
+    """Return the local name of a language."""
+    return QLocale(code).nativeLanguageName().title()
 
 
 def elide(text: str, length: int) -> str:
@@ -444,6 +469,7 @@ def fontMatcher(font: QFont) -> QFont:
     default Qt font matching algorithm doesn't handle well changing
     application fonts at runtime.
     """
+    font.setStyleName(None)  # Make sure no font style name is set from config, see #2502
     info = QFontInfo(font)
     if (famRequest := font.family()) != (famActual := info.family()):
         logger.warning("Font mismatch: Requested '%s', but got '%s'", famRequest, famActual)
@@ -462,21 +488,21 @@ def fontMatcher(font: QFont) -> QFont:
 
 
 def qtLambda(func: Callable, *args: Any, **kwargs: Any) -> Callable:
-    """A replacement for Python lambdas that works for Qt slots."""
+    """A replacement for Python lambdas that works for Qt slots."""  # noqa: D401
     def wrapper(*a_: Any) -> None:
         func(*args, **kwargs)
     return wrapper
 
 
 def qtAddAction(parent: QWidget, label: str) -> QAction:
-    """Helper to add action to widget and always return the action."""
+    """Helper to add action to widget and always return the action."""  # noqa: D401
     action = QAction(label, parent)
     parent.addAction(action)
     return action
 
 
 def qtAddMenu(parent: QMenuBar | QMenu, label: str) -> QMenu:
-    """Helper to add menu to menu and always return the menu."""
+    """Helper to add menu to menu and always return the menu."""  # noqa: D401
     menu = QMenu(label, parent)
     parent.addMenu(menu)
     return menu
@@ -485,12 +511,26 @@ def qtAddMenu(parent: QMenuBar | QMenu, label: str) -> QMenu:
 def encodeMimeHandles(mimeData: QMimeData, handles: list[str]) -> None:
     """Encode handles into a mime data object."""
     mimeData.setData(nwConst.MIME_HANDLE, b"|".join(h.encode() for h in handles))
-    return
 
 
 def decodeMimeHandles(mimeData: QMimeData) -> list[str]:
     """Decode and split a mime data object with handles."""
     return mimeData.data(nwConst.MIME_HANDLE).data().decode().split("|")
+
+
+def utf16CharMap(text: str) -> list[int]:
+    """Compute mapping from Python string index to QString index.
+    Python strings are always one character per position in either
+    ASCII, UCS-2 or UCS-4. QStrings are in UTF-16, so wide characters
+    use 2 indices, and thus create an offset.
+    """
+    utf16Map = list(range(0, len(text) + 1))
+    offset = 0
+    for i, c in enumerate(text, 1):
+        if ord(c) > 0xffff:
+            offset += 1
+        utf16Map[i] = i + offset
+    return utf16Map
 
 
 ##
@@ -519,7 +559,7 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
         elif first in ("{", "["):
             n += 1
             indent = "\n"+"  "*n
-            if n > nmax and nmax > 0:
+            if n > nmax > 0:
                 buffer.append(chunk)
             else:
                 buffer.append(chunk[0] + indent + chunk[1:])
@@ -527,13 +567,13 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
         elif first in ("}", "]"):
             n -= 1
             indent = "\n"+"  "*n
-            if n >= nmax and nmax > 0:
+            if n >= nmax > 0:
                 buffer.append(chunk)
             else:
                 buffer.append(indent + chunk)
 
         elif first == ",":
-            if n > nmax and nmax > 0:
+            if n > nmax > 0:
                 buffer.append(chunk)
             else:
                 buffer.append(chunk[0] + indent + chunk[1:].lstrip())
@@ -544,6 +584,12 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
     return "".join(buffer)
 
 
+def jsonCombine(data: dict[str, str]) -> str:
+    """Combine multiple already packed JSON strings."""
+    payload = ",\n".join(f'  "{k}": {v}' for k, v in data.items())
+    return f"{{\n{payload}\n}}\n"
+
+
 ##
 #  XML Helpers
 ##
@@ -551,7 +597,7 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
 def xmlIndent(xml: ET.Element | ET.ElementTree) -> None:
     """A modified version of the XML indent function in the standard
     library. It behaves more closely to how the one from lxml does.
-    """
+    """  # noqa: D401
     tree = xml.getroot() if isinstance(xml, ET.ElementTree) else xml
     if not isinstance(tree, ET.Element):
         return
@@ -581,8 +627,6 @@ def xmlIndent(xml: ET.Element | ET.ElementTree) -> None:
         if last is not None:
             last.tail = indentations[level]
 
-        return
-
     if len(tree):
         indentChildren(tree, 0)
     tree.tail = "\n"
@@ -597,7 +641,7 @@ def xmlElement(
     attrib: dict | None = None,
     tail: str | None = None,
 ) -> ET.Element:
-    """A custom implementation of Element with more arguments."""
+    """A custom implementation of Element with more arguments."""  # noqa: D401
     xSub = ET.Element(tag, attrib=attrib or {})
     if text is not None:
         if isinstance(text, bool):
@@ -617,7 +661,7 @@ def xmlSubElem(
     attrib: dict | None = None,
     tail: str | None = None,
 ) -> ET.Element:
-    """A custom implementation of SubElement with more arguments."""
+    """A custom implementation of SubElement with more arguments."""  # noqa: D401
     xSub = ET.SubElement(parent, tag, attrib=attrib or {})
     if text is not None:
         if isinstance(text, bool):
@@ -648,6 +692,7 @@ def readTextFile(path: str | Path) -> str:
 
 def makeFileNameSafe(text: str) -> str:
     """Return a filename-safe string.
+
     See: https://unicode.org/reports/tr15/#Norm_Forms
     """
     text = unicodedata.normalize("NFKC", text).strip()
@@ -676,8 +721,11 @@ def openExternalPath(path: Path) -> bool:
 #  Classes
 ##
 
+_T_Enum = TypeVar("_T_Enum", bound=Enum)
+
+
 class NWConfigParser(ConfigParser):
-    """Common: Adapted Config Parser
+    """Common: Adapted Config Parser.
 
     This is a subclass of the standard config parser that adds type safe
     helper functions, and support for lists. It also turns off
@@ -686,7 +734,6 @@ class NWConfigParser(ConfigParser):
 
     def __init__(self) -> None:
         super().__init__(interpolation=None)
-        return
 
     def rdStr(self, section: str, option: str, default: str) -> str:
         """Read string value."""
@@ -737,3 +784,10 @@ class NWConfigParser(ConfigParser):
             for i in range(min(len(data), len(result))):
                 result[i] = checkInt(data[i].strip(), result[i])
         return result
+
+    def rdEnum(self, section: str, option: str, default: _T_Enum) -> _T_Enum:
+        """Read enum value."""
+        if self.has_option(section, option):
+            data = self.get(section, option, fallback="")
+            return type(default).__members__.get(data.upper(), default)
+        return default

@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import logging
@@ -32,7 +32,7 @@ from PyQt6.QtCore import QTimer, pyqtSlot
 from PyQt6.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialogButtonBox, QFileDialog,
     QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
-    QPushButton, QSplitter, QVBoxLayout, QWidget
+    QSplitter, QVBoxLayout, QWidget
 )
 
 from novelwriter import SHARED
@@ -40,10 +40,10 @@ from novelwriter.common import makeFileNameSafe, openExternalPath
 from novelwriter.constants import nwLabels
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.item import NWItem
-from novelwriter.enum import nwBuildFmt
-from novelwriter.extensions.modified import NDialog, NIconToolButton
+from novelwriter.enum import nwBuildFmt, nwStandardButton
+from novelwriter.extensions.modified import NDialog, NIconToolButton, NPushButton
 from novelwriter.extensions.progressbars import NProgressSimple
-from novelwriter.types import QtAlignCenter, QtDialogClose, QtRoleAction, QtRoleReject, QtUserRole
+from novelwriter.types import QtAlignCenter, QtRoleAction, QtRoleDestruct, QtUserRole
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
@@ -54,7 +54,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiManuscriptBuild(NDialog):
-    """GUI Tools: Manuscript Build Dialog
+    """GUI Tools: Manuscript Build Dialog.
 
     This is the tool for running the build itself. It can be accessed
     independently of the Manuscript Build Tool.
@@ -76,7 +76,7 @@ class GuiManuscriptBuild(NDialog):
         self.setMinimumHeight(300)
 
         iSz = SHARED.theme.baseIconSize
-        bSz = SHARED.theme.buttonIconSize
+        bSz = SHARED.theme.toolButtonIconSize
 
         pOptions = SHARED.project.options
         self.resize(
@@ -143,7 +143,7 @@ class GuiManuscriptBuild(NDialog):
         # Build Path
         self.lblPath = QLabel(self.tr("Path"), self)
         self.buildPath = QLineEdit(self)
-        self.btnBrowse = NIconToolButton(self, iSz, "browse")
+        self.btnBrowse = NIconToolButton(self, iSz, "browse", "systemio")
 
         self.pathBox = QHBoxLayout()
         self.pathBox.addWidget(self.buildPath)
@@ -153,7 +153,7 @@ class GuiManuscriptBuild(NDialog):
         # Build Name
         self.lblName = QLabel(self.tr("File Name"), self)
         self.buildName = QLineEdit(self)
-        self.btnReset = NIconToolButton(self, iSz, "revert", "green")
+        self.btnReset = NIconToolButton(self, iSz, "revert", "reset")
         self.btnReset.setToolTip(self.tr("Reset file name to default"))
 
         self.nameBox = QHBoxLayout()
@@ -178,25 +178,19 @@ class GuiManuscriptBuild(NDialog):
         self.buildBox.setVerticalSpacing(4)
 
         # Dialog Buttons
-        self.buttonBox = QDialogButtonBox(self)
-
-        self.btnOpen = QPushButton(
-            SHARED.theme.getIcon("browse", "yellow"), self.tr("Open Folder"), self
-        )
-        self.btnOpen.setIconSize(bSz)
+        self.btnOpen = NPushButton(self, self.tr("Open Folder"), bSz, "browse", "systemio")
         self.btnOpen.setAutoDefault(False)
-        self.buttonBox.addButton(self.btnOpen, QtRoleAction)
 
-        self.btnBuild = QPushButton(
-            SHARED.theme.getIcon("sb_build", "blue"), self.tr("&Build"), self
-        )
-        self.btnBuild.setIconSize(bSz)
+        self.btnBuild = SHARED.theme.getStandardButton(nwStandardButton.BUILD, self)
         self.btnBuild.setAutoDefault(True)
-        self.buttonBox.addButton(self.btnBuild, QtRoleAction)
 
-        self.btnClose = self.buttonBox.addButton(QtDialogClose)
-        if self.btnClose:
-            self.btnClose.setAutoDefault(False)
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.setAutoDefault(False)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnOpen, QtRoleAction)
+        self.btnBox.addButton(self.btnBuild, QtRoleAction)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
 
         # Assemble GUI
         # ============
@@ -223,7 +217,7 @@ class GuiManuscriptBuild(NDialog):
         self.outerBox.addSpacing(4)
         self.outerBox.addLayout(self.buildBox, 0)
         self.outerBox.addSpacing(16)
-        self.outerBox.addWidget(self.buttonBox, 0)
+        self.outerBox.addWidget(self.btnBox, 0)
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
@@ -239,16 +233,13 @@ class GuiManuscriptBuild(NDialog):
         # Signals
         self.btnReset.clicked.connect(self._doResetBuildName)
         self.btnBrowse.clicked.connect(self._doSelectPath)
-        self.buttonBox.clicked.connect(self._dialogButtonClicked)
+        self.btnBox.clicked.connect(self._dialogButtonClicked)
         self.listFormats.itemSelectionChanged.connect(self._resetProgress)
 
         logger.debug("Ready: GuiManuscriptBuild")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiManuscriptBuild")
-        return
 
     ##
     #  Events
@@ -261,7 +252,6 @@ class GuiManuscriptBuild(NDialog):
         self._saveSettings()
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -270,15 +260,12 @@ class GuiManuscriptBuild(NDialog):
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
-        role = self.buttonBox.buttonRole(button)
-        if role == QtRoleAction:
-            if button == self.btnBuild:
-                self._runBuild()
-            elif button == self.btnOpen:
-                self._openOutputFolder()
-        elif role == QtRoleReject:
+        if button == self.btnBuild:
+            self._runBuild()
+        elif button == self.btnOpen:
+            self._openOutputFolder()
+        elif button == self.btnClose:
             self.close()
-        return
 
     @pyqtSlot()
     def _doSelectPath(self) -> None:
@@ -290,7 +277,6 @@ class GuiManuscriptBuild(NDialog):
         )
         if savePath:
             self.buildPath.setText(savePath)
-        return
 
     @pyqtSlot()
     def _doResetBuildName(self) -> None:
@@ -298,13 +284,11 @@ class GuiManuscriptBuild(NDialog):
         bName = f"{SHARED.project.data.name} - {self._build.name}"
         self.buildName.setText(bName)
         self._build.setLastBuildName(bName)
-        return
 
     @pyqtSlot()
     def _resetProgress(self) -> None:
         """Set the progress bar back to 0."""
         self.buildProgress.setValue(0)
-        return
 
     ##
     #  Internal Functions
@@ -371,7 +355,6 @@ class GuiManuscriptBuild(NDialog):
         pOptions.setValue("GuiManuscriptBuild", "fmtWidth", mainSplit[0])
         pOptions.setValue("GuiManuscriptBuild", "sumWidth", mainSplit[1])
         pOptions.saveSettings()
-        return
 
     def _populateContentList(self) -> None:
         """Build the content list."""
@@ -396,9 +379,6 @@ class GuiManuscriptBuild(NDialog):
                 item.setIcon(nwItem.getMainIcon())
                 self.listContent.addItem(item)
 
-        return
-
     def _openOutputFolder(self) -> None:
         """Open the build folder in the system's file explorer."""
         openExternalPath(Path(self.buildPath.text()))
-        return

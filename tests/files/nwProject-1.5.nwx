@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.7b1" hexVersion="0x020700b1" fileVersion="1.5" fileRevision="5" timeStamp="2025-04-29 22:07:59">
+<novelWriterXML appVersion="2.7b1" hexVersion="0x020700b1" fileVersion="1.5" fileRevision="6" timeStamp="2025-04-29 22:07:59">
   <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2179" autoCount="285" editTime="1000">
     <name>Sample Project</name>
     <author>Jane Smith</author>
@@ -20,20 +20,20 @@
       <entry key="C">D</entry>
     </autoReplace>
     <status>
-      <entry key="sf12341" count="8" red="100" green="100" blue="100" shape="SQUARE">New</entry>
-      <entry key="sf24ce6" count="2" red="200" green="50" blue="0" shape="SQUARE">Notes</entry>
-      <entry key="sc24b8f" count="3" red="182" green="60" blue="0" shape="BARS_1">Started</entry>
-      <entry key="s90e6c9" count="5" red="193" green="129" blue="0" shape="BARS_2">1st Draft</entry>
-      <entry key="sd51c5b" count="1" red="193" green="129" blue="0" shape="BARS_3">2nd Draft</entry>
-      <entry key="s8ae72a" count="1" red="193" green="129" blue="0" shape="BARS_4">3rd Draft</entry>
-      <entry key="s78ea90" count="1" red="58" green="180" blue="58" shape="STAR">Finished</entry>
+      <entry key="sf12341" count="8" color="#646464" shape="SQUARE">New</entry>
+      <entry key="sf24ce6" count="2" color="#c83200" shape="SQUARE">Notes</entry>
+      <entry key="sc24b8f" count="3" color="#b63c00" shape="BARS_1">Started</entry>
+      <entry key="s90e6c9" count="5" color="#c18100" shape="BARS_2">1st Draft</entry>
+      <entry key="sd51c5b" count="1" color="#c18100" shape="BARS_3">2nd Draft</entry>
+      <entry key="s8ae72a" count="1" color="#c18100" shape="BARS_4">3rd Draft</entry>
+      <entry key="s78ea90" count="1" color="#3ab43a" shape="STAR">Finished</entry>
     </status>
     <importance>
-      <entry key="ia857f0" count="5" red="100" green="100" blue="100" shape="SQUARE">None</entry>
-      <entry key="i4a1d39" count="1" red="220" green="138" blue="221" shape="BLOCK_1">Background</entry>
-      <entry key="icfb3a5" count="1" red="220" green="138" blue="221" shape="BLOCK_2">Minor</entry>
-      <entry key="i2d7a54" count="2" red="220" green="138" blue="221" shape="BLOCK_3">Major</entry>
-      <entry key="i56be10" count="1" red="220" green="138" blue="221" shape="BLOCK_4">Main</entry>
+      <entry key="ia857f0" count="5" color="#646464" shape="SQUARE">None</entry>
+      <entry key="i4a1d39" count="1" color="#dc8add" shape="BLOCK_1">Background</entry>
+      <entry key="icfb3a5" count="1" color="#dc8add" shape="BLOCK_2">Minor</entry>
+      <entry key="i2d7a54" count="2" color="#dc8add" shape="BLOCK_3">Major</entry>
+      <entry key="i56be10" count="1" color="#dc8add" shape="BLOCK_4">Main</entry>
     </importance>
   </settings>
   <content items="31" novelWords="1016" notesWords="416" novelChars="5602" notesChars="2285">

@@ -21,7 +21,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 
 
 class WheelEventFilter(QObject):
-    """Extensions: Wheel Event Filter
+    """Extensions: Wheel Event Filter.
 
     An event filter that filters mouse wheel events for a widget and
     forward them to the root widget. This solves the lack of mouse wheel
@@ -50,7 +50,6 @@ class WheelEventFilter(QObject):
         super().__init__(parent=parent)
         self._parent = parent
         self._locked = False
-        return
 
     def eventFilter(self, obj: QObject, event: QEvent) -> bool:
         """Filter events of type QWheelEvent and forward them to the
@@ -69,6 +68,7 @@ class WheelEventFilter(QObject):
 
 
 class StatusTipFilter(QObject):
+    """Filter: Remove StatusBar ToolTips."""
 
     def eventFilter(self, obj: QObject, event: QEvent) -> bool:
         """Filter out status tip events on menus."""

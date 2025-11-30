@@ -20,7 +20,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
 from __future__ import annotations
 
 import json
@@ -39,12 +39,13 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, checkIntTuple, formatTime, minmax, qtLambda
 from novelwriter.constants import nwConst
+from novelwriter.enum import nwStandardButton
 from novelwriter.error import formatException
-from novelwriter.extensions.modified import NToolDialog
+from novelwriter.extensions.modified import NPushButton, NToolDialog
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import (
     QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle, QtDecoration,
-    QtDialogClose, QtRoleAction
+    QtRoleAction, QtRoleDestruct
 )
 
 if TYPE_CHECKING:
@@ -54,7 +55,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiWritingStats(NToolDialog):
-    """GUI Tools: Writing Statistics
+    """GUI Tools: Writing Statistics.
 
     Displays data from the NWSessionLog object.
     """
@@ -182,6 +183,7 @@ class GuiWritingStats(NToolDialog):
 
         # Filter Options
         iPx = SHARED.theme.baseIconHeight
+        bSz = SHARED.theme.toolButtonIconSize
 
         self.filterForm = QGridLayout(self)
         self.filterForm.setRowStretch(6, 1)
@@ -276,6 +278,10 @@ class GuiWritingStats(NToolDialog):
         self.optsBox.addWidget(self.histMax, 0)
 
         # Buttons
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.clicked.connect(self.closeDialog)
+        self.btnClose.setAutoDefault(False)
+
         self.saveJSON = QAction(self.tr("JSON Data File (.json)"), self)
         self.saveJSON.triggered.connect(qtLambda(self._saveData, self.FMT_JSON))
 
@@ -286,17 +292,13 @@ class GuiWritingStats(NToolDialog):
         self.saveMenu.addAction(self.saveJSON)
         self.saveMenu.addAction(self.saveCSV)
 
-        self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.btnSave = NPushButton(self, self.tr("Save As"), bSz, "btn_save", "action")
+        self.btnSave.setAutoDefault(False)
+        self.btnSave.setMenu(self.saveMenu)
 
-        self.btnClose = self.buttonBox.addButton(QtDialogClose)
-        if self.btnClose:
-            self.btnClose.setAutoDefault(False)
-
-        self.btnSave = self.buttonBox.addButton(self.tr("Save As"), QtRoleAction)
-        if self.btnSave:
-            self.btnSave.setAutoDefault(False)
-            self.btnSave.setMenu(self.saveMenu)
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnSave, QtRoleAction)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
 
         # Assemble
         self.outerBox = QGridLayout()
@@ -304,18 +306,15 @@ class GuiWritingStats(NToolDialog):
         self.outerBox.addLayout(self.optsBox,   1, 0, 1, 2)
         self.outerBox.addWidget(self.infoBox,   2, 0)
         self.outerBox.addWidget(self.filterBox, 2, 1)
-        self.outerBox.addWidget(self.buttonBox, 3, 0, 1, 2)
+        self.outerBox.addWidget(self.btnBox,    3, 0, 1, 2)
         self.outerBox.setRowStretch(0, 1)
 
         self.setLayout(self.outerBox)
 
         logger.debug("Ready: GuiWritingStats")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiWritingStats")
-        return
 
     def populateGUI(self) -> None:
         """Populate list box with data from the log file."""
@@ -323,7 +322,6 @@ class GuiWritingStats(NToolDialog):
         self._loadLogFile()
         self._updateListBox()
         QApplication.restoreOverrideCursor()
-        return
 
     ##
     #  Events
@@ -331,16 +329,15 @@ class GuiWritingStats(NToolDialog):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """Capture the user closing the window."""
+        self._saveSettings()
         event.accept()
         self.softDelete()
-        return
 
     ##
-    #  Private Slots
+    #  Internal Functions
     ##
 
-    @pyqtSlot()
-    def _doClose(self) -> None:
+    def _saveSettings(self) -> None:
         """Save the state of the window, clear cache, end close."""
         self.logData = []
 
@@ -374,10 +371,6 @@ class GuiWritingStats(NToolDialog):
         pOptions.setValue("GuiWritingStats", "showIdleTime", showIdleTime)
         pOptions.setValue("GuiWritingStats", "histMax",      histMax)
         pOptions.saveSettings()
-
-        self.close()
-
-        return
 
     def _saveData(self, dataFmt: int) -> bool:
         """Save the content of the list box to a file."""
@@ -450,10 +443,6 @@ class GuiWritingStats(NToolDialog):
 
         return wSuccess
 
-    ##
-    #  Internal Functions
-    ##
-
     def _loadLogFile(self) -> None:
         """Load the content of the log file into a buffer."""
         logger.debug("Loading session log file")
@@ -497,8 +486,6 @@ class GuiWritingStats(NToolDialog):
         self.novelWords.setText(f"{ttNovel:n}")
         self.notesWords.setText(f"{ttNotes:n}")
         self.totalWords.setText(f"{ttWords:n}")
-
-        return
 
     ##
     #  Private Slots
@@ -622,5 +609,3 @@ class GuiWritingStats(NToolDialog):
             self.timeFilter += sDiff
 
         self.labelFilter.setText(formatTime(round(self.timeFilter)))
-
-        return
