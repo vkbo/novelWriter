@@ -4,287 +4,292 @@
   <context>
     <name>Builds</name>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="129" />
+        <location filename="../novelwriter/core/buildsettings.py" line="130" />
         <source>Document Filters</source>
         <translation>Document Filters</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="130" />
+        <location filename="../novelwriter/core/buildsettings.py" line="131" />
         <source>Novel Documents</source>
         <translation>Novel Documents</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="131" />
+        <location filename="../novelwriter/core/buildsettings.py" line="132" />
         <source>Project Notes</source>
         <translation>Project Notes</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="132" />
+        <location filename="../novelwriter/core/buildsettings.py" line="133" />
         <source>Inactive Documents</source>
         <translation>Inactive Documents</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="134" />
+        <location filename="../novelwriter/core/buildsettings.py" line="135" />
         <source>Headings</source>
         <translation>Headings</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="135" />
+        <location filename="../novelwriter/core/buildsettings.py" line="136" />
         <source>Partition Format</source>
         <translation>Partition Format</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="136" />
+        <location filename="../novelwriter/core/buildsettings.py" line="137" />
         <source>Chapter Format</source>
         <translation>Chapter Format</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="137" />
+        <location filename="../novelwriter/core/buildsettings.py" line="138" />
         <source>Unnumbered Format</source>
         <translation>Unnumbered Format</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="138" />
+        <location filename="../novelwriter/core/buildsettings.py" line="139" />
         <source>Scene Format</source>
         <translation>Scene Format</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="139" />
+        <location filename="../novelwriter/core/buildsettings.py" line="140" />
         <source>Alt. Scene Format</source>
         <translation>Alt. Scene Format</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="140" />
+        <location filename="../novelwriter/core/buildsettings.py" line="141" />
         <source>Section Format</source>
         <translation>Section Format</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="141" />
+        <location filename="../novelwriter/core/buildsettings.py" line="142" />
         <source>Title Styling</source>
         <translation>Title Styling</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="142" />
+        <location filename="../novelwriter/core/buildsettings.py" line="143" />
         <source>Partition Styling</source>
         <translation>Partition Styling</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="143" />
+        <location filename="../novelwriter/core/buildsettings.py" line="144" />
         <source>Chapter Styling</source>
         <translation>Chapter Styling</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="144" />
+        <location filename="../novelwriter/core/buildsettings.py" line="145" />
         <source>Scene Styling</source>
         <translation>Scene Styling</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="146" />
+        <location filename="../novelwriter/core/buildsettings.py" line="147" />
         <source>Text Content</source>
         <translation>Text Content</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="147" />
+        <location filename="../novelwriter/core/buildsettings.py" line="148" />
         <source>Include Synopsis</source>
         <translation>Include Synopsis</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="148" />
+        <location filename="../novelwriter/core/buildsettings.py" line="149" />
         <source>Include Comments</source>
         <translation>Include Comments</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="149" />
+        <location filename="../novelwriter/core/buildsettings.py" line="150" />
         <source>Include Story Structure</source>
         <translation>Include Story Structure</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="150" />
+        <location filename="../novelwriter/core/buildsettings.py" line="151" />
         <source>Include Manuscript Notes</source>
         <translation>Include Manuscript Notes</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="151" />
+        <location filename="../novelwriter/core/buildsettings.py" line="152" />
         <source>Include Keywords</source>
         <translation>Include Keywords</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="152" />
+        <location filename="../novelwriter/core/buildsettings.py" line="153" />
         <source>Include Body Text</source>
         <translation>Include Body Text</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="153" />
+        <location filename="../novelwriter/core/buildsettings.py" line="154" />
         <source>Ignore These Keywords</source>
         <translation>Ignore These Keywords</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="154" />
+        <location filename="../novelwriter/core/buildsettings.py" line="155" />
         <source>Add Titles for Notes</source>
         <translation>Add Titles for Notes</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="156" />
+        <location filename="../novelwriter/core/buildsettings.py" line="157" />
         <source>Text Format</source>
         <translation>Text Format</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="157" />
+        <location filename="../novelwriter/core/buildsettings.py" line="158" />
         <source>Text Font</source>
         <translation>Text Font</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="158" />
+        <location filename="../novelwriter/core/buildsettings.py" line="159" />
         <source>Line Height</source>
         <translation>Line Height</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="159" />
+        <location filename="../novelwriter/core/buildsettings.py" line="160" />
         <source>Justify Text Margins</source>
         <translation>Justify Text Margins</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="160" />
+        <location filename="../novelwriter/core/buildsettings.py" line="161" />
         <source>Replace Unicode Characters</source>
         <translation>Replace Unicode Characters</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="161" />
+        <location filename="../novelwriter/core/buildsettings.py" line="162" />
         <source>Replace Tabs with Spaces</source>
         <translation>Replace Tabs with Spaces</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="162" />
+        <location filename="../novelwriter/core/buildsettings.py" line="163" />
         <source>Preserve Hard Line Breaks</source>
         <translation>Preserve Hard Line Breaks</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="163" />
+        <location filename="../novelwriter/core/buildsettings.py" line="164" />
         <source>Apply Dialogue Highlighting</source>
         <translation>Apply Dialog Highlighting</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="165" />
+        <location filename="../novelwriter/core/buildsettings.py" line="166" />
         <source>First Line Indent</source>
         <translation>First Line Indent</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="166" />
+        <location filename="../novelwriter/core/buildsettings.py" line="167" />
         <source>Enable Indent</source>
         <translation>Enable Indent</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="167" />
+        <location filename="../novelwriter/core/buildsettings.py" line="168" />
         <source>Indent Width</source>
         <translation>Indent Width</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="168" />
+        <location filename="../novelwriter/core/buildsettings.py" line="169" />
         <source>Indent First Paragraph</source>
         <translation>Indent First Paragraph</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="170" />
+        <location filename="../novelwriter/core/buildsettings.py" line="171" />
         <source>Text Margins</source>
         <translation>Text Margins</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="171" />
+        <location filename="../novelwriter/core/buildsettings.py" line="172" />
         <source>Title and Partition</source>
         <translation>Title and Partition</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="172" />
+        <location filename="../novelwriter/core/buildsettings.py" line="173" />
         <source>Heading 1 and Chapter</source>
         <translation>Heading 1 and Chapter</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="173" />
+        <location filename="../novelwriter/core/buildsettings.py" line="174" />
         <source>Heading 2 and Scene</source>
         <translation>Heading 2 and Scene</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="174" />
+        <location filename="../novelwriter/core/buildsettings.py" line="175" />
         <source>Heading 3 and Section</source>
         <translation>Heading 3 and Section</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="175" />
+        <location filename="../novelwriter/core/buildsettings.py" line="176" />
         <source>Heading 4</source>
         <translation>Heading 4</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="176" />
+        <location filename="../novelwriter/core/buildsettings.py" line="177" />
         <source>Text Paragraph</source>
         <translation>Text Paragraph</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="177" />
+        <location filename="../novelwriter/core/buildsettings.py" line="178" />
         <source>Scene Separator</source>
         <translation>Scene Separator</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="179" />
+        <location filename="../novelwriter/core/buildsettings.py" line="180" />
         <source>Page Layout</source>
         <translation>Page Layout</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="180" />
+        <location filename="../novelwriter/core/buildsettings.py" line="181" />
         <source>Unit</source>
         <translation>Unit</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="181" />
+        <location filename="../novelwriter/core/buildsettings.py" line="182" />
         <source>Page Size</source>
         <translation>Page Size</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="182" />
+        <location filename="../novelwriter/core/buildsettings.py" line="183" />
         <source>Page Margins</source>
         <translation>Page Margins</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="184" />
+        <location filename="../novelwriter/core/buildsettings.py" line="185" />
         <source>Document Style</source>
         <translation>Document Style</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="185" />
+        <location filename="../novelwriter/core/buildsettings.py" line="186" />
         <source>Page Header</source>
         <translation>Page Header</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="186" />
+        <location filename="../novelwriter/core/buildsettings.py" line="187" />
         <source>Page Counter Offset</source>
         <translation>Page Counter Offset</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="187" />
+        <location filename="../novelwriter/core/buildsettings.py" line="188" />
         <source>Add Colours to Headings</source>
         <translation>Add Colors to Headings</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="188" />
+        <location filename="../novelwriter/core/buildsettings.py" line="189" />
         <source>Increase Size of Headings</source>
         <translation>Increase Size of Headings</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="189" />
+        <location filename="../novelwriter/core/buildsettings.py" line="190" />
         <source>Bold Headings</source>
         <translation>Bold Headings</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/buildsettings.py" line="191" />
+        <source>Override Document Language</source>
+        <translation>Override Document Language</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/core/buildsettings.py" line="193" />
         <source>HTML Options</source>
         <translation>HTML Options</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="192" />
+        <location filename="../novelwriter/core/buildsettings.py" line="194" />
         <source>Add CSS Styles</source>
         <translation>Add CSS Styles</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/buildsettings.py" line="193" />
+        <location filename="../novelwriter/core/buildsettings.py" line="195" />
         <source>Preserve Tab Characters</source>
         <translation>Preserve Tab Characters</translation>
     </message>
@@ -378,72 +383,72 @@
 </context><context>
     <name>Common</name>
     <message>
-        <location filename="../novelwriter/common.py" line="361" />
+        <location filename="../novelwriter/common.py" line="372" />
         <source>in the future</source>
         <translation>in the future</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="365" />
+        <location filename="../novelwriter/common.py" line="376" />
         <source>just now</source>
         <translation>just now</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="369" />
+        <location filename="../novelwriter/common.py" line="380" />
         <source>a minute ago</source>
         <translation>a minute ago</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="373" />
+        <location filename="../novelwriter/common.py" line="384" />
         <source>{0} minutes ago</source>
         <translation>{0} minutes ago</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="377" />
+        <location filename="../novelwriter/common.py" line="388" />
         <source>an hour ago</source>
         <translation>an hour ago</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="381" />
+        <location filename="../novelwriter/common.py" line="392" />
         <source>{0} hours ago</source>
         <translation>{0} hours ago</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="385" />
+        <location filename="../novelwriter/common.py" line="396" />
         <source>a day ago</source>
         <translation>a day ago</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="389" />
+        <location filename="../novelwriter/common.py" line="400" />
         <source>{0} days ago</source>
         <translation>{0} days ago</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="393" />
+        <location filename="../novelwriter/common.py" line="404" />
         <source>a week ago</source>
         <translation>a week ago</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="397" />
+        <location filename="../novelwriter/common.py" line="408" />
         <source>{0} weeks ago</source>
         <translation>{0} weeks ago</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="401" />
+        <location filename="../novelwriter/common.py" line="412" />
         <source>a month ago</source>
         <translation>a month ago</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="405" />
+        <location filename="../novelwriter/common.py" line="416" />
         <source>{0} months ago</source>
         <translation>{0} months ago</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="409" />
+        <location filename="../novelwriter/common.py" line="420" />
         <source>a year ago</source>
         <translation>a year ago</translation>
     </message>
     <message>
-        <location filename="../novelwriter/common.py" line="413" />
+        <location filename="../novelwriter/common.py" line="424" />
         <source>{0} years ago</source>
         <translation>{0} years ago</translation>
     </message>
@@ -1089,43 +1094,43 @@
 </context><context>
     <name>GuiBuildSettings</name>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="98" />
-        <location filename="../novelwriter/tools/manussettings.py" line="86" />
+        <location filename="../novelwriter/tools/manussettings.py" line="101" />
+        <location filename="../novelwriter/tools/manussettings.py" line="89" />
         <source>Manuscript Build Settings</source>
         <translation>Manuscript Build Settings</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="103" />
+        <location filename="../novelwriter/tools/manussettings.py" line="106" />
         <source>Name</source>
         <translation>Name</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="111" />
+        <location filename="../novelwriter/tools/manussettings.py" line="114" />
         <source>General</source>
         <translation>General</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="112" />
+        <location filename="../novelwriter/tools/manussettings.py" line="115" />
         <source>Selection</source>
         <translation>Selection</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="113" />
+        <location filename="../novelwriter/tools/manussettings.py" line="116" />
         <source>Headings</source>
         <translation>Headings</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="114" />
+        <location filename="../novelwriter/tools/manussettings.py" line="117" />
         <source>Formatting</source>
         <translation>Formatting</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="132" />
+        <location filename="../novelwriter/tools/manussettings.py" line="135" />
         <source>Auto-Update Preview</source>
         <translation>Auto-Update Preview</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="267" />
+        <location filename="../novelwriter/tools/manussettings.py" line="270" />
         <source>Do you want to save your changes to '{0}'?</source>
         <translation>Do you want to save your changes to '{0}'?</translation>
     </message>
@@ -4443,37 +4448,37 @@
 </context><context>
     <name>_FilterTab</name>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="325" />
+        <location filename="../novelwriter/tools/manussettings.py" line="328" />
         <source>Included in manuscript</source>
         <translation>Included in manuscript</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="326" />
+        <location filename="../novelwriter/tools/manussettings.py" line="329" />
         <source>Excluded from manuscript</source>
         <translation>Excluded from manuscript</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="360" />
+        <location filename="../novelwriter/tools/manussettings.py" line="363" />
         <source>Always included</source>
         <translation>Always included</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="364" />
+        <location filename="../novelwriter/tools/manussettings.py" line="367" />
         <source>Always excluded</source>
         <translation>Always excluded</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="368" />
+        <location filename="../novelwriter/tools/manussettings.py" line="371" />
         <source>Reset to default</source>
         <translation>Reset to default</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="372" />
+        <location filename="../novelwriter/tools/manussettings.py" line="375" />
         <source>Mark selection as</source>
         <translation>Mark selection as</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="519" />
+        <location filename="../novelwriter/tools/manussettings.py" line="522" />
         <source>Select Root Folders</source>
         <translation>Select Root Folders</translation>
     </message>
@@ -4502,84 +4507,84 @@
 </context><context>
     <name>_HeadingsTab</name>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="592" />
+        <location filename="../novelwriter/tools/manussettings.py" line="595" />
         <source>Hide</source>
         <translation>Hide</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="927" />
-        <location filename="../novelwriter/tools/manussettings.py" line="704" />
+        <location filename="../novelwriter/tools/manussettings.py" line="930" />
+        <location filename="../novelwriter/tools/manussettings.py" line="707" />
         <source>Editing: {0}</source>
         <translation>Editing: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="924" />
-        <location filename="../novelwriter/tools/manussettings.py" line="704" />
+        <location filename="../novelwriter/tools/manussettings.py" line="927" />
+        <location filename="../novelwriter/tools/manussettings.py" line="707" />
         <source>None</source>
         <translation>None</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="713" />
+        <location filename="../novelwriter/tools/manussettings.py" line="716" />
         <source>Title</source>
         <translation>Title</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="714" />
+        <location filename="../novelwriter/tools/manussettings.py" line="717" />
         <source>Chapter Number</source>
         <translation>Chapter Number</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="715" />
+        <location filename="../novelwriter/tools/manussettings.py" line="718" />
         <source>Chapter Number (Word)</source>
         <translation>Chapter Number (Word)</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="716" />
+        <location filename="../novelwriter/tools/manussettings.py" line="719" />
         <source>Chapter Number (Upper Case Roman)</source>
         <translation>Chapter Number (Upper Case Roman)</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="717" />
+        <location filename="../novelwriter/tools/manussettings.py" line="720" />
         <source>Chapter Number (Lower Case Roman)</source>
         <translation>Chapter Number (Lower Case Roman)</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="718" />
+        <location filename="../novelwriter/tools/manussettings.py" line="721" />
         <source>Scene Number (In Chapter)</source>
         <translation>Scene Number (In Chapter)</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="719" />
+        <location filename="../novelwriter/tools/manussettings.py" line="722" />
         <source>Scene Number (Absolute)</source>
         <translation>Scene Number (Absolute)</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="720" />
+        <location filename="../novelwriter/tools/manussettings.py" line="723" />
         <source>Point of View Character</source>
         <translation>Point of View Character</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="721" />
+        <location filename="../novelwriter/tools/manussettings.py" line="724" />
         <source>Focus Character</source>
         <translation>Focus Character</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="733" />
+        <location filename="../novelwriter/tools/manussettings.py" line="736" />
         <source>Insert</source>
         <translation>Insert</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="736" />
+        <location filename="../novelwriter/tools/manussettings.py" line="739" />
         <source>Apply</source>
         <translation>Apply</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="751" />
+        <location filename="../novelwriter/tools/manussettings.py" line="754" />
         <source>Centre</source>
         <translation>Center</translation>
     </message>
     <message>
-        <location filename="../novelwriter/tools/manussettings.py" line="752" />
+        <location filename="../novelwriter/tools/manussettings.py" line="755" />
         <source>Page Break</source>
         <translation>Page Break</translation>
     </message>
