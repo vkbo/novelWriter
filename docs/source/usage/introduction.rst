@@ -6,7 +6,7 @@ Introduction
 
 .. _Markdown: https://en.wikipedia.org/wiki/Markdown
 .. _Contributing Guide: https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md
-.. _Crowding: https://crowdin.com/project/novelwriter
+.. _Crowdin: https://crowdin.com/project/novelwriter
 
 In a nutshell, novelWriter is a plain text editor that lets you organise one or more novels, and
 associated notes, as many smaller documents. You can at any time generate standard document formats
