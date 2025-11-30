@@ -40,6 +40,10 @@ backups.
 * It is now possible to override the manuscript language meta value for document formats that have
   this. The IETF BCP 47 language tag is used. Issue #2328. PR #2593.
 
+**Internationalisation**
+
+* Updated US English, Italian, Norwegian, and Japanese translations. PR #2589.
+
 ----
 
 ## Version 2.8 Beta 1 [2025-10-29]
