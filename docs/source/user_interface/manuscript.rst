@@ -136,6 +136,12 @@ Any text you add that isn't highlighted in colours will remain in your formatted
 You can preview the result of these format strings by clicking :guilabel:`Apply`, and then clicking
 :guilabel:`Preview` in the **Manuscript Build** tool main window.
 
+.. note::
+
+   The language used for generating chapter numbers is defined by the project language set in
+   **Project Settings**. This feature relies on translation files existing for each language.
+   If you want to help add new languages to novelWriter, see: :ref:`docs_contributing`.
+
 
 .. _docs_ui_manuscript_head_numbers:
 

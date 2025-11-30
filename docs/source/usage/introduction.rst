@@ -5,6 +5,8 @@ Introduction
 ************
 
 .. _Markdown: https://en.wikipedia.org/wiki/Markdown
+.. _Contributing Guide: https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md
+.. _Crowding: https://crowdin.com/project/novelwriter
 
 In a nutshell, novelWriter is a plain text editor that lets you organise one or more novels, and
 associated notes, as many smaller documents. You can at any time generate standard document formats
@@ -55,3 +57,22 @@ comments, and an auto-complete menu can help you here too. More about this later
    mainly intended for character profiles and plot outlines. It is recommended to use a proper
    note-taking tool for research. This is anyway more practical as you may use the same research
    for multiple projects.
+
+
+.. _docs_contributing:
+
+Contributing
+============
+
+This project relies on contributions to add new features. In particular, adding translations into
+other languages, or updating translations for existing languages, is particularly useful.
+
+For code contributions, please read the official `Contributing Guide`_.
+
+For translations, please use the project page on Crowdin_. For each language, there are two
+translation sets. One for the application itself, labelled "Main GUI". This is a fairly large
+dataset to translate. A smaller set called "Project Exports" is also available. The latter is what
+makes a language available in **Project Settings** in the application. It is a fairly small set to
+translate, and you can choose to translate only this set if you wish. If the language you wish to
+contribute to is not available in the list, you can message the maintainer on the Crowdin page to
+add new languages to the project.

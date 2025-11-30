@@ -1,5 +1,51 @@
 # novelWriter Changelog
 
+## Version 2.8 RC 1 [2025-11-30]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed a bug that would block the return key in the editor if French style space padding was
+  enabled in Preferences. Issue #2586. PR #2587.
+* Fixed an issue where dialog state was no longer saved properly when they were closed for many
+  dialogs. This may be due to a change in the Qt framework, or a bug from a previous release.
+  PR #2585.
+* Fixed an issue where a confusing error would show up if the user cancelled the file dialog during
+  example project creation. A new dialog now tells you what the actual issue was and sends you back
+  to the welcome dialog. Issue #2590. PR #2592.
+
+**Features**
+
+* Vim mode has been added to the editor, and can now be enabled in Preferences. Contributed by
+  @idealemu. Issue #2493. PRs #2499 and #2588.
+
+**Improvements**
+
+* Using format button from the editor toolbar will not apply the formatting on lines that cannot
+  take formatting, like headings and meta data lines. Issue #2560. PR #2575.
+* Added an option in Preferences that will try to centre the main app windows during startup. This
+  effect is always triggered if the main window is scaled down at startup due to being opened on a
+  smaller screen. Issue #2579. PRs #2580 and #2581.
+* The example project has been updated and improved. Issue #2570. PRs #2572 and #2574.
+* The spacing between icon and text in push buttons has been increased. PR #2582.
+* The font selection dialog now remembers its previous size, and uses the new standard push buttons
+  instead of the Qt defaults. PR #2584.
+* It is now possible to override the manuscript language meta value for document formats that have
+  this. The IETF BCP 47 language tag is used. Issue #2328. PR #2593.
+
+**Internationalisation**
+
+* Updated US English, Italian, Norwegian, and Japanese translations. PR #2589.
+
+----
+
 ## Version 2.8 Beta 1 [2025-10-29]
 
 ### Release Notes
