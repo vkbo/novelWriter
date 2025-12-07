@@ -40,8 +40,8 @@ from enum import Enum, IntFlag
 from time import time
 
 from PyQt6.QtCore import (
-    QObject, QPoint, QRect, QRegularExpression, QRunnable, Qt, QTimer,
-    QVariant, pyqtSignal, pyqtSlot
+    QMimeData, QObject, QPoint, QRect, QRegularExpression, QRunnable, Qt,
+    QTimer, QVariant, pyqtSignal, pyqtSlot
 )
 from PyQt6.QtGui import (
     QAction, QCursor, QDragEnterEvent, QDragMoveEvent, QDropEvent,
@@ -1071,6 +1071,13 @@ class GuiDocEditor(QPlainTextEdit):
             rect.translate(vM.left(), vM.top())
             return rect
         return super().inputMethodQuery(query)
+
+    def insertFromMimeData(self, source: QMimeData | None) -> None:
+        """Overload mime data insertion in the document."""
+        if source and source.hasText():
+            # Block empty inserts (Issue #2598)
+            logger.debug("Inserted text in document")
+            super().insertFromMimeData(source)
 
     ##
     #  Public Slots
