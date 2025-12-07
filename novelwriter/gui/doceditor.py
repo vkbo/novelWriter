@@ -1076,7 +1076,7 @@ class GuiDocEditor(QPlainTextEdit):
         """Overload mime data insertion in the document."""
         if source and source.hasText():
             # Block empty inserts (Issue #2598)
-            logger.debug("Inserted text in document")
+            logger.debug("Inserted text into document")
             super().insertFromMimeData(source)
 
     ##
