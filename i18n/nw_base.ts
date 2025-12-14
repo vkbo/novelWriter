@@ -1184,121 +1184,121 @@
 </context><context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3452" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3459" />
         <source>Line: {0} ({1})</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3453" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3460" />
         <source>Selected: {0}</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3558" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3565" />
         <source>NORMAL</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3559" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3566" />
         <source>INSERT</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3560" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3567" />
         <source>VISUAL</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3561" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3568" />
         <source>V-LINE</source>
         <translation type="unfinished" />
     </message>
 </context><context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3246" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3253" />
         <source>Toggle Tool Bar</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3251" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3258" />
         <source>Outline</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3256" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3263" />
         <source>Search</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3261" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3268" />
         <source>Toggle Focus Mode</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3266" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3273" />
         <source>Close</source>
         <translation type="unfinished" />
     </message>
 </context><context>
     <name>GuiDocEditSearch</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2896" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2903" />
         <source>Search for</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2900" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2907" />
         <source>Replace with</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2908" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2915" />
         <source>Search</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2913" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2920" />
         <source>Case Sensitive</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2919" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2926" />
         <source>Whole Words Only</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2925" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2932" />
         <source>RegEx Mode</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2931" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2938" />
         <source>Loop Search</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2937" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2944" />
         <source>Search Next File</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2945" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2952" />
         <source>Preserve Case</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2953" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2960" />
         <source>Close Search</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2964" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2971" />
         <source>Find in current document</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2968" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2975" />
         <source>Find and replace in current document</source>
         <translation type="unfinished" />
     </message>
@@ -1360,82 +1360,82 @@
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1189" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1196" />
         <source>Set as Document Name</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1195" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1202" />
         <source>Open URL</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1202" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1209" />
         <source>Follow Tag</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1206" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1213" />
         <source>Create Note for Tag</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1212" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1219" />
         <source>Cut</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1214" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1221" />
         <source>Copy</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1217" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1224" />
         <source>Paste</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1222" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1229" />
         <source>Select All</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1224" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1231" />
         <source>Select Word</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1226" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1233" />
         <source>Select Paragraph</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1240" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1247" />
         <source>Spelling Suggestion(s)</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1245" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1252" />
         <source>No Suggestions</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1249" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1256" />
         <source>Ignore Word</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1251" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1258" />
         <source>Add Word to Dictionary</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1645" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1652" />
         <source>Please select some text before calling replace quotes.</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2334" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2341" />
         <source>Do you want to create a new project note for the tag '{0}'?</source>
         <translation type="unfinished" />
     </message>
@@ -1516,57 +1516,57 @@
 </context><context>
     <name>GuiDocToolBar</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2753" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2760" />
         <source>Markdown Bold</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2759" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2766" />
         <source>Markdown Italic</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2765" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2772" />
         <source>Markdown Strikethrough</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2771" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2778" />
         <source>Markdown Highlight</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2777" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2784" />
         <source>Shortcode Bold</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2783" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2790" />
         <source>Shortcode Italic</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2789" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2796" />
         <source>Shortcode Strikethrough</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2795" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2802" />
         <source>Shortcode Underline</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2801" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2808" />
         <source>Shortcode Highlight</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2807" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2814" />
         <source>Shortcode Superscript</source>
         <translation type="unfinished" />
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2813" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2820" />
         <source>Shortcode Subscript</source>
         <translation type="unfinished" />
     </message>
