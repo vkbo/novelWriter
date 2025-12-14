@@ -55,6 +55,8 @@ else
     echo "Missing: setup/macos/Info.plist"
     exit 1
 fi
+echo "Generating requirements.txt"
+python3 pkgutils.py gen-req
 
 # Check that other assets are present
 echo "Checking assets"
@@ -108,7 +110,6 @@ conda install -c conda-forge enchant hunspell-en --yes
 
 # Install dependencies
 echo "Installing Python dependencies ..."
-python3 pkgutils.py gen-req
 pip install -r "$SRC_DIR/requirements.txt"
 
 # Leave conda env
