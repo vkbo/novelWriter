@@ -276,7 +276,7 @@
     <message>
         <location filename="../novelwriter/core/buildsettings.py" line="191" />
         <source>Override Document Language</source>
-        <translation type="unfinished" />
+        <translation>覆盖文档语言</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/buildsettings.py" line="193" />
@@ -298,87 +298,87 @@
     <message>
         <location filename="../novelwriter/gui/theme.py" line="63" />
         <source>OK</source>
-        <translation type="unfinished">OK</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="64" />
         <source>Cancel</source>
-        <translation type="unfinished">取消</translation>
+        <translation>取消</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="65" />
         <source>&amp;Yes</source>
-        <translation type="unfinished">是(&amp;Y)</translation>
+        <translation>是(&amp;Y)</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="66" />
         <source>&amp;No</source>
-        <translation type="unfinished">否(&amp;N)</translation>
+        <translation>否(&amp;N)</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="67" />
         <source>Open</source>
-        <translation type="unfinished">打开</translation>
+        <translation>打开</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="68" />
         <source>Close</source>
-        <translation type="unfinished">关闭</translation>
+        <translation>关闭</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="69" />
         <source>Save</source>
-        <translation type="unfinished">保存</translation>
+        <translation>保存</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="70" />
         <source>Browse</source>
-        <translation type="unfinished">浏览</translation>
+        <translation>浏览</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="71" />
         <source>List</source>
-        <translation type="unfinished">列表</translation>
+        <translation>列表</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="72" />
         <source>New</source>
-        <translation type="unfinished">新建</translation>
+        <translation>新建</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="73" />
         <source>Create</source>
-        <translation type="unfinished">创建</translation>
+        <translation>创建</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="74" />
         <source>Reset</source>
-        <translation type="unfinished">重置</translation>
+        <translation>重置</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="75" />
         <source>Insert</source>
-        <translation type="unfinished">插入</translation>
+        <translation>插入</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="76" />
         <source>Apply</source>
-        <translation type="unfinished">应用</translation>
+        <translation>应用</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="77" />
         <source>Build</source>
-        <translation type="unfinished">构建</translation>
+        <translation>构建</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="78" />
         <source>Print</source>
-        <translation type="unfinished">打印</translation>
+        <translation>打印</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="79" />
         <source>Preview</source>
-        <translation type="unfinished">预览</translation>
+        <translation>预览</translation>
     </message>
 </context><context>
     <name>Common</name>
@@ -907,7 +907,7 @@
     <message>
         <location filename="../novelwriter/constants.py" line="461" />
         <source>Background Colour</source>
-        <translation type="unfinished" />
+        <translation>背景色</translation>
     </message>
     <message>
         <location filename="../novelwriter/constants.py" line="462" />
@@ -937,7 +937,7 @@
     <message>
         <location filename="../novelwriter/constants.py" line="467" />
         <source>Cyan</source>
-        <translation type="unfinished" />
+        <translation>青色</translation>
     </message>
     <message>
         <location filename="../novelwriter/constants.py" line="468" />
@@ -952,17 +952,17 @@
     <message>
         <location filename="../novelwriter/constants.py" line="477" />
         <source>System Theme</source>
-        <translation type="unfinished" />
+        <translation>系统主题</translation>
     </message>
     <message>
         <location filename="../novelwriter/constants.py" line="478" />
         <source>Light Theme</source>
-        <translation type="unfinished" />
+        <translation>浅色主题</translation>
     </message>
     <message>
         <location filename="../novelwriter/constants.py" line="479" />
         <source>Dark Theme</source>
-        <translation type="unfinished" />
+        <translation>深色主题</translation>
     </message>
     <message>
         <location filename="../novelwriter/constants.py" line="516" />
@@ -1127,7 +1127,7 @@
     <message>
         <location filename="../novelwriter/tools/manussettings.py" line="135" />
         <source>Auto-Update Preview</source>
-        <translation type="unfinished" />
+        <translation>自动更新预览</translation>
     </message>
     <message>
         <location filename="../novelwriter/tools/manussettings.py" line="270" />
@@ -1184,121 +1184,121 @@
 </context><context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3452" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3459" />
         <source>Line: {0} ({1})</source>
         <translation>行数: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3453" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3460" />
         <source>Selected: {0}</source>
         <translation>已选中: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3558" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3565" />
         <source>NORMAL</source>
-        <translation type="unfinished" />
+        <translation>NORMAL</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3559" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3566" />
         <source>INSERT</source>
-        <translation type="unfinished" />
+        <translation>INSERT</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3560" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3567" />
         <source>VISUAL</source>
-        <translation type="unfinished" />
+        <translation>VISUAL</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3561" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3568" />
         <source>V-LINE</source>
-        <translation type="unfinished" />
+        <translation>V-LINE</translation>
     </message>
 </context><context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3246" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3253" />
         <source>Toggle Tool Bar</source>
         <translation>切换工具栏</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3251" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3258" />
         <source>Outline</source>
         <translation>提纲</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3256" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3263" />
         <source>Search</source>
         <translation>搜索</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3261" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3268" />
         <source>Toggle Focus Mode</source>
         <translation>切换聚焦模式</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3266" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3273" />
         <source>Close</source>
         <translation>关闭</translation>
     </message>
 </context><context>
     <name>GuiDocEditSearch</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2896" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2903" />
         <source>Search for</source>
         <translation>搜索</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2900" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2907" />
         <source>Replace with</source>
         <translation>替换为</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2908" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2915" />
         <source>Search</source>
         <translation>搜索</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2913" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2920" />
         <source>Case Sensitive</source>
         <translation>大小写敏感</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2919" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2926" />
         <source>Whole Words Only</source>
         <translation>匹配整个单词</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2925" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2932" />
         <source>RegEx Mode</source>
         <translation>正则表达式模式</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2931" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2938" />
         <source>Loop Search</source>
         <translation>循环搜索</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2937" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2944" />
         <source>Search Next File</source>
         <translation>搜索下一个文件</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2945" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2952" />
         <source>Preserve Case</source>
         <translation>保留大小写</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2953" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2960" />
         <source>Close Search</source>
         <translation>关闭搜索</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2964" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2971" />
         <source>Find in current document</source>
         <translation>在当前文档中查找</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2968" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2975" />
         <source>Find and replace in current document</source>
         <translation>在当前文档中查找和替换</translation>
     </message>
@@ -1337,7 +1337,7 @@
     <message>
         <location filename="../novelwriter/gui/doceditor.py" line="820" />
         <source>Cannot apply requested format on this line</source>
-        <translation type="unfinished" />
+        <translation>不可在改行应用请求的格式</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/doceditor.py" line="842" />
@@ -1360,82 +1360,82 @@
         <translation>文件位置</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1189" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1196" />
         <source>Set as Document Name</source>
         <translation>设置为文档名称</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1195" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1202" />
         <source>Open URL</source>
         <translation>打开 URL</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1202" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1209" />
         <source>Follow Tag</source>
         <translation>跟随标签</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1206" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1213" />
         <source>Create Note for Tag</source>
         <translation>为标签创建笔记</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1212" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1219" />
         <source>Cut</source>
         <translation>剪贴</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1214" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1221" />
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1217" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1224" />
         <source>Paste</source>
         <translation>粘贴</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1222" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1229" />
         <source>Select All</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1224" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1231" />
         <source>Select Word</source>
         <translation>选定单词</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1226" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1233" />
         <source>Select Paragraph</source>
         <translation>选定段落</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1240" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1247" />
         <source>Spelling Suggestion(s)</source>
         <translation>拼写建议</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1245" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1252" />
         <source>No Suggestions</source>
         <translation>无建议</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1249" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1256" />
         <source>Ignore Word</source>
         <translation>忽略单词</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1251" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1258" />
         <source>Add Word to Dictionary</source>
         <translation>向字典中添加单词</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1645" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1652" />
         <source>Please select some text before calling replace quotes.</source>
         <translation>在替换引号之前请选择文本。</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2334" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2341" />
         <source>Do you want to create a new project note for the tag '{0}'?</source>
         <translation>您想要为标记为'{0}'创建一个新的项目说明吗？</translation>
     </message>
@@ -1516,57 +1516,57 @@
 </context><context>
     <name>GuiDocToolBar</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2753" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2760" />
         <source>Markdown Bold</source>
         <translation>Markdown加粗</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2759" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2766" />
         <source>Markdown Italic</source>
         <translation>Markdown斜体</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2765" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2772" />
         <source>Markdown Strikethrough</source>
         <translation>Markdown 删除线</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2771" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2778" />
         <source>Markdown Highlight</source>
-        <translation type="unfinished" />
+        <translation>Markdown 高亮显示</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2777" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2784" />
         <source>Shortcode Bold</source>
         <translation>Shortcode 加粗</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2783" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2790" />
         <source>Shortcode Italic</source>
         <translation>Shortcode斜体</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2789" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2796" />
         <source>Shortcode Strikethrough</source>
         <translation>Shortcode删除线</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2795" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2802" />
         <source>Shortcode Underline</source>
         <translation>Shortcode下划线</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2801" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2808" />
         <source>Shortcode Highlight</source>
         <translation>短代码高亮</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2807" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2814" />
         <source>Shortcode Superscript</source>
         <translation>Shortcode上标</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2813" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2820" />
         <source>Shortcode Subscript</source>
         <translation>Shortcode下标</translation>
     </message>
@@ -1600,12 +1600,12 @@
     <message>
         <location filename="../novelwriter/gui/docviewer.py" line="874" />
         <source>Notes</source>
-        <translation type="unfinished" />
+        <translation>笔记</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/docviewer.py" line="880" />
         <source>Show Notes</source>
-        <translation type="unfinished" />
+        <translation>显示笔记</translation>
     </message>
 </context><context>
     <name>GuiDocViewHeader</name>
@@ -1785,7 +1785,7 @@
     <message>
         <location filename="../novelwriter/guimain.py" line="496" />
         <source>The project index is broken. Rebuilding index.</source>
-        <translation type="unfinished" />
+        <translation>项目索引已损坏。正在重建索引。</translation>
     </message>
     <message>
         <location filename="../novelwriter/guimain.py" line="660" />
@@ -2833,18 +2833,18 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="187" />
         <source>Light colour theme</source>
-        <translation type="unfinished" />
+        <translation>淡色主题</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="192" />
         <location filename="../novelwriter/dialogs/preferences.py" line="188" />
         <source>You can change theme mode from the sidebar.</source>
-        <translation type="unfinished" />
+        <translation>您可以从侧边栏更改主题模式。</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="191" />
         <source>Dark colour theme</source>
-        <translation type="unfinished" />
+        <translation>深色主题</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="204" />
@@ -2937,7 +2937,7 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="302" />
         <source>Theme Colours</source>
-        <translation type="unfinished">主题颜色</translation>
+        <translation>主题颜色</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="308" />
@@ -3013,12 +3013,12 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="370" />
         <source>Centre window on startup</source>
-        <translation type="unfinished" />
+        <translation>启动时中心窗口</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="371" />
         <source>Applies to main window and welcome dialog.</source>
-        <translation type="unfinished" />
+        <translation>应用于主窗口和欢迎对话框。</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="377" />
@@ -3198,7 +3198,7 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="566" />
         <source>Highlight current line</source>
-        <translation type="unfinished" />
+        <translation>高亮显示当前行</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="573" />
@@ -3344,7 +3344,7 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="719" />
         <source>Highlight multiple spaces between words</source>
-        <translation type="unfinished" />
+        <translation>高亮显示单词之间的多个空格</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="726" />
@@ -3475,17 +3475,17 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="874" />
         <source>Features</source>
-        <translation type="unfinished" />
+        <translation>特性</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="883" />
         <source>Enable Vim mode</source>
-        <translation type="unfinished" />
+        <translation>启用 Vim 模式</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="884" />
         <source>Switch the editor to use Vim editor commands.</source>
-        <translation type="unfinished" />
+        <translation>切换编辑器以使用 Vim 编辑器命令。</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="946" />
@@ -3495,12 +3495,12 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="1151" />
         <source>Are you sure you want to enable Vim mode?</source>
-        <translation type="unfinished" />
+        <translation>您确定要启用 Vim 模式吗？</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="1152" />
         <source>This changes how the editor accepts input.</source>
-        <translation type="unfinished" />
+        <translation>这会改变编辑器接受输入的方式。</translation>
     </message>
 </context><context>
     <name>GuiProjectSearch</name>
@@ -3734,7 +3734,7 @@
     <message>
         <location filename="../novelwriter/gui/sidebar.py" line="82" />
         <source>Switch Colour Theme</source>
-        <translation type="unfinished" />
+        <translation>切换颜色主题</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/sidebar.py" line="86" />
@@ -4240,7 +4240,7 @@
     <message>
         <location filename="../novelwriter/shared.py" line="317" />
         <source>Select Project Folder</source>
-        <translation type="unfinished">选择项目文件夹</translation>
+        <translation>选择项目文件夹</translation>
     </message>
     <message>
         <location filename="../novelwriter/shared.py" line="326" />
@@ -4737,7 +4737,7 @@
     <message>
         <location filename="../novelwriter/tools/welcome.py" line="366" />
         <source>You must select a location for the example project.</source>
-        <translation type="unfinished" />
+        <translation>您必须为示例项目选择一个位置。</translation>
     </message>
 </context><context>
     <name>_OverviewPage</name>
@@ -4835,7 +4835,7 @@
     <message>
         <location filename="../novelwriter/tools/welcome.py" line="441" />
         <source>Select to create an example project</source>
-        <translation type="unfinished" />
+        <translation>选择创建一个示例工程</translation>
     </message>
 </context><context>
     <name>_ReplacePage</name>
@@ -4999,7 +4999,7 @@
     <message>
         <location filename="../novelwriter/dialogs/projectsettings.py" line="397" />
         <source>Custom</source>
-        <translation type="unfinished">自定义</translation>
+        <translation>自定义</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/projectsettings.py" line="411" />

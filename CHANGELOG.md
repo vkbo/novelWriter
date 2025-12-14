@@ -1,5 +1,37 @@
 # novelWriter Changelog
 
+## Version 2.8 [2025-12-14]
+
+### Release Notes
+
+The 2.8 release is based on the features added in 2.8 beta 1 and 2.8 RC 1.
+
+See the website for complete [Release Notes](https://novelwriter.io/releases/release_2_8.html).
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an issue where the app could crash when the user pasted from an empty clipboard. This appears
+  to be a Qt or PyQt bug, and is not present on the later releases, but a fix has been added that
+  ensures the bug is not triggered. Issue #2598. PR #2602.
+
+**Documentation**
+
+* Fixed a broken link in the updated 2.8 docs. PR #2595.
+
+**Internationalisation**
+
+* Updated Czech, German, US English, Italian, Japanese, Norwegian and Chinese translation files
+  from the Crowdin project page. PR #2608.
+
+**Packaging**
+
+* Added `qt6-svg-plugins` as a direct dependency of novelWriter on Debian. This package was not
+  always installed on some distros. Issue #2604. PR #2607.
+
+----
+
 ## Version 2.8 RC 1 [2025-11-30]
 
 ### Release Notes
