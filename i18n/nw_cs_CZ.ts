@@ -276,7 +276,7 @@
     <message>
         <location filename="../novelwriter/core/buildsettings.py" line="191" />
         <source>Override Document Language</source>
-        <translation type="unfinished" />
+        <translation>Přepsat jazyk dokumentu</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/buildsettings.py" line="193" />
@@ -298,87 +298,87 @@
     <message>
         <location filename="../novelwriter/gui/theme.py" line="63" />
         <source>OK</source>
-        <translation type="unfinished">Ok</translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="64" />
         <source>Cancel</source>
-        <translation type="unfinished">Zrušit</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="65" />
         <source>&amp;Yes</source>
-        <translation type="unfinished">&amp;Ano</translation>
+        <translation>&amp;Ano</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="66" />
         <source>&amp;No</source>
-        <translation type="unfinished">&amp;Ne</translation>
+        <translation>&amp;Ne</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="67" />
         <source>Open</source>
-        <translation type="unfinished">Otevřít</translation>
+        <translation>Otevřít</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="68" />
         <source>Close</source>
-        <translation type="unfinished">Zavřít</translation>
+        <translation>Zavřít</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="69" />
         <source>Save</source>
-        <translation type="unfinished">Uložit</translation>
+        <translation>Uložit</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="70" />
         <source>Browse</source>
-        <translation type="unfinished">Procházet</translation>
+        <translation>Procházet</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="71" />
         <source>List</source>
-        <translation type="unfinished">Seznam</translation>
+        <translation>Seznam</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="72" />
         <source>New</source>
-        <translation type="unfinished">Nový</translation>
+        <translation>Nový</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="73" />
         <source>Create</source>
-        <translation type="unfinished">Vytvořit</translation>
+        <translation>Vytvořit</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="74" />
         <source>Reset</source>
-        <translation type="unfinished">Resetovat</translation>
+        <translation>Resetovat</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="75" />
         <source>Insert</source>
-        <translation type="unfinished">Vložit</translation>
+        <translation>Vložit</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="76" />
         <source>Apply</source>
-        <translation type="unfinished">Použít</translation>
+        <translation>Použít</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="77" />
         <source>Build</source>
-        <translation type="unfinished">Sestavit</translation>
+        <translation>Sestavit</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="78" />
         <source>Print</source>
-        <translation type="unfinished">Tisk</translation>
+        <translation>Tisk</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/theme.py" line="79" />
         <source>Preview</source>
-        <translation type="unfinished">Náhled</translation>
+        <translation>Náhled</translation>
     </message>
 </context><context>
     <name>Common</name>
@@ -907,7 +907,7 @@
     <message>
         <location filename="../novelwriter/constants.py" line="461" />
         <source>Background Colour</source>
-        <translation type="unfinished" />
+        <translation>Barva pozadí</translation>
     </message>
     <message>
         <location filename="../novelwriter/constants.py" line="462" />
@@ -937,7 +937,7 @@
     <message>
         <location filename="../novelwriter/constants.py" line="467" />
         <source>Cyan</source>
-        <translation type="unfinished" />
+        <translation>Tyrkysová</translation>
     </message>
     <message>
         <location filename="../novelwriter/constants.py" line="468" />
@@ -952,17 +952,17 @@
     <message>
         <location filename="../novelwriter/constants.py" line="477" />
         <source>System Theme</source>
-        <translation type="unfinished" />
+        <translation>Motiv systému</translation>
     </message>
     <message>
         <location filename="../novelwriter/constants.py" line="478" />
         <source>Light Theme</source>
-        <translation type="unfinished" />
+        <translation>Světlý režim</translation>
     </message>
     <message>
         <location filename="../novelwriter/constants.py" line="479" />
         <source>Dark Theme</source>
-        <translation type="unfinished" />
+        <translation>Tmavý motiv</translation>
     </message>
     <message>
         <location filename="../novelwriter/constants.py" line="516" />
@@ -1127,7 +1127,7 @@
     <message>
         <location filename="../novelwriter/tools/manussettings.py" line="135" />
         <source>Auto-Update Preview</source>
-        <translation type="unfinished" />
+        <translation>Náhled automatické aktualizace</translation>
     </message>
     <message>
         <location filename="../novelwriter/tools/manussettings.py" line="270" />
@@ -1184,121 +1184,121 @@
 </context><context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3452" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3459" />
         <source>Line: {0} ({1})</source>
         <translation>Řádek: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3453" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3460" />
         <source>Selected: {0}</source>
         <translation>Vybráno: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3558" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3565" />
         <source>NORMAL</source>
-        <translation type="unfinished" />
+        <translation>NORMÁLNÍ</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3559" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3566" />
         <source>INSERT</source>
-        <translation type="unfinished" />
+        <translation>VLOŽIT</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3560" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3567" />
         <source>VISUAL</source>
-        <translation type="unfinished" />
+        <translation>VIZUÁLNÍ</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3561" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3568" />
         <source>V-LINE</source>
-        <translation type="unfinished" />
+        <translation>V-LINE</translation>
     </message>
 </context><context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3246" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3253" />
         <source>Toggle Tool Bar</source>
         <translation>Přepnout nástrojovou lištu</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3251" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3258" />
         <source>Outline</source>
         <translation>Podtržený</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3256" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3263" />
         <source>Search</source>
         <translation>Hledat</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3261" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3268" />
         <source>Toggle Focus Mode</source>
         <translation>Přepnout režim soustředění</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3266" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3273" />
         <source>Close</source>
         <translation>Zavřít</translation>
     </message>
 </context><context>
     <name>GuiDocEditSearch</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2896" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2903" />
         <source>Search for</source>
         <translation>Najít</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2900" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2907" />
         <source>Replace with</source>
         <translation>Nahradit</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2908" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2915" />
         <source>Search</source>
         <translation>Hledat</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2913" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2920" />
         <source>Case Sensitive</source>
         <translation>Rozlišovat velká a malá písmena</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2919" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2926" />
         <source>Whole Words Only</source>
         <translation>Pouze celá slova</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2925" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2932" />
         <source>RegEx Mode</source>
         <translation>RegEx režim</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2931" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2938" />
         <source>Loop Search</source>
         <translation>Hledání ve smyčce</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2937" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2944" />
         <source>Search Next File</source>
         <translation>Hledat další soubor</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2945" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2952" />
         <source>Preserve Case</source>
         <translation>Preserve Case</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2953" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2960" />
         <source>Close Search</source>
         <translation>Ukončit hledání</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2964" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2971" />
         <source>Find in current document</source>
         <translation>Najít v aktuálním dokumentu</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2968" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2975" />
         <source>Find and replace in current document</source>
         <translation>Najít a nahradit v aktuálním dokumentu</translation>
     </message>
@@ -1337,7 +1337,7 @@
     <message>
         <location filename="../novelwriter/gui/doceditor.py" line="820" />
         <source>Cannot apply requested format on this line</source>
-        <translation type="unfinished" />
+        <translation>Na tomto řádku nejde formát použít</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/doceditor.py" line="842" />
@@ -1360,82 +1360,82 @@
         <translation>Umístění souboru: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1189" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1196" />
         <source>Set as Document Name</source>
         <translation>Nastavit jako název dokumentu</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1195" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1202" />
         <source>Open URL</source>
         <translation>Otevřít URL</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1202" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1209" />
         <source>Follow Tag</source>
         <translation>Sledovat štítek</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1206" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1213" />
         <source>Create Note for Tag</source>
         <translation>Vytvořit poznámku pro štítek</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1212" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1219" />
         <source>Cut</source>
         <translation>Vyjmout</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1214" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1221" />
         <source>Copy</source>
         <translation>Kopírovat</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1217" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1224" />
         <source>Paste</source>
         <translation>Vložit</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1222" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1229" />
         <source>Select All</source>
         <translation>Vybrat vše</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1224" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1231" />
         <source>Select Word</source>
         <translation>Vybrat slovo</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1226" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1233" />
         <source>Select Paragraph</source>
         <translation>Vybrat odstavec</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1240" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1247" />
         <source>Spelling Suggestion(s)</source>
         <translation>Návrhy opravy</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1245" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1252" />
         <source>No Suggestions</source>
         <translation>Žádné návrhy</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1249" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1256" />
         <source>Ignore Word</source>
         <translation>Ignorovat slovo</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1251" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1258" />
         <source>Add Word to Dictionary</source>
         <translation>Přidat slovo do slovníku</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1645" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1652" />
         <source>Please select some text before calling replace quotes.</source>
         <translation>Vyberte prosím nějaký text před voláním nahrazujících uvozovek.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2334" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2341" />
         <source>Do you want to create a new project note for the tag '{0}'?</source>
         <translation>Chcete vytvořit novou poznámku projektu pro značku '{0}'?</translation>
     </message>
@@ -1516,57 +1516,57 @@
 </context><context>
     <name>GuiDocToolBar</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2753" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2760" />
         <source>Markdown Bold</source>
         <translation>Markdown Tučně</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2759" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2766" />
         <source>Markdown Italic</source>
         <translation>Markdown Kurzíva</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2765" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2772" />
         <source>Markdown Strikethrough</source>
         <translation>Markdown Přeškrtnuté</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2771" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2778" />
         <source>Markdown Highlight</source>
-        <translation type="unfinished" />
+        <translation>Zvýraznit Markdown</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2777" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2784" />
         <source>Shortcode Bold</source>
         <translation>Shortcode Tučně</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2783" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2790" />
         <source>Shortcode Italic</source>
         <translation>Shortcode Kurzíva</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2789" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2796" />
         <source>Shortcode Strikethrough</source>
         <translation>Shortcode Přeškrtnuté</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2795" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2802" />
         <source>Shortcode Underline</source>
         <translation>Shortcode Podtržené</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2801" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2808" />
         <source>Shortcode Highlight</source>
         <translation>Shortcode Zvýraznění</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2807" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2814" />
         <source>Shortcode Superscript</source>
         <translation>Shortcode Horní index</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2813" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2820" />
         <source>Shortcode Subscript</source>
         <translation>Shortcode Dolní index</translation>
     </message>
@@ -1600,12 +1600,12 @@
     <message>
         <location filename="../novelwriter/gui/docviewer.py" line="874" />
         <source>Notes</source>
-        <translation type="unfinished" />
+        <translation>Poznámky</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/docviewer.py" line="880" />
         <source>Show Notes</source>
-        <translation type="unfinished" />
+        <translation>Zobrazit poznámky</translation>
     </message>
 </context><context>
     <name>GuiDocViewHeader</name>
@@ -1785,7 +1785,7 @@
     <message>
         <location filename="../novelwriter/guimain.py" line="496" />
         <source>The project index is broken. Rebuilding index.</source>
-        <translation type="unfinished" />
+        <translation>Index projektu je zastaralý nebo nefunkční. Obnovte index.</translation>
     </message>
     <message>
         <location filename="../novelwriter/guimain.py" line="660" />
@@ -2833,18 +2833,18 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="187" />
         <source>Light colour theme</source>
-        <translation type="unfinished" />
+        <translation>Světlý barevný motiv</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="192" />
         <location filename="../novelwriter/dialogs/preferences.py" line="188" />
         <source>You can change theme mode from the sidebar.</source>
-        <translation type="unfinished" />
+        <translation>Režim motivu můžete změnit v postranním panelu.</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="191" />
         <source>Dark colour theme</source>
-        <translation type="unfinished" />
+        <translation>Tmavý barevný motiv</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="204" />
@@ -2937,7 +2937,7 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="302" />
         <source>Theme Colours</source>
-        <translation type="unfinished">Barvy šablony</translation>
+        <translation>Barvy motivu</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="308" />
@@ -3013,12 +3013,12 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="370" />
         <source>Centre window on startup</source>
-        <translation type="unfinished" />
+        <translation>Střed okna při spuštění</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="371" />
         <source>Applies to main window and welcome dialog.</source>
-        <translation type="unfinished" />
+        <translation>Platí pro hlavní okno a uvítací dialog.</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="377" />
@@ -3198,7 +3198,7 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="566" />
         <source>Highlight current line</source>
-        <translation type="unfinished" />
+        <translation>Zvýraznit aktuální řádek</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="573" />
@@ -3344,7 +3344,7 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="719" />
         <source>Highlight multiple spaces between words</source>
-        <translation type="unfinished" />
+        <translation>Zvýraznit více mezer mezi slovy</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="726" />
@@ -3475,17 +3475,17 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="874" />
         <source>Features</source>
-        <translation type="unfinished" />
+        <translation>Funkce</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="883" />
         <source>Enable Vim mode</source>
-        <translation type="unfinished" />
+        <translation>Povolit Vim mód</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="884" />
         <source>Switch the editor to use Vim editor commands.</source>
-        <translation type="unfinished" />
+        <translation>Přepne editor pro používání Vim příkazů.</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="946" />
@@ -3495,12 +3495,12 @@
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="1151" />
         <source>Are you sure you want to enable Vim mode?</source>
-        <translation type="unfinished" />
+        <translation>Jste si jisti, že chcete povolit režim Vim?</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="1152" />
         <source>This changes how the editor accepts input.</source>
-        <translation type="unfinished" />
+        <translation>Tím se změní způsob, jakým editor přijímá vstupy.</translation>
     </message>
 </context><context>
     <name>GuiProjectSearch</name>
@@ -3734,7 +3734,7 @@
     <message>
         <location filename="../novelwriter/gui/sidebar.py" line="82" />
         <source>Switch Colour Theme</source>
-        <translation type="unfinished" />
+        <translation>Přepnout barevné téma</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/sidebar.py" line="86" />
@@ -4240,7 +4240,7 @@
     <message>
         <location filename="../novelwriter/shared.py" line="317" />
         <source>Select Project Folder</source>
-        <translation type="unfinished">Vybrat složku projektu</translation>
+        <translation>Vyberte složku projektu</translation>
     </message>
     <message>
         <location filename="../novelwriter/shared.py" line="326" />
@@ -4737,7 +4737,7 @@
     <message>
         <location filename="../novelwriter/tools/welcome.py" line="366" />
         <source>You must select a location for the example project.</source>
-        <translation type="unfinished" />
+        <translation>Musíte vybrat umístění pro ukázkový projekt.</translation>
     </message>
 </context><context>
     <name>_OverviewPage</name>
@@ -4835,7 +4835,7 @@
     <message>
         <location filename="../novelwriter/tools/welcome.py" line="441" />
         <source>Select to create an example project</source>
-        <translation type="unfinished" />
+        <translation>Vyberte pro vytvoření ukázkového projektu</translation>
     </message>
 </context><context>
     <name>_ReplacePage</name>
@@ -4999,7 +4999,7 @@
     <message>
         <location filename="../novelwriter/dialogs/projectsettings.py" line="397" />
         <source>Custom</source>
-        <translation type="unfinished">Vlastní</translation>
+        <translation>Vlastní</translation>
     </message>
     <message>
         <location filename="../novelwriter/dialogs/projectsettings.py" line="411" />

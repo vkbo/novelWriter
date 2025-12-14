@@ -1184,121 +1184,121 @@
 </context><context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3452" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3459" />
         <source>Line: {0} ({1})</source>
         <translation>行: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3453" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3460" />
         <source>Selected: {0}</source>
         <translation>選択済み: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3558" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3565" />
         <source>NORMAL</source>
         <translation>NORMAL</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3559" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3566" />
         <source>INSERT</source>
         <translation>INSERT</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3560" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3567" />
         <source>VISUAL</source>
         <translation>VISUAL</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3561" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3568" />
         <source>V-LINE</source>
         <translation>V-LINE</translation>
     </message>
 </context><context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3246" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3253" />
         <source>Toggle Tool Bar</source>
         <translation>ツールバーの切り替え</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3251" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3258" />
         <source>Outline</source>
         <translation>アウトライン</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3256" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3263" />
         <source>Search</source>
         <translation>検索</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3261" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3268" />
         <source>Toggle Focus Mode</source>
         <translation>フォーカスモードの切り替え</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="3266" />
+        <location filename="../novelwriter/gui/doceditor.py" line="3273" />
         <source>Close</source>
         <translation>閉じる</translation>
     </message>
 </context><context>
     <name>GuiDocEditSearch</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2896" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2903" />
         <source>Search for</source>
         <translation>検索</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2900" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2907" />
         <source>Replace with</source>
         <translation>置換候補</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2908" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2915" />
         <source>Search</source>
         <translation>検索</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2913" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2920" />
         <source>Case Sensitive</source>
         <translation>大文字と小文字を区別</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2919" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2926" />
         <source>Whole Words Only</source>
         <translation>完全一致のみ</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2925" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2932" />
         <source>RegEx Mode</source>
         <translation>正規表現モード</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2931" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2938" />
         <source>Loop Search</source>
         <translation>ループ検索</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2937" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2944" />
         <source>Search Next File</source>
         <translation>次のファイルを検索</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2945" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2952" />
         <source>Preserve Case</source>
         <translation>大文字と小文字を保持</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2953" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2960" />
         <source>Close Search</source>
         <translation>検索を閉じる</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2964" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2971" />
         <source>Find in current document</source>
         <translation>現在のドキュメント内を検索</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2968" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2975" />
         <source>Find and replace in current document</source>
         <translation>現在のドキュメント内を検索して置き換え</translation>
     </message>
@@ -1360,82 +1360,82 @@
         <translation>ファイル場所: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1189" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1196" />
         <source>Set as Document Name</source>
         <translation>ドキュメント名として設定</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1195" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1202" />
         <source>Open URL</source>
         <translation>URLを開く</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1202" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1209" />
         <source>Follow Tag</source>
         <translation>タグをフォロー</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1206" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1213" />
         <source>Create Note for Tag</source>
         <translation>タグのメモを作成</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1212" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1219" />
         <source>Cut</source>
         <translation>切り取り</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1214" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1221" />
         <source>Copy</source>
         <translation>コピー</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1217" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1224" />
         <source>Paste</source>
         <translation>貼り付け</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1222" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1229" />
         <source>Select All</source>
         <translation>すべて選択</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1224" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1231" />
         <source>Select Word</source>
         <translation>単語を選択</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1226" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1233" />
         <source>Select Paragraph</source>
         <translation>段落を選択</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1240" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1247" />
         <source>Spelling Suggestion(s)</source>
         <translation>スペルの提案</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1245" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1252" />
         <source>No Suggestions</source>
         <translation>候補なし</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1249" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1256" />
         <source>Ignore Word</source>
         <translation>単語を無視</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1251" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1258" />
         <source>Add Word to Dictionary</source>
         <translation>単語を辞書に追加</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="1645" />
+        <location filename="../novelwriter/gui/doceditor.py" line="1652" />
         <source>Please select some text before calling replace quotes.</source>
         <translation>置き換え引用符を呼び出す前にテキストを選択してください。</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2334" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2341" />
         <source>Do you want to create a new project note for the tag '{0}'?</source>
         <translation>タグ '{0}' の新規プロジェクトノートを作成しますか？</translation>
     </message>
@@ -1516,57 +1516,57 @@
 </context><context>
     <name>GuiDocToolBar</name>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2753" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2760" />
         <source>Markdown Bold</source>
         <translation>マークダウン 太字</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2759" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2766" />
         <source>Markdown Italic</source>
         <translation>マークダウン 斜体</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2765" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2772" />
         <source>Markdown Strikethrough</source>
         <translation>マークダウン 取り消し線</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2771" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2778" />
         <source>Markdown Highlight</source>
         <translation>Markdown ハイライト</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2777" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2784" />
         <source>Shortcode Bold</source>
         <translation>ショートコード 太字</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2783" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2790" />
         <source>Shortcode Italic</source>
         <translation>ショートコード 斜体</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2789" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2796" />
         <source>Shortcode Strikethrough</source>
         <translation>ショートコード 取り消し線</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2795" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2802" />
         <source>Shortcode Underline</source>
         <translation>ショートコード 下線</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2801" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2808" />
         <source>Shortcode Highlight</source>
         <translation>ショートコードハイライト</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2807" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2814" />
         <source>Shortcode Superscript</source>
         <translation>ショートコード 上付き文字</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/doceditor.py" line="2813" />
+        <location filename="../novelwriter/gui/doceditor.py" line="2820" />
         <source>Shortcode Subscript</source>
         <translation>ショートコード 下付き文字</translation>
     </message>
@@ -1847,7 +1847,7 @@
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="137" />
         <source>&amp;Project</source>
-        <translation>&amp;プロジェクト</translation>
+        <translation>プロジェクト (&amp;P)</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="140" />
@@ -1897,7 +1897,7 @@
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="200" />
         <source>&amp;Document</source>
-        <translation>&amp;ドキュメント</translation>
+        <translation>ドキュメント (&amp;D)</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="203" />
@@ -1937,7 +1937,7 @@
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="246" />
         <source>&amp;Edit</source>
-        <translation>&amp;編集</translation>
+        <translation>編集 (&amp;E)</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="249" />
@@ -1977,7 +1977,7 @@
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="313" />
         <source>&amp;View</source>
-        <translation>&amp;表示</translation>
+        <translation>表示 (&amp;V)</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="316" />
@@ -2017,7 +2017,7 @@
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="373" />
         <source>&amp;Insert</source>
-        <translation>&amp;挿入</translation>
+        <translation>挿入 (&amp;I)</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="376" />
@@ -2222,7 +2222,7 @@
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="650" />
         <source>&amp;Format</source>
-        <translation>&amp;書式</translation>
+        <translation>書式 (&amp;F)</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="653" />
@@ -2363,7 +2363,7 @@
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="903" />
         <source>&amp;Search</source>
-        <translation>&amp;検索</translation>
+        <translation>検索 (&amp;S)</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="906" />
@@ -2398,7 +2398,7 @@
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="948" />
         <source>&amp;Tools</source>
-        <translation>&amp;ツール</translation>
+        <translation>ツール (&amp;T)</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="951" />
@@ -2453,7 +2453,7 @@
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="1011" />
         <source>&amp;Help</source>
-        <translation>&amp;ヘルプ</translation>
+        <translation>ヘルプ (&amp;H)</translation>
     </message>
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="1014" />
@@ -4603,7 +4603,7 @@
     <message>
         <location filename="../novelwriter/tools/welcome.py" line="576" />
         <source>Create a fresh project</source>
-        <translation>新鮮なプロジェクトを作成</translation>
+        <translation>まっさらなプロジェクトを作成</translation>
     </message>
     <message>
         <location filename="../novelwriter/tools/welcome.py" line="580" />
@@ -4688,7 +4688,7 @@
     <message>
         <location filename="../novelwriter/tools/welcome.py" line="762" />
         <source>Fresh Project</source>
-        <translation>新鮮なプロジェクト</translation>
+        <translation>まっさらなプロジェクト</translation>
     </message>
     <message>
         <location filename="../novelwriter/tools/welcome.py" line="764" />
