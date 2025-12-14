@@ -30,6 +30,9 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).parent.parent
 SETUP_DIR = ROOT_DIR / "setup"
 
+MIN_QT_VERS = "6.4"
+MIN_PY_VERSION = "3.11"
+
 
 def extractReqs(groups: list[str]) -> list[str]:
     """Extract dependency groups from pyproject.toml."""
