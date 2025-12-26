@@ -131,6 +131,7 @@ QtSelectBlock = QTextCursor.SelectionType.BlockUnderCursor
 QtSelectDocument = QTextCursor.SelectionType.Document
 
 QtImCursorRectangle = Qt.InputMethodQuery.ImCursorRectangle
+QtImCurrentSelection = Qt.InputMethodQuery.ImCurrentSelection
 
 # Size Policy
 
