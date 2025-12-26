@@ -24,7 +24,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt6.QtCore import QEvent, QMimeData, QPointF, Qt, QThreadPool, QUrl
+from PyQt6.QtCore import QEvent, QMimeData, QPointF, QRect, Qt, QThreadPool, QUrl, QVariant
 from PyQt6.QtGui import (
     QAction, QClipboard, QDesktopServices, QDragEnterEvent, QDragMoveEvent,
     QDropEvent, QFont, QInputMethodEvent, QMouseEvent, QTextBlock, QTextCursor,
@@ -41,9 +41,9 @@ from novelwriter.gui.doceditor import GuiDocEditor, TextAutoReplace, _TagAction
 from novelwriter.gui.dochighlight import TextBlockData
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
-    QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtModNone,
-    QtMouseLeft, QtMoveAnchor, QtMoveRight, QtScrollAlwaysOff,
-    QtScrollAsNeeded, QtSelectDocument, QtSelectWord
+    QtAlignJustify, QtAlignLeft, QtImCurrentSelection, QtImCursorRectangle,
+    QtKeepAnchor, QtModCtrl, QtModNone, QtMouseLeft, QtMoveAnchor, QtMoveRight,
+    QtScrollAlwaysOff, QtScrollAsNeeded, QtSelectDocument, QtSelectWord
 )
 
 from tests.mocked import causeOSError
@@ -2551,6 +2551,23 @@ def testGuiEditor_TextAutoReplaceProcess():
     ar.initSettings()
     assert ar.process(*prep('Text "')) is True
     assert doc.toRawText() == "Text «\u202f"
+
+
+@pytest.mark.gui
+def testGuiEditor_BigFixes(qtbot, nwGUI):
+    """Test specific bug fixes in the editor."""
+    docEditor = nwGUI.docEditor
+
+    # Cursor rectangle should take into account viewport margins (Issues #2267 and #2517)
+    vM = docEditor.viewportMargins()
+    cR = docEditor.inputMethodQuery(QtImCursorRectangle)
+    assert isinstance(cR, QRect)
+    assert cR.left() >= vM.left()
+    assert cR.top() >= vM.top()
+
+    # This one should simply not crash, and return a plain QVariant (Issue #2622)
+    cV = docEditor.inputMethodQuery(QtImCurrentSelection)
+    assert isinstance(cV, QVariant)
 
 
 @pytest.mark.gui
