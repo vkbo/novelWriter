@@ -186,17 +186,11 @@ See :ref:`docs_features_shortcuts` for more details.
 Colour Themes
 =============
 
-By default, novelWriter uses a light colour theme. You can also choose between a standard dark
-theme that have neutral colours, or a series of other included themes, from **Preferences**. 
+By default, novelWriter should pick a dark or light theme based on the colour mode of your
+operating system. You can select which colour mode to use from the application sidebar.
+
+The default light and dark theme can be changed from **Preferences**. There are a number of themes
+to choose from. There are also some high contrast themes available.
 
 If you wish, you *can* create your own colour themes, and even have them added to the application.
 See :ref:`docs_more_custom_theme` for more details.
-
-Switching the GUI colour theme does not affect the colours of the editor and viewer. They have
-separate themes selectable from the "Document colour theme" setting in **Preferences**. They are
-separated because there are a lot more options to choose from for the editor and viewer.
-
-.. note::
-
-   If you switch between light and dark mode on the GUI, you should also switch editor theme to
-   match, otherwise icons may be hard to see in the editor and viewer.

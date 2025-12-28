@@ -89,9 +89,9 @@ def makeDebianPackage(
     else:
         pkgVers = numVers
         if debianVersion < DEB_STABLE:
-            pkgDist = "oldstable"
+            pkgDist = "-oldstable"
         elif debianVersion > DEB_STABLE:
-            pkgDist = "testing"
+            pkgDist = "-testing"
     pkgVers = f"{pkgVers}+{buildName}" if buildName else pkgVers
 
     # Set Up Folder
