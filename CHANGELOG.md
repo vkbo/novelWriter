@@ -1,5 +1,28 @@
 # novelWriter Changelog
 
+## Version 2.8.1 [2025-12-28]
+
+### Release Notes
+
+This is a patch release that fixes an issue where the application could crash due to a change in
+PyQt/Qt 6.10. The issue is related to certain input methods, and is at least triggered when using
+Spotlight on MacOS.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an issue where the inputMethodQuery call to the Qt library returns an object that PyQt6
+  cannot convert to a Python object. The fix just disables the conversion since the return value is
+  passed back to the Qt library anyway. The problem affects Qt/PyQt 6.10 and is triggered in MacOS
+  at least, but it is not known if it affects other platforms. Issue #2622. PR #2623.
+
+**Documentation**
+
+* Removed references to the old colour theme system in the documentation. Issue #2619. PR #2625.
+
+----
+
 ## Version 2.8 [2025-12-14]
 
 ### Release Notes
