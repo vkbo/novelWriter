@@ -39,6 +39,7 @@ import logging
 from enum import Enum, IntFlag
 from time import time
 
+from PyQt6 import sip
 from PyQt6.QtCore import (
     QMimeData, QObject, QPoint, QRect, QRegularExpression, QRunnable, Qt,
     QTimer, QVariant, pyqtSignal, pyqtSlot
@@ -76,12 +77,13 @@ from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
-    QtAlignRight, QtBlack, QtImCursorRectangle, QtKeepAnchor, QtModCtrl,
-    QtModNone, QtModShift, QtMouseLeft, QtMoveAnchor, QtMoveDown, QtMoveEnd,
-    QtMoveEndOfLine, QtMoveEndOfWord, QtMoveLeft, QtMoveNextChar,
-    QtMoveNextWord, QtMovePreviousWord, QtMoveRight, QtMoveStart,
-    QtMoveStartOfLine, QtMoveUp, QtScrollAlwaysOff, QtScrollAsNeeded,
-    QtSelectBlock, QtSelectDocument, QtSelectLine, QtSelectWord, QtTransparent
+    QtAlignRight, QtBlack, QtImCurrentSelection, QtImCursorRectangle,
+    QtKeepAnchor, QtModCtrl, QtModNone, QtModShift, QtMouseLeft, QtMoveAnchor,
+    QtMoveDown, QtMoveEnd, QtMoveEndOfLine, QtMoveEndOfWord, QtMoveLeft,
+    QtMoveNextChar, QtMoveNextWord, QtMovePreviousWord, QtMoveRight,
+    QtMoveStart, QtMoveStartOfLine, QtMoveUp, QtScrollAlwaysOff,
+    QtScrollAsNeeded, QtSelectBlock, QtSelectDocument, QtSelectLine,
+    QtSelectWord, QtTransparent
 )
 
 logger = logging.getLogger(__name__)
@@ -1070,6 +1072,12 @@ class GuiDocEditor(QPlainTextEdit):
             rect = self.cursorRect()
             rect.translate(vM.left(), vM.top())
             return rect
+        elif query == QtImCurrentSelection:
+            # See issue #2622
+            ac = sip.enableautoconversion(QVariant, False)  # type: ignore
+            variant = super().inputMethodQuery(query)
+            sip.enableautoconversion(QVariant, ac)  # type: ignore
+            return variant
         return super().inputMethodQuery(query)
 
     def insertFromMimeData(self, source: QMimeData | None) -> None:
