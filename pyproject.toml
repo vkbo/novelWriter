@@ -7,7 +7,7 @@ name = "novelWriter"
 authors = [{ name = "Veronica Berglyd Olsen", email = "code@vkbo.net" }]
 description = "A plain text editor for planning and writing novels"
 readme = { file = "setup/description_pypi.md", content-type = "text/markdown" }
-license = "GPL-3.0-or-later AND Apache-2.0 AND CC-BY-4.0"
+license = "GPL-3.0-or-later AND Apache-2.0 AND CC-BY-4.0 AND ISC"
 license-files = ["LICENSE.md", "setup/LICENSE-Apache-2.0.txt"]
 dynamic = ["version"]
 requires-python = ">=3.11"

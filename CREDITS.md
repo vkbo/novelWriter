@@ -69,6 +69,7 @@ constraints. These themes include a subset of icons from:
 
 * **Font Awesome** by Fonticons Inc (CC BY 4.0)
 * **Remix** by RemixIcon (Apache 2.0 w/non-free clause)
+* **Lucide** by Cole Bemis and Lucide Contributors (ISC License)
 
 ## Colour Themes
 
