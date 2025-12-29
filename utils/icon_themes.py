@@ -37,13 +37,13 @@ ET.register_namespace("", "http://www.w3.org/2000/svg")
 ICON_SOURCES = {
     "material":     "https://github.com/google/material-design-icons.git",
     "font_awesome": "https://github.com/FortAwesome/Font-Awesome/archive/refs/tags/7.1.0.zip",
-    "remix":        "https://github.com/Remix-Design/RemixIcon/archive/refs/tags/v4.6.0.zip",
+    "remix":        "https://github.com/Remix-Design/RemixIcon/archive/refs/tags/v4.8.0.zip",
     "lucide":       "https://github.com/lucide-icons/lucide/archive/refs/tags/0.562.0.zip",
 }
 ICON_EXTRACT = {
     "material":     "material-design-icons",
     "font_awesome": "Font-Awesome-7.1.0",
-    "remix":        "RemixIcon-4.6.0",
+    "remix":        "RemixIcon-4.8.0",
     "lucide":       "lucide-0.562.0",
 }
 ICONS = [
