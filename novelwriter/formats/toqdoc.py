@@ -285,10 +285,11 @@ class ToQTextDocument(Tokenizer):
         printer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
         printer.setOutputFileName(str(path))
 
-        if layout := self._document.documentLayout():
-            layout.setPaintDevice(printer)
-
-        self._document.setPageSize(printer.pageRect(QPrinter.Unit.DevicePixel).size())
+        ptPage = self._pageSize.size(QPageSize.Unit.Millimeter)
+        self._document.setPageSize(QSizeF(
+            (ptPage.width() - self._pageMargins.left() - self._pageMargins.right()) / 25.4*96,
+            (ptPage.height() - self._pageMargins.top() - self._pageMargins.bottom()) / 25.4*96,
+        ))
         self._document.print(printer)
 
     def closeDocument(self) -> None:
