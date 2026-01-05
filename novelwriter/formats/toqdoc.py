@@ -70,11 +70,19 @@ class ToQTextDocument(Tokenizer):
     is intended for usage in the document viewer and build tool preview.
     """
 
-    def __init__(self, project: NWProject) -> None:
+    def __init__(self, project: NWProject, pdf: bool = False) -> None:
         super().__init__(project)
+
         self._document = QTextDocument()
         self._document.setUndoRedoEnabled(False)
         self._document.setDocumentMargin(0.0)
+
+        self._printer = None
+        if pdf:
+            self._printer = QPrinter(QPrinter.PrinterMode.HighResolution)
+            self._printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
+            self._printer.setDocName(project.data.name)
+            self._printer.setCreator(f"novelWriter/{__version__}")
 
         self._usedNotes: dict[str, int] = {}
         self._usedFields: list[tuple[int, str]] = []
@@ -125,11 +133,11 @@ class ToQTextDocument(Tokenizer):
     #  Class Methods
     ##
 
-    def initDocument(self, pdf: bool = False) -> None:
+    def initDocument(self) -> None:
         """Initialise all computed values of the document."""
         super().initDocument()
 
-        if pdf:
+        if self._printer:
             family = self._textFont.family()
             style = self._textFont.styleName()
             self._dpi = 300 if QFontDatabase.isScalable(family, style) else 72
@@ -149,8 +157,6 @@ class ToQTextDocument(Tokenizer):
         self._hWeight = QFont.Weight.Bold if self._boldHeads else self._dWeight
 
         # Scaled Sizes
-        # ============
-
         fPt = self._textFont.pointSizeF()
         fPx = fPt*96.0/72.0  # 1 em in pixels
         mPx = fPx * self._dpi/96.0
@@ -182,8 +188,6 @@ class ToQTextDocument(Tokenizer):
         self._tIndent = mPx * self._firstWidth
 
         # Text Formats
-        # ============
-
         self._blockFmt = QTextBlockFormat()
         self._blockFmt.setTopMargin(self._mText[0])
         self._blockFmt.setBottomMargin(self._mText[1])
@@ -194,6 +198,21 @@ class ToQTextDocument(Tokenizer):
         self._charFmt.setBackground(QtTransparent)
         self._charFmt.setForeground(self._theme.text)
 
+        # Set Up PDF Printing
+        if self._printer:
+            self._printer.setResolution(self._dpi)
+            self._printer.setPageSize(self._pageSize)
+            self._printer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
+
+            # See #2637
+            self._textFont.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+
+            ptPage = self._pageSize.size(QPageSize.Unit.Millimeter)
+            self._document.setPageSize(QSizeF(
+                (ptPage.width() - self._pageMargins.left() - self._pageMargins.right()) / 25.4*96,
+                (ptPage.height() - self._pageMargins.top() - self._pageMargins.bottom()) / 25.4*96,
+            ))
+
         self._init = True
 
     def doConvert(self) -> None:
@@ -201,7 +220,7 @@ class ToQTextDocument(Tokenizer):
         if not self._init:
             return
 
-        self._document.blockSignals(True)
+        self._document.blockSignals(self._printer is None)
         cursor = QTextCursor(self._document)
         cursor.movePosition(QtMoveEnd)
 
@@ -274,22 +293,11 @@ class ToQTextDocument(Tokenizer):
 
     def saveDocument(self, path: Path) -> None:
         """Save the document as a PDF file."""
-        logger.info("Writing PDF at %d DPI", self._dpi)
-
-        printer = QPrinter(QPrinter.PrinterMode.HighResolution)
-        printer.setDocName(self._project.data.name)
-        printer.setCreator(f"novelWriter/{__version__}")
-        printer.setResolution(self._dpi)
-        printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
-        printer.setPageSize(self._pageSize)
-        printer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
-        printer.setOutputFileName(str(path))
-
-        if layout := self._document.documentLayout():
-            layout.setPaintDevice(printer)
-
-        self._document.setPageSize(printer.pageRect(QPrinter.Unit.DevicePixel).size())
-        self._document.print(printer)
+        if self._printer:
+            logger.info("Writing PDF ...")
+            self._printer.setOutputFileName(str(path))
+            self._document.print(self._printer)
+            logger.info("Wrote %d pages at %d DPI", self._document.pageCount(), self._dpi)
 
     def closeDocument(self) -> None:
         """Run close document tasks."""
