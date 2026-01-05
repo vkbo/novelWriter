@@ -132,7 +132,7 @@ class ToQTextDocument(Tokenizer):
         if pdf:
             family = self._textFont.family()
             style = self._textFont.styleName()
-            self._dpi = 1200 if QFontDatabase.isScalable(family, style) else 72
+            self._dpi = 300 if QFontDatabase.isScalable(family, style) else 72
 
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
@@ -285,11 +285,10 @@ class ToQTextDocument(Tokenizer):
         printer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
         printer.setOutputFileName(str(path))
 
-        ptPage = self._pageSize.size(QPageSize.Unit.Millimeter)
-        self._document.setPageSize(QSizeF(
-            (ptPage.width() - self._pageMargins.left() - self._pageMargins.right()) / 25.4*96,
-            (ptPage.height() - self._pageMargins.top() - self._pageMargins.bottom()) / 25.4*96,
-        ))
+        if layout := self._document.documentLayout():
+            layout.setPaintDevice(printer)
+
+        self._document.setPageSize(printer.pageRect(QPrinter.Unit.DevicePixel).size())
         self._document.print(printer)
 
     def closeDocument(self) -> None:
