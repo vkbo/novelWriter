@@ -132,7 +132,7 @@ class ToQTextDocument(Tokenizer):
         if pdf:
             family = self._textFont.family()
             style = self._textFont.styleName()
-            self._dpi = 1200 if QFontDatabase.isScalable(family, style) else 72
+            self._dpi = 300 if QFontDatabase.isScalable(family, style) else 72
 
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
