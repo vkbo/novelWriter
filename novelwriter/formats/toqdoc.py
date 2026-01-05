@@ -140,6 +140,20 @@ class ToQTextDocument(Tokenizer):
         self._document.clear()
         self._document.setDefaultFont(self._textFont)
 
+        # Set Up PDF Printing
+        # The hinting preference solves an issue with kerning on Windows, and
+        # setting the paint device ensures the document is rendered at print
+        # resolution. See issues #2100 and #2637.
+        dpi = 96.0
+        if self._printer:
+            dpi = 72.0
+            self._printer.setPageSize(self._pageSize)
+            self._printer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
+            self._textFont.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+            self._document.setPageSize(self._printer.pageRect(QPrinter.Unit.DevicePixel).size())
+            if layout := self._document.documentLayout():
+                layout.setPaintDevice(self._printer)
+
         # Default Styles
         self._dWeight = self._textFont.weight()
         self._dItalic = self._textFont.italic()
@@ -151,8 +165,8 @@ class ToQTextDocument(Tokenizer):
 
         # Scaled Sizes
         fPt = self._textFont.pointSizeF()
-        fPx = fPt*96.0/72.0  # 1 em in pixels
-        mPx = fPx * (0.75 if self._printer else 1.0)  # PDFs are 72 DPI, screen is 96
+        fPx = fPt * 96.0/72.0  # 1 em in pixels
+        mPx = fPx * dpi/96.0
 
         self._mHead = {
             BlockTyp.TITLE: (fPx * self._marginTitle[0], fPx * self._marginTitle[1]),
@@ -190,18 +204,6 @@ class ToQTextDocument(Tokenizer):
         self._charFmt = QTextCharFormat()
         self._charFmt.setBackground(QtTransparent)
         self._charFmt.setForeground(self._theme.text)
-
-        # Set Up PDF Printing
-        # The hinting preference solves an issue with kerning on Windows, and
-        # setting the paint device ensures the document is rendered at print
-        # resolution. See issues #2100 and #2637.
-        if self._printer:
-            self._printer.setPageSize(self._pageSize)
-            self._printer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
-            self._textFont.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
-            self._document.setPageSize(self._printer.pageRect(QPrinter.Unit.DevicePixel).size())
-            if layout := self._document.documentLayout():
-                layout.setPaintDevice(self._printer)
 
         self._init = True
 
