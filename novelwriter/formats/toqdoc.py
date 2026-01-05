@@ -138,7 +138,6 @@ class ToQTextDocument(Tokenizer):
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
         self._document.clear()
-        self._document.setDefaultFont(self._textFont)
 
         # Set Up PDF Printing
         # The hinting preference solves an issue with kerning on Windows, and
@@ -153,6 +152,8 @@ class ToQTextDocument(Tokenizer):
             self._document.setPageSize(self._printer.pageRect(QPrinter.Unit.DevicePixel).size())
             if layout := self._document.documentLayout():
                 layout.setPaintDevice(self._printer)
+
+        self._document.setDefaultFont(self._textFont)
 
         # Default Styles
         self._dWeight = self._textFont.weight()
