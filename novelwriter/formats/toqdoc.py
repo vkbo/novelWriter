@@ -29,8 +29,8 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QMarginsF, QSizeF
 from PyQt6.QtGui import (
-    QColor, QFont, QFontDatabase, QPageLayout, QPageSize, QTextBlockFormat,
-    QTextCharFormat, QTextCursor, QTextDocument, QTextFrameFormat
+    QColor, QFont, QPageLayout, QPageSize, QTextBlockFormat, QTextCharFormat,
+    QTextCursor, QTextDocument, QTextFrameFormat
 )
 from PyQt6.QtPrintSupport import QPrinter
 
@@ -72,14 +72,13 @@ class ToQTextDocument(Tokenizer):
 
     def __init__(self, project: NWProject, pdf: bool = False) -> None:
         super().__init__(project)
-
         self._document = QTextDocument()
         self._document.setUndoRedoEnabled(False)
         self._document.setDocumentMargin(0.0)
 
         self._printer = None
         if pdf:
-            self._printer = QPrinter(QPrinter.PrinterMode.HighResolution)
+            self._printer = QPrinter(QPrinter.PrinterMode.PrinterResolution)
             self._printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
             self._printer.setDocName(project.data.name)
             self._printer.setCreator(f"novelWriter/{__version__}")
@@ -97,7 +96,6 @@ class ToQTextDocument(Tokenizer):
         self._dStrike = False
         self._dUnderline = False
 
-        self._dpi = 96
         self._pageSize = QPageSize(QPageSize.PageSizeId.A4)
         self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
 
@@ -137,11 +135,6 @@ class ToQTextDocument(Tokenizer):
         """Initialise all computed values of the document."""
         super().initDocument()
 
-        if self._printer:
-            family = self._textFont.family()
-            style = self._textFont.styleName()
-            self._dpi = 300 if QFontDatabase.isScalable(family, style) else 72
-
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
         self._document.clear()
@@ -159,7 +152,7 @@ class ToQTextDocument(Tokenizer):
         # Scaled Sizes
         fPt = self._textFont.pointSizeF()
         fPx = fPt*96.0/72.0  # 1 em in pixels
-        mPx = fPx * self._dpi/96.0
+        mPx = fPx * (0.75 if self._printer else 1.0)  # PDFs are 72 DPI, screen is 96
 
         self._mHead = {
             BlockTyp.TITLE: (fPx * self._marginTitle[0], fPx * self._marginTitle[1]),
@@ -199,19 +192,16 @@ class ToQTextDocument(Tokenizer):
         self._charFmt.setForeground(self._theme.text)
 
         # Set Up PDF Printing
+        # The hinting preference solves an issue with kerning on Windows, and
+        # setting the paint device ensures the document is rendered at print
+        # resolution. See issues #2100 and #2637.
         if self._printer:
-            self._printer.setResolution(self._dpi)
             self._printer.setPageSize(self._pageSize)
             self._printer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
-
-            # See #2637
             self._textFont.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
-
-            ptPage = self._pageSize.size(QPageSize.Unit.Millimeter)
-            self._document.setPageSize(QSizeF(
-                (ptPage.width() - self._pageMargins.left() - self._pageMargins.right()) / 25.4*96,
-                (ptPage.height() - self._pageMargins.top() - self._pageMargins.bottom()) / 25.4*96,
-            ))
+            self._document.setPageSize(self._printer.pageRect(QPrinter.Unit.DevicePixel).size())
+            if layout := self._document.documentLayout():
+                layout.setPaintDevice(self._printer)
 
         self._init = True
 
@@ -297,7 +287,10 @@ class ToQTextDocument(Tokenizer):
             logger.info("Writing PDF ...")
             self._printer.setOutputFileName(str(path))
             self._document.print(self._printer)
-            logger.info("Wrote %d pages at %d DPI", self._document.pageCount(), self._dpi)
+            logger.info(
+                "Wrote %d pages at %d DPI",
+                self._document.pageCount(), self._printer.resolution()
+            )
 
     def closeDocument(self) -> None:
         """Run close document tasks."""
