@@ -29,8 +29,8 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QMarginsF, QSizeF
 from PyQt6.QtGui import (
-    QColor, QFont, QFontDatabase, QPageLayout, QPageSize, QTextBlockFormat,
-    QTextCharFormat, QTextCursor, QTextDocument, QTextFrameFormat
+    QColor, QFont, QPageLayout, QPageSize, QTextBlockFormat, QTextCharFormat,
+    QTextCursor, QTextDocument, QTextFrameFormat
 )
 from PyQt6.QtPrintSupport import QPrinter
 
@@ -70,11 +70,18 @@ class ToQTextDocument(Tokenizer):
     is intended for usage in the document viewer and build tool preview.
     """
 
-    def __init__(self, project: NWProject) -> None:
+    def __init__(self, project: NWProject, pdf: bool = False) -> None:
         super().__init__(project)
         self._document = QTextDocument()
         self._document.setUndoRedoEnabled(False)
         self._document.setDocumentMargin(0.0)
+
+        self._printer = None
+        if pdf:
+            self._printer = QPrinter(QPrinter.PrinterMode.PrinterResolution)
+            self._printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
+            self._printer.setDocName(project.data.name)
+            self._printer.setCreator(f"novelWriter/{__version__}")
 
         self._usedNotes: dict[str, int] = {}
         self._usedFields: list[tuple[int, str]] = []
@@ -89,7 +96,6 @@ class ToQTextDocument(Tokenizer):
         self._dStrike = False
         self._dUnderline = False
 
-        self._dpi = 96
         self._pageSize = QPageSize(QPageSize.PageSizeId.A4)
         self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
 
@@ -125,18 +131,28 @@ class ToQTextDocument(Tokenizer):
     #  Class Methods
     ##
 
-    def initDocument(self, pdf: bool = False) -> None:
+    def initDocument(self) -> None:
         """Initialise all computed values of the document."""
         super().initDocument()
-
-        if pdf:
-            family = self._textFont.family()
-            style = self._textFont.styleName()
-            self._dpi = 300 if QFontDatabase.isScalable(family, style) else 72
 
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
         self._document.clear()
+
+        # Set Up PDF Printing
+        # The hinting preference solves an issue with kerning on Windows, and
+        # setting the paint device ensures the document is rendered at print
+        # resolution. See issues #2100 and #2637.
+        dpi = 96.0
+        if self._printer:
+            dpi = 72.0
+            self._printer.setPageSize(self._pageSize)
+            self._printer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
+            self._textFont.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+            self._document.setPageSize(self._printer.pageRect(QPrinter.Unit.DevicePixel).size())
+            if layout := self._document.documentLayout():
+                layout.setPaintDevice(self._printer)
+
         self._document.setDefaultFont(self._textFont)
 
         # Default Styles
@@ -149,11 +165,9 @@ class ToQTextDocument(Tokenizer):
         self._hWeight = QFont.Weight.Bold if self._boldHeads else self._dWeight
 
         # Scaled Sizes
-        # ============
-
         fPt = self._textFont.pointSizeF()
-        fPx = fPt*96.0/72.0  # 1 em in pixels
-        mPx = fPx * self._dpi/96.0
+        fPx = fPt * 96.0/72.0  # 1 em in pixels
+        mPx = fPx * dpi/96.0
 
         self._mHead = {
             BlockTyp.TITLE: (fPx * self._marginTitle[0], fPx * self._marginTitle[1]),
@@ -182,8 +196,6 @@ class ToQTextDocument(Tokenizer):
         self._tIndent = mPx * self._firstWidth
 
         # Text Formats
-        # ============
-
         self._blockFmt = QTextBlockFormat()
         self._blockFmt.setTopMargin(self._mText[0])
         self._blockFmt.setBottomMargin(self._mText[1])
@@ -201,7 +213,7 @@ class ToQTextDocument(Tokenizer):
         if not self._init:
             return
 
-        self._document.blockSignals(True)
+        self._document.blockSignals(self._printer is None)
         cursor = QTextCursor(self._document)
         cursor.movePosition(QtMoveEnd)
 
@@ -274,22 +286,14 @@ class ToQTextDocument(Tokenizer):
 
     def saveDocument(self, path: Path) -> None:
         """Save the document as a PDF file."""
-        logger.info("Writing PDF at %d DPI", self._dpi)
-
-        printer = QPrinter(QPrinter.PrinterMode.HighResolution)
-        printer.setDocName(self._project.data.name)
-        printer.setCreator(f"novelWriter/{__version__}")
-        printer.setResolution(self._dpi)
-        printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
-        printer.setPageSize(self._pageSize)
-        printer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
-        printer.setOutputFileName(str(path))
-
-        if layout := self._document.documentLayout():
-            layout.setPaintDevice(printer)
-
-        self._document.setPageSize(printer.pageRect(QPrinter.Unit.DevicePixel).size())
-        self._document.print(printer)
+        if self._printer:
+            logger.info("Writing PDF ...")
+            self._printer.setOutputFileName(str(path))
+            self._document.print(self._printer)
+            logger.info(
+                "Wrote %d pages at %d DPI",
+                self._document.pageCount(), self._printer.resolution()
+            )
 
     def closeDocument(self) -> None:
         """Run close document tasks."""

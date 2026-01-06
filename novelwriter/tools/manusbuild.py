@@ -28,11 +28,12 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QTimer, pyqtSlot
+from PyQt6.QtCore import Qt, QTimer, pyqtSlot
+from PyQt6.QtGui import QCursor
 from PyQt6.QtWidgets import (
-    QAbstractButton, QAbstractItemView, QDialogButtonBox, QFileDialog,
-    QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
-    QSplitter, QVBoxLayout, QWidget
+    QAbstractButton, QAbstractItemView, QApplication, QDialogButtonBox,
+    QFileDialog, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget,
+    QListWidgetItem, QSplitter, QVBoxLayout, QWidget
 )
 
 from novelwriter import SHARED
@@ -323,12 +324,16 @@ class GuiManuscriptBuild(NDialog):
         # Make sure editor content is saved before we start
         SHARED.saveEditor()
 
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+
         docBuild = NWBuildDocument(SHARED.project, self._build)
         docBuild.queueAll()
 
         self.buildProgress.setMaximum(len(docBuild))
         for i, _ in docBuild.iterBuildDocument(buildPath, bFormat):
             self.buildProgress.setValue(i+1)
+
+        QApplication.restoreOverrideCursor()
 
         self._build.setLastBuildPath(bPath)
         self._build.setLastBuildName(bName)
