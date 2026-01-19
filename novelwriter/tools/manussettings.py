@@ -1144,12 +1144,20 @@ class _FormattingTab(NScrollableForm):
         self._sidebar.addButton(title, section)
         self.addGroupLabel(title, section)
 
-        self.pixT = QLabel(self)
-        self.pixB = QLabel(self)
-        self.pixL = QLabel(self)
-        self.pixR = QLabel(self)
-        self.pixH = QLabel(self)
-        self.pixW = QLabel(self)
+        self.pixTTT = QLabel(self)
+        self.pixTTB = QLabel(self)
+        self.pixH1T = QLabel(self)
+        self.pixH1B = QLabel(self)
+        self.pixH2T = QLabel(self)
+        self.pixH2B = QLabel(self)
+        self.pixH3T = QLabel(self)
+        self.pixH3B = QLabel(self)
+        self.pixH4T = QLabel(self)
+        self.pixH4B = QLabel(self)
+        self.pixTXT = QLabel(self)
+        self.pixTXB = QLabel(self)
+        self.pixSPT = QLabel(self)
+        self.pixSPB = QLabel(self)
 
         # Title
         self.titleMarginT = NDoubleSpinBox(self)
@@ -1160,7 +1168,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.titleMargin"),
-            [self.pixT, self.titleMarginT, 6, self.pixB, self.titleMarginB],
+            [self.pixTTT, self.titleMarginT, 6, self.pixTTB, self.titleMarginB],
             unit="em",
         )
 
@@ -1173,7 +1181,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.h1Margin"),
-            [self.pixT, self.h1MarginT, 6, self.pixB, self.h1MarginB],
+            [self.pixH1T, self.h1MarginT, 6, self.pixH1B, self.h1MarginB],
             unit="em",
         )
 
@@ -1186,7 +1194,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.h2Margin"),
-            [self.pixT, self.h2MarginT, 6, self.pixB, self.h2MarginB],
+            [self.pixH2T, self.h2MarginT, 6, self.pixH2B, self.h2MarginB],
             unit="em",
         )
 
@@ -1199,7 +1207,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.h3Margin"),
-            [self.pixT, self.h3MarginT, 6, self.pixB, self.h3MarginB],
+            [self.pixH3T, self.h3MarginT, 6, self.pixH3B, self.h3MarginB],
             unit="em",
         )
 
@@ -1212,7 +1220,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.h4Margin"),
-            [self.pixT, self.h4MarginT, 6, self.pixB, self.h4MarginB],
+            [self.pixH4T, self.h4MarginT, 6, self.pixH4B, self.h4MarginB],
             unit="em",
         )
 
@@ -1225,7 +1233,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.textMargin"),
-            [self.pixT, self.textMarginT, 6, self.pixB, self.textMarginB],
+            [self.pixTXT, self.textMarginT, 6, self.pixTXB, self.textMarginB],
             unit="em",
         )
 
@@ -1238,7 +1246,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.sepMargin"),
-            [self.pixT, self.sepMarginT, 6, self.pixB, self.sepMarginB],
+            [self.pixSPT, self.sepMarginT, 6, self.pixSPB, self.sepMarginB],
             unit="em",
         )
 
@@ -1249,6 +1257,13 @@ class _FormattingTab(NScrollableForm):
         section += 1
         self._sidebar.addButton(title, section)
         self.addGroupLabel(title, section)
+
+        self.pixH = QLabel(self)
+        self.pixW = QLabel(self)
+        self.pixT = QLabel(self)
+        self.pixB = QLabel(self)
+        self.pixL = QLabel(self)
+        self.pixR = QLabel(self)
 
         # Unit
         self.pageUnit = NComboBox(self)
@@ -1362,6 +1377,20 @@ class _FormattingTab(NScrollableForm):
         self.btnPageHeader.setThemeIcon("revert", "reset")
 
         iPx = SHARED.theme.baseIconHeight
+        self.pixTTT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
+        self.pixTTB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
+        self.pixH1T.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
+        self.pixH1B.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
+        self.pixH2T.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
+        self.pixH2B.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
+        self.pixH3T.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
+        self.pixH3B.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
+        self.pixH4T.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
+        self.pixH4B.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
+        self.pixTXT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
+        self.pixTXB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
+        self.pixSPT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
+        self.pixSPB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
         self.pixT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
         self.pixB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
         self.pixL.setPixmap(SHARED.theme.getPixmap("margin_left", (iPx, iPx)))
