@@ -915,6 +915,16 @@ class Tokenizer(ABC):
                     pLines = []
                     self._noIndent = False
 
+            elif addEmptyLine and cBlock[0] in HEADING_BLOCKS:
+                if cBlock[4] & BlockFmt.PBB:
+                    sBlocks.append((BlockTyp.SKIP, "", "", [], BlockFmt.PBB))
+                    sBlocks.append((
+                        cBlock[0], cBlock[1], cBlock[2], cBlock[3], cBlock[4] & ~BlockFmt.PBB
+                    ))
+                else:
+                    sBlocks.append((BlockTyp.SKIP, "", "", [], BlockFmt.NONE))
+                    sBlocks.append(cBlock)
+
             else:
                 sBlocks.append(cBlock)
 
