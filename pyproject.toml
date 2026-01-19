@@ -79,7 +79,7 @@ forced_separate = ["tests.*"]
 line-length = 99
 
 [tool.ruff.lint]
-preview = true
+preview = false
 
 # Rules: https://docs.astral.sh/ruff/rules
 select = [
