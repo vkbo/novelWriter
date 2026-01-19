@@ -158,6 +158,7 @@ class Tokenizer(ABC):
         self._marginMeta  = nwStyles.T_MARGIN["MT"]
         self._marginFoot  = nwStyles.T_MARGIN["FT"]
         self._marginSep   = nwStyles.T_MARGIN["SP"]
+        self._lineMargins = False
 
         # Title Formats
         self._fmtPart    = nwHeadFmt.TITLE  # Formatting for partitions
@@ -374,6 +375,19 @@ class Tokenizer(ABC):
         """Set the upper and lower meta text margin."""
         self._marginSep = (float(upper), float(lower))
 
+    def setLineForMargin(self, value: bool) -> None:
+        """Enable using empty lines for margins."""
+        self._lineMargins = value
+        self._marginTitle = (0.0, 0.0) if value else nwStyles.T_MARGIN["H0"]
+        self._marginHead1 = (0.0, 0.0) if value else nwStyles.T_MARGIN["H1"]
+        self._marginHead2 = (0.0, 0.0) if value else nwStyles.T_MARGIN["H2"]
+        self._marginHead3 = (0.0, 0.0) if value else nwStyles.T_MARGIN["H3"]
+        self._marginHead4 = (0.0, 0.0) if value else nwStyles.T_MARGIN["H4"]
+        self._marginText  = (0.0, 0.0) if value else nwStyles.T_MARGIN["TT"]
+        self._marginMeta  = (0.0, 0.0) if value else nwStyles.T_MARGIN["MT"]
+        self._marginFoot  = (0.0, 0.0) if value else nwStyles.T_MARGIN["FT"]
+        self._marginSep   = (0.0, 0.0) if value else nwStyles.T_MARGIN["SP"]
+
     def setLinkHeadings(self, state: bool) -> None:
         """Enable or disable adding an anchor before headings."""
         self._linkHeadings = state
@@ -503,6 +517,7 @@ class Tokenizer(ABC):
         keepBreaks = self._keepBreaks
         indentFirst = self._indentFirst
         firstIndent = self._firstIndent
+        lineMargins = self._lineMargins
 
         # Replace all instances of [br] with a placeholder character
         text = REGEX_PATTERNS.lineBreak.sub(nwUnicode.U_NAC2, self._text)
@@ -832,9 +847,10 @@ class Tokenizer(ABC):
                 # specific type
                 self._noIndent = True
 
+            addEmptyLine = lineMargins
             if cBlock[0] == BlockTyp.EMPTY:
                 # We don't need to keep the empty lines after this pass
-                pass
+                addEmptyLine = False
 
             elif cBlock[0] in (BlockTyp.KEYWORD, BlockTyp.NOTE):
                 # Adjust margins for lines in repeated meta blocks
@@ -843,6 +859,7 @@ class Tokenizer(ABC):
                     aStyle |= BlockFmt.Z_TOP
                 if nBlock[0] == cBlock[0]:
                     aStyle |= BlockFmt.Z_BTM
+                    addEmptyLine = False
                 sBlocks.append((
                     cBlock[0], cBlock[1], cBlock[2], cBlock[3], aStyle
                 ))
@@ -850,6 +867,7 @@ class Tokenizer(ABC):
             elif cBlock[0] == BlockTyp.TEXT:
                 # Combine lines from the same paragraph
                 pLines.append(cBlock)
+                addEmptyLine = False
 
                 if nBlock[0] != BlockTyp.TEXT:
                     # Next block is not text, so we add the buffer to blocks
@@ -891,6 +909,7 @@ class Tokenizer(ABC):
                         sBlocks.append((
                             BlockTyp.TEXT, pLines[0][1], pTxt, tFmt, cStyle
                         ))
+                        addEmptyLine = lineMargins
 
                     # Reset buffer and make sure text indent is on for next pass
                     pLines = []
@@ -898,6 +917,9 @@ class Tokenizer(ABC):
 
             else:
                 sBlocks.append(cBlock)
+
+            if addEmptyLine:
+                sBlocks.append((BlockTyp.SKIP, "", "", [], BlockFmt.NONE))
 
         self._blocks = sBlocks
 

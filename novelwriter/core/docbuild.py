@@ -338,6 +338,7 @@ class NWBuildDocument:
                 scale*self._build.getFloat("format.leftMargin"),
                 scale*self._build.getFloat("format.rightMargin"),
             )
+            bldObj.setLineForMargin(self._build.getBool("format.lineForMargin"))
 
         return self._build.buildItemFilter(
             self._project, withRoots=self._build.getBool("text.addNoteHeadings")
