@@ -1144,27 +1144,15 @@ class _FormattingTab(NScrollableForm):
         self._sidebar.addButton(title, section)
         self.addGroupLabel(title, section)
 
-        self.pixTTT = QLabel(self)
-        self.pixTTB = QLabel(self)
-        self.pixH1T = QLabel(self)
-        self.pixH1B = QLabel(self)
-        self.pixH2T = QLabel(self)
-        self.pixH2B = QLabel(self)
-        self.pixH3T = QLabel(self)
-        self.pixH3B = QLabel(self)
-        self.pixH4T = QLabel(self)
-        self.pixH4B = QLabel(self)
-        self.pixTXT = QLabel(self)
-        self.pixTXB = QLabel(self)
-        self.pixSPT = QLabel(self)
-        self.pixSPB = QLabel(self)
-
         # Title
         self.titleMarginT = NDoubleSpinBox(self)
         self.titleMarginT.setFixedWidth(dbW)
 
         self.titleMarginB = NDoubleSpinBox(self)
         self.titleMarginB.setFixedWidth(dbW)
+
+        self.pixTTT = QLabel(self)
+        self.pixTTB = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.titleMargin"),
@@ -1179,6 +1167,9 @@ class _FormattingTab(NScrollableForm):
         self.h1MarginB = NDoubleSpinBox(self)
         self.h1MarginB.setFixedWidth(dbW)
 
+        self.pixH1T = QLabel(self)
+        self.pixH1B = QLabel(self)
+
         self.addRow(
             self._build.getLabel("format.h1Margin"),
             [self.pixH1T, self.h1MarginT, 6, self.pixH1B, self.h1MarginB],
@@ -1191,6 +1182,9 @@ class _FormattingTab(NScrollableForm):
 
         self.h2MarginB = NDoubleSpinBox(self)
         self.h2MarginB.setFixedWidth(dbW)
+
+        self.pixH2T = QLabel(self)
+        self.pixH2B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.h2Margin"),
@@ -1205,6 +1199,9 @@ class _FormattingTab(NScrollableForm):
         self.h3MarginB = NDoubleSpinBox(self)
         self.h3MarginB.setFixedWidth(dbW)
 
+        self.pixH3T = QLabel(self)
+        self.pixH3B = QLabel(self)
+
         self.addRow(
             self._build.getLabel("format.h3Margin"),
             [self.pixH3T, self.h3MarginT, 6, self.pixH3B, self.h3MarginB],
@@ -1217,6 +1214,9 @@ class _FormattingTab(NScrollableForm):
 
         self.h4MarginB = NDoubleSpinBox(self)
         self.h4MarginB.setFixedWidth(dbW)
+
+        self.pixH4T = QLabel(self)
+        self.pixH4B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.h4Margin"),
@@ -1231,6 +1231,9 @@ class _FormattingTab(NScrollableForm):
         self.textMarginB = NDoubleSpinBox(self)
         self.textMarginB.setFixedWidth(dbW)
 
+        self.pixTXT = QLabel(self)
+        self.pixTXB = QLabel(self)
+
         self.addRow(
             self._build.getLabel("format.textMargin"),
             [self.pixTXT, self.textMarginT, 6, self.pixTXB, self.textMarginB],
@@ -1243,6 +1246,9 @@ class _FormattingTab(NScrollableForm):
 
         self.sepMarginB = NDoubleSpinBox(self)
         self.sepMarginB.setFixedWidth(dbW)
+
+        self.pixSPT = QLabel(self)
+        self.pixSPB = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.sepMargin"),
@@ -1257,13 +1263,6 @@ class _FormattingTab(NScrollableForm):
         section += 1
         self._sidebar.addButton(title, section)
         self.addGroupLabel(title, section)
-
-        self.pixH = QLabel(self)
-        self.pixW = QLabel(self)
-        self.pixT = QLabel(self)
-        self.pixB = QLabel(self)
-        self.pixL = QLabel(self)
-        self.pixR = QLabel(self)
 
         # Unit
         self.pageUnit = NComboBox(self)
@@ -1285,9 +1284,12 @@ class _FormattingTab(NScrollableForm):
         self.pageHeight.setFixedWidth(dbW)
         self.pageHeight.valueChanged.connect(self._pageSizeValueChanged)
 
+        self.pixPSH = QLabel(self)
+        self.pixPSW = QLabel(self)
+
         self.addRow(
             self._build.getLabel("format.pageSize"),
-            [self.pageSize, 6, self.pixW, self.pageWidth, 6, self.pixH, self.pageHeight],
+            [self.pageSize, 6, self.pixPSW, self.pageWidth, 6, self.pixPSH, self.pageHeight],
         )
 
         # Page Margins
@@ -1303,13 +1305,18 @@ class _FormattingTab(NScrollableForm):
         self.rightMargin = NDoubleSpinBox(self)
         self.rightMargin.setFixedWidth(dbW)
 
+        self.pixPMT = QLabel(self)
+        self.pixPMB = QLabel(self)
+        self.pixPML = QLabel(self)
+        self.pixPMR = QLabel(self)
+
         self.addRow(
             self._build.getLabel("format.pageMargins"),
-            [self.pixT, self.topMargin, 6, self.pixB, self.bottomMargin],
+            [self.pixPMT, self.topMargin, 6, self.pixPMB, self.bottomMargin],
         )
         self.addRow(
             "",
-            [self.pixL, self.leftMargin, 6, self.pixR, self.rightMargin],
+            [self.pixPML, self.leftMargin, 6, self.pixPMR, self.rightMargin],
         )
 
         # Open Document
@@ -1391,12 +1398,12 @@ class _FormattingTab(NScrollableForm):
         self.pixTXB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
         self.pixSPT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
         self.pixSPB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
-        self.pixT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
-        self.pixB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
-        self.pixL.setPixmap(SHARED.theme.getPixmap("margin_left", (iPx, iPx)))
-        self.pixR.setPixmap(SHARED.theme.getPixmap("margin_right", (iPx, iPx)))
-        self.pixH.setPixmap(SHARED.theme.getPixmap("fit_height", (iPx, iPx)))
-        self.pixW.setPixmap(SHARED.theme.getPixmap("fit_width", (iPx, iPx)))
+        self.pixPSH.setPixmap(SHARED.theme.getPixmap("fit_height", (iPx, iPx)))
+        self.pixPSW.setPixmap(SHARED.theme.getPixmap("fit_width", (iPx, iPx)))
+        self.pixPMT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
+        self.pixPMB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
+        self.pixPML.setPixmap(SHARED.theme.getPixmap("margin_left", (iPx, iPx)))
+        self.pixPMR.setPixmap(SHARED.theme.getPixmap("margin_right", (iPx, iPx)))
 
         self.pageSize.updateStyle()
         self.pageUnit.updateStyle()
