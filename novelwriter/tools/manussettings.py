@@ -1153,12 +1153,12 @@ class _FormattingTab(NScrollableForm):
         self.titleMarginB = NDoubleSpinBox(self)
         self.titleMarginB.setFixedWidth(dbW)
 
-        self.pixTTT = QLabel(self)
-        self.pixTTB = QLabel(self)
+        self.pixH0T = QLabel(self)
+        self.pixH0B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.titleMargin"),
-            [self.pixTTT, self.titleMarginT, 6, self.pixTTB, self.titleMarginB],
+            [self.pixH0T, self.titleMarginT, 6, self.pixH0B, self.titleMarginB],
             unit="em",
         )
 
@@ -1233,12 +1233,12 @@ class _FormattingTab(NScrollableForm):
         self.textMarginB = NDoubleSpinBox(self)
         self.textMarginB.setFixedWidth(dbW)
 
-        self.pixTXT = QLabel(self)
-        self.pixTXB = QLabel(self)
+        self.pixTTT = QLabel(self)
+        self.pixTTB = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.textMargin"),
-            [self.pixTXT, self.textMarginT, 6, self.pixTXB, self.textMarginB],
+            [self.pixTTT, self.textMarginT, 6, self.pixTTB, self.textMarginB],
             unit="em",
         )
 
@@ -1386,24 +1386,28 @@ class _FormattingTab(NScrollableForm):
         self.btnPageHeader.setThemeIcon("revert", "reset")
 
         iPx = SHARED.theme.baseIconHeight
-        self.pixTTT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
-        self.pixTTB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
-        self.pixH1T.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
-        self.pixH1B.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
-        self.pixH2T.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
-        self.pixH2B.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
-        self.pixH3T.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
-        self.pixH3B.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
-        self.pixH4T.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
-        self.pixH4B.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
-        self.pixTXT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
-        self.pixTXB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
-        self.pixSPT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
-        self.pixSPB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
+
+        tMargin = SHARED.theme.getPixmap("margin_top", (iPx, iPx))
+        bMargin = SHARED.theme.getPixmap("margin_bottom", (iPx, iPx))
+        self.pixH0T.setPixmap(tMargin)
+        self.pixH0B.setPixmap(bMargin)
+        self.pixH1T.setPixmap(tMargin)
+        self.pixH1B.setPixmap(bMargin)
+        self.pixH2T.setPixmap(tMargin)
+        self.pixH2B.setPixmap(bMargin)
+        self.pixH3T.setPixmap(tMargin)
+        self.pixH3B.setPixmap(bMargin)
+        self.pixH4T.setPixmap(tMargin)
+        self.pixH4B.setPixmap(bMargin)
+        self.pixTTT.setPixmap(tMargin)
+        self.pixTTB.setPixmap(bMargin)
+        self.pixSPT.setPixmap(tMargin)
+        self.pixSPB.setPixmap(bMargin)
+        self.pixPMT.setPixmap(tMargin)
+        self.pixPMB.setPixmap(bMargin)
+
         self.pixPSH.setPixmap(SHARED.theme.getPixmap("fit_height", (iPx, iPx)))
         self.pixPSW.setPixmap(SHARED.theme.getPixmap("fit_width", (iPx, iPx)))
-        self.pixPMT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
-        self.pixPMB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
         self.pixPML.setPixmap(SHARED.theme.getPixmap("margin_left", (iPx, iPx)))
         self.pixPMR.setPixmap(SHARED.theme.getPixmap("margin_right", (iPx, iPx)))
 
