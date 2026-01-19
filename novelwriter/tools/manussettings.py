@@ -1109,10 +1109,12 @@ class _FormattingTab(NScrollableForm):
         self.colorHeadings = NSwitch(self, height=iPx)
         self.scaleHeadings = NSwitch(self, height=iPx)
         self.boldHeadings = NSwitch(self, height=iPx)
+        self.upperHeadings = NSwitch(self, height=iPx)
 
         self.addRow(self._build.getLabel("format.colorHeadings"), self.colorHeadings)
         self.addRow(self._build.getLabel("format.scaleHeadings"), self.scaleHeadings)
         self.addRow(self._build.getLabel("format.boldHeadings"), self.boldHeadings)
+        self.addRow(self._build.getLabel("format.upperHeadings"), self.upperHeadings)
 
         # First Line Indent
         # =================
@@ -1446,6 +1448,7 @@ class _FormattingTab(NScrollableForm):
         self.colorHeadings.setChecked(self._build.getBool("format.colorHeadings"))
         self.scaleHeadings.setChecked(self._build.getBool("format.scaleHeadings"))
         self.boldHeadings.setChecked(self._build.getBool("format.boldHeadings"))
+        self.upperHeadings.setChecked(self._build.getBool("format.upperHeadings"))
 
         # First Line Indent
         # =================
@@ -1539,6 +1542,7 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.colorHeadings", self.colorHeadings.isChecked())
         self._build.setValue("format.scaleHeadings", self.scaleHeadings.isChecked())
         self._build.setValue("format.boldHeadings", self.boldHeadings.isChecked())
+        self._build.setValue("format.upperHeadings", self.upperHeadings.isChecked())
 
         # First Line Indent
         self._build.setValue("format.firstLineIndent", self.firstIndent.isChecked())

@@ -656,6 +656,7 @@ def testToolBuildSettings_FormatHeadingFormat(monkeypatch, qtbot, nwGUI):
     build.setValue("format.colorHeadings", True)
     build.setValue("format.scaleHeadings", True)
     build.setValue("format.boldHeadings", True)
+    build.setValue("format.upperHeadings", False)
 
     # Create the dialog and populate it
     bSettings = GuiBuildSettings(nwGUI, build)
@@ -672,11 +673,13 @@ def testToolBuildSettings_FormatHeadingFormat(monkeypatch, qtbot, nwGUI):
     assert fmtTab.colorHeadings.isChecked() is True
     assert fmtTab.scaleHeadings.isChecked() is True
     assert fmtTab.boldHeadings.isChecked() is True
+    assert fmtTab.upperHeadings.isChecked() is False
 
     # Change values
     fmtTab.colorHeadings.setChecked(False)
     fmtTab.scaleHeadings.setChecked(False)
     fmtTab.boldHeadings.setChecked(False)
+    fmtTab.upperHeadings.setChecked(True)
 
     # Save values
     fmtTab.saveContent()
@@ -686,6 +689,7 @@ def testToolBuildSettings_FormatHeadingFormat(monkeypatch, qtbot, nwGUI):
     assert sBuild.getBool("format.colorHeadings") is False
     assert sBuild.getBool("format.scaleHeadings") is False
     assert sBuild.getBool("format.boldHeadings") is False
+    assert sBuild.getBool("format.upperHeadings") is True
 
     # Finish
     bSettings._dialogButtonClicked(bSettings.btnClose)

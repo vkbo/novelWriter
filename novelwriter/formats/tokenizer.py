@@ -315,11 +315,12 @@ class Tokenizer(ABC):
         """Set the line height between 0.5 and 5.0."""
         self._lineHeight = min(max(float(height), 0.5), 5.0)
 
-    def setHeadingStyles(self, color: bool, scale: bool, bold: bool) -> None:
+    def setHeadingStyles(self, color: bool, scale: bool, bold: bool, upper: bool) -> None:
         """Set text style for headings."""
         self._colorHeads = color
         self._scaleHeads = scale
         self._boldHeads = bold
+        self._hFormatter.setUppercase(upper)
 
     def setBlockIndent(self, indent: float) -> None:
         """Set the block indent between 0.0 and 10.0."""
@@ -1157,10 +1158,15 @@ class HeadingFormatter:
         self._chapter = chapter
         self._scene = scene
         self._absolute = absolute
+        self._upper = False
 
     def setHandle(self, tHandle: str | None) -> None:
         """Set the handle currently being processed."""
         self._handle = tHandle
+
+    def setUppercase(self, value: bool) -> None:
+        """Set headers to be uppercase."""
+        self._upper = value
 
     def incChapter(self) -> None:
         """Increment the chapter counter."""
@@ -1181,24 +1187,24 @@ class HeadingFormatter:
         """Reset the chapter scene counter."""
         self._scene = 0
 
-    def apply(self, hFormat: str, text: str, nHead: int) -> str:
+    def apply(self, template: str, text: str, nHead: int) -> str:
         """Apply formatting to a specific heading."""
-        hFormat = hFormat.replace(nwHeadFmt.TITLE, text)
-        hFormat = hFormat.replace(nwHeadFmt.BR, "\n")
-        hFormat = hFormat.replace(nwHeadFmt.CH_NUM, str(self._chapter))
-        hFormat = hFormat.replace(nwHeadFmt.SC_NUM, str(self._scene))
-        hFormat = hFormat.replace(nwHeadFmt.SC_ABS, str(self._absolute))
-        if nwHeadFmt.CH_WORD in hFormat:
+        template = template.replace(nwHeadFmt.TITLE, text)
+        template = template.replace(nwHeadFmt.BR, "\n")
+        template = template.replace(nwHeadFmt.CH_NUM, str(self._chapter))
+        template = template.replace(nwHeadFmt.SC_NUM, str(self._scene))
+        template = template.replace(nwHeadFmt.SC_ABS, str(self._absolute))
+        if nwHeadFmt.CH_WORD in template:
             chWord = self._project.localLookup(self._chapter)
-            hFormat = hFormat.replace(nwHeadFmt.CH_WORD, chWord)
-        if nwHeadFmt.CH_ROML in hFormat:
+            template = template.replace(nwHeadFmt.CH_WORD, chWord)
+        if nwHeadFmt.CH_ROML in template:
             chRom = numberToRoman(self._chapter, toLower=True)
-            hFormat = hFormat.replace(nwHeadFmt.CH_ROML, chRom)
-        if nwHeadFmt.CH_ROMU in hFormat:
+            template = template.replace(nwHeadFmt.CH_ROML, chRom)
+        if nwHeadFmt.CH_ROMU in template:
             chRom = numberToRoman(self._chapter, toLower=False)
-            hFormat = hFormat.replace(nwHeadFmt.CH_ROMU, chRom)
+            template = template.replace(nwHeadFmt.CH_ROMU, chRom)
 
-        if nwHeadFmt.CHAR_POV in hFormat or nwHeadFmt.CHAR_FOCUS in hFormat:
+        if nwHeadFmt.CHAR_POV in template or nwHeadFmt.CHAR_FOCUS in template:
             if self._handle and nHead > 0:
                 index = self._project.index
                 pList = index.getReferenceForHeader(self._handle, nHead, nwKeyWords.POV_KEY)
@@ -1208,7 +1214,10 @@ class HeadingFormatter:
             else:
                 pText = trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY])
                 fText = trConst(nwLabels.KEY_NAME[nwKeyWords.FOCUS_KEY])
-            hFormat = hFormat.replace(nwHeadFmt.CHAR_POV, pText)
-            hFormat = hFormat.replace(nwHeadFmt.CHAR_FOCUS, fText)
+            template = template.replace(nwHeadFmt.CHAR_POV, pText)
+            template = template.replace(nwHeadFmt.CHAR_FOCUS, fText)
 
-        return hFormat
+        if self._upper:
+            template = template.upper()
+
+        return template

@@ -94,6 +94,7 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "format.colorHeadings":    (bool, True),
     "format.scaleHeadings":    (bool, True),
     "format.boldHeadings":     (bool, True),
+    "format.upperHeadings":    (bool, False),
     "format.firstLineIndent":  (bool, False),
     "format.firstIndentWidth": (float, 1.4),
     "format.indentFirstPar":   (bool, False),
@@ -167,6 +168,7 @@ SETTINGS_LABELS = {
     "format.colorHeadings":    QT_TRANSLATE_NOOP("Builds", "Add Colours to Headings"),
     "format.scaleHeadings":    QT_TRANSLATE_NOOP("Builds", "Increase Size of Headings"),
     "format.boldHeadings":     QT_TRANSLATE_NOOP("Builds", "Bold Headings"),
+    "format.upperHeadings":    QT_TRANSLATE_NOOP("Builds", "Uppercase Headings"),
 
     "format.grpParIndent":     QT_TRANSLATE_NOOP("Builds", "First Line Indent"),
     "format.firstLineIndent":  QT_TRANSLATE_NOOP("Builds", "Enable Indent"),
