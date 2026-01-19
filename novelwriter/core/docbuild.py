@@ -273,9 +273,10 @@ class NWBuildDocument:
             self._build.getBool("format.indentFirstPar"),
         )
         bldObj.setHeadingStyles(
-            self._build.getBool("doc.colorHeadings"),
-            self._build.getBool("doc.scaleHeadings"),
-            self._build.getBool("doc.boldHeadings"),
+            self._build.getBool("format.colorHeadings"),
+            self._build.getBool("format.scaleHeadings"),
+            self._build.getBool("format.boldHeadings"),
+            self._build.getBool("format.upperHeadings"),
         )
 
         bldObj.setTitleMargins(

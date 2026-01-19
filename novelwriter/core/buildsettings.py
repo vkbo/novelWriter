@@ -91,6 +91,10 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "format.replaceTabs":      (bool, False),
     "format.keepBreaks":       (bool, True),
     "format.showDialogue":     (bool, False),
+    "format.colorHeadings":    (bool, True),
+    "format.scaleHeadings":    (bool, True),
+    "format.boldHeadings":     (bool, True),
+    "format.upperHeadings":    (bool, False),
     "format.firstLineIndent":  (bool, False),
     "format.firstIndentWidth": (float, 1.4),
     "format.indentFirstPar":   (bool, False),
@@ -118,9 +122,6 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "format.rightMargin":      (float, 2.0),
     "doc.pageHeader":          (str, nwHeadFmt.DOC_AUTO),
     "doc.pageCountOffset":     (int, 0),
-    "doc.colorHeadings":       (bool, True),
-    "doc.scaleHeadings":       (bool, True),
-    "doc.boldHeadings":        (bool, True),
     "doc.metaLanguage":        (str, ""),
     "html.addStyles":          (bool, True),
     "html.preserveTabs":       (bool, False),
@@ -163,6 +164,12 @@ SETTINGS_LABELS = {
     "format.keepBreaks":       QT_TRANSLATE_NOOP("Builds", "Preserve Hard Line Breaks"),
     "format.showDialogue":     QT_TRANSLATE_NOOP("Builds", "Apply Dialogue Highlighting"),
 
+    "format.grpHeadings":      QT_TRANSLATE_NOOP("Builds", "Heading Format"),
+    "format.colorHeadings":    QT_TRANSLATE_NOOP("Builds", "Add Colours to Headings"),
+    "format.scaleHeadings":    QT_TRANSLATE_NOOP("Builds", "Increase Size of Headings"),
+    "format.boldHeadings":     QT_TRANSLATE_NOOP("Builds", "Bold Headings"),
+    "format.upperHeadings":    QT_TRANSLATE_NOOP("Builds", "Uppercase Headings"),
+
     "format.grpParIndent":     QT_TRANSLATE_NOOP("Builds", "First Line Indent"),
     "format.firstLineIndent":  QT_TRANSLATE_NOOP("Builds", "Enable Indent"),
     "format.firstIndentWidth": QT_TRANSLATE_NOOP("Builds", "Indent Width"),
@@ -185,9 +192,6 @@ SETTINGS_LABELS = {
     "doc":                     QT_TRANSLATE_NOOP("Builds", "Document Style"),
     "doc.pageHeader":          QT_TRANSLATE_NOOP("Builds", "Page Header"),
     "doc.pageCountOffset":     QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
-    "doc.colorHeadings":       QT_TRANSLATE_NOOP("Builds", "Add Colours to Headings"),
-    "doc.scaleHeadings":       QT_TRANSLATE_NOOP("Builds", "Increase Size of Headings"),
-    "doc.boldHeadings":        QT_TRANSLATE_NOOP("Builds", "Bold Headings"),
     "doc.metaLanguage":        QT_TRANSLATE_NOOP("Builds", "Override Document Language"),
 
     "html":                    QT_TRANSLATE_NOOP("Builds", "HTML Options"),
@@ -198,6 +202,9 @@ SETTINGS_LABELS = {
 RENAMED = {
     "odt.pageHeader": "doc.pageHeader",
     "odt.pageCountOffset": "doc.pageCountOffset",
+    "doc.colorHeadings": "format.colorHeadings",
+    "doc.scaleHeadings": "format.scaleHeadings",
+    "doc.boldHeadings": "format.boldHeadings",
 }
 
 

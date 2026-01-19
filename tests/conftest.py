@@ -99,7 +99,7 @@ def functionFixture(qtbot):
         shutil.rmtree(_TMP_CONF)
     _TMP_CONF.mkdir()
 
-    CONFIG.__init__()  # noqa: PLC2801
+    CONFIG.__init__()
     CONFIG.initConfig(confPath=_TMP_CONF, dataPath=_TMP_CONF)
     resetConfigVars()
     logging.getLogger("novelwriter").setLevel(logging.INFO)

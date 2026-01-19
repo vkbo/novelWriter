@@ -2693,3 +2693,7 @@ def testFmtToken_HeadingFormatter(fncPath, mockGUI, mockRnd):
     # Chapter w/Fallback Focus
     cFormat = f"Chapter {nwHeadFmt.CH_NUM}, Scene {nwHeadFmt.SC_NUM} - {nwHeadFmt.CHAR_FOCUS}"
     assert formatter.apply(cFormat, "Hi Bob", 0) == "Chapter 2, Scene 3 - Focus"
+
+    # Uppercase Headings
+    formatter.setUppercase(True)
+    assert formatter.apply(nwHeadFmt.TITLE, "Chapter One", 0) == "CHAPTER ONE"
