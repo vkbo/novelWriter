@@ -67,7 +67,7 @@ BUILD_CONF = {
         "format.stripUnicode": False,
         "format.replaceTabs": True,
         "format.firstLineIndent": True,
-        "doc.colorHeadings": True,
+        "format.colorHeadings": True,
         "html.addStyles": True,
     },
     "content": {

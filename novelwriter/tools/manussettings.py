@@ -1098,6 +1098,22 @@ class _FormattingTab(NScrollableForm):
         self.addRow(self._build.getLabel("format.keepBreaks"), self.keepBreaks)
         self.addRow(self._build.getLabel("format.showDialogue"), self.showDialogue)
 
+        # Heading Format
+        # ==============
+
+        title = self._build.getLabel("format.grpHeadings")
+        section += 1
+        self._sidebar.addButton(title, section)
+        self.addGroupLabel(title, section)
+
+        self.colorHeadings = NSwitch(self, height=iPx)
+        self.scaleHeadings = NSwitch(self, height=iPx)
+        self.boldHeadings = NSwitch(self, height=iPx)
+
+        self.addRow(self._build.getLabel("format.colorHeadings"), self.colorHeadings)
+        self.addRow(self._build.getLabel("format.scaleHeadings"), self.scaleHeadings)
+        self.addRow(self._build.getLabel("format.boldHeadings"), self.boldHeadings)
+
         # First Line Indent
         # =================
 
@@ -1306,15 +1322,6 @@ class _FormattingTab(NScrollableForm):
         self.pageCountOffset.setMinimumWidth(spW)
         self.addRow(self._build.getLabel("doc.pageCountOffset"), self.pageCountOffset)
 
-        # Headings
-        self.colorHeadings = NSwitch(self, height=iPx)
-        self.scaleHeadings = NSwitch(self, height=iPx)
-        self.boldHeadings = NSwitch(self, height=iPx)
-
-        self.addRow(self._build.getLabel("doc.colorHeadings"), self.colorHeadings)
-        self.addRow(self._build.getLabel("doc.scaleHeadings"), self.scaleHeadings)
-        self.addRow(self._build.getLabel("doc.boldHeadings"), self.boldHeadings)
-
         # Meta Language
         self.lblMetaLanguage = QLabel(self)
         self.lblMetaLanguage.setAlignment(QtAlignRightMiddle)
@@ -1397,6 +1404,13 @@ class _FormattingTab(NScrollableForm):
         self.keepBreaks.setChecked(self._build.getBool("format.keepBreaks"))
         self.showDialogue.setChecked(self._build.getBool("format.showDialogue"))
 
+        # Heading Format
+        # ==============
+
+        self.colorHeadings.setChecked(self._build.getBool("format.colorHeadings"))
+        self.scaleHeadings.setChecked(self._build.getBool("format.scaleHeadings"))
+        self.boldHeadings.setChecked(self._build.getBool("format.boldHeadings"))
+
         # First Line Indent
         # =================
 
@@ -1451,9 +1465,6 @@ class _FormattingTab(NScrollableForm):
         # Document
         # ========
 
-        self.colorHeadings.setChecked(self._build.getBool("doc.colorHeadings"))
-        self.scaleHeadings.setChecked(self._build.getBool("doc.scaleHeadings"))
-        self.boldHeadings.setChecked(self._build.getBool("doc.boldHeadings"))
         self.metaLanguage.setText(processLangCode(self._build.getStr("doc.metaLanguage")))
         self.pageHeader.setText(self._build.getStr("doc.pageHeader"))
         self.pageCountOffset.setValue(self._build.getInt("doc.pageCountOffset"))
@@ -1487,6 +1498,11 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.replaceTabs", self.replaceTabs.isChecked())
         self._build.setValue("format.keepBreaks", self.keepBreaks.isChecked())
         self._build.setValue("format.showDialogue", self.showDialogue.isChecked())
+
+        # Heading Format
+        self._build.setValue("format.colorHeadings", self.colorHeadings.isChecked())
+        self._build.setValue("format.scaleHeadings", self.scaleHeadings.isChecked())
+        self._build.setValue("format.boldHeadings", self.boldHeadings.isChecked())
 
         # First Line Indent
         self._build.setValue("format.firstLineIndent", self.firstIndent.isChecked())
@@ -1522,9 +1538,6 @@ class _FormattingTab(NScrollableForm):
         # Documents
         metaLanguage = processLangCode(self.metaLanguage.text())
 
-        self._build.setValue("doc.colorHeadings", self.colorHeadings.isChecked())
-        self._build.setValue("doc.scaleHeadings", self.scaleHeadings.isChecked())
-        self._build.setValue("doc.boldHeadings", self.boldHeadings.isChecked())
         self._build.setValue("doc.metaLanguage", metaLanguage)
         self._build.setValue("doc.pageHeader", self.pageHeader.text())
         self._build.setValue("doc.pageCountOffset", self.pageCountOffset.value())

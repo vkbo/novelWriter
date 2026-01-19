@@ -649,6 +649,50 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
 
 
 @pytest.mark.gui
+def testToolBuildSettings_FormatHeadingFormat(monkeypatch, qtbot, nwGUI):
+    """Test the Heading Format settings."""
+    build = BuildSettings()
+
+    build.setValue("format.colorHeadings", True)
+    build.setValue("format.scaleHeadings", True)
+    build.setValue("format.boldHeadings", True)
+
+    # Create the dialog and populate it
+    bSettings = GuiBuildSettings(nwGUI, build)
+    bSettings.show()
+    bSettings.loadContent()
+
+    fmtTab = bSettings.optTabFormatting
+    button = bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 2)
+    assert button is not None
+    button.click()
+    assert bSettings.toolStack.currentWidget() is fmtTab
+
+    # Check initial values
+    assert fmtTab.colorHeadings.isChecked() is True
+    assert fmtTab.scaleHeadings.isChecked() is True
+    assert fmtTab.boldHeadings.isChecked() is True
+
+    # Change values
+    fmtTab.colorHeadings.setChecked(False)
+    fmtTab.scaleHeadings.setChecked(False)
+    fmtTab.boldHeadings.setChecked(False)
+
+    # Save values
+    fmtTab.saveContent()
+    sBuild = bSettings._build
+    assert sBuild.buildID == build.buildID
+
+    assert sBuild.getBool("format.colorHeadings") is False
+    assert sBuild.getBool("format.scaleHeadings") is False
+    assert sBuild.getBool("format.boldHeadings") is False
+
+    # Finish
+    bSettings._dialogButtonClicked(bSettings.btnClose)
+    # qtbot.stop()
+
+
+@pytest.mark.gui
 def testToolBuildSettings_FormatFirstLineIndent(monkeypatch, qtbot, nwGUI):
     """Test the First Line Indent settings."""
     build = BuildSettings()
@@ -755,9 +799,6 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
 
     build.setValue("doc.pageHeader", nwHeadFmt.DOC_AUTO)
     build.setValue("doc.pageCountOffset", 0)
-    build.setValue("doc.colorHeadings", True)
-    build.setValue("doc.scaleHeadings", True)
-    build.setValue("doc.boldHeadings", True)
 
     build.setValue("html.addStyles", False)
     build.setValue("html.preserveTabs", False)
@@ -776,9 +817,6 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     # Check initial values
     assert fmtTab.pageHeader.text() == nwHeadFmt.DOC_AUTO
     assert fmtTab.pageCountOffset.value() == 0
-    assert fmtTab.colorHeadings.isChecked() is True
-    assert fmtTab.scaleHeadings.isChecked() is True
-    assert fmtTab.boldHeadings.isChecked() is True
 
     assert fmtTab.htmlAddStyles.isChecked() is False
     assert fmtTab.htmlPreserveTabs.isChecked() is False
@@ -792,9 +830,6 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert fmtTab.lblMetaLanguage.text() == "British English"
 
     # Toggle all
-    fmtTab.colorHeadings.setChecked(False)
-    fmtTab.scaleHeadings.setChecked(False)
-    fmtTab.boldHeadings.setChecked(False)
     fmtTab.htmlAddStyles.setChecked(True)
     fmtTab.htmlPreserveTabs.setChecked(True)
 
@@ -806,9 +841,6 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert sBuild.getStr("doc.pageHeader") == "Stuff"
     assert sBuild.getInt("doc.pageCountOffset") == 1
     assert sBuild.getStr("doc.metaLanguage") == "en-GB"
-    assert sBuild.getBool("doc.colorHeadings") is False
-    assert sBuild.getBool("doc.scaleHeadings") is False
-    assert sBuild.getBool("doc.boldHeadings") is False
 
     assert sBuild.getBool("html.addStyles") is True
     assert sBuild.getBool("html.preserveTabs") is True
