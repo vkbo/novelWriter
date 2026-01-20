@@ -41,7 +41,7 @@ from novelwriter.common import (
     describeFont, fontMatcher, languageName, processLangCode, qtAddAction,
     qtLambda
 )
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwUnicode, trConst
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles, nwUnicode, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import (
@@ -1013,7 +1013,7 @@ class _FormattingTab(NScrollableForm):
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
         spW = 6*SHARED.theme.textNWidth
-        dbW = 8*SHARED.theme.textNWidth
+        dbW = 7*SHARED.theme.textNWidth
 
         # Text Content
         # ============
@@ -1137,8 +1137,8 @@ class _FormattingTab(NScrollableForm):
         self.addRow(self._build.getLabel("format.firstIndentWidth"), self.indentWidth, unit="em")
         self.addRow(self._build.getLabel("format.indentFirstPar"), self.indentFirstPar)
 
-        # Text Margins
-        # ============
+        # Size & Margins
+        # ==============
 
         title = self._build.getLabel("format.grpMargins")
         section += 1
@@ -1152,6 +1152,8 @@ class _FormattingTab(NScrollableForm):
         self.titleMarginT.setFixedWidth(dbW)
         self.titleMarginB = NDoubleSpinBox(self)
         self.titleMarginB.setFixedWidth(dbW)
+        self.btnTitleProps = NIconToolButton(self, iSz)
+        self.btnTitleProps.clicked.connect(self._resetTitleProps)
 
         self.pixH0S = QLabel(self)
         self.pixH0T = QLabel(self)
@@ -1164,7 +1166,7 @@ class _FormattingTab(NScrollableForm):
                 self.pixH0T, self.titleMarginT, iSp,
                 self.pixH0B, self.titleMarginB,
             ],
-            unit="em",
+            button=self.btnTitleProps,
         )
 
         # Heading 1
@@ -1174,6 +1176,8 @@ class _FormattingTab(NScrollableForm):
         self.h1MarginT.setFixedWidth(dbW)
         self.h1MarginB = NDoubleSpinBox(self)
         self.h1MarginB.setFixedWidth(dbW)
+        self.btnH1Props = NIconToolButton(self, iSz)
+        self.btnH1Props.clicked.connect(self._resetH1Props)
 
         self.pixH1S = QLabel(self)
         self.pixH1T = QLabel(self)
@@ -1186,7 +1190,7 @@ class _FormattingTab(NScrollableForm):
                 self.pixH1T, self.h1MarginT, iSp,
                 self.pixH1B, self.h1MarginB,
             ],
-            unit="em",
+            button=self.btnH1Props,
         )
 
         # Heading 2
@@ -1196,6 +1200,8 @@ class _FormattingTab(NScrollableForm):
         self.h2MarginT.setFixedWidth(dbW)
         self.h2MarginB = NDoubleSpinBox(self)
         self.h2MarginB.setFixedWidth(dbW)
+        self.btnH2Props = NIconToolButton(self, iSz)
+        self.btnH2Props.clicked.connect(self._resetH2Props)
 
         self.pixH2S = QLabel(self)
         self.pixH2T = QLabel(self)
@@ -1208,7 +1214,7 @@ class _FormattingTab(NScrollableForm):
                 self.pixH2T, self.h2MarginT, iSp,
                 self.pixH2B, self.h2MarginB,
             ],
-            unit="em",
+            button=self.btnH2Props,
         )
 
         # Heading 3
@@ -1218,6 +1224,8 @@ class _FormattingTab(NScrollableForm):
         self.h3MarginT.setFixedWidth(dbW)
         self.h3MarginB = NDoubleSpinBox(self)
         self.h3MarginB.setFixedWidth(dbW)
+        self.btnH3Props = NIconToolButton(self, iSz)
+        self.btnH3Props.clicked.connect(self._resetH3Props)
 
         self.pixH3S = QLabel(self)
         self.pixH3T = QLabel(self)
@@ -1230,7 +1238,7 @@ class _FormattingTab(NScrollableForm):
                 self.pixH3T, self.h3MarginT, iSp,
                 self.pixH3B, self.h3MarginB,
             ],
-            unit="em",
+            button=self.btnH3Props,
         )
 
         # Heading 4
@@ -1240,6 +1248,8 @@ class _FormattingTab(NScrollableForm):
         self.h4MarginT.setFixedWidth(dbW)
         self.h4MarginB = NDoubleSpinBox(self)
         self.h4MarginB.setFixedWidth(dbW)
+        self.btnH4Props = NIconToolButton(self, iSz)
+        self.btnH4Props.clicked.connect(self._resetH4Props)
 
         self.pixH4S = QLabel(self)
         self.pixH4T = QLabel(self)
@@ -1252,15 +1262,16 @@ class _FormattingTab(NScrollableForm):
                 self.pixH4T, self.h4MarginT, iSp,
                 self.pixH4B, self.h4MarginB,
             ],
-            unit="em",
+            button=self.btnH4Props,
         )
 
         # Text
         self.textMarginT = NDoubleSpinBox(self)
         self.textMarginT.setFixedWidth(dbW)
-
         self.textMarginB = NDoubleSpinBox(self)
         self.textMarginB.setFixedWidth(dbW)
+        self.btnTextProps = NIconToolButton(self, iSz)
+        self.btnTextProps.clicked.connect(self._resetTextProps)
 
         self.pixTTT = QLabel(self)
         self.pixTTB = QLabel(self)
@@ -1268,15 +1279,16 @@ class _FormattingTab(NScrollableForm):
         self.addRow(
             self._build.getLabel("format.textMargin"),
             [self.pixTTT, self.textMarginT, iSp, self.pixTTB, self.textMarginB],
-            unit="em",
+            button=self.btnTextProps,
         )
 
         # Separator
         self.sepMarginT = NDoubleSpinBox(self)
         self.sepMarginT.setFixedWidth(dbW)
-
         self.sepMarginB = NDoubleSpinBox(self)
         self.sepMarginB.setFixedWidth(dbW)
+        self.btnSepProps = NIconToolButton(self, iSz)
+        self.btnSepProps.clicked.connect(self._resetSepProps)
 
         self.pixSPT = QLabel(self)
         self.pixSPB = QLabel(self)
@@ -1284,7 +1296,7 @@ class _FormattingTab(NScrollableForm):
         self.addRow(
             self._build.getLabel("format.sepMargin"),
             [self.pixSPT, self.sepMarginT, iSp, self.pixSPB, self.sepMarginB],
-            unit="em",
+            button=self.btnSepProps,
         )
 
         # Empty Lines
@@ -1419,6 +1431,13 @@ class _FormattingTab(NScrollableForm):
         self.ignoredKeywordsButton.setThemeIcon("add", "add")
         self.btnTextFont.setThemeIcon("font", "tool")
         self.btnPageHeader.setThemeIcon("revert", "reset")
+        self.btnTitleProps.setThemeIcon("revert", "reset")
+        self.btnH1Props.setThemeIcon("revert", "reset")
+        self.btnH2Props.setThemeIcon("revert", "reset")
+        self.btnH3Props.setThemeIcon("revert", "reset")
+        self.btnH4Props.setThemeIcon("revert", "reset")
+        self.btnTextProps.setThemeIcon("revert", "reset")
+        self.btnSepProps.setThemeIcon("revert", "reset")
 
         iPx = SHARED.theme.baseIconHeight
 
@@ -1742,6 +1761,53 @@ class _FormattingTab(NScrollableForm):
         """Reset the document header format to default."""
         self.pageHeader.setText(nwHeadFmt.DOC_AUTO)
         self.pageHeader.setCursorPosition(0)
+
+    @pyqtSlot()
+    def _resetTitleProps(self) -> None:
+        """Reset the title size and margins to default."""
+        self.titleSize.setValue(nwStyles.H_SIZES[0])
+        self.titleMarginT.setValue(nwStyles.T_MARGIN["H0"][0])
+        self.titleMarginB.setValue(nwStyles.T_MARGIN["H0"][1])
+
+    @pyqtSlot()
+    def _resetH1Props(self) -> None:
+        """Reset the H1 size and margins to default."""
+        self.h1Size.setValue(nwStyles.H_SIZES[1])
+        self.h1MarginT.setValue(nwStyles.T_MARGIN["H1"][0])
+        self.h1MarginB.setValue(nwStyles.T_MARGIN["H1"][1])
+
+    @pyqtSlot()
+    def _resetH2Props(self) -> None:
+        """Reset the H2 size and margins to default."""
+        self.h2Size.setValue(nwStyles.H_SIZES[2])
+        self.h2MarginT.setValue(nwStyles.T_MARGIN["H2"][0])
+        self.h2MarginB.setValue(nwStyles.T_MARGIN["H2"][1])
+
+    @pyqtSlot()
+    def _resetH3Props(self) -> None:
+        """Reset the H3 size and margins to default."""
+        self.h3Size.setValue(nwStyles.H_SIZES[3])
+        self.h3MarginT.setValue(nwStyles.T_MARGIN["H3"][0])
+        self.h3MarginB.setValue(nwStyles.T_MARGIN["H3"][1])
+
+    @pyqtSlot()
+    def _resetH4Props(self) -> None:
+        """Reset the H4 size and margins to default."""
+        self.h4Size.setValue(nwStyles.H_SIZES[4])
+        self.h4MarginT.setValue(nwStyles.T_MARGIN["H4"][0])
+        self.h4MarginB.setValue(nwStyles.T_MARGIN["H4"][1])
+
+    @pyqtSlot()
+    def _resetTextProps(self) -> None:
+        """Reset the text size and margins to default."""
+        self.textMarginT.setValue(nwStyles.T_MARGIN["TT"][0])
+        self.textMarginB.setValue(nwStyles.T_MARGIN["TT"][1])
+
+    @pyqtSlot()
+    def _resetSepProps(self) -> None:
+        """Reset the separator size and margins to default."""
+        self.sepMarginT.setValue(nwStyles.T_MARGIN["SP"][0])
+        self.sepMarginB.setValue(nwStyles.T_MARGIN["SP"][1])
 
     @pyqtSlot()
     def _refreshMetaLang(self) -> None:

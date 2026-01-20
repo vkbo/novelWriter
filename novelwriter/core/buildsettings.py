@@ -179,7 +179,7 @@ SETTINGS_LABELS = {
     "format.firstIndentWidth": QT_TRANSLATE_NOOP("Builds", "Indent Width"),
     "format.indentFirstPar":   QT_TRANSLATE_NOOP("Builds", "Indent First Paragraph"),
 
-    "format.grpMargins":       QT_TRANSLATE_NOOP("Builds", "Size and Margins"),
+    "format.grpMargins":       QT_TRANSLATE_NOOP("Builds", "Size & Margins"),
     "format.titleMargin":      QT_TRANSLATE_NOOP("Builds", "Title and Partition"),
     "format.h1Margin":         QT_TRANSLATE_NOOP("Builds", "Heading 1 and Chapter"),
     "format.h2Margin":         QT_TRANSLATE_NOOP("Builds", "Heading 2 and Scene"),
