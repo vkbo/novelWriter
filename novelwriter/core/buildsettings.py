@@ -92,7 +92,6 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "format.keepBreaks":       (bool, True),
     "format.showDialogue":     (bool, False),
     "format.colorHeadings":    (bool, True),
-    "format.scaleHeadings":    (bool, True),
     "format.boldHeadings":     (bool, True),
     "format.upperHeadings":    (bool, False),
     "format.firstLineIndent":  (bool, False),
@@ -172,7 +171,6 @@ SETTINGS_LABELS = {
 
     "format.grpHeadings":      QT_TRANSLATE_NOOP("Builds", "Heading Format"),
     "format.colorHeadings":    QT_TRANSLATE_NOOP("Builds", "Add Colours to Headings"),
-    "format.scaleHeadings":    QT_TRANSLATE_NOOP("Builds", "Increase Size of Headings"),
     "format.boldHeadings":     QT_TRANSLATE_NOOP("Builds", "Bold Headings"),
     "format.upperHeadings":    QT_TRANSLATE_NOOP("Builds", "Uppercase Headings"),
 
@@ -210,7 +208,6 @@ RENAMED = {
     "odt.pageHeader": "doc.pageHeader",
     "odt.pageCountOffset": "doc.pageCountOffset",
     "doc.colorHeadings": "format.colorHeadings",
-    "doc.scaleHeadings": "format.scaleHeadings",
     "doc.boldHeadings": "format.boldHeadings",
 }
 

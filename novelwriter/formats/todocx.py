@@ -517,7 +517,6 @@ class ToDocX(Tokenizer):
         """Generate usable styles."""
         styles: list[DocXParStyle] = []
 
-        hScale = self._scaleHeads
         hColor = _docXCol(self._theme.head) if self._colorHeads else None
         fSz = self._fontSize
 
@@ -538,7 +537,7 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Title",
             styleId=S_TITLE,
-            size=(self._sizeTitle * fSz) if hScale else fSz,
+            size=fSz * self._sizeTitle,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginTitle[0],
@@ -552,7 +551,7 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Heading 1",
             styleId=S_HEAD1,
-            size=(self._sizeHead1 * fSz) if hScale else fSz,
+            size=fSz * self._sizeHead1,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginHead1[0],
@@ -567,7 +566,7 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Heading 2",
             styleId=S_HEAD2,
-            size=(self._sizeHead2 * fSz) if hScale else fSz,
+            size=fSz * self._sizeHead2,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginHead2[0],
@@ -582,7 +581,7 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Heading 3",
             styleId=S_HEAD3,
-            size=(self._sizeHead3 * fSz) if hScale else fSz,
+            size=fSz * self._sizeHead3,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginHead3[0],
@@ -597,7 +596,7 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Heading 4",
             styleId=S_HEAD4,
-            size=(self._sizeHead4 * fSz) if hScale else fSz,
+            size=fSz * self._sizeHead4,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginHead4[0],

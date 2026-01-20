@@ -126,7 +126,6 @@ class Tokenizer(ABC):
         self._textFont     = QFont("Serif", 11)  # Output text font
         self._lineHeight   = 1.15    # Line height in units of em
         self._colorHeads   = True    # Colourise headings
-        self._scaleHeads   = True    # Scale headings to larger font size
         self._boldHeads    = True    # Bold headings
         self._blockIndent  = 4.00    # Block indent in units of em
         self._firstIndent  = False   # Enable first line indent
@@ -322,10 +321,9 @@ class Tokenizer(ABC):
         """Set the line height between 0.5 and 5.0."""
         self._lineHeight = min(max(float(height), 0.5), 5.0)
 
-    def setHeadingStyles(self, color: bool, scale: bool, bold: bool, upper: bool) -> None:
+    def setHeadingStyles(self, color: bool, bold: bool, upper: bool) -> None:
         """Set text style for headings."""
         self._colorHeads = color
-        self._scaleHeads = scale
         self._boldHeads = bold
         self._hFormatter.setUppercase(upper)
 

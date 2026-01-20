@@ -164,14 +164,13 @@ class ToQTextDocument(Tokenizer):
             BlockTyp.HEAD4: (fPx * self._marginHead4[0], fPx * self._marginHead4[1]),
         }
 
-        hScale = self._scaleHeads
         self._sHead = {
-            BlockTyp.TITLE: (fPt * self._sizeTitle) if hScale else fPt,
-            BlockTyp.PART:  (fPt * self._sizeTitle) if hScale else fPt,
-            BlockTyp.HEAD1: (fPt * self._sizeHead1) if hScale else fPt,
-            BlockTyp.HEAD2: (fPt * self._sizeHead2) if hScale else fPt,
-            BlockTyp.HEAD3: (fPt * self._sizeHead3) if hScale else fPt,
-            BlockTyp.HEAD4: (fPt * self._sizeHead4) if hScale else fPt,
+            BlockTyp.TITLE: fPt * self._sizeTitle,
+            BlockTyp.PART:  fPt * self._sizeTitle,
+            BlockTyp.HEAD1: fPt * self._sizeHead1,
+            BlockTyp.HEAD2: fPt * self._sizeHead2,
+            BlockTyp.HEAD3: fPt * self._sizeHead3,
+            BlockTyp.HEAD4: fPt * self._sizeHead4,
         }
 
         self._mText = (fPx * self._marginText[0], fPx * self._marginText[1])
