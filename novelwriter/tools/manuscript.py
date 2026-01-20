@@ -186,7 +186,7 @@ class GuiManuscript(NToolDialog):
         self.swtNewPage.setChecked(options.getBool("GuiManuscript", "showNewPage", True))
         self.swtNewPage.clicked.connect(self._generatePreview)
 
-        self.lblNewPage = QLabel(self.tr("Show Page Breaks"), self)
+        self.lblNewPage = QLabel(self.tr("Show page breaks"), self)
         self.lblNewPage.setBuddy(self.swtNewPage)
 
         # Assemble GUI
@@ -630,8 +630,8 @@ class _DetailsWidget(QWidget):
         item.setText(1, "")
         self.listView.addTopLevelItem(item)
         for key in [
-            "text.includeSynopsis", "text.includeComments", "text.includeStory",
-            "text.includeNotes", "text.includeKeywords", "text.includeBodyText",
+            "text.includeBodyText", "text.includeSynopsis", "text.includeComments",
+            "text.includeStory", "text.includeNotes", "text.includeKeywords",
         ]:
             sub = QTreeWidgetItem()
             sub.setText(0, build.getLabel(key))
@@ -1053,8 +1053,8 @@ class _StatsWidget(QWidget):
 
         self.leftForm = QFormLayout()
         self.leftForm.addRow(trAllWords, self.maxTotalWords)
-        self.leftForm.addRow(trTitleWords, self.maxHeadWords)
         self.leftForm.addRow(trTextWords, self.maxTextWords)
+        self.leftForm.addRow(trTitleWords, self.maxHeadWords)
         self.leftForm.addRow("", QLabel(self))
         self.leftForm.addRow(trTitleCount, self.maxTitleCount)
         self.leftForm.addRow(trParagraphCount, self.maxParCount)
@@ -1078,11 +1078,11 @@ class _StatsWidget(QWidget):
 
         self.rightForm = QFormLayout()
         self.rightForm.addRow(trAllChars, self.maxTotalChars)
-        self.rightForm.addRow(trTitleChars, self.maxHeaderChars)
-        self.rightForm.addRow(trTextChars, self.maxTextChars)
         self.rightForm.addRow(trAllWordChars, self.maxTotalWordChars)
-        self.rightForm.addRow(trTitleWordChars, self.maxHeadWordChars)
+        self.rightForm.addRow(trTextChars, self.maxTextChars)
         self.rightForm.addRow(trTextWordChars, self.maxTextWordChars)
+        self.rightForm.addRow(trTitleChars, self.maxHeaderChars)
+        self.rightForm.addRow(trTitleWordChars, self.maxHeadWordChars)
         self.rightForm.setHorizontalSpacing(12)
         self.rightForm.setVerticalSpacing(4)
 
