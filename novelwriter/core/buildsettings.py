@@ -112,6 +112,7 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "format.textMarginB":      (float, nwStyles.T_MARGIN["TT"][1]),
     "format.sepMarginT":       (float, nwStyles.T_MARGIN["SP"][0]),
     "format.sepMarginB":       (float, nwStyles.T_MARGIN["SP"][1]),
+    "format.lineForMargin":    (bool, False),
     "format.pageUnit":         (str, "cm"),
     "format.pageSize":         (str, "A4"),
     "format.pageWidth":        (float, 21.0),
@@ -183,6 +184,7 @@ SETTINGS_LABELS = {
     "format.h4Margin":         QT_TRANSLATE_NOOP("Builds", "Heading 4"),
     "format.textMargin":       QT_TRANSLATE_NOOP("Builds", "Text Paragraph"),
     "format.sepMargin":        QT_TRANSLATE_NOOP("Builds", "Scene Separator"),
+    "format.lineForMargin":    QT_TRANSLATE_NOOP("Builds", "Use Empty Lines As Margins"),
 
     "format.grpPage":          QT_TRANSLATE_NOOP("Builds", "Page Layout"),
     "format.pageUnit":         QT_TRANSLATE_NOOP("Builds", "Unit"),

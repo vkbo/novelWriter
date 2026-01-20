@@ -1258,6 +1258,12 @@ class _FormattingTab(NScrollableForm):
             unit="em",
         )
 
+        # Empty Lines
+        self.lineForMargin = NSwitch(self, height=iPx)
+        self.lineForMargin.clicked.connect(self._updateTextMarginState)
+
+        self.addRow(self._build.getLabel("format.lineForMargin"), self.lineForMargin)
+
         # Page Layout
         # ===========
 
@@ -1478,6 +1484,9 @@ class _FormattingTab(NScrollableForm):
         self.textMarginB.setValue(self._build.getFloat("format.textMarginB"))
         self.sepMarginT.setValue(self._build.getFloat("format.sepMarginT"))
         self.sepMarginB.setValue(self._build.getFloat("format.sepMarginB"))
+        self.lineForMargin.setChecked(self._build.getBool("format.lineForMargin"))
+
+        self._updateTextMarginState()
 
         # Page Layout
         # ===========
@@ -1568,6 +1577,7 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.textMarginB", self.textMarginB.value())
         self._build.setValue("format.sepMarginT", self.sepMarginT.value())
         self._build.setValue("format.sepMarginB", self.sepMarginB.value())
+        self._build.setValue("format.lineForMargin", self.lineForMargin.isChecked())
 
         # Page Layout
         self._build.setValue("format.pageUnit", str(self.pageUnit.currentData()))
@@ -1694,6 +1704,25 @@ class _FormattingTab(NScrollableForm):
         """Update the meta language helper info."""
         code = self.metaLanguage.text().strip()
         self.lblMetaLanguage.setText(languageName(code))
+
+    @pyqtSlot()
+    def _updateTextMarginState(self) -> None:
+        """Update the enabled state of text margin settings."""
+        enabled = not self.lineForMargin.isChecked()
+        self.titleMarginT.setEnabled(enabled)
+        self.titleMarginB.setEnabled(enabled)
+        self.h1MarginT.setEnabled(enabled)
+        self.h1MarginB.setEnabled(enabled)
+        self.h2MarginT.setEnabled(enabled)
+        self.h2MarginB.setEnabled(enabled)
+        self.h3MarginT.setEnabled(enabled)
+        self.h3MarginB.setEnabled(enabled)
+        self.h4MarginT.setEnabled(enabled)
+        self.h4MarginB.setEnabled(enabled)
+        self.textMarginT.setEnabled(enabled)
+        self.textMarginB.setEnabled(enabled)
+        self.sepMarginT.setEnabled(enabled)
+        self.sepMarginB.setEnabled(enabled)
 
     ##
     #  Internal Functions

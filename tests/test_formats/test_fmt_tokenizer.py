@@ -1324,6 +1324,67 @@ def testFmtToken_LineBreak(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToken_LineForMargin(mockGUI):
+    """Test using empty lines between blocks in the Tokenizer class."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens._handle = TMH
+    tokens._isNovel = True
+    tokens.setLineForMargin(True)
+    tokens.setChapterStyle(False, True)
+
+    # Between paragraphs
+    tokens._text = "Line one\n\nLine two"
+    tokens._isFirst = True
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.TEXT, "", "Line one", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Line two", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+    ]
+
+    # Not between hard line breaks
+    tokens._text = "Line one\nLine two"
+    tokens._isFirst = True
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.TEXT, "", "Line one\nLine two", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+    ]
+
+    # Between heading and text
+    tokens._text = "### Scene\n\nLine one"
+    tokens._isFirst = True
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, f"{TMH}:T0001", "Scene", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Line one", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+    ]
+
+    # Between two chapters
+    tokens._text = "## Chapter One\n\nText\n\n## Chapter Two\n\nText"
+    tokens._isFirst = True
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.HEAD1, f"{TMH}:T0001", "Chapter One", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Text", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, f"{TMH}:T0002", "Chapter Two", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Text", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+    ]
+
+
+
+@pytest.mark.core
 def testFmtToken_ShortcodeValue(mockGUI):
     """Test processing of shortcodes with values."""
     project = NWProject()
@@ -1347,7 +1408,6 @@ def testFmtToken_ShortcodeValue(mockGUI):
             (13, TextFmt.FIELD, f"{TMH}:abcd"),
         ], BlockFmt.NONE
     )]
-
 
 @pytest.mark.core
 def testFmtToken_Dialogue(mockGUI):
