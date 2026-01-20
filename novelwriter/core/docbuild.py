@@ -274,36 +274,40 @@ class NWBuildDocument:
         )
         bldObj.setHeadingStyles(
             self._build.getBool("format.colorHeadings"),
-            self._build.getBool("format.scaleHeadings"),
             self._build.getBool("format.boldHeadings"),
             self._build.getBool("format.upperHeadings"),
         )
 
-        bldObj.setTitleMargins(
+        bldObj.setTitleProperties(
             self._build.getFloat("format.titleMarginT"),
             self._build.getFloat("format.titleMarginB"),
+            self._build.getFloat("format.titleSize"),
         )
-        bldObj.setHead1Margins(
+        bldObj.setHead1Properties(
             self._build.getFloat("format.h1MarginT"),
             self._build.getFloat("format.h1MarginB"),
+            self._build.getFloat("format.h1Size"),
         )
-        bldObj.setHead2Margins(
+        bldObj.setHead2Properties(
             self._build.getFloat("format.h2MarginT"),
             self._build.getFloat("format.h2MarginB"),
+            self._build.getFloat("format.h2Size"),
         )
-        bldObj.setHead3Margins(
+        bldObj.setHead3Properties(
             self._build.getFloat("format.h3MarginT"),
             self._build.getFloat("format.h3MarginB"),
+            self._build.getFloat("format.h3Size"),
         )
-        bldObj.setHead4Margins(
+        bldObj.setHead4Properties(
             self._build.getFloat("format.h4MarginT"),
             self._build.getFloat("format.h4MarginB"),
+            self._build.getFloat("format.h4Size"),
         )
-        bldObj.setTextMargins(
+        bldObj.setTextProperties(
             self._build.getFloat("format.textMarginT"),
             self._build.getFloat("format.textMarginB"),
         )
-        bldObj.setSeparatorMargins(
+        bldObj.setSeparatorProperties(
             self._build.getFloat("format.sepMarginT"),
             self._build.getFloat("format.sepMarginB"),
         )

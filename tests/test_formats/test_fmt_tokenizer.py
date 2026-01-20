@@ -91,6 +91,11 @@ def testFmtToken_Setters(mockGUI):
     assert tokens._marginSep == nwStyles.T_MARGIN["SP"]
     assert tokens._marginText == nwStyles.T_MARGIN["TT"]
     assert tokens._marginMeta == nwStyles.T_MARGIN["MT"]
+    assert tokens._sizeTitle == nwStyles.H_SIZES[0]
+    assert tokens._sizeHead1 == nwStyles.H_SIZES[1]
+    assert tokens._sizeHead2 == nwStyles.H_SIZES[2]
+    assert tokens._sizeHead3 == nwStyles.H_SIZES[3]
+    assert tokens._sizeHead4 == nwStyles.H_SIZES[4]
     assert tokens._hidePart is False
     assert tokens._hideChapter is False
     assert tokens._hideUnNum is False
@@ -113,14 +118,14 @@ def testFmtToken_Setters(mockGUI):
     tokens.setLineHeight(2.0)
     tokens.setBlockIndent(6.0)
     tokens.setJustify(True)
-    tokens.setTitleMargins(2.0, 2.0)
-    tokens.setHead1Margins(2.0, 2.0)
-    tokens.setHead2Margins(2.0, 2.0)
-    tokens.setHead3Margins(2.0, 2.0)
-    tokens.setHead4Margins(2.0, 2.0)
-    tokens.setTextMargins(2.0, 2.0)
-    tokens.setMetaMargins(2.0, 2.0)
-    tokens.setSeparatorMargins(2.0, 2.0)
+    tokens.setTitleProperties(2.0, 2.0, 8.0)
+    tokens.setHead1Properties(2.0, 2.0, 7.0)
+    tokens.setHead2Properties(2.0, 2.0, 6.0)
+    tokens.setHead3Properties(2.0, 2.0, 5.0)
+    tokens.setHead4Properties(2.0, 2.0, 4.0)
+    tokens.setTextProperties(2.0, 2.0)
+    tokens.setMetaProperties(2.0, 2.0)
+    tokens.setSeparatorProperties(2.0, 2.0)
     tokens.setLinkHeadings(True)
     tokens.setBodyText(False)
     tokens.setCommentType(nwComment.PLAIN, True)
@@ -147,6 +152,11 @@ def testFmtToken_Setters(mockGUI):
     assert tokens._marginText == (2.0, 2.0)
     assert tokens._marginMeta == (2.0, 2.0)
     assert tokens._marginSep == (2.0, 2.0)
+    assert tokens._sizeTitle == 8.0
+    assert tokens._sizeHead1 == 7.0
+    assert tokens._sizeHead2 == 6.0
+    assert tokens._sizeHead3 == 5.0
+    assert tokens._sizeHead4 == 4.0
     assert tokens._hidePart is True
     assert tokens._hideChapter is True
     assert tokens._hideUnNum is True

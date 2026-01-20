@@ -126,7 +126,6 @@ class Tokenizer(ABC):
         self._textFont     = QFont("Serif", 11)  # Output text font
         self._lineHeight   = 1.15    # Line height in units of em
         self._colorHeads   = True    # Colourise headings
-        self._scaleHeads   = True    # Scale headings to larger font size
         self._boldHeads    = True    # Bold headings
         self._blockIndent  = 4.00    # Block indent in units of em
         self._firstIndent  = False   # Enable first line indent
@@ -174,6 +173,12 @@ class Tokenizer(ABC):
         self._hideScene   = False  # Do not include scene headings
         self._hideHScene  = False  # Do not include hard scene headings
         self._hideSection = False  # Do not include section headings
+
+        self._sizeTitle = nwStyles.H_SIZES[0]
+        self._sizeHead1 = nwStyles.H_SIZES[1]
+        self._sizeHead2 = nwStyles.H_SIZES[2]
+        self._sizeHead3 = nwStyles.H_SIZES[3]
+        self._sizeHead4 = nwStyles.H_SIZES[4]
 
         self._linkHeadings = False  # Add an anchor before headings
 
@@ -316,10 +321,9 @@ class Tokenizer(ABC):
         """Set the line height between 0.5 and 5.0."""
         self._lineHeight = min(max(float(height), 0.5), 5.0)
 
-    def setHeadingStyles(self, color: bool, scale: bool, bold: bool, upper: bool) -> None:
+    def setHeadingStyles(self, color: bool, bold: bool, upper: bool) -> None:
         """Set text style for headings."""
         self._colorHeads = color
-        self._scaleHeads = scale
         self._boldHeads = bold
         self._hFormatter.setUppercase(upper)
 
@@ -343,37 +347,42 @@ class Tokenizer(ABC):
         """Enable or disable dialogue highlighting."""
         self._hlightDialog = state
 
-    def setTitleMargins(self, upper: float, lower: float) -> None:
-        """Set the upper and lower title margin."""
-        self._marginTitle = (float(upper), float(lower))
+    def setTitleProperties(self, upper: float, lower: float, size: float) -> None:
+        """Set the font size and upper and lower title margin."""
+        self._marginTitle = (upper, lower)
+        self._sizeTitle = size
 
-    def setHead1Margins(self, upper: float, lower: float) -> None:
-        """Set the upper and lower heading 1 margin."""
-        self._marginHead1 = (float(upper), float(lower))
+    def setHead1Properties(self, upper: float, lower: float, size: float) -> None:
+        """Set the font size and upper and lower heading 1 margin."""
+        self._marginHead1 = (upper, lower)
+        self._sizeHead1 = size
 
-    def setHead2Margins(self, upper: float, lower: float) -> None:
-        """Set the upper and lower heading 2 margin."""
-        self._marginHead2 = (float(upper), float(lower))
+    def setHead2Properties(self, upper: float, lower: float, size: float) -> None:
+        """Set the font size and upper and lower heading 2 margin."""
+        self._marginHead2 = (upper, lower)
+        self._sizeHead2 = size
 
-    def setHead3Margins(self, upper: float, lower: float) -> None:
-        """Set the upper and lower heading 3 margin."""
-        self._marginHead3 = (float(upper), float(lower))
+    def setHead3Properties(self, upper: float, lower: float, size: float) -> None:
+        """Set the font size and upper and lower heading 3 margin."""
+        self._marginHead3 = (upper, lower)
+        self._sizeHead3 = size
 
-    def setHead4Margins(self, upper: float, lower: float) -> None:
-        """Set the upper and lower heading 4 margin."""
-        self._marginHead4 = (float(upper), float(lower))
+    def setHead4Properties(self, upper: float, lower: float, size: float) -> None:
+        """Set the font size and upper and lower heading 4 margin."""
+        self._marginHead4 = (upper, lower)
+        self._sizeHead4 = size
 
-    def setTextMargins(self, upper: float, lower: float) -> None:
+    def setTextProperties(self, upper: float, lower: float) -> None:
         """Set the upper and lower text margin."""
-        self._marginText = (float(upper), float(lower))
+        self._marginText = (upper, lower)
 
-    def setMetaMargins(self, upper: float, lower: float) -> None:
+    def setMetaProperties(self, upper: float, lower: float) -> None:
         """Set the upper and lower meta text margin."""
-        self._marginMeta = (float(upper), float(lower))
+        self._marginMeta = (upper, lower)
 
-    def setSeparatorMargins(self, upper: float, lower: float) -> None:
+    def setSeparatorProperties(self, upper: float, lower: float) -> None:
         """Set the upper and lower meta text margin."""
-        self._marginSep = (float(upper), float(lower))
+        self._marginSep = (upper, lower)
 
     def setLineForMargin(self, value: bool) -> None:
         """Enable using empty lines for margins."""

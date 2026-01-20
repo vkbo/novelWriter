@@ -30,7 +30,7 @@ from time import time
 from typing import TYPE_CHECKING
 
 from novelwriter.common import formatTimeStamp
-from novelwriter.constants import nwHtmlUnicode, nwStyles
+from novelwriter.constants import nwHtmlUnicode
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import COMMENT_BLOCKS, Tokenizer
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS, QtHexRgb
@@ -332,11 +332,11 @@ class ToHtml(Tokenizer):
         mtSP = self._marginSep[0]
         mbSP = self._marginSep[1]
 
-        fSz0 = nwStyles.H_SIZES[0]
-        fSz1 = nwStyles.H_SIZES[1]
-        fSz2 = nwStyles.H_SIZES[2]
-        fSz3 = nwStyles.H_SIZES[3]
-        fSz4 = nwStyles.H_SIZES[4]
+        fSz0 = self._sizeTitle
+        fSz1 = self._sizeHead1
+        fSz2 = self._sizeHead2
+        fSz3 = self._sizeHead3
+        fSz4 = self._sizeHead4
 
         font = self._textFont
         fFam = font.family()

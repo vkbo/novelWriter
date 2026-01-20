@@ -27,6 +27,7 @@
     "fmt_bold": "bold",
     "fmt_italic": "italic",
     "fmt_mark": "highlighter",
+    "fmt_size": "a-large-small",
     "fmt_strike": "strikethrough",
     "fmt_subscript": "subscript",
     "fmt_superscript": "superscript",
