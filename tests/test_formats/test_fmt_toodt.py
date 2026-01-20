@@ -917,6 +917,57 @@ def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths, ipsumText):
 
 
 @pytest.mark.core
+def testFmtToOdt_SaveFlatWithEmptyLines(mockGUI, fncPath, tstPaths, ipsumText):
+    """Test the document save functions."""
+    project = NWProject()
+    project.data.setAuthor("Jane Smith")
+    project.data.setName("Test Project")
+    project.data.setSaveCount(1234)
+    project.data.setEditTime(3674096)
+
+    odt = ToOdt(project, isFlat=True)
+    odt._isNovel = True
+    odt.setHeaderFormat(nwHeadFmt.DOC_AUTO, 1)
+    odt.setLineForMargin(True)
+    assert odt._headerFormat == nwHeadFmt.DOC_AUTO
+
+    odt.setPageLayout(148, 210, 20, 18, 17, 15)
+    assert odt._mDocWidth  == "14.800cm"
+    assert odt._mDocHeight == "21.000cm"
+    assert odt._mDocTop    == "2.000cm"
+    assert odt._mDocBtm    == "1.800cm"
+    assert odt._mDocLeft   == "1.700cm"
+    assert odt._mDocRight  == "1.500cm"
+
+    odt._text = (
+        "#! My Novel\n\n"
+        "**Word Count: [field:allWords]**\n"
+        "[field:paragraphCount] paragrphs\n"
+        "Web: http://example.com\n\n"
+        "## Chapter One\n\n"
+        f"{ipsumText[0]}\n\n"
+        "## Chapter Two\n\n"
+        f"{ipsumText[1]}[footnote:abc]\n\n"
+        "%Footnote.abc: Lorem ipsum\n\n"
+    )
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.countStats()
+    odt.closeDocument()
+
+    flatFile = fncPath / "document.fodt"
+    testFile = tstPaths.outDir / "fmtToOdt_SaveFlatWithEmptyLines_document.fodt"
+    compFile = tstPaths.refDir / "fmtToOdt_SaveFlatWithEmptyLines_document.fodt"
+
+    odt.saveDocument(flatFile)
+    assert flatFile.exists()
+
+    copyfile(flatFile, testFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=ODT_IGNORE)
+
+
+@pytest.mark.core
 def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths, ipsumText):
     """Test the document save functions."""
     project = NWProject()
