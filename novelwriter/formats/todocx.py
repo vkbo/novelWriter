@@ -538,7 +538,7 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Title",
             styleId=S_TITLE,
-            size=(nwStyles.H_SIZES[0] * fSz) if hScale else fSz,
+            size=(self._sizeTitle * fSz) if hScale else fSz,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginTitle[0],
@@ -552,7 +552,7 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Heading 1",
             styleId=S_HEAD1,
-            size=(nwStyles.H_SIZES[1] * fSz) if hScale else fSz,
+            size=(self._sizeHead1 * fSz) if hScale else fSz,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginHead1[0],
@@ -567,7 +567,7 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Heading 2",
             styleId=S_HEAD2,
-            size=(nwStyles.H_SIZES[2] * fSz) if hScale else fSz,
+            size=(self._sizeHead2 * fSz) if hScale else fSz,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginHead2[0],
@@ -582,7 +582,7 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Heading 3",
             styleId=S_HEAD3,
-            size=(nwStyles.H_SIZES[3] * fSz) if hScale else fSz,
+            size=(self._sizeHead3 * fSz) if hScale else fSz,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginHead3[0],
@@ -597,7 +597,7 @@ class ToDocX(Tokenizer):
         styles.append(DocXParStyle(
             name="Heading 4",
             styleId=S_HEAD4,
-            size=(nwStyles.H_SIZES[4] * fSz) if hScale else fSz,
+            size=(self._sizeHead4 * fSz) if hScale else fSz,
             basedOn=S_NORM,
             nextStyle=S_NORM,
             before=fSz * self._marginHead4[0],

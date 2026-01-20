@@ -750,7 +750,7 @@ class ToOdt(Tokenizer):
             _mkTag("fo", "font-family"): self._fontFamily,
             _mkTag("fo", "font-weight"): self._fontWeight,
             _mkTag("fo", "font-style"): self._fontStyle,
-            _mkTag("fo", "font-size"): self._emToPt(nwStyles.H_SIZES[4] if hScale else 1.0),
+            _mkTag("fo", "font-size"): self._emToPt(self._sizeHead4 if hScale else 1.0),
         })
 
         # Add Header and Footer Styles
@@ -829,7 +829,7 @@ class ToOdt(Tokenizer):
         style.setTextAlign("center")
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._emToPt(nwStyles.H_SIZES[0] if hScale else 1.0))
+        style.setFontSize(self._emToPt(self._sizeTitle if hScale else 1.0))
         style.setFontWeight(self._headWeight)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
@@ -862,7 +862,7 @@ class ToOdt(Tokenizer):
         style.setMarginBottom(self._emToCm(self._marginHead1[1]))
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._emToPt(nwStyles.H_SIZES[1] if hScale else 1.0))
+        style.setFontSize(self._emToPt(self._sizeHead1 if hScale else 1.0))
         style.setFontWeight(self._headWeight)
         style.setColor(hColor)
         style.packXML(self._xStyl)
@@ -879,7 +879,7 @@ class ToOdt(Tokenizer):
         style.setMarginBottom(self._emToCm(self._marginHead2[1]))
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._emToPt(nwStyles.H_SIZES[2] if hScale else 1.0))
+        style.setFontSize(self._emToPt(self._sizeHead2 if hScale else 1.0))
         style.setFontWeight(self._headWeight)
         style.setColor(hColor)
         style.packXML(self._xStyl)
@@ -896,7 +896,7 @@ class ToOdt(Tokenizer):
         style.setMarginBottom(self._emToCm(self._marginHead3[1]))
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._emToPt(nwStyles.H_SIZES[3] if hScale else 1.0))
+        style.setFontSize(self._emToPt(self._sizeHead3 if hScale else 1.0))
         style.setFontWeight(self._headWeight)
         style.setColor(hColor)
         style.packXML(self._xStyl)
@@ -913,7 +913,7 @@ class ToOdt(Tokenizer):
         style.setMarginBottom(self._emToCm(self._marginHead4[1]))
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
-        style.setFontSize(self._emToPt(nwStyles.H_SIZES[4] if hScale else 1.0))
+        style.setFontSize(self._emToPt(self._sizeHead4 if hScale else 1.0))
         style.setFontWeight(self._headWeight)
         style.setColor(hColor)
         style.packXML(self._xStyl)

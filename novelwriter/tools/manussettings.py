@@ -1009,6 +1009,7 @@ class _FormattingTab(NScrollableForm):
         """Build the formatting form."""
         section = 10
 
+        iSp = 6
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
         spW = 6*SHARED.theme.textNWidth
@@ -1147,82 +1148,112 @@ class _FormattingTab(NScrollableForm):
         self.addGroupLabel(title, section)
 
         # Title
+        self.titleSize = NDoubleSpinBox(self, minVal=0.8, maxVal=10.0, step=0.05)
+        self.titleSize.setFixedWidth(dbW)
         self.titleMarginT = NDoubleSpinBox(self)
         self.titleMarginT.setFixedWidth(dbW)
-
         self.titleMarginB = NDoubleSpinBox(self)
         self.titleMarginB.setFixedWidth(dbW)
 
+        self.pixH0S = QLabel(self)
         self.pixH0T = QLabel(self)
         self.pixH0B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.titleMargin"),
-            [self.pixH0T, self.titleMarginT, 6, self.pixH0B, self.titleMarginB],
+            [
+                self.pixH0S, self.titleSize, iSp,
+                self.pixH0T, self.titleMarginT, iSp,
+                self.pixH0B, self.titleMarginB,
+            ],
             unit="em",
         )
 
         # Heading 1
+        self.h1Size = NDoubleSpinBox(self, minVal=0.8, maxVal=10.0, step=0.05)
+        self.h1Size.setFixedWidth(dbW)
         self.h1MarginT = NDoubleSpinBox(self)
         self.h1MarginT.setFixedWidth(dbW)
-
         self.h1MarginB = NDoubleSpinBox(self)
         self.h1MarginB.setFixedWidth(dbW)
 
+        self.pixH1S = QLabel(self)
         self.pixH1T = QLabel(self)
         self.pixH1B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.h1Margin"),
-            [self.pixH1T, self.h1MarginT, 6, self.pixH1B, self.h1MarginB],
+            [
+                self.pixH1S, self.h1Size, iSp,
+                self.pixH1T, self.h1MarginT, iSp,
+                self.pixH1B, self.h1MarginB,
+            ],
             unit="em",
         )
 
         # Heading 2
+        self.h2Size = NDoubleSpinBox(self, minVal=0.8, maxVal=10.0, step=0.05)
+        self.h2Size.setFixedWidth(dbW)
         self.h2MarginT = NDoubleSpinBox(self)
         self.h2MarginT.setFixedWidth(dbW)
-
         self.h2MarginB = NDoubleSpinBox(self)
         self.h2MarginB.setFixedWidth(dbW)
 
+        self.pixH2S = QLabel(self)
         self.pixH2T = QLabel(self)
         self.pixH2B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.h2Margin"),
-            [self.pixH2T, self.h2MarginT, 6, self.pixH2B, self.h2MarginB],
+            [
+                self.pixH2S, self.h2Size, iSp,
+                self.pixH2T, self.h2MarginT, iSp,
+                self.pixH2B, self.h2MarginB,
+            ],
             unit="em",
         )
 
         # Heading 3
+        self.h3Size = NDoubleSpinBox(self, minVal=0.8, maxVal=10.0, step=0.05)
+        self.h3Size.setFixedWidth(dbW)
         self.h3MarginT = NDoubleSpinBox(self)
         self.h3MarginT.setFixedWidth(dbW)
-
         self.h3MarginB = NDoubleSpinBox(self)
         self.h3MarginB.setFixedWidth(dbW)
 
+        self.pixH3S = QLabel(self)
         self.pixH3T = QLabel(self)
         self.pixH3B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.h3Margin"),
-            [self.pixH3T, self.h3MarginT, 6, self.pixH3B, self.h3MarginB],
+            [
+                self.pixH3S, self.h3Size, iSp,
+                self.pixH3T, self.h3MarginT, iSp,
+                self.pixH3B, self.h3MarginB,
+            ],
             unit="em",
         )
 
         # Heading 4
+        self.h4Size = NDoubleSpinBox(self, minVal=0.8, maxVal=10.0, step=0.05)
+        self.h4Size.setFixedWidth(dbW)
         self.h4MarginT = NDoubleSpinBox(self)
         self.h4MarginT.setFixedWidth(dbW)
-
         self.h4MarginB = NDoubleSpinBox(self)
         self.h4MarginB.setFixedWidth(dbW)
 
+        self.pixH4S = QLabel(self)
         self.pixH4T = QLabel(self)
         self.pixH4B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.h4Margin"),
-            [self.pixH4T, self.h4MarginT, 6, self.pixH4B, self.h4MarginB],
+            [
+                self.pixH4S, self.h4Size, iSp,
+                self.pixH4T, self.h4MarginT, iSp,
+                self.pixH4B, self.h4MarginB,
+            ],
             unit="em",
         )
 
@@ -1238,7 +1269,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.textMargin"),
-            [self.pixTTT, self.textMarginT, 6, self.pixTTB, self.textMarginB],
+            [self.pixTTT, self.textMarginT, iSp, self.pixTTB, self.textMarginB],
             unit="em",
         )
 
@@ -1254,7 +1285,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.sepMargin"),
-            [self.pixSPT, self.sepMarginT, 6, self.pixSPB, self.sepMarginB],
+            [self.pixSPT, self.sepMarginT, iSp, self.pixSPB, self.sepMarginB],
             unit="em",
         )
 
@@ -1297,7 +1328,7 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.pageSize"),
-            [self.pageSize, 6, self.pixPSW, self.pageWidth, 6, self.pixPSH, self.pageHeight],
+            [self.pageSize, iSp, self.pixPSW, self.pageWidth, iSp, self.pixPSH, self.pageHeight],
         )
 
         # Page Margins
@@ -1320,11 +1351,11 @@ class _FormattingTab(NScrollableForm):
 
         self.addRow(
             self._build.getLabel("format.pageMargins"),
-            [self.pixPMT, self.topMargin, 6, self.pixPMB, self.bottomMargin],
+            [self.pixPMT, self.topMargin, iSp, self.pixPMB, self.bottomMargin],
         )
         self.addRow(
             "",
-            [self.pixPML, self.leftMargin, 6, self.pixPMR, self.rightMargin],
+            [self.pixPML, self.leftMargin, iSp, self.pixPMR, self.rightMargin],
         )
 
         # Open Document
@@ -1392,6 +1423,13 @@ class _FormattingTab(NScrollableForm):
         self.btnPageHeader.setThemeIcon("revert", "reset")
 
         iPx = SHARED.theme.baseIconHeight
+
+        fSize = SHARED.theme.getPixmap("fmt_size", (iPx, iPx))
+        self.pixH0S.setPixmap(fSize)
+        self.pixH1S.setPixmap(fSize)
+        self.pixH2S.setPixmap(fSize)
+        self.pixH3S.setPixmap(fSize)
+        self.pixH4S.setPixmap(fSize)
 
         tMargin = SHARED.theme.getPixmap("margin_top", (iPx, iPx))
         bMargin = SHARED.theme.getPixmap("margin_bottom", (iPx, iPx))
@@ -1470,14 +1508,19 @@ class _FormattingTab(NScrollableForm):
         # Text Margins
         # ============
 
+        self.titleSize.setValue(self._build.getFloat("format.titleSize"))
         self.titleMarginT.setValue(self._build.getFloat("format.titleMarginT"))
         self.titleMarginB.setValue(self._build.getFloat("format.titleMarginB"))
+        self.h1Size.setValue(self._build.getFloat("format.h1Size"))
         self.h1MarginT.setValue(self._build.getFloat("format.h1MarginT"))
         self.h1MarginB.setValue(self._build.getFloat("format.h1MarginB"))
+        self.h2Size.setValue(self._build.getFloat("format.h2Size"))
         self.h2MarginT.setValue(self._build.getFloat("format.h2MarginT"))
         self.h2MarginB.setValue(self._build.getFloat("format.h2MarginB"))
+        self.h3Size.setValue(self._build.getFloat("format.h3Size"))
         self.h3MarginT.setValue(self._build.getFloat("format.h3MarginT"))
         self.h3MarginB.setValue(self._build.getFloat("format.h3MarginB"))
+        self.h4Size.setValue(self._build.getFloat("format.h4Size"))
         self.h4MarginT.setValue(self._build.getFloat("format.h4MarginT"))
         self.h4MarginB.setValue(self._build.getFloat("format.h4MarginB"))
         self.textMarginT.setValue(self._build.getFloat("format.textMarginT"))
@@ -1563,14 +1606,19 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.indentFirstPar", self.indentFirstPar.isChecked())
 
         # Text Margins
+        self._build.setValue("format.titleSize", self.titleSize.value())
         self._build.setValue("format.titleMarginT", self.titleMarginT.value())
         self._build.setValue("format.titleMarginB", self.titleMarginB.value())
+        self._build.setValue("format.h1Size", self.h1Size.value())
         self._build.setValue("format.h1MarginT", self.h1MarginT.value())
         self._build.setValue("format.h1MarginB", self.h1MarginB.value())
+        self._build.setValue("format.h2Size", self.h2Size.value())
         self._build.setValue("format.h2MarginT", self.h2MarginT.value())
         self._build.setValue("format.h2MarginB", self.h2MarginB.value())
+        self._build.setValue("format.h3Size", self.h3Size.value())
         self._build.setValue("format.h3MarginT", self.h3MarginT.value())
         self._build.setValue("format.h3MarginB", self.h3MarginB.value())
+        self._build.setValue("format.h4Size", self.h4Size.value())
         self._build.setValue("format.h4MarginT", self.h4MarginT.value())
         self._build.setValue("format.h4MarginB", self.h4MarginB.value())
         self._build.setValue("format.textMarginT", self.textMarginT.value())
