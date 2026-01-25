@@ -37,12 +37,14 @@ ET.register_namespace("", "http://www.w3.org/2000/svg")
 ICON_SOURCES = {
     "material":     "https://github.com/google/material-design-icons.git",
     "font_awesome": "https://github.com/FortAwesome/Font-Awesome/archive/refs/tags/7.1.0.zip",
-    "remix":        "https://github.com/Remix-Design/RemixIcon/archive/refs/tags/v4.6.0.zip",
+    "remix":        "https://github.com/Remix-Design/RemixIcon/archive/refs/tags/v4.8.0.zip",
+    "lucide":       "https://github.com/lucide-icons/lucide/archive/refs/tags/0.562.0.zip",
 }
 ICON_EXTRACT = {
     "material":     "material-design-icons",
     "font_awesome": "Font-Awesome-7.1.0",
-    "remix":        "RemixIcon-4.6.0",
+    "remix":        "RemixIcon-4.8.0",
+    "lucide":       "lucide-0.562.0",
 }
 ICONS = [
     # Remember to also update tests/files/all_icons.json for test coverage
@@ -189,14 +191,6 @@ def _loadMap(name: str) -> dict[str, str]:
     return icons
 
 
-def _fixXml(svg: ET.Element) -> str:
-    """Clean up the SVG XML and add needed fields."""
-    svg.set("fill", "#000000")
-    svg.set("height", "128")
-    svg.set("width", "128")
-    return ET.tostring(svg).decode()
-
-
 def _writeThemeFile(
     path: Path, name: str, author: str, license_: str, icons: dict[str, ET.Element]
 ) -> None:
@@ -210,7 +204,8 @@ def _writeThemeFile(
         out.write("\n")
         out.write("# Icons\n")
         for key, svg in icons.items():
-            out.write(f"icon:{key:<15s} = {_fixXml(svg)}\n")
+            icon = ET.tostring(svg).decode().replace("\n", "")
+            out.write(f"icon:{key:<15s} = {icon}\n")
         print(f"- Wrote: {len(icons)} icons")
         print(f"- Target: {path.relative_to(UTILS.parent)}")
 
@@ -261,7 +256,11 @@ def processMaterialIcons(workDir: Path, iconsDir: Path, jobs: dict) -> None:
                 fileName = f"{icon}_24px.svg"
             iconFile = iconSrc / icon / f"materialsymbols{style}" / fileName
             if iconFile.is_file():
-                icons[key] = ET.fromstring(iconFile.read_text(encoding="utf-8"))
+                svg = ET.fromstring(iconFile.read_text(encoding="utf-8"))
+                svg.set("fill", "#000000")
+                svg.set("height", "128")
+                svg.set("width", "128")
+                icons[key] = svg
             else:
                 print(f"Not Found: {iconFile}")
 
@@ -304,6 +303,9 @@ def processFontAwesome(workDir: Path, iconsDir: Path, jobs: dict) -> None:
                 viewbox = [int(x) for x in svg.get("viewBox", "").split()]
                 viewbox = [viewbox[2]//2 - 256, 0, 512, 512]
                 svg.set("viewBox", " ".join(str(x) for x in viewbox))
+                svg.set("fill", "#000000")
+                svg.set("height", "128")
+                svg.set("width", "128")
                 for elem in svg.iter():
                     elem.attrib.pop("fill", None)
                 icons[key] = svg
@@ -313,6 +315,37 @@ def processFontAwesome(workDir: Path, iconsDir: Path, jobs: dict) -> None:
 
         target = iconsDir / f"{file}.icons"
         _writeThemeFile(target, name, "Fonticons Inc", "CC BY 4.0", icons)
+
+    print("")
+
+
+def processLucide(workDir: Path, iconsDir: Path, jobs: dict) -> None:
+    """Process Lucide icons of a given spec and write output file."""
+    srcRepo = workDir / ICON_EXTRACT["lucide"]
+    if not srcRepo.is_dir():
+        _downloadIconPack(workDir, "lucide")
+
+    for file, job in jobs.items():
+        name: str = job["name"]
+        print(f"Processing: {name}")
+
+        icons: dict[str, ET.Element] = {}
+        iconSrc = srcRepo / "icons"
+        for key, icon in _loadMap("lucide").items():
+            iconFile = iconSrc / f"{icon}.svg"
+            if iconFile.is_file():
+                svg = ET.fromstring(iconFile.read_text(encoding="utf-8"))
+                ET.indent(svg, space="")
+                svg.set("fill", "none")
+                svg.set("stroke", "#000000")
+                svg.set("height", "128")
+                svg.set("width", "128")
+                icons[key] = svg
+            else:
+                print(f"Not Found: {iconFile}")
+
+        target = iconsDir / f"{file}.icons"
+        _writeThemeFile(target, name, "Cole Bemis, Lucide Contributors", "ISC/MIT License", icons)
 
     print("")
 
@@ -351,7 +384,11 @@ def processRemix(workDir: Path, iconsDir: Path, jobs: dict) -> None:
                     print(f"Not Found: {fileName}")
                     continue
 
-            icons[key] = ET.fromstring(iconFile.read_text(encoding="utf-8"))
+            svg = ET.fromstring(iconFile.read_text(encoding="utf-8"))
+            svg.set("fill", "#000000")
+            svg.set("height", "128")
+            svg.set("width", "128")
+            icons[key] = svg
 
         target = iconsDir / f"{file}.icons"
         _writeThemeFile(target, name, "Remix Icon", "Apache 2.0", icons)
@@ -415,6 +452,13 @@ def main(args: argparse.Namespace) -> None:
         processFontAwesome(workDir, iconsDir, {
             "font_awesome": {
                 "name": "Font Awesome 7",
+            },
+        })
+
+    if style in ("all", "optional", "free", "lucide"):
+        processLucide(workDir, iconsDir, {
+            "lucide": {
+                "name": "Lucide",
             },
         })
 

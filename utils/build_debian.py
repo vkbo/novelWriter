@@ -231,7 +231,6 @@ def launchpad(args: argparse.Namespace) -> None:
 
     distLoop = [
         ("24.04", "noble", 12, True),
-        ("25.04", "plucky", 13, True),
         ("25.10", "questing", 13, False),
         ("26.04", "resolute", 13, False),
     ]
