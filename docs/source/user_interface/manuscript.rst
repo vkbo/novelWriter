@@ -198,6 +198,21 @@ See :ref:`docs_usage_headings_levels` for more info on how to format alternative
 your text.
 
 
+.. _docs_ui_manuscript_head_promote:
+
+Heading Level Promotion
+^^^^^^^^^^^^^^^^^^^^^^^
+
+When you build the manuscript, novel headings are promoted one level relative to the level
+specified in the source documents as typed in the editor. The promotion follows these rules:
+
+#. The main novel title and partition titles are converted to regular text paragraphs with a larger
+   font size.
+#. Chapter titles are promoted to the top-most heading of the document, that is level 1.
+#. Scenes and Section titles, if used, are promoted to level 2 and 3, respectively.
+#. Headings in note documents are left as-is.
+
+
 Output Settings
 ---------------
 

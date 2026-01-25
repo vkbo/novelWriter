@@ -500,6 +500,7 @@ class GuiMain(QMainWindow):
         QApplication.processEvents()
         self.docEditor.setDocumentChanged(False)
         SHARED.project.setProjectChanged(False)
+        SHARED.reportSpellCheckStatus()
 
         logger.debug("Project loaded in %.3f ms", (time() - tStart)*1000)
 

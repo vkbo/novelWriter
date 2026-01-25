@@ -94,3 +94,8 @@ Page breaks can be automatically added before titles, partition, chapter and sce
 the **Manuscript Build** tool when you build your project to a format that supports page breaks.
 If you want page breaks in other places, you have to specify them manually.
 See :ref:`docs_usage_formatting_breaks` for more details.
+
+.. note::
+
+   When you build a manuscript from your project, the level of the headings in your document will
+   change. See :ref:`docs_ui_manuscript_head_promote` for more details.

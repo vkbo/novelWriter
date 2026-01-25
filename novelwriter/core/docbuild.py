@@ -176,10 +176,10 @@ class NWBuildDocument:
             makeObj.closeDocument()
 
         elif bFormat == nwBuildFmt.PDF:
-            makeObj = ToQTextDocument(self._project)
+            makeObj = ToQTextDocument(self._project, pdf=True)
             makeObj.disableAnchors()
             filtered = self._setupBuild(makeObj)
-            makeObj.initDocument(pdf=True)
+            makeObj.initDocument()
             yield from self._iterBuild(makeObj, filtered)
             makeObj.closeDocument()
 

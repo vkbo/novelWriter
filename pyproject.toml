@@ -161,6 +161,7 @@ markers = [
     "base: Base classes tests",
     "core: Core classes tests",
     "gui: GUI classes tests",
+    "opt_assets: Include optional asset tests",
 ]
 
 [tool.coverage.run]
