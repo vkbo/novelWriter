@@ -27,7 +27,7 @@ from PyQt6.QtGui import QFont
 
 from novelwriter import SHARED
 from novelwriter.common import describeFont
-from novelwriter.constants import nwHeadFmt
+from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.modified import NFontDialog
 from novelwriter.tools.manussettings import (
@@ -649,6 +649,50 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
 
 
 @pytest.mark.gui
+def testToolBuildSettings_FormatHeadingFormat(monkeypatch, qtbot, nwGUI):
+    """Test the Heading Format settings."""
+    build = BuildSettings()
+
+    build.setValue("format.colorHeadings", True)
+    build.setValue("format.boldHeadings", True)
+    build.setValue("format.upperHeadings", False)
+
+    # Create the dialog and populate it
+    bSettings = GuiBuildSettings(nwGUI, build)
+    bSettings.show()
+    bSettings.loadContent()
+
+    fmtTab = bSettings.optTabFormatting
+    button = bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 2)
+    assert button is not None
+    button.click()
+    assert bSettings.toolStack.currentWidget() is fmtTab
+
+    # Check initial values
+    assert fmtTab.colorHeadings.isChecked() is True
+    assert fmtTab.boldHeadings.isChecked() is True
+    assert fmtTab.upperHeadings.isChecked() is False
+
+    # Change values
+    fmtTab.colorHeadings.setChecked(False)
+    fmtTab.boldHeadings.setChecked(False)
+    fmtTab.upperHeadings.setChecked(True)
+
+    # Save values
+    fmtTab.saveContent()
+    sBuild = bSettings._build
+    assert sBuild.buildID == build.buildID
+
+    assert sBuild.getBool("format.colorHeadings") is False
+    assert sBuild.getBool("format.boldHeadings") is False
+    assert sBuild.getBool("format.upperHeadings") is True
+
+    # Finish
+    bSettings._dialogButtonClicked(bSettings.btnClose)
+    # qtbot.stop()
+
+
+@pytest.mark.gui
 def testToolBuildSettings_FormatFirstLineIndent(monkeypatch, qtbot, nwGUI):
     """Test the First Line Indent settings."""
     build = BuildSettings()
@@ -686,6 +730,142 @@ def testToolBuildSettings_FormatFirstLineIndent(monkeypatch, qtbot, nwGUI):
     assert sBuild.getBool("format.firstLineIndent") is True
     assert sBuild.getFloat("format.firstIndentWidth") == 2.0
     assert sBuild.getBool("format.indentFirstPar") is True
+
+    # Finish
+    bSettings._dialogButtonClicked(bSettings.btnClose)
+    # qtbot.stop()
+
+
+def testToolBuildSettings_SizeAndMargins(monkeypatch, qtbot, nwGUI):
+    """Test the Size & Margins settings."""
+    build = BuildSettings()
+
+    build.setValue("format.titleSize", nwStyles.H_SIZES[0])
+    build.setValue("format.h1Size", nwStyles.H_SIZES[1])
+    build.setValue("format.h2Size", nwStyles.H_SIZES[2])
+    build.setValue("format.h3Size", nwStyles.H_SIZES[3])
+    build.setValue("format.h4Size", nwStyles.H_SIZES[4])
+    build.setValue("format.titleMarginT", nwStyles.T_MARGIN["H0"][0])
+    build.setValue("format.titleMarginB", nwStyles.T_MARGIN["H0"][1])
+    build.setValue("format.h1MarginT", nwStyles.T_MARGIN["H1"][0])
+    build.setValue("format.h1MarginB", nwStyles.T_MARGIN["H1"][1])
+    build.setValue("format.h2MarginT", nwStyles.T_MARGIN["H2"][0])
+    build.setValue("format.h2MarginB", nwStyles.T_MARGIN["H2"][1])
+    build.setValue("format.h3MarginT", nwStyles.T_MARGIN["H3"][0])
+    build.setValue("format.h3MarginB", nwStyles.T_MARGIN["H3"][1])
+    build.setValue("format.h4MarginT", nwStyles.T_MARGIN["H4"][0])
+    build.setValue("format.h4MarginB", nwStyles.T_MARGIN["H4"][1])
+    build.setValue("format.textMarginT", nwStyles.T_MARGIN["TT"][0])
+    build.setValue("format.textMarginB", nwStyles.T_MARGIN["TT"][1])
+    build.setValue("format.sepMarginT", nwStyles.T_MARGIN["SP"][0])
+    build.setValue("format.sepMarginB", nwStyles.T_MARGIN["SP"][1])
+
+    # Create the dialog and populate it
+    bSettings = GuiBuildSettings(nwGUI, build)
+    bSettings.show()
+    bSettings.loadContent()
+
+    fmtTab = bSettings.optTabFormatting
+    button = bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 3)
+    assert button is not None
+    button.click()
+    assert bSettings.toolStack.currentWidget() is fmtTab
+
+    # Check initial values
+    assert fmtTab.titleSize.value() == nwStyles.H_SIZES[0]
+    assert fmtTab.h1Size.value() == nwStyles.H_SIZES[1]
+    assert fmtTab.h2Size.value() == nwStyles.H_SIZES[2]
+    assert fmtTab.h3Size.value() == nwStyles.H_SIZES[3]
+    assert fmtTab.h4Size.value() == nwStyles.H_SIZES[4]
+    assert fmtTab.titleMarginT.value() == nwStyles.T_MARGIN["H0"][0]
+    assert fmtTab.titleMarginB.value() == nwStyles.T_MARGIN["H0"][1]
+    assert fmtTab.h1MarginT.value() == nwStyles.T_MARGIN["H1"][0]
+    assert fmtTab.h1MarginB.value() == nwStyles.T_MARGIN["H1"][1]
+    assert fmtTab.h2MarginT.value() == nwStyles.T_MARGIN["H2"][0]
+    assert fmtTab.h2MarginB.value() == nwStyles.T_MARGIN["H2"][1]
+    assert fmtTab.h3MarginT.value() == nwStyles.T_MARGIN["H3"][0]
+    assert fmtTab.h3MarginB.value() == nwStyles.T_MARGIN["H3"][1]
+    assert fmtTab.h4MarginT.value() == nwStyles.T_MARGIN["H4"][0]
+    assert fmtTab.h4MarginB.value() == nwStyles.T_MARGIN["H4"][1]
+    assert fmtTab.textMarginT.value() == nwStyles.T_MARGIN["TT"][0]
+    assert fmtTab.textMarginB.value() == nwStyles.T_MARGIN["TT"][1]
+    assert fmtTab.sepMarginT.value() == nwStyles.T_MARGIN["SP"][0]
+    assert fmtTab.sepMarginB.value() == nwStyles.T_MARGIN["SP"][1]
+
+    # Change values
+    fmtTab.titleSize.setValue(1.0)
+    fmtTab.h1Size.setValue(1.0)
+    fmtTab.h2Size.setValue(1.0)
+    fmtTab.h3Size.setValue(1.0)
+    fmtTab.h4Size.setValue(1.0)
+    fmtTab.titleMarginT.setValue(1.0)
+    fmtTab.titleMarginB.setValue(1.0)
+    fmtTab.h1MarginT.setValue(1.0)
+    fmtTab.h1MarginB.setValue(1.0)
+    fmtTab.h2MarginT.setValue(1.0)
+    fmtTab.h2MarginB.setValue(1.0)
+    fmtTab.h3MarginT.setValue(1.0)
+    fmtTab.h3MarginB.setValue(1.0)
+    fmtTab.h4MarginT.setValue(1.0)
+    fmtTab.h4MarginB.setValue(1.0)
+    fmtTab.textMarginT.setValue(1.0)
+    fmtTab.textMarginB.setValue(1.0)
+    fmtTab.sepMarginT.setValue(1.0)
+    fmtTab.sepMarginB.setValue(1.0)
+
+    # Save values
+    fmtTab.saveContent()
+    sBuild = bSettings._build
+    assert sBuild.buildID == build.buildID
+
+    assert sBuild.getFloat("format.titleSize") == 1.0
+    assert sBuild.getFloat("format.h1Size") == 1.0
+    assert sBuild.getFloat("format.h2Size") == 1.0
+    assert sBuild.getFloat("format.h3Size") == 1.0
+    assert sBuild.getFloat("format.h4Size") == 1.0
+    assert sBuild.getFloat("format.titleMarginT") == 1.0
+    assert sBuild.getFloat("format.titleMarginB") == 1.0
+    assert sBuild.getFloat("format.h1MarginT") == 1.0
+    assert sBuild.getFloat("format.h1MarginB") == 1.0
+    assert sBuild.getFloat("format.h2MarginT") == 1.0
+    assert sBuild.getFloat("format.h2MarginB") == 1.0
+    assert sBuild.getFloat("format.h3MarginT") == 1.0
+    assert sBuild.getFloat("format.h3MarginB") == 1.0
+    assert sBuild.getFloat("format.h4MarginT") == 1.0
+    assert sBuild.getFloat("format.h4MarginB") == 1.0
+    assert sBuild.getFloat("format.textMarginT") == 1.0
+    assert sBuild.getFloat("format.textMarginB") == 1.0
+    assert sBuild.getFloat("format.sepMarginT") == 1.0
+    assert sBuild.getFloat("format.sepMarginB") == 1.0
+
+    # Reset values
+    fmtTab.btnTitleProps.click()
+    fmtTab.btnH1Props.click()
+    fmtTab.btnH2Props.click()
+    fmtTab.btnH3Props.click()
+    fmtTab.btnH4Props.click()
+    fmtTab.btnTextProps.click()
+    fmtTab.btnSepProps.click()
+
+    assert fmtTab.titleSize.value() == nwStyles.H_SIZES[0]
+    assert fmtTab.h1Size.value() == nwStyles.H_SIZES[1]
+    assert fmtTab.h2Size.value() == nwStyles.H_SIZES[2]
+    assert fmtTab.h3Size.value() == nwStyles.H_SIZES[3]
+    assert fmtTab.h4Size.value() == nwStyles.H_SIZES[4]
+    assert fmtTab.titleMarginT.value() == nwStyles.T_MARGIN["H0"][0]
+    assert fmtTab.titleMarginB.value() == nwStyles.T_MARGIN["H0"][1]
+    assert fmtTab.h1MarginT.value() == nwStyles.T_MARGIN["H1"][0]
+    assert fmtTab.h1MarginB.value() == nwStyles.T_MARGIN["H1"][1]
+    assert fmtTab.h2MarginT.value() == nwStyles.T_MARGIN["H2"][0]
+    assert fmtTab.h2MarginB.value() == nwStyles.T_MARGIN["H2"][1]
+    assert fmtTab.h3MarginT.value() == nwStyles.T_MARGIN["H3"][0]
+    assert fmtTab.h3MarginB.value() == nwStyles.T_MARGIN["H3"][1]
+    assert fmtTab.h4MarginT.value() == nwStyles.T_MARGIN["H4"][0]
+    assert fmtTab.h4MarginB.value() == nwStyles.T_MARGIN["H4"][1]
+    assert fmtTab.textMarginT.value() == nwStyles.T_MARGIN["TT"][0]
+    assert fmtTab.textMarginB.value() == nwStyles.T_MARGIN["TT"][1]
+    assert fmtTab.sepMarginT.value() == nwStyles.T_MARGIN["SP"][0]
+    assert fmtTab.sepMarginB.value() == nwStyles.T_MARGIN["SP"][1]
 
     # Finish
     bSettings._dialogButtonClicked(bSettings.btnClose)
@@ -755,9 +935,6 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
 
     build.setValue("doc.pageHeader", nwHeadFmt.DOC_AUTO)
     build.setValue("doc.pageCountOffset", 0)
-    build.setValue("doc.colorHeadings", True)
-    build.setValue("doc.scaleHeadings", True)
-    build.setValue("doc.boldHeadings", True)
 
     build.setValue("html.addStyles", False)
     build.setValue("html.preserveTabs", False)
@@ -776,9 +953,6 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     # Check initial values
     assert fmtTab.pageHeader.text() == nwHeadFmt.DOC_AUTO
     assert fmtTab.pageCountOffset.value() == 0
-    assert fmtTab.colorHeadings.isChecked() is True
-    assert fmtTab.scaleHeadings.isChecked() is True
-    assert fmtTab.boldHeadings.isChecked() is True
 
     assert fmtTab.htmlAddStyles.isChecked() is False
     assert fmtTab.htmlPreserveTabs.isChecked() is False
@@ -792,9 +966,6 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert fmtTab.lblMetaLanguage.text() == "British English"
 
     # Toggle all
-    fmtTab.colorHeadings.setChecked(False)
-    fmtTab.scaleHeadings.setChecked(False)
-    fmtTab.boldHeadings.setChecked(False)
     fmtTab.htmlAddStyles.setChecked(True)
     fmtTab.htmlPreserveTabs.setChecked(True)
 
@@ -806,9 +977,6 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert sBuild.getStr("doc.pageHeader") == "Stuff"
     assert sBuild.getInt("doc.pageCountOffset") == 1
     assert sBuild.getStr("doc.metaLanguage") == "en-GB"
-    assert sBuild.getBool("doc.colorHeadings") is False
-    assert sBuild.getBool("doc.scaleHeadings") is False
-    assert sBuild.getBool("doc.boldHeadings") is False
 
     assert sBuild.getBool("html.addStyles") is True
     assert sBuild.getBool("html.preserveTabs") is True

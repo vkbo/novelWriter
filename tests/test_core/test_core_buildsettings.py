@@ -195,8 +195,8 @@ def testCoreBuildSettings_BuildValues():
     assert build.getFloat(floatSetting) == 2.5
 
     # Check labels
-    assert build.getLabel(strSetting) == "Partition Format"
-    assert BuildSettings.getLabel(strSetting) == "Partition Format"
+    assert build.getLabel(strSetting) == "Partition format"
+    assert BuildSettings.getLabel(strSetting) == "Partition format"
 
     # Pack the values
     data = build.pack()

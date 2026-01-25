@@ -41,7 +41,7 @@ from novelwriter.common import (
     describeFont, fontMatcher, languageName, processLangCode, qtAddAction,
     qtLambda
 )
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwUnicode, trConst
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles, nwUnicode, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import (
@@ -132,7 +132,7 @@ class GuiBuildSettings(NToolDialog):
         self.swtAutoPreview = NSwitch(self, height=iPx)
         self.swtAutoPreview.setChecked(options.getBool("GuiBuildSettings", "autoPreview", True))
 
-        self.lblAutoPreview = QLabel(self.tr("Auto-Update Preview"), self)
+        self.lblAutoPreview = QLabel(self.tr("Auto-update preview"), self)
         self.lblAutoPreview.setBuddy(self.swtAutoPreview)
 
         # Buttons
@@ -1009,10 +1009,11 @@ class _FormattingTab(NScrollableForm):
         """Build the formatting form."""
         section = 10
 
+        iSp = 6
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
         spW = 6*SHARED.theme.textNWidth
-        dbW = 8*SHARED.theme.textNWidth
+        dbW = 7*SHARED.theme.textNWidth
 
         # Text Content
         # ============
@@ -1098,6 +1099,22 @@ class _FormattingTab(NScrollableForm):
         self.addRow(self._build.getLabel("format.keepBreaks"), self.keepBreaks)
         self.addRow(self._build.getLabel("format.showDialogue"), self.showDialogue)
 
+        # Heading Format
+        # ==============
+
+        title = self._build.getLabel("format.grpHeadings")
+        section += 1
+        self._sidebar.addButton(title, section)
+        self.addGroupLabel(title, section)
+
+        self.colorHeadings = NSwitch(self, height=iPx)
+        self.boldHeadings = NSwitch(self, height=iPx)
+        self.upperHeadings = NSwitch(self, height=iPx)
+
+        self.addRow(self._build.getLabel("format.colorHeadings"), self.colorHeadings)
+        self.addRow(self._build.getLabel("format.boldHeadings"), self.boldHeadings)
+        self.addRow(self._build.getLabel("format.upperHeadings"), self.upperHeadings)
+
         # First Line Indent
         # =================
 
@@ -1120,111 +1137,173 @@ class _FormattingTab(NScrollableForm):
         self.addRow(self._build.getLabel("format.firstIndentWidth"), self.indentWidth, unit="em")
         self.addRow(self._build.getLabel("format.indentFirstPar"), self.indentFirstPar)
 
-        # Text Margins
-        # ============
+        # Size & Margins
+        # ==============
 
         title = self._build.getLabel("format.grpMargins")
         section += 1
         self._sidebar.addButton(title, section)
         self.addGroupLabel(title, section)
 
-        self.pixT = QLabel(self)
-        self.pixB = QLabel(self)
-        self.pixL = QLabel(self)
-        self.pixR = QLabel(self)
-        self.pixH = QLabel(self)
-        self.pixW = QLabel(self)
-
         # Title
+        self.titleSize = NDoubleSpinBox(self, minVal=0.8, maxVal=10.0, step=0.05)
+        self.titleSize.setFixedWidth(dbW)
         self.titleMarginT = NDoubleSpinBox(self)
         self.titleMarginT.setFixedWidth(dbW)
-
         self.titleMarginB = NDoubleSpinBox(self)
         self.titleMarginB.setFixedWidth(dbW)
+        self.btnTitleProps = NIconToolButton(self, iSz)
+        self.btnTitleProps.clicked.connect(self._resetTitleProps)
+
+        self.pixH0S = QLabel(self)
+        self.pixH0T = QLabel(self)
+        self.pixH0B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.titleMargin"),
-            [self.pixT, self.titleMarginT, 6, self.pixB, self.titleMarginB],
-            unit="em",
+            [
+                self.pixH0S, self.titleSize, iSp,
+                self.pixH0T, self.titleMarginT, iSp,
+                self.pixH0B, self.titleMarginB,
+            ],
+            button=self.btnTitleProps,
         )
 
         # Heading 1
+        self.h1Size = NDoubleSpinBox(self, minVal=0.8, maxVal=10.0, step=0.05)
+        self.h1Size.setFixedWidth(dbW)
         self.h1MarginT = NDoubleSpinBox(self)
         self.h1MarginT.setFixedWidth(dbW)
-
         self.h1MarginB = NDoubleSpinBox(self)
         self.h1MarginB.setFixedWidth(dbW)
+        self.btnH1Props = NIconToolButton(self, iSz)
+        self.btnH1Props.clicked.connect(self._resetH1Props)
+
+        self.pixH1S = QLabel(self)
+        self.pixH1T = QLabel(self)
+        self.pixH1B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.h1Margin"),
-            [self.pixT, self.h1MarginT, 6, self.pixB, self.h1MarginB],
-            unit="em",
+            [
+                self.pixH1S, self.h1Size, iSp,
+                self.pixH1T, self.h1MarginT, iSp,
+                self.pixH1B, self.h1MarginB,
+            ],
+            button=self.btnH1Props,
         )
 
         # Heading 2
+        self.h2Size = NDoubleSpinBox(self, minVal=0.8, maxVal=10.0, step=0.05)
+        self.h2Size.setFixedWidth(dbW)
         self.h2MarginT = NDoubleSpinBox(self)
         self.h2MarginT.setFixedWidth(dbW)
-
         self.h2MarginB = NDoubleSpinBox(self)
         self.h2MarginB.setFixedWidth(dbW)
+        self.btnH2Props = NIconToolButton(self, iSz)
+        self.btnH2Props.clicked.connect(self._resetH2Props)
+
+        self.pixH2S = QLabel(self)
+        self.pixH2T = QLabel(self)
+        self.pixH2B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.h2Margin"),
-            [self.pixT, self.h2MarginT, 6, self.pixB, self.h2MarginB],
-            unit="em",
+            [
+                self.pixH2S, self.h2Size, iSp,
+                self.pixH2T, self.h2MarginT, iSp,
+                self.pixH2B, self.h2MarginB,
+            ],
+            button=self.btnH2Props,
         )
 
         # Heading 3
+        self.h3Size = NDoubleSpinBox(self, minVal=0.8, maxVal=10.0, step=0.05)
+        self.h3Size.setFixedWidth(dbW)
         self.h3MarginT = NDoubleSpinBox(self)
         self.h3MarginT.setFixedWidth(dbW)
-
         self.h3MarginB = NDoubleSpinBox(self)
         self.h3MarginB.setFixedWidth(dbW)
+        self.btnH3Props = NIconToolButton(self, iSz)
+        self.btnH3Props.clicked.connect(self._resetH3Props)
+
+        self.pixH3S = QLabel(self)
+        self.pixH3T = QLabel(self)
+        self.pixH3B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.h3Margin"),
-            [self.pixT, self.h3MarginT, 6, self.pixB, self.h3MarginB],
-            unit="em",
+            [
+                self.pixH3S, self.h3Size, iSp,
+                self.pixH3T, self.h3MarginT, iSp,
+                self.pixH3B, self.h3MarginB,
+            ],
+            button=self.btnH3Props,
         )
 
         # Heading 4
+        self.h4Size = NDoubleSpinBox(self, minVal=0.8, maxVal=10.0, step=0.05)
+        self.h4Size.setFixedWidth(dbW)
         self.h4MarginT = NDoubleSpinBox(self)
         self.h4MarginT.setFixedWidth(dbW)
-
         self.h4MarginB = NDoubleSpinBox(self)
         self.h4MarginB.setFixedWidth(dbW)
+        self.btnH4Props = NIconToolButton(self, iSz)
+        self.btnH4Props.clicked.connect(self._resetH4Props)
+
+        self.pixH4S = QLabel(self)
+        self.pixH4T = QLabel(self)
+        self.pixH4B = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.h4Margin"),
-            [self.pixT, self.h4MarginT, 6, self.pixB, self.h4MarginB],
-            unit="em",
+            [
+                self.pixH4S, self.h4Size, iSp,
+                self.pixH4T, self.h4MarginT, iSp,
+                self.pixH4B, self.h4MarginB,
+            ],
+            button=self.btnH4Props,
         )
 
         # Text
         self.textMarginT = NDoubleSpinBox(self)
         self.textMarginT.setFixedWidth(dbW)
-
         self.textMarginB = NDoubleSpinBox(self)
         self.textMarginB.setFixedWidth(dbW)
+        self.btnTextProps = NIconToolButton(self, iSz)
+        self.btnTextProps.clicked.connect(self._resetTextProps)
+
+        self.pixTTT = QLabel(self)
+        self.pixTTB = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.textMargin"),
-            [self.pixT, self.textMarginT, 6, self.pixB, self.textMarginB],
-            unit="em",
+            [self.pixTTT, self.textMarginT, iSp, self.pixTTB, self.textMarginB],
+            button=self.btnTextProps,
         )
 
         # Separator
         self.sepMarginT = NDoubleSpinBox(self)
         self.sepMarginT.setFixedWidth(dbW)
-
         self.sepMarginB = NDoubleSpinBox(self)
         self.sepMarginB.setFixedWidth(dbW)
+        self.btnSepProps = NIconToolButton(self, iSz)
+        self.btnSepProps.clicked.connect(self._resetSepProps)
+
+        self.pixSPT = QLabel(self)
+        self.pixSPB = QLabel(self)
 
         self.addRow(
             self._build.getLabel("format.sepMargin"),
-            [self.pixT, self.sepMarginT, 6, self.pixB, self.sepMarginB],
-            unit="em",
+            [self.pixSPT, self.sepMarginT, iSp, self.pixSPB, self.sepMarginB],
+            button=self.btnSepProps,
         )
+
+        # Empty Lines
+        self.lineForMargin = NSwitch(self, height=iPx)
+        self.lineForMargin.clicked.connect(self._updateTextMarginState)
+
+        self.addRow(self._build.getLabel("format.lineForMargin"), self.lineForMargin)
 
         # Page Layout
         # ===========
@@ -1254,9 +1333,12 @@ class _FormattingTab(NScrollableForm):
         self.pageHeight.setFixedWidth(dbW)
         self.pageHeight.valueChanged.connect(self._pageSizeValueChanged)
 
+        self.pixPSH = QLabel(self)
+        self.pixPSW = QLabel(self)
+
         self.addRow(
             self._build.getLabel("format.pageSize"),
-            [self.pageSize, 6, self.pixW, self.pageWidth, 6, self.pixH, self.pageHeight],
+            [self.pageSize, iSp, self.pixPSW, self.pageWidth, iSp, self.pixPSH, self.pageHeight],
         )
 
         # Page Margins
@@ -1272,13 +1354,18 @@ class _FormattingTab(NScrollableForm):
         self.rightMargin = NDoubleSpinBox(self)
         self.rightMargin.setFixedWidth(dbW)
 
+        self.pixPMT = QLabel(self)
+        self.pixPMB = QLabel(self)
+        self.pixPML = QLabel(self)
+        self.pixPMR = QLabel(self)
+
         self.addRow(
             self._build.getLabel("format.pageMargins"),
-            [self.pixT, self.topMargin, 6, self.pixB, self.bottomMargin],
+            [self.pixPMT, self.topMargin, iSp, self.pixPMB, self.bottomMargin],
         )
         self.addRow(
             "",
-            [self.pixL, self.leftMargin, 6, self.pixR, self.rightMargin],
+            [self.pixPML, self.leftMargin, iSp, self.pixPMR, self.rightMargin],
         )
 
         # Open Document
@@ -1305,15 +1392,6 @@ class _FormattingTab(NScrollableForm):
         self.pageCountOffset.setSingleStep(1)
         self.pageCountOffset.setMinimumWidth(spW)
         self.addRow(self._build.getLabel("doc.pageCountOffset"), self.pageCountOffset)
-
-        # Headings
-        self.colorHeadings = NSwitch(self, height=iPx)
-        self.scaleHeadings = NSwitch(self, height=iPx)
-        self.boldHeadings = NSwitch(self, height=iPx)
-
-        self.addRow(self._build.getLabel("doc.colorHeadings"), self.colorHeadings)
-        self.addRow(self._build.getLabel("doc.scaleHeadings"), self.scaleHeadings)
-        self.addRow(self._build.getLabel("doc.boldHeadings"), self.boldHeadings)
 
         # Meta Language
         self.lblMetaLanguage = QLabel(self)
@@ -1353,14 +1431,46 @@ class _FormattingTab(NScrollableForm):
         self.ignoredKeywordsButton.setThemeIcon("add", "add")
         self.btnTextFont.setThemeIcon("font", "tool")
         self.btnPageHeader.setThemeIcon("revert", "reset")
+        self.btnTitleProps.setThemeIcon("revert", "reset")
+        self.btnH1Props.setThemeIcon("revert", "reset")
+        self.btnH2Props.setThemeIcon("revert", "reset")
+        self.btnH3Props.setThemeIcon("revert", "reset")
+        self.btnH4Props.setThemeIcon("revert", "reset")
+        self.btnTextProps.setThemeIcon("revert", "reset")
+        self.btnSepProps.setThemeIcon("revert", "reset")
 
         iPx = SHARED.theme.baseIconHeight
-        self.pixT.setPixmap(SHARED.theme.getPixmap("margin_top", (iPx, iPx)))
-        self.pixB.setPixmap(SHARED.theme.getPixmap("margin_bottom", (iPx, iPx)))
-        self.pixL.setPixmap(SHARED.theme.getPixmap("margin_left", (iPx, iPx)))
-        self.pixR.setPixmap(SHARED.theme.getPixmap("margin_right", (iPx, iPx)))
-        self.pixH.setPixmap(SHARED.theme.getPixmap("fit_height", (iPx, iPx)))
-        self.pixW.setPixmap(SHARED.theme.getPixmap("fit_width", (iPx, iPx)))
+
+        fSize = SHARED.theme.getPixmap("fmt_size", (iPx, iPx))
+        self.pixH0S.setPixmap(fSize)
+        self.pixH1S.setPixmap(fSize)
+        self.pixH2S.setPixmap(fSize)
+        self.pixH3S.setPixmap(fSize)
+        self.pixH4S.setPixmap(fSize)
+
+        tMargin = SHARED.theme.getPixmap("margin_top", (iPx, iPx))
+        bMargin = SHARED.theme.getPixmap("margin_bottom", (iPx, iPx))
+        self.pixH0T.setPixmap(tMargin)
+        self.pixH0B.setPixmap(bMargin)
+        self.pixH1T.setPixmap(tMargin)
+        self.pixH1B.setPixmap(bMargin)
+        self.pixH2T.setPixmap(tMargin)
+        self.pixH2B.setPixmap(bMargin)
+        self.pixH3T.setPixmap(tMargin)
+        self.pixH3B.setPixmap(bMargin)
+        self.pixH4T.setPixmap(tMargin)
+        self.pixH4B.setPixmap(bMargin)
+        self.pixTTT.setPixmap(tMargin)
+        self.pixTTB.setPixmap(bMargin)
+        self.pixSPT.setPixmap(tMargin)
+        self.pixSPB.setPixmap(bMargin)
+        self.pixPMT.setPixmap(tMargin)
+        self.pixPMB.setPixmap(bMargin)
+
+        self.pixPSH.setPixmap(SHARED.theme.getPixmap("fit_height", (iPx, iPx)))
+        self.pixPSW.setPixmap(SHARED.theme.getPixmap("fit_width", (iPx, iPx)))
+        self.pixPML.setPixmap(SHARED.theme.getPixmap("margin_left", (iPx, iPx)))
+        self.pixPMR.setPixmap(SHARED.theme.getPixmap("margin_right", (iPx, iPx)))
 
         self.pageSize.updateStyle()
         self.pageUnit.updateStyle()
@@ -1397,6 +1507,13 @@ class _FormattingTab(NScrollableForm):
         self.keepBreaks.setChecked(self._build.getBool("format.keepBreaks"))
         self.showDialogue.setChecked(self._build.getBool("format.showDialogue"))
 
+        # Heading Format
+        # ==============
+
+        self.colorHeadings.setChecked(self._build.getBool("format.colorHeadings"))
+        self.boldHeadings.setChecked(self._build.getBool("format.boldHeadings"))
+        self.upperHeadings.setChecked(self._build.getBool("format.upperHeadings"))
+
         # First Line Indent
         # =================
 
@@ -1406,6 +1523,12 @@ class _FormattingTab(NScrollableForm):
 
         # Text Margins
         # ============
+
+        self.titleSize.setValue(self._build.getFloat("format.titleSize"))
+        self.h1Size.setValue(self._build.getFloat("format.h1Size"))
+        self.h2Size.setValue(self._build.getFloat("format.h2Size"))
+        self.h3Size.setValue(self._build.getFloat("format.h3Size"))
+        self.h4Size.setValue(self._build.getFloat("format.h4Size"))
 
         self.titleMarginT.setValue(self._build.getFloat("format.titleMarginT"))
         self.titleMarginB.setValue(self._build.getFloat("format.titleMarginB"))
@@ -1421,6 +1544,9 @@ class _FormattingTab(NScrollableForm):
         self.textMarginB.setValue(self._build.getFloat("format.textMarginB"))
         self.sepMarginT.setValue(self._build.getFloat("format.sepMarginT"))
         self.sepMarginB.setValue(self._build.getFloat("format.sepMarginB"))
+        self.lineForMargin.setChecked(self._build.getBool("format.lineForMargin"))
+
+        self._updateTextMarginState()
 
         # Page Layout
         # ===========
@@ -1451,9 +1577,6 @@ class _FormattingTab(NScrollableForm):
         # Document
         # ========
 
-        self.colorHeadings.setChecked(self._build.getBool("doc.colorHeadings"))
-        self.scaleHeadings.setChecked(self._build.getBool("doc.scaleHeadings"))
-        self.boldHeadings.setChecked(self._build.getBool("doc.boldHeadings"))
         self.metaLanguage.setText(processLangCode(self._build.getStr("doc.metaLanguage")))
         self.pageHeader.setText(self._build.getStr("doc.pageHeader"))
         self.pageCountOffset.setValue(self._build.getInt("doc.pageCountOffset"))
@@ -1488,12 +1611,23 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.keepBreaks", self.keepBreaks.isChecked())
         self._build.setValue("format.showDialogue", self.showDialogue.isChecked())
 
+        # Heading Format
+        self._build.setValue("format.colorHeadings", self.colorHeadings.isChecked())
+        self._build.setValue("format.boldHeadings", self.boldHeadings.isChecked())
+        self._build.setValue("format.upperHeadings", self.upperHeadings.isChecked())
+
         # First Line Indent
         self._build.setValue("format.firstLineIndent", self.firstIndent.isChecked())
         self._build.setValue("format.firstIndentWidth", self.indentWidth.value())
         self._build.setValue("format.indentFirstPar", self.indentFirstPar.isChecked())
 
         # Text Margins
+        self._build.setValue("format.titleSize", self.titleSize.value())
+        self._build.setValue("format.h1Size", self.h1Size.value())
+        self._build.setValue("format.h2Size", self.h2Size.value())
+        self._build.setValue("format.h3Size", self.h3Size.value())
+        self._build.setValue("format.h4Size", self.h4Size.value())
+
         self._build.setValue("format.titleMarginT", self.titleMarginT.value())
         self._build.setValue("format.titleMarginB", self.titleMarginB.value())
         self._build.setValue("format.h1MarginT", self.h1MarginT.value())
@@ -1508,6 +1642,7 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.textMarginB", self.textMarginB.value())
         self._build.setValue("format.sepMarginT", self.sepMarginT.value())
         self._build.setValue("format.sepMarginB", self.sepMarginB.value())
+        self._build.setValue("format.lineForMargin", self.lineForMargin.isChecked())
 
         # Page Layout
         self._build.setValue("format.pageUnit", str(self.pageUnit.currentData()))
@@ -1522,9 +1657,6 @@ class _FormattingTab(NScrollableForm):
         # Documents
         metaLanguage = processLangCode(self.metaLanguage.text())
 
-        self._build.setValue("doc.colorHeadings", self.colorHeadings.isChecked())
-        self._build.setValue("doc.scaleHeadings", self.scaleHeadings.isChecked())
-        self._build.setValue("doc.boldHeadings", self.boldHeadings.isChecked())
         self._build.setValue("doc.metaLanguage", metaLanguage)
         self._build.setValue("doc.pageHeader", self.pageHeader.text())
         self._build.setValue("doc.pageCountOffset", self.pageCountOffset.value())
@@ -1633,10 +1765,76 @@ class _FormattingTab(NScrollableForm):
         self.pageHeader.setCursorPosition(0)
 
     @pyqtSlot()
+    def _resetTitleProps(self) -> None:
+        """Reset the title size and margins to default."""
+        self.titleSize.setValue(nwStyles.H_SIZES[0])
+        self.titleMarginT.setValue(nwStyles.T_MARGIN["H0"][0])
+        self.titleMarginB.setValue(nwStyles.T_MARGIN["H0"][1])
+
+    @pyqtSlot()
+    def _resetH1Props(self) -> None:
+        """Reset the H1 size and margins to default."""
+        self.h1Size.setValue(nwStyles.H_SIZES[1])
+        self.h1MarginT.setValue(nwStyles.T_MARGIN["H1"][0])
+        self.h1MarginB.setValue(nwStyles.T_MARGIN["H1"][1])
+
+    @pyqtSlot()
+    def _resetH2Props(self) -> None:
+        """Reset the H2 size and margins to default."""
+        self.h2Size.setValue(nwStyles.H_SIZES[2])
+        self.h2MarginT.setValue(nwStyles.T_MARGIN["H2"][0])
+        self.h2MarginB.setValue(nwStyles.T_MARGIN["H2"][1])
+
+    @pyqtSlot()
+    def _resetH3Props(self) -> None:
+        """Reset the H3 size and margins to default."""
+        self.h3Size.setValue(nwStyles.H_SIZES[3])
+        self.h3MarginT.setValue(nwStyles.T_MARGIN["H3"][0])
+        self.h3MarginB.setValue(nwStyles.T_MARGIN["H3"][1])
+
+    @pyqtSlot()
+    def _resetH4Props(self) -> None:
+        """Reset the H4 size and margins to default."""
+        self.h4Size.setValue(nwStyles.H_SIZES[4])
+        self.h4MarginT.setValue(nwStyles.T_MARGIN["H4"][0])
+        self.h4MarginB.setValue(nwStyles.T_MARGIN["H4"][1])
+
+    @pyqtSlot()
+    def _resetTextProps(self) -> None:
+        """Reset the text size and margins to default."""
+        self.textMarginT.setValue(nwStyles.T_MARGIN["TT"][0])
+        self.textMarginB.setValue(nwStyles.T_MARGIN["TT"][1])
+
+    @pyqtSlot()
+    def _resetSepProps(self) -> None:
+        """Reset the separator size and margins to default."""
+        self.sepMarginT.setValue(nwStyles.T_MARGIN["SP"][0])
+        self.sepMarginB.setValue(nwStyles.T_MARGIN["SP"][1])
+
+    @pyqtSlot()
     def _refreshMetaLang(self) -> None:
         """Update the meta language helper info."""
         code = self.metaLanguage.text().strip()
         self.lblMetaLanguage.setText(languageName(code))
+
+    @pyqtSlot()
+    def _updateTextMarginState(self) -> None:
+        """Update the enabled state of text margin settings."""
+        enabled = not self.lineForMargin.isChecked()
+        self.titleMarginT.setEnabled(enabled)
+        self.titleMarginB.setEnabled(enabled)
+        self.h1MarginT.setEnabled(enabled)
+        self.h1MarginB.setEnabled(enabled)
+        self.h2MarginT.setEnabled(enabled)
+        self.h2MarginB.setEnabled(enabled)
+        self.h3MarginT.setEnabled(enabled)
+        self.h3MarginB.setEnabled(enabled)
+        self.h4MarginT.setEnabled(enabled)
+        self.h4MarginB.setEnabled(enabled)
+        self.textMarginT.setEnabled(enabled)
+        self.textMarginB.setEnabled(enabled)
+        self.sepMarginT.setEnabled(enabled)
+        self.sepMarginB.setEnabled(enabled)
 
     ##
     #  Internal Functions

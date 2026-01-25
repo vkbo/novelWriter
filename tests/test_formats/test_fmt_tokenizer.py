@@ -91,6 +91,11 @@ def testFmtToken_Setters(mockGUI):
     assert tokens._marginSep == nwStyles.T_MARGIN["SP"]
     assert tokens._marginText == nwStyles.T_MARGIN["TT"]
     assert tokens._marginMeta == nwStyles.T_MARGIN["MT"]
+    assert tokens._sizeTitle == nwStyles.H_SIZES[0]
+    assert tokens._sizeHead1 == nwStyles.H_SIZES[1]
+    assert tokens._sizeHead2 == nwStyles.H_SIZES[2]
+    assert tokens._sizeHead3 == nwStyles.H_SIZES[3]
+    assert tokens._sizeHead4 == nwStyles.H_SIZES[4]
     assert tokens._hidePart is False
     assert tokens._hideChapter is False
     assert tokens._hideUnNum is False
@@ -113,14 +118,14 @@ def testFmtToken_Setters(mockGUI):
     tokens.setLineHeight(2.0)
     tokens.setBlockIndent(6.0)
     tokens.setJustify(True)
-    tokens.setTitleMargins(2.0, 2.0)
-    tokens.setHead1Margins(2.0, 2.0)
-    tokens.setHead2Margins(2.0, 2.0)
-    tokens.setHead3Margins(2.0, 2.0)
-    tokens.setHead4Margins(2.0, 2.0)
-    tokens.setTextMargins(2.0, 2.0)
-    tokens.setMetaMargins(2.0, 2.0)
-    tokens.setSeparatorMargins(2.0, 2.0)
+    tokens.setTitleProperties(2.0, 2.0, 8.0)
+    tokens.setHead1Properties(2.0, 2.0, 7.0)
+    tokens.setHead2Properties(2.0, 2.0, 6.0)
+    tokens.setHead3Properties(2.0, 2.0, 5.0)
+    tokens.setHead4Properties(2.0, 2.0, 4.0)
+    tokens.setTextProperties(2.0, 2.0)
+    tokens.setMetaProperties(2.0, 2.0)
+    tokens.setSeparatorProperties(2.0, 2.0)
     tokens.setLinkHeadings(True)
     tokens.setBodyText(False)
     tokens.setCommentType(nwComment.PLAIN, True)
@@ -147,6 +152,11 @@ def testFmtToken_Setters(mockGUI):
     assert tokens._marginText == (2.0, 2.0)
     assert tokens._marginMeta == (2.0, 2.0)
     assert tokens._marginSep == (2.0, 2.0)
+    assert tokens._sizeTitle == 8.0
+    assert tokens._sizeHead1 == 7.0
+    assert tokens._sizeHead2 == 6.0
+    assert tokens._sizeHead3 == 5.0
+    assert tokens._sizeHead4 == 4.0
     assert tokens._hidePart is True
     assert tokens._hideChapter is True
     assert tokens._hideUnNum is True
@@ -1324,6 +1334,67 @@ def testFmtToken_LineBreak(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToken_LineForMargin(mockGUI):
+    """Test using empty lines between blocks in the Tokenizer class."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens._handle = TMH
+    tokens._isNovel = True
+    tokens.setLineForMargin(True)
+    tokens.setChapterStyle(False, True)
+
+    # Between paragraphs
+    tokens._text = "Line one\n\nLine two"
+    tokens._isFirst = True
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.TEXT, "", "Line one", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Line two", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+    ]
+
+    # Not between hard line breaks
+    tokens._text = "Line one\nLine two"
+    tokens._isFirst = True
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.TEXT, "", "Line one\nLine two", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+    ]
+
+    # Between heading and text
+    tokens._text = "### Scene\n\nLine one"
+    tokens._isFirst = True
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, f"{TMH}:T0001", "Scene", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Line one", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+    ]
+
+    # Between two chapters
+    tokens._text = "## Chapter One\n\nText\n\n## Chapter Two\n\nText"
+    tokens._isFirst = True
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.HEAD1, f"{TMH}:T0001", "Chapter One", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Text", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.PBB),
+        (BlockTyp.HEAD1, f"{TMH}:T0002", "Chapter Two", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Text", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+    ]
+
+
+
+@pytest.mark.core
 def testFmtToken_ShortcodeValue(mockGUI):
     """Test processing of shortcodes with values."""
     project = NWProject()
@@ -1347,7 +1418,6 @@ def testFmtToken_ShortcodeValue(mockGUI):
             (13, TextFmt.FIELD, f"{TMH}:abcd"),
         ], BlockFmt.NONE
     )]
-
 
 @pytest.mark.core
 def testFmtToken_Dialogue(mockGUI):
@@ -2693,3 +2763,7 @@ def testFmtToken_HeadingFormatter(fncPath, mockGUI, mockRnd):
     # Chapter w/Fallback Focus
     cFormat = f"Chapter {nwHeadFmt.CH_NUM}, Scene {nwHeadFmt.SC_NUM} - {nwHeadFmt.CHAR_FOCUS}"
     assert formatter.apply(cFormat, "Hi Bob", 0) == "Chapter 2, Scene 3 - Focus"
+
+    # Uppercase Headings
+    formatter.setUppercase(True)
+    assert formatter.apply(nwHeadFmt.TITLE, "Chapter One", 0) == "CHAPTER ONE"

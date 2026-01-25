@@ -310,8 +310,10 @@ class SharedData(QObject):
         allowZip: bool = False
     ) -> Path | None:
         """Open the file dialog and select a novelWriter project file."""
-        label = (self.tr("novelWriter Project File or Zip File")
-                 if allowZip else self.tr("novelWriter Project File"))
+        label = (
+            self.tr("novelWriter Project File or Zip File")
+            if allowZip else self.tr("novelWriter Project File")
+        )
         ext = f"{nwFiles.PROJ_FILE} *.zip" if allowZip else nwFiles.PROJ_FILE
         fFilter = formatFileFilter([(label, ext), "*"])
         selected, _ = QFileDialog.getOpenFileName(
