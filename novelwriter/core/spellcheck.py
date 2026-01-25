@@ -54,6 +54,7 @@ class NWSpellEnchant:
         self._enchant = FakeEnchant()
         self._userDict = UserDictionary(project)
         self._language = None
+        self._requested = None
         self._broker = None
         logger.debug("Ready: NWSpellEnchant")
 
@@ -66,7 +67,13 @@ class NWSpellEnchant:
 
     @property
     def spellLanguage(self) -> str | None:
+        """Return the current spell check language."""
         return self._language
+
+    @property
+    def requestedLanguage(self) -> str | None:
+        """Return the requested spell check language."""
+        return self._requested
 
     ##
     #  Setters
@@ -81,6 +88,7 @@ class NWSpellEnchant:
         self._enchant = FakeEnchant()
         self._broker = None
         self._language = None
+        self._requested = language or None
 
         try:
             import enchant

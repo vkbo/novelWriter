@@ -256,6 +256,14 @@ class SharedData(QObject):
             _, provider = self.spelling.describeDict()
             self.spellLanguageChanged.emit(language, provider)
 
+    def reportSpellCheckStatus(self) -> None:
+        """Report the state of the spell checker."""
+        spell = self.spelling
+        if (req := spell.requestedLanguage) is not None and req != spell.spellLanguage:
+            self.warn(self.tr(
+                "Could not load spell checking for language code '{0}'."
+            ).format(req))
+
     def updateIdleTime(self, currTime: float, userIdle: bool) -> None:
         """Update the idle time record. If the userIdle flag is True,
         the user idle counter is updated with the time difference since
