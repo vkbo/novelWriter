@@ -1,5 +1,38 @@
 # novelWriter Changelog
 
+## Version 2.8.2 [2026-01-25]
+
+### Release Notes
+
+This is a patch release that fixes an issue with launching novelWriter via a project file on
+Windows, adds an alert when the spell check dictionary cannot be loaded, handles headings in HTML
+manuscripts the same way as for documents, and updates the documentation on how heading levels are
+handled in the manuscript build process.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue with the exe launcher on Windows where it didn't support spaces in the path when
+  the user tried to open novelWriter from a project file. Issue #2643. PR #2645.
+* Fixed an issue with the PDF manuscript format which stopped after about 600-700 pages when
+  generating A4 pages. The limit is now in the 11000 pages range. Issue #2637. PRs #2638 and #2639.
+
+**Improvements**
+
+* Added an alert box when the spell check language selected for a project could not be loaded.
+  Issue #2631. PR #2654.
+* The HTML manuscript format now exports novel title and partition titles as paragraphs with a
+  larger font size instead of HTML headings. This is more consistent with the other formatted
+  document formats. Issue #2641. PR #2653.
+
+**Documentation**
+
+* Added information to the documentation about heading level promotion when building the
+  manuscript. Issue #2641. PR #2653.
+
+----
+
 ## Version 2.8.1 [2025-12-28]
 
 ### Release Notes
@@ -12,7 +45,7 @@ Spotlight on MacOS.
 
 **Bugfixes**
 
-* Fix an issue where the inputMethodQuery call to the Qt library returns an object that PyQt6
+* Fixed an issue where the inputMethodQuery call to the Qt library returns an object that PyQt6
   cannot convert to a Python object. The fix just disables the conversion since the return value is
   passed back to the Qt library anyway. The problem affects Qt/PyQt 6.10 and is triggered in MacOS
   at least, but it is not known if it affects other platforms. Issue #2622. PR #2623.
@@ -35,9 +68,9 @@ See the website for complete [Release Notes](https://novelwriter.io/releases/rel
 
 **Bugfixes**
 
-* Fix an issue where the app could crash when the user pasted from an empty clipboard. This appears
-  to be a Qt or PyQt bug, and is not present on the later releases, but a fix has been added that
-  ensures the bug is not triggered. Issue #2598. PR #2602.
+* Fixed an issue where the app could crash when the user pasted from an empty clipboard. This
+  appears to be a Qt or PyQt bug, and is not present on the later releases, but a fix has been
+  added that ensures the bug is not triggered. Issue #2598. PR #2602.
 
 **Documentation**
 
