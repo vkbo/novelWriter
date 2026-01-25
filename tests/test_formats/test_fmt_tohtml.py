@@ -51,7 +51,7 @@ def testFmtToHtml_ConvertHeaders(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 class='title' style='text-align: center;'>Part<br>Title</h1>\n"
+        "<p class='title' style='text-align: center;'>Part<br>Title</p>\n"
     )
 
     # Header 2
@@ -81,7 +81,7 @@ def testFmtToHtml_ConvertHeaders(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 class='title' style='text-align: center; page-break-before: always;'>Title</h1>\n"
+        "<p class='title' style='text-align: center; page-break-before: always;'>Title</p>\n"
     )
 
     # Unnumbered
@@ -127,8 +127,8 @@ def testFmtToHtml_ConvertHeaders(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 class='title' style='text-align: center; page-break-before: always;'>"
-        "<a name='0000000000000:T0001'></a>Heading One</h1>\n"
+        "<p class='title' style='text-align: center; page-break-before: always;'>"
+        "<a name='0000000000000:T0001'></a>Heading One</p>\n"
     )
 
     # Unnumbered
@@ -498,8 +498,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     ]
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 class='title' style='text-align: center; page-break-before: always;'>"
-        "<a name='0000000000000:T0001'></a>A Title</h1>\n"
+        "<p class='title' style='text-align: center; page-break-before: always;'>"
+        "<a name='0000000000000:T0001'></a>A Title</p>\n"
     )
 
     # Unnumbered
@@ -541,7 +541,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     ]
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 class='title' style='text-align: left;'>A Title</h1>\n"
+        "<p class='title' style='text-align: left;'>A Title</p>\n"
     )
 
     # Align Right
@@ -550,7 +550,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     ]
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 class='title' style='text-align: right;'>A Title</h1>\n"
+        "<p class='title' style='text-align: right;'>A Title</p>\n"
     )
 
     # Align Centre
@@ -559,7 +559,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     ]
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 class='title' style='text-align: center;'>A Title</h1>\n"
+        "<p class='title' style='text-align: center;'>A Title</p>\n"
     )
 
     # Align Justify
@@ -568,7 +568,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     ]
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 class='title' style='text-align: justify;'>A Title</h1>\n"
+        "<p class='title' style='text-align: justify;'>A Title</p>\n"
     )
 
     # Page Break
@@ -580,8 +580,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     ]
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 class='title' "
-        "style='page-break-before: always; page-break-after: always;'>A Title</h1>\n"
+        "<p class='title' "
+        "style='page-break-before: always; page-break-after: always;'>A Title</p>\n"
     )
 
     # Indent
@@ -711,7 +711,7 @@ def testFmtToHtml_Save(mockGUI, fncPath):
         "#### A Section\n\n\tMore text in scene two.\n",
     ]
     resText = [(
-        "<h1 class='title' style='text-align: center;'>My Novel</h1>\n"
+        "<p class='title' style='text-align: center;'>My Novel</p>\n"
         "<p><strong>By Jane Doh</strong></p>\n"
     ), (
         "<h1 style='page-break-before: always;'>Chapter 1</h1>\n"
