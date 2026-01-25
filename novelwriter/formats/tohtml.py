@@ -200,7 +200,7 @@ class ToHtml(Tokenizer):
 
             elif tType in (BlockTyp.TITLE, BlockTyp.PART):
                 tHead = tText.replace("\n", "<br>")
-                lines.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
+                lines.append(f"<p class='title'{hStyle}>{aNm}{tHead}</p>\n")
 
             elif tType == BlockTyp.HEAD1:
                 tHead = tText.replace("\n", "<br>")
@@ -342,6 +342,7 @@ class ToHtml(Tokenizer):
         fFam = font.family()
         fSz = font.pointSize()
         fW = FONT_WEIGHTS.get(font.weight(), 400)
+        hW = FONT_WEIGHTS.get(700 if self._boldHeads else 400, 400)
         fS = FONT_STYLE.get(font.style(), "normal")
 
         lHeight = round(100 * self._lineHeight)
@@ -359,23 +360,23 @@ class ToHtml(Tokenizer):
         styles.append(f"mark {{background: {mColor};}}")
         styles.append(f"h1, h2, h3, h4 {{color: {hColor}; page-break-after: avoid;}}")
         styles.append(
-            f"h1 {{font-size: {fSz1:.2f}em; "
+            f"h1 {{font-size: {fSz1:.2f}em; font-weight: {hW}; "
             f"margin-top: {mtH1:.2f}em; margin-bottom: {mbH1:.2f}em;}}"
         )
         styles.append(
-            f"h2 {{font-size: {fSz2:.2f}em; "
+            f"h2 {{font-size: {fSz2:.2f}em; font-weight: {hW}; "
             f"margin-top: {mtH2:.2f}em; margin-bottom: {mbH2:.2f}em;}}"
         )
         styles.append(
-            f"h3 {{font-size: {fSz3:.2f}em; "
+            f"h3 {{font-size: {fSz3:.2f}em; font-weight: {hW}; "
             f"margin-top: {mtH3:.2f}em; margin-bottom: {mbH3:.2f}em;}}"
         )
         styles.append(
-            f"h4 {{font-size: {fSz4:.2f}em; "
+            f"h4 {{font-size: {fSz4:.2f}em; font-weight: {hW}; "
             f"margin-top: {mtH4:.2f}em; margin-bottom: {mbH4:.2f}em;}}"
         )
         styles.append(
-            f".title {{font-size: {fSz0:.2f}em; "
+            f".title {{font-size: {fSz0:.2f}em; font-weight: {hW}; "
             f"margin-top: {mtH0:.2f}em; margin-bottom: {mbH0:.2f}em;}}"
         )
         styles.append(
