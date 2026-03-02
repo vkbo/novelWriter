@@ -130,7 +130,8 @@ class VersionInfoWidget(QWidget):
                 f"{version} \u2013 {self._trDownload.format(download)}"
             ))
         else:
-            self._lblRelease.setText(self._trLatest.format(reason or self.tr("Failed")))
+            self._lblRelease.setText(self._trLatest.format(self.tr("Failed")))
+            logger.error("Could not retrieve version info: %s", reason)
 
 
 class _Retriever(QRunnable):
