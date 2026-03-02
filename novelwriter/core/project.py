@@ -37,7 +37,7 @@ from PyQt6.QtCore import QCoreApplication
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__
 from novelwriter.common import (
     checkStringNone, formatInt, formatTimeStamp, getFileSize, hexToInt,
-    makeFileNameSafe, minmax
+    makeFileNameSafe, minmax, safeIsFile
 )
 from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.index import Index
@@ -575,7 +575,7 @@ class NWProject:
             return False
 
         langFile = Path(CONFIG.nwLangPath) / f"project_{self._data.language}.json"
-        if not langFile.is_file():
+        if not safeIsFile(langFile):
             langFile = Path(CONFIG.nwLangPath) / "project_en_GB.json"
 
         try:

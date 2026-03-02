@@ -37,7 +37,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import SHARED
-from novelwriter.common import makeFileNameSafe, openExternalPath
+from novelwriter.common import makeFileNameSafe, openExternalPath, safeExists, safeIsDir
 from novelwriter.constants import nwLabels
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.item import NWItem
@@ -272,7 +272,7 @@ class GuiManuscriptBuild(NDialog):
     def _doSelectPath(self) -> None:
         """Select a folder for output."""
         bPath = Path(self.buildPath.text())
-        bPath = bPath if bPath.is_dir() else self._build.lastBuildPath
+        bPath = bPath if safeIsDir(bPath) else self._build.lastBuildPath
         savePath = QFileDialog.getExistingDirectory(
             self, self.tr("Select Folder"), str(bPath)
         )
@@ -308,14 +308,14 @@ class GuiManuscriptBuild(NDialog):
 
         self.buildProgress.setValue(0)
         bPath = Path(self.buildPath.text())
-        if not bPath.is_dir():
+        if not safeIsDir(bPath):
             SHARED.error(self.tr("Output folder does not exist."))
             return False
 
         bExt = nwLabels.BUILD_EXT[bFormat]
         buildPath = (bPath / makeFileNameSafe(bName)).with_suffix(bExt)
 
-        if buildPath.exists():
+        if safeExists(buildPath):
             if not SHARED.question(
                 self.tr("The file already exists. Do you want to overwrite it?")
             ):

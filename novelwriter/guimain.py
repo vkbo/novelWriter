@@ -38,7 +38,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__
-from novelwriter.common import formatFileFilter, formatVersion, hexToInt, minmax
+from novelwriter.common import formatFileFilter, formatVersion, hexToInt, minmax, safeIsFile
 from novelwriter.constants import nwConst
 from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
@@ -106,7 +106,7 @@ class GuiMain(QMainWindow):
         self._updateWindowTitle()
 
         nwIcon = CONFIG.assetPath("icons") / "novelwriter.svg"
-        self.nwIcon = QIcon(str(nwIcon)) if nwIcon.is_file() else QIcon()
+        self.nwIcon = QIcon(str(nwIcon)) if safeIsFile(nwIcon) else QIcon()
         self.setWindowIcon(self.nwIcon)
         QApplication.setWindowIcon(self.nwIcon)
 

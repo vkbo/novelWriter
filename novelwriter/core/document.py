@@ -30,7 +30,7 @@ from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
 
-from novelwriter.common import formatTimeStamp, isHandle
+from novelwriter.common import formatTimeStamp, isHandle, safeExists, safeIsFile
 from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.error import formatException, logException
 
@@ -110,18 +110,17 @@ class NWDocument:
     @staticmethod
     def quickReadText(content: Path, tHandle: str) -> str:
         """Return the text of a document in a fast and efficient way."""
-        if (path := content / f"{tHandle}.nwd").is_file():
-            try:
+        try:
+            if (path := content / f"{tHandle}.nwd").is_file():
                 with open(path, mode="r", encoding="utf-8") as inFile:
                     line = ""
                     for _ in range(10):
                         if not (line := inFile.readline()).startswith(r"%%~"):
                             break
                     return line + inFile.read()
-            except Exception:
-                logger.error("Cannot read document with handle '%s'", tHandle)
-                logException()
-                return ""
+        except Exception:
+            logger.error("Cannot read document with handle '%s'", tHandle)
+            logException()
         return ""
 
     ##
@@ -138,7 +137,7 @@ class NWDocument:
             logger.error("No content path set")
             return False
 
-        return (contentPath / f"{self._handle}.nwd").is_file()
+        return safeIsFile(contentPath / f"{self._handle}.nwd")
 
     def readDocument(self, isOrphan: bool = False) -> str | None:
         """Read the document specified by the handle set in the
@@ -170,7 +169,7 @@ class NWDocument:
         self._docMeta = {}
         self._lastHash = ""
 
-        if docPath.exists():
+        if safeExists(docPath):
             try:
                 with open(docPath, mode="r", encoding="utf-8") as inFile:
                     # Check the first <= 10 lines for metadata
@@ -236,7 +235,7 @@ class NWDocument:
         updatedDate = self._docMeta.get("updated", "Unknown")
         if writeHash != self._lastHash:
             updatedDate = currTime
-        if not docPath.is_file():
+        if not safeIsFile(docPath):
             createdDate = currTime
             updatedDate = currTime
 

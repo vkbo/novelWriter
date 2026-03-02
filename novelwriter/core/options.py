@@ -31,7 +31,7 @@ from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, TypeVar
 
-from novelwriter.common import checkBool, checkFloat, checkInt, checkString, jsonEncode
+from novelwriter.common import checkBool, checkFloat, checkInt, checkString, jsonEncode, safeExists
 from novelwriter.constants import nwFiles
 from novelwriter.error import logException
 
@@ -102,7 +102,7 @@ class OptionState:
             return False
 
         data = {}
-        if stateFile.exists():
+        if safeExists(stateFile):
             logger.debug("Loading GUI options file")
             try:
                 with open(stateFile, mode="r", encoding="utf-8") as inFile:

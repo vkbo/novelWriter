@@ -33,6 +33,7 @@ from typing import TYPE_CHECKING, Literal, overload
 from PyQt6.QtCore import QModelIndex
 
 from novelwriter import SHARED
+from novelwriter.common import safeIsFile
 from novelwriter.constants import nwFiles, nwLabels, nwStyles, trConst
 from novelwriter.core.item import NWItem
 from novelwriter.core.itemmodel import ProjectModel, ProjectNode
@@ -372,7 +373,7 @@ class NWTree:
         for node in self._model.root.allChildren():
             item = node.item
             file = f"{item.itemHandle}.nwd"
-            if (contentPath / file).is_file():
+            if safeIsFile(contentPath / file):
                 tocLine = "{0:<25s}  {1:<9s}  {2:<8s}  {3:s}".format(
                     f"content/{file}",
                     item.itemClass.name,

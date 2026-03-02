@@ -35,7 +35,7 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
 from novelwriter import CONFIG
-from novelwriter.common import checkUuid, isHandle, jsonEncode
+from novelwriter.common import checkUuid, isHandle, jsonEncode, safeExists, safeIsDir
 from novelwriter.constants import nwFiles, nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
@@ -272,7 +272,7 @@ class BuildSettings:
     @property
     def lastBuildPath(self) -> Path:
         """The last used build path."""
-        if self._path.is_dir():
+        if safeIsDir(self._path):
             return self._path
         return CONFIG.homePath()
 
@@ -345,7 +345,7 @@ class BuildSettings:
         """Set the last used build path."""
         if isinstance(path, str):
             path = Path(path)
-        if isinstance(path, Path) and path.is_dir():
+        if isinstance(path, Path) and safeIsDir(path):
             self._path = path
         else:
             self._path = CONFIG.homePath()
@@ -617,7 +617,7 @@ class BuildCollection:
             return False
 
         data = {}
-        if buildsFile.exists():
+        if safeExists(buildsFile):
             logger.debug("Loading builds file")
             try:
                 with open(buildsFile, mode="r", encoding="utf-8") as inFile:
