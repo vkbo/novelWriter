@@ -39,8 +39,9 @@ from novelwriter.common import (
     isItemClass, isItemLayout, isItemType, isListInstance, isTitleTag,
     joinLines, jsonCombine, jsonEncode, languageName, makeFileNameSafe, minmax,
     numberToRoman, openExternalPath, processDialogSymbols, processLangCode,
-    readTextFile, simplified, transferCase, uniqueCompact, utf16CharMap,
-    xmlElement, xmlIndent, xmlSubElem, yesNo
+    readTextFile, safeExists, safeIsDir, safeIsFile, safeIterDir, simplified,
+    transferCase, uniqueCompact, utf16CharMap, xmlElement, xmlIndent,
+    xmlSubElem, yesNo
 )
 from novelwriter.enum import nwItemClass
 
@@ -572,6 +573,51 @@ def testBaseCommon_numberToRoman():
     assert numberToRoman(999, False) == "CMXCIX"
     assert numberToRoman(2010, False) == "MMX"
     assert numberToRoman(999, True) == "cmxcix"
+
+
+@pytest.mark.base
+def testBaseCommon_safeIterDir(fncPath: Path):
+    """Test the safeIterDir function."""
+    files = [
+        fncPath / "file1.txt",
+        fncPath / "file2.txt",
+        fncPath / "file3.txt",
+    ]
+    for file in files:
+        file.touch()
+
+    assert sorted(safeIterDir(fncPath, alert=True)) == files
+    assert list(safeIterDir(None, alert=True)) == []  # type: ignore
+
+
+@pytest.mark.base
+def testBaseCommon_safeExists(fncPath: Path):
+    """Test the safeExists function."""
+    file = fncPath / "file1.txt"
+    file.touch()
+
+    assert safeExists(file, alert=True) is True
+    assert safeExists(None, alert=True) is False  # type: ignore
+
+
+@pytest.mark.base
+def testBaseCommon_safeIsFile(fncPath: Path):
+    """Test the safeIsFile function."""
+    file = fncPath / "file1.txt"
+    file.touch()
+
+    assert safeIsFile(file, alert=True) is True
+    assert safeIsFile(None, alert=True) is False  # type: ignore
+
+
+@pytest.mark.base
+def testBaseCommon_safeIsDir(fncPath: Path):
+    """Test the safeIsDir function."""
+    folder = fncPath / "folder1"
+    folder.mkdir()
+
+    assert safeIsDir(folder, alert=True) is True
+    assert safeIsDir(None, alert=True) is False  # type: ignore
 
 
 @pytest.mark.base

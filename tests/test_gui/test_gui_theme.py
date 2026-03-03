@@ -92,9 +92,13 @@ def testGuiTheme_ParseColor():
 def testGuiTheme_ScanThemes(monkeypatch):
     """Test the themes scanning."""
     theme = GuiTheme()
+    files = []
+
+    # Invalid path should be handled silently
+    _listContent(files, None, ".conf")  # type: ignore
+    assert len(files) == 0
 
     # Load built-in themes
-    files = []
     _listContent(files, CONFIG.assetPath("themes"), ".conf")
     assert len(files) > 0
 

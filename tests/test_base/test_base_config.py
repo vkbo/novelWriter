@@ -446,3 +446,17 @@ def testBaseConfig_RecentPaths(monkeypatch, tstPaths):
         mp.setattr("builtins.open", causeOSError)
         assert recent.saveCache() is False
         assert recent.loadCache() is False
+
+
+@pytest.mark.base
+def testBaseConfig_IOError(monkeypatch):
+    """Test handling of I/O errors when using pathlib."""
+    with monkeypatch.context() as mp:
+        mp.setattr(Path, "iterdir", causeOSError)
+        config = Config()  # Loading manuals will fail if not handled
+        assert config.listLanguages(config.LANG_NW) == [("en_GB", "British English")]
+
+    with monkeypatch.context() as mp:
+        config = Config()
+        mp.setattr(Path, "is_dir", causeOSError)
+        config.initConfig()

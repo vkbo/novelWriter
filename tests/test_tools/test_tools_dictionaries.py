@@ -20,6 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
 from __future__ import annotations
 
+from pathlib import Path
 from zipfile import ZipFile
 
 import enchant
@@ -31,7 +32,7 @@ from PyQt6.QtWidgets import QFileDialog
 from novelwriter import SHARED
 from novelwriter.tools.dictionaries import GuiDictionaries
 
-from tests.mocked import causeException
+from tests.mocked import causeException, causeOSError
 
 
 @pytest.mark.gui
@@ -144,6 +145,11 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
         assert nwDicts.infoBox.toPlainText().splitlines()[-1] == (
             "Could not process dictionary file"
         )
+
+    # Re-init and fail to scan for dictionaries
+    with monkeypatch.context() as mp:
+        mp.setattr(Path, "iterdir", causeOSError)
+        nwDicts.initDialog()
 
     # Re-init
     nwDicts.initDialog()

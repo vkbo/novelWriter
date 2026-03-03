@@ -565,11 +565,10 @@ class Config:
 
         # If the config and data folders don't exist, create them
         # This assumes that the os config and data folders exist
-        self._confPath.mkdir(exist_ok=True)
-        self._dataPath.mkdir(exist_ok=True)
-
         # Also create the themes and icons folders if possible
         try:
+            self._confPath.mkdir(exist_ok=True)
+            self._dataPath.mkdir(exist_ok=True)
             if self._dataPath.is_dir():
                 (self._dataPath / "cache").mkdir(exist_ok=True)
                 (self._dataPath / "icons").mkdir(exist_ok=True)

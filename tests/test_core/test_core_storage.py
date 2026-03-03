@@ -167,7 +167,7 @@ def testCoreStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreStorage_InitProjectStorage_Invalid(mockGUI, fncPath):
+def testCoreStorage_InitProjectStorage_Invalid(monkeypatch, mockGUI, fncPath):
     """Test initialising a project in an invalid folder."""
     project = NWProject()
 
@@ -199,6 +199,13 @@ def testCoreStorage_InitProjectStorage_Invalid(mockGUI, fncPath):
     # Add the project file, and we should now fail on the folders
     (fncPath / nwFiles.PROJ_FILE).touch()
     assert storage.initProjectStorage(fncPath) == NWStorageOpen.FAILED
+
+    # Remove the files blocking the folders, but make the legacy storage scan fail
+    (fncPath / "meta").unlink()
+    (fncPath / "content").unlink()
+    with monkeypatch.context() as mp:
+        mp.setattr(_LegacyStorage, "deprecatedFiles", causeOSError)
+        assert storage.initProjectStorage(fncPath) == NWStorageOpen.FAILED
 
     project.closeProject()
 

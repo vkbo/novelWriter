@@ -235,7 +235,7 @@ class NWStorage:
                 if child.is_dir() and child.name.startswith("data_"):
                     legacy.legacyDataFolder(basePath, child)
         except Exception as exc:
-            logger.error("Failed to create project folders", exc_info=exc)
+            logger.error("Failed to scan project folder content", exc_info=exc)
             self.clear()
             return NWStorageOpen.FAILED
 

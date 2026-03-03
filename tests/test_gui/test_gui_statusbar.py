@@ -123,4 +123,10 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         nwGUI._timeTick()
         assert status.statsText.text() == "Characters: 40 (+40)"
 
+    # Set message
+    status.messageBox.setMessage("Hi!", "info", 10000)
+    assert status.messageBox._text.text() == "Hi!"
+    status.messageBox.clearMessage()
+    assert status.messageBox._text.text() == ""
+
     # qtbot.stop()
