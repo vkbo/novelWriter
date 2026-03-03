@@ -43,7 +43,8 @@ from PyQt6.QtWidgets import QApplication
 
 from novelwriter.common import (
     NWConfigParser, checkInt, checkPath, describeFont, fontMatcher,
-    formatTimeStamp, joinLines, languageName, processDialogSymbols, simplified
+    formatTimeStamp, joinLines, languageName, processDialogSymbols, safeExists,
+    safeIsDir, simplified
 )
 from novelwriter.constants import nwFiles, nwQuotes, nwUnicode
 from novelwriter.enum import nwTheme
@@ -139,7 +140,7 @@ class Config:
         self._nwLangPath = self._appPath / "assets" / "i18n"
         self._qtLangPath = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
 
-        hasLocale = (self._nwLangPath / f"nw_{QLocale.system().name()}.qm").exists()
+        hasLocale = safeExists(self._nwLangPath / f"nw_{QLocale.system().name()}.qm")
         self._qLocale = QLocale.system() if hasLocale else QLocale("en_GB")
         self._dLocale = QLocale.system()
         self._dShortDate = self._dLocale.dateFormat(QLocale.FormatType.ShortFormat)
@@ -148,10 +149,13 @@ class Config:
 
         # PDF Manual
         self._manuals: dict[str, Path] = {}
-        if (assets := self._appPath / "assets").is_dir():
-            for item in assets.iterdir():
-                if item.is_file() and item.stem.startswith("manual") and item.suffix == ".pdf":
-                    self._manuals[item.stem] = item
+        try:
+            if (assets := self._appPath / "assets").is_dir():
+                for item in assets.iterdir():
+                    if item.is_file() and item.stem.startswith("manual") and item.suffix == ".pdf":
+                        self._manuals[item.stem] = item
+        except Exception:
+            logException()
 
         # User Settings
         # =============
@@ -391,9 +395,9 @@ class Config:
         """
         if isinstance(path, str | Path):
             path = checkPath(path, self._homePath)
-            if not path.is_dir():
+            if not safeIsDir(path):
                 path = path.parent
-            if path.is_dir():
+            if safeIsDir(path):
                 self._recentPaths.setPath(key, path)
 
     def setBackupPath(self, path: Path | str) -> None:
@@ -468,14 +472,13 @@ class Config:
     def lastPath(self, key: str) -> Path:
         """Return the last path used by the user, if it exists."""
         if path := self._recentPaths.getPath(key):
-            asPath = Path(path)
-            if asPath.is_dir():
+            if safeIsDir(asPath := Path(path)):
                 return asPath
         return self._homePath
 
     def backupPath(self) -> Path:
         """Return the backup path."""
-        if isinstance(self._backupPath, Path) and self._backupPath.is_dir():
+        if isinstance(self._backupPath, Path) and safeIsDir(self._backupPath):
             return self._backupPath
         return self._backPath
 
@@ -516,15 +519,18 @@ class Config:
         else:
             return []
 
-        for qmFile in self._nwLangPath.iterdir():
-            qmName = qmFile.name
-            if not (qmFile.is_file() and qmName.startswith(fPre) and qmName.endswith(fExt)):
-                continue
+        try:
+            for qmFile in self._nwLangPath.iterdir():
+                qmName = qmFile.name
+                if not (qmFile.is_file() and qmName.startswith(fPre) and qmName.endswith(fExt)):
+                    continue
 
-            qmLang = qmName[len(fPre):-len(fExt)]
-            qmName = languageName(qmLang)
-            if qmLang and qmName and qmLang != "en_GB":
-                langList[qmLang] = qmName
+                qmLang = qmName[len(fPre):-len(fExt)]
+                qmName = languageName(qmLang)
+                if qmLang and qmName and qmLang != "en_GB":
+                    langList[qmLang] = qmName
+        except Exception as exc:
+            logger.error("Failed to load additional language files", exc_info=exc)
 
         return sorted(langList.items(), key=lambda x: x[0])
 
@@ -559,14 +565,16 @@ class Config:
 
         # If the config and data folders don't exist, create them
         # This assumes that the os config and data folders exist
-        self._confPath.mkdir(exist_ok=True)
-        self._dataPath.mkdir(exist_ok=True)
-
         # Also create the themes and icons folders if possible
-        if self._dataPath.is_dir():
-            (self._dataPath / "cache").mkdir(exist_ok=True)
-            (self._dataPath / "icons").mkdir(exist_ok=True)
-            (self._dataPath / "themes").mkdir(exist_ok=True)
+        try:
+            self._confPath.mkdir(exist_ok=True)
+            self._dataPath.mkdir(exist_ok=True)
+            if self._dataPath.is_dir():
+                (self._dataPath / "cache").mkdir(exist_ok=True)
+                (self._dataPath / "icons").mkdir(exist_ok=True)
+                (self._dataPath / "themes").mkdir(exist_ok=True)
+        except Exception:
+            logException()
 
         self._recentPaths.loadCache()
         self._recentProjects.loadCache()
@@ -582,7 +590,7 @@ class Config:
         QLocale.setDefault(self._qLocale)
         self._qtTrans = {}
 
-        hasLocale = (self._nwLangPath / f"nw_{self._qLocale.name()}.qm").exists()
+        hasLocale = safeExists(self._nwLangPath / f"nw_{self._qLocale.name()}.qm")
         self._dLocale = self._qLocale if hasLocale else QLocale.system()
         self._dShortDate = self._dLocale.dateFormat(QLocale.FormatType.ShortFormat)
         self._dShortDateTime = self._dLocale.dateTimeFormat(QLocale.FormatType.ShortFormat)
@@ -611,7 +619,7 @@ class Config:
         conf = NWConfigParser()
         cnfPath = self._confPath / nwFiles.CONF_FILE
 
-        if not cnfPath.exists():
+        if not safeExists(cnfPath):
             # Initial file, so we just create one from defaults
             self.setGuiFont(None)
             self.setTextFont(None)
@@ -927,9 +935,9 @@ class RecentProjects:
         """Load the cache file for recent projects."""
         self._data = {}
         self._map = {}
-        cacheFile = self._conf.dataPath(nwFiles.RECENT_FILE)
-        if cacheFile.is_file():
-            try:
+        try:
+            cacheFile = self._conf.dataPath(nwFiles.RECENT_FILE)
+            if cacheFile.is_file():
                 with open(cacheFile, mode="r", encoding="utf-8") as inFile:
                     data = json.load(inFile)
                 for path, entry in data.items():
@@ -940,10 +948,10 @@ class RecentProjects:
                     saved = checkInt(entry.get("time", 0), 0)
                     if path and title:
                         self._setEntry(puuid, path, title, words, chars, saved)
-            except Exception:
-                logger.error("Could not load recent project cache")
-                logException()
-                return False
+        except Exception:
+            logger.error("Could not load recent project cache")
+            logException()
+            return False
         return True
 
     def saveCache(self) -> bool:
@@ -1027,19 +1035,19 @@ class RecentPaths:
     def loadCache(self) -> bool:
         """Load the cache file for recent paths."""
         self._data = {}
-        cacheFile = self._conf.dataPath(nwFiles.RECENT_PATH)
-        if cacheFile.is_file():
-            try:
+        try:
+            cacheFile = self._conf.dataPath(nwFiles.RECENT_PATH)
+            if cacheFile.is_file():
                 with open(cacheFile, mode="r", encoding="utf-8") as inFile:
                     data = json.load(inFile)
                 if isinstance(data, dict):
                     for key, path in data.items():
                         if key in self.KEYS and isinstance(path, str):
                             self._data[key] = path
-            except Exception:
-                logger.error("Could not load recent paths cache")
-                logException()
-                return False
+        except Exception:
+            logger.error("Could not load recent paths cache")
+            logException()
+            return False
         return True
 
     def saveCache(self) -> bool:

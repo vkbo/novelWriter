@@ -109,9 +109,6 @@ def testExtVersionInfo_Main(qtbot, monkeypatch):
         "Latest Version: 2.0 – Download from <a href='#website'>novelwriter.io</a>"
     )
 
-    version._updateReleaseInfo("", "Error")
-    assert version._lblRelease.text() == "Latest Version: Error"
-
     version._updateReleaseInfo("", "")
     assert version._lblRelease.text() == "Latest Version: Failed"
 

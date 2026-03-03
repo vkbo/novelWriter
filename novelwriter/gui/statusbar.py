@@ -27,15 +27,19 @@ import logging
 
 from datetime import datetime
 from time import time
+from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import pyqtSlot
-from PyQt6.QtWidgets import QApplication, QLabel, QStatusBar, QWidget
+from PyQt6.QtCore import QTimer, pyqtSlot
+from PyQt6.QtWidgets import QApplication, QHBoxLayout, QLabel, QStatusBar, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime, languageName
 from novelwriter.constants import nwConst, nwLabels, nwStats, trStats
 from novelwriter.extensions.modified import NClickableLabel
 from novelwriter.extensions.statusled import StatusLED
+
+if TYPE_CHECKING:
+    from novelwriter.types import T_MsgSeverity
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +57,9 @@ class GuiMainStatus(QStatusBar):
         self._debugInfo = False
 
         iPx = SHARED.theme.baseIconHeight
+
+        self.messageBox = _MessageWidget(self)
+        self.insertWidget(0, self.messageBox)
 
         # Permanent Widgets
         # =================
@@ -195,10 +202,10 @@ class GuiMainStatus(QStatusBar):
     #  Public Slots
     ##
 
-    @pyqtSlot(str)
-    def setStatusMessage(self, message: str) -> None:
+    @pyqtSlot(str, str)
+    def setStatusMessage(self, message: str, severity: T_MsgSeverity = "info") -> None:
         """Set the status bar message to display."""
-        self.showMessage(message, nwConst.STATUS_MSG_TIMEOUT)
+        self.messageBox.setMessage(message, severity, nwConst.STATUS_MSG_TIMEOUT)
         QApplication.processEvents()
 
     @pyqtSlot(str, str)
@@ -265,3 +272,32 @@ class GuiMainStatus(QStatusBar):
         )
         self.showMessage(f"Debug [{stamp}] {message}", 6000)
         logger.debug("[MEMINFO] %s", message)
+
+
+class _MessageWidget(QWidget):
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent)
+        self._icon = QLabel(self)
+        self._text = QLabel(self)
+
+        self._layout = QHBoxLayout()
+        self._layout.addWidget(self._icon)
+        self._layout.addWidget(self._text)
+        self._layout.setSpacing(4)
+        self._layout.setContentsMargins(4, 0, 0, 0)
+        self.setLayout(self._layout)
+
+    def setMessage(self, message: str, severity: str, timeout: int) -> None:
+        """Set a status bar message with a timeout."""
+        iSz = SHARED.theme.baseIconHeight
+        icon = severity.replace("warning", "warn")
+        self._icon.setPixmap(SHARED.theme.getPixmap(f"alert_{icon}", (iSz, iSz), severity))
+        self._text.setText(message)
+        QTimer.singleShot(timeout, self.clearMessage)
+
+    @pyqtSlot()
+    def clearMessage(self) -> None:
+        """Clear the current status bar message and icon."""
+        self._icon.clear()
+        self._text.clear()

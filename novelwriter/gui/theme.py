@@ -39,7 +39,7 @@ from PyQt6.QtGui import (
 from PyQt6.QtWidgets import QApplication, QWidget
 
 from novelwriter import CONFIG
-from novelwriter.common import checkInt, minmax
+from novelwriter.common import checkInt, minmax, safeIsFile
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS, DEF_TREECOL
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwStandardButton, nwTheme
@@ -914,7 +914,7 @@ class GuiIcons:
             logger.error("Decoration with name '%s' does not exist", name)
             return QPixmap()
 
-        if not imgPath.is_file():
+        if not safeIsFile(imgPath):
             logger.error("Asset not found: %s", imgPath)
             return QPixmap()
 
@@ -1031,5 +1031,8 @@ class GuiIcons:
 
 def _listContent(data: list[Path], path: Path, extension: str) -> None:
     """List files of a specific type and extend the list."""
-    if path.is_dir():
-        data.extend(n for n in path.iterdir() if n.is_file() and n.suffix == extension)
+    try:
+        if path.is_dir():
+            data.extend(n for n in path.iterdir() if n.is_file() and n.suffix == extension)
+    except Exception:
+        logException()

@@ -35,7 +35,8 @@ from typing import TYPE_CHECKING
 
 from novelwriter import SHARED, __hexversion__
 from novelwriter.common import (
-    formatTimeStamp, isHandle, isItemClass, isTitleTag, jsonCombine, jsonEncode
+    formatTimeStamp, isHandle, isItemClass, isTitleTag, jsonCombine,
+    jsonEncode, safeExists
 )
 from novelwriter.constants import nwFiles, nwKeyWords, nwStyles
 from novelwriter.core.indexdata import NOTE_TYPES, TT_NONE, IndexHeading, IndexNode, T_NoteTypes
@@ -241,7 +242,7 @@ class Index:
 
         tStart = time()
         self._indexBroken = False
-        if indexFile.exists():
+        if safeExists(indexFile):
             logger.debug("Loading index file")
             try:
                 with open(indexFile, mode="r", encoding="utf-8") as inFile:

@@ -48,6 +48,7 @@ if TYPE_CHECKING:
     from novelwriter.core.status import T_StatusKind
     from novelwriter.gui.theme import GuiTheme
     from novelwriter.guimain import GuiMain
+    from novelwriter.types import T_MsgSeverity
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +79,7 @@ class SharedData(QObject):
     novelStructureChanged = pyqtSignal(str)
     projectItemChanged = pyqtSignal(str, Enum)
     projectStatusChanged = pyqtSignal(bool)
-    projectStatusMessage = pyqtSignal(str)
+    projectStatusMessage = pyqtSignal(str, str)
     rootFolderChanged = pyqtSignal(str, Enum)
     spellLanguageChanged = pyqtSignal(str, str)
     statusLabelsChanged = pyqtSignal(str)
@@ -291,9 +292,9 @@ class SharedData(QObject):
         if gui := self._gui:
             QTimer.singleShot(int(delay*1000), gui.mainProgress.reset)
 
-    def newStatusMessage(self, message: str) -> None:
+    def newStatusMessage(self, message: str | Exception, severity: T_MsgSeverity = "info") -> None:
         """Request a new status message."""
-        self.projectStatusMessage.emit(message)
+        self.projectStatusMessage.emit(str(message), severity)
 
     def setGlobalProjectState(self, state: bool) -> None:
         """Change the global project status."""

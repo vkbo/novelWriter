@@ -40,7 +40,7 @@ from novelwriter.common import (
     formatFileFilter, formatInt, getFileSize, joinLines, openExternalPath
 )
 from novelwriter.enum import nwStandardButton
-from novelwriter.error import formatException
+from novelwriter.error import formatException, logException
 from novelwriter.extensions.modified import NIconToolButton, NNonBlockingDialog
 from novelwriter.types import QtHexArgb, QtMoveEnd, QtRoleDestruct
 
@@ -152,16 +152,21 @@ class GuiDictionaries(NNonBlockingDialog):
             logger.error("Could not get enchant path")
             return False
 
-        if path.is_dir():
-            self.inPath.setText(str(path))
-            hunspell = path / "hunspell"
-            if hunspell.is_dir():
-                self._currDicts = set(
-                    i.stem for i in hunspell.iterdir() if i.is_file() and i.suffix == ".aff"
-                )
-            self._appendLog(self.tr(
-                "Additional dictionaries found: {0}"
-            ).format(len(self._currDicts)))
+        try:
+            if path.is_dir():
+                self.inPath.setText(str(path))
+                hunspell = path / "hunspell"
+                if hunspell.is_dir():
+                    self._currDicts = set(
+                        i.stem for i in hunspell.iterdir() if i.is_file() and i.suffix == ".aff"
+                    )
+                self._appendLog(self.tr(
+                    "Additional dictionaries found: {0}"
+                ).format(len(self._currDicts)))
+        except Exception as exc:
+            SHARED.newStatusMessage(exc, "error")
+            logger.error("Failed to load additional dictionaries")
+            logException()
 
         QApplication.processEvents()
         self.adjustSize()
@@ -200,18 +205,18 @@ class GuiDictionaries(NNonBlockingDialog):
         procErr = self.tr("Could not process dictionary file")
         if self._installPath:
             temp = self.huInput.text()
-            if temp and (path := Path(temp)).is_file():
-                try:
+            try:
+                if temp and (path := Path(temp)).is_file():
                     hunspell = self._installPath / "hunspell"
                     hunspell.mkdir(exist_ok=True)
                     nAff, nDic = self._extractDicts(path, hunspell)
                     if nAff == 0 or nDic == 0:
                         self._appendLog(procErr, err=True)
-                except Exception as exc:
+                else:
                     self._appendLog(procErr, err=True)
-                    self._appendLog(formatException(exc), err=True)
-            else:
+            except Exception as exc:
                 self._appendLog(procErr, err=True)
+                self._appendLog(formatException(exc), err=True)
 
     @pyqtSlot()
     def _doOpenInstallLocation(self) -> None:

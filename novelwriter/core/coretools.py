@@ -38,7 +38,7 @@ from zipfile import ZipFile, is_zipfile
 from PyQt6.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import isHandle, minmax, simplified
+from novelwriter.common import isHandle, minmax, safeExists, safeIsFile, simplified
 from novelwriter.constants import nwConst, nwFiles, nwItemClass, nwStats
 from novelwriter.core.project import NWProject
 from novelwriter.core.storage import NWStorageCreate
@@ -520,13 +520,15 @@ class ProjectBuilder:
         update new settings.
         """
         source = data.get("template")
-        if not (isinstance(source, Path) and source.is_file()
-                and (source.name == nwFiles.PROJ_FILE or is_zipfile(source))):
+        if not (
+            isinstance(source, Path) and safeIsFile(source)
+            and (source.name == nwFiles.PROJ_FILE or is_zipfile(source))
+        ):
             logger.error("Could not access source project: %s", source)
             return False
 
         logger.info("Copying project: %s", source)
-        if path.exists():
+        if safeExists(path):
             SHARED.error(self.tr(
                 "The target folder already exists. "
                 "Please choose another folder."
@@ -566,14 +568,14 @@ class ProjectBuilder:
         """Make a copy of the sample project by extracting the
         sample.zip file to the new path.
         """
-        if path.exists():
+        if safeExists(path):
             SHARED.error(self.tr(
                 "The target folder already exists. "
                 "Please choose another folder."
             ))
             return False
 
-        if (sample := CONFIG.assetPath("sample.zip")).is_file():
+        if safeIsFile(sample := CONFIG.assetPath("sample.zip")):
             try:
                 shutil.unpack_archive(sample, path)
                 self._resetProject(path, data)

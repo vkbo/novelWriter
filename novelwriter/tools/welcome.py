@@ -43,7 +43,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatInt, makeFileNameSafe, qtAddAction
+from novelwriter.common import formatInt, makeFileNameSafe, qtAddAction, safeIsFile
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.enum import nwItemClass, nwStandardButton
@@ -341,7 +341,7 @@ class _OpenProjectPage(QWidget):
         self.selectedPath.setText(text)
         self.selectedPath.setToolTip(text)
         self.selectedPath.setCursorPosition(0)
-        self.aMissing.setVisible(value != "" and not (Path(value) / nwFiles.PROJ_FILE).is_file())
+        self.aMissing.setVisible(value != "" and not safeIsFile(Path(value) / nwFiles.PROJ_FILE))
 
     @pyqtSlot(QModelIndex)
     def _projectDoubleClicked(self, index: QModelIndex) -> None:

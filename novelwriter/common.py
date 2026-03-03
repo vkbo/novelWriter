@@ -46,7 +46,7 @@ from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Generator
 
 logger = logging.getLogger(__name__)
 
@@ -462,6 +462,57 @@ def numberToRoman(value: int, toLower: bool = False) -> str:
             break
 
     return roman.lower() if toLower else roman
+
+
+##
+#  Safe I/O Wrappers
+##
+
+def safeIterDir(path: Path, *, alert: bool = False) -> Generator[Path, None, None]:
+    """Call Path.iterdir() with exception handling."""
+    try:
+        yield from path.iterdir()
+    except Exception as exc:
+        logException()
+        if alert:
+            from novelwriter import SHARED
+            SHARED.newStatusMessage(exc, "warning")
+
+
+def safeExists(path: Path, *, alert: bool = False) -> bool:
+    """Call Path.exists() with exception handling."""
+    try:
+        return path.exists()
+    except Exception as exc:
+        logException()
+        if alert:
+            from novelwriter import SHARED
+            SHARED.newStatusMessage(exc, "warning")
+        return False
+
+
+def safeIsFile(path: Path, *, alert: bool = False) -> bool:
+    """Call Path.is_file() with exception handling."""
+    try:
+        return path.is_file()
+    except Exception as exc:
+        logException()
+        if alert:
+            from novelwriter import SHARED
+            SHARED.newStatusMessage(exc, "warning")
+        return False
+
+
+def safeIsDir(path: Path, *, alert: bool = False) -> bool:
+    """Call Path.is_dir() with exception handling."""
+    try:
+        return path.is_dir()
+    except Exception as exc:
+        logException()
+        if alert:
+            from novelwriter import SHARED
+            SHARED.newStatusMessage(exc, "warning")
+        return False
 
 
 ##

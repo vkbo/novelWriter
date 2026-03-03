@@ -33,7 +33,7 @@ from typing import TYPE_CHECKING
 from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile
 
 from novelwriter import CONFIG
-from novelwriter.common import isHandle, minmax
+from novelwriter.common import isHandle, minmax, safeExists, safeIsDir, safeIsFile, safeIterDir
 from novelwriter.constants import nwFiles
 from novelwriter.core.document import NWDocument
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
@@ -112,8 +112,7 @@ class NWStorage:
         already exist, otherwise this property is None.
         """
         if isinstance(self._runtimePath, Path):
-            contentPath = self._runtimePath / "content"
-            if contentPath.is_dir():
+            if safeIsDir(contentPath := self._runtimePath / "content", alert=True):
                 return contentPath
         logger.error("Content path cannot be resolved")
         return None
@@ -141,7 +140,7 @@ class NWStorage:
     def createNewProject(self, path: str | Path) -> NWStorageCreate:
         """Create a new project at the given location."""
         inPath = Path(path).resolve()
-        if inPath.is_dir() and len(list(inPath.iterdir())) > 0:
+        if safeIsDir(inPath) and len(list(safeIterDir(inPath))) > 0:
             logger.error("Folder is not empty: %s", inPath)
             return NWStorageCreate.NOT_EMPTY
 
@@ -177,9 +176,9 @@ class NWStorage:
         # Check what we're opening. Only two options are allowed:
         # 1. A folder with an nwProject.nwx file in it (not home)
         # 2. A full path to an nwProject.nwx file
-        if inPath.is_dir() and inPath != Path.home().resolve():
+        if safeIsDir(inPath, alert=True) and inPath != Path.home().resolve():
             nwxFile = inPath / nwFiles.PROJ_FILE
-        elif inPath.is_file():
+        elif safeIsFile(inPath, alert=True):
             if inPath.name == nwFiles.PROJ_FILE:
                 nwxFile = inPath
             else:
@@ -189,7 +188,7 @@ class NWStorage:
             logger.error("Not found: %s", inPath)
             return NWStorageOpen.NOT_FOUND
 
-        if not nwxFile.exists():
+        if not safeExists(nwxFile, alert=True):
             # The .nwx file must exist to continue
             logger.error("Not found: %s", nwxFile)
             return NWStorageOpen.NOT_FOUND
@@ -229,11 +228,16 @@ class NWStorage:
             return NWStorageOpen.FAILED
 
         # Check for legacy data folders
-        legacy = _LegacyStorage(self._project)
-        legacy.deprecatedFiles(basePath)
-        for child in basePath.iterdir():
-            if child.is_dir() and child.name.startswith("data_"):
-                legacy.legacyDataFolder(basePath, child)
+        try:
+            legacy = _LegacyStorage(self._project)
+            legacy.deprecatedFiles(basePath)
+            for child in basePath.iterdir():
+                if child.is_dir() and child.name.startswith("data_"):
+                    legacy.legacyDataFolder(basePath, child)
+        except Exception as exc:
+            logger.error("Failed to scan project folder content", exc_info=exc)
+            self.clear()
+            return NWStorageOpen.FAILED
 
         self._ready = True
 
@@ -298,7 +302,7 @@ class NWStorage:
         """
         contentPath = self.contentPath
         return [
-            item.stem for item in contentPath.iterdir()
+            item.stem for item in safeIterDir(contentPath)
             if item.suffix == ".nwd" and isHandle(item.stem)
         ] if contentPath else []
 
@@ -312,24 +316,24 @@ class NWStorage:
             logger.error("No path set")
             return False
 
-        baseMeta = basePath / "meta"
-        baseCont = basePath / "content"
-        files = [
-            (basePath / nwFiles.PROJ_FILE,   nwFiles.PROJ_FILE),
-            (baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"),
-            (baseMeta / nwFiles.INDEX_FILE,  f"meta/{nwFiles.INDEX_FILE}"),
-            (baseMeta / nwFiles.OPTS_FILE,   f"meta/{nwFiles.OPTS_FILE}"),
-            (baseMeta / nwFiles.DICT_FILE,   f"meta/{nwFiles.DICT_FILE}"),
-            (baseMeta / nwFiles.SESS_FILE,   f"meta/{nwFiles.SESS_FILE}"),
-        ]
-        for contItem in baseCont.iterdir():
-            name = contItem.name
-            if contItem.is_file() and len(name) == 17 and name.endswith(".nwd"):
-                files.append((contItem, f"content/{name}"))
-
-        comp = ZIP_STORED if compression is None else ZIP_DEFLATED
-        level = minmax(compression, 0, 9) if isinstance(compression, int) else None
         try:
+            baseMeta = basePath / "meta"
+            baseCont = basePath / "content"
+            files = [
+                (basePath / nwFiles.PROJ_FILE,   nwFiles.PROJ_FILE),
+                (baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"),
+                (baseMeta / nwFiles.INDEX_FILE,  f"meta/{nwFiles.INDEX_FILE}"),
+                (baseMeta / nwFiles.OPTS_FILE,   f"meta/{nwFiles.OPTS_FILE}"),
+                (baseMeta / nwFiles.DICT_FILE,   f"meta/{nwFiles.DICT_FILE}"),
+                (baseMeta / nwFiles.SESS_FILE,   f"meta/{nwFiles.SESS_FILE}"),
+            ]
+            for contItem in baseCont.iterdir():
+                name = contItem.name
+                if contItem.is_file() and len(name) == 17 and name.endswith(".nwd"):
+                    files.append((contItem, f"content/{name}"))
+
+            comp = ZIP_STORED if compression is None else ZIP_DEFLATED
+            level = minmax(compression, 0, 9) if isinstance(compression, int) else None
             with ZipFile(target, mode="w", compression=comp, compresslevel=level) as zipObj:
                 logger.info("Creating archive: %s", target)
                 for srcPath, zipPath in files:
@@ -351,7 +355,7 @@ class NWStorage:
         """Read the project lock file."""
         self._lockedBy = None
         path = self._lockFilePath
-        if isinstance(path, Path) and path.exists():
+        if isinstance(path, Path) and safeExists(path):
             try:
                 self._lockedBy = path.read_text(encoding="utf-8").strip().split(";")
             except Exception:
@@ -380,7 +384,7 @@ class NWStorage:
         """Remove the lock file, if it exists."""
         if self._lockFilePath is None:
             return False
-        if self._lockFilePath.exists():
+        if safeExists(self._lockFilePath):
             try:
                 self._lockFilePath.unlink()
             except Exception:

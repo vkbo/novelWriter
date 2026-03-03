@@ -119,15 +119,14 @@ class NWSessionLog:
     def iterRecords(self) -> Iterable[dict]:
         """Iterate through all records in the log."""
         sessFile = self._project.storage.getMetaFile(nwFiles.SESS_FILE)
-        if isinstance(sessFile, Path) and sessFile.is_file():
-            try:
+        try:
+            if isinstance(sessFile, Path) and sessFile.is_file():
                 with open(sessFile, mode="r", encoding="utf-8") as fObj:
                     for line in fObj:
                         yield json.loads(line)
-            except Exception:
-                logger.error("Failed to process session stats file")
-                logException()
-        return
+        except Exception:
+            logger.error("Failed to process session stats file")
+            logException()
 
     def createInitial(self, total: int) -> str:
         """Low level function to create the initial log file record."""
