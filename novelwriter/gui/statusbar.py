@@ -44,7 +44,6 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-
 class GuiMainStatus(QStatusBar):
     """GUI: Main Window Status Bar."""
 

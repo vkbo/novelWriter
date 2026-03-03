@@ -1393,7 +1393,6 @@ def testFmtToken_LineForMargin(mockGUI):
     ]
 
 
-
 @pytest.mark.core
 def testFmtToken_ShortcodeValue(mockGUI):
     """Test processing of shortcodes with values."""
@@ -1418,6 +1417,7 @@ def testFmtToken_ShortcodeValue(mockGUI):
             (13, TextFmt.FIELD, f"{TMH}:abcd"),
         ], BlockFmt.NONE
     )]
+
 
 @pytest.mark.core
 def testFmtToken_Dialogue(mockGUI):

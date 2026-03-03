@@ -478,6 +478,7 @@ def safeIterDir(path: Path, *, alert: bool = False) -> Generator[Path, None, Non
             from novelwriter import SHARED
             SHARED.newStatusMessage(exc, "warning")
 
+
 def safeExists(path: Path, *, alert: bool = False) -> bool:
     """Call Path.exists() with exception handling."""
     try:
@@ -488,6 +489,7 @@ def safeExists(path: Path, *, alert: bool = False) -> bool:
             from novelwriter import SHARED
             SHARED.newStatusMessage(exc, "warning")
         return False
+
 
 def safeIsFile(path: Path, *, alert: bool = False) -> bool:
     """Call Path.is_file() with exception handling."""
