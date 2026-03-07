@@ -86,7 +86,13 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.horizontalScrollBarPolicy() == QtScrollAsNeeded
     assert docEditor._autoReplace._padChar == nwUnicode.U_NBSP
     assert docEditor.docHeader.itemTitle.text() == (
-        "Novel  \u203a  New Folder  \u203a  New Scene"
+        "<font style='color: #ff303030'>"
+        "<a href='#ff3030300000008' style='color: #ff303030; text-decoration: none'>Novel</a>"
+        "  \u203a  "
+        "<a href='#ff303030000000d' style='color: #ff303030; text-decoration: none'>New Folder</a>"
+        "  \u203a  "
+        "<a href='#ff303030000000f' style='color: #ff303030; text-decoration: none'>New Scene</a>"
+        "</font>"
     )
     assert docEditor.docHeader._docOutline == {0: "### New Scene"}
 
@@ -110,7 +116,11 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.verticalScrollBarPolicy() == QtScrollAlwaysOff
     assert docEditor.horizontalScrollBarPolicy() == QtScrollAlwaysOff
     assert docEditor._autoReplace._padChar == nwUnicode.U_THNBSP
-    assert docEditor.docHeader.itemTitle.text() == "New Scene"
+    assert docEditor.docHeader.itemTitle.text() == (
+        "<font style='color: #ff303030'>"
+        "<a href='#ff303030000000f' style='color: #ff303030; text-decoration: none'>New Scene</a>"
+        "</font>"
+    )
 
     # Header
     # ======
@@ -122,7 +132,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Select item from header
     with qtbot.waitSignal(docEditor.requestProjectItemSelected, timeout=1000) as signal:
-        qtbot.mouseClick(docEditor.docHeader, QtMouseLeft)
+        docEditor.docHeader._processLabelLink(f"#{docEditor.docHeader._docHandle}")
         assert signal.args == [docEditor.docHeader._docHandle, True]
 
     # Close from header
@@ -133,11 +143,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docHeader.searchButton.isVisible() is False
     assert docEditor.docHeader.closeButton.isVisible() is False
     assert docEditor.docHeader.minmaxButton.isVisible() is False
-
-    # Select item from header
-    with qtbot.waitSignal(docEditor.requestProjectItemSelected, timeout=1000) as signal:
-        qtbot.mouseClick(docEditor.docHeader, QtMouseLeft)
-        assert signal.args == ["", True]
+    assert docEditor.docHeader.itemTitle.text() == ""
 
     # qtbot.stop()
 

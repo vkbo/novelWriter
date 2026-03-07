@@ -380,10 +380,16 @@ def testCoreTree_ItemMethods(monkeypatch, mockGUI, mockItems):
     assert tree.checkType(C.hInvalid, nwItemType.FILE) is False
 
     # Item Path
-    assert tree.itemPath(C.hSceneDoc, asName=True) == ["New Scene", "New Folder", "Novel"]
+    assert tree.itemPath(C.hSceneDoc, withName=True) == [
+        ("000000000000f", "New Scene"),
+        ("000000000000d", "New Folder"),
+        ("0000000000008", "Novel"),
+    ]
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.tree.MAX_DEPTH", 1)
-        assert tree.itemPath(C.hSceneDoc, asName=True) == ["New Scene"]
+        assert tree.itemPath(C.hSceneDoc, withName=True) == [
+            ("000000000000f", "New Scene"),
+        ]
 
     # Sub Tree
     assert tree.subTree(C.hInvalid) == []
