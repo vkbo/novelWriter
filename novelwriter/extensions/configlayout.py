@@ -280,6 +280,11 @@ class NColorLabel(QLabel):
         self.setWordWrap(wrap)
         self.setColorState(nwState.NORMAL)
 
+    def clear(self) -> None:
+        """Overload clear to also clear path text."""
+        self._crumbs = ""
+        super().clear()
+
     def setPathText(self, crumbs: list[tuple[str, str]]) -> None:
         """Set a clickable crumb-trail of links."""
         self._crumbs = ("<font style='color: #000000'>{inner}</font>".format(

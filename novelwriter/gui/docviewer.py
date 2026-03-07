@@ -691,7 +691,7 @@ class GuiDocViewHeader(QWidget):
         self._docHandle = None
         self._docOutline = {}
 
-        self.itemTitle.setText("")
+        self.itemTitle.clear()
         self.outlineMenu.clear()
         self.outlineButton.setVisible(False)
         self.backButton.setVisible(False)

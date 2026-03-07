@@ -436,9 +436,9 @@ class NWTree:
 
     def itemPath(self, tHandle: str, withName: bool = False) -> list:
         """Iterate upwards in the tree until we find the item with
-        parent None, the root item, and return the list of handles, or
-        alternatively item names. We do this with a for loop with a
-        maximum depth to make infinite loops impossible.
+        parent None, the root item, and return the list of handles,
+        alternatively including item names. We do this with a for loop
+        with a maximum depth to make infinite loops impossible.
         """
         path = []
         if node := self._nodes.get(tHandle):

@@ -3321,7 +3321,7 @@ class GuiDocEditHeader(QWidget):
         self._docHandle = None
         self._docOutline = {}
 
-        self.itemTitle.setText("")
+        self.itemTitle.clear()
         self.outlineMenu.clear()
         self.tbButton.setVisible(False)
         self.outlineButton.setVisible(False)
