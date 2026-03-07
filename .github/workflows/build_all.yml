@@ -19,6 +19,7 @@ jobs:
     needs: buildAssets
     uses: ./.github/workflows/part_macos_amd64.yml
     secrets: inherit
+    if: false
     permissions:
       contents: read
 
@@ -26,6 +27,7 @@ jobs:
     needs: buildAssets
     uses: ./.github/workflows/part_macos_m1.yml
     secrets: inherit
+    if: false
     permissions:
       contents: read
 
