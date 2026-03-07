@@ -67,7 +67,7 @@ from novelwriter.enum import (
     nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
     nwItemType, nwState, nwVimMode
 )
-from novelwriter.extensions.configlayout import NColorLabel
+from novelwriter.extensions.configlayout import NPathColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
 from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
@@ -3246,7 +3246,7 @@ class GuiDocEditHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = NColorLabel("", self)
+        self.itemTitle = NPathColorLabel("", self)
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
@@ -3321,7 +3321,7 @@ class GuiDocEditHeader(QWidget):
         self._docHandle = None
         self._docOutline = {}
 
-        self.itemTitle.clear()
+        self.itemTitle.setText("")
         self.outlineMenu.clear()
         self.tbButton.setVisible(False)
         self.outlineButton.setVisible(False)
@@ -3396,9 +3396,9 @@ class GuiDocEditHeader(QWidget):
         """
         self._docHandle = tHandle
         if CONFIG.showFullPath:
-            self.itemTitle.setPathText(SHARED.project.tree.itemPath(tHandle, withName=True))
+            self.itemTitle.setText(SHARED.project.tree.itemPath(tHandle, withName=True))
         elif item := SHARED.project.tree[tHandle]:
-            self.itemTitle.setPathText([(item.itemHandle, item.itemName)])
+            self.itemTitle.setText([(item.itemHandle, item.itemName)])
 
         self.tbButton.setVisible(True)
         self.searchButton.setVisible(True)

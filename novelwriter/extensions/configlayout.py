@@ -36,7 +36,7 @@ from PyQt6.QtWidgets import (
 
 from novelwriter.constants import nwUnicode
 from novelwriter.enum import nwState
-from novelwriter.types import QtBlack, QtHexArgb, QtScrollAsNeeded
+from novelwriter.types import QtHexArgb, QtScrollAsNeeded
 
 DEFAULT_SCALE = 0.9
 
@@ -280,21 +280,6 @@ class NColorLabel(QLabel):
         self.setWordWrap(wrap)
         self.setColorState(nwState.NORMAL)
 
-    def clear(self) -> None:
-        """Overload clear to also clear path text."""
-        self._crumbs = ""
-        super().clear()
-
-    def setPathText(self, crumbs: list[tuple[str, str]]) -> None:
-        """Set a clickable crumb-trail of links."""
-        self._crumbs = ("<font style='color: #000000'>{inner}</font>".format(
-            inner=f"  {nwUnicode.U_RSAQUO}  ".join(reversed([
-                f"<a href='#{h}' style='color: #000000; text-decoration: none'>{n}</a>"
-                for h, n in crumbs
-            ]))
-        ))
-        self._refeshTextColor()
-
     def setTextColors(
         self, *, color: QColor | None = None,
         faded: QColor | None = None, error: QColor | None = None,
@@ -313,20 +298,41 @@ class NColorLabel(QLabel):
 
     def _refeshTextColor(self) -> None:
         """Refresh the colour of the text on the label."""
-        color = QtBlack
+        palette = self.palette()
         match self._state:
             case nwState.NORMAL:
-                color = self._color
+                palette.setColor(QPalette.ColorRole.Text, self._color)
             case nwState.INACTIVE:
-                color = self._faded
+                palette.setColor(QPalette.ColorRole.Text, self._faded)
             case nwState.ERROR:
-                color = self._error
-
-        palette = self.palette()
-        palette.setColor(QPalette.ColorRole.Text, color)
+                palette.setColor(QPalette.ColorRole.Text, self._error)
         self.setPalette(palette)
-        if self._crumbs:
-            self.setText(self._crumbs.replace("#000000", color.name(QtHexArgb)))
+
+
+class NPathColorLabel(NColorLabel):
+    """Extension: A Coloured Label for Paths."""
+
+    _text = ""
+
+    def setText(self, value: str | list[tuple[str, str]]) -> None:
+        """Set the text or a clickable crumb-trail of links."""
+        if isinstance(value, str):
+            self._text = ""
+            super().setText(value)
+        else:
+            self._text = ("<font style='color: #000000'>{inner}</font>".format(
+                inner=f"  {nwUnicode.U_RSAQUO}  ".join(reversed([
+                    f"<a href='#{h}' style='color: #000000; text-decoration: none'>{n}</a>"
+                    for h, n in value
+                ]))
+            ))
+            self._refeshTextColor()
+
+    def _refeshTextColor(self) -> None:
+        """Refresh the colour of the text on the label."""
+        super()._refeshTextColor()
+        color = self.palette().text().color().name(QtHexArgb)
+        super().setText(self._text.replace("#000000", color))
 
 
 class NWrappedWidgetBox(QHBoxLayout):

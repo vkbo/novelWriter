@@ -45,7 +45,7 @@ from novelwriter.common import decodeMimeHandles, qtAddAction, qtLambda
 from novelwriter.constants import nwConst, nwStyles, nwUnicode
 from novelwriter.enum import nwChange, nwComment, nwDocAction, nwDocMode, nwItemType, nwState
 from novelwriter.error import logException
-from novelwriter.extensions.configlayout import NColorLabel
+from novelwriter.extensions.configlayout import NPathColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.formats.shared import TextDocumentTheme
@@ -614,7 +614,7 @@ class GuiDocViewHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = NColorLabel("", self, faded=SHARED.theme.fadedText)
+        self.itemTitle = NPathColorLabel("", self, faded=SHARED.theme.fadedText)
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
@@ -691,7 +691,7 @@ class GuiDocViewHeader(QWidget):
         self._docHandle = None
         self._docOutline = {}
 
-        self.itemTitle.clear()
+        self.itemTitle.setText("")
         self.outlineMenu.clear()
         self.outlineButton.setVisible(False)
         self.backButton.setVisible(False)
@@ -770,9 +770,9 @@ class GuiDocViewHeader(QWidget):
         """
         self._docHandle = tHandle
         if CONFIG.showFullPath:
-            self.itemTitle.setPathText(SHARED.project.tree.itemPath(tHandle, withName=True))
+            self.itemTitle.setText(SHARED.project.tree.itemPath(tHandle, withName=True))
         elif item := SHARED.project.tree[tHandle]:
-            self.itemTitle.setPathText([(item.itemHandle, item.itemName)])
+            self.itemTitle.setText([(item.itemHandle, item.itemName)])
 
         self.backButton.setVisible(True)
         self.forwardButton.setVisible(True)
