@@ -29,7 +29,7 @@ else:
     with open(initFile, encoding="utf-8") as inFile:
         for aLine in inFile:
             if aLine.startswith("__version__"):
-                release = aLine.split('"')[1].strip()
+                release = "20" + aLine.split('"')[1].strip()
                 break
         else:
             release = "unknown"

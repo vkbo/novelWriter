@@ -26,7 +26,7 @@ import shutil
 import subprocess
 import tomllib
 
-from utils.common import ROOT_DIR, systemCall
+from utils.common import ROOT_DIR, extractVersion, formatVersion, systemCall
 
 
 def updateDocsTranslationSources(args: argparse.Namespace) -> None:
@@ -87,11 +87,12 @@ def buildHtmlDocs(args: argparse.Namespace | None = None) -> None:
     for code in build:
         outDir = bldRoot / code
         env = os.environ.copy()
+        env["SPHINX_I18N_VERSION"] = formatVersion(extractVersion()[0])
         cmd = "make clean html"
         if code != "en":
             if code not in locConf:
                 print(f"ERROR: No config for language code '{code}' in config.toml")
-            env["SPHINX_I18N_VERSION"] = locConf[code].get("version", "")
+            env["SPHINX_I18N_VERSION"] = formatVersion(locConf[code].get("version", ""))
             env["SPHINX_I18N_AUTHORS"] = ", ".join(locConf[code].get("authors", []))
             cmd += f" -e SPHINXOPTS=\"-D language='{code}'\""
 
@@ -128,12 +129,13 @@ def buildPdfDocAssets(args: argparse.Namespace | None = None) -> None:
 
     for code in build:
         env = os.environ.copy()
+        env["SPHINX_I18N_VERSION"] = formatVersion(extractVersion()[0])
         cmd = "make clean latexpdf"
         name = "manual.pdf"
         if code != "en":
             if code not in locConf:
                 print(f"ERROR: No config for language code '{code}' in config.toml")
-            env["SPHINX_I18N_VERSION"] = locConf[code].get("version", "")
+            env["SPHINX_I18N_VERSION"] = formatVersion(locConf[code].get("version", ""))
             env["SPHINX_I18N_AUTHORS"] = ", ".join(locConf[code].get("authors", []))
             cmd += f" -e SPHINXOPTS=\"-D language='{code}'\""
             name = f"manual_{code}.pdf"
