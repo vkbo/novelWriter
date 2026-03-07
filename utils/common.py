@@ -88,6 +88,21 @@ def stripVersion(version: str) -> str:
         return version
 
 
+def formatVersion(value: str) -> str:
+    """Format a version number into a more human readable form."""
+    major, _, version = value.partition(".")
+    prefix = "20" if int(major) >= 20 else ""
+    if "." in version:
+        version = version.replace(".", " Patch ")
+    elif "a" in version:
+        version = version.replace("a", " Alpha ")
+    elif "b" in version:
+        version = version.replace("b", " Beta ")
+    elif "rc" in version:
+        version = version.replace("rc", " RC ")
+    return f"{prefix}{major}.{version}" if major and version else ""
+
+
 def copySourceCode(dst: Path) -> None:
     """Copy the novelwriter source tree to path."""
     src = ROOT_DIR / "novelwriter"
