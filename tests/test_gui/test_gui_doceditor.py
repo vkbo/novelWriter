@@ -941,6 +941,34 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
 
 @pytest.mark.gui
+def testGuiEditor_Navigation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
+    """Test editor navigation."""
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor: GuiDocEditor = nwGUI.docEditor
+
+    text = "### A Scene\n\n{0}".format("\n\n".join(ipsumText[:3]))
+    docEditor.replaceText(text)
+    assert docEditor.textCursor().blockNumber() == 0
+
+    steps = [
+        (0, 0),  # No change
+        (1, 2),  # First paragraph
+        (1, 4),  # Second paragraph
+        (1, 6),  # Third paragraph
+        (1, 6),  # Third paragraph, end of document
+        (-1, 4),  # Second paragraph
+        (-1, 2),  # First paragraph
+        (-1, 0),  # Title
+        (-1, 0),  # First paragraph, start of document
+    ]
+
+    for step, pos in steps:
+        docEditor._skipToParagraph(step)
+        assert docEditor.textCursor().blockNumber() == pos
+
+
+@pytest.mark.gui
 def testGuiEditor_ToolBar(qtbot, nwGUI, projPath, mockRnd):
     """Test the document actions. This is not an extensive test of the
     action features, just that the actions are actually called. The
