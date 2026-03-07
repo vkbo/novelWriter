@@ -301,11 +301,11 @@ class NColorLabel(QLabel):
         palette = self.palette()
         match self._state:
             case nwState.NORMAL:
-                palette.setColor(QPalette.ColorRole.Text, self._color)
+                palette.setColor(QPalette.ColorRole.WindowText, self._color)
             case nwState.INACTIVE:
-                palette.setColor(QPalette.ColorRole.Text, self._faded)
+                palette.setColor(QPalette.ColorRole.WindowText, self._faded)
             case nwState.ERROR:
-                palette.setColor(QPalette.ColorRole.Text, self._error)
+                palette.setColor(QPalette.ColorRole.WindowText, self._error)
         self.setPalette(palette)
 
 
