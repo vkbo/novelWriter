@@ -202,12 +202,22 @@ class GuiDocEditor(QPlainTextEdit):
         self._followTag1 = QShortcut(self)
         self._followTag1.setKey("Ctrl+Return")
         self._followTag1.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self._followTag1.activated.connect(self._processTag)
+        self._followTag1.activated.connect(qtLambda(self._processTag))
 
         self._followTag2 = QShortcut(self)
         self._followTag2.setKey("Ctrl+Enter")
         self._followTag2.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self._followTag2.activated.connect(self._processTag)
+        self._followTag2.activated.connect(qtLambda(self._processTag))
+
+        self._prevLine = QShortcut(self)
+        self._prevLine.setKey("Ctrl+Up")
+        self._prevLine.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._prevLine.activated.connect(qtLambda(self._skipToParagraph, -1))
+
+        self._nextLine = QShortcut(self)
+        self._nextLine.setKey("Ctrl+Down")
+        self._nextLine.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._nextLine.activated.connect(qtLambda(self._skipToParagraph, 1))
 
         # Set Up Document Word Counter
         self._timerDoc = QTimer(self)
@@ -655,8 +665,7 @@ class GuiDocEditor(QPlainTextEdit):
     def setCursorLine(self, line: int | None) -> None:
         """Move the cursor to a given line in the document."""
         if isinstance(line, int) and line > 0:
-            block = self._qDocument.findBlockByNumber(line - 1)
-            if block:
+            if block := self._qDocument.findBlockByNumber(line - 1):
                 self.setCursorPosition(block.position())
                 logger.debug("Cursor moved to line %d", line)
 
@@ -2440,6 +2449,17 @@ class GuiDocEditor(QPlainTextEdit):
             self._doReplace = CONFIG.doReplace
         else:
             self._doReplace = False
+
+    def _skipToParagraph(self, step: int) -> None:
+        """Move cursor to next paragraph by step."""
+        cursor = self.textCursor()
+        limit = -1 if step < 0 else self._qDocument.blockCount()
+        for i in range(cursor.blockNumber() + step, limit, step):
+            block = self._qDocument.findBlockByNumber(i)
+            if block.isValid() and block.text().strip():
+                cursor.setPosition(block.position())
+                self.setTextCursor(cursor)
+                break
 
 
 class CommandCompleter(QMenu):
