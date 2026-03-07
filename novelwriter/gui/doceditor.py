@@ -3250,7 +3250,7 @@ class GuiDocEditHeader(QWidget):
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
         self.itemTitle.setAlignment(QtAlignCenterTop)
-        self.itemTitle.setFixedHeight(iPx)
+        self.itemTitle.setFixedHeight(SHARED.theme.fontPixelSize)
 
         # Other Widgets
         self.outlineMenu = QMenu(self)
