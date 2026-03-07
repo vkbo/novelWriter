@@ -52,8 +52,9 @@ from novelwriter.formats.shared import TextDocumentTheme
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
-    QtAlignCenterTop, QtKeepAnchor, QtMoveAnchor, QtScrollAlwaysOff,
-    QtScrollAsNeeded, QtSelectBlock, QtSelectDocument, QtSelectWord
+    QtAlignCenterTop, QtAlignMiddle, QtKeepAnchor, QtMoveAnchor,
+    QtScrollAlwaysOff, QtScrollAsNeeded, QtSelectBlock, QtSelectDocument,
+    QtSelectWord
 )
 
 logger = logging.getLogger(__name__)
@@ -606,8 +607,8 @@ class GuiDocViewHeader(QWidget):
         self._docHandle = None
         self._docOutline: dict[str, tuple[str, int]] = {}
 
-        iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
+        fPx = SHARED.theme.fontPixelSize
 
         # Main Widget Settings
         self.setAutoFillBackground(True)
@@ -618,7 +619,7 @@ class GuiDocViewHeader(QWidget):
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
         self.itemTitle.setAlignment(QtAlignCenterTop)
-        self.itemTitle.setFixedHeight(SHARED.theme.fontPixelSize)
+        self.itemTitle.setFixedHeight(fPx)
         self.itemTitle.linkActivated.connect(self._processLabelLink)
 
         # Other Widgets
@@ -657,15 +658,15 @@ class GuiDocViewHeader(QWidget):
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.outlineButton, 0)
-        self.outerBox.addWidget(self.backButton, 0)
-        self.outerBox.addWidget(self.forwardButton, 0)
+        self.outerBox.addWidget(self.outlineButton, 0, QtAlignMiddle)
+        self.outerBox.addWidget(self.backButton, 0, QtAlignMiddle)
+        self.outerBox.addWidget(self.forwardButton, 0, QtAlignMiddle)
         self.outerBox.addSpacing(4)
-        self.outerBox.addWidget(self.itemTitle, 1)
+        self.outerBox.addWidget(self.itemTitle, 1, QtAlignMiddle)
         self.outerBox.addSpacing(4)
-        self.outerBox.addWidget(self.editButton, 0)
-        self.outerBox.addWidget(self.refreshButton, 0)
-        self.outerBox.addWidget(self.closeButton, 0)
+        self.outerBox.addWidget(self.editButton, 0, QtAlignMiddle)
+        self.outerBox.addWidget(self.refreshButton, 0, QtAlignMiddle)
+        self.outerBox.addWidget(self.closeButton, 0, QtAlignMiddle)
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
@@ -674,7 +675,7 @@ class GuiDocViewHeader(QWidget):
         # This is needed for high DPI systems. See issue #499.
         self.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setContentsMargins(4, 4, 4, 4)
-        self.setMinimumHeight(iPx + 8)
+        self.setMinimumHeight(fPx + 4)
 
         self.updateFont()
         self.updateTheme()
