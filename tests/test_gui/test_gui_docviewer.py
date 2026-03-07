@@ -24,11 +24,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt6.QtCore import QEvent, QMimeData, QPointF, Qt, QUrl
-from PyQt6.QtGui import (
-    QAction, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent,
-    QMouseEvent
-)
+from PyQt6.QtCore import QMimeData, QPointF, Qt, QUrl
+from PyQt6.QtGui import QAction, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent
 from PyQt6.QtWidgets import QApplication, QMenu, QTextBrowser
 
 from novelwriter import CONFIG, SHARED
@@ -66,11 +63,8 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwGUI.projView.projTree.clearSelection()
     assert nwGUI.projView.projTree.getSelectedHandle() is None
 
-    # Re-select via header click
-    button = QtMouseLeft
-    modifier = QtModNone
-    event = QMouseEvent(QEvent.Type.MouseButtonPress, QPointF(), button, button, modifier)
-    docViewer.docHeader.mousePressEvent(event)
+    # Re-select via header link
+    docViewer.docHeader._processLabelLink("#88243afbe5ed8")
     assert nwGUI.projView.projTree.getSelectedHandle() == "88243afbe5ed8"
 
     # Reload the text
@@ -212,12 +206,22 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwItem.setName("Test Title")  # type: ignore
     assert nwItem.itemName == "Test Title"  # type: ignore
     docViewer.onProjectItemChanged("4c4f28287af27", nwChange.UPDATE)
-    assert docViewer.docHeader.itemTitle.text() == "Characters  \u203a  Test Title"
+    assert docViewer.docHeader.itemTitle.text() == (
+        "<font style='color: #ff303030'>"
+        "<a href='#67a8707f2f249' style='color: #ff303030; text-decoration: none'>Characters</a>"
+        "  \u203a  "
+        "<a href='#4c4f28287af27' style='color: #ff303030; text-decoration: none'>Test Title</a>"
+        "</font>"
+    )
 
     # Title without full path
     CONFIG.showFullPath = False
     docViewer.onProjectItemChanged("4c4f28287af27", nwChange.UPDATE)
-    assert docViewer.docHeader.itemTitle.text() == "Test Title"
+    assert docViewer.docHeader.itemTitle.text() == (
+        "<font style='color: #ff303030'>"
+        "<a href='#4c4f28287af27' style='color: #ff303030; text-decoration: none'>Test Title</a>"
+        "</font>"
+    )
     CONFIG.showFullPath = True
 
     # Document footer show/hide synopsis

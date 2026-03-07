@@ -45,14 +45,14 @@ from novelwriter.common import decodeMimeHandles, qtAddAction, qtLambda
 from novelwriter.constants import nwConst, nwStyles, nwUnicode
 from novelwriter.enum import nwChange, nwComment, nwDocAction, nwDocMode, nwItemType, nwState
 from novelwriter.error import logException
-from novelwriter.extensions.configlayout import NColorLabel
+from novelwriter.extensions.configlayout import NPathColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.formats.shared import TextDocumentTheme
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
-    QtAlignCenterTop, QtKeepAnchor, QtMouseLeft, QtMoveAnchor,
+    QtAlignCenterTop, QtAlignMiddle, QtKeepAnchor, QtMoveAnchor,
     QtScrollAlwaysOff, QtScrollAsNeeded, QtSelectBlock, QtSelectDocument,
     QtSelectWord
 )
@@ -607,19 +607,20 @@ class GuiDocViewHeader(QWidget):
         self._docHandle = None
         self._docOutline: dict[str, tuple[str, int]] = {}
 
-        iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
+        fPx = SHARED.theme.fontPixelSize
 
         # Main Widget Settings
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = NColorLabel("", self, faded=SHARED.theme.fadedText)
+        self.itemTitle = NPathColorLabel("", self, faded=SHARED.theme.fadedText)
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
         self.itemTitle.setAlignment(QtAlignCenterTop)
-        self.itemTitle.setFixedHeight(iPx)
+        self.itemTitle.setFixedHeight(fPx)
+        self.itemTitle.linkActivated.connect(self._processLabelLink)
 
         # Other Widgets
         self.outlineMenu = QMenu(self)
@@ -657,15 +658,15 @@ class GuiDocViewHeader(QWidget):
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.outlineButton, 0)
-        self.outerBox.addWidget(self.backButton, 0)
-        self.outerBox.addWidget(self.forwardButton, 0)
+        self.outerBox.addWidget(self.outlineButton, 0, QtAlignMiddle)
+        self.outerBox.addWidget(self.backButton, 0, QtAlignMiddle)
+        self.outerBox.addWidget(self.forwardButton, 0, QtAlignMiddle)
         self.outerBox.addSpacing(4)
-        self.outerBox.addWidget(self.itemTitle, 1)
+        self.outerBox.addWidget(self.itemTitle, 1, QtAlignMiddle)
         self.outerBox.addSpacing(4)
-        self.outerBox.addWidget(self.editButton, 0)
-        self.outerBox.addWidget(self.refreshButton, 0)
-        self.outerBox.addWidget(self.closeButton, 0)
+        self.outerBox.addWidget(self.editButton, 0, QtAlignMiddle)
+        self.outerBox.addWidget(self.refreshButton, 0, QtAlignMiddle)
+        self.outerBox.addWidget(self.closeButton, 0, QtAlignMiddle)
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
@@ -674,7 +675,7 @@ class GuiDocViewHeader(QWidget):
         # This is needed for high DPI systems. See issue #499.
         self.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setContentsMargins(4, 4, 4, 4)
-        self.setMinimumHeight(iPx + 8)
+        self.setMinimumHeight(fPx + 4)
 
         self.updateFont()
         self.updateTheme()
@@ -755,7 +756,8 @@ class GuiDocViewHeader(QWidget):
         palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
         self.itemTitle.setTextColors(
-            color=palette.windowText().color(), faded=SHARED.theme.fadedText
+            color=palette.windowText().color(),
+            faded=SHARED.theme.fadedText,
         )
 
     def changeFocusState(self, state: bool) -> None:
@@ -763,17 +765,14 @@ class GuiDocViewHeader(QWidget):
         self.itemTitle.setColorState(nwState.NORMAL if state else nwState.INACTIVE)
 
     def setHandle(self, tHandle: str) -> None:
-        """Set the document title from the handle, or alternatively,
-        set the whole document path.
+        """Set the document title from the handle, or alternatively, set
+        the whole document path within the project.
         """
         self._docHandle = tHandle
-
         if CONFIG.showFullPath:
-            self.itemTitle.setText(f"  {nwUnicode.U_RSAQUO}  ".join(reversed(
-                [name for name in SHARED.project.tree.itemPath(tHandle, asName=True)]
-            )))
-        else:
-            self.itemTitle.setText(i.itemName if (i := SHARED.project.tree[tHandle]) else "")
+            self.itemTitle.setText(SHARED.project.tree.itemPath(tHandle, withName=True))
+        elif item := SHARED.project.tree[tHandle]:
+            self.itemTitle.setText([(item.itemHandle, item.itemName)])
 
         self.backButton.setVisible(True)
         self.forwardButton.setVisible(True)
@@ -808,16 +807,11 @@ class GuiDocViewHeader(QWidget):
         if tHandle := self._docHandle:
             self.docViewer.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "", True)
 
-    ##
-    #  Events
-    ##
-
-    def mousePressEvent(self, event: QMouseEvent) -> None:
-        """Capture a click on the title and ensure that the item is
-        selected in the project tree.
-        """
-        if event.button() == QtMouseLeft:
-            self.docViewer.requestProjectItemSelected.emit(self._docHandle, True)
+    @pyqtSlot(str)
+    def _processLabelLink(self, link: str) -> None:
+        """Process an activated link in the label."""
+        if link.startswith("#"):
+            self.docViewer.requestProjectItemSelected.emit(link.lstrip("#"), True)
 
 
 class GuiDocViewFooter(QWidget):

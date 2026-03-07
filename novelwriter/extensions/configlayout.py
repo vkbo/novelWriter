@@ -27,14 +27,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
 from __future__ import annotations
 
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QFont, QPalette
 from PyQt6.QtWidgets import (
     QAbstractButton, QFrame, QHBoxLayout, QLabel, QLayout, QScrollArea,
     QVBoxLayout, QWidget
 )
 
+from novelwriter.constants import nwUnicode
 from novelwriter.enum import nwState
-from novelwriter.types import QtScrollAsNeeded
+from novelwriter.types import QtHexArgb, QtScrollAsNeeded
 
 DEFAULT_SCALE = 0.9
 
@@ -266,15 +268,13 @@ class NColorLabel(QLabel):
         self._color = color or default
         self._faded = faded or default
         self._error = error or default
+        self._crumbs = ""
 
         font = self.font()
         font.setPointSizeF(scale*font.pointSizeF())
         font.setWeight(QFont.Weight.Bold if bold else QFont.Weight.Normal)
-        if color:
-            colour = self.palette()
-            colour.setColor(QPalette.ColorRole.WindowText, color)
-            self.setPalette(colour)
 
+        self.setTextFormat(Qt.TextFormat.RichText)
         self.setFont(font)
         self.setIndent(indent)
         self.setWordWrap(wrap)
@@ -282,7 +282,7 @@ class NColorLabel(QLabel):
 
     def setTextColors(
         self, *, color: QColor | None = None,
-        faded: QColor | None = None, error: QColor | None = None
+        faded: QColor | None = None, error: QColor | None = None,
     ) -> None:
         """Set or update the text colours."""
         self._color = color or self._color
@@ -307,6 +307,32 @@ class NColorLabel(QLabel):
             case nwState.ERROR:
                 palette.setColor(QPalette.ColorRole.WindowText, self._error)
         self.setPalette(palette)
+
+
+class NPathColorLabel(NColorLabel):
+    """Extension: A Coloured Label for Paths."""
+
+    _text = ""
+
+    def setText(self, value: str | list[tuple[str, str]]) -> None:
+        """Set the text or a clickable crumb-trail of links."""
+        if isinstance(value, str):
+            self._text = ""
+            super().setText(value)
+        else:
+            self._text = ("<font style='color: #000000'>{inner}</font>".format(
+                inner=f"  {nwUnicode.U_RSAQUO}  ".join(reversed([
+                    f"<a href='#{h}' style='color: #000000; text-decoration: none'>{n}</a>"
+                    for h, n in value
+                ]))
+            ))
+            self._refeshTextColor()
+
+    def _refeshTextColor(self) -> None:
+        """Refresh the colour of the text on the label."""
+        super()._refeshTextColor()
+        color = self.palette().text().color().name(QtHexArgb)
+        super().setText(self._text.replace("#000000", color))
 
 
 class NWrappedWidgetBox(QHBoxLayout):
