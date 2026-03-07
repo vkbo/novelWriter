@@ -30,7 +30,7 @@ jobs:
 
       - name: Sync UV
         run: |
-          uv sync --no-dev --group test --group macos
+          uv sync --no-dev --group test
 
       - name: Build Assets
         run: |
