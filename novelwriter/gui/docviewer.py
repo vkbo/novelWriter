@@ -52,9 +52,8 @@ from novelwriter.formats.shared import TextDocumentTheme
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
-    QtAlignCenterTop, QtKeepAnchor, QtMouseLeft, QtMoveAnchor,
-    QtScrollAlwaysOff, QtScrollAsNeeded, QtSelectBlock, QtSelectDocument,
-    QtSelectWord
+    QtAlignCenterTop, QtKeepAnchor, QtMoveAnchor, QtScrollAlwaysOff,
+    QtScrollAsNeeded, QtSelectBlock, QtSelectDocument, QtSelectWord
 )
 
 logger = logging.getLogger(__name__)
@@ -620,6 +619,7 @@ class GuiDocViewHeader(QWidget):
         self.itemTitle.setAutoFillBackground(True)
         self.itemTitle.setAlignment(QtAlignCenterTop)
         self.itemTitle.setFixedHeight(SHARED.theme.fontPixelSize)
+        self.itemTitle.linkActivated.connect(self._processLabelLink)
 
         # Other Widgets
         self.outlineMenu = QMenu(self)
@@ -755,7 +755,8 @@ class GuiDocViewHeader(QWidget):
         palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
         self.itemTitle.setTextColors(
-            color=palette.windowText().color(), faded=SHARED.theme.fadedText
+            color=palette.windowText().color(),
+            faded=SHARED.theme.fadedText,
         )
 
     def changeFocusState(self, state: bool) -> None:
@@ -763,17 +764,14 @@ class GuiDocViewHeader(QWidget):
         self.itemTitle.setColorState(nwState.NORMAL if state else nwState.INACTIVE)
 
     def setHandle(self, tHandle: str) -> None:
-        """Set the document title from the handle, or alternatively,
-        set the whole document path.
+        """Set the document title from the handle, or alternatively, set
+        the whole document path within the project.
         """
         self._docHandle = tHandle
-
         if CONFIG.showFullPath:
-            self.itemTitle.setText(f"  {nwUnicode.U_RSAQUO}  ".join(reversed(
-                [name for name in SHARED.project.tree.itemPath(tHandle, asName=True)]
-            )))
-        else:
-            self.itemTitle.setText(i.itemName if (i := SHARED.project.tree[tHandle]) else "")
+            self.itemTitle.setPathText(SHARED.project.tree.itemPath(tHandle, withName=True))
+        elif item := SHARED.project.tree[tHandle]:
+            self.itemTitle.setPathText([(item.itemHandle, item.itemName)])
 
         self.backButton.setVisible(True)
         self.forwardButton.setVisible(True)
@@ -808,16 +806,11 @@ class GuiDocViewHeader(QWidget):
         if tHandle := self._docHandle:
             self.docViewer.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "", True)
 
-    ##
-    #  Events
-    ##
-
-    def mousePressEvent(self, event: QMouseEvent) -> None:
-        """Capture a click on the title and ensure that the item is
-        selected in the project tree.
-        """
-        if event.button() == QtMouseLeft:
-            self.docViewer.requestProjectItemSelected.emit(self._docHandle, True)
+    @pyqtSlot(str)
+    def _processLabelLink(self, link: str) -> None:
+        """Process an activated link in the label."""
+        if link.startswith("#"):
+            self.docViewer.requestProjectItemSelected.emit(link.lstrip("#"), True)
 
 
 class GuiDocViewFooter(QWidget):

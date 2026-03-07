@@ -428,7 +428,13 @@ class NWTree:
             return tItem.itemType == itemType
         return False
 
-    def itemPath(self, tHandle: str, asName: bool = False) -> list[str]:
+    @overload
+    def itemPath(self, tHandle: str, withName: Literal[True]) -> list[tuple[str, str]]: ...
+
+    @overload
+    def itemPath(self, tHandle: str, withName: Literal[False]) -> list[str]: ...
+
+    def itemPath(self, tHandle: str, withName: bool = False) -> list:
         """Iterate upwards in the tree until we find the item with
         parent None, the root item, and return the list of handles, or
         alternatively item names. We do this with a for loop with a
@@ -437,8 +443,8 @@ class NWTree:
         path = []
         if node := self._nodes.get(tHandle):
             for _ in range(MAX_DEPTH):
-                if parent := node.parent():
-                    path.append(node.item.itemName if asName else tHandle)
+                if (parent := node.parent()) and (item := node.item):
+                    path.append((item.itemHandle, item.itemName) if withName else tHandle)
                     node = parent
                 else:
                     return path

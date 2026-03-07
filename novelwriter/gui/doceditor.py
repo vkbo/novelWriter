@@ -78,12 +78,11 @@ from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
     QtAlignRight, QtBlack, QtImCurrentSelection, QtImCursorRectangle,
-    QtKeepAnchor, QtModCtrl, QtModNone, QtModShift, QtMouseLeft, QtMoveAnchor,
-    QtMoveDown, QtMoveEnd, QtMoveEndOfLine, QtMoveEndOfWord, QtMoveLeft,
-    QtMoveNextChar, QtMoveNextWord, QtMovePreviousWord, QtMoveRight,
-    QtMoveStart, QtMoveStartOfLine, QtMoveUp, QtScrollAlwaysOff,
-    QtScrollAsNeeded, QtSelectBlock, QtSelectDocument, QtSelectLine,
-    QtSelectWord, QtTransparent
+    QtKeepAnchor, QtModCtrl, QtModNone, QtModShift, QtMoveAnchor, QtMoveDown,
+    QtMoveEnd, QtMoveEndOfLine, QtMoveEndOfWord, QtMoveLeft, QtMoveNextChar,
+    QtMoveNextWord, QtMovePreviousWord, QtMoveRight, QtMoveStart,
+    QtMoveStartOfLine, QtMoveUp, QtScrollAlwaysOff, QtScrollAsNeeded,
+    QtSelectBlock, QtSelectDocument, QtSelectLine, QtSelectWord, QtTransparent
 )
 
 logger = logging.getLogger(__name__)
@@ -3251,6 +3250,7 @@ class GuiDocEditHeader(QWidget):
         self.itemTitle.setAutoFillBackground(True)
         self.itemTitle.setAlignment(QtAlignCenterTop)
         self.itemTitle.setFixedHeight(SHARED.theme.fontPixelSize)
+        self.itemTitle.linkActivated.connect(self._processLabelLink)
 
         # Other Widgets
         self.outlineMenu = QMenu(self)
@@ -3393,13 +3393,10 @@ class GuiDocEditHeader(QWidget):
         the whole document path within the project.
         """
         self._docHandle = tHandle
-
         if CONFIG.showFullPath:
-            self.itemTitle.setText(f"  {nwUnicode.U_RSAQUO}  ".join(reversed(
-                [name for name in SHARED.project.tree.itemPath(tHandle, asName=True)]
-            )))
-        else:
-            self.itemTitle.setText(i.itemName if (i := SHARED.project.tree[tHandle]) else "")
+            self.itemTitle.setPathText(SHARED.project.tree.itemPath(tHandle, withName=True))
+        elif item := SHARED.project.tree[tHandle]:
+            self.itemTitle.setPathText([(item.itemHandle, item.itemName)])
 
         self.tbButton.setVisible(True)
         self.searchButton.setVisible(True)
@@ -3432,16 +3429,11 @@ class GuiDocEditHeader(QWidget):
         """Reset the colour state of the header title."""
         self.itemTitle.setColorState(self._state)
 
-    ##
-    #  Events
-    ##
-
-    def mousePressEvent(self, event: QMouseEvent) -> None:
-        """Capture a click on the title and ensure that the item is
-        selected in the project tree.
-        """
-        if event.button() == QtMouseLeft:
-            self.docEditor.requestProjectItemSelected.emit(self._docHandle or "", True)
+    @pyqtSlot(str)
+    def _processLabelLink(self, link: str) -> None:
+        """Process an activated link in the label."""
+        if link.startswith("#"):
+            self.docEditor.requestProjectItemSelected.emit(link.lstrip("#"), True)
 
 
 class GuiDocEditFooter(QWidget):

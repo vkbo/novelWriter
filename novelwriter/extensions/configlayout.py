@@ -27,14 +27,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
 from __future__ import annotations
 
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QFont, QPalette
 from PyQt6.QtWidgets import (
     QAbstractButton, QFrame, QHBoxLayout, QLabel, QLayout, QScrollArea,
     QVBoxLayout, QWidget
 )
 
+from novelwriter.constants import nwUnicode
 from novelwriter.enum import nwState
-from novelwriter.types import QtScrollAsNeeded
+from novelwriter.types import QtBlack, QtHexArgb, QtScrollAsNeeded
 
 DEFAULT_SCALE = 0.9
 
@@ -266,23 +268,31 @@ class NColorLabel(QLabel):
         self._color = color or default
         self._faded = faded or default
         self._error = error or default
+        self._crumbs = ""
 
         font = self.font()
         font.setPointSizeF(scale*font.pointSizeF())
         font.setWeight(QFont.Weight.Bold if bold else QFont.Weight.Normal)
-        if color:
-            colour = self.palette()
-            colour.setColor(QPalette.ColorRole.WindowText, color)
-            self.setPalette(colour)
 
+        self.setTextFormat(Qt.TextFormat.RichText)
         self.setFont(font)
         self.setIndent(indent)
         self.setWordWrap(wrap)
         self.setColorState(nwState.NORMAL)
 
+    def setPathText(self, crumbs: list[tuple[str, str]]) -> None:
+        """Set a clickable crumb-trail of links."""
+        self._crumbs = ("<font style='color: #000000'>{inner}</font>".format(
+            inner=f"  {nwUnicode.U_RSAQUO}  ".join(reversed([
+                f"<a href='#{h}' style='color: #000000; text-decoration: none'>{n}</a>"
+                for h, n in crumbs
+            ]))
+        ))
+        self._refeshTextColor()
+
     def setTextColors(
         self, *, color: QColor | None = None,
-        faded: QColor | None = None, error: QColor | None = None
+        faded: QColor | None = None, error: QColor | None = None,
     ) -> None:
         """Set or update the text colours."""
         self._color = color or self._color
@@ -298,15 +308,20 @@ class NColorLabel(QLabel):
 
     def _refeshTextColor(self) -> None:
         """Refresh the colour of the text on the label."""
-        palette = self.palette()
+        color = QtBlack
         match self._state:
             case nwState.NORMAL:
-                palette.setColor(QPalette.ColorRole.WindowText, self._color)
+                color = self._color
             case nwState.INACTIVE:
-                palette.setColor(QPalette.ColorRole.WindowText, self._faded)
+                color = self._faded
             case nwState.ERROR:
-                palette.setColor(QPalette.ColorRole.WindowText, self._error)
+                color = self._error
+
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Text, color)
         self.setPalette(palette)
+        if self._crumbs:
+            self.setText(self._crumbs.replace("#000000", color.name(QtHexArgb)))
 
 
 class NWrappedWidgetBox(QHBoxLayout):
