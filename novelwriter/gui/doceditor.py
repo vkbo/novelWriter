@@ -2452,14 +2452,15 @@ class GuiDocEditor(QPlainTextEdit):
 
     def _skipToParagraph(self, step: int) -> None:
         """Move cursor to next paragraph by step."""
-        cursor = self.textCursor()
-        limit = -1 if step < 0 else self._qDocument.blockCount()
-        for i in range(cursor.blockNumber() + step, limit, step):
-            block = self._qDocument.findBlockByNumber(i)
-            if block.isValid() and block.text().strip():
-                cursor.setPosition(block.position())
-                self.setTextCursor(cursor)
-                break
+        if step != 0:
+            cursor = self.textCursor()
+            limit = -1 if step < 0 else self._qDocument.blockCount()
+            for i in range(cursor.blockNumber() + step, limit, step):
+                block = self._qDocument.findBlockByNumber(i)
+                if block.isValid() and block.text().strip():
+                    cursor.setPosition(block.position())
+                    self.setTextCursor(cursor)
+                    break
 
 
 class CommandCompleter(QMenu):
