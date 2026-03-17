@@ -34,12 +34,15 @@ from typing import TYPE_CHECKING, TypeVar
 
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QDesktopServices, QFont, QScreen
-from PyQt6.QtWidgets import QApplication, QFileDialog, QMessageBox, QWidget
+from PyQt6.QtWidgets import (
+    QApplication, QFileDialog, QGridLayout, QMessageBox, QSpacerItem, QWidget
+)
 
 from novelwriter.common import appendIfSet, formatFileFilter, joinLines
 from novelwriter.constants import nwFiles
 from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.enum import nwChange, nwItemClass, nwStandardButton
+from novelwriter.types import QtSizeExpanding, QtSizeMinimum
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -405,7 +408,7 @@ class SharedData(QObject):
         self._lastAlert = alert.logMessage
         if log:
             self._logMessage(self._lastAlert, logger.info)
-        alert.exec()
+        alert.pop()
 
     def warn(self, text: T_Msg, info: str = "", details: str = "", log: bool = True) -> None:
         """Open a warning alert box."""
@@ -415,7 +418,7 @@ class SharedData(QObject):
         self._lastAlert = alert.logMessage
         if log:
             self._logMessage(self._lastAlert, logger.warning)
-        alert.exec()
+        alert.pop()
 
     def error(self, text: T_Msg, info: str = "", details: str = "", log: bool = True,
               exc: Exception | None = None) -> None:
@@ -428,7 +431,7 @@ class SharedData(QObject):
         self._lastAlert = alert.logMessage
         if log:
             self._logMessage(self._lastAlert, logger.error)
-        alert.exec()
+        alert.pop()
 
     def question(self, text: T_Msg, info: str = "", details: str = "", warn: bool = False) -> bool:
         """Open a question box."""
@@ -436,7 +439,7 @@ class SharedData(QObject):
         alert.setMessage(text, info, details)
         alert.setAlertType(_GuiAlert.WARN if warn else _GuiAlert.ASK, True)
         self._lastAlert = alert.logMessage
-        alert.exec()
+        alert.pop()
         return alert.finalState
 
     ##
@@ -497,6 +500,14 @@ class _GuiAlert(QMessageBox):
     @property
     def finalState(self) -> bool:
         return self._state
+
+    def pop(self) -> int:
+        """Make sure the message box isn't too small."""
+        # See https://stackoverflow.com/a/50549396
+        self._spacer = QSpacerItem(20*self._theme.fontPixelSize, 0, QtSizeMinimum, QtSizeExpanding)
+        if isinstance(layout := self.layout(), QGridLayout):
+            layout.addItem(self._spacer, layout.rowCount(), 0, 1, layout.columnCount())
+        return self.exec()
 
     def setMessage(self, text: T_Msg, info: str, details: str) -> None:
         """Set the alert box message."""
