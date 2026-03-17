@@ -30,6 +30,7 @@ from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
 
+from novelwriter import SHARED
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwFiles
 from novelwriter.error import logException
@@ -109,7 +110,8 @@ class NWSessionLog:
                     cnotes=cCNotes,
                 ))
 
-        except Exception:
+        except Exception as exc:
+            SHARED.appendErrorMessage(exc)
             logger.error("Failed to write to session stats file")
             logException()
             return False

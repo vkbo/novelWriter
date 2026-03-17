@@ -396,7 +396,8 @@ class NWTree:
                 toc.write("\n".join(entries))
                 toc.write("\n")
 
-        except Exception:
+        except Exception as exc:
+            SHARED.appendErrorMessage(exc)
             logger.error("Could not write ToC file")
             logException()
             return False

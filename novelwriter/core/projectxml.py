@@ -33,7 +33,7 @@ from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
 
-from novelwriter import __hexversion__, __version__
+from novelwriter import SHARED, __hexversion__, __version__
 from novelwriter.common import (
     checkBool, checkInt, checkString, checkStringNone, formatTimeStamp,
     hexToInt, simplified, xmlIndent, yesNo
@@ -468,16 +468,6 @@ class ProjectXMLWriter:
 
     def __init__(self, path: str | Path) -> None:
         self._path = Path(path)
-        self._error = None
-
-    ##
-    #  Properties
-    ##
-
-    @property
-    def error(self) -> Exception | None:
-        """Return the error status."""
-        return self._error
 
     ##
     #  Methods
@@ -552,7 +542,7 @@ class ProjectXMLWriter:
             xml.write(tmp, encoding="utf-8", xml_declaration=True)
             tmp.replace(self._path)
         except Exception as exc:
-            self._error = exc
+            SHARED.appendErrorMessage(exc)
             return False
 
         logger.debug("Project XML saved in %.3f ms", (time() - tStart)*1000)

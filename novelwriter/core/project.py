@@ -414,10 +414,11 @@ class NWProject:
             return False
 
         saveTime = time()
+        SHARED.clearErrorCache()
         editTime = self._data.editTime + max(round(saveTime - self._session.start), 0)
         content = self._tree.pack()
         if not xmlWriter.write(self._data, content, saveTime, editTime):
-            SHARED.error(self.tr("Failed to save project."), exc=xmlWriter.error)
+            self._reportErrors(self.tr("Issues encountered when saving project:"))
             return False
 
         # Save other project data
@@ -429,6 +430,8 @@ class NWProject:
         if storagePath := self._storage.storagePath:
             CONFIG.recentProjects.update(storagePath, self._data, saveTime)
 
+        self._reportErrors(self.tr("Issues encountered when saving project:"))
+
         SHARED.newStatusMessage(self.tr("Saved Project: {0}").format(self._data.name))
         self.setProjectChanged(False)
 
@@ -437,11 +440,14 @@ class NWProject:
     def closeProject(self, idleTime: float = 0.0) -> None:
         """Close the project."""
         logger.info("Closing project")
+
+        SHARED.clearErrorCache()
         self._index.clear()  # Triggers clear signal, see #1718
         self._options.saveSettings()
         self._tree.writeToCFile()
         self._session.appendSession(idleTime)
         self._storage.closeSession()
+        self._reportErrors(self.tr("Issues encountered when closing project:"))
 
     def backupProject(self, doNotify: bool) -> bool:
         """Create a zip file of the entire project."""
@@ -567,6 +573,10 @@ class NWProject:
     ##
     #  Internal Functions
     ##
+    def _reportErrors(self, title: str) -> None:
+        """Report any errors from the error cache."""
+        if errors := SHARED.errorCache():
+            SHARED.error(title, "<br><br>".join(errors))
 
     def _loadProjectLocalisation(self) -> bool:
         """Load the language data for the current project language."""
