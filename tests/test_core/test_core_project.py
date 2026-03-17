@@ -411,6 +411,12 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     assert project.data.autoReplace == {"A": "B", "C": "D"}
     assert project.projChanged
 
+    # Error Report
+    SHARED.appendErrorMessage("Error 1")
+    SHARED.appendErrorMessage("Error 2")
+    project._reportErrors("Opps!")
+    assert SHARED.lastAlert == ["Opps!", "Error 1<br><br>Error 2"]
+
 
 @pytest.mark.core
 def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
