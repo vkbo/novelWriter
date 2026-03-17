@@ -27,6 +27,7 @@ from shutil import copyfile
 
 import pytest
 
+from novelwriter import SHARED
 from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
 from novelwriter.core.projectdata import NWProjectData
@@ -245,17 +246,19 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     xmlWriter = ProjectXMLWriter(fncPath / nwFiles.PROJ_FILE)
 
     # Fail saving
+    SHARED.clearErrorCache()
     with monkeypatch.context() as mp:
         mp.setattr("xml.etree.ElementTree.ElementTree.write", causeOSError)
         assert xmlWriter.write(data, packedContent, timeStamp, 1000) is False
-        assert str(xmlWriter.error) == "Mock OSError"
+        assert SHARED.errorCache() == ["OSError: Mock OSError"]
 
+    SHARED.clearErrorCache()
     with monkeypatch.context() as mp:
         mp.setattr("pathlib.Path.replace", causeOSError)
         assert xmlWriter.write(data, packedContent, timeStamp, 1000) is False
-        assert str(xmlWriter.error) == "Mock OSError"
+        assert SHARED.errorCache() == ["OSError: Mock OSError"]
 
-    # Successful save (should be twice)
+    # Successful save (should be run twice)
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     copyfile(outFile, tstFile)

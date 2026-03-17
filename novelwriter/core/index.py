@@ -298,7 +298,8 @@ class Index:
                     "novelWriter.tagsIndex": jsonEncode(self._tagsIndex.packData(), n=1, nmax=2),
                     "novelWriter.itemIndex": jsonEncode(self._itemIndex.packData(), n=1, nmax=4),
                 }))
-        except Exception:
+        except Exception as exc:
+            SHARED.appendErrorMessage(exc)
             logger.error("Failed to save index file")
             logException()
             return False
