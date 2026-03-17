@@ -102,6 +102,7 @@ class SharedData(QObject):
         self._idleTime = 0.0
         self._idleRefTime = time()
         self._focusMode = False
+        self._cachedErrors = []
 
         self._clock = QTimer(self)
         self._clock.setInterval(1000)
@@ -395,6 +396,26 @@ class SharedData(QObject):
         """Emit the rootFolderChanged signal."""
         if self._project and self._project.data.uuid == project.data.uuid:
             self.rootFolderChanged.emit(handle, change)
+
+    ##
+    #  Error Cache
+    ##
+
+    def clearErrorCache(self) -> None:
+        """Clear all cached errors."""
+        self._cachedErrors = []
+
+    def appendErrorMessage(self, message: str | Exception) -> None:
+        """Append an error message to the error cache."""
+        if isinstance(message, Exception):
+            message = f"{type(message).__name__}: {message!s}"
+        self._cachedErrors.append(message)
+
+    def errorCache(self) -> list[str]:
+        """Return all cached errors and clear cache."""
+        errors = self._cachedErrors
+        self._cachedErrors = []
+        return errors
 
     ##
     #  Alert Boxes
