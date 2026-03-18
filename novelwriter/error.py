@@ -102,7 +102,8 @@ class NWErrorMessage(QDialog):
             "+++ Please Reinstall Universe and Reboot +++",
             "+++ Error At Address 14, Treacle Mine Road +++",
             "+++ Abomination Unto Nuggan Error +++",
-        ][random.randint(0, 4)])
+            "+++ Anoia Error: Cutlery Stuck in Drawer +++",
+        ][random.randint(0, 5)])
 
         self.setLayout(self.mainBox)
 
