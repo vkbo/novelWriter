@@ -25,6 +25,7 @@ documentation.
 * PyPi Project: [pypi.org/project/novelWriter](https://pypi.org/project/novelWriter)
 * Social Media: [fosstodon.org/@novelwriter](https://fosstodon.org/@novelwriter)
 
+_This project is free of AI slop._
 
 ## Sponsors
 
