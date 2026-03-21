@@ -10,12 +10,12 @@ echo ""
 echo " Building Dependencies"
 echo "================================================================================"
 echo ""
-uv run pkgutils.py build-assets
-uv run pkgutils.py icons optional
+pdm run pkgutils.py build-assets
+pdm run pkgutils.py icons optional
 
 echo ""
 echo " Building Linux Packages"
 echo "================================================================================"
 echo ""
-uv run pkgutils.py build-deb --sign
-uv run pkgutils.py build-ubuntu --sign
+pdm run pkgutils.py build-deb --sign
+pdm run pkgutils.py build-ubuntu --sign
