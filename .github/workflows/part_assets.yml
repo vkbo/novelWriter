@@ -16,20 +16,19 @@ jobs:
           sudo apt update
           sudo apt install qttools5-dev-tools latexmk texlive texlive-latex-extra
 
-      - name: Install UV and Python
-        uses: astral-sh/setup-uv@v6
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v4
         with:
           python-version: "3.13"
-          enable-cache: true
 
-      - name: Sync UV
+      - name: Install Dependencies
         run: |
-          uv sync --no-dev --group docs
+          pdm install --group docs
 
       - name: Build Assets
         run: |
-          uv run --no-sync pkgutils.py build-assets
-          uv run --no-sync pkgutils.py icons optional
+          pdm run pkgutils.py build-assets
+          pdm run pkgutils.py icons optional
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

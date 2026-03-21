@@ -10,14 +10,14 @@ echo ""
 echo " Building Dependencies"
 echo "================================================================================"
 echo ""
-uv run pkgutils.py build-assets
-uv run pkgutils.py icons optional
+pdm run pkgutils.py build-assets
+pdm run pkgutils.py icons optional
 
 echo ""
 echo " Building Packages"
 echo "================================================================================"
 echo ""
-uv build
+pdm build
 mkdir -pv dist_upload
 cp -v dist/novelwriter-*.whl dist_upload/
 cd dist_upload

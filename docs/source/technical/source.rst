@@ -7,7 +7,7 @@ Running from Source
 .. _GitHub: https://github.com/vkbo/novelWriter/releases
 .. _PyPi: https://pypi.org/project/novelWriter/
 .. _Sphinx Docs: https://www.sphinx-doc.org/
-.. _uv: https://docs.astral.sh/uv/
+.. _pdm: https://pdm-project.org/
 
 This chapter describes various ways of running novelWriter directly from the source code, and how
 to build the various components like the translation files and documentation.
@@ -47,11 +47,11 @@ must be at least 3.0 to work with Windows. On Linux, 2.0 also works fine.
 
 If you install novelWriter from PyPi, these dependencies should be installed automatically.
 
-You can run novelWriter directly from source with uv_:
+You can run novelWriter directly from source with pdm_ or another similar tool:
 
 .. code-block:: bash
 
-   uv run novelwriter
+   pdm run novelwriter
 
 If you prefer to install dependencies using ``pip``, you must first generate the
 ``requirements.txt`` file:
@@ -162,11 +162,11 @@ The documentation can then be built from the root folder in the source code by r
 
    make -C docs html
 
-Or you can run directly with uv_:
+Or you can run directly with pdm_ or similar tools:
 
 .. code-block:: bash
 
-   uv run make -C docs html
+   pdm run make -C docs html
 
 If successful, the documentation should be available in the ``docs/build/html`` folder and you can
 open the ``index.html`` file in your browser.

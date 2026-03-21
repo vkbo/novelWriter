@@ -23,24 +23,24 @@ jobs:
         run: |
           brew install enchant
 
-      - name: Install UV and Python
-        uses: astral-sh/setup-uv@v6
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v4
         with:
           python-version: "3.13"
 
-      - name: Sync UV
+      - name: Install Dependencies
         run: |
-          uv sync --no-dev --group test
+          pdm install --group test
 
       - name: Build Assets
         run: |
-          uv run --no-sync pkgutils.py sample
+          pdm run pkgutils.py sample
 
       - name: Run Tests
         run: |
           export QT_QPA_PLATFORM=offscreen
-          uv run --no-sync coverage run -m pytest -v --timeout=60
-          uv run --no-sync coverage xml
+          pdm run coverage run -m pytest -v --timeout=60
+          pdm run coverage xml
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5
