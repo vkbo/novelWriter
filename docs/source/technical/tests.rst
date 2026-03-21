@@ -4,7 +4,7 @@
 Running Tests
 *************
 
-.. _uv: https://docs.astral.sh/uv/
+.. _pdm: https://pdm-project.org/
 
 The novelWriter source code is well covered by tests. The test framework used for the development
 is ``pytest`` with the use of an extension for Qt.
@@ -17,9 +17,9 @@ To run the tests, you simply need to execute the following from the root of the 
 
 .. code-block:: bash
 
-   uv run pytest
+   pdm run pytest
 
-This uses uv_. See below for manually installing dependencies using ``pip``.
+This uses pdm_. See below for manually installing dependencies using ``pip``.
 
 Since several of the tests involve opening up the novelWriter GUI, you may want to disable the GUI
 for the duration of the test run. Moving your mouse while the tests are running may otherwise

@@ -26,29 +26,36 @@ just make a pull request directly.
 * Make pull requests with AI generated code. This is not a project suitable for vibe coding.
   Outright slop will result in the account being blocked.
 
-This project uses [uv](https://docs.astral.sh/uv/) as its main developer tool. In order to run
+This project uses [pdm](https://pdm-project.org/) as its main developer tool. In order to run
 novelWriter directly from checked out source, simply call from the root folder:
 
 ```bash
-uv run novelwriter
+pdm run novelwriter
+```
+
+To set up a development environment with all needed dependencies, run:
+
+```bash
+pdm install
 ```
 
 Many tasks like building assets from source are handled by the `pkgutils.py` helper tool.
+This tool requires no dependencies, so you can either run it directly with Python, or `pdm run`.
 
 ```bash
-uv run pkgutils.py --help
+python pkgutils.py --help
 ```
 
 The translation files needed at runtime can be built with:
 
 ```bash
-uv run pkgutils.py qtlrelease
+python pkgutils.py qtlrelease
 ```
 
 Material design icons are included with the source. Optional icon themes can be built with:
 
 ```bash
-uv run pkgutils.py icons optional
+python pkgutils.py icons optional
 ```
 
 
@@ -104,7 +111,7 @@ A helper script is provided for running tests. It simplifies coverage reporting 
 things. Run the following to see all details:
 
 ```bash
-uv run run_tests.py --help
+pdm run run_tests.py --help
 ```
 
 
