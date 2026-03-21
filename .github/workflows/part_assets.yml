@@ -23,7 +23,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pdm install --prod --group docs
+          pdm install --group docs
 
       - name: Build Assets
         run: |

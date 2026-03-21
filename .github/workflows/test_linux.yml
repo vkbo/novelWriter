@@ -39,7 +39,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pdm install --prod --group test
+          pdm install --group test
 
       - name: Build Assets
         run: |
