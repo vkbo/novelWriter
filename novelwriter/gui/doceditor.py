@@ -114,8 +114,10 @@ class GuiDocEditor(QPlainTextEdit):
     __slots__ = (
         "_autoReplace", "_completer", "_doReplace", "_docChanged", "_docHandle", "_followTag1",
         "_followTag2", "_keyContext", "_lastActive", "_lastEdit", "_lastFind", "_nwDocument",
-        "_nwItem", "_qDocument", "_timerDoc", "_timerSel", "_vim", "_vpMargin", "_wCounterDoc",
-        "_wCounterSel",
+        "_nwItem", "_qDocument", "_timerDoc", "_timerSel", "_trActions", "_trAddWord", "_trCopy",
+        "_trCreateNote", "_trCut", "_trFollowTag", "_trIgnoreWord", "_trMoveText", "_trNoSuggest",
+        "_trOpenURL", "_trPaste", "_trSelectAll", "_trSelectPara", "_trSelectWord", "_trSetName",
+        "_trSpellSuggest", "_trSplitDoc", "_vim", "_vpMargin", "_wCounterDoc", "_wCounterSel",
     )
 
     MOVE_KEYS = (
@@ -158,6 +160,25 @@ class GuiDocEditor(QPlainTextEdit):
         self._doReplace  = False  # Switch to temporarily disable auto-replace
         self._lineColor  = QtTransparent
         self._selection  = QTextEdit.ExtraSelection()
+
+        # Context Menu Translation
+        self._trSetName = self.tr("Set as Document Name")
+        self._trOpenURL = self.tr("Open URL")
+        self._trFollowTag = self.tr("Follow Tag")
+        self._trCreateNote = self.tr("Create Note for Tag")
+        self._trCut = self.tr("Cut")
+        self._trCopy = self.tr("Copy")
+        self._trPaste = self.tr("Paste")
+        self._trSelectAll = self.tr("Select All")
+        self._trSelectWord = self.tr("Select Word")
+        self._trSelectPara = self.tr("Select Paragraph")
+        self._trMoveText = self.tr("Move Text to New Document")
+        self._trSplitDoc = self.tr("Split Document at Cursor")
+        self._trActions = self.tr("More Actions")
+        self._trSpellSuggest = self.tr("Spelling Suggestion(s)")
+        self._trNoSuggest = self.tr("No Suggestions")
+        self._trIgnoreWord = self.tr("Ignore Word")
+        self._trAddWord = self.tr("Add Word to Dictionary")
 
         # Auto-Replace
         self._autoReplace = TextAutoReplace()
@@ -1217,54 +1238,50 @@ class GuiDocEditor(QPlainTextEdit):
         ctxMenu = QMenu(self)
         ctxMenu.setObjectName("ContextMenu")
         if pBlock.userState() == BLOCK_TITLE:
-            action = qtAddAction(ctxMenu, self.tr("Set as Document Name"))
+            action = qtAddAction(ctxMenu, self._trSetName)
             action.triggered.connect(qtLambda(self._emitRenameItem, pBlock))
 
         # URL
         (mData, mType) = self._qDocument.metaDataAtPos(pCursor.position())
         if mData and mType == "url":
-            action = qtAddAction(ctxMenu, self.tr("Open URL"))
+            action = qtAddAction(ctxMenu, self._trOpenURL)
             action.triggered.connect(qtLambda(SHARED.openWebsite, mData))
             ctxMenu.addSeparator()
 
         # Follow
         status = self._processTag(cursor=pCursor, follow=False)
         if status & _TagAction.FOLLOW:
-            action = qtAddAction(ctxMenu, self.tr("Follow Tag"))
+            action = qtAddAction(ctxMenu, self._trFollowTag)
             action.triggered.connect(qtLambda(self._processTag, cursor=pCursor, follow=True))
             ctxMenu.addSeparator()
         elif status & _TagAction.CREATE:
-            action = qtAddAction(ctxMenu, self.tr("Create Note for Tag"))
+            action = qtAddAction(ctxMenu, self._trCreateNote)
             action.triggered.connect(qtLambda(self._processTag, cursor=pCursor, create=True))
             ctxMenu.addSeparator()
 
         # Cut, Copy and Paste
         if hasSelection:
-            action = qtAddAction(ctxMenu, self.tr("Cut"))
+            action = qtAddAction(ctxMenu, self._trCut)
             action.triggered.connect(qtLambda(self.docAction, nwDocAction.CUT))
-            action = qtAddAction(ctxMenu, self.tr("Copy"))
+            action = qtAddAction(ctxMenu, self._trCopy)
             action.triggered.connect(qtLambda(self.docAction, nwDocAction.COPY))
 
-        action = qtAddAction(ctxMenu, self.tr("Paste"))
+        action = qtAddAction(ctxMenu, self._trPaste)
         action.triggered.connect(qtLambda(self.docAction, nwDocAction.PASTE))
         ctxMenu.addSeparator()
 
         # Selections
-        action = qtAddAction(ctxMenu, self.tr("Select All"))
+        action = qtAddAction(ctxMenu, self._trSelectAll)
         action.triggered.connect(qtLambda(self.docAction, nwDocAction.SEL_ALL))
-        action = qtAddAction(ctxMenu, self.tr("Select Word"))
+        action = qtAddAction(ctxMenu, self._trSelectWord)
         action.triggered.connect(qtLambda(self._makePosSelection, QtSelectWord, pos))
-        action = qtAddAction(ctxMenu, self.tr("Select Paragraph"))
+        action = qtAddAction(ctxMenu, self._trSelectPara)
         action.triggered.connect(qtLambda(self._makePosSelection, QtSelectBlock, pos))
 
         # Actions
-        mTools = qtAddMenu(ctxMenu, self.tr("Actions"))
-        if hasSelection:
-            action = qtAddAction(mTools, self.tr("Move Text to New Document"))
-            action.triggered.connect(self._moveTextToNewDocument)
-        else:
-            action = qtAddAction(mTools, self.tr("Split Document at Cursor"))
-            action.triggered.connect(self._moveTextToNewDocument)
+        mTools = qtAddMenu(ctxMenu, self._trActions)
+        action = qtAddAction(mTools, self._trMoveText if hasSelection else self._trSplitDoc)
+        action.triggered.connect(self._moveTextToNewDocument)
 
         # Spell Checking
         if SHARED.project.data.spellCheck:
@@ -1277,18 +1294,17 @@ class GuiDocEditor(QPlainTextEdit):
                 sCursor.movePosition(QtMoveRight, QtKeepAnchor, len(word))
                 if suggest:
                     ctxMenu.addSeparator()
-                    qtAddAction(ctxMenu, self.tr("Spelling Suggestion(s)"))
+                    qtAddAction(ctxMenu, self._trSpellSuggest)
                     for option in suggest[:15]:
                         action = qtAddAction(ctxMenu, f"{nwUnicode.U_ENDASH} {option}")
                         action.triggered.connect(qtLambda(self._correctWord, sCursor, option))
                 else:
-                    trNone = self.tr("No Suggestions")
-                    qtAddAction(ctxMenu, f"{nwUnicode.U_ENDASH} {trNone}")
+                    qtAddAction(ctxMenu, f"{nwUnicode.U_ENDASH} {self._trNoSuggest}")
 
                 ctxMenu.addSeparator()
-                action = qtAddAction(ctxMenu, self.tr("Ignore Word"))
+                action = qtAddAction(ctxMenu, self._trIgnoreWord)
                 action.triggered.connect(qtLambda(self._addWord, word, block, False))
-                action = qtAddAction(ctxMenu, self.tr("Add Word to Dictionary"))
+                action = qtAddAction(ctxMenu, self._trAddWord)
                 action.triggered.connect(qtLambda(self._addWord, word, block, True))
 
         # Execute the context menu
