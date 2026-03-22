@@ -68,3 +68,22 @@ def processComment(text: str) -> tuple[nwComment, str, str, int, int]:
         return MODIFIERS[clean], key, content.lstrip(), dot, col
 
     return nwComment.PLAIN, "", check, 0, 0
+
+
+def processHeading(line: str) -> tuple[str, str]:
+    """Split a heading into its heading level and text value."""
+    if line.startswith("# "):
+        return "H1", line[2:].strip()
+    elif line.startswith("## "):
+        return "H2", line[3:].strip()
+    elif line.startswith("### "):
+        return "H3", line[4:].strip()
+    elif line.startswith("#### "):
+        return "H4", line[5:].strip()
+    elif line.startswith("#! "):
+        return "H1", line[3:].strip()
+    elif line.startswith("##! "):
+        return "H2", line[4:].strip()
+    elif line.startswith("###! "):
+        return "H3", line[5:].strip()
+    return "H0", ""
