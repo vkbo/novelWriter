@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 class GuiEditLabel(NDialog):
     """GUI: Edit Item Label Dialog."""
 
-    def __init__(self, parent: QWidget, text: str = "") -> None:
+    def __init__(self, parent: QWidget, text: str = "", info: str = "") -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiEditLabel")
@@ -74,6 +74,8 @@ class GuiEditLabel(NDialog):
 
         self.outerBox = QVBoxLayout()
         self.outerBox.setSpacing(12)
+        if info:
+            self.outerBox.addWidget(QLabel(info), 0)
         self.outerBox.addLayout(self.innerBox, 1)
         self.outerBox.addWidget(self.btnBox, 0)
 
@@ -89,9 +91,9 @@ class GuiEditLabel(NDialog):
         return self.edtValue.text()
 
     @classmethod
-    def getLabel(cls, parent: QWidget, text: str) -> tuple[str, bool]:
+    def getLabel(cls, parent: QWidget, text: str, info: str = "") -> tuple[str, bool]:
         """Pop the dialog and return the result."""
-        dialog = cls(parent, text=text)
+        dialog = cls(parent, text=text, info=info)
         dialog.exec()
         label = dialog.itemLabel
         accepted = dialog.result() == QtAccepted

@@ -258,6 +258,10 @@ class NWTree:
         self._model.endInsertRows()
         self._model.layoutChanged.emit()
 
+    def subTreePos(self, tHandle: str) -> int:
+        """Return the position of an item under its parent."""
+        return node.row() if (node := self._nodes.get(tHandle)) else -1
+
     def pickParent(self, sNode: ProjectNode, hLevel: int, isNote: bool) -> tuple[str | None, int]:
         """Pick an appropriate parent handle for adding a new item."""
         if sNode.item.isFolderType() or sNode.item.isRootType():

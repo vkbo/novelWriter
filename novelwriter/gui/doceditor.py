@@ -57,12 +57,15 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import (
-    decodeMimeHandles, fontMatcher, minmax, qtAddAction, qtLambda, transferCase
+    decodeMimeHandles, fontMatcher, minmax, qtAddAction, qtAddMenu, qtLambda,
+    transferCase
 )
 from novelwriter.constants import (
-    nwConst, nwKeyWords, nwLabels, nwShortcode, nwStats, nwUnicode, trStats
+    nwConst, nwKeyWords, nwLabels, nwShortcode, nwStats, nwStyles, nwUnicode,
+    trStats
 )
 from novelwriter.core.document import NWDocument
+from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import (
     nwChange, nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass,
     nwItemType, nwState, nwVimMode
@@ -1206,6 +1209,7 @@ class GuiDocEditor(QPlainTextEdit):
         uCursor = self.textCursor()
         pCursor = self.cursorForPosition(pos)
         pBlock = pCursor.block()
+        hasSelection = uCursor.hasSelection()
 
         ctxMenu = QMenu(self)
         ctxMenu.setObjectName("ContextMenu")
@@ -1232,7 +1236,7 @@ class GuiDocEditor(QPlainTextEdit):
             ctxMenu.addSeparator()
 
         # Cut, Copy and Paste
-        if uCursor.hasSelection():
+        if hasSelection:
             action = qtAddAction(ctxMenu, self.tr("Cut"))
             action.triggered.connect(qtLambda(self.docAction, nwDocAction.CUT))
             action = qtAddAction(ctxMenu, self.tr("Copy"))
@@ -1249,6 +1253,15 @@ class GuiDocEditor(QPlainTextEdit):
         action.triggered.connect(qtLambda(self._makePosSelection, QtSelectWord, pos))
         action = qtAddAction(ctxMenu, self.tr("Select Paragraph"))
         action.triggered.connect(qtLambda(self._makePosSelection, QtSelectBlock, pos))
+
+        # Tools
+        mTools = qtAddMenu(ctxMenu, self.tr("Tools"))
+        if hasSelection:
+            action = qtAddAction(mTools, self.tr("Move to New Document"))
+            action.triggered.connect(self._moveTextToNewDocument)
+        else:
+            action = qtAddAction(mTools, self.tr("Split Document at Cursor"))
+            action.triggered.connect(self._moveTextToNewDocument)
 
         # Spell Checking
         if SHARED.project.data.spellCheck:
@@ -1301,6 +1314,32 @@ class GuiDocEditor(QPlainTextEdit):
                 self.docTextChanged.emit(self._docHandle, self._lastEdit)
 
         return
+
+    @pyqtSlot()
+    def _moveTextToNewDocument(self) -> None:
+        """Process request to move text to new document."""
+        cursor = self.textCursor()
+        if not cursor.hasSelection():
+            cursor.movePosition(QtMoveEnd, QtKeepAnchor)
+            self.setTextCursor(cursor)
+            QApplication.processEvents()
+
+        if (
+            cursor.hasSelection()
+            and (text := cursor.selectedText().strip())
+            and (item := self._nwItem)
+            and (parent := item.itemParent)
+        ):
+            label, dlgOk = GuiEditLabel.getLabel(
+                self, text=f"{item.itemName} (1)",
+                info=self.tr("Create a new document from selected text?")
+            )
+            if dlgOk and (tHandle := SHARED.project.newFile(
+                label, parent, SHARED.project.tree.subTreePos(item.itemHandle) + 1
+            )):
+                hLevel = nwStyles.H_LEVEL.get(item.mainHeading, 3)
+                if SHARED.project.writeNewFile(tHandle, hLevel, item.isDocumentLayout(), text):
+                    cursor.removeSelectedText()
 
     @pyqtSlot(int, int, int)
     def _updateDocCounts(self, cCount: int, wCount: int, pCount: int) -> None:
