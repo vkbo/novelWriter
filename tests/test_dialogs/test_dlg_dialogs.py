@@ -71,12 +71,12 @@ def testDlgOther_EditLabel(qtbot, monkeypatch):
 
     with monkeypatch.context() as mp:
         mp.setattr(GuiEditLabel, "result", lambda *a: QtAccepted)
-        newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Hello World")  # type: ignore
+        newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Stuff")  # type: ignore
         assert dlgOk is True
-        assert newLabel == "Hello World"
+        assert newLabel == "Stuff"
 
     with monkeypatch.context() as mp:
         mp.setattr(GuiEditLabel, "result", lambda *a: QtRejected)
-        newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Hello World")  # type: ignore
+        newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Stuff", info="Hi")  # type: ignore
         assert dlgOk is False
-        assert newLabel == "Hello World"
+        assert newLabel == "Stuff"

@@ -203,7 +203,10 @@ class NWProject:
         self._tree.remove(tHandle)
         return True
 
-    def writeNewFile(self, tHandle: str, hLevel: int, isDocument: bool, text: str = "") -> bool:
+    def writeNewFile(
+        self, tHandle: str, hLevel: int, isDocument: bool,
+        text: str = "", *, addHeading: bool = True,
+    ) -> bool:
         """Write content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
@@ -213,8 +216,9 @@ class NWProject:
         if self._storage.getDocumentText(tHandle).strip():
             return False
 
-        indent = "#"*minmax(hLevel, 1, 4)
-        text = f"{indent} {tItem.itemName}\n\n{text}"
+        if addHeading:
+            indent = "#"*minmax(hLevel, 1, 4)
+            text = f"{indent} {tItem.itemName}\n\n{text}"
 
         if tItem.isNovelLike() and isDocument:
             tItem.setLayout(nwItemLayout.DOCUMENT)

@@ -240,6 +240,12 @@ class GuiMainMenu(QMenuBar):
         self.aImportFile = qtAddAction(self.docuMenu, self.tr("Import Text from File"))
         self.aImportFile.triggered.connect(qtLambda(self.mainGui.importDocument))
 
+        # Document > Move Text
+        self.aMoveText = qtAddAction(self.docuMenu, self.tr("Move Text to New Document"))
+        self.aMoveText.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.MOVE_TEXT)
+        )
+
     def _buildEditMenu(self) -> None:
         """Assemble the Edit menu."""
         # Edit

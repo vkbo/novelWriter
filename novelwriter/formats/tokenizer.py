@@ -43,7 +43,7 @@ from novelwriter.enum import nwComment, nwItemLayout
 from novelwriter.formats.shared import (
     BlockFmt, BlockTyp, T_Block, T_Formats, T_Note, TextDocumentTheme, TextFmt
 )
-from novelwriter.text.comments import processComment
+from novelwriter.text.formats import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 
 if TYPE_CHECKING:
