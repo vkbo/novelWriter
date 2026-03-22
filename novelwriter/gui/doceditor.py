@@ -77,6 +77,7 @@ from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
 from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.text.counting import standardCounter
+from novelwriter.text.formats import processHeading
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
@@ -1326,19 +1327,23 @@ class GuiDocEditor(QPlainTextEdit):
 
         if (
             cursor.hasSelection()
-            and (text := cursor.selectedText().strip())
+            and (text := self.getSelectedText().strip())  # This handles proper line breaks
             and (item := self._nwItem)
             and (parent := item.itemParent)
         ):
+            heading, title = processHeading(text.partition("\n")[0])
             label, dlgOk = GuiEditLabel.getLabel(
-                self, text=f"{item.itemName} (1)",
+                self, text=title or f"{item.itemName} (1)",
                 info=self.tr("Create a new document from selected text?")
             )
             if dlgOk and (tHandle := SHARED.project.newFile(
                 label, parent, SHARED.project.tree.subTreePos(item.itemHandle) + 1
             )):
-                hLevel = nwStyles.H_LEVEL.get(item.mainHeading, 3)
-                if SHARED.project.writeNewFile(tHandle, hLevel, item.isDocumentLayout(), text):
+                hasHeading = heading != "H0"
+                hLevel = nwStyles.H_LEVEL.get(heading if hasHeading else item.mainHeading, 3)
+                if SHARED.project.writeNewFile(
+                    tHandle, hLevel, item.isDocumentLayout(), text, addHeading=not hasHeading
+                ):
                     cursor.removeSelectedText()
 
     @pyqtSlot(int, int, int)
