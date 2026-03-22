@@ -366,7 +366,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
         "Set as Document Name", "Paste",
-        "Select All", "Select Word", "Select Paragraph", "Tools",
+        "Select All", "Select Word", "Select Paragraph", "Actions",
     ]
     with monkeypatch.context() as mp:
         mp.setattr(GuiEditLabel, "getLabel", lambda a, text: (text, True))
@@ -382,7 +382,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
         "Open URL", "Paste",
-        "Select All", "Select Word", "Select Paragraph", "Tools",
+        "Select All", "Select Word", "Select Paragraph", "Actions",
     ]
     ctxMenu.setObjectName("")
     ctxMenu.deleteLater()
@@ -393,7 +393,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
         "Create Note for Tag", "Paste",
-        "Select All", "Select Word", "Select Paragraph", "Tools",
+        "Select All", "Select Word", "Select Paragraph", "Actions",
     ]
     ctxMenu.actions()[0].trigger()
     janeItem = SHARED.project.tree["0000000000010"]
@@ -408,7 +408,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
         "Follow Tag", "Paste",
-        "Select All", "Select Word", "Select Paragraph", "Tools",
+        "Select All", "Select Word", "Select Paragraph", "Actions",
     ]
     ctxMenu.actions()[0].trigger()
     assert nwGUI.docViewer.docHandle == "0000000000010"
@@ -420,7 +420,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Paste", "Select All", "Select Word", "Select Paragraph", "Tools",
+        "Paste", "Select All", "Select Word", "Select Paragraph", "Actions",
     ]
     ctxMenu.actions()[3].trigger()
     assert docEditor.textCursor().selectedText() == "text"
@@ -432,7 +432,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Paste", "Select All", "Select Word", "Select Paragraph", "Tools",
+        "Paste", "Select All", "Select Word", "Select Paragraph", "Actions",
     ]
     ctxMenu.actions()[4].trigger()
     assert docEditor.textCursor().selectedText() == "Some text ..."
@@ -444,7 +444,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Paste", "Select All", "Select Word", "Select Paragraph", "Tools",
+        "Paste", "Select All", "Select Word", "Select Paragraph", "Actions",
     ]
     ctxMenu.actions()[2].trigger()
     assert docEditor.textCursor().selectedText() == docEditor.document().toRawText()
@@ -460,7 +460,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert docEditor.textCursor().selectedText() == "text"
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Cut", "Copy", "Paste", "Select All", "Select Word", "Select Paragraph", "Tools",
+        "Cut", "Copy", "Paste", "Select All", "Select Word", "Select Paragraph", "Actions",
     ]
     clipboard.clear()
     ctxMenu.actions()[1].trigger()
@@ -1883,7 +1883,7 @@ def testGuiEditor_MoveTextToNewDocument(qtbot, monkeypatch, nwGUI, projPath, ips
     # Move from cursor
     nHandle = "0000000000010"
     docEditor.setCursorLine(6)
-    docEditor._moveTextToNewDocument()
+    docEditor.docAction(nwDocAction.MOVE_TEXT)
     item = SHARED.project.tree[nHandle]
     assert isinstance(item, NWItem)
     assert item.itemName == "New Scene (1)"
@@ -1905,7 +1905,7 @@ def testGuiEditor_MoveTextToNewDocument(qtbot, monkeypatch, nwGUI, projPath, ips
     docEditor.setTextCursor(cursor)
 
     # Move to new document
-    docEditor._moveTextToNewDocument()
+    docEditor.docAction(nwDocAction.MOVE_TEXT)
     item = SHARED.project.tree[nHandle]
     assert isinstance(item, NWItem)
     assert item.itemName == "Another Scene"

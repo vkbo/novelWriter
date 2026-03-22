@@ -129,6 +129,7 @@ class nwDocAction(Enum):
     SC_MARK   = 36
     SC_SUP    = 37
     SC_SUB    = 38
+    MOVE_TEXT = 39
 
 
 class nwDocInsert(Enum):

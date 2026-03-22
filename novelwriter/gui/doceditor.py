@@ -828,6 +828,8 @@ class GuiDocEditor(QPlainTextEdit):
             self._wrapSelection(nwShortcode.SUP_O, nwShortcode.SUP_C)
         elif action == nwDocAction.SC_SUB and not noFormat:
             self._wrapSelection(nwShortcode.SUB_O, nwShortcode.SUB_C)
+        elif action == nwDocAction.MOVE_TEXT:
+            self._moveTextToNewDocument()
         else:
             if noFormat:
                 logger.warning("Action '%s' not alowed on current block", action)
@@ -1255,10 +1257,10 @@ class GuiDocEditor(QPlainTextEdit):
         action = qtAddAction(ctxMenu, self.tr("Select Paragraph"))
         action.triggered.connect(qtLambda(self._makePosSelection, QtSelectBlock, pos))
 
-        # Tools
-        mTools = qtAddMenu(ctxMenu, self.tr("Tools"))
+        # Actions
+        mTools = qtAddMenu(ctxMenu, self.tr("Actions"))
         if hasSelection:
-            action = qtAddAction(mTools, self.tr("Move to New Document"))
+            action = qtAddAction(mTools, self.tr("Move Text to New Document"))
             action.triggered.connect(self._moveTextToNewDocument)
         else:
             action = qtAddAction(mTools, self.tr("Split Document at Cursor"))
