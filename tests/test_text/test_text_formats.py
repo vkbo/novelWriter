@@ -23,11 +23,11 @@ from __future__ import annotations
 import pytest
 
 from novelwriter.enum import nwComment
-from novelwriter.text.comments import _checkModKey, processComment
+from novelwriter.text.formats import _checkModKey, processComment, processHeading
 
 
 @pytest.mark.core
-def testTextComments_checkModKey():
+def testTextFormats_checkModKey():
     """Test the _checkModKey function."""
     # Check Requirements
 
@@ -59,7 +59,7 @@ def testTextComments_checkModKey():
 
 
 @pytest.mark.core
-def testTextComments_processComment():
+def testTextFormats_processComment():
     """Test the comment processing function."""
     # Plain
     assert processComment("%Hi") == (nwComment.PLAIN, "", "Hi", 0, 0)
@@ -108,3 +108,23 @@ def testTextComments_processComment():
     assert processComment("% note.term : Hi") == (nwComment.NOTE, "term", "Hi", 7, 13)
     assert processComment("% note. term : Hi") == (nwComment.PLAIN, "", "note. term : Hi", 0, 0)
     assert processComment("% note . term : Hi") == (nwComment.PLAIN, "", "note . term : Hi", 0, 0)
+
+
+@pytest.mark.core
+def testTextFormats_processHeading():
+    """Test the heading processing function."""
+    # Correct titles
+    assert processHeading("# Title") == ("H1", "Title")
+    assert processHeading("#! Title") == ("H1", "Title")
+    assert processHeading("## Title") == ("H2", "Title")
+    assert processHeading("##! Title") == ("H2", "Title")
+    assert processHeading("### Title") == ("H3", "Title")
+    assert processHeading("###! Title") == ("H3", "Title")
+    assert processHeading("#### Title") == ("H4", "Title")
+
+    # Stripped text
+    assert processHeading("# \tTitle\t  ") == ("H1", "Title")
+
+    # Incorrect titles
+    assert processHeading("##### Title") == ("H0", "")
+    assert processHeading("#Title") == ("H0", "")

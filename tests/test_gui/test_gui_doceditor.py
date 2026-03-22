@@ -35,6 +35,7 @@ from PyQt6.QtWidgets import QApplication, QMenu, QPlainTextEdit
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
 from novelwriter.constants import nwKeyWords, nwUnicode
+from novelwriter.core.item import NWItem
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwState
 from novelwriter.gui.doceditor import GuiDocEditor, TextAutoReplace, _TagAction
@@ -365,7 +366,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
         "Set as Document Name", "Paste",
-        "Select All", "Select Word", "Select Paragraph"
+        "Select All", "Select Word", "Select Paragraph", "Tools",
     ]
     with monkeypatch.context() as mp:
         mp.setattr(GuiEditLabel, "getLabel", lambda a, text: (text, True))
@@ -381,7 +382,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
         "Open URL", "Paste",
-        "Select All", "Select Word", "Select Paragraph"
+        "Select All", "Select Word", "Select Paragraph", "Tools",
     ]
     ctxMenu.setObjectName("")
     ctxMenu.deleteLater()
@@ -392,7 +393,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
         "Create Note for Tag", "Paste",
-        "Select All", "Select Word", "Select Paragraph"
+        "Select All", "Select Word", "Select Paragraph", "Tools",
     ]
     ctxMenu.actions()[0].trigger()
     janeItem = SHARED.project.tree["0000000000010"]
@@ -407,7 +408,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
         "Follow Tag", "Paste",
-        "Select All", "Select Word", "Select Paragraph"
+        "Select All", "Select Word", "Select Paragraph", "Tools",
     ]
     ctxMenu.actions()[0].trigger()
     assert nwGUI.docViewer.docHandle == "0000000000010"
@@ -419,7 +420,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Paste", "Select All", "Select Word", "Select Paragraph"
+        "Paste", "Select All", "Select Word", "Select Paragraph", "Tools",
     ]
     ctxMenu.actions()[3].trigger()
     assert docEditor.textCursor().selectedText() == "text"
@@ -431,7 +432,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Paste", "Select All", "Select Word", "Select Paragraph"
+        "Paste", "Select All", "Select Word", "Select Paragraph", "Tools",
     ]
     ctxMenu.actions()[4].trigger()
     assert docEditor.textCursor().selectedText() == "Some text ..."
@@ -443,7 +444,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Paste", "Select All", "Select Word", "Select Paragraph"
+        "Paste", "Select All", "Select Word", "Select Paragraph", "Tools",
     ]
     ctxMenu.actions()[2].trigger()
     assert docEditor.textCursor().selectedText() == docEditor.document().toRawText()
@@ -459,7 +460,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert docEditor.textCursor().selectedText() == "text"
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Cut", "Copy", "Paste", "Select All", "Select Word", "Select Paragraph"
+        "Cut", "Copy", "Paste", "Select All", "Select Word", "Select Paragraph", "Tools",
     ]
     clipboard.clear()
     ctxMenu.actions()[1].trigger()
@@ -537,13 +538,14 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     # With Suggestion
     with monkeypatch.context() as mp:
         mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [LORAX])
+        suggestion = f"{nwUnicode.U_ENDASH} {LORAX}"
 
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
-        actions = [x.text() for x in ctxMenu.actions() if x.text()]
+        actions = [x.text() for x in ctxMenu.actions()]
         assert "Spelling Suggestion(s)" in actions
-        assert f"{nwUnicode.U_ENDASH} {LORAX}" in actions
-        ctxMenu.actions()[7].trigger()
+        assert suggestion in actions
+        ctxMenu.actions()[actions.index(suggestion)].trigger()
         QApplication.processEvents()
         assert docEditor.getText() == text.replace("Lorem", LORAX, 1)
         ctxMenu.setObjectName("")
@@ -558,7 +560,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
-        actions = [x.text() for x in ctxMenu.actions() if x.text()]
+        actions = [x.text() for x in ctxMenu.actions()]
         assert f"{nwUnicode.U_ENDASH} No Suggestions" in actions
         assert docEditor.getText() == text.replace("Lorem", LORAX, 1)
         ctxMenu.setObjectName("")
@@ -570,14 +572,14 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
-        actions = [x.text() for x in ctxMenu.actions() if x.text()]
+        actions = [x.text() for x in ctxMenu.actions()]
         assert "Ignore Word" in actions
         assert "Add Word to Dictionary" in actions
 
         assert LORAX not in SHARED.spelling._userDict
-        ctxMenu.actions()[7].trigger()  # Ignore
+        ctxMenu.actions()[actions.index("Ignore Word")].trigger()
         assert LORAX not in SHARED.spelling._userDict
-        ctxMenu.actions()[8].trigger()  # Add
+        ctxMenu.actions()[actions.index("Add Word to Dictionary")].trigger()
         assert LORAX in SHARED.spelling._userDict
         ctxMenu.setObjectName("")
         ctxMenu.deleteLater()
@@ -1862,6 +1864,53 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     docEditor.setCursorPosition(47)
     assert docEditor._processTag() == _TagAction.NONE
+
+    # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiEditor_MoveTextToNewDocument(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
+    """Test the moving text to new document feature."""
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text, info: (text, True))
+
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor: GuiDocEditor = nwGUI.docEditor
+
+    text = "### A Scene\n\n{0}".format("\n\n".join(ipsumText))
+    docEditor.replaceText(text)
+
+    # Move from cursor
+    nHandle = "0000000000010"
+    docEditor.setCursorLine(6)
+    docEditor._moveTextToNewDocument()
+    item = SHARED.project.tree[nHandle]
+    assert isinstance(item, NWItem)
+    assert item.itemName == "New Scene (1)"
+    assert nwGUI.openDocument(nHandle) is True
+    assert docEditor.getText() == "### New Scene (1)\n\n{0}\n".format("\n\n".join(ipsumText[2:]))
+
+    # New from selection, with existing header
+    nHandle = "0000000000011"
+    docEditor.setCursorLine(5)
+    sPos = docEditor.getCursorPosition()
+    docEditor.insertText("### Another Scene\n\n")
+
+    # Select new title plus next paragraph
+    docEditor.setCursorLine(8)
+    ePos = docEditor.getCursorPosition()
+    cursor = docEditor.textCursor()
+    cursor.setPosition(sPos)
+    cursor.movePosition(QtMoveRight, QtKeepAnchor, ePos - sPos)
+    docEditor.setTextCursor(cursor)
+
+    # Move to new document
+    docEditor._moveTextToNewDocument()
+    item = SHARED.project.tree[nHandle]
+    assert isinstance(item, NWItem)
+    assert item.itemName == "Another Scene"
+    assert nwGUI.openDocument(nHandle) is True
+    assert docEditor.getText() == f"### Another Scene\n\n{ipsumText[3]}\n"
 
     # qtbot.stop()
 

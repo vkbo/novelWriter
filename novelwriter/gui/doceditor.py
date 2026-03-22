@@ -1344,6 +1344,8 @@ class GuiDocEditor(QPlainTextEdit):
                 if SHARED.project.writeNewFile(
                     tHandle, hLevel, item.isDocumentLayout(), text, addHeading=not hasHeading
                 ):
+                    SHARED.project.index.reIndexHandle(tHandle)
+                    SHARED.project.tree.refreshItems([tHandle])
                     cursor.removeSelectedText()
 
     @pyqtSlot(int, int, int)
