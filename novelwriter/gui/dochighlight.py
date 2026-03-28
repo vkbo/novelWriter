@@ -94,6 +94,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         syntax = SHARED.theme.syntaxTheme
 
         colEmph = syntax.emph if CONFIG.highlightEmph else None
+        dotCodes = "dot" if CONFIG.dottedModCodes else ""
 
         h1Size = nwStyles.H_SIZES[1] if CONFIG.scaleHeadings else None
         h2Size = nwStyles.H_SIZES[2] if CONFIG.scaleHeadings else None
@@ -118,16 +119,16 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._addCharFormat("nobreak",   syntax.space, "bg")
         self._addCharFormat("altdialog", syntax.dialA)
         self._addCharFormat("dialog",    syntax.dialN)
-        self._addCharFormat("replace",   syntax.repTag)
+        self._addCharFormat("replace",   syntax.repTag, dotCodes)
         self._addCharFormat("hidden",    syntax.hidden)
         self._addCharFormat("markup",    syntax.hidden)
         self._addCharFormat("link",      syntax.link, "u")
         self._addCharFormat("note",      syntax.note)
-        self._addCharFormat("code",      syntax.code)
+        self._addCharFormat("code",      syntax.code, dotCodes)
         self._addCharFormat("keyword",   syntax.key)
         self._addCharFormat("tag",       syntax.tag, "u")
-        self._addCharFormat("modifier",  syntax.mod)
-        self._addCharFormat("value",     syntax.val)
+        self._addCharFormat("modifier",  syntax.mod, dotCodes)
+        self._addCharFormat("value",     syntax.val, dotCodes)
         self._addCharFormat("optional",  syntax.opt)
         self._addCharFormat("invalid",   None, "err")
 
@@ -488,6 +489,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 charFormat.setFontUnderline(True)
             if "s" in styles:
                 charFormat.setFontStrikeOut(True)
+            if "dot" in styles:
+                charFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.DotLine)
             if "err" in styles:
                 charFormat.setUnderlineColor(SHARED.theme.syntaxTheme.error)
                 charFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)

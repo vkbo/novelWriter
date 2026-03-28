@@ -280,6 +280,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.altDialogOpen.setText("%")  # Symbol also tests for #2455
     prefs.altDialogClose.setText("%")  # Symbol also tests for #2455
     prefs.highlightEmph.setChecked(False)
+    prefs.dottedModCodes.setChecked(True)
     prefs.showMultiSpaces.setChecked(True)
 
     prefs._insertDialogLineSymbol(nwUnicode.U_ENDASH)
@@ -293,6 +294,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.altDialogOpen == ""
     assert CONFIG.altDialogClose == ""
     assert CONFIG.highlightEmph is True
+    assert CONFIG.dottedModCodes is False
     assert CONFIG.showMultiSpaces is False
 
     # Text Automation
@@ -419,6 +421,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.altDialogOpen == "%"
     assert CONFIG.altDialogClose == "%"
     assert CONFIG.highlightEmph is False
+    assert CONFIG.dottedModCodes is True
     assert CONFIG.showMultiSpaces is True
 
     # Text Automation

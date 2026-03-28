@@ -719,6 +719,14 @@ class GuiPreferences(NDialog):
             self.tr("Applies to the document editor only.")
         )
 
+        # Dotted Codes and Modifiers
+        self.dottedModCodes = NSwitch(self)
+        self.dottedModCodes.setChecked(CONFIG.dottedModCodes)
+        self.mainForm.addRow(
+            self.tr("Add dotted lines under codes and modifiers"), self.dottedModCodes,
+            self.tr("Applies to the document editor only.")
+        )
+
         # Additional Spaces
         self.showMultiSpaces = NSwitch(self)
         self.showMultiSpaces.setChecked(CONFIG.showMultiSpaces)
@@ -1116,6 +1124,7 @@ class GuiPreferences(NDialog):
         altDialogOpen   = compact(self.altDialogOpen.text())
         altDialogClose  = compact(self.altDialogClose.text())
         highlightEmph   = self.highlightEmph.isChecked()
+        dottedModCodes  = self.dottedModCodes.isChecked()
         showMultiSpaces = self.showMultiSpaces.isChecked()
 
         updateSyntax |= CONFIG.dialogStyle != dialogueStyle
@@ -1126,6 +1135,7 @@ class GuiPreferences(NDialog):
         updateSyntax |= CONFIG.altDialogOpen != altDialogOpen
         updateSyntax |= CONFIG.altDialogClose != altDialogClose
         updateSyntax |= CONFIG.highlightEmph != highlightEmph
+        updateSyntax |= CONFIG.dottedModCodes != dottedModCodes
         updateSyntax |= CONFIG.showMultiSpaces != showMultiSpaces
 
         CONFIG.dialogStyle     = dialogueStyle
@@ -1136,6 +1146,7 @@ class GuiPreferences(NDialog):
         CONFIG.altDialogOpen   = altDialogOpen
         CONFIG.altDialogClose  = altDialogClose
         CONFIG.highlightEmph   = highlightEmph
+        CONFIG.dottedModCodes  = dottedModCodes
         CONFIG.showMultiSpaces = showMultiSpaces
 
         # Text Automation

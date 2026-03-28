@@ -81,10 +81,10 @@ class Config:
         "appHandle", "appName", "askBeforeBackup", "askBeforeExit", "autoSaveDoc", "autoSaveProj",
         "autoScroll", "autoScrollPos", "autoSelect", "backupOnClose", "cursorWidth", "darkTheme",
         "dialogLine", "dialogStyle", "doJustify", "doReplace", "doReplaceDQuote", "doReplaceDash",
-        "doReplaceDots", "doReplaceSQuote", "emphLabels", "fmtApostrophe", "fmtDQuoteClose",
-        "fmtDQuoteOpen", "fmtPadAfter", "fmtPadBefore", "fmtPadThin", "fmtSQuoteClose",
-        "fmtSQuoteOpen", "focusWidth", "fontWinSize", "guiFont", "guiLocale", "hasEnchant",
-        "hideFocusFooter", "hideHScroll", "hideVScroll", "highlightEmph", "hostName",
+        "doReplaceDots", "doReplaceSQuote", "dottedModCodes", "emphLabels", "fmtApostrophe",
+        "fmtDQuoteClose", "fmtDQuoteOpen", "fmtPadAfter", "fmtPadBefore", "fmtPadThin",
+        "fmtSQuoteClose", "fmtSQuoteOpen", "focusWidth", "fontWinSize", "guiFont", "guiLocale",
+        "hasEnchant", "hideFocusFooter", "hideHScroll", "hideVScroll", "highlightEmph", "hostName",
         "iconColDocs", "iconColTree", "iconTheme", "incNotesWCount", "isDebug", "kernelVer",
         "lastNotes", "lightTheme", "lineHighlight", "mainPanePos", "mainWinSize", "memInfo",
         "moveMainWin", "narratorBreak", "narratorDialog", "nativeFont", "osDarwin", "osLinux",
@@ -237,6 +237,7 @@ class Config:
         self.altDialogOpen   = ""       # Alternative dialog symbol, open
         self.altDialogClose  = ""       # Alternative dialog symbol, close
         self.highlightEmph   = True     # Add colour to text emphasis
+        self.dottedModCodes  = False    # Add dotted lines under codes and modifiers
 
         self.stopWhenIdle    = True     # Stop the status bar clock when the user is idle
         self.userIdleTime    = 300      # Time of inactivity to consider user idle
@@ -718,6 +719,7 @@ class Config:
         self.altDialogOpen   = conf.rdStr(sec, "altdialogopen", self.altDialogOpen)
         self.altDialogClose  = conf.rdStr(sec, "altdialogclose", self.altDialogClose)
         self.highlightEmph   = conf.rdBool(sec, "highlightemph", self.highlightEmph)
+        self.dottedModCodes  = conf.rdBool(sec, "dottedmodcodes", self.dottedModCodes)
         self.stopWhenIdle    = conf.rdBool(sec, "stopwhenidle", self.stopWhenIdle)
         self.userIdleTime    = conf.rdInt(sec, "useridletime", self.userIdleTime)
 
@@ -850,6 +852,7 @@ class Config:
             "altdialogopen":   str(self.altDialogOpen),
             "altdialogclose":  str(self.altDialogClose),
             "highlightemph":   str(self.highlightEmph),
+            "dottedmodcodes":  str(self.dottedModCodes),
             "stopwhenidle":    str(self.stopWhenIdle),
             "useridletime":    str(self.userIdleTime),
         }
