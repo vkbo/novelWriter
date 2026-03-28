@@ -113,6 +113,7 @@ Other themes were created for novelWriter:
 * **Selenium** themes by Myian
 * **Sepia** themes by Myian
 * **Sultana** themes by Myian
+* **Today** themes by Veronica Berglyd Olsen
 * **Vivid** themes by Myian
 * **Warpgate** theme by Myian
 * **Waterlily** themes by Myian
