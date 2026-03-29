@@ -46,6 +46,7 @@ def syntax(nwGUI):
     CONFIG.altDialogOpen = "::"
     CONFIG.altDialogClose = "::"
     CONFIG.showMultiSpaces = True
+    CONFIG.dottedModCodes = True
 
     theme = SHARED.theme
     theme.loadTheme(force=True)
@@ -328,9 +329,12 @@ def testGuiDocHighlighter_Comments(syntax):
     assert formats[1].foreground().color().getRgb() == colHidden
     assert formats[1].fontStrikeOut() is True
     assert formats[2].foreground().color().getRgb() == colMod
+    assert formats[2].underlineStyle() == QTextCharFormat.UnderlineStyle.DotLine
     assert formats[3].foreground().color().getRgb() == colNote
     assert formats[4].foreground().color().getRgb() == colMod
+    assert formats[4].underlineStyle() == QTextCharFormat.UnderlineStyle.DotLine
     assert formats[5].foreground().color().getRgb() == colValue
+    assert formats[5].underlineStyle() == QTextCharFormat.UnderlineStyle.DotLine
     assert formats[6].foreground().color().getRgb() == colNote
 
     # Unicode <= 0xFFFF
@@ -354,9 +358,12 @@ def testGuiDocHighlighter_Comments(syntax):
     assert formats[1].foreground().color().getRgb() == colHidden
     assert formats[1].fontStrikeOut() is True
     assert formats[2].foreground().color().getRgb() == colMod
+    assert formats[2].underlineStyle() == QTextCharFormat.UnderlineStyle.DotLine
     assert formats[3].foreground().color().getRgb() == colNote
     assert formats[4].foreground().color().getRgb() == colMod
+    assert formats[4].underlineStyle() == QTextCharFormat.UnderlineStyle.DotLine
     assert formats[5].foreground().color().getRgb() == colValue
+    assert formats[5].underlineStyle() == QTextCharFormat.UnderlineStyle.DotLine
     assert formats[6].foreground().color().getRgb() == colNote
 
     # Unicode > 0xFFFF
@@ -380,9 +387,12 @@ def testGuiDocHighlighter_Comments(syntax):
     assert formats[1].foreground().color().getRgb() == colHidden
     assert formats[1].fontStrikeOut() is True
     assert formats[2].foreground().color().getRgb() == colMod
+    assert formats[2].underlineStyle() == QTextCharFormat.UnderlineStyle.DotLine
     assert formats[3].foreground().color().getRgb() == colNote
     assert formats[4].foreground().color().getRgb() == colMod
+    assert formats[4].underlineStyle() == QTextCharFormat.UnderlineStyle.DotLine
     assert formats[5].foreground().color().getRgb() == colValue
+    assert formats[5].underlineStyle() == QTextCharFormat.UnderlineStyle.DotLine
     assert formats[6].foreground().color().getRgb() == colNote
 
 

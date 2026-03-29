@@ -134,7 +134,7 @@ class GuiDocEditor(QPlainTextEdit):
     loadDocumentTagRequest = pyqtSignal(str, Enum)
     openDocumentRequest = pyqtSignal(str, Enum, str, bool)
     requestNewNoteCreation = pyqtSignal(str, nwItemClass)
-    requestNextDocument = pyqtSignal(str, bool)
+    requestNextDocument = pyqtSignal(str, bool, bool)
     requestProjectItemRenamed = pyqtSignal(str, str)
     requestProjectItemSelected = pyqtSignal(str, bool)
     spellCheckStateChanged = pyqtSignal(bool)
@@ -689,10 +689,11 @@ class GuiDocEditor(QPlainTextEdit):
 
     def setCursorLine(self, line: int | None) -> None:
         """Move the cursor to a given line in the document."""
-        if isinstance(line, int) and line > 0:
-            if block := self._qDocument.findBlockByNumber(line - 1):
+        if isinstance(line, int) and line != 0:
+            line = self._qDocument.blockCount() + line if line < 0 else line - 1
+            if block := self._qDocument.findBlockByNumber(line):
                 self.setCursorPosition(block.position())
-                logger.debug("Cursor moved to line %d", line)
+                logger.debug("Cursor moved to line %d", line + 1)
 
     def setCursorSelection(self, start: int, length: int) -> None:
         """Make a text selection."""
@@ -1458,8 +1459,8 @@ class GuiDocEditor(QPlainTextEdit):
         if len(resS) == 0 and self._docHandle:
             self.docSearch.setResultCount(0, 0)
             self._lastFind = None
-            if CONFIG.searchNextFile and not goBack:
-                self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop)
+            if CONFIG.searchNextFile:
+                self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop, goBack)
                 QApplication.processEvents()
                 self.beginSearch()
                 prevFocus.setFocus()
@@ -1474,16 +1475,15 @@ class GuiDocEditor(QPlainTextEdit):
         if goBack:
             resIdx -= 2
 
-        if resIdx < 0:
-            resIdx = maxIdx if doLoop else 0
-
-        if resIdx > maxIdx and self._docHandle:
-            if CONFIG.searchNextFile and not goBack:
-                self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop)
+        if ((resIdx < 0 and goBack) or (resIdx > maxIdx and not goBack)) and self._docHandle:
+            if CONFIG.searchNextFile:
+                self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop, goBack)
                 QApplication.processEvents()
                 self.beginSearch()
                 prevFocus.setFocus()
                 return
+            elif goBack:
+                resIdx = maxIdx if doLoop else 0
             else:
                 resIdx = 0 if doLoop else maxIdx
 

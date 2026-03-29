@@ -42,6 +42,7 @@ from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
+from novelwriter.guimain import GuiMain
 from novelwriter.shared import _GuiAlert
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.types import QtModCtrl, QtModShift
@@ -831,9 +832,29 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
-def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI, projPath, fncPath, mockRnd):
+def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI: GuiMain, projPath, fncPath, mockRnd):
     """Test various features of the main window."""
     buildTestProject(nwGUI, projPath)
+
+    # Check open document and prev/next with no wraparound
+    nwGUI.openNextDocument(C.hSceneDoc, False, True)  # Backwards
+    assert nwGUI.docEditor._docHandle == C.hChapterDoc
+    nwGUI.openNextDocument(C.hChapterDoc, False, False)  # Forwards
+    assert nwGUI.docEditor._docHandle == C.hSceneDoc
+
+    # Check open document and prev/next with wraparound
+    nwGUI.openNextDocument(C.hSceneDoc, True, False)  # Forwards
+    assert nwGUI.docEditor._docHandle == C.hTitlePage
+    nwGUI.openNextDocument(C.hTitlePage, True, True)  # Backwards
+    assert nwGUI.docEditor._docHandle == C.hSceneDoc
+
+    # Check with handle that is not a document, should do nothing
+    nwGUI.openDocument(C.hSceneDoc)
+    assert nwGUI.docEditor._docHandle == C.hSceneDoc
+    nwGUI.openNextDocument(C.hNovelRoot, True, True)
+    assert nwGUI.docEditor._docHandle == C.hSceneDoc
+
+    # Open some test documents
     nwGUI.openDocument(C.hSceneDoc)
     nwGUI.viewDocument(C.hTitlePage)
 
