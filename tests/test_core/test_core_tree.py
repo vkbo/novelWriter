@@ -71,6 +71,7 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
         "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
         "Plot", "Characters", "Locations", "Trash",
     ]
+    assert tree.allDocs() == [C.hTitlePage, C.hChapterDoc, C.hSceneDoc]
 
     # Pack the data again
     assert [n["name"] for n in tree.pack()] == [
