@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import logging
 
+from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 
@@ -38,9 +39,10 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, qtAddAction
 from novelwriter.core.coretools import DocSearch
+from novelwriter.enum import nwDocMode
 from novelwriter.types import (
     QtAlignMiddle, QtAlignRight, QtHeaderStretch, QtHeaderToContents,
-    QtHexArgb, QtUserRole
+    QtHexArgb, QtModShift, QtUserRole
 )
 
 if TYPE_CHECKING:
@@ -60,6 +62,7 @@ class GuiProjectSearch(QWidget):
     D_RESULT = QtUserRole + 1
 
     selectedItemChanged = pyqtSignal(str)
+    openDocumentRequest = pyqtSignal(str, Enum, str, bool)
     openDocumentSelectRequest = pyqtSignal(str, int, int, bool)
 
     def __init__(self, parent: QWidget) -> None:
@@ -185,9 +188,12 @@ class GuiProjectSearch(QWidget):
             and (data := items[0].data(0, self.D_RESULT))
             and len(data) == 3
         ):
-            self.openDocumentSelectRequest.emit(
-                str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1), False
-            )
+            if QApplication.keyboardModifiers() == QtModShift:
+                self.openDocumentRequest.emit(str(data[0]), nwDocMode.VIEW, "", True)
+            else:
+                self.openDocumentSelectRequest.emit(
+                    str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1), False
+                )
 
     def beginSearch(self, text: str = "") -> None:
         """Focus the search box and select its text, if any."""

@@ -247,6 +247,7 @@ class GuiMain(QMainWindow):
         self.novelView.openDocumentRequest.connect(self._openDocument)
         self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
 
+        self.projSearch.openDocumentRequest.connect(self._openDocument)
         self.projSearch.openDocumentSelectRequest.connect(self._openDocumentSelection)
         self.projSearch.selectedItemChanged.connect(self.itemDetails.updateViewBox)
 
@@ -291,20 +292,8 @@ class GuiMain(QMainWindow):
 
         # Shortcuts
         self.keyReturn = QShortcut(self)
-        self.keyReturn.setKey("Return")
+        self.keyReturn.setKeys(["Return", "Enter", "Shift+Return", "Shift+Enter"])
         self.keyReturn.activated.connect(self._keyPressReturn)
-
-        self.keyShiftReturn = QShortcut(self)
-        self.keyShiftReturn.setKey("Shift+Return")
-        self.keyShiftReturn.activated.connect(self._keyPressReturn)
-
-        self.keyEnter = QShortcut(self)
-        self.keyEnter.setKey("Enter")
-        self.keyEnter.activated.connect(self._keyPressReturn)
-
-        self.keyShiftEnter = QShortcut(self)
-        self.keyShiftEnter.setKey("Shift+Enter")
-        self.keyShiftEnter.activated.connect(self._keyPressReturn)
 
         self.keyEscape = QShortcut(self)
         self.keyEscape.setKey("Esc")

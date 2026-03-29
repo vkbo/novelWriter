@@ -27,7 +27,7 @@ import pytest
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
 
-from novelwriter.enum import nwView
+from novelwriter.enum import nwDocMode, nwView
 from novelwriter.gui.search import GuiProjectSearch
 
 
@@ -84,6 +84,9 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
         with qtbot.waitSignal(search.openDocumentSelectRequest, timeout=1000) as signal:
             qtbot.keyClick(search, Qt.Key.Key_Return)
             assert signal.args == [handle, 3, 5, False]
+        with qtbot.waitSignal(search.openDocumentRequest, timeout=1000) as signal:
+            qtbot.keyClick(search, Qt.Key.Key_Return, Qt.KeyboardModifier.ShiftModifier)
+            assert signal.args == [handle, nwDocMode.VIEW, "", True]
 
     assert nwGUI.docEditor.docHandle == handle
     assert nwGUI.docEditor.textCursor().selectedText() == "Lorem"
