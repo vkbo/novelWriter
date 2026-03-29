@@ -112,12 +112,13 @@ class GuiDocEditor(QPlainTextEdit):
     """Gui Widget: Main Document Editor."""
 
     __slots__ = (
-        "_autoReplace", "_completer", "_doReplace", "_docChanged", "_docHandle", "_followTag1",
-        "_followTag2", "_keyContext", "_lastActive", "_lastEdit", "_lastFind", "_nwDocument",
+        "_autoReplace", "_completer", "_doReplace", "_docChanged", "_docHandle", "_followTagEdit",
+        "_followTagView", "_keyContext", "_lastActive", "_lastEdit", "_lastFind", "_nwDocument",
         "_nwItem", "_qDocument", "_timerDoc", "_timerSel", "_trActions", "_trAddWord", "_trCopy",
-        "_trCreateNote", "_trCut", "_trFollowTag", "_trIgnoreWord", "_trMoveText", "_trNoSuggest",
+        "_trCreateNote", "_trCut", "_trEditTag", "_trIgnoreWord", "_trMoveText", "_trNoSuggest",
         "_trOpenURL", "_trPaste", "_trSelectAll", "_trSelectPara", "_trSelectWord", "_trSetName",
-        "_trSpellSuggest", "_trSplitDoc", "_vim", "_vpMargin", "_wCounterDoc", "_wCounterSel",
+        "_trSpellSuggest", "_trSplitDoc", "_trViewTag", "_vim", "_vpMargin", "_wCounterDoc",
+        "_wCounterSel",
     )
 
     MOVE_KEYS = (
@@ -164,7 +165,8 @@ class GuiDocEditor(QPlainTextEdit):
         # Context Menu Translation
         self._trSetName = self.tr("Set as Document Name")
         self._trOpenURL = self.tr("Open URL")
-        self._trFollowTag = self.tr("Follow Tag")
+        self._trViewTag = self.tr("View Tag Source")
+        self._trEditTag = self.tr("Edit Tag Source")
         self._trCreateNote = self.tr("Create Note for Tag")
         self._trCut = self.tr("Cut")
         self._trCopy = self.tr("Copy")
@@ -224,15 +226,15 @@ class GuiDocEditor(QPlainTextEdit):
         self._keyContext.setContext(Qt.ShortcutContext.WidgetShortcut)
         self._keyContext.activated.connect(self._openContextFromCursor)
 
-        self._followTag1 = QShortcut(self)
-        self._followTag1.setKey("Ctrl+Return")
-        self._followTag1.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self._followTag1.activated.connect(qtLambda(self._processTag))
+        self._followTagView = QShortcut(self)
+        self._followTagView.setKeys(["Ctrl+Return", "Ctrl+Enter"])
+        self._followTagView.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._followTagView.activated.connect(qtLambda(self._processTag))
 
-        self._followTag2 = QShortcut(self)
-        self._followTag2.setKey("Ctrl+Enter")
-        self._followTag2.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self._followTag2.activated.connect(qtLambda(self._processTag))
+        self._followTagEdit = QShortcut(self)
+        self._followTagEdit.setKeys(["Ctrl+Shift+Return", "Ctrl+Shift+Enter"])
+        self._followTagEdit.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._followTagEdit.activated.connect(qtLambda(self._processTag, edit=True))
 
         self._prevLine = QShortcut(self)
         self._prevLine.setKey("Ctrl+Up")
@@ -1252,8 +1254,14 @@ class GuiDocEditor(QPlainTextEdit):
         # Follow
         status = self._processTag(cursor=pCursor, follow=False)
         if status & _TagAction.FOLLOW:
-            action = qtAddAction(ctxMenu, self._trFollowTag)
-            action.triggered.connect(qtLambda(self._processTag, cursor=pCursor, follow=True))
+            action = qtAddAction(ctxMenu, self._trViewTag)
+            action.triggered.connect(
+                qtLambda(self._processTag, cursor=pCursor, follow=True, edit=False)
+            )
+            action = qtAddAction(ctxMenu, self._trEditTag)
+            action.triggered.connect(
+                qtLambda(self._processTag, cursor=pCursor, follow=True, edit=True)
+            )
             ctxMenu.addSeparator()
         elif status & _TagAction.CREATE:
             action = qtAddAction(ctxMenu, self._trCreateNote)
@@ -2361,7 +2369,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument.syntaxHighlighter.rehighlightBlock(block)
 
     def _processTag(
-        self, cursor: QTextCursor | None = None, follow: bool = True, create: bool = False
+        self, cursor: QTextCursor | None = None, *,
+        follow: bool = True, edit: bool = False, create: bool = False
     ) -> _TagAction:
         """Activated by Ctrl+Enter. Checks that we're in a block
         starting with '@'. We then find the tag under the cursor and
@@ -2417,7 +2426,7 @@ class GuiDocEditor(QPlainTextEdit):
 
             if follow and exist:
                 logger.debug("Attempting to follow tag '%s'", tag)
-                self.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
+                self.loadDocumentTagRequest.emit(tag, nwDocMode.EDIT if edit else nwDocMode.VIEW)
             elif create and not exist:
                 if SHARED.question(self.tr(
                     "Do you want to create a new project note for the tag '{0}'?"
