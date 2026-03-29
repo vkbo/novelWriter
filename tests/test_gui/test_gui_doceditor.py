@@ -407,7 +407,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Follow Tag", "Paste",
+        "View Tag Source", "Edit Tag Source", "Paste",
         "Select All", "Select Word", "Select Paragraph", "More Actions",
     ]
     ctxMenu.actions()[0].trigger()
@@ -1799,6 +1799,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
+    docViewer = nwGUI.docViewer
 
     # Create Scene
     text = "### A Scene\n\n@char: Jane, John\n\n@object: Gun\n\n@:\n\n" + ipsumText[0] + "\n\n"
@@ -1807,13 +1808,13 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Create Character
     text = "### Jane Doe\n\n@tag: Jane\n\n" + ipsumText[1] + "\n\n"
     cHandle = SHARED.project.newFile("Jane Doe", C.hCharRoot)
-    assert nwGUI.openDocument(cHandle) is True
+    nwGUI.openDocument(cHandle)
     docEditor.replaceText(text)
     nwGUI.saveDocument()
 
     # Follow Tag
     # ==========
-    assert nwGUI.openDocument(C.hSceneDoc) is True
+    nwGUI.openDocument(C.hSceneDoc)
 
     # Empty Block
     docEditor.setCursorLine(2)
@@ -1830,22 +1831,26 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # On Known Tag, No Follow
     docEditor.setCursorPosition(22)
     assert docEditor._processTag(follow=False) == _TagAction.FOLLOW
-    assert nwGUI.docViewer._docHandle is None
+    assert docViewer._docHandle is None
 
-    # qtbot.stop()
     # On Known Tag, Follow
     docEditor.setCursorPosition(22)
     position = QPointF(docEditor.cursorRect().center())
     event = QMouseEvent(
         QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModCtrl
     )
-    assert nwGUI.docViewer._docHandle is None
+    assert docViewer._docHandle is None
     docEditor.mouseReleaseEvent(event)
-    assert nwGUI.docViewer._docHandle == cHandle
+    assert docViewer._docHandle == cHandle
     assert nwGUI.closeViewerPanel() is True
-    assert nwGUI.docViewer._docHandle is None
+    assert docViewer._docHandle is None
+
+    # On Known Tag, Follow and Edit
+    assert docEditor._processTag(follow=True, edit=True) == _TagAction.FOLLOW
+    assert docEditor._docHandle == cHandle
 
     # On Unknown Tag, Create It
+    nwGUI.openDocument(C.hSceneDoc)
     assert "0000000000011" not in SHARED.project.tree
     docEditor.setCursorPosition(28)
     assert docEditor._processTag(create=True) == _TagAction.CREATE
