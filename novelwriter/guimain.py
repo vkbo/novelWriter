@@ -559,8 +559,9 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot(str, bool, bool)
     def openNextDocument(self, tHandle: str, wrapAround: bool, goBack: bool) -> None:
-        """Open the next document in the project tree, following the
-        document with the given handle. Stop when reaching the end.
+        """Open the next (or previous) document in the project tree,
+        next to the document with the given handle. Stop when reaching
+        the edge unless the wrapAround flag is set.
         """
         if SHARED.hasProject and (allDocs := SHARED.project.tree.allDocs()):
             try:
