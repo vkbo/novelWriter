@@ -557,29 +557,25 @@ class GuiMain(QMainWindow):
 
         return True
 
-    @pyqtSlot(str, bool)
-    def openNextDocument(self, tHandle: str, wrapAround: bool) -> None:
+    @pyqtSlot(str, bool, bool)
+    def openNextDocument(self, tHandle: str, wrapAround: bool, goBack: bool) -> None:
         """Open the next document in the project tree, following the
         document with the given handle. Stop when reaching the end.
         """
-        if SHARED.hasProject:
-            nHandle = None   # The next handle after tHandle
-            fHandle = None   # The first file handle we encounter
-            foundIt = False  # We've found tHandle, pick the next we see
-            for tItem in SHARED.project.tree:
-                if not tItem.isFileType():
-                    continue
-                if fHandle is None:
-                    fHandle = tItem.itemHandle
-                if tItem.itemHandle == tHandle:
-                    foundIt = True
-                elif foundIt:
-                    nHandle = tItem.itemHandle
-                    break
-            if nHandle is not None:
-                self.openDocument(nHandle, tLine=1, doScroll=True)
-            elif wrapAround:
-                self.openDocument(fHandle, tLine=1, doScroll=True)
+        if SHARED.hasProject and (allDocs := SHARED.project.tree.allDocs()):
+            try:
+                currIdx = allDocs.index(tHandle)
+                nHandle = (
+                    (allDocs[-1] if wrapAround else None)
+                    if currIdx == 0 else allDocs[currIdx - 1]
+                ) if goBack else (
+                    (allDocs[0] if wrapAround else None)
+                    if currIdx == len(allDocs) - 1 else allDocs[currIdx + 1]
+                )
+                if nHandle is not None:
+                    self.openDocument(nHandle, tLine=(-1 if goBack else 1), doScroll=True)
+            except Exception:
+                logger.error("Could not find next document for '%s'", tHandle)
 
     def saveDocument(self, force: bool = False) -> None:
         """Save the current documents."""
