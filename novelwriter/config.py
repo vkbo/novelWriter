@@ -46,7 +46,7 @@ from novelwriter.common import (
     formatTimeStamp, joinLines, languageName, processDialogSymbols, safeExists,
     safeIsDir, simplified
 )
-from novelwriter.constants import nwFiles, nwQuotes, nwUnicode
+from novelwriter.constants import nwFiles, nwQuotes, nwUnicode, trStats
 from novelwriter.enum import nwTheme
 from novelwriter.error import formatException, logException
 
@@ -79,23 +79,24 @@ class Config:
         "_manuals", "_nwLangPath", "_qLocale", "_qtLangPath", "_qtTrans", "_recentPaths",
         "_recentProjects", "_splash", "allowOpenDial", "altDialogClose", "altDialogOpen",
         "appHandle", "appName", "askBeforeBackup", "askBeforeExit", "autoSaveDoc", "autoSaveProj",
-        "autoScroll", "autoScrollPos", "autoSelect", "backupOnClose", "cursorWidth", "darkTheme",
-        "dialogLine", "dialogStyle", "doJustify", "doReplace", "doReplaceDQuote", "doReplaceDash",
-        "doReplaceDots", "doReplaceSQuote", "dottedModCodes", "emphLabels", "fmtApostrophe",
-        "fmtDQuoteClose", "fmtDQuoteOpen", "fmtPadAfter", "fmtPadBefore", "fmtPadThin",
-        "fmtSQuoteClose", "fmtSQuoteOpen", "focusWidth", "fontWinSize", "guiFont", "guiLocale",
-        "hasEnchant", "hideFocusFooter", "hideHScroll", "hideVScroll", "highlightEmph", "hostName",
-        "iconColDocs", "iconColTree", "iconTheme", "incNotesWCount", "isDebug", "kernelVer",
-        "lastNotes", "lightTheme", "lineHighlight", "mainPanePos", "mainWinSize", "memInfo",
-        "moveMainWin", "narratorBreak", "narratorDialog", "nativeFont", "osDarwin", "osLinux",
-        "osType", "osUnknown", "osWindows", "outlinePanePos", "prefsWinSize", "scaleHeadings",
-        "scrollPastEnd", "searchCase", "searchLoop", "searchMatchCap", "searchNextFile",
-        "searchProjCase", "searchProjRegEx", "searchProjWord", "searchRegEx", "searchWord",
-        "showEditToolBar", "showFullPath", "showLineEndings", "showMultiSpaces", "showSessionTime",
-        "showTabsNSpaces", "showViewerPanel", "spellLanguage", "stopWhenIdle", "tabWidth",
-        "textFont", "textMargin", "textWidth", "themeMode", "useCharCount", "userIdleTime",
-        "verPyQtString", "verPyQtValue", "verPyString", "verQtString", "verQtValue",
-        "viewComments", "viewNotes", "viewPanePos", "viewSynopsis", "vimMode", "welcomeWinSize"
+        "autoScroll", "autoScrollPos", "autoSelect", "backupOnClose", "countUnit", "cursorWidth",
+        "darkTheme", "dialogLine", "dialogStyle", "doJustify", "doReplace", "doReplaceDQuote",
+        "doReplaceDash", "doReplaceDots", "doReplaceSQuote", "dottedModCodes", "emphLabels",
+        "fmtApostrophe", "fmtDQuoteClose", "fmtDQuoteOpen", "fmtPadAfter", "fmtPadBefore",
+        "fmtPadThin", "fmtSQuoteClose", "fmtSQuoteOpen", "focusWidth", "fontWinSize", "guiFont",
+        "guiLocale", "hasEnchant", "hideFocusFooter", "hideHScroll", "hideVScroll",
+        "highlightEmph", "hostName", "iconColDocs", "iconColTree", "iconTheme", "incNotesWCount",
+        "isDebug", "kernelVer", "lastNotes", "lightTheme", "lineHighlight", "mainPanePos",
+        "mainWinSize", "memInfo", "moveMainWin", "narratorBreak", "narratorDialog", "nativeFont",
+        "osDarwin", "osLinux", "osType", "osUnknown", "osWindows", "outlinePanePos",
+        "prefsWinSize", "scaleHeadings", "scrollPastEnd", "searchCase", "searchLoop",
+        "searchMatchCap", "searchNextFile", "searchProjCase", "searchProjRegEx", "searchProjWord",
+        "searchRegEx", "searchWord", "showEditToolBar", "showFullPath", "showLineEndings",
+        "showMultiSpaces", "showSessionTime", "showTabsNSpaces", "showViewerPanel",
+        "spellLanguage", "stopWhenIdle", "tabWidth", "textFont", "textMargin", "textWidth",
+        "themeMode", "useCharCount", "userIdleTime", "verPyQtString", "verPyQtValue",
+        "verPyString", "verQtString", "verQtValue", "viewComments", "viewNotes", "viewPanePos",
+        "viewSynopsis", "vimMode", "welcomeWinSize",
     )
 
     LANG_NW   = 1
@@ -176,6 +177,7 @@ class Config:
         self.nativeFont   = True           # Use native font dialog
         self.useCharCount = False          # Use character count as primary count
         self.vimMode      = False          # Enable Vim mode
+        self.countUnit    = "words"        # Primary count unit
 
         # Icons
         self.iconTheme   = DEF_ICONS    # Icons theme
@@ -450,6 +452,11 @@ class Config:
             self.textFont = fontMatcher(font)
             logger.debug("Text font set to: %s", describeFont(self.textFont))
 
+    def setPrimaryCount(self, useCharCount: bool) -> None:
+        """Set the primary count unit. This also updates the unit label."""
+        self.useCharCount = useCharCount
+        self.countUnit = trStats("Characters" if useCharCount else "Words").lower()
+
     ##
     #  Methods
     ##
@@ -609,6 +616,9 @@ class Config:
                         logger.debug("Loaded: %s.qm", lngFile)
                         nwApp.installTranslator(qTrans)
                         self._qtTrans[lngFile] = qTrans
+
+        # Refresh translated values
+        self.setPrimaryCount(self.useCharCount)
 
     def loadConfig(self, splash: NSplashScreen | None = None) -> bool:
         """Load preferences from file and replace default settings."""

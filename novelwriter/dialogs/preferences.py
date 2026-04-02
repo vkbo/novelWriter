@@ -1058,8 +1058,8 @@ class GuiPreferences(NDialog):
         CONFIG.hideVScroll  = self.hideVScroll.isChecked()
         CONFIG.hideHScroll  = self.hideHScroll.isChecked()
         CONFIG.nativeFont   = self.nativeFont.isChecked()
-        CONFIG.useCharCount = useCharCount
         CONFIG.setGuiFont(self._guiFont)
+        CONFIG.setPrimaryCount(useCharCount)
 
         # Document Style
         CONFIG.showFullPath   = self.showFullPath.isChecked()
