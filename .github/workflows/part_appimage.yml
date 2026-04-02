@@ -29,10 +29,10 @@ jobs:
         run: pip install python-appimage setuptools
 
       - name: Checkout Source
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nw-assets
           path: novelwriter/assets
@@ -47,7 +47,7 @@ jobs:
           python pkgutils.py build-appimage $LINUX_TAG $LINUX_ARCH $PYTHON_VERSION
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: novelWriter-${{ steps.build.outputs.BUILD_VERSION }}-Linux-AppImage
           path: dist_appimage/*.AppImage*

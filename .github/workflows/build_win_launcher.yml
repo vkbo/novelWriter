@@ -9,7 +9,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Build Launcher
         id: build
@@ -19,7 +19,7 @@ jobs:
 
       - name: Upload Unsigned Artifacts
         id: upload-unsigned-artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: launcher
           path: setup/windows/novelWriter.exe
@@ -27,7 +27,7 @@ jobs:
           retention-days: 14
 
       - name: Submit Signing Request
-        uses: signpath/github-action-submit-signing-request@v1
+        uses: signpath/github-action-submit-signing-request@v2
         with:
           api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
           organization-id: "0471e52c-66fa-4e9a-bfb9-36167095ca3f"
@@ -39,7 +39,7 @@ jobs:
           output-artifact-directory: "."
 
       - name: Upload Signed Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: launcher-signed
           path: novelWriter.exe
