@@ -197,16 +197,18 @@ class NScrollableForm(QScrollArea):
         else:
             qWidget = widget
 
-        text = label or ""
-        qLabel = QLabel(text, self)
+        qLabel = QLabel(label or "", self)
         qLabel.setIndent(self._indent)
         qLabel.setBuddy(qWidget)
+        qWidget.setAccessibleName(label)
 
         if helpText:
             qHelp = NColorLabel(
                 str(helpText), self, color=self._helpCol,
                 scale=self._fontScale, wrap=True, indent=self._indent
             )
+            qHelp.setBuddy(qWidget)
+            qWidget.setAccessibleDescription(helpText)
             labelBox = QVBoxLayout()
             labelBox.addWidget(qLabel, 0)
             labelBox.addWidget(qHelp, 1)
@@ -214,16 +216,17 @@ class NScrollableForm(QScrollArea):
             row.addLayout(labelBox, stretch[0])
             if editable:
                 self._editable[editable] = qHelp
-            text = f"{text}: {helpText}"
         else:
             row.addWidget(qLabel, stretch[0])
 
         if isinstance(unit, str):
+            qUnit = QLabel(unit, self)
+            qUnit.setBuddy(qWidget)
+            qWidget.setAccessibleDescription(f"{unit}. {qWidget.accessibleDescription()}")
             box = QHBoxLayout()
             box.addWidget(qWidget, 1)
-            box.addWidget(QLabel(unit, self), 0)
+            box.addWidget(qUnit, 0)
             row.addLayout(box, stretch[1])
-            text = f"{text} Unit: {unit}"
         elif isinstance(button, QAbstractButton):
             box = QHBoxLayout()
             box.addWidget(qWidget, 1)
@@ -236,7 +239,6 @@ class NScrollableForm(QScrollArea):
         self._layout.addLayout(row)
         if label:
             self._index[label.strip()] = qWidget
-        qLabel.setAccessibleName(text)
 
     def finalise(self) -> None:
         """Finalise the layout when the form is built."""
@@ -268,7 +270,6 @@ class NColorLabel(QLabel):
         self._color = color or default
         self._faded = faded or default
         self._error = error or default
-        self._crumbs = ""
 
         font = self.font()
         font.setPointSizeF(scale*font.pointSizeF())
