@@ -576,28 +576,39 @@ class _NewProjectForm(QWidget):
         self.projName.setPlaceholderText(self.tr("Required"))
         self.projName.textChanged.connect(self._updateProjPath)
 
-        # Author(s)
+        self.projNameLabel = QLabel(self.tr("Project Name"), self)
+        self.projNameLabel.setBuddy(self.projName)
+
+        # Author
         self.projAuthor = QLineEdit(self)
         self.projAuthor.setMaxLength(200)
         self.projAuthor.setPlaceholderText(self.tr("Optional"))
         self.projAuthor.setText(CONFIG.lastAuthor)
+
+        self.projAuthorLabel = QLabel(self.tr("Author"), self)
+        self.projAuthorLabel.setBuddy(self.projAuthor)
 
         # Project Path
         self.projPath = QLineEdit(self)
         self.projPath.setReadOnly(True)
 
         self.browsePath = NIconToolButton(self, iSz, "browse", "systemio")
+        self.browsePath.setToolTip(self.tr("Browse for new project path"))
         self.browsePath.clicked.connect(self._doBrowse)
 
         self.pathBox = QHBoxLayout()
         self.pathBox.addWidget(self.projPath)
         self.pathBox.addWidget(self.browsePath)
 
+        self.projPathLabel = QLabel(self.tr("Project Path"), self)
+        self.projPathLabel.setBuddy(self.projPath)
+
         # Fill Project
         self.projFill = QLineEdit(self)
         self.projFill.setReadOnly(True)
 
         self.browseFill = NIconToolButton(self, iSz, "document_add", "add")
+        self.browseFill.setToolTip(self.tr("Fill new project"))
 
         self.fillMenu = QMenu(self.browseFill)
 
@@ -619,13 +630,16 @@ class _NewProjectForm(QWidget):
         self.fillBox.addWidget(self.projFill)
         self.fillBox.addWidget(self.browseFill)
 
+        self.projFillLabel = QLabel(self.tr("Prefill Project"), self)
+        self.projFillLabel.setBuddy(self.projFill)
+
         # Project Form
         self.projectForm = QFormLayout()
         self.projectForm.setAlignment(QtAlignLeft)
-        self.projectForm.addRow(self.tr("Project Name"), self.projName)
-        self.projectForm.addRow(self.tr("Author"), self.projAuthor)
-        self.projectForm.addRow(self.tr("Project Path"), self.pathBox)
-        self.projectForm.addRow(self.tr("Prefill Project"), self.fillBox)
+        self.projectForm.addRow(self.projNameLabel, self.projName)
+        self.projectForm.addRow(self.projAuthorLabel, self.projAuthor)
+        self.projectForm.addRow(self.projPathLabel, self.pathBox)
+        self.projectForm.addRow(self.projFillLabel, self.fillBox)
 
         # Chapters and Scenes
         # ===================

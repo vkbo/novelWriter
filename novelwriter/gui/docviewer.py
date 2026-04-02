@@ -840,38 +840,38 @@ class GuiDocViewFooter(QWidget):
 
         # Show/Hide Details
         self.showHide = NIconToolButton(self, iSz)
-        self.showHide.clicked.connect(lambda: self.docViewer.togglePanelVisibility.emit())
         self.showHide.setToolTip(self.tr("Show/Hide Viewer Panel"))
+        self.showHide.clicked.connect(lambda: self.docViewer.togglePanelVisibility.emit())
 
         # Show Comments
         self.showComments = QToolButton(self)
         self.showComments.setText(self.tr("Comments"))
+        self.showComments.setToolTip(self.tr("Show Comments"))
         self.showComments.setCheckable(True)
         self.showComments.setChecked(CONFIG.viewComments)
         self.showComments.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.showComments.setIconSize(iSz)
         self.showComments.toggled.connect(self._doToggleComments)
-        self.showComments.setToolTip(self.tr("Show Comments"))
 
         # Show Synopsis
         self.showSynopsis = QToolButton(self)
         self.showSynopsis.setText(self.tr("Synopsis"))
+        self.showSynopsis.setToolTip(self.tr("Show Synopsis Comments"))
         self.showSynopsis.setCheckable(True)
         self.showSynopsis.setChecked(CONFIG.viewSynopsis)
         self.showSynopsis.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.showSynopsis.setIconSize(iSz)
         self.showSynopsis.toggled.connect(self._doToggleSynopsis)
-        self.showSynopsis.setToolTip(self.tr("Show Synopsis Comments"))
 
         # Show Notes
         self.showNotes = QToolButton(self)
         self.showNotes.setText(self.tr("Notes"))
+        self.showNotes.setToolTip(self.tr("Show Notes"))
         self.showNotes.setCheckable(True)
         self.showNotes.setChecked(CONFIG.viewNotes)
         self.showNotes.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.showNotes.setIconSize(iSz)
         self.showNotes.toggled.connect(self._doToggleNotes)
-        self.showNotes.setToolTip(self.tr("Show Notes"))
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()

@@ -42,9 +42,12 @@ from novelwriter import CONFIG
 from novelwriter.common import checkInt, minmax, safeIsFile
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS, DEF_TREECOL
 from novelwriter.constants import nwLabels
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwStandardButton, nwTheme
+from novelwriter.enum import (
+    nwItemClass, nwItemLayout, nwItemType, nwStandardButton, nwTheme,
+    nwToolButton
+)
 from novelwriter.error import logException
-from novelwriter.extensions.modified import NPushButton
+from novelwriter.extensions.modified import NIconToolButton, NPushButton
 from novelwriter.types import (
     QtBlack, QtColActive, QtColDisabled, QtColInactive, QtHexArgb,
     QtPaintAntiAlias, QtTransparent
@@ -77,6 +80,18 @@ STANDARD_BUTTONS = {
     nwStandardButton.BUILD:   (QT_TRANSLATE_NOOP("Button", "Build"), "btn_build", "action"),
     nwStandardButton.PRINT:   (QT_TRANSLATE_NOOP("Button", "Print"), "btn_print", "action"),
     nwStandardButton.PREVIEW: (QT_TRANSLATE_NOOP("Button", "Preview"), "btn_preview", "action"),
+}
+
+TOOL_BUTTONS = {
+    nwToolButton.ADD:       (QT_TRANSLATE_NOOP("Button", "Add"), "add", "add"),
+    nwToolButton.REMOVE:    (QT_TRANSLATE_NOOP("Button", "Remove"), "remove", "remove"),
+    nwToolButton.MOVE_UP:   (QT_TRANSLATE_NOOP("Button", "Move Up"), "chevron_up", "action"),
+    nwToolButton.MOVE_DOWN: (QT_TRANSLATE_NOOP("Button", "Move Down"), "chevron_down", "action"),
+    nwToolButton.IMPORT:    (QT_TRANSLATE_NOOP("Button", "Import"), "import", "apply"),
+    nwToolButton.EXPORT:    (QT_TRANSLATE_NOOP("Button", "Export"), "export", "action"),
+    nwToolButton.BROWSE:    (QT_TRANSLATE_NOOP("Button", "Browse"), "browse", "systemio"),
+    nwToolButton.EDIT:      (QT_TRANSLATE_NOOP("Button", "Edit"), "edit", "change"),
+    nwToolButton.REVERT:    (QT_TRANSLATE_NOOP("Button", "Revert"), "revert", "reset"),
 }
 
 
@@ -145,10 +160,10 @@ class GuiTheme:
         "_qColors", "_styleSheets", "_svgColors", "_syntaxList", "accentCol", "baseButtonHeight",
         "baseIconHeight", "baseIconSize", "errorText", "fadedText", "fontPixelSize",
         "fontPointSize", "getDecoration", "getHeaderDecoration", "getHeaderDecorationNarrow",
-        "getIcon", "getItemIcon", "getPixmap", "getStandardButton", "getToggleIcon", "guiFont",
-        "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall", "helpText", "iconCache",
-        "isDarkTheme", "pushButtonIconSize", "sidebarIconSize", "syntaxTheme", "textNHeight",
-        "textNWidth", "toolButtonIconSize",
+        "getIcon", "getItemIcon", "getPixmap", "getStandardButton", "getToggleIcon",
+        "getToolButton", "guiFont", "guiFontB", "guiFontBU", "guiFontFixed", "guiFontSmall",
+        "helpText", "iconCache", "isDarkTheme", "pushButtonIconSize", "sidebarIconSize",
+        "syntaxTheme", "textNHeight", "textNWidth", "toolButtonIconSize",
     )
 
     def __init__(self) -> None:
@@ -179,6 +194,7 @@ class GuiTheme:
         self.getItemIcon = self.iconCache.getItemIcon
         self.getToggleIcon = self.iconCache.getToggleIcon
         self.getDecoration = self.iconCache.getDecoration
+        self.getToolButton = self.iconCache.getToolButton
         self.getStandardButton = self.iconCache.getStandardButton
         self.getHeaderDecoration = self.iconCache.getHeaderDecoration
         self.getHeaderDecorationNarrow = self.iconCache.getHeaderDecorationNarrow
@@ -902,6 +918,15 @@ class GuiIcons:
             parent, QCoreApplication.translate("Button", text),
             self._theme.pushButtonIconSize, icon, color
         )
+
+    def getToolButton(self, button: nwToolButton, parent: QWidget) -> NIconToolButton:
+        """Return a tool button with icon."""
+        toolTip, icon, color = TOOL_BUTTONS.get(button, ("", "", ""))
+        toolButton = NIconToolButton(
+            parent, self._theme.baseIconSize, icon, color
+        )
+        toolButton.setToolTip(QCoreApplication.translate("Button", toolTip))
+        return toolButton
 
     def getDecoration(self, name: str, w: int | None = None, h: int | None = None) -> QPixmap:
         """Load graphical decoration element based on the decoration

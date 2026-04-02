@@ -281,6 +281,20 @@ class nwStandardButton(Enum):
     PREVIEW = 16
 
 
+class nwToolButton(Enum):
+    """Enum: Standard Tool Buttons."""
+
+    ADD       = 0
+    REMOVE    = 1
+    MOVE_UP   = 2
+    MOVE_DOWN = 3
+    IMPORT    = 4
+    EXPORT    = 5
+    BROWSE    = 6
+    EDIT      = 7
+    REVERT    = 8
+
+
 class nwState(Enum):
     """Enum: Object state values."""
 

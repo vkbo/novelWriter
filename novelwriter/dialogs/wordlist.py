@@ -37,9 +37,9 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter
 from novelwriter.core.spellcheck import UserDictionary
-from novelwriter.enum import nwStandardButton
+from novelwriter.enum import nwStandardButton, nwToolButton
 from novelwriter.extensions.configlayout import NColorLabel
-from novelwriter.extensions.modified import NDialog, NIconToolButton
+from novelwriter.extensions.modified import NDialog
 from novelwriter.types import QtRoleAccept, QtRoleDestruct
 
 if TYPE_CHECKING:
@@ -60,8 +60,6 @@ class GuiWordList(NDialog):
         self.setObjectName("GuiWordList")
         self.setWindowTitle(self.tr("Project Word List"))
 
-        iSz = SHARED.theme.baseIconSize
-
         self.setMinimumWidth(250)
         self.setMinimumHeight(250)
         self.resize(
@@ -75,11 +73,11 @@ class GuiWordList(NDialog):
             scale=NColorLabel.HEADER_SCALE
         )
 
-        self.importButton = NIconToolButton(self, iSz, "import", "apply")
+        self.importButton = SHARED.theme.getToolButton(nwToolButton.IMPORT, self)
         self.importButton.setToolTip(self.tr("Import words from text file"))
         self.importButton.clicked.connect(self._importWords)
 
-        self.exportButton = NIconToolButton(self, iSz, "export", "action")
+        self.exportButton = SHARED.theme.getToolButton(nwToolButton.EXPORT, self)
         self.exportButton.setToolTip(self.tr("Export words to text file"))
         self.exportButton.clicked.connect(self._exportWords)
 
@@ -97,12 +95,10 @@ class GuiWordList(NDialog):
         # Add/Remove Form
         self.newEntry = QLineEdit(self)
 
-        self.addButton = NIconToolButton(self, iSz, "add", "add")
-        self.addButton.setToolTip(self.tr("Add Word"))
+        self.addButton = SHARED.theme.getToolButton(nwToolButton.ADD, self)
         self.addButton.clicked.connect(self._doAdd)
 
-        self.delButton = NIconToolButton(self, iSz, "remove", "remove")
-        self.delButton.setToolTip(self.tr("Remove Word"))
+        self.delButton = SHARED.theme.getToolButton(nwToolButton.REMOVE, self)
         self.delButton.clicked.connect(self._doDelete)
 
         self.editBox = QHBoxLayout()

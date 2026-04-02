@@ -41,7 +41,7 @@ from novelwriter.common import makeFileNameSafe, openExternalPath, safeExists, s
 from novelwriter.constants import nwLabels
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.item import NWItem
-from novelwriter.enum import nwBuildFmt, nwStandardButton
+from novelwriter.enum import nwBuildFmt, nwStandardButton, nwToolButton
 from novelwriter.extensions.modified import NDialog, NIconToolButton, NPushButton
 from novelwriter.extensions.progressbars import NProgressSimple
 from novelwriter.types import QtAlignCenter, QtRoleAction, QtRoleDestruct, QtUserRole
@@ -144,7 +144,7 @@ class GuiManuscriptBuild(NDialog):
         # Build Path
         self.lblPath = QLabel(self.tr("Path"), self)
         self.buildPath = QLineEdit(self)
-        self.btnBrowse = NIconToolButton(self, iSz, "browse", "systemio")
+        self.btnBrowse = SHARED.theme.getToolButton(nwToolButton.BROWSE, self)
 
         self.pathBox = QHBoxLayout()
         self.pathBox.addWidget(self.buildPath)
