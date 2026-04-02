@@ -9,7 +9,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install System Packages
         run: |
@@ -31,7 +31,7 @@ jobs:
           pdm run pkgutils.py icons optional
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nw-assets
           path: |

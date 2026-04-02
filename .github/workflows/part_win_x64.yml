@@ -15,10 +15,10 @@ jobs:
           architecture: x64
 
       - name: Checkout Source
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download Assets
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nw-assets
           path: novelwriter/assets
@@ -31,7 +31,7 @@ jobs:
 
       - name: Upload Unsigned Artifacts
         id: upload-unsigned-artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: novelWriter-${{ steps.build.outputs.BUILD_VERSION }}-Win-Setup
           path: dist/*.exe
@@ -52,7 +52,7 @@ jobs:
             version: "${{ steps.build.outputs.BUILD_VERSION }}"
 
       - name: Upload Signed Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: novelWriter-${{ steps.build.outputs.BUILD_VERSION }}-Win-Setup-Signed
           path: dist/*.exe
