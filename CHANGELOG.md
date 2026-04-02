@@ -7,6 +7,8 @@
 This is a beta release of the next release version, and is intended for testing purposes. Please be
 careful when using this version on live writing projects, and make sure you take frequent backups.
 
+Note: There are no longer any Mac releases produced for novelWriter. See #2618.
+
 ### Detailed Changelog
 
 **Bugfixes**
