@@ -15,22 +15,6 @@ jobs:
     permissions:
       contents: read
 
-  buildMac-AMD64:
-    needs: buildAssets
-    uses: ./.github/workflows/part_macos_amd64.yml
-    secrets: inherit
-    if: false
-    permissions:
-      contents: read
-
-  buildMac-M1:
-    needs: buildAssets
-    uses: ./.github/workflows/part_macos_m1.yml
-    secrets: inherit
-    if: false
-    permissions:
-      contents: read
-
   buildWin-X64:
     needs: buildAssets
     uses: ./.github/workflows/part_win_x64.yml
