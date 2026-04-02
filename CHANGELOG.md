@@ -43,8 +43,8 @@ Note: There are no longer any Mac releases produced for novelWriter. See #2618.
   viewer. However, it cannot show the actual search result since the search itself is performed on
   the raw plain text document and doesn't apply to the generated document in the viewer.
   Issue #2661. PR #2697.
-* Backwards searches in the editor will can now also iterate backwards in project documents if the
-  option to continue search in the next document is enabled. Issue #1451. PR #2696.
+* Backward searches in the editor can now also iterate backwards in project documents if the option
+  to continue search in the next document is enabled. Issue #1451. PR #2696.
 * Error handling when encountering file system problems has been improved and hardened. It should
   further prevent application crashes when encountering such issues. Issue #2529 and #2671.
   PRs #2675 and #2683.
