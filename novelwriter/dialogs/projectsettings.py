@@ -250,7 +250,7 @@ class _SettingsPage(NScrollableForm):
         self.projAuthor.setMinimumWidth(200)
         self.projAuthor.setText(data.author)
         self.addRow(
-            self.tr("Author(s)"), self.projAuthor,
+            self.tr("Author"), self.projAuthor,
             self.tr("Only used when building the manuscript."),
             stretch=(3, 2)
         )
