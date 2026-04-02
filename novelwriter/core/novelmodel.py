@@ -30,7 +30,7 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt
 from PyQt6.QtGui import QIcon, QPixmap
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.enum import nwNovelExtra
 from novelwriter.types import QtAlignRight
@@ -201,11 +201,16 @@ class NovelModel(QAbstractTableModel):
     def _generateEntry(self, handle: str, key: str, head: IndexHeading) -> dict[int, T_NodeData]:
         """Generate a cache entry."""
         iLevel = nwStyles.H_LEVEL.get(head.level, 0)
+        countValue = f"{head.mainCount:n}"
+        countInfo = f"{countValue} {CONFIG.countUnit}"
+
         data = {}
         data[C_FACTOR*0 | R_TIP] = head.title
         data[C_FACTOR*0 | R_TEXT] = head.title
         data[C_FACTOR*0 | R_ICON] = SHARED.theme.getHeaderDecoration(iLevel)
-        data[C_FACTOR*1 | R_TEXT] = f"{head.mainCount:n}"
+        data[C_FACTOR*1 | R_TEXT] = countValue
+        data[C_FACTOR*1 | R_TIP] = countInfo
+        data[C_FACTOR*1 | R_ACCESS] = countInfo
         data[C_FACTOR*1 | R_ALIGN] = QtAlignRight
         if self._columns == 3:
             data[C_FACTOR*2 | R_ICON] = self._more

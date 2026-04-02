@@ -293,6 +293,8 @@ class NIconToolButton(QToolButton):
     A quicker way to create a tool button using the app theme.
     """
 
+    __slots__ = ("_color", "_icon")
+
     def __init__(
         self, parent: QWidget, iconSize: QSize,
         icon: str | None = None, color: str | None = None
@@ -306,7 +308,13 @@ class NIconToolButton(QToolButton):
 
     def setThemeIcon(self, icon: str, color: str) -> None:
         """Set an icon from the current theme."""
+        self._icon = icon
+        self._color = color
         self.setIcon(SHARED.theme.getIcon(icon, color))
+
+    def refreshIcon(self) -> None:
+        """Refresh the icon for theme updates."""
+        self.setIcon(SHARED.theme.getIcon(self._icon, self._color))
 
 
 class NIconToggleButton(QToolButton):

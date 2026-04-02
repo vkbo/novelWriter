@@ -75,6 +75,7 @@ class GuiDocViewerPanel(QWidget):
         self.aInactive.toggled.connect(self._toggleHideInactive)
 
         self.optsButton = NIconToolButton(self, iSz)
+        self.optsButton.setToolTip(self.tr("Options"))
         self.optsButton.setMenu(self.optsMenu)
         self.optsButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 

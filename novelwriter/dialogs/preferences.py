@@ -212,6 +212,7 @@ class GuiPreferences(NDialog):
         self.guiFont.setText(describeFont(self._guiFont))
         self.guiFont.setCursorPosition(0)
         self.guiFontButton = NIconToolButton(self, iSz, "font", "tool")
+        self.guiFontButton.setToolTip(self.tr("Select Font"))
         self.guiFontButton.clicked.connect(self._selectGuiFont)
         self.mainForm.addRow(
             self.tr("Application font"), self.guiFont,
@@ -266,6 +267,7 @@ class GuiPreferences(NDialog):
         self.textFont.setText(describeFont(CONFIG.textFont))
         self.textFont.setCursorPosition(0)
         self.textFontButton = NIconToolButton(self, iSz, "font", "tool")
+        self.textFontButton.setToolTip(self.tr("Select Font"))
         self.textFontButton.clicked.connect(self._selectTextFont)
         self.mainForm.addRow(
             self.tr("Document font"), self.textFont,
@@ -683,6 +685,7 @@ class GuiPreferences(NDialog):
         self.dialogLine.setText(" ".join(CONFIG.dialogLine))
 
         self.dialogLineButton = NIconToolButton(self, iSz, "add", "add")
+        self.dialogLineButton.setToolTip(self.tr("Select Symbol"))
         self.dialogLineButton.setMenu(self.mnLineSymbols)
 
         self.mainForm.addRow(
@@ -833,6 +836,7 @@ class GuiPreferences(NDialog):
         self.fmtSQuoteOpen.setAlignment(QtAlignCenter)
         self.fmtSQuoteOpen.setText(CONFIG.fmtSQuoteOpen)
         self.btnSQuoteOpen = NIconToolButton(self, iSz, "quote", "tool")
+        self.btnSQuoteOpen.setToolTip(self.tr("Select Symbol"))
         self.btnSQuoteOpen.clicked.connect(self._changeSingleQuoteOpen)
         self.mainForm.addRow(
             self.tr("Single quote open style"), self.fmtSQuoteOpen,
@@ -847,6 +851,7 @@ class GuiPreferences(NDialog):
         self.fmtSQuoteClose.setAlignment(QtAlignCenter)
         self.fmtSQuoteClose.setText(CONFIG.fmtSQuoteClose)
         self.btnSQuoteClose = NIconToolButton(self, iSz, "quote", "tool")
+        self.btnSQuoteClose.setToolTip(self.tr("Select Symbol"))
         self.btnSQuoteClose.clicked.connect(self._changeSingleQuoteClose)
         self.mainForm.addRow(
             self.tr("Single quote close style"), self.fmtSQuoteClose,
@@ -862,6 +867,7 @@ class GuiPreferences(NDialog):
         self.fmtDQuoteOpen.setAlignment(QtAlignCenter)
         self.fmtDQuoteOpen.setText(CONFIG.fmtDQuoteOpen)
         self.btnDQuoteOpen = NIconToolButton(self, iSz, "quote", "tool")
+        self.btnDQuoteOpen.setToolTip(self.tr("Select Symbol"))
         self.btnDQuoteOpen.clicked.connect(self._changeDoubleQuoteOpen)
         self.mainForm.addRow(
             self.tr("Double quote open style"), self.fmtDQuoteOpen,
@@ -876,6 +882,7 @@ class GuiPreferences(NDialog):
         self.fmtDQuoteClose.setAlignment(QtAlignCenter)
         self.fmtDQuoteClose.setText(CONFIG.fmtDQuoteClose)
         self.btnDQuoteClose = NIconToolButton(self, iSz, "quote", "tool")
+        self.btnDQuoteClose.setToolTip(self.tr("Select Symbol"))
         self.btnDQuoteClose.clicked.connect(self._changeDoubleQuoteClose)
         self.mainForm.addRow(
             self.tr("Double quote close style"), self.fmtDQuoteClose,
@@ -1051,8 +1058,8 @@ class GuiPreferences(NDialog):
         CONFIG.hideVScroll  = self.hideVScroll.isChecked()
         CONFIG.hideHScroll  = self.hideHScroll.isChecked()
         CONFIG.nativeFont   = self.nativeFont.isChecked()
-        CONFIG.useCharCount = useCharCount
         CONFIG.setGuiFont(self._guiFont)
+        CONFIG.setPrimaryCount(useCharCount)
 
         # Document Style
         CONFIG.showFullPath   = self.showFullPath.isChecked()

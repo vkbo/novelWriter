@@ -31,6 +31,7 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import QAbstractItemModel, QMimeData, QModelIndex, Qt
 from PyQt6.QtGui import QFont, QIcon
 
+from novelwriter import CONFIG
 from novelwriter.common import decodeMimeHandles, encodeMimeHandles, minmax
 from novelwriter.constants import nwConst
 from novelwriter.core.item import NWItem
@@ -51,6 +52,8 @@ C_LABEL_FONT    = 0x0000 | Qt.ItemDataRole.FontRole
 C_COUNT_TEXT    = 0x0100 | Qt.ItemDataRole.DisplayRole
 C_COUNT_ICON    = 0x0100 | Qt.ItemDataRole.DecorationRole
 C_COUNT_ALIGN   = 0x0100 | Qt.ItemDataRole.TextAlignmentRole
+C_COUNT_TIP     = 0x0100 | Qt.ItemDataRole.ToolTipRole
+C_COUNT_ACCESS  = 0x0100 | Qt.ItemDataRole.AccessibleTextRole
 C_ACTIVE_ICON   = 0x0200 | Qt.ItemDataRole.DecorationRole
 C_ACTIVE_TIP    = 0x0200 | Qt.ItemDataRole.ToolTipRole
 C_ACTIVE_ACCESS = 0x0200 | Qt.ItemDataRole.AccessibleTextRole
@@ -164,7 +167,11 @@ class ProjectNode:
     def updateCount(self, propagate: bool = True) -> None:
         """Update counts, and propagate upwards in the tree."""
         self._count = self._item.mainCount + sum(c._count for c in self._children)  # noqa: SLF001
-        self._cache[C_COUNT_TEXT] = f"{self._count:n}"
+        text = f"{self._count:n}"
+        info = f"{text} {CONFIG.countUnit}"
+        self._cache[C_COUNT_TEXT] = text
+        self._cache[C_COUNT_TIP] = info
+        self._cache[C_COUNT_ACCESS] = info
         if propagate and (parent := self._parent):
             parent.updateCount()
 
