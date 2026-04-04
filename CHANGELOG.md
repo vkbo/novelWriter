@@ -1,5 +1,25 @@
 # novelWriter Changelog
 
+## Version 26.1 Beta 2 [2026-04-04]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+Note: There are no longer any Mac releases produced for novelWriter. See #2618.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* An unchecked dependency on Qt 6.9 has been fixed. If the app was running in an environment with
+  an older Qt version, the app would crash when opening one of the settings dialogs. This should
+  only affect the Debian packages since the Windows and AppImage releases bundle Qt 6.11.
+  Issue #2706. PR #2704.
+
+----
+
 ## Version 26.1 Beta 1 [2026-04-02]
 
 ### Release Notes
