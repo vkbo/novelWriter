@@ -1,4 +1,4 @@
-name: Linting
+name: Syntax
 
 on:
   push:
@@ -12,6 +12,7 @@ on:
 
 jobs:
   checkSyntax:
+    name: Linting and Type Checking
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -13,6 +13,7 @@ on:
 jobs:
   testMac:
     runs-on: macos-latest
+    name: Test Python 3.13
     permissions:
       contents: read
     steps:

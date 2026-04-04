@@ -4,6 +4,7 @@ on: workflow_call
 
 jobs:
   buildMac-M1:
+    name: Build on MacOS AARCH64
     runs-on: macos-latest
     permissions:
       contents: read

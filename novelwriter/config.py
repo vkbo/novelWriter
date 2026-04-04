@@ -499,6 +499,10 @@ class Config:
         self._errData = []
         return message
 
+    def checkMinQtVersion(self, version: int) -> bool:
+        """Check if a minimum Qt version is satisfied."""
+        return self.verPyQtValue >= version and self.verQtValue >= version
+
     def localDate(self, value: datetime) -> str:
         """Return a localised date format."""
         # Explicitly convert the date first, see bug #2325
