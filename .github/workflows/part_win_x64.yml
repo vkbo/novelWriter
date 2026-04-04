@@ -4,6 +4,7 @@ on: workflow_call
 
 jobs:
   buildWin-X64:
+    name: Build on Windows
     runs-on: windows-2022
     permissions:
       contents: read

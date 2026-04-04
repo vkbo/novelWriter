@@ -6,6 +6,7 @@ jobs:
   buildLinux-AppImage:
     # Needs to stay on 22.04 as long as we're using manylinux_2_28
     # as libxcb-cursor0 in 22.04 supports glibc >= 2.17
+    name: Build AppImage
     runs-on: ubuntu-22.04
     permissions:
       contents: read

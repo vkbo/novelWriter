@@ -4,6 +4,7 @@ on: workflow_call
 
 jobs:
   buildMac-AMD64:
+    name: Build on MACOS AMD64
     runs-on: macos-latest
     permissions:
       contents: read

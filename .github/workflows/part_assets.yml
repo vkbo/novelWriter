@@ -4,6 +4,7 @@ on: workflow_call
 
 jobs:
   buildAssets:
+    name: Build Assets
     runs-on: ubuntu-latest
     permissions:
       contents: read
