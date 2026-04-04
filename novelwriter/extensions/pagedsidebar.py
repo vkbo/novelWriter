@@ -86,7 +86,7 @@ class NPagedSideBar(QToolBar):
         """Add a new button to the toolbar."""
         button = _PagedToolButton(self)
         button.setText(text)
-        button.setAccessibleIdentifier(text)
+        button.setAccessibleName(text)
         self.insertWidget(self._stretchAction, button)
         self._group.addButton(button, id=buttonId)
         self._buttons[buttonId] = button

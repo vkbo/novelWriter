@@ -300,7 +300,7 @@ class GuiTheme:
 
     def isDesktopDarkMode(self) -> bool:
         """Check if the desktop is in dark mode."""
-        if CONFIG.verQtValue >= 0x060500 and (hint := QGuiApplication.styleHints()):
+        if CONFIG.checkMinQtVersion(0x060500) and (hint := QGuiApplication.styleHints()):
             return hint.colorScheme() == Qt.ColorScheme.Dark
 
         palette = QPalette()
@@ -513,7 +513,7 @@ class GuiTheme:
         self._guiPalette.setBrush(QtColInactive, QPalette.ColorRole.Highlight, highlight)
         self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Highlight, grey)
 
-        if CONFIG.verQtValue >= 0x060600:
+        if CONFIG.checkMinQtVersion(0x060600):
             self._guiPalette.setBrush(QtColActive, QPalette.ColorRole.Accent, self.accentCol)
             self._guiPalette.setBrush(QtColInactive, QPalette.ColorRole.Accent, self.accentCol)
             self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Accent, grey)
