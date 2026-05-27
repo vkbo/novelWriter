@@ -6,8 +6,13 @@ on:
 permissions:
   contents: write
 
+# One run per branch — protects the rolling `latest-mac` release from races.
+concurrency:
+  group: build-macos-dmg-py2app-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  # Build i18n .qm files, sample.zip, PDF manual and optional icon themes
+  # Compile .qm translations, sample.zip, PDF manual and optional icon themes
   # once on Linux, then share the populated novelwriter/assets/ tree with
   # the per-architecture macOS jobs via an artifact.
   buildAssets:
@@ -37,21 +42,20 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
+          cache: pip
 
-      - name: Install system dependencies
-        run: brew install enchant create-dmg
+      - name: Install create-dmg
+        run: brew install create-dmg
 
-      - name: Install Python dependencies
+      # py2app needs only pyobjc-core for its bootloader; the full pyobjc
+      # meta-package pulls ~170 framework subpackages novelwriter never
+      # imports (the runtime dep in pyproject.toml is unused).
+      - name: Install Python build dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install py2app PyQt6 pyenchant pyobjc
-          pip install -e .
+          pip install py2app pyobjc-core PyQt6 pyenchant
 
-      # Replaces the raw `i18n/` and `sample/` sources the previous version
-      # bundled. The downloaded artifact contains compiled .qm files,
-      # sample.zip, the PDF manual and the optional icon themes — all in
-      # the layout novelwriter expects relative to the package root.
       - name: Download pre-built assets
         uses: actions/download-artifact@v4
         with:
@@ -64,7 +68,6 @@ jobs:
             || { echo "ERROR: novelwriter/assets/sample.zip missing"; exit 1; }
           ls novelwriter/assets/i18n/*.qm >/dev/null 2>&1 \
             || { echo "ERROR: no compiled .qm translation files in novelwriter/assets/i18n/"; exit 1; }
-          echo "Compiled i18n .qm files, sample.zip and icon themes are in place."
 
       - name: Determine version
         id: ver
@@ -77,76 +80,55 @@ jobs:
         run: iconutil -c icns setup/macos/novelwriter.iconset -o setup/macos/novelwriter.icns
 
       - name: Build .app with py2app
-        # Remove the editable-install egg-info so setuptools doesn't try
-        # to merge it into py2app's Distribution and re-trigger the
-        # install_requires path that newer setuptools rejects.
+        run: python setup/macos/setup_py2app.py py2app
+
+      # py2app reads our gen-plist Info.plist as the base and layers its
+      # runtime keys (PyRuntimeLocations etc.) on top. Confirm both halves
+      # of that merge survived — overwriting Info.plist after the build
+      # strips PyRuntimeLocations and prevents the bootloader from
+      # finding Python.
+      - name: Verify Info.plist
         run: |
-          rm -rf novelWriter.egg-info
-          python setup/macos/setup_py2app.py py2app
+          PLIST=dist/novelWriter.app/Contents/Info.plist
+          plutil -extract CFBundleIdentifier raw "$PLIST"
+          plutil -extract CFBundleShortVersionString raw "$PLIST"
+          plutil -extract PyRuntimeLocations xml1 "$PLIST" >/dev/null \
+            || { echo "ERROR: PyRuntimeLocations missing from Info.plist"; exit 1; }
 
-      # py2app may overwrite a few keys (CFBundleExecutable etc) — re-apply
-      # the canonical plist so version, identifier and document types match
-      # what pkgutils.py gen-plist produced.
-      - name: Apply generated Info.plist
-        run: cp setup/macos/Info.plist dist/novelWriter.app/Contents/Info.plist
-
-      # novelwriter/config.py sets _appPath = __file__.parent.parent in frozen
-      # mode. With py2app's layout that resolves to
+      # novelwriter/config.py sets _appPath = __file__.parent.parent in
+      # frozen mode. With py2app's layout that resolves to
       #   .../Contents/Resources/lib/pythonX.Y/
-      # so the assets/ tree must sit there — NOT inside the bundled
+      # so the assets/ tree must sit there — not inside the bundled
       # novelwriter/ package directory where py2app would otherwise leave it.
-      - name: Place assets at the path config.py expects
+      # The same PY_DIR is reused by the asset-verification step below.
+      - name: Place assets and verify bundle
         run: |
           PY_DIR=$(find dist/novelWriter.app/Contents/Resources/lib -maxdepth 1 -type d -name 'python3.*' | head -1)
           test -n "$PY_DIR" || { echo "ERROR: no python3.X dir in bundle"; exit 1; }
-          echo "Placing assets at: $PY_DIR/assets"
           rm -rf "$PY_DIR/assets"
           cp -R novelwriter/assets "$PY_DIR/assets"
-
-      # libenchant comes from Homebrew and isn't bundled by py2app. Copy the
-      # dylib (and its non-system dependencies) into the .app so spell-check
-      # works on machines without Homebrew installed.
-      - name: Bundle libenchant
-        run: |
-          ENCHANT_PREFIX=$(brew --prefix enchant)
-          FW_DIR="dist/novelWriter.app/Contents/Frameworks"
-          mkdir -p "$FW_DIR"
-          ENCHANT_LIB=$(find "$ENCHANT_PREFIX/lib" -maxdepth 1 -name 'libenchant-2*.dylib' | head -1)
-          test -n "$ENCHANT_LIB" || { echo "ERROR: libenchant-2 not found"; exit 1; }
-          cp -L "$ENCHANT_LIB" "$FW_DIR/"
-          # Copy enchant plugin/data dir if present
-          if [ -d "$ENCHANT_PREFIX/lib/enchant-2" ]; then
-            cp -R "$ENCHANT_PREFIX/lib/enchant-2" "$FW_DIR/"
-          fi
-          if [ -d "$ENCHANT_PREFIX/share/enchant" ]; then
-            mkdir -p "dist/novelWriter.app/Contents/Resources"
-            cp -R "$ENCHANT_PREFIX/share/enchant" "dist/novelWriter.app/Contents/Resources/"
-          fi
-
-      - name: Verify bundled assets
-        run: |
-          PY_DIR=$(find dist/novelWriter.app/Contents/Resources/lib -maxdepth 1 -type d -name 'python3.*' | head -1)
           test -f "$PY_DIR/assets/sample.zip" \
-            || { echo "ERROR: sample.zip not bundled at $PY_DIR/assets/sample.zip"; exit 1; }
+            || { echo "ERROR: sample.zip not bundled"; exit 1; }
           test -n "$(find "$PY_DIR/assets/i18n" -name '*.qm' 2>/dev/null)" \
             || { echo "ERROR: compiled .qm files not bundled"; exit 1; }
           test -n "$(find "$PY_DIR/assets/icons" -name '*.icons' 2>/dev/null)" \
             || { echo "ERROR: icon themes not bundled"; exit 1; }
-          echo "OK — assets, sample.zip, .qm files and icon themes are in the bundle."
 
-      # Ad-hoc signing keeps Gatekeeper friction down for unsigned releases.
-      # Replace with a real Developer ID signing + notarization step once
-      # the project has an Apple Developer account configured (secrets:
-      # APPLE_ID, APPLE_TEAM_ID, APPLE_APP_PASSWORD, signing certificate).
+      # Ad-hoc signing for unsigned releases. Replace with a real
+      # Developer ID identity + xcrun notarytool + xcrun stapler once the
+      # project has an Apple Developer account configured.
       - name: Ad-hoc codesign
-        run: codesign --force --deep --sign - --entitlements setup/macos/App.entitlements --options runtime "dist/novelWriter.app" || codesign --force --deep --sign - "dist/novelWriter.app"
+        run: |
+          codesign --force --deep --sign - \
+            --entitlements setup/macos/App.entitlements \
+            --options runtime \
+            "dist/novelWriter.app"
 
       - name: Build DMG
         run: |
-          VOLNAME="novelWriter ${{ steps.ver.outputs.version }}"
           DMG_NAME="novelWriter-${{ steps.ver.outputs.version }}-${{ matrix.arch }}.dmg"
           create-dmg \
-            --volname "$VOLNAME" \
+            --volname "novelWriter ${{ steps.ver.outputs.version }}" \
             --volicon setup/macos/novelwriter.icns \
             --window-pos 200 120 \
             --window-size 800 400 \
@@ -173,7 +155,7 @@ jobs:
           name: "Latest macOS build"
           body: |
             Unofficial macOS build of novelWriter (py2app).
-            Built from `main` on ${{ github.event.repository.updated_at }}.
+            Built from commit `${{ github.sha }}` (run ${{ github.run_id }}).
 
             **Install:**
             After downloading, clear the quarantine attribute so Gatekeeper
@@ -186,6 +168,9 @@ jobs:
             Pick the file matching your CPU:
               * `*-arm64.dmg`  — Apple Silicon (M1/M2/M3/M4)
               * `*-x86_64.dmg` — Intel Macs
+
+            Spell-check requires `enchant` and a dictionary; install with
+            `brew install enchant hunspell` if you need it.
           prerelease: true
           files: |
             novelWriter-${{ steps.ver.outputs.version }}-${{ matrix.arch }}.dmg
