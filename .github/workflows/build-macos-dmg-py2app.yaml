@@ -45,11 +45,8 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          # py2app's setup.py path doesn't cooperate with setuptools >=70
-          # (the install_requires / setup_requires machinery was removed).
-          pip install 'setuptools<70' wheel
           pip install py2app PyQt6 pyenchant pyobjc
-          pip install --no-build-isolation -e .
+          pip install -e .
 
       # Replaces the raw `i18n/` and `sample/` sources the previous version
       # bundled. The downloaded artifact contains compiled .qm files,
