@@ -45,8 +45,11 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
+          # py2app's setup.py path doesn't cooperate with setuptools >=70
+          # (the install_requires / setup_requires machinery was removed).
+          pip install 'setuptools<70' wheel
           pip install py2app PyQt6 pyenchant pyobjc
-          pip install -e .
+          pip install --no-build-isolation -e .
 
       # Replaces the raw `i18n/` and `sample/` sources the previous version
       # bundled. The downloaded artifact contains compiled .qm files,
@@ -77,7 +80,12 @@ jobs:
         run: iconutil -c icns setup/macos/novelwriter.iconset -o setup/macos/novelwriter.icns
 
       - name: Build .app with py2app
-        run: python setup/macos/setup_py2app.py py2app
+        # Remove the editable-install egg-info so setuptools doesn't try
+        # to merge it into py2app's Distribution and re-trigger the
+        # install_requires path that newer setuptools rejects.
+        run: |
+          rm -rf novelWriter.egg-info
+          python setup/macos/setup_py2app.py py2app
 
       # py2app may overwrite a few keys (CFBundleExecutable etc) — re-apply
       # the canonical plist so version, identifier and document types match

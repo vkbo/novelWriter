@@ -37,8 +37,8 @@ OPTIONS = {
 }
 
 setup(
+    name="novelWriter",
     app=APP,
     data_files=DATA_FILES,
     options={"py2app": OPTIONS},
-    setup_requires=["py2app"],
 )
