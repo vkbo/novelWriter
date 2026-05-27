@@ -2,25 +2,14 @@ name: Build macOS DMG (PyInstaller)
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - 'v*'
 
 permissions:
   contents: write
 
 jobs:
   build-dmg:
-    name: Build DMG (${{ matrix.arch }})
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: macos-13     # Intel
-            arch: x86_64
-          - runner: macos-14     # Apple Silicon
-            arch: arm64
+    name: Build DMG (arm64)
+    runs-on: macos-14   # Apple Silicon
 
     steps:
       - name: Checkout source
@@ -48,9 +37,9 @@ jobs:
             ICON=$(find . -name "*.icns" -not -path "./build/*" -not -path "./dist/*" | head -n1)
           fi
           if [ -z "$ICON" ]; then
-            PNG=$(find setup -name "*512*.png" 2>/dev/null | head -n1)
+            PNG=$(find novelwriter/assets -name "*512*.png" 2>/dev/null | head -n1)
             if [ -z "$PNG" ]; then
-              PNG=$(find . -path "*icons*" -name "*512*.png" | head -n1)
+              PNG=$(find . -name "*512*.png" -path "*icon*" | head -n1)
             fi
             if [ -n "$PNG" ]; then
               mkdir -p icon.iconset
@@ -61,6 +50,18 @@ jobs:
           fi
           echo "icon=$ICON" >> "$GITHUB_OUTPUT"
           echo "Using icon: $ICON"
+
+      - name: Discover data directories
+        id: data
+        run: |
+          ARGS=""
+          [ -d "novelwriter/assets" ] && ARGS="$ARGS --add-data novelwriter/assets:assets"
+          [ -d "i18n" ]               && ARGS="$ARGS --add-data i18n:i18n"
+          [ -d "sample" ]             && ARGS="$ARGS --add-data sample:sample"
+          [ -d "novelwriter/themes" ] && ARGS="$ARGS --add-data novelwriter/themes:themes"
+          [ -d "novelwriter/icons" ]  && ARGS="$ARGS --add-data novelwriter/icons:icons"
+          echo "args=$ARGS" >> "$GITHUB_OUTPUT"
+          echo "Will pass to PyInstaller: $ARGS"
 
       - name: Build .app with PyInstaller
         run: |
@@ -76,20 +77,27 @@ jobs:
             --osx-bundle-identifier io.novelwriter.app \
             --collect-all novelwriter \
             --collect-all PyQt6 \
-            --collect-data novelwriter \
-            --collect-submodules novelwriter \
             --collect-binaries enchant \
+            ${{ steps.data.outputs.args }} \
             novelWriter.py
+
+      - name: Verify assets were bundled
+        run: |
+          echo "=== Frameworks directory contents ==="
+          ls -la "dist/novelWriter.app/Contents/Frameworks/" | head -40
+          echo ""
+          echo "=== Looking for assets folder ==="
+          if [ -d "dist/novelWriter.app/Contents/Frameworks/assets" ]; then
+            echo "OK: assets/ found"
+            ls "dist/novelWriter.app/Contents/Frameworks/assets/"
+          else
+            echo "ERROR: assets/ not found at expected path"
+            find "dist/novelWriter.app" -name "assets" -type d
+            exit 1
+          fi
 
       - name: Ad-hoc codesign (reduces Gatekeeper friction)
         run: codesign --force --deep --sign - "dist/novelWriter.app"
-
-      - name: Smoke-test the bundle
-        run: |
-          # Launch and kill after 5s; fails the workflow if it crashes immediately
-          ./dist/novelWriter.app/Contents/MacOS/novelWriter --help 2>&1 | head -20 || true
-          echo "Bundle inspection:"
-          ls -la dist/novelWriter.app/Contents/
 
       - name: Build DMG
         run: |
@@ -101,17 +109,29 @@ jobs:
             --icon "novelWriter.app" 175 190 \
             --hide-extension "novelWriter.app" \
             --app-drop-link 425 190 \
-            "novelWriter-${{ matrix.arch }}.dmg" \
+            "novelWriter-arm64.dmg" \
             "dist/novelWriter.app"
 
       - name: Upload as workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: novelWriter-${{ matrix.arch }}-dmg
-          path: novelWriter-${{ matrix.arch }}.dmg
+          name: novelWriter-arm64-dmg
+          path: novelWriter-arm64.dmg
 
-      - name: Attach to GitHub Release (tag push only)
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Publish to rolling 'latest-mac' release
         uses: softprops/action-gh-release@v2
         with:
-          files: novelWriter-${{ matrix.arch }}.dmg
+          tag_name: latest-mac
+          name: "Latest macOS build (Apple Silicon)"
+          body: |
+            Unofficial macOS build of novelWriter for Apple Silicon (arm64).
+            Built from `main` on ${{ github.event.repository.updated_at }}.
+            
+            **Install:**
+            ```
+            xattr -d com.apple.quarantine ~/Downloads/novelWriter-arm64.dmg
+            ```
+            Then mount and drag to /Applications.
+          prerelease: true
+          files: novelWriter-arm64.dmg
+          make_latest: "false"
