@@ -114,15 +114,18 @@ jobs:
           test -n "$(find "$PY_DIR/assets/icons" -name '*.icons' 2>/dev/null)" \
             || { echo "ERROR: icon themes not bundled"; exit 1; }
 
-      # Ad-hoc signing for unsigned releases. Replace with a real
-      # Developer ID identity + xcrun notarytool + xcrun stapler once the
-      # project has an Apple Developer account configured.
+      # Ad-hoc signing. Intentionally minimal — `--options runtime` and
+      # `--entitlements` only have effect for Developer-ID-signed bundles
+      # and trigger errSecCoreFoundationUnknown when combined with ad-hoc.
+      # When real signing is wired up, the swap is:
+      #   codesign --force --options runtime \
+      #     --entitlements setup/macos/App.entitlements \
+      #     --sign "Developer ID Application: <name> (<TEAMID>)" \
+      #     <each embedded dylib/binary, then the .app last>
+      #   xcrun notarytool submit ... --wait
+      #   xcrun stapler staple dist/novelWriter.app
       - name: Ad-hoc codesign
-        run: |
-          codesign --force --deep --sign - \
-            --entitlements setup/macos/App.entitlements \
-            --options runtime \
-            "dist/novelWriter.app"
+        run: codesign --force --deep --sign - "dist/novelWriter.app"
 
       - name: Build DMG
         run: |
