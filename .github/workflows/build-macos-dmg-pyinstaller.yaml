@@ -37,13 +37,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Intel (x86_64) is disabled for now — no way to test the AMD build,
+        # and macos-13 Intel runners are scarce/slow to allocate. To bring it
+        # back, add this entry under `include:`
+        #   - arch: x86_64
+        #     runner: macos-13   # Intel
+        #     label: AMD64
         include:
           - arch: arm64
             runner: macos-14   # Apple Silicon
             label: M1
-          - arch: x86_64
-            runner: macos-13   # Intel
-            label: AMD64
 
     steps:
       - name: Checkout source
@@ -276,9 +279,7 @@ jobs:
             xattr -d com.apple.quarantine ~/Downloads/novelWriter-*.dmg
             ```
 
-            Pick the file matching your CPU:
-              * `*-arm64.dmg`  — Apple Silicon (M1/M2/M3/M4)
-              * `*-x86_64.dmg` — Intel Macs
+            This build is for Apple Silicon (arm64 — M1/M2/M3/M4).
 
             Spell-check is included; add dictionaries from within novelWriter
             via Preferences if your language isn't already available.
