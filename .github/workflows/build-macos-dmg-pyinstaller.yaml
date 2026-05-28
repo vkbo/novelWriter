@@ -1,4 +1,4 @@
-name: Build macOS DMG (py2app)
+name: Build macOS DMG (PyInstaller)
 
 on:
   workflow_dispatch:
@@ -6,9 +6,9 @@ on:
 permissions:
   contents: write
 
-# One run per branch — protects the rolling `latest-mac` release from races.
+# One run per ref — protects the rolling `latest-mac` release from races.
 concurrency:
-  group: build-macos-dmg-py2app-${{ github.ref }}
+  group: build-macos-dmg-pyinstaller-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -48,13 +48,10 @@ jobs:
       - name: Install create-dmg
         run: brew install create-dmg
 
-      # py2app needs only pyobjc-core for its bootloader; the full pyobjc
-      # meta-package pulls ~170 framework subpackages novelwriter never
-      # imports (the runtime dep in pyproject.toml is unused).
       - name: Install Python build dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install py2app pyobjc-core PyQt6 pyenchant
+          pip install pyinstaller PyQt6 pyenchant
 
       - name: Download pre-built assets
         uses: actions/download-artifact@v4
@@ -79,45 +76,48 @@ jobs:
       - name: Build .icns icon
         run: iconutil -c icns setup/macos/novelwriter.iconset -o setup/macos/novelwriter.icns
 
-      - name: Build .app with py2app
-        run: python setup/macos/setup_py2app.py py2app
-
-      # py2app reads our gen-plist Info.plist as the base and layers its
-      # runtime keys (PyRuntimeLocations etc.) on top. Confirm both halves
-      # of that merge survived — overwriting Info.plist after the build
-      # strips PyRuntimeLocations and prevents the bootloader from
-      # finding Python.
-      - name: Verify Info.plist
+      # PyInstaller 6.x places package data and --add-data files inside
+      # Contents/Frameworks/. novelwriter/config.py sets
+      #   _appPath = Path(__file__).parent.parent
+      # in frozen mode, which resolves to Contents/Frameworks/ — so
+      # mapping novelwriter/assets -> assets puts the tree at exactly
+      # the path config.py looks up via CONFIG.assetPath().
+      - name: Build .app with PyInstaller
         run: |
-          PLIST=dist/novelWriter.app/Contents/Info.plist
-          plutil -extract CFBundleIdentifier raw "$PLIST"
-          plutil -extract CFBundleShortVersionString raw "$PLIST"
-          plutil -extract PyRuntimeLocations xml1 "$PLIST" >/dev/null \
-            || { echo "ERROR: PyRuntimeLocations missing from Info.plist"; exit 1; }
+          pyinstaller \
+            --windowed \
+            --noconfirm \
+            --name novelWriter \
+            --icon setup/macos/novelwriter.icns \
+            --osx-bundle-identifier io.novelwriter.novelWriter \
+            --collect-all novelwriter \
+            --collect-all PyQt6 \
+            --add-data novelwriter/assets:assets \
+            novelWriter.py
 
-      # novelwriter/config.py sets _appPath = __file__.parent.parent in
-      # frozen mode. With py2app's layout that resolves to
-      #   .../Contents/Resources/lib/pythonX.Y/
-      # so the assets/ tree must sit there — not inside the bundled
-      # novelwriter/ package directory where py2app would otherwise leave it.
-      # The same PY_DIR is reused by the asset-verification step below.
-      - name: Place assets and verify bundle
+      # PyInstaller's bootloader does not require special plist keys
+      # (unlike py2app's PyRuntimeLocations) so overwriting with our
+      # gen-plist version is safe and gives us the canonical version,
+      # bundle identifier and .nwx document-type registration.
+      - name: Apply generated Info.plist
+        run: cp setup/macos/Info.plist dist/novelWriter.app/Contents/Info.plist
+
+      - name: Verify bundle
         run: |
-          PY_DIR=$(find dist/novelWriter.app/Contents/Resources/lib -maxdepth 1 -type d -name 'python3.*' | head -1)
-          test -n "$PY_DIR" || { echo "ERROR: no python3.X dir in bundle"; exit 1; }
-          rm -rf "$PY_DIR/assets"
-          cp -R novelwriter/assets "$PY_DIR/assets"
-          test -f "$PY_DIR/assets/sample.zip" \
+          APP_FW="dist/novelWriter.app/Contents/Frameworks"
+          test -f "$APP_FW/assets/sample.zip" \
             || { echo "ERROR: sample.zip not bundled"; exit 1; }
-          test -n "$(find "$PY_DIR/assets/i18n" -name '*.qm' 2>/dev/null)" \
+          test -n "$(find "$APP_FW/assets/i18n" -name '*.qm' 2>/dev/null)" \
             || { echo "ERROR: compiled .qm files not bundled"; exit 1; }
-          test -n "$(find "$PY_DIR/assets/icons" -name '*.icons' 2>/dev/null)" \
+          test -n "$(find "$APP_FW/assets/icons" -name '*.icons' 2>/dev/null)" \
             || { echo "ERROR: icon themes not bundled"; exit 1; }
+          plutil -extract CFBundleIdentifier raw dist/novelWriter.app/Contents/Info.plist
+          plutil -extract CFBundleShortVersionString raw dist/novelWriter.app/Contents/Info.plist
 
-      # Ad-hoc signing. Intentionally minimal — `--options runtime` and
-      # `--entitlements` only have effect for Developer-ID-signed bundles
-      # and trigger errSecCoreFoundationUnknown when combined with ad-hoc.
-      # When real signing is wired up, the swap is:
+      # Ad-hoc signing. `--options runtime` and `--entitlements` are
+      # deliberately omitted — they require a real Developer ID identity
+      # to be honored and trigger errSecCoreFoundationUnknown when
+      # combined with --sign -. The swap to real signing is:
       #   codesign --force --options runtime \
       #     --entitlements setup/macos/App.entitlements \
       #     --sign "Developer ID Application: <name> (<TEAMID>)" \
@@ -157,7 +157,7 @@ jobs:
           tag_name: latest-mac
           name: "Latest macOS build"
           body: |
-            Unofficial macOS build of novelWriter (py2app).
+            Unofficial macOS build of novelWriter (PyInstaller).
             Built from commit `${{ github.sha }}` (run ${{ github.run_id }}).
 
             **Install:**
