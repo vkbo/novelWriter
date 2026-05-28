@@ -1,12 +1,16 @@
 name: Build macOS DMG (PyInstaller)
 
+# Publishing a release builds the macOS DMG and attaches it to that release
+# tag. workflow_dispatch is kept for manual/test runs (artifact only).
 on:
   workflow_dispatch:
+  release:
+    types: [published]
 
 permissions:
   contents: write
 
-# One run per ref — protects the rolling `latest-mac` release from races.
+# Avoid overlapping runs on the same ref (e.g. a re-published release).
 concurrency:
   group: build-macos-dmg-pyinstaller-${{ github.ref }}
   cancel-in-progress: true
@@ -50,12 +54,12 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
+          python-version: "3.13"
           cache: pip
 
       # enchant is required at build time: PyInstaller's enchant hook loads
@@ -114,7 +118,7 @@ jobs:
           rm -f "$CERT_PATH"
 
       - name: Download pre-built assets
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nw-assets
           path: novelwriter/assets
@@ -256,38 +260,25 @@ jobs:
         run: shasum -a 256 "${{ steps.ver.outputs.dmg }}" | tee "${{ steps.ver.outputs.dmg }}.sha256"
 
       - name: Upload as workflow artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: novelWriter-${{ steps.ver.outputs.version }}-MacOS-${{ matrix.label }}-DMG
           path: ${{ steps.ver.outputs.dmg }}*
           if-no-files-found: error
           retention-days: 14
 
-      - name: Publish to rolling 'latest-mac' release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: latest-mac
-          name: "Latest macOS build"
-          body: |
-            Unofficial macOS build of novelWriter (PyInstaller).
-            Built from commit `${{ github.sha }}` (run ${{ github.run_id }}).
-
-            **Install:** mount the DMG and drag novelWriter to /Applications.
-            Signed and notarized builds open without a Gatekeeper warning.
-            Unsigned (ad-hoc) builds need the quarantine attribute cleared:
-            ```
-            xattr -d com.apple.quarantine ~/Downloads/novelWriter-*.dmg
-            ```
-
-            This build is for Apple Silicon (arm64 — M1/M2/M3/M4).
-
-            Spell-check is included; add dictionaries from within novelWriter
-            via Preferences if your language isn't already available.
-          prerelease: true
-          files: |
-            ${{ steps.ver.outputs.dmg }}
-            ${{ steps.ver.outputs.dmg }}.sha256
-          make_latest: "false"
+      # On a published release, attach the DMG + checksum to that release's
+      # tag. Manual (workflow_dispatch) runs only produce the artifact above.
+      - name: Attach DMG to release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" \
+            "${{ steps.ver.outputs.dmg }}" \
+            "${{ steps.ver.outputs.dmg }}.sha256" \
+            --repo "${{ github.repository }}" \
+            --clobber
 
       - name: Remove temporary keychain
         if: always() && steps.signing.outputs.enabled == 'true'
