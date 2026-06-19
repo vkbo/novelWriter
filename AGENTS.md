@@ -32,6 +32,7 @@
 - `novelwriter/text/` contains various text processing utilities.
 - `novelwriter/tools/` contains larger GUI components that process data.
 - `novelwriter/` root contains shared codes, constants, variables and utility functions.
+- Build getter key strings used with `BuildSettings` are defined in `novelwriter/core/buildsettings.py`.
 - For formats changes, check adjacent format implementations before modifying shared logic.
 - All formats classes are write only, and do not need to read the same file formats.
 
@@ -40,6 +41,8 @@
 - Run the most relevant tests for the changed area when available.
 - If tests are missing for the touched path, add focused tests alongside the change when practical.
 - Do not fix unrelated failures unless they block the requested task.
+- When running tests, set `QT_QPA_PLATFORM=offscreen` to disable the Qt GUI. Use `./run_tests.py -o`
+  or `QT_QPA_PLATFORM=offscreen python -m pytest`.
 
 ## Documentation
 

@@ -582,6 +582,7 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
     build.setValue("format.lineHeight", 1.2)
 
     build.setValue("format.justifyText", False)
+    build.setValue("format.justifyOnBreak", False)
     build.setValue("format.stripUnicode", False)
     build.setValue("format.replaceTabs", False)
     build.setValue("format.keepBreaks", True)
@@ -602,6 +603,7 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
     assert fmtTab.lineHeight.value() == 1.2
 
     assert fmtTab.justifyText.isChecked() is False
+    assert fmtTab.justifyOnBreak.isChecked() is False
     assert fmtTab.stripUnicode.isChecked() is False
     assert fmtTab.replaceTabs.isChecked() is False
     assert fmtTab.keepBreaks.isChecked() is True
@@ -614,6 +616,7 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
     fmtTab.lineHeight.setValue(1.15)
 
     fmtTab.justifyText.setChecked(True)
+    fmtTab.justifyOnBreak.setChecked(True)
     fmtTab.stripUnicode.setChecked(True)
     fmtTab.replaceTabs.setChecked(True)
     fmtTab.keepBreaks.setChecked(False)
@@ -628,6 +631,7 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
     assert sBuild.getFloat("format.lineHeight") == 1.15
 
     assert sBuild.getBool("format.justifyText") is True
+    assert sBuild.getBool("format.justifyOnBreak") is True
     assert sBuild.getBool("format.stripUnicode") is True
     assert sBuild.getBool("format.replaceTabs") is True
     assert sBuild.getBool("format.keepBreaks") is False

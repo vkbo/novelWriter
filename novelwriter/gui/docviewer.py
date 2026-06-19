@@ -219,7 +219,7 @@ class GuiDocViewer(QTextBrowser):
         sPos = vBar.value() if vBar else 0
 
         qDoc = ToQTextDocument(SHARED.project)
-        qDoc.setJustify(CONFIG.doJustify)
+        qDoc.setJustify(CONFIG.doJustify, False)
         qDoc.setDialogHighlight(True)
         qDoc.setTextFont(CONFIG.textFont)
         qDoc.setTheme(self._docTheme)
