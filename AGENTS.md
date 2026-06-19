@@ -32,6 +32,7 @@
 - `novelwriter/text/` contains various text processing utilities.
 - `novelwriter/tools/` contains larger GUI components that process data.
 - `novelwriter/` root contains shared codes, constants, variables and utility functions.
+- Build getter key strings used with `BuildSettings` are defined in `novelwriter/core/buildsettings.py`.
 - For formats changes, check adjacent format implementations before modifying shared logic.
 - All formats classes are write only, and do not need to read the same file formats.
 

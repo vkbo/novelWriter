@@ -53,6 +53,7 @@ logger = logging.getLogger(__name__)
 
 # Main XML NameSpaces
 XML_NS = {
+    "config":   "urn:oasis:names:tc:opendocument:xmlns:config:1.0",
     "dc":       "http://purl.org/dc/elements/1.1/",
     "fo":       "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
     "loext":    "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
@@ -60,6 +61,7 @@ XML_NS = {
     "meta":     "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
     "number":   "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0",
     "office":   "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
+    "ooo":      "http://openoffice.org/2004/office",
     "style":    "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
     "text":     "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
     "xlink":    "http://www.w3.org/1999/xlink",
@@ -74,6 +76,11 @@ def _mkTag(ns: str, tag: str) -> str:
         return f"{{{uri}}}{tag}"
     logger.warning("Missing xml namespace '%s'", ns)
     return tag
+
+
+def formatBool(value: bool) -> str:
+    """Format a boolean value as 'true' or 'false'."""
+    return "true" if value else "false"
 
 
 # Mimetype and Version
@@ -144,9 +151,11 @@ class ToOdt(Tokenizer):
         self._dFlat = ET.Element("")  # FODT file XML root
         self._dCont = ET.Element("")  # ODT content.xml root
         self._dMeta = ET.Element("")  # ODT meta.xml root
+        self._dSett = ET.Element("")  # ODT settings.xml root
         self._dStyl = ET.Element("")  # ODT styles.xml root
 
         self._xMeta = ET.Element("")  # Office meta root
+        self._xSett = ET.Element("")  # Office settings root
         self._xFont = ET.Element("")  # Office font face declaration
         self._xFnt2 = ET.Element("")  # Office font face declaration, secondary
         self._xStyl = ET.Element("")  # Office styles root
@@ -255,6 +264,7 @@ class ToOdt(Tokenizer):
             self._dFlat = ET.Element(tFlat, attrib=tAttr)
 
             self._xMeta = ET.SubElement(self._dFlat, _mkTag("office", "meta"))
+            self._xSett = ET.SubElement(self._dFlat, _mkTag("office", "settings"))
             self._xFont = ET.SubElement(self._dFlat, _mkTag("office", "font-face-decls"))
             self._xStyl = ET.SubElement(self._dFlat, _mkTag("office", "styles"))
             self._xAuto = ET.SubElement(self._dFlat, _mkTag("office", "automatic-styles"))
@@ -270,6 +280,7 @@ class ToOdt(Tokenizer):
 
             tCont = _mkTag("office", "document-content")
             tMeta = _mkTag("office", "document-meta")
+            tSett = _mkTag("office", "document-settings")
             tStyl = _mkTag("office", "document-styles")
 
             # content.xml
@@ -281,6 +292,10 @@ class ToOdt(Tokenizer):
             # meta.xml
             self._dMeta = ET.Element(tMeta, attrib=tAttr)
             self._xMeta = ET.SubElement(self._dMeta, _mkTag("office", "meta"))
+
+            # settings.xml
+            self._dSett = ET.Element(tSett, attrib=tAttr)
+            self._xSett = ET.SubElement(self._dSett, _mkTag("office", "settings"))
 
             # styles.xml
             self._dStyl = ET.Element(tStyl, attrib=tAttr)
@@ -315,6 +330,21 @@ class ToOdt(Tokenizer):
         xmlSubElem(self._xMeta, _mkTag("dc", "title"), self._project.data.name)
         xmlSubElem(self._xMeta, _mkTag("dc", "date"), timeStamp)
         xmlSubElem(self._xMeta, _mkTag("dc", "creator"), self._project.data.author)
+
+        # Settings
+        cAttr = {}
+        cAttr[_mkTag("config", "name")] = ET.QName(XML_NS["ooo"], "configuration-settings")
+        xConf = xmlSubElem(self._xSett, _mkTag("config", "config-item-set"), attrib=cAttr)
+
+        cItem = _mkTag("config", "config-item")
+        cName = _mkTag("config", "name")
+        cType = _mkTag("config", "type")
+
+        cSettings = [
+            ("DoNotJustifyLinesWithManualBreak", "boolean", formatBool(not self._justifyBreak)),
+        ]
+        for name, typ, val in cSettings:
+            xmlSubElem(xConf, cItem, val, attrib={cName: name, cType: typ})
 
         self._pageStyles()
         self._defaultStyles()
@@ -427,10 +457,6 @@ class ToOdt(Tokenizer):
             ET.SubElement(xMani, mFile, attrib={mPath: "meta.xml", mType: "text/xml"})
             ET.SubElement(xMani, mFile, attrib={mPath: "styles.xml", mType: "text/xml"})
 
-            oRoot = _mkTag("office", "document-settings")
-            oVers = _mkTag("office", "version")
-            xSett = ET.Element(oRoot, attrib={oVers: X_VERS})
-
             def xmlToZip(name: str, root: ET.Element, zipObj: ZipFile) -> None:
                 zipObj.writestr(
                     name, ET.tostring(root, encoding="utf-8", xml_declaration=True),
@@ -440,7 +466,7 @@ class ToOdt(Tokenizer):
             with ZipFile(path, mode="w") as outZip:
                 outZip.writestr("mimetype", X_MIME, compress_type=None, compresslevel=None)
                 xmlToZip("META-INF/manifest.xml", xMani, outZip)
-                xmlToZip("settings.xml", xSett, outZip)
+                xmlToZip("settings.xml", self._dSett, outZip)
                 xmlToZip("content.xml", self._dCont, outZip)
                 xmlToZip("meta.xml", self._dMeta, outZip)
                 xmlToZip("styles.xml", self._dStyl, outZip)

@@ -132,6 +132,7 @@ class Tokenizer(ABC):
         self._firstWidth   = 1.40    # First line indent in units of em
         self._indentFirst  = False   # Indent first paragraph
         self._doJustify    = False   # Justify text
+        self._justifyBreak = True    # Justify text on manual line breaks
         self._doBodyText   = True    # Include body text
         self._doComments   = set()   # Comment styles to allow
         self._doKeywords   = False   # Also process keywords like tags and references
@@ -339,9 +340,10 @@ class Tokenizer(ABC):
         self._firstWidth = indent
         self._indentFirst = first
 
-    def setJustify(self, state: bool) -> None:
+    def setJustify(self, state: bool, onManualBreak: bool) -> None:
         """Enable or disable text justification."""
         self._doJustify = state
+        self._justifyBreak = onManualBreak
 
     def setDialogHighlight(self, state: bool) -> None:
         """Enable or disable dialogue highlighting."""

@@ -263,7 +263,7 @@ class NWBuildDocument:
             self._build.getBool("headings.breakScene")
         )
 
-        bldObj.setJustify(self._build.getBool("format.justifyText"))
+        bldObj.setJustify(self._build.getBool("format.justifyText"), False)
         bldObj.setLineHeight(self._build.getFloat("format.lineHeight"))
         bldObj.setKeepLineBreaks(self._build.getBool("format.keepBreaks"))
         bldObj.setDialogHighlight(self._build.getBool("format.showDialogue"))
