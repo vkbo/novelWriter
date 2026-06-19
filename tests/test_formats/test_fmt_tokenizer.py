@@ -117,7 +117,7 @@ def testFmtToken_Setters(mockGUI):
     tokens.setTextFont(QFont("Monospace", 10))
     tokens.setLineHeight(2.0)
     tokens.setBlockIndent(6.0)
-    tokens.setJustify(True)
+    tokens.setJustify(True, False)
     tokens.setTitleProperties(2.0, 2.0, 8.0)
     tokens.setHead1Properties(2.0, 2.0, 7.0)
     tokens.setHead2Properties(2.0, 2.0, 6.0)
@@ -1199,7 +1199,7 @@ def testFmtToken_BreakAlignIndent(mockGUI):
         # With Justify
         # This should disable justify
         tokens.setKeepLineBreaks(True)
-        tokens.setJustify(True)
+        tokens.setJustify(True, False)
         tokens._text = text
         tokens.tokenizeText()
         assert tokens._blocks == [
@@ -1223,7 +1223,7 @@ def testFmtToken_BreakJustify(mockGUI):
     project = NWProject()
     tokens = BareTokenizer(project)
     tokens._handle = TMH
-    tokens.setJustify(True)
+    tokens.setJustify(True, False)
 
     # Applied to all lines when breaks are preserved
     tokens._text = "This is text\nspanning multiple\nlines"

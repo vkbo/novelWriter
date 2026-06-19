@@ -722,12 +722,12 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
         "with\nbreak\n\n"
         "Left Align <<\n\n"
     )
-    odt.setJustify(True)
+    odt.setJustify(True, False)
     odt.tokenizeText()
     odt.initDocument()
     odt.doConvert()
     odt.closeDocument()
-    odt.setJustify(False)
+    odt.setJustify(False, False)
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
