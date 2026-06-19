@@ -17,6 +17,8 @@ just make a pull request directly.
 * Improvements to the documentation. Particularly if the documentation is unclear. Please don't
   make any larger changes to the documentation without discussing them with the maintainer first.
 * Adaptations, installation or packaging features targeting specific operating systems.
+* Using AI as a coding assistant is fine as long as the code is of good quality and the scope of
+  changes is small.
 
 **Please do not:**
 
