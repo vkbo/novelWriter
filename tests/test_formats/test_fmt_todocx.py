@@ -722,6 +722,7 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
     build.setValue("text.includeKeywords", True)
     build.setValue("format.textFont", "Source Sans Pro,12")
     build.setValue("format.firstLineIndent", True)
+    build.setValue("format.justifyOnBreak", False)
     build.setValue("doc.pageHeader", pageHeader)
 
     docBuild = NWBuildDocument(project, build)
