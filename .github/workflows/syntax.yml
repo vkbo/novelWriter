@@ -18,26 +18,28 @@ jobs:
       contents: read
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
-      - name: Setup PDM
-        uses: pdm-project/setup-pdm@v4
+      - name: Install UV and Python
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          enable-cache: true
 
       - name: Install Dependencies
         run: |
-          pdm install --group lint
+          uv sync --no-dev --group lint
 
       - name: Ruff Check
         run: |
-          pdm run ruff --version
-          pdm run ruff check --output-format github
+          uv run --no-sync ruff --version
+          uv run --no-sync ruff check --output-format github
 
       - name: Pyright Check
         run: |
-          pdm run pyright --version
-          pdm run pyright
+          uv run --no-sync pyright --version
+          uv run --no-sync pyright
 
       - name: Isort Check
         run: |
-          pdm run isort --version
-          pdm run isort --check .
+          uv run --no-sync isort --version
+          uv run --no-sync isort --check .
