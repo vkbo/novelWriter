@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Build Manuscript
+novelWriter – GUI Manuscript Build
 ==================================
 
 File History:
@@ -73,7 +73,7 @@ class GuiManuscriptBuild(NDialog):
         self._parent = parent
         self._build = build
 
-        self.setWindowTitle(self.tr("Build Manuscript"))
+        self.setWindowTitle(self.tr("Manuscript Build"))
         self.setMinimumWidth(500)
         self.setMinimumHeight(300)
 

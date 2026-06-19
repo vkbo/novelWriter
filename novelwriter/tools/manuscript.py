@@ -85,7 +85,7 @@ class GuiManuscript(NToolDialog):
         self._builds = BuildCollection(SHARED.project)
         self._buildMap: dict[str, QListWidgetItem] = {}
 
-        self.setWindowTitle(self.tr("Build Manuscript"))
+        self.setWindowTitle(self.tr("Manuscript Build"))
         self.setMinimumWidth(600)
         self.setMinimumHeight(500)
 

@@ -19,6 +19,11 @@
 - When editing code, keep diffs minimal and update only the relevant files.
 - Prefer project-local helpers and conventions over introducing new abstractions.
 - The code base should use camelCase style to match the Qt library style.
+- The `i18n/*.ts` files are auto-generated and must never be edited manually.
+- Do not edit files under `sample/` unless explicitly requested.
+- Do not edit files under `tests/lipsum/` unless explicitly requested.
+- Any folder containing `nwProject.nwx` is a novelWriter project storage folder and must not be
+  edited unless explicitly requested.
 
 ## Codebase Navigation
 
