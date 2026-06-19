@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Manuscript Build
+novelWriter – GUI Build Manuscript
 ==================================
 
 File History:
@@ -56,10 +56,10 @@ logger = logging.getLogger(__name__)
 
 
 class GuiManuscriptBuild(NDialog):
-    """GUI Tools: Manuscript Build Dialog.
+    """GUI Tools: Build Manuscript Dialog.
 
     This is the tool for running the build itself. It can be accessed
-    independently of the Manuscript Build Tool.
+    independently of the Build Manuscript Tool.
     """
 
     D_KEY = QtUserRole
@@ -73,7 +73,7 @@ class GuiManuscriptBuild(NDialog):
         self._parent = parent
         self._build = build
 
-        self.setWindowTitle(self.tr("Manuscript Build"))
+        self.setWindowTitle(self.tr("Build Manuscript"))
         self.setMinimumWidth(500)
         self.setMinimumHeight(300)
 
