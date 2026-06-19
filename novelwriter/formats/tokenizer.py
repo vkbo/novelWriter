@@ -340,10 +340,10 @@ class Tokenizer(ABC):
         self._firstWidth = indent
         self._indentFirst = first
 
-    def setJustify(self, state: bool, onManualBreak: bool) -> None:
+    def setJustify(self, enabled: bool, onBreak: bool) -> None:
         """Enable or disable text justification."""
-        self._doJustify = state
-        self._justifyBreak = onManualBreak
+        self._doJustify = enabled
+        self._justifyBreak = onBreak
 
     def setDialogHighlight(self, state: bool) -> None:
         """Enable or disable dialogue highlighting."""

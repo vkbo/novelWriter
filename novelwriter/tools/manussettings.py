@@ -1084,12 +1084,14 @@ class _FormattingTab(NScrollableForm):
 
         # Text Options
         self.justifyText = NSwitch(self, height=iPx)
+        self.justifyOnBreak = NSwitch(self, height=iPx)
         self.stripUnicode = NSwitch(self, height=iPx)
         self.replaceTabs = NSwitch(self, height=iPx)
         self.keepBreaks = NSwitch(self, height=iPx)
         self.showDialogue = NSwitch(self, height=iPx)
 
         self.addRow(self._build.getLabel("format.justifyText"), self.justifyText)
+        self.addRow(self._build.getLabel("format.justifyOnBreak"), self.justifyOnBreak)
         self.addRow(self._build.getLabel("format.stripUnicode"), self.stripUnicode)
         self.addRow(self._build.getLabel("format.replaceTabs"), self.replaceTabs)
         self.addRow(self._build.getLabel("format.keepBreaks"), self.keepBreaks)
@@ -1492,6 +1494,7 @@ class _FormattingTab(NScrollableForm):
 
         self.lineHeight.setValue(self._build.getFloat("format.lineHeight"))
         self.justifyText.setChecked(self._build.getBool("format.justifyText"))
+        self.justifyOnBreak.setChecked(self._build.getBool("format.justifyOnBreak"))
         self.stripUnicode.setChecked(self._build.getBool("format.stripUnicode"))
         self.replaceTabs.setChecked(self._build.getBool("format.replaceTabs"))
         self.keepBreaks.setChecked(self._build.getBool("format.keepBreaks"))
@@ -1596,6 +1599,7 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.lineHeight", self.lineHeight.value())
 
         self._build.setValue("format.justifyText", self.justifyText.isChecked())
+        self._build.setValue("format.justifyOnBreak", self.justifyOnBreak.isChecked())
         self._build.setValue("format.stripUnicode", self.stripUnicode.isChecked())
         self._build.setValue("format.replaceTabs", self.replaceTabs.isChecked())
         self._build.setValue("format.keepBreaks", self.keepBreaks.isChecked())

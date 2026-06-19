@@ -334,17 +334,18 @@ class ToOdt(Tokenizer):
         # Settings
         cAttr = {}
         cAttr[_mkTag("config", "name")] = ET.QName(XML_NS["ooo"], "configuration-settings")
-        xConf = xmlSubElem(self._xSett, _mkTag("config", "config-item-set"), attrib=cAttr)
+        xCSet = xmlSubElem(self._xSett, _mkTag("config", "config-item-set"), attrib=cAttr)
 
         cItem = _mkTag("config", "config-item")
         cName = _mkTag("config", "name")
         cType = _mkTag("config", "type")
 
         cSettings = [
+            ("JustifyLinesWithShrinking", "boolean", formatBool(False)),
             ("DoNotJustifyLinesWithManualBreak", "boolean", formatBool(not self._justifyBreak)),
         ]
-        for name, typ, val in cSettings:
-            xmlSubElem(xConf, cItem, val, attrib={cName: name, cType: typ})
+        for sName, sType, sValue in cSettings:
+            xmlSubElem(xCSet, cItem, sValue, attrib={cName: sName, cType: sType})
 
         self._pageStyles()
         self._defaultStyles()
