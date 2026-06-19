@@ -38,7 +38,7 @@ from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.item import NWItem
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwState
-from novelwriter.gui.doceditor import GuiDocEditor, TextAutoReplace, _TagAction
+from novelwriter.gui.doceditor import CommandCompleter, GuiDocEditor, TextAutoReplace, _TagAction
 from novelwriter.gui.dochighlight import TextBlockData
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
@@ -1964,7 +1964,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     nwGUI.saveDocument()
 
     docEditor.replaceText("")
-    completer = docEditor._completer
+    completer: CommandCompleter = docEditor._completer
 
     # Create Scene
     nwGUI.docEditor.setFocus()
@@ -2009,13 +2009,24 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
 
     # Selecting "Jane" should insert it
     completer.actions()[0].trigger()
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     assert docEditor.getText() == (
         "### Scene One\n\n"
-        "@char: Jane\n"
+        "@char: Jane"
     )
 
+    # Adding a comma should reopen it
+    qtbot.keyClick(docEditor, ",", delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, " ", delay=KEY_DELAY)
+    assert [a.text() for a in completer.actions()] == ["Jane", "John"]
+
+    # Pressing return without selecting anything should just close it
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    assert [a.text() for a in completer.actions()] == []
+    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
+
     # Start a new line with a nonsense keyword, which should be handled
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     for c in "@: ":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
@@ -2074,7 +2085,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
         "%Story.Resolution: \n"
     )
 
-    # Auto-complete note comment
+    # Auto-complete note comment, but select with Tab
     SHARED.project.index._itemIndex._cache.note.add("Consistency")
     qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
     assert len(completer.actions()) == 4
@@ -2082,11 +2093,11 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
     qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
     qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Tab, delay=KEY_DELAY)
     qtbot.keyClick(completer, ".", delay=KEY_DELAY)
     assert len(completer.actions()) == 1
     qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Tab, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     assert docEditor.getText() == (
         "### Scene One\n\n"

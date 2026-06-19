@@ -38,6 +38,7 @@ import logging
 
 from enum import Enum, IntFlag
 from time import time
+from typing import NamedTuple
 
 from PyQt6 import sip
 from PyQt6.QtCore import (
@@ -2536,6 +2537,14 @@ class GuiDocEditor(QPlainTextEdit):
                     break
 
 
+class CompleterAction(NamedTuple):
+    """Values needed to complete a completer action."""
+
+    pos: int
+    length: int
+    value: str
+
+
 class CommandCompleter(QMenu):
     """GuiWidget: Command Completer Menu.
 
@@ -2552,9 +2561,10 @@ class CommandCompleter(QMenu):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
         self._parent = parent
+        self.triggered.connect(self._emitComplete)
 
     def updateMetaText(self, text: str, pos: int) -> bool:
-        """Update the menu options based on the line of text."""
+        """Update the menu options based on the line of meta text."""
         self.clear()
         kw, sep, _ = text.partition(":")
         if pos <= len(kw):
@@ -2583,12 +2593,12 @@ class CommandCompleter(QMenu):
         for value in options:
             rep = value + suffix
             action = qtAddAction(self, value)
-            action.triggered.connect(qtLambda(self._emitComplete, offset, length, rep))
+            action.setData(CompleterAction(pos=offset, length=length, value=rep))
 
         return True
 
     def updateCommentText(self, text: str, pos: int) -> bool:
-        """Update the menu options based on the line of text."""
+        """Update the menu options based on the line of comment text."""
         self.clear()
         cmd, sep, _ = text.partition(":")
         if pos <= len(cmd):
@@ -2626,7 +2636,7 @@ class CommandCompleter(QMenu):
                 for value in options:
                     rep = value + suffix
                     action = qtAddAction(self, rep.rstrip(":. "))
-                    action.triggered.connect(qtLambda(self._emitComplete, offset, length, rep))
+                    action.setData(CompleterAction(pos=offset, length=length, value=rep))
                 return True
 
         return False
@@ -2637,22 +2647,37 @@ class CommandCompleter(QMenu):
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Capture keypresses and forward most of them to the editor."""
-        if event.key() in (
-            Qt.Key.Key_Up, Qt.Key.Key_Down, Qt.Key.Key_Return,
-            Qt.Key.Key_Enter, Qt.Key.Key_Escape
-        ):
-            super().keyPressEvent(event)
-        else:
-            self.close()  # Close to release the event lock before forwarding the key press (#2510)
-            self._parent.keyPressEvent(event)
+        match event.key():
+            case Qt.Key.Key_Up | Qt.Key.Key_Down:
+                # Let the menu handle navigation
+                super().keyPressEvent(event)
+            case Qt.Key.Key_Right | Qt.Key.Key_Return | Qt.Key.Key_Enter | Qt.Key.Key_Tab:
+                # Activate the selection if there is one, otherwise close the completer
+                if action := self.activeAction():
+                    action.trigger()
+                else:
+                    self.clear()
+                    self.close()
+            case Qt.Key.Key_Left | Qt.Key.Key_Escape:
+                # Cancel the completer
+                self.clear()
+                self.close()
+            case _:
+                # Any other keys, send back to the editor
+                # Also close to release the event lock before forwarding key press (#2510)
+                self.clear()
+                self.close()
+                self._parent.keyPressEvent(event)
 
     ##
-    #  Internal Functions
+    #  Internal Slots
     ##
 
-    def _emitComplete(self, pos: int, length: int, value: str) -> None:
+    @pyqtSlot(QAction)
+    def _emitComplete(self, action: QAction) -> None:
         """Emit the signal to indicate a selection has been made."""
-        self.insertText.emit(pos, length, value)
+        if isinstance(data := action.data(), CompleterAction):
+            self.insertText.emit(data.pos, data.length, data.value)
 
 
 class BackgroundWordCounter(QRunnable):
