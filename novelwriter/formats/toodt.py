@@ -342,7 +342,7 @@ class ToOdt(Tokenizer):
 
         cSettings = [
             ("JustifyLinesWithShrinking", "boolean", formatBool(False)),
-            ("DoNotJustifyLinesWithManualBreak", "boolean", formatBool(not self._justifyBreak)),
+            ("DoNotJustifyLinesWithManualBreak", "boolean", formatBool(not self._justifyOnBreak)),
         ]
         for sName, sType, sValue in cSettings:
             xmlSubElem(xCSet, cItem, sValue, attrib={cName: sName, cType: sType})

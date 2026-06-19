@@ -929,6 +929,7 @@ def testFmtToOdt_SaveFlatWithEmptyLines(mockGUI, fncPath, tstPaths, ipsumText):
     odt._isNovel = True
     odt.setHeaderFormat(nwHeadFmt.DOC_AUTO, 1)
     odt.setLineForMargin(True)
+    odt.setJustify(True, False)
     assert odt._headerFormat == nwHeadFmt.DOC_AUTO
 
     odt.setPageLayout(148, 210, 20, 18, 17, 15)

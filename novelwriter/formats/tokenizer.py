@@ -122,22 +122,22 @@ class Tokenizer(ABC):
         self._outline: dict[str, str] = {}
 
         # User Settings
-        self._dLocale      = CONFIG.locale  # The document locale
-        self._textFont     = QFont("Serif", 11)  # Output text font
-        self._lineHeight   = 1.15    # Line height in units of em
-        self._colorHeads   = True    # Colourise headings
-        self._boldHeads    = True    # Bold headings
-        self._blockIndent  = 4.00    # Block indent in units of em
-        self._firstIndent  = False   # Enable first line indent
-        self._firstWidth   = 1.40    # First line indent in units of em
-        self._indentFirst  = False   # Indent first paragraph
-        self._doJustify    = False   # Justify text
-        self._justifyBreak = True    # Justify text on manual line breaks
-        self._doBodyText   = True    # Include body text
-        self._doComments   = set()   # Comment styles to allow
-        self._doKeywords   = False   # Also process keywords like tags and references
-        self._keepBreaks   = True    # Keep line breaks in paragraphs
-        self._defaultAlign = "left"  # The default text alignment
+        self._dLocale        = CONFIG.locale  # The document locale
+        self._textFont       = QFont("Serif", 11)  # Output text font
+        self._lineHeight     = 1.15    # Line height in units of em
+        self._colorHeads     = True    # Colourise headings
+        self._boldHeads      = True    # Bold headings
+        self._blockIndent    = 4.00    # Block indent in units of em
+        self._firstIndent    = False   # Enable first line indent
+        self._firstWidth     = 1.40    # First line indent in units of em
+        self._indentFirst    = False   # Indent first paragraph
+        self._doJustify      = False   # Justify text
+        self._justifyOnBreak = True    # Justify text on manual line breaks
+        self._doBodyText     = True    # Include body text
+        self._doComments     = set()   # Comment styles to allow
+        self._doKeywords     = False   # Also process keywords like tags and references
+        self._keepBreaks     = True    # Keep line breaks in paragraphs
+        self._defaultAlign   = "left"  # The default text alignment
 
         self._skipKeywords: set[str] = set()  # Keywords to ignore
 
@@ -343,7 +343,7 @@ class Tokenizer(ABC):
     def setJustify(self, enabled: bool, onBreak: bool) -> None:
         """Enable or disable text justification."""
         self._doJustify = enabled
-        self._justifyBreak = onBreak
+        self._justifyOnBreak = onBreak
 
     def setDialogHighlight(self, state: bool) -> None:
         """Enable or disable dialogue highlighting."""
