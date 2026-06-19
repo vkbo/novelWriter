@@ -56,10 +56,10 @@ logger = logging.getLogger(__name__)
 
 
 class GuiManuscriptBuild(NDialog):
-    """GUI Tools: Manuscript Build Dialog.
+    """GUI Tools: Build Manuscript Dialog.
 
     This is the tool for running the build itself. It can be accessed
-    independently of the Manuscript Build Tool.
+    independently of the Build Manuscript Tool.
     """
 
     D_KEY = QtUserRole

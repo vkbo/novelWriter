@@ -26,7 +26,7 @@ The Manuscript Build Tool
 =========================
 
 .. figure:: images/fig_manuscript_build.png
-   :width: 80%
+   :width: 90%
 
    The **Manuscript Build** tool main window.
 
@@ -39,7 +39,7 @@ Outline and Word Counts
 -----------------------
 
 .. figure:: images/fig_manuscript_build_outline.png
-   :width: 80%
+   :width: 90%
 
    The **Manuscript Build** tool main window with the **Outline** visible.
 
@@ -64,9 +64,8 @@ by double-clicking or by selecting it and pressing the edit button in the toolba
 .. tip::
 
    You can keep the **Manuscript Build Settings** dialog open while testing the different options,
-   and just hit the :guilabel:`Apply` button. You can test the result of your settings change by
-   pressing the :guilabel:`Preview` button in the main **Manuscript Build** window. When you're
-   happy with the result, you can close the settings.
+   and just hit the :guilabel:`Apply` button to update the preview in the main **Manuscript Build**
+   window. When you're happy with the result, you can close the settings.
 
 
 .. _docs_ui_manuscript_selection:
@@ -79,7 +78,7 @@ Document Selection
 
    The **Selections** page of the **Manuscript Build Settings** dialog.
 
-The **Selections** page of the **Manuscript Build Settings** dialog allows you to fine tune which
+The **Selections** page of the **Manuscript Build Settings** dialog allows you to fine-tune which
 documents are included in the build. The included documents are indicated by an icon in the last
 column. On the right you have some filter options for selecting content of a specific type, and a
 set of switches for which root folders to include.
@@ -133,8 +132,7 @@ Any text you add that isn't highlighted in colours will remain in your formatted
    "``{Char:POV}``",       "Insert the point-of-view character's :ref:`display name <docs_usage_tags_refs_tags>`."
    "``{Char:Focus}``",     "Insert the focus character's :ref:`display name <docs_usage_tags_refs_tags>`."
 
-You can preview the result of these format strings by clicking :guilabel:`Apply`, and then clicking
-:guilabel:`Preview` in the **Manuscript Build** tool main window.
+You can preview the result of these format strings by clicking :guilabel:`Apply`.
 
 .. note::
 
@@ -218,7 +216,7 @@ Output Settings
 
 The **Formatting** sections of the **Manuscript Build Settings** dialog control a number of other
 settings for the output. This includes formatting, but also what content is included. You can for
-instance select to include comments, synopsis. tags and reference, and even exclude the body text
+instance select to include comments, synopsis, tags and reference, and even exclude the body text
 itself.
 
 
@@ -230,9 +228,9 @@ Building Manuscript Documents
 .. figure:: images/fig_build_build.png
    :width: 80%
 
-   The **Manuscript Build** dialog used for writing the actual manuscript documents.
+   The **Build Manuscript** dialog used for writing the actual manuscript documents.
 
-When you press the :guilabel:`Build` button on the **Build Manuscript** tool main window, a special
+When you press the :guilabel:`Build` button on the **Manuscript Build** tool main window, a special
 file dialog opens up. This is where you pick your desired output format and where to write the
 file.
 
@@ -295,7 +293,7 @@ order they appear in the project tree. Each document is then split up into a lis
 entry per paragraph it contains.
 
 These files are mainly intended for scripted post-processing for those who want that option. A JSON
-file can be imported directly into a Python dict object or a PHP array, to mentions a few options.
+file can be imported directly into a Python dict object or a PHP array, to mention a few options.
 
 
 .. _docs_ui_manuscript_print:

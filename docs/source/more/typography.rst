@@ -76,7 +76,7 @@ right single quotation marks, depending on the font. There is a Wikipedia articl
 
 .. note::
 
-   On export with the **Build Manuscript** tool, these apostrophes will be replaced
+   On export with the **Manuscript Build** tool, these apostrophes will be replaced
    automatically with the corresponding right hand single quote symbol as is generally recommended.
    Therefore it doesn't really matter if you only use them to correct syntax highlighting in some
    places, and not others.

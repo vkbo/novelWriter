@@ -85,7 +85,7 @@ class GuiManuscript(NToolDialog):
         self._builds = BuildCollection(SHARED.project)
         self._buildMap: dict[str, QListWidgetItem] = {}
 
-        self.setWindowTitle(self.tr("Build Manuscript"))
+        self.setWindowTitle(self.tr("Manuscript Build"))
         self.setMinimumWidth(600)
         self.setMinimumHeight(500)
 
@@ -117,7 +117,7 @@ class GuiManuscript(NToolDialog):
         self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
         self.tbEdit.clicked.connect(self._editSelectedBuild)
 
-        self.lblBuilds = QLabel(self.tr("Builds"), self)
+        self.lblBuilds = QLabel(self.tr("Build Settings"), self)
         self.lblBuilds.setFont(SHARED.theme.guiFontB)
 
         self.listToolBox = QHBoxLayout()
