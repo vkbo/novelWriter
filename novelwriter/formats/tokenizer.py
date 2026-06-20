@@ -663,10 +663,17 @@ class Tokenizer(ABC):
                     elif isPlain:
                         tText = self._hFormatter.apply(self._fmtPart, tText, nHead)
                         tStyle |= self._partStyle
+                        if self._hFormatter.hrule:
+                            tBlocks.append((
+                                BlockTyp.HRULE, "", "", [], BlockFmt.NONE
+                            ))
+                            tType = tType if tText else BlockTyp.EMPTY
+
                     if isPlain:
                         self._hFormatter.resetScene()
                     else:
                         self._hFormatter.resetAll()
+
                     self._noSep = True
 
                 tBlocks.append((
@@ -693,12 +700,19 @@ class Tokenizer(ABC):
                     tType = BlockTyp.HEAD1  # Promote
                     if isPlain:
                         self._hFormatter.incChapter()
+
                     if sHide:
                         tText = ""
                         tType = BlockTyp.EMPTY
                     else:
                         tText = self._hFormatter.apply(tFormat, tText, nHead)
                         tStyle |= self._chapterStyle
+                        if self._hFormatter.hrule:
+                            tBlocks.append((
+                                BlockTyp.HRULE, "", "", [], BlockFmt.NONE
+                            ))
+                            tType = tType if tText else BlockTyp.EMPTY
+
                     self._hFormatter.resetScene()
                     self._noSep = True
 
@@ -739,6 +753,12 @@ class Tokenizer(ABC):
                             tText = "" if self._noSep else tText
                             tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SEP
                             tStyle |= BlockFmt.NONE if self._noSep else BlockFmt.CENTRE
+                        if self._hFormatter.hrule:
+                            tBlocks.append((
+                                BlockTyp.HRULE, "", "", [], BlockFmt.NONE
+                            ))
+                            tType = tType if tText else BlockTyp.EMPTY
+
                     self._noSep = False
 
                 tBlocks.append((
@@ -768,6 +788,12 @@ class Tokenizer(ABC):
                         elif tText == self._fmtSection:  # Static Format
                             tType = BlockTyp.SEP
                             tStyle |= BlockFmt.CENTRE
+
+                        if self._hFormatter.hrule:
+                            tBlocks.append((
+                                BlockTyp.HRULE, "", "", [], BlockFmt.NONE
+                            ))
+                            tType = tType if tText else BlockTyp.EMPTY
 
                 tBlocks.append((
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
@@ -1202,6 +1228,12 @@ class HeadingFormatter:
         self._scene = scene
         self._absolute = absolute
         self._upper = False
+        self._hrule = False
+
+    @property
+    def hrule(self) -> bool:
+        """Return current horizontal rule state."""
+        return self._hrule
 
     def setHandle(self, tHandle: str | None) -> None:
         """Set the handle currently being processed."""
@@ -1232,8 +1264,11 @@ class HeadingFormatter:
 
     def apply(self, template: str, text: str, nHead: int) -> str:
         """Apply formatting to a specific heading."""
+        self._hrule = nwHeadFmt.HR in template
+
         template = template.replace(nwHeadFmt.TITLE, text)
         template = template.replace(nwHeadFmt.BR, "\n")
+        template = template.replace(nwHeadFmt.HR, "")
         template = template.replace(nwHeadFmt.CH_NUM, str(self._chapter))
         template = template.replace(nwHeadFmt.SC_NUM, str(self._scene))
         template = template.replace(nwHeadFmt.SC_ABS, str(self._absolute))
@@ -1263,4 +1298,4 @@ class HeadingFormatter:
         if self._upper:
             template = template.upper()
 
-        return template
+        return template.strip()
