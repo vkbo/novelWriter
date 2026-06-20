@@ -31,7 +31,7 @@ import xml.etree.ElementTree as ET
 
 from datetime import datetime
 from hashlib import sha256
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Literal, NamedTuple
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from PyQt6.QtGui import QColor, QFont
@@ -123,6 +123,7 @@ S_HEAD2 = "Heading_20_2"
 S_HEAD3 = "Heading_20_3"
 S_HEAD4 = "Heading_20_4"
 S_SEP   = "Separator"
+S_HLINE = "Horizontal_20_Line"
 S_FIND  = "First_20_line_20_indent"
 S_TEXT  = "Text_20_body"
 S_META  = "Text_20_Meta"
@@ -198,6 +199,9 @@ class ToOdt(Tokenizer):
         self._mDocLeft   = "2.000cm"
         self._mDocRight  = "2.000cm"
 
+        # Horizontal Line Margin
+        self._mHorLine = "4.250cm"  # Quarter of the text width
+
     ##
     #  Setters
     ##
@@ -212,6 +216,7 @@ class ToOdt(Tokenizer):
         self._mDocBtm    = f"{bottom/10.0:.3f}cm"
         self._mDocLeft   = f"{left/10.0:.3f}cm"
         self._mDocRight  = f"{right/10.0:.3f}cm"
+        self._mHorLine   = f"{(width - left - right)/40.0:.3f}cm"  # Quarter of the text width
 
     def setHeaderFormat(self, value: str, offset: int) -> None:
         """Set the document header format."""
@@ -410,6 +415,9 @@ class ToOdt(Tokenizer):
 
             elif tType == BlockTyp.SEP:
                 self._addTextPar(xText, S_SEP, oStyle, tText)
+
+            elif tType == BlockTyp.HRULE:
+                self._addTextPar(xText, S_HLINE, oStyle, tText)
 
             elif tType == BlockTyp.SKIP:
                 self._addTextPar(xText, S_TEXT, oStyle, "")
@@ -876,6 +884,23 @@ class ToOdt(Tokenizer):
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
+        # Add Horizontal Line Style
+        style = ODTParagraphStyle(S_HLINE)
+        style.setDisplayName("Horizontal Line")
+        style.setParentStyleName("Standard")
+        style.setNextStyleName(S_TEXT)
+        style.setClass("html")
+        style.setMarginTop(self._emToCm(0))
+        style.setMarginBottom(self._emToCm(self._marginSep[1]))
+        style.setMarginLeft(self._mHorLine)
+        style.setMarginRight(self._mHorLine)
+        style.setBorderLeft(ODTBorderStyle("none"))
+        style.setBorderRight(ODTBorderStyle("none"))
+        style.setBorderTop(ODTBorderStyle("none"))
+        style.setBorderBottom(ODTBorderStyle("solid", 0.75, self._theme.comment))
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
+
         # Add Heading 1 Style
         style = ODTParagraphStyle(S_HEAD1)
         style.setDisplayName("Heading 1")
@@ -1014,7 +1039,7 @@ class ODTParagraphStyle:
     VALID_ALIGN: Final[list[str]]  = ["start", "center", "end", "justify", "left", "right"]
     VALID_BREAK: Final[list[str]]  = ["auto", "page", "even-page", "odd-page", "inherit"]
     VALID_LEVEL: Final[list[str]]  = ["1", "2", "3", "4"]
-    VALID_CLASS: Final[list[str]]  = ["text", "chapter", "extra"]
+    VALID_CLASS: Final[list[str]]  = ["text", "chapter", "extra", "html"]
     VALID_WEIGHT: Final[list[str]] = ["normal", "bold", *FONT_WEIGHT_NUM]
 
     def __init__(self, name: str) -> None:
@@ -1036,6 +1061,10 @@ class ODTParagraphStyle:
             "margin-bottom": ["fo", None],
             "margin-left":   ["fo", None],
             "margin-right":  ["fo", None],
+            "border-left":   ["fo", None],
+            "border-right":  ["fo", None],
+            "border-top":    ["fo", None],
+            "border-bottom": ["fo", None],
             "text-indent":   ["fo", None],
             "line-height":   ["fo", None],
             "text-align":    ["fo", None],
@@ -1114,6 +1143,22 @@ class ODTParagraphStyle:
     def setMarginRight(self, value: str | None) -> None:
         """Set paragraph right margin."""
         self._pAttr["margin-right"][1] = value
+
+    def setBorderLeft(self, value: ODTBorderStyle | None) -> None:
+        """Set paragraph left border."""
+        self._pAttr["border-left"][1] = None if value is None else str(value)
+
+    def setBorderRight(self, value: ODTBorderStyle | None) -> None:
+        """Set paragraph right border."""
+        self._pAttr["border-right"][1] = None if value is None else str(value)
+
+    def setBorderTop(self, value: ODTBorderStyle | None) -> None:
+        """Set paragraph top border."""
+        self._pAttr["border-top"][1] = None if value is None else str(value)
+
+    def setBorderBottom(self, value: ODTBorderStyle | None) -> None:
+        """Set paragraph bottom border."""
+        self._pAttr["border-bottom"][1] = None if value is None else str(value)
 
     def setTextIndent(self, value: str | None) -> None:
         """Set text indentation."""
@@ -1217,6 +1262,23 @@ class ODTParagraphStyle:
 
         if attr := {_mkTag(n, m): v for m, (n, v) in self._tAttr.items() if v}:
             ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=attr)
+
+
+class ODTBorderStyle(NamedTuple):
+    """Named tuple for border styles."""
+
+    style: Literal["none", "solid", "dashed", "dotted", "double"] = "none"
+    width: float | None = None
+    color: QColor | None = None
+
+    def __str__(self) -> str:
+        """Convert the border style to a string that can be used in ODT XML."""
+        values = [self.style]
+        if self.width is not None:
+            values.insert(0, f"{self.width:.2f}pt")
+        if self.color is not None:
+            values.append(self.color.name(QtHexRgb))
+        return " ".join(values)
 
 
 class ODTTextStyle:

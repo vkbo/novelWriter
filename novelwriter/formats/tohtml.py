@@ -221,6 +221,9 @@ class ToHtml(Tokenizer):
             elif tType == BlockTyp.SEP:
                 lines.append(f"<p class='sep'{hStyle}>{tText}</p>\n")
 
+            elif tType == BlockTyp.HRULE:
+                lines.append(f"<hr{hStyle}>\n")
+
             elif tType == BlockTyp.SKIP:
                 lines.append(f"<p{hStyle}>&nbsp;</p>\n")
 

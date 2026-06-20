@@ -29,7 +29,7 @@ import re
 import xml.etree.ElementTree as ET
 
 from datetime import datetime
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING, Literal, NamedTuple
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from PyQt6.QtCore import QMargins, QSize
@@ -39,7 +39,7 @@ from novelwriter.common import firstFloat, xmlElement, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import COMMENT_BLOCKS, Tokenizer
-from novelwriter.types import QtHexRgb
+from novelwriter.types import QtBlack, QtHexRgb
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -178,6 +178,16 @@ class DocXParStyle(NamedTuple):
     bold: bool = False
 
 
+class DocXBorder(NamedTuple):
+    """DocX Border Data."""
+
+    line: Literal["single", "double", "dashed", "dotted"] = "single"
+    color: QColor = QtBlack
+    size: int = 6
+    space: int = 1
+    margin: int = 0
+
+
 class ToDocX(Tokenizer):
     """Core: DocX Document Writer.
 
@@ -196,6 +206,7 @@ class ToDocX(Tokenizer):
         self._fontSize    = 12.0
         self._pageSize    = QSize(_mmToSz(210.0), _mmToSz(297.0))
         self._pageMargins = QMargins(_mmToSz(20.0), _mmToSz(20.0), _mmToSz(20.0), _mmToSz(20.0))
+        self._mHorLine = _mmToSz(42.5/20.0)
 
         # Data Variables
         self._pars: list[DocXParagraph] = []
@@ -215,6 +226,7 @@ class ToDocX(Tokenizer):
         """Set the document page size and margins in millimetres."""
         self._pageSize = QSize(_mmToSz(width), _mmToSz(height))
         self._pageMargins = QMargins(_mmToSz(left), _mmToSz(top), _mmToSz(right), _mmToSz(bottom))
+        self._mHorLine = _mmToSz((width - left - right)/80.0)
 
     def setHeaderFormat(self, value: str, offset: int) -> None:
         """Set the document header format."""
@@ -290,6 +302,12 @@ class ToDocX(Tokenizer):
 
             elif tType == BlockTyp.SEP:
                 self._processFragments(par, S_SEP, tText)
+
+            elif tType == BlockTyp.HRULE:
+                par.setBorder("bottom", DocXBorder(line="single", color=self._theme.comment))
+                par.setMarginLeft(self._mHorLine)
+                par.setMarginRight(self._mHorLine)
+                self._processFragments(par, S_NORM, "")
 
             elif tType == BlockTyp.SKIP:
                 self._processFragments(par, S_NORM, "")
@@ -1049,7 +1067,7 @@ class DocXParagraph:
     """
 
     __slots__ = (
-        "_bottomMargin", "_breakAfter", "_breakBefore", "_content",
+        "_borders", "_bottomMargin", "_breakAfter", "_breakBefore", "_content",
         "_footnoteRef", "_indentFirst", "_leftMargin", "_rightMargin",
         "_style", "_textAlign", "_topMargin",
     )
@@ -1066,6 +1084,7 @@ class DocXParagraph:
         self._breakBefore = False
         self._breakAfter = False
         self._footnoteRef = False
+        self._borders: dict[str, DocXBorder] = {}
 
     ##
     #  Properties
@@ -1104,6 +1123,10 @@ class DocXParagraph:
     def setMarginRight(self, value: float) -> None:
         """Set margin right in pt."""
         self._rightMargin = value
+
+    def setBorder(self, position: str, value: DocXBorder) -> None:
+        """Set border for a specific position."""
+        self._borders[position] = value
 
     def setIndentFirst(self, state: bool) -> None:
         """Set first line indent."""
@@ -1153,6 +1176,15 @@ class DocXParagraph:
                     _wTag("line"): str(int(20.0 * firstFloat(style.line, style.size))),
                     _wTag("lineRule"): "auto",
                 })
+            if self._borders:
+                pBdr = xmlSubElem(pPr, _wTag("pBdr"))
+                for position, border in self._borders.items():
+                    xmlSubElem(pBdr, _wTag(position), attrib={
+                        _wTag("val"): border.line,
+                        _wTag("color"): _docXCol(border.color),
+                        _wTag("sz"): str(border.size),
+                        _wTag("space"): str(border.space),
+                    })
             if indent:
                 xmlSubElem(pPr, _wTag("ind"), attrib=indent)
             if self._textAlign:
