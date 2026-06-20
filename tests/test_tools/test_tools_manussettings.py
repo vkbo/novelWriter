@@ -485,14 +485,29 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     headTab.btnApply.click()
     assert sBuild.getStr("headings.fmtSection") == nwHeadFmt.TITLE
 
+    # Check that horizontal rule replaces all
+    headTab.btnScene.click()
+    headTab.aInsTitle.trigger()
+    headTab.aInsHRule.trigger()
+    headTab.btnApply.click()
+    assert sBuild.getStr("headings.fmtScene") == nwHeadFmt.HRULE
+
     # Check hide switches
+    headTab.swtPart.setChecked(True)
+    headTab.swtChapter.setChecked(True)
+    headTab.swtUnnumbered.setChecked(True)
     headTab.swtScene.setChecked(True)
+    headTab.swtAScene.setChecked(True)
     headTab.swtSection.setChecked(True)
     headTab.saveContent()
     sBuild = bSettings._build
     assert sBuild.buildID == build.buildID
 
+    assert sBuild.getBool("headings.hidePart") is True
+    assert sBuild.getBool("headings.hideChapter") is True
+    assert sBuild.getBool("headings.hideUnnumbered") is True
     assert sBuild.getBool("headings.hideScene") is True
+    assert sBuild.getBool("headings.hideAltScene") is True
     assert sBuild.getBool("headings.hideSection") is True
 
     # Finish

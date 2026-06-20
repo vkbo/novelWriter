@@ -413,7 +413,7 @@ def testFmtToOdt_ConvertNotesHeadings(mockGUI):
     odt = ToOdt(project, isFlat=True)
     odt._isNovel = False
 
-    # Header 1
+    # Heading 1
     odt._text = "# Title\n"
     odt.tokenizeText()
     odt.initDocument()
@@ -426,7 +426,7 @@ def testFmtToOdt_ConvertNotesHeadings(mockGUI):
         '</office:text>'
     )
 
-    # Header 2
+    # Heading 2
     odt._text = "## Title\n"
     odt.tokenizeText()
     odt.initDocument()
@@ -439,7 +439,7 @@ def testFmtToOdt_ConvertNotesHeadings(mockGUI):
         '</office:text>'
     )
 
-    # Header 3
+    # Heading 3
     odt._text = "### Title\n"
     odt.tokenizeText()
     odt.initDocument()
@@ -452,7 +452,7 @@ def testFmtToOdt_ConvertNotesHeadings(mockGUI):
         '</office:text>'
     )
 
-    # Header 4
+    # Heading 4
     odt._text = "#### Title\n"
     odt.tokenizeText()
     odt.initDocument()
@@ -655,6 +655,23 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
         '<text:p text:style-name="Separator">* * *</text:p>'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
         '<text:p text:style-name="Separator">* * *</text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
+        '</office:text>'
+    )
+
+    # Horizontal Line
+    odt._text = "### Scene One\n\nText\n\n### Scene Two\n\nText"
+    odt.setSceneFormat(nwHeadFmt.HRULE, False)
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert odt.errData == []
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="Horizontal_20_Line" />'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
+        '<text:p text:style-name="Horizontal_20_Line" />'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )

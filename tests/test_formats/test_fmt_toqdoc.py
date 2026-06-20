@@ -217,11 +217,29 @@ def testFmtToQTextDocument_HorizontalRule(mockGUI):
     doc = ToQTextDocument(project)
     doc.initDocument()
 
+    doc._isNovel = True
+    doc._isFirst = True
+    doc._text = (
+        "#! Title\n"
+        "## Chapter\n"
+        "### Scene 1\n"
+        "Text 1\n"
+        "### Scene 2\n"
+        "Text 2\n"
+        "#### Section\n"
+        "Text 3\n"
+    )
+    doc.setSceneFormat(nwHeadFmt.HRULE, False)
+    doc.setSectionFormat("", False)
+    doc.tokenizeText()
+    doc.doConvert()
+    assert doc.document.blockCount() == 7
+
     cursor = QTextCursor(doc.document)
     cursor.movePosition(QtMoveEnd)
     doc._insertHorizontalRule(cursor)
 
-    block = doc.document.findBlockByNumber(0)
+    block = doc.document.findBlockByNumber(3)
     bFmt = block.blockFormat()
     assert bFmt.alignment() == QtAlignCenter
     assert bFmt.hasProperty(QTextFormat.Property.BlockTrailingHorizontalRulerWidth)

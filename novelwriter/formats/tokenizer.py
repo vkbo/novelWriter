@@ -735,10 +735,13 @@ class Tokenizer(ABC):
                         tStyle |= self._sceneStyle
                         if tText == "":  # Empty Format
                             tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SKIP
-                        elif tText == tFormat:  # Static Format
+                        elif tFormat == nwHeadFmt.HRULE:  # Horizontal Rule Format
+                            tText = ""
+                            tType = BlockTyp.EMPTY if self._noSep else BlockTyp.HRULE
+                            tStyle = BlockFmt.NONE
+                        elif tText == tFormat:  # Separator Format
                             tText = "" if self._noSep else tText
-                            tType = BlockTyp.HRULE if tFormat == nwHeadFmt.HRULE else BlockTyp.SEP
-                            tType = BlockTyp.EMPTY if self._noSep else tType
+                            tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SEP
                             tStyle |= BlockFmt.NONE if self._noSep else BlockFmt.CENTRE
 
                     self._noSep = False
@@ -768,8 +771,12 @@ class Tokenizer(ABC):
                         tText = self._hFormatter.apply(tFormat, tText, nHead)
                         if tText == "":  # Empty Format
                             tType = BlockTyp.SKIP
-                        elif tText == tFormat:  # Static Format
-                            tType = BlockTyp.HRULE if tFormat == nwHeadFmt.HRULE else BlockTyp.SEP
+                        elif tFormat == nwHeadFmt.HRULE:  # Horizontal Rule Format
+                            tText = ""
+                            tType = BlockTyp.HRULE
+                            tStyle = BlockFmt.NONE
+                        elif tText == tFormat:  # Separator Format
+                            tType = BlockTyp.SEP
                             tStyle |= BlockFmt.CENTRE
 
                 tBlocks.append((

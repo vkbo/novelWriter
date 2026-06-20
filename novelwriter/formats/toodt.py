@@ -417,7 +417,7 @@ class ToOdt(Tokenizer):
                 self._addTextPar(xText, S_SEP, oStyle, tText)
 
             elif tType == BlockTyp.HRULE:
-                self._addTextPar(xText, S_HLINE, oStyle, tText)
+                self._addTextPar(xText, S_HLINE, oStyle, "")
 
             elif tType == BlockTyp.SKIP:
                 self._addTextPar(xText, S_TEXT, oStyle, "")

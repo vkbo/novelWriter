@@ -30,7 +30,7 @@ from novelwriter.formats.tomarkdown import ToMarkdown
 
 
 @pytest.mark.core
-def testFmtToMarkdown_ConvertHeaders(mockGUI):
+def testFmtToMarkdown_ConvertNovelHeaders(mockGUI):
     """Test header formats in the ToMarkdown class."""
     project = NWProject()
     md = ToMarkdown(project, False)
@@ -38,28 +38,28 @@ def testFmtToMarkdown_ConvertHeaders(mockGUI):
     md._isNovel = True
     md._isFirst = True
 
-    # Header 1
+    # Partition
     md._text = "# Title\n"
     md.setPartitionFormat(f"Part{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == "Part - Title\n============\n\n"
 
-    # Header 2
+    # Chapter
     md._text = "## Title\n"
     md.setChapterFormat(f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == "# Chapter 1 - Title\n\n"
 
-    # Header 3
+    # Scene
     md._text = "### Title\n"
     md.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == "## Scene 1 - Title\n\n"
 
-    # Header 4
+    # Section
     md._text = "#### Section Title\n"
     md.tokenizeText()
     md.doConvert()
@@ -76,6 +76,64 @@ def testFmtToMarkdown_ConvertHeaders(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == "# Prologue\n\n"
+
+    # Alt Scene
+    md._text = "###! Title\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "## Title\n\n"
+
+
+@pytest.mark.core
+def testFmtToMarkdown_ConvertNotesHeaders(mockGUI):
+    """Test header formats in the ToMarkdown class."""
+    project = NWProject()
+    md = ToMarkdown(project, False)
+
+    md._isNovel = False
+    md._isFirst = True
+
+    # Heading 1
+    md._text = "# Title\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "# Title\n\n"
+
+    # Heading 2
+    md._text = "## Title\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "## Title\n\n"
+
+    # Heading 3
+    md._text = "### Title\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "### Title\n\n"
+
+    # Heading 4
+    md._text = "#### Title\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "#### Title\n\n"
+
+    # Title
+    md._text = "#! Title\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "Title\n=====\n\n"
+
+    # Alt Heading 2
+    md._text = "##! Title\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "## Title\n\n"
+
+    # Alt Heading 3
+    md._text = "###! Title\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "### Title\n\n"
 
 
 @pytest.mark.core
@@ -242,6 +300,13 @@ def testFmtToMarkdown_ConvertDirect(mockGUI):
     ]
     md.doConvert()
     assert md._pages[-1] == "* * *\n\n"
+
+    # Horizontal Rule
+    md._blocks = [
+        (BlockTyp.HRULE, "", "", [], BlockFmt.CENTRE),
+    ]
+    md.doConvert()
+    assert md._pages[-1] == "----\n\n"
 
     # Skip
     md._blocks = [

@@ -769,7 +769,7 @@ def testFmtToken_HeaderStyleHorizontalRule(mockGUI):
     tokens._text = "### Scene One\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HRULE, TM1, nwHeadFmt.HRULE, [], BlockFmt.CENTRE),
+        (BlockTyp.HRULE, TM1, "", [], BlockFmt.NONE),
     ]
 
     # Immediately after chapter, scene separators and HRULE are suppressed
@@ -794,7 +794,7 @@ def testFmtToken_HeaderStyleHorizontalRule(mockGUI):
     tokens._text = "###! Scene Four\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HRULE, TM1, nwHeadFmt.HRULE, [], BlockFmt.CENTRE),
+        (BlockTyp.HRULE, TM1, "", [], BlockFmt.NONE),
     ]
 
     # Sections still treat static four hyphens as a centred HRULE block
@@ -803,7 +803,7 @@ def testFmtToken_HeaderStyleHorizontalRule(mockGUI):
     tokens._text = "#### Section\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HRULE, TM1, nwHeadFmt.HRULE, [], BlockFmt.CENTRE),
+        (BlockTyp.HRULE, TM1, "", [], BlockFmt.NONE),
     ]
 
 
