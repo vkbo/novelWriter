@@ -316,9 +316,10 @@ class ToHtml(Tokenizer):
             return []
 
         tColor = self._theme.text.name(QtHexRgb)
-        hColor = self._theme.head.name(QtHexRgb) if self._colorHeads else tColor
         lColor = self._theme.head.name(QtHexRgb)
         mColor = self._theme.highlight.name(QtHexRgb)
+        cColor = self._theme.comment.name(QtHexRgb)
+        hColor = lColor if self._colorHeads else tColor
 
         mtH0 = self._marginTitle[0]
         mbH0 = self._marginTitle[1]
@@ -361,6 +362,10 @@ class ToHtml(Tokenizer):
         )
         styles.append(f"a {{color: {lColor};}}")
         styles.append(f"mark {{background: {mColor};}}")
+        styles.append(
+            f"hr {{width: 50%; color: {cColor}; "
+            f"margin: {mtSP:.2f}em auto {mbSP:.2f}em auto;}}"
+        )
         styles.append(f"h1, h2, h3, h4 {{color: {hColor}; page-break-after: avoid;}}")
         styles.append(
             f"h1 {{font-size: {fSz1:.2f}em; font-weight: {hW}; "

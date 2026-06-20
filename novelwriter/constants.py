@@ -485,7 +485,6 @@ class nwHeadFmt:
     """Manuscript Header Formats."""
 
     BR         = "{BR}"
-    HR         = "{HR}"
     TITLE      = "{Title}"
     CH_NUM     = "{Chapter}"
     CH_WORD    = "{Chapter:Word}"
@@ -495,10 +494,11 @@ class nwHeadFmt:
     SC_ABS     = "{Scene:Abs}"
     CHAR_POV   = "{Char:POV}"
     CHAR_FOCUS = "{Char:Focus}"
+    HRULE      = "----"
 
     PAGE_HEADERS: Final[list[str]] = [
         TITLE, CH_NUM, CH_WORD, CH_ROMU, CH_ROML, SC_NUM, SC_ABS,
-        CHAR_POV, CHAR_FOCUS, HR,
+        CHAR_POV, CHAR_FOCUS,
     ]
 
     # Document Page Header
