@@ -34,7 +34,10 @@ from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp, TextFmt
-from novelwriter.formats.toodt import ODTParagraphStyle, ODTTextStyle, ToOdt, XMLParagraph, _mkTag
+from novelwriter.formats.toodt import (
+    ODTBorderStyle, ODTParagraphStyle, ODTTextStyle, ToOdt, XMLParagraph,
+    _mkTag
+)
 
 from tests.tools import ODT_IGNORE, cmpFiles, xmlToText
 
@@ -116,10 +119,11 @@ def testFmtToOdt_TextFormatting(mockGUI):
 
     assert list(odt._mainPara.keys()) == [
         "Text_20_body", "First_20_line_20_indent", "Text_20_Meta", "Title", "Separator",
-        "Heading_20_1", "Heading_20_2", "Heading_20_3", "Heading_20_4", "Header", "Footnote",
+        "Horizontal_20_Line", "Heading_20_1", "Heading_20_2", "Heading_20_3",
+        "Heading_20_4", "Header", "Footnote",
     ]
 
-    key = "55db6c1d22ff5aba93f0f67c8d4a857a26e2d3813dfbcba1ef7c0d424f501be5"
+    key = "3cf442c88e0f5e263fdf225fa4763d6e5d7a1d78e611c24f5e9befef1b7646c9"
     assert key in odt._autoPara
     assert isinstance(odt._autoPara[key], ODTParagraphStyle)
     assert odt._autoPara[key].name == "P1"
@@ -409,7 +413,7 @@ def testFmtToOdt_ConvertNotesHeadings(mockGUI):
     odt = ToOdt(project, isFlat=True)
     odt._isNovel = False
 
-    # Header 1
+    # Heading 1
     odt._text = "# Title\n"
     odt.tokenizeText()
     odt.initDocument()
@@ -422,7 +426,7 @@ def testFmtToOdt_ConvertNotesHeadings(mockGUI):
         '</office:text>'
     )
 
-    # Header 2
+    # Heading 2
     odt._text = "## Title\n"
     odt.tokenizeText()
     odt.initDocument()
@@ -435,7 +439,7 @@ def testFmtToOdt_ConvertNotesHeadings(mockGUI):
         '</office:text>'
     )
 
-    # Header 3
+    # Heading 3
     odt._text = "### Title\n"
     odt.tokenizeText()
     odt.initDocument()
@@ -448,7 +452,7 @@ def testFmtToOdt_ConvertNotesHeadings(mockGUI):
         '</office:text>'
     )
 
-    # Header 4
+    # Heading 4
     odt._text = "#### Title\n"
     odt.tokenizeText()
     odt.initDocument()
@@ -651,6 +655,23 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
         '<text:p text:style-name="Separator">* * *</text:p>'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
         '<text:p text:style-name="Separator">* * *</text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
+        '</office:text>'
+    )
+
+    # Horizontal Line
+    odt._text = "### Scene One\n\nText\n\n### Scene Two\n\nText"
+    odt.setSceneFormat(nwHeadFmt.HRULE, False)
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert odt.errData == []
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="Horizontal_20_Line" />'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
+        '<text:p text:style-name="Horizontal_20_Line" />'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )
@@ -1107,6 +1128,10 @@ def testFmtToOdt_ODTParagraphStyle():
     assert parStyle._pAttr["margin-bottom"] == ["fo", None]
     assert parStyle._pAttr["margin-left"]   == ["fo", None]
     assert parStyle._pAttr["margin-right"]  == ["fo", None]
+    assert parStyle._pAttr["border-left"]   == ["fo", None]
+    assert parStyle._pAttr["border-right"]  == ["fo", None]
+    assert parStyle._pAttr["border-top"]    == ["fo", None]
+    assert parStyle._pAttr["border-bottom"] == ["fo", None]
     assert parStyle._pAttr["text-indent"]   == ["fo", None]
     assert parStyle._pAttr["line-height"]   == ["fo", None]
 
@@ -1114,6 +1139,10 @@ def testFmtToOdt_ODTParagraphStyle():
     parStyle.setMarginBottom("0.000cm")
     parStyle.setMarginLeft("0.000cm")
     parStyle.setMarginRight("0.000cm")
+    parStyle.setBorderLeft(ODTBorderStyle("none"))
+    parStyle.setBorderRight(ODTBorderStyle("none"))
+    parStyle.setBorderTop(ODTBorderStyle("none"))
+    parStyle.setBorderBottom(ODTBorderStyle("double", 0.14, QColor(128, 128, 128)))
     parStyle.setTextIndent("0.000cm")
     parStyle.setLineHeight("1.15")
 
@@ -1121,6 +1150,10 @@ def testFmtToOdt_ODTParagraphStyle():
     assert parStyle._pAttr["margin-bottom"] == ["fo", "0.000cm"]
     assert parStyle._pAttr["margin-left"]   == ["fo", "0.000cm"]
     assert parStyle._pAttr["margin-right"]  == ["fo", "0.000cm"]
+    assert parStyle._pAttr["border-left"]   == ["fo", "none"]
+    assert parStyle._pAttr["border-right"]  == ["fo", "none"]
+    assert parStyle._pAttr["border-top"]    == ["fo", "none"]
+    assert parStyle._pAttr["border-bottom"] == ["fo", "0.14pt double #808080"]
     assert parStyle._pAttr["text-indent"]   == ["fo", "0.000cm"]
     assert parStyle._pAttr["line-height"]   == ["fo", "1.15"]
 
@@ -1245,7 +1278,9 @@ def testFmtToOdt_ODTParagraphStyle():
         '<style:style style:name="test" style:family="paragraph" style:display-name="Name" '
         'style:parent-style-name="Name" style:next-style-name="Name">'
         '<style:paragraph-properties fo:margin-top="0.000cm" fo:margin-bottom="0.000cm" '
-        'fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:text-indent="0.000cm" '
+        'fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:border-left="none" '
+        'fo:border-right="none" fo:border-top="none" '
+        'fo:border-bottom="0.14pt double #808080" fo:text-indent="0.000cm" '
         'fo:line-height="1.15" />'
         '<style:text-properties style:font-name="Verdana" fo:font-family="Verdana" '
         'fo:font-size="12pt" />'
@@ -1279,6 +1314,14 @@ def testFmtToOdt_ODTParagraphStyle():
     oStyle.setColor(QColor(42, 42, 42))
     assert aStyle.checkNew(oStyle) is True
     assert aStyle.getID() != oStyle.getID()
+
+
+@pytest.mark.core
+def testFmtToOdt_ODTBorderStyle():
+    """Test the ODTBorderStyle class."""
+    assert str(ODTBorderStyle("none")) == "none"
+    assert str(ODTBorderStyle("dashed", 0.50)) == "0.50pt dashed"
+    assert str(ODTBorderStyle("solid", 0.75, QColor(100, 100, 100))) == "0.75pt solid #646464"
 
 
 @pytest.mark.core

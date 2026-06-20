@@ -19,6 +19,10 @@
 - When editing code, keep diffs minimal and update only the relevant files.
 - Prefer project-local helpers and conventions over introducing new abstractions.
 - The code base should use camelCase style to match the Qt library style.
+- For Qt enums and related Qt type constants, prefer aliases imported from `novelwriter/types.py`
+  instead of direct enum members from PyQt6 modules where aliases are already available.
+- When connecting Qt signals and passing parameters, prefer `qtLambda` from `novelwriter/common.py`
+  over inline lambdas where it fits existing project patterns.
 
 ## Codebase Navigation
 

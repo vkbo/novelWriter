@@ -735,10 +735,15 @@ class Tokenizer(ABC):
                         tStyle |= self._sceneStyle
                         if tText == "":  # Empty Format
                             tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SKIP
-                        elif tText == tFormat:  # Static Format
+                        elif tFormat == nwHeadFmt.HRULE:  # Horizontal Rule Format
+                            tText = ""
+                            tType = BlockTyp.EMPTY if self._noSep else BlockTyp.HRULE
+                            tStyle = BlockFmt.NONE
+                        elif tText == tFormat:  # Separator Format
                             tText = "" if self._noSep else tText
                             tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SEP
                             tStyle |= BlockFmt.NONE if self._noSep else BlockFmt.CENTRE
+
                     self._noSep = False
 
                 tBlocks.append((
@@ -756,16 +761,21 @@ class Tokenizer(ABC):
                 nHead += 1
                 tText = aLine[5:].strip()
                 tType = BlockTyp.HEAD4
+                tFormat = self._fmtSection
                 if isNovel:
                     tType = BlockTyp.HEAD3  # Promote
                     if self._hideSection:
                         tText = ""
                         tType = BlockTyp.EMPTY
                     else:
-                        tText = self._hFormatter.apply(self._fmtSection, tText, nHead)
+                        tText = self._hFormatter.apply(tFormat, tText, nHead)
                         if tText == "":  # Empty Format
                             tType = BlockTyp.SKIP
-                        elif tText == self._fmtSection:  # Static Format
+                        elif tFormat == nwHeadFmt.HRULE:  # Horizontal Rule Format
+                            tText = ""
+                            tType = BlockTyp.HRULE
+                            tStyle = BlockFmt.NONE
+                        elif tText == tFormat:  # Separator Format
                             tType = BlockTyp.SEP
                             tStyle |= BlockFmt.CENTRE
 

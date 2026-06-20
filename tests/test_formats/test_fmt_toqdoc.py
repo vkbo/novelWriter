@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt6.QtGui import QTextBlock, QTextCharFormat, QTextCursor
+from PyQt6.QtGui import QTextBlock, QTextCharFormat, QTextCursor, QTextFormat, QTextLength
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwHeadFmt, nwUnicode
@@ -32,8 +32,9 @@ from novelwriter.formats.shared import BlockFmt, BlockTyp, TextDocumentTheme
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
-    QtFontBold, QtPageBreakAfter, QtPageBreakAuto, QtPageBreakBefore,
-    QtTransparent, QtVAlignNormal, QtVAlignSub, QtVAlignSuper
+    QtFontBold, QtMoveEnd, QtPageBreakAfter, QtPageBreakAuto,
+    QtPageBreakBefore, QtTransparent, QtVAlignNormal, QtVAlignSub,
+    QtVAlignSuper
 )
 
 THEME = TextDocumentTheme()
@@ -207,6 +208,45 @@ def testFmtToQTextDocument_SeparatorSkip(mockGUI):
     # 6: Text 3
     block = doc.document.findBlockByNumber(6)
     assert block.text() == "Text 3"
+
+
+@pytest.mark.core
+def testFmtToQTextDocument_HorizontalRule(mockGUI):
+    """Test horizontal rule helper in the ToQTextDocument class."""
+    project = NWProject()
+    doc = ToQTextDocument(project)
+    doc.initDocument()
+
+    doc._isNovel = True
+    doc._isFirst = True
+    doc._text = (
+        "#! Title\n"
+        "## Chapter\n"
+        "### Scene 1\n"
+        "Text 1\n"
+        "### Scene 2\n"
+        "Text 2\n"
+        "#### Section\n"
+        "Text 3\n"
+    )
+    doc.setSceneFormat(nwHeadFmt.HRULE, False)
+    doc.setSectionFormat("", False)
+    doc.tokenizeText()
+    doc.doConvert()
+    assert doc.document.blockCount() == 7
+
+    cursor = QTextCursor(doc.document)
+    cursor.movePosition(QtMoveEnd)
+    doc._insertHorizontalRule(cursor)
+
+    block = doc.document.findBlockByNumber(3)
+    bFmt = block.blockFormat()
+    assert bFmt.alignment() == QtAlignCenter
+    assert bFmt.hasProperty(QTextFormat.Property.BlockTrailingHorizontalRulerWidth)
+
+    width = bFmt.lengthProperty(QTextFormat.Property.BlockTrailingHorizontalRulerWidth)
+    assert width.type() == QTextLength.Type.PercentageLength
+    assert width.rawValue() == pytest.approx(50.0)
 
 
 @pytest.mark.core

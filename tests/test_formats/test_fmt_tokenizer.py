@@ -755,6 +755,59 @@ def testFmtToken_HeaderStyleSeparation(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToken_HeaderStyleHorizontalRule(mockGUI):
+    """Test header style processing with static horizontal rule format."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+
+    tokens._isNovel = True
+    tokens._handle = TMH
+
+    # Scene rule as static four hyphens emits a centred HRULE block
+    tokens.setSceneFormat(nwHeadFmt.HRULE, False)
+    tokens._noSep = False
+    tokens._text = "### Scene One\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HRULE, TM1, "", [], BlockFmt.NONE),
+    ]
+
+    # Immediately after chapter, scene separators and HRULE are suppressed
+    tokens.setSceneFormat(nwHeadFmt.HRULE, False)
+    tokens._noSep = True
+    tokens._text = "### Scene Two\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == []
+
+    # Mixed format is not allowed and treated as a normal header
+    tokens.setSceneFormat(f"{nwHeadFmt.HRULE}{nwHeadFmt.BR}{nwHeadFmt.TITLE}", False)
+    tokens._noSep = False
+    tokens._text = "### Scene Three\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HEAD2, TM1, f"{nwHeadFmt.HRULE}\nScene Three", [], BlockFmt.NONE),
+    ]
+
+    # The same static four hyphens rule applies to hard scenes
+    tokens.setHardSceneFormat(nwHeadFmt.HRULE, False)
+    tokens._noSep = False
+    tokens._text = "###! Scene Four\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HRULE, TM1, "", [], BlockFmt.NONE),
+    ]
+
+    # Sections still treat static four hyphens as a centred HRULE block
+    tokens.setSectionFormat(nwHeadFmt.HRULE, False)
+    tokens._noSep = True
+    tokens._text = "#### Section\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HRULE, TM1, "", [], BlockFmt.NONE),
+    ]
+
+
+@pytest.mark.core
 def testFmtToken_MetaFormat(mockGUI):
     """Test the tokenization of meta formats in the Tokenizer class."""
     project = NWProject()

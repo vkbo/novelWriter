@@ -55,7 +55,8 @@ from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.types import (
     QtAlignCenter, QtAlignLeft, QtAlignRightMiddle, QtHeaderFixed,
-    QtHeaderStretch, QtRoleAccept, QtRoleApply, QtRoleDestruct, QtUserRole
+    QtHeaderStretch, QtRoleAccept, QtRoleApply, QtRoleDestruct,
+    QtSelectDocument, QtUserRole
 )
 
 if TYPE_CHECKING:
@@ -721,6 +722,7 @@ class _HeadingsTab(NScrollablePage):
         self.aInsScAbs = qtAddAction(self.mInsert, self.tr("Scene Number (Absolute)"))
         self.aInsCharPOV = qtAddAction(self.mInsert, self.tr("Point of View Character"))
         self.aInsCharFocus = qtAddAction(self.mInsert, self.tr("Focus Character"))
+        self.aInsHRule = qtAddAction(self.mInsert, self.tr("Horizontal Rule"))
 
         self.aInsTitle.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.TITLE))
         self.aInsChNum.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CH_NUM))
@@ -731,6 +733,7 @@ class _HeadingsTab(NScrollablePage):
         self.aInsScAbs.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.SC_ABS))
         self.aInsCharPOV.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CHAR_POV))
         self.aInsCharFocus.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CHAR_FOCUS))
+        self.aInsHRule.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.HRULE, True))
 
         self.btnInsert = QPushButton(self.tr("Insert"), self)
         self.btnInsert.setMenu(self.mInsert)
@@ -891,10 +894,13 @@ class _HeadingsTab(NScrollablePage):
     #  Internal Functions
     ##
 
-    def _insertIntoForm(self, text: str) -> None:
+    def _insertIntoForm(self, text: str, replace: bool = False) -> None:
         """Insert formatting text from the dropdown menu."""
         if self._editing > 0:
             cursor = self.editTextBox.textCursor()
+            if replace:
+                cursor.select(QtSelectDocument)
+                cursor.removeSelectedText()
             cursor.insertText(text)
             self.editTextBox.setFocus()
 
@@ -982,15 +988,19 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
 
     def highlightBlock(self, text: str) -> None:
         """Add syntax highlighting to the text block."""
-        for heading in nwHeadFmt.PAGE_HEADERS:
-            pos = text.find(heading)
-            if pos >= 0:
-                chars = len(heading)
-                self.setFormat(pos, chars, self._fmtSymbol)
-                self.setFormat(pos + 1, chars - 2, self._fmtFormat)
-                ddots = heading.find(":")
-                if ddots > 0:
-                    self.setFormat(pos + ddots, 1, self._fmtSymbol)
+        if text == nwHeadFmt.HRULE:
+            # Special case for horizontal rule, which is a single symbol
+            self.setFormat(0, len(text), self._fmtSymbol)
+        else:
+            for heading in nwHeadFmt.PAGE_HEADERS:
+                if (chars := len(heading)) > 0:
+                    offset = 0
+                    while (pos := text.find(heading, offset)) >= 0:
+                        offset = pos + chars
+                        self.setFormat(pos, chars, self._fmtSymbol)
+                        self.setFormat(pos + 1, chars - 2, self._fmtFormat)
+                        if (ddots := heading.find(":")) > 0:
+                            self.setFormat(pos + ddots, 1, self._fmtSymbol)
 
 
 class _FormattingTab(NScrollableForm):
