@@ -755,6 +755,81 @@ def testFmtToken_HeaderStyleSeparation(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToken_HeaderStyleHorizontalRule(mockGUI):
+    """Test header style processing with horizontal rule marker."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+
+    tokens._isNovel = True
+    tokens._handle = TMH
+
+    # Title with horizontal rule
+    tokens.setPartitionFormat(nwHeadFmt.HR, False)
+    tokens._text = "# Title\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HRULE, "", "", [], BlockFmt.NONE)
+    ]
+
+    # Chapter heading with horizontal rule
+    tokens.setChapterFormat(nwHeadFmt.HR, False)
+    tokens._text = "## Chapter One\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HRULE, "", "", [], BlockFmt.NONE)
+    ]
+
+    # Scene separator with HR marker inserts both blocks when not after chapter
+    tokens.setSceneFormat(f"{nwHeadFmt.HR}{nwHeadFmt.BR}* * *{nwHeadFmt.BR}", False)
+    tokens._noSep = False
+    tokens._text = "### Scene One\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HRULE, "", "", [], BlockFmt.NONE),
+        (BlockTyp.SEP, TM1, "* * *", [], BlockFmt.CENTRE),
+    ]
+
+    # Immediately after chapter, both static separator and HR are suppressed
+    tokens.setSceneFormat(f"{nwHeadFmt.HR}{nwHeadFmt.BR}* * *{nwHeadFmt.BR}", False)
+    tokens._noSep = True
+    tokens._text = "### Scene Two\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == []
+
+    # Scene text with HR marker keeps heading text and strips markers/newlines
+    tokens.setSceneFormat(
+        f"{nwHeadFmt.HR}{nwHeadFmt.BR}Scene: {nwHeadFmt.TITLE}{nwHeadFmt.BR}", False
+    )
+    tokens._noSep = False
+    tokens._text = "### Scene Three\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HRULE, "", "", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM1, "Scene: Scene Three", [], BlockFmt.NONE),
+    ]
+
+    # The same HR behaviour also applies to hard scenes
+    tokens.setHardSceneFormat(f"{nwHeadFmt.HR}{nwHeadFmt.TITLE}", False)
+    tokens._noSep = False
+    tokens._text = "###! Scene Four\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HRULE, "", "", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM1, "Scene Four", [], BlockFmt.NONE),
+    ]
+
+    # Sections always process HR and static separators, independent of _noSep
+    tokens.setSectionFormat(f"{nwHeadFmt.HR}{nwHeadFmt.BR}* * *{nwHeadFmt.BR}", False)
+    tokens._noSep = True
+    tokens._text = "#### Section\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HRULE, "", "", [], BlockFmt.NONE),
+        (BlockTyp.SEP, TM1, "* * *", [], BlockFmt.CENTRE),
+    ]
+
+
+@pytest.mark.core
 def testFmtToken_MetaFormat(mockGUI):
     """Test the tokenization of meta formats in the Tokenizer class."""
     project = NWProject()

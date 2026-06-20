@@ -747,17 +747,18 @@ class Tokenizer(ABC):
                     else:
                         tText = self._hFormatter.apply(tFormat, tText, nHead)
                         tStyle |= self._sceneStyle
-                        if tText == "":  # Empty Format
-                            tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SKIP
-                        elif tText == tFormat:  # Static Format
-                            tText = "" if self._noSep else tText
-                            tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SEP
-                            tStyle |= BlockFmt.NONE if self._noSep else BlockFmt.CENTRE
-                        if self._hFormatter.hrule:
+                        if self._hFormatter.hrule and not self._noSep:
                             tBlocks.append((
                                 BlockTyp.HRULE, "", "", [], BlockFmt.NONE
                             ))
                             tType = tType if tText else BlockTyp.EMPTY
+
+                        if self._hFormatter.empty:
+                            tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SKIP
+                        elif self._hFormatter.static:
+                            tText = "" if self._noSep else tText
+                            tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SEP
+                            tStyle |= BlockFmt.NONE if self._noSep else BlockFmt.CENTRE
 
                     self._noSep = False
 
@@ -783,17 +784,17 @@ class Tokenizer(ABC):
                         tType = BlockTyp.EMPTY
                     else:
                         tText = self._hFormatter.apply(self._fmtSection, tText, nHead)
-                        if tText == "":  # Empty Format
-                            tType = BlockTyp.SKIP
-                        elif tText == self._fmtSection:  # Static Format
-                            tType = BlockTyp.SEP
-                            tStyle |= BlockFmt.CENTRE
-
                         if self._hFormatter.hrule:
                             tBlocks.append((
                                 BlockTyp.HRULE, "", "", [], BlockFmt.NONE
                             ))
                             tType = tType if tText else BlockTyp.EMPTY
+
+                        if self._hFormatter.empty:
+                            tType = BlockTyp.SKIP
+                        elif self._hFormatter.static:
+                            tType = BlockTyp.SEP
+                            tStyle |= BlockFmt.CENTRE
 
                 tBlocks.append((
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
@@ -1229,11 +1230,23 @@ class HeadingFormatter:
         self._absolute = absolute
         self._upper = False
         self._hrule = False
+        self._empty = False
+        self._static = False
 
     @property
     def hrule(self) -> bool:
         """Return current horizontal rule state."""
         return self._hrule
+
+    @property
+    def empty(self) -> bool:
+        """Return whether the current header is empty."""
+        return self._empty
+
+    @property
+    def static(self) -> bool:
+        """Return whether the current header is static."""
+        return self._static
 
     def setHandle(self, tHandle: str | None) -> None:
         """Set the handle currently being processed."""
@@ -1264,11 +1277,15 @@ class HeadingFormatter:
 
     def apply(self, template: str, text: str, nHead: int) -> str:
         """Apply formatting to a specific heading."""
+        # Check for horizontal rule and remove from template, and transform line breaks
         self._hrule = nwHeadFmt.HR in template
-
-        template = template.replace(nwHeadFmt.TITLE, text)
-        template = template.replace(nwHeadFmt.BR, "\n")
         template = template.replace(nwHeadFmt.HR, "")
+        template = template.replace(nwHeadFmt.BR, "\n")
+        template = template.strip("\n")
+        compare = template
+
+        # Process template variables.
+        template = template.replace(nwHeadFmt.TITLE, text)
         template = template.replace(nwHeadFmt.CH_NUM, str(self._chapter))
         template = template.replace(nwHeadFmt.SC_NUM, str(self._scene))
         template = template.replace(nwHeadFmt.SC_ABS, str(self._absolute))
@@ -1295,7 +1312,12 @@ class HeadingFormatter:
             template = template.replace(nwHeadFmt.CHAR_POV, pText)
             template = template.replace(nwHeadFmt.CHAR_FOCUS, fText)
 
+        # If nothing was replaced, we can treat this as a static header
+        # If there is nothing at all, we have an empty header
+        self._static = (compare == template)
+        self._empty = (template == "")
+
         if self._upper:
             template = template.upper()
 
-        return template.strip()
+        return template
