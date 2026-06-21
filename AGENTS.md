@@ -23,6 +23,11 @@
   instead of direct enum members from PyQt6 modules where aliases are already available.
 - When connecting Qt signals and passing parameters, prefer `qtLambda` from `novelwriter/common.py`
   over inline lambdas where it fits existing project patterns.
+- The `i18n/*.ts` files are auto-generated and must never be edited manually.
+- Do not edit files under `sample/` unless explicitly requested.
+- Do not edit files under `tests/lipsum/` unless explicitly requested.
+- Any folder containing `nwProject.nwx` is a novelWriter project storage folder and must not be
+  edited unless explicitly requested.
 
 ## Codebase Navigation
 

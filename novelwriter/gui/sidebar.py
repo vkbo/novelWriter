@@ -91,7 +91,7 @@ class GuiSideBar(QWidget):
         self.tbStats.clicked.connect(self.mainGui.showWritingStatsDialog)
 
         self.tbBuild = NIconToolButton(self, iSz)
-        self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Build Manuscript")))
+        self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Manuscript Build")))
         self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
 
         # Settings Menu

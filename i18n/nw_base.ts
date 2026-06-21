@@ -2523,7 +2523,7 @@
     </message>
     <message>
         <location filename="../novelwriter/gui/mainmenu.py" line="998" />
-        <source>Build Manuscript</source>
+        <source>Manuscript Build</source>
         <translation type="unfinished" />
     </message>
     <message>
@@ -2613,7 +2613,7 @@
     <name>GuiManuscript</name>
     <message>
         <location filename="../novelwriter/tools/manuscript.py" line="88" />
-        <source>Build Manuscript</source>
+        <source>Manuscript Build</source>
         <translation type="unfinished" />
     </message>
     <message>
@@ -2638,7 +2638,7 @@
     </message>
     <message>
         <location filename="../novelwriter/tools/manuscript.py" line="120" />
-        <source>Builds</source>
+        <source>Build Settings</source>
         <translation type="unfinished" />
     </message>
     <message>
@@ -3880,7 +3880,7 @@
     </message>
     <message>
         <location filename="../novelwriter/gui/sidebar.py" line="94" />
-        <source>Build Manuscript</source>
+        <source>Manuscript Build</source>
         <translation type="unfinished" />
     </message>
     <message>

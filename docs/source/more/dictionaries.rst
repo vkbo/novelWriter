@@ -35,7 +35,7 @@ that uses Enchant for spell checking.
 **Manual Install**
 
 If you prefer to do this manually or want to use a different source than the ones mentioned above,
-You need to get compatible dictionary files for your language. You need two files files ending with
+You need to get compatible dictionary files for your language. You need two files ending with
 ``.aff`` and ``.dic``. These files must then be copied to the following location: 
 
 ``C:\Users\<USER>\AppData\Local\enchant\hunspell``

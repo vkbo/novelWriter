@@ -51,7 +51,7 @@ Other analytical models propose tracking a scene's pace, how it affects the mood
 which element(s) of the story's genre are being satisfied. An author can use this mechanism to
 track any element of a scene. Some examples include time of day, how much time passes in the scene,
 or even the physical form of a shape-shifting character. If a story involves magic, one could track
-which wand a main character has in hand. It's up to tha author.
+which wand a main character has in hand. It's up to the author.
 
 When the story and other scene metadata is extracted into a tabular form, it is possible to get a
 comprehensive overview of the story and to identify possible issues. For example, so many

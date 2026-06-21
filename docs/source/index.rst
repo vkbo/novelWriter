@@ -59,6 +59,7 @@ storage for robustness.
    user_interface/editor_viewer
    user_interface/split_and_merge
    user_interface/manuscript
+   user_interface/formatting
    user_interface/statistics
 
 .. toctree::

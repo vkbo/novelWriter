@@ -1372,8 +1372,8 @@ class _FormattingTab(NScrollableForm):
             [self.pixPML, self.leftMargin, iSp, self.pixPMR, self.rightMargin],
         )
 
-        # Open Document
-        # =============
+        # Document Style
+        # ==============
 
         title = self._build.getLabel("doc")
         section += 1

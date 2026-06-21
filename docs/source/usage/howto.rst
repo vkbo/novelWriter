@@ -59,7 +59,7 @@ Your Project
    within chapters. Like for instance if you switch point-of-view character often.
 
    In such cases you may want to use different scene headings for hard and soft scene breaks. The
-   **Build Manuscript** tool will let you define a different format for scenes using the ``###``
+   **Manuscript Build** tool will let you define a different format for scenes using the ``###``
    and ``###!`` heading codes when you generate your manuscript. You can for instance add the
    common "``* * *``" for hard breaks and select to hide soft scene breaks, which will just insert
    an empty paragraph in their place. See :ref:`docs_ui_manuscript_settings` for more details.
