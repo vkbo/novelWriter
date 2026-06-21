@@ -15,7 +15,7 @@ generated preview.
 Text Word Counts and Stats
 ==========================
 
-These are the rules for the main counts available for for each document in a project.
+These are the rules for the main counts available for each document in a project.
 
 For all counts, the following rules apply.
 
@@ -82,17 +82,17 @@ The following counts are available:
    The number of characters in all lines, including any comments and meta data text. Paragraph
    breaks are not counted, but in-paragraph hard line breaks are.
 
-**Character in Text**
+**Characters in Text**
    The number of characters in body text paragraphs. Paragraph breaks are not counted, but
    in-paragraph hard line breaks are.
 
 **Characters in Headings**
    The number of characters in headings.
 
-**Character in Text, No Spaces**
+**Characters in Text, No Spaces**
    The number of characters in body text paragraphs considered part of a word or punctuation. That
    is, white space characters are not counted.
 
-**Character in Headings, No Spaces**
+**Characters in Headings, No Spaces**
    The number of characters in headings considered part of a word or punctuation. That is, white
    space characters are not counted.

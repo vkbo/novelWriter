@@ -23,7 +23,7 @@ it selected, or drag and drop it onto the editor panel. This will open the docum
 editor.
 
 The editor has a maximise button, which toggles the **Focus Mode**, and a close button in the
-top--right corner. On the top--left side you will find a tools button that opens a toolbar with a
+top-right corner. On the top-left side you will find a tools button that opens a toolbar with a
 few buttons for applying text formatting, a drop down menu for navigating between headings, and a
 search button to open the search dialog.
 
@@ -153,14 +153,14 @@ middle-clicking on the document will also open it in the viewer.
 
 The document viewed does not have to be the same document as the one currently being edited.
 However, If you *are* viewing the same document, pressing :kbd:`Ctrl+R` from the editor will update
-the document with your latest changes. You can also press the reload button in the top--right
+the document with your latest changes. You can also press the reload button in the top-right
 corner of the viewer panel, next to the close button, to achieve the same thing.
 
 In the viewer, references become clickable links. Clicking them will replace the content of the
 viewer with the content of the document the reference points to.
 
 The document viewer keeps a history of viewed documents, which you can navigate with the arrow
-buttons in the top--left corner of the viewer. If your mouse has backward and forward navigation
+buttons in the top-left corner of the viewer. If your mouse has backward and forward navigation
 buttons, these can be used as well. They work just like the backward and forward features in a
 browser. The left-most button is a dropdown menu for quickly navigation between headings in the
 document. The edit button on the right will open the viewed document in the editor.
