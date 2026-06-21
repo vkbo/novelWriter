@@ -18,7 +18,7 @@ time you need them. For reference, a list of all shortcuts can be found in the
 :ref:`docs_features_shortcuts` section.
 
 On the left side of the main window you will find a sidebar. This bar has buttons for the standard
-views you can switch between, a quick link to the **Build Manuscript** tool, and a set of
+views you can switch between, a quick link to the **Manuscript Build** tool, and a set of
 project-related tools and quick access to settings at the bottom.
 
 
