@@ -4,6 +4,9 @@
 Formatting the Manuscript
 *************************
 
+The **Manuscript Build Settings** tool has a **Headings** page and a separate **Formatting** page.
+This chapter covers both.
+
 
 .. _docs_ui_manuscript_formatting_head:
 
@@ -17,8 +20,8 @@ Headings
 
 The **Headings** page of the **Manuscript Build Settings** dialog allows you to set how the
 headings in your Novel Documents are formatted. By default, the title is just copied as-is,
-indicated by the ``{Title}`` format. You can change this to for instance add chapter numbers and
-scene numbers, or insert character names, like shown in the figure above.
+indicated by the ``{Title}`` format. You can change this to, for instance, add chapter numbers and
+scene numbers, or insert character names, as shown in the figure above.
 
 Clicking the edit button next to a format will copy the formatting string into the edit box where
 it can be modified, and where a syntax highlighter will help indicate which parts are automatically
@@ -37,7 +40,7 @@ Any text you add that isn't highlighted in colours will remain in your formatted
    "``{Chapter}``",        "Insert a chapter number."
    "``{Chapter:Word}``",   "Insert a chapter number as a word."
    "``{Chapter:URoman}``", "Insert a chapter number as an upper case Roman numeral."
-   "``{Chapter:LRoman}``", "Insert a chapter number as an lower case Roman numeral."
+   "``{Chapter:LRoman}``", "Insert a chapter number as a lower case Roman numeral."
    "``{Scene}``",          "Insert a scene number within the current chapter."
    "``{Scene:Abs}``",      "Insert a scene number unique to the whole manuscript."
    "``{Char:POV}``",       "Insert the point-of-view character's :ref:`display name <docs_usage_tags_refs_tags>`."
@@ -63,7 +66,7 @@ headings. The automatic chapter number counter will skip all chapter headings ma
 using the heading format described in :ref:`docs_usage_headings_levels`.
 
 Scene numbers are mostly intended for use in a draft manuscript. You can either insert absolute
-scene numbers that counts every scene in the novel, or you can insert per-chapter scene numbers
+scene numbers that count every scene in the novel, or you can insert per-chapter scene numbers
 that reset to 1 for each new chapter.
 
 :bdg-info:`Example`
@@ -94,6 +97,14 @@ the desired separator text as the format. If the format is any piece of static t
 be treated as a separator. A static separator is only inserted between scenes, as opposed to a
 formatted heading which is also inserted before the first scene of a chapter.
 
+A special case of the static separator is the horizontal line, which is inserted by using the
+``----`` format. There is also an option for it in the :guilabel:`Insert` dropdown list. This will
+replace all the text in the edit box with four hyphens. Only if the format is exactly four hyphens
+will it be treated as a horizontal line.
+
+In the output formats, the horizontal line is rendered as a line at 50% the text width or the page
+width. The exception is for Markdown output, where it is printed as-is.
+
 
 .. _docs_ui_manuscript_formatting_head_hard_soft:
 
@@ -104,8 +115,8 @@ If you wish to distinguish between so-called soft and hard scene breaks, you can
 alternative scene heading format in your text. You can then give these headings a different
 formatting in the **Headings** settings.
 
-See :ref:`docs_usage_headings_levels` for more info on how to format alternative scene headings in
-your text.
+See :ref:`docs_usage_headings_levels` for more information on how to format alternative scene
+headings in your text.
 
 
 .. _docs_ui_manuscript_formatting_head_promote:
@@ -123,10 +134,80 @@ specified in the source documents as typed in the editor. The promotion follows 
 #. Headings in note documents are left as-is.
 
 
-Output Settings
-===============
+.. _docs_ui_manuscript_formatting_head_styling:
 
-The **Formatting** sections of the **Manuscript Build Settings** dialog control a number of other
-settings for the output. This includes formatting, but also what content is included. You can for
-instance select to include comments, synopsis. tags and reference, and even exclude the body text
-itself.
+Title Styling
+-------------
+
+The **Manuscript Build Settings** dialog also provides layout options for controlling how headings
+are visually presented in the output. These options allow you to add page breaks and centre
+headings at specific heading levels.
+
+The layout options are presented in a grid showing the following heading styles:
+
+- **Title** – The novel's main title
+- **Partition** – Partition headings (for dividing the novel into major sections)
+- **Chapter** – Chapter headings
+- **Scene** – Scene headings
+
+For each of these, you can toggle:
+
+- **Centre** – Centre the heading text on the page
+- **Page Break** – Insert a page break before the heading
+
+These settings apply to the formatted heading output and affect all document formats that support
+page breaks and text alignment.
+
+
+.. _docs_ui_manuscript_formatting_options:
+
+Formatting Options
+==================
+
+The **Formatting** section in the **Manuscript Build Settings** dialog is split into groups, each
+accessible from its own entry in the sidebar. The sections below summarise what each group
+controls.
+
+**Text Content**
+   Controls which parts of the text in each selected document are included in the output. These
+   options do not select documents, that is done in the **Selection** page. They only control
+   which content elements within each document are rendered. The available switches are:
+   "Include body text", "Include synopsis", "Include comments", "Include story structure",
+   "Include manuscript notes", and "Include keywords". A text field for specifying keywords to
+   ignore is also provided, as well as an option to "Add titles for note root folders".
+
+**Text Format**
+   Controls the base appearance of rendered text. Set the "Text font" and "Line height", and
+   toggle options for "Justify text margins", "Justify text on manual line breaks",
+   "Replace Unicode characters", "Replace tabs with spaces", "Preserve hard line breaks", and
+   "Apply dialogue highlighting".
+
+**Heading Format**
+   Controls visual formatting applied to all headings in the output. Toggle "Add colours to
+   headings", "Bold headings", and "Uppercase headings".
+
+**First Line Indent**
+   Controls paragraph indentation. Toggle "Enable indent", set the "Indent width", and choose
+   whether to "Indent first paragraph" (the paragraph immediately following a heading).
+
+**Size & Margins**
+   Controls font sizes and spacing for each element in the output. Entries cover "Title and
+   Partition", "Heading 1 and Chapter", "Heading 2 and Scene", "Heading 3 and Section",
+   "Heading 4", "Text paragraph", and "Scene separator". Each entry has a size field and top and
+   bottom margin fields. The option "Add empty lines instead of margins" replaces spacing with
+   blank lines, which is useful for formats that do not support paragraph margins.
+
+**Page Layout**
+   Controls paper settings for formats that support page layout, such as Open Document and PDF.
+   Set the "Unit" (centimetres, millimetres or inches), "Page size", and "Page margins"
+   (top, bottom, left, and right).
+
+**Document Style**
+   Controls document-level settings for office type documents. Set the "Page header" format, the
+   "Page counter offset", and optionally override the document language with "Override document
+   language".
+
+**HTML Options**
+   Controls settings specific to HTML output. Toggle "Add CSS styles" to include inline
+   stylesheet rules, and "Preserve tab characters" to keep tabs rather than converting them to
+   spaces.

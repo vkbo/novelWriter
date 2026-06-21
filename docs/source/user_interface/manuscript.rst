@@ -31,7 +31,7 @@ The Manuscript Build Tool
    The **Manuscript Build** tool main window.
 
 The main window of the **Manuscript Build** tool contains a list of all the builds you have
-defined, a selection of settings, and a few buttons to generate preview, open the print dialog, or
+defined, a selection of settings, and a few buttons to generate a preview, open the print dialog, or
 run the build to create a manuscript document.
 
 
@@ -68,6 +68,9 @@ by double-clicking or by selecting it and pressing the edit button in the toolba
    pressing the :guilabel:`Preview` button in the main **Manuscript Build** window. When you're
    happy with the result, you can close the settings.
 
+For detailed information on how to format headings, including how to add chapter numbers, scene
+numbers, and other dynamic content, see :ref:`docs_ui_manuscript_formatting`.
+
 
 .. _docs_ui_manuscript_selection:
 
@@ -79,20 +82,100 @@ Document Selection
 
    The **Selections** page of the **Manuscript Build Settings** dialog.
 
-The **Selections** page of the **Manuscript Build Settings** dialog allows you to fine tune which
-documents are included in the build. The included documents are indicated by an icon in the last
-column. On the right you have some filter options for selecting content of a specific type, and a
-set of switches for which root folders to include.
+The **Selections** page allows you to fine tune which documents are included in the build. The
+included documents are indicated by an icon in the last column. The interface is split into two
+parts: a project tree on the left showing all documents, and filter options on the right.
 
 You can override the result of these filters by marking one or more documents and selecting to
 explicitly include or exclude them by using the buttons below the tree view. The last button can be
 used to reset the override and return control to the filter settings.
 
-In the figure, the orange icon and the blue icon indicates which documents are included, and the
+In the figure, the orange icon and the blue icon indicate which documents are included, and the
 red icon indicates that a document is explicitly excluded.
 
 By default, inactive documents are excluded, but you can override this in the filter settings.
 See :ref:`docs_usage_project_active` for more details.
+
+
+Root Folder Selection
+^^^^^^^^^^^^^^^^^^^^^
+
+At the bottom of the filter options on the right, you will find a set of switches for each root
+folder in your project. These allow you to quickly include or exclude entire root folders from the
+build. For example, you can use this to exclude all your notes if you only want the novel content,
+or exclude all story content if you want to build an outline of your notes instead.
+
+When a root folder switch is off, all documents within that folder are excluded regardless of the
+other filter settings.
+
+
+.. _docs_ui_manuscript_content:
+
+Content Filtering
+-----------------
+
+The options in **Document Selection** and **Root Folder Selection** decide which whole documents
+are part of the build.
+
+The content filtering options in the **Formatting** page are different: they only control which
+parts of the selected documents are included in the output.
+
+For further content filtering options, see :ref:`docs_ui_manuscript_formatting_options`.
+
+
+.. _docs_ui_manuscript_build_manage:
+
+Build Management
+----------------
+
+The main **Manuscript Build** tool window provides several controls for managing your build
+definitions:
+
+**Create a New Build**
+   Press the :guilabel:`Add` button (or plus icon) in the toolbar to create a new build definition.
+   A new build will be created with default settings that you can then customise.
+
+**Edit a Build**
+   Double-click on a build in the list, or select it and press the :guilabel:`Edit` button to open
+   the **Manuscript Build Settings** dialog.
+
+**Duplicate a Build**
+   Select a build and press the :guilabel:`Duplicate` button (or copy icon) to create a copy of it.
+   This is useful for creating variations of a build without starting from scratch. The duplicated
+   build will have "2" appended to its name.
+
+**Delete a Build**
+   Select a build and press the :guilabel:`Delete` button (or minus icon) to remove it. This action
+   cannot be undone, so make sure you have saved any settings you want to keep.
+
+**Reorder Builds**
+   You can drag and drop builds in the list to change their order. The order is saved automatically
+   when you close the tool.
+
+
+.. _docs_ui_manuscript_stats:
+
+Statistics View
+---------------
+
+Below the preview panel, there is a collapsible statistics widget showing word and character counts
+for the current build. Press the expand button (arrow icon) to toggle between a minimal and detailed
+view.
+
+The **Minimal View** shows:
+
+- Total word count
+- Total character count
+
+The **Detailed View** shows:
+
+- Total words, words in titles, words in text
+- Total characters, characters in titles, characters in text
+- Total word characters (letters and numbers only), broken down by section
+
+These statistics are calculated from the text you have included in the document after all
+formatting has been applied, making them more accurate than the counts available in the project
+tree. For a detailed explanation of how text is counted, see :ref:`docs_more_counting`.
 
 
 .. _docs_ui_manuscript_build:
@@ -168,7 +251,7 @@ order they appear in the project tree. Each document is then split up into a lis
 entry per paragraph it contains.
 
 These files are mainly intended for scripted post-processing for those who want that option. A JSON
-file can be imported directly into a Python dict object or a PHP array, to mentions a few options.
+file can be imported directly into a Python dict object or a PHP array, to name a few options.
 
 
 .. _docs_ui_manuscript_print:
