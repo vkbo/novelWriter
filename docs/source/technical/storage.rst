@@ -190,4 +190,4 @@ Statistics** tool. If this file is lost, the history it contains is also lost, b
 no impact on the project.
 
 Each session is recorded as a JSON object on a single line of the file. Each session record is
-appended tot he file.
+appended to the file.
