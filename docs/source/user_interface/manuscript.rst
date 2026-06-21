@@ -26,7 +26,7 @@ The Manuscript Build Tool
 =========================
 
 .. figure:: images/fig_manuscript_build.png
-   :width: 80%
+   :width: 90%
 
    The **Manuscript Build** tool main window.
 
@@ -39,7 +39,7 @@ Outline and Word Counts
 -----------------------
 
 .. figure:: images/fig_manuscript_build_outline.png
-   :width: 80%
+   :width: 90%
 
    The **Manuscript Build** tool main window with the **Outline** visible.
 
@@ -64,9 +64,8 @@ by double-clicking or by selecting it and pressing the edit button in the toolba
 .. tip::
 
    You can keep the **Manuscript Build Settings** dialog open while testing the different options,
-   and just hit the :guilabel:`Apply` button. You can test the result of your settings change by
-   pressing the :guilabel:`Preview` button in the main **Manuscript Build** window. When you're
-   happy with the result, you can close the settings.
+   and just hit the :guilabel:`Apply` button to update the preview in the main **Manuscript Build**
+   window. When you're happy with the result, you can close the settings.
 
 For detailed information on how to format headings, including how to add chapter numbers, scene
 numbers, and other dynamic content, see :ref:`docs_ui_manuscript_formatting`.
@@ -186,9 +185,9 @@ Building Manuscript Documents
 .. figure:: images/fig_build_build.png
    :width: 80%
 
-   The **Manuscript Build** dialog used for writing the actual manuscript documents.
+   The **Build Manuscript** dialog used for writing the actual manuscript documents.
 
-When you press the :guilabel:`Build` button on the **Build Manuscript** tool main window, a special
+When you press the :guilabel:`Build` button on the **Manuscript Build** tool main window, a special
 file dialog opens up. This is where you pick your desired output format and where to write the
 file.
 

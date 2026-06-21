@@ -994,8 +994,8 @@ class GuiMainMenu(QMenuBar):
         self.aBackupProject = qtAddAction(self.toolsMenu, self.tr("Backup Project"))
         self.aBackupProject.triggered.connect(qtLambda(SHARED.project.backupProject, True))
 
-        # Tools > Build Manuscript
-        self.aBuildManuscript = qtAddAction(self.toolsMenu, self.tr("Build Manuscript"))
+        # Tools > Manuscript Build
+        self.aBuildManuscript = qtAddAction(self.toolsMenu, self.tr("Manuscript Build"))
         self.aBuildManuscript.setShortcut("F5")
         self.aBuildManuscript.triggered.connect(self.mainGui.showBuildManuscriptDialog)
 

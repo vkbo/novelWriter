@@ -62,7 +62,7 @@ Forced Line Break
 -----------------
 
 Inserting ``[br]`` in the text will ensure a line break is always inserted in that place, even if
-you turn off **Preserve Hard Line Breaks** in your manuscript build settings.
+you turn off **Preserve Hard Line Breaks** in your **Manuscript Build** settings.
 
 You can add a manual line break after it too, for a better visual representation in the editor, but
 keep in mind that this line break is removed before the text is processed, so the text on either
