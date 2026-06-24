@@ -152,12 +152,11 @@ quote-style = "double"
 
 [tool.pyright]
 include = ["novelwriter"]
-exclude = ["**/__pycache__", "**/.*"]
-
 reportIncompatibleMethodOverride = false
 pythonVersion = "3.11"
 
 [tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
 log_level = "DEBUG"
 qt_api = "pyqt6"
 markers = [
