@@ -55,13 +55,7 @@ from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScroll
 from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import (
-    QtRoleAccept,
-    QtRoleReject,
-    QtSizeMinimum,
-    QtSizeMinimumExpanding,
-    QtUserRole,
-)
+from novelwriter.types import QtRoleAccept, QtRoleReject, QtSizeMinimum, QtSizeMinimumExpanding, QtUserRole
 
 logger = logging.getLogger(__name__)
 

@@ -27,16 +27,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import NamedTuple
 
-from PyQt6.QtCore import (
-    QAbstractListModel,
-    QModelIndex,
-    QObject,
-    QPoint,
-    QSize,
-    Qt,
-    pyqtSignal,
-    pyqtSlot,
-)
+from PyQt6.QtCore import QAbstractListModel, QModelIndex, QObject, QPoint, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QAction, QCloseEvent, QKeyEvent, QPainter, QPaintEvent, QPen, QShortcut
 from PyQt6.QtWidgets import (
     QApplication,

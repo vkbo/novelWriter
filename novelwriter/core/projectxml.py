@@ -412,15 +412,7 @@ class ProjectXMLReader:
                 name["import"] = iMap.get(tmpStatus, None)
 
             # A number of layouts were removed in 1.3
-            if item.get("layout", "") in (
-                "TITLE",
-                "PAGE",
-                "BOOK",
-                "PARTITION",
-                "UNNUMBERED",
-                "CHAPTER",
-                "SCENE",
-            ):
+            if item.get("layout", "") in ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"):
                 item["layout"] = "DOCUMENT"
 
             # The trash type was removed in 1.4

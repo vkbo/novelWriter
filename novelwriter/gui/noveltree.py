@@ -47,13 +47,7 @@ from novelwriter.enum import nwChange, nwDocMode, nwNovelExtra, nwOutline
 from novelwriter.extensions.modified import NIconToolButton, NTreeView
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.types import (
-    QtHeaderStretch,
-    QtHeaderToContents,
-    QtScrollAlwaysOff,
-    QtScrollAsNeeded,
-    QtSizeExpanding,
-)
+from novelwriter.types import QtHeaderStretch, QtHeaderToContents, QtScrollAlwaysOff, QtScrollAsNeeded, QtSizeExpanding
 
 logger = logging.getLogger(__name__)
 

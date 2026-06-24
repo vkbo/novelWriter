@@ -30,15 +30,7 @@ from time import time
 from typing import TYPE_CHECKING
 
 from novelwriter import SHARED, __hexversion__
-from novelwriter.common import (
-    formatTimeStamp,
-    isHandle,
-    isItemClass,
-    isTitleTag,
-    jsonCombine,
-    jsonEncode,
-    safeExists,
-)
+from novelwriter.common import formatTimeStamp, isHandle, isItemClass, isTitleTag, jsonCombine, jsonEncode, safeExists
 from novelwriter.constants import nwFiles, nwKeyWords, nwStyles
 from novelwriter.core.indexdata import NOTE_TYPES, TT_NONE, IndexHeading, IndexNode, T_NoteTypes
 from novelwriter.core.novelmodel import NovelModel

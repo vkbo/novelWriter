@@ -26,14 +26,7 @@ from unittest.mock import Mock
 import pytest
 
 from PyQt6.QtCore import QEvent, QPoint, QPointF, QSize, Qt
-from PyQt6.QtGui import (
-    QFont,
-    QKeyEvent,
-    QMouseEvent,
-    QStandardItem,
-    QStandardItemModel,
-    QWheelEvent,
-)
+from PyQt6.QtGui import QFont, QKeyEvent, QMouseEvent, QStandardItem, QStandardItemModel, QWheelEvent
 from PyQt6.QtWidgets import QFontDialog, QWidget
 
 from novelwriter.extensions.modified import (

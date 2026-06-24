@@ -31,12 +31,7 @@ from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.modified import NFontDialog
-from novelwriter.tools.manussettings import (
-    GuiBuildSettings,
-    _FilterTab,
-    _FormattingTab,
-    _HeadingsTab,
-)
+from novelwriter.tools.manussettings import GuiBuildSettings, _FilterTab, _FormattingTab, _HeadingsTab
 
 from tests.tools import C, buildTestProject
 
