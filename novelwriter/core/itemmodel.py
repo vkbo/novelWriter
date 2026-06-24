@@ -2,10 +2,6 @@
 novelWriter – Project Item Model
 ================================
 
-File History:
-Created: 2024-11-16 [2.6b2] ProjectNode
-Created: 2024-11-16 [2.6b2] ProjectModel
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 

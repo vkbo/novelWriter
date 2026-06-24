@@ -2,9 +2,6 @@
 novelWriter – Project Wrapper
 =============================
 
-File History:
-Created: 2018-09-29 [0.0.1] NWProject
-
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 

@@ -2,9 +2,6 @@
 novelWriter – Project Storage Class
 ===================================
 
-File History:
-Created: 2022-11-01 [2.0rc2] NWStorage
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 

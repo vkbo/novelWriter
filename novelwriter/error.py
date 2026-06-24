@@ -2,9 +2,6 @@
 novelWriter – Exception Handling
 ================================
 
-File History:
-Created: 2020-08-02 [0.10.2]
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 

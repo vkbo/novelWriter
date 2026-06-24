@@ -2,11 +2,6 @@
 novelWriter – Project Index
 ===========================
 
-File History:
-Created: 2019-05-27 [0.1.4]  Index
-Created: 2022-05-29 [2.0rc1] TagsIndex
-Created: 2022-05-29 [2.0rc1] ItemIndex
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 

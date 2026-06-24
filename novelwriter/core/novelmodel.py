@@ -2,9 +2,6 @@
 novelWriter – Novel Model
 =========================
 
-File History:
-Created: 2025-02-22 [2.7b1] NovelModel
-
 This file is a part of novelWriter
 Copyright (C) 2025 Veronica Berglyd Olsen and novelWriter contributors
 

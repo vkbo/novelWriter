@@ -2,9 +2,6 @@
 novelWriter – Common Functions
 ==============================
 
-File History:
-Created: 2019-05-12 [0.1.0]
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 

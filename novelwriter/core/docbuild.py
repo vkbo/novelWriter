@@ -2,9 +2,6 @@
 novelWriter – Manuscript Document Builder
 =========================================
 
-File History:
-Created: 2022-12-01 [2.1b1] NWBuildDocument
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 

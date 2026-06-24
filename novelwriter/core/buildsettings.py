@@ -2,10 +2,6 @@
 novelWriter – Build Settings
 ============================
 
-File History:
-Created: 2023-02-14 [2.1b1] BuildSettings
-Created: 2023-05-22 [2.1b1] BuildCollection
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 

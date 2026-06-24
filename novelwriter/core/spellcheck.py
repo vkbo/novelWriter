@@ -2,10 +2,6 @@
 novelWriter – Spell Check Classes
 =================================
 
-File History:
-Created: 2019-06-11 [0.1.5] NWSpellEnchant
-Created: 2023-06-13 [2.1b1] UserDictionary
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
