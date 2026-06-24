@@ -2,9 +2,6 @@
 novelWriter – QTextDocument Converter
 =====================================
 
-File History:
-Created: 2024-05-21 [2.5b1] ToQTextDocument
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 

@@ -2,10 +2,6 @@
 novelWriter – Theme and Icons Classes
 =====================================
 
-File History:
-Created: 2019-05-18 [0.1.3] GuiTheme
-Created: 2019-11-08 [0.4]   GuiIcons
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 

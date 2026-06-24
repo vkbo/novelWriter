@@ -2,9 +2,6 @@
 novelWriter – Raw NW Text Format
 ================================
 
-File History:
-Created: 2024-10-15 [2.6b1] ToRaw
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 

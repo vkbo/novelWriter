@@ -2,13 +2,6 @@
 novelWriter – Custom Widget: Config Layout
 ==========================================
 
-File History:
-Created: 2020-05-03 [0.4.5] NColourLabel
-Created: 2024-01-08 [2.3b1] NScrollableForm
-Created: 2024-01-26 [2.3b1] NScrollablePage
-Created: 2024-01-26 [2.3b1] NFixedPage
-Created: 2024-03-12 [2.4b1] NWrappedWidgetBox
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 

@@ -2,19 +2,6 @@
 novelWriter – GUI Document Editor
 =================================
 
-File History:
-Created:   2018-09-29 [0.0.1]  GuiDocEditor
-Created:   2019-04-22 [0.0.1]  BackgroundWordCounter
-Created:   2019-09-29 [0.2.1]  GuiDocEditSearch
-Created:   2020-04-25 [0.4.5]  GuiDocEditHeader
-Rewritten: 2020-06-15 [0.9]    GuiDocEditSearch
-Created:   2020-06-27 [0.10]   GuiDocEditFooter
-Rewritten: 2020-10-07 [1.0b3]  BackgroundWordCounter
-Created:   2023-11-06 [2.2b1]  MetaCompleter
-Created:   2023-11-07 [2.2b1]  GuiDocToolBar
-Extended:  2025-05-18 [2.7rc1] CommandCompleter
-Created:   2025-08-12 [2.8b1]  VimState
-
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 

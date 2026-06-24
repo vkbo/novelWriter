@@ -2,9 +2,6 @@
 novelWriter – Custom Widget: Status LED
 =======================================
 
-File History:
-Created: 2020-05-17 [0.5.1]
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 

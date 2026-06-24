@@ -2,9 +2,6 @@
 novelWriter – Custom Widget: Version Info
 =========================================
 
-File History:
-Created: 2024-02-14 [2.3b1] VersionInfoWidget
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 

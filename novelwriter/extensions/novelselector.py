@@ -2,9 +2,6 @@
 novelWriter – Custom Widget: Novel Selector
 ===========================================
 
-File History:
-Created: 2022-11-17 [2.0] NovelSelector
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 

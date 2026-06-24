@@ -2,11 +2,6 @@
 novelWriter – Custom Widget: Paged SideBar
 ==========================================
 
-File History:
-Created: 2023-02-21 [2.1b1] NPagedSideBar
-Created: 2023-02-21 [2.1b1] NPagedToolButton
-Created: 2023-02-21 [2.1b1] NPagedToolLabel
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 

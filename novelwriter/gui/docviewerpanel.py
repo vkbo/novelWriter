@@ -2,9 +2,6 @@
 novelWriter – GUI Document Viewer Panel
 =======================================
 
-File History:
-Created: 2023-11-14 [2.2rc1] GuiDocViewerPanel
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 

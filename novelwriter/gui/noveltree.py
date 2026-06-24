@@ -2,13 +2,6 @@
 novelWriter – GUI Novel Tree
 ============================
 
-File History:
-Created:   2020-12-20 [1.1rc1] GuiNovelTree
-Created:   2022-06-12 [2.0rc1] GuiNovelView
-Created:   2022-06-12 [2.0rc1] GuiNovelToolBar
-Rewritten: 2025-02-22 [2.7b1] GuiNovelView
-Rewritten: 2025-02-22 [2.7b1] GuiNovelToolBar
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
