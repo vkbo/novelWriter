@@ -66,6 +66,9 @@ version = { attr = "novelwriter.__init__.__version__" }
 [tool.setuptools.packages.find]
 include = ["novelwriter*"]
 
+[tool.setuptools.package-data]
+novelwriter = ["assets/**/*"]
+
 [tool.isort]
 py_version = "311"
 line_length = 99
