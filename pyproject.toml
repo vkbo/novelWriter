@@ -127,14 +127,13 @@ ignore = [
     "RUF001",  # ambiguous-unicode-character-string
     "RUF015",  # unnecessary-iterable-allocation-for-first-element
     "RUF067",  # non-empty-init-module
-    "RUF069",  # float-equality-comparison
     "RUF076",  # pytest-fixture-autouse
     "UP015",   # redundant-open-modes
     "UP030",   # format-literals
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["ANN", "SLF", "TC", "PLC2701", "D101", "D102", "D105"]
+"tests/*" = ["ANN", "D101", "D102", "D105", "PLC2701", "RUF069", "SLF", "TC"]
 "utils/*" = ["ANN", "SLF", "TC"]
 
 [tool.ruff.lint.pydocstyle]

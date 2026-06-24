@@ -93,7 +93,7 @@ def genMacOSPlist(args: argparse.Namespace) -> None:
         macosBundleVers=numVers,
         macosBundleVersMajor=pkgVersMaj,
         macosBundleVersMinor=pkgVersMin,
-        macosBundleCopyright=f"Copyright 2018–{copyrightYear}, Veronica Berglyd Olsen",
+        macosBundleCopyright=f"Copyright {copyrightYear}, Veronica Berglyd Olsen",
     )
 
     print(f"Writing Info.plist to {outDir}/Info.plist")
