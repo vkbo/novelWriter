@@ -2,9 +2,6 @@
 novelWriter – Markdown Text Converter
 =====================================
 
-File History:
-Created: 2021-02-06 [1.2b1] ToMarkdown
-
 This file is a part of novelWriter
 Copyright (C) 2021 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -111,7 +109,6 @@ class ToMarkdown(Tokenizer):
 
         lines = []
         for tType, _, tText, tFormat, tStyle in self._blocks:
-
             if tType == BlockTyp.TEXT:
                 tTemp = self._formatText(tText, tFormat, mTags).replace("\n", "  \n")
                 lines.append(f"{tTemp}\n\n")
@@ -119,7 +116,7 @@ class ToMarkdown(Tokenizer):
             elif tType in (BlockTyp.TITLE, BlockTyp.PART):
                 tHead = tText.replace("\n", " - ")
                 lines.append(f"{tHead}\n")
-                lines.append("="*len(tHead) + "\n\n")
+                lines.append("=" * len(tHead) + "\n\n")
 
             elif tType == BlockTyp.HEAD1:
                 tHead = tText.replace("\n", " - ")
@@ -162,9 +159,7 @@ class ToMarkdown(Tokenizer):
             pages = len(self._pages)
             for doc, field in self._usedFields:
                 if doc >= 0 and doc < pages and (value := self._counts.get(field)) is not None:
-                    self._pages[doc] = self._pages[doc].replace(
-                        f"{{{{{field}}}}}", self._formatInt(value)
-                    )
+                    self._pages[doc] = self._pages[doc].replace(f"{{{{{field}}}}}", self._formatInt(value))
 
         # Add footnotes
         if self._usedNotes:
@@ -189,7 +184,7 @@ class ToMarkdown(Tokenizer):
 
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = " ") -> None:
         """Replace tabs with spaces."""
-        spaces = spaceChar*nSpaces
+        spaces = spaceChar * nSpaces
         self._pages = [p.replace("\t", spaces) for p in self._pages]
 
     ##

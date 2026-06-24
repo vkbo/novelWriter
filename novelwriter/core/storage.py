@@ -2,9 +2,6 @@
 novelWriter – Project Storage Class
 ===================================
 
-File History:
-Created: 2022-11-01 [2.0rc2] NWStorage
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -49,19 +47,19 @@ logger = logging.getLogger(__name__)
 class NWStorageOpen(Enum):
     """The status of a storage location."""
 
-    UNKOWN    = 0
+    UNKOWN = 0
     NOT_FOUND = 1
-    LOCKED    = 2
-    FAILED    = 3
-    READY     = 4
+    LOCKED = 2
+    FAILED = 3
+    READY = 4
 
 
 class NWStorageCreate(Enum):
     """The status of a new storage location."""
 
     NOT_EMPTY = 0
-    OS_ERROR  = 1
-    READY     = 2
+    OS_ERROR = 1
+    READY = 2
 
 
 class NWStorage:
@@ -71,8 +69,8 @@ class NWStorage:
     """
 
     MODE_INACTIVE = 0
-    MODE_INPLACE  = 1
-    MODE_ARCHIVE  = 2
+    MODE_INPLACE = 1
+    MODE_ARCHIVE = 2
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
@@ -301,10 +299,11 @@ class NWStorage:
         found in it. Files that do not match the pattern are ignored.
         """
         contentPath = self.contentPath
-        return [
-            item.stem for item in safeIterDir(contentPath)
-            if item.suffix == ".nwd" and isHandle(item.stem)
-        ] if contentPath else []
+        return (
+            [item.stem for item in safeIterDir(contentPath) if item.suffix == ".nwd" and isHandle(item.stem)]
+            if contentPath
+            else []
+        )
 
     def zipIt(self, target: str | Path, compression: int | None = None) -> bool:
         """Zip the content of the project at its runtime location into a
@@ -320,12 +319,12 @@ class NWStorage:
             baseMeta = basePath / "meta"
             baseCont = basePath / "content"
             files = [
-                (basePath / nwFiles.PROJ_FILE,   nwFiles.PROJ_FILE),
+                (basePath / nwFiles.PROJ_FILE, nwFiles.PROJ_FILE),
                 (baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"),
-                (baseMeta / nwFiles.INDEX_FILE,  f"meta/{nwFiles.INDEX_FILE}"),
-                (baseMeta / nwFiles.OPTS_FILE,   f"meta/{nwFiles.OPTS_FILE}"),
-                (baseMeta / nwFiles.DICT_FILE,   f"meta/{nwFiles.DICT_FILE}"),
-                (baseMeta / nwFiles.SESS_FILE,   f"meta/{nwFiles.SESS_FILE}"),
+                (baseMeta / nwFiles.INDEX_FILE, f"meta/{nwFiles.INDEX_FILE}"),
+                (baseMeta / nwFiles.OPTS_FILE, f"meta/{nwFiles.OPTS_FILE}"),
+                (baseMeta / nwFiles.DICT_FILE, f"meta/{nwFiles.DICT_FILE}"),
+                (baseMeta / nwFiles.SESS_FILE, f"meta/{nwFiles.SESS_FILE}"),
             ]
             for contItem in baseCont.iterdir():
                 name = contItem.name
@@ -372,7 +371,7 @@ class NWStorage:
         try:
             self._lockFilePath.write_text(
                 f"{CONFIG.hostName};{CONFIG.osType};{CONFIG.kernelVer};{int(time())}",
-                encoding="utf-8"
+                encoding="utf-8",
             )
         except Exception:
             logger.error("Failed to write project lockfile")
@@ -448,31 +447,28 @@ class _LegacyStorage:
     def deprecatedFiles(self, path: Path) -> None:
         """Handle files that are no longer used by novelWriter."""
         self._convertOldWordList(  # Changed in 2.1 Beta 1
-            path / "meta" / "wordlist.txt",
-            path / "meta" / nwFiles.DICT_FILE
+            path / "meta" / "wordlist.txt", path / "meta" / nwFiles.DICT_FILE
         )
         self._convertOldLogFile(  # Changed in 2.1 Beta 1
-            path / "meta" / "sessionStats.log",
-            path / "meta" / nwFiles.SESS_FILE
+            path / "meta" / "sessionStats.log", path / "meta" / nwFiles.SESS_FILE
         )
         self._convertOldOptionsFile(  # Changed in 2.1 Beta 1
-            path / "meta" / "guiOptions.json",
-            path / "meta" / nwFiles.OPTS_FILE
+            path / "meta" / "guiOptions.json", path / "meta" / nwFiles.OPTS_FILE
         )
 
         # Delete removed files
         remove = [
-            path / "meta" / "tagsIndex.json",          # Renamed in 2.1 Beta 1
-            path / "meta" / "mainOptions.json",        # Replaced in 0.5
-            path / "meta" / "exportOptions.json",      # Replaced in 0.5
-            path / "meta" / "outlineOptions.json",     # Replaced in 0.5
-            path / "meta" / "timelineOptions.json",    # Replaced in 0.5
-            path / "meta" / "docMergeOptions.json",    # Replaced in 0.5
+            path / "meta" / "tagsIndex.json",  # Renamed in 2.1 Beta 1
+            path / "meta" / "mainOptions.json",  # Replaced in 0.5
+            path / "meta" / "exportOptions.json",  # Replaced in 0.5
+            path / "meta" / "outlineOptions.json",  # Replaced in 0.5
+            path / "meta" / "timelineOptions.json",  # Replaced in 0.5
+            path / "meta" / "docMergeOptions.json",  # Replaced in 0.5
             path / "meta" / "sessionLogOptions.json",  # Replaced in 0.5
-            path / "cache" / "prevBuild.json",         # Dropped in 2.1 Beta 1
-            path / "cache",                            # Dropped in 2.1 Beta 1
-            path / "ToC.json",                         # Dropped in 1.0 RC 1
-            path / "nwProject.bak",                    # Dropped in 2.3 Beta 1
+            path / "cache" / "prevBuild.json",  # Dropped in 2.1 Beta 1
+            path / "cache",  # Dropped in 2.1 Beta 1
+            path / "ToC.json",  # Dropped in 1.0 RC 1
+            path / "nwProject.bak",  # Dropped in 2.3 Beta 1
         ]
         for item in remove:
             if item.exists():
@@ -532,13 +528,15 @@ class _LegacyStorage:
                     if record.startswith("# Offset") and nBits == 3:
                         offset = int(bits[2])
                     elif not record.startswith("#") and nBits > 5:
-                        data.append(session.createRecord(
-                            start=f"{bits[0]} {bits[1]}",
-                            end=f"{bits[2]} {bits[3]}",
-                            novel=int(bits[4]),
-                            notes=int(bits[5]),
-                            idle=int(bits[6]) if nBits > 6 else 0,
-                        ))
+                        data.append(
+                            session.createRecord(
+                                start=f"{bits[0]} {bits[1]}",
+                                end=f"{bits[2]} {bits[3]}",
+                                novel=int(bits[4]),
+                                notes=int(bits[5]),
+                                idle=int(bits[6]) if nBits > 6 else 0,
+                            )
+                        )
 
             with open(sessJson, mode="a+", encoding="utf-8") as fObj:
                 fObj.write(session.createInitial(offset))

@@ -2,9 +2,6 @@
 novelWriter – GUI Main Window SideBar
 =====================================
 
-File History:
-Created: 2022-05-10 [2.0rc1] GuiSideBar
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -180,7 +178,6 @@ class GuiSideBar(QWidget):
 
 
 class _PopRightMenu(QMenu):
-
     def event(self, event: QEvent) -> bool:
         """Overload the show event and move the menu popup location."""
         if event.type() == QEvent.Type.Show:

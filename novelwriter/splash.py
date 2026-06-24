@@ -2,9 +2,6 @@
 novelWriter – Splash Screen
 ===========================
 
-File History:
-Created: 2015-04-25 [2.7rc1]
-
 This file is a part of novelWriter
 Copyright (C) 2025 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -62,6 +60,7 @@ class NSplashScreen(QSplashScreen):
         self._text = ""
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NSplashScreen")
 
     def drawContents(self, painter: QPainter) -> None:

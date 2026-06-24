@@ -2,11 +2,6 @@
 novelWriter – Text Counting Functions
 =====================================
 
-File History:
-Created:   2019-04-22 [0.0.1] standardCounter
-Rewritten: 2024-02-27 [2.4b1] preProcessText, standardCounter
-Created:   2024-02-27 [2.4b1] bodyTextCounter
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -23,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import re
@@ -86,7 +82,6 @@ def standardCounter(text: str) -> tuple[int, int, int]:
     prevEmpty = True
 
     for line in preProcessText(text):
-
         countPara = True
         if not line:
             prevEmpty = True

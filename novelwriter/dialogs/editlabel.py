@@ -2,9 +2,6 @@
 novelWriter – Edit Label Dialog
 ===============================
 
-File History:
-Created: 2022-06-11 [2.0rc1] GuiEditLabel
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -84,6 +82,7 @@ class GuiEditLabel(NDialog):
         logger.debug("Ready: GuiEditLabel")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiEditLabel")
 
     @property

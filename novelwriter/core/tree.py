@@ -2,10 +2,6 @@
 novelWriter – Project Tree Class
 ================================
 
-File History:
-Created:   2020-05-07 [0.4.5] NWTree
-Rewritten: 2024-11-16 [2.6b2] NWTree
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -22,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -75,6 +72,7 @@ class NWTree:
         logger.debug("Ready: NWTree")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NWTree")
 
     def __len__(self) -> int:
@@ -180,21 +178,33 @@ class NWTree:
 
     @overload  # pragma: no cover
     def create(
-        self, label: str, parent: None, itemType: Literal[nwItemType.ROOT],
-        itemClass: nwItemClass, pos: int = -1
+        self,
+        label: str,
+        parent: None,
+        itemType: Literal[nwItemType.ROOT],
+        itemClass: nwItemClass,
+        pos: int = -1,
     ) -> str:
         pass
 
     @overload  # pragma: no cover
     def create(
-        self, label: str, parent: str | None, itemType: nwItemType,
-        itemClass: nwItemClass = nwItemClass.NO_CLASS, pos: int = -1
+        self,
+        label: str,
+        parent: str | None,
+        itemType: nwItemType,
+        itemClass: nwItemClass = nwItemClass.NO_CLASS,
+        pos: int = -1,
     ) -> str | None:
         pass
 
     def create(
-        self, label: str, parent: str | None, itemType: nwItemType,
-        itemClass: nwItemClass = nwItemClass.NO_CLASS, pos: int = -1,
+        self,
+        label: str,
+        parent: str | None,
+        itemType: nwItemType,
+        itemClass: nwItemClass = nwItemClass.NO_CLASS,
+        pos: int = -1,
     ) -> str | None:
         """Create a new item in the project tree, and return its handle.
         If the item cannot be added to the project because of an invalid
@@ -228,10 +238,7 @@ class NWTree:
         """
         nodes = self._model.root.allChildren()
         if len(nodes) != len(self._nodes):
-            logger.warning(
-                "Model tree is inconsitent with nodes map, %d != %d",
-                len(nodes), len(self._nodes)
-            )
+            logger.warning("Model tree is inconsitent with nodes map, %d != %d", len(nodes), len(self._nodes))
         return [node.item.pack() for node in nodes]
 
     def unpack(self, data: list[dict]) -> None:
@@ -266,10 +273,7 @@ class NWTree:
     def allDocs(self) -> list[str]:
         """Return a list of all document handles."""
         if not self._docs:
-            self._docs = [
-                node.item.itemHandle for node in self._model.root.allChildren()
-                if node.item.isFileType()
-            ]
+            self._docs = [node.item.itemHandle for node in self._model.root.allChildren() if node.item.isFileType()]
         return self._docs
 
     def pickParent(self, sNode: ProjectNode, hLevel: int, isNote: bool) -> tuple[str | None, int]:
@@ -404,10 +408,10 @@ class NWTree:
                 toc.write("Table of Contents\n")
                 toc.write("=================\n")
                 toc.write("\n")
-                toc.write("{0:<25s}  {1:<9s}  {2:<8s}  {3:s}\n".format(
-                    "File Name", "Class", "Layout", "Document Label"
-                ))
-                toc.write("-"*max(maxLen, 62) + "\n")
+                toc.write(
+                    "{0:<25s}  {1:<9s}  {2:<8s}  {3:s}\n".format("File Name", "Class", "Layout", "Document Label")
+                )
+                toc.write("-" * max(maxLen, 62) + "\n")
                 toc.write("\n".join(entries))
                 toc.write("\n")
 

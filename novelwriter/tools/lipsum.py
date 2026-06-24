@@ -2,9 +2,6 @@
 novelWriter – Lorem Ipsum Tool
 ==============================
 
-File History:
-Created: 2022-04-02 [2.0rc1] GuiLipsum
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,16 +18,14 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
 import random
 
 from PyQt6.QtCore import pyqtSlot
-from PyQt6.QtWidgets import (
-    QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel, QSpinBox, QVBoxLayout,
-    QWidget
-)
+from PyQt6.QtWidgets import QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel, QSpinBox, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import readTextFile
@@ -114,6 +109,7 @@ class GuiLipsum(NDialog):
         logger.debug("Ready: GuiLipsum")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiLipsum")
 
     @property

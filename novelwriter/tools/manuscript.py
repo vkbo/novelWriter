@@ -2,9 +2,6 @@
 novelWriter – GUI Manuscript Tool
 =================================
 
-File History:
-Created: 2023-05-13 [2.1b1] GuiManuscript
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -30,15 +28,34 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import (
-    QCloseEvent, QColor, QCursor, QDesktopServices, QFont, QPageLayout,
-    QPalette, QResizeEvent, QTextDocument
+    QCloseEvent,
+    QColor,
+    QCursor,
+    QDesktopServices,
+    QFont,
+    QPageLayout,
+    QPalette,
+    QResizeEvent,
+    QTextDocument,
 )
 from PyQt6.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt6.QtWidgets import (
-    QAbstractItemView, QApplication, QFormLayout, QGridLayout, QHBoxLayout,
-    QLabel, QListWidget, QListWidgetItem, QSplitter, QStackedWidget,
-    QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget
+    QAbstractItemView,
+    QApplication,
+    QFormLayout,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
+    QSplitter,
+    QStackedWidget,
+    QTabWidget,
+    QTextBrowser,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import CONFIG, SHARED
@@ -56,8 +73,12 @@ from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
 from novelwriter.types import (
-    QtAlignCenter, QtAlignRight, QtAlignTop, QtSizeExpanding, QtSizeIgnored,
-    QtUserRole
+    QtAlignCenter,
+    QtAlignRight,
+    QtAlignTop,
+    QtSizeExpanding,
+    QtSizeIgnored,
+    QtUserRole,
 )
 
 if TYPE_CHECKING:
@@ -154,10 +175,12 @@ class GuiManuscript(NToolDialog):
         self.buildSplit = QSplitter(Qt.Orientation.Vertical, self)
         self.buildSplit.addWidget(self.buildList)
         self.buildSplit.addWidget(self.detailsTabs)
-        self.buildSplit.setSizes([
-            options.getInt("GuiManuscript", "listHeight", 50),
-            options.getInt("GuiManuscript", "detailsHeight", 50),
-        ])
+        self.buildSplit.setSizes(
+            [
+                options.getInt("GuiManuscript", "listHeight", 50),
+                options.getInt("GuiManuscript", "detailsHeight", 50),
+            ]
+        )
 
         # Process Controls
         # ================
@@ -176,9 +199,9 @@ class GuiManuscript(NToolDialog):
 
         self.processBox = QGridLayout()
         self.processBox.addWidget(self.btnPreview, 0, 0)
-        self.processBox.addWidget(self.btnPrint,   0, 1)
-        self.processBox.addWidget(self.btnBuild,   1, 0)
-        self.processBox.addWidget(self.btnClose,   1, 1)
+        self.processBox.addWidget(self.btnPrint, 0, 1)
+        self.processBox.addWidget(self.btnBuild, 1, 0)
+        self.processBox.addWidget(self.btnClose, 1, 1)
 
         # Preview Options
         # ===============
@@ -226,10 +249,12 @@ class GuiManuscript(NToolDialog):
         self.mainSplit.setCollapsible(1, False)
         self.mainSplit.setStretchFactor(0, 0)
         self.mainSplit.setStretchFactor(1, 1)
-        self.mainSplit.setSizes([
-            options.getInt("GuiManuscript", "optsWidth", 225),
-            options.getInt("GuiManuscript", "viewWidth", 675),
-        ])
+        self.mainSplit.setSizes(
+            [
+                options.getInt("GuiManuscript", "optsWidth", 225),
+                options.getInt("GuiManuscript", "viewWidth", 675),
+            ]
+        )
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.mainSplit)
@@ -245,6 +270,7 @@ class GuiManuscript(NToolDialog):
         logger.debug("Ready: GuiManuscript")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiManuscript")
 
     def loadContent(self) -> None:
@@ -399,7 +425,7 @@ class GuiManuscript(NToolDialog):
         self.docStats.updateStats(buildObj.textStats)
         self.buildOutline.updateOutline(buildObj.textOutline)
 
-        logger.debug("Build completed in %.3f ms", 1000*(time()-start))
+        logger.debug("Build completed in %.3f ms", 1000 * (time() - start))
 
         return
 
@@ -439,10 +465,7 @@ class GuiManuscript(NToolDialog):
 
     def _saveSettings(self) -> None:
         """Save the user GUI settings."""
-        buildOrder = [
-            item.data(self.D_KEY) for i in range(self.buildList.count())
-            if (item := self.buildList.item(i))
-        ]
+        buildOrder = [item.data(self.D_KEY) for i in range(self.buildList.count()) if (item := self.buildList.item(i))]
 
         current = self.buildList.currentItem()
         lastBuild = current.data(self.D_KEY) if isinstance(current, QListWidgetItem) else ""
@@ -511,7 +534,6 @@ class GuiManuscript(NToolDialog):
 
 
 class _DetailsWidget(QWidget):
-
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
@@ -631,8 +653,12 @@ class _DetailsWidget(QWidget):
         item.setText(1, "")
         self.listView.addTopLevelItem(item)
         for key in [
-            "text.includeBodyText", "text.includeSynopsis", "text.includeComments",
-            "text.includeStory", "text.includeNotes", "text.includeKeywords",
+            "text.includeBodyText",
+            "text.includeSynopsis",
+            "text.includeComments",
+            "text.includeStory",
+            "text.includeNotes",
+            "text.includeKeywords",
         ]:
             sub = QTreeWidgetItem()
             sub.setText(0, build.getLabel(key))
@@ -652,7 +678,6 @@ class _DetailsWidget(QWidget):
 
 
 class _OutlineWidget(QWidget):
-
     D_LINE = QtUserRole
 
     outlineEntryClicked = pyqtSignal(str)
@@ -725,7 +750,6 @@ class _OutlineWidget(QWidget):
 
 
 class _PreviewWidget(QTextBrowser):
-
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
@@ -739,7 +763,7 @@ class _PreviewWidget(QTextBrowser):
         dPalette.setColor(QPalette.ColorRole.Text, QColor(0, 0, 0))
         self.setPalette(dPalette)
 
-        self.setMinimumWidth(40*SHARED.theme.textNWidth)
+        self.setMinimumWidth(40 * SHARED.theme.textNWidth)
         self.setTabStopDistance(CONFIG.tabWidth)
         self.setOpenExternalLinks(False)
         self.setOpenLinks(False)
@@ -747,9 +771,7 @@ class _PreviewWidget(QTextBrowser):
         if document := self.document():
             document.setDocumentMargin(CONFIG.textMargin)
 
-        self.setPlaceholderText(self.tr(
-            'Press the "Preview" button to generate ...'
-        ))
+        self.setPlaceholderText(self.tr('Press the "Preview" button to generate ...'))
 
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
 
@@ -758,14 +780,14 @@ class _PreviewWidget(QTextBrowser):
 
         # Document Age
         aFont = self.font()
-        aFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
+        aFont.setPointSizeF(0.9 * SHARED.theme.fontPointSize)
 
         self.ageLabel = QLabel("", self)
         self.ageLabel.setIndent(0)
         self.ageLabel.setFont(aFont)
         self.ageLabel.setAutoFillBackground(True)
         self.ageLabel.setAlignment(QtAlignCenter)
-        self.ageLabel.setFixedHeight(int(2.1*SHARED.theme.fontPixelSize))
+        self.ageLabel.setFixedHeight(int(2.1 * SHARED.theme.fontPixelSize))
 
         # Progress
         self.buildProgress = NProgressCircle(self, 160, 16)
@@ -773,9 +795,7 @@ class _PreviewWidget(QTextBrowser):
         self.buildProgress.setMaximum(1)
         self.buildProgress.setValue(0)
         self.buildProgress.setColors(
-            back=QColor(255, 255, 255, 224),
-            track=QColor(196, 196, 196, 128),
-            text=QColor(0, 0, 0)
+            back=QColor(255, 255, 255, 224), track=QColor(196, 196, 196, 128), text=QColor(0, 0, 0)
         )
 
         self._updateDocMargins()
@@ -902,11 +922,13 @@ class _PreviewWidget(QTextBrowser):
     def _updateBuildAge(self) -> None:
         """Update the build time and the fuzzy age."""
         if self._buildName and self._docTime > 0:
-            self.ageLabel.setText("<b>{0}</b><br>{1}: {2}".format(
-                self._buildName,
-                self.tr("Built"),
-                fuzzyTime(int(time()) - self._docTime),
-            ))
+            self.ageLabel.setText(
+                "<b>{0}</b><br>{1}: {2}".format(
+                    self._buildName,
+                    self.tr("Built"),
+                    fuzzyTime(int(time()) - self._docTime),
+                )
+            )
         else:
             self.ageLabel.setText("<b>{0}</b>".format(self.tr("No Preview")))
 
@@ -927,22 +949,21 @@ class _PreviewWidget(QTextBrowser):
         """
         vBar = self.verticalScrollBar()
         tB = self.frameWidth()
-        vW = self.width() - 2*tB - (vBar.width() if vBar else 0)
-        vH = self.height() - 2*tB
+        vW = self.width() - 2 * tB - (vBar.width() if vBar else 0)
+        vH = self.height() - 2 * tB
         tH = self.ageLabel.height()
         pS = self.buildProgress.width()
         self.ageLabel.setGeometry(tB, tB, vW, tH)
         self.setViewportMargins(0, tH, 0, 0)
-        self.buildProgress.move((vW-pS)//2, (vH-pS)//2)
+        self.buildProgress.move((vW - pS) // 2, (vH - pS) // 2)
 
 
 class _StatsWidget(QWidget):
-
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         font = self.font()
-        font.setPointSizeF(0.9*SHARED.theme.fontPointSize)
+        font.setPointSizeF(0.9 * SHARED.theme.fontPointSize)
         self.setFont(font)
 
         self.minWidget = QWidget(self)

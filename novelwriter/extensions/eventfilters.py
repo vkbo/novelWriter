@@ -2,10 +2,6 @@
 novelWriter – Custom Objects: Event Filters
 ===========================================
 
-File History:
-Created: 2023-08-31 [2.1rc1] WheelEventFilter
-Created: 2023-11-28 [2.2]    StatusTipFilter
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -22,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

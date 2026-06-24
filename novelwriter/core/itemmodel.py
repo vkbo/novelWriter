@@ -2,10 +2,6 @@
 novelWriter – Project Item Model
 ================================
 
-File History:
-Created: 2024-11-16 [2.6b2] ProjectNode
-Created: 2024-11-16 [2.6b2] ProjectModel
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -22,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -37,8 +34,13 @@ from novelwriter.constants import nwConst
 from novelwriter.core.item import NWItem
 from novelwriter.enum import nwItemClass
 from novelwriter.types import (
-    QtAccessibleTextRole, QtAlignRight, QtDecorationRole, QtDisplayRole,
-    QtFontRole, QtTextAlignmentRole, QtToolTipRole
+    QtAccessibleTextRole,
+    QtAlignRight,
+    QtDecorationRole,
+    QtDisplayRole,
+    QtFontRole,
+    QtTextAlignmentRole,
+    QtToolTipRole,
 )
 
 if TYPE_CHECKING:
@@ -49,19 +51,19 @@ logger = logging.getLogger(__name__)
 INV_ROOT = "invisibleRoot"
 C_FACTOR = 0x0100
 
-C_LABEL_TEXT    = 0x0000 | QtDisplayRole
-C_LABEL_ICON    = 0x0000 | QtDecorationRole
-C_LABEL_FONT    = 0x0000 | QtFontRole
-C_COUNT_TEXT    = 0x0100 | QtDisplayRole
-C_COUNT_ICON    = 0x0100 | QtDecorationRole
-C_COUNT_ALIGN   = 0x0100 | QtTextAlignmentRole
-C_COUNT_TIP     = 0x0100 | QtToolTipRole
-C_COUNT_ACCESS  = 0x0100 | QtAccessibleTextRole
-C_ACTIVE_ICON   = 0x0200 | QtDecorationRole
-C_ACTIVE_TIP    = 0x0200 | QtToolTipRole
+C_LABEL_TEXT = 0x0000 | QtDisplayRole
+C_LABEL_ICON = 0x0000 | QtDecorationRole
+C_LABEL_FONT = 0x0000 | QtFontRole
+C_COUNT_TEXT = 0x0100 | QtDisplayRole
+C_COUNT_ICON = 0x0100 | QtDecorationRole
+C_COUNT_ALIGN = 0x0100 | QtTextAlignmentRole
+C_COUNT_TIP = 0x0100 | QtToolTipRole
+C_COUNT_ACCESS = 0x0100 | QtAccessibleTextRole
+C_ACTIVE_ICON = 0x0200 | QtDecorationRole
+C_ACTIVE_TIP = 0x0200 | QtToolTipRole
 C_ACTIVE_ACCESS = 0x0200 | QtAccessibleTextRole
-C_STATUS_ICON   = 0x0300 | QtDecorationRole
-C_STATUS_TIP    = 0x0300 | QtToolTipRole
+C_STATUS_ICON = 0x0300 | QtDecorationRole
+C_STATUS_TIP = 0x0300 | QtToolTipRole
 C_STATUS_ACCESS = 0x0300 | QtAccessibleTextRole
 
 NODE_FLAGS = Qt.ItemFlag.ItemIsEnabled
@@ -92,8 +94,8 @@ class ProjectNode:
     cached, as the GUI will pull this information often.
     """
 
-    C_NAME   = 0
-    C_COUNT  = 1
+    C_NAME = 0
+    C_COUNT = 1
     C_ACTIVE = 2
     C_STATUS = 3
 
@@ -111,6 +113,7 @@ class ProjectNode:
         self.updateCount()
 
     def __repr__(self) -> str:
+        """Return a string representation of the node."""
         return (
             f"<ProjectNode handle={self._item.itemHandle} "
             f"parent={self._parent.item.itemHandle if self._parent else None} "
@@ -119,6 +122,7 @@ class ProjectNode:
         )
 
     def __bool__(self) -> bool:
+        """Return True if the node is valid."""
         # A node should always evaluate to True.
         return True
 
@@ -192,7 +196,7 @@ class ProjectNode:
 
     def data(self, column: int, role: Qt.ItemDataRole) -> T_NodeData:
         """Return cached node data."""
-        return self._cache.get(C_FACTOR*column | role)
+        return self._cache.get(C_FACTOR * column | role)
 
     def flags(self) -> Qt.ItemFlag:
         """Return cached node flags."""
@@ -304,6 +308,7 @@ class ProjectModel(QAbstractItemModel):
         logger.debug("Ready: ProjectModel")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: ProjectModel")
 
     ##
@@ -370,33 +375,23 @@ class ProjectModel(QAbstractItemModel):
 
     def mimeData(self, indices: list[QModelIndex]) -> QMimeData:
         """Encode mime data about a selection."""
-        handles = [
-            i.internalPointer().item.itemHandle
-            for i in indices if i.isValid() and i.column() == 0
-        ]
+        handles = [i.internalPointer().item.itemHandle for i in indices if i.isValid() and i.column() == 0]
         mime = QMimeData()
         encodeMimeHandles(mime, handles)
         return mime
 
     def canDropMimeData(
-        self, data: QMimeData, action: Qt.DropAction,
-        row: int, column: int, parent: QModelIndex
+        self, data: QMimeData, action: Qt.DropAction, row: int, column: int, parent: QModelIndex
     ) -> bool:
         """Check if mime data can be dropped on the current location."""
         if parent.isValid() and parent.internalPointer() is not self._root:
             return data.hasFormat(nwConst.MIME_HANDLE) and action == Qt.DropAction.MoveAction
         return False
 
-    def dropMimeData(
-        self, data: QMimeData, action: Qt.DropAction,
-        row: int, column: int, parent: QModelIndex
-    ) -> bool:
+    def dropMimeData(self, data: QMimeData, action: Qt.DropAction, row: int, column: int, parent: QModelIndex) -> bool:
         """Process mime data drop."""
         if self.canDropMimeData(data, action, row, column, parent):
-            items = [
-                index for handle in decodeMimeHandles(data)
-                if (index := self.indexFromHandle(handle)).isValid()
-            ]
+            items = [index for handle in decodeMimeHandles(data) if (index := self.indexFromHandle(handle)).isValid()]
             self.multiMove(items, parent, row)
             return True
         return False
@@ -484,7 +479,7 @@ class ProjectModel(QAbstractItemModel):
                     if node.item.isRootType() is False and handle not in handles:
                         pruned.append(node)
                         handles.add(handle)
-            for node in (reversed(pruned) if pos >= 0 else pruned):
+            for node in reversed(pruned) if pos >= 0 else pruned:
                 if node.item.itemParent not in handles:
                     index = self.indexFromNode(node)
                     if temp := self.removeChild(index.parent(), index.row()):
@@ -504,10 +499,7 @@ class ProjectModel(QAbstractItemModel):
 
     def allExpanded(self) -> list[QModelIndex]:
         """Return a list of all expanded items."""
-        return [
-            self.createIndex(node.row(), 0, node) for node in self._root.allChildren()
-            if node.item.isExpanded
-        ]
+        return [self.createIndex(node.row(), 0, node) for node in self._root.allChildren() if node.item.isExpanded]
 
     def trashSelection(self, indices: list[QModelIndex]) -> bool:
         """Check if a selection of indices are all in trash or not."""

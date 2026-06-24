@@ -2,13 +2,6 @@
 novelWriter – Custom Widget: Config Layout
 ==========================================
 
-File History:
-Created: 2020-05-03 [0.4.5] NColourLabel
-Created: 2024-01-08 [2.3b1] NScrollableForm
-Created: 2024-01-26 [2.3b1] NScrollablePage
-Created: 2024-01-26 [2.3b1] NFixedPage
-Created: 2024-03-12 [2.4b1] NWrappedWidgetBox
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -25,14 +18,12 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QPalette
-from PyQt6.QtWidgets import (
-    QAbstractButton, QFrame, QHBoxLayout, QLabel, QLayout, QScrollArea,
-    QVBoxLayout, QWidget
-)
+from PyQt6.QtWidgets import QAbstractButton, QFrame, QHBoxLayout, QLabel, QLayout, QScrollArea, QVBoxLayout, QWidget
 
 from novelwriter import SHARED
 from novelwriter.constants import nwUnicode
@@ -206,8 +197,12 @@ class NScrollableForm(QScrollArea):
 
         if helpText:
             qHelp = NColorLabel(
-                str(helpText), self, color=self._helpCol,
-                scale=self._fontScale, wrap=True, indent=self._indent
+                str(helpText),
+                self,
+                color=self._helpCol,
+                scale=self._fontScale,
+                wrap=True,
+                indent=self._indent,
             )
             qHelp.setBuddy(qWidget)
             qWidget.setAccessibleDescription(helpText)
@@ -261,10 +256,17 @@ class NColorLabel(QLabel):
     _state = None
 
     def __init__(
-        self, text: str, parent: QWidget, *,
-        color: QColor | None = None, faded: QColor | None = None, error: QColor | None = None,
-        scale: float = HELP_SCALE, wrap: bool = False, indent: int = 0,
-        bold: bool = False
+        self,
+        text: str,
+        parent: QWidget,
+        *,
+        color: QColor | None = None,
+        faded: QColor | None = None,
+        error: QColor | None = None,
+        scale: float = HELP_SCALE,
+        wrap: bool = False,
+        indent: int = 0,
+        bold: bool = False,
     ) -> None:
         super().__init__(text, parent=parent)
 
@@ -274,7 +276,7 @@ class NColorLabel(QLabel):
         self._error = error or default
 
         font = self.font()
-        font.setPointSizeF(scale*font.pointSizeF())
+        font.setPointSizeF(scale * font.pointSizeF())
         font.setWeight(QtFontSemiBold if bold else QtFontNormal)
 
         self.setTextFormat(Qt.TextFormat.RichText)
@@ -284,8 +286,11 @@ class NColorLabel(QLabel):
         self.setColorState(nwState.NORMAL)
 
     def setTextColors(
-        self, *, color: QColor | None = None,
-        faded: QColor | None = None, error: QColor | None = None,
+        self,
+        *,
+        color: QColor | None = None,
+        faded: QColor | None = None,
+        error: QColor | None = None,
     ) -> None:
         """Set or update the text colours."""
         self._color = color or self._color
@@ -323,12 +328,13 @@ class NPathColorLabel(NColorLabel):
             self._text = ""
             super().setText(value)
         else:
-            self._text = ("<font style='color: #000000'>{inner}</font>".format(
-                inner=f"  {nwUnicode.U_RSAQUO}  ".join(reversed([
-                    f"<a href='#{h}' style='color: #000000; text-decoration: none'>{n}</a>"
-                    for h, n in value
-                ]))
-            ))
+            self._text = "<font style='color: #000000'>{inner}</font>".format(
+                inner=f"  {nwUnicode.U_RSAQUO}  ".join(
+                    reversed(
+                        [f"<a href='#{h}' style='color: #000000; text-decoration: none'>{n}</a>" for h, n in value]
+                    )
+                )
+            )
             self._refreshTextColor()
 
     def _refreshTextColor(self) -> None:
@@ -348,7 +354,7 @@ class NWrappedWidgetBox(QHBoxLayout):
 
     def __init__(self, text: str, widget: QWidget) -> None:
         super().__init__()
-        before, _, after  = text.partition(r"{0}")
+        before, _, after = text.partition(r"{0}")
         if before:
             self.addWidget(QLabel(before.rstrip()))
         self.addWidget(widget)

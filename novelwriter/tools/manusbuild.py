@@ -2,9 +2,6 @@
 novelWriter – GUI Build Manuscript
 ==================================
 
-File History:
-Created: 2023-05-24 [2.1b1] GuiManuscriptBuild
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -31,9 +29,20 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import Qt, QTimer, pyqtSlot
 from PyQt6.QtGui import QCursor
 from PyQt6.QtWidgets import (
-    QAbstractButton, QAbstractItemView, QApplication, QDialogButtonBox,
-    QFileDialog, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget,
-    QListWidgetItem, QSplitter, QVBoxLayout, QWidget
+    QAbstractButton,
+    QAbstractItemView,
+    QApplication,
+    QDialogButtonBox,
+    QFileDialog,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QSplitter,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import SHARED
@@ -134,8 +143,10 @@ class GuiManuscriptBuild(NDialog):
         # ===============
 
         self.lblMain = NColorLabel(
-            self.tr("Build: {0}").format(self._build.name), self,
-            color=SHARED.theme.helpText, scale=NColorLabel.HEADER_SCALE,
+            self.tr("Build: {0}").format(self._build.name),
+            self,
+            color=SHARED.theme.helpText,
+            scale=NColorLabel.HEADER_SCALE,
         )
 
         # Build Path
@@ -201,10 +212,12 @@ class GuiManuscriptBuild(NDialog):
         self.mainSplit.setCollapsible(1, False)
         self.mainSplit.setStretchFactor(0, 0)
         self.mainSplit.setStretchFactor(1, 1)
-        self.mainSplit.setSizes([
-            pOptions.getInt("GuiManuscriptBuild", "fmtWidth", 360),
-            pOptions.getInt("GuiManuscriptBuild", "sumWidth", 360),
-        ])
+        self.mainSplit.setSizes(
+            [
+                pOptions.getInt("GuiManuscriptBuild", "fmtWidth", 360),
+                pOptions.getInt("GuiManuscriptBuild", "sumWidth", 360),
+            ]
+        )
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.lblMain, 0, QtAlignCenter)
@@ -237,6 +250,7 @@ class GuiManuscriptBuild(NDialog):
         logger.debug("Ready: GuiManuscriptBuild")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiManuscriptBuild")
 
     ##
@@ -270,9 +284,7 @@ class GuiManuscriptBuild(NDialog):
         """Select a folder for output."""
         bPath = Path(self.buildPath.text())
         bPath = bPath if safeIsDir(bPath) else self._build.lastBuildPath
-        savePath = QFileDialog.getExistingDirectory(
-            self, self.tr("Select Folder"), str(bPath)
-        )
+        savePath = QFileDialog.getExistingDirectory(self, self.tr("Select Folder"), str(bPath))
         if savePath:
             self.buildPath.setText(savePath)
 
@@ -313,9 +325,7 @@ class GuiManuscriptBuild(NDialog):
         buildPath = (bPath / makeFileNameSafe(bName)).with_suffix(bExt)
 
         if safeExists(buildPath):
-            if not SHARED.question(
-                self.tr("The file already exists. Do you want to overwrite it?")
-            ):
+            if not SHARED.question(self.tr("The file already exists. Do you want to overwrite it?")):
                 return False
 
         # Make sure editor content is saved before we start
@@ -328,7 +338,7 @@ class GuiManuscriptBuild(NDialog):
 
         self.buildProgress.setMaximum(len(docBuild))
         for i, _ in docBuild.iterBuildDocument(buildPath, bFormat):
-            self.buildProgress.setValue(i+1)
+            self.buildProgress.setValue(i + 1)
 
         QApplication.restoreOverrideCursor()
 

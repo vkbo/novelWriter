@@ -2,9 +2,6 @@
 novelWriter – GUI Item Details Panel
 ====================================
 
-File History:
-Created: 2019-04-24 [0.0.1] GuiItemDetails
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -34,10 +32,7 @@ from novelwriter import SHARED
 from novelwriter.common import elide
 from novelwriter.constants import nwLabels, nwStats, trConst, trStats
 from novelwriter.enum import nwChange
-from novelwriter.types import (
-    QtAlignLeft, QtAlignLeftBase, QtAlignRight, QtAlignRightBase,
-    QtAlignRightMiddle
-)
+from novelwriter.types import QtAlignLeft, QtAlignLeftBase, QtAlignRight, QtAlignRightBase, QtAlignRightMiddle
 
 logger = logging.getLogger(__name__)
 
@@ -141,9 +136,9 @@ class GuiItemDetails(QWidget):
 
         # Assemble
         self.mainBox = QGridLayout(self)
-        self.mainBox.addWidget(self.labelName,  0, 0, 1, 1)
-        self.mainBox.addWidget(self.labelIcon,  0, 1, 1, 1)
-        self.mainBox.addWidget(self.labelData,  0, 2, 1, 3)
+        self.mainBox.addWidget(self.labelName, 0, 0, 1, 1)
+        self.mainBox.addWidget(self.labelIcon, 0, 1, 1, 1)
+        self.mainBox.addWidget(self.labelData, 0, 2, 1, 3)
 
         self.mainBox.addWidget(self.statusName, 1, 0, 1, 1)
         self.mainBox.addWidget(self.statusIcon, 1, 1, 1, 1)
@@ -151,15 +146,15 @@ class GuiItemDetails(QWidget):
         self.mainBox.addWidget(self.cCountName, 1, 3, 1, 1)
         self.mainBox.addWidget(self.cCountData, 1, 4, 1, 1)
 
-        self.mainBox.addWidget(self.className,  2, 0, 1, 1)
-        self.mainBox.addWidget(self.classIcon,  2, 1, 1, 1)
-        self.mainBox.addWidget(self.classData,  2, 2, 1, 1)
+        self.mainBox.addWidget(self.className, 2, 0, 1, 1)
+        self.mainBox.addWidget(self.classIcon, 2, 1, 1, 1)
+        self.mainBox.addWidget(self.classData, 2, 2, 1, 1)
         self.mainBox.addWidget(self.wCountName, 2, 3, 1, 1)
         self.mainBox.addWidget(self.wCountData, 2, 4, 1, 1)
 
-        self.mainBox.addWidget(self.usageName,  3, 0, 1, 1)
-        self.mainBox.addWidget(self.usageIcon,  3, 1, 1, 1)
-        self.mainBox.addWidget(self.usageData,  3, 2, 1, 1)
+        self.mainBox.addWidget(self.usageName, 3, 0, 1, 1)
+        self.mainBox.addWidget(self.usageIcon, 3, 1, 1, 1)
+        self.mainBox.addWidget(self.usageData, 3, 2, 1, 1)
         self.mainBox.addWidget(self.pCountName, 3, 3, 1, 1)
         self.mainBox.addWidget(self.pCountData, 3, 4, 1, 1)
 
@@ -178,7 +173,7 @@ class GuiItemDetails(QWidget):
         self.updateTheme()
 
         # Make sure the columns for flags and counts don't resize too often
-        flagWidth  = SHARED.theme.getTextWidth("Mm", fntValue)
+        flagWidth = SHARED.theme.getTextWidth("Mm", fntValue)
         countWidth = SHARED.theme.getTextWidth("99,999", fntValue)
         self.mainBox.setColumnMinimumWidth(1, flagWidth)
         self.mainBox.setColumnMinimumWidth(4, countWidth)
@@ -220,7 +215,7 @@ class GuiItemDetails(QWidget):
             return
 
         self._handle = tHandle
-        iPx = round(0.9*SHARED.theme.baseIconHeight)
+        iPx = round(0.9 * SHARED.theme.baseIconHeight)
 
         # Label
         # =====

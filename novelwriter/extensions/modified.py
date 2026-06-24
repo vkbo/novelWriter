@@ -2,20 +2,6 @@
 novelWriter – Custom Widget: Modified Widgets
 =============================================
 
-File History:
-Created: 2024-02-01 [2.3b1]  NComboBox
-Created: 2024-02-01 [2.3b1]  NSpinBox
-Created: 2024-02-01 [2.3b1]  NDoubleSpinBox
-Created: 2024-03-20 [2.4b1]  NIconToolButton
-Created: 2024-04-01 [2.4rc1] NIconToggleButton
-Created: 2024-05-01 [2.5b1]  NToolDialog
-Created: 2024-05-01 [2.5b1]  NNonBlockingDialog
-Created: 2024-05-27 [2.5rc1] NDialog
-Created: 2024-12-29 [2.6rc1] NClickableLabel
-Created: 2025-02-22 [2.7b1]  NTreeView
-Created: 2025-10-25 [2.8b1]  NPushButton
-Created: 2025-11-08 [2.8rc1] NFontDialog
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -32,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -40,8 +27,18 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
-    QApplication, QComboBox, QDialog, QDialogButtonBox, QDoubleSpinBox,
-    QFontDialog, QLabel, QPushButton, QSpinBox, QToolButton, QTreeView, QWidget
+    QApplication,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QDoubleSpinBox,
+    QFontDialog,
+    QLabel,
+    QPushButton,
+    QSpinBox,
+    QToolButton,
+    QTreeView,
+    QWidget,
 )
 
 from novelwriter import CONFIG, SHARED
@@ -134,6 +131,7 @@ class NFontDialog(QFontDialog):
         logger.debug("Ready: NFontDialog")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NFontDialog")
 
     @staticmethod
@@ -167,10 +165,7 @@ class NTreeView(QTreeView):
 
     def mousePressEvent(self, event: QMouseEvent | None) -> None:
         """Emit a signal on mouse middle click."""
-        if (
-            event and event.button() == QtMouseMiddle
-            and (index := self.indexAt(event.pos())).isValid()
-        ):
+        if event and event.button() == QtMouseMiddle and (index := self.indexAt(event.pos())).isValid():
             self.middleClicked.emit(index)
         return super().mousePressEvent(event)
 
@@ -239,7 +234,7 @@ class NSpinBox(QSpinBox):
 
     def setFixedNumbersWidth(self, count: int) -> None:
         """Set a fixed with for a certain amount of numbers."""
-        self.setFixedWidth(count*SHARED.theme.textNWidth + 24)
+        self.setFixedWidth(count * SHARED.theme.textNWidth + 24)
 
 
 class NDoubleSpinBox(QDoubleSpinBox):
@@ -275,7 +270,7 @@ class NDoubleSpinBox(QDoubleSpinBox):
 
     def setFixedNumbersWidth(self, count: int) -> None:
         """Set a fixed with for a certain amount of numbers."""
-        self.setFixedWidth(count*SHARED.theme.textNWidth + 24)
+        self.setFixedWidth(count * SHARED.theme.textNWidth + 24)
 
 
 class NPushButton(QPushButton):
@@ -285,8 +280,12 @@ class NPushButton(QPushButton):
     """
 
     def __init__(
-        self, parent: QWidget, text: str, iconSize: QSize,
-        icon: str | None = None, color: str | None = None
+        self,
+        parent: QWidget,
+        text: str,
+        iconSize: QSize,
+        icon: str | None = None,
+        color: str | None = None,
     ) -> None:
         super().__init__(parent=parent)
         self._icon = icon
@@ -313,10 +312,7 @@ class NIconToolButton(QToolButton):
 
     __slots__ = ("_color", "_icon")
 
-    def __init__(
-        self, parent: QWidget, iconSize: QSize,
-        icon: str | None = None, color: str | None = None
-    ) -> None:
+    def __init__(self, parent: QWidget, iconSize: QSize, icon: str | None = None, color: str | None = None) -> None:
         super().__init__(parent=parent)
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.setIconSize(iconSize)
@@ -341,10 +337,7 @@ class NIconToggleButton(QToolButton):
     A quicker way to create a toggle button using the app theme.
     """
 
-    def __init__(
-        self, parent: QWidget, iconSize: QSize,
-        icon: str | None = None, color: str | None = None
-    ) -> None:
+    def __init__(self, parent: QWidget, iconSize: QSize, icon: str | None = None, color: str | None = None) -> None:
         super().__init__(parent=parent)
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.setIconSize(iconSize)

@@ -2,10 +2,6 @@
 novelWriter – Text Tokenizer
 ============================
 
-File History:
-Created: 2019-05-05 [0.0.1] Tokenizer
-Created: 2023-05-23 [2.1b1] HeadingFormatter
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -22,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -36,12 +33,24 @@ from PyQt6.QtGui import QColor, QFont
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, fontMatcher, numberToRoman
 from novelwriter.constants import (
-    nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwStats, nwStyles, nwUnicode,
-    trConst
+    nwHeadFmt,
+    nwKeyWords,
+    nwLabels,
+    nwShortcode,
+    nwStats,
+    nwStyles,
+    nwUnicode,
+    trConst,
 )
 from novelwriter.enum import nwComment, nwItemLayout
 from novelwriter.formats.shared import (
-    BlockFmt, BlockTyp, T_Block, T_Formats, T_Note, TextDocumentTheme, TextFmt
+    BlockFmt,
+    BlockTyp,
+    T_Block,
+    T_Formats,
+    T_Note,
+    TextDocumentTheme,
+    TextFmt,
 )
 from novelwriter.text.formats import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
@@ -63,28 +72,32 @@ class ComStyle(NamedTuple):
 
 
 COMMENT_STYLE = {
-    nwComment.PLAIN:    ComStyle("Comment", "comment", "comment"),
-    nwComment.IGNORE:   ComStyle(),
+    nwComment.PLAIN: ComStyle("Comment", "comment", "comment"),
+    nwComment.IGNORE: ComStyle(),
     nwComment.SYNOPSIS: ComStyle("Synopsis", "modifier", "note"),
-    nwComment.SHORT:    ComStyle("Short Description", "modifier", "note"),
-    nwComment.NOTE:     ComStyle("Note", "modifier", "note"),
+    nwComment.SHORT: ComStyle("Short Description", "modifier", "note"),
+    nwComment.NOTE: ComStyle("Note", "modifier", "note"),
     nwComment.FOOTNOTE: ComStyle("", "modifier", "note"),
-    nwComment.COMMENT:  ComStyle(),
-    nwComment.STORY:    ComStyle("Story Structure", "modifier", "note"),
+    nwComment.COMMENT: ComStyle(),
+    nwComment.STORY: ComStyle("Story Structure", "modifier", "note"),
 }
 COMMENT_TYPE = {
-    nwComment.PLAIN:    BlockTyp.COMMENT,
-    nwComment.IGNORE:   BlockTyp.COMMENT,
+    nwComment.PLAIN: BlockTyp.COMMENT,
+    nwComment.IGNORE: BlockTyp.COMMENT,
     nwComment.SYNOPSIS: BlockTyp.SUMMARY,
-    nwComment.SHORT:    BlockTyp.SUMMARY,
-    nwComment.NOTE:     BlockTyp.NOTE,
+    nwComment.SHORT: BlockTyp.SUMMARY,
+    nwComment.NOTE: BlockTyp.NOTE,
     nwComment.FOOTNOTE: BlockTyp.COMMENT,
-    nwComment.COMMENT:  BlockTyp.COMMENT,
-    nwComment.STORY:    BlockTyp.NOTE,
+    nwComment.COMMENT: BlockTyp.COMMENT,
+    nwComment.STORY: BlockTyp.NOTE,
 }
 HEADING_BLOCKS = [
-    BlockTyp.TITLE, BlockTyp.PART, BlockTyp.HEAD1,
-    BlockTyp.HEAD2, BlockTyp.HEAD3, BlockTyp.HEAD4,
+    BlockTyp.TITLE,
+    BlockTyp.PART,
+    BlockTyp.HEAD1,
+    BlockTyp.HEAD2,
+    BlockTyp.HEAD3,
+    BlockTyp.HEAD4,
 ]
 COMMENT_BLOCKS = (BlockTyp.COMMENT, BlockTyp.SUMMARY, BlockTyp.NOTE)
 META_BLOCKS = (BlockTyp.COMMENT, BlockTyp.SUMMARY, BlockTyp.NOTE, BlockTyp.KEYWORD)
@@ -106,9 +119,9 @@ class Tokenizer(ABC):
         self._project = project
 
         # Data Variables
-        self._text     = ""     # The raw text to be tokenized
-        self._handle   = None   # The item handle currently being processed
-        self._keepRaw  = False  # Whether to keep the raw text, used by ToRaw
+        self._text = ""  # The raw text to be tokenized
+        self._handle = None  # The item handle currently being processed
+        self._keepRaw = False  # Whether to keep the raw text, used by ToRaw
         self._noTokens = False  # Disable tokenization if they're not needed
 
         # Blocks and Meta Data (Per Document)
@@ -122,22 +135,22 @@ class Tokenizer(ABC):
         self._outline: dict[str, str] = {}
 
         # User Settings
-        self._dLocale        = CONFIG.locale  # The document locale
-        self._textFont       = QFont("Serif", 11)  # Output text font
-        self._lineHeight     = 1.15    # Line height in units of em
-        self._colorHeads     = True    # Colourise headings
-        self._boldHeads      = True    # Bold headings
-        self._blockIndent    = 4.00    # Block indent in units of em
-        self._firstIndent    = False   # Enable first line indent
-        self._firstWidth     = 1.40    # First line indent in units of em
-        self._indentFirst    = False   # Indent first paragraph
-        self._doJustify      = False   # Justify text
-        self._justifyOnBreak = True    # Justify text on manual line breaks
-        self._doBodyText     = True    # Include body text
-        self._doComments     = set()   # Comment styles to allow
-        self._doKeywords     = False   # Also process keywords like tags and references
-        self._keepBreaks     = True    # Keep line breaks in paragraphs
-        self._defaultAlign   = "left"  # The default text alignment
+        self._dLocale = CONFIG.locale  # The document locale
+        self._textFont = QFont("Serif", 11)  # Output text font
+        self._lineHeight = 1.15  # Line height in units of em
+        self._colorHeads = True  # Colourise headings
+        self._boldHeads = True  # Bold headings
+        self._blockIndent = 4.00  # Block indent in units of em
+        self._firstIndent = False  # Enable first line indent
+        self._firstWidth = 1.40  # First line indent in units of em
+        self._indentFirst = False  # Indent first paragraph
+        self._doJustify = False  # Justify text
+        self._justifyOnBreak = True  # Justify text on manual line breaks
+        self._doBodyText = True  # Include body text
+        self._doComments = set()  # Comment styles to allow
+        self._doKeywords = False  # Also process keywords like tags and references
+        self._keepBreaks = True  # Keep line breaks in paragraphs
+        self._defaultAlign = "left"  # The default text alignment
 
         self._skipKeywords: set[str] = set()  # Keywords to ignore
 
@@ -154,25 +167,25 @@ class Tokenizer(ABC):
         self._marginHead2 = nwStyles.T_MARGIN["H2"]
         self._marginHead3 = nwStyles.T_MARGIN["H3"]
         self._marginHead4 = nwStyles.T_MARGIN["H4"]
-        self._marginText  = nwStyles.T_MARGIN["TT"]
-        self._marginMeta  = nwStyles.T_MARGIN["MT"]
-        self._marginFoot  = nwStyles.T_MARGIN["FT"]
-        self._marginSep   = nwStyles.T_MARGIN["SP"]
+        self._marginText = nwStyles.T_MARGIN["TT"]
+        self._marginMeta = nwStyles.T_MARGIN["MT"]
+        self._marginFoot = nwStyles.T_MARGIN["FT"]
+        self._marginSep = nwStyles.T_MARGIN["SP"]
         self._lineMargins = False
 
         # Title Formats
-        self._fmtPart    = nwHeadFmt.TITLE  # Formatting for partitions
+        self._fmtPart = nwHeadFmt.TITLE  # Formatting for partitions
         self._fmtChapter = nwHeadFmt.TITLE  # Formatting for numbered chapters
-        self._fmtUnNum   = nwHeadFmt.TITLE  # Formatting for unnumbered chapters
-        self._fmtScene   = nwHeadFmt.TITLE  # Formatting for scenes
-        self._fmtHScene  = nwHeadFmt.TITLE  # Formatting for hard scenes
+        self._fmtUnNum = nwHeadFmt.TITLE  # Formatting for unnumbered chapters
+        self._fmtScene = nwHeadFmt.TITLE  # Formatting for scenes
+        self._fmtHScene = nwHeadFmt.TITLE  # Formatting for hard scenes
         self._fmtSection = nwHeadFmt.TITLE  # Formatting for sections
 
-        self._hidePart    = False  # Do not include partition headings
+        self._hidePart = False  # Do not include partition headings
         self._hideChapter = False  # Do not include chapter headings
-        self._hideUnNum   = False  # Do not include unnumbered headings
-        self._hideScene   = False  # Do not include scene headings
-        self._hideHScene  = False  # Do not include hard scene headings
+        self._hideUnNum = False  # Do not include unnumbered headings
+        self._hideScene = False  # Do not include scene headings
+        self._hideHScene = False  # Do not include hard scene headings
         self._hideSection = False  # Do not include section headings
 
         self._sizeTitle = nwStyles.H_SIZES[0]
@@ -183,20 +196,20 @@ class Tokenizer(ABC):
 
         self._linkHeadings = False  # Add an anchor before headings
 
-        self._titleStyle   = BlockFmt.CENTRE | BlockFmt.PBB
-        self._partStyle    = BlockFmt.CENTRE | BlockFmt.PBB
+        self._titleStyle = BlockFmt.CENTRE | BlockFmt.PBB
+        self._partStyle = BlockFmt.CENTRE | BlockFmt.PBB
         self._chapterStyle = BlockFmt.PBB
-        self._sceneStyle   = BlockFmt.NONE
+        self._sceneStyle = BlockFmt.NONE
 
         # Instance Variables
         self._hFormatter = HeadingFormatter(self._project)
-        self._noSep      = True   # Flag to indicate that we don't want a scene separator
-        self._noIndent   = False  # Flag to disable text indent on next paragraph
-        self._breakNext  = False  # Add a page break on next token
+        self._noSep = True  # Flag to indicate that we don't want a scene separator
+        self._noIndent = False  # Flag to disable text indent on next paragraph
+        self._breakNext = False  # Add a page break on next token
 
         # This File
         self._isNovel = False  # Document is a novel document
-        self._isFirst = True   # Document is the first in a set
+        self._isFirst = True  # Document is the first in a set
 
         # Error Handling
         self._errData = []
@@ -207,23 +220,30 @@ class Tokenizer(ABC):
         # Format RegEx
         self._rxMarkdown = [
             (REGEX_PATTERNS.markdownItalic, [0, TextFmt.I_B, 0, TextFmt.I_E]),
-            (REGEX_PATTERNS.markdownBold,   [0, TextFmt.B_B, 0, TextFmt.B_E]),
+            (REGEX_PATTERNS.markdownBold, [0, TextFmt.B_B, 0, TextFmt.B_E]),
             (REGEX_PATTERNS.markdownStrike, [0, TextFmt.D_B, 0, TextFmt.D_E]),
-            (REGEX_PATTERNS.markdownMark,   [0, TextFmt.M_B, 0, TextFmt.M_E]),
+            (REGEX_PATTERNS.markdownMark, [0, TextFmt.M_B, 0, TextFmt.M_E]),
         ]
 
         self._shortCodeFmt = {
-            nwShortcode.ITALIC_O: TextFmt.I_B,   nwShortcode.ITALIC_C: TextFmt.I_E,
-            nwShortcode.BOLD_O:   TextFmt.B_B,   nwShortcode.BOLD_C:   TextFmt.B_E,
-            nwShortcode.STRIKE_O: TextFmt.D_B,   nwShortcode.STRIKE_C: TextFmt.D_E,
-            nwShortcode.ULINE_O:  TextFmt.U_B,   nwShortcode.ULINE_C:  TextFmt.U_E,
-            nwShortcode.MARK_O:   TextFmt.M_B,   nwShortcode.MARK_C:   TextFmt.M_E,
-            nwShortcode.SUP_O:    TextFmt.SUP_B, nwShortcode.SUP_C:    TextFmt.SUP_E,
-            nwShortcode.SUB_O:    TextFmt.SUB_B, nwShortcode.SUB_C:    TextFmt.SUB_E,
+            nwShortcode.ITALIC_O: TextFmt.I_B,
+            nwShortcode.ITALIC_C: TextFmt.I_E,
+            nwShortcode.BOLD_O: TextFmt.B_B,
+            nwShortcode.BOLD_C: TextFmt.B_E,
+            nwShortcode.STRIKE_O: TextFmt.D_B,
+            nwShortcode.STRIKE_C: TextFmt.D_E,
+            nwShortcode.ULINE_O: TextFmt.U_B,
+            nwShortcode.ULINE_C: TextFmt.U_E,
+            nwShortcode.MARK_O: TextFmt.M_B,
+            nwShortcode.MARK_C: TextFmt.M_E,
+            nwShortcode.SUP_O: TextFmt.SUP_B,
+            nwShortcode.SUP_C: TextFmt.SUP_E,
+            nwShortcode.SUB_O: TextFmt.SUB_B,
+            nwShortcode.SUB_C: TextFmt.SUB_E,
         }
         self._shortCodeVals = {
             nwShortcode.FOOTNOTE_B: TextFmt.FNOTE,
-            nwShortcode.FIELD_B:    TextFmt.FIELD,
+            nwShortcode.FIELD_B: TextFmt.FIELD,
         }
 
         # Dialogue
@@ -394,10 +414,10 @@ class Tokenizer(ABC):
         self._marginHead2 = (0.0, 0.0) if value else nwStyles.T_MARGIN["H2"]
         self._marginHead3 = (0.0, 0.0) if value else nwStyles.T_MARGIN["H3"]
         self._marginHead4 = (0.0, 0.0) if value else nwStyles.T_MARGIN["H4"]
-        self._marginText  = (0.0, 0.0) if value else nwStyles.T_MARGIN["TT"]
-        self._marginMeta  = (0.0, 0.0) if value else nwStyles.T_MARGIN["MT"]
-        self._marginFoot  = (0.0, 0.0) if value else nwStyles.T_MARGIN["FT"]
-        self._marginSep   = (0.0, 0.0) if value else nwStyles.T_MARGIN["SP"]
+        self._marginText = (0.0, 0.0) if value else nwStyles.T_MARGIN["TT"]
+        self._marginMeta = (0.0, 0.0) if value else nwStyles.T_MARGIN["MT"]
+        self._marginFoot = (0.0, 0.0) if value else nwStyles.T_MARGIN["FT"]
+        self._marginSep = (0.0, 0.0) if value else nwStyles.T_MARGIN["SP"]
 
     def setLinkHeadings(self, state: bool) -> None:
         """Enable or disable adding an anchor before headings."""
@@ -475,9 +495,7 @@ class Tokenizer(ABC):
                 notes = self._localLookup("Notes")
                 title = f"{notes}: {title}"
 
-            self._blocks = [(
-                BlockTyp.TITLE, f"{self._handle}:T0001", title, [], style
-            )]
+            self._blocks = [(BlockTyp.TITLE, f"{self._handle}:T0001", title, [], style)]
             if self._keepRaw:
                 self._raw.append(f"#! {title}\n\n")
 
@@ -534,16 +552,20 @@ class Tokenizer(ABC):
         text = REGEX_PATTERNS.lineBreak.sub(nwUnicode.U_NAC2, self._text)
 
         # Translation Maps
-        transMapA = str.maketrans({
-            nwUnicode.U_NAC2:  "",  # Used when [br] is ignored
-            nwUnicode.U_MAPOS: nwUnicode.U_RSQUO,
-            nwUnicode.U_HBAR:  nwUnicode.U_EMDASH,
-        })
-        transMapB = str.maketrans({
-            nwUnicode.U_NAC2:  "\n",  # Used when [br] is not ignored
-            nwUnicode.U_MAPOS: nwUnicode.U_RSQUO,
-            nwUnicode.U_HBAR:  nwUnicode.U_EMDASH,
-        })
+        transMapA = str.maketrans(
+            {
+                nwUnicode.U_NAC2: "",  # Used when [br] is ignored
+                nwUnicode.U_MAPOS: nwUnicode.U_RSQUO,
+                nwUnicode.U_HBAR: nwUnicode.U_EMDASH,
+            }
+        )
+        transMapB = str.maketrans(
+            {
+                nwUnicode.U_NAC2: "\n",  # Used when [br] is not ignored
+                nwUnicode.U_MAPOS: nwUnicode.U_RSQUO,
+                nwUnicode.U_HBAR: nwUnicode.U_EMDASH,
+            }
+        )
 
         nHead = 0
         tHandle = self._handle or ""
@@ -578,21 +600,15 @@ class Tokenizer(ABC):
                     continue
 
                 if sLine == "[vspace]":
-                    tBlocks.append(
-                        (BlockTyp.SKIP, "", "", [], tStyle)
-                    )
+                    tBlocks.append((BlockTyp.SKIP, "", "", [], tStyle))
                     continue
 
                 if sLine.startswith("[vspace:") and sLine.endswith("]"):
                     nSkip = checkInt(sLine[8:-1], 0)
                     if nSkip >= 1:
-                        tBlocks.append(
-                            (BlockTyp.SKIP, "", "", [], tStyle)
-                        )
+                        tBlocks.append((BlockTyp.SKIP, "", "", [], tStyle))
                     if nSkip > 1:
-                        tBlocks += (nSkip - 1) * [
-                            (BlockTyp.SKIP, "", "", [], BlockFmt.NONE)
-                        ]
+                        tBlocks += (nSkip - 1) * [(BlockTyp.SKIP, "", "", [], BlockFmt.NONE)]
                     continue
 
             if aLine.startswith("%"):
@@ -612,14 +628,15 @@ class Tokenizer(ABC):
                     tStyle |= BlockFmt.JUSTIFY
 
                 if cStyle in (
-                    nwComment.SYNOPSIS, nwComment.SHORT, nwComment.PLAIN,
-                    nwComment.STORY, nwComment.NOTE,
+                    nwComment.SYNOPSIS,
+                    nwComment.SHORT,
+                    nwComment.PLAIN,
+                    nwComment.STORY,
+                    nwComment.NOTE,
                 ):
                     bStyle = COMMENT_STYLE[cStyle]
                     tLine, tFmt = self._formatComment(bStyle, cKey, cText)
-                    tBlocks.append((
-                        COMMENT_TYPE[cStyle], "", tLine, tFmt, tStyle
-                    ))
+                    tBlocks.append((COMMENT_TYPE[cStyle], "", tLine, tFmt, tStyle))
 
                 elif cStyle == nwComment.FOOTNOTE:
                     tLine, tFmt = self._extractFormats(cText, skip=TextFmt.FNOTE)
@@ -634,9 +651,7 @@ class Tokenizer(ABC):
                 if self._doKeywords:
                     tTag, tLine, tFmt = self._formatMeta(aLine)
                     if tLine:
-                        tBlocks.append((
-                            BlockTyp.KEYWORD, tTag[1:], tLine, tFmt, tStyle
-                        ))
+                        tBlocks.append((BlockTyp.KEYWORD, tTag[1:], tLine, tFmt, tStyle))
 
             elif aLine.startswith(("# ", "#! ")):
                 # Title or Partition Headings
@@ -669,9 +684,7 @@ class Tokenizer(ABC):
                         self._hFormatter.resetAll()
                     self._noSep = True
 
-                tBlocks.append((
-                    tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
-                ))
+                tBlocks.append((tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle))
 
             elif aLine.startswith(("## ", "##! ")):
                 # (Unnumbered) Chapter Headings
@@ -702,9 +715,7 @@ class Tokenizer(ABC):
                     self._hFormatter.resetScene()
                     self._noSep = True
 
-                tBlocks.append((
-                    tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
-                ))
+                tBlocks.append((tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle))
 
             elif aLine.startswith(("### ", "###! ")):
                 # (Alternative) Scene Headings
@@ -746,9 +757,7 @@ class Tokenizer(ABC):
 
                     self._noSep = False
 
-                tBlocks.append((
-                    tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
-                ))
+                tBlocks.append((tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle))
 
             elif aLine.startswith("#### "):
                 # Section Headings
@@ -779,9 +788,7 @@ class Tokenizer(ABC):
                             tType = BlockTyp.SEP
                             tStyle |= BlockFmt.CENTRE
 
-                tBlocks.append((
-                    tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
-                ))
+                tBlocks.append((tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle))
 
             else:
                 # Text Lines
@@ -825,9 +832,7 @@ class Tokenizer(ABC):
 
                 # Process formats
                 tLine, tFmt = self._extractFormats(bLine, hDialog=isNovel)
-                tBlocks.append((
-                    BlockTyp.TEXT, "", tLine, tFmt, tStyle
-                ))
+                tBlocks.append((BlockTyp.TEXT, "", tLine, tFmt, tStyle))
 
         # If we have content, turn off the first page flag
         if self._isFirst and len(tBlocks) > 1:
@@ -838,9 +843,7 @@ class Tokenizer(ABC):
             for n, cBlock in enumerate(tBlocks):
                 if cBlock[0] != BlockTyp.EMPTY:
                     if cBlock[4] & BlockFmt.PBB:
-                        tBlocks[n] = (
-                            cBlock[0], cBlock[1], cBlock[2], cBlock[3], cBlock[4] & ~BlockFmt.PBB
-                        )
+                        tBlocks[n] = (cBlock[0], cBlock[1], cBlock[2], cBlock[3], cBlock[4] & ~BlockFmt.PBB)
                     break
 
         # Always add an empty line at the end of the file
@@ -858,9 +861,8 @@ class Tokenizer(ABC):
         pLines: list[T_Block] = []
         sBlocks: list[T_Block] = []
         for n, cBlock in enumerate(tBlocks[1:-1], 1):
-
-            pBlock = tBlocks[n-1]  # Look behind
-            nBlock = tBlocks[n+1]  # Look ahead
+            pBlock = tBlocks[n - 1]  # Look behind
+            nBlock = tBlocks[n + 1]  # Look ahead
 
             if cBlock[0] in SKIP_INDENT and not indentFirst:
                 # Unless the indentFirst flag is set, we set up the next
@@ -881,9 +883,7 @@ class Tokenizer(ABC):
                 if nBlock[0] == cBlock[0]:
                     aStyle |= BlockFmt.Z_BTM
                     addEmptyLine = False
-                sBlocks.append((
-                    cBlock[0], cBlock[1], cBlock[2], cBlock[3], aStyle
-                ))
+                sBlocks.append((cBlock[0], cBlock[1], cBlock[2], cBlock[3], aStyle))
 
             elif cBlock[0] == BlockTyp.TEXT:
                 # Combine lines from the same paragraph
@@ -911,7 +911,7 @@ class Tokenizer(ABC):
                         for aBlock in pLines:
                             tLen = len(tTxt)
                             tTxt += f"{aBlock[2]}{lineSep}"
-                            tFmt.extend((p+tLen, fmt, key) for p, fmt, key in aBlock[3])
+                            tFmt.extend((p + tLen, fmt, key) for p, fmt, key in aBlock[3])
                             cStyle |= aBlock[4]
 
                         pTxt = tTxt[:-1].translate(transMapB)
@@ -927,9 +927,7 @@ class Tokenizer(ABC):
                         if doJustify and not isAligned:
                             cStyle |= BlockFmt.JUSTIFY
 
-                        sBlocks.append((
-                            BlockTyp.TEXT, pLines[0][1], pTxt, tFmt, cStyle
-                        ))
+                        sBlocks.append((BlockTyp.TEXT, pLines[0][1], pTxt, tFmt, cStyle))
                         addEmptyLine = lineMargins
 
                     # Reset buffer and make sure text indent is on for next pass
@@ -939,9 +937,7 @@ class Tokenizer(ABC):
             elif addEmptyLine and cBlock[0] in HEADING_BLOCKS:
                 if cBlock[4] & BlockFmt.PBB:
                     sBlocks.append((BlockTyp.SKIP, "", "", [], BlockFmt.PBB))
-                    sBlocks.append((
-                        cBlock[0], cBlock[1], cBlock[2], cBlock[3], cBlock[4] & ~BlockFmt.PBB
-                    ))
+                    sBlocks.append((cBlock[0], cBlock[1], cBlock[2], cBlock[3], cBlock[4] & ~BlockFmt.PBB))
                 else:
                     sBlocks.append((BlockTyp.SKIP, "", "", [], BlockFmt.NONE))
                     sBlocks.append(cBlock)
@@ -1129,9 +1125,7 @@ class Tokenizer(ABC):
 
         return tag, "".join(txt), fmt
 
-    def _extractFormats(
-        self, text: str, skip: int = 0, hDialog: bool = False
-    ) -> tuple[str, T_Formats]:
+    def _extractFormats(self, text: str, skip: int = 0, hDialog: bool = False) -> tuple[str, T_Formats]:
         """Extract format markers from a text paragraph. In order to
         also process dialogue highlighting, the hDialog flag must be set
         to True. See issues #2011 and #2013.
@@ -1141,10 +1135,7 @@ class Tokenizer(ABC):
         # Match Markdown
         for regEx, fmts in self._rxMarkdown:
             for res in regEx.finditer(text):
-                temp.extend(
-                    (res.start(n), res.end(n), fmt, "")
-                    for n, fmt in enumerate(fmts) if fmt > 0
-                )
+                temp.extend((res.start(n), res.end(n), fmt, "") for n, fmt in enumerate(fmts) if fmt > 0)
 
         # Match URLs
         for res in REGEX_PATTERNS.url.finditer(text):
@@ -1161,11 +1152,14 @@ class Tokenizer(ABC):
         tHandle = self._handle or ""
         for res in REGEX_PATTERNS.shortcodeValue.finditer(text):
             kind = self._shortCodeVals.get(res.group(1).lower(), 0)
-            temp.append((
-                res.start(0), res.end(0),
-                TextFmt.STRIP if kind == skip else kind,
-                f"{tHandle}:{res.group(2)}",
-            ))
+            temp.append(
+                (
+                    res.start(0),
+                    res.end(0),
+                    TextFmt.STRIP if kind == skip else kind,
+                    f"{tHandle}:{res.group(2)}",
+                )
+            )
 
         # Match Dialogue
         if self._hlightDialog and hDialog:
@@ -1185,7 +1179,7 @@ class Tokenizer(ABC):
             if fmt > 0:
                 if end > pos:
                     result = result[:pos] + result[end:]
-                    formats = [(p+pos-end if p > pos else p, f, m) for p, f, m in formats]
+                    formats = [(p + pos - end if p > pos else p, f, m) for p, f, m in formats]
                 formats.insert(0, (pos, fmt, meta))
 
         return result, formats

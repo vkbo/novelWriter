@@ -2,9 +2,6 @@
 novelWriter – Exception Handling
 ================================
 
-File History:
-Created: 2020-08-02 [0.10.2]
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -32,8 +30,14 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QFont, QFontDatabase
 from PyQt6.QtWidgets import (
-    QApplication, QDialog, QDialogButtonBox, QGridLayout, QLabel,
-    QPlainTextEdit, QStyle, QWidget
+    QApplication,
+    QDialog,
+    QDialogButtonBox,
+    QGridLayout,
+    QLabel,
+    QPlainTextEdit,
+    QStyle,
+    QWidget,
 )
 
 if TYPE_CHECKING:
@@ -66,16 +70,14 @@ class NWErrorMessage(QDialog):
         # Widgets
         self.msgIcon = QLabel()
         if style := QApplication.style():
-            self.msgIcon.setPixmap(
-                style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical).pixmap(64, 64)
-            )
+            self.msgIcon.setPixmap(style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical).pixmap(64, 64))
 
         self.msgHead = QLabel()
         self.msgHead.setOpenExternalLinks(True)
         self.msgHead.setWordWrap(True)
 
         font = QFont()
-        font.setPointSize(round(0.9*self.font().pointSize()))
+        font.setPointSize(round(0.9 * self.font().pointSize()))
         font.setFamily(QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont).family())
 
         self.msgBody = QPlainTextEdit()
@@ -90,20 +92,22 @@ class NWErrorMessage(QDialog):
         self.mainBox.addWidget(self.msgIcon, 0, 0, 2, 1, Qt.AlignmentFlag.AlignTop)
         self.mainBox.addWidget(self.msgHead, 0, 1, 1, 1, Qt.AlignmentFlag.AlignTop)
         self.mainBox.addWidget(self.msgBody, 1, 1, 1, 1)
-        self.mainBox.addWidget(self.btnBox,  2, 0, 1, 2)
+        self.mainBox.addWidget(self.btnBox, 2, 0, 1, 2)
         self.mainBox.setSpacing(16)
 
         # Pick a random window title from a set of error messages by
         # Hex the computer, Unseen University, Ankh-Morpork, Discworld
         # and other Discworld references
-        self.setWindowTitle([
-            "+++ Out of Cheese Error +++",
-            "+++ Divide by Cucumber Error +++",
-            "+++ Please Reinstall Universe and Reboot +++",
-            "+++ Error At Address 14, Treacle Mine Road +++",
-            "+++ Abomination Unto Nuggan Error +++",
-            "+++ Anoia Error: Cutlery Stuck in Drawer +++",
-        ][random.randint(0, 5)])
+        self.setWindowTitle(
+            [
+                "+++ Out of Cheese Error +++",
+                "+++ Divide by Cucumber Error +++",
+                "+++ Please Reinstall Universe and Reboot +++",
+                "+++ Error At Address 14, Treacle Mine Road +++",
+                "+++ Abomination Unto Nuggan Error +++",
+                "+++ Anoia Error: Cutlery Stuck in Drawer +++",
+            ][random.randint(0, 5)]
+        )
 
         self.setLayout(self.mainBox)
 
@@ -138,6 +142,7 @@ class NWErrorMessage(QDialog):
 
         try:
             import enchant
+
             enchantVersion = enchant.__version__
         except Exception:
             enchantVersion = "Unknown"

@@ -2,9 +2,6 @@
 novelWriter – Custom Widget: Switch
 ===================================
 
-File History:
-Created: 2020-05-03 [0.4.5]
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from PyQt6.QtCore import QPropertyAnimation, Qt, pyqtProperty, pyqtSlot  # pyright: ignore
@@ -40,8 +38,8 @@ class NSwitch(QAbstractButton):
         super().__init__(parent=parent)
 
         self._xH = height or SHARED.theme.baseButtonHeight
-        self._xW = 2*self._xH
-        self._xR = int(self._xH*0.5)
+        self._xW = 2 * self._xH
+        self._xR = int(self._xH * 0.5)
         self._rH = self._xH - 4
         self._rR = self._xR - 2
 

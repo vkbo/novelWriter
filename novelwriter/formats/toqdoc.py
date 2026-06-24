@@ -2,9 +2,6 @@
 novelWriter – QTextDocument Converter
 =====================================
 
-File History:
-Created: 2024-05-21 [2.5b1] ToQTextDocument
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -29,8 +27,17 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QMarginsF, QSizeF
 from PyQt6.QtGui import (
-    QBrush, QColor, QFont, QPageLayout, QPageSize, QTextBlockFormat,
-    QTextCharFormat, QTextCursor, QTextDocument, QTextFrameFormat, QTextLength
+    QBrush,
+    QColor,
+    QFont,
+    QPageLayout,
+    QPageSize,
+    QTextBlockFormat,
+    QTextCharFormat,
+    QTextCursor,
+    QTextDocument,
+    QTextFrameFormat,
+    QTextLength,
 )
 from PyQt6.QtPrintSupport import QPrinter
 
@@ -39,10 +46,24 @@ from novelwriter.constants import nwUnicode
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import HEADING_BLOCKS, META_BLOCKS, Tokenizer
 from novelwriter.types import (
-    QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
-    QtFontBold, QtFontNormal, QtKeepAnchor, QtMoveAnchor, QtMoveEnd,
-    QtPageBreakAfter, QtPageBreakAuto, QtPageBreakBefore, QtPropLineHeight,
-    QtTransparent, QtVAlignNormal, QtVAlignSub, QtVAlignSuper
+    QtAlignAbsolute,
+    QtAlignCenter,
+    QtAlignJustify,
+    QtAlignLeft,
+    QtAlignRight,
+    QtFontBold,
+    QtFontNormal,
+    QtKeepAnchor,
+    QtMoveAnchor,
+    QtMoveEnd,
+    QtPageBreakAfter,
+    QtPageBreakAuto,
+    QtPageBreakBefore,
+    QtPropLineHeight,
+    QtTransparent,
+    QtVAlignNormal,
+    QtVAlignSub,
+    QtVAlignSuper,
 )
 
 if TYPE_CHECKING:
@@ -112,9 +133,7 @@ class ToQTextDocument(Tokenizer):
     #  Setters
     ##
 
-    def setPageLayout(
-        self, width: float, height: float, top: float, bottom: float, left: float, right: float
-    ) -> None:
+    def setPageLayout(self, width: float, height: float, top: float, bottom: float, left: float, right: float) -> None:
         """Set the document page size and margins in millimetres."""
         self._pageSize = QPageSize(QSizeF(width, height), QPageSize.Unit.Millimeter)
         self._pageMargins = QMarginsF(left, top, right, bottom)
@@ -166,12 +185,12 @@ class ToQTextDocument(Tokenizer):
 
         # Scaled Sizes
         fPt = self._textFont.pointSizeF()
-        fPx = fPt * 96.0/72.0  # 1 em in pixels
-        mPx = fPx * dpi/96.0
+        fPx = fPt * 96.0 / 72.0  # 1 em in pixels
+        mPx = fPx * dpi / 96.0
 
         self._mHead = {
             BlockTyp.TITLE: (fPx * self._marginTitle[0], fPx * self._marginTitle[1]),
-            BlockTyp.PART:  (fPx * self._marginTitle[0], fPx * self._marginTitle[1]),
+            BlockTyp.PART: (fPx * self._marginTitle[0], fPx * self._marginTitle[1]),
             BlockTyp.HEAD1: (fPx * self._marginHead1[0], fPx * self._marginHead1[1]),
             BlockTyp.HEAD2: (fPx * self._marginHead2[0], fPx * self._marginHead2[1]),
             BlockTyp.HEAD3: (fPx * self._marginHead3[0], fPx * self._marginHead3[1]),
@@ -180,7 +199,7 @@ class ToQTextDocument(Tokenizer):
 
         self._sHead = {
             BlockTyp.TITLE: fPt * self._sizeTitle,
-            BlockTyp.PART:  fPt * self._sizeTitle,
+            BlockTyp.PART: fPt * self._sizeTitle,
             BlockTyp.HEAD1: fPt * self._sizeHead1,
             BlockTyp.HEAD2: fPt * self._sizeHead2,
             BlockTyp.HEAD3: fPt * self._sizeHead3,
@@ -189,7 +208,7 @@ class ToQTextDocument(Tokenizer):
 
         self._mText = (fPx * self._marginText[0], fPx * self._marginText[1])
         self._mMeta = (fPx * self._marginMeta[0], fPx * self._marginMeta[1])
-        self._mSep  = (fPx * self._marginSep[0], fPx * self._marginSep[1])
+        self._mSep = (fPx * self._marginSep[0], fPx * self._marginSep[1])
 
         self._mIndent = mPx * 2.0
         self._tIndent = mPx * self._firstWidth
@@ -199,7 +218,7 @@ class ToQTextDocument(Tokenizer):
         self._blockFmt.setTopMargin(self._mText[0])
         self._blockFmt.setBottomMargin(self._mText[1])
         self._blockFmt.setAlignment(QtAlignAbsolute)
-        self._blockFmt.setLineHeight(100.0*self._lineHeight, QtPropLineHeight)
+        self._blockFmt.setLineHeight(100.0 * self._lineHeight, QtPropLineHeight)
 
         self._charFmt = QTextCharFormat()
         self._charFmt.setBackground(QtTransparent)
@@ -217,7 +236,6 @@ class ToQTextDocument(Tokenizer):
         cursor.movePosition(QtMoveEnd)
 
         for tType, tMeta, tText, tFormat, tStyle in self._blocks:
-
             bFmt = QTextBlockFormat(self._blockFmt)
             if tType in META_BLOCKS:
                 bFmt.setTopMargin(self._mMeta[0])
@@ -292,10 +310,7 @@ class ToQTextDocument(Tokenizer):
             logger.info("Writing PDF ...")
             self._printer.setOutputFileName(str(path))
             self._document.print(self._printer)
-            logger.info(
-                "Wrote %d pages at %d DPI",
-                self._document.pageCount(), self._printer.resolution()
-            )
+            logger.info("Wrote %d pages at %d DPI", self._document.pageCount(), self._printer.resolution())
 
     def closeDocument(self) -> None:
         """Run close document tasks."""
@@ -335,16 +350,13 @@ class ToQTextDocument(Tokenizer):
     #  Internal Functions
     ##
 
-    def _insertFragments(
-        self, text: str, tFmt: T_Formats, cursor: QTextCursor, dFmt: QTextCharFormat
-    ) -> None:
+    def _insertFragments(self, text: str, tFmt: T_Formats, cursor: QTextCursor, dFmt: QTextCharFormat) -> None:
         """Apply formatting tags to text."""
         cFmt = QTextCharFormat(dFmt)
         temp = text.replace("\n", nwUnicode.U_LSEP)
         start = 0
         primary: QColor | None = None
         for pos, fmt, data in tFmt:
-
             # Insert buffer with previous format
             cursor.insertText(stripEscape(temp[start:pos]), cFmt)
 
@@ -460,7 +472,7 @@ class ToQTextDocument(Tokenizer):
             cFmt.setFontUnderline(False)
             cFmt.setFontStrikeOut(False)
             cFmt.setFontWeight(QtFontNormal)
-            cFmt.setFontPointSize(0.75*self._textFont.pointSizeF())
+            cFmt.setFontPointSize(0.75 * self._textFont.pointSizeF())
             cFmt.setForeground(fgCol)
 
             cursor.insertFrame(fFmt)
@@ -478,7 +490,7 @@ class ToQTextDocument(Tokenizer):
         bFmt.setLineHeight(100.0, QtPropLineHeight)
         bFmt.setProperty(
             QTextBlockFormat.Property.BlockTrailingHorizontalRulerWidth,
-            QTextLength(QTextLength.Type.PercentageLength, 50.0)
+            QTextLength(QTextLength.Type.PercentageLength, 50.0),
         )
         bFmt.setProperty(QTextBlockFormat.Property.BackgroundBrush, QBrush(self._theme.text))
 

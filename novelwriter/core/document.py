@@ -2,9 +2,6 @@
 novelWriter – Project Document
 ==============================
 
-File History:
-Created: 2018-09-29 [0.0.1]
-
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import hashlib
@@ -54,12 +52,12 @@ class NWDocument:
 
         self._project = project
 
-        self._item      = None   # The currently open item
-        self._handle    = None   # The handle of the currently open item
-        self._fileLoc   = None   # The file location of the currently open item
-        self._docMeta   = {}     # The meta data of the currently open item
-        self._docError  = ""     # The latest encountered IO error
-        self._lastHash  = ""     # The last known SHA hash
+        self._item = None  # The currently open item
+        self._handle = None  # The handle of the currently open item
+        self._fileLoc = None  # The file location of the currently open item
+        self._docMeta = {}  # The meta data of the currently open item
+        self._docError = ""  # The latest encountered IO error
+        self._lastHash = ""  # The last known SHA hash
         self._hashError = False  # Hash mismatch on last write attempt
 
         if isHandle(tHandle):
@@ -69,9 +67,11 @@ class NWDocument:
             self._item = self._project.tree[tHandle]
 
     def __repr__(self) -> str:
+        """Return a string representation of the document."""
         return f"<NWDocument handle={self._handle}>"
 
     def __bool__(self) -> bool:
+        """Return True if the document has a valid handle and item."""
         return self._handle is not None and self._item is not None
 
     ##

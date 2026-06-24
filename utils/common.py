@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import shutil
@@ -50,6 +51,7 @@ def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
     """Extract the novelWriter version number without having to import
     anything else from the main package.
     """
+
     def getValue(text: str) -> str:
         bits = text.partition("=")
         return bits[2].strip().strip('"')
@@ -132,13 +134,6 @@ def copyPackageFiles(dst: Path, oldLicense: bool = False) -> None:
     for copyFile in copyFiles:
         shutil.copyfile(copyFile, dst / copyFile.name)
         print("Copied:", copyFile, flush=True)
-
-    writeFile(dst / "MANIFEST.in", (
-        "include LICENSE.md\n"
-        "include LICENSE-Apache-2.0.txt\n"
-        "include CREDITS.md\n"
-        "recursive-include novelwriter/assets *\n"
-    ))
 
     text = readFile(ROOT_DIR / "pyproject.toml")
     text = text.replace("setup/description_pypi.md", "data/description_short.txt")
@@ -270,13 +265,13 @@ def removeRedundantQt(qtBase: Path) -> None:
     print("Deleting redundant files ...")
 
     pyQt6Dir = qtBase / "PyQt6"
-    bindDir  = qtBase / "PyQt6" / "bindings"
-    qt6Dir   = qtBase / "PyQt6" / "Qt6"
-    binDir   = qtBase / "PyQt6" / "Qt6" / "bin"
-    libDir   = qtBase / "PyQt6" / "Qt6" / "lib"
-    plugDir  = qtBase / "PyQt6" / "Qt6" / "plugins"
-    qmDir    = qtBase / "PyQt6" / "Qt6" / "translations"
-    dictDir  = qtBase / "enchant" / "data" / "mingw64" / "share" / "enchant" / "hunspell"
+    bindDir = qtBase / "PyQt6" / "bindings"
+    qt6Dir = qtBase / "PyQt6" / "Qt6"
+    binDir = qtBase / "PyQt6" / "Qt6" / "bin"
+    libDir = qtBase / "PyQt6" / "Qt6" / "lib"
+    plugDir = qtBase / "PyQt6" / "Qt6" / "plugins"
+    qmDir = qtBase / "PyQt6" / "Qt6" / "translations"
+    dictDir = qtBase / "enchant" / "data" / "mingw64" / "share" / "enchant" / "hunspell"
 
     # Prune Dictionaries
     if dictDir.exists():
@@ -291,8 +286,13 @@ def removeRedundantQt(qtBase: Path) -> None:
 
     # Delete Modules
     modules = [
-        "Qt6Qml", "Qt6Quick", "Qt6Bluetooth", "Qt6Nfc",
-        "Qt6Sensors", "Qt6SerialPort", "Qt6Test",
+        "Qt6Qml",
+        "Qt6Quick",
+        "Qt6Bluetooth",
+        "Qt6Nfc",
+        "Qt6Sensors",
+        "Qt6SerialPort",
+        "Qt6Test",
     ]
     modules.extend([x.replace("Qt6", "Qt") for x in modules])
     modules.extend([f"lib{x}" for x in modules])

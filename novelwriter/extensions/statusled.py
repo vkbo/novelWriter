@@ -2,9 +2,6 @@
 novelWriter – Custom Widget: Status LED
 =======================================
 
-File History:
-Created: 2020-05-17 [0.5.1]
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging

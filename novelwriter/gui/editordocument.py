@@ -2,9 +2,6 @@
 novelWriter – GUI Text Document
 ===============================
 
-File History:
-Created: 2023-09-07 [2.2b1] GuiTextDocument
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -58,6 +56,7 @@ class GuiTextDocument(QTextDocument):
         logger.debug("Ready: GuiTextDocument")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiTextDocument")
 
     ##
@@ -95,8 +94,8 @@ class GuiTextDocument(QTextDocument):
 
         tEnd = time()
 
-        logger.debug("Loaded %d text blocks in %.3f ms", count, 1000*(tMid - tStart))
-        logger.debug("Highlighted document in %.3f ms", 1000*(tEnd - tMid))
+        logger.debug("Loaded %d text blocks in %.3f ms", count, 1000 * (tMid - tStart))
+        logger.debug("Highlighted document in %.3f ms", 1000 * (tEnd - tMid))
 
     def metaDataAtPos(self, pos: int) -> tuple[str, str]:
         """Check if there is meta data available at a given position in

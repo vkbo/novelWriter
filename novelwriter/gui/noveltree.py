@@ -2,13 +2,6 @@
 novelWriter – GUI Novel Tree
 ============================
 
-File History:
-Created:   2020-12-20 [1.1rc1] GuiNovelTree
-Created:   2022-06-12 [2.0rc1] GuiNovelView
-Created:   2022-06-12 [2.0rc1] GuiNovelToolBar
-Rewritten: 2025-02-22 [2.7b1] GuiNovelView
-Rewritten: 2025-02-22 [2.7b1] GuiNovelToolBar
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -25,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -34,8 +28,15 @@ from enum import Enum
 from PyQt6.QtCore import QModelIndex, QPoint, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QActionGroup, QPainter, QPalette, QResizeEvent
 from PyQt6.QtWidgets import (
-    QAbstractItemView, QFrame, QHBoxLayout, QInputDialog, QMenu,
-    QStyleOptionViewItem, QToolTip, QVBoxLayout, QWidget
+    QAbstractItemView,
+    QFrame,
+    QHBoxLayout,
+    QInputDialog,
+    QMenu,
+    QStyleOptionViewItem,
+    QToolTip,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import CONFIG, SHARED
@@ -47,8 +48,11 @@ from novelwriter.extensions.modified import NIconToolButton, NTreeView
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
-    QtHeaderStretch, QtHeaderToContents, QtScrollAlwaysOff, QtScrollAsNeeded,
-    QtSizeExpanding
+    QtHeaderStretch,
+    QtHeaderToContents,
+    QtScrollAlwaysOff,
+    QtScrollAsNeeded,
+    QtSizeExpanding,
 )
 
 logger = logging.getLogger(__name__)
@@ -107,12 +111,8 @@ class GuiNovelView(QWidget):
         lastNovel = SHARED.project.data.getLastHandle("novel")
         logger.debug("Setting novel tree to root item '%s'", lastNovel)
 
-        lastCol = SHARED.project.options.getEnum(
-            "GuiNovelView", "lastCol", nwNovelExtra, nwNovelExtra.HIDDEN
-        )
-        lastColSize = SHARED.project.options.getInt(
-            "GuiNovelView", "lastColSize", 25
-        )
+        lastCol = SHARED.project.options.getEnum("GuiNovelView", "lastCol", nwNovelExtra, nwNovelExtra.HIDDEN)
+        lastColSize = SHARED.project.options.getInt("GuiNovelView", "lastColSize", 25)
 
         self.clearNovelView()
         self.novelBar.buildNovelRootMenu()
@@ -206,9 +206,9 @@ class GuiNovelToolBar(QWidget):
         self.gLastCol = QActionGroup(self.mMore)
         self.aLastCol = {}
         self._addLastColAction(nwNovelExtra.HIDDEN, self.tr("Hidden"))
-        self._addLastColAction(nwNovelExtra.POV,    self.tr("Point of View Character"))
-        self._addLastColAction(nwNovelExtra.FOCUS,  self.tr("Focus Character"))
-        self._addLastColAction(nwNovelExtra.PLOT,   self.tr("Novel Plot"))
+        self._addLastColAction(nwNovelExtra.POV, self.tr("Point of View Character"))
+        self._addLastColAction(nwNovelExtra.FOCUS, self.tr("Focus Character"))
+        self._addLastColAction(nwNovelExtra.PLOT, self.tr("Novel Plot"))
 
         self.mLastCol.addSeparator()
         self.aLastColSize = qtAddAction(self.mLastCol, self.tr("Column Size"))
@@ -254,8 +254,7 @@ class GuiNovelToolBar(QWidget):
         self.tbMore.setStyleSheet(buttonStyle)
 
         self.novelValue.setStyleSheet(
-            "QComboBox {border-style: none; padding-left: 0;} "
-            "QComboBox::drop-down {border-style: none}"
+            "QComboBox {border-style: none; padding-left: 0;} QComboBox::drop-down {border-style: none}"
         )
         self.novelValue.updateTheme()
         self.tbNovel.setVisible(self.novelValue.count() > 1)
@@ -295,11 +294,7 @@ class GuiNovelToolBar(QWidget):
         refresh when content structure changes.
         """
         self._active = state
-        if (
-            self._active
-            and (handle := self.novelValue.handle)
-            and self._refresh.get(handle, False)
-        ):
+        if self._active and (handle := self.novelValue.handle) and self._refresh.get(handle, False):
             self._refreshNovelTree(self.novelValue.handle)
 
     ##
@@ -362,7 +357,7 @@ class GuiNovelTree(NTreeView):
         self.novelView = novelView
 
         # Internal Variables
-        self._actHandle   = None
+        self._actHandle = None
         self._lastColType = nwNovelExtra.POV
         self._lastColSize = 0.25
 
@@ -452,7 +447,7 @@ class GuiNovelTree(NTreeView):
 
     def setLastColSize(self, colSize: int) -> None:
         """Set the extra column size between 15% and 75%."""
-        self._lastColSize = minmax(colSize, 15, 75)/100.0
+        self._lastColSize = minmax(colSize, 15, 75) / 100.0
 
     ##
     #  Class Methods
@@ -510,21 +505,13 @@ class GuiNovelTree(NTreeView):
     @pyqtSlot(QModelIndex)
     def _onDoubleClick(self, index: QModelIndex) -> None:
         """Process user double-click on an index."""
-        if (
-            (model := self._getModel())
-            and (tHandle := model.handle(index))
-            and (sTitle := model.key(index))
-        ):
+        if (model := self._getModel()) and (tHandle := model.handle(index)) and (sTitle := model.key(index)):
             self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle, False)
 
     @pyqtSlot(QModelIndex)
     def _onMiddleClick(self, index: QModelIndex) -> None:
         """Process user middle-click on an index."""
-        if (
-            (model := self._getModel())
-            and (tHandle := model.handle(index))
-            and (sTitle := model.key(index))
-        ):
+        if (model := self._getModel()) and (tHandle := model.handle(index)) and (sTitle := model.key(index)):
             self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, sTitle, False)
 
     ##
@@ -539,6 +526,7 @@ class GuiNovelTree(NTreeView):
 
     def _popMetaBox(self, qPos: QPoint, tHandle: str, sTitle: str) -> None:
         """Show the novel meta data box."""
+
         def appendTags(refs: dict, key: str, lines: list[str]) -> None:
             """Generate a reference list for a given reference key."""
             if tags := ", ".join(refs.get(key, [])):

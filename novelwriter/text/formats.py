@@ -2,10 +2,6 @@
 novelWriter – Text Comments
 ===========================
 
-File History:
-Created: 2023-11-23 [2.2b1]
-Moved:   2025-02-09 [2.7b1]
-
 This file is a part of novelWriter
 Copyright (C) 2025 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -22,23 +18,24 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from novelwriter.enum import nwComment
 
 MODIFIERS = {
     "synopsis": nwComment.SYNOPSIS,
-    "short":    nwComment.SHORT,
-    "note":     nwComment.NOTE,
+    "short": nwComment.SHORT,
+    "note": nwComment.NOTE,
     "footnote": nwComment.FOOTNOTE,
-    "story":    nwComment.STORY,
+    "story": nwComment.STORY,
 }
 KEY_REQ = {
     "synopsis": 0,  # Key not allowed
-    "short":    0,  # Key not allowed
-    "note":     1,  # Key optional
+    "short": 0,  # Key not allowed
+    "note": 1,  # Key optional
     "footnote": 2,  # Key required
-    "story":    2,  # Key required
+    "story": 2,  # Key required
 }
 
 

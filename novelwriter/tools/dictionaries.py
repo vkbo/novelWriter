@@ -2,9 +2,6 @@
 novelWriter – GUI Dictionary Downloader
 =======================================
 
-File History:
-Created: 2023-11-19 [2.2rc1] GuiDictionaries
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -31,14 +29,21 @@ from zipfile import ZipFile
 
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import (
-    QApplication, QDialogButtonBox, QFileDialog, QFrame, QHBoxLayout, QLabel,
-    QLineEdit, QPlainTextEdit, QPushButton, QVBoxLayout, QWidget
+    QApplication,
+    QDialogButtonBox,
+    QFileDialog,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPlainTextEdit,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import (
-    formatFileFilter, formatInt, getFileSize, joinLines, openExternalPath
-)
+from novelwriter.common import formatFileFilter, formatInt, getFileSize, joinLines, openExternalPath
 from novelwriter.enum import nwStandardButton, nwToolButton
 from novelwriter.error import formatException, logException
 from novelwriter.extensions.modified import NNonBlockingDialog
@@ -74,11 +79,17 @@ class GuiDictionaries(NNonBlockingDialog):
         # Hunspell Dictionaries
         loUrl = "https://extensions.libreoffice.org"
         ooUrl = "https://extensions.openoffice.org"
-        self.huInfo = QLabel(joinLines([
-            self.tr("Download a dictionary from one of the links, and add it below."),
-            f"&nbsp;\u203a <a href='{loUrl}'>{loUrl}</a>",
-            f"&nbsp;\u203a <a href='{ooUrl}'>{ooUrl}</a>",
-        ], "<br>"), self)
+        self.huInfo = QLabel(
+            joinLines(
+                [
+                    self.tr("Download a dictionary from one of the links, and add it below."),
+                    f"&nbsp;\u203a <a href='{loUrl}'>{loUrl}</a>",
+                    f"&nbsp;\u203a <a href='{ooUrl}'>{ooUrl}</a>",
+                ],
+                "<br>",
+            ),
+            self,
+        )
         self.huInfo.setOpenExternalLinks(True)
         self.huInfo.setWordWrap(True)
         self.huInput = QLineEdit(self)
@@ -137,12 +148,14 @@ class GuiDictionaries(NNonBlockingDialog):
         logger.debug("Ready: GuiDictionaries")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiDictionaries")
 
     def initDialog(self) -> bool:
         """Prepare and check that we can proceed."""
         try:
             import enchant
+
             path = Path(enchant.get_user_config_dir())
             self._installPath = Path(path).resolve()
             self._installPath.mkdir(exist_ok=True, parents=True)
@@ -155,12 +168,8 @@ class GuiDictionaries(NNonBlockingDialog):
                 self.inPath.setText(str(path))
                 hunspell = path / "hunspell"
                 if hunspell.is_dir():
-                    self._currDicts = set(
-                        i.stem for i in hunspell.iterdir() if i.is_file() and i.suffix == ".aff"
-                    )
-                self._appendLog(self.tr(
-                    "Additional dictionaries found: {0}"
-                ).format(len(self._currDicts)))
+                    self._currDicts = set(i.stem for i in hunspell.iterdir() if i.is_file() and i.suffix == ".aff")
+                self._appendLog(self.tr("Additional dictionaries found: {0}").format(len(self._currDicts)))
         except Exception as exc:
             SHARED.newStatusMessage(exc, "error")
             logger.error("Failed to load additional dictionaries")
@@ -187,12 +196,8 @@ class GuiDictionaries(NNonBlockingDialog):
     @pyqtSlot()
     def _doBrowseHunspell(self) -> None:
         """Browse for a Free/Libre Office dictionary."""
-        ffilter = formatFileFilter([
-            (self.tr("Free or Libre Office extension"), "*.sox *.oxt"), "*"
-        ])
-        soxFile, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Browse Files"), str(CONFIG.homePath()), filter=ffilter
-        )
+        ffilter = formatFileFilter([(self.tr("Free or Libre Office extension"), "*.sox *.oxt"), "*"])
+        soxFile, _ = QFileDialog.getOpenFileName(self, self.tr("Browse Files"), str(CONFIG.homePath()), filter=ffilter)
         if soxFile:
             path = Path(soxFile).absolute()
             self.huInput.setText(str(path))
@@ -242,9 +247,7 @@ class GuiDictionaries(NNonBlockingDialog):
                     oPath = output / zPath.name
                     oPath.write_bytes(zF.read())
                     size = getFileSize(oPath)
-                    self._appendLog(self.tr(
-                        "Added: {0} [{1}B]"
-                    ).format(zPath.name, formatInt(size)))
+                    self._appendLog(self.tr("Added: {0} [{1}B]").format(zPath.name, formatInt(size)))
         return nAff, nDic
 
     def _appendLog(self, text: str, err: bool = False) -> None:

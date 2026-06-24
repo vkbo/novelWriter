@@ -2,10 +2,6 @@
 novelWriter – GUI Doc Merge Dialog
 ==================================
 
-File History:
-Created:   2020-01-23 [0.4.3]  GuiDocMerge
-Rewritten: 2022-10-06 [2.0rc1] GuiDocMerge
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -22,14 +18,21 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
 
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtWidgets import (
-    QAbstractItemView, QDialogButtonBox, QGridLayout, QLabel, QListWidget,
-    QListWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView,
+    QDialogButtonBox,
+    QGridLayout,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import SHARED
@@ -60,7 +63,9 @@ class GuiDocMerge(NDialog):
         self.headLabel.setFont(SHARED.theme.guiFontB)
         self.helpLabel = NColorLabel(
             self.tr("Drag and drop items to change the order, or uncheck to exclude."),
-            self, color=SHARED.theme.helpText, wrap=True
+            self,
+            color=SHARED.theme.helpText,
+            wrap=True,
         )
 
         iPx = SHARED.theme.baseIconHeight
@@ -80,7 +85,7 @@ class GuiDocMerge(NDialog):
         self.trashLabel.setBuddy(self.trashSwitch)
 
         self.optBox = QGridLayout()
-        self.optBox.addWidget(self.trashLabel,  0, 0)
+        self.optBox.addWidget(self.trashLabel, 0, 0)
         self.optBox.addWidget(self.trashSwitch, 0, 1)
         self.optBox.setHorizontalSpacing(12)
         self.optBox.setColumnStretch(2, 1)
@@ -119,6 +124,7 @@ class GuiDocMerge(NDialog):
         logger.debug("Ready: GuiDocMerge")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiDocMerge")
 
     def data(self) -> dict:

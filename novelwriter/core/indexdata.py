@@ -2,12 +2,6 @@
 novelWriter – Project Index Data
 ================================
 
-File History:
-Created: 2022-05-28 [2.0rc1] IndexNode
-Created: 2022-05-28 [2.0rc1] IndexHeading
-Moved:   2025-02-22 [2.7b1]  IndexNode
-Moved:   2025-02-22 [2.7b1]  IndexHeading
-
 This file is a part of novelWriter
 Copyright (C) 2025 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -24,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -70,15 +65,19 @@ class IndexNode:
         self._count = 0
 
     def __repr__(self) -> str:
+        """Return a string representation of the index node."""
         return f"<IndexNode handle='{self._handle}'>"
 
     def __len__(self) -> int:
+        """Return the number of headings in the index node."""
         return len(self._headings)
 
     def __getitem__(self, sTitle: str) -> IndexHeading | None:
+        """Return the IndexHeading for the given title."""
         return self._headings.get(sTitle, None)
 
     def __contains__(self, sTitle: str) -> bool:
+        """Return True if the given title is in the index node."""
         return sTitle in self._headings
 
     ##
@@ -167,7 +166,7 @@ class IndexNode:
         """Pack the indexed item's data into a dictionary."""
         data = {}
         for sTitle, hItem in self._headings.items():
-            data[sTitle]  = hItem.packData()
+            data[sTitle] = hItem.packData()
         if self._notes:
             data["document"] = {style: list(keys) for style, keys in self._notes.items()}
         return data
@@ -198,15 +197,9 @@ class IndexHeading:
     of all references made under the heading.
     """
 
-    __slots__ = (
-        "_cache", "_comments", "_counts", "_key", "_level", "_line", "_refs",
-        "_tag", "_title",
-    )
+    __slots__ = ("_cache", "_comments", "_counts", "_key", "_level", "_line", "_refs", "_tag", "_title")
 
-    def __init__(
-        self, cache: IndexCache, key: str, line: int = 0,
-        level: str = "H0", title: str = "",
-    ) -> None:
+    def __init__(self, cache: IndexCache, key: str, line: int = 0, level: str = "H0", title: str = "") -> None:
         self._cache = cache
         self._key = key
         self._line = line
@@ -218,6 +211,7 @@ class IndexHeading:
         self._comments: dict[str, str] = {}
 
     def __repr__(self) -> str:
+        """Return a string representation of the index heading."""
         return f"<IndexHeading key='{self._key}'>"
 
     ##

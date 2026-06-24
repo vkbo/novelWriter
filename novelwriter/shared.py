@@ -2,10 +2,6 @@
 novelWriter – Shared Data Class
 ===============================
 
-File History:
-Created: 2023-08-10 [2.1rc1] SharedData
-Created: 2023-08-14 [2.1rc1] _GuiAlert
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -22,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -34,9 +31,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QDesktopServices, QFont, QScreen
-from PyQt6.QtWidgets import (
-    QApplication, QFileDialog, QGridLayout, QMessageBox, QSpacerItem, QWidget
-)
+from PyQt6.QtWidgets import QApplication, QFileDialog, QGridLayout, QMessageBox, QSpacerItem, QWidget
 
 from novelwriter.common import appendIfSet, formatFileFilter, joinLines
 from novelwriter.constants import nwFiles
@@ -69,10 +64,7 @@ class SharedData(QObject):
     the main GUI, the current project, and the GUI theme.
     """
 
-    __slots__ = (
-        "_gui", "_idleRefTime", "_idleTime", "_lastAlert", "_lockedBy",
-        "_project", "_spelling", "_theme",
-    )
+    __slots__ = ("_gui", "_idleRefTime", "_idleTime", "_lastAlert", "_lockedBy", "_project", "_spelling", "_theme")
 
     focusModeChanged = pyqtSignal(bool)
     indexAvailable = pyqtSignal()
@@ -213,10 +205,7 @@ class SharedData(QObject):
     def saveEditor(self, tHandle: str | None = None) -> None:
         """Save the editor content, optionally a specific document."""
         docEditor = self.mainGui.docEditor
-        if (
-            self.hasProject and docEditor.docHandle
-            and (tHandle is None or tHandle == docEditor.docHandle)
-        ):
+        if self.hasProject and docEditor.docHandle and (tHandle is None or tHandle == docEditor.docHandle):
             logger.debug("Saving editor document before action")
             docEditor.saveText()
 
@@ -255,6 +244,7 @@ class SharedData(QObject):
     def updateSpellCheckLanguage(self, reload: bool = False) -> None:
         """Update the active spell check language from settings."""
         from novelwriter import CONFIG
+
         language = self.project.data.spellLang or CONFIG.spellLanguage
         if language != self.spelling.spellLanguage or reload:
             self.spelling.setLanguage(language)
@@ -265,9 +255,7 @@ class SharedData(QObject):
         """Report the state of the spell checker."""
         spell = self.spelling
         if (req := spell.requestedLanguage) is not None and req != spell.spellLanguage:
-            self.warn(self.tr(
-                "Could not load spell checking for language code '{0}'."
-            ).format(req))
+            self.warn(self.tr("Could not load spell checking for language code '{0}'.").format(req))
 
     def updateIdleTime(self, currTime: float, userIdle: bool) -> None:
         """Update the idle time record. If the userIdle flag is True,
@@ -294,7 +282,7 @@ class SharedData(QObject):
     def clearMainProgress(self, delay: float = 1.0) -> None:
         """Clear the main progress bar."""
         if gui := self._gui:
-            QTimer.singleShot(int(delay*1000), gui.mainProgress.reset)
+            QTimer.singleShot(int(delay * 1000), gui.mainProgress.reset)
 
     def newStatusMessage(self, message: str | Exception, severity: T_MsgSeverity = "info") -> None:
         """Request a new status message."""
@@ -309,27 +297,20 @@ class SharedData(QObject):
         if pool := QThreadPool.globalInstance():
             pool.start(runnable, priority=priority)
 
-    def getProjectPath(
-        self, parent: QWidget,
-        path: str | Path | None = None,
-        allowZip: bool = False
-    ) -> Path | None:
+    def getProjectPath(self, parent: QWidget, path: str | Path | None = None, allowZip: bool = False) -> Path | None:
         """Open the file dialog and select a novelWriter project file."""
-        label = (
-            self.tr("novelWriter Project File or Zip File")
-            if allowZip else self.tr("novelWriter Project File")
-        )
+        label = self.tr("novelWriter Project File or Zip File") if allowZip else self.tr("novelWriter Project File")
         ext = f"{nwFiles.PROJ_FILE} *.zip" if allowZip else nwFiles.PROJ_FILE
         fFilter = formatFileFilter([(label, ext), "*"])
-        selected, _ = QFileDialog.getOpenFileName(
-            parent, self.tr("Open Project"), str(path or ""), filter=fFilter
-        )
+        selected, _ = QFileDialog.getOpenFileName(parent, self.tr("Open Project"), str(path or ""), filter=fFilter)
         return Path(selected) if selected else None
 
     def getProjectFolder(self, parent: QWidget, path: str | Path | None = None) -> Path | None:
         """Open the folder dialog and select a project folder."""
         location = QFileDialog.getExistingDirectory(
-            parent, self.tr("Select Project Folder"), str(path),
+            parent,
+            self.tr("Select Project Folder"),
+            str(path),
             options=QFileDialog.Option.ShowDirsOnly,
         )
         return Path(location) if location else None
@@ -365,9 +346,7 @@ class SharedData(QObject):
     #  Signal Proxies
     ##
 
-    def emitIndexChangedTags(
-        self, project: NWProject, updated: list[str], deleted: list[str]
-    ) -> None:
+    def emitIndexChangedTags(self, project: NWProject, updated: list[str], deleted: list[str]) -> None:
         """Emit the indexChangedTags signal."""
         if self._project and self._project.data.uuid == project.data.uuid:
             self.indexChangedTags.emit(updated, deleted)
@@ -441,8 +420,14 @@ class SharedData(QObject):
             self._logMessage(self._lastAlert, logger.warning)
         alert.pop()
 
-    def error(self, text: T_Msg, info: str = "", details: str = "", log: bool = True,
-              exc: Exception | None = None) -> None:
+    def error(
+        self,
+        text: T_Msg,
+        info: str = "",
+        details: str = "",
+        log: bool = True,
+        exc: Exception | None = None,
+    ) -> None:
         """Open an error alert box."""
         alert = _GuiAlert(self.mainGui, self.theme)
         alert.setMessage(text, info, details)
@@ -475,6 +460,7 @@ class SharedData(QObject):
     def _resetProject(self) -> None:
         """Create a new project and spell checking instance."""
         from novelwriter.core.project import NWProject
+
         if isinstance(self._project, NWProject):
             self._project.clear()
             del self._project
@@ -492,13 +478,13 @@ class SharedData(QObject):
     def _closeToolDialogs(self) -> None:
         """Close all open tool dialogs."""
         from novelwriter.extensions.modified import NToolDialog
+
         for widget in self.mainGui.children():
             if isinstance(widget, NToolDialog):
                 widget.close()
 
 
 class _GuiAlert(QMessageBox):
-
     INFO = 0
     WARN = 1
     ERROR = 2
@@ -525,7 +511,7 @@ class _GuiAlert(QMessageBox):
     def pop(self) -> int:
         """Make sure the message box isn't too small."""
         # See https://stackoverflow.com/a/50549396
-        self._spacer = QSpacerItem(20*self._theme.fontPixelSize, 0, QtSizeMinimum, QtSizeExpanding)
+        self._spacer = QSpacerItem(20 * self._theme.fontPixelSize, 0, QtSizeMinimum, QtSizeExpanding)
         if isinstance(layout := self.layout(), QGridLayout):
             layout.addItem(self._spacer, layout.rowCount(), 0, 1, layout.columnCount())
         return self.exec()
@@ -552,7 +538,7 @@ class _GuiAlert(QMessageBox):
         if isYesNo:
             self._btnYes = self._theme.getStandardButton(nwStandardButton.YES, self)
             self._btnYes.clicked.connect(self._onAccept)
-            self._btnNo  = self._theme.getStandardButton(nwStandardButton.NO, self)
+            self._btnNo = self._theme.getStandardButton(nwStandardButton.NO, self)
             self._btnNo.clicked.connect(self._onReject)
             self.addButton(self._btnYes, QMessageBox.ButtonRole.YesRole)
             self.addButton(self._btnNo, QMessageBox.ButtonRole.NoRole)
@@ -561,7 +547,7 @@ class _GuiAlert(QMessageBox):
             self._btnOk.clicked.connect(self._onAccept)
             self.addButton(self._btnOk, QMessageBox.ButtonRole.AcceptRole)
 
-        pSz = 2*self._theme.fontPixelSize
+        pSz = 2 * self._theme.fontPixelSize
         if level == self.INFO:
             self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz), "info"))
             self.setWindowTitle(self.tr("Information"))

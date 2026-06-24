@@ -2,9 +2,6 @@
 novelWriter – Custom Widget: Novel Selector
 ===========================================
 
-File History:
-Created: 2022-11-17 [2.0] NovelSelector
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
