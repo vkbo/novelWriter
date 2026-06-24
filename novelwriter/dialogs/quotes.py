@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -25,18 +26,21 @@ import logging
 from PyQt6.QtCore import QSize, pyqtSlot
 from PyQt6.QtGui import QFontMetrics
 from PyQt6.QtWidgets import (
-    QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget,
-    QListWidgetItem, QVBoxLayout, QWidget
+    QDialogButtonBox,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import SHARED
 from novelwriter.constants import nwQuotes, trConst
 from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NDialog
-from novelwriter.types import (
-    QtAccepted, QtAlignCenter, QtAlignTop, QtRoleAccept, QtRoleReject,
-    QtUserRole
-)
+from novelwriter.types import QtAccepted, QtAlignCenter, QtAlignTop, QtRoleAccept, QtRoleReject, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -62,13 +66,13 @@ class GuiQuoteSelect(NDialog):
         self._selected = current
 
         lblFont = self.font()
-        lblFont.setPointSizeF(4*lblFont.pointSizeF())
+        lblFont.setPointSizeF(4 * lblFont.pointSizeF())
         metrics = QFontMetrics(self.font())
 
         # Preview Label
         self.previewLabel = QLabel(current, self)
         self.previewLabel.setFont(lblFont)
-        self.previewLabel.setFixedSize(QSize(4*metrics.maxWidth(), 5*metrics.height()))
+        self.previewLabel.setFixedSize(QSize(4 * metrics.maxWidth(), 5 * metrics.height()))
         self.previewLabel.setAlignment(QtAlignCenter)
         self.previewLabel.setFrameStyle(QFrame.Shape.Box | QFrame.Shadow.Plain)
 

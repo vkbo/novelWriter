@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import time
@@ -31,17 +32,61 @@ from PyQt6.QtCore import QMimeData, QUrl
 from PyQt6.QtGui import QDesktopServices, QFont, QFontDatabase, QFontInfo
 
 from novelwriter.common import (
-    NWConfigParser, appendIfSet, checkBool, checkFloat, checkInt,
-    checkIntTuple, checkPath, checkString, checkStringNone, checkUuid, compact,
-    decodeMimeHandles, describeFont, elide, encodeMimeHandles, firstFloat,
-    fontMatcher, formatFileFilter, formatInt, formatLink, formatTime,
-    formatTimeStamp, formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle,
-    isItemClass, isItemLayout, isItemType, isListInstance, isTitleTag,
-    joinLines, jsonCombine, jsonEncode, languageName, makeFileNameSafe, minmax,
-    numberToRoman, openExternalPath, processDialogSymbols, processLangCode,
-    readTextFile, safeExists, safeIsDir, safeIsFile, safeIterDir, simplified,
-    transferCase, uniqueCompact, utf16CharMap, xmlElement, xmlIndent,
-    xmlSubElem, yesNo
+    NWConfigParser,
+    appendIfSet,
+    checkBool,
+    checkFloat,
+    checkInt,
+    checkIntTuple,
+    checkPath,
+    checkString,
+    checkStringNone,
+    checkUuid,
+    compact,
+    decodeMimeHandles,
+    describeFont,
+    elide,
+    encodeMimeHandles,
+    firstFloat,
+    fontMatcher,
+    formatFileFilter,
+    formatInt,
+    formatLink,
+    formatTime,
+    formatTimeStamp,
+    formatVersion,
+    fuzzyTime,
+    getFileSize,
+    hexToInt,
+    isHandle,
+    isItemClass,
+    isItemLayout,
+    isItemType,
+    isListInstance,
+    isTitleTag,
+    joinLines,
+    jsonCombine,
+    jsonEncode,
+    languageName,
+    makeFileNameSafe,
+    minmax,
+    numberToRoman,
+    openExternalPath,
+    processDialogSymbols,
+    processLangCode,
+    readTextFile,
+    safeExists,
+    safeIsDir,
+    safeIsFile,
+    safeIterDir,
+    simplified,
+    transferCase,
+    uniqueCompact,
+    utf16CharMap,
+    xmlElement,
+    xmlIndent,
+    xmlSubElem,
+    yesNo,
 )
 from novelwriter.enum import nwItemClass
 
@@ -447,16 +492,16 @@ def testBaseCommon_elide():
     assert elide("Hello World!", 12) == "Hello World!"
     assert elide("Hello World!", 11) == "Hello W ..."
     assert elide("Hello World!", 10) == "Hello ..."
-    assert elide("Hello World!",  9) == "Hello ..."
-    assert elide("Hello World!",  8) == "Hell ..."
-    assert elide("Hello World!",  7) == "Hel ..."
-    assert elide("Hello World!",  6) == "He ..."
-    assert elide("Hello World!",  5) == "H ..."
-    assert elide("Hello World!",  4) == " ..."
-    assert elide("Hello World!",  3) == " ..."
-    assert elide("Hello World!",  2) == " ..."
-    assert elide("Hello World!",  1) == " ..."
-    assert elide("Hello World!",  0) == " ..."
+    assert elide("Hello World!", 9) == "Hello ..."
+    assert elide("Hello World!", 8) == "Hell ..."
+    assert elide("Hello World!", 7) == "Hel ..."
+    assert elide("Hello World!", 6) == "He ..."
+    assert elide("Hello World!", 5) == "H ..."
+    assert elide("Hello World!", 4) == " ..."
+    assert elide("Hello World!", 3) == " ..."
+    assert elide("Hello World!", 2) == " ..."
+    assert elide("Hello World!", 1) == " ..."
+    assert elide("Hello World!", 0) == " ..."
 
 
 @pytest.mark.base
@@ -471,7 +516,7 @@ def testBaseCommon_yesNo():
 
     # String
     assert yesNo("foo") == "yes"  # type: ignore
-    assert yesNo("") == "no"      # type: ignore
+    assert yesNo("") == "no"  # type: ignore
 
     # Integer
     assert yesNo(0) == "no"
@@ -479,7 +524,7 @@ def testBaseCommon_yesNo():
     assert yesNo(2) == "yes"
 
     # Float
-    assert yesNo(0.0) == "no"   # type: ignore
+    assert yesNo(0.0) == "no"  # type: ignore
     assert yesNo(1.0) == "yes"  # type: ignore
     assert yesNo(2.0) == "yes"  # type: ignore
 
@@ -509,7 +554,7 @@ def testBaseCommon_formatInt():
 def testBaseCommon_transferCase():
     """Test the transferCase function."""
     assert transferCase(1, "TaRgEt") == "TaRgEt"  # type: ignore
-    assert transferCase("source", 1) == 1         # type: ignore
+    assert transferCase("source", 1) == 1  # type: ignore
     assert transferCase("", "TaRgEt") == "TaRgEt"
     assert transferCase("source", "") == ""
     assert transferCase("Source", "target") == "Target"
@@ -666,7 +711,7 @@ def testBaseCommon_utf16CharMap(monkeypatch):
     """Test the utf16CharMap function."""
     assert utf16CharMap("abc") == [0, 1, 2, 3]
     assert utf16CharMap("a\u2014b\u2014c") == [0, 1, 2, 3, 4, 5]
-    assert utf16CharMap("a\U0001F605b\U0001F605c") == [0, 1, 3, 4, 6, 7]
+    assert utf16CharMap("a\U0001f605b\U0001f605c") == [0, 1, 3, 4, 6, 7]
 
 
 @pytest.mark.base
@@ -694,49 +739,49 @@ def testBaseCommon_jsonEncode():
 
     # Complex Structure
     assert jsonEncode(tstDict) == (
-        '{\n'
+        "{\n"
         '  "null": null,\n'
         '  "one": 1,\n'
         '  "two": "2",\n'
         '  "three": 3.0,\n'
         '  "four": false,\n'
         '  "five": [\n'
-        '    1,\n'
-        '    2\n'
-        '  ],\n'
+        "    1,\n"
+        "    2\n"
+        "  ],\n"
         '  "six": {\n'
         '    "a": 1,\n'
         '    "b": 2\n'
-        '  },\n'
+        "  },\n"
         '  "seven": [],\n'
         '  "eight": {}\n'
-        '}'
+        "}"
     )
 
     # Additional Indent
     assert jsonEncode(tstDict, n=2) == (
-        '{\n'
+        "{\n"
         '      "null": null,\n'
         '      "one": 1,\n'
         '      "two": "2",\n'
         '      "three": 3.0,\n'
         '      "four": false,\n'
         '      "five": [\n'
-        '        1,\n'
-        '        2\n'
-        '      ],\n'
+        "        1,\n"
+        "        2\n"
+        "      ],\n"
         '      "six": {\n'
         '        "a": 1,\n'
         '        "b": 2\n'
-        '      },\n'
+        "      },\n"
         '      "seven": [],\n'
         '      "eight": {}\n'
-        '    }'
+        "    }"
     )
 
     # Max Indent
     assert jsonEncode(tstDict, n=0, nmax=1) == (
-        '{\n'
+        "{\n"
         '  "null": null,\n'
         '  "one": 1,\n'
         '  "two": "2",\n'
@@ -746,39 +791,22 @@ def testBaseCommon_jsonEncode():
         '  "six": {"a": 1, "b": 2},\n'
         '  "seven": [],\n'
         '  "eight": {}\n'
-        '}'
+        "}"
     )
 
 
 @pytest.mark.base
 def testBaseCommon_jsonCombine():
     """Test the jsonCombine function."""
-    assert jsonCombine({"a": "[1, 2]", "b": "[3, 4]"}) == (
-        '{\n'
-        '  "a": [1, 2],\n'
-        '  "b": [3, 4]\n'
-        '}\n'
-    )
+    assert jsonCombine({"a": "[1, 2]", "b": "[3, 4]"}) == ('{\n  "a": [1, 2],\n  "b": [3, 4]\n}\n')
 
 
 @pytest.mark.base
 def testBaseCommon_xmlIndent():
     """Test the xmlIndent function."""
-    xRoot = ET.fromstring(
-        "<xml>"
-        "<group>"
-        "<item>foo</item>"
-        "</group>"
-        "</xml>"
-    )
+    xRoot = ET.fromstring("<xml><group><item>foo</item></group></xml>")
     xmlIndent(ET.ElementTree(xRoot))
-    assert ET.tostring(xRoot) == (
-        b"<xml>\n"
-        b"  <group>\n"
-        b"    <item>foo</item>\n"
-        b"  </group>\n"
-        b"</xml>\n"
-    )
+    assert ET.tostring(xRoot) == (b"<xml>\n  <group>\n    <item>foo</item>\n  </group>\n</xml>\n")
 
     # If we send nonsense, nothing is done
     data = "foobar"
@@ -789,47 +817,26 @@ def testBaseCommon_xmlIndent():
 @pytest.mark.base
 def testBaseCommon_xmlElement():
     """Test the xmlElement function."""
-    assert ET.tostring(
-        xmlElement("node", None, attrib={"a": "b"})
-    ) == b'<node a="b" />'
-    assert ET.tostring(
-        xmlElement("node", "text", attrib={"a": "b"})
-    ) == b'<node a="b">text</node>'
-    assert ET.tostring(
-        xmlElement("node", "text", tail="foo", attrib={"a": "b"})
-    ) == b'<node a="b">text</node>foo'
-    assert ET.tostring(
-        xmlElement("node", 42, attrib={"a": "b"})
-    ) == b'<node a="b">42</node>'
-    assert ET.tostring(
-        xmlElement("node", 3.14, attrib={"a": "b"})
-    ) == b'<node a="b">3.14</node>'
-    assert ET.tostring(
-        xmlElement("node", True, attrib={"a": "b"})
-    ) == b'<node a="b">true</node>'
+    assert ET.tostring(xmlElement("node", None, attrib={"a": "b"})) == b'<node a="b" />'
+    assert ET.tostring(xmlElement("node", "text", attrib={"a": "b"})) == b'<node a="b">text</node>'
+    assert ET.tostring(xmlElement("node", "text", tail="foo", attrib={"a": "b"})) == b'<node a="b">text</node>foo'
+    assert ET.tostring(xmlElement("node", 42, attrib={"a": "b"})) == b'<node a="b">42</node>'
+    assert ET.tostring(xmlElement("node", 3.14, attrib={"a": "b"})) == b'<node a="b">3.14</node>'
+    assert ET.tostring(xmlElement("node", True, attrib={"a": "b"})) == b'<node a="b">true</node>'
 
 
 @pytest.mark.base
 def testBaseCommon_xmlSubElem():
     """Test the xmlSubElem function."""
-    assert ET.tostring(
-        xmlSubElem(ET.Element("r"), "node", None, attrib={"a": "b"})
-    ) == b'<node a="b" />'
-    assert ET.tostring(
-        xmlSubElem(ET.Element("r"), "node", "text", attrib={"a": "b"})
-    ) == b'<node a="b">text</node>'
-    assert ET.tostring(
-        xmlSubElem(ET.Element("r"), "node", "text", tail="foo", attrib={"a": "b"})
-    ) == b'<node a="b">text</node>foo'
-    assert ET.tostring(
-        xmlSubElem(ET.Element("r"), "node", 42, attrib={"a": "b"})
-    ) == b'<node a="b">42</node>'
-    assert ET.tostring(
-        xmlSubElem(ET.Element("r"), "node", 3.14, attrib={"a": "b"})
-    ) == b'<node a="b">3.14</node>'
-    assert ET.tostring(
-        xmlSubElem(ET.Element("r"), "node", True, attrib={"a": "b"})
-    ) == b'<node a="b">true</node>'
+    assert ET.tostring(xmlSubElem(ET.Element("r"), "node", None, attrib={"a": "b"})) == b'<node a="b" />'
+    assert ET.tostring(xmlSubElem(ET.Element("r"), "node", "text", attrib={"a": "b"})) == b'<node a="b">text</node>'
+    assert (
+        ET.tostring(xmlSubElem(ET.Element("r"), "node", "text", tail="foo", attrib={"a": "b"}))
+        == b'<node a="b">text</node>foo'
+    )
+    assert ET.tostring(xmlSubElem(ET.Element("r"), "node", 42, attrib={"a": "b"})) == b'<node a="b">42</node>'
+    assert ET.tostring(xmlSubElem(ET.Element("r"), "node", 3.14, attrib={"a": "b"})) == b'<node a="b">3.14</node>'
+    assert ET.tostring(xmlSubElem(ET.Element("r"), "node", True, attrib={"a": "b"})) == b'<node a="b">true</node>'
 
 
 @pytest.mark.base
@@ -915,21 +922,24 @@ def testBaseCommon_openExternalPath(monkeypatch, tstPaths):
 def testBaseCommon_NWConfigParser(fncPath):
     """Test the NWConfigParser subclass."""
     conf = fncPath / "test.cfg"
-    writeFile(conf, (
-        "[main]\n"
-        "stropt = value\n"
-        "intopt1 = 42\n"
-        "intopt2 = 42.43\n"
-        "boolopt1 = true\n"
-        "boolopt2 = TRUE\n"
-        "boolopt3 = 1\n"
-        "boolopt4 = 0\n"
-        "list1 = a, b, c\n"
-        "list2 = 17, 18, 19\n"
-        "float1 = 4.2\n"
-        "enum1 = NOVEL\n"
-        f"path1 = {fncPath}\n"
-    ))
+    writeFile(
+        conf,
+        (
+            "[main]\n"
+            "stropt = value\n"
+            "intopt1 = 42\n"
+            "intopt2 = 42.43\n"
+            "boolopt1 = true\n"
+            "boolopt2 = TRUE\n"
+            "boolopt3 = 1\n"
+            "boolopt4 = 0\n"
+            "list1 = a, b, c\n"
+            "list2 = 17, 18, 19\n"
+            "float1 = 4.2\n"
+            "enum1 = NOVEL\n"
+            f"path1 = {fncPath}\n"
+        ),
+    )
 
     parser = NWConfigParser()
     parser.read(conf)
@@ -938,38 +948,38 @@ def testBaseCommon_NWConfigParser(fncPath):
     # =======
 
     # Read String
-    assert parser.rdStr("main", "stropt",   "stuff") == "value"
+    assert parser.rdStr("main", "stropt", "stuff") == "value"
     assert parser.rdStr("main", "boolopt1", "stuff") == "true"
-    assert parser.rdStr("main", "intopt1",  "stuff") == "42"
+    assert parser.rdStr("main", "intopt1", "stuff") == "42"
 
-    assert parser.rdStr("nope", "stropt",   "stuff") == "stuff"
-    assert parser.rdStr("main", "blabla",   "stuff") == "stuff"
+    assert parser.rdStr("nope", "stropt", "stuff") == "stuff"
+    assert parser.rdStr("main", "blabla", "stuff") == "stuff"
 
     # Read Boolean
-    assert parser.rdBool("main", "boolopt1", None) is True   # type: ignore
-    assert parser.rdBool("main", "boolopt2", None) is True   # type: ignore
-    assert parser.rdBool("main", "boolopt3", None) is True   # type: ignore
+    assert parser.rdBool("main", "boolopt1", None) is True  # type: ignore
+    assert parser.rdBool("main", "boolopt2", None) is True  # type: ignore
+    assert parser.rdBool("main", "boolopt3", None) is True  # type: ignore
     assert parser.rdBool("main", "boolopt4", None) is False  # type: ignore
-    assert parser.rdBool("main", "intopt1",  None) is None   # type: ignore
+    assert parser.rdBool("main", "intopt1", None) is None  # type: ignore
 
-    assert parser.rdBool("nope", "boolopt1", None) is None   # type: ignore
-    assert parser.rdBool("main", "blabla",   None) is None   # type: ignore
+    assert parser.rdBool("nope", "boolopt1", None) is None  # type: ignore
+    assert parser.rdBool("main", "blabla", None) is None  # type: ignore
 
     # Read Integer
     assert parser.rdInt("main", "intopt1", 13) == 42
     assert parser.rdInt("main", "intopt2", 13) == 13
-    assert parser.rdInt("main", "stropt",  13) == 13
+    assert parser.rdInt("main", "stropt", 13) == 13
 
     assert parser.rdInt("nope", "intopt1", 13) == 13
-    assert parser.rdInt("main", "blabla",  13) == 13
+    assert parser.rdInt("main", "blabla", 13) == 13
 
     # Read Float
     assert parser.rdFlt("main", "intopt1", 13.0) == 42.0
-    assert parser.rdFlt("main", "float1",  13.0) == 4.2
-    assert parser.rdFlt("main", "stropt",  13.0) == 13.0
+    assert parser.rdFlt("main", "float1", 13.0) == 4.2
+    assert parser.rdFlt("main", "stropt", 13.0) == 13.0
 
     assert parser.rdFlt("nope", "intopt1", 13.0) == 13.0
-    assert parser.rdFlt("main", "blabla",  13.0) == 13.0
+    assert parser.rdFlt("main", "blabla", 13.0) == 13.0
 
     # Read Path
     assert parser.rdPath("main", "path1", Path.home()) == fncPath

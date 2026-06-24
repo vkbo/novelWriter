@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from urllib.error import HTTPError
@@ -38,7 +39,6 @@ class MockRetriever:
 
 
 class MockDesktopServices:
-
     url = None
 
     @staticmethod
@@ -52,7 +52,6 @@ class MockData:
 
 
 class MockPayload:
-
     def __enter__(self):
         return self
 
@@ -64,7 +63,6 @@ class MockPayload:
 
 
 class MockHTTPError:
-
     def __enter__(self):
         raise HTTPError("http://example.com", 403, "Rate limit", None, None)  # type: ignore
 
@@ -73,7 +71,6 @@ class MockHTTPError:
 
 
 class MockException:
-
     def __enter__(self):
         raise Exception("Oh noes!")
 
@@ -105,9 +102,7 @@ def testExtVersionInfo_Main(qtbot, monkeypatch):
         assert version._lblRelease.text() == "Latest Version: Checking ..."
 
     version._updateReleaseInfo("v2.0", "")
-    assert version._lblRelease.text() == (
-        "Latest Version: 2.0 – Download from <a href='#website'>novelwriter.io</a>"
-    )
+    assert version._lblRelease.text() == ("Latest Version: 2.0 – Download from <a href='#website'>novelwriter.io</a>")
 
     version._updateReleaseInfo("", "")
     assert version._lblRelease.text() == "Latest Version: Failed"

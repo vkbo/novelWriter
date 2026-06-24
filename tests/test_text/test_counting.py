@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -59,18 +60,40 @@ def testTextCounting_preProcessText():
         "## Heading Two",
         "### Heading Three",
         "#### Heading Four",
-        "", "", "",
-        "A paragraph.", "",
-        "", "", "", "", "", "", "", "",
-        "Dashes and even longer dashes.", ""
+        "",
+        "",
+        "",
+        "A paragraph.",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Dashes and even longer dashes.",
+        "",
     ]
 
     # Process Text, wo/Headers
     assert preProcessText(text, keepHeaders=False) == [
-        "", "", "",
-        "A paragraph.", "",
-        "", "", "", "", "", "", "", "",
-        "Dashes and even longer dashes.", ""
+        "",
+        "",
+        "",
+        "A paragraph.",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Dashes and even longer dashes.",
+        "",
     ]
 
 
@@ -106,34 +129,18 @@ def testTextCounting_standardCounter():
     assert pC == 4
 
     # Text Alignment
-    cC, wC, pC = standardCounter(
-        "# Title\n\n"
-        "Left aligned<<\n\n"
-        "Left aligned <<\n\n"
-        "Right indent<\n\n"
-        "Right indent <\n\n"
-    )
+    cC, wC, pC = standardCounter("# Title\n\nLeft aligned<<\n\nLeft aligned <<\n\nRight indent<\n\nRight indent <\n\n")
+    assert cC == 53
+    assert wC == 9
+    assert pC == 4
+
+    cC, wC, pC = standardCounter("# Title\n\n>>Right aligned\n\n>> Right aligned\n\n>Left indent\n\n> Left indent\n\n")
     assert cC == 53
     assert wC == 9
     assert pC == 4
 
     cC, wC, pC = standardCounter(
-        "# Title\n\n"
-        ">>Right aligned\n\n"
-        ">> Right aligned\n\n"
-        ">Left indent\n\n"
-        "> Left indent\n\n"
-    )
-    assert cC == 53
-    assert wC == 9
-    assert pC == 4
-
-    cC, wC, pC = standardCounter(
-        "# Title\n\n"
-        ">>Centre aligned<<\n\n"
-        ">> Centre aligned <<\n\n"
-        ">Double indent<\n\n"
-        "> Double indent <\n\n"
+        "# Title\n\n>>Centre aligned<<\n\n>> Centre aligned <<\n\n>Double indent<\n\n> Double indent <\n\n"
     )
     assert cC == 59
     assert wC == 9

@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import re
@@ -86,44 +87,28 @@ def testTextPatterns_Words():
     regEx = REGEX_PATTERNS.wordSplit
 
     # Spaces
-    assert allMatches(regEx, "one two three") == [
-        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
-    ]
+    assert allMatches(regEx, "one two three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
 
     # Hyphens
-    assert allMatches(regEx, "one-two-three") == [
-        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
-    ]
+    assert allMatches(regEx, "one-two-three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
 
     # En Dashes
-    assert allMatches(regEx, "one\u2013two\u2013three") == [
-        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
-    ]
+    assert allMatches(regEx, "one\u2013two\u2013three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
 
     # Em Dashes
-    assert allMatches(regEx, "one\u2014two\u2014three") == [
-        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
-    ]
+    assert allMatches(regEx, "one\u2014two\u2014three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
 
     # Plus
-    assert allMatches(regEx, "one+two+three") == [
-        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
-    ]
+    assert allMatches(regEx, "one+two+three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
 
     # Slash
-    assert allMatches(regEx, "one/two/three") == [
-        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
-    ]
+    assert allMatches(regEx, "one/two/three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
 
     # Brackets
-    assert allMatches(regEx, "one[two]three") == [
-        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
-    ]
+    assert allMatches(regEx, "one[two]three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
 
     # Colon
-    assert allMatches(regEx, "one:two:three") == [
-        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
-    ]
+    assert allMatches(regEx, "one:two:three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
 
 
 @pytest.mark.core
@@ -134,9 +119,7 @@ def testTextPatterns_Markdown():
     CONFIG.singleStarBold = False
     regEx = REGEX_PATTERNS.markdownBold
     # Correct format
-    assert allMatches(regEx, "one **two** three") == [
-        [("**two**", 4, 11), ("**", 4, 6), ("two", 6, 9), ("**", 9, 11)]
-    ]
+    assert allMatches(regEx, "one **two** three") == [[("**two**", 4, 11), ("**", 4, 6), ("two", 6, 9), ("**", 9, 11)]]
 
     # Single asterisk format is ignored
     assert allMatches(regEx, "one *two* three") == []
@@ -159,58 +142,40 @@ def testTextPatterns_Markdown():
     regEx = REGEX_PATTERNS.markdownBold
 
     # Two asterisks work as before
-    assert allMatches(regEx, "one **two** three") == [
-        [("**two**", 4, 11), ("**", 4, 6), ("two", 6, 9), ("**", 9, 11)]
-    ]
+    assert allMatches(regEx, "one **two** three") == [[("**two**", 4, 11), ("**", 4, 6), ("two", 6, 9), ("**", 9, 11)]]
 
     # Single asterisk format is now allowed
-    assert allMatches(regEx, "one *two* three") == [
-         [("*two*", 4, 9), ("*", 4, 5), ("two", 5, 8), ("*", 8, 9)]
-    ]
+    assert allMatches(regEx, "one *two* three") == [[("*two*", 4, 9), ("*", 4, 5), ("two", 5, 8), ("*", 8, 9)]]
 
     # This is now a valid bold, and the extra asterisk is just kept as-is
-    assert allMatches(regEx, "one **two* three") == [
-        [("*two*", 5, 10), ("*", 5, 6), ("two", 6, 9), ("*", 9, 10)]
-    ]
+    assert allMatches(regEx, "one **two* three") == [[("*two*", 5, 10), ("*", 5, 6), ("two", 6, 9), ("*", 9, 10)]]
 
     # This is now a valid bold, and the extra asterisk is just kept as-is
-    assert allMatches(regEx, "one *two** three") == [
-        [("*two*", 4, 9), ("*", 4, 5), ("two", 5, 8), ("*", 8, 9)]
-    ]
+    assert allMatches(regEx, "one *two** three") == [[("*two*", 4, 9), ("*", 4, 5), ("two", 5, 8), ("*", 8, 9)]]
 
     # This is now a valid bold, because the asterisk itself is a valid boundary
-    assert allMatches(regEx, "one**two**three") == [
-        [("*two*", 4, 9), ("*", 4, 5), ("two", 5, 8), ("*", 8, 9)]
-    ]
+    assert allMatches(regEx, "one**two**three") == [[("*two*", 4, 9), ("*", 4, 5), ("two", 5, 8), ("*", 8, 9)]]
 
     # However, this is still invalid
     assert allMatches(regEx, "one*two*three") == []
 
     # Italic
     regEx = REGEX_PATTERNS.markdownItalic
-    assert allMatches(regEx, "one _two_ three") == [
-        [("_two_", 4, 9), ("_", 4, 5), ("two", 5, 8), ("_", 8, 9)]
-    ]
+    assert allMatches(regEx, "one _two_ three") == [[("_two_", 4, 9), ("_", 4, 5), ("two", 5, 8), ("_", 8, 9)]]
     assert allMatches(regEx, "one __two_ three") == []
-    assert allMatches(regEx, "one _two__ three") == [
-        [("_two__", 4, 10), ("_", 4, 5), ("two_", 5, 9), ("_", 9, 10)]
-    ]
+    assert allMatches(regEx, "one _two__ three") == [[("_two__", 4, 10), ("_", 4, 5), ("two_", 5, 9), ("_", 9, 10)]]
     assert allMatches(regEx, "one_two_three") == []
 
     # Strike
     regEx = REGEX_PATTERNS.markdownStrike
-    assert allMatches(regEx, "one ~~two~~ three") == [
-        [("~~two~~", 4, 11), ("~~", 4, 6), ("two", 6, 9), ("~~", 9, 11)]
-    ]
+    assert allMatches(regEx, "one ~~two~~ three") == [[("~~two~~", 4, 11), ("~~", 4, 6), ("two", 6, 9), ("~~", 9, 11)]]
     assert allMatches(regEx, "one ~~two~ three") == []
     assert allMatches(regEx, "one ~two~~ three") == []
     assert allMatches(regEx, "one~~two~~three") == []
 
     # Mark
     regEx = REGEX_PATTERNS.markdownMark
-    assert allMatches(regEx, "one ==two== three") == [
-        [("==two==", 4, 11), ("==", 4, 6), ("two", 6, 9), ("==", 9, 11)]
-    ]
+    assert allMatches(regEx, "one ==two== three") == [[("==two==", 4, 11), ("==", 4, 6), ("two", 6, 9), ("==", 9, 11)]]
     assert allMatches(regEx, "one ==two= three") == []
     assert allMatches(regEx, "one =two== three") == []
     assert allMatches(regEx, "one==two==three") == []
@@ -327,9 +292,9 @@ def testTextPatterns_DialogueStyle():
     assert REGEX_PATTERNS.dialogStyle is None
 
     # Set the config
-    CONFIG.fmtSQuoteOpen  = nwUnicode.U_LSQUO
+    CONFIG.fmtSQuoteOpen = nwUnicode.U_LSQUO
     CONFIG.fmtSQuoteClose = nwUnicode.U_RSQUO
-    CONFIG.fmtDQuoteOpen  = nwUnicode.U_LDQUO
+    CONFIG.fmtDQuoteOpen = nwUnicode.U_LDQUO
     CONFIG.fmtDQuoteClose = nwUnicode.U_RDQUO
 
     CONFIG.dialogStyle = 3
@@ -342,18 +307,15 @@ def testTextPatterns_DialogueStyle():
     assert regEx is not None
 
     # Defined single quotes are recognised
-    assert allMatches(regEx, "one \u2018two\u2019 three") == [
-        [("\u2018two\u2019", 4, 9)]
-    ]
+    assert allMatches(regEx, "one \u2018two\u2019 three") == [[("\u2018two\u2019", 4, 9)]]
 
     # Defined double quotes are recognised
-    assert allMatches(regEx, "one \u201ctwo\u201d three") == [
-        [("\u201ctwo\u201d", 4, 9)]
-    ]
+    assert allMatches(regEx, "one \u201ctwo\u201d three") == [[("\u201ctwo\u201d", 4, 9)]]
 
     # Both single and double quotes are recognised
     assert allMatches(regEx, "one \u2018two\u2019 three \u201cfour\u201d five") == [
-        [("\u2018two\u2019", 4, 9)], [("\u201cfour\u201d", 16, 22)]
+        [("\u2018two\u2019", 4, 9)],
+        [("\u201cfour\u201d", 16, 22)],
     ]
 
     # But not mixed
@@ -376,12 +338,8 @@ def testTextPatterns_DialogueStyle():
     ]
 
     # Check with no whitespace, double quote
-    assert allMatches(regEx, "one\u201ctwo\u201dthree") == [
-        [("\u201ctwo\u201d", 3, 8)]
-    ]
-    assert allMatches(regEx, "one\u201ctwo\u201d three") == [
-        [("\u201ctwo\u201d", 3, 8)]
-    ]
+    assert allMatches(regEx, "one\u201ctwo\u201dthree") == [[("\u201ctwo\u201d", 3, 8)]]
+    assert allMatches(regEx, "one\u201ctwo\u201d three") == [[("\u201ctwo\u201d", 3, 8)]]
 
     # Check with apostrophe
     assert allMatches(regEx, "one \u2018two\u2019s three\u2019, \u2018four\u2019 five") == [
@@ -397,23 +355,19 @@ def testTextPatterns_DialogueStyle():
     assert regEx is not None
 
     # Defined single quotes are recognised also when open
-    assert allMatches(regEx, "one \u2018two three") == [
-        [("\u2018two three", 4, 14)]
-    ]
+    assert allMatches(regEx, "one \u2018two three") == [[("\u2018two three", 4, 14)]]
 
     # Defined double quotes are recognised also when open
-    assert allMatches(regEx, "one \u201ctwo three") == [
-        [("\u201ctwo three", 4, 14)]
-    ]
+    assert allMatches(regEx, "one \u201ctwo three") == [[("\u201ctwo three", 4, 14)]]
 
 
 @pytest.mark.core
 def testTextPatterns_DialoguePlain():
     """Test the dialogue style pattern regexes for plain quotes."""
     # Set the config
-    CONFIG.fmtSQuoteOpen  = "'"
+    CONFIG.fmtSQuoteOpen = "'"
     CONFIG.fmtSQuoteClose = "'"
-    CONFIG.fmtDQuoteOpen  = '"'
+    CONFIG.fmtDQuoteOpen = '"'
     CONFIG.fmtDQuoteClose = '"'
 
     CONFIG.dialogStyle = 3
@@ -425,13 +379,12 @@ def testTextPatterns_DialoguePlain():
     # ======
 
     # One double quoted string
-    assert allMatches(regEx, 'one "two" three') == [
-        [('"two"', 4, 9)]
-    ]
+    assert allMatches(regEx, 'one "two" three') == [[('"two"', 4, 9)]]
 
     # Two double quoted strings
     assert allMatches(regEx, 'one "two" three "four" five') == [
-        [('"two"', 4, 9)], [('"four"', 16, 22)],
+        [('"two"', 4, 9)],
+        [('"four"', 16, 22)],
     ]
 
     # No space
@@ -443,13 +396,12 @@ def testTextPatterns_DialoguePlain():
     # ======
 
     # One single quoted string
-    assert allMatches(regEx, "one 'two' three") == [
-        [("'two'", 4, 9)]
-    ]
+    assert allMatches(regEx, "one 'two' three") == [[("'two'", 4, 9)]]
 
     # Two single quoted strings
     assert allMatches(regEx, "one 'two' three 'four' five") == [
-        [("'two'", 4, 9)], [("'four'", 16, 22)],
+        [("'two'", 4, 9)],
+        [("'four'", 16, 22)],
     ]
 
     # No space
@@ -482,14 +434,10 @@ def testTextPatterns_DialogueSpecial():
     assert regEx is not None
 
     # With no padding
-    assert allMatches(regEx, "one ::two:: three") == [
-        [("::two::", 4, 11)]
-    ]
+    assert allMatches(regEx, "one ::two:: three") == [[("::two::", 4, 11)]]
 
     # With padding
-    assert allMatches(regEx, "one :: two :: three") == [
-        [(":: two ::", 4, 13)]
-    ]
+    assert allMatches(regEx, "one :: two :: three") == [[(":: two ::", 4, 13)]]
 
 
 @pytest.mark.core
@@ -497,9 +445,9 @@ def testTextPatterns_DialogParserEnglish():
     """Test the dialog parser with English settings."""
     # Set the config
     CONFIG.dialogStyle = 3
-    CONFIG.fmtSQuoteOpen  = nwUnicode.U_LSQUO
+    CONFIG.fmtSQuoteOpen = nwUnicode.U_LSQUO
     CONFIG.fmtSQuoteClose = nwUnicode.U_RSQUO
-    CONFIG.fmtDQuoteOpen  = nwUnicode.U_LDQUO
+    CONFIG.fmtDQuoteOpen = nwUnicode.U_LDQUO
     CONFIG.fmtDQuoteClose = nwUnicode.U_RDQUO
 
     parser = DialogParser()
@@ -518,7 +466,8 @@ def testTextPatterns_DialogParserEnglish():
 
     # Positions:   0                 18            32                      56
     assert parser("“Simple dialogue,” argued John, “is not always so easy.”") == [
-        (0, 18), (32, 56),
+        (0, 18),
+        (32, 56),
     ]
 
     # With Narrator breaks
@@ -528,12 +477,14 @@ def testTextPatterns_DialogParserEnglish():
 
     # Positions:   0                 18              34                      58
     assert parser("“Simple dialogue, — argued John, — is not always so easy.”") == [
-        (0, 18), (34, 58),
+        (0, 18),
+        (34, 58),
     ]
 
     # Positions:   0                 18            32                      56
     assert parser("“Simple dialogue, —argued John—, is not always so easy.”") == [
-        (0, 18), (32, 56),
+        (0, 18),
+        (32, 56),
     ]
 
     # Positions:   0                              31
@@ -547,9 +498,9 @@ def testTextPatterns_DialogParserSpanish():
     """Test the dialog parser with Spanish settings."""
     # Set the config
     CONFIG.dialogStyle = 3
-    CONFIG.fmtSQuoteOpen  = nwUnicode.U_LSAQUO
+    CONFIG.fmtSQuoteOpen = nwUnicode.U_LSAQUO
     CONFIG.fmtSQuoteClose = nwUnicode.U_RSAQUO
-    CONFIG.fmtDQuoteOpen  = nwUnicode.U_LAQUO
+    CONFIG.fmtDQuoteOpen = nwUnicode.U_LAQUO
     CONFIG.fmtDQuoteClose = nwUnicode.U_RAQUO
     CONFIG.dialogLine = nwUnicode.U_EMDASH + nwUnicode.U_RAQUO
     CONFIG.narratorBreak = nwUnicode.U_EMDASH
@@ -559,7 +510,8 @@ def testTextPatterns_DialogParserSpanish():
 
     # Positions:   0                 18                                  54              70
     assert parser("—No te preocupes. —Cerró la puerta y salió corriendo—. Volveré pronto.") == [
-        (0, 18), (54, 70),
+        (0, 18),
+        (54, 70),
     ]
 
     # Positions:   0             14
@@ -578,9 +530,9 @@ def testTextPatterns_DialogParserPortuguese():
     """Test the dialog parser with Portuguese settings."""
     # Set the config
     CONFIG.dialogStyle = 0
-    CONFIG.fmtSQuoteOpen  = nwUnicode.U_LSAQUO
+    CONFIG.fmtSQuoteOpen = nwUnicode.U_LSAQUO
     CONFIG.fmtSQuoteClose = nwUnicode.U_RSAQUO
-    CONFIG.fmtDQuoteOpen  = nwUnicode.U_LAQUO
+    CONFIG.fmtDQuoteOpen = nwUnicode.U_LAQUO
     CONFIG.fmtDQuoteClose = nwUnicode.U_RAQUO
     CONFIG.dialogLine = nwUnicode.U_EMDASH
     CONFIG.narratorBreak = nwUnicode.U_EMDASH
@@ -600,12 +552,14 @@ def testTextPatterns_DialogParserPortuguese():
 
     # Positions:   0           12               29                  49
     assert parser("— Tudo bem? — ele pergunta. — Você falou com ele?") == [
-        (0, 12), (29, 49),
+        (0, 12),
+        (29, 49),
     ]
 
     # Positions:   0           12               29                  49
     assert parser("— Tudo bem? — ele pergunta —. Você falou com ele?") == [
-        (0, 12), (29, 49),
+        (0, 12),
+        (29, 49),
     ]
 
 
@@ -614,9 +568,9 @@ def testTextPatterns_DialogParserPolish():
     """Test the dialog parser with alternating Polish settings."""
     # Set the config
     CONFIG.dialogStyle = 0
-    CONFIG.fmtSQuoteOpen  = "'"
+    CONFIG.fmtSQuoteOpen = "'"
     CONFIG.fmtSQuoteClose = "'"
-    CONFIG.fmtDQuoteOpen  = '"'
+    CONFIG.fmtDQuoteOpen = '"'
     CONFIG.fmtDQuoteClose = '"'
     CONFIG.dialogLine = ""
     CONFIG.narratorBreak = ""
@@ -628,10 +582,9 @@ def testTextPatterns_DialogParserPolish():
     # This is what an example dialogue might look like using Polish punctuation rules
     # See discussion #1976
 
-    assert parser(
-        "– Example statement – someone said. And he added: – Another example statement."
-    ) == [
-        (0, 20), (50, 78),
+    assert parser("– Example statement – someone said. And he added: – Another example statement.") == [
+        (0, 20),
+        (50, 78),
     ]
 
     assert parser(
@@ -649,7 +602,10 @@ def testTextPatterns_DialogParserPolish():
         (109, 122),
     ]
 
-    assert parser(
-        'And so on and so forth. However, "text in quotation marks" should not be '
-        "highlighted at all, and if so, it should be highlighted differently."
-    ) == []
+    assert (
+        parser(
+            'And so on and so forth. However, "text in quotation marks" should not be '
+            "highlighted at all, and if so, it should be highlighted differently."
+        )
+        == []
+    )

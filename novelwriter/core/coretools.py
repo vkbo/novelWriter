@@ -24,6 +24,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -205,7 +206,6 @@ class DocSplitter:
             hHandle = [self._parHandle, None, None, None, None]
             pLevel = 0
             for docText, hLevel, docLabel in self._rawData:
-
                 hLevel = minmax(hLevel, 1, 4)
                 if pLevel == 0:
                     pLevel = hLevel
@@ -220,10 +220,7 @@ class DocSplitter:
                     elif hLevel == 4:
                         pHandle = hHandle[3] or hHandle[2] or hHandle[1] or hHandle[0]
 
-                if (
-                    (dHandle := self._project.newFile(docLabel, pHandle))
-                    and (nwItem := self._project.tree[dHandle])
-                ):
+                if (dHandle := self._project.newFile(docLabel, pHandle)) and (nwItem := self._project.tree[dHandle]):
                     hHandle[hLevel] = dHandle
                     nwItem.setStatus(self._srcItem.itemStatus)
                     nwItem.setImport(self._srcItem.itemImport)
@@ -309,9 +306,7 @@ class DocSearch:
         """Set the escape flag to the opposite state."""
         self._escape = not state
 
-    def iterSearch(
-        self, project: NWProject, search: str
-    ) -> Iterable[tuple[NWItem, list[tuple[int, int, str]], bool]]:
+    def iterSearch(self, project: NWProject, search: str) -> Iterable[tuple[NWItem, list[tuple[int, int, str]], bool]]:
         """Iterate through documents in a project and apply search."""
         self._regEx = re.compile(self._buildPattern(search), self._opts)
         logger.debug("Searching with pattern '%s'", self._regEx.pattern)
@@ -335,7 +330,7 @@ class DocSearch:
             num = len(res.group(0))
             lim = text[:pos].rfind("\n") + 1
             cut = text[lim:pos].rfind(" ") + lim + 1
-            context = text[cut:cut+100].partition("\n")[0]
+            context = text[cut : cut + 100].partition("\n")[0]
             if context:
                 results.append((pos, num, context))
                 count += 1
@@ -401,15 +396,10 @@ class ProjectBuilder:
         project = NWProject()
         status = project.storage.createNewProject(path)
         if status == NWStorageCreate.NOT_EMPTY:
-            SHARED.error(self.tr(
-                "The target folder is not empty. "
-                "Please choose another folder."
-            ))
+            SHARED.error(self.tr("The target folder is not empty. Please choose another folder."))
             return False
         elif status == NWStorageCreate.OS_ERROR:
-            SHARED.error(self.tr(
-                "An error occurred while trying to create the project."
-            ), exc=project.storage.exc)
+            SHARED.error(self.tr("An error occurred while trying to create the project."), exc=project.storage.exc)
             return False
 
         self._path = project.storage.storagePath
@@ -432,26 +422,28 @@ class ProjectBuilder:
 
         # Generate Title Page
         aDoc = project.storage.getDocument(hTitlePage)
-        aDoc.writeDocument((
-            "{author}[br]\n"
-            "{address} 1[br]\n"
-            "{address} 2 <<\n"
-            "\n"
-            "[vspace:5]\n"
-            "\n"
-            "#! {title}\n"
-            "\n"
-            ">> **{by} {author}** <<\n"
-            "\n"
-            ">> {count}: [field:{field}] <<\n"
-        ).format(
-            author=project.data.author or trAuthor,
-            address=self.tr("Address Line"),
-            title=project.data.name or trName,
-            by=self.tr("By"),
-            count=self.tr("Word Count"),
-            field=nwStats.WORDS_TEXT,
-        ))
+        aDoc.writeDocument(
+            (
+                "{author}[br]\n"
+                "{address} 1[br]\n"
+                "{address} 2 <<\n"
+                "\n"
+                "[vspace:5]\n"
+                "\n"
+                "#! {title}\n"
+                "\n"
+                ">> **{by} {author}** <<\n"
+                "\n"
+                ">> {count}: [field:{field}] <<\n"
+            ).format(
+                author=project.data.author or trAuthor,
+                address=self.tr("Address Line"),
+                title=project.data.name or trName,
+                by=self.tr("By"),
+                count=self.tr("Word Count"),
+                field=nwStats.WORDS_TEXT,
+            )
+        )
 
         # Create chapters and scenes
         numChapters = data.get("chapters", 0)
@@ -464,7 +456,7 @@ class ProjectBuilder:
         # Create chapters
         if numChapters > 0:
             for ch in range(numChapters):
-                chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
+                chTitle = self.tr("Chapter {0}").format(f"{ch + 1:d}")
                 cHandle = project.newFile(chTitle, hNovelRoot)
                 aDoc = project.storage.getDocument(cHandle)
                 aDoc.writeDocument(f"## {chTitle}\n\n%Synopsis: {trChSynop}\n\n")
@@ -472,7 +464,7 @@ class ProjectBuilder:
                 # Create chapter scenes
                 if numScenes > 0 and cHandle:
                     for sc in range(numScenes):
-                        scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
+                        scTitle = self.tr("Scene {0}").format(f"{ch + 1:d}.{sc + 1:d}")
                         sHandle = project.newFile(scTitle, cHandle)
                         aDoc = project.storage.getDocument(sHandle)
                         aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {trScSynop}\n\n")
@@ -480,7 +472,7 @@ class ProjectBuilder:
         # Create scenes (no chapters)
         elif numScenes > 0:
             for sc in range(numScenes):
-                scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
+                scTitle = self.tr("Scene {0}").format(f"{sc + 1:d}")
                 sHandle = project.newFile(scTitle, hNovelRoot)
                 aDoc = project.storage.getDocument(sHandle)
                 aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {trScSynop}\n\n")
@@ -500,11 +492,7 @@ class ProjectBuilder:
                     aHandle = project.newFile(noteTitles[newRoot], rHandle)
                     ntTag = simplified(noteTitles[newRoot]).replace(" ", "")
                     aDoc = project.storage.getDocument(aHandle)
-                    aDoc.writeDocument(
-                        f"# {noteTitles[newRoot]}\n\n"
-                        f"@tag: {ntTag}\n\n"
-                        f"%Short: {trNoteDesc}\n\n"
-                    )
+                    aDoc.writeDocument(f"# {noteTitles[newRoot]}\n\n@tag: {ntTag}\n\n%Short: {trNoteDesc}\n\n")
 
         # Also add the archive and trash folders
         project.newRoot(nwItemClass.ARCHIVE)
@@ -521,18 +509,14 @@ class ProjectBuilder:
         """
         source = data.get("template")
         if not (
-            isinstance(source, Path) and safeIsFile(source)
-            and (source.name == nwFiles.PROJ_FILE or is_zipfile(source))
+            isinstance(source, Path) and safeIsFile(source) and (source.name == nwFiles.PROJ_FILE or is_zipfile(source))
         ):
             logger.error("Could not access source project: %s", source)
             return False
 
         logger.info("Copying project: %s", source)
         if safeExists(path):
-            SHARED.error(self.tr(
-                "The target folder already exists. "
-                "Please choose another folder."
-            ))
+            SHARED.error(self.tr("The target folder already exists. Please choose another folder."))
             return False
 
         # Begin copying
@@ -569,10 +553,7 @@ class ProjectBuilder:
         sample.zip file to the new path.
         """
         if safeExists(path):
-            SHARED.error(self.tr(
-                "The target folder already exists. "
-                "Please choose another folder."
-            ))
+            SHARED.error(self.tr("The target folder already exists. Please choose another folder."))
             return False
 
         if safeIsFile(sample := CONFIG.assetPath("sample.zip")):
@@ -583,11 +564,13 @@ class ProjectBuilder:
                 SHARED.error(self.tr("Failed to create a new example project."), exc=exc)
                 return False
         else:
-            SHARED.error(self.tr(
-                "Failed to create a new example project. "
-                "Could not find the necessary files. "
-                "They seem to be missing from this installation."
-            ))
+            SHARED.error(
+                self.tr(
+                    "Failed to create a new example project. "
+                    "Could not find the necessary files. "
+                    "They seem to be missing from this installation."
+                )
+            )
             return False
 
         return True

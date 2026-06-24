@@ -24,6 +24,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import argparse
@@ -39,10 +40,7 @@ import utils.build_windows
 import utils.docs
 import utils.icon_themes
 
-from utils.common import (
-    ROOT_DIR, SETUP_DIR, extractReqs, extractVersion, readFile, stripVersion,
-    writeFile
-)
+from utils.common import ROOT_DIR, SETUP_DIR, extractReqs, extractVersion, readFile, stripVersion, writeFile
 
 OS_LINUX = sys.platform.startswith("linux")
 OS_DARWIN = sys.platform.startswith("darwin")
@@ -108,10 +106,7 @@ def genMacOSPlist(args: argparse.Namespace) -> None:
 def genReqFiles(args: argparse.Namespace) -> None:
     """Generate requirements.txt file from pyproject.toml."""
     select = [s.strip().lower() for s in args.groups] if args.groups else ["app"]
-    (ROOT_DIR / "requirements.txt").write_text(
-        "\n".join(extractReqs(select)),
-        encoding="utf-8"
-    )
+    (ROOT_DIR / "requirements.txt").write_text("\n".join(extractReqs(select)), encoding="utf-8")
 
 
 if __name__ == "__main__":
@@ -122,91 +117,74 @@ if __name__ == "__main__":
             "This tool provides setup and build commands for installing or distributing "
             "novelWriter as a package on Linux, Mac and Windows, as well as developer tools "
             "for internationalisation."
-        )
+        ),
     )
     parsers = parser.add_subparsers()
 
     # Version
-    cmdVersion = parsers.add_parser(
-        "version", help="Print the novelWriter version."
-    )
+    cmdVersion = parsers.add_parser("version", help="Print the novelWriter version.")
     cmdVersion.set_defaults(func=printVersion)
 
     # Additional Builds
     # =================
 
     # Build Icons
-    styles = ", ".join([
-        "all", "default", "optional", "free", "non_free",
-        *utils.icon_themes.ICON_SOURCES.keys()
-    ])
-    cmdIcons = parsers.add_parser(
-        "icons", help="Build icon theme files from upstream sources."
-    )
+    styles = ", ".join(["all", "default", "optional", "free", "non_free", *utils.icon_themes.ICON_SOURCES.keys()])
+    cmdIcons = parsers.add_parser("icons", help="Build icon theme files from upstream sources.")
     cmdIcons.add_argument("style", help=f"What icon style to build: {styles}")
     cmdIcons.add_argument("--work-dir", help="Working directory.", default="build_icons")
     cmdIcons.set_defaults(func=utils.icon_themes.main)
 
     # Import Translations
-    cmdImportTS = parsers.add_parser(
-        "qtlimport", help="Import updated i18n files from a Crowdin zip file."
-    )
+    cmdImportTS = parsers.add_parser("qtlimport", help="Import updated i18n files from a Crowdin zip file.")
     cmdImportTS.add_argument("file", help="Path to zip file from Crowdin")
     cmdImportTS.set_defaults(func=utils.assets.importI18nUpdates)
 
     # Update i18n Sources
     cmdUpdateTS = parsers.add_parser(
-        "qtlupdate", help=(
+        "qtlupdate",
+        help=(
             "Update translation files for internationalisation. "
             "The files to be updated must be provided as arguments. "
             "New files can be created by giving a 'nw_<lang>.ts' file name "
             "where <lang> is a valid language code."
-        )
+        ),
     )
     cmdUpdateTS.add_argument("files", nargs="+")
     cmdUpdateTS.set_defaults(func=utils.assets.updateTranslationSources)
 
     # Build i18n Files
-    cmdBuildQM = parsers.add_parser(
-        "qtlrelease", help="Build the language files for internationalisation."
-    )
+    cmdBuildQM = parsers.add_parser("qtlrelease", help="Build the language files for internationalisation.")
     cmdBuildQM.set_defaults(func=utils.assets.buildTranslationAssets)
 
     # Update Docs i18n Sources
     cmdUpdateDocsPo = parsers.add_parser(
-        "docs-lupdate", help=(
+        "docs-lupdate",
+        help=(
             "Update translation files for internationalisation of the docs. "
             "The langauges to be updated can be added as arguments, "
             "or set to all to update all existing translations."
-        )
+        ),
     )
     cmdUpdateDocsPo.add_argument("lang", nargs="+")
     cmdUpdateDocsPo.set_defaults(func=utils.docs.updateDocsTranslationSources)
 
     # Build PDF Docs
-    cmdBuildPdfDocs = parsers.add_parser(
-        "docs-pdf", help="Build the PDF manual files."
-    )
+    cmdBuildPdfDocs = parsers.add_parser("docs-pdf", help="Build the PDF manual files.")
     cmdBuildPdfDocs.add_argument("lang", nargs="+")
     cmdBuildPdfDocs.set_defaults(func=utils.docs.buildPdfDocAssets)
 
     # Build HTML Docs
-    cmdBuildHtmlDocs = parsers.add_parser(
-        "docs-html", help="Build the HTML docs."
-    )
+    cmdBuildHtmlDocs = parsers.add_parser("docs-html", help="Build the HTML docs.")
     cmdBuildHtmlDocs.add_argument("lang", nargs="+", help="Language codes to generate docs for.")
     cmdBuildHtmlDocs.set_defaults(func=utils.docs.buildHtmlDocs)
 
     # Build Sample
-    cmdBuildSample = parsers.add_parser(
-        "sample", help="Build the sample project zip file and add it to assets."
-    )
+    cmdBuildSample = parsers.add_parser("sample", help="Build the sample project zip file and add it to assets.")
     cmdBuildSample.set_defaults(func=utils.assets.buildSampleZip)
 
     # Clean Assets
-    cmdCleanAssets = parsers.add_parser(
-        "clean-assets", help="Delete assets built by docs-pdf, sample and qtlrelease."
-    )
+    cmdCleanAssets = parsers.add_parser("clean-assets", help="Delete assets built by docs-pdf, sample and qtlrelease.")
     cmdCleanAssets.set_defaults(func=utils.assets.cleanBuiltAssets)
 
     # Build Assets
@@ -220,20 +198,14 @@ if __name__ == "__main__":
 
     # Build Debian Package
     cmdBuildDeb = parsers.add_parser(
-        "build-deb", help=(
-            "Build a .deb package for Debian and Ubuntu. "
-            "Add --sign to sign package."
-        )
+        "build-deb", help=("Build a .deb package for Debian and Ubuntu. Add --sign to sign package.")
     )
     cmdBuildDeb.add_argument("--sign", action="store_true", help="Sign the package.")
     cmdBuildDeb.set_defaults(func=utils.build_debian.debian)
 
     # Build Ubuntu Packages
     cmdBuildUbuntu = parsers.add_parser(
-        "build-ubuntu", help=(
-            "Build a .deb package for Debian and Ubuntu. "
-            "Add --sign to sign package."
-        )
+        "build-ubuntu", help=("Build a .deb package for Debian and Ubuntu. Add --sign to sign package.")
     )
     cmdBuildUbuntu.add_argument("--sign", action="store_true", help="Sign the package.")
     cmdBuildUbuntu.add_argument("--build", type=int, help="Set build number.")
@@ -255,33 +227,27 @@ if __name__ == "__main__":
     cmdBuildSetupExe.set_defaults(func=utils.build_windows.main)
 
     # Build Binary
-    cmdBuildBinary = parsers.add_parser(
-        "build-bin", help="Build a standalone binary package."
-    )
+    cmdBuildBinary = parsers.add_parser("build-bin", help="Build a standalone binary package.")
     cmdBuildBinary.set_defaults(func=utils.build_binary.main)
 
     # Build Clean
-    cmdBuildClean = parsers.add_parser(
-        "build-clean", help="Recursively delete all build folders."
-    )
+    cmdBuildClean = parsers.add_parser("build-clean", help="Recursively delete all build folders.")
     cmdBuildClean.set_defaults(func=cleanBuildDirs)
 
     # Generate MacOS PList File
-    cmdGenMacOSPlist = parsers.add_parser(
-        "gen-plist", help="Generate an Info.plist for use in a MacOS Bundle."
-    )
+    cmdGenMacOSPlist = parsers.add_parser("gen-plist", help="Generate an Info.plist for use in a MacOS Bundle.")
     cmdGenMacOSPlist.set_defaults(func=genMacOSPlist)
 
     # Generate Requirement File
-    cmdGenReq = parsers.add_parser(
-        "gen-req", help="Generate a requirements.txt file for pip."
-    )
+    cmdGenReq = parsers.add_parser("gen-req", help="Generate a requirements.txt file for pip.")
     cmdGenReq.add_argument(
-        "groups", nargs="*", help=(
+        "groups",
+        nargs="*",
+        help=(
             "Groups to generate for, or 'all' to generate for all groups. "
             "Use 'app' to generate for just the core application. "
             "Defaults to 'app' if none are specified."
-        )
+        ),
     )
     cmdGenReq.set_defaults(func=genReqFiles)
 

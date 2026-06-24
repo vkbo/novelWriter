@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from shutil import copyfile
@@ -120,7 +121,7 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     assert eHandle in project.tree
 
     # Write to file, failed
-    assert project.writeNewFile("blabla", 1, True) is False         # Not a handle
+    assert project.writeNewFile("blabla", 1, True) is False  # Not a handle
     assert project.writeNewFile(aHandle, 1, True) is False  # Not a file
     assert project.writeNewFile(C.hTitlePage, 1, True) is False  # Already has content
 
@@ -130,9 +131,7 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
 
     # Write to file with additional text, success
     assert project.writeNewFile(cHandle, 1, False, "Hi Jane\n\n") is True
-    assert project.storage.getDocument(cHandle).readDocument() == (
-        "# Jane\n\nHi Jane\n\n"
-    )
+    assert project.storage.getDocument(cHandle).readDocument() == ("# Jane\n\nHi Jane\n\n")
 
     # Copy file content, invalid target
     assert project.copyFileContent(xHandle, cHandle) is False  # Unknown handle
@@ -470,7 +469,4 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
         inZip.extractall(tstPaths.tmpDir / "extract")
 
     # Check that the main project file was restored
-    assert cmpFiles(
-        fncPath / "nwProject.nwx",
-        tstPaths.tmpDir / "extract" / "nwProject.nwx"
-    )
+    assert cmpFiles(fncPath / "nwProject.nwx", tstPaths.tmpDir / "extract" / "nwProject.nwx")

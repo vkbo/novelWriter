@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -26,8 +27,18 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
-    QApplication, QComboBox, QDialog, QDialogButtonBox, QDoubleSpinBox,
-    QFontDialog, QLabel, QPushButton, QSpinBox, QToolButton, QTreeView, QWidget
+    QApplication,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QDoubleSpinBox,
+    QFontDialog,
+    QLabel,
+    QPushButton,
+    QSpinBox,
+    QToolButton,
+    QTreeView,
+    QWidget,
 )
 
 from novelwriter import CONFIG, SHARED
@@ -153,10 +164,7 @@ class NTreeView(QTreeView):
 
     def mousePressEvent(self, event: QMouseEvent | None) -> None:
         """Emit a signal on mouse middle click."""
-        if (
-            event and event.button() == QtMouseMiddle
-            and (index := self.indexAt(event.pos())).isValid()
-        ):
+        if event and event.button() == QtMouseMiddle and (index := self.indexAt(event.pos())).isValid():
             self.middleClicked.emit(index)
         return super().mousePressEvent(event)
 
@@ -225,7 +233,7 @@ class NSpinBox(QSpinBox):
 
     def setFixedNumbersWidth(self, count: int) -> None:
         """Set a fixed with for a certain amount of numbers."""
-        self.setFixedWidth(count*SHARED.theme.textNWidth + 24)
+        self.setFixedWidth(count * SHARED.theme.textNWidth + 24)
 
 
 class NDoubleSpinBox(QDoubleSpinBox):
@@ -261,7 +269,7 @@ class NDoubleSpinBox(QDoubleSpinBox):
 
     def setFixedNumbersWidth(self, count: int) -> None:
         """Set a fixed with for a certain amount of numbers."""
-        self.setFixedWidth(count*SHARED.theme.textNWidth + 24)
+        self.setFixedWidth(count * SHARED.theme.textNWidth + 24)
 
 
 class NPushButton(QPushButton):
@@ -271,8 +279,7 @@ class NPushButton(QPushButton):
     """
 
     def __init__(
-        self, parent: QWidget, text: str, iconSize: QSize,
-        icon: str | None = None, color: str | None = None
+        self, parent: QWidget, text: str, iconSize: QSize, icon: str | None = None, color: str | None = None
     ) -> None:
         super().__init__(parent=parent)
         self._icon = icon
@@ -299,10 +306,7 @@ class NIconToolButton(QToolButton):
 
     __slots__ = ("_color", "_icon")
 
-    def __init__(
-        self, parent: QWidget, iconSize: QSize,
-        icon: str | None = None, color: str | None = None
-    ) -> None:
+    def __init__(self, parent: QWidget, iconSize: QSize, icon: str | None = None, color: str | None = None) -> None:
         super().__init__(parent=parent)
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.setIconSize(iconSize)
@@ -327,10 +331,7 @@ class NIconToggleButton(QToolButton):
     A quicker way to create a toggle button using the app theme.
     """
 
-    def __init__(
-        self, parent: QWidget, iconSize: QSize,
-        icon: str | None = None, color: str | None = None
-    ) -> None:
+    def __init__(self, parent: QWidget, iconSize: QSize, icon: str | None = None, color: str | None = None) -> None:
         super().__init__(parent=parent)
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.setIconSize(iconSize)

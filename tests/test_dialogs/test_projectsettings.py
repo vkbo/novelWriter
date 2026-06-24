@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -56,9 +57,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
 
     # Get the dialog object
     nwGUI.mainMenu.aProjectSettings.activate(QAction.ActionEvent.Trigger)
-    qtbot.waitUntil(
-        lambda: SHARED.findTopLevelWidget(GuiProjectSettings) is not None, timeout=1000
-    )
+    qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiProjectSettings) is not None, timeout=1000)
 
     projSettings = SHARED.findTopLevelWidget(GuiProjectSettings)
     assert isinstance(projSettings, GuiProjectSettings)
@@ -235,31 +234,23 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     # Move items, none selected -> no change
     status.listBox.clearSelection()
     status._moveItem(1)
-    assert [x[0] for x in status.getNewList()] == [
-        C.sNew, C.sDraft, C.sFinished, None
-    ]
+    assert [x[0] for x in status.getNewList()] == [C.sNew, C.sDraft, C.sFinished, None]
 
     # Move items, first selected, move up -> no change
     status.listBox.clearSelection()
     status.listBox.setCurrentItem(status.listBox.topLevelItem(0))
     status._moveItem(-1)
-    assert [x[0] for x in status.getNewList()] == [
-        C.sNew, C.sDraft, C.sFinished, None
-    ]
+    assert [x[0] for x in status.getNewList()] == [C.sNew, C.sDraft, C.sFinished, None]
 
     # Move items, last selected, move up -> allowed
     status.listBox.clearSelection()
     status.listBox.setCurrentItem(status.listBox.topLevelItem(3))
     status._moveItem(-1)
-    assert [x[0] for x in status.getNewList()] == [
-        C.sNew, C.sDraft, None, C.sFinished
-    ]
+    assert [x[0] for x in status.getNewList()] == [C.sNew, C.sDraft, None, C.sFinished]
 
     # Move items, same selected, move down -> allowed
     status._moveItem(1)
-    assert [x[0] for x in status.getNewList()] == [
-        C.sNew, C.sDraft, C.sFinished, None
-    ]
+    assert [x[0] for x in status.getNewList()] == [C.sNew, C.sDraft, C.sFinished, None]
 
     # Importance Tab
     # ==============
@@ -402,9 +393,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Set some values
     project = SHARED.project
-    project.data.setAutoReplace({
-        "A": "B", "C": "D"
-    })
+    project.data.setAutoReplace({"A": "B", "C": "D"})
 
     # Create Dialog
     projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.PAGE_REPLACE)
@@ -417,9 +406,9 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     replace = projSettings.replacePage
 
     assert replace.listBox.topLevelItem(0).text(0) == "<A>"  # type: ignore
-    assert replace.listBox.topLevelItem(0).text(1) == "B"    # type: ignore
+    assert replace.listBox.topLevelItem(0).text(1) == "B"  # type: ignore
     assert replace.listBox.topLevelItem(1).text(0) == "<C>"  # type: ignore
-    assert replace.listBox.topLevelItem(1).text(1) == "D"    # type: ignore
+    assert replace.listBox.topLevelItem(1).text(1) == "D"  # type: ignore
     assert replace.listBox.topLevelItemCount() == 2
 
     # Nothing to save or delete
@@ -460,8 +449,6 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Check Project
     projSettings._doSave()
-    assert project.data.autoReplace == {
-        "A": "B", "C": "D", "This": "With This Stuff"
-    }
+    assert project.data.autoReplace == {"A": "B", "C": "D", "This": "With This Stuff"}
 
     # qtbot.stop()

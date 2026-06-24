@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -168,20 +169,20 @@ def testCoreNovelModel_Data(nwGUI, fncPath, mockRnd):
     scene.addHeading(IndexHeading(scene._cache, "T0002", 10, "H4", "A Section"))
     scene.addHeading(IndexHeading(scene._cache, "T0003", 10, "H4", "Another Section"))
     assert model.refresh(scene) is True
-    assert [
-        model.data(model.createIndex(i, 0), QtDisplayRole)
-        for i in range(model.rowCount(root))
-    ] == [
-        "New Novel", "New Chapter", "New Scene", "A Section", "Another Section",
+    assert [model.data(model.createIndex(i, 0), QtDisplayRole) for i in range(model.rowCount(root))] == [
+        "New Novel",
+        "New Chapter",
+        "New Scene",
+        "A Section",
+        "Another Section",
     ]
 
     # Remove new headings
     del scene._headings["T0002"]
     del scene._headings["T0003"]
     assert model.refresh(scene) is True
-    assert [
-        model.data(model.createIndex(i, 0), QtDisplayRole)
-        for i in range(model.rowCount(root))
-    ] == [
-        "New Novel", "New Chapter", "New Scene",
+    assert [model.data(model.createIndex(i, 0), QtDisplayRole) for i in range(model.rowCount(root))] == [
+        "New Novel",
+        "New Chapter",
+        "New Scene",
     ]

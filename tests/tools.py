@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import shutil
@@ -38,36 +39,32 @@ MOCK_TIME = datetime(2019, 5, 10, 18, 52, 0).timestamp()
 
 
 class C:
-
     # Import and status items from test project when random generator is mocked
-    sNew      = "s000000"
-    sNote     = "s000001"
-    sDraft    = "s000002"
+    sNew = "s000000"
+    sNote = "s000001"
+    sDraft = "s000002"
     sFinished = "s000003"
 
-    iNew   = "i000004"
+    iNew = "i000004"
     iMinor = "i000005"
     iMajor = "i000006"
-    iMain  = "i000007"
+    iMain = "i000007"
 
     # Handles from test project when random generator is mocked
-    hInvalid    = "0000000000000"
-    hNovelRoot  = "0000000000008"
-    hPlotRoot   = "0000000000009"
-    hTrashRoot  = "0000000000010"
-    hCharRoot   = "000000000000a"
-    hWorldRoot  = "000000000000b"
-    hTitlePage  = "000000000000c"
+    hInvalid = "0000000000000"
+    hNovelRoot = "0000000000008"
+    hPlotRoot = "0000000000009"
+    hTrashRoot = "0000000000010"
+    hCharRoot = "000000000000a"
+    hWorldRoot = "000000000000b"
+    hTitlePage = "000000000000c"
     hChapterDir = "000000000000d"
     hChapterDoc = "000000000000e"
-    hSceneDoc   = "000000000000f"
+    hSceneDoc = "000000000000f"
 
 
 def cmpFiles(
-    fileOne: str | Path,
-    fileTwo: str | Path,
-    ignoreLines: list[int] | None = None,
-    ignoreStart: tuple | None = None
+    fileOne: str | Path, fileTwo: str | Path, ignoreLines: list[int] | None = None, ignoreStart: tuple | None = None
 ) -> bool:
     """Compare two files, with optional line ignore."""
     if ignoreLines is None:
@@ -96,17 +93,17 @@ def cmpFiles(
         lnOne = txtOne[n].strip()
         lnTwo = txtTwo[n].strip()
 
-        if n+1 in ignoreLines:
-            print(f"Ignoring line {n+1}")
+        if n + 1 in ignoreLines:
+            print(f"Ignoring line {n + 1}")
             continue
 
         if ignoreStart is not None:
             if lnOne.startswith(ignoreStart):
-                print(f"Ignoring line {n+1}")
+                print(f"Ignoring line {n + 1}")
                 continue
 
         if lnOne != lnTwo:
-            print(f"Diff on line {n+1}:")
+            print(f"Diff on line {n + 1}:")
             print(f" << '{lnOne}'")
             print(f" >> '{lnTwo}'")
             diffFound = True
@@ -174,6 +171,7 @@ def buildTestProject(obj: object, projPath: Path) -> None:
         project = obj
     elif isinstance(obj, GuiMain):
         from novelwriter import SHARED
+
         nwGUI = obj
         project = SHARED.project
     else:
@@ -224,7 +222,6 @@ def buildTestProject(obj: object, projPath: Path) -> None:
 
 
 class SimpleDialog(QDialog):
-
     def __init__(self, widget: QWidget | None = None) -> None:
         super().__init__()
         self._widget = widget

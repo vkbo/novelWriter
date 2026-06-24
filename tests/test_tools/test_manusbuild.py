@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -40,9 +41,7 @@ from tests.tools import buildTestProject
 
 
 @pytest.mark.gui
-def testToolManuscriptBuild_Main(
-    monkeypatch, qtbot: QtBot, nwGUI: GuiMain, fncPath: Path, projPath: Path, mockRnd
-):
+def testToolManuscriptBuild_Main(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, fncPath: Path, projPath: Path, mockRnd):
     """Test the GuiManuscriptBuild dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)

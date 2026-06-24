@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import re
@@ -81,7 +82,6 @@ def standardCounter(text: str) -> tuple[int, int, int]:
     prevEmpty = True
 
     for line in preProcessText(text):
-
         countPara = True
         if not line:
             prevEmpty = True

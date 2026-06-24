@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -27,10 +28,7 @@ from PyQt6.QtWidgets import QGridLayout, QLabel, QScrollArea, QWidget
 
 from novelwriter import SHARED
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import (
-    QtAlignLeft, QtAlignRight, QtAlignRightMiddle, QtSizeMinimum,
-    QtSizeMinimumExpanding
-)
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtAlignRightMiddle, QtSizeMinimum, QtSizeMinimumExpanding
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QIcon
@@ -49,7 +47,7 @@ class NSwitchBox(QScrollArea):
         super().__init__(parent=parent)
         self._index = 0
         self._hSwitch = baseSize
-        self._wSwitch = 2*self._hSwitch
+        self._wSwitch = 2 * self._hSwitch
         self._sIcon = baseSize
         self._widgets = []
         self.clear()
@@ -99,7 +97,7 @@ class NSwitchBox(QScrollArea):
     def addSeparator(self) -> None:
         """Add a blank entry in the content box."""
         spacer = QWidget(self)
-        spacer.setFixedHeight(int(0.5*self._sIcon))
+        spacer.setFixedHeight(int(0.5 * self._sIcon))
         self._content.addWidget(spacer, self._index, 0, 1, 3, QtAlignLeft)
         self._widgets.append(spacer)
         self._bumpIndex()

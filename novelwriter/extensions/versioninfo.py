@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -123,16 +124,13 @@ class VersionInfoWidget(QWidget):
         """Update the widget release info."""
         if version := formatVersion(tag.lstrip("v")):
             download = formatLink("#website", __domain__)
-            self._lblRelease.setText(self._trLatest.format(
-                f"{version} \u2013 {self._trDownload.format(download)}"
-            ))
+            self._lblRelease.setText(self._trLatest.format(f"{version} \u2013 {self._trDownload.format(download)}"))
         else:
             self._lblRelease.setText(self._trLatest.format(self.tr("Failed")))
             logger.error("Could not retrieve version info: %s", reason)
 
 
 class _Retriever(QRunnable):
-
     def __init__(self) -> None:
         super().__init__()
         self.signals = _RetrieverSignal()

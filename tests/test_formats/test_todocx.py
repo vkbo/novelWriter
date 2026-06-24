@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
@@ -55,7 +56,7 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Title" /><w:jc w:val="center" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Partition
@@ -70,7 +71,7 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Title" /><w:jc w:val="center" /></w:pPr>'
         '<w:r><w:br w:type="page" /></w:r>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Formatted
@@ -82,7 +83,7 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Title" /><w:jc w:val="center" /></w:pPr>'
         '<w:r><w:br w:type="page" /></w:r>'
-        '<w:r><w:rPr /><w:t>Part</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Part</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Chapter
@@ -97,7 +98,7 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr>'
         '<w:r><w:br w:type="page" /></w:r>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Formatted
@@ -109,7 +110,7 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr>'
         '<w:r><w:br w:type="page" /></w:r>'
-        '<w:r><w:rPr /><w:t>Chapter 2</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Chapter 2</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Scene
@@ -123,7 +124,7 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:rPr />'
-        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Formatted
@@ -134,7 +135,7 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Scene 2</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Scene 2</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Section
@@ -147,7 +148,7 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Heading3" /></w:pPr><w:r><w:rPr />'
-        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
 
@@ -169,7 +170,7 @@ def testFmtToDocX_NotesHeadingStyles(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Title" /><w:jc w:val="center" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Heading 1
@@ -181,7 +182,7 @@ def testFmtToDocX_NotesHeadingStyles(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:rPr />'
-        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Heading 2
@@ -193,7 +194,7 @@ def testFmtToDocX_NotesHeadingStyles(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:rPr />'
-        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Heading 3
@@ -205,7 +206,7 @@ def testFmtToDocX_NotesHeadingStyles(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Heading3" /></w:pPr><w:r><w:rPr />'
-        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Heading 4
@@ -217,7 +218,7 @@ def testFmtToDocX_NotesHeadingStyles(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Heading4" /></w:pPr><w:r><w:rPr />'
-        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
 
@@ -240,7 +241,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr><w:r><w:rPr />'
-        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Separator
@@ -249,8 +250,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        '<w:body><w:p><w:pPr><w:pStyle w:val="Separator" /></w:pPr><w:r><w:rPr />'
-        '<w:t>* * *</w:t></w:r></w:p></w:body>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Separator" /></w:pPr><w:r><w:rPr /><w:t>* * *</w:t></w:r></w:p></w:body>'
     )
 
     # Empty Paragraph
@@ -258,9 +258,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
     doc._blocks = [(BlockTyp.SKIP, "", "* * *", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
-    assert xmlToText(xTest) == (
-        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr></w:p></w:body>'
-    )
+    assert xmlToText(xTest) == ('<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr></w:p></w:body>')
 
     # Synopsis
     xTest = ET.Element(_wTag("body"))
@@ -273,7 +271,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
         '<w:r><w:rPr><w:b /><w:color w:val="813709" /></w:rPr><w:t>Synopsis:</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
         '<w:r><w:rPr><w:color w:val="813709" /></w:rPr><w:t>Hello World</w:t></w:r>'
-        '</w:p></w:body>'
+        "</w:p></w:body>"
     )
 
     # Short
@@ -287,7 +285,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
         '<w:r><w:rPr><w:b /><w:color w:val="813709" /></w:rPr><w:t>Short Description:</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
         '<w:r><w:rPr><w:color w:val="813709" /></w:rPr><w:t>Hello World</w:t></w:r>'
-        '</w:p></w:body>'
+        "</w:p></w:body>"
     )
 
     # Comment
@@ -301,7 +299,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
         '<w:r><w:rPr><w:b /><w:color w:val="646464" /></w:rPr><w:t>Comment:</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
         '<w:r><w:rPr><w:color w:val="646464" /></w:rPr><w:t>Hello World</w:t></w:r>'
-        '</w:p></w:body>'
+        "</w:p></w:body>"
     )
 
     # Tags and References (Single)
@@ -315,7 +313,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
         '<w:r><w:rPr><w:b /><w:color w:val="f5871f" /></w:rPr><w:t>Tag:</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
         '<w:r><w:rPr><w:color w:val="4271ae" /></w:rPr><w:t>Stuff</w:t></w:r>'
-        '</w:p></w:body>'
+        "</w:p></w:body>"
     )
 
     # Tags and References (Multiple)
@@ -331,7 +329,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
         '<w:r><w:rPr><w:color w:val="4271ae" /></w:rPr><w:t>Jane</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve">, </w:t></w:r>'
         '<w:r><w:rPr><w:color w:val="4271ae" /></w:rPr><w:t>John</w:t></w:r>'
-        '</w:p></w:body>'
+        "</w:p></w:body>"
     )
 
     # Tags and References (Invalid)
@@ -366,7 +364,7 @@ def testFmtToDocX_Links(mockGUI):
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t xml:space="preserve">Foo </w:t></w:r>'
         '<w:hyperlink r:id="rId1"><w:r><w:rPr><w:rStyle w:val="InternetLink" /></w:rPr>'
-        '<w:t>http://example.com</w:t></w:r></w:hyperlink>'
+        "<w:t>http://example.com</w:t></w:r></w:hyperlink>"
         '<w:r><w:rPr /><w:t xml:space="preserve"> bar</w:t></w:r></w:p></w:body>'
     )
 
@@ -380,7 +378,7 @@ def testFmtToDocX_Links(mockGUI):
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t xml:space="preserve">Foo </w:t></w:r>'
         '<w:hyperlink r:id="rId2"><w:r><w:rPr><w:rStyle w:val="InternetLink" /></w:rPr>'
-        '<w:t>https://example.com</w:t></w:r></w:hyperlink>'
+        "<w:t>https://example.com</w:t></w:r></w:hyperlink>"
         '<w:r><w:rPr /><w:t xml:space="preserve"> bar</w:t></w:r></w:p></w:body>'
     )
 
@@ -402,7 +400,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /><w:jc w:val="left" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Right Align
@@ -412,7 +410,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /><w:jc w:val="right" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Center Align
@@ -422,7 +420,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /><w:jc w:val="center" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Justify
@@ -432,7 +430,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /><w:jc w:val="both" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Page Break Before
@@ -443,8 +441,8 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:br w:type="page" /></w:r>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r>'
-        '</w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r>"
+        "</w:p></w:body>"
     )
 
     # Page Break After
@@ -454,9 +452,9 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r>"
         '<w:r><w:br w:type="page" /></w:r>'
-        '</w:p></w:body>'
+        "</w:p></w:body>"
     )
 
     # Zero Margins
@@ -467,7 +465,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" />'
         '<w:spacing w:before="0" w:after="0" w:line="252" w:lineRule="auto" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # Indent
@@ -478,7 +476,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" />'
         '<w:ind w:left="880" w:right="880" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
     # First Line Indent
@@ -489,7 +487,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" />'
         '<w:ind w:firstLine="308" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
 
@@ -509,13 +507,13 @@ def testFmtToDocX_TextFormatting(mockGUI):
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t xml:space="preserve">Text </w:t></w:r>'
-        '<w:r><w:rPr><w:b /></w:rPr><w:t>bold</w:t></w:r>'
+        "<w:r><w:rPr><w:b /></w:rPr><w:t>bold</w:t></w:r>"
         '<w:r><w:rPr /><w:t xml:space="preserve">, </w:t></w:r>'
-        '<w:r><w:rPr><w:i /></w:rPr><w:t>italic</w:t></w:r>'
+        "<w:r><w:rPr><w:i /></w:rPr><w:t>italic</w:t></w:r>"
         '<w:r><w:rPr /><w:t xml:space="preserve">, </w:t></w:r>'
-        '<w:r><w:rPr><w:strike /></w:rPr><w:t>strike</w:t></w:r>'
-        '<w:r><w:rPr /><w:t>.</w:t></w:r>'
-        '</w:p></w:body>'
+        "<w:r><w:rPr><w:strike /></w:rPr><w:t>strike</w:t></w:r>"
+        "<w:r><w:rPr /><w:t>.</w:t></w:r>"
+        "</w:p></w:body>"
     )
 
     # Nested Shortcode Text, Emphasis
@@ -528,14 +526,14 @@ def testFmtToDocX_TextFormatting(mockGUI):
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t xml:space="preserve">Some </w:t></w:r>'
         '<w:r><w:rPr><w:strike /></w:rPr><w:t xml:space="preserve">nested </w:t></w:r>'
-        '<w:r><w:rPr><w:b /><w:strike /></w:rPr><w:t>bold</w:t></w:r>'
+        "<w:r><w:rPr><w:b /><w:strike /></w:rPr><w:t>bold</w:t></w:r>"
         '<w:r><w:rPr><w:strike /></w:rPr><w:t xml:space="preserve"> </w:t></w:r>'
         '<w:r><w:rPr><w:u w:val="single" /><w:strike /></w:rPr><w:t>and</w:t></w:r>'
         '<w:r><w:rPr><w:strike /></w:rPr><w:t xml:space="preserve"> </w:t></w:r>'
-        '<w:r><w:rPr><w:i /><w:strike /></w:rPr><w:t>italics</w:t></w:r>'
+        "<w:r><w:rPr><w:i /><w:strike /></w:rPr><w:t>italics</w:t></w:r>"
         '<w:r><w:rPr><w:strike /></w:rPr><w:t xml:space="preserve"> text</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> text.</w:t></w:r>'
-        '</w:p></w:body>'
+        "</w:p></w:body>"
     )
 
     # Shortcode Text, Super/Subscript
@@ -546,12 +544,12 @@ def testFmtToDocX_TextFormatting(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Some super</w:t></w:r>'
+        "<w:r><w:rPr /><w:t>Some super</w:t></w:r>"
         '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr><w:t>script</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> and sub</w:t></w:r>'
         '<w:r><w:rPr><w:vertAlign w:val="subscript" /></w:rPr><w:t>script</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> text.</w:t></w:r>'
-        '</w:p></w:body>'
+        "</w:p></w:body>"
     )
 
     # Shortcode Text, Underline/Highlight
@@ -566,9 +564,9 @@ def testFmtToDocX_TextFormatting(mockGUI):
         '<w:r><w:rPr><w:u w:val="single" /></w:rPr>'
         '<w:t xml:space="preserve">underlined and </w:t></w:r>'
         '<w:r><w:rPr><w:u w:val="single" /><w:shd w:fill="ffffa6" w:val="clear" /></w:rPr>'
-        '<w:t>highlighted</w:t></w:r>'
+        "<w:t>highlighted</w:t></w:r>"
         '<w:r><w:rPr /><w:t xml:space="preserve"> text.</w:t></w:r>'
-        '</w:p></w:body>'
+        "</w:p></w:body>"
     )
 
     # Hard Break
@@ -579,8 +577,8 @@ def testFmtToDocX_TextFormatting(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Some text.</w:t><w:br /><w:t>Next line</w:t></w:r>'
-        '</w:p></w:body>'
+        "<w:r><w:rPr /><w:t>Some text.</w:t><w:br /><w:t>Next line</w:t></w:r>"
+        "</w:p></w:body>"
     )
 
     # Tab
@@ -591,8 +589,8 @@ def testFmtToDocX_TextFormatting(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
-        '<w:r><w:rPr /><w:tab /><w:t>Item 1</w:t><w:tab /><w:t>Item 2</w:t></w:r>'
-        '</w:p></w:body>'
+        "<w:r><w:rPr /><w:tab /><w:t>Item 1</w:t><w:tab /><w:t>Item 2</w:t></w:r>"
+        "</w:p></w:body>"
     )
 
     # Tab in Format
@@ -604,8 +602,8 @@ def testFmtToDocX_TextFormatting(mockGUI):
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t xml:space="preserve">Some </w:t></w:r>'
-        '<w:r><w:rPr><w:b /></w:rPr><w:t>bold</w:t><w:tab /><w:t>text</w:t></w:r>'
-        '</w:p></w:body>'
+        "<w:r><w:rPr><w:b /></w:rPr><w:t>bold</w:t><w:tab /><w:t>text</w:t></w:r>"
+        "</w:p></w:body>"
     )
 
 
@@ -631,34 +629,34 @@ def testFmtToDocX_Footnotes(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
-        '<w:r><w:rPr /><w:t>Text with one</w:t></w:r>'
+        "<w:r><w:rPr /><w:t>Text with one</w:t></w:r>"
         '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr>'
         '<w:footnoteReference w:id="1" /></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve">, </w:t></w:r>'
-        '<w:r><w:rPr><w:b /></w:rPr><w:t>two</w:t></w:r>'
+        "<w:r><w:rPr><w:b /></w:rPr><w:t>two</w:t></w:r>"
         '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr>'
         '<w:footnoteReference w:id="2" /></w:r>'
-        '<w:r><w:rPr /><w:t>, or three</w:t></w:r>'
+        "<w:r><w:rPr /><w:t>, or three</w:t></w:r>"
         '<w:r><w:rPr /><w:t xml:space="preserve"> footnotes.</w:t></w:r>'
         '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr>'
         '<w:footnoteReference w:id="3" /></w:r>'
-        '</w:p></w:body>'
+        "</w:p></w:body>"
     )
 
     # Footnotes
     doc._footnotesXml()
     assert xmlToText(doc._files["footnotes.xml"].xml) == (
-        '<w:footnotes>'
+        "<w:footnotes>"
         '<w:footnote w:id="1"><w:p><w:pPr><w:pStyle w:val="FootnoteText" /></w:pPr>'
         '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr><w:footnoteRef /></w:r>'
-        '<w:r><w:rPr /><w:t>Footnote text A.</w:t></w:r></w:p></w:footnote>'
+        "<w:r><w:rPr /><w:t>Footnote text A.</w:t></w:r></w:p></w:footnote>"
         '<w:footnote w:id="2"><w:p><w:pPr><w:pStyle w:val="FootnoteText" /></w:pPr>'
         '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr><w:footnoteRef /></w:r>'
-        '<w:r><w:rPr /><w:t>Another footnote.</w:t></w:r></w:p></w:footnote>'
+        "<w:r><w:rPr /><w:t>Another footnote.</w:t></w:r></w:p></w:footnote>"
         '<w:footnote w:id="3"><w:p><w:pPr><w:pStyle w:val="FootnoteText" /></w:pPr>'
         '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr><w:footnoteRef /></w:r>'
-        '<w:r><w:rPr /><w:t>Again?</w:t></w:r></w:p></w:footnote>'
-        '</w:footnotes>'
+        "<w:r><w:rPr /><w:t>Again?</w:t></w:r></w:p></w:footnote>"
+        "</w:footnotes>"
     )
 
 
@@ -678,11 +676,7 @@ def testFmtToDocX_Fields(mockGUI):
     assert doc._generateField("a", 0x00) is None
 
     # Full Processing
-    doc._text = (
-        "Word Count: [field:allWords]\n"
-        "Character Count: [field:allChars]\n"
-        "Chicken Count: [field:allChickens]\n"
-    )
+    doc._text = "Word Count: [field:allWords]\nCharacter Count: [field:allChars]\nChicken Count: [field:allChickens]\n"
     doc.tokenizeText()
     doc.doConvert()
     doc.countStats()
@@ -690,18 +684,18 @@ def testFmtToDocX_Fields(mockGUI):
     assert xmlToText(doc._files["document.xml"].xml) == (
         '<w:document><w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t xml:space="preserve">Word Count: </w:t></w:r>'
-        '<w:r><w:rPr /><w:t>6</w:t></w:r>'
+        "<w:r><w:rPr /><w:t>6</w:t></w:r>"
         '<w:r><w:rPr /><w:br /><w:t xml:space="preserve">Character Count: </w:t></w:r>'
-        '<w:r><w:rPr /><w:t>46</w:t></w:r>'
+        "<w:r><w:rPr /><w:t>46</w:t></w:r>"
         '<w:r><w:rPr /><w:br /><w:t xml:space="preserve">Chicken Count: </w:t></w:r>'
-        '<w:r><w:rPr /><w:t>0</w:t></w:r>'
-        '</w:p><w:sectPr>'
+        "<w:r><w:rPr /><w:t>0</w:t></w:r>"
+        "</w:p><w:sectPr>"
         '<w:footnotePr><w:numFmt w:val="decimal" /></w:footnotePr>'
         '<w:pgSz w:w="11905" w:h="16837" w:orient="portrait" />'
         '<w:pgMar w:top="1133" w:right="1133" w:bottom="1133" w:left="1133" '
         'w:header="748" w:footer="0" w:gutter="0" />'
         '<w:pgNumType w:start="1" w:fmt="decimal" /><w:titlePg />'
-        '</w:sectPr></w:body></w:document>'
+        "</w:sectPr></w:body></w:document>"
     )
 
 
@@ -729,10 +723,28 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
 
     docPath = fncPath / "document.docx"
     assert list(docBuild.iterBuildDocument(docPath, nwBuildFmt.DOCX)) == [
-        (0, True), (1, True), (2, True), (3, True), (4, True), (5, False),
-        (6, True), (7, True), (8, True), (9, False), (10, False), (11, True),
-        (12, True), (13, True), (14, True), (15, True), (16, True), (17, True),
-        (18, True), (19, True), (20, True), (21, False),
+        (0, True),
+        (1, True),
+        (2, True),
+        (3, True),
+        (4, True),
+        (5, False),
+        (6, True),
+        (7, True),
+        (8, True),
+        (9, False),
+        (10, False),
+        (11, True),
+        (12, True),
+        (13, True),
+        (14, True),
+        (15, True),
+        (16, True),
+        (17, True),
+        (18, True),
+        (19, True),
+        (20, True),
+        (21, False),
     ]
 
     assert docPath.exists()

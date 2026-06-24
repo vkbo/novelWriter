@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -166,10 +167,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     assert doc.writeDocument("### Test File\n\nText ...\n\n") is True
 
     contPath = fncPath / "content"
-    assert NWDocument.quickReadText(contPath, xHandle) == (
-        "### Test File\n\n"
-        "Text ...\n\n"
-    )
+    assert NWDocument.quickReadText(contPath, xHandle) == ("### Test File\n\nText ...\n\n")
 
     # Check read text fallback
     assert NWDocument.quickReadText(contPath, "0000000000000") == ""

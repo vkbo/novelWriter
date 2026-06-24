@@ -18,23 +18,24 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from novelwriter.enum import nwComment
 
 MODIFIERS = {
     "synopsis": nwComment.SYNOPSIS,
-    "short":    nwComment.SHORT,
-    "note":     nwComment.NOTE,
+    "short": nwComment.SHORT,
+    "note": nwComment.NOTE,
     "footnote": nwComment.FOOTNOTE,
-    "story":    nwComment.STORY,
+    "story": nwComment.STORY,
 }
 KEY_REQ = {
     "synopsis": 0,  # Key not allowed
-    "short":    0,  # Key not allowed
-    "note":     1,  # Key optional
+    "short": 0,  # Key not allowed
+    "note": 1,  # Key optional
     "footnote": 2,  # Key required
-    "story":    2,  # Key required
+    "story": 2,  # Key required
 }
 
 

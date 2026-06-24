@@ -21,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -86,10 +87,7 @@ class NWSessionLog:
         cDiff = cCNovel + cCNotes - iCTotal
         sTime = now - self._start
 
-        logger.info(
-            "The session lasted %d seconds and added %d words and %d characters",
-            int(sTime), wDiff, cDiff
-        )
+        logger.info("The session lasted %d seconds and added %d words and %d characters", int(sTime), wDiff, cDiff)
         if sTime < 300 and (wDiff == 0 or cDiff == 0):
             logger.info("Session too short, skipping log entry")
             return False
@@ -100,15 +98,17 @@ class NWSessionLog:
                     fObj.write(self.createInitial(iWTotal))
 
             with open(sessFile, mode="a+", encoding="utf-8") as fObj:
-                fObj.write(self.createRecord(
-                    start=formatTimeStamp(self._start),
-                    end=formatTimeStamp(now),
-                    novel=cWNovel,
-                    notes=cWNotes,
-                    idle=round(idleTime),
-                    cnovel=cCNovel,
-                    cnotes=cCNotes,
-                ))
+                fObj.write(
+                    self.createRecord(
+                        start=formatTimeStamp(self._start),
+                        end=formatTimeStamp(now),
+                        novel=cWNovel,
+                        notes=cWNotes,
+                        idle=round(idleTime),
+                        cnovel=cCNovel,
+                        cnotes=cCNotes,
+                    )
+                )
 
         except Exception as exc:
             SHARED.appendErrorMessage(exc)
@@ -136,18 +136,26 @@ class NWSessionLog:
         return f"{data}\n"
 
     def createRecord(
-        self, start: str, end: str, novel: int, notes: int, idle: int,
-        cnovel: int = 0, cnotes: int = 0,
+        self,
+        start: str,
+        end: str,
+        novel: int,
+        notes: int,
+        idle: int,
+        cnovel: int = 0,
+        cnotes: int = 0,
     ) -> str:
         """Low level function to create a log record."""
-        data = json.dumps({
-            "type": "record",
-            "start": start,
-            "end": end,
-            "novel": novel,
-            "notes": notes,
-            "cnovel": cnovel,
-            "cnotes": cnotes,
-            "idle": idle,
-        })
+        data = json.dumps(
+            {
+                "type": "record",
+                "start": start,
+                "end": end,
+                "novel": novel,
+                "notes": notes,
+                "cnovel": cnovel,
+                "cnotes": cnotes,
+                "idle": idle,
+            }
+        )
         return f"{data}\n"

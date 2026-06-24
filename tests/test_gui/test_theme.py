@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -36,8 +37,12 @@ from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwTheme
 from novelwriter.gui.theme import (
-    STYLES_BIG_TOOLBUTTON, STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON, GuiTheme,
-    ThemeMeta, _listContent
+    STYLES_BIG_TOOLBUTTON,
+    STYLES_FLAT_TABS,
+    STYLES_MIN_TOOLBUTTON,
+    GuiTheme,
+    ThemeMeta,
+    _listContent,
 )
 
 from tests.mocked import causeOSError
@@ -218,35 +223,38 @@ def testGuiTheme_SpecialColors(tstPaths):
     theme.iconCache = MagicMock()
 
     testTheme: Path = tstPaths.cnfDir / "themes" / "test.conf"
-    testTheme.write_text((
-        "[Main]\n"
-        "name = Test\n"
-        "mode = light\n"
-        "\n"
-        "[Base]\n"
-        "default = #cccccc\n"
-        "faded   = #949494\n"
-        "red     = #ff0000\n"
-        "orange  = #ff7f00\n"
-        "yellow  = #ffff00\n"
-        "green   = #00ff00\n"
-        "cyan    = #00ffff\n"
-        "blue    = #0000ff\n"
-        "purple  = #ff00ff\n"
-        "\n"
-        "[Project]\n"
-        "root    = blue\n"
-        "folder  = yellow\n"
-        "file    = default\n"
-        "title   = green\n"
-        "chapter = red\n"
-        "scene   = blue\n"
-        "note    = yellow\n"
-        "\n"
-        "[Palette]\n"
-        "window  = #000000\n"
-        "text    = #ffffff\n"
-    ), encoding="utf-8")
+    testTheme.write_text(
+        (
+            "[Main]\n"
+            "name = Test\n"
+            "mode = light\n"
+            "\n"
+            "[Base]\n"
+            "default = #cccccc\n"
+            "faded   = #949494\n"
+            "red     = #ff0000\n"
+            "orange  = #ff7f00\n"
+            "yellow  = #ffff00\n"
+            "green   = #00ff00\n"
+            "cyan    = #00ffff\n"
+            "blue    = #0000ff\n"
+            "purple  = #ff00ff\n"
+            "\n"
+            "[Project]\n"
+            "root    = blue\n"
+            "folder  = yellow\n"
+            "file    = default\n"
+            "title   = green\n"
+            "chapter = red\n"
+            "scene   = blue\n"
+            "note    = yellow\n"
+            "\n"
+            "[Palette]\n"
+            "window  = #000000\n"
+            "text    = #ffffff\n"
+        ),
+        encoding="utf-8",
+    )
     theme._scanThemes([testTheme])
     assert len(theme.colourThemes) == 1
     CONFIG.themeMode = nwTheme.LIGHT
@@ -318,7 +326,7 @@ def testGuiTheme_Methods(monkeypatch):
     theme.guiFont = QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont)
     assert theme.getTextWidth("MMMMM") > theme.getTextWidth("MMM")
     font = QFont(theme.guiFont)
-    font.setPointSizeF(0.5*font.pointSizeF())
+    font.setPointSizeF(0.5 * font.pointSizeF())
     assert theme.getTextWidth("MMMMM", font) < theme.getTextWidth("MMMMM")
 
     # Detect desktop mode Qt 6.5+
@@ -482,9 +490,10 @@ def testGuiTheme_LoadIcons():
     ) == iconCache.getIcon("prj_folder", "folder")
 
     # Document H0 -> Not Null
-    assert iconCache.getItemIcon(
-        nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.NO_LAYOUT, hLevel="H0"
-    ) == iconCache._noIcon
+    assert (
+        iconCache.getItemIcon(nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.NO_LAYOUT, hLevel="H0")
+        == iconCache._noIcon
+    )
 
     # Document H1 -> Not Null
     assert iconCache.getItemIcon(
@@ -517,9 +526,10 @@ def testGuiTheme_LoadIcons():
     ) == iconCache.getIcon("prj_note", "note")
 
     # No Type -> Null
-    assert iconCache.getItemIcon(
-        nwItemType.NO_TYPE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H0"
-    ) == iconCache._noIcon
+    assert (
+        iconCache.getItemIcon(nwItemType.NO_TYPE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H0")
+        == iconCache._noIcon
+    )
 
 
 @pytest.mark.gui
@@ -566,24 +576,24 @@ def testGuiTheme_LoadDecorations(monkeypatch):
     # ==================
 
     assert iconCache.getHeaderDecoration(-1) == iconCache._headerDec[0]
-    assert iconCache.getHeaderDecoration(0)  == iconCache._headerDec[0]
-    assert iconCache.getHeaderDecoration(1)  == iconCache._headerDec[1]
-    assert iconCache.getHeaderDecoration(2)  == iconCache._headerDec[2]
-    assert iconCache.getHeaderDecoration(3)  == iconCache._headerDec[3]
-    assert iconCache.getHeaderDecoration(4)  == iconCache._headerDec[4]
-    assert iconCache.getHeaderDecoration(5)  == iconCache._headerDec[4]
+    assert iconCache.getHeaderDecoration(0) == iconCache._headerDec[0]
+    assert iconCache.getHeaderDecoration(1) == iconCache._headerDec[1]
+    assert iconCache.getHeaderDecoration(2) == iconCache._headerDec[2]
+    assert iconCache.getHeaderDecoration(3) == iconCache._headerDec[3]
+    assert iconCache.getHeaderDecoration(4) == iconCache._headerDec[4]
+    assert iconCache.getHeaderDecoration(5) == iconCache._headerDec[4]
 
     # Narrow Header Decorations
     # =========================
 
     assert iconCache.getHeaderDecorationNarrow(-1) == iconCache._headerDecNarrow[0]
-    assert iconCache.getHeaderDecorationNarrow(0)  == iconCache._headerDecNarrow[0]
-    assert iconCache.getHeaderDecorationNarrow(1)  == iconCache._headerDecNarrow[1]
-    assert iconCache.getHeaderDecorationNarrow(2)  == iconCache._headerDecNarrow[2]
-    assert iconCache.getHeaderDecorationNarrow(3)  == iconCache._headerDecNarrow[3]
-    assert iconCache.getHeaderDecorationNarrow(4)  == iconCache._headerDecNarrow[4]
-    assert iconCache.getHeaderDecorationNarrow(5)  == iconCache._headerDecNarrow[5]
-    assert iconCache.getHeaderDecorationNarrow(6)  == iconCache._headerDecNarrow[5]
+    assert iconCache.getHeaderDecorationNarrow(0) == iconCache._headerDecNarrow[0]
+    assert iconCache.getHeaderDecorationNarrow(1) == iconCache._headerDecNarrow[1]
+    assert iconCache.getHeaderDecorationNarrow(2) == iconCache._headerDecNarrow[2]
+    assert iconCache.getHeaderDecorationNarrow(3) == iconCache._headerDecNarrow[3]
+    assert iconCache.getHeaderDecorationNarrow(4) == iconCache._headerDecNarrow[4]
+    assert iconCache.getHeaderDecorationNarrow(5) == iconCache._headerDecNarrow[5]
+    assert iconCache.getHeaderDecorationNarrow(6) == iconCache._headerDecNarrow[5]
 
 
 THEMES = []
@@ -621,34 +631,99 @@ def testGuiTheme_CheckTheme(theme):
 
     structure = {
         "Main": [
-            "name", "mode", "author",  # The rest are not required
+            "name",
+            "mode",
+            "author",  # The rest are not required
         ],
         "Base": [
-            "base", "default", "faded", "red", "orange", "yellow", "green",
-            "cyan", "blue", "purple",
+            "base",
+            "default",
+            "faded",
+            "red",
+            "orange",
+            "yellow",
+            "green",
+            "cyan",
+            "blue",
+            "purple",
         ],
         "Project": [
-            "root", "folder", "file", "title", "chapter", "scene", "note",
-            "active", "inactive", "disabled",
+            "root",
+            "folder",
+            "file",
+            "title",
+            "chapter",
+            "scene",
+            "note",
+            "active",
+            "inactive",
+            "disabled",
         ],
         "Icon": [
-            "tool", "sidebar", "accept", "reject", "action", "altaction",
-            "apply", "create", "destroy", "reset", "add", "change", "remove",
-            "shortcode", "markdown", "systemio", "info", "warning", "error",
+            "tool",
+            "sidebar",
+            "accept",
+            "reject",
+            "action",
+            "altaction",
+            "apply",
+            "create",
+            "destroy",
+            "reset",
+            "add",
+            "change",
+            "remove",
+            "shortcode",
+            "markdown",
+            "systemio",
+            "info",
+            "warning",
+            "error",
         ],
         "Palette": [
-            "window", "windowtext", "base", "alternatebase", "text",
-            "tooltipbase", "tooltiptext", "button", "buttontext", "brighttext",
-            "highlight", "highlightedtext", "link", "linkvisited", "accent",
+            "window",
+            "windowtext",
+            "base",
+            "alternatebase",
+            "text",
+            "tooltipbase",
+            "tooltiptext",
+            "button",
+            "buttontext",
+            "brighttext",
+            "highlight",
+            "highlightedtext",
+            "link",
+            "linkvisited",
+            "accent",
         ],
         "GUI": [
-            "helptext", "fadedtext", "errortext",
+            "helptext",
+            "fadedtext",
+            "errortext",
         ],
         "Syntax": [
-            "background", "text", "line", "link", "headertext", "headertag",
-            "emphasis", "whitespace", "dialog", "altdialog", "hidden", "note",
-            "shortcode", "keyword", "tag", "value", "optional",
-            "spellcheckline", "errorline", "replacetag", "modifier",
+            "background",
+            "text",
+            "line",
+            "link",
+            "headertext",
+            "headertag",
+            "emphasis",
+            "whitespace",
+            "dialog",
+            "altdialog",
+            "hidden",
+            "note",
+            "shortcode",
+            "keyword",
+            "tag",
+            "value",
+            "optional",
+            "spellcheckline",
+            "errorline",
+            "replacetag",
+            "modifier",
             "texthighlight",
         ],
     }
@@ -661,23 +736,21 @@ def testGuiTheme_CheckTheme(theme):
     # Check deprecated
     deprecated = []
     for section in sections:
-        deprecated.extend(
-            opt for opt in parser[section]
-            if opt not in structure[section] and opt not in optional
-        )
+        deprecated.extend(opt for opt in parser[section] if opt not in structure[section] and opt not in optional)
     assert deprecated == [], "Deprecated options in theme file"
 
 
-@pytest.mark.parametrize("icons", [
-    pytest.param(
-        a.stem,
-        marks=(
-            (pytest.mark.gui,)
-            if a.stem.startswith("material")
-            else (pytest.mark.gui, pytest.mark.opt_assets)
-        ),
-    ) for a in CONFIG.assetPath("icons").iterdir() if a.is_dir and a.suffix == ".icons"
-])
+@pytest.mark.parametrize(
+    "icons",
+    [
+        pytest.param(
+            a.stem,
+            marks=((pytest.mark.gui,) if a.stem.startswith("material") else (pytest.mark.gui, pytest.mark.opt_assets)),
+        )
+        for a in CONFIG.assetPath("icons").iterdir()
+        if a.is_dir and a.suffix == ".icons"
+    ],
+)
 def testGuiTheme_CheckIcons(icons, tstPaths):
     """Test loading all icons."""
     keysFile: Path = tstPaths.filesDir / "all_icons.json"

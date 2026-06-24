@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -52,20 +53,21 @@ def testGuiNovelView_Content(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert isinstance(contentPath, Path)
     cHandle = "0000000000010"
 
-    (contentPath / f"{cHandle}.nwd").write_text(
-        "# Jane Doe\n\n@tag: Jane\n\n", encoding="utf-8"
+    (contentPath / f"{cHandle}.nwd").write_text("# Jane Doe\n\n@tag: Jane\n\n", encoding="utf-8")
+    (contentPath / f"{C.hSceneDoc}.nwd").write_text(
+        (
+            "### Scene One\n\n"
+            "@pov: Jane\n"
+            "@focus: Jane\n\n"
+            "% Synopsis: This is a scene.\n\n"
+            "This is some text in the edited scene."
+        ),
+        encoding="utf-8",
     )
-    (contentPath / f"{C.hSceneDoc}.nwd").write_text((
-        "### Scene One\n\n"
-        "@pov: Jane\n"
-        "@focus: Jane\n\n"
-        "% Synopsis: This is a scene.\n\n"
-        "This is some text in the edited scene."
-    ), encoding="utf-8")
 
     novelView = nwGUI.novelView
     novelTree = nwGUI.novelView.novelTree
-    novelBar  = nwGUI.novelView.novelBar
+    novelBar = nwGUI.novelView.novelBar
 
     # Show/Hide Scrollbars
     # ====================
@@ -156,8 +158,7 @@ def testGuiNovelView_Content(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         toolTip = ""
         novelTree._onSingleClick(model.createIndex(2, 3))
         assert toolTip == (
-            "<p><b>Point of View:</b> Jane<br><b>Focus:</b> Jane</p>"
-            "<p><b>Synopsis:</b> This is a scene.</p>"
+            "<p><b>Point of View:</b> Jane<br><b>Focus:</b> Jane</p><p><b>Synopsis:</b> This is a scene.</p>"
         )
 
         toolTip = ""

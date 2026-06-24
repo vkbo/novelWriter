@@ -32,14 +32,10 @@ jobs:
       - name: Ruff Check
         run: |
           uv run --no-sync ruff --version
+          uv run --no-sync ruff format --check
           uv run --no-sync ruff check --output-format github
 
       - name: Pyright Check
         run: |
           uv run --no-sync pyright --version
           uv run --no-sync pyright
-
-      - name: Isort Check
-        run: |
-          uv run --no-sync isort --version
-          uv run --no-sync isort --check .

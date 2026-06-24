@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -91,9 +92,7 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     noDict = fncPath / "foobar.sox"
     noDict.write_bytes(b"foobar")
 
-    assert nwDicts.infoBox.toPlainText().splitlines()[-1] == (
-        "Additional dictionaries found: 0"
-    )
+    assert nwDicts.infoBox.toPlainText().splitlines()[-1] == ("Additional dictionaries found: 0")
 
     # Import Free Office Dictionary
     with monkeypatch.context() as mp:
@@ -132,9 +131,7 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
         assert nwDicts.huInput.text() == str(emDict)
         nwDicts._doImportHunspell()
         assert nwDicts.infoBox.blockCount() == 8
-        assert nwDicts.infoBox.toPlainText().splitlines()[-1] == (
-            "Could not process dictionary file"
-        )
+        assert nwDicts.infoBox.toPlainText().splitlines()[-1] == ("Could not process dictionary file")
 
     # Handle Non-Existing File
     with monkeypatch.context() as mp:
@@ -142,9 +139,7 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
         nwDicts._doBrowseHunspell()
         nwDicts._doImportHunspell()
         assert nwDicts.infoBox.blockCount() == 9
-        assert nwDicts.infoBox.toPlainText().splitlines()[-1] == (
-            "Could not process dictionary file"
-        )
+        assert nwDicts.infoBox.toPlainText().splitlines()[-1] == ("Could not process dictionary file")
 
     # Re-init and fail to scan for dictionaries
     with monkeypatch.context() as mp:
@@ -154,8 +149,6 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     # Re-init
     nwDicts.initDialog()
     assert nwDicts.infoBox.blockCount() == 10
-    assert nwDicts.infoBox.toPlainText().splitlines()[-1] == (
-        "Additional dictionaries found: 2"
-    )
+    assert nwDicts.infoBox.toPlainText().splitlines()[-1] == ("Additional dictionaries found: 2")
 
     # qtbot.stop()

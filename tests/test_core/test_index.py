@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -165,9 +166,7 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
     assert index.indexBroken is True
 
     # Write an index file that passes loading, but is still empty
-    projFile.write_text(
-        '{"novelWriter.tagsIndex": {}, "novelWriter.itemIndex": {}}', encoding="utf-8"
-    )
+    projFile.write_text('{"novelWriter.tagsIndex": {}, "novelWriter.itemIndex": {}}', encoding="utf-8")
     assert index.loadIndex() is True
     assert index.indexBroken is False
 
@@ -216,37 +215,37 @@ def testCoreIndex_ScanThis(mockGUI):
     isValid, bits, pos = index.scanThis("@a:")
     assert isValid is True
     assert bits == ["@a"]
-    assert pos  == [0]
+    assert pos == [0]
 
     isValid, bits, pos = index.scanThis("@a:b")
     assert isValid is True
     assert bits == ["@a", "b"]
-    assert pos  == [0, 3]
+    assert pos == [0, 3]
 
     isValid, bits, pos = index.scanThis("@a:b,c,d")
     assert isValid is True
     assert bits == ["@a", "b", "c", "d"]
-    assert pos  == [0, 3, 5, 7]
+    assert pos == [0, 3, 5, 7]
 
     isValid, bits, pos = index.scanThis("@a : b , c , d")
     assert isValid is True
     assert bits == ["@a", "b", "c", "d"]
-    assert pos  == [0, 5, 9, 13]
+    assert pos == [0, 5, 9, 13]
 
     isValid, bits, pos = index.scanThis("@tag: this, and this")
     assert isValid is True
     assert bits == ["@tag", "this", "and this"]
-    assert pos  == [0, 6, 12]
+    assert pos == [0, 6, 12]
 
     isValid, bits, pos = index.scanThis("@tag: this,, and this")
     assert isValid is True
     assert bits == ["@tag", "this", "", "and this"]
-    assert pos  == [0, 6, 11, 13]
+    assert pos == [0, 6, 11, 13]
 
     isValid, bits, pos = index.scanThis("@tag: this, , and this")
     assert isValid is True
     assert bits == ["@tag", "this", "", "and this"]
-    assert pos  == [0, 6, 12, 14]
+    assert pos == [0, 6, 12, 14]
 
     project.closeProject()
 
@@ -261,7 +260,7 @@ def testCoreIndex_CheckThese(nwGUI, fncPath, mockRnd):
     index.clear()
 
     nHandle = project.newFile("Hello", C.hNovelRoot)
-    cHandle = project.newFile("Jane",  C.hCharRoot)
+    cHandle = project.newFile("Jane", C.hCharRoot)
     wHandle = project.newFile("Earth", C.hWorldRoot)
     assert isinstance(nHandle, str)
     assert isinstance(cHandle, str)
@@ -278,22 +277,14 @@ def testCoreIndex_CheckThese(nwGUI, fncPath, mockRnd):
     assert index.rootChangedSince(None, 0) is False
     assert index.indexChangedSince(0) is False
 
-    assert index.scanText(cHandle, (
-        "# Jane Smith\n"
-        "@tag: Jane\n"
-        "@tag:\n"
-        "@:\n"
-    ))
-    assert index.scanText(wHandle, (
-        "# Earth\n"
-        "@tag: Earth\n"
-    ))
-    assert index.scanText(nHandle, (
-        "# Hello World!\n"
-        "@pov: Jane\n"
-        "@location: Earth\n"
-        "@invalid: John\n"  # Checks for issue #688
-    ))
+    assert index.scanText(cHandle, ("# Jane Smith\n@tag: Jane\n@tag:\n@:\n"))
+    assert index.scanText(wHandle, ("# Earth\n@tag: Earth\n"))
+    assert index.scanText(
+        nHandle,
+        (
+            "# Hello World!\n@pov: Jane\n@location: Earth\n@invalid: John\n"  # Checks for issue #688
+        ),
+    )
     assert index._tagsIndex.tagHandle("Earth") == wHandle
     assert index._tagsIndex.tagHeading("Earth") == "T0001"
     assert index._tagsIndex.tagClass("Earth") == "WORLD"
@@ -425,9 +416,9 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
 
     # Make some usable items
     tHandle = project.newFile("Title", C.hNovelRoot)
-    pHandle = project.newFile("Page",  C.hNovelRoot)
+    pHandle = project.newFile("Page", C.hNovelRoot)
     nHandle = project.newFile("Hello", C.hNovelRoot)
-    cHandle = project.newFile("Jane",  C.hCharRoot)
+    cHandle = project.newFile("Jane", C.hCharRoot)
     sHandle = project.newFile("Scene", C.hNovelRoot)
     assert isinstance(tHandle, str)
     assert isinstance(pHandle, str)
@@ -439,19 +430,19 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     # =============
 
     # Index correct text
-    assert index.scanText(cHandle, (
-        "# Jane Smith\n"
-        "@tag: Jane\n"
-    ))
-    assert index.scanText(nHandle, (
-        "# Hello World!\n"
-        "@pov: Jane\n"
-        "@char: Jane\n\n"
-        "% this is a comment\n\n"
-        "This is a story about Jane Smith.\n\n"
-        "Well, not really.[footnote:key]\n\n"
-        "%Footnote.key: Footnote text.\n\n"
-    ))
+    assert index.scanText(cHandle, ("# Jane Smith\n@tag: Jane\n"))
+    assert index.scanText(
+        nHandle,
+        (
+            "# Hello World!\n"
+            "@pov: Jane\n"
+            "@char: Jane\n\n"
+            "% this is a comment\n\n"
+            "This is a story about Jane Smith.\n\n"
+            "Well, not really.[footnote:key]\n\n"
+            "%Footnote.key: Footnote text.\n\n"
+        ),
+    )
     assert index._tagsIndex.tagHandle("Jane") == cHandle
     assert index._tagsIndex.tagHeading("Jane") == "T0001"
     assert index._tagsIndex.tagClass("Jane") == "CHARACTER"
@@ -462,22 +453,25 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     # ==============
 
     # Document File
-    assert index.scanText(nHandle, (
-        "# Title One\n\n"
-        "% synopsis: Synopsis One.\n\n"
-        "Paragraph One.\n\n"
-        "## Title Two\n\n"
-        "% synopsis: Synopsis Two.\n\n"
-        "Paragraph Two.\n\n"
-        "### Title Three\n\n"
-        "% synopsis: Synopsis Three.\n\n"
-        "Paragraph Three.\n\n"
-        "#### Title Four\n\n"
-        "% synopsis: Synopsis Four.\n\n"
-        "Paragraph Four.\n\n"
-        "##### Title Five\n\n"  # Not interpreted as a title, the hashes are counted as a word
-        "Paragraph Five.\n\n"
-    ))
+    assert index.scanText(
+        nHandle,
+        (
+            "# Title One\n\n"
+            "% synopsis: Synopsis One.\n\n"
+            "Paragraph One.\n\n"
+            "## Title Two\n\n"
+            "% synopsis: Synopsis Two.\n\n"
+            "Paragraph Two.\n\n"
+            "### Title Three\n\n"
+            "% synopsis: Synopsis Three.\n\n"
+            "Paragraph Three.\n\n"
+            "#### Title Four\n\n"
+            "% synopsis: Synopsis Four.\n\n"
+            "Paragraph Four.\n\n"
+            "##### Title Five\n\n"  # Not interpreted as a title, the hashes are counted as a word
+            "Paragraph Five.\n\n"
+        ),
+    )
     assert index._itemIndex[nHandle]["T0001"].references == {}  # type: ignore
     assert index._itemIndex[nHandle]["T0002"].references == {}  # type: ignore
     assert index._itemIndex[nHandle]["T0003"].references == {}  # type: ignore
@@ -519,12 +513,7 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     assert index._itemIndex[nHandle]["T0004"].synopsis == "Synopsis Four."  # type: ignore
 
     # Note File
-    assert index.scanText(cHandle, (
-        "# Title One\n\n"
-        "@tag: One\n\n"
-        "% synopsis: Synopsis One.\n\n"
-        "Paragraph One.\n\n"
-    ))
+    assert index.scanText(cHandle, ("# Title One\n\n@tag: One\n\n% synopsis: Synopsis One.\n\nParagraph One.\n\n"))
     assert index._itemIndex[cHandle]["T0001"].references == {}  # type: ignore
     assert index._itemIndex[cHandle]["T0001"].level == "H1"  # type: ignore
     assert index._itemIndex[cHandle]["T0001"].line == 1  # type: ignore
@@ -535,25 +524,26 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     assert index._itemIndex[cHandle]["T0001"].synopsis == "Synopsis One."  # type: ignore
 
     # Valid and Invalid References
-    assert index.scanText(sHandle, (
-        "# Title One\n\n"
-        "@pov: One\n\n"  # Valid
-        "@char: Two\n\n"  # Invalid tag
-        "@:\n\n"  # Invalid line
-        "% synopsis: Synopsis One.\n\n"
-        "Paragraph One.\n\n"
-    ))
+    assert index.scanText(
+        sHandle,
+        (
+            "# Title One\n\n"
+            "@pov: One\n\n"  # Valid
+            "@char: Two\n\n"  # Invalid tag
+            "@:\n\n"  # Invalid line
+            "% synopsis: Synopsis One.\n\n"
+            "Paragraph One.\n\n"
+        ),
+    )
     assert index._itemIndex[sHandle]["T0001"].references == {  # type: ignore
-        "one": {"@pov"}, "two": {"@char"}
+        "one": {"@pov"},
+        "two": {"@char"},
     }
 
     # Special Titles
     # ==============
 
-    assert index.scanText(tHandle, (
-        "#! My Project\n\n"
-        ">> By Jane Doe <<\n\n"
-    ))
+    assert index.scanText(tHandle, ("#! My Project\n\n>> By Jane Doe <<\n\n"))
     assert index._itemIndex[cHandle]["T0001"].references == {}  # type: ignore
     assert index._itemIndex[tHandle]["T0001"].level == "H1"  # type: ignore
     assert index._itemIndex[tHandle]["T0001"].line == 1  # type: ignore
@@ -563,10 +553,7 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     assert index._itemIndex[tHandle]["T0001"].paraCount == 1  # type: ignore
     assert index._itemIndex[tHandle]["T0001"].synopsis == ""  # type: ignore
 
-    assert index.scanText(tHandle, (
-        "##! Prologue\n\n"
-        "In the beginning there was time ...\n\n"
-    ))
+    assert index.scanText(tHandle, ("##! Prologue\n\nIn the beginning there was time ...\n\n"))
     assert index._itemIndex[cHandle]["T0001"].references == {}  # type: ignore
     assert index._itemIndex[tHandle]["T0001"].level == "H2"  # type: ignore
     assert index._itemIndex[tHandle]["T0001"].line == 1  # type: ignore
@@ -576,10 +563,7 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     assert index._itemIndex[tHandle]["T0001"].paraCount == 1  # type: ignore
     assert index._itemIndex[tHandle]["T0001"].synopsis == ""  # type: ignore
 
-    assert index.scanText(tHandle, (
-        "###! Hard Scene\n\n"
-        "We're no longer following Jane, but John!\n\n"
-    ))
+    assert index.scanText(tHandle, ("###! Hard Scene\n\nWe're no longer following Jane, but John!\n\n"))
     assert index._itemIndex[cHandle]["T0001"].references == {}  # type: ignore
     assert index._itemIndex[tHandle]["T0001"].level == "H3"  # type: ignore
     assert index._itemIndex[tHandle]["T0001"].line == 1  # type: ignore
@@ -593,9 +577,7 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     # =============
 
     project.tree[pHandle]._layout = nwItemLayout.DOCUMENT  # type: ignore
-    assert index.scanText(pHandle, (
-        "This is a page with some text on it.\n\n"
-    ))
+    assert index.scanText(pHandle, ("This is a page with some text on it.\n\n"))
     assert index._itemIndex[pHandle]["T0000"].references == {}  # type: ignore
     assert index._itemIndex[pHandle]["T0000"].level == "H0"  # type: ignore
     assert index._itemIndex[pHandle]["T0000"].line == 0  # type: ignore
@@ -606,9 +588,7 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     assert index._itemIndex[pHandle]["T0000"].synopsis == ""  # type: ignore
 
     project.tree[pHandle]._layout = nwItemLayout.NOTE  # type: ignore
-    assert index.scanText(pHandle, (
-        "This is a page with some text on it.\n\n"
-    ))
+    assert index.scanText(pHandle, ("This is a page with some text on it.\n\n"))
     assert index._itemIndex[pHandle]["T0000"].references == {}  # type: ignore
     assert index._itemIndex[pHandle]["T0000"].level == "H0"  # type: ignore
     assert index._itemIndex[pHandle]["T0000"].line == 0  # type: ignore
@@ -676,8 +656,8 @@ def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
     index.reIndexHandle(C.hSceneDoc)
 
     nHandle = project.newFile("Hello", C.hNovelRoot)
-    cHandle = project.newFile("Jane",  C.hCharRoot)
-    dHandle = project.newFile("John",  C.hCharRoot)
+    cHandle = project.newFile("Jane", C.hCharRoot)
+    dHandle = project.newFile("John", C.hCharRoot)
     assert isinstance(nHandle, str)
     assert isinstance(cHandle, str)
     assert isinstance(dHandle, str)
@@ -685,23 +665,20 @@ def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
     assert index.getItemHeading("", "") is None
     assert index.getItemHeading(C.hNovelRoot, "") is None
 
-    assert index.scanText(cHandle, (
-        "# Jane Smith\n"
-        "@tag: Jane\n"
-    ))
-    assert index.scanText(dHandle, (
-        "# John Smith\n"
-        "@tag: John\n"
-    ))
-    assert index.scanText(nHandle, (
-        "# Hello World!\n"
-        "@tag: Scene\n"
-        "@pov: Jane\n"
-        "@char: Jane, John\n\n"
-        "% this is a comment\n\n"
-        "This is a story about Jane Smith.\n\n"
-        "Well, not really.\n"
-    ))
+    assert index.scanText(cHandle, ("# Jane Smith\n@tag: Jane\n"))
+    assert index.scanText(dHandle, ("# John Smith\n@tag: John\n"))
+    assert index.scanText(
+        nHandle,
+        (
+            "# Hello World!\n"
+            "@tag: Scene\n"
+            "@pov: Jane\n"
+            "@char: Jane, John\n\n"
+            "% this is a comment\n\n"
+            "This is a story about Jane Smith.\n\n"
+            "Well, not really.\n"
+        ),
+    )
 
     # The novel structure should contain the pointer to the novel file header
     keys = []
@@ -743,7 +720,7 @@ def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
     cC, wC, pC = index.getCounts(nHandle)
     assert cC == 62  # Characters in text and title only
     assert wC == 12  # Words in text and title only
-    assert pC == 2   # Paragraphs in text only
+    assert pC == 2  # Paragraphs in text only
 
     # getReferences
     # =============
@@ -801,32 +778,24 @@ def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
 
     # getTagsData
     # ===========
-    assert list(index.getTagsData()) == [(
-        "jane", "Jane", "CHARACTER",
-        index.getItemData(cHandle),
-        index.getItemHeading(cHandle, "T0001")
-    ), (
-        "john", "John", "CHARACTER",
-        index.getItemData(dHandle),
-        index.getItemHeading(dHandle, "T0001")
-    )]
+    assert list(index.getTagsData()) == [
+        ("jane", "Jane", "CHARACTER", index.getItemData(cHandle), index.getItemHeading(cHandle, "T0001")),
+        ("john", "John", "CHARACTER", index.getItemData(dHandle), index.getItemHeading(dHandle, "T0001")),
+    ]
 
     # getItemHeading
     # ==============
-    assert list(index.iterItemHeadings(cHandle)) == [
-        ("T0001", index.getItemHeading(cHandle, "T0001"))
-    ]
-    assert list(index.iterItemHeadings(dHandle)) == [
-        ("T0001", index.getItemHeading(dHandle, "T0001"))
-    ]
+    assert list(index.iterItemHeadings(cHandle)) == [("T0001", index.getItemHeading(cHandle, "T0001"))]
+    assert list(index.iterItemHeadings(dHandle)) == [("T0001", index.getItemHeading(dHandle, "T0001"))]
     assert list(index.iterItemHeadings(C.hInvalid)) == []
 
     # getSingleTag
     # ============
     assert index.getSingleTag("jane") == (
-        "Jane", "CHARACTER",
+        "Jane",
+        "CHARACTER",
         index.getItemData(cHandle),
-        index.getItemHeading(cHandle, "T0001")
+        index.getItemHeading(cHandle, "T0001"),
     )
     assert index.getSingleTag("foobar") == ("", "", None, None)
 
@@ -839,20 +808,23 @@ def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
     assert index.getCounts(nHandle, "stuff") == (0, 0, 0)
 
     # Get section counts for a novel file
-    assert index.scanText(nHandle, (
-        "# Hello World!\n"
-        "@pov: Jane\n"
-        "@char: Jane\n\n"
-        "% this is a comment\n\n"
-        "This is a story about Jane Smith.\n\n"
-        "Well, not really.\n\n"
-        "# Hello World!\n"
-        "@pov: Jane\n"
-        "@char: Jane\n\n"
-        "% this is a comment\n\n"
-        "This is a story about Jane Smith.\n\n"
-        "Well, not really. She's still awesome though.\n"
-    ))
+    assert index.scanText(
+        nHandle,
+        (
+            "# Hello World!\n"
+            "@pov: Jane\n"
+            "@char: Jane\n\n"
+            "% this is a comment\n\n"
+            "This is a story about Jane Smith.\n\n"
+            "Well, not really.\n\n"
+            "# Hello World!\n"
+            "@pov: Jane\n"
+            "@char: Jane\n\n"
+            "% this is a comment\n\n"
+            "This is a story about Jane Smith.\n\n"
+            "Well, not really. She's still awesome though.\n"
+        ),
+    )
 
     # Whole document
     cC, wC, pC = index.getCounts(nHandle)
@@ -873,20 +845,23 @@ def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
     assert pC == 2
 
     # Get section counts for a note file
-    assert index.scanText(cHandle, (
-        "# Hello World!\n"
-        "@pov: Jane\n"
-        "@char: Jane\n\n"
-        "% this is a comment\n\n"
-        "This is a story about Jane Smith.\n\n"
-        "Well, not really.\n\n"
-        "# Hello World!\n"
-        "@pov: Jane\n"
-        "@char: Jane\n\n"
-        "% this is a comment\n\n"
-        "This is a story about Jane Smith.\n\n"
-        "Well, not really. She's still awesome though.\n"
-    ))
+    assert index.scanText(
+        cHandle,
+        (
+            "# Hello World!\n"
+            "@pov: Jane\n"
+            "@char: Jane\n\n"
+            "% this is a comment\n\n"
+            "This is a story about Jane Smith.\n\n"
+            "Well, not really.\n\n"
+            "# Hello World!\n"
+            "@pov: Jane\n"
+            "@char: Jane\n\n"
+            "% this is a comment\n\n"
+            "This is a story about Jane Smith.\n\n"
+            "Well, not really. She's still awesome though.\n"
+        ),
+    )
     # Whole document
     cC, wC, pC = index.getCounts(cHandle)
     assert cC == 152
@@ -1112,81 +1087,91 @@ def testCoreIndex_TagsIndex():
 
     # Invalid key
     with pytest.raises(ValueError):
-        tagsIndex.unpackData({
-            1234: {
-                "name": "Tag1",
-                "display": "Tag1",
-                "handle": "0000000000001",
-                "heading": "T0001",
-                "class": "NOVEL",
+        tagsIndex.unpackData(
+            {
+                1234: {
+                    "name": "Tag1",
+                    "display": "Tag1",
+                    "handle": "0000000000001",
+                    "heading": "T0001",
+                    "class": "NOVEL",
+                }
             }
-        })
+        )
 
     # Invalid entry
     with pytest.raises(ValueError):
-        tagsIndex.unpackData({
-            "tag1": None
-        })
+        tagsIndex.unpackData({"tag1": None})
 
     # Invalid name
     with pytest.raises(ValueError):
-        tagsIndex.unpackData({
-            "tag1": {
-                "name": 1234,
-                "display": "Tag1",
-                "handle": "0000000000001",
-                "heading": "T0001",
-                "class": "NOVEL",
+        tagsIndex.unpackData(
+            {
+                "tag1": {
+                    "name": 1234,
+                    "display": "Tag1",
+                    "handle": "0000000000001",
+                    "heading": "T0001",
+                    "class": "NOVEL",
+                }
             }
-        })
+        )
 
     # Invalid display
     with pytest.raises(ValueError):
-        tagsIndex.unpackData({
-            "tag1": {
-                "name": "Tag1",
-                "display": 1234,
-                "handle": "0000000000001",
-                "heading": "T0001",
-                "class": "NOVEL",
+        tagsIndex.unpackData(
+            {
+                "tag1": {
+                    "name": "Tag1",
+                    "display": 1234,
+                    "handle": "0000000000001",
+                    "heading": "T0001",
+                    "class": "NOVEL",
+                }
             }
-        })
+        )
 
     # Invalid handle
     with pytest.raises(ValueError):
-        tagsIndex.unpackData({
-            "tag1": {
-                "name": "Tag1",
-                "display": "Tag1",
-                "handle": "blablabla",
-                "heading": "T0001",
-                "class": "NOVEL",
+        tagsIndex.unpackData(
+            {
+                "tag1": {
+                    "name": "Tag1",
+                    "display": "Tag1",
+                    "handle": "blablabla",
+                    "heading": "T0001",
+                    "class": "NOVEL",
+                }
             }
-        })
+        )
 
     # Invalid heading
     with pytest.raises(ValueError):
-        tagsIndex.unpackData({
-            "tag1": {
-                "name": "Tag1",
-                "display": "Tag1",
-                "handle": "0000000000001",
-                "heading": "stuff",
-                "class": "NOVEL",
+        tagsIndex.unpackData(
+            {
+                "tag1": {
+                    "name": "Tag1",
+                    "display": "Tag1",
+                    "handle": "0000000000001",
+                    "heading": "stuff",
+                    "class": "NOVEL",
+                }
             }
-        })
+        )
 
     # Invalid class
     with pytest.raises(ValueError):
-        tagsIndex.unpackData({
-            "tag1": {
-                "name": "Tag1",
-                "display": "Tag1",
-                "handle": "0000000000001",
-                "heading": "T0001",
-                "class": "STUFF",
+        tagsIndex.unpackData(
+            {
+                "tag1": {
+                    "name": "Tag1",
+                    "display": "Tag1",
+                    "handle": "0000000000001",
+                    "heading": "T0001",
+                    "class": "STUFF",
+                }
             }
-        })
+        )
 
 
 @pytest.mark.core
@@ -1237,7 +1222,11 @@ def testCoreIndex_ItemIndex(nwGUI, fncPath, mockRnd):
     idxData = itemIndex.packData()
 
     assert idxData[cHandle]["T0001"]["meta"] == {
-        "level": "H2", "line": 1, "title": "Chapter One", "tag": "one", "counts": (60, 10, 2),
+        "level": "H2",
+        "line": 1,
+        "title": "Chapter One",
+        "tag": "one",
+        "counts": (60, 10, 2),
     }
     assert "@pov" in idxData[cHandle]["T0001"]["refs"]["jane"]
     assert "@focus" in idxData[cHandle]["T0001"]["refs"]["jane"]

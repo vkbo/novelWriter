@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import csv
@@ -28,9 +29,21 @@ from pathlib import Path
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QCloseEvent, QColor
 from PyQt6.QtWidgets import (
-    QAbstractItemView, QApplication, QColorDialog, QDialogButtonBox,
-    QFileDialog, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
-    QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView,
+    QApplication,
+    QColorDialog,
+    QDialogButtonBox,
+    QFileDialog,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMenu,
+    QStackedWidget,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import CONFIG, SHARED
@@ -42,10 +55,7 @@ from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScroll
 from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import (
-    QtRoleAccept, QtRoleReject, QtSizeMinimum, QtSizeMinimumExpanding,
-    QtUserRole
-)
+from novelwriter.types import QtRoleAccept, QtRoleReject, QtSizeMinimum, QtSizeMinimumExpanding, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -54,9 +64,9 @@ class GuiProjectSettings(NDialog):
     """GUI: Project Settings DIalog."""
 
     PAGE_SETTINGS = 0
-    PAGE_STATUS   = 1
-    PAGE_IMPORT   = 2
-    PAGE_REPLACE  = 3
+    PAGE_STATUS = 1
+    PAGE_IMPORT = 2
+    PAGE_REPLACE = 3
 
     newProjectSettingsReady = pyqtSignal()
 
@@ -76,8 +86,11 @@ class GuiProjectSettings(NDialog):
 
         # Title
         self.titleLabel = NColorLabel(
-            self.tr("Project Settings"), self, color=SHARED.theme.helpText,
-            scale=NColorLabel.HEADER_SCALE, indent=4,
+            self.tr("Project Settings"),
+            self,
+            color=SHARED.theme.helpText,
+            scale=NColorLabel.HEADER_SCALE,
+            indent=4,
         )
 
         # SideBar
@@ -172,12 +185,12 @@ class GuiProjectSettings(NDialog):
     @pyqtSlot()
     def _doSave(self) -> None:
         """Save settings and close dialog."""
-        project    = SHARED.project
-        projName   = self.settingsPage.projName.text()
+        project = SHARED.project
+        projName = self.settingsPage.projName.text()
         projAuthor = self.settingsPage.projAuthor.text()
-        projLang   = self.settingsPage.projLang.currentData()
-        spellLang  = self.settingsPage.spellLang.currentData()
-        doBackup   = not self.settingsPage.noBackup.isChecked()
+        projLang = self.settingsPage.projLang.currentData()
+        spellLang = self.settingsPage.spellLang.currentData()
+        doBackup = not self.settingsPage.noBackup.isChecked()
 
         project.data.setName(projName)
         project.data.setAuthor(projAuthor)
@@ -207,8 +220,8 @@ class GuiProjectSettings(NDialog):
 
     def _saveSettings(self) -> None:
         """Save GUI settings."""
-        statusColW  = self.statusPage.columnWidth()
-        importColW  = self.importPage.columnWidth()
+        statusColW = self.statusPage.columnWidth()
+        importColW = self.importPage.columnWidth()
         replaceColW = self.replacePage.columnWidth()
 
         logger.debug("Saving State: GuiProjectSettings")
@@ -221,7 +234,6 @@ class GuiProjectSettings(NDialog):
 
 
 class _SettingsPage(NScrollableForm):
-
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
@@ -235,9 +247,10 @@ class _SettingsPage(NScrollableForm):
         self.projName.setMinimumWidth(200)
         self.projName.setText(data.name)
         self.addRow(
-            self.tr("Project name"), self.projName,
+            self.tr("Project name"),
+            self.projName,
             self.tr("Changing this will affect the backup path."),
-            stretch=(3, 2)
+            stretch=(3, 2),
         )
 
         # Project Author
@@ -246,9 +259,7 @@ class _SettingsPage(NScrollableForm):
         self.projAuthor.setMinimumWidth(200)
         self.projAuthor.setText(data.author)
         self.addRow(
-            self.tr("Author"), self.projAuthor,
-            self.tr("Only used when building the manuscript."),
-            stretch=(3, 2)
+            self.tr("Author"), self.projAuthor, self.tr("Only used when building the manuscript."), stretch=(3, 2)
         )
 
         # Project Language
@@ -259,9 +270,10 @@ class _SettingsPage(NScrollableForm):
             self.projLang.addItem(language, tag)
         self.projLang.setCurrentData(projLang, projLang)
         self.addRow(
-            self.tr("Project language"), self.projLang,
+            self.tr("Project language"),
+            self.projLang,
             self.tr("Only used when building the manuscript."),
-            stretch=(3, 2)
+            stretch=(3, 2),
         )
 
         # Spell Check Language
@@ -272,9 +284,7 @@ class _SettingsPage(NScrollableForm):
             for tag, language in SHARED.spelling.listDictionaries():
                 self.spellLang.addItem(language, tag)
         self.addRow(
-            self.tr("Spell check language"), self.spellLang,
-            self.tr("Overrides main preferences."),
-            stretch=(3, 2)
+            self.tr("Spell check language"), self.spellLang, self.tr("Overrides main preferences."), stretch=(3, 2)
         )
         if (idx := self.spellLang.findData(data.spellLang)) != -1:
             self.spellLang.setCurrentIndex(idx)
@@ -282,21 +292,17 @@ class _SettingsPage(NScrollableForm):
         # Backup on Close
         self.noBackup = NSwitch(self)
         self.noBackup.setChecked(not data.doBackup)
-        self.addRow(
-            self.tr("Disable backup on close"), self.noBackup,
-            self.tr("Overrides main preferences.")
-        )
+        self.addRow(self.tr("Disable backup on close"), self.noBackup, self.tr("Overrides main preferences."))
 
         self.finalise()
 
 
 class _StatusPage(NFixedPage):
-
-    C_DATA  = 0
+    C_DATA = 0
     C_LABEL = 0
     C_USAGE = 1
 
-    D_KEY   = QtUserRole
+    D_KEY = QtUserRole
     D_ENTRY = QtUserRole + 1
 
     def __init__(self, parent: QWidget, isStatus: bool) -> None:
@@ -328,15 +334,12 @@ class _StatusPage(NFixedPage):
 
         # Labels
         self.trCountNone = self.tr("Not in use")
-        self.trCountOne  = self.tr("Used once")
+        self.trCountOne = self.tr("Used once")
         self.trCountMore = self.tr("Used by {0} items")
-        self.trSelColor  = self.tr("Select Colour")
+        self.trSelColor = self.tr("Select Colour")
 
         # Title
-        self.pageTitle = NColorLabel(
-            pageLabel, self, color=SHARED.theme.helpText,
-            scale=NColorLabel.HEADER_SCALE
-        )
+        self.pageTitle = NColorLabel(pageLabel, self, color=SHARED.theme.helpText, scale=NColorLabel.HEADER_SCALE)
 
         # List Box
         self.listBox = QTreeWidget(self)
@@ -392,10 +395,7 @@ class _StatusPage(NFixedPage):
         self.labelColor = QLabel(self.tr("Colour"), self)
         self.labelColor.setBuddy(self.iconColor)
 
-        buttonStyle = (
-            "QToolButton {padding: 0 4px;} "
-            "QToolButton::menu-indicator {image: none;}"
-        )
+        buttonStyle = "QToolButton {padding: 0 4px;} QToolButton::menu-indicator {image: none;}"
 
         self.colorButton = NIconToolButton(self, iSz)
         self.colorButton.setToolTip(self.tr("Colour"))
@@ -577,8 +577,10 @@ class _StatusPage(NFixedPage):
     def _importLabels(self) -> None:
         """Import labels from file."""
         if path := QFileDialog.getOpenFileName(
-            self, self.tr("Import File"),
-            str(CONFIG.homePath()), filter=formatFileFilter(["*.csv", "*"]),
+            self,
+            self.tr("Import File"),
+            str(CONFIG.homePath()),
+            filter=formatFileFilter(["*.csv", "*"]),
         )[0]:
             try:
                 with open(path, mode="r", encoding="utf-8") as fo:
@@ -596,7 +598,9 @@ class _StatusPage(NFixedPage):
         """Export labels to file."""
         name = f"{SHARED.project.data.fileSafeName} - {self._kind}.csv"
         if path := QFileDialog.getSaveFileName(
-            self, self.tr("Export File"), str(CONFIG.homePath() / name),
+            self,
+            self.tr("Export File"),
+            str(CONFIG.homePath() / name),
         )[0]:
             try:
                 path = Path(path).with_suffix(".csv")
@@ -683,8 +687,7 @@ class _StatusPage(NFixedPage):
 
 
 class _ReplacePage(NFixedPage):
-
-    C_KEY  = 0
+    C_KEY = 0
     C_REPL = 1
 
     def __init__(self, parent: QWidget) -> None:
@@ -696,8 +699,10 @@ class _ReplacePage(NFixedPage):
 
         # Title
         self.pageTitle = NColorLabel(
-            self.tr("Text Auto-Replace for Preview and Build"), self,
-            color=SHARED.theme.helpText, scale=NColorLabel.HEADER_SCALE
+            self.tr("Text Auto-Replace for Preview and Build"),
+            self,
+            color=SHARED.theme.helpText,
+            scale=NColorLabel.HEADER_SCALE,
         )
 
         # List Box

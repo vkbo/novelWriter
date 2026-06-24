@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -41,11 +42,11 @@ logger = logging.getLogger(__name__)
 
 # Each opener tag, with the id of its corresponding closer and tag format
 HTML_OPENER: dict[int, tuple[int, str]] = {
-    TextFmt.B_B:   (TextFmt.B_E,   "<strong>"),
-    TextFmt.I_B:   (TextFmt.I_E,   "<em>"),
-    TextFmt.D_B:   (TextFmt.D_E,   "<del>"),
-    TextFmt.U_B:   (TextFmt.U_E,   "<span style='text-decoration: underline;'>"),
-    TextFmt.M_B:   (TextFmt.M_E,   "<mark>"),
+    TextFmt.B_B: (TextFmt.B_E, "<strong>"),
+    TextFmt.I_B: (TextFmt.I_E, "<em>"),
+    TextFmt.D_B: (TextFmt.D_E, "<del>"),
+    TextFmt.U_B: (TextFmt.U_E, "<span style='text-decoration: underline;'>"),
+    TextFmt.M_B: (TextFmt.M_E, "<mark>"),
     TextFmt.SUP_B: (TextFmt.SUP_E, "<sup>"),
     TextFmt.SUB_B: (TextFmt.SUB_E, "<sub>"),
     TextFmt.COL_B: (TextFmt.COL_E, "<span style='color: {0}'>"),
@@ -56,11 +57,11 @@ HTML_OPENER: dict[int, tuple[int, str]] = {
 
 # Each closer tag, with the id of its corresponding opener and tag format
 HTML_CLOSER: dict[int, tuple[int, str]] = {
-    TextFmt.B_E:   (TextFmt.B_B,   "</strong>"),
-    TextFmt.I_E:   (TextFmt.I_B,   "</em>"),
-    TextFmt.D_E:   (TextFmt.D_B,   "</del>"),
-    TextFmt.U_E:   (TextFmt.U_B,   "</span>"),
-    TextFmt.M_E:   (TextFmt.M_B,   "</mark>"),
+    TextFmt.B_E: (TextFmt.B_B, "</strong>"),
+    TextFmt.I_E: (TextFmt.I_B, "</em>"),
+    TextFmt.D_E: (TextFmt.D_B, "</del>"),
+    TextFmt.U_E: (TextFmt.U_B, "</span>"),
+    TextFmt.M_E: (TextFmt.M_B, "</mark>"),
     TextFmt.SUP_E: (TextFmt.SUP_B, "</sup>"),
     TextFmt.SUB_E: (TextFmt.SUB_B, "</sub>"),
     TextFmt.COL_E: (TextFmt.COL_B, "</span>"),
@@ -129,7 +130,6 @@ class ToHtml(Tokenizer):
         """Convert the list of text tokens into an HTML document."""
         lines = []
         for tType, tMeta, tText, tFmt, tStyle in self._blocks:
-
             # Replace < and > with HTML entities
             if tFmt:
                 # If we have formatting, we must recompute the locations
@@ -237,9 +237,7 @@ class ToHtml(Tokenizer):
             pages = len(self._pages)
             for doc, field in self._usedFields:
                 if doc >= 0 and doc < pages and (value := self._counts.get(field)) is not None:
-                    self._pages[doc] = self._pages[doc].replace(
-                        f"{{{{{field}}}}}", self._formatInt(value)
-                    )
+                    self._pages[doc] = self._pages[doc].replace(f"{{{{{field}}}}}", self._formatInt(value))
 
         # Add footnotes
         if self._usedNotes:
@@ -270,7 +268,7 @@ class ToHtml(Tokenizer):
                 "text": {
                     "css": self.getStyleSheet(),
                     "html": [t.replace("\t", "&#09;").rstrip().split("\n") for t in self._pages],
-                }
+                },
             }
             with open(path, mode="w", encoding="utf-8") as fObj:
                 json.dump(data, fObj, indent=2)
@@ -300,7 +298,7 @@ class ToHtml(Tokenizer):
 
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = "&nbsp;") -> None:
         """Replace tabs with spaces in the html."""
-        tabSpace = spaceChar*nSpaces
+        tabSpace = spaceChar * nSpaces
         pages = [aLine.replace("\t", tabSpace) for aLine in self._pages]
         self._pages = pages
 
@@ -346,8 +344,7 @@ class ToHtml(Tokenizer):
 
         styles = []
         styles.append(
-            f"body {{color: {tColor}; font-family: '{fFam}'; font-size: {fSz}pt; "
-            f"font-weight: {fW}; font-style: {fS};}}"
+            f"body {{color: {tColor}; font-family: '{fFam}'; font-size: {fSz}pt; font-weight: {fW}; font-style: {fS};}}"
         )
         styles.append(
             f"p {{text-align: {self._defaultAlign}; line-height: {lHeight}%; "
@@ -357,28 +354,22 @@ class ToHtml(Tokenizer):
         styles.append(f"mark {{background: {mColor};}}")
         styles.append(f"h1, h2, h3, h4 {{color: {hColor}; page-break-after: avoid;}}")
         styles.append(
-            f"h1 {{font-size: {fSz1:.2f}em; font-weight: {hW}; "
-            f"margin-top: {mtH1:.2f}em; margin-bottom: {mbH1:.2f}em;}}"
+            f"h1 {{font-size: {fSz1:.2f}em; font-weight: {hW}; margin-top: {mtH1:.2f}em; margin-bottom: {mbH1:.2f}em;}}"
         )
         styles.append(
-            f"h2 {{font-size: {fSz2:.2f}em; font-weight: {hW}; "
-            f"margin-top: {mtH2:.2f}em; margin-bottom: {mbH2:.2f}em;}}"
+            f"h2 {{font-size: {fSz2:.2f}em; font-weight: {hW}; margin-top: {mtH2:.2f}em; margin-bottom: {mbH2:.2f}em;}}"
         )
         styles.append(
-            f"h3 {{font-size: {fSz3:.2f}em; font-weight: {hW}; "
-            f"margin-top: {mtH3:.2f}em; margin-bottom: {mbH3:.2f}em;}}"
+            f"h3 {{font-size: {fSz3:.2f}em; font-weight: {hW}; margin-top: {mtH3:.2f}em; margin-bottom: {mbH3:.2f}em;}}"
         )
         styles.append(
-            f"h4 {{font-size: {fSz4:.2f}em; font-weight: {hW}; "
-            f"margin-top: {mtH4:.2f}em; margin-bottom: {mbH4:.2f}em;}}"
+            f"h4 {{font-size: {fSz4:.2f}em; font-weight: {hW}; margin-top: {mtH4:.2f}em; margin-bottom: {mbH4:.2f}em;}}"
         )
         styles.append(
             f".title {{font-size: {fSz0:.2f}em; font-weight: {hW}; "
             f"margin-top: {mtH0:.2f}em; margin-bottom: {mbH0:.2f}em;}}"
         )
-        styles.append(
-            f".sep {{text-align: center; margin-top: {mtSP:.2f}em; margin-bottom: {mbSP:.2f}em;}}"
-        )
+        styles.append(f".sep {{text-align: center; margin-top: {mtSP:.2f}em; margin-bottom: {mbSP:.2f}em;}}")
 
         return styles
 
