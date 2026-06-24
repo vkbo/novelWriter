@@ -411,12 +411,7 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
 
     # Check the file content
     data = json.loads(buildsFile.read_text(encoding="utf-8"))
-    assert list(data["novelWriter.builds"].keys()) == [
-        "lastBuild",
-        "defaultBuild",
-        buildIDOne,
-        buildIDTwo,
-    ]
+    assert list(data["novelWriter.builds"].keys()) == ["lastBuild", "defaultBuild", buildIDOne, buildIDTwo]
 
     # Remove a build
     builds.removeBuild(buildIDOne)

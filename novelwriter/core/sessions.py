@@ -84,12 +84,7 @@ class NWSessionLog:
         cDiff = cCNovel + cCNotes - iCTotal
         sTime = now - self._start
 
-        logger.info(
-            "The session lasted %d seconds and added %d words and %d characters",
-            int(sTime),
-            wDiff,
-            cDiff,
-        )
+        logger.info("The session lasted %d seconds and added %d words and %d characters", int(sTime), wDiff, cDiff)
         if sTime < 300 and (wDiff == 0 or cDiff == 0):
             logger.info("Session too short, skipping log entry")
             return False

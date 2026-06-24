@@ -48,30 +48,12 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import (
-    describeFont,
-    fontMatcher,
-    languageName,
-    processLangCode,
-    qtAddAction,
-    qtLambda,
-)
+from novelwriter.common import describeFont, fontMatcher, languageName, processLangCode, qtAddAction, qtLambda
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles, nwUnicode, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.enum import nwStandardButton, nwToolButton
-from novelwriter.extensions.configlayout import (
-    NColorLabel,
-    NFixedPage,
-    NScrollableForm,
-    NScrollablePage,
-)
-from novelwriter.extensions.modified import (
-    NComboBox,
-    NDoubleSpinBox,
-    NIconToolButton,
-    NSpinBox,
-    NToolDialog,
-)
+from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollableForm, NScrollablePage
+from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NIconToolButton, NSpinBox, NToolDialog
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox

@@ -92,17 +92,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
 
     # Valid Input Options
     shortOpt = "hvidc"
-    longOpt = [
-        "help",
-        "version",
-        "info",
-        "debug",
-        "color",
-        "style=",
-        "config=",
-        "data=",
-        "meminfo",
-    ]
+    longOpt = ["help", "version", "info", "debug", "color", "style=", "config=", "data=", "meminfo"]
 
     helpMsg = (
         f"novelWriter {__version__} ({__date__})\n"

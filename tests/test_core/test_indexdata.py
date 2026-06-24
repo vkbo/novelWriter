@@ -135,17 +135,7 @@ def testCoreIndexData_IndexNodePackUnpack(mockGUI):
     new = IndexNode(cache, handle, item)
 
     # Unpack heading one
-    data = {
-        "T0001": {
-            "meta": {
-                "level": "H1",
-                "title": "Heading 1",
-                "line": 1,
-                "tag": "",
-                "counts": (42, 13, 3),
-            }
-        }
-    }
+    data = {"T0001": {"meta": {"level": "H1", "title": "Heading 1", "line": 1, "tag": "", "counts": (42, 13, 3)}}}
     new.unpackData(data)
     data = new.packData()
     assert data["T0001"] == {"meta": {"level": "H1", "title": "Heading 1", "line": 1, "tag": "", "counts": (42, 13, 3)}}
@@ -343,15 +333,7 @@ def testCoreIndexData_IndexHeadingUnpackMeta():
     cache = IndexCache(TagsIndex())
 
     # Valid
-    data = {
-        "meta": {
-            "level": "H1",
-            "title": "So it Begins",
-            "line": 1,
-            "tag": "begins",
-            "counts": [95, 18, 1],
-        }
-    }
+    data = {"meta": {"level": "H1", "title": "So it Begins", "line": 1, "tag": "begins", "counts": [95, 18, 1]}}
     head = IndexHeading(cache, "T0001")
     head.unpackData(data)
     assert head.level == "H1"
@@ -393,14 +375,7 @@ def testCoreIndexData_IndexHeadingUnpackRefs():
     cache = IndexCache(TagsIndex())
 
     # Valid
-    data = {
-        "refs": {
-            "jane": "@char,@pov",
-            "john": "@char",
-            "earth": "@location",
-            "space": "@mention,@location",
-        }
-    }
+    data = {"refs": {"jane": "@char,@pov", "john": "@char", "earth": "@location", "space": "@mention,@location"}}
     head = IndexHeading(cache, "T0001")
     head.unpackData(data)
     assert head.references["jane"] == {"@char", "@pov"}

@@ -27,14 +27,7 @@ from PyQt6.QtCore import QRect
 from PyQt6.QtGui import QBrush, QColor, QPainter, QPaintEvent, QPen
 from PyQt6.QtWidgets import QProgressBar, QWidget
 
-from novelwriter.types import (
-    QtAlignCenter,
-    QtPaintAntiAlias,
-    QtRoundCap,
-    QtSizeFixed,
-    QtSolidLine,
-    QtTransparent,
-)
+from novelwriter.types import QtAlignCenter, QtPaintAntiAlias, QtRoundCap, QtSizeFixed, QtSolidLine, QtTransparent
 
 
 class NProgressCircle(QProgressBar):

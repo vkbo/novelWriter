@@ -35,15 +35,7 @@ import utils.build_windows
 import utils.docs
 import utils.icon_themes
 
-from utils.common import (
-    ROOT_DIR,
-    SETUP_DIR,
-    extractReqs,
-    extractVersion,
-    readFile,
-    stripVersion,
-    writeFile,
-)
+from utils.common import ROOT_DIR, SETUP_DIR, extractReqs, extractVersion, readFile, stripVersion, writeFile
 
 OS_LINUX = sys.platform.startswith("linux")
 OS_DARWIN = sys.platform.startswith("darwin")
@@ -201,16 +193,14 @@ if __name__ == "__main__":
 
     # Build Debian Package
     cmdBuildDeb = parsers.add_parser(
-        "build-deb",
-        help=("Build a .deb package for Debian and Ubuntu. Add --sign to sign package."),
+        "build-deb", help=("Build a .deb package for Debian and Ubuntu. Add --sign to sign package.")
     )
     cmdBuildDeb.add_argument("--sign", action="store_true", help="Sign the package.")
     cmdBuildDeb.set_defaults(func=utils.build_debian.debian)
 
     # Build Ubuntu Packages
     cmdBuildUbuntu = parsers.add_parser(
-        "build-ubuntu",
-        help=("Build a .deb package for Debian and Ubuntu. Add --sign to sign package."),
+        "build-ubuntu", help=("Build a .deb package for Debian and Ubuntu. Add --sign to sign package.")
     )
     cmdBuildUbuntu.add_argument("--sign", action="store_true", help="Sign the package.")
     cmdBuildUbuntu.add_argument("--build", type=int, help="Set build number.")
