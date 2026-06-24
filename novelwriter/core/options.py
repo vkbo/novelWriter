@@ -22,6 +22,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -45,37 +46,77 @@ NWEnum = TypeVar("NWEnum", bound=Enum)
 
 VALID_MAP: dict[str, set[str]] = {
     "GuiWritingStats": {
-        "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
-        "widthCol3", "sortCol", "sortOrder", "incNovel", "incNotes",
-        "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax",
+        "winWidth",
+        "winHeight",
+        "widthCol0",
+        "widthCol1",
+        "widthCol2",
+        "widthCol3",
+        "sortCol",
+        "sortOrder",
+        "incNovel",
+        "incNotes",
+        "hideZeros",
+        "hideNegative",
+        "groupByDay",
+        "showIdleTime",
+        "histMax",
     },
     "GuiDocSplit": {"spLevel", "intoFolder", "docHierarchy"},
     "GuiOutline": {"columnState"},
     "GuiProjectSettings": {
-        "winWidth", "winHeight", "replaceColW", "statusColW", "importColW",
+        "winWidth",
+        "winHeight",
+        "replaceColW",
+        "statusColW",
+        "importColW",
     },
     "GuiWordList": {"winWidth", "winHeight"},
     "GuiNovelView": {"lastCol", "lastColSize"},
     "GuiBuildSettings": {
-        "winWidth", "winHeight", "treeWidth", "filterWidth", "autoPreview",
+        "winWidth",
+        "winHeight",
+        "treeWidth",
+        "filterWidth",
+        "autoPreview",
     },
     "GuiManuscript": {
-        "winWidth", "winHeight", "optsWidth", "viewWidth", "listHeight",
-        "detailsHeight", "detailsWidth", "detailsExpanded", "showNewPage",
+        "winWidth",
+        "winHeight",
+        "optsWidth",
+        "viewWidth",
+        "listHeight",
+        "detailsHeight",
+        "detailsWidth",
+        "detailsExpanded",
+        "showNewPage",
     },
     "GuiManuscriptBuild": {
-        "winWidth", "winHeight", "fmtWidth", "sumWidth",
+        "winWidth",
+        "winHeight",
+        "fmtWidth",
+        "sumWidth",
     },
     "GuiDocViewerPanel": {
-        "colWidths", "hideInactive",
+        "colWidths",
+        "hideInactive",
     },
     "GuiNovelDetails": {
-        "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
-        "widthCol3", "widthCol4", "wordsPerPage", "countFrom", "clearDouble",
+        "winWidth",
+        "winHeight",
+        "widthCol0",
+        "widthCol1",
+        "widthCol2",
+        "widthCol3",
+        "widthCol4",
+        "wordsPerPage",
+        "countFrom",
+        "clearDouble",
         "novelRoot",
     },
     "GuiOutlineDetails": {
-        "detailsWidth", "tagsWidth",
+        "detailsWidth",
+        "tagsWidth",
     },
 }
 

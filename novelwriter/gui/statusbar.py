@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -264,15 +265,14 @@ class GuiMainStatus(QStatusBar):
         stamp = datetime.now().strftime("%H:%M:%S")
         message = (
             f"Widgets: {count} \u2013 "
-            f"{self._traceMallocRef} Memory: {current/1024:,.2f} kiB \u2013 "
-            f"Peak: {peak/1024:,.2f} kiB"
+            f"{self._traceMallocRef} Memory: {current / 1024:,.2f} kiB \u2013 "
+            f"Peak: {peak / 1024:,.2f} kiB"
         )
         self.showMessage(f"Debug [{stamp}] {message}", 6000)
         logger.debug("[MEMINFO] %s", message)
 
 
 class _MessageWidget(QWidget):
-
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
         self._icon = QLabel(self)

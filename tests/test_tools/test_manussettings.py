@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -30,9 +31,7 @@ from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.modified import NFontDialog
-from novelwriter.tools.manussettings import (
-    GuiBuildSettings, _FilterTab, _FormattingTab, _HeadingsTab
-)
+from novelwriter.tools.manussettings import GuiBuildSettings, _FilterTab, _FormattingTab, _HeadingsTab
 
 from tests.tools import C, buildTestProject
 
@@ -168,49 +167,49 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     # Switch off novel docs
     filterTab.filterOpt._widgets[switchMap["incNovel"]].setChecked(False)
     assert sBuild.buildItemFilter(SHARED.project) == {
-        C.hNovelRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (False, FilterMode.FILTERED),
+        C.hNovelRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
         C.hChapterDoc: (False, FilterMode.FILTERED),
-        C.hSceneDoc:   (False, FilterMode.FILTERED),
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        hPlotDoc:      (False, FilterMode.FILTERED),
-        C.hCharRoot:   (False, FilterMode.SKIPPED),
-        hCharDoc:      (False, FilterMode.FILTERED),
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTrashRoot:  (False, FilterMode.SKIPPED),
+        C.hSceneDoc: (False, FilterMode.FILTERED),
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (False, FilterMode.FILTERED),
+        C.hCharRoot: (False, FilterMode.SKIPPED),
+        hCharDoc: (False, FilterMode.FILTERED),
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTrashRoot: (False, FilterMode.SKIPPED),
     }
 
     # Switch on note docs
     filterTab.filterOpt._widgets[switchMap["incNotes"]].setChecked(True)
     assert sBuild.buildItemFilter(SHARED.project) == {
-        C.hNovelRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (False, FilterMode.FILTERED),
+        C.hNovelRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
         C.hChapterDoc: (False, FilterMode.FILTERED),
-        C.hSceneDoc:   (False, FilterMode.FILTERED),
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        hPlotDoc:      (False, FilterMode.FILTERED),  # Set to inactive
-        C.hCharRoot:   (False, FilterMode.SKIPPED),
-        hCharDoc:      (True,  FilterMode.FILTERED),  # Now enabled
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTrashRoot:  (False, FilterMode.SKIPPED),
+        C.hSceneDoc: (False, FilterMode.FILTERED),
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (False, FilterMode.FILTERED),  # Set to inactive
+        C.hCharRoot: (False, FilterMode.SKIPPED),
+        hCharDoc: (True, FilterMode.FILTERED),  # Now enabled
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTrashRoot: (False, FilterMode.SKIPPED),
     }
 
     # Switch on inactive docs
     filterTab.filterOpt._widgets[switchMap["incInactive"]].setChecked(True)
     assert sBuild.buildItemFilter(SHARED.project) == {
-        C.hNovelRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (False, FilterMode.FILTERED),
+        C.hNovelRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
         C.hChapterDoc: (False, FilterMode.FILTERED),
-        C.hSceneDoc:   (False, FilterMode.FILTERED),
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        hPlotDoc:      (True,  FilterMode.FILTERED),  # Now enabled
-        C.hCharRoot:   (False, FilterMode.SKIPPED),
-        hCharDoc:      (True,  FilterMode.FILTERED),
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTrashRoot:  (False, FilterMode.SKIPPED),
+        C.hSceneDoc: (False, FilterMode.FILTERED),
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (True, FilterMode.FILTERED),  # Now enabled
+        C.hCharRoot: (False, FilterMode.SKIPPED),
+        hCharDoc: (True, FilterMode.FILTERED),
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTrashRoot: (False, FilterMode.SKIPPED),
     }
 
     # Set chapter and scene docs to included
@@ -218,17 +217,17 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     filterTab._treeMap[C.hSceneDoc].setSelected(True)
     filterTab.includedButton.click()
     assert sBuild.buildItemFilter(SHARED.project) == {
-        C.hNovelRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (False, FilterMode.FILTERED),
+        C.hNovelRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
-        C.hChapterDoc: (True,  FilterMode.INCLUDED),  # Now included
-        C.hSceneDoc:   (True,  FilterMode.INCLUDED),  # Now included
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        hPlotDoc:      (True,  FilterMode.FILTERED),
-        C.hCharRoot:   (False, FilterMode.SKIPPED),
-        hCharDoc:      (True,  FilterMode.FILTERED),
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTrashRoot:  (False, FilterMode.SKIPPED),
+        C.hChapterDoc: (True, FilterMode.INCLUDED),  # Now included
+        C.hSceneDoc: (True, FilterMode.INCLUDED),  # Now included
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (True, FilterMode.FILTERED),
+        C.hCharRoot: (False, FilterMode.SKIPPED),
+        hCharDoc: (True, FilterMode.FILTERED),
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTrashRoot: (False, FilterMode.SKIPPED),
     }
 
     # Set char and plot docs to excluded
@@ -237,33 +236,33 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     filterTab._treeMap[hCharDoc].setSelected(True)  # type: ignore
     filterTab.excludedButton.click()
     assert sBuild.buildItemFilter(SHARED.project) == {
-        C.hNovelRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (False, FilterMode.FILTERED),
+        C.hNovelRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
-        C.hChapterDoc: (True,  FilterMode.INCLUDED),
-        C.hSceneDoc:   (True,  FilterMode.INCLUDED),
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        hPlotDoc:      (False, FilterMode.EXCLUDED),  # Now excluded
-        C.hCharRoot:   (False, FilterMode.SKIPPED),
-        hCharDoc:      (False, FilterMode.EXCLUDED),  # Now excluded
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTrashRoot:  (False, FilterMode.SKIPPED),
+        C.hChapterDoc: (True, FilterMode.INCLUDED),
+        C.hSceneDoc: (True, FilterMode.INCLUDED),
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (False, FilterMode.EXCLUDED),  # Now excluded
+        C.hCharRoot: (False, FilterMode.SKIPPED),
+        hCharDoc: (False, FilterMode.EXCLUDED),  # Now excluded
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTrashRoot: (False, FilterMode.SKIPPED),
     }
 
     # Switch on novel docs
     filterTab.filterOpt._widgets[switchMap["incNovel"]].setChecked(True)
     assert sBuild.buildItemFilter(SHARED.project) == {
-        C.hNovelRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (True,  FilterMode.FILTERED),  # Now enabled
+        C.hNovelRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (True, FilterMode.FILTERED),  # Now enabled
         C.hChapterDir: (False, FilterMode.SKIPPED),
-        C.hChapterDoc: (True,  FilterMode.INCLUDED),
-        C.hSceneDoc:   (True,  FilterMode.INCLUDED),
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        hPlotDoc:      (False, FilterMode.EXCLUDED),
-        C.hCharRoot:   (False, FilterMode.SKIPPED),
-        hCharDoc:      (False, FilterMode.EXCLUDED),
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTrashRoot:  (False, FilterMode.SKIPPED),
+        C.hChapterDoc: (True, FilterMode.INCLUDED),
+        C.hSceneDoc: (True, FilterMode.INCLUDED),
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (False, FilterMode.EXCLUDED),
+        C.hCharRoot: (False, FilterMode.SKIPPED),
+        hCharDoc: (False, FilterMode.EXCLUDED),
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTrashRoot: (False, FilterMode.SKIPPED),
     }
 
     # Selecting only novel root should iterate through all children
@@ -271,17 +270,17 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     filterTab._treeMap[C.hNovelRoot].setSelected(True)
     filterTab.resetButton.click()
     assert sBuild.buildItemFilter(SHARED.project) == {
-        C.hNovelRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (True,  FilterMode.FILTERED),
+        C.hNovelRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (True, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
-        C.hChapterDoc: (True,  FilterMode.FILTERED),
-        C.hSceneDoc:   (True,  FilterMode.FILTERED),
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        hPlotDoc:      (False, FilterMode.EXCLUDED),
-        C.hCharRoot:   (False, FilterMode.SKIPPED),
-        hCharDoc:      (False, FilterMode.EXCLUDED),
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTrashRoot:  (False, FilterMode.SKIPPED),
+        C.hChapterDoc: (True, FilterMode.FILTERED),
+        C.hSceneDoc: (True, FilterMode.FILTERED),
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (False, FilterMode.EXCLUDED),
+        C.hCharRoot: (False, FilterMode.SKIPPED),
+        hCharDoc: (False, FilterMode.EXCLUDED),
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTrashRoot: (False, FilterMode.SKIPPED),
     }
 
     # Set everything back to filtered
@@ -292,30 +291,42 @@ def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     filterTab._treeMap[hCharDoc].setSelected(True)  # type: ignore
     filterTab.resetButton.click()
     assert sBuild.buildItemFilter(SHARED.project) == {
-        C.hNovelRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (True,  FilterMode.FILTERED),
+        C.hNovelRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (True, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
-        C.hChapterDoc: (True,  FilterMode.FILTERED),
-        C.hSceneDoc:   (True,  FilterMode.FILTERED),
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        hPlotDoc:      (True,  FilterMode.FILTERED),
-        C.hCharRoot:   (False, FilterMode.SKIPPED),
-        hCharDoc:      (True,  FilterMode.FILTERED),
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTrashRoot:  (False, FilterMode.SKIPPED),
+        C.hChapterDoc: (True, FilterMode.FILTERED),
+        C.hSceneDoc: (True, FilterMode.FILTERED),
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (True, FilterMode.FILTERED),
+        C.hCharRoot: (False, FilterMode.SKIPPED),
+        hCharDoc: (True, FilterMode.FILTERED),
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTrashRoot: (False, FilterMode.SKIPPED),
     }
 
     # Check handling of invalid project items
     assert list(filterTab._treeMap.keys()) == [
-        C.hNovelRoot, C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
-        C.hPlotRoot, hPlotDoc, C.hCharRoot, hCharDoc,
+        C.hNovelRoot,
+        C.hTitlePage,
+        C.hChapterDir,
+        C.hChapterDoc,
+        C.hSceneDoc,
+        C.hPlotRoot,
+        hPlotDoc,
+        C.hCharRoot,
+        hCharDoc,
     ]
     SHARED.project.tree[hCharDoc].setRoot(None)  # type: ignore
     SHARED.project.tree[hPlotDoc].setParent(None)  # type: ignore
     filterTab._populateTree()
     assert list(filterTab._treeMap.keys()) == [
-        C.hNovelRoot, C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
-        C.hPlotRoot, C.hCharRoot
+        C.hNovelRoot,
+        C.hTitlePage,
+        C.hChapterDir,
+        C.hChapterDoc,
+        C.hSceneDoc,
+        C.hPlotRoot,
+        C.hCharRoot,
     ]
 
     # Finish
@@ -450,9 +461,7 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     headTab.btnChapter.click()
     headTab.editTextBox.setPlainText(f"Chapter {nwHeadFmt.CH_NUM}\n{nwHeadFmt.TITLE}\n")
     headTab.btnApply.click()
-    assert sBuild.getStr("headings.fmtChapter") == (
-        f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}"
-    )
+    assert sBuild.getStr("headings.fmtChapter") == (f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
 
     # Set all to plain title
     headTab.btnPart.click()

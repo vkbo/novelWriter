@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -29,10 +30,7 @@ import pytest
 
 from PyQt6.QtWidgets import QApplication
 
-from novelwriter import (
-    BLUE, CONFIG, END, FILE, LINE, LVLC, LVLP, TEXT, TIME, WHITE, _createApp,
-    logger, main
-)
+from novelwriter import BLUE, CONFIG, END, FILE, LINE, LVLC, LVLP, TEXT, TIME, WHITE, _createApp, logger, main
 from novelwriter.splash import NSplashScreen
 
 from tests.tools import clearLogHandlers
@@ -89,9 +87,7 @@ def testBaseInit_Options(monkeypatch, fncPath):
 
     monkeypatch.setattr("novelwriter._createApp", lambda *a: app)
     monkeypatch.setattr("novelwriter.guimain.GuiMain", lambda *a: gui)
-    monkeypatch.setattr(sys, "argv", [
-        "novelWriter.py", f"--config={fncPath}", f"--data={fncPath}"
-    ])
+    monkeypatch.setattr(sys, "argv", ["novelWriter.py", f"--config={fncPath}", f"--data={fncPath}"])
 
     # Defaults wo/Args
     gui.reset_mock()
@@ -186,8 +182,8 @@ def testBaseInit_Imports(caplog, monkeypatch, fncPath):
     with pytest.raises(SystemExit) as ex:
         main([f"--config={fncPath}", f"--data={fncPath}"])
 
-    assert ex.value.code & 4 == 4    # Python version not satisfied  # type: ignore
-    assert ex.value.code & 8 == 8    # Qt version not satisfied  # type: ignore
+    assert ex.value.code & 4 == 4  # Python version not satisfied  # type: ignore
+    assert ex.value.code & 8 == 8  # Qt version not satisfied  # type: ignore
     assert ex.value.code & 16 == 16  # PyQt version not satisfied  # type: ignore
 
     assert "At least Python" in caplog.messages[0]

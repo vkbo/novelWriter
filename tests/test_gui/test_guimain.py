@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import shutil
@@ -437,8 +438,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     # ============
 
     for c in (
-        "This is another paragraph of much longer nonsense text. "
-        "It is in fact 1 very very NONSENSICAL nonsense text! "
+        "This is another paragraph of much longer nonsense text. It is in fact 1 very very NONSENSICAL nonsense text! "
     ):
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     for c in "We can also try replacing \"quotes\", even single 'quotes' are replaced. ":
@@ -712,9 +712,7 @@ def testGuiMain_Viewing(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.projView.setSelectedHandle(C.hSceneDoc)
     with monkeypatch.context() as mp:
         mp.setattr(nwGUI.projView.projTree, "hasFocus", lambda *a: True)
-        qtbot.keyClick(
-            nwGUI.projView.projTree, Qt.Key.Key_Return, modifier=QtModShift, delay=KEY_DELAY
-        )
+        qtbot.keyClick(nwGUI.projView.projTree, Qt.Key.Key_Return, modifier=QtModShift, delay=KEY_DELAY)
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
 
     # qtbot.stop()

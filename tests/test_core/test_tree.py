@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import random
@@ -68,23 +69,44 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
     assert len(tree) == 9
     assert tree.trash is not None
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
     assert tree.allDocs() == [C.hTitlePage, C.hChapterDoc, C.hSceneDoc]
 
     # Pack the data again
     assert [n["name"] for n in tree.pack()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Inject a node in the map, but not in the tree (inconsistent tree)
     # This should be ignored
     tree._nodes["123456789abc"] = tree.model.root
     assert [n["name"] for n in tree.pack()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Clear, and populate in reverse order
@@ -93,8 +115,15 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
     assert len(tree) == 0
     tree.unpack(list(reversed(mockItems)))
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Locations", "Characters", "Plot", "Novel", "New Folder",
-        "New Scene", "New Chapter", "Title Page", "Trash",
+        "Locations",
+        "Characters",
+        "Plot",
+        "Novel",
+        "New Folder",
+        "New Scene",
+        "New Chapter",
+        "Title Page",
+        "Trash",
     ]
 
     # Clear, and populate with one item being its own parent
@@ -107,8 +136,15 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
     tree.unpack(mockItems)
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Clear and populate reversed with max depth limit very low
@@ -119,7 +155,11 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
         assert len(tree) == 0
         tree.unpack(list(reversed(mockItems)))
         assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-            "Locations", "Characters", "Plot", "Novel", "Trash",
+            "Locations",
+            "Characters",
+            "Plot",
+            "Novel",
+            "Trash",
         ]
 
 
@@ -131,8 +171,15 @@ def testCoreTree_ManipulateTree(mockGUI, mockItems):
     tree.unpack(mockItems)
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Create Root
@@ -152,16 +199,36 @@ def testCoreTree_ManipulateTree(mockGUI, mockItems):
 
     # Check Tree
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Foo",
+        "Bar",
+        "Trash",
     ]
 
     # Cannot add a folder or file with no parent
     assert tree.create("Foo", None, nwItemType.FOLDER, pos=0) is None
     assert tree.create("Bar", None, nwItemType.FILE, pos=0) is None
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Foo",
+        "Bar",
+        "Trash",
     ]
 
     # Duplicate Bar -> Baz
@@ -170,22 +237,54 @@ def testCoreTree_ManipulateTree(mockGUI, mockItems):
     baz.setName("Baz")
     zHandle = baz.itemHandle
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Baz", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Foo",
+        "Bar",
+        "Baz",
+        "Trash",
     ]
 
     # Duplicate non-existent
     assert tree.duplicate("bob", fHandle, True) is None
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Baz", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Foo",
+        "Bar",
+        "Baz",
+        "Trash",
     ]
 
     # Remove Baz
     assert tree.remove(zHandle) is True
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Foo",
+        "Bar",
+        "Trash",
     ]
     assert len(tree._items) == len(tree.model.root.allChildren())
     assert len(tree._items) == len(tree._nodes)
@@ -198,8 +297,18 @@ def testCoreTree_ManipulateTree(mockGUI, mockItems):
     item.setParent(tree._makeHandle())
     assert tree.add(item) is False
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Foo",
+        "Bar",
+        "Trash",
     ]
 
     # Add item with non parent, that isn't a root
@@ -207,8 +316,18 @@ def testCoreTree_ManipulateTree(mockGUI, mockItems):
     item.setType(nwItemType.FOLDER)
     assert tree.add(item) is False
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Objects", "Foo", "Bar", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Foo",
+        "Bar",
+        "Trash",
     ]
 
 
@@ -359,8 +478,15 @@ def testCoreTree_ItemMethods(monkeypatch, mockGUI, mockItems):
     tree.unpack(mockItems)
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Check Type
@@ -395,7 +521,10 @@ def testCoreTree_ItemMethods(monkeypatch, mockGUI, mockItems):
     # Sub Tree
     assert tree.subTree(C.hInvalid) == []
     assert tree.subTree(C.hNovelRoot) == [
-        C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
+        C.hTitlePage,
+        C.hChapterDir,
+        C.hChapterDoc,
+        C.hSceneDoc,
     ]
 
     # Root Classes
@@ -438,8 +567,15 @@ def testCoreTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
 
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Refresh All

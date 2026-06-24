@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -31,9 +32,19 @@ from novelwriter.enum import nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp, TextDocumentTheme
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.types import (
-    QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
-    QtFontBold, QtPageBreakAfter, QtPageBreakAuto, QtPageBreakBefore,
-    QtTransparent, QtVAlignNormal, QtVAlignSub, QtVAlignSuper
+    QtAlignAbsolute,
+    QtAlignCenter,
+    QtAlignJustify,
+    QtAlignLeft,
+    QtAlignRight,
+    QtFontBold,
+    QtPageBreakAfter,
+    QtPageBreakAuto,
+    QtPageBreakBefore,
+    QtTransparent,
+    QtVAlignNormal,
+    QtVAlignSub,
+    QtVAlignSuper,
 )
 
 THEME = TextDocumentTheme()
@@ -60,13 +71,7 @@ def testFmtToQTextDocument_ConvertHeaders(mockGUI):
     doc.setChapterFormat(f"{nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
 
     # Populate
-    doc._text = (
-        "#! Title\n"
-        "# Partition\n"
-        "## Chapter\n"
-        "### Scene\n"
-        "#### Section\n"
-    )
+    doc._text = "#! Title\n# Partition\n## Chapter\n### Scene\n#### Section\n"
     doc.tokenizeText()
     doc.doConvert()
     assert doc.document.blockCount() == 6
@@ -152,16 +157,7 @@ def testFmtToQTextDocument_SeparatorSkip(mockGUI):
 
     doc._isNovel = True
     doc._isFirst = True
-    doc._text = (
-        "#! Title\n"
-        "## Chapter\n"
-        "### Scene 1\n"
-        "Text 1\n"
-        "### Scene 2\n"
-        "Text 2\n"
-        "#### Section\n"
-        "Text 3\n"
-    )
+    doc._text = "#! Title\n## Chapter\n### Scene 1\nText 1\n### Scene 2\nText 2\n#### Section\nText 3\n"
     doc.setSceneFormat("* * *", False)
     doc.setSectionFormat("", False)
     doc.tokenizeText()
@@ -222,12 +218,7 @@ def testFmtToQTextDocument_NovelMeta(mockGUI):
     doc.setCommentType(nwComment.SYNOPSIS, True)
     doc.setKeywords(True)
     doc._text = (
-        "### Scene\n\n"
-        "@pov: Jane\n"
-        "@char: John, Bob\n\n"
-        "%Synopsis: Stuff that happened\n\n"
-        "% A regular comment\n\n"
-        "Text\n\n"
+        "### Scene\n\n@pov: Jane\n@char: John, Bob\n\n%Synopsis: Stuff that happened\n\n% A regular comment\n\nText\n\n"
     )
     doc.tokenizeText()
     doc.doConvert()
@@ -298,12 +289,7 @@ def testFmtToQTextDocument_NoteMeta(mockGUI):
     doc.setCommentType(nwComment.PLAIN, True)
     doc.setCommentType(nwComment.SHORT, True)
     doc.setKeywords(True)
-    doc._text = (
-        "# Jane Smith\n\n"
-        "@tag: Jane | Jane Smith\n"
-        "%Short: All about Jane\n\n"
-        "Text\n\n"
-    )
+    doc._text = "# Jane Smith\n\n@tag: Jane | Jane Smith\n%Short: All about Jane\n\nText\n\n"
     doc.tokenizeText()
     doc.doConvert()
     assert doc.document.blockCount() == 4
@@ -455,7 +441,7 @@ def testFmtToQTextDocument_TextBlockFormats(mockGUI):
 @pytest.mark.core
 def testFmtToQTextDocument_TextCharFormats(mockGUI):
     """Test text char formats in the ToQTextDocument class."""
-    CONFIG.fmtDQuoteOpen  = nwUnicode.U_LDQUO
+    CONFIG.fmtDQuoteOpen = nwUnicode.U_LDQUO
     CONFIG.fmtDQuoteClose = nwUnicode.U_RDQUO
     CONFIG.altDialogOpen = "|<"
     CONFIG.altDialogClose = ">|"

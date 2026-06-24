@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import argparse
@@ -30,8 +31,15 @@ import zipfile
 from pathlib import Path
 
 from utils.common import (
-    ROOT_DIR, SETUP_DIR, copySourceCode, extractReqs, extractVersion, readFile,
-    removeRedundantQt, systemCall, writeFile
+    ROOT_DIR,
+    SETUP_DIR,
+    copySourceCode,
+    extractReqs,
+    extractVersion,
+    readFile,
+    removeRedundantQt,
+    systemCall,
+    writeFile,
 )
 
 
@@ -48,7 +56,6 @@ def prepareCode(outDir: Path) -> None:
         SETUP_DIR / "iss_license.txt",
         SETUP_DIR / "windows" / "novelWriter.ico",
         SETUP_DIR / "windows" / "novelWriter.exe",
-
     ]
     for item in files:
         shutil.copyfile(item, outDir / item.name)
@@ -83,9 +90,7 @@ def embedPython(bldDir: Path, outDir: Path) -> None:
 def installRequirements(libDir: Path) -> None:
     """Install dependencies."""
     print("Install dependencies ...")
-    systemCall([
-        sys.executable, "-m", "pip", "install", *extractReqs(["app"]), "--target", libDir
-    ])
+    systemCall([sys.executable, "-m", "pip", "install", *extractReqs(["app"]), "--target", libDir])
     print("Done")
     print("")
 
@@ -121,17 +126,20 @@ def main(args: argparse.Namespace) -> None:
     shutil.copyfile(libDir / "PyQt6" / "Qt6" / "bin" / "msvcp140.dll", outDir / "msvcp140.dll")
 
     print("Updating starting script ...")
-    writeFile(outDir / "novelWriter.pyw", (
-        "import os\n"
-        "import sys\n"
-        "\n"
-        "os.curdir = os.path.abspath(os.path.dirname(__file__))\n"
-        'sys.path.insert(0, os.path.join(os.curdir, "lib"))\n'
-        "\n"
-        'if __name__ == "__main__":\n'
-        "    import novelwriter\n"
-        "    novelwriter.main(sys.argv[1:])\n"
-    ))
+    writeFile(
+        outDir / "novelWriter.pyw",
+        (
+            "import os\n"
+            "import sys\n"
+            "\n"
+            "os.curdir = os.path.abspath(os.path.dirname(__file__))\n"
+            'sys.path.insert(0, os.path.join(os.curdir, "lib"))\n'
+            "\n"
+            'if __name__ == "__main__":\n'
+            "    import novelwriter\n"
+            "    novelwriter.main(sys.argv[1:])\n"
+        ),
+    )
     print("Done")
     print("")
 

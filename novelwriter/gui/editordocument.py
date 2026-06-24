@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -92,8 +93,8 @@ class GuiTextDocument(QTextDocument):
 
         tEnd = time()
 
-        logger.debug("Loaded %d text blocks in %.3f ms", count, 1000*(tMid - tStart))
-        logger.debug("Highlighted document in %.3f ms", 1000*(tEnd - tMid))
+        logger.debug("Loaded %d text blocks in %.3f ms", count, 1000 * (tMid - tStart))
+        logger.debug("Highlighted document in %.3f ms", 1000 * (tEnd - tMid))
 
     def metaDataAtPos(self, pos: int) -> tuple[str, str]:
         """Check if there is meta data available at a given position in

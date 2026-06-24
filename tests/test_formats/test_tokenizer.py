@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -166,7 +167,10 @@ def testFmtToken_Setters(mockGUI):
     assert tokens._linkHeadings is True
     assert tokens._doBodyText is False
     assert tokens._doComments == {
-        nwComment.FOOTNOTE, nwComment.PLAIN, nwComment.SYNOPSIS, nwComment.SHORT,
+        nwComment.FOOTNOTE,
+        nwComment.PLAIN,
+        nwComment.SYNOPSIS,
+        nwComment.SHORT,
     }
     assert tokens._doKeywords is True
 
@@ -225,15 +229,17 @@ def testFmtToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     # First Page
     tokens.addRootHeading(C.hPlotRoot)
     assert tokens._raw[-1] == "#! Notes: Plot\n\n"
-    assert tokens._blocks[-1] == (
-        BlockTyp.TITLE, "0000000000009:T0001", "Notes: Plot", [], BlockFmt.CENTRE
-    )
+    assert tokens._blocks[-1] == (BlockTyp.TITLE, "0000000000009:T0001", "Notes: Plot", [], BlockFmt.CENTRE)
 
     # Not First Page
     tokens.addRootHeading(C.hPlotRoot)
     assert tokens._raw[-1] == "#! Notes: Plot\n\n"
     assert tokens._blocks[-1] == (
-        BlockTyp.TITLE, "0000000000009:T0001", "Notes: Plot", [], BlockFmt.CENTRE | BlockFmt.PBB
+        BlockTyp.TITLE,
+        "0000000000009:T0001",
+        "Notes: Plot",
+        [],
+        BlockFmt.CENTRE | BlockFmt.PBB,
     )
 
     # Set Text
@@ -775,13 +781,22 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens.setCommentType(nwComment.PLAIN, True)
     tokens._text = "% A comment\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.COMMENT, "", "Comment: A comment", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "comment"),
-            (8, TextFmt.COL_E, ""), (8, TextFmt.B_E, ""),
-            (9, TextFmt.COL_B, "comment"), (18, TextFmt.COL_E, ""),
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.COMMENT,
+            "",
+            "Comment: A comment",
+            [
+                (0, TextFmt.B_B, ""),
+                (0, TextFmt.COL_B, "comment"),
+                (8, TextFmt.COL_E, ""),
+                (8, TextFmt.B_E, ""),
+                (9, TextFmt.COL_B, "comment"),
+                (18, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     # Synopsis
     tokens.setCommentType(nwComment.SYNOPSIS, False)
@@ -792,13 +807,22 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens.setCommentType(nwComment.SYNOPSIS, True)
     tokens._text = "% synopsis: The synopsis\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.SUMMARY, "", "Synopsis: The synopsis", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
-            (9, TextFmt.COL_E, ""), (9, TextFmt.B_E, ""),
-            (10, TextFmt.COL_B, "note"), (22, TextFmt.COL_E, "")
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.SUMMARY,
+            "",
+            "Synopsis: The synopsis",
+            [
+                (0, TextFmt.B_B, ""),
+                (0, TextFmt.COL_B, "modifier"),
+                (9, TextFmt.COL_E, ""),
+                (9, TextFmt.B_E, ""),
+                (10, TextFmt.COL_B, "note"),
+                (22, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     # Short
     tokens.setCommentType(nwComment.SHORT, False)
@@ -809,13 +833,22 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens.setCommentType(nwComment.SHORT, True)
     tokens._text = "% short: A short description\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.SUMMARY, "", "Short Description: A short description", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
-            (18, TextFmt.COL_E, ""), (18, TextFmt.B_E, ""),
-            (19, TextFmt.COL_B, "note"), (38, TextFmt.COL_E, ""),
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.SUMMARY,
+            "",
+            "Short Description: A short description",
+            [
+                (0, TextFmt.B_B, ""),
+                (0, TextFmt.COL_B, "modifier"),
+                (18, TextFmt.COL_E, ""),
+                (18, TextFmt.B_E, ""),
+                (19, TextFmt.COL_B, "note"),
+                (38, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     # Story Comments
     tokens.setCommentType(nwComment.STORY, False)
@@ -836,25 +869,50 @@ def testFmtToken_MetaFormat(mockGUI):
         "%Note.Other: That other stuff that happened\n"
     )
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.NOTE, "", "Story Structure (Stuff): Stuff happens", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
-            (24, TextFmt.COL_E, ""), (24, TextFmt.B_E, ""),
-            (25, TextFmt.COL_B, "note"), (38, TextFmt.COL_E, "")
-        ], BlockFmt.Z_BTM
-    ), (
-        BlockTyp.NOTE, "", "Note (More): That stuff that happened", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
-            (12, TextFmt.COL_E, ""), (12, TextFmt.B_E, ""),
-            (13, TextFmt.COL_B, "note"), (37, TextFmt.COL_E, "")
-        ], BlockFmt.Z_TOP | BlockFmt.Z_BTM
-    ), (
-        BlockTyp.NOTE, "", "Note (Other): That other stuff that happened", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
-            (13, TextFmt.COL_E, ""), (13, TextFmt.B_E, ""),
-            (14, TextFmt.COL_B, "note"), (44, TextFmt.COL_E, "")
-        ], BlockFmt.Z_TOP
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.NOTE,
+            "",
+            "Story Structure (Stuff): Stuff happens",
+            [
+                (0, TextFmt.B_B, ""),
+                (0, TextFmt.COL_B, "modifier"),
+                (24, TextFmt.COL_E, ""),
+                (24, TextFmt.B_E, ""),
+                (25, TextFmt.COL_B, "note"),
+                (38, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.Z_BTM,
+        ),
+        (
+            BlockTyp.NOTE,
+            "",
+            "Note (More): That stuff that happened",
+            [
+                (0, TextFmt.B_B, ""),
+                (0, TextFmt.COL_B, "modifier"),
+                (12, TextFmt.COL_E, ""),
+                (12, TextFmt.B_E, ""),
+                (13, TextFmt.COL_B, "note"),
+                (37, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.Z_TOP | BlockFmt.Z_BTM,
+        ),
+        (
+            BlockTyp.NOTE,
+            "",
+            "Note (Other): That other stuff that happened",
+            [
+                (0, TextFmt.B_B, ""),
+                (0, TextFmt.COL_B, "modifier"),
+                (13, TextFmt.COL_E, ""),
+                (13, TextFmt.B_E, ""),
+                (14, TextFmt.COL_B, "note"),
+                (44, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.Z_TOP,
+        ),
+    ]
 
     # Keyword
     tokens.setKeywords(False)
@@ -864,52 +922,100 @@ def testFmtToken_MetaFormat(mockGUI):
 
     tokens.setKeywords(True)
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.KEYWORD, "char", "Characters: Bod", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (11, TextFmt.COL_E, ""), (11, TextFmt.B_E, ""),
-            (12, TextFmt.COL_B, "tag"), (12, TextFmt.ARF_B, "#tag_bod"),
-            (15, TextFmt.ARF_E, ""), (15, TextFmt.COL_E, ""),
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.KEYWORD,
+            "char",
+            "Characters: Bod",
+            [
+                (0, TextFmt.B_B, ""),
+                (0, TextFmt.COL_B, "keyword"),
+                (11, TextFmt.COL_E, ""),
+                (11, TextFmt.B_E, ""),
+                (12, TextFmt.COL_B, "tag"),
+                (12, TextFmt.ARF_B, "#tag_bod"),
+                (15, TextFmt.ARF_E, ""),
+                (15, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     tokens._text = "@pov: Bod\n@plot: Main\n@location: Europe\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.KEYWORD, "pov", "Point of View: Bod", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (14, TextFmt.COL_E, ""), (14, TextFmt.B_E, ""),
-            (15, TextFmt.COL_B, "tag"), (15, TextFmt.ARF_B, "#tag_bod"),
-            (18, TextFmt.ARF_E, ""), (18, TextFmt.COL_E, ""),
-        ], BlockFmt.Z_BTM
-    ), (
-        BlockTyp.KEYWORD, "plot", "Plot: Main", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (5, TextFmt.COL_E, ""), (5, TextFmt.B_E, ""),
-            (6, TextFmt.COL_B, "tag"), (6, TextFmt.ARF_B, "#tag_main"),
-            (10, TextFmt.ARF_E, ""), (10, TextFmt.COL_E, ""),
-        ], BlockFmt.Z_TOP | BlockFmt.Z_BTM
-    ), (
-        BlockTyp.KEYWORD, "location", "Locations: Europe", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (10, TextFmt.COL_E, ""), (10, TextFmt.B_E, ""),
-            (11, TextFmt.COL_B, "tag"), (11, TextFmt.ARF_B, "#tag_europe"),
-            (17, TextFmt.ARF_E, ""), (17, TextFmt.COL_E, ""),
-        ], BlockFmt.Z_TOP
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.KEYWORD,
+            "pov",
+            "Point of View: Bod",
+            [
+                (0, TextFmt.B_B, ""),
+                (0, TextFmt.COL_B, "keyword"),
+                (14, TextFmt.COL_E, ""),
+                (14, TextFmt.B_E, ""),
+                (15, TextFmt.COL_B, "tag"),
+                (15, TextFmt.ARF_B, "#tag_bod"),
+                (18, TextFmt.ARF_E, ""),
+                (18, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.Z_BTM,
+        ),
+        (
+            BlockTyp.KEYWORD,
+            "plot",
+            "Plot: Main",
+            [
+                (0, TextFmt.B_B, ""),
+                (0, TextFmt.COL_B, "keyword"),
+                (5, TextFmt.COL_E, ""),
+                (5, TextFmt.B_E, ""),
+                (6, TextFmt.COL_B, "tag"),
+                (6, TextFmt.ARF_B, "#tag_main"),
+                (10, TextFmt.ARF_E, ""),
+                (10, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.Z_TOP | BlockFmt.Z_BTM,
+        ),
+        (
+            BlockTyp.KEYWORD,
+            "location",
+            "Locations: Europe",
+            [
+                (0, TextFmt.B_B, ""),
+                (0, TextFmt.COL_B, "keyword"),
+                (10, TextFmt.COL_E, ""),
+                (10, TextFmt.B_E, ""),
+                (11, TextFmt.COL_B, "tag"),
+                (11, TextFmt.ARF_B, "#tag_europe"),
+                (17, TextFmt.ARF_E, ""),
+                (17, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.Z_TOP,
+        ),
+    ]
 
     # Ignored keywords
     tokens._text = "@pov: Bod\n@plot: Main\n@location: Europe\n"
     tokens.setIgnoredKeywords("@plot, @location")
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.KEYWORD, "pov", "Point of View: Bod", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (14, TextFmt.COL_E, ""), (14, TextFmt.B_E, ""),
-            (15, TextFmt.COL_B, "tag"), (15, TextFmt.ARF_B, "#tag_bod"),
-            (18, TextFmt.ARF_E, ""), (18, TextFmt.COL_E, ""),
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.KEYWORD,
+            "pov",
+            "Point of View: Bod",
+            [
+                (0, TextFmt.B_B, ""),
+                (0, TextFmt.COL_B, "keyword"),
+                (14, TextFmt.COL_E, ""),
+                (14, TextFmt.B_E, ""),
+                (15, TextFmt.COL_B, "tag"),
+                (15, TextFmt.ARF_B, "#tag_bod"),
+                (18, TextFmt.ARF_E, ""),
+                (18, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
 
 @pytest.mark.core
@@ -993,23 +1099,28 @@ def testFmtToken_ExtractFormats(mockGUI, singleBold):
     text, fmt = tokens._extractFormats("Text with **bold and _italics_** in it.")
     assert text == "Text with bold and italics in it."
     assert fmt == [
-        (10, TextFmt.B_B, ""), (19, TextFmt.I_B, ""),
-        (26, TextFmt.I_E, ""), (26, TextFmt.B_E, ""),
+        (10, TextFmt.B_B, ""),
+        (19, TextFmt.I_B, ""),
+        (26, TextFmt.I_E, ""),
+        (26, TextFmt.B_E, ""),
     ]
 
     if singleBold:
         text, fmt = tokens._extractFormats("Text with *bold and _italics_* in it.")
         assert text == "Text with bold and italics in it."
         assert fmt == [
-            (10, TextFmt.B_B, ""), (19, TextFmt.I_B, ""),
-            (26, TextFmt.I_E, ""), (26, TextFmt.B_E, ""),
+            (10, TextFmt.B_B, ""),
+            (19, TextFmt.I_B, ""),
+            (26, TextFmt.I_E, ""),
+            (26, TextFmt.B_E, ""),
         ]
     else:
         # If single bold is off, only italics is recognised
         text, fmt = tokens._extractFormats("Text with *bold and _italics_* in it.")
         assert text == "Text with *bold and italics* in it."
         assert fmt == [
-            (20, TextFmt.I_B, ""), (27, TextFmt.I_E, ""),
+            (20, TextFmt.I_B, ""),
+            (27, TextFmt.I_E, ""),
         ]
 
     # Bold with overlapping italics
@@ -1018,8 +1129,10 @@ def testFmtToken_ExtractFormats(mockGUI, singleBold):
         text, fmt = tokens._extractFormats("Text with **bold and overlapping _italics**_ in it.")
         assert text == "Text with *bold and overlapping italics* in it."
         assert fmt == [
-            (11, TextFmt.B_B, ""), (32, TextFmt.I_B, ""),
-            (39, TextFmt.B_E, ""), (40, TextFmt.I_E, ""),
+            (11, TextFmt.B_B, ""),
+            (32, TextFmt.I_B, ""),
+            (39, TextFmt.B_E, ""),
+            (40, TextFmt.I_E, ""),
         ]
     else:
         # Here, bold is ignored because it is not on word boundary
@@ -1069,29 +1182,31 @@ def testFmtToken_ExtractFormats(mockGUI, singleBold):
     text, fmt = tokens._extractFormats("Text with [b]bold and [i]italics[/i][/b] in it.")
     assert text == "Text with bold and italics in it."
     assert fmt == [
-        (10, TextFmt.B_B, ""), (19, TextFmt.I_B, ""),
-        (26, TextFmt.I_E, ""), (26, TextFmt.B_E, ""),
+        (10, TextFmt.B_B, ""),
+        (19, TextFmt.I_B, ""),
+        (26, TextFmt.I_E, ""),
+        (26, TextFmt.B_E, ""),
     ]
 
     # Bold with overlapping italics
     # With shortcodes, this works
-    text, fmt = tokens._extractFormats(
-        "Text with [b]bold and overlapping [i]italics[/b][/i] in it."
-    )
+    text, fmt = tokens._extractFormats("Text with [b]bold and overlapping [i]italics[/b][/i] in it.")
     assert text == "Text with bold and overlapping italics in it."
     assert fmt == [
-        (10, TextFmt.B_B, ""), (31, TextFmt.I_B, ""),
-        (38, TextFmt.B_E, ""), (38, TextFmt.I_E, ""),
+        (10, TextFmt.B_B, ""),
+        (31, TextFmt.I_B, ""),
+        (38, TextFmt.B_E, ""),
+        (38, TextFmt.I_E, ""),
     ]
 
     # So does this
-    text, fmt = tokens._extractFormats(
-        "Text with [b]bold and overlapping [i]italics[/b] in[/i] it."
-    )
+    text, fmt = tokens._extractFormats("Text with [b]bold and overlapping [i]italics[/b] in[/i] it.")
     assert text == "Text with bold and overlapping italics in it."
     assert fmt == [
-        (10, TextFmt.B_B, ""), (31, TextFmt.I_B, ""),
-        (38, TextFmt.B_E, ""), (41, TextFmt.I_E, ""),
+        (10, TextFmt.B_B, ""),
+        (31, TextFmt.I_B, ""),
+        (38, TextFmt.B_E, ""),
+        (41, TextFmt.I_E, ""),
     ]
 
 
@@ -1132,15 +1247,16 @@ def testFmtToken_Paragraphs(mockGUI):
     tokens.tokenizeText()
     assert tokens._blocks == [
         (
-            BlockTyp.TEXT, "",
+            BlockTyp.TEXT,
+            "",
             "This is text spanning multiple lines",
             [
-                (5,  TextFmt.B_B, ""),
+                (5, TextFmt.B_B, ""),
                 (12, TextFmt.B_E, ""),
                 (22, TextFmt.I_B, ""),
                 (30, TextFmt.I_E, ""),
             ],
-            BlockFmt.NONE
+            BlockFmt.NONE,
         ),
     ]
 
@@ -1151,19 +1267,27 @@ def testFmtToken_Paragraphs(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.HEAD1, TM1, "Title", [], BlockFmt.NONE),
         (
-            BlockTyp.TEXT, "", "Text on two lines.", [
+            BlockTyp.TEXT,
+            "",
+            "Text on two lines.",
+            [
                 (5, TextFmt.I_B, ""),
                 (7, TextFmt.I_E, ""),
-            ], BlockFmt.NONE
+            ],
+            BlockFmt.NONE,
         ),
         (BlockTyp.HEAD2, TM2, "Chapter", [], BlockFmt.NONE),
         (
-            BlockTyp.TEXT, "", "More text here.", [
-                (5,  TextFmt.B_B, ""),
-                (9,  TextFmt.B_E, ""),
+            BlockTyp.TEXT,
+            "",
+            "More text here.",
+            [
+                (5, TextFmt.B_B, ""),
+                (9, TextFmt.B_E, ""),
                 (10, TextFmt.I_B, ""),
                 (14, TextFmt.I_E, ""),
-            ], BlockFmt.NONE
+            ],
+            BlockFmt.NONE,
         ),
     ]
 
@@ -1264,54 +1388,84 @@ def testFmtToken_TextFormat(mockGUI):
     # Text Emphasis
     tokens._text = "Some **bolded text** on this lines\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "", "Some bolded text on this lines", [
-            (5,  TextFmt.B_B, ""),
-            (16, TextFmt.B_E, ""),
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "Some bolded text on this lines",
+            [
+                (5, TextFmt.B_B, ""),
+                (16, TextFmt.B_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     tokens._text = "Some _italic text_ on this lines\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "", "Some italic text on this lines", [
-            (5,  TextFmt.I_B, ""),
-            (16, TextFmt.I_E, ""),
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "Some italic text on this lines",
+            [
+                (5, TextFmt.I_B, ""),
+                (16, TextFmt.I_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     tokens._text = "Some **_bold italic text_** on this lines\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "", "Some bold italic text on this lines", [
-            (5,  TextFmt.B_B, ""),
-            (5,  TextFmt.I_B, ""),
-            (21, TextFmt.I_E, ""),
-            (21, TextFmt.B_E, ""),
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "Some bold italic text on this lines",
+            [
+                (5, TextFmt.B_B, ""),
+                (5, TextFmt.I_B, ""),
+                (21, TextFmt.I_E, ""),
+                (21, TextFmt.B_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     tokens._text = "Some ~~strikethrough text~~ on this lines\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "", "Some strikethrough text on this lines", [
-            (5,  TextFmt.D_B, ""),
-            (23, TextFmt.D_E, ""),
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "Some strikethrough text on this lines",
+            [
+                (5, TextFmt.D_B, ""),
+                (23, TextFmt.D_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     tokens._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "", "Some nested bold and italic and strikethrough text here", [
-            (5,  TextFmt.B_B, ""),
-            (21, TextFmt.I_B, ""),
-            (27, TextFmt.I_E, ""),
-            (32, TextFmt.D_B, ""),
-            (45, TextFmt.D_E, ""),
-            (50, TextFmt.B_E, ""),
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "Some nested bold and italic and strikethrough text here",
+            [
+                (5, TextFmt.B_B, ""),
+                (21, TextFmt.I_B, ""),
+                (27, TextFmt.I_E, ""),
+                (32, TextFmt.D_B, ""),
+                (45, TextFmt.D_E, ""),
+                (50, TextFmt.B_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
 
 @pytest.mark.core
@@ -1325,52 +1479,51 @@ def testFmtToken_LineBreak(mockGUI):
     # They are stripped in headers
     tokens._text = "## Hello[br] World"
     tokens.tokenizeText()
-    assert tokens._blocks == [
-        (BlockTyp.HEAD2, TM1, "Hello World", [], BlockFmt.NONE)
-    ]
+    assert tokens._blocks == [(BlockTyp.HEAD2, TM1, "Hello World", [], BlockFmt.NONE)]
 
     # They are stripped in comments
     tokens._text = "% Hello[br] World"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.COMMENT, "", "Comment: Hello World", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "comment"),
-            (8, TextFmt.COL_E, ""), (8, TextFmt.B_E, ""),
-            (9, TextFmt.COL_B, "comment"), (20, TextFmt.COL_E, ""),
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.COMMENT,
+            "",
+            "Comment: Hello World",
+            [
+                (0, TextFmt.B_B, ""),
+                (0, TextFmt.COL_B, "comment"),
+                (8, TextFmt.COL_E, ""),
+                (8, TextFmt.B_E, ""),
+                (9, TextFmt.COL_B, "comment"),
+                (20, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     # They are used in text, with breaks enabled
     tokens.setKeepLineBreaks(True)
     tokens._text = "Hello[br]\nWorld"
     tokens.tokenizeText()
-    assert tokens._blocks == [
-        (BlockTyp.TEXT, "", "Hello\nWorld", [], BlockFmt.NONE)
-    ]
+    assert tokens._blocks == [(BlockTyp.TEXT, "", "Hello\nWorld", [], BlockFmt.NONE)]
 
     # They are used in text, with breaks disabled
     tokens.setKeepLineBreaks(False)
     tokens._text = "Hello[br]\nWorld"
     tokens.tokenizeText()
-    assert tokens._blocks == [
-        (BlockTyp.TEXT, "", "Hello\nWorld", [], BlockFmt.NONE)
-    ]
+    assert tokens._blocks == [(BlockTyp.TEXT, "", "Hello\nWorld", [], BlockFmt.NONE)]
 
     # Without forced breaks, they are preserved with breaks enabled
     tokens.setKeepLineBreaks(True)
     tokens._text = "Hello\nWorld"
     tokens.tokenizeText()
-    assert tokens._blocks == [
-        (BlockTyp.TEXT, "", "Hello\nWorld", [], BlockFmt.NONE)
-    ]
+    assert tokens._blocks == [(BlockTyp.TEXT, "", "Hello\nWorld", [], BlockFmt.NONE)]
 
     # Without forced breaks, they are not preserved with breaks disabled
     tokens.setKeepLineBreaks(False)
     tokens._text = "Hello\nWorld"
     tokens.tokenizeText()
-    assert tokens._blocks == [
-        (BlockTyp.TEXT, "", "Hello World", [], BlockFmt.NONE)
-    ]
+    assert tokens._blocks == [(BlockTyp.TEXT, "", "Hello World", [], BlockFmt.NONE)]
 
 
 @pytest.mark.core
@@ -1443,31 +1596,43 @@ def testFmtToken_ShortcodeValue(mockGUI):
     # Footnote
     tokens._text = "Hello World[footnote:abcd] to you!"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "", "Hello World to you!", [
-            (11, TextFmt.FNOTE, f"{TMH}:abcd"),
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "Hello World to you!",
+            [
+                (11, TextFmt.FNOTE, f"{TMH}:abcd"),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     # Field
     tokens._text = "Hello World: [field:abcd] times!"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "", "Hello World:  times!", [
-            (13, TextFmt.FIELD, f"{TMH}:abcd"),
-        ], BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "Hello World:  times!",
+            [
+                (13, TextFmt.FIELD, f"{TMH}:abcd"),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
 
 @pytest.mark.core
 def testFmtToken_Dialogue(mockGUI):
     """Test the tokenization of dialogue in the Tokenizer class."""
-    CONFIG.fmtDQuoteOpen  = "\u201c"
+    CONFIG.fmtDQuoteOpen = "\u201c"
     CONFIG.fmtDQuoteClose = "\u201d"
-    CONFIG.fmtSQuoteOpen  = "\u2018"
+    CONFIG.fmtSQuoteOpen = "\u2018"
     CONFIG.fmtSQuoteClose = "\u2019"
-    CONFIG.dialogStyle    = 3
-    CONFIG.altDialogOpen  = "::"
+    CONFIG.dialogStyle = 3
+    CONFIG.altDialogOpen = "::"
     CONFIG.altDialogClose = "::"
 
     project = NWProject()
@@ -1479,47 +1644,56 @@ def testFmtToken_Dialogue(mockGUI):
     # Single quotes
     tokens._text = "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "",
-        "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019",
-        [
-            (10, TextFmt.COL_B, "dialog"),
-            (25, TextFmt.COL_E, ""),
-            (30, TextFmt.COL_B, "dialog"),
-            (45, TextFmt.COL_E, ""),
-        ],
-        BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019",
+            [
+                (10, TextFmt.COL_B, "dialog"),
+                (25, TextFmt.COL_E, ""),
+                (30, TextFmt.COL_B, "dialog"),
+                (45, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     # Double quotes
     tokens._text = "Text with \u201cdialogue one,\u201d and \u201cdialogue two.\u201d\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "",
-        "Text with \u201cdialogue one,\u201d and \u201cdialogue two.\u201d",
-        [
-            (10, TextFmt.COL_B, "dialog"),
-            (25, TextFmt.COL_E, ""),
-            (30, TextFmt.COL_B, "dialog"),
-            (45, TextFmt.COL_E, ""),
-        ],
-        BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "Text with \u201cdialogue one,\u201d and \u201cdialogue two.\u201d",
+            [
+                (10, TextFmt.COL_B, "dialog"),
+                (25, TextFmt.COL_E, ""),
+                (30, TextFmt.COL_B, "dialog"),
+                (45, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     # Alt quotes
     tokens._text = "Text with ::dialogue one,:: and ::dialogue two.::\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "",
-        "Text with ::dialogue one,:: and ::dialogue two.::",
-        [
-            (10, TextFmt.COL_B, "altdialog"),
-            (27, TextFmt.COL_E, ""),
-            (32, TextFmt.COL_B, "altdialog"),
-            (49, TextFmt.COL_E, ""),
-        ],
-        BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "Text with ::dialogue one,:: and ::dialogue two.::",
+            [
+                (10, TextFmt.COL_B, "altdialog"),
+                (27, TextFmt.COL_E, ""),
+                (32, TextFmt.COL_B, "altdialog"),
+                (49, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     # Dialogue line
     CONFIG.dialogLine = "\u2013"
@@ -1529,15 +1703,18 @@ def testFmtToken_Dialogue(mockGUI):
     tokens._isNovel = True
     tokens._text = "\u2013 Dialogue line without narrator break.\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "",
-        "\u2013 Dialogue line without narrator break.",
-        [
-            (0,  TextFmt.COL_B, "dialog"),
-            (39, TextFmt.COL_E, ""),
-        ],
-        BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "\u2013 Dialogue line without narrator break.",
+            [
+                (0, TextFmt.COL_B, "dialog"),
+                (39, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     # Dialogue line with narrator break
     CONFIG.narratorBreak = "\u2013"
@@ -1547,17 +1724,20 @@ def testFmtToken_Dialogue(mockGUI):
     tokens._isNovel = True
     tokens._text = "\u2013 Dialogue with a narrator break, \u2013he said\u2013, see?\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "",
-        "\u2013 Dialogue with a narrator break, \u2013he said\u2013, see?",
-        [
-            (0,  TextFmt.COL_B, "dialog"),
-            (34, TextFmt.COL_E, ""),
-            (44, TextFmt.COL_B, "dialog"),
-            (49, TextFmt.COL_E, ""),
-        ],
-        BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "\u2013 Dialogue with a narrator break, \u2013he said\u2013, see?",
+            [
+                (0, TextFmt.COL_B, "dialog"),
+                (34, TextFmt.COL_E, ""),
+                (44, TextFmt.COL_B, "dialog"),
+                (49, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
     # Special Cases
     # =============
@@ -1565,17 +1745,20 @@ def testFmtToken_Dialogue(mockGUI):
     # Dialogue + formatting on same index (Issue #2012)
     tokens._text = "[i]\u201cDialogue text.\u201d[/i]\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [(
-        BlockTyp.TEXT, "",
-        "\u201cDialogue text.\u201d",
-        [
-            (0,  TextFmt.I_B, ""),
-            (0,  TextFmt.COL_B, "dialog"),
-            (16, TextFmt.I_E, ""),
-            (16, TextFmt.COL_E, ""),
-        ],
-        BlockFmt.NONE
-    )]
+    assert tokens._blocks == [
+        (
+            BlockTyp.TEXT,
+            "",
+            "\u201cDialogue text.\u201d",
+            [
+                (0, TextFmt.I_B, ""),
+                (0, TextFmt.COL_B, "dialog"),
+                (16, TextFmt.I_E, ""),
+                (16, TextFmt.COL_E, ""),
+            ],
+            BlockFmt.NONE,
+        )
+    ]
 
 
 @pytest.mark.core
@@ -1596,147 +1779,101 @@ def testFmtToken_SpecialFormat(mockGUI):
 
     # Command wo/Space
     tokens._isFirst = True
-    tokens._text = (
-        "# Title One\n\n"
-        "[newpage]\n\n"
-        "# Title Two\n\n"
-    )
+    tokens._text = "# Title One\n\n[newpage]\n\n# Title Two\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == correctResp
 
     # Command w/Space
     tokens._isFirst = True
-    tokens._text = (
-        "# Title One\n\n"
-        "[new page]\n\n"
-        "# Title Two\n\n"
-    )
+    tokens._text = "# Title One\n\n[new page]\n\n# Title Two\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == correctResp
 
     # Trailing Spaces
     tokens._isFirst = True
-    tokens._text = (
-        "# Title One\n\n"
-        "[new page]   \t\n\n"
-        "# Title Two\n\n"
-    )
+    tokens._text = "# Title One\n\n[new page]   \t\n\n# Title Two\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == correctResp
 
     # Single Empty Paragraph
     # ======================
 
-    tokens._text = (
-        "# Title One\n\n"
-        "[vspace] \n\n"
-        "Some text to go here ...\n\n"
-    )
+    tokens._text = "# Title One\n\n[vspace] \n\nSome text to go here ...\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
-        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Multiple Empty Paragraphs
     # =========================
 
     # One Skip
-    tokens._text = (
-        "# Title One\n\n"
-        "[vspace:1] \n\n"
-        "Some text to go here ...\n\n"
-    )
+    tokens._text = "# Title One\n\n[vspace:1] \n\nSome text to go here ...\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
-        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Three Skips
-    tokens._text = (
-        "# Title One\n\n"
-        "[vspace:3] \n\n"
-        "Some text to go here ...\n\n"
-    )
+    tokens._text = "# Title One\n\n[vspace:3] \n\nSome text to go here ...\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
-        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
-        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
-        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Malformed Command, Case 1
-    tokens._text = (
-        "# Title One\n\n"
-        "[vspace:3xa] \n\n"
-        "Some text to go here ...\n\n"
-    )
+    tokens._text = "# Title One\n\n[vspace:3xa] \n\nSome text to go here ...\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Malformed Command, Case 2
-    tokens._text = (
-        "# Title One\n\n"
-        "[vspace:3.5]\n\n"
-        "Some text to go here ...\n\n"
-    )
+    tokens._text = "# Title One\n\n[vspace:3.5]\n\nSome text to go here ...\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Malformed Command, Case 3
-    tokens._text = (
-        "# Title One\n\n"
-        "[vspace:-1]\n\n"
-        "Some text to go here ...\n\n"
-    )
+    tokens._text = "# Title One\n\n[vspace:-1]\n\nSome text to go here ...\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Empty Paragraph and Page Break
     # ==============================
 
     # Single Skip
-    tokens._text = (
-        "# Title One\n\n"
-        "[new page]\n\n"
-        "[vspace]\n\n"
-        "Some text to go here ...\n\n"
-    )
+    tokens._text = "# Title One\n\n[new page]\n\n[vspace]\n\nSome text to go here ...\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP, "",  "", [], BlockFmt.PBB),
-        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.PBB),
+        (BlockTyp.TEXT, "", "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Multiple Skip
-    tokens._text = (
-        "# Title One\n\n"
-        "[new page]\n\n"
-        "[vspace:3]\n\n"
-        "Some text to go here ...\n\n"
-    )
+    tokens._text = "# Title One\n\n[new page]\n\n[vspace:3]\n\nSome text to go here ...\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.PART, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP, "",  "", [], BlockFmt.PBB),
-        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
-        (BlockTyp.SKIP, "",  "", [], BlockFmt.NONE),
-        (BlockTyp.TEXT, "",  "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.PBB),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
 
@@ -1758,44 +1895,37 @@ def testFmtToken_TextIndent(mockGUI):
 
     # Page One
     # Two paragraphs in the same scene
-    tokens._text = (
-        "# Title One\n\n"
-        "### Scene One\n\n"
-        "First paragraph.\n\n"
-        "Second paragraph.\n\n"
-    )
+    tokens._text = "# Title One\n\n### Scene One\n\nFirst paragraph.\n\nSecond paragraph.\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.NONE),
         (BlockTyp.HEAD3, TM2, "Scene One", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  "",  "First paragraph.", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  "",  "Second paragraph.", [], BlockFmt.IND_T),
+        (BlockTyp.TEXT, "", "First paragraph.", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Second paragraph.", [], BlockFmt.IND_T),
     ]
     assert tokens._noIndent is False
 
     # Page Two
     # New scene with only a synopsis
-    tokens._text = (
-        "### Scene Two\n\n"
-        "%Synopsis: Stuff happens.\n\n"
-    )
+    tokens._text = "### Scene Two\n\n%Synopsis: Stuff happens.\n\n"
     tokens.tokenizeText()
     tFmt = [
-        (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"), (9, TextFmt.COL_E, ""),
-        (9, TextFmt.B_E, ""), (10, TextFmt.COL_B, "note"), (24, TextFmt.COL_E, ""),
+        (0, TextFmt.B_B, ""),
+        (0, TextFmt.COL_B, "modifier"),
+        (9, TextFmt.COL_E, ""),
+        (9, TextFmt.B_E, ""),
+        (10, TextFmt.COL_B, "note"),
+        (24, TextFmt.COL_E, ""),
     ]
     assert tokens._blocks == [
-        (BlockTyp.HEAD3,   TM1, "Scene Two", [], BlockFmt.NONE),
-        (BlockTyp.SUMMARY, "",  "Synopsis: Stuff happens.", tFmt, BlockFmt.NONE),
+        (BlockTyp.HEAD3, TM1, "Scene Two", [], BlockFmt.NONE),
+        (BlockTyp.SUMMARY, "", "Synopsis: Stuff happens.", tFmt, BlockFmt.NONE),
     ]
     assert tokens._noIndent is True
 
     # Page Three
     # Two paragraphs for the scene on the previous page
-    tokens._text = (
-        "First paragraph.\n\n"
-        "Second paragraph.\n\n"
-    )
+    tokens._text = "First paragraph.\n\nSecond paragraph.\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.TEXT, "", "First paragraph.", [], BlockFmt.NONE),
@@ -1813,18 +1943,13 @@ def testFmtToken_TextIndent(mockGUI):
 
     # Page Four
     # Two paragraphs in the same scene
-    tokens._text = (
-        "# Title One\n\n"
-        "### Scene One\n\n"
-        "First paragraph.\n\n"
-        "Second paragraph.\n\n"
-    )
+    tokens._text = "# Title One\n\n### Scene One\n\nFirst paragraph.\n\nSecond paragraph.\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
         (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.NONE),
         (BlockTyp.HEAD3, TM2, "Scene One", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  "",  "First paragraph.", [], BlockFmt.IND_T),
-        (BlockTyp.TEXT,  "",  "Second paragraph.", [], BlockFmt.IND_T),
+        (BlockTyp.TEXT, "", "First paragraph.", [], BlockFmt.IND_T),
+        (BlockTyp.TEXT, "", "Second paragraph.", [], BlockFmt.IND_T),
     ]
     assert tokens._noIndent is False
 
@@ -2030,21 +2155,29 @@ def testFmtToken_FormatComment(mockGUI):
     # Comment, No Formatting
     style = COMMENT_STYLE[nwComment.PLAIN]
     assert tokens._formatComment(style, "", "Hello world!") == (
-        "Comment: Hello world!", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "comment"),
-            (8, TextFmt.COL_E, ""), (8, TextFmt.B_E, ""),
-            (9, TextFmt.COL_B, "comment"), (21, TextFmt.COL_E, ""),
-        ]
+        "Comment: Hello world!",
+        [
+            (0, TextFmt.B_B, ""),
+            (0, TextFmt.COL_B, "comment"),
+            (8, TextFmt.COL_E, ""),
+            (8, TextFmt.B_E, ""),
+            (9, TextFmt.COL_B, "comment"),
+            (21, TextFmt.COL_E, ""),
+        ],
     )
 
     # Synopsis, No Formatting
     style = COMMENT_STYLE[nwComment.SYNOPSIS]
     assert tokens._formatComment(style, "", "Hello world!") == (
-        "Synopsis: Hello world!", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
-            (9, TextFmt.COL_E, ""), (9, TextFmt.B_E, ""),
-            (10, TextFmt.COL_B, "note"), (22, TextFmt.COL_E, ""),
-        ]
+        "Synopsis: Hello world!",
+        [
+            (0, TextFmt.B_B, ""),
+            (0, TextFmt.COL_B, "modifier"),
+            (9, TextFmt.COL_E, ""),
+            (9, TextFmt.B_E, ""),
+            (10, TextFmt.COL_B, "note"),
+            (22, TextFmt.COL_E, ""),
+        ],
     )
 
 
@@ -2057,24 +2190,39 @@ def testFmtToken_FormatMeta(mockGUI):
     tokens = BareTokenizer(project)
 
     assert tokens._formatMeta("@tag: Jane | Jane Smith") == (
-        "@tag", "Tag: Jane | Jane Smith", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (4, TextFmt.COL_E, ""), (4, TextFmt.B_E, ""),
-            (5, TextFmt.COL_B, "tag"), (5, TextFmt.ANM_B, "tag_jane"),
-            (9, TextFmt.ANM_E, ""), (9, TextFmt.COL_E, ""),
-            (12, TextFmt.COL_B, "optional"), (22, TextFmt.COL_E, ""),
-        ]
+        "@tag",
+        "Tag: Jane | Jane Smith",
+        [
+            (0, TextFmt.B_B, ""),
+            (0, TextFmt.COL_B, "keyword"),
+            (4, TextFmt.COL_E, ""),
+            (4, TextFmt.B_E, ""),
+            (5, TextFmt.COL_B, "tag"),
+            (5, TextFmt.ANM_B, "tag_jane"),
+            (9, TextFmt.ANM_E, ""),
+            (9, TextFmt.COL_E, ""),
+            (12, TextFmt.COL_B, "optional"),
+            (22, TextFmt.COL_E, ""),
+        ],
     )
 
     assert tokens._formatMeta("@char: Jane, John") == (
-        "@char", "Characters: Jane, John", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (11, TextFmt.COL_E, ""), (11, TextFmt.B_E, ""),
-            (12, TextFmt.COL_B, "tag"), (12, TextFmt.ARF_B, "#tag_jane"),
-            (16, TextFmt.ARF_E, ""), (16, TextFmt.COL_E, ""),
-            (18, TextFmt.COL_B, "tag"), (18, TextFmt.ARF_B, "#tag_john"),
-            (22, TextFmt.ARF_E, ""), (22, TextFmt.COL_E, ""),
-        ]
+        "@char",
+        "Characters: Jane, John",
+        [
+            (0, TextFmt.B_B, ""),
+            (0, TextFmt.COL_B, "keyword"),
+            (11, TextFmt.COL_E, ""),
+            (11, TextFmt.B_E, ""),
+            (12, TextFmt.COL_B, "tag"),
+            (12, TextFmt.ARF_B, "#tag_jane"),
+            (16, TextFmt.ARF_E, ""),
+            (16, TextFmt.COL_E, ""),
+            (18, TextFmt.COL_B, "tag"),
+            (18, TextFmt.ARF_B, "#tag_john"),
+            (22, TextFmt.ARF_E, ""),
+            (22, TextFmt.COL_E, ""),
+        ],
     )
 
 
@@ -2112,15 +2260,7 @@ def testFmtToken_BuildOutline(mockGUI, ipsumText):
     tokens._isNovel = False
     tokens._handle = "0000000000001"
     tokens._text = (
-        "#! My Notes\n\n"
-        "# Header 1\n\n"
-        "Text\n\n"
-        "## Header 2\n\n"
-        "Text\n\n"
-        "### Header 3\n\n"
-        "Text\n\n"
-        "#### Header 4\n\n"
-        "Text\n\n"
+        "#! My Notes\n\n# Header 1\n\nText\n\n## Header 2\n\nText\n\n### Header 3\n\nText\n\n#### Header 4\n\nText\n\n"
     )
     tokens.tokenizeText()
     tokens.buildOutline()
@@ -2161,10 +2301,17 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens.countStats()
     assert tokens._blocks[0][2] == "A Chapter Title"
     assert tokens.textStats == {
-        "titleCount": 1, "paragraphCount": 0,
-        "allWords": 3, "textWords": 0, "titleWords": 3,
-        "allChars": 15, "textChars": 0, "titleChars": 15,
-        "allWordChars": 13, "textWordChars": 0, "titleWordChars": 13
+        "titleCount": 1,
+        "paragraphCount": 0,
+        "allWords": 3,
+        "textWords": 0,
+        "titleWords": 3,
+        "allChars": 15,
+        "textChars": 0,
+        "titleChars": 15,
+        "allWordChars": 13,
+        "textWordChars": 0,
+        "titleWordChars": 13,
     }
 
     # Header w/Format
@@ -2176,10 +2323,17 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens.countStats()
     assert tokens._blocks[0][2] == "C 1: A Chapter Title"
     assert tokens.textStats == {
-        "titleCount": 1, "paragraphCount": 0,
-        "allWords": 5, "textWords": 0, "titleWords": 5,
-        "allChars": 20, "textChars": 0, "titleChars": 20,
-        "allWordChars": 16, "textWordChars": 0, "titleWordChars": 16
+        "titleCount": 1,
+        "paragraphCount": 0,
+        "allWords": 5,
+        "textWords": 0,
+        "titleWords": 5,
+        "allChars": 20,
+        "textChars": 0,
+        "titleChars": 20,
+        "allWordChars": 16,
+        "textWordChars": 0,
+        "titleWordChars": 16,
     }
 
     # Two Paragraphs
@@ -2189,10 +2343,17 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens.tokenizeText()
     tokens.countStats()
     assert tokens.textStats == {
-        "titleCount": 0, "paragraphCount": 2,
-        "allWords": 9, "textWords": 9, "titleWords": 0,
-        "allChars": 47, "textChars": 47, "titleChars": 0,
-        "allWordChars": 40, "textWordChars": 40, "titleWordChars": 0
+        "titleCount": 0,
+        "paragraphCount": 2,
+        "allWords": 9,
+        "textWords": 9,
+        "titleWords": 0,
+        "allChars": 47,
+        "textChars": 47,
+        "titleChars": 0,
+        "allWordChars": 40,
+        "textWordChars": 40,
+        "titleWordChars": 0,
     }
 
     # Two Scenes w/Separator
@@ -2204,10 +2365,17 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens.countStats()
     assert [t[2] for t in tokens._blocks] == ["Chapter", "Text", "* * *", "Text"]
     assert tokens.textStats == {
-        "titleCount": 1, "paragraphCount": 2,
-        "allWords": 6, "textWords": 2, "titleWords": 1,
-        "allChars": 20, "textChars": 8, "titleChars": 7,
-        "allWordChars": 18, "textWordChars": 8, "titleWordChars": 7
+        "titleCount": 1,
+        "paragraphCount": 2,
+        "allWords": 6,
+        "textWords": 2,
+        "titleWords": 1,
+        "allChars": 20,
+        "textChars": 8,
+        "titleChars": 7,
+        "allWordChars": 18,
+        "textWordChars": 8,
+        "titleWordChars": 7,
     }
 
     # Scene w/Synopsis
@@ -2221,10 +2389,17 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens.countStats()
     assert [t[2] for t in tokens._blocks] == ["Chapter", "Synopsis: Stuff", "Text"]
     assert tokens.textStats == {
-        "titleCount": 1, "paragraphCount": 1,
-        "allWords": 4, "textWords": 1, "titleWords": 1,
-        "allChars": 26, "textChars": 4, "titleChars": 7,
-        "allWordChars": 25, "textWordChars": 4, "titleWordChars": 7
+        "titleCount": 1,
+        "paragraphCount": 1,
+        "allWords": 4,
+        "textWords": 1,
+        "titleWords": 1,
+        "allChars": 26,
+        "textChars": 4,
+        "titleChars": 7,
+        "allWordChars": 25,
+        "textWordChars": 4,
+        "titleWordChars": 7,
     }
 
     # Scene w/Short
@@ -2238,10 +2413,17 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens.countStats()
     assert [t[2] for t in tokens._blocks] == ["Chapter", "Short Description: Stuff", "Text"]
     assert tokens.textStats == {
-        "titleCount": 1, "paragraphCount": 1,
-        "allWords": 5, "textWords": 1, "titleWords": 1,
-        "allChars": 35, "textChars": 4, "titleChars": 7,
-        "allWordChars": 33, "textWordChars": 4, "titleWordChars": 7
+        "titleCount": 1,
+        "paragraphCount": 1,
+        "allWords": 5,
+        "textWords": 1,
+        "titleWords": 1,
+        "allChars": 35,
+        "textChars": 4,
+        "titleChars": 7,
+        "allWordChars": 33,
+        "textWordChars": 4,
+        "titleWordChars": 7,
     }
 
     # Scene w/Comment
@@ -2255,10 +2437,17 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens.countStats()
     assert [t[2] for t in tokens._blocks] == ["Chapter", "Comment: Stuff", "Text"]
     assert tokens.textStats == {
-        "titleCount": 1, "paragraphCount": 1,
-        "allWords": 4, "textWords": 1, "titleWords": 1,
-        "allChars": 25, "textChars": 4, "titleChars": 7,
-        "allWordChars": 24, "textWordChars": 4, "titleWordChars": 7
+        "titleCount": 1,
+        "paragraphCount": 1,
+        "allWords": 4,
+        "textWords": 1,
+        "titleWords": 1,
+        "allChars": 25,
+        "textChars": 4,
+        "titleChars": 7,
+        "allWordChars": 24,
+        "textWordChars": 4,
+        "titleWordChars": 7,
     }
 
     # Scene w/Keyword
@@ -2272,47 +2461,46 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens.countStats()
     assert [t[2] for t in tokens._blocks] == ["Chapter", "Point of View: Jane", "Text"]
     assert tokens.textStats == {
-        "titleCount": 1, "paragraphCount": 1,
-        "allWords": 6, "textWords": 1, "titleWords": 1,
-        "allChars": 30, "textChars": 4, "titleChars": 7,
-        "allWordChars": 27, "textWordChars": 4, "titleWordChars": 7
+        "titleCount": 1,
+        "paragraphCount": 1,
+        "allWords": 6,
+        "textWords": 1,
+        "titleWords": 1,
+        "allChars": 30,
+        "textChars": 4,
+        "titleChars": 7,
+        "allWordChars": 27,
+        "textWordChars": 4,
+        "titleWordChars": 7,
     }
 
     # Long Text
     # =========
     tokens._text = (
         "# Act One\n\n"
-
         "## Chapter\n\n"
-
         "### Scene\n\n"
         "@pov: Jane\n"
         "@char: Jane, John\n\n"
         "%Synopsis: A scene\n\n"
         f"{ipsumText[0]}.\n\n"
-
         "### Scene\n\n"
         "@pov: Jane\n"
         "@char: Jane, John\n\n"
         "%Synopsis: A scene\n\n"
         f"{ipsumText[1]}.\n\n"
-
         "## Chapter\n\n"
-
         "### Scene\n\n"
         "@pov: Jane\n"
         "@char: Jane, John\n\n"
         "%Synopsis: A scene\n\n"
         f"{ipsumText[2]}.\n\n"
-
         "### Scene\n\n"
         "@pov: Jane\n"
         "@char: Jane, John\n\n"
         "%Synopsis: A scene\n\n"
         f"{ipsumText[3]}.\n\n"
-
         "## Chapter\n\n"
-
         "### Scene\n\n"
         "@pov: Jane\n"
         "@char: Jane, John\n\n"
@@ -2331,10 +2519,17 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     tokens.tokenizeText()
     tokens.countStats()
     assert tokens.textStats == {
-        "titleCount": 4, "paragraphCount": 5,
-        "allWords": 596, "textWords": 528, "titleWords": 12,
-        "allChars": 3859, "textChars": 3513, "titleChars": 46,
-        "allWordChars": 3289, "textWordChars": 2990, "titleWordChars": 38
+        "titleCount": 4,
+        "paragraphCount": 5,
+        "allWords": 596,
+        "textWords": 528,
+        "titleWords": 12,
+        "allChars": 3859,
+        "textChars": 3513,
+        "titleChars": 46,
+        "allWordChars": 3289,
+        "textWordChars": 2990,
+        "titleWordChars": 38,
     }
 
 
@@ -2372,16 +2567,7 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "T: Title One\n"
-        "============\n\n"
-        "Text\n\n"
-        "~\n\n"
-        "Text\n\n"
-        "T: Title Two\n"
-        "============\n\n"
-        "Text\n\n"
-        "* * *\n\n"
-        "Text\n\n"
+        "T: Title One\n============\n\nText\n\n~\n\nText\n\nT: Title Two\n============\n\nText\n\n* * *\n\nText\n\n"
     )
 
     # Scene Title Formatted
@@ -2469,29 +2655,14 @@ def testFmtToken_SceneSeparators(mockGUI):
     md._isNovel = True
 
     md._text = (
-        "### Scene One\n\n"
-        "Text\n\n"
-        "### Scene Two\n\n"
-        "Text\n\n"
-        "### Scene Three\n\n"
-        "Text\n\n"
-        "###! Scene Four\n\n"
-        "Text\n\n"
+        "### Scene One\n\nText\n\n### Scene Two\n\nText\n\n### Scene Three\n\nText\n\n###! Scene Four\n\nText\n\n"
     )
 
     md.setSceneFormat("", False)
     md.setHardSceneFormat("* * *", False)
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == (
-        "Text\n\n"
-        "\u205f\n\n"
-        "Text\n\n"
-        "\u205f\n\n"
-        "Text\n\n"
-        "* * *\n\n"
-        "Text\n\n"
-    )
+    assert md._pages[-1] == ("Text\n\n\u205f\n\nText\n\n\u205f\n\nText\n\n* * *\n\nText\n\n")
 
 
 @pytest.mark.core
@@ -2566,15 +2737,7 @@ def testFmtToken_HeaderVisibility(mockGUI):
 
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == (
-        "Novel\n"
-        "=====\n\n"
-        "Text\n\n"
-        "Text\n\n"
-        "Text\n\n"
-        "Text\n\n"
-        "Text\n\n"
-    )
+    assert md._pages[-1] == ("Novel\n=====\n\nText\n\nText\n\nText\n\nText\n\nText\n\n")
 
     # Note Files
     # ==========
@@ -2656,12 +2819,8 @@ def testFmtToken_CounterHandling(mockGUI):
     md.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     md.setChapterFormat(f"C {nwHeadFmt.CH_NUM}: {nwHeadFmt.TITLE}")
     md.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
-    md.setSceneFormat(
-        f"S {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM} ({nwHeadFmt.SC_ABS}): {nwHeadFmt.TITLE}", False
-    )
-    md.setHardSceneFormat(
-        f"H {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM} ({nwHeadFmt.SC_ABS}): {nwHeadFmt.TITLE}", False
-    )
+    md.setSceneFormat(f"S {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM} ({nwHeadFmt.SC_ABS}): {nwHeadFmt.TITLE}", False)
+    md.setHardSceneFormat(f"H {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM} ({nwHeadFmt.SC_ABS}): {nwHeadFmt.TITLE}", False)
     md.setSectionFormat("", True)
 
     # Two Novel Format
@@ -2708,39 +2867,33 @@ def testFmtToken_HeadingFormatter(fncPath, mockGUI, mockRnd):
     buildTestProject(project, fncPath)
 
     nHandle = project.newFile("Hello", C.hNovelRoot)
-    cHandle = project.newFile("Jane",  C.hCharRoot)
-    dHandle = project.newFile("John",  C.hCharRoot)
+    cHandle = project.newFile("Jane", C.hCharRoot)
+    dHandle = project.newFile("John", C.hCharRoot)
 
     assert isinstance(nHandle, str)
     assert isinstance(cHandle, str)
     assert isinstance(dHandle, str)
 
-    assert project.index.scanText(cHandle, (
-        "# Jane Smith\n"
-        "@tag: Jane | Jane Smith\n"
-    ))
-    assert project.index.scanText(dHandle, (
-        "# John Smith\n"
-        "@tag: John | John Smith\n"
-    ))
-    assert project.index.scanText(nHandle, (
-        "## Hi Bob\n"
-        "@pov: Jane\n"
-        "@focus: John\n"
-        "@char: Jane, John\n\n"
-        "This is a story about Jane Smith.\n\n"
-        "Well, not really.\n"
-    ))
+    assert project.index.scanText(cHandle, ("# Jane Smith\n@tag: Jane | Jane Smith\n"))
+    assert project.index.scanText(dHandle, ("# John Smith\n@tag: John | John Smith\n"))
+    assert project.index.scanText(
+        nHandle,
+        (
+            "## Hi Bob\n"
+            "@pov: Jane\n"
+            "@focus: John\n"
+            "@char: Jane, John\n\n"
+            "This is a story about Jane Smith.\n\n"
+            "Well, not really.\n"
+        ),
+    )
 
     formatter = HeadingFormatter(project)
     formatter.setHandle(nHandle)
 
     # Counters
     # ========
-    cFormat = (
-        f"Chapter {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM} - "
-        f"Scene {nwHeadFmt.SC_ABS} - {nwHeadFmt.TITLE}"
-    )
+    cFormat = f"Chapter {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM} - Scene {nwHeadFmt.SC_ABS} - {nwHeadFmt.TITLE}"
 
     # Initial
     assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter 0.0 - Scene 0 - Hi Bob"

@@ -18,14 +18,21 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
 
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import (
-    QAbstractItemView, QDialogButtonBox, QGridLayout, QLabel, QListWidget,
-    QListWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView,
+    QDialogButtonBox,
+    QGridLayout,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import SHARED
@@ -41,7 +48,7 @@ logger = logging.getLogger(__name__)
 class GuiDocSplit(NDialog):
     """GUI: Document Split Tool."""
 
-    LINE_ROLE  = QtUserRole
+    LINE_ROLE = QtUserRole
     LEVEL_ROLE = QtUserRole + 1
     LABEL_ROLE = QtUserRole + 2
 
@@ -59,8 +66,7 @@ class GuiDocSplit(NDialog):
         self.headLabel = QLabel(self.tr("Document Headings"), self)
         self.headLabel.setFont(SHARED.theme.guiFontB)
         self.helpLabel = NColorLabel(
-            self.tr("Select the maximum level to split into files."),
-            self, color=SHARED.theme.helpText, wrap=True
+            self.tr("Select the maximum level to split into files."), self, color=SHARED.theme.helpText, wrap=True
         )
 
         # Values
@@ -78,9 +84,9 @@ class GuiDocSplit(NDialog):
         self.listBox.setMinimumHeight(180)
 
         self.splitLevel = NComboBox(self)
-        self.splitLevel.addItem(self.tr("Split on Heading Level 1 (Partition)"),  1)
+        self.splitLevel.addItem(self.tr("Split on Heading Level 1 (Partition)"), 1)
         self.splitLevel.addItem(self.tr("Split up to Heading Level 2 (Chapter)"), 2)
-        self.splitLevel.addItem(self.tr("Split up to Heading Level 3 (Scene)"),   3)
+        self.splitLevel.addItem(self.tr("Split up to Heading Level 3 (Scene)"), 3)
         self.splitLevel.addItem(self.tr("Split up to Heading Level 4 (Section)"), 4)
         spIndex = self.splitLevel.findData(spLevel)
         if spIndex != -1:
@@ -103,11 +109,11 @@ class GuiDocSplit(NDialog):
         self.trashLabel.setBuddy(self.trashSwitch)
 
         self.optBox = QGridLayout()
-        self.optBox.addWidget(self.folderLabel,  0, 0)
+        self.optBox.addWidget(self.folderLabel, 0, 0)
         self.optBox.addWidget(self.folderSwitch, 0, 1)
-        self.optBox.addWidget(self.hierarchyLabel,  1, 0)
+        self.optBox.addWidget(self.hierarchyLabel, 1, 0)
         self.optBox.addWidget(self.hierarchySwitch, 1, 1)
-        self.optBox.addWidget(self.trashLabel,  2, 0)
+        self.optBox.addWidget(self.trashLabel, 2, 0)
         self.optBox.addWidget(self.trashSwitch, 2, 1)
         self.optBox.setVerticalSpacing(8)
         self.optBox.setHorizontalSpacing(12)
@@ -154,11 +160,13 @@ class GuiDocSplit(NDialog):
         for i in range(self.listBox.count()):
             item = self.listBox.item(i)
             if item is not None:
-                headerList.append((
-                    item.data(self.LINE_ROLE),
-                    item.data(self.LEVEL_ROLE),
-                    item.data(self.LABEL_ROLE),
-                ))
+                headerList.append(
+                    (
+                        item.data(self.LINE_ROLE),
+                        item.data(self.LEVEL_ROLE),
+                        item.data(self.LABEL_ROLE),
+                    )
+                )
 
         spLevel = self.splitLevel.currentData()
         intoFolder = self.folderSwitch.isChecked()
@@ -219,7 +227,6 @@ class GuiDocSplit(NDialog):
             self._text = SHARED.project.storage.getDocumentText(sHandle).splitlines()
 
         for i, line in enumerate(self._text):
-
             pos = -1
             level = 0
             label = line.strip()

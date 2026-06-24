@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import re
@@ -33,14 +34,14 @@ class RegExPatterns:
     AMBIGUOUS = (nwUnicode.U_APOS, nwUnicode.U_RSQUO)
 
     # Static RegExes
-    _rxUrl     = re.compile(nwRegEx.URL, re.ASCII)
-    _rxWords   = re.compile(nwRegEx.WORDS)
-    _rxBreak   = re.compile(nwRegEx.BREAK)
-    _rxItalic  = re.compile(nwRegEx.FMT_IT)
-    _rxBold1   = re.compile(nwRegEx.FMT_B1)
-    _rxBold2   = re.compile(nwRegEx.FMT_B2)
-    _rxStrike  = re.compile(nwRegEx.FMT_ST)
-    _rxMark    = re.compile(nwRegEx.FMT_HL)
+    _rxUrl = re.compile(nwRegEx.URL, re.ASCII)
+    _rxWords = re.compile(nwRegEx.WORDS)
+    _rxBreak = re.compile(nwRegEx.BREAK)
+    _rxItalic = re.compile(nwRegEx.FMT_IT)
+    _rxBold1 = re.compile(nwRegEx.FMT_B1)
+    _rxBold2 = re.compile(nwRegEx.FMT_B2)
+    _rxStrike = re.compile(nwRegEx.FMT_ST)
+    _rxMark = re.compile(nwRegEx.FMT_HL)
     _rxSCPlain = re.compile(nwRegEx.FMT_SC)
     _rxSCValue = re.compile(nwRegEx.FMT_SV)
 
@@ -133,8 +134,14 @@ class DialogParser:
     """A callable parser for finding dialog regions in text."""
 
     __slots__ = (
-        "_alternate", "_breakD", "_breakQ", "_dialog", "_enabled", "_mode",
-        "_narrator", "_quotes",
+        "_alternate",
+        "_breakD",
+        "_breakQ",
+        "_dialog",
+        "_enabled",
+        "_mode",
+        "_narrator",
+        "_quotes",
     )
 
     def __init__(self) -> None:
@@ -205,7 +212,7 @@ class DialogParser:
                 pos = 0
                 for num, bit in enumerate(text.split(self._alternate)):
                     length = len(bit) + (1 if num > 0 else 0)
-                    if num%2:
+                    if num % 2:
                         temp.append(pos)
                         temp.append(pos + length)
                     pos += length

@@ -24,6 +24,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -167,7 +168,7 @@ class IndexNode:
         """Pack the indexed item's data into a dictionary."""
         data = {}
         for sTitle, hItem in self._headings.items():
-            data[sTitle]  = hItem.packData()
+            data[sTitle] = hItem.packData()
         if self._notes:
             data["document"] = {style: list(keys) for style, keys in self._notes.items()}
         return data
@@ -199,13 +200,24 @@ class IndexHeading:
     """
 
     __slots__ = (
-        "_cache", "_comments", "_counts", "_key", "_level", "_line", "_refs",
-        "_tag", "_title",
+        "_cache",
+        "_comments",
+        "_counts",
+        "_key",
+        "_level",
+        "_line",
+        "_refs",
+        "_tag",
+        "_title",
     )
 
     def __init__(
-        self, cache: IndexCache, key: str, line: int = 0,
-        level: str = "H0", title: str = "",
+        self,
+        cache: IndexCache,
+        key: str,
+        line: int = 0,
+        level: str = "H0",
+        title: str = "",
     ) -> None:
         self._cache = cache
         self._key = key

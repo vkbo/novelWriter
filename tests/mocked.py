@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -30,7 +31,6 @@ from novelwriter.extensions.modified import NPushButton
 
 
 class MockGuiMain(QWidget):
-
     def __init__(self):
         super().__init__()
         self.mainStatus = MagicMock()
@@ -59,7 +59,6 @@ class MockGuiMain(QWidget):
 
 
 class MockTheme:
-
     def __init__(self):
         self.baseIconHeight = 20
         self.fontPixelSize = 20
@@ -87,7 +86,6 @@ class MockTheme:
 
 
 class MockApp:
-
     def __init__(self):
         return
 
@@ -98,6 +96,7 @@ class MockApp:
 # Error Functions
 # ===============
 # Mock functions that will raise errors instead.
+
 
 def causeOSError(*args, **kwargs):
     """Raise an OSError."""

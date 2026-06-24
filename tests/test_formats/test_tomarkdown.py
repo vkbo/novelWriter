@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -92,18 +93,14 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     md._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == (
-        "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
-    )
+    assert md._pages[-1] == ("Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n")
 
     # Text for Standard Markdown
     md._extended = False
     md._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == (
-        "Some **nested bold and _italic_ and strikethrough text** here\n\n"
-    )
+    assert md._pages[-1] == ("Some **nested bold and _italic_ and strikethrough text** here\n\n")
 
     # Shortcodes for Extended Markdown
     md._extended = True
@@ -114,8 +111,7 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == (
-        "Some **bold**, _italic_, ~~strike~~, underline, ==mark==, "
-        "super^script^, sub~script~ here\n\n"
+        "Some **bold**, _italic_, ~~strike~~, underline, ==mark==, super^script^, sub~script~ here\n\n"
     )
 
     # Shortcodes for Standard Markdown
@@ -126,9 +122,7 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     )
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == (
-        "Some **bold**, _italic_, strike, underline, mark, superscript, subscript here\n\n"
-    )
+    assert md._pages[-1] == ("Some **bold**, _italic_, strike, underline, mark, superscript, subscript here\n\n")
 
     # Text w/Hard Break
     md._text = "Line one\nLine two\nLine three\n"
@@ -190,30 +184,17 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     md._text = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
     md.tokenizeText()
     md.doConvert()
-    assert md._pages[-1] == (
-        "# Chapter\n\n"
-        "**Point of View:** Bod  \n"
-        "**Plot:** Main  \n"
-        "**Locations:** Europe\n\n"
-    )
+    assert md._pages[-1] == ("# Chapter\n\n**Point of View:** Bod  \n**Plot:** Main  \n**Locations:** Europe\n\n")
 
     # Footnotes
-    md._text = (
-        "Text with one[footnote:fa] or two[footnote:fb] footnotes.\n\n"
-        "%footnote.fa: Footnote text A.\n\n"
-    )
+    md._text = "Text with one[footnote:fa] or two[footnote:fb] footnotes.\n\n%footnote.fa: Footnote text A.\n\n"
     md.tokenizeText()
     md.doConvert()
     assert md._pages[-1] == "Text with one[1] or two[ERR] footnotes.\n\n"
 
     md.closeDocument()
-    assert md._pages[-2] == (
-        "Text with one[1] or two[ERR] footnotes.\n\n"
-    )
-    assert md._pages[-1] == (
-        "### Footnotes\n\n"
-        "1. Footnote text A.\n\n"
-    )
+    assert md._pages[-2] == ("Text with one[1] or two[ERR] footnotes.\n\n")
+    assert md._pages[-1] == ("### Footnotes\n\n1. Footnote text A.\n\n")
 
 
 @pytest.mark.core

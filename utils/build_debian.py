@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import argparse
@@ -27,9 +28,18 @@ import shutil
 import sys
 
 from utils.common import (
-    MIN_PY_VERSION, MIN_QT_VERS, ROOT_DIR, SETUP_DIR, checkAssetsExist,
-    copyPackageFiles, copySourceCode, extractVersion, makeCheckSum, systemCall,
-    toUpload, writeFile
+    MIN_PY_VERSION,
+    MIN_QT_VERS,
+    ROOT_DIR,
+    SETUP_DIR,
+    checkAssetsExist,
+    copyPackageFiles,
+    copySourceCode,
+    extractVersion,
+    makeCheckSum,
+    systemCall,
+    toUpload,
+    writeFile,
 )
 
 SIGN_KEY = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
@@ -63,8 +73,12 @@ Description: A plain text editor for planning and writing novels
 
 
 def makeDebianPackage(
-    signKey: str | None = None, sourceBuild: bool = False, distName: str = "unstable",
-    buildName: str = "", debianVersion: int = 13, forLaunchpad: bool = False,
+    signKey: str | None = None,
+    sourceBuild: bool = False,
+    distName: str = "unstable",
+    buildName: str = "",
+    debianVersion: int = 13,
+    forLaunchpad: bool = False,
     oldLicense: bool = False,
 ) -> str:
     """Build a Debian package."""
@@ -151,11 +165,14 @@ def makeDebianPackage(
     writeFile(debDir / "control", DEB_CONTROL.replace("%dependencies%", ",\n  ".join(depend)))
     print("Wrote:  debian/control")
 
-    writeFile(debDir / "changelog", (
-        f"novelwriter ({pkgVers}) {distName}; urgency=low\n\n"
-        f"  * Update to version {pkgVers}\n\n"
-        f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
-    ))
+    writeFile(
+        debDir / "changelog",
+        (
+            f"novelwriter ({pkgVers}) {distName}; urgency=low\n\n"
+            f"  * Update to version {pkgVers}\n\n"
+            f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
+        ),
+    )
     print("Wrote:  debian/changelog")
 
     # Copy/Write Data Files

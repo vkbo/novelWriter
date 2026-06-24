@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -70,7 +71,7 @@ class ToRaw(Tokenizer):
                 },
                 "text": {
                     "nwd": [page.rstrip("\n").split("\n") for page in self._raw],
-                }
+                },
             }
             with open(path, mode="w", encoding="utf-8") as fObj:
                 json.dump(data, fObj, indent=2)
@@ -84,5 +85,5 @@ class ToRaw(Tokenizer):
 
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = " ") -> None:
         """Replace tabs with spaces."""
-        spaces = spaceChar*nSpaces
+        spaces = spaceChar * nSpaces
         self._raw = [p.replace("\t", spaces) for p in self._raw]

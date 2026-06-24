@@ -21,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -28,10 +29,7 @@ import uuid
 
 from typing import TYPE_CHECKING, Any, Literal
 
-from novelwriter.common import (
-    checkBool, checkInt, checkStringNone, checkUuid, isHandle,
-    makeFileNameSafe, simplified
-)
+from novelwriter.common import checkBool, checkInt, checkStringNone, checkUuid, isHandle, makeFileNameSafe, simplified
 from novelwriter.core.status import NWStatus
 
 if TYPE_CHECKING:
@@ -71,18 +69,18 @@ class NWProjectData:
         self._initCounts = [0, 0, 0, 0]
         self._currCounts = [0, 0, 0, 0]
         self._lastHandle: dict[str, str | None] = {
-            "editor":  None,
-            "viewer":  None,
-            "novel":   None,
+            "editor": None,
+            "viewer": None,
+            "novel": None,
             "outline": None,
         }
         self._autoReplace: dict[str, str] = {}
         self._titleFormat: dict[str, str] = {
-            "title":      "%title%",
-            "chapter":    "%title%",
+            "title": "%title%",
+            "chapter": "%title%",
             "unnumbered": "%title%",
-            "scene":      "* * *",
-            "section":    "",
+            "scene": "* * *",
+            "section": "",
         }
 
         self._status = NWStatus(NWStatus.STATUS)
@@ -287,9 +285,7 @@ class NWProjectData:
                     self._lastHandle[key] = str(entry) if isHandle(entry) else None
             self._project.setProjectChanged(True)
 
-    def setInitCounts(
-        self, wNovel: Any = None, wNotes: Any = None, cNovel: Any = None, cNotes: Any = None
-    ) -> None:
+    def setInitCounts(self, wNovel: Any = None, wNotes: Any = None, cNovel: Any = None, cNotes: Any = None) -> None:
         """Set the count totals for novel and note files."""
         if wNovel is not None:
             count = checkInt(wNovel, 0)
@@ -308,9 +304,7 @@ class NWProjectData:
             self._initCounts[3] = count
             self._currCounts[3] = count
 
-    def setCurrCounts(
-        self, wNovel: Any = None, wNotes: Any = None, cNovel: Any = None, cNotes: Any = None
-    ) -> None:
+    def setCurrCounts(self, wNovel: Any = None, wNotes: Any = None, cNovel: Any = None, cNotes: Any = None) -> None:
         """Set the count totals for novel and note files."""
         if wNovel is not None:
             self._currCounts[0] = checkInt(wNovel, 0)

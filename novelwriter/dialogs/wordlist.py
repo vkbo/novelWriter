@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -27,8 +28,15 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
-    QAbstractItemView, QApplication, QDialogButtonBox, QFileDialog,
-    QHBoxLayout, QLineEdit, QListWidget, QVBoxLayout, QWidget
+    QAbstractItemView,
+    QApplication,
+    QDialogButtonBox,
+    QFileDialog,
+    QHBoxLayout,
+    QLineEdit,
+    QListWidget,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import CONFIG, SHARED
@@ -60,14 +68,13 @@ class GuiWordList(NDialog):
         self.setMinimumWidth(250)
         self.setMinimumHeight(250)
         self.resize(
-            SHARED.project.options.getInt("GuiWordList", "winWidth",  320),
+            SHARED.project.options.getInt("GuiWordList", "winWidth", 320),
             SHARED.project.options.getInt("GuiWordList", "winHeight", 340),
         )
 
         # Header
         self.headLabel = NColorLabel(
-            self.tr("Project Word List"), self, color=SHARED.theme.helpText,
-            scale=NColorLabel.HEADER_SCALE
+            self.tr("Project Word List"), self, color=SHARED.theme.helpText, scale=NColorLabel.HEADER_SCALE
         )
 
         self.importButton = SHARED.theme.getToolButton(nwToolButton.IMPORT, self)
@@ -177,11 +184,11 @@ class GuiWordList(NDialog):
     @pyqtSlot()
     def _importWords(self) -> None:
         """Import words from file."""
-        SHARED.info(self.tr(
-            "Note: The import file must be a plain text file with UTF-8 or ASCII encoding."
-        ))
+        SHARED.info(self.tr("Note: The import file must be a plain text file with UTF-8 or ASCII encoding."))
         if path := QFileDialog.getOpenFileName(
-            self, self.tr("Import File"), str(CONFIG.homePath()),
+            self,
+            self.tr("Import File"),
+            str(CONFIG.homePath()),
             filter=formatFileFilter(["*.txt", "*"]),
         )[0]:
             try:
@@ -199,7 +206,9 @@ class GuiWordList(NDialog):
         """Export words to file."""
         name = f"{SHARED.project.data.fileSafeName} - {self.windowTitle()}.txt"
         if path := QFileDialog.getSaveFileName(
-            self, self.tr("Export File"), str(CONFIG.homePath() / name),
+            self,
+            self.tr("Export File"),
+            str(CONFIG.homePath() / name),
         )[0]:
             try:
                 path = Path(path).with_suffix(".txt")
@@ -224,7 +233,7 @@ class GuiWordList(NDialog):
         """Save GUI settings."""
         logger.debug("Saving State: GuiWordList")
         pOptions = SHARED.project.options
-        pOptions.setValue("GuiWordList", "winWidth",  self.width())
+        pOptions.setValue("GuiWordList", "winWidth", self.width())
         pOptions.setValue("GuiWordList", "winHeight", self.height())
 
     def _addWord(self, word: str) -> None:
@@ -236,6 +245,7 @@ class GuiWordList(NDialog):
     def _listWords(self) -> list[str]:
         """List all words in the list box."""
         return [
-            word for i in range(self.listBox.count())
+            word
+            for i in range(self.listBox.count())
             if (item := self.listBox.item(i)) and (word := item.text().strip())
         ]

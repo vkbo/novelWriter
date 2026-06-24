@@ -29,47 +29,47 @@ class nwItemType(Enum):
     """Enum: Project Item Types."""
 
     NO_TYPE = 0
-    ROOT    = 1
-    FOLDER  = 2
-    FILE    = 3
+    ROOT = 1
+    FOLDER = 2
+    FILE = 3
 
 
 class nwItemClass(Enum):
     """Enum: Project Item Classes."""
 
-    NO_CLASS  = 0
-    NOVEL     = 1
-    PLOT      = 2
+    NO_CLASS = 0
+    NOVEL = 1
+    PLOT = 2
     CHARACTER = 3
-    WORLD     = 4
-    TIMELINE  = 5
-    OBJECT    = 6
-    ENTITY    = 7
-    CUSTOM    = 8
-    ARCHIVE   = 9
-    TEMPLATE  = 10
-    TRASH     = 11
+    WORLD = 4
+    TIMELINE = 5
+    OBJECT = 6
+    ENTITY = 7
+    CUSTOM = 8
+    ARCHIVE = 9
+    TEMPLATE = 10
+    TRASH = 11
 
 
 class nwItemLayout(Enum):
     """A project item's layout."""
 
     NO_LAYOUT = 0
-    DOCUMENT  = 1
-    NOTE      = 2
+    DOCUMENT = 1
+    NOTE = 2
 
 
 class nwComment(Enum):
     """Types of text comments."""
 
-    PLAIN    = 0
-    IGNORE   = 1
+    PLAIN = 0
+    IGNORE = 1
     SYNOPSIS = 2
-    SHORT    = 3
-    NOTE     = 4
+    SHORT = 3
+    NOTE = 4
     FOOTNOTE = 5
-    COMMENT  = 6
-    STORY    = 7
+    COMMENT = 6
+    STORY = 7
 
 
 class nwChange(Enum):
@@ -91,44 +91,44 @@ class nwDocAction(Enum):
     """Document actions."""
 
     NO_ACTION = 0
-    UNDO      = 1
-    REDO      = 2
-    CUT       = 3
-    COPY      = 4
-    PASTE     = 5
+    UNDO = 1
+    REDO = 2
+    CUT = 3
+    COPY = 4
+    PASTE = 5
     MD_ITALIC = 6
-    MD_BOLD   = 7
+    MD_BOLD = 7
     MD_STRIKE = 8
-    MD_MARK   = 9
-    S_QUOTE   = 10
-    D_QUOTE   = 11
-    SEL_ALL   = 12
-    SEL_PARA  = 13
-    BLOCK_H1  = 14
-    BLOCK_H2  = 15
-    BLOCK_H3  = 16
-    BLOCK_H4  = 17
+    MD_MARK = 9
+    S_QUOTE = 10
+    D_QUOTE = 11
+    SEL_ALL = 12
+    SEL_PARA = 13
+    BLOCK_H1 = 14
+    BLOCK_H2 = 15
+    BLOCK_H3 = 16
+    BLOCK_H4 = 17
     BLOCK_COM = 18
     BLOCK_IGN = 19
     BLOCK_TXT = 20
     BLOCK_TTL = 21
     BLOCK_UNN = 22
     BLOCK_HSC = 23
-    REPL_SNG  = 24
-    REPL_DBL  = 25
+    REPL_SNG = 24
+    REPL_DBL = 25
     RM_BREAKS = 26
-    ALIGN_L   = 27
-    ALIGN_C   = 28
-    ALIGN_R   = 29
-    INDENT_L  = 30
-    INDENT_R  = 31
+    ALIGN_L = 27
+    ALIGN_C = 28
+    ALIGN_R = 29
+    INDENT_L = 30
+    INDENT_R = 31
     SC_ITALIC = 32
-    SC_BOLD   = 33
+    SC_BOLD = 33
     SC_STRIKE = 34
-    SC_ULINE  = 35
-    SC_MARK   = 36
-    SC_SUP    = 37
-    SC_SUB    = 38
+    SC_ULINE = 35
+    SC_MARK = 36
+    SC_SUP = 37
+    SC_SUB = 38
     MOVE_TEXT = 39
 
 
@@ -136,118 +136,118 @@ class nwDocInsert(Enum):
     """Document insert actions."""
 
     NO_INSERT = 0
-    QUOTE_LS  = 1
-    QUOTE_RS  = 2
-    QUOTE_LD  = 3
-    QUOTE_RD  = 4
-    SYNOPSIS  = 5
-    SHORT     = 6
-    NEW_PAGE  = 7
-    VSPACE_S  = 8
-    VSPACE_M  = 9
-    LIPSUM    = 10
-    FOOTNOTE  = 11
-    LINE_BRK  = 12
+    QUOTE_LS = 1
+    QUOTE_RS = 2
+    QUOTE_LD = 3
+    QUOTE_RD = 4
+    SYNOPSIS = 5
+    SHORT = 6
+    NEW_PAGE = 7
+    VSPACE_S = 8
+    VSPACE_M = 9
+    LIPSUM = 10
+    FOOTNOTE = 11
+    LINE_BRK = 12
 
 
 class nwView(Enum):
     """Main GUI view modes."""
 
-    EDITOR  = 0
+    EDITOR = 0
     PROJECT = 1
-    NOVEL   = 2
+    NOVEL = 2
     OUTLINE = 3
-    SEARCH  = 4
+    SEARCH = 4
 
 
 class nwFocus(Enum):
     """Main GUI panel focus."""
 
-    TREE     = 1
+    TREE = 1
     DOCUMENT = 2
-    OUTLINE  = 3
+    OUTLINE = 3
 
 
 class nwTheme(Enum):
     """GUI theme colour modes."""
 
-    AUTO  = 0
+    AUTO = 0
     LIGHT = 1
-    DARK  = 2
+    DARK = 2
 
 
 class nwOutline(Enum):
     """Enum: Project Outline Columns."""
 
-    TITLE   = 0
-    LEVEL   = 1
-    LABEL   = 2
-    LINE    = 3
-    STATUS  = 4
-    CCOUNT  = 5
-    WCOUNT  = 6
-    PCOUNT  = 7
-    POV     = 8
-    FOCUS   = 9
-    CHAR    = 10
-    PLOT    = 11
-    TIME    = 12
-    WORLD   = 13
-    OBJECT  = 14
-    ENTITY  = 15
-    CUSTOM  = 16
-    STORY   = 17
+    TITLE = 0
+    LEVEL = 1
+    LABEL = 2
+    LINE = 3
+    STATUS = 4
+    CCOUNT = 5
+    WCOUNT = 6
+    PCOUNT = 7
+    POV = 8
+    FOCUS = 9
+    CHAR = 10
+    PLOT = 11
+    TIME = 12
+    WORLD = 13
+    OBJECT = 14
+    ENTITY = 15
+    CUSTOM = 16
+    STORY = 17
     MENTION = 18
-    SYNOP   = 19
+    SYNOP = 19
 
 
 class nwNovelExtra(Enum):
     """Enum: Novel View Extra Columns."""
 
     HIDDEN = 0
-    POV    = 1
-    FOCUS  = 2
-    PLOT   = 3
+    POV = 1
+    FOCUS = 2
+    PLOT = 3
 
 
 class nwBuildFmt(Enum):
     """Enum: Manuscript Document Formats."""
 
-    ODT    = 0
-    FODT   = 1
-    DOCX   = 2
-    PDF    = 3
-    HTML   = 4
+    ODT = 0
+    FODT = 1
+    DOCX = 2
+    PDF = 3
+    HTML = 4
     STD_MD = 5
     EXT_MD = 6
-    NWD    = 7
+    NWD = 7
     J_HTML = 8
-    J_NWD  = 9
+    J_NWD = 9
 
 
 class nwStatusShape(Enum):
     """Enum: Status/Importance Icon Shapes."""
 
-    SQUARE   = 0
+    SQUARE = 0
     TRIANGLE = 1
-    NABLA    = 2
-    DIAMOND  = 3
+    NABLA = 2
+    DIAMOND = 3
     PENTAGON = 4
-    HEXAGON  = 5
-    STAR     = 6
-    PACMAN   = 7
+    HEXAGON = 5
+    STAR = 6
+    PACMAN = 7
     CIRCLE_Q = 8
     CIRCLE_H = 9
     CIRCLE_T = 10
-    CIRCLE   = 11
-    BARS_1   = 12
-    BARS_2   = 13
-    BARS_3   = 14
-    BARS_4   = 15
-    BLOCK_1  = 16
-    BLOCK_2  = 17
-    BLOCK_3  = 18
-    BLOCK_4  = 19
+    CIRCLE = 11
+    BARS_1 = 12
+    BARS_2 = 13
+    BARS_3 = 14
+    BARS_4 = 15
+    BLOCK_1 = 16
+    BLOCK_2 = 17
+    BLOCK_3 = 18
+    BLOCK_4 = 19
 
 
 class nwVimMode(Enum):
@@ -262,42 +262,42 @@ class nwVimMode(Enum):
 class nwStandardButton(Enum):
     """Enum: Standard Dialog Buttons."""
 
-    OK      = 0
-    CANCEL  = 1
-    YES     = 2
-    NO      = 3
-    OPEN    = 4
-    CLOSE   = 5
-    SAVE    = 6
-    BROWSE  = 7
-    LIST    = 8
-    NEW     = 9
-    CREATE  = 10
-    RESET   = 11
-    INSERT  = 12
-    APPLY   = 13
-    BUILD   = 14
-    PRINT   = 15
+    OK = 0
+    CANCEL = 1
+    YES = 2
+    NO = 3
+    OPEN = 4
+    CLOSE = 5
+    SAVE = 6
+    BROWSE = 7
+    LIST = 8
+    NEW = 9
+    CREATE = 10
+    RESET = 11
+    INSERT = 12
+    APPLY = 13
+    BUILD = 14
+    PRINT = 15
     PREVIEW = 16
 
 
 class nwToolButton(Enum):
     """Enum: Standard Tool Buttons."""
 
-    ADD       = 0
-    REMOVE    = 1
-    MOVE_UP   = 2
+    ADD = 0
+    REMOVE = 1
+    MOVE_UP = 2
     MOVE_DOWN = 3
-    IMPORT    = 4
-    EXPORT    = 5
-    BROWSE    = 6
-    EDIT      = 7
-    REVERT    = 8
+    IMPORT = 4
+    EXPORT = 5
+    BROWSE = 6
+    EDIT = 7
+    REVERT = 8
 
 
 class nwState(Enum):
     """Enum: Object state values."""
 
-    NORMAL   = 0
+    NORMAL = 0
     INACTIVE = 1
-    ERROR    = 2
+    ERROR = 2

@@ -22,10 +22,7 @@ else:
 if override_version := os.environ.get("SPHINX_I18N_VERSION"):
     release = override_version
 else:
-    initFile = os.path.join(
-        os.path.dirname(__file__), os.pardir, os.pardir,
-        "novelwriter", "__init__.py"
-    )
+    initFile = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "novelwriter", "__init__.py")
     with open(initFile, encoding="utf-8") as inFile:
         for aLine in inFile:
             if aLine.startswith("__version__"):
@@ -81,13 +78,8 @@ html_sidebars = {
 latex_elements = {
     "papersize": "a4paper",
     "pointsize": "11pt",
-    "preamble": (
-        "\\usepackage[utf8]{inputenc}\n"
-        "\\DeclareUnicodeCharacter{2212}{\\textendash}\n"
-    ),
+    "preamble": ("\\usepackage[utf8]{inputenc}\n\\DeclareUnicodeCharacter{2212}{\\textendash}\n"),
     "figure_align": "htbp",
 }
 latex_logo = "_static/novelwriter-pdf.png"
-latex_documents = [(
-    master_doc, "manual.tex", None, author, "manual"
-)]
+latex_documents = [(master_doc, "manual.tex", None, author, "manual")]

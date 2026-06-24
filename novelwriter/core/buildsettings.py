@@ -22,6 +22,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -52,6 +53,7 @@ T_BuildValue = str | int | float | bool
 # =====================
 # Each entry contains a tuple on the form: (type, default)
 
+# fmt: off
 SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "filter.includeNovel":     (bool, True),
     "filter.includeNotes":     (bool, False),
@@ -203,6 +205,7 @@ SETTINGS_LABELS = {
     "html.addStyles":          QT_TRANSLATE_NOOP("Builds", "Add CSS styles"),
     "html.preserveTabs":       QT_TRANSLATE_NOOP("Builds", "Preserve tab characters"),
 }
+# fmt: on
 
 RENAMED = {
     "odt.pageHeader": "doc.pageHeader",
@@ -215,12 +218,12 @@ RENAMED = {
 class FilterMode(Enum):
     """The decision reason for an item in a filtered project."""
 
-    UNKNOWN  = 0
+    UNKNOWN = 0
     FILTERED = 1
     INCLUDED = 2
     EXCLUDED = 3
-    SKIPPED  = 4
-    ROOT     = 5
+    SKIPPED = 4
+    ROOT = 5
 
 
 class BuildSettings:
@@ -392,7 +395,7 @@ class BuildSettings:
     def setValue(self, key: str, value: T_BuildValue) -> None:
         """Set a specific value for a build setting."""
         if (d := SETTINGS_TEMPLATE.get(key)) and len(d) == 2 and isinstance(value, d[0]):
-            self._changed |= (value != self._settings[key])
+            self._changed |= value != self._settings[key]
             self._settings[key] = value
 
     ##
@@ -403,9 +406,7 @@ class BuildSettings:
         """Check if a root handle is allowed in the build."""
         return tHandle not in self._skipRoot
 
-    def buildItemFilter(
-        self, project: NWProject, withRoots: bool = False
-    ) -> dict[str, tuple[bool, FilterMode]]:
+    def buildItemFilter(self, project: NWProject, withRoots: bool = False) -> dict[str, tuple[bool, FilterMode]]:
         """Return a dictionary of item handles with filter decisions
         applied.
         """
@@ -480,7 +481,7 @@ class BuildSettings:
                 "included": list(self._included),
                 "excluded": list(self._excluded),
                 "skipRoot": list(self._skipRoot),
-            }
+            },
         }
 
     def unpack(self, data: dict) -> None:

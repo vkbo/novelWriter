@@ -21,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -60,7 +61,12 @@ class NWBuildDocument:
     """
 
     __slots__ = (
-        "_build", "_cache", "_count", "_error", "_outline", "_project",
+        "_build",
+        "_cache",
+        "_count",
+        "_error",
+        "_outline",
+        "_project",
         "_queue",
     )
 
@@ -222,46 +228,22 @@ class NWBuildDocument:
         bldObj.setTextFont(textFont)
         bldObj.setLanguage(self._build.getStr("doc.metaLanguage") or self._project.data.language)
 
-        bldObj.setPartitionFormat(
-            self._build.getStr("headings.fmtPart"),
-            self._build.getBool("headings.hidePart")
-        )
-        bldObj.setChapterFormat(
-            self._build.getStr("headings.fmtChapter"),
-            self._build.getBool("headings.hideChapter")
-        )
+        bldObj.setPartitionFormat(self._build.getStr("headings.fmtPart"), self._build.getBool("headings.hidePart"))
+        bldObj.setChapterFormat(self._build.getStr("headings.fmtChapter"), self._build.getBool("headings.hideChapter"))
         bldObj.setUnNumberedFormat(
-            self._build.getStr("headings.fmtUnnumbered"),
-            self._build.getBool("headings.hideUnnumbered")
+            self._build.getStr("headings.fmtUnnumbered"), self._build.getBool("headings.hideUnnumbered")
         )
-        bldObj.setSceneFormat(
-            self._build.getStr("headings.fmtScene"),
-            self._build.getBool("headings.hideScene")
-        )
+        bldObj.setSceneFormat(self._build.getStr("headings.fmtScene"), self._build.getBool("headings.hideScene"))
         bldObj.setHardSceneFormat(
-            self._build.getStr("headings.fmtAltScene"),
-            self._build.getBool("headings.hideAltScene")
+            self._build.getStr("headings.fmtAltScene"), self._build.getBool("headings.hideAltScene")
         )
-        bldObj.setSectionFormat(
-            self._build.getStr("headings.fmtSection"),
-            self._build.getBool("headings.hideSection")
-        )
-        bldObj.setTitleStyle(
-            self._build.getBool("headings.centerTitle"),
-            self._build.getBool("headings.breakTitle")
-        )
-        bldObj.setPartitionStyle(
-            self._build.getBool("headings.centerPart"),
-            self._build.getBool("headings.breakPart")
-        )
+        bldObj.setSectionFormat(self._build.getStr("headings.fmtSection"), self._build.getBool("headings.hideSection"))
+        bldObj.setTitleStyle(self._build.getBool("headings.centerTitle"), self._build.getBool("headings.breakTitle"))
+        bldObj.setPartitionStyle(self._build.getBool("headings.centerPart"), self._build.getBool("headings.breakPart"))
         bldObj.setChapterStyle(
-            self._build.getBool("headings.centerChapter"),
-            self._build.getBool("headings.breakChapter")
+            self._build.getBool("headings.centerChapter"), self._build.getBool("headings.breakChapter")
         )
-        bldObj.setSceneStyle(
-            self._build.getBool("headings.centerScene"),
-            self._build.getBool("headings.breakScene")
-        )
+        bldObj.setSceneStyle(self._build.getBool("headings.centerScene"), self._build.getBool("headings.breakScene"))
 
         bldObj.setJustify(self._build.getBool("format.justifyText"))
         bldObj.setLineHeight(self._build.getFloat("format.lineHeight"))
@@ -335,18 +317,16 @@ class NWBuildDocument:
             scale = nwLabels.UNIT_SCALE.get(self._build.getStr("format.pageUnit"), 1.0)
             pW, pH = nwLabels.PAPER_SIZE.get(self._build.getStr("format.pageSize"), (-1.0, -1.0))
             bldObj.setPageLayout(
-                pW if pW > 0.0 else scale*self._build.getFloat("format.pageWidth"),
-                pH if pH > 0.0 else scale*self._build.getFloat("format.pageHeight"),
-                scale*self._build.getFloat("format.topMargin"),
-                scale*self._build.getFloat("format.bottomMargin"),
-                scale*self._build.getFloat("format.leftMargin"),
-                scale*self._build.getFloat("format.rightMargin"),
+                pW if pW > 0.0 else scale * self._build.getFloat("format.pageWidth"),
+                pH if pH > 0.0 else scale * self._build.getFloat("format.pageHeight"),
+                scale * self._build.getFloat("format.topMargin"),
+                scale * self._build.getFloat("format.bottomMargin"),
+                scale * self._build.getFloat("format.leftMargin"),
+                scale * self._build.getFloat("format.rightMargin"),
             )
             bldObj.setLineForMargin(self._build.getBool("format.lineForMargin"))
 
-        return self._build.buildItemFilter(
-            self._project, withRoots=self._build.getBool("text.addNoteHeadings")
-        )
+        return self._build.buildItemFilter(self._project, withRoots=self._build.getBool("text.addNoteHeadings"))
 
     def _doBuild(self, bldObj: Tokenizer, tHandle: str, convert: bool = True) -> bool:
         """Build a single document and add it to the build object."""

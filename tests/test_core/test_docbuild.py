@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -465,10 +466,7 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
     assert count == 4
     assert error == []
     assert docFile.read_text(encoding="utf-8") == (
-        "#! New Novel\n\n"
-        ">> By Jane Doe <<\n\n"
-        "## New Chapter\n\n"
-        "### New Scene\n\n"
+        "#! New Novel\n\n>> By Jane Doe <<\n\n## New Chapter\n\n### New Scene\n\n"
     )
     docFile.unlink()
 
@@ -495,10 +493,7 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
     assert count == 4
     assert error == []
     assert docFile.read_text(encoding="utf-8") == (
-        "#! New Novel\n\n"
-        ">> By Jane Doe <<\n\n"
-        "## New Chapter\n\n"
-        "### New Scene\n\n"
+        "#! New Novel\n\n>> By Jane Doe <<\n\n## New Chapter\n\n### New Scene\n\n"
     )
     docFile.unlink()
 
@@ -524,8 +519,16 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     # ODT Format
     docFile = fncPath / "Minimal.odt"
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.ODT)) == [
-        (0, True), (1, True), (2, False), (3, True), (4, True),
-        (5, True), (6, True), (7, True), (8, True), (9, False),
+        (0, True),
+        (1, True),
+        (2, False),
+        (3, True),
+        (4, True),
+        (5, True),
+        (6, True),
+        (7, True),
+        (8, True),
+        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToOdt)
     assert docFile.is_file()
@@ -534,8 +537,16 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     # FODT Format
     docFile = fncPath / "Minimal.fodt"
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.FODT)) == [
-        (0, True), (1, True), (2, False), (3, True), (4, True),
-        (5, True), (6, True), (7, True), (8, True), (9, False),
+        (0, True),
+        (1, True),
+        (2, False),
+        (3, True),
+        (4, True),
+        (5, True),
+        (6, True),
+        (7, True),
+        (8, True),
+        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToOdt)
     assert docFile.read_text(encoding="utf-8").startswith("<?xml")
@@ -544,8 +555,16 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     # HTML Format
     docFile = fncPath / "Minimal.html"
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.HTML)) == [
-        (0, True), (1, True), (2, False), (3, True), (4, True),
-        (5, True), (6, True), (7, True), (8, True), (9, False),
+        (0, True),
+        (1, True),
+        (2, False),
+        (3, True),
+        (4, True),
+        (5, True),
+        (6, True),
+        (7, True),
+        (8, True),
+        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToHtml)
     assert docFile.read_text(encoding="utf-8").startswith("<!DOCTYPE html>")
@@ -554,8 +573,16 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     # JSON HTML Format
     docFile = fncPath / "Minimal.json"
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.J_HTML)) == [
-        (0, True), (1, True), (2, False), (3, True), (4, True),
-        (5, True), (6, True), (7, True), (8, True), (9, False),
+        (0, True),
+        (1, True),
+        (2, False),
+        (3, True),
+        (4, True),
+        (5, True),
+        (6, True),
+        (7, True),
+        (8, True),
+        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToHtml)
     data = json.loads(docFile.read_text(encoding="utf-8"))
@@ -566,8 +593,16 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     # Standard Markdown Format
     docFile = fncPath / "Minimal.md"
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.STD_MD)) == [
-        (0, True), (1, True), (2, False), (3, True), (4, True),
-        (5, True), (6, True), (7, True), (8, True), (9, False),
+        (0, True),
+        (1, True),
+        (2, False),
+        (3, True),
+        (4, True),
+        (5, True),
+        (6, True),
+        (7, True),
+        (8, True),
+        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToMarkdown)
     assert docFile.read_text(encoding="utf-8") == (
@@ -590,8 +625,16 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     # Extended Markdown Format
     docFile = fncPath / "Minimal.md"
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.EXT_MD)) == [
-        (0, True), (1, True), (2, False), (3, True), (4, True),
-        (5, True), (6, True), (7, True), (8, True), (9, False),
+        (0, True),
+        (1, True),
+        (2, False),
+        (3, True),
+        (4, True),
+        (5, True),
+        (6, True),
+        (7, True),
+        (8, True),
+        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToMarkdown)
     assert docFile.read_text(encoding="utf-8") == (
@@ -614,8 +657,16 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     # NWD Format
     docFile = fncPath / "Minimal.txt"
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.NWD)) == [
-        (0, True), (1, True), (2, False), (3, True), (4, True),
-        (5, True), (6, True), (7, True), (8, True), (9, False),
+        (0, True),
+        (1, True),
+        (2, False),
+        (3, True),
+        (4, True),
+        (5, True),
+        (6, True),
+        (7, True),
+        (8, True),
+        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToRaw)
     assert docFile.read_text(encoding="utf-8") == (
@@ -635,8 +686,16 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     # JSON NWD Format
     docFile = fncPath / "Minimal.json"
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.J_NWD)) == [
-        (0, True), (1, True), (2, False), (3, True), (4, True),
-        (5, True), (6, True), (7, True), (8, True), (9, False),
+        (0, True),
+        (1, True),
+        (2, False),
+        (3, True),
+        (4, True),
+        (5, True),
+        (6, True),
+        (7, True),
+        (8, True),
+        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToRaw)
     data = json.loads(docFile.read_text(encoding="utf-8"))
@@ -647,8 +706,16 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     # PDF Format
     docFile = fncPath / "Minimal.pdf"
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.PDF)) == [
-        (0, True), (1, True), (2, False), (3, True), (4, True),
-        (5, True), (6, True), (7, True), (8, True), (9, False),
+        (0, True),
+        (1, True),
+        (2, False),
+        (3, True),
+        (4, True),
+        (5, True),
+        (6, True),
+        (7, True),
+        (8, True),
+        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToQTextDocument)
     assert docFile.is_file()

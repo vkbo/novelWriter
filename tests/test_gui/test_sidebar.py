@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -36,7 +37,6 @@ def testGuiSideBar_CycleColourTheme(nwGUI):
 
     # Run 3 Cycles
     for _ in range(3):
-
         # Cycle Light
         sidebar._cycleColurTheme()
         assert CONFIG.themeMode == nwTheme.LIGHT

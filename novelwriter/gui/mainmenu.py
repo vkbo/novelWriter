@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -32,8 +33,15 @@ from PyQt6.QtWidgets import QMenuBar
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import openExternalPath, qtAddAction, qtAddMenu, qtLambda
 from novelwriter.constants import (
-    nwConst, nwKeyWords, nwLabels, nwShortcode, nwStats, nwStyles, nwUnicode,
-    trConst, trStats
+    nwConst,
+    nwKeyWords,
+    nwLabels,
+    nwShortcode,
+    nwStats,
+    nwStyles,
+    nwUnicode,
+    trConst,
+    trStats,
 )
 from novelwriter.enum import nwDocAction, nwDocInsert, nwFocus, nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
@@ -177,9 +185,7 @@ class GuiMainMenu(QMenuBar):
         # Project > Empty Trash
         self.aEmptyTrash = qtAddAction(self.projMenu, self.tr("Empty Trash"))
 
-        self.mainGui.projView.connectMenuActions(
-            self.aRenameItem, self.aDeleteItem, self.aEmptyTrash
-        )
+        self.mainGui.projView.connectMenuActions(self.aRenameItem, self.aDeleteItem, self.aEmptyTrash)
 
         # Project > Separator
         self.projMenu.addSeparator()
@@ -239,9 +245,7 @@ class GuiMainMenu(QMenuBar):
 
         # Document > Move Text
         self.aMoveText = qtAddAction(self.docuMenu, self.tr("Move Text to New Document"))
-        self.aMoveText.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.MOVE_TEXT)
-        )
+        self.aMoveText.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.MOVE_TEXT))
 
     def _buildEditMenu(self) -> None:
         """Assemble the Edit menu."""
@@ -251,17 +255,13 @@ class GuiMainMenu(QMenuBar):
         # Edit > Undo
         self.aEditUndo = qtAddAction(self.editMenu, self.tr("Undo"))
         self.aEditUndo.setShortcut("Ctrl+Z")
-        self.aEditUndo.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.UNDO)
-        )
+        self.aEditUndo.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.UNDO))
         self.mainGui.addAction(self.aEditUndo)
 
         # Edit > Redo
         self.aEditRedo = qtAddAction(self.editMenu, self.tr("Redo"))
         self.aEditRedo.setShortcut("Ctrl+Y")
-        self.aEditRedo.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.REDO)
-        )
+        self.aEditRedo.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.REDO))
         self.mainGui.addAction(self.aEditRedo)
 
         # Edit > Separator
@@ -270,25 +270,19 @@ class GuiMainMenu(QMenuBar):
         # Edit > Cut
         self.aEditCut = qtAddAction(self.editMenu, self.tr("Cut"))
         self.aEditCut.setShortcut("Ctrl+X")
-        self.aEditCut.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.CUT)
-        )
+        self.aEditCut.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.CUT))
         self.mainGui.addAction(self.aEditCut)
 
         # Edit > Copy
         self.aEditCopy = qtAddAction(self.editMenu, self.tr("Copy"))
         self.aEditCopy.setShortcut("Ctrl+C")
-        self.aEditCopy.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.COPY)
-        )
+        self.aEditCopy.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.COPY))
         self.mainGui.addAction(self.aEditCopy)
 
         # Edit > Paste
         self.aEditPaste = qtAddAction(self.editMenu, self.tr("Paste"))
         self.aEditPaste.setShortcut("Ctrl+V")
-        self.aEditPaste.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.PASTE)
-        )
+        self.aEditPaste.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.PASTE))
         self.mainGui.addAction(self.aEditPaste)
 
         # Edit > Separator
@@ -297,17 +291,13 @@ class GuiMainMenu(QMenuBar):
         # Edit > Select All
         self.aSelectAll = qtAddAction(self.editMenu, self.tr("Select All"))
         self.aSelectAll.setShortcut("Ctrl+A")
-        self.aSelectAll.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SEL_ALL)
-        )
+        self.aSelectAll.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.SEL_ALL))
         self.mainGui.addAction(self.aSelectAll)
 
         # Edit > Select Paragraph
         self.aSelectPar = qtAddAction(self.editMenu, self.tr("Select Paragraph"))
         self.aSelectPar.setShortcut("Ctrl+Shift+A")
-        self.aSelectPar.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SEL_PARA)
-        )
+        self.aSelectPar.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.SEL_PARA))
         self.mainGui.addAction(self.aSelectPar)
 
     def _buildViewMenu(self) -> None:
@@ -318,24 +308,18 @@ class GuiMainMenu(QMenuBar):
         # View > TreeView
         self.aFocusTree = qtAddAction(self.viewMenu, self.tr("Go to Tree View"))
         self.aFocusTree.setShortcut("Ctrl+T")
-        self.aFocusTree.triggered.connect(
-            lambda: self.requestFocusChange.emit(nwFocus.TREE)
-        )
+        self.aFocusTree.triggered.connect(lambda: self.requestFocusChange.emit(nwFocus.TREE))
         self.mainGui.addAction(self.aFocusTree)
 
         # View > Document Editor
         self.aFocusDocument = qtAddAction(self.viewMenu, self.tr("Go to Document"))
         self.aFocusDocument.setShortcut("Ctrl+E")
-        self.aFocusDocument.triggered.connect(
-            lambda: self.requestFocusChange.emit(nwFocus.DOCUMENT)
-        )
+        self.aFocusDocument.triggered.connect(lambda: self.requestFocusChange.emit(nwFocus.DOCUMENT))
 
         # View > Outline
         self.aFocusOutline = qtAddAction(self.viewMenu, self.tr("Go to Outline"))
         self.aFocusOutline.setShortcut("Ctrl+Shift+T")
-        self.aFocusOutline.triggered.connect(
-            lambda: self.requestFocusChange.emit(nwFocus.OUTLINE)
-        )
+        self.aFocusOutline.triggered.connect(lambda: self.requestFocusChange.emit(nwFocus.OUTLINE))
         self.mainGui.addAction(self.aFocusOutline)
 
         # View > Separator
@@ -381,33 +365,25 @@ class GuiMainMenu(QMenuBar):
         # Insert > Short Dash
         self.aInsENDash = qtAddAction(self.mInsDashes, self.tr("Short Dash"))
         self.aInsENDash.setShortcut("Ctrl+K, -")
-        self.aInsENDash.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_ENDASH)
-        )
+        self.aInsENDash.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_ENDASH))
         self.mainGui.addAction(self.aInsENDash)
 
         # Insert > Long Dash
         self.aInsEMDash = qtAddAction(self.mInsDashes, self.tr("Long Dash"))
         self.aInsEMDash.setShortcut("Ctrl+K, _")
-        self.aInsEMDash.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_EMDASH)
-        )
+        self.aInsEMDash.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_EMDASH))
         self.mainGui.addAction(self.aInsEMDash)
 
         # Insert > Long Dash
         self.aInsHorBar = qtAddAction(self.mInsDashes, self.tr("Horizontal Bar"))
         self.aInsHorBar.setShortcut("Ctrl+K, Ctrl+_")
-        self.aInsHorBar.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_HBAR)
-        )
+        self.aInsHorBar.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_HBAR))
         self.mainGui.addAction(self.aInsHorBar)
 
         # Insert > Figure Dash
         self.aInsFigDash = qtAddAction(self.mInsDashes, self.tr("Figure Dash"))
         self.aInsFigDash.setShortcut("Ctrl+K, ~")
-        self.aInsFigDash.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_FGDASH)
-        )
+        self.aInsFigDash.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_FGDASH))
         self.mainGui.addAction(self.aInsFigDash)
 
         # Insert > Quote Marks
@@ -416,41 +392,31 @@ class GuiMainMenu(QMenuBar):
         # Insert > Left Single Quote
         self.aInsQuoteLS = qtAddAction(self.mInsQuotes, self.tr("Left Single Quote"))
         self.aInsQuoteLS.setShortcut("Ctrl+K, 1")
-        self.aInsQuoteLS.triggered.connect(
-            lambda: self.requestDocInsert.emit(nwDocInsert.QUOTE_LS)
-        )
+        self.aInsQuoteLS.triggered.connect(lambda: self.requestDocInsert.emit(nwDocInsert.QUOTE_LS))
         self.mainGui.addAction(self.aInsQuoteLS)
 
         # Insert > Right Single Quote
         self.aInsQuoteRS = qtAddAction(self.mInsQuotes, self.tr("Right Single Quote"))
         self.aInsQuoteRS.setShortcut("Ctrl+K, 2")
-        self.aInsQuoteRS.triggered.connect(
-            lambda: self.requestDocInsert.emit(nwDocInsert.QUOTE_RS)
-        )
+        self.aInsQuoteRS.triggered.connect(lambda: self.requestDocInsert.emit(nwDocInsert.QUOTE_RS))
         self.mainGui.addAction(self.aInsQuoteRS)
 
         # Insert > Left Double Quote
         self.aInsQuoteLD = qtAddAction(self.mInsQuotes, self.tr("Left Double Quote"))
         self.aInsQuoteLD.setShortcut("Ctrl+K, 3")
-        self.aInsQuoteLD.triggered.connect(
-            lambda: self.requestDocInsert.emit(nwDocInsert.QUOTE_LD)
-        )
+        self.aInsQuoteLD.triggered.connect(lambda: self.requestDocInsert.emit(nwDocInsert.QUOTE_LD))
         self.mainGui.addAction(self.aInsQuoteLD)
 
         # Insert > Right Double Quote
         self.aInsQuoteRD = qtAddAction(self.mInsQuotes, self.tr("Right Double Quote"))
         self.aInsQuoteRD.setShortcut("Ctrl+K, 4")
-        self.aInsQuoteRD.triggered.connect(
-            lambda: self.requestDocInsert.emit(nwDocInsert.QUOTE_RD)
-        )
+        self.aInsQuoteRD.triggered.connect(lambda: self.requestDocInsert.emit(nwDocInsert.QUOTE_RD))
         self.mainGui.addAction(self.aInsQuoteRD)
 
         # Insert > Alternative Apostrophe
         self.aInsMSApos = qtAddAction(self.mInsQuotes, self.tr("Alternative Apostrophe"))
         self.aInsMSApos.setShortcut("Ctrl+K, '")
-        self.aInsMSApos.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_MAPOS)
-        )
+        self.aInsMSApos.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_MAPOS))
         self.mainGui.addAction(self.aInsMSApos)
 
         # Insert > Symbols
@@ -459,25 +425,19 @@ class GuiMainMenu(QMenuBar):
         # Insert > Ellipsis
         self.aInsEllipsis = qtAddAction(self.mInsPunct, self.tr("Ellipsis"))
         self.aInsEllipsis.setShortcut("Ctrl+K, .")
-        self.aInsEllipsis.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_HELLIP)
-        )
+        self.aInsEllipsis.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_HELLIP))
         self.mainGui.addAction(self.aInsEllipsis)
 
         # Insert > Prime
         self.aInsPrime = qtAddAction(self.mInsPunct, self.tr("Prime"))
         self.aInsPrime.setShortcut("Ctrl+K, Ctrl+'")
-        self.aInsPrime.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_PRIME)
-        )
+        self.aInsPrime.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_PRIME))
         self.mainGui.addAction(self.aInsPrime)
 
         # Insert > Double Prime
         self.aInsDPrime = qtAddAction(self.mInsPunct, self.tr("Double Prime"))
         self.aInsDPrime.setShortcut('Ctrl+K, Ctrl+"')
-        self.aInsDPrime.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_DPRIME)
-        )
+        self.aInsDPrime.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_DPRIME))
         self.mainGui.addAction(self.aInsDPrime)
 
         # Insert > White Spaces
@@ -486,25 +446,19 @@ class GuiMainMenu(QMenuBar):
         # Insert > Non-Breaking Space
         self.aInsNBSpace = qtAddAction(self.mInsSpace, self.tr("Non-Breaking Space"))
         self.aInsNBSpace.setShortcut("Ctrl+K, Space")
-        self.aInsNBSpace.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_NBSP)
-        )
+        self.aInsNBSpace.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_NBSP))
         self.mainGui.addAction(self.aInsNBSpace)
 
         # Insert > Thin Space
         self.aInsThinSpace = qtAddAction(self.mInsSpace, self.tr("Thin Space"))
         self.aInsThinSpace.setShortcut("Ctrl+K, Shift+Space")
-        self.aInsThinSpace.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_THSP)
-        )
+        self.aInsThinSpace.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_THSP))
         self.mainGui.addAction(self.aInsThinSpace)
 
         # Insert > Thin Non-Breaking Space
         self.aInsThinNBSpace = qtAddAction(self.mInsSpace, self.tr("Thin Non-Breaking Space"))
         self.aInsThinNBSpace.setShortcut("Ctrl+K, Ctrl+Space")
-        self.aInsThinNBSpace.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_THNBSP)
-        )
+        self.aInsThinNBSpace.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_THNBSP))
         self.mainGui.addAction(self.aInsThinNBSpace)
 
         # Insert > Symbols
@@ -513,65 +467,49 @@ class GuiMainMenu(QMenuBar):
         # Insert > List Bullet
         self.aInsBullet = qtAddAction(self.mInsSymbol, self.tr("List Bullet"))
         self.aInsBullet.setShortcut("Ctrl+K, *")
-        self.aInsBullet.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_BULL)
-        )
+        self.aInsBullet.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_BULL))
         self.mainGui.addAction(self.aInsBullet)
 
         # Insert > Hyphen Bullet
         self.aInsHyBull = qtAddAction(self.mInsSymbol, self.tr("Hyphen Bullet"))
         self.aInsHyBull.setShortcut("Ctrl+K, Ctrl+-")
-        self.aInsHyBull.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_HYBULL)
-        )
+        self.aInsHyBull.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_HYBULL))
         self.mainGui.addAction(self.aInsHyBull)
 
         # Insert > Flower Mark
         self.aInsFlower = qtAddAction(self.mInsSymbol, self.tr("Flower Mark"))
         self.aInsFlower.setShortcut("Ctrl+K, Ctrl+*")
-        self.aInsFlower.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_FLOWER)
-        )
+        self.aInsFlower.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_FLOWER))
         self.mainGui.addAction(self.aInsFlower)
 
         # Insert > Per Mille
         self.aInsPerMille = qtAddAction(self.mInsSymbol, self.tr("Per Mille"))
         self.aInsPerMille.setShortcut("Ctrl+K, %")
-        self.aInsPerMille.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_PERMIL)
-        )
+        self.aInsPerMille.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_PERMIL))
         self.mainGui.addAction(self.aInsPerMille)
 
         # Insert > Degree Symbol
         self.aInsDegree = qtAddAction(self.mInsSymbol, self.tr("Degree Symbol"))
         self.aInsDegree.setShortcut("Ctrl+K, Ctrl+O")
-        self.aInsDegree.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_DEGREE)
-        )
+        self.aInsDegree.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_DEGREE))
         self.mainGui.addAction(self.aInsDegree)
 
         # Insert > Minus Sign
         self.aInsMinus = qtAddAction(self.mInsSymbol, self.tr("Minus Sign"))
         self.aInsMinus.setShortcut("Ctrl+K, Ctrl+M")
-        self.aInsMinus.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_MINUS)
-        )
+        self.aInsMinus.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_MINUS))
         self.mainGui.addAction(self.aInsMinus)
 
         # Insert > Times Sign
         self.aInsTimes = qtAddAction(self.mInsSymbol, self.tr("Times Sign"))
         self.aInsTimes.setShortcut("Ctrl+K, Ctrl+X")
-        self.aInsTimes.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_TIMES)
-        )
+        self.aInsTimes.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_TIMES))
         self.mainGui.addAction(self.aInsTimes)
 
         # Insert > Division
         self.aInsDivide = qtAddAction(self.mInsSymbol, self.tr("Division Sign"))
         self.aInsDivide.setShortcut("Ctrl+K, Ctrl+D")
-        self.aInsDivide.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_DIVIDE)
-        )
+        self.aInsDivide.triggered.connect(lambda: self.requestDocInsertText.emit(nwUnicode.U_DIVIDE))
         self.mainGui.addAction(self.aInsDivide)
 
         # Insert > Tags and References
@@ -588,17 +526,13 @@ class GuiMainMenu(QMenuBar):
         # Insert > Synopsis Comment
         self.aInsSynopsis = qtAddAction(self.mInsComments, self.tr("Synopsis Comment"))
         self.aInsSynopsis.setShortcut("Ctrl+K, S")
-        self.aInsSynopsis.triggered.connect(
-            lambda: self.requestDocInsert.emit(nwDocInsert.SYNOPSIS)
-        )
+        self.aInsSynopsis.triggered.connect(lambda: self.requestDocInsert.emit(nwDocInsert.SYNOPSIS))
         self.mainGui.addAction(self.aInsSynopsis)
 
         # Insert > Short Description Comment
         self.aInsShort = qtAddAction(self.mInsComments, self.tr("Short Description Comment"))
         self.aInsShort.setShortcut("Ctrl+K, H")
-        self.aInsShort.triggered.connect(
-            lambda: self.requestDocInsert.emit(nwDocInsert.SHORT)
-        )
+        self.aInsShort.triggered.connect(lambda: self.requestDocInsert.emit(nwDocInsert.SHORT))
         self.mainGui.addAction(self.aInsShort)
 
         # Insert > Word/Character Count
@@ -613,39 +547,27 @@ class GuiMainMenu(QMenuBar):
 
         # Insert > New Page
         self.aInsNewPage = qtAddAction(self.mInsBreaks, self.tr("Page Break"))
-        self.aInsNewPage.triggered.connect(
-            lambda: self.requestDocInsert.emit(nwDocInsert.NEW_PAGE)
-        )
+        self.aInsNewPage.triggered.connect(lambda: self.requestDocInsert.emit(nwDocInsert.NEW_PAGE))
 
         # Insert > Forced Line Break
         self.aInsLineBreak = qtAddAction(self.mInsBreaks, self.tr("Forced Line Break"))
-        self.aInsLineBreak.triggered.connect(
-            lambda: self.requestDocInsert.emit(nwDocInsert.LINE_BRK)
-        )
+        self.aInsLineBreak.triggered.connect(lambda: self.requestDocInsert.emit(nwDocInsert.LINE_BRK))
 
         # Insert > Vertical Space (Single)
         self.aInsVSpaceS = qtAddAction(self.mInsBreaks, self.tr("Vertical Space (Single)"))
-        self.aInsVSpaceS.triggered.connect(
-            lambda: self.requestDocInsert.emit(nwDocInsert.VSPACE_S)
-        )
+        self.aInsVSpaceS.triggered.connect(lambda: self.requestDocInsert.emit(nwDocInsert.VSPACE_S))
 
         # Insert > Vertical Space (Multi)
         self.aInsVSpaceM = qtAddAction(self.mInsBreaks, self.tr("Vertical Space (Multi)"))
-        self.aInsVSpaceM.triggered.connect(
-            lambda: self.requestDocInsert.emit(nwDocInsert.VSPACE_M)
-        )
+        self.aInsVSpaceM.triggered.connect(lambda: self.requestDocInsert.emit(nwDocInsert.VSPACE_M))
 
         # Insert > Placeholder Text
         self.aLipsumText = qtAddAction(self.insMenu, self.tr("Placeholder Text"))
-        self.aLipsumText.triggered.connect(
-            lambda: self.requestDocInsert.emit(nwDocInsert.LIPSUM)
-        )
+        self.aLipsumText.triggered.connect(lambda: self.requestDocInsert.emit(nwDocInsert.LIPSUM))
 
         # Insert > Footnote
         self.aFootnote = qtAddAction(self.insMenu, self.tr("Footnote"))
-        self.aFootnote.triggered.connect(
-            lambda: self.requestDocInsert.emit(nwDocInsert.FOOTNOTE)
-        )
+        self.aFootnote.triggered.connect(lambda: self.requestDocInsert.emit(nwDocInsert.FOOTNOTE))
 
     def _buildFormatMenu(self) -> None:
         """Assemble the Format menu."""
@@ -655,33 +577,25 @@ class GuiMainMenu(QMenuBar):
         # Format > Bold
         self.aFmtBold = qtAddAction(self.fmtMenu, self.tr("Bold"))
         self.aFmtBold.setShortcut("Ctrl+B")
-        self.aFmtBold.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.MD_BOLD)
-        )
+        self.aFmtBold.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.MD_BOLD))
         self.mainGui.addAction(self.aFmtBold)
 
         # Format > Italic
         self.aFmtItalic = qtAddAction(self.fmtMenu, self.tr("Italic"))
         self.aFmtItalic.setShortcut("Ctrl+I")
-        self.aFmtItalic.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.MD_ITALIC)
-        )
+        self.aFmtItalic.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.MD_ITALIC))
         self.mainGui.addAction(self.aFmtItalic)
 
         # Format > Strikethrough
         self.aFmtStrike = qtAddAction(self.fmtMenu, self.tr("Strikethrough"))
         self.aFmtStrike.setShortcut("Ctrl+D")
-        self.aFmtStrike.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.MD_STRIKE)
-        )
+        self.aFmtStrike.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.MD_STRIKE))
         self.mainGui.addAction(self.aFmtStrike)
 
         # Format > Highlight
         self.aFmtMark = qtAddAction(self.fmtMenu, self.tr("Highlight"))
         self.aFmtMark.setShortcut("Ctrl+M")
-        self.aFmtMark.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.MD_MARK)
-        )
+        self.aFmtMark.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.MD_MARK))
         self.mainGui.addAction(self.aFmtStrike)
 
         # Edit > Separator
@@ -690,17 +604,13 @@ class GuiMainMenu(QMenuBar):
         # Format > Double Quotes
         self.aFmtDQuote = qtAddAction(self.fmtMenu, self.tr("Wrap Double Quotes"))
         self.aFmtDQuote.setShortcut('Ctrl+"')
-        self.aFmtDQuote.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.D_QUOTE)
-        )
+        self.aFmtDQuote.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.D_QUOTE))
         self.mainGui.addAction(self.aFmtDQuote)
 
         # Format > Single Quotes
         self.aFmtSQuote = qtAddAction(self.fmtMenu, self.tr("Wrap Single Quotes"))
         self.aFmtSQuote.setShortcut("Ctrl+'")
-        self.aFmtSQuote.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.S_QUOTE)
-        )
+        self.aFmtSQuote.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.S_QUOTE))
         self.mainGui.addAction(self.aFmtSQuote)
 
         # Format > Separator
@@ -711,45 +621,31 @@ class GuiMainMenu(QMenuBar):
 
         # Shortcode Bold
         self.aScBold = qtAddAction(self.mShortcodes, self.tr("Bold (Shortcode)"))
-        self.aScBold.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_BOLD)
-        )
+        self.aScBold.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.SC_BOLD))
 
         # Shortcode Italic
         self.aScItalic = qtAddAction(self.mShortcodes, self.tr("Italics (Shortcode)"))
-        self.aScItalic.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_ITALIC)
-        )
+        self.aScItalic.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.SC_ITALIC))
 
         # Shortcode Strikethrough
         self.aScStrike = qtAddAction(self.mShortcodes, self.tr("Strikethrough (Shortcode)"))
-        self.aScStrike.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_STRIKE)
-        )
+        self.aScStrike.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.SC_STRIKE))
 
         # Shortcode Underline
         self.aScULine = qtAddAction(self.mShortcodes, self.tr("Underline"))
-        self.aScULine.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_ULINE)
-        )
+        self.aScULine.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.SC_ULINE))
 
         # Shortcode Mark
         self.aScMark = qtAddAction(self.mShortcodes, self.tr("Highlight"))
-        self.aScMark.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_MARK)
-        )
+        self.aScMark.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.SC_MARK))
 
         # Shortcode Superscript
         self.aScSuper = qtAddAction(self.mShortcodes, self.tr("Superscript"))
-        self.aScSuper.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_SUP)
-        )
+        self.aScSuper.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.SC_SUP))
 
         # Shortcode Subscript
         self.aScSub = qtAddAction(self.mShortcodes, self.tr("Subscript"))
-        self.aScSub.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_SUB)
-        )
+        self.aScSub.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.SC_SUB))
 
         # Format > Separator
         self.fmtMenu.addSeparator()
@@ -757,33 +653,25 @@ class GuiMainMenu(QMenuBar):
         # Format > Heading 1 (Partition)
         self.aFmtHead1 = qtAddAction(self.fmtMenu, trConst(nwStyles.T_LABEL["H1"]))
         self.aFmtHead1.setShortcut("Ctrl+1")
-        self.aFmtHead1.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H1)
-        )
+        self.aFmtHead1.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H1))
         self.mainGui.addAction(self.aFmtHead1)
 
         # Format > Heading 2 (Chapter)
         self.aFmtHead2 = qtAddAction(self.fmtMenu, trConst(nwStyles.T_LABEL["H2"]))
         self.aFmtHead2.setShortcut("Ctrl+2")
-        self.aFmtHead2.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H2)
-        )
+        self.aFmtHead2.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H2))
         self.mainGui.addAction(self.aFmtHead2)
 
         # Format > Heading 3 (Scene)
         self.aFmtHead3 = qtAddAction(self.fmtMenu, trConst(nwStyles.T_LABEL["H3"]))
         self.aFmtHead3.setShortcut("Ctrl+3")
-        self.aFmtHead3.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H3)
-        )
+        self.aFmtHead3.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H3))
         self.mainGui.addAction(self.aFmtHead3)
 
         # Format > Heading 4 (Section)
         self.aFmtHead4 = qtAddAction(self.fmtMenu, trConst(nwStyles.T_LABEL["H4"]))
         self.aFmtHead4.setShortcut("Ctrl+4")
-        self.aFmtHead4.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H4)
-        )
+        self.aFmtHead4.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H4))
         self.mainGui.addAction(self.aFmtHead4)
 
         # Format > Separator
@@ -791,21 +679,15 @@ class GuiMainMenu(QMenuBar):
 
         # Format > Novel Title
         self.aFmtTitle = qtAddAction(self.fmtMenu, self.tr("Novel Title"))
-        self.aFmtTitle.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.BLOCK_TTL)
-        )
+        self.aFmtTitle.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.BLOCK_TTL))
 
         # Format > Unnumbered Chapter
         self.aFmtUnNum = qtAddAction(self.fmtMenu, self.tr("Unnumbered Chapter"))
-        self.aFmtUnNum.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.BLOCK_UNN)
-        )
+        self.aFmtUnNum.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.BLOCK_UNN))
 
         # Format > Alternative Scene
         self.aFmtHardSc = qtAddAction(self.fmtMenu, self.tr("Alternative Scene"))
-        self.aFmtHardSc.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.BLOCK_HSC)
-        )
+        self.aFmtHardSc.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.BLOCK_HSC))
 
         # Format > Separator
         self.fmtMenu.addSeparator()
@@ -813,25 +695,19 @@ class GuiMainMenu(QMenuBar):
         # Format > Align Left
         self.aFmtAlignLeft = qtAddAction(self.fmtMenu, self.tr("Align Left"))
         self.aFmtAlignLeft.setShortcut("Ctrl+5")
-        self.aFmtAlignLeft.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.ALIGN_L)
-        )
+        self.aFmtAlignLeft.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.ALIGN_L))
         self.mainGui.addAction(self.aFmtAlignLeft)
 
         # Format > Align Centre
         self.aFmtAlignCentre = qtAddAction(self.fmtMenu, self.tr("Align Centre"))
         self.aFmtAlignCentre.setShortcut("Ctrl+6")
-        self.aFmtAlignCentre.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.ALIGN_C)
-        )
+        self.aFmtAlignCentre.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.ALIGN_C))
         self.mainGui.addAction(self.aFmtAlignCentre)
 
         # Format > Align Right
         self.aFmtAlignRight = qtAddAction(self.fmtMenu, self.tr("Align Right"))
         self.aFmtAlignRight.setShortcut("Ctrl+7")
-        self.aFmtAlignRight.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.ALIGN_R)
-        )
+        self.aFmtAlignRight.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.ALIGN_R))
         self.mainGui.addAction(self.aFmtAlignRight)
 
         # Format > Separator
@@ -840,17 +716,13 @@ class GuiMainMenu(QMenuBar):
         # Format > Indent Left
         self.aFmtIndentLeft = qtAddAction(self.fmtMenu, self.tr("Indent Left"))
         self.aFmtIndentLeft.setShortcut("Ctrl+8")
-        self.aFmtIndentLeft.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.INDENT_L)
-        )
+        self.aFmtIndentLeft.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.INDENT_L))
         self.mainGui.addAction(self.aFmtIndentLeft)
 
         # Format > Indent Right
         self.aFmtIndentRight = qtAddAction(self.fmtMenu, self.tr("Indent Right"))
         self.aFmtIndentRight.setShortcut("Ctrl+9")
-        self.aFmtIndentRight.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.INDENT_R)
-        )
+        self.aFmtIndentRight.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.INDENT_R))
         self.mainGui.addAction(self.aFmtIndentRight)
 
         # Format > Separator
@@ -859,24 +731,18 @@ class GuiMainMenu(QMenuBar):
         # Format > Comment
         self.aFmtComment = qtAddAction(self.fmtMenu, self.tr("Toggle Comment"))
         self.aFmtComment.setShortcut("Ctrl+/")
-        self.aFmtComment.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.BLOCK_COM)
-        )
+        self.aFmtComment.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.BLOCK_COM))
         self.mainGui.addAction(self.aFmtComment)
 
         # Format > Ignore Text
         self.aFmtIgnore = qtAddAction(self.fmtMenu, self.tr("Toggle Ignore Text"))
         self.aFmtIgnore.setShortcut("Ctrl+Shift+D")
-        self.aFmtIgnore.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.BLOCK_IGN)
-        )
+        self.aFmtIgnore.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.BLOCK_IGN))
 
         # Format > Remove Block Format
         self.aFmtNoFormat = qtAddAction(self.fmtMenu, self.tr("Remove Block Format"))
         self.aFmtNoFormat.setShortcuts(["Ctrl+0", "Ctrl+Shift+/"])
-        self.aFmtNoFormat.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.BLOCK_TXT)
-        )
+        self.aFmtNoFormat.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.BLOCK_TXT))
         self.mainGui.addAction(self.aFmtNoFormat)
 
         # Format > Separator
@@ -884,21 +750,15 @@ class GuiMainMenu(QMenuBar):
 
         # Format > Replace Straight Single Quotes
         self.aFmtReplSng = qtAddAction(self.fmtMenu, self.tr("Replace Straight Single Quotes"))
-        self.aFmtReplSng.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.REPL_SNG)
-        )
+        self.aFmtReplSng.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.REPL_SNG))
 
         # Format > Replace Straight Double Quotes
         self.aFmtReplDbl = qtAddAction(self.fmtMenu, self.tr("Replace Straight Double Quotes"))
-        self.aFmtReplDbl.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.REPL_DBL)
-        )
+        self.aFmtReplDbl.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.REPL_DBL))
 
         # Format > Remove In-Paragraph Breaks
         self.aFmtRmBreaks = qtAddAction(self.fmtMenu, self.tr("Remove In-Paragraph Breaks"))
-        self.aFmtRmBreaks.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.RM_BREAKS)
-        )
+        self.aFmtRmBreaks.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.RM_BREAKS))
 
     def _buildSearchMenu(self) -> None:
         """Assemble the Search menu."""
@@ -925,9 +785,7 @@ class GuiMainMenu(QMenuBar):
 
         # Search > Find Prev
         self.aFindPrev = qtAddAction(self.srcMenu, self.tr("Find Previous"))
-        self.aFindPrev.setShortcuts(
-            ["Ctrl+Shift+G", "Shift+F3"] if CONFIG.osDarwin else ["Shift+F3", "Ctrl+Shift+G"]
-        )
+        self.aFindPrev.setShortcuts(["Ctrl+Shift+G", "Shift+F3"] if CONFIG.osDarwin else ["Shift+F3", "Ctrl+Shift+G"])
         self.aFindPrev.triggered.connect(qtLambda(self.mainGui.docEditor.findNext, goBack=True))
         self.mainGui.addAction(self.aFindPrev)
 
