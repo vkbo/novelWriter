@@ -141,6 +141,7 @@ class GuiProjectSettings(NDialog):
         logger.debug("Ready: GuiProjectSettings")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiProjectSettings")
 
     ##

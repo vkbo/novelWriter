@@ -61,6 +61,7 @@ class NovelModel(QAbstractTableModel):
         self._extraLabel = ""
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NovelModel")
 
     ##

@@ -55,6 +55,7 @@ class NWSpellEnchant:
         logger.debug("Ready: NWSpellEnchant")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NWSpellEnchant")
 
     ##
@@ -196,9 +197,11 @@ class UserDictionary:
         self._words = set()
 
     def __contains__(self, word: str) -> bool:
+        """Return True if the word is in the dictionary."""
         return word in self._words
 
     def __iter__(self) -> Iterator[str]:
+        """Return an iterator over the words in the dictionary."""
         return iter(self._words)
 
     def add(self, word: str) -> bool:

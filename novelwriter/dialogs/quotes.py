@@ -115,6 +115,7 @@ class GuiQuoteSelect(NDialog):
         logger.debug("Ready: GuiQuoteSelect")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiQuoteSelect")
 
     @property

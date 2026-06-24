@@ -71,6 +71,7 @@ class NWTree:
         logger.debug("Ready: NWTree")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NWTree")
 
     def __len__(self) -> int:

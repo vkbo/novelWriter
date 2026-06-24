@@ -234,6 +234,7 @@ class GuiManuscriptBuild(NDialog):
         logger.debug("Ready: GuiManuscriptBuild")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiManuscriptBuild")
 
     ##

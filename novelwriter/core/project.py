@@ -96,6 +96,7 @@ class NWProject:
         logger.debug("Ready: NWProject")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NWProject")
 
     def clear(self) -> None:

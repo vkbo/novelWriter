@@ -130,6 +130,7 @@ class GuiWordList(NDialog):
         logger.debug("Ready: GuiWordList")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiWordList")
 
     ##

@@ -134,6 +134,7 @@ class GuiDictionaries(NNonBlockingDialog):
         logger.debug("Ready: GuiDictionaries")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiDictionaries")
 
     def initDialog(self) -> bool:

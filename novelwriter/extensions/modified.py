@@ -120,6 +120,7 @@ class NFontDialog(QFontDialog):
         logger.debug("Ready: NFontDialog")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NFontDialog")
 
     @staticmethod

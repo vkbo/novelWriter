@@ -144,6 +144,7 @@ class GuiDocSplit(NDialog):
         logger.debug("Ready: GuiDocSplit")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiDocSplit")
 
     def data(self) -> tuple[dict, list[str]]:

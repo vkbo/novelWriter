@@ -178,6 +178,7 @@ class GuiBuildSettings(NToolDialog):
         logger.debug("Ready: GuiBuildSettings")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiBuildSettings")
 
     def loadContent(self) -> None:

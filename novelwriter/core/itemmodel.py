@@ -107,6 +107,7 @@ class ProjectNode:
         self.updateCount()
 
     def __repr__(self) -> str:
+        """Return a string representation of the node."""
         return (
             f"<ProjectNode handle={self._item.itemHandle} "
             f"parent={self._parent.item.itemHandle if self._parent else None} "
@@ -115,6 +116,7 @@ class ProjectNode:
         )
 
     def __bool__(self) -> bool:
+        """Return True if the node is valid."""
         # A node should always evaluate to True.
         return True
 
@@ -300,6 +302,7 @@ class ProjectModel(QAbstractItemModel):
         logger.debug("Ready: ProjectModel")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: ProjectModel")
 
     ##

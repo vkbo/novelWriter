@@ -82,6 +82,7 @@ class NWItem:
         self._charInit  = 0     # Initial word count
 
     def __repr__(self) -> str:
+        """Return a string representation of the item."""
         return f"<NWItem handle={self._handle}, parent={self._parent}, name='{self._name}'>"
 
     def __bool__(self) -> bool:

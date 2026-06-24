@@ -151,6 +151,7 @@ class DocSplitter:
             self._srcItem = srcItem
 
     def __len__(self) -> int:
+        """Return the number of raw data entries."""
         return len(self._rawData)
 
     ##

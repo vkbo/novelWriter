@@ -242,6 +242,7 @@ class GuiManuscript(NToolDialog):
         logger.debug("Ready: GuiManuscript")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiManuscript")
 
     def loadContent(self) -> None:

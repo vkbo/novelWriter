@@ -83,7 +83,12 @@ class NWStatus:
         self._prefix = prefix[:1]
         self._height = SHARED.theme.baseIconHeight
 
+    def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
+        logger.debug("Delete: NWStatus")
+
     def __len__(self) -> int:
+        """Return the number of entries in the status list."""
         return len(self._store)
 
     def __getitem__(self, key: str | None) -> StatusEntry:

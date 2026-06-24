@@ -59,6 +59,7 @@ class NSplashScreen(QSplashScreen):
         self._text = ""
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NSplashScreen")
 
     def drawContents(self, painter: QPainter) -> None:

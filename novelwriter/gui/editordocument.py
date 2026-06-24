@@ -55,6 +55,7 @@ class GuiTextDocument(QTextDocument):
         logger.debug("Ready: GuiTextDocument")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiTextDocument")
 
     ##

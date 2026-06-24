@@ -311,6 +311,7 @@ class GuiWritingStats(NToolDialog):
         logger.debug("Ready: GuiWritingStats")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiWritingStats")
 
     def populateGUI(self) -> None:

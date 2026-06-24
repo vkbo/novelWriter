@@ -109,7 +109,6 @@ select = [
 ]
 ignore = [
     "ANN401",  # any-type
-    "D105",    # undocumented-magic-method
     "D107",    # undocumented-public-init
     "D203",    # incorrect-blank-line-before-class
     "D205",    # missing-blank-line-after-summary
@@ -135,7 +134,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["ANN", "SLF", "TC", "PLC2701", "D101", "D102"]
+"tests/*" = ["ANN", "SLF", "TC", "PLC2701", "D101", "D102", "D105"]
 "utils/*" = ["ANN", "SLF", "TC"]
 
 [tool.ruff.lint.pydocstyle]

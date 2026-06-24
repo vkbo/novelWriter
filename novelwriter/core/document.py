@@ -66,9 +66,11 @@ class NWDocument:
             self._item = self._project.tree[tHandle]
 
     def __repr__(self) -> str:
+        """Return a string representation of the document."""
         return f"<NWDocument handle={self._handle}>"
 
     def __bool__(self) -> bool:
+        """Return True if the document has a valid handle and item."""
         return self._handle is not None and self._item is not None
 
     ##

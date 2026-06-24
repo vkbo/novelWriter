@@ -64,15 +64,19 @@ class IndexNode:
         self._count = 0
 
     def __repr__(self) -> str:
+        """Return a string representation of the index node."""
         return f"<IndexNode handle='{self._handle}'>"
 
     def __len__(self) -> int:
+        """Return the number of headings in the index node."""
         return len(self._headings)
 
     def __getitem__(self, sTitle: str) -> IndexHeading | None:
+        """Return the IndexHeading for the given title."""
         return self._headings.get(sTitle, None)
 
     def __contains__(self, sTitle: str) -> bool:
+        """Return True if the given title is in the index node."""
         return sTitle in self._headings
 
     ##
@@ -212,6 +216,7 @@ class IndexHeading:
         self._comments: dict[str, str] = {}
 
     def __repr__(self) -> str:
+        """Return a string representation of the index heading."""
         return f"<IndexHeading key='{self._key}'>"
 
     ##

@@ -115,6 +115,7 @@ class GuiDocMerge(NDialog):
         logger.debug("Ready: GuiDocMerge")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiDocMerge")
 
     def data(self) -> dict:

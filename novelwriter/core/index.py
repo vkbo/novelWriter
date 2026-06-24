@@ -104,6 +104,7 @@ class Index:
         self._rootChange = {}
 
     def __repr__(self) -> str:
+        """Return a string representation of the index."""
         return f"<Index project='{self._project.data.name}'>"
 
     ##
@@ -784,12 +785,15 @@ class TagsIndex:
         self._tags: dict[str, dict[str, str]] = {}
 
     def __contains__(self, tagKey: str) -> bool:
+        """Return True if the given tag key is in the index."""
         return tagKey.lower() in self._tags
 
     def __delitem__(self, tagKey: str) -> None:
+        """Delete the data dictionary for a given tag key."""
         self._tags.pop(tagKey.lower(), None)
 
     def __getitem__(self, tagKey: str) -> dict | None:
+        """Return the data dictionary for a given tag key."""
         return self._tags.get(tagKey.lower(), None)
 
     ##
@@ -932,12 +936,15 @@ class ItemIndex:
         self._items: dict[str, IndexNode] = {}
 
     def __contains__(self, tHandle: str) -> bool:
+        """Return True if the given handle is in the index."""
         return tHandle in self._items
 
     def __delitem__(self, tHandle: str) -> None:
+        """Delete the IndexNode for the given handle."""
         self._items.pop(tHandle, None)
 
     def __getitem__(self, tHandle: str) -> IndexNode | None:
+        """Return the IndexNode for the given handle."""
         return self._items.get(tHandle, None)
 
     ##
