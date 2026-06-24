@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from time import sleep
@@ -43,8 +44,10 @@ def testExtProgressBars_NProgressCircle(qtbot):
 
     dialog.resize(200, 200)
     progress.setColors(
-        QColor(255, 255, 255), QColor(255, 192, 192),
-        QColor(255, 0, 0), QColor(0, 0, 0),
+        QColor(255, 255, 255),
+        QColor(255, 192, 192),
+        QColor(255, 0, 0),
+        QColor(0, 0, 0),
     )
 
     progress.setMaximum(100)

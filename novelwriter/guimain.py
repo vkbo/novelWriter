@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -30,8 +31,15 @@ from time import time
 from PyQt6.QtCore import QEvent, Qt, QTimer, pyqtSlot
 from PyQt6.QtGui import QCloseEvent, QCursor, QIcon, QShortcut
 from PyQt6.QtWidgets import (
-    QApplication, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox,
-    QSplitter, QStackedWidget, QVBoxLayout, QWidget
+    QApplication,
+    QFileDialog,
+    QHBoxLayout,
+    QMainWindow,
+    QMessageBox,
+    QSplitter,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__
@@ -41,9 +49,7 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
-from novelwriter.enum import (
-    nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView, nwVimMode
-)
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView, nwVimMode
 from novelwriter.extensions.progressbars import NProgressSimple
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.docviewer import GuiDocViewer
@@ -111,17 +117,17 @@ class GuiMain(QMainWindow):
         # =============
 
         # Main GUI Elements
-        self.mainStatus     = GuiMainStatus(self)
-        self.projView       = GuiProjectView(self)
-        self.projSearch     = GuiProjectSearch(self)
-        self.novelView      = GuiNovelView(self)
-        self.docEditor      = GuiDocEditor(self)
-        self.docViewer      = GuiDocViewer(self)
+        self.mainStatus = GuiMainStatus(self)
+        self.projView = GuiProjectView(self)
+        self.projSearch = GuiProjectSearch(self)
+        self.novelView = GuiNovelView(self)
+        self.docEditor = GuiDocEditor(self)
+        self.docViewer = GuiDocViewer(self)
         self.docViewerPanel = GuiDocViewerPanel(self)
-        self.itemDetails    = GuiItemDetails(self)
-        self.outlineView    = GuiOutlineView(self)
-        self.mainMenu       = GuiMainMenu(self)
-        self.sideBar        = GuiSideBar(self)
+        self.itemDetails = GuiItemDetails(self)
+        self.outlineView = GuiOutlineView(self)
+        self.mainMenu = GuiMainMenu(self)
+        self.sideBar = GuiSideBar(self)
 
         # Project Tree Stack
         self.projStack = QStackedWidget(self)
@@ -312,8 +318,8 @@ class GuiMain(QMainWindow):
 
     def initMain(self) -> None:
         """Initialise elements that depend on user settings."""
-        self.asProjTimer.setInterval(int(CONFIG.autoSaveProj*1000))
-        self.asDocTimer.setInterval(int(CONFIG.autoSaveDoc*1000))
+        self.asProjTimer.setInterval(int(CONFIG.autoSaveProj * 1000))
+        self.asDocTimer.setInterval(int(CONFIG.autoSaveDoc * 1000))
 
     def postLaunchTasks(self, cmdOpen: str | None) -> None:
         """Process tasks after the main window has been created."""
@@ -337,14 +343,14 @@ class GuiMain(QMainWindow):
         # If this is a new release, let the user know
         if hexToInt(CONFIG.lastNotes) < hexToInt(__hexversion__):
             CONFIG.lastNotes = __hexversion__
-            SHARED.info([
-                self.tr(
-                    "You are now running novelWriter version {0}."
-                ).format(formatVersion(__version__)),
-                self.tr(
-                    "Please check the {0}release notes{1} for further details."
-                ).format(f"<a href='{nwConst.URL_RELEASES}'>", "</a>")
-            ])
+            SHARED.info(
+                [
+                    self.tr("You are now running novelWriter version {0}.").format(formatVersion(__version__)),
+                    self.tr("Please check the {0}release notes{1} for further details.").format(
+                        f"<a href='{nwConst.URL_RELEASES}'>", "</a>"
+                    ),
+                ]
+            )
 
     ##
     #  Project Actions
@@ -360,10 +366,12 @@ class GuiMain(QMainWindow):
             return True
 
         if not isYes:
-            msgYes = SHARED.question([
-                self.tr("Close the current project?"),
-                self.tr("Changes are saved automatically."),
-            ])
+            msgYes = SHARED.question(
+                [
+                    self.tr("Close the current project?"),
+                    self.tr("Changes are saved automatically."),
+                ]
+            )
             if not msgYes:
                 return False
 
@@ -434,11 +442,12 @@ class GuiMain(QMainWindow):
             )
             try:
                 lockDetails = self.tr(
-                    "The project was locked by the computer "
-                    "'{0}' ({1} {2}), last active on {3}."
+                    "The project was locked by the computer '{0}' ({1} {2}), last active on {3}."
                 ).format(
-                    lockStatus[0], lockStatus[1], lockStatus[2],
-                    CONFIG.localDateTime(datetime.fromtimestamp(int(lockStatus[3])))
+                    lockStatus[0],
+                    lockStatus[1],
+                    lockStatus[2],
+                    CONFIG.localDateTime(datetime.fromtimestamp(int(lockStatus[3]))),
                 )
             except Exception:
                 lockDetails = ""
@@ -488,7 +497,7 @@ class GuiMain(QMainWindow):
         SHARED.project.setProjectChanged(False)
         SHARED.reportSpellCheckStatus()
 
-        logger.debug("Project loaded in %.3f ms", (time() - tStart)*1000)
+        logger.debug("Project loaded in %.3f ms", (time() - tStart) * 1000)
 
         return True
 
@@ -517,7 +526,7 @@ class GuiMain(QMainWindow):
         tLine: int | None = None,
         sTitle: str | None = None,
         changeFocus: bool = True,
-        doScroll: bool = False
+        doScroll: bool = False,
     ) -> bool:
         """Open a specific document, optionally at a given line."""
         if not (SHARED.hasProject and tHandle):
@@ -553,11 +562,9 @@ class GuiMain(QMainWindow):
             try:
                 currIdx = allDocs.index(tHandle)
                 nHandle = (
-                    (allDocs[-1] if wrapAround else None)
-                    if currIdx == 0 else allDocs[currIdx - 1]
-                ) if goBack else (
-                    (allDocs[0] if wrapAround else None)
-                    if currIdx == len(allDocs) - 1 else allDocs[currIdx + 1]
+                    ((allDocs[-1] if wrapAround else None) if currIdx == 0 else allDocs[currIdx - 1])
+                    if goBack
+                    else ((allDocs[0] if wrapAround else None) if currIdx == len(allDocs) - 1 else allDocs[currIdx + 1])
                 )
                 if nHandle is not None:
                     self.openDocument(nHandle, tLine=(-1 if goBack else 1), doScroll=True)
@@ -615,7 +622,7 @@ class GuiMain(QMainWindow):
                 bPos = self.splitMain.sizes()
                 self.splitView.setVisible(True)
                 vPos = [0, 0]
-                vPos[0] = int(bPos[1]/2)
+                vPos[0] = int(bPos[1] / 2)
                 vPos[1] = bPos[1] - vPos[0]
                 self.splitDocs.setSizes(vPos)
                 self.docViewerPanel.setVisible(CONFIG.showViewerPanel)
@@ -640,9 +647,7 @@ class GuiMain(QMainWindow):
 
         lastPath = CONFIG.lastPath("import")
         ffilter = formatFileFilter(["*.txt", "*.md", "*.nwd", "*"])
-        loadFile, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Import File"), str(lastPath), filter=ffilter
-        )
+        loadFile, _ = QFileDialog.getOpenFileName(self, self.tr("Import File"), str(lastPath), filter=ffilter)
         if not loadFile:
             return False
 
@@ -655,22 +660,19 @@ class GuiMain(QMainWindow):
                 text = inFile.read()
             CONFIG.setLastPath("import", loadFile)
         except Exception as exc:
-            SHARED.error(self.tr(
-                "Could not read file. The file must be an existing text file."
-            ), exc=exc)
+            SHARED.error(self.tr("Could not read file. The file must be an existing text file."), exc=exc)
             return False
 
         if self.docEditor.docHandle is None:
-            SHARED.error(self.tr(
-                "Please open a document to import the text file into."
-            ))
+            SHARED.error(self.tr("Please open a document to import the text file into."))
             return False
 
         if not self.docEditor.isEmpty:
-            msgYes = SHARED.question(self.tr(
-                "Importing the file will overwrite the current content of "
-                "the document. Do you want to proceed?"
-            ))
+            msgYes = SHARED.question(
+                self.tr(
+                    "Importing the file will overwrite the current content of the document. Do you want to proceed?"
+                )
+            )
             if not msgYes:
                 return False
 
@@ -721,7 +723,7 @@ class GuiMain(QMainWindow):
 
             tEnd = time()
             self.mainStatus.setStatusMessage(
-                self.tr("Indexing completed in {0} ms").format(f"{(tEnd - tStart)*1000.0:.1f}")
+                self.tr("Indexing completed in {0} ms").format(f"{(tEnd - tStart) * 1000.0:.1f}")
             )
             self._updateStatusWordCount()
             QApplication.restoreOverrideCursor()
@@ -823,10 +825,16 @@ class GuiMain(QMainWindow):
 
     def closeMain(self) -> bool:
         """Save everything, and close novelWriter."""
-        if SHARED.hasProject and CONFIG.askBeforeExit and not SHARED.question([
-            self.tr("Do you want to exit novelWriter?"),
-            self.tr("Changes are saved automatically."),
-        ]):
+        if (
+            SHARED.hasProject
+            and CONFIG.askBeforeExit
+            and not SHARED.question(
+                [
+                    self.tr("Do you want to exit novelWriter?"),
+                    self.tr("Changes are saved automatically."),
+                ]
+            )
+        ):
             return False
 
         logger.info("Exiting novelWriter")
@@ -1064,9 +1072,7 @@ class GuiMain(QMainWindow):
         self._updateStatusWordCount()
 
         if restart:
-            SHARED.info(self.tr(
-                "Some changes will not be applied until novelWriter has been restarted."
-            ))
+            SHARED.info(self.tr("Some changes will not be applied until novelWriter has been restarted."))
 
     @pyqtSlot()
     def _processProjectSettingsChanges(self) -> None:
@@ -1088,13 +1094,13 @@ class GuiMain(QMainWindow):
         """Follow a tag after user interaction with a link."""
         tHandle, sTitle = SHARED.project.index.getTagSource(tag)
         if tHandle is None:
-            SHARED.error(self.tr(
-                "Could not find the reference for tag '{0}'. It either doesn't "
-                "exist, or the index is out of date. The index can be updated "
-                "from the Tools menu, or by pressing {1}."
-            ).format(
-                tag, "F9"
-            ))
+            SHARED.error(
+                self.tr(
+                    "Could not find the reference for tag '{0}'. It either doesn't "
+                    "exist, or the index is out of date. The index can be updated "
+                    "from the Tools menu, or by pressing {1}."
+                ).format(tag, "F9")
+            )
         else:
             if mode == nwDocMode.EDIT:
                 self.openDocument(tHandle, sTitle=sTitle)
@@ -1119,9 +1125,7 @@ class GuiMain(QMainWindow):
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
 
     @pyqtSlot(str, int, int, bool)
-    def _openDocumentSelection(
-        self, tHandle: str, selStart: int, selLength: int, changeFocus: bool
-    ) -> None:
+    def _openDocumentSelection(self, tHandle: str, selStart: int, selLength: int, changeFocus: bool) -> None:
         """Open a document and select a section of the text."""
         if self.openDocument(tHandle, changeFocus=changeFocus):
             self.docEditor.setCursorSelection(selStart, selLength)
@@ -1152,9 +1156,7 @@ class GuiMain(QMainWindow):
         elif view == nwView.SEARCH:
             self.mainStack.setCurrentWidget(self.splitMain)
             self.projStack.setCurrentWidget(self.projSearch)
-            self.projSearch.beginSearch(
-                self.docEditor.getSelectedText() if self.docEditor.anyFocus() else ""
-            )
+            self.projSearch.beginSearch(self.docEditor.getSelectedText() if self.docEditor.anyFocus() else "")
         elif view == nwView.OUTLINE:
             self.mainStack.setCurrentWidget(self.outlineView)
 
@@ -1206,7 +1208,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _autoSaveProject(self) -> None:
         """Autosave of the project. This is a timer-activated slot."""
-        doSave  = SHARED.hasProject
+        doSave = SHARED.hasProject
         doSave &= SHARED.project.projChanged
         doSave &= SHARED.project.storage.isOpen()
         if doSave:

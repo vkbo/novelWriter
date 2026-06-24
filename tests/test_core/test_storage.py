@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -252,7 +253,10 @@ def testCoreStorage_LockFile(monkeypatch, fncPath):
     # Successful read
     storage._readLockFile()
     assert storage.lockStatus == [
-        CONFIG.hostName, CONFIG.osType, CONFIG.kernelVer, "1000",
+        CONFIG.hostName,
+        CONFIG.osType,
+        CONFIG.kernelVer,
+        "1000",
     ]
 
     # Write an invalid lockfile
@@ -427,11 +431,7 @@ def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
     wordListOld: Path = fncPath / "meta" / "wordlist.txt"
     wordListNew: Path = fncPath / "meta" / nwFiles.DICT_FILE
 
-    wordListOld.write_text((
-        "word_a\n"
-        "word_b\n"
-        "word_c\n"
-    ), encoding="utf-8")
+    wordListOld.write_text(("word_a\nword_b\nword_c\n"), encoding="utf-8")
 
     assert wordListOld.exists() is True
     assert wordListNew.exists() is False
@@ -440,12 +440,15 @@ def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
     sessLogOld: Path = fncPath / "meta" / "sessionStats.log"
     sessLogNew: Path = fncPath / "meta" / nwFiles.SESS_FILE
 
-    sessLogOld.write_text((
-        "# Offset 150\n"
-        "# Start Time         End Time                Novel     Notes    Idle\n"
-        "2021-02-02 02:02:02  2021-02-02 03:03:03       200       200      10\n"
-        "2021-03-03 03:03:03  2021-03-03 04:04:04       300       300      20\n"
-    ), encoding="utf-8")
+    sessLogOld.write_text(
+        (
+            "# Offset 150\n"
+            "# Start Time         End Time                Novel     Notes    Idle\n"
+            "2021-02-02 02:02:02  2021-02-02 03:03:03       200       200      10\n"
+            "2021-03-03 03:03:03  2021-03-03 04:04:04       300       300      20\n"
+        ),
+        encoding="utf-8",
+    )
 
     assert sessLogOld.exists() is True
     assert sessLogNew.exists() is False
@@ -454,17 +457,23 @@ def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
     optionsOld: Path = fncPath / "meta" / "guiOptions.json"
     optionsNew: Path = fncPath / "meta" / nwFiles.OPTS_FILE
 
-    optionsOld.write_text(json.dumps({
-        "GuiProjectSettings": {
-            "winWidth": 570,
-            "winHeight": 375,
-        },
-        "GuiOutline": {
-            "headerOrder": ["TITLE", "LEVEL", "LABEL", "LINE"],
-            "columnWidth": {"TITLE": 325, "LEVEL": 40, "LABEL": 267, "LINE": 40},
-            "columnHidden": {"TITLE": False, "LEVEL": True, "LABEL": False, "LINE": True},
-        },
-    }, indent=2), encoding="utf-8")
+    optionsOld.write_text(
+        json.dumps(
+            {
+                "GuiProjectSettings": {
+                    "winWidth": 570,
+                    "winHeight": 375,
+                },
+                "GuiOutline": {
+                    "headerOrder": ["TITLE", "LEVEL", "LABEL", "LINE"],
+                    "columnWidth": {"TITLE": 325, "LEVEL": 40, "LABEL": 267, "LINE": 40},
+                    "columnHidden": {"TITLE": False, "LEVEL": True, "LABEL": False, "LINE": True},
+                },
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
     assert optionsOld.exists() is True
     assert optionsNew.exists() is False
@@ -522,11 +531,12 @@ def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
     # Check Options File
     data = json.loads(optionsNew.read_text(encoding="utf-8"))
     assert data["novelWriter.guiOptions"]["GuiProjectSettings"] == {
-        "winWidth": 570, "winHeight": 375
+        "winWidth": 570,
+        "winHeight": 375,
     }
     assert data["novelWriter.guiOptions"]["GuiOutline"]["columnState"] == {
         "TITLE": [False, 325],
         "LEVEL": [True, 40],
         "LABEL": [False, 267],
-        "LINE": [True, 40]
+        "LINE": [True, 40],
     }

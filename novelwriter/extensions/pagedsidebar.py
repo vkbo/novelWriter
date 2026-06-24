@@ -18,18 +18,29 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from PyQt6.QtCore import QPoint, QRectF, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QColor, QPainter, QPaintEvent, QPolygon
 from PyQt6.QtWidgets import (
-    QAbstractButton, QButtonGroup, QLabel, QStyleOptionToolButton, QToolBar,
-    QToolButton, QWidget
+    QAbstractButton,
+    QButtonGroup,
+    QLabel,
+    QStyleOptionToolButton,
+    QToolBar,
+    QToolButton,
+    QWidget,
 )
 
 from novelwriter.types import (
-    QtAlignLeft, QtMouseOver, QtNoBrush, QtNoPen, QtPaintAntiAlias,
-    QtSizeExpanding, QtSizeFixed
+    QtAlignLeft,
+    QtMouseOver,
+    QtNoBrush,
+    QtNoPen,
+    QtPaintAntiAlias,
+    QtSizeExpanding,
+    QtSizeFixed,
 )
 
 
@@ -104,7 +115,6 @@ class NPagedSideBar(QToolBar):
 
 
 class _PagedToolButton(QToolButton):
-
     __slots__ = ("_aH", "_bH", "_tM")
 
     def __init__(self, parent: QWidget) -> None:
@@ -115,13 +125,13 @@ class _PagedToolButton(QToolButton):
 
         fH = self.fontMetrics().height()
         self._bH = round(fH * 1.7)
-        self._tM = (self._bH - fH)//2
-        self._aH = 2*fH//7
+        self._tM = (self._bH - fH) // 2
+        self._aH = 2 * fH // 7
         self.setFixedHeight(self._bH)
 
     def sizeHint(self) -> QSize:
         """Return a size hint that includes the arrow."""
-        return super().sizeHint() + QSize(4*self._aH, 0)
+        return super().sizeHint() + QSize(4 * self._aH, 0)
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Overload the paint event to draw a simple, left aligned text
@@ -153,26 +163,29 @@ class _PagedToolButton(QToolButton):
             textCol = palette.text().color()
 
         tW = width - 24
-        tH = height - 2*self._tM
+        tH = height - 2 * self._tM
 
         painter.setPen(textCol)
         painter.setOpacity(1.0)
         painter.drawText(QRectF(12, self._tM, tW, tH), QtAlignLeft, self.text())
 
-        tC = self.height()//2
+        tC = self.height() // 2
         tW = self.width() - self._aH - 12
         if self.isChecked():
             painter.setBrush(textCol)
-        painter.drawPolygon(QPolygon([
-            QPoint(tW, tC - self._aH),
-            QPoint(tW + self._aH, tC),
-            QPoint(tW, tC + self._aH),
-        ]))
+        painter.drawPolygon(
+            QPolygon(
+                [
+                    QPoint(tW, tC - self._aH),
+                    QPoint(tW + self._aH, tC),
+                    QPoint(tW, tC + self._aH),
+                ]
+            )
+        )
         painter.end()
 
 
 class _NPagedToolLabel(QLabel):
-
     __slots__ = ("_bH", "_tM", "_textCol")
 
     def __init__(self, parent: QWidget, textColor: QColor | None = None) -> None:
@@ -182,7 +195,7 @@ class _NPagedToolLabel(QLabel):
 
         fH = self.fontMetrics().height()
         self._bH = round(fH * 1.7)
-        self._tM = (self._bH - fH)//2
+        self._tM = (self._bH - fH) // 2
         self.setFixedHeight(self._bH)
 
         self._textCol = textColor or self.palette().text().color()
@@ -196,7 +209,7 @@ class _NPagedToolLabel(QLabel):
         label that matches the button style.
         """
         tW = self.width() - 8
-        tH = self.height() - 2*self._tM
+        tH = self.height() - 2 * self._tM
 
         painter = QPainter(self)
         painter.setRenderHint(QtPaintAntiAlias, True)

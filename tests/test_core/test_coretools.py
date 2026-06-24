@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import shutil
@@ -32,9 +33,7 @@ import pytest
 from novelwriter import CONFIG
 from novelwriter.constants import nwConst, nwFiles, nwItemClass
 from novelwriter.core.buildsettings import BuildSettings
-from novelwriter.core.coretools import (
-    DocDuplicator, DocMerger, DocSearch, DocSplitter, ProjectBuilder
-)
+from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSearch, DocSplitter, ProjectBuilder
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
@@ -159,21 +158,31 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
     hSplitDoc = project.newFile("Split Doc", C.hNovelRoot)
 
     docData = [
-        "# Part One", ipsumText[0],
-        "## Chapter One", ipsumText[1],
-        "### Scene One", ipsumText[2],
-        "#### Section One", ipsumText[3],
-        "#### Section Two", ipsumText[4],
-        "### Scene Two", ipsumText[0],
-        "## Chapter Two", ipsumText[1],
-        "### Scene Three", ipsumText[2],
-        "### Scene Four", ipsumText[3],
-        "### Scene Five", ipsumText[4],
+        "# Part One",
+        ipsumText[0],
+        "## Chapter One",
+        ipsumText[1],
+        "### Scene One",
+        ipsumText[2],
+        "#### Section One",
+        ipsumText[3],
+        "#### Section Two",
+        ipsumText[4],
+        "### Scene Two",
+        ipsumText[0],
+        "## Chapter Two",
+        ipsumText[1],
+        "### Scene Three",
+        ipsumText[2],
+        "### Scene Four",
+        ipsumText[3],
+        "### Scene Five",
+        ipsumText[4],
     ]
     splitData = [
-        (0, 1,  "Part One"),
-        (4, 2,  "Chapter One"),
-        (8, 3,  "Scene One"),
+        (0, 1, "Part One"),
+        (4, 2, "Chapter One"),
+        (8, 3, "Scene One"),
         (12, 4, "Section One"),
         (16, 4, "Section Two"),
         (20, 3, "Scene Two"),
@@ -196,9 +205,13 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
     # Run the split algorithm
     docSplitter.splitDocument(splitData, docRaw)  # type: ignore
     for i, (lineNo, hLevel, hLabel) in enumerate(splitData):
-        assert docSplitter._rawData[i] == (docRaw[lineNo:lineNo+4], hLevel, hLabel)
+        assert docSplitter._rawData[i] == (docRaw[lineNo : lineNo + 4], hLevel, hLabel)
     assert project.tree.subTree(C.hNovelRoot) == [
-        "000000000000c", "000000000000d", "000000000000e", "000000000000f", "0000000000010",
+        "000000000000c",
+        "000000000000d",
+        "000000000000e",
+        "000000000000f",
+        "0000000000010",
     ]
 
     # Test flat split into same parent
@@ -212,9 +225,21 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
         assert not any(docSplitter.writeDocuments(False))
         assert docSplitter.getError() == "OSError: Mock OSError"
     assert project.tree.subTree(C.hNovelRoot) == [
-        "000000000000c", "000000000000d", "000000000000e", "000000000000f", "0000000000010",
-        "0000000000011", "0000000000012", "0000000000013", "0000000000014", "0000000000015",
-        "0000000000016", "0000000000017", "0000000000018", "0000000000019", "000000000001a",
+        "000000000000c",
+        "000000000000d",
+        "000000000000e",
+        "000000000000f",
+        "0000000000010",
+        "0000000000011",
+        "0000000000012",
+        "0000000000013",
+        "0000000000014",
+        "0000000000015",
+        "0000000000016",
+        "0000000000017",
+        "0000000000018",
+        "0000000000019",
+        "000000000001a",
     ]
 
     # Generate as flat structure in root folder
@@ -223,11 +248,31 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
 
     assert all(resStatus)
     assert resDocHandle == [
-        "000000000000c", "000000000000d", "000000000000e", "000000000000f", "0000000000010",
-        "0000000000011", "0000000000012", "0000000000013", "0000000000014", "0000000000015",
-        "0000000000016", "0000000000017", "0000000000018", "0000000000019", "000000000001a",
-        "000000000001b", "000000000001c", "000000000001d", "000000000001e", "000000000001f",
-        "0000000000020", "0000000000021", "0000000000022", "0000000000023", "0000000000024",
+        "000000000000c",
+        "000000000000d",
+        "000000000000e",
+        "000000000000f",
+        "0000000000010",
+        "0000000000011",
+        "0000000000012",
+        "0000000000013",
+        "0000000000014",
+        "0000000000015",
+        "0000000000016",
+        "0000000000017",
+        "0000000000018",
+        "0000000000019",
+        "000000000001a",
+        "000000000001b",
+        "000000000001c",
+        "000000000001d",
+        "000000000001e",
+        "000000000001f",
+        "0000000000020",
+        "0000000000021",
+        "0000000000022",
+        "0000000000023",
+        "0000000000024",
     ]
 
     # Generate as hierarchy in new folder
@@ -296,8 +341,14 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
         "0000000000010"  # The Scene
     ]
     assert list(project.tree._items.keys()) == [
-        C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
-        C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
+        C.hNovelRoot,
+        C.hPlotRoot,
+        C.hCharRoot,
+        C.hWorldRoot,
+        C.hTitlePage,
+        C.hChapterDir,
+        C.hChapterDoc,
+        C.hSceneDoc,
         "0000000000010",
     ]
 
@@ -317,10 +368,18 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
         "0000000000013",  # The Scene
     ]
     assert list(project.tree._items.keys()) == [
-        C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
-        C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
+        C.hNovelRoot,
+        C.hPlotRoot,
+        C.hCharRoot,
+        C.hWorldRoot,
+        C.hTitlePage,
+        C.hChapterDir,
+        C.hChapterDoc,
+        C.hSceneDoc,
         "0000000000010",
-        "0000000000011", "0000000000012", "0000000000013",
+        "0000000000011",
+        "0000000000012",
+        "0000000000013",
     ]
 
     # With the same content
@@ -338,9 +397,7 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     # ================
 
     # The root is copied, with three docs and a folder
-    assert list(dup.duplicate(
-        [C.hNovelRoot, C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
-    )) == [
+    assert list(dup.duplicate([C.hNovelRoot, C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc])) == [
         "0000000000014",  # The Root
         "0000000000015",  # The Title Page
         "0000000000016",  # The Folder
@@ -348,11 +405,23 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
         "0000000000018",  # The Scene
     ]
     assert list(project.tree._items.keys()) == [
-        C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
-        C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
+        C.hNovelRoot,
+        C.hPlotRoot,
+        C.hCharRoot,
+        C.hWorldRoot,
+        C.hTitlePage,
+        C.hChapterDir,
+        C.hChapterDoc,
+        C.hSceneDoc,
         "0000000000010",
-        "0000000000011", "0000000000012", "0000000000013",
-        "0000000000014", "0000000000015", "0000000000016", "0000000000017", "0000000000018",
+        "0000000000011",
+        "0000000000012",
+        "0000000000013",
+        "0000000000014",
+        "0000000000015",
+        "0000000000016",
+        "0000000000017",
+        "0000000000018",
     ]
 
     # With the same content
@@ -408,9 +477,7 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     project = NWProject()
     mockRnd.reset()
     buildTestProject(project, fncPath)
-    project.storage.getDocument(C.hSceneDoc).writeDocument(
-        "### New Scene\n\n" + "\n\n".join(ipsumText)
-    )
+    project.storage.getDocument(C.hSceneDoc).writeDocument("### New Scene\n\n" + "\n\n".join(ipsumText))
 
     search = DocSearch()
 
@@ -444,8 +511,13 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
 
     # Defaults
     assert pruneResult(search.iterSearch(project, "Lorem"), 2) == [
-        (15, 5, "Lorem"), (754, 5, "lorem"), (2056, 5, "lorem,"), (2209, 5, "lorem"),
-        (2425, 5, "lorem"), (2840, 5, "lorem."), (3399, 5, "lorem"),
+        (15, 5, "Lorem"),
+        (754, 5, "lorem"),
+        (2056, 5, "lorem,"),
+        (2209, 5, "lorem"),
+        (2425, 5, "lorem"),
+        (2840, 5, "lorem."),
+        (3399, 5, "lorem"),
     ]
 
     # Whole Words
@@ -453,8 +525,14 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     assert pruneResult(search.iterSearch(project, "Lor"), 2) == []
     search.setWholeWords(False)
     assert pruneResult(search.iterSearch(project, "Lor"), 2) == [
-        (15, 3, "Lorem"), (29, 3, "dolor"), (754, 3, "lorem"), (2056, 3, "lorem,"),
-        (2209, 3, "lorem"), (2425, 3, "lorem"), (2840, 3, "lorem."), (3328, 3, "dolor."),
+        (15, 3, "Lorem"),
+        (29, 3, "dolor"),
+        (754, 3, "lorem"),
+        (2056, 3, "lorem,"),
+        (2209, 3, "lorem"),
+        (2425, 3, "lorem"),
+        (2840, 3, "lorem."),
+        (3328, 3, "dolor."),
         (3399, 3, "lorem"),
     ]
 
@@ -462,14 +540,17 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     search.setWholeWords(False)
     search.setUserRegEx(True)
     assert pruneResult(search.iterSearch(project, r"Lor\b"), 2) == [
-        (29, 3, "dolor"), (3328, 3, "dolor."),
+        (29, 3, "dolor"),
+        (3328, 3, "dolor."),
     ]
 
     # Max Results
     with monkeypatch.context() as mp:
         mp.setattr(nwConst, "MAX_SEARCH_RESULT", 3)
         assert pruneResult(search.iterSearch(project, "Lorem"), 2) == [
-            (15, 5, "Lorem"), (754, 5, "lorem"), (2056, 5, "lorem,"),
+            (15, 5, "Lorem"),
+            (754, 5, "lorem"),
+            (2056, 5, "lorem,"),
         ]
 
     # Case Sensitive
@@ -759,9 +840,7 @@ def testCoreTools_ProjectBuilderSample(monkeypatch, mockGUI, fncPath, tstPaths):
     # Force the lookup path for assets to our temp folder
     srcSample = CONFIG._appRoot / "sample"
     dstSample = tstPaths.tmpDir / "sample.zip"
-    monkeypatch.setattr(
-        "novelwriter.config.Config.assetPath", lambda *a: tstPaths.tmpDir / "sample.zip"
-    )
+    monkeypatch.setattr("novelwriter.config.Config.assetPath", lambda *a: tstPaths.tmpDir / "sample.zip")
 
     # Cannot extract when the zip does not exist
     assert builder.buildProject(data) is False

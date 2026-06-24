@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -35,8 +36,14 @@ from novelwriter.core.projectdata import NWProjectData
 from novelwriter.enum import nwItemClass
 from novelwriter.tools.welcome import SAMPLE_KEY, SAMPLE_NAME, GuiWelcome, _ProjectListEntry
 from novelwriter.types import (
-    QtAccessibleTextRole, QtDecorationRole, QtDisplayRole, QtFontRole,
-    QtMouseLeft, QtTextAlignmentRole, QtToolTipRole, QtUserRole
+    QtAccessibleTextRole,
+    QtDecorationRole,
+    QtDisplayRole,
+    QtFontRole,
+    QtMouseLeft,
+    QtTextAlignmentRole,
+    QtToolTipRole,
+    QtUserRole,
 )
 
 

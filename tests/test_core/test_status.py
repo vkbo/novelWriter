@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -55,10 +56,10 @@ def testCoreStatus_StatusEntry():
     # Check copy is not the same
     assert other.name == "Test"
     assert other.color is not color  # Not the same object
-    assert other.color == color      # But same colours
+    assert other.color == color  # But same colours
     assert entry.theme == CUSTOM_COL
     assert other.shape == nwStatusShape.CIRCLE
-    assert other.icon is not icon    # Not the same icon, but a copy
+    assert other.icon is not icon  # Not the same icon, but a copy
     assert other.count == 42
 
 
@@ -88,31 +89,31 @@ def testCoreStatus_Internal(mockGUI, mockRnd):
     # Check Key
     # =========
 
-    assert nStatus._isKey(None) is False        # Not a string
-    assert nStatus._isKey("s00000") is False    # Too short
-    assert nStatus._isKey("s000000") is True    # Correct length
+    assert nStatus._isKey(None) is False  # Not a string
+    assert nStatus._isKey("s00000") is False  # Too short
+    assert nStatus._isKey("s000000") is True  # Correct length
     assert nStatus._isKey("s0000000") is False  # Too long
-    assert nStatus._isKey("i000000") is False   # Wrong type
-    assert nStatus._isKey("q000000") is False   # Wrong type
-    assert nStatus._isKey("s12345H") is False   # Not a hex value
-    assert nStatus._isKey("s12345F") is False   # Not a lower case hex value
-    assert nStatus._isKey("s12345f") is True    # Valid hex value
+    assert nStatus._isKey("i000000") is False  # Wrong type
+    assert nStatus._isKey("q000000") is False  # Wrong type
+    assert nStatus._isKey("s12345H") is False  # Not a hex value
+    assert nStatus._isKey("s12345F") is False  # Not a lower case hex value
+    assert nStatus._isKey("s12345f") is True  # Valid hex value
 
-    assert nImport._isKey(None) is False        # Not a string
-    assert nImport._isKey("i00000") is False    # Too short
-    assert nImport._isKey("i000000") is True    # Correct length
+    assert nImport._isKey(None) is False  # Not a string
+    assert nImport._isKey("i00000") is False  # Too short
+    assert nImport._isKey("i000000") is True  # Correct length
     assert nImport._isKey("i0000000") is False  # Too long
-    assert nImport._isKey("s000000") is False   # Wrong type
-    assert nImport._isKey("q000000") is False   # Wrong type
-    assert nImport._isKey("i12345H") is False   # Not a hex value
-    assert nImport._isKey("i12345F") is False   # Not a lower case hex value
-    assert nImport._isKey("i12345f") is True    # Valid hex value
+    assert nImport._isKey("s000000") is False  # Wrong type
+    assert nImport._isKey("q000000") is False  # Wrong type
+    assert nImport._isKey("i12345H") is False  # Not a hex value
+    assert nImport._isKey("i12345F") is False  # Not a lower case hex value
+    assert nImport._isKey("i12345f") is True  # Valid hex value
 
-    assert nStatus._checkKey(None) == "s000008"       # Creates next key
+    assert nStatus._checkKey(None) == "s000008"  # Creates next key
     assert nStatus._checkKey("s654321") == "s654321"  # Status key accepted
     assert nStatus._checkKey("i123456") == "s000009"  # Import key not accepted
 
-    assert nImport._checkKey(None) == "i00000a"       # Creates next key
+    assert nImport._checkKey(None) == "i00000a"  # Creates next key
     assert nImport._checkKey("s654321") == "i00000b"  # Status key not accepted
     assert nImport._checkKey("i123456") == "i123456"  # Import key accepted
 
@@ -121,9 +122,9 @@ def testCoreStatus_Internal(mockGUI, mockRnd):
 def testCoreStatus_Iterator(mockGUI, mockRnd):
     """Test the iterator functions of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
-    nStatus.add(None, "New",      "#646464", "SQUARE", 0)
-    nStatus.add(None, "Note",     "#ff3f00", "CIRCLE", 1)
-    nStatus.add(None, "Draft",    "#ffaf00", "SQUARE", 2)
+    nStatus.add(None, "New", "#646464", "SQUARE", 0)
+    nStatus.add(None, "Note", "#ff3f00", "CIRCLE", 1)
+    nStatus.add(None, "Draft", "#ffaf00", "SQUARE", 2)
     nStatus.add(None, "Finished", "#3fff00", "CIRCLE", 3)
 
     # Direct access
@@ -138,23 +139,25 @@ def testCoreStatus_Iterator(mockGUI, mockRnd):
     assert len(nStatus) == 4
 
     # Content : Keys
-    assert [k for k, _ in nStatus.iterItems()] == [
-        "s000000", "s000001", "s000002", "s000003"
-    ]
+    assert [k for k, _ in nStatus.iterItems()] == ["s000000", "s000001", "s000002", "s000003"]
 
     # Content : Names
-    assert [e.name for _, e in nStatus.iterItems()] == [
-        "New", "Note", "Draft", "Finished"
-    ]
+    assert [e.name for _, e in nStatus.iterItems()] == ["New", "Note", "Draft", "Finished"]
 
     # Content : Colours
     assert [e.color.getRgb() for _, e in nStatus.iterItems()] == [
-        (100, 100, 100, 255), (255, 63,  0, 255), (255, 175, 0, 255), (63,  255, 0, 255)
+        (100, 100, 100, 255),
+        (255, 63, 0, 255),
+        (255, 175, 0, 255),
+        (63, 255, 0, 255),
     ]
 
     # Content : Shape
     assert [e.shape for _, e in nStatus.iterItems()] == [
-        nwStatusShape.SQUARE, nwStatusShape.CIRCLE, nwStatusShape.SQUARE, nwStatusShape.CIRCLE
+        nwStatusShape.SQUARE,
+        nwStatusShape.CIRCLE,
+        nwStatusShape.SQUARE,
+        nwStatusShape.CIRCLE,
     ]
 
     # Content : Count
@@ -327,10 +330,10 @@ def testCoreStatus_Entries(mockGUI, mockRnd):
 def testCoreStatus_RefreshIcons_Theme(mockGUIwithTheme, mockRnd):
     """Test refreshing the icons with theme colours."""
     nStatus = NWStatus(NWStatus.STATUS)
-    nStatus.add(None, "New",      "default", "SQUARE", 0)
-    nStatus.add(None, "Note",     "red",     "CIRCLE", 0)
-    nStatus.add(None, "Draft",    "yellow",  "SQUARE", 0)
-    nStatus.add(None, "Finished", "green",   "SQUARE", 0)
+    nStatus.add(None, "New", "default", "SQUARE", 0)
+    nStatus.add(None, "Note", "red", "CIRCLE", 0)
+    nStatus.add(None, "Draft", "yellow", "SQUARE", 0)
+    nStatus.add(None, "Finished", "green", "SQUARE", 0)
 
     iconsA = [nStatus[statusKeys[i]].icon for i in range(4)]
     themeA = [nStatus[statusKeys[i]].theme for i in range(4)]
@@ -350,9 +353,9 @@ def testCoreStatus_RefreshIcons_Theme(mockGUIwithTheme, mockRnd):
 def testCoreStatus_RefreshIcons_Custom(mockGUIwithTheme, mockRnd):
     """Test refreshing the icons with custom colours."""
     nStatus = NWStatus(NWStatus.STATUS)
-    nStatus.add(None, "New",      "#707070", "SQUARE", 0)
-    nStatus.add(None, "Note",     "#ff0000", "CIRCLE", 0)
-    nStatus.add(None, "Draft",    "#ffff00", "SQUARE", 0)
+    nStatus.add(None, "New", "#707070", "SQUARE", 0)
+    nStatus.add(None, "Note", "#ff0000", "CIRCLE", 0)
+    nStatus.add(None, "Draft", "#ffff00", "SQUARE", 0)
     nStatus.add(None, "Finished", "#00ff00", "SQUARE", 0)
 
     iconsA = [nStatus[statusKeys[i]].icon for i in range(4)]
@@ -378,9 +381,9 @@ def testCoreStatus_RefreshIcons_Custom(mockGUIwithTheme, mockRnd):
 def testCoreStatus_Pack(mockGUIwithTheme, mockRnd):
     """Test data packing of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
-    nStatus.add(None, "New",      "#646464", "SQUARE", 0)
-    nStatus.add(None, "Note",     "#c83200", "CIRCLE", 0)
-    nStatus.add(None, "Draft",    "#c89600", "SQUARE", 0)
+    nStatus.add(None, "New", "#646464", "SQUARE", 0)
+    nStatus.add(None, "Note", "#c83200", "CIRCLE", 0)
+    nStatus.add(None, "Draft", "#c89600", "SQUARE", 0)
     nStatus.add(None, "Finished", "default", "SQUARE", 0)
 
     countTo = [3, 5, 7, 9]
@@ -390,30 +393,42 @@ def testCoreStatus_Pack(mockGUIwithTheme, mockRnd):
 
     # Pack
     assert list(nStatus.pack()) == [
-        ("New", {
-            "key": statusKeys[0],
-            "count": "3",
-            "color": "#646464",
-            "shape": "SQUARE",
-        }),
-        ("Note", {
-            "key": statusKeys[1],
-            "count": "5",
-            "color": "#c83200",
-            "shape": "CIRCLE",
-        }),
-        ("Draft", {
-            "key": statusKeys[2],
-            "count": "7",
-            "color": "#c89600",
-            "shape": "SQUARE",
-        }),
-        ("Finished", {
-            "key": statusKeys[3],
-            "count": "9",
-            "color": "default",
-            "shape": "SQUARE",
-        }),
+        (
+            "New",
+            {
+                "key": statusKeys[0],
+                "count": "3",
+                "color": "#646464",
+                "shape": "SQUARE",
+            },
+        ),
+        (
+            "Note",
+            {
+                "key": statusKeys[1],
+                "count": "5",
+                "color": "#c83200",
+                "shape": "CIRCLE",
+            },
+        ),
+        (
+            "Draft",
+            {
+                "key": statusKeys[2],
+                "count": "7",
+                "color": "#c89600",
+                "shape": "SQUARE",
+            },
+        ),
+        (
+            "Finished",
+            {
+                "key": statusKeys[3],
+                "count": "9",
+                "color": "default",
+                "shape": "SQUARE",
+            },
+        ),
     ]
 
 
@@ -423,26 +438,26 @@ def testCoreStatus_ShapeCache():
     shapes = _ShapeCache()
 
     # Generate all shapes
-    square    = shapes.getShape(nwStatusShape.SQUARE)
-    circleQ   = shapes.getShape(nwStatusShape.CIRCLE_Q)
-    circleH   = shapes.getShape(nwStatusShape.CIRCLE_H)
-    circleT   = shapes.getShape(nwStatusShape.CIRCLE_T)
-    circle    = shapes.getShape(nwStatusShape.CIRCLE)
-    triangle  = shapes.getShape(nwStatusShape.TRIANGLE)
-    nabla     = shapes.getShape(nwStatusShape.NABLA)
-    diamond   = shapes.getShape(nwStatusShape.DIAMOND)
-    pentagon  = shapes.getShape(nwStatusShape.PENTAGON)
-    hexagon   = shapes.getShape(nwStatusShape.HEXAGON)
-    star      = shapes.getShape(nwStatusShape.STAR)
-    pacman    = shapes.getShape(nwStatusShape.PACMAN)
-    bars1     = shapes.getShape(nwStatusShape.BARS_1)
-    bars2     = shapes.getShape(nwStatusShape.BARS_2)
-    bars3     = shapes.getShape(nwStatusShape.BARS_3)
-    bars4     = shapes.getShape(nwStatusShape.BARS_4)
-    block1    = shapes.getShape(nwStatusShape.BLOCK_1)
-    block2    = shapes.getShape(nwStatusShape.BLOCK_2)
-    block3    = shapes.getShape(nwStatusShape.BLOCK_3)
-    block4    = shapes.getShape(nwStatusShape.BLOCK_4)
+    square = shapes.getShape(nwStatusShape.SQUARE)
+    circleQ = shapes.getShape(nwStatusShape.CIRCLE_Q)
+    circleH = shapes.getShape(nwStatusShape.CIRCLE_H)
+    circleT = shapes.getShape(nwStatusShape.CIRCLE_T)
+    circle = shapes.getShape(nwStatusShape.CIRCLE)
+    triangle = shapes.getShape(nwStatusShape.TRIANGLE)
+    nabla = shapes.getShape(nwStatusShape.NABLA)
+    diamond = shapes.getShape(nwStatusShape.DIAMOND)
+    pentagon = shapes.getShape(nwStatusShape.PENTAGON)
+    hexagon = shapes.getShape(nwStatusShape.HEXAGON)
+    star = shapes.getShape(nwStatusShape.STAR)
+    pacman = shapes.getShape(nwStatusShape.PACMAN)
+    bars1 = shapes.getShape(nwStatusShape.BARS_1)
+    bars2 = shapes.getShape(nwStatusShape.BARS_2)
+    bars3 = shapes.getShape(nwStatusShape.BARS_3)
+    bars4 = shapes.getShape(nwStatusShape.BARS_4)
+    block1 = shapes.getShape(nwStatusShape.BLOCK_1)
+    block2 = shapes.getShape(nwStatusShape.BLOCK_2)
+    block3 = shapes.getShape(nwStatusShape.BLOCK_3)
+    block4 = shapes.getShape(nwStatusShape.BLOCK_4)
 
     # Request again should return from cache
     assert shapes.getShape(nwStatusShape.SQUARE) is square

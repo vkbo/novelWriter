@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import time
@@ -186,7 +187,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     nwGUI._changeView(nwView.OUTLINE)
 
     outlineView = nwGUI.outlineView
-    outlineBar  = outlineView.outlineBar
+    outlineBar = outlineView.outlineBar
     outlineTree = outlineView.outlineTree
     outlineData = outlineView.outlineData
 
@@ -195,7 +196,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     # Check defaults in dropdown list
     assert outlineBar.novelValue.itemData(0) == lipHandle
     assert outlineBar.novelValue.itemData(1) is None  # Separator
-    assert outlineBar.novelValue.itemData(2) == ""    # All novels
+    assert outlineBar.novelValue.itemData(2) == ""  # All novels
 
     # Add a second novel folder
     with qtbot.waitSignal(SHARED.rootFolderChanged):
@@ -205,18 +206,24 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert outlineBar.novelValue.itemData(0) == lipHandle
     assert outlineBar.novelValue.itemData(1) == newHandle
     assert outlineBar.novelValue.itemData(2) is None  # Separator
-    assert outlineBar.novelValue.itemData(3) == ""    # All novels
+    assert outlineBar.novelValue.itemData(3) == ""  # All novels
 
     # Add a bunch of files in a header order that hits all tree combos
     docList = [
-        ("Section 1", 4), ("Scene 1", 3), ("Chapter 1", 2), ("Part 1", 1),
-        ("Section 2", 4), ("Scene 2", 3), ("Chapter 2", 2),
-        ("Section 3", 4), ("Scene 3", 3),
+        ("Section 1", 4),
+        ("Scene 1", 3),
+        ("Chapter 1", 2),
+        ("Part 1", 1),
+        ("Section 2", 4),
+        ("Scene 2", 3),
+        ("Chapter 2", 2),
+        ("Section 3", 4),
+        ("Scene 3", 3),
         ("Section 4", 4),
     ]
     for dTitle, hLevel in docList:
         aHandle = SHARED.project.newFile(dTitle, newHandle)
-        hHash = "#"*hLevel
+        hHash = "#" * hLevel
         writeFile(prjLipsum / "content" / f"{aHandle}.nwd", f"{hHash} {dTitle}\n\n")
 
     nwGUI.rebuildIndex()

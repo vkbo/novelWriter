@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -142,6 +143,7 @@ class NWSpellEnchant:
         lang = []
         try:
             import enchant
+
             tags = [x for x, _ in enchant.list_dicts()]
             lang = [(x, f"{languageName(x)} [{x}]") for x in set(tags)]
         except Exception:

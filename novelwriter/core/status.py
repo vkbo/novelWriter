@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import dataclasses
@@ -160,12 +161,15 @@ class NWStatus:
                 color = entry.color.name(QColor.NameFormat.HexRgb)
             else:
                 color = entry.theme
-            yield (entry.name, {
-                "key":   key,
-                "count": str(entry.count),
-                "color": color,
-                "shape": entry.shape.name,
-            })
+            yield (
+                entry.name,
+                {
+                    "key": key,
+                    "count": str(entry.count),
+                    "color": color,
+                    "shape": entry.shape.name,
+                },
+            )
         return
 
     def iterItems(self) -> Iterable[tuple[str, StatusEntry]]:
@@ -205,11 +209,14 @@ class NWStatus:
         painter.fillPath(_SHAPES.getShape(shape), color)
         painter.end()
 
-        return QIcon(pixmap.scaled(
-            height, height,
-            Qt.AspectRatioMode.IgnoreAspectRatio,
-            Qt.TransformationMode.SmoothTransformation
-        ))
+        return QIcon(
+            pixmap.scaled(
+                height,
+                height,
+                Qt.AspectRatioMode.IgnoreAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
+            )
+        )
 
     ##
     #  Internal Functions
@@ -246,7 +253,6 @@ class NWStatus:
 
 
 class _ShapeCache:
-
     def __init__(self) -> None:
         self._cache: dict[nwStatusShape, QPainterPath] = {}
 
@@ -259,49 +265,78 @@ class _ShapeCache:
         if shape == nwStatusShape.SQUARE:
             path.addRoundedRect(2.0, 2.0, 44.0, 44.0, 4.0, 4.0)
         elif shape == nwStatusShape.TRIANGLE:
-            path.addPolygon(QPolygonF([
-                QPointF(24.00, 3.00),
-                QPointF(43.92, 37.50),
-                QPointF(4.08, 37.50),
-            ]))
+            path.addPolygon(
+                QPolygonF(
+                    [
+                        QPointF(24.00, 3.00),
+                        QPointF(43.92, 37.50),
+                        QPointF(4.08, 37.50),
+                    ]
+                )
+            )
         elif shape == nwStatusShape.NABLA:
-            path.addPolygon(QPolygonF([
-                QPointF(24.00, 48.00),
-                QPointF(4.08, 14.50),
-                QPointF(43.92, 14.50),
-            ]))
+            path.addPolygon(
+                QPolygonF(
+                    [
+                        QPointF(24.00, 48.00),
+                        QPointF(4.08, 14.50),
+                        QPointF(43.92, 14.50),
+                    ]
+                )
+            )
         elif shape == nwStatusShape.DIAMOND:
-            path.addPolygon(QPolygonF([
-                QPointF(24.00, 2.00),
-                QPointF(44.00, 24.00),
-                QPointF(24.00, 46.00),
-                QPointF(4.00, 24.00),
-            ]))
+            path.addPolygon(
+                QPolygonF(
+                    [
+                        QPointF(24.00, 2.00),
+                        QPointF(44.00, 24.00),
+                        QPointF(24.00, 46.00),
+                        QPointF(4.00, 24.00),
+                    ]
+                )
+            )
         elif shape == nwStatusShape.PENTAGON:
-            path.addPolygon(QPolygonF([
-                QPointF(24.00, 1.50),
-                QPointF(45.87, 17.39),
-                QPointF(37.52, 43.11),
-                QPointF(10.48, 43.11),
-                QPointF(2.13, 17.39),
-            ]))
+            path.addPolygon(
+                QPolygonF(
+                    [
+                        QPointF(24.00, 1.50),
+                        QPointF(45.87, 17.39),
+                        QPointF(37.52, 43.11),
+                        QPointF(10.48, 43.11),
+                        QPointF(2.13, 17.39),
+                    ]
+                )
+            )
         elif shape == nwStatusShape.HEXAGON:
-            path.addPolygon(QPolygonF([
-                QPointF(24.00, 1.50),
-                QPointF(43.92, 13.00),
-                QPointF(43.92, 36.00),
-                QPointF(24.00, 47.50),
-                QPointF(4.08, 36.00),
-                QPointF(4.08, 13.00),
-            ]))
+            path.addPolygon(
+                QPolygonF(
+                    [
+                        QPointF(24.00, 1.50),
+                        QPointF(43.92, 13.00),
+                        QPointF(43.92, 36.00),
+                        QPointF(24.00, 47.50),
+                        QPointF(4.08, 36.00),
+                        QPointF(4.08, 13.00),
+                    ]
+                )
+            )
         elif shape == nwStatusShape.STAR:
-            path.addPolygon(QPolygonF([
-                QPointF(24.00, 0.50), QPointF(31.05, 14.79),
-                QPointF(46.83, 17.08), QPointF(35.41, 28.21),
-                QPointF(38.11, 43.92), QPointF(24.00, 36.50),
-                QPointF(9.89, 43.92), QPointF(12.59, 28.21),
-                QPointF(1.17, 17.08), QPointF(15.37, 16.16),
-            ]))
+            path.addPolygon(
+                QPolygonF(
+                    [
+                        QPointF(24.00, 0.50),
+                        QPointF(31.05, 14.79),
+                        QPointF(46.83, 17.08),
+                        QPointF(35.41, 28.21),
+                        QPointF(38.11, 43.92),
+                        QPointF(24.00, 36.50),
+                        QPointF(9.89, 43.92),
+                        QPointF(12.59, 28.21),
+                        QPointF(1.17, 17.08),
+                        QPointF(15.37, 16.16),
+                    ]
+                )
+            )
         elif shape == nwStatusShape.PACMAN:
             path.moveTo(24.0, 24.0)
             path.arcTo(2.0, 2.0, 44.0, 44.0, 40.0, 280.0)

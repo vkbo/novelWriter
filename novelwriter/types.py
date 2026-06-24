@@ -18,14 +18,20 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from typing import Literal
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import (
-    QColor, QFont, QPainter, QPalette, QTextCharFormat, QTextCursor,
-    QTextFormat
+    QColor,
+    QFont,
+    QPainter,
+    QPalette,
+    QTextCharFormat,
+    QTextCursor,
+    QTextFormat,
 )
 from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QHeaderView, QSizePolicy, QStyle
 
@@ -170,19 +176,19 @@ QtFontBold = QFont.Weight.Bold
 # Maps
 
 FONT_WEIGHTS: dict[int, int] = {
-    QFont.Weight.Thin:       100,
+    QFont.Weight.Thin: 100,
     QFont.Weight.ExtraLight: 200,
-    QFont.Weight.Light:      300,
-    QFont.Weight.Normal:     400,
-    QFont.Weight.Medium:     500,
-    QFont.Weight.DemiBold:   600,
-    QFont.Weight.Bold:       700,
-    QFont.Weight.ExtraBold:  800,
-    QFont.Weight.Black:      900,
+    QFont.Weight.Light: 300,
+    QFont.Weight.Normal: 400,
+    QFont.Weight.Medium: 500,
+    QFont.Weight.DemiBold: 600,
+    QFont.Weight.Bold: 700,
+    QFont.Weight.ExtraBold: 800,
+    QFont.Weight.Black: 900,
 }
 
 FONT_STYLE: dict[QFont.Style, str] = {
-    QFont.Style.StyleNormal:  "normal",
-    QFont.Style.StyleItalic:  "italic",
+    QFont.Style.StyleNormal: "normal",
+    QFont.Style.StyleItalic: "italic",
     QFont.Style.StyleOblique: "oblique",
 }

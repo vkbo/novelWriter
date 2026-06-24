@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -25,10 +26,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import (
-    checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified,
-    yesNo
-)
+from novelwriter.common import checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified, yesNo
 from novelwriter.constants import nwLabels, nwStyles, trConst
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 
@@ -50,36 +48,52 @@ class NWItem:
     """
 
     __slots__ = (
-        "_active", "_charCount", "_charInit", "_class", "_cursorPos",
-        "_expanded", "_handle", "_heading", "_import", "_layout", "_name",
-        "_order", "_paraCount", "_parent", "_project", "_root", "_status",
-        "_type", "_wordCount", "_wordInit",
+        "_active",
+        "_charCount",
+        "_charInit",
+        "_class",
+        "_cursorPos",
+        "_expanded",
+        "_handle",
+        "_heading",
+        "_import",
+        "_layout",
+        "_name",
+        "_order",
+        "_paraCount",
+        "_parent",
+        "_project",
+        "_root",
+        "_status",
+        "_type",
+        "_wordCount",
+        "_wordInit",
     )
 
     def __init__(self, project: NWProject, handle: str) -> None:
 
-        self._project  = project
-        self._name     = ""
-        self._handle   = handle
-        self._parent   = None
-        self._root     = None
-        self._order    = 0
-        self._type     = nwItemType.NO_TYPE
-        self._class    = nwItemClass.NO_CLASS
-        self._layout   = nwItemLayout.NO_LAYOUT
-        self._status   = None
-        self._import   = None
-        self._active   = True
+        self._project = project
+        self._name = ""
+        self._handle = handle
+        self._parent = None
+        self._root = None
+        self._order = 0
+        self._type = nwItemType.NO_TYPE
+        self._class = nwItemClass.NO_CLASS
+        self._layout = nwItemLayout.NO_LAYOUT
+        self._status = None
+        self._import = None
+        self._active = True
         self._expanded = False
 
         # Document Meta Data
-        self._heading   = "H0"  # The main heading
-        self._charCount = 0     # Current character count
-        self._wordCount = 0     # Current word count
-        self._paraCount = 0     # Current paragraph count
-        self._cursorPos = 0     # Last cursor position
-        self._wordInit  = 0     # Initial character count
-        self._charInit  = 0     # Initial word count
+        self._heading = "H0"  # The main heading
+        self._charCount = 0  # Current character count
+        self._wordCount = 0  # Current word count
+        self._paraCount = 0  # Current paragraph count
+        self._cursorPos = 0  # Last cursor position
+        self._wordInit = 0  # Initial character count
+        self._charInit = 0  # Initial word count
 
     def __repr__(self) -> str:
         """Return a string representation of the item."""
@@ -183,24 +197,24 @@ class NWItem:
         meta: dict[str, str] = {}
         name: dict[str, str] = {}
 
-        item["handle"]   = str(self._handle)
-        item["parent"]   = str(self._parent)
-        item["root"]     = str(self._root)
-        item["order"]    = str(self._order)
-        item["type"]     = str(self._type.name)
-        item["class"]    = str(self._class.name)
+        item["handle"] = str(self._handle)
+        item["parent"] = str(self._parent)
+        item["root"] = str(self._root)
+        item["order"] = str(self._order)
+        item["type"] = str(self._type.name)
+        item["class"] = str(self._class.name)
         meta["expanded"] = yesNo(self._expanded)
-        name["status"]   = str(self._status)
-        name["import"]   = str(self._import)
+        name["status"] = str(self._status)
+        name["import"] = str(self._import)
 
         if self._type == nwItemType.FILE:
-            item["layout"]    = str(self._layout.name)
-            meta["heading"]   = str(self._heading)
+            item["layout"] = str(self._layout.name)
+            meta["heading"] = str(self._heading)
             meta["charCount"] = str(self._charCount)
             meta["wordCount"] = str(self._wordCount)
             meta["paraCount"] = str(self._paraCount)
             meta["cursorPos"] = str(self._cursorPos)
-            name["active"]    = yesNo(self._active)
+            name["active"] = yesNo(self._active)
 
         return {
             "name": str(self._name),
@@ -244,7 +258,7 @@ class NWItem:
         # Make some checks to ensure consistency
         if self._type == nwItemType.ROOT:
             self._root = self._handle  # Root items are their own ancestor
-            self._parent = None        # Root items cannot have a parent
+            self._parent = None  # Root items cannot have a parent
 
         if self._type != nwItemType.FILE:
             # Reset values that should only be set for files
@@ -265,22 +279,22 @@ class NWItem:
     def duplicate(cls, source: NWItem, handle: str) -> NWItem:
         """Make a copy of an item."""
         new = cls(source._project, handle)
-        new._name       = source._name
-        new._parent     = source._parent
-        new._root       = source._root
-        new._order      = source._order
-        new._type       = source._type
-        new._class      = source._class
-        new._layout     = source._layout
-        new._status     = source._status
-        new._import     = source._import
-        new._active     = source._active
-        new._expanded   = source._expanded
-        new._heading    = source._heading
-        new._charCount  = source._charCount
-        new._wordCount  = source._wordCount
-        new._paraCount  = source._paraCount
-        new._cursorPos  = source._cursorPos
+        new._name = source._name
+        new._parent = source._parent
+        new._root = source._root
+        new._order = source._order
+        new._type = source._type
+        new._class = source._class
+        new._layout = source._layout
+        new._status = source._status
+        new._import = source._import
+        new._active = source._active
+        new._expanded = source._expanded
+        new._heading = source._heading
+        new._charCount = source._charCount
+        new._wordCount = source._wordCount
+        new._paraCount = source._paraCount
+        new._cursorPos = source._cursorPos
         new._wordInit = source._wordInit
         new._charInit = source._charInit
         return new

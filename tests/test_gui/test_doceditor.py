@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -26,9 +27,19 @@ import pytest
 
 from PyQt6.QtCore import QEvent, QMimeData, QPointF, QRect, Qt, QThreadPool, QUrl, QVariant
 from PyQt6.QtGui import (
-    QAction, QClipboard, QDesktopServices, QDragEnterEvent, QDragMoveEvent,
-    QDropEvent, QFont, QInputMethodEvent, QMouseEvent, QTextBlock, QTextCursor,
-    QTextDocument, QTextOption
+    QAction,
+    QClipboard,
+    QDesktopServices,
+    QDragEnterEvent,
+    QDragMoveEvent,
+    QDropEvent,
+    QFont,
+    QInputMethodEvent,
+    QMouseEvent,
+    QTextBlock,
+    QTextCursor,
+    QTextDocument,
+    QTextOption,
 )
 from PyQt6.QtWidgets import QApplication, QMenu, QPlainTextEdit
 
@@ -42,9 +53,20 @@ from novelwriter.gui.doceditor import CommandCompleter, GuiDocEditor, TextAutoRe
 from novelwriter.gui.dochighlight import TextBlockData
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
-    QtAlignJustify, QtAlignLeft, QtImCurrentSelection, QtImCursorRectangle,
-    QtKeepAnchor, QtModCtrl, QtModNone, QtMouseLeft, QtMoveAnchor, QtMoveRight,
-    QtScrollAlwaysOff, QtScrollAsNeeded, QtSelectDocument, QtSelectWord
+    QtAlignJustify,
+    QtAlignLeft,
+    QtImCurrentSelection,
+    QtImCursorRectangle,
+    QtKeepAnchor,
+    QtModCtrl,
+    QtModNone,
+    QtMouseLeft,
+    QtMoveAnchor,
+    QtMoveRight,
+    QtScrollAlwaysOff,
+    QtScrollAsNeeded,
+    QtSelectDocument,
+    QtSelectWord,
 )
 
 from tests.mocked import causeOSError
@@ -156,7 +178,7 @@ def testGuiEditor_LoadText(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
 
-    longText = "### Lorem Ipsum\n\n{0}".format("\n\n".join(ipsumText*20))
+    longText = "### Lorem Ipsum\n\n{0}".format("\n\n".join(ipsumText * 20))
     docEditor.replaceText(longText)
     nwGUI.saveDocument()
     nwGUI.closeDocument()
@@ -299,18 +321,9 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
     # Get Text
     # This should replace line and paragraph separators, but preserve
     # non-breaking spaces.
-    newText = (
-        "### New Scene\u2029\u2029"
-        "Some\u2028text.\u2029"
-        "More\u00a0text.\u2029"
-    )
+    newText = "### New Scene\u2029\u2029Some\u2028text.\u2029More\u00a0text.\u2029"
     docEditor.replaceText(newText)
-    assert docEditor.getText() == (
-        "### New Scene\n\n"
-        "Some\n"
-        "text.\n"
-        "More\u00a0text.\n"
-    )
+    assert docEditor.getText() == ("### New Scene\n\nSome\ntext.\nMore\u00a0text.\n")
 
     # Check Properties
     assert docEditor.docChanged is True
@@ -351,12 +364,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     sceneItem = SHARED.project.tree[C.hSceneDoc]
     assert sceneItem is not None
 
-    docText = (
-        "### A Scene\n\n"
-        "@pov: Jane\n\n"
-        "Some text ...\n\n"
-        "... and a link to http://example.com\n\n"
-    )
+    docText = "### A Scene\n\n@pov: Jane\n\nSome text ...\n\n... and a link to http://example.com\n\n"
     docEditor.setPlainText(docText)
     assert docEditor.getText() == docText
 
@@ -365,8 +373,12 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Set as Document Name", "Paste",
-        "Select All", "Select Word", "Select Paragraph", "More Actions",
+        "Set as Document Name",
+        "Paste",
+        "Select All",
+        "Select Word",
+        "Select Paragraph",
+        "More Actions",
     ]
     with monkeypatch.context() as mp:
         mp.setattr(GuiEditLabel, "getLabel", lambda a, text: (text, True))
@@ -381,8 +393,12 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Open URL", "Paste",
-        "Select All", "Select Word", "Select Paragraph", "More Actions",
+        "Open URL",
+        "Paste",
+        "Select All",
+        "Select Word",
+        "Select Paragraph",
+        "More Actions",
     ]
     ctxMenu.setObjectName("")
     ctxMenu.deleteLater()
@@ -392,8 +408,12 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Create Note for Tag", "Paste",
-        "Select All", "Select Word", "Select Paragraph", "More Actions",
+        "Create Note for Tag",
+        "Paste",
+        "Select All",
+        "Select Word",
+        "Select Paragraph",
+        "More Actions",
     ]
     ctxMenu.actions()[0].trigger()
     janeItem = SHARED.project.tree["0000000000010"]
@@ -407,8 +427,13 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "View Tag Source", "Edit Tag Source", "Paste",
-        "Select All", "Select Word", "Select Paragraph", "More Actions",
+        "View Tag Source",
+        "Edit Tag Source",
+        "Paste",
+        "Select All",
+        "Select Word",
+        "Select Paragraph",
+        "More Actions",
     ]
     ctxMenu.actions()[0].trigger()
     assert nwGUI.docViewer.docHandle == "0000000000010"
@@ -420,7 +445,11 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Paste", "Select All", "Select Word", "Select Paragraph", "More Actions",
+        "Paste",
+        "Select All",
+        "Select Word",
+        "Select Paragraph",
+        "More Actions",
     ]
     ctxMenu.actions()[3].trigger()
     assert docEditor.textCursor().selectedText() == "text"
@@ -432,7 +461,11 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Paste", "Select All", "Select Word", "Select Paragraph", "More Actions",
+        "Paste",
+        "Select All",
+        "Select Word",
+        "Select Paragraph",
+        "More Actions",
     ]
     ctxMenu.actions()[4].trigger()
     assert docEditor.textCursor().selectedText() == "Some text ..."
@@ -444,7 +477,11 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Paste", "Select All", "Select Word", "Select Paragraph", "More Actions",
+        "Paste",
+        "Select All",
+        "Select Word",
+        "Select Paragraph",
+        "More Actions",
     ]
     ctxMenu.actions()[2].trigger()
     assert docEditor.textCursor().selectedText() == docEditor.document().toRawText()
@@ -460,7 +497,13 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert docEditor.textCursor().selectedText() == "text"
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Cut", "Copy", "Paste", "Select All", "Select Word", "Select Paragraph", "More Actions",
+        "Cut",
+        "Copy",
+        "Paste",
+        "Select All",
+        "Select Word",
+        "Select Paragraph",
+        "More Actions",
     ]
     clipboard.clear()
     ctxMenu.actions()[1].trigger()
@@ -523,7 +566,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     # Run SpellCheck
     # ==============
     SHARED.project.data.setSpellCheck(True)
-    LORAX = "Lorax\U0001F03A"
+    LORAX = "Lorax\U0001f03a"
 
     cursor = docEditor.textCursor()
     cursor.setPosition(16)
@@ -1158,17 +1201,13 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
     # Valid Keyword
     docEditor.insertKeyWord(nwKeyWords.POV_KEY)
     docEditor.insertText("Jane\n")
-    assert docEditor.getText() == text.replace(
-        "\n\n\n", "\n\n@pov: Jane\n\n", 1
-    )
+    assert docEditor.getText() == text.replace("\n\n\n", "\n\n@pov: Jane\n\n", 1)
 
     # Insert In-Block
     docEditor.setCursorPosition(20)
     docEditor.insertKeyWord(nwKeyWords.CHAR_KEY)
     docEditor.insertText("John")
-    assert docEditor.getText() == text.replace(
-        "\n\n\n", "\n\n@pov: Jane\n@char: John\n\n", 1
-    )
+    assert docEditor.getText() == text.replace("\n\n\n", "\n\n@pov: Jane\n@char: John\n\n", 1)
 
     # qtbot.stop()
 
@@ -1212,7 +1251,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     newText = docEditor.getText()
     newPara = list(filter(str.strip, newText.split("\n")))
-    assert newPara[1] == "="+ipsumText[0]+"="
+    assert newPara[1] == "=" + ipsumText[0] + "="
     assert newPara[2] == ipsumText[1]
 
     # Toggle Format
@@ -1244,7 +1283,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     newText = docEditor.getText()
     newPara = list(filter(str.strip, newText.split("\n")))
-    assert newPara[1] == "="+ipsumText[0]+"="
+    assert newPara[1] == "=" + ipsumText[0] + "="
     assert newPara[2] == ipsumText[1]
 
     # Wrap Double Equal
@@ -1730,7 +1769,20 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
     text = "### A Scene\n\n@char: Jane, John\n\n" + "\n\n".join(ipsumText) + "\n\n"
     docEditor.replaceText(text)
     assert [x[:5] for x in docEditor.getText().splitlines()] == [
-        "### A", "", "@char", "", "Lorem", "", "Nulla", "", "Nulla", "", "Pelle", "", "Integ", ""
+        "### A",
+        "",
+        "@char",
+        "",
+        "Lorem",
+        "",
+        "Nulla",
+        "",
+        "Nulla",
+        "",
+        "Pelle",
+        "",
+        "Integ",
+        "",
     ]
 
     # Toggle Comment
@@ -1741,7 +1793,20 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
 
     docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
     assert [x[:5] for x in docEditor.getText().splitlines()] == [
-        "### A", "", "@char", "", "% Lor", "", "% Nul", "", "% Nul", "", "% Pel", "", "Integ", ""
+        "### A",
+        "",
+        "@char",
+        "",
+        "% Lor",
+        "",
+        "% Nul",
+        "",
+        "% Nul",
+        "",
+        "% Pel",
+        "",
+        "Integ",
+        "",
     ]
 
     # Un-toggle the second
@@ -1751,7 +1816,20 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
 
     docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
     assert [x[:5] for x in docEditor.getText().splitlines()] == [
-        "### A", "", "@char", "", "% Lor", "", "Nulla", "", "% Nul", "", "% Pel", "", "Integ", ""
+        "### A",
+        "",
+        "@char",
+        "",
+        "% Lor",
+        "",
+        "Nulla",
+        "",
+        "% Nul",
+        "",
+        "% Pel",
+        "",
+        "Integ",
+        "",
     ]
 
     # Un-toggle all
@@ -1762,7 +1840,20 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
 
     docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
     assert [x[:5] for x in docEditor.getText().splitlines()] == [
-        "### A", "", "@char", "", "Lorem", "", "Nulla", "", "Nulla", "", "Pelle", "", "Integ", ""
+        "### A",
+        "",
+        "@char",
+        "",
+        "Lorem",
+        "",
+        "Nulla",
+        "",
+        "Nulla",
+        "",
+        "Pelle",
+        "",
+        "Integ",
+        "",
     ]
 
     # Toggle Ignore Text
@@ -1773,7 +1864,20 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
 
     docEditor._iterFormatBlocks(nwDocAction.BLOCK_IGN)
     assert [x[:5] for x in docEditor.getText().splitlines()] == [
-        "### A", "", "@char", "", "%~ Lo", "", "%~ Nu", "", "%~ Nu", "", "%~ Pe", "", "Integ", ""
+        "### A",
+        "",
+        "@char",
+        "",
+        "%~ Lo",
+        "",
+        "%~ Nu",
+        "",
+        "%~ Nu",
+        "",
+        "%~ Pe",
+        "",
+        "Integ",
+        "",
     ]
 
     # Clear all paragraphs
@@ -1784,7 +1888,20 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
 
     docEditor._iterFormatBlocks(nwDocAction.BLOCK_TXT)
     assert [x[:5] for x in docEditor.getText().splitlines()] == [
-        "### A", "", "@char", "", "Lorem", "", "Nulla", "", "Nulla", "", "Pelle", "", "Integ", ""
+        "### A",
+        "",
+        "@char",
+        "",
+        "Lorem",
+        "",
+        "Nulla",
+        "",
+        "Nulla",
+        "",
+        "Pelle",
+        "",
+        "Integ",
+        "",
     ]
 
     # Final text should be identical to initial text
@@ -1836,9 +1953,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # On Known Tag, Follow
     docEditor.setCursorPosition(22)
     position = QPointF(docEditor.cursorRect().center())
-    event = QMouseEvent(
-        QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModCtrl
-    )
+    event = QMouseEvent(QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModCtrl)
     assert docViewer._docHandle is None
     docEditor.mouseReleaseEvent(event)
     assert docViewer._docHandle == cHandle
@@ -1930,9 +2045,7 @@ def testGuiEditor_Links(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd)
 
     docEditor.setCursorPosition(20)
     position = QPointF(docEditor.cursorRect().center())
-    event = QMouseEvent(
-        QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModCtrl
-    )
+    event = QMouseEvent(QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModCtrl)
 
     with monkeypatch.context() as mp:
         openUrl = MagicMock()
@@ -1952,12 +2065,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     docEditor = nwGUI.docEditor
 
     # Create Character
-    text = (
-        "# Jane Doe\n\n"
-        "@tag: Jane\n\n"
-        "# John Doe\n\n"
-        "@tag: John\n\n"
-    )
+    text = "# Jane Doe\n\n@tag: Jane\n\n# John Doe\n\n@tag: John\n\n"
     cHandle = SHARED.project.newFile("People", C.hCharRoot)
     assert nwGUI.openDocument(cHandle) is True
     docEditor.replaceText(text)
@@ -1989,10 +2097,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
     assert len(completer.actions()) == 2
     completer.actions()[0].trigger()
-    assert docEditor.getText() == (
-        "### Scene One\n\n"
-        "@char:"
-    )
+    assert docEditor.getText() == ("### Scene One\n\n@char:")
 
     # The list of Characters should show up automatically
     qtbot.keyClick(docEditor, " ", delay=KEY_DELAY)
@@ -2009,10 +2114,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
 
     # Selecting "Jane" should insert it
     completer.actions()[0].trigger()
-    assert docEditor.getText() == (
-        "### Scene One\n\n"
-        "@char: Jane"
-    )
+    assert docEditor.getText() == ("### Scene One\n\n@char: Jane")
 
     # Adding a comma should reopen it
     qtbot.keyClick(docEditor, ",", delay=KEY_DELAY)
@@ -2045,11 +2147,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(completer, Qt.Key.Key_Escape, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    assert docEditor.getText() == (
-        "### Scene One\n\n"
-        "@char: Jane\n"
-        "@focus: John\n"
-    )
+    assert docEditor.getText() == ("### Scene One\n\n@char: Jane\n@focus: John\n")
 
     # Send keypresses to the completer object for a comment
     qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
@@ -2057,12 +2155,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
     qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    assert docEditor.getText() == (
-        "### Scene One\n\n"
-        "@char: Jane\n"
-        "@focus: John\n"
-        "%Synopsis: \n"
-    )
+    assert docEditor.getText() == ("### Scene One\n\n@char: Jane\n@focus: John\n%Synopsis: \n")
 
     # Auto-complete story comment
     SHARED.project.index._itemIndex._cache.story.add("Resolution")
@@ -2077,13 +2170,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
     qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    assert docEditor.getText() == (
-        "### Scene One\n\n"
-        "@char: Jane\n"
-        "@focus: John\n"
-        "%Synopsis: \n"
-        "%Story.Resolution: \n"
-    )
+    assert docEditor.getText() == ("### Scene One\n\n@char: Jane\n@focus: John\n%Synopsis: \n%Story.Resolution: \n")
 
     # Auto-complete note comment, but select with Tab
     SHARED.project.index._itemIndex._cache.note.add("Consistency")
@@ -2100,12 +2187,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(completer, Qt.Key.Key_Tab, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     assert docEditor.getText() == (
-        "### Scene One\n\n"
-        "@char: Jane\n"
-        "@focus: John\n"
-        "%Synopsis: \n"
-        "%Story.Resolution: \n"
-        "%Note.Consistency: \n"
+        "### Scene One\n\n@char: Jane\n@focus: John\n%Synopsis: \n%Story.Resolution: \n%Note.Consistency: \n"
     )
 
     # CJK completer reposition (#2267 and #2517)
@@ -2131,9 +2213,7 @@ def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
     nwGUI.openDocument(C.hSceneDoc)
     docEditor = nwGUI.docEditor
 
-    docEditor.setPlainText(
-        "### Scene\n\n" + "".join(["Text\n\n"]*100)
-    )
+    docEditor.setPlainText("### Scene\n\n" + "".join(["Text\n\n"] * 100))
     assert docEditor.cursorIsVisible() is True
     docEditor.setCenterOnScroll(False)
 
@@ -2166,7 +2246,6 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     docEditor = nwGUI.docEditor
 
     class MockThreadPool:
-
         def __init__(self):
             self._objID = None
 
@@ -2683,6 +2762,7 @@ def testGuiEditor_Vim_EnableVimMode(qtbot, nwGUI, projPath, mockRnd):
         """Reset test text."""
         docEditor.setPlainText("Line1\nLine2\nLine3")
         return docEditor.getText()
+
     original_text = resetText()
 
     # Normal mode: hjkl should NOT change text
@@ -2841,7 +2921,7 @@ def testGuiEditor_Vim_DeleteYankPaste(qtbot, nwGUI, projPath, mockRnd):
     docEditor.setCursorPosition(line3_pos)
     qtbot.keyClicks(docEditor, "yy", delay=inputDelay)  # Yank Line3
     docEditor.setCursorPosition(line2_pos)
-    qtbot.keyClicks(docEditor, "P", delay=inputDelay)   # Paste before Line2
+    qtbot.keyClicks(docEditor, "P", delay=inputDelay)  # Paste before Line2
     lines = list(filter(str.strip, docEditor.getText().splitlines()))
     assert lines == ["Line1", "Line3", "Line2", "Line3"]
 
@@ -2912,6 +2992,7 @@ def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
         """Reset test text."""
         docEditor.setPlainText("Line1\nLine2\nLine3")
         return docEditor.getText()
+
     original_text = resetText()
 
     # Visual mode with yy
@@ -2999,7 +3080,7 @@ def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     docEditor.setPlainText("Line1 lineExtra Line2 Line3")
     end_pos = docEditor.getText().find("Line1") + len("Line1") - 1
     docEditor.setCursorPosition(end_pos)
-    qtbot.keyClick(docEditor, "v", delay=inputDelay)   # Enter visual mode
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)  # Enter visual mode
     qtbot.keyClicks(docEditor, "e", delay=inputDelay)
     selected = docEditor.textCursor().selectedText().strip()
     # Should have selected whitespace + "lineExtra"
@@ -3009,8 +3090,8 @@ def testGuiEditor_Vim_VisualMode(qtbot, nwGUI, projPath, mockRnd):
     # Visual select all with ggVG
     qtbot.keyClicks(docEditor, "g", delay=inputDelay)
     qtbot.keyClicks(docEditor, "g", delay=inputDelay)  # Go to start
-    qtbot.keyClick(docEditor, "v", delay=inputDelay)   # Enter visual mode
-    qtbot.keyClick(docEditor, "G", delay=inputDelay)   # Extend to end of file
+    qtbot.keyClick(docEditor, "v", delay=inputDelay)  # Enter visual mode
+    qtbot.keyClick(docEditor, "G", delay=inputDelay)  # Extend to end of file
 
     # Delete selection
     qtbot.keyClick(docEditor, "d", delay=inputDelay)
@@ -3095,6 +3176,7 @@ def testGuiEditor_Vim_NormalMode(qtbot, nwGUI, projPath, mockRnd):
         """Reset test text."""
         docEditor.setPlainText("Line1\nLine2\nLine3")
         return docEditor.getText()
+
     originalText = resetText()
 
     # NORMAL MODE: hjkl should NOT modify text

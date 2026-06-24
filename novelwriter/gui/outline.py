@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import csv
@@ -30,9 +31,22 @@ from typing import Final
 from PyQt6.QtCore import QT_TRANSLATE_NOOP, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWidgets import (
-    QAbstractItemView, QFileDialog, QFrame, QGridLayout, QGroupBox,
-    QHBoxLayout, QLabel, QMenu, QScrollArea, QSplitter, QToolBar, QToolButton,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView,
+    QFileDialog,
+    QFrame,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QMenu,
+    QScrollArea,
+    QSplitter,
+    QToolBar,
+    QToolButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import CONFIG, SHARED
@@ -43,8 +57,14 @@ from novelwriter.error import logException
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.types import (
-    QtAlignLeftTop, QtAlignRight, QtAlignRightTop, QtDecorationRole,
-    QtScrollAlwaysOff, QtScrollAsNeeded, QtSizeExpanding, QtUserRole
+    QtAlignLeftTop,
+    QtAlignRight,
+    QtAlignRightTop,
+    QtDecorationRole,
+    QtScrollAlwaysOff,
+    QtScrollAsNeeded,
+    QtSizeExpanding,
+    QtUserRole,
 )
 
 logger = logging.getLogger(__name__)
@@ -100,9 +120,7 @@ class GuiOutlineView(QWidget):
 
         self.outlineBar.updateTheme()
         self.outlineTree.updateTheme()
-        self.outlineTree.refreshTree(
-            rootHandle=SHARED.project.data.getLastHandle("outline"), overRide=True
-        )
+        self.outlineTree.refreshTree(rootHandle=SHARED.project.data.getLastHandle("outline"), overRide=True)
 
     def initSettings(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
@@ -200,16 +218,14 @@ class GuiOutlineToolBar(QToolBar):
         logger.debug("Create: GuiOutlineToolBar")
 
         self.setMovable(False)
-        self.setIconSize(1.4*SHARED.theme.baseIconSize)
+        self.setIconSize(1.4 * SHARED.theme.baseIconSize)
         self.setContentsMargins(0, 0, 0, 0)
 
         stretch = QWidget(self)
         stretch.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
 
         # Novel Selector
-        self.novelLabel = NColorLabel(
-            self.tr("Outline of"), self, scale=NColorLabel.HEADER_SCALE, bold=True
-        )
+        self.novelLabel = NColorLabel(self.tr("Outline of"), self, scale=NColorLabel.HEADER_SCALE, bold=True)
         self.novelLabel.setContentsMargins(0, 0, 12, 0)
 
         self.novelValue = NovelSelector(self)
@@ -226,9 +242,7 @@ class GuiOutlineToolBar(QToolBar):
 
         # Column Menu
         self.mColumns = GuiOutlineHeaderMenu(self)
-        self.mColumns.columnToggled.connect(
-            lambda isChecked, tItem: self.viewColumnToggled.emit(isChecked, tItem)
-        )
+        self.mColumns.columnToggled.connect(lambda isChecked, tItem: self.viewColumnToggled.emit(isChecked, tItem))
 
         self.tbColumns = QToolButton(self)
         self.tbColumns.setMenu(self.mColumns)
@@ -299,53 +313,53 @@ class GuiOutlineTree(QTreeWidget):
     """GUI: Project Outline Panel Tree."""
 
     DEF_WIDTH: Final[dict[nwOutline, int]] = {
-        nwOutline.TITLE:   200,
-        nwOutline.LEVEL:   40,
-        nwOutline.LABEL:   150,
-        nwOutline.LINE:    40,
-        nwOutline.STATUS:  100,
-        nwOutline.CCOUNT:  50,
-        nwOutline.WCOUNT:  50,
-        nwOutline.PCOUNT:  50,
-        nwOutline.POV:     100,
-        nwOutline.FOCUS:   100,
-        nwOutline.CHAR:    100,
-        nwOutline.PLOT:    100,
-        nwOutline.TIME:    100,
-        nwOutline.WORLD:   100,
-        nwOutline.OBJECT:  100,
-        nwOutline.ENTITY:  100,
-        nwOutline.CUSTOM:  100,
-        nwOutline.STORY:   100,
+        nwOutline.TITLE: 200,
+        nwOutline.LEVEL: 40,
+        nwOutline.LABEL: 150,
+        nwOutline.LINE: 40,
+        nwOutline.STATUS: 100,
+        nwOutline.CCOUNT: 50,
+        nwOutline.WCOUNT: 50,
+        nwOutline.PCOUNT: 50,
+        nwOutline.POV: 100,
+        nwOutline.FOCUS: 100,
+        nwOutline.CHAR: 100,
+        nwOutline.PLOT: 100,
+        nwOutline.TIME: 100,
+        nwOutline.WORLD: 100,
+        nwOutline.OBJECT: 100,
+        nwOutline.ENTITY: 100,
+        nwOutline.CUSTOM: 100,
+        nwOutline.STORY: 100,
         nwOutline.MENTION: 100,
-        nwOutline.SYNOP:   200,
+        nwOutline.SYNOP: 200,
     }
 
     DEF_HIDDEN: Final[dict[nwOutline, bool]] = {
-        nwOutline.TITLE:   False,
-        nwOutline.LEVEL:   True,
-        nwOutline.LABEL:   False,
-        nwOutline.LINE:    True,
-        nwOutline.STATUS:  True,
-        nwOutline.CCOUNT:  True,
-        nwOutline.WCOUNT:  False,
-        nwOutline.PCOUNT:  False,
-        nwOutline.POV:     False,
-        nwOutline.FOCUS:   True,
-        nwOutline.CHAR:    False,
-        nwOutline.PLOT:    False,
-        nwOutline.TIME:    True,
-        nwOutline.WORLD:   False,
-        nwOutline.OBJECT:  True,
-        nwOutline.ENTITY:  True,
-        nwOutline.CUSTOM:  True,
-        nwOutline.STORY:   True,
+        nwOutline.TITLE: False,
+        nwOutline.LEVEL: True,
+        nwOutline.LABEL: False,
+        nwOutline.LINE: True,
+        nwOutline.STATUS: True,
+        nwOutline.CCOUNT: True,
+        nwOutline.WCOUNT: False,
+        nwOutline.PCOUNT: False,
+        nwOutline.POV: False,
+        nwOutline.FOCUS: True,
+        nwOutline.CHAR: False,
+        nwOutline.PLOT: False,
+        nwOutline.TIME: True,
+        nwOutline.WORLD: False,
+        nwOutline.OBJECT: True,
+        nwOutline.ENTITY: True,
+        nwOutline.CUSTOM: True,
+        nwOutline.STORY: True,
         nwOutline.MENTION: True,
-        nwOutline.SYNOP:   False,
+        nwOutline.SYNOP: False,
     }
 
     D_HANDLE = QtUserRole
-    D_TITLE  = QtUserRole + 1
+    D_TITLE = QtUserRole + 1
 
     hiddenStateChanged = pyqtSignal()
     activeItemChanged = pyqtSignal(str, str)
@@ -384,9 +398,9 @@ class GuiOutlineTree(QTreeWidget):
 
         # Internals
         self._treeOrder = []
-        self._colWidth  = {}
+        self._colWidth = {}
         self._colHidden = {}
-        self._colIdx    = {}
+        self._colIdx = {}
         self._treeNCols = 0
         self._firstView = True
         self._lastBuild = 0
@@ -436,9 +450,9 @@ class GuiOutlineTree(QTreeWidget):
         self.setHeaderLabel(trConst(nwLabels.OUTLINE_COLS[nwOutline.TITLE]))
 
         self._treeOrder: list[nwOutline] = []
-        self._colWidth:  dict[nwOutline, int] = {}
+        self._colWidth: dict[nwOutline, int] = {}
         self._colHidden: dict[nwOutline, bool] = {}
-        self._colIdx:    dict[nwOutline, int] = {}
+        self._colIdx: dict[nwOutline, int] = {}
         self._treeNCols = 0
 
         for hItem in nwOutline:
@@ -463,10 +477,7 @@ class GuiOutlineTree(QTreeWidget):
             "H4": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H4"),
         }
 
-    def refreshTree(
-        self, rootHandle: str | None = None,
-        overRide: bool = False, novelChanged: bool = False
-    ) -> None:
+    def refreshTree(self, rootHandle: str | None = None, overRide: bool = False, novelChanged: bool = False) -> None:
         """Refresh the outline tree. Called whenever the Outline tab is
         activated and controls what data to load, and if necessary,
         force a rebuild of the tree.
@@ -530,9 +541,7 @@ class GuiOutlineTree(QTreeWidget):
             logger.info("Writing CSV file: %s", path)
             with open(path, mode="w", newline="", encoding="utf-8") as csvFile:
                 writer = csv.writer(csvFile, dialect="excel", quoting=csv.QUOTE_ALL)
-                writer.writerows(
-                    self._dumpNovelData(self.outlineView.outlineBar.novelValue.handle)
-                )
+                writer.writerows(self._dumpNovelData(self.outlineView.outlineBar.novelValue.handle))
 
     ##
     #  Private Slots
@@ -619,7 +628,8 @@ class GuiOutlineTree(QTreeWidget):
                 orgWidth = self._colWidth[hItem]
                 logWidth = self.columnWidth(iLog)
                 colState[hItem.name] = [
-                    logHidden, orgWidth if logHidden and logWidth == 0 else logWidth
+                    logHidden,
+                    orgWidth if logHidden and logWidth == 0 else logWidth,
                 ]
 
             logger.debug("Saving State: GuiOutline")
@@ -654,16 +664,12 @@ class GuiOutlineTree(QTreeWidget):
 
             headItem = self.headerItem()
             if isinstance(headItem, QTreeWidgetItem):
-                headItem.setTextAlignment(
-                    self._colIdx[nwOutline.CCOUNT], QtAlignRight)
-                headItem.setTextAlignment(
-                    self._colIdx[nwOutline.WCOUNT], QtAlignRight)
-                headItem.setTextAlignment(
-                    self._colIdx[nwOutline.PCOUNT], QtAlignRight)
+                headItem.setTextAlignment(self._colIdx[nwOutline.CCOUNT], QtAlignRight)
+                headItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], QtAlignRight)
+                headItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], QtAlignRight)
 
         novStruct = SHARED.project.index.novelStructure(rootHandle=rootHandle, activeOnly=True)
         for _, tHandle, sTitle, novIdx in novStruct:
-
             iLevel = nwStyles.H_LEVEL.get(novIdx.level, 0)
             nwItem = SHARED.project.tree[tHandle]
             if iLevel == 0 or nwItem is None:
@@ -693,22 +699,22 @@ class GuiOutlineTree(QTreeWidget):
             item.setTextAlignment(self._colIdx[nwOutline.PCOUNT], QtAlignRight)
 
             refs = SHARED.project.index.getReferences(tHandle, sTitle)
-            item.setText(self._colIdx[nwOutline.POV],     ", ".join(refs[nwKeyWords.POV_KEY]))
-            item.setText(self._colIdx[nwOutline.FOCUS],   ", ".join(refs[nwKeyWords.FOCUS_KEY]))
-            item.setText(self._colIdx[nwOutline.CHAR],    ", ".join(refs[nwKeyWords.CHAR_KEY]))
-            item.setText(self._colIdx[nwOutline.PLOT],    ", ".join(refs[nwKeyWords.PLOT_KEY]))
-            item.setText(self._colIdx[nwOutline.TIME],    ", ".join(refs[nwKeyWords.TIME_KEY]))
-            item.setText(self._colIdx[nwOutline.WORLD],   ", ".join(refs[nwKeyWords.WORLD_KEY]))
-            item.setText(self._colIdx[nwOutline.OBJECT],  ", ".join(refs[nwKeyWords.OBJECT_KEY]))
-            item.setText(self._colIdx[nwOutline.ENTITY],  ", ".join(refs[nwKeyWords.ENTITY_KEY]))
-            item.setText(self._colIdx[nwOutline.CUSTOM],  ", ".join(refs[nwKeyWords.CUSTOM_KEY]))
-            item.setText(self._colIdx[nwOutline.STORY],   ", ".join(refs[nwKeyWords.STORY_KEY]))
+            item.setText(self._colIdx[nwOutline.POV], ", ".join(refs[nwKeyWords.POV_KEY]))
+            item.setText(self._colIdx[nwOutline.FOCUS], ", ".join(refs[nwKeyWords.FOCUS_KEY]))
+            item.setText(self._colIdx[nwOutline.CHAR], ", ".join(refs[nwKeyWords.CHAR_KEY]))
+            item.setText(self._colIdx[nwOutline.PLOT], ", ".join(refs[nwKeyWords.PLOT_KEY]))
+            item.setText(self._colIdx[nwOutline.TIME], ", ".join(refs[nwKeyWords.TIME_KEY]))
+            item.setText(self._colIdx[nwOutline.WORLD], ", ".join(refs[nwKeyWords.WORLD_KEY]))
+            item.setText(self._colIdx[nwOutline.OBJECT], ", ".join(refs[nwKeyWords.OBJECT_KEY]))
+            item.setText(self._colIdx[nwOutline.ENTITY], ", ".join(refs[nwKeyWords.ENTITY_KEY]))
+            item.setText(self._colIdx[nwOutline.CUSTOM], ", ".join(refs[nwKeyWords.CUSTOM_KEY]))
+            item.setText(self._colIdx[nwOutline.STORY], ", ".join(refs[nwKeyWords.STORY_KEY]))
             item.setText(self._colIdx[nwOutline.MENTION], ", ".join(refs[nwKeyWords.MENTION_KEY]))
 
             self.addTopLevelItem(item)
 
         self._lastBuild = time()
-        logger.debug("Project outline built in %.3f ms", 1000.0*(time() - tStart))
+        logger.debug("Project outline built in %.3f ms", 1000.0 * (time() - tStart))
 
     def _dumpNovelData(self, rootHandle: str | None) -> list[list[str | int]]:
         """Dump all novel data into a table."""
@@ -721,63 +727,65 @@ class GuiOutlineTree(QTreeWidget):
         sHeaders = [f"{sLabel} ({k})" for k in sKeys]
         nHeaders = [f"{nLabel} ({k})" for k in nKeys]
 
-        data: list[list[str | int]] = [[
-            "H",
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.TITLE]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.LABEL]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.LINE]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.STATUS]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.CCOUNT]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.WCOUNT]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.PCOUNT]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.POV]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.FOCUS]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.CHAR]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.PLOT]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.TIME]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.WORLD]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.OBJECT]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.ENTITY]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.CUSTOM]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.STORY]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.MENTION]),
-            trConst(nwLabels.OUTLINE_COLS[nwOutline.SYNOP]),
-            *sHeaders,
-            *nHeaders,
-        ]]
+        data: list[list[str | int]] = [
+            [
+                "H",
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.TITLE]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.LABEL]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.LINE]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.STATUS]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.CCOUNT]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.WCOUNT]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.PCOUNT]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.POV]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.FOCUS]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.CHAR]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.PLOT]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.TIME]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.WORLD]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.OBJECT]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.ENTITY]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.CUSTOM]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.STORY]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.MENTION]),
+                trConst(nwLabels.OUTLINE_COLS[nwOutline.SYNOP]),
+                *sHeaders,
+                *nHeaders,
+            ]
+        ]
 
-        for _, tHandle, sTitle, novIdx in SHARED.project.index.novelStructure(
-            rootHandle=rootHandle, activeOnly=True
-        ):
+        for _, tHandle, sTitle, novIdx in SHARED.project.index.novelStructure(rootHandle=rootHandle, activeOnly=True):
             if novIdx.level != "H0" and (nwItem := SHARED.project.tree[tHandle]):
                 refs = SHARED.project.index.getReferences(tHandle, sTitle)
                 comments = dict(novIdx.comments.items())
                 story = [comments.get(k, "") for k in sMatch]
                 notes = [comments.get(k, "") for k in nMatch]
-                data.append([
-                    novIdx.level,
-                    novIdx.title,
-                    nwItem.itemName,
-                    novIdx.line,
-                    nwItem.getImportStatus()[0],
-                    novIdx.charCount,
-                    novIdx.wordCount,
-                    novIdx.paraCount,
-                    ", ".join(refs[nwKeyWords.POV_KEY]),
-                    ", ".join(refs[nwKeyWords.FOCUS_KEY]),
-                    ", ".join(refs[nwKeyWords.CHAR_KEY]),
-                    ", ".join(refs[nwKeyWords.PLOT_KEY]),
-                    ", ".join(refs[nwKeyWords.TIME_KEY]),
-                    ", ".join(refs[nwKeyWords.WORLD_KEY]),
-                    ", ".join(refs[nwKeyWords.OBJECT_KEY]),
-                    ", ".join(refs[nwKeyWords.ENTITY_KEY]),
-                    ", ".join(refs[nwKeyWords.CUSTOM_KEY]),
-                    ", ".join(refs[nwKeyWords.STORY_KEY]),
-                    ", ".join(refs[nwKeyWords.MENTION_KEY]),
-                    novIdx.synopsis,
-                    *story,
-                    *notes,
-                ])
+                data.append(
+                    [
+                        novIdx.level,
+                        novIdx.title,
+                        nwItem.itemName,
+                        novIdx.line,
+                        nwItem.getImportStatus()[0],
+                        novIdx.charCount,
+                        novIdx.wordCount,
+                        novIdx.paraCount,
+                        ", ".join(refs[nwKeyWords.POV_KEY]),
+                        ", ".join(refs[nwKeyWords.FOCUS_KEY]),
+                        ", ".join(refs[nwKeyWords.CHAR_KEY]),
+                        ", ".join(refs[nwKeyWords.PLOT_KEY]),
+                        ", ".join(refs[nwKeyWords.TIME_KEY]),
+                        ", ".join(refs[nwKeyWords.WORLD_KEY]),
+                        ", ".join(refs[nwKeyWords.OBJECT_KEY]),
+                        ", ".join(refs[nwKeyWords.ENTITY_KEY]),
+                        ", ".join(refs[nwKeyWords.CUSTOM_KEY]),
+                        ", ".join(refs[nwKeyWords.STORY_KEY]),
+                        ", ".join(refs[nwKeyWords.MENTION_KEY]),
+                        novIdx.synopsis,
+                        *story,
+                        *notes,
+                    ]
+                )
 
         return data
 
@@ -841,8 +849,8 @@ class GuiOutlineDetails(QScrollArea):
         self.outlineView = outlineView
 
         # Sizes
-        minTitle = 30*SHARED.theme.textNWidth
-        maxTitle = 40*SHARED.theme.textNWidth
+        minTitle = 30 * SHARED.theme.textNWidth
+        maxTitle = 40 * SHARED.theme.textNWidth
         wCount = SHARED.theme.getTextWidth("999,999")
 
         bFont = SHARED.theme.guiFontB
@@ -853,11 +861,11 @@ class GuiOutlineDetails(QScrollArea):
 
         # Details Area
         self.titleLabel = QLabel(self.tr("Title"), self)
-        self.fileLabel  = QLabel(self.tr("Document"), self)
-        self.itemLabel  = QLabel(self.tr("Status"), self)
+        self.fileLabel = QLabel(self.tr("Document"), self)
+        self.itemLabel = QLabel(self.tr("Status"), self)
         self.titleValue = QLabel("", self)
-        self.fileValue  = QLabel("", self)
-        self.itemValue  = QLabel("", self)
+        self.fileValue = QLabel("", self)
+        self.itemValue = QLabel("", self)
 
         self.titleLabel.setFont(bFont)
         self.fileLabel.setFont(bFont)
@@ -907,16 +915,16 @@ class GuiOutlineDetails(QScrollArea):
 
         self.mainForm.addWidget(self.titleLabel, 0, 0, 1, 1, QtAlignLeftTop)
         self.mainForm.addWidget(self.titleValue, 0, 1, 1, 1, QtAlignLeftTop)
-        self.mainForm.addWidget(self.cCLabel,    0, 2, 1, 1, QtAlignLeftTop)
-        self.mainForm.addWidget(self.cCValue,    0, 3, 1, 1, QtAlignRightTop)
-        self.mainForm.addWidget(self.fileLabel,  1, 0, 1, 1, QtAlignLeftTop)
-        self.mainForm.addWidget(self.fileValue,  1, 1, 1, 1, QtAlignLeftTop)
-        self.mainForm.addWidget(self.wCLabel,    1, 2, 1, 1, QtAlignLeftTop)
-        self.mainForm.addWidget(self.wCValue,    1, 3, 1, 1, QtAlignRightTop)
-        self.mainForm.addWidget(self.itemLabel,  2, 0, 1, 1, QtAlignLeftTop)
-        self.mainForm.addWidget(self.itemValue,  2, 1, 1, 1, QtAlignLeftTop)
-        self.mainForm.addWidget(self.pCLabel,    2, 2, 1, 1, QtAlignLeftTop)
-        self.mainForm.addWidget(self.pCValue,    2, 3, 1, 1, QtAlignRightTop)
+        self.mainForm.addWidget(self.cCLabel, 0, 2, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.cCValue, 0, 3, 1, 1, QtAlignRightTop)
+        self.mainForm.addWidget(self.fileLabel, 1, 0, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.fileValue, 1, 1, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.wCLabel, 1, 2, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.wCValue, 1, 3, 1, 1, QtAlignRightTop)
+        self.mainForm.addWidget(self.itemLabel, 2, 0, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.itemValue, 2, 1, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.pCLabel, 2, 2, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.pCValue, 2, 3, 1, 1, QtAlignRightTop)
         self.mainForm.addWidget(self.synopLabel, 3, 0, 1, 4, QtAlignLeftTop)
         self.mainForm.addLayout(self.synopLWrap, 4, 0, 1, 4, QtAlignLeftTop)
 
@@ -984,10 +992,12 @@ class GuiOutlineDetails(QScrollArea):
         parent = self.outlineView.parent()  # This widget is rendered already
         width = parent.width() if isinstance(parent, QWidget) else 1000
         pOptions = SHARED.project.options
-        self.mainSplit.setSizes([
-            pOptions.getInt("GuiOutlineDetails", "detailsWidth", width//3),
-            pOptions.getInt("GuiOutlineDetails", "tagsWidth", 2*width//3),
-        ])
+        self.mainSplit.setSizes(
+            [
+                pOptions.getInt("GuiOutlineDetails", "detailsWidth", width // 3),
+                pOptions.getInt("GuiOutlineDetails", "tagsWidth", 2 * width // 3),
+            ]
+        )
 
     def saveGuiSettings(self) -> None:
         """Run close project tasks."""
@@ -1058,6 +1068,4 @@ class GuiOutlineDetails(QScrollArea):
     @staticmethod
     def _formatTags(refs: dict[str, list[str]], key: str) -> str:
         """Convert a list of tags into a list of clickable tag links."""
-        return ", ".join(
-            [f"<a href='{tag}'>{tag}</a>" for tag in refs.get(key, [])]
-        )
+        return ", ".join([f"<a href='{tag}'>{tag}</a>" for tag in refs.get(key, [])])

@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -43,20 +44,25 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
 
     # Write a test file
     optFile = metaDir / nwFiles.OPTS_FILE
-    optFile.write_text(json.dumps({
-        "novelWriter.guiOptions": {
-            "GuiProjectSettings": {
-                "winWidth": 570,
-                "winHeight": 375,
-                "replaceColW": 130,
-                "statusColW": 130,
-                "importColW": 130
-            },
-            "MockGroup": {
-                "mockItem": None,
-            },
-        },
-    }), encoding="utf-8")
+    optFile.write_text(
+        json.dumps(
+            {
+                "novelWriter.guiOptions": {
+                    "GuiProjectSettings": {
+                        "winWidth": 570,
+                        "winHeight": 375,
+                        "replaceColW": 130,
+                        "statusColW": 130,
+                        "importColW": 130,
+                    },
+                    "MockGroup": {
+                        "mockItem": None,
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
 
     # Load and save with no path set
     project.storage._runtimePath = None
@@ -84,7 +90,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
             "winHeight": 375,
             "replaceColW": 130,
             "statusColW": 130,
-            "importColW": 130
+            "importColW": 130,
         },
     }
 
@@ -99,7 +105,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
             "winHeight": 375,
             "replaceColW": 130,
             "statusColW": 130,
-            "importColW": 130
+            "importColW": 130,
         },
     }
 

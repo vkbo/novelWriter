@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -47,18 +48,14 @@ def testFmtToHtml_ConvertNovelHeaders(mockGUI):
     html.setPartitionFormat(f"Part{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p class='title' style='text-align: center;'>Part<br>Title</p>\n"
-    )
+    assert html._pages[-1] == ("<p class='title' style='text-align: center;'>Part<br>Title</p>\n")
 
     # Chapter
     html._text = "## Title\n"
     html.setChapterFormat(f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<h1 style='page-break-before: always;'>Chapter 1<br>Title</h1>\n"
-    )
+    assert html._pages[-1] == ("<h1 style='page-break-before: always;'>Chapter 1<br>Title</h1>\n")
 
     # Scene
     html._text = "### Title\n"
@@ -77,9 +74,7 @@ def testFmtToHtml_ConvertNovelHeaders(mockGUI):
     html._text = "#! Title\n"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p class='title' style='text-align: center; page-break-before: always;'>Title</p>\n"
-    )
+    assert html._pages[-1] == ("<p class='title' style='text-align: center; page-break-before: always;'>Title</p>\n")
 
     # Unnumbered
     html._text = "##! Prologue\n"
@@ -167,8 +162,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == (
-        "<p>Some <strong>nested bold and <em>italic</em> and "
-        "<del>strikethrough</del> text</strong> here</p>\n"
+        "<p>Some <strong>nested bold and <em>italic</em> and <del>strikethrough</del> text</strong> here</p>\n"
     )
 
     # Shortcodes
@@ -188,9 +182,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html._text = "Line one\nLine two\nLine three\n"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p>Line one<br>Line two<br>Line three</p>\n"
-    )
+    assert html._pages[-1] == ("<p>Line one<br>Line two<br>Line three</p>\n")
 
     # Synopsis, Short
     html._text = "%synopsis: The synopsis ...\n"
@@ -290,16 +282,13 @@ def testFmtToHtml_ConvertMeta(mockGUI):
     html._text = "@tag: Bod\n"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p class='meta meta-tag'><strong>Tag:</strong> <a name='tag_bod'>Bod</a></p>\n"
-    )
+    assert html._pages[-1] == ("<p class='meta meta-tag'><strong>Tag:</strong> <a name='tag_bod'>Bod</a></p>\n")
 
     html._text = "@tag: Bod | Nobody Owens\n"
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == (
-        "<p class='meta meta-tag'><strong>Tag:</strong> "
-        "<a name='tag_bod'>Bod</a> | Nobody Owens</p>\n"
+        "<p class='meta meta-tag'><strong>Tag:</strong> <a name='tag_bod'>Bod</a> | Nobody Owens</p>\n"
     )
 
     # Multiple Keywords w/Colour
@@ -351,41 +340,31 @@ def testFmtToHtml_Alignment(mockGUI):
     html._text = "This is text <<\nspanning multiple\nlines"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p style='text-align: left;'>This is text<br>spanning multiple<br>lines</p>\n"
-    )
+    assert html._pages[-1] == ("<p style='text-align: left;'>This is text<br>spanning multiple<br>lines</p>\n")
 
     # Right
     html._text = ">> This is text\nspanning multiple\nlines"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p style='text-align: right;'>This is text<br>spanning multiple<br>lines</p>\n"
-    )
+    assert html._pages[-1] == ("<p style='text-align: right;'>This is text<br>spanning multiple<br>lines</p>\n")
 
     # Centre
     html._text = ">> This is text <<\nspanning multiple\nlines"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p style='text-align: center;'>This is text<br>spanning multiple<br>lines</p>\n"
-    )
+    assert html._pages[-1] == ("<p style='text-align: center;'>This is text<br>spanning multiple<br>lines</p>\n")
 
     # Left before Right
     html._text = ">> This is text\nspanning multiple <<\nlines"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p style='text-align: left;'>This is text<br>spanning multiple<br>lines</p>\n"
-    )
+    assert html._pages[-1] == ("<p style='text-align: left;'>This is text<br>spanning multiple<br>lines</p>\n")
 
     # Right before Centre
     html._text = ">> This is text <<\n>> spanning multiple\nlines"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p style='text-align: right;'>This is text<br>spanning multiple<br>lines</p>\n"
-    )
+    assert html._pages[-1] == ("<p style='text-align: right;'>This is text<br>spanning multiple<br>lines</p>\n")
 
 
 @pytest.mark.core
@@ -407,8 +386,7 @@ def testFmtToHtml_Dialog(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1>Chapter</h1>\n"
-        "<p>This text <span style='color: #4271ae'>“has dialogue”</span> in it.</p>\n"
+        "<h1>Chapter</h1>\n<p>This text <span style='color: #4271ae'>“has dialogue”</span> in it.</p>\n"
     )
 
     # Alt Dialog
@@ -430,28 +408,18 @@ def testFmtToHtml_Footnotes(mockGUI):
     html._isNovel = True
     html._isFirst = True
 
-    html._text = (
-        "Text with one[footnote:fa] or two[footnote:fb] footnotes.\n\n"
-        "%footnote.fa: Footnote text A.\n\n"
-    )
+    html._text = "Text with one[footnote:fa] or two[footnote:fb] footnotes.\n\n%footnote.fa: Footnote text A.\n\n"
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == (
-        "<p>Text with one<sup><a href='#footnote_1'>1</a></sup> "
-        "or two<sup>ERR</sup> footnotes.</p>\n"
+        "<p>Text with one<sup><a href='#footnote_1'>1</a></sup> or two<sup>ERR</sup> footnotes.</p>\n"
     )
 
     html.closeDocument()
     assert html._pages[-2] == (
-        "<p>Text with one<sup><a href='#footnote_1'>1</a></sup> "
-        "or two<sup>ERR</sup> footnotes.</p>\n"
+        "<p>Text with one<sup><a href='#footnote_1'>1</a></sup> or two<sup>ERR</sup> footnotes.</p>\n"
     )
-    assert html._pages[-1] == (
-        "<h3>Footnotes</h3>\n"
-        "<ol>\n"
-        "<li id='footnote_1'><p>Footnote text A.</p></li>\n"
-        "</ol>\n"
-    )
+    assert html._pages[-1] == ("<h3>Footnotes</h3>\n<ol>\n<li id='footnote_1'><p>Footnote text A.</p></li>\n</ol>\n")
 
 
 @pytest.mark.core
@@ -486,9 +454,7 @@ def testFmtToHtml_CloseTags(mockGUI):
     html._text = "Text text [/b][/i][/s][/u][/m][/sup][/sub]text text.\n"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p>Text text text text.</p>\n"
-    )
+    assert html._pages[-1] == ("<p>Text text text text.</p>\n")
 
 
 @pytest.mark.core
@@ -523,8 +489,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     ]
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 style='page-break-before: always;'>"
-        "<a name='0000000000000:T0001'></a>Prologue</h1>\n"
+        "<h1 style='page-break-before: always;'><a name='0000000000000:T0001'></a>Prologue</h1>\n"
     )
 
     # Separators
@@ -562,36 +527,28 @@ def testFmtToHtml_ConvertDirect(mockGUI):
         (BlockTyp.PART, tMeta, "A Title", [], BlockFmt.LEFT),
     ]
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p class='title' style='text-align: left;'>A Title</p>\n"
-    )
+    assert html._pages[-1] == ("<p class='title' style='text-align: left;'>A Title</p>\n")
 
     # Align Right
     html._blocks = [
         (BlockTyp.PART, tMeta, "A Title", [], BlockFmt.RIGHT),
     ]
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p class='title' style='text-align: right;'>A Title</p>\n"
-    )
+    assert html._pages[-1] == ("<p class='title' style='text-align: right;'>A Title</p>\n")
 
     # Align Centre
     html._blocks = [
         (BlockTyp.PART, tMeta, "A Title", [], BlockFmt.CENTRE),
     ]
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p class='title' style='text-align: center;'>A Title</p>\n"
-    )
+    assert html._pages[-1] == ("<p class='title' style='text-align: center;'>A Title</p>\n")
 
     # Align Justify
     html._blocks = [
         (BlockTyp.PART, tMeta, "A Title", [], BlockFmt.JUSTIFY),
     ]
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p class='title' style='text-align: justify;'>A Title</p>\n"
-    )
+    assert html._pages[-1] == ("<p class='title' style='text-align: justify;'>A Title</p>\n")
 
     # Page Break
     # ==========
@@ -602,8 +559,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     ]
     html.doConvert()
     assert html._pages[-1] == (
-        "<p class='title' "
-        "style='page-break-before: always; page-break-after: always;'>A Title</p>\n"
+        "<p class='title' style='page-break-before: always; page-break-after: always;'>A Title</p>\n"
     )
 
     # Indent
@@ -614,27 +570,21 @@ def testFmtToHtml_ConvertDirect(mockGUI):
         (BlockTyp.TEXT, tMeta, "Some text ...", [], BlockFmt.IND_L),
     ]
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p style='margin-left: 4.00em;'>Some text ...</p>\n"
-    )
+    assert html._pages[-1] == ("<p style='margin-left: 4.00em;'>Some text ...</p>\n")
 
     # Indent Right
     html._blocks = [
         (BlockTyp.TEXT, tMeta, "Some text ...", [], BlockFmt.IND_R),
     ]
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p style='margin-right: 4.00em;'>Some text ...</p>\n"
-    )
+    assert html._pages[-1] == ("<p style='margin-right: 4.00em;'>Some text ...</p>\n")
 
     # Text Indent
     html._blocks = [
         (BlockTyp.TEXT, tMeta, "Some text ...", [], BlockFmt.IND_T),
     ]
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p style='text-indent: 1.40em;'>Some text ...</p>\n"
-    )
+    assert html._pages[-1] == ("<p style='text-indent: 1.40em;'>Some text ...</p>\n")
 
 
 @pytest.mark.core
@@ -651,30 +601,22 @@ def testFmtToHtml_SpecialCases(mockGUI):
     html._text = "Text with > and < with some **bold text** in it.\n"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p>Text with &gt; and &lt; with some <strong>bold text</strong> in it.</p>\n"
-    )
+    assert html._pages[-1] == ("<p>Text with &gt; and &lt; with some <strong>bold text</strong> in it.</p>\n")
 
     html._text = "Text with some <**bold text**> in it.\n"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p>Text with some &lt;<strong>bold text</strong>&gt; in it.</p>\n"
-    )
+    assert html._pages[-1] == ("<p>Text with some &lt;<strong>bold text</strong>&gt; in it.</p>\n")
 
     html._text = "Let's > be > _difficult **shall** > we_?\n"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p>Let's &gt; be &gt; <em>difficult <strong>shall</strong> &gt; we</em>?</p>\n"
-    )
+    assert html._pages[-1] == ("<p>Let's &gt; be &gt; <em>difficult <strong>shall</strong> &gt; we</em>?</p>\n")
 
     html._text = "Test > text _<**bold**>_ and more.\n"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p>Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> and more.</p>\n"
-    )
+    assert html._pages[-1] == ("<p>Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> and more.</p>\n")
 
     # Test for issue #950
     # ===================
@@ -696,9 +638,7 @@ def testFmtToHtml_SpecialCases(mockGUI):
     html._text = "## Heading <1>\n"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<h1 style='page-break-before: always;'>Heading &lt;1&gt;</h1>\n"
-    )
+    assert html._pages[-1] == ("<h1 style='page-break-before: always;'>Heading &lt;1&gt;</h1>\n")
 
     # Test for issue #1412
     # ====================
@@ -707,9 +647,7 @@ def testFmtToHtml_SpecialCases(mockGUI):
     html._text = "Test text \\**_bold_** and more.\n"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p>Test text **<em>bold</em>** and more.</p>\n"
-    )
+    assert html._pages[-1] == ("<p>Test text **<em>bold</em>** and more.</p>\n")
 
 
 @pytest.mark.core
@@ -732,28 +670,15 @@ def testFmtToHtml_Save(mockGUI, fncPath):
         "### Scene 2\n\nThe text of scene two.\n",
         "#### A Section\n\n\tMore text in scene two.\n",
     ]
-    resText = [(
-        "<p class='title' style='text-align: center;'>My Novel</p>\n"
-        "<p><strong>By Jane Doh</strong></p>\n"
-    ), (
-        "<h1 style='page-break-before: always;'>Chapter 1</h1>\n"
-        "<p>The text of chapter one.</p>\n"
-    ), (
-        "<h2>Scene 1</h2>\n"
-        "<p>The text of scene one.</p>\n"
-    ), (
-        "<h3>A Section</h3>\n"
-        "<p>More text in scene one.</p>\n"
-    ), (
-        "<h1 style='page-break-before: always;'>Chapter 2</h1>\n"
-        "<p>The text of chapter two.</p>\n"
-    ),  (
-        "<h2>Scene 2</h2>\n"
-        "<p>The text of scene two.</p>\n"
-    ),  (
-        "<h3>A Section</h3>\n"
-        "<p>\tMore text in scene two.</p>\n"
-    )]
+    resText = [
+        ("<p class='title' style='text-align: center;'>My Novel</p>\n<p><strong>By Jane Doh</strong></p>\n"),
+        ("<h1 style='page-break-before: always;'>Chapter 1</h1>\n<p>The text of chapter one.</p>\n"),
+        ("<h2>Scene 1</h2>\n<p>The text of scene one.</p>\n"),
+        ("<h3>A Section</h3>\n<p>More text in scene one.</p>\n"),
+        ("<h1 style='page-break-before: always;'>Chapter 2</h1>\n<p>The text of chapter two.</p>\n"),
+        ("<h2>Scene 2</h2>\n<p>The text of scene two.</p>\n"),
+        ("<h3>A Section</h3>\n<p>\tMore text in scene two.</p>\n"),
+    ]
 
     for i in range(len(docText)):
         html._text = docText[i]
@@ -787,10 +712,7 @@ def testFmtToHtml_Save(mockGUI, fncPath):
         "{body}\n"
         "</body>\n"
         "</html>\n"
-    ).format(
-        style="\n".join(hStyle),
-        body="".join(resText).rstrip()
-    )
+    ).format(style="\n".join(hStyle), body="".join(resText).rstrip())
 
     saveFile = fncPath / "outFile.htm"
     html.saveDocument(saveFile)
@@ -809,9 +731,7 @@ def testFmtToHtml_Save(mockGUI, fncPath):
         "{body}\n"
         "</body>\n"
         "</html>\n"
-    ).format(
-        body="".join(resText).rstrip()
-    )
+    ).format(body="".join(resText).rstrip())
 
     saveFile = fncPath / "outFile.htm"
     html.saveDocument(saveFile)
@@ -844,9 +764,7 @@ def testFmtToHtml_Methods(mockGUI):
     html.doPreProcessing()
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p>Text with &lt;brackets&gt; &amp; short–dash, long—dash …</p>\n"
-    )
+    assert html._pages[-1] == ("<p>Text with &lt;brackets&gt; &amp; short–dash, long—dash …</p>\n")
 
     # Auto-Replace, replace Unicode
     docText = "Text with <brackets> & short–dash, long—dash …\n"
@@ -855,9 +773,7 @@ def testFmtToHtml_Methods(mockGUI):
     html.doPreProcessing()
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == (
-        "<p>Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;</p>\n"
-    )
+    assert html._pages[-1] == ("<p>Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;</p>\n")
 
     # Result Size
     assert html.getFullResultSize() == 147

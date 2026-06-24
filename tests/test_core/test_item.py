@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import copy
@@ -288,7 +289,7 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
             "order": "1",
             "type": "FILE",
             "class": "NOVEL",
-            "layout": "DOCUMENT"
+            "layout": "DOCUMENT",
         },
         "metaAttr": {
             "expanded": "no",
@@ -296,13 +297,9 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
             "charCount": "9",
             "wordCount": "2",
             "paraCount": "0",
-            "cursorPos": "0"
+            "cursorPos": "0",
         },
-        "nameAttr": {
-            "status": "s000000",
-            "import": "i000004",
-            "active": "yes"
-        }
+        "nameAttr": {"status": "s000000", "import": "i000004", "active": "yes"},
     }
 
     # Get the scene item
@@ -555,31 +552,36 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
 
     # File
     item = NWItem(project, "")
-    assert item.unpack({
-        "name": "A File",
-        "itemAttr": {
-            "handle": "0000000000003",
-            "parent": "0000000000002",
-            "root": "0000000000001",
-            "order": 1,
-            "type": "FILE",
-            "class": "NOVEL",
-            "layout": "DOCUMENT",
-        },
-        "metaAttr": {
-            "expanded": True,
-            "heading": "H1",
-            "charCount": 100,
-            "wordCount": 20,
-            "paraCount": 2,
-            "cursorPos": 50,
-        },
-        "nameAttr": {
-            "status": None,
-            "import": None,
-            "active": False,
-        },
-    }) is True
+    assert (
+        item.unpack(
+            {
+                "name": "A File",
+                "itemAttr": {
+                    "handle": "0000000000003",
+                    "parent": "0000000000002",
+                    "root": "0000000000001",
+                    "order": 1,
+                    "type": "FILE",
+                    "class": "NOVEL",
+                    "layout": "DOCUMENT",
+                },
+                "metaAttr": {
+                    "expanded": True,
+                    "heading": "H1",
+                    "charCount": 100,
+                    "wordCount": 20,
+                    "paraCount": 2,
+                    "cursorPos": 50,
+                },
+                "nameAttr": {
+                    "status": None,
+                    "import": None,
+                    "active": False,
+                },
+            }
+        )
+        is True
+    )
 
     assert item.itemName == "A File"
     assert item.itemHandle == "0000000000003"
@@ -622,36 +624,41 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
             "status": "s000000",
             "import": "i000001",
             "active": "no",
-        }
+        },
     }
 
     # Folder
     item = NWItem(project, "")
-    assert item.unpack({
-        "name": "A Folder",
-        "itemAttr": {
-            "handle": "0000000000003",
-            "parent": "0000000000002",
-            "root": "0000000000001",
-            "order": 1,
-            "type": "FOLDER",
-            "class": "NOVEL",
-            "layout": "DOCUMENT",
-        },
-        "metaAttr": {
-            "expanded": True,
-            "heading": "H1",
-            "charCount": 100,
-            "wordCount": 20,
-            "paraCount": 2,
-            "cursorPos": 50,
-        },
-        "nameAttr": {
-            "status": "",
-            "import": "",
-            "active": True,
-        }
-    }) is True
+    assert (
+        item.unpack(
+            {
+                "name": "A Folder",
+                "itemAttr": {
+                    "handle": "0000000000003",
+                    "parent": "0000000000002",
+                    "root": "0000000000001",
+                    "order": 1,
+                    "type": "FOLDER",
+                    "class": "NOVEL",
+                    "layout": "DOCUMENT",
+                },
+                "metaAttr": {
+                    "expanded": True,
+                    "heading": "H1",
+                    "charCount": 100,
+                    "wordCount": 20,
+                    "paraCount": 2,
+                    "cursorPos": 50,
+                },
+                "nameAttr": {
+                    "status": "",
+                    "import": "",
+                    "active": True,
+                },
+            }
+        )
+        is True
+    )
 
     assert item.itemName == "A Folder"
     assert item.itemHandle == "0000000000003"
@@ -687,36 +694,41 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
         "nameAttr": {
             "status": "s000000",
             "import": "i000001",
-        }
+        },
     }
 
     # Root
     item = NWItem(project, "")
-    assert item.unpack({
-        "name": "A Novel",
-        "itemAttr": {
-            "handle": "0000000000003",
-            "parent": "0000000000002",
-            "root": "0000000000001",
-            "order": 1,
-            "type": "ROOT",
-            "class": "NOVEL",
-            "layout": "DOCUMENT",
-        },
-        "metaAttr": {
-            "expanded": True,
-            "heading": "H1",
-            "charCount": 100,
-            "wordCount": 20,
-            "paraCount": 2,
-            "cursorPos": 50,
-        },
-        "nameAttr": {
-            "status": None,
-            "import": None,
-            "active": True,
-        },
-    }) is True
+    assert (
+        item.unpack(
+            {
+                "name": "A Novel",
+                "itemAttr": {
+                    "handle": "0000000000003",
+                    "parent": "0000000000002",
+                    "root": "0000000000001",
+                    "order": 1,
+                    "type": "ROOT",
+                    "class": "NOVEL",
+                    "layout": "DOCUMENT",
+                },
+                "metaAttr": {
+                    "expanded": True,
+                    "heading": "H1",
+                    "charCount": 100,
+                    "wordCount": 20,
+                    "paraCount": 2,
+                    "cursorPos": 50,
+                },
+                "nameAttr": {
+                    "status": None,
+                    "import": None,
+                    "active": True,
+                },
+            }
+        )
+        is True
+    )
 
     assert item.itemName == "A Novel"
     assert item.itemHandle == "0000000000003"
@@ -752,5 +764,5 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
         "nameAttr": {
             "status": "s000000",
             "import": "i000001",
-        }
+        },
     }

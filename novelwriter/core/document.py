@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import hashlib
@@ -51,12 +52,12 @@ class NWDocument:
 
         self._project = project
 
-        self._item      = None   # The currently open item
-        self._handle    = None   # The handle of the currently open item
-        self._fileLoc   = None   # The file location of the currently open item
-        self._docMeta   = {}     # The meta data of the currently open item
-        self._docError  = ""     # The latest encountered IO error
-        self._lastHash  = ""     # The last known SHA hash
+        self._item = None  # The currently open item
+        self._handle = None  # The handle of the currently open item
+        self._fileLoc = None  # The file location of the currently open item
+        self._docMeta = {}  # The meta data of the currently open item
+        self._docError = ""  # The latest encountered IO error
+        self._lastHash = ""  # The last known SHA hash
         self._hashError = False  # Hash mismatch on last write attempt
 
         if isHandle(tHandle):

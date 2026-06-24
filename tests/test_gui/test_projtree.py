@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -36,8 +37,13 @@ from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.gui.projtree import _TreeContextMenu
 from novelwriter.shared import _GuiAlert
 from novelwriter.types import (
-    QtAccepted, QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected,
-    QtScrollAlwaysOff, QtScrollAsNeeded
+    QtAccepted,
+    QtModNone,
+    QtMouseLeft,
+    QtMouseMiddle,
+    QtRejected,
+    QtScrollAlwaysOff,
+    QtScrollAsNeeded,
 )
 
 from tests.mocked import causeOSError
@@ -64,8 +70,15 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert trash is not None
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Root Items
@@ -74,8 +87,15 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     # No class set
     projTree.newTreeItem(nwItemType.ROOT)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Create Objects root item after Locations
@@ -87,8 +107,16 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert item is not None
     assert item.itemName == "Objects"
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Objects", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Trash",
     ]
 
     # File/Folder Items
@@ -128,8 +156,17 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert item.itemRoot == C.hNovelRoot
     assert item.itemClass == nwItemClass.NOVEL
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "Plot", "Characters", "Locations", "Objects", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Trash",
     ]
 
     # Add a new file in the new folder
@@ -144,9 +181,18 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert item.itemRoot == C.hNovelRoot
     assert item.itemClass == nwItemClass.NOVEL
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "Plot", "Characters", "Locations",
-        "Objects", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "New Document",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Trash",
     ]
 
     # Add a new partition next to the other new file
@@ -163,9 +209,19 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert nwGUI.openDocument(hNewPart)
     assert nwGUI.docEditor.getText() == "# New Part\n\n"
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Part", "Plot", "Characters",
-        "Locations", "Objects", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "New Document",
+        "New Part",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Trash",
     ]
 
     # Add a new chapter next to the other new file
@@ -182,9 +238,20 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert nwGUI.openDocument(hNewChapter)
     assert nwGUI.docEditor.getText() == "## New Chapter\n\n"
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Part", "New Chapter", "Plot",
-        "Characters", "Locations", "Objects", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "New Document",
+        "New Part",
+        "New Chapter",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Trash",
     ]
 
     # Add a new scene next to the other new file
@@ -201,9 +268,21 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert nwGUI.openDocument(hNewScene)
     assert nwGUI.docEditor.getText() == "### New Scene\n\n"
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Objects", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "New Document",
+        "New Part",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Trash",
     ]
 
     # Add a new scene with the content copied from the previous
@@ -224,9 +303,22 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert nwGUI.openDocument(hNewSceneCopy)
     assert nwGUI.docEditor.getText() == "### New Scene\n\nWith Stuff\n\n"
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
-        "New Scene", "Plot", "Characters", "Locations", "Objects", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "New Document",
+        "New Part",
+        "New Chapter",
+        "New Scene",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Trash",
     ]
 
     # Add a new file to the characters folder
@@ -243,10 +335,23 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert nwGUI.openDocument(hNewCharacter)
     assert nwGUI.docEditor.getText() == "# New Note\n\n"
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
-        "New Scene", "Plot", "Characters", "New Note", "Locations",
-        "Objects", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "New Document",
+        "New Part",
+        "New Chapter",
+        "New Scene",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "New Note",
+        "Locations",
+        "Objects",
+        "Trash",
     ]
 
     # Cancel during creation
@@ -255,10 +360,23 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
         projView.setSelectedHandle(hNewFile, doScroll=True)
         projTree.newTreeItem(nwItemType.FILE)
         assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-            "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-            "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
-            "New Scene", "Plot", "Characters", "New Note", "Locations",
-            "Objects", "Trash",
+            "Novel",
+            "Title Page",
+            "New Folder",
+            "New Chapter",
+            "New Scene",
+            "New Folder",
+            "New Document",
+            "New Part",
+            "New Chapter",
+            "New Scene",
+            "New Scene",
+            "Plot",
+            "Characters",
+            "New Note",
+            "Locations",
+            "Objects",
+            "Trash",
         ]
 
     # From Template
@@ -276,10 +394,24 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert item.itemRoot == hTemplateRoot
     assert item.itemClass == nwItemClass.TEMPLATE
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
-        "New Scene", "Plot", "Characters", "New Note", "Locations",
-        "Objects", "Templates", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "New Document",
+        "New Part",
+        "New Chapter",
+        "New Scene",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "New Note",
+        "Locations",
+        "Objects",
+        "Templates",
+        "Trash",
     ]
 
     # Create scene template
@@ -299,10 +431,25 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     nwGUI.docEditor.setPlainText("### New Scene Template\n\nWith Stuff\n\n")
     nwGUI.saveDocument()
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
-        "New Scene", "Plot", "Characters", "New Note", "Locations",
-        "Objects", "Templates", "New Scene Template", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "New Document",
+        "New Part",
+        "New Chapter",
+        "New Scene",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "New Note",
+        "Locations",
+        "Objects",
+        "Templates",
+        "New Scene Template",
+        "Trash",
     ]
 
     # Create from template
@@ -319,10 +466,26 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
     assert nwGUI.openDocument(hNewFromTemplate)
     assert nwGUI.docEditor.getText() == "### New Scene Template\n\nWith Stuff\n\n"
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Folder", "New Document", "New Part", "New Chapter", "New Scene",
-        "New Scene", "New Scene Template", "Plot", "Characters", "New Note",
-        "Locations", "Objects", "Templates", "New Scene Template", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "New Document",
+        "New Part",
+        "New Chapter",
+        "New Scene",
+        "New Scene",
+        "New Scene Template",
+        "Plot",
+        "Characters",
+        "New Note",
+        "Locations",
+        "Objects",
+        "Templates",
+        "New Scene Template",
+        "Trash",
     ]
 
     # Rename Item
@@ -367,8 +530,15 @@ def testGuiProjTree_SimpleOperations(qtbot, monkeypatch, nwGUI, projPath, mockRn
     assert trash is not None
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Add some scenes
@@ -387,12 +557,23 @@ def testGuiProjTree_SimpleOperations(qtbot, monkeypatch, nwGUI, projPath, mockRn
         assert hScene in tree
         item = tree[hScene]
         assert item is not None
-        item.setName(f"Scene {n+1}")
+        item.setName(f"Scene {n + 1}")
 
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Chapter Folder", "Scene 1", "Scene 2", "Scene 3", "Scene 4",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Chapter Folder",
+        "Scene 1",
+        "Scene 2",
+        "Scene 3",
+        "Scene 4",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Expansion
@@ -400,20 +581,21 @@ def testGuiProjTree_SimpleOperations(qtbot, monkeypatch, nwGUI, projPath, mockRn
 
     # Default State
     assert [n.item.itemHandle for n in [model.node(i) for i in model.allExpanded()] if n] == [
-        C.hNovelRoot, hFolder
+        C.hNovelRoot,
+        hFolder,
     ]
 
     # Expand Novel
     projTree.expandFromIndex(model.indexFromHandle(C.hNovelRoot))
     assert [n.item.itemHandle for n in [model.node(i) for i in model.allExpanded()] if n] == [
-        C.hNovelRoot, C.hChapterDir, hFolder
+        C.hNovelRoot,
+        C.hChapterDir,
+        hFolder,
     ]
 
     # Collapse Novel
     projTree.collapseFromIndex(model.indexFromHandle(C.hNovelRoot))
-    assert [n.item.itemHandle for n in [model.node(i) for i in model.allExpanded()] if n] == [
-        C.hNovelRoot
-    ]
+    assert [n.item.itemHandle for n in [model.node(i) for i in model.allExpanded()] if n] == [C.hNovelRoot]
 
     # Move Up
     # =======
@@ -422,14 +604,22 @@ def testGuiProjTree_SimpleOperations(qtbot, monkeypatch, nwGUI, projPath, mockRn
     projView.setSelectedHandle(hScenes[0], doScroll=True)
     projTree.moveItemUp()
     assert [n.item.itemName for n in tree.model.root.allChildren()][5:10] == [
-        "Chapter Folder", "Scene 1", "Scene 2", "Scene 3", "Scene 4",
+        "Chapter Folder",
+        "Scene 1",
+        "Scene 2",
+        "Scene 3",
+        "Scene 4",
     ]
 
     # Proper move
     projView.setSelectedHandle(hScenes[1], doScroll=True)
     projTree.moveItemUp()
     assert [n.item.itemName for n in tree.model.root.allChildren()][5:10] == [
-        "Chapter Folder", "Scene 2", "Scene 1", "Scene 3", "Scene 4",
+        "Chapter Folder",
+        "Scene 2",
+        "Scene 1",
+        "Scene 3",
+        "Scene 4",
     ]
 
     # Move Down
@@ -439,14 +629,22 @@ def testGuiProjTree_SimpleOperations(qtbot, monkeypatch, nwGUI, projPath, mockRn
     projView.setSelectedHandle(hScenes[3], doScroll=True)
     projTree.moveItemDown()
     assert [n.item.itemName for n in tree.model.root.allChildren()][5:10] == [
-        "Chapter Folder", "Scene 2", "Scene 1", "Scene 3", "Scene 4",
+        "Chapter Folder",
+        "Scene 2",
+        "Scene 1",
+        "Scene 3",
+        "Scene 4",
     ]
 
     # Proper move
     projView.setSelectedHandle(hScenes[1], doScroll=True)
     projTree.moveItemDown()
     assert [n.item.itemName for n in tree.model.root.allChildren()][5:10] == [
-        "Chapter Folder", "Scene 1", "Scene 2", "Scene 3", "Scene 4",
+        "Chapter Folder",
+        "Scene 1",
+        "Scene 2",
+        "Scene 3",
+        "Scene 4",
     ]
 
     # Select Up
@@ -517,9 +715,7 @@ def testGuiProjTree_MouseClicks(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Double click on folder expands/collapses it
     assert [n.item.itemHandle for n in [model.node(i) for i in model.allExpanded()] if n] == []
     projTree._onDoubleClick(model.indexFromHandle(C.hNovelRoot))
-    assert [n.item.itemHandle for n in [model.node(i) for i in model.allExpanded()] if n] == [
-        C.hNovelRoot
-    ]
+    assert [n.item.itemHandle for n in [model.node(i) for i in model.allExpanded()] if n] == [C.hNovelRoot]
     projTree._onDoubleClick(model.indexFromHandle(C.hNovelRoot))
     assert [n.item.itemHandle for n in [model.node(i) for i in model.allExpanded()] if n] == []
 
@@ -572,8 +768,15 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
     assert trash is not None
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Add some scenes
@@ -592,38 +795,81 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
         assert hScene in tree
         item = tree[hScene]
         assert item is not None
-        item.setName(f"Scene {n+1}")
+        item.setName(f"Scene {n + 1}")
 
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Chapter Folder", "Scene 1", "Scene 2", "Scene 3", "Scene 4",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Chapter Folder",
+        "Scene 1",
+        "Scene 2",
+        "Scene 3",
+        "Scene 4",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Calling it with no selection, does nothing
     projTree._clearSelection()
     projTree.processDeleteRequest()
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Chapter Folder", "Scene 1", "Scene 2", "Scene 3", "Scene 4",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Chapter Folder",
+        "Scene 1",
+        "Scene 2",
+        "Scene 3",
+        "Scene 4",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Deleting a used root raises an error
     projTree.processDeleteRequest([C.hNovelRoot])
     assert SHARED.lastAlert[0] == "Root folders can only be deleted when they are empty."
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Chapter Folder", "Scene 1", "Scene 2", "Scene 3", "Scene 4",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Chapter Folder",
+        "Scene 1",
+        "Scene 2",
+        "Scene 3",
+        "Scene 4",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Deleting a unused root is fine
     projTree.processDeleteRequest([C.hWorldRoot])
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Chapter Folder", "Scene 1", "Scene 2", "Scene 3", "Scene 4",
-        "Plot", "Characters", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Chapter Folder",
+        "Scene 1",
+        "Scene 2",
+        "Scene 3",
+        "Scene 4",
+        "Plot",
+        "Characters",
+        "Trash",
     ]
 
     # User can cancel move to trash
@@ -631,17 +877,37 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
         mp.setattr(_GuiAlert, "finalState", False)
         projTree.processDeleteRequest(hScenes, askFirst=True)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Chapter Folder", "Scene 1", "Scene 2", "Scene 3", "Scene 4",
-        "Plot", "Characters", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Chapter Folder",
+        "Scene 1",
+        "Scene 2",
+        "Scene 3",
+        "Scene 4",
+        "Plot",
+        "Characters",
+        "Trash",
     ]
 
     # Items not already in trash can be moved there
     projTree.processDeleteRequest(hScenes, askFirst=True)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Chapter Folder", "Plot", "Characters", "Trash",
-        "Scene 1", "Scene 2", "Scene 3", "Scene 4",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Chapter Folder",
+        "Plot",
+        "Characters",
+        "Trash",
+        "Scene 1",
+        "Scene 2",
+        "Scene 3",
+        "Scene 4",
     ]
 
     # User can block permanent deletion
@@ -649,31 +915,64 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
         mp.setattr(_GuiAlert, "finalState", False)
         projTree.processDeleteRequest(hScenes[0:2], askFirst=True)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Chapter Folder", "Plot", "Characters", "Trash",
-        "Scene 1", "Scene 2", "Scene 3", "Scene 4",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Chapter Folder",
+        "Plot",
+        "Characters",
+        "Trash",
+        "Scene 1",
+        "Scene 2",
+        "Scene 3",
+        "Scene 4",
     ]
 
     # Items in trash can be permanently deleted
     projTree.processDeleteRequest(hScenes[0:2], askFirst=True)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Chapter Folder", "Plot", "Characters", "Trash",
-        "Scene 3", "Scene 4",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Chapter Folder",
+        "Plot",
+        "Characters",
+        "Trash",
+        "Scene 3",
+        "Scene 4",
     ]
 
     # Moving a parent item to trash, includes children
     projTree.processDeleteRequest([C.hChapterDir], askFirst=True)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "Chapter Folder", "Plot", "Characters", "Trash",
-        "Scene 3", "Scene 4", "New Folder", "New Chapter", "New Scene",
+        "Novel",
+        "Title Page",
+        "Chapter Folder",
+        "Plot",
+        "Characters",
+        "Trash",
+        "Scene 3",
+        "Scene 4",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
     ]
 
     # Permanently delete in trash is recursive
     projTree.processDeleteRequest([C.hChapterDir], askFirst=True)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "Chapter Folder", "Plot", "Characters", "Trash",
-        "Scene 3", "Scene 4",
+        "Novel",
+        "Title Page",
+        "Chapter Folder",
+        "Plot",
+        "Characters",
+        "Trash",
+        "Scene 3",
+        "Scene 4",
     ]
 
     # Trash can be completely emptied, but user can block it
@@ -681,8 +980,14 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
         mp.setattr(_GuiAlert, "finalState", False)
         projTree.emptyTrash()
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "Chapter Folder", "Plot", "Characters", "Trash",
-        "Scene 3", "Scene 4",
+        "Novel",
+        "Title Page",
+        "Chapter Folder",
+        "Plot",
+        "Characters",
+        "Trash",
+        "Scene 3",
+        "Scene 4",
     ]
 
     # Opening documents before delete, will close them
@@ -695,7 +1000,12 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
     # Trash can be completely emptied
     projTree.emptyTrash()
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "Chapter Folder", "Plot", "Characters", "Trash",
+        "Novel",
+        "Title Page",
+        "Chapter Folder",
+        "Plot",
+        "Characters",
+        "Trash",
     ]
 
     assert nwGUI.docEditor.docHandle is None
@@ -708,14 +1018,23 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
     # Trash can be deleted if empty
     projTree.processDeleteRequest([trash.item.itemHandle])
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "Chapter Folder", "Plot", "Characters"
+        "Novel",
+        "Title Page",
+        "Chapter Folder",
+        "Plot",
+        "Characters",
     ]
 
     # Emptying trash when it doesn't exist, recreates it
     projTree.emptyTrash()
     assert SHARED.lastAlert[0] == "The Trash folder is already empty."
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "Chapter Folder", "Plot", "Characters", "Trash",
+        "Novel",
+        "Title Page",
+        "Chapter Folder",
+        "Plot",
+        "Characters",
+        "Trash",
     ]
 
 
@@ -741,8 +1060,15 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
     assert trash is not None
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Create File to Merge
@@ -775,9 +1101,19 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
     project.writeNewFile(hSceneOne13, 3, True, docText4)
 
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Chapter 1", "Scene 1.1", "Scene 1.2", "Scene 1.3",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Chapter 1",
+        "Scene 1.1",
+        "Scene 1.2",
+        "Scene 1.3",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Invalid file handle
@@ -808,9 +1144,20 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
     assert mergedText is not None
     assert len(mergedText) > lenAll
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Chapter 1", "Scene 1.1", "Scene 1.2", "Scene 1.3", "[Merged] Chapter 1",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Chapter 1",
+        "Scene 1.1",
+        "Scene 1.2",
+        "Scene 1.3",
+        "[Merged] Chapter 1",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Merge to Existing Doc
@@ -839,10 +1186,20 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
     assert len(mergedText) > lenAll
 
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Chapter 1", "[Merged] Chapter 1",
-        "Plot", "Characters", "Locations", "Trash",
-        "Scene 1.1", "Scene 1.2", "Scene 1.3",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Chapter 1",
+        "[Merged] Chapter 1",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
+        "Scene 1.1",
+        "Scene 1.2",
+        "Scene 1.3",
     ]
 
     # qtbot.stop()
@@ -871,8 +1228,15 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
     assert trash is not None
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     docText = (
@@ -911,19 +1275,46 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
     ]
 
     fstSet = [
-        "0000000000012", "0000000000013", "0000000000014", "0000000000015",
-        "0000000000016", "0000000000017", "0000000000018", "0000000000019",
-        "000000000001a", "000000000001b", "000000000001c", "000000000001d",
+        "0000000000012",
+        "0000000000013",
+        "0000000000014",
+        "0000000000015",
+        "0000000000016",
+        "0000000000017",
+        "0000000000018",
+        "0000000000019",
+        "000000000001a",
+        "000000000001b",
+        "000000000001c",
+        "000000000001d",
     ]
     sndSet = [
-        "000000000001e", "000000000001f", "0000000000020", "0000000000021",
-        "0000000000022", "0000000000023", "0000000000024", "0000000000025",
-        "0000000000026", "0000000000027", "0000000000028", "0000000000029",
+        "000000000001e",
+        "000000000001f",
+        "0000000000020",
+        "0000000000021",
+        "0000000000022",
+        "0000000000023",
+        "0000000000024",
+        "0000000000025",
+        "0000000000026",
+        "0000000000027",
+        "0000000000028",
+        "0000000000029",
     ]
     trdSet = [
-        "000000000002b", "000000000002c", "000000000002d", "000000000002e",
-        "000000000002f", "0000000000030", "0000000000031", "0000000000032",
-        "0000000000033", "0000000000034", "0000000000035", "0000000000036",
+        "000000000002b",
+        "000000000002c",
+        "000000000002d",
+        "000000000002e",
+        "000000000002f",
+        "0000000000030",
+        "0000000000031",
+        "0000000000032",
+        "0000000000033",
+        "0000000000034",
+        "0000000000035",
+        "0000000000036",
     ]
 
     # Try to split an invalid document and a non-document
@@ -981,8 +1372,15 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert trash is not None
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     projTree.expandAll()
@@ -990,8 +1388,15 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Nothing to do
     projTree.duplicateFromHandle(C.hInvalid)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Duplicate title page, but select no
@@ -999,33 +1404,75 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         mp.setattr(_GuiAlert, "finalState", False)
         projTree.duplicateFromHandle(C.hTitlePage)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Duplicate title page
     projTree.duplicateFromHandle(C.hTitlePage)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "Title Page", "New Folder", "New Chapter",
-        "New Scene", "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Duplicate folder
     projTree.duplicateFromHandle(C.hChapterDir)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "Title Page", "New Folder", "New Chapter",
-        "New Scene", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Duplicate novel root
     projTree.duplicateFromHandle(C.hNovelRoot)
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "Title Page", "New Folder", "New Chapter",
-        "New Scene", "New Folder", "New Chapter", "New Scene",
-        "Novel", "Title Page", "Title Page", "New Folder", "New Chapter",
-        "New Scene", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Novel",
+        "Title Page",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # qtbot.stop()
@@ -1080,18 +1527,25 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert trash is not None
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Handles for new objects
-    hCharNote     = "0000000000011"
-    hNovelNote    = "0000000000012"
-    hTrashDoc     = "0000000000013"
-    hSubNote      = "0000000000014"
+    hCharNote = "0000000000011"
+    hNovelNote = "0000000000012"
+    hTrashDoc = "0000000000013"
+    hSubNote = "0000000000014"
     hNewFolderOne = "0000000000015"
     hNewFolderTwo = "0000000000017"
-    hTrashRoot    = trash.item.itemHandle
+    hTrashRoot = trash.item.itemHandle
 
     projTree.expandAll()
     projTree.setSelectedHandle(C.hCharRoot)
@@ -1110,9 +1564,19 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert item.itemParent == hNovelNote
 
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "New Note", "SubNote", "Plot", "Characters", "New Note", "Locations",
-        "Trash", "New Part",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "New Note",
+        "SubNote",
+        "Plot",
+        "Characters",
+        "New Note",
+        "Locations",
+        "Trash",
+        "New Part",
     ]
 
     # Pop the menu in various positions and check for success
@@ -1152,8 +1616,13 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     ctxMenu.buildSingleSelectMenu()
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Create New ...", "Rename", "Set Status to ...", "Expand All",
-        "Collapse All", "Duplicate", "Delete Permanently",
+        "Create New ...",
+        "Rename",
+        "Set Status to ...",
+        "Expand All",
+        "Collapse All",
+        "Duplicate",
+        "Delete Permanently",
     ]
 
     # Context Menu on Folder Item
@@ -1163,8 +1632,14 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     ctxMenu.buildSingleSelectMenu()
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Create New ...", "Rename", "Set Status to ...", "Transform ...", "Expand All",
-        "Collapse All", "Duplicate", "Move to Trash",
+        "Create New ...",
+        "Rename",
+        "Set Status to ...",
+        "Transform ...",
+        "Expand All",
+        "Collapse All",
+        "Duplicate",
+        "Move to Trash",
     ]
 
     def getTransformSubMenu(menu: QMenu) -> list[str]:
@@ -1182,11 +1657,20 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     ctxMenu.buildSingleSelectMenu()
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Open Document", "View Document", "Create New ...", "Rename", "Rename to Heading",
-        "Toggle Active", "Set Status to ...", "Transform ...", "Duplicate", "Move to Trash",
+        "Open Document",
+        "View Document",
+        "Create New ...",
+        "Rename",
+        "Rename to Heading",
+        "Toggle Active",
+        "Set Status to ...",
+        "Transform ...",
+        "Duplicate",
+        "Move to Trash",
     ]
     assert getTransformSubMenu(ctxMenu) == [
-        "Convert to Project Note", "Split Document by Headings"
+        "Convert to Project Note",
+        "Split Document by Headings",
     ]
 
     # Context Menu on Note File Item in Character Folder
@@ -1196,8 +1680,16 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     ctxMenu.buildSingleSelectMenu()
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Open Document", "View Document", "Create New ...", "Rename", "Rename to Heading",
-        "Toggle Active", "Set Importance to ...", "Transform ...", "Duplicate", "Move to Trash",
+        "Open Document",
+        "View Document",
+        "Create New ...",
+        "Rename",
+        "Rename to Heading",
+        "Toggle Active",
+        "Set Importance to ...",
+        "Transform ...",
+        "Duplicate",
+        "Move to Trash",
     ]
     assert getTransformSubMenu(ctxMenu) == [
         "Split Document by Headings",
@@ -1210,13 +1702,24 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     ctxMenu.buildSingleSelectMenu()
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Open Document", "View Document", "Create New ...", "Rename", "Rename to Heading",
-        "Toggle Active", "Set Status to ...", "Transform ...", "Expand All", "Collapse All",
-        "Duplicate", "Move to Trash",
+        "Open Document",
+        "View Document",
+        "Create New ...",
+        "Rename",
+        "Rename to Heading",
+        "Toggle Active",
+        "Set Status to ...",
+        "Transform ...",
+        "Expand All",
+        "Collapse All",
+        "Duplicate",
+        "Move to Trash",
     ]
     assert getTransformSubMenu(ctxMenu) == [
-        "Convert to Novel Document", "Merge Child Items into Self",
-        "Merge Child Items into New", "Split Document by Headings",
+        "Convert to Novel Document",
+        "Merge Child Items into Self",
+        "Merge Child Items into New",
+        "Split Document by Headings",
     ]
 
     # Context Menu on Multiple Items, Clicked on Document
@@ -1230,7 +1733,9 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     ctxMenu.buildMultiSelectMenu()
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Set Active to ...", "Set Status to ...", "Move to Trash",
+        "Set Active to ...",
+        "Set Status to ...",
+        "Move to Trash",
     ]
 
     # Context Menu on Multiple Items, Clicked on Note
@@ -1244,7 +1749,9 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     ctxMenu.buildMultiSelectMenu()
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Set Active to ...", "Set Importance to ...", "Move to Trash",
+        "Set Active to ...",
+        "Set Importance to ...",
+        "Move to Trash",
     ]
 
     # Direct Edit Functions, Single
@@ -1386,7 +1893,7 @@ def testGuiProjTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Create a project
     projView = nwGUI.projView
     projTree = projView.projTree
-    projBar  = projView.projBar
+    projBar = projView.projBar
     project = SHARED.project
     tree = project.tree
 
@@ -1396,16 +1903,23 @@ def testGuiProjTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert trash is not None
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Handles for new objects
     hTemplatesRoot = "0000000000011"
     hSceneTemplate = "0000000000012"
-    hNoteTemplate  = "0000000000013"
-    hNewScene      = "0000000000014"
-    hNewCharacter  = "0000000000015"
+    hNoteTemplate = "0000000000013"
+    hNewScene = "0000000000014"
+    hNewCharacter = "0000000000015"
 
     # Add template folder
     projTree.newTreeItem(nwItemType.ROOT, nwItemClass.TEMPLATE)

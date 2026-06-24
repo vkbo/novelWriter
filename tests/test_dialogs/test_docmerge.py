@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -90,17 +91,13 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Test Class Method
     with monkeypatch.context() as mp:
         mp.setattr(GuiDocMerge, "result", lambda *a: QtAccepted)
-        data, status = GuiDocMerge.getData(
-            nwGUI, C.hChapterDir, [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
-        )
+        data, status = GuiDocMerge.getData(nwGUI, C.hChapterDir, [C.hChapterDir, C.hChapterDoc, C.hSceneDoc])
         assert data["sHandle"] == C.hChapterDir
         assert status is True
 
     with monkeypatch.context() as mp:
         mp.setattr(GuiDocMerge, "result", lambda *a: QtRejected)
-        data, status = GuiDocMerge.getData(
-            nwGUI, C.hChapterDir, [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
-        )
+        data, status = GuiDocMerge.getData(nwGUI, C.hChapterDir, [C.hChapterDir, C.hChapterDoc, C.hSceneDoc])
         assert data["sHandle"] == C.hChapterDir
         assert status is False
 

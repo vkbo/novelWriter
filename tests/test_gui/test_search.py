@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from time import time
@@ -41,8 +42,7 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     def totalCount():
         res = search.searchResult
         return sum(
-            int(res.topLevelItem(i).text(GuiProjectSearch.C_COUNT).strip("()"))
-            for i in range(res.topLevelItemCount())
+            int(res.topLevelItem(i).text(GuiProjectSearch.C_COUNT).strip("()")) for i in range(res.topLevelItemCount())
         )
 
     # Plain search

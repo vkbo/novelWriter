@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -26,13 +27,17 @@ from enum import Enum
 
 from PyQt6.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import (
-    QCursor, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent,
-    QMouseEvent, QPalette, QResizeEvent, QTextCursor
+    QCursor,
+    QDesktopServices,
+    QDragEnterEvent,
+    QDragMoveEvent,
+    QDropEvent,
+    QMouseEvent,
+    QPalette,
+    QResizeEvent,
+    QTextCursor,
 )
-from PyQt6.QtWidgets import (
-    QApplication, QFrame, QHBoxLayout, QMenu, QTextBrowser, QToolButton,
-    QWidget
-)
+from PyQt6.QtWidgets import QApplication, QFrame, QHBoxLayout, QMenu, QTextBrowser, QToolButton, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles, qtAddAction, qtLambda
@@ -46,9 +51,15 @@ from novelwriter.formats.shared import TextDocumentTheme
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
-    QtAlignCenterTop, QtAlignMiddle, QtKeepAnchor, QtMoveAnchor,
-    QtScrollAlwaysOff, QtScrollAsNeeded, QtSelectBlock, QtSelectDocument,
-    QtSelectWord
+    QtAlignCenterTop,
+    QtAlignMiddle,
+    QtKeepAnchor,
+    QtMoveAnchor,
+    QtScrollAlwaysOff,
+    QtScrollAsNeeded,
+    QtSelectBlock,
+    QtSelectDocument,
+    QtSelectWord,
 )
 
 logger = logging.getLogger(__name__)
@@ -83,10 +94,10 @@ class GuiDocViewer(QTextBrowser):
         self.setFrameStyle(QFrame.Shape.NoFrame)
 
         # Document Header and Footer
-        self.docHeader  = GuiDocViewHeader(self)
-        self.docFooter  = GuiDocViewFooter(self)
+        self.docHeader = GuiDocViewHeader(self)
+        self.docFooter = GuiDocViewFooter(self)
         self.docHistory = GuiDocViewHistory(self)
-        self.stickyRef  = False
+        self.stickyRef = False
 
         # Signals
         self.anchorClicked.connect(self._linkClicked)
@@ -164,18 +175,18 @@ class GuiDocViewer(QTextBrowser):
             self.docFooter.matchColors()
 
         # Update theme colours
-        self._docTheme.text      = syntax.text
+        self._docTheme.text = syntax.text
         self._docTheme.highlight = syntax.mark
-        self._docTheme.head      = syntax.head
-        self._docTheme.link      = syntax.link
-        self._docTheme.comment   = syntax.hidden
-        self._docTheme.note      = syntax.note
-        self._docTheme.code      = syntax.code
-        self._docTheme.modifier  = syntax.mod
-        self._docTheme.keyword   = syntax.key
-        self._docTheme.tag       = syntax.tag
-        self._docTheme.optional  = syntax.opt
-        self._docTheme.dialog    = syntax.dialN
+        self._docTheme.head = syntax.head
+        self._docTheme.link = syntax.link
+        self._docTheme.comment = syntax.hidden
+        self._docTheme.note = syntax.note
+        self._docTheme.code = syntax.code
+        self._docTheme.modifier = syntax.mod
+        self._docTheme.keyword = syntax.key
+        self._docTheme.tag = syntax.tag
+        self._docTheme.optional = syntax.opt
+        self._docTheme.dialog = syntax.dialN
         self._docTheme.altdialog = syntax.dialA
 
         # Set default text margins
@@ -256,10 +267,12 @@ class GuiDocViewer(QTextBrowser):
         self._docHandle = tHandle
         SHARED.project.data.setLastHandle(tHandle, "viewer")
         self.docHeader.setHandle(tHandle)
-        self.docHeader.setOutline({
-            sTitle: (hItem.title, nwStyles.H_LEVEL.get(hItem.level, 0))
-            for sTitle, hItem in SHARED.project.index.iterItemHeadings(tHandle)
-        })
+        self.docHeader.setOutline(
+            {
+                sTitle: (hItem.title, nwStyles.H_LEVEL.get(hItem.level, 0))
+                for sTitle, hItem in SHARED.project.index.iterItemHeadings(tHandle)
+            }
+        )
         self.updateDocMargins()
 
         QApplication.restoreOverrideCursor()
@@ -314,10 +327,10 @@ class GuiDocViewer(QTextBrowser):
         tM = cM
         if CONFIG.textWidth > 0:
             tW = CONFIG.getTextWidth()
-            tM = max((wW - sW - tW)//2, cM)
+            tM = max((wW - sW - tW) // 2, cM)
 
         tB = self.frameWidth()
-        tW = wW - 2*tB - sW
+        tW = wW - 2 * tB - sW
         tH = self.docHeader.height()
         fH = self.docFooter.height()
         fY = wH - fH - tB - sH
@@ -465,7 +478,7 @@ class GuiDocViewer(QTextBrowser):
             posE = cursor.selectionEnd()
             selTxt = cursor.selectedText()
             if selTxt.startswith(nwUnicode.U_PSEP):
-                cursor.setPosition(posS+1, QtMoveAnchor)
+                cursor.setPosition(posS + 1, QtMoveAnchor)
                 cursor.setPosition(posE, QtKeepAnchor)
 
         self.setTextCursor(cursor)
@@ -568,8 +581,8 @@ class GuiDocViewHistory:
         enforces a maximum length of the navigation history to 20.
         """
         nSkip = 1 if atPos > 19 else 0
-        self._navHistory = self._navHistory[nSkip:atPos + 1]
-        self._posHistory = self._posHistory[nSkip:atPos + 1]
+        self._navHistory = self._navHistory[nSkip : atPos + 1]
+        self._posHistory = self._posHistory[nSkip : atPos + 1]
         self._currPos -= nSkip
         self._prevPos -= nSkip
 
@@ -706,11 +719,9 @@ class GuiDocViewHeader(QWidget):
                     entries.append((title, text, level))
                     minLevel = min(minLevel, level)
             for title, text, level in entries[:30]:
-                indent = "    "*(level - minLevel)
+                indent = "    " * (level - minLevel)
                 action = qtAddAction(self.outlineMenu, f"{indent}{text}")
-                action.triggered.connect(
-                    lambda _, title=title: self.docViewer.navigateTo(f"#{tHandle}:{title}")
-                )
+                action.triggered.connect(lambda _, title=title: self.docViewer.navigateTo(f"#{tHandle}:{title}"))
             self._docOutline = data
 
     def updateFont(self) -> None:
@@ -903,7 +914,7 @@ class GuiDocViewFooter(QWidget):
         """Update theme elements."""
         logger.debug("Theme Update: GuiDocViewFooter")
 
-        fPx = int(0.9*SHARED.theme.fontPixelSize)
+        fPx = int(0.9 * SHARED.theme.fontPixelSize)
         bulletIcon = SHARED.theme.getToggleIcon("bullet", (fPx, fPx), "action")
 
         self.showHide.setThemeIcon("panel", "default")

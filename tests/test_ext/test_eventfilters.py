@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -31,7 +32,6 @@ from novelwriter.types import QtModNone, QtModShift
 
 
 class MockWidget(QWidget):
-
     def __init__(self):
         super().__init__(None)
         self.count = 0
@@ -57,9 +57,14 @@ def testExtEventFilters_WheelEventFilter():
     pos = QPoint(0, 0)
     posF = QPointF(0.0, 0.0)
     event = QWheelEvent(
-        posF, posF, pos, pos,
-        Qt.MouseButton.NoButton, QtModNone,
-        Qt.ScrollPhase.NoScrollPhase, False,
+        posF,
+        posF,
+        pos,
+        pos,
+        Qt.MouseButton.NoButton,
+        QtModNone,
+        Qt.ScrollPhase.NoScrollPhase,
+        False,
     )
     eFilter.eventFilter(obj, event)
     assert widget.count == 1

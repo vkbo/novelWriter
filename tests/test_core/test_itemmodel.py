@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -162,7 +163,10 @@ def testCoreItemModel_ProjectNode_Modify(mockGUI, mockRnd, fncPath):
     # Scene 1 should now have moved
     assert scene1.row() == 3
     assert [n.item.itemName for n in folder.children] == [
-        "New Chapter", "Scene 2", "New Scene", "Scene 1",
+        "New Chapter",
+        "Scene 2",
+        "New Scene",
+        "Scene 1",
     ]
 
     # Check that defaults have been set
@@ -193,7 +197,10 @@ def testCoreItemModel_ProjectNode_Modify(mockGUI, mockRnd, fncPath):
     assert scene2 is not None
     assert scene2.item.itemName == "Scene 2"
     assert [n.item.itemName for n in folder.children] == [
-        "New Chapter", "New Scene", "Scene 1", "Scene 2",
+        "New Chapter",
+        "New Scene",
+        "Scene 1",
+        "Scene 2",
     ]
 
     # Remove original scene, invalid position
@@ -212,7 +219,9 @@ def testCoreItemModel_ProjectNode_Modify(mockGUI, mockRnd, fncPath):
     assert removed.item.itemName == "New Scene"
     assert folder.childCount() == 3
     assert [n.item.itemName for n in folder.children] == [
-        "New Chapter", "Scene 1", "Scene 2",
+        "New Chapter",
+        "Scene 1",
+        "Scene 2",
     ]
 
 
@@ -360,12 +369,15 @@ def testCoreItemModel_ProjectModel_DragNDrop(mockGUI, mockRnd, fncPath):
 
     sceneChapterMime = model.mimeData([chapterIdx, sceneIdx])
     assert decodeMimeHandles(sceneChapterMime) == [
-        chapter.item.itemHandle, scene.item.itemHandle,
+        chapter.item.itemHandle,
+        scene.item.itemHandle,
     ]
 
     multiMime = model.mimeData([novelIdx, folderIdx, sceneIdx, invalidIdx])
     assert decodeMimeHandles(multiMime) == [
-        novel.item.itemHandle, folder.item.itemHandle, scene.item.itemHandle,
+        novel.item.itemHandle,
+        folder.item.itemHandle,
+        scene.item.itemHandle,
     ]
 
     # Check that drop is possible, but only with valid items and not on root
@@ -378,14 +390,26 @@ def testCoreItemModel_ProjectModel_DragNDrop(mockGUI, mockRnd, fncPath):
 
     # Drop the scene on the novel folder
     assert [n.item.itemName for n in model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
     ]
     assert model.dropMimeData(invalidMime, Qt.DropAction.MoveAction, 0, 0, novelIdx) is False
     assert model.dropMimeData(sceneChapterMime, Qt.DropAction.MoveAction, 0, 0, novelIdx) is True
     assert [n.item.itemName for n in model.root.allChildren()] == [
-        "Novel", "New Chapter", "New Scene", "Title Page", "New Folder",
-        "Plot", "Characters", "Locations",
+        "Novel",
+        "New Chapter",
+        "New Scene",
+        "Title Page",
+        "New Folder",
+        "Plot",
+        "Characters",
+        "Locations",
     ]
 
 
@@ -495,8 +519,14 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
 
     # Initial Order
     assert [n.item.itemName for n in model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
     ]
 
     # Remove Child, invalid index
@@ -512,8 +542,13 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     assert child is not None
     assert child.item.itemName == "Title Page"
     assert [n.item.itemName for n in model.root.allChildren()] == [
-        "Novel", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations",
+        "Novel",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
     ]
     titleIdx = model.indexFromNode(title)
     folderIdx = model.indexFromNode(folder)
@@ -527,8 +562,14 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     assert signal.args[1] == 1
     assert signal.args[2] == 1
     assert [n.item.itemName for n in model.root.allChildren()] == [
-        "Novel", "New Folder", "New Chapter", "New Scene", "Title Page",
-        "Plot", "Characters", "Locations",
+        "Novel",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Title Page",
+        "Plot",
+        "Characters",
+        "Locations",
     ]
     titleIdx = model.indexFromNode(title)
     folderIdx = model.indexFromNode(folder)
@@ -544,8 +585,14 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     assert signal.args[3].internalPointer().item.itemName == "Novel"
     assert signal.args[4] == 0
     assert [n.item.itemName for n in model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
     ]
     titleIdx = model.indexFromNode(title)
     folderIdx = model.indexFromNode(folder)
@@ -557,8 +604,14 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     # because folder is also selected, so their order should not change
     model.multiMove([folderIdx, sceneIdx, chapterIdx, invalidIdx], novelIdx, 0)
     assert [n.item.itemName for n in model.root.allChildren()] == [
-        "Novel", "New Folder", "New Chapter", "New Scene", "Title Page",
-        "Plot", "Characters", "Locations",
+        "Novel",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Title Page",
+        "Plot",
+        "Characters",
+        "Locations",
     ]
     assert folder.parent() is novel
     assert chapter.parent() is folder
@@ -574,8 +627,14 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     # and no longer in the folder
     model.multiMove([sceneIdx, chapterIdx, invalidIdx], novelIdx, 0)
     assert [n.item.itemName for n in model.root.allChildren()] == [
-        "Novel", "New Scene", "New Chapter", "New Folder", "Title Page",
-        "Plot", "Characters", "Locations",
+        "Novel",
+        "New Scene",
+        "New Chapter",
+        "New Folder",
+        "Title Page",
+        "Plot",
+        "Characters",
+        "Locations",
     ]
     assert folder.parent() is novel
     assert chapter.parent() is novel
@@ -612,8 +671,15 @@ def testCoreItemModel_ProjectModel_Other(qtbot, mockGUI, mockRnd, fncPath):
     assert scene.item.itemName == "New Scene"
 
     assert [n.item.itemName for n in model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder", "New Chapter", "New Scene",
-        "Plot", "Characters", "Locations", "Trash",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
     ]
 
     # Indices
@@ -631,8 +697,15 @@ def testCoreItemModel_ProjectModel_Other(qtbot, mockGUI, mockRnd, fncPath):
     assert model.trashSelection([chapterIdx, sceneIdx]) is False
     model.multiMove([chapterIdx, sceneIdx], trashIdx)
     assert [n.item.itemName for n in model.root.allChildren()] == [
-        "Novel", "Title Page", "New Folder",
-        "Plot", "Characters", "Locations", "Trash", "New Chapter", "New Scene",
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Trash",
+        "New Chapter",
+        "New Scene",
     ]
 
     chapterIdx = model.indexFromNode(chapter)

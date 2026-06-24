@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -224,8 +225,8 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
 
     # Add some more items
     hArchRoot = project.newRoot(nwItemClass.ARCHIVE)
-    hPlotDoc  = project.newFile("Main Plot", C.hPlotRoot)
-    hCharDoc  = project.newFile("Jane Doe", C.hCharRoot)
+    hPlotDoc = project.newFile("Main Plot", C.hPlotRoot)
+    hCharDoc = project.newFile("Jane Doe", C.hCharRoot)
 
     # With no changes
     assert build.isRootAllowed(C.hNovelRoot) is True
@@ -234,33 +235,33 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     assert build.isRootAllowed(C.hWorldRoot) is True
 
     assert build.buildItemFilter(project, withRoots=False) == {
-        C.hNovelRoot:  (False, FilterMode.SKIPPED),
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        C.hCharRoot:   (False, FilterMode.SKIPPED),
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (True,  FilterMode.FILTERED),
+        C.hNovelRoot: (False, FilterMode.SKIPPED),
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        C.hCharRoot: (False, FilterMode.SKIPPED),
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (True, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
-        C.hChapterDoc: (True,  FilterMode.FILTERED),
-        C.hSceneDoc:   (True,  FilterMode.FILTERED),
-        hArchRoot:     (False, FilterMode.SKIPPED),
-        hPlotDoc:      (False, FilterMode.FILTERED),
-        hCharDoc:      (False, FilterMode.FILTERED),
+        C.hChapterDoc: (True, FilterMode.FILTERED),
+        C.hSceneDoc: (True, FilterMode.FILTERED),
+        hArchRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (False, FilterMode.FILTERED),
+        hCharDoc: (False, FilterMode.FILTERED),
     }
 
     # Enable notes and roots
     build.setValue("filter.includeNotes", True)
     assert build.buildItemFilter(project, withRoots=True) == {
-        C.hNovelRoot:  (True,  FilterMode.ROOT),
-        C.hPlotRoot:   (True,  FilterMode.ROOT),
-        C.hCharRoot:   (True,  FilterMode.ROOT),
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),  # World folder is empty
-        C.hTitlePage:  (True,  FilterMode.FILTERED),
+        C.hNovelRoot: (True, FilterMode.ROOT),
+        C.hPlotRoot: (True, FilterMode.ROOT),
+        C.hCharRoot: (True, FilterMode.ROOT),
+        C.hWorldRoot: (False, FilterMode.SKIPPED),  # World folder is empty
+        C.hTitlePage: (True, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
-        C.hChapterDoc: (True,  FilterMode.FILTERED),
-        C.hSceneDoc:   (True,  FilterMode.FILTERED),
-        hArchRoot:     (False, FilterMode.SKIPPED),
-        hPlotDoc:      (True,  FilterMode.FILTERED),
-        hCharDoc:      (True,  FilterMode.FILTERED),
+        C.hChapterDoc: (True, FilterMode.FILTERED),
+        C.hSceneDoc: (True, FilterMode.FILTERED),
+        hArchRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (True, FilterMode.FILTERED),
+        hCharDoc: (True, FilterMode.FILTERED),
     }
 
     # Skip plot and char roots
@@ -272,17 +273,17 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     assert build.isRootAllowed(C.hCharRoot) is False
     assert build.isRootAllowed(C.hWorldRoot) is True
     assert build.buildItemFilter(project, withRoots=True) == {
-        C.hNovelRoot:  (True,  FilterMode.ROOT),
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        C.hCharRoot:   (False, FilterMode.SKIPPED),
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (True,  FilterMode.FILTERED),
+        C.hNovelRoot: (True, FilterMode.ROOT),
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        C.hCharRoot: (False, FilterMode.SKIPPED),
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (True, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
-        C.hChapterDoc: (True,  FilterMode.FILTERED),
-        C.hSceneDoc:   (True,  FilterMode.FILTERED),
-        hArchRoot:     (False, FilterMode.SKIPPED),
-        hPlotDoc:      (False, FilterMode.SKIPPED),  # Now also skipped since in plot
-        hCharDoc:      (False, FilterMode.SKIPPED),  # Now also skipped since in char
+        C.hChapterDoc: (True, FilterMode.FILTERED),
+        C.hSceneDoc: (True, FilterMode.FILTERED),
+        hArchRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (False, FilterMode.SKIPPED),  # Now also skipped since in plot
+        hCharDoc: (False, FilterMode.SKIPPED),  # Now also skipped since in char
     }
 
     # Enable char root again, but exclude char doc and scene doc
@@ -296,17 +297,17 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     assert build.isRootAllowed(C.hCharRoot) is True
     assert build.isRootAllowed(C.hWorldRoot) is True
     assert build.buildItemFilter(project, withRoots=True) == {
-        C.hNovelRoot:  (True,  FilterMode.ROOT),
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        C.hCharRoot:   (False, FilterMode.SKIPPED),  # Is skipped anyway since doc is skipped
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (True,  FilterMode.FILTERED),
+        C.hNovelRoot: (True, FilterMode.ROOT),
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        C.hCharRoot: (False, FilterMode.SKIPPED),  # Is skipped anyway since doc is skipped
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (True, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
-        C.hChapterDoc: (True,  FilterMode.FILTERED),
-        C.hSceneDoc:   (False, FilterMode.EXCLUDED),
-        hArchRoot:     (False, FilterMode.SKIPPED),
-        hPlotDoc:      (False, FilterMode.SKIPPED),
-        hCharDoc:      (False, FilterMode.EXCLUDED),
+        C.hChapterDoc: (True, FilterMode.FILTERED),
+        C.hSceneDoc: (False, FilterMode.EXCLUDED),
+        hArchRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (False, FilterMode.SKIPPED),
+        hCharDoc: (False, FilterMode.EXCLUDED),
     }
 
     # Disable notes, but include char doc
@@ -320,17 +321,17 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     assert build.isRootAllowed(C.hCharRoot) is True
     assert build.isRootAllowed(C.hWorldRoot) is True
     assert build.buildItemFilter(project, withRoots=True) == {
-        C.hNovelRoot:  (True,  FilterMode.ROOT),
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        C.hCharRoot:   (True,  FilterMode.ROOT),
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (True,  FilterMode.FILTERED),
+        C.hNovelRoot: (True, FilterMode.ROOT),
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        C.hCharRoot: (True, FilterMode.ROOT),
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (True, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
-        C.hChapterDoc: (True,  FilterMode.FILTERED),
-        C.hSceneDoc:   (False, FilterMode.EXCLUDED),
-        hArchRoot:     (False, FilterMode.SKIPPED),
-        hPlotDoc:      (False, FilterMode.SKIPPED),
-        hCharDoc:      (True,  FilterMode.INCLUDED),
+        C.hChapterDoc: (True, FilterMode.FILTERED),
+        C.hSceneDoc: (False, FilterMode.EXCLUDED),
+        hArchRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (False, FilterMode.SKIPPED),
+        hCharDoc: (True, FilterMode.INCLUDED),
     }
 
     # Set everything back to filtered
@@ -344,17 +345,17 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     assert build.isRootAllowed(C.hCharRoot) is True
     assert build.isRootAllowed(C.hWorldRoot) is True
     assert build.buildItemFilter(project, withRoots=True) == {
-        C.hNovelRoot:  (True,  FilterMode.ROOT),
-        C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        C.hCharRoot:   (False, FilterMode.SKIPPED),
-        C.hWorldRoot:  (False, FilterMode.SKIPPED),
-        C.hTitlePage:  (True,  FilterMode.FILTERED),
+        C.hNovelRoot: (True, FilterMode.ROOT),
+        C.hPlotRoot: (False, FilterMode.SKIPPED),
+        C.hCharRoot: (False, FilterMode.SKIPPED),
+        C.hWorldRoot: (False, FilterMode.SKIPPED),
+        C.hTitlePage: (True, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
-        C.hChapterDoc: (True,  FilterMode.FILTERED),
-        C.hSceneDoc:   (True,  FilterMode.FILTERED),
-        hArchRoot:     (False, FilterMode.SKIPPED),
-        hPlotDoc:      (False, FilterMode.SKIPPED),
-        hCharDoc:      (False, FilterMode.FILTERED),
+        C.hChapterDoc: (True, FilterMode.FILTERED),
+        C.hSceneDoc: (True, FilterMode.FILTERED),
+        hArchRoot: (False, FilterMode.SKIPPED),
+        hPlotDoc: (False, FilterMode.SKIPPED),
+        hCharDoc: (False, FilterMode.FILTERED),
     }
 
     # No valid project provided
@@ -411,7 +412,10 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
     # Check the file content
     data = json.loads(buildsFile.read_text(encoding="utf-8"))
     assert list(data["novelWriter.builds"].keys()) == [
-        "lastBuild", "defaultBuild", buildIDOne, buildIDTwo
+        "lastBuild",
+        "defaultBuild",
+        buildIDOne,
+        buildIDTwo,
     ]
 
     # Remove a build
@@ -423,9 +427,7 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
 
     # Check the file content
     data = json.loads(buildsFile.read_text(encoding="utf-8"))
-    assert list(data["novelWriter.builds"].keys()) == [
-        "lastBuild", "defaultBuild", buildIDTwo
-    ]
+    assert list(data["novelWriter.builds"].keys()) == ["lastBuild", "defaultBuild", buildIDTwo]
     builds.setBuild(buildOne)
     assert list(builds.builds()) == [
         (buildIDTwo, "Build Two"),

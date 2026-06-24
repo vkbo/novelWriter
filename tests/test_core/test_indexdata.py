@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import pytest
@@ -124,26 +125,30 @@ def testCoreIndexData_IndexNodePackUnpack(mockGUI):
 
     # Check packing
     data = node.packData()
-    assert data["T0001"] == {"meta": {
-        "level": "H1", "title": "Heading 1", "line": 1, "tag": "", "counts": (42, 13, 3)
-    }}
-    assert data["T0002"] == {"meta": {
-        "level": "H2", "title": "Heading 2", "line": 10, "tag": "", "counts": (84, 26, 6)
-    }}
+    assert data["T0001"] == {"meta": {"level": "H1", "title": "Heading 1", "line": 1, "tag": "", "counts": (42, 13, 3)}}
+    assert data["T0002"] == {
+        "meta": {"level": "H2", "title": "Heading 2", "line": 10, "tag": "", "counts": (84, 26, 6)}
+    }
     assert set(data["document"]["footnotes"]) == {"key1", "key2"}
 
     # Create a new node
     new = IndexNode(cache, handle, item)
 
     # Unpack heading one
-    data = {"T0001": {"meta": {
-        "level": "H1", "title": "Heading 1", "line": 1, "tag": "", "counts": (42, 13, 3)
-    }}}
+    data = {
+        "T0001": {
+            "meta": {
+                "level": "H1",
+                "title": "Heading 1",
+                "line": 1,
+                "tag": "",
+                "counts": (42, 13, 3),
+            }
+        }
+    }
     new.unpackData(data)
     data = new.packData()
-    assert data["T0001"] == {"meta": {
-        "level": "H1", "title": "Heading 1", "line": 1, "tag": "", "counts": (42, 13, 3)
-    }}
+    assert data["T0001"] == {"meta": {"level": "H1", "title": "Heading 1", "line": 1, "tag": "", "counts": (42, 13, 3)}}
 
     # Unpack invalid key
     data = {"stuff": "whatever"}
@@ -338,9 +343,15 @@ def testCoreIndexData_IndexHeadingUnpackMeta():
     cache = IndexCache(TagsIndex())
 
     # Valid
-    data = {"meta": {
-        "level": "H1", "title": "So it Begins", "line": 1, "tag": "begins", "counts": [95, 18, 1]
-    }}
+    data = {
+        "meta": {
+            "level": "H1",
+            "title": "So it Begins",
+            "line": 1,
+            "tag": "begins",
+            "counts": [95, 18, 1],
+        }
+    }
     head = IndexHeading(cache, "T0001")
     head.unpackData(data)
     assert head.level == "H1"
@@ -352,9 +363,7 @@ def testCoreIndexData_IndexHeadingUnpackMeta():
     assert head.paraCount == 1
 
     # Invalid
-    data = {"meta": {
-        "level": "H9", "title": None, "line": None, "tag": None, "counts": [42]
-    }}
+    data = {"meta": {"level": "H9", "title": None, "line": None, "tag": None, "counts": [42]}}
     head = IndexHeading(cache, "T0001")
     head.unpackData(data)
     assert head.level == "H0"
@@ -384,9 +393,14 @@ def testCoreIndexData_IndexHeadingUnpackRefs():
     cache = IndexCache(TagsIndex())
 
     # Valid
-    data = {"refs": {
-        "jane": "@char,@pov", "john": "@char", "earth": "@location", "space": "@mention,@location"
-    }}
+    data = {
+        "refs": {
+            "jane": "@char,@pov",
+            "john": "@char",
+            "earth": "@location",
+            "space": "@mention,@location",
+        }
+    }
     head = IndexHeading(cache, "T0001")
     head.unpackData(data)
     assert head.references["jane"] == {"@char", "@pov"}

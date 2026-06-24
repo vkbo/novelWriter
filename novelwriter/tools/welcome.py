@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -27,14 +28,30 @@ from pathlib import Path
 from typing import NamedTuple
 
 from PyQt6.QtCore import (
-    QAbstractListModel, QModelIndex, QObject, QPoint, QSize, Qt, pyqtSignal,
-    pyqtSlot
+    QAbstractListModel,
+    QModelIndex,
+    QObject,
+    QPoint,
+    QSize,
+    Qt,
+    pyqtSignal,
+    pyqtSlot,
 )
 from PyQt6.QtGui import QAction, QCloseEvent, QKeyEvent, QPainter, QPaintEvent, QPen, QShortcut
 from PyQt6.QtWidgets import (
-    QApplication, QFormLayout, QHBoxLayout, QLabel, QLineEdit, QListView,
-    QMenu, QScrollArea, QStackedWidget, QStyledItemDelegate,
-    QStyleOptionViewItem, QVBoxLayout, QWidget
+    QApplication,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListView,
+    QMenu,
+    QScrollArea,
+    QStackedWidget,
+    QStyledItemDelegate,
+    QStyleOptionViewItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import CONFIG, SHARED
@@ -47,8 +64,13 @@ from novelwriter.extensions.modified import NDialog, NIconToolButton, NSpinBox
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.versioninfo import VersionInfoWidget
 from novelwriter.types import (
-    QtAccessibleTextRole, QtAlignLeft, QtAlignRightTop, QtDisplayRole,
-    QtHexArgb, QtScrollAsNeeded, QtSelected
+    QtAccessibleTextRole,
+    QtAlignLeft,
+    QtAlignRightTop,
+    QtDisplayRole,
+    QtHexArgb,
+    QtScrollAsNeeded,
+    QtSelected,
 )
 
 logger = logging.getLogger(__name__)
@@ -242,7 +264,6 @@ class GuiWelcome(NDialog):
 
 
 class _OpenProjectPage(QWidget):
-
     openProjectRequest = pyqtSignal(Path)
 
     def __init__(self, parent: QWidget) -> None:
@@ -352,10 +373,9 @@ class _OpenProjectPage(QWidget):
     def _deleteSelectedItem(self) -> None:
         """Delete the currently selected project item."""
         if (sel := self.listWidget.selectedIndexes()) and (entry := self.listModel.entry(sel[0])):
-            text = self.tr(
-                "Remove '{0}' from the recent projects list? "
-                "The project files will not be deleted."
-            ).format(entry.title)
+            text = self.tr("Remove '{0}' from the recent projects list? The project files will not be deleted.").format(
+                entry.title
+            )
             if SHARED.question(text):
                 self.listModel.removeEntry(sel[0])
             self._selectFirstItem()
@@ -403,7 +423,6 @@ class _OpenProjectPage(QWidget):
 
 
 class _ProjectListItem(QStyledItemDelegate):
-
     __slots__ = ("_dFont", "_dPen", "_hPx", "_icon", "_pPx", "_tFont")
 
     def __init__(self, parent: QWidget) -> None:
@@ -456,7 +475,6 @@ class _ProjectListEntry(NamedTuple):
 
 
 class _ProjectListModel(QAbstractListModel):
-
     __slots__ = ("_data",)
 
     def __init__(self, parent: QObject) -> None:
@@ -469,21 +487,20 @@ class _ProjectListModel(QAbstractListModel):
         records = sorted(CONFIG.recentProjects.listEntries(), key=lambda x: x[3], reverse=True)
         for path, title, count, time in records:
             when = CONFIG.localDate(datetime.fromtimestamp(time))
-            self._data.append(_ProjectListEntry(
-                title=title,
-                path=path,
-                details=f"{opened}: {when}, {words}: {formatInt(count)}",
-                accessible=f"{title}, {opened} {when}, {words} {formatInt(count)}",
-            ))
+            self._data.append(
+                _ProjectListEntry(
+                    title=title,
+                    path=path,
+                    details=f"{opened}: {when}, {words}: {formatInt(count)}",
+                    accessible=f"{title}, {opened} {when}, {words} {formatInt(count)}",
+                )
+            )
 
         if not self._data:
             details = self.tr("Select to create an example project")
-            self._data.append(_ProjectListEntry(
-                title=SAMPLE_NAME,
-                path=SAMPLE_KEY,
-                details=details,
-                accessible=details
-            ))
+            self._data.append(
+                _ProjectListEntry(title=SAMPLE_NAME, path=SAMPLE_KEY, details=details, accessible=details)
+            )
 
     def rowCount(self, parent: QModelIndex | None = None) -> int:
         """Return the size of the model."""
@@ -516,7 +533,6 @@ class _ProjectListModel(QAbstractListModel):
 
 
 class _NewProjectPage(QWidget):
-
     openProjectRequest = pyqtSignal(Path)
 
     def __init__(self, parent: QWidget) -> None:
@@ -573,7 +589,6 @@ class _NewProjectPage(QWidget):
 
 
 class _NewProjectForm(QWidget):
-
     FILL_BLANK = 0
     FILL_SAMPLE = 1
     FILL_COPY = 2
@@ -670,18 +685,14 @@ class _NewProjectForm(QWidget):
         self.numChapters.setValue(0)
         self.numChapters.setToolTip(self.tr("Set to 0 to only add scenes"))
 
-        self.chapterBox = NWrappedWidgetBox(
-            self.tr("Add {0} chapter documents"), self.numChapters
-        )
+        self.chapterBox = NWrappedWidgetBox(self.tr("Add {0} chapter documents"), self.numChapters)
         self.chapterBox.addStretch(1)
 
         self.numScenes = NSpinBox(self, minVal=0, maxVal=200)
         self.numScenes.setFixedNumbersWidth(3)
         self.numScenes.setValue(0)
 
-        self.sceneBox = NWrappedWidgetBox(
-            self.tr("Add {0} scene documents (to each chapter)"), self.numScenes
-        )
+        self.sceneBox = NWrappedWidgetBox(self.tr("Add {0} scene documents (to each chapter)"), self.numScenes)
         self.sceneBox.addStretch(1)
 
         self.novelForm = QVBoxLayout()

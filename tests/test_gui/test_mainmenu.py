@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -73,151 +74,143 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Split By Chapter
     assert nwGUI.openDocument("4c4f28287af27") is True
-    docEditor.setCursorPosition(x+3)
-    cleanText = docEditor.getText()[x:x+47]
+    docEditor.setCursorPosition(x + 3)
+    cleanText = docEditor.getText()[x : x + 47]
 
     # Bold
     mainMenu.aFmtBold.activate(QAction.ActionEvent.Trigger)
     fmtStr = "**Pellentesque** nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+51] == fmtStr
+    assert docEditor.getText()[x : x + 51] == fmtStr
     mainMenu.aFmtBold.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+47] == cleanText
+    assert docEditor.getText()[x : x + 47] == cleanText
 
     # Italic
     mainMenu.aFmtItalic.activate(QAction.ActionEvent.Trigger)
     fmtStr = "_Pellentesque_ nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+49] == fmtStr
+    assert docEditor.getText()[x : x + 49] == fmtStr
     mainMenu.aFmtItalic.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+47] == cleanText
+    assert docEditor.getText()[x : x + 47] == cleanText
 
     # Strikethrough
     mainMenu.aFmtStrike.activate(QAction.ActionEvent.Trigger)
     fmtStr = "~~Pellentesque~~ nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+51] == fmtStr
+    assert docEditor.getText()[x : x + 51] == fmtStr
     mainMenu.aFmtStrike.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+47] == cleanText
+    assert docEditor.getText()[x : x + 47] == cleanText
 
     # Should get us back to plain
     mainMenu.aFmtBold.activate(QAction.ActionEvent.Trigger)
     mainMenu.aFmtItalic.activate(QAction.ActionEvent.Trigger)
     mainMenu.aFmtItalic.activate(QAction.ActionEvent.Trigger)
     mainMenu.aFmtBold.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+47] == cleanText
+    assert docEditor.getText()[x : x + 47] == cleanText
 
     # Double Quotes
     mainMenu.aFmtDQuote.activate(QAction.ActionEvent.Trigger)
     fmtStr = "“Pellentesque” nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+49] == fmtStr
+    assert docEditor.getText()[x : x + 49] == fmtStr
     mainMenu.aEditUndo.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+47] == cleanText
+    assert docEditor.getText()[x : x + 47] == cleanText
 
     # Single Quotes
     mainMenu.aFmtSQuote.activate(QAction.ActionEvent.Trigger)
     fmtStr = "‘Pellentesque’ nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+49] == fmtStr
+    assert docEditor.getText()[x : x + 49] == fmtStr
     mainMenu.aEditUndo.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+47] == cleanText
+    assert docEditor.getText()[x : x + 47] == cleanText
 
     # Block Formats
     # =============
     # cSpell:ignore Pellentesque erat nulla posuere commodo
-    docEditor.setCursorPosition(x+3)
+    docEditor.setCursorPosition(x + 3)
 
     # Header 1
     mainMenu.aFmtHead1.activate(QAction.ActionEvent.Trigger)
     fmtStr = "# Pellentesque nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+49] == fmtStr
+    assert docEditor.getText()[x : x + 49] == fmtStr
 
     # Header 2
     mainMenu.aFmtHead2.activate(QAction.ActionEvent.Trigger)
     fmtStr = "## Pellentesque nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+50] == fmtStr
+    assert docEditor.getText()[x : x + 50] == fmtStr
 
     # Header 3
     mainMenu.aFmtHead3.activate(QAction.ActionEvent.Trigger)
     fmtStr = "### Pellentesque nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+51] == fmtStr
+    assert docEditor.getText()[x : x + 51] == fmtStr
 
     # Header 4
     mainMenu.aFmtHead4.activate(QAction.ActionEvent.Trigger)
     fmtStr = "#### Pellentesque nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+52] == fmtStr
+    assert docEditor.getText()[x : x + 52] == fmtStr
 
     # Title Format
     mainMenu.aFmtTitle.activate(QAction.ActionEvent.Trigger)
     fmtStr = "#! Pellentesque nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+50] == fmtStr
+    assert docEditor.getText()[x : x + 50] == fmtStr
 
     # Unnumbered Chapter
     mainMenu.aFmtUnNum.activate(QAction.ActionEvent.Trigger)
     fmtStr = "##! Pellentesque nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+51] == fmtStr
+    assert docEditor.getText()[x : x + 51] == fmtStr
 
     # Hard Scene
     mainMenu.aFmtHardSc.activate(QAction.ActionEvent.Trigger)
     fmtStr = "###! Pellentesque nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+52] == fmtStr
+    assert docEditor.getText()[x : x + 52] == fmtStr
 
     # Clear Format
     mainMenu.aFmtNoFormat.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+47] == cleanText
+    assert docEditor.getText()[x : x + 47] == cleanText
 
     # Comment On
     mainMenu.aFmtComment.activate(QAction.ActionEvent.Trigger)
     fmtStr = "% Pellentesque nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+49] == fmtStr
+    assert docEditor.getText()[x : x + 49] == fmtStr
 
     # Comment Off
     mainMenu.aFmtComment.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+47] == cleanText
+    assert docEditor.getText()[x : x + 47] == cleanText
 
     # Check comment with no space before text
     docEditor.setCursorPosition(x)
     docEditor.insertText("%")
     fmtStr = "%Pellentesque nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+48] == fmtStr
+    assert docEditor.getText()[x : x + 48] == fmtStr
 
     mainMenu.aFmtNoFormat.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+47] == cleanText
+    assert docEditor.getText()[x : x + 47] == cleanText
 
     # Undo/Redo
     mainMenu.aEditUndo.activate(QAction.ActionEvent.Trigger)
     fmtStr = "%Pellentesque nec erat ut nulla posuere commodo."
-    assert docEditor.getText()[x:x+48] == fmtStr
+    assert docEditor.getText()[x : x + 48] == fmtStr
     mainMenu.aEditRedo.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+47] == cleanText
+    assert docEditor.getText()[x : x + 47] == cleanText
 
     # Cut, Copy and Paste
     docEditor.setCursorPosition(x)
     docEditor._makeSelection(QtSelectWord)
 
     mainMenu.aEditCut.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+50] == (
-        " nec erat ut nulla posuere commodo. Curabitur nisi"
-    )
+    assert docEditor.getText()[x : x + 50] == (" nec erat ut nulla posuere commodo. Curabitur nisi")
 
     mainMenu.aEditPaste.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+50] == (
-        "Pellentesque nec erat ut nulla posuere commodo. Cu"
-    )
+    assert docEditor.getText()[x : x + 50] == ("Pellentesque nec erat ut nulla posuere commodo. Cu")
 
     docEditor.setCursorPosition(x)
     docEditor._makeSelection(QtSelectWord)
 
     mainMenu.aEditCopy.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+50] == (
-        "Pellentesque nec erat ut nulla posuere commodo. Cu"
-    )
+    assert docEditor.getText()[x : x + 50] == ("Pellentesque nec erat ut nulla posuere commodo. Cu")
 
     docEditor.setCursorPosition(x)
     mainMenu.aEditPaste.activate(QAction.ActionEvent.Trigger)
-    assert docEditor.getText()[x:x+50] == (
-        "PellentesquePellentesque nec erat ut nulla posuere"
-    )
+    assert docEditor.getText()[x : x + 50] == ("PellentesquePellentesque nec erat ut nulla posuere")
     mainMenu.aEditUndo.activate(QAction.ActionEvent.Trigger)
 
     # Select Paragraph/All
-    docEditor.setCursorPosition(x+3)
+    docEditor.setCursorPosition(x + 3)
     mainMenu.aSelectPar.activate(QAction.ActionEvent.Trigger)
     cursor = docEditor.textCursor()
     assert cursor.selectedText() == (
@@ -230,7 +223,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
         "nunc lacus, imperdiet nec posuere ac, interdum non lectus."
     )
 
-    docEditor.setCursorPosition(x+3)
+    docEditor.setCursorPosition(x + 3)
     mainMenu.aSelectAll.activate(QAction.ActionEvent.Trigger)
     cursor = docEditor.textCursor()
     assert len(cursor.selectedText()) == 1928

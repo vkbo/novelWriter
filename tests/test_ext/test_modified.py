@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 from unittest.mock import Mock
@@ -26,14 +27,25 @@ import pytest
 
 from PyQt6.QtCore import QEvent, QPoint, QPointF, QSize, Qt
 from PyQt6.QtGui import (
-    QFont, QKeyEvent, QMouseEvent, QStandardItem, QStandardItemModel,
-    QWheelEvent
+    QFont,
+    QKeyEvent,
+    QMouseEvent,
+    QStandardItem,
+    QStandardItemModel,
+    QWheelEvent,
 )
 from PyQt6.QtWidgets import QFontDialog, QWidget
 
 from novelwriter.extensions.modified import (
-    NClickableLabel, NComboBox, NDialog, NDoubleSpinBox, NFontDialog,
-    NIconToggleButton, NIconToolButton, NSpinBox, NTreeView
+    NClickableLabel,
+    NComboBox,
+    NDialog,
+    NDoubleSpinBox,
+    NFontDialog,
+    NIconToggleButton,
+    NIconToolButton,
+    NSpinBox,
+    NTreeView,
 )
 from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
 
@@ -41,12 +53,16 @@ from tests.tools import SimpleDialog
 
 
 class MockWheelEvent(QWheelEvent):
-
     def __init__(self):
         super().__init__(
-            QPointF(0, 0), QPointF(0, 0), QPoint(0, 0), QPoint(0, 0),
-            Qt.MouseButton.NoButton, Qt.KeyboardModifier.NoModifier,
-            Qt.ScrollPhase.ScrollUpdate, False
+            QPointF(0, 0),
+            QPointF(0, 0),
+            QPoint(0, 0),
+            QPoint(0, 0),
+            Qt.MouseButton.NoButton,
+            Qt.KeyboardModifier.NoModifier,
+            Qt.ScrollPhase.ScrollUpdate,
+            False,
         )
         self.ignored = False
 
@@ -115,9 +131,7 @@ def testExtModified_NTreeView(qtbot, monkeypatch):
     assert item is not None
 
     position = QPointF(widget.visualRect(model.createIndex(0, 0)).center())
-    event = QMouseEvent(
-        QEvent.Type.MouseButtonPress, position, QtMouseMiddle, QtMouseMiddle, QtModNone
-    )
+    event = QMouseEvent(QEvent.Type.MouseButtonPress, position, QtMouseMiddle, QtMouseMiddle, QtModNone)
     with qtbot.waitSignal(widget.middleClicked):
         widget.mousePressEvent(event)
 
@@ -209,9 +223,7 @@ def testExtModified_NClickableLabel(qtbot):
     dialog.show()
 
     position = QPointF(widget.rect().center())
-    event = QMouseEvent(
-        QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModNone
-    )
+    event = QMouseEvent(QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModNone)
 
     with qtbot.waitSignal(widget.mouseClicked):
         widget.mousePressEvent(event)

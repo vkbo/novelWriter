@@ -18,15 +18,14 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtWidgets import (
-    QDialogButtonBox, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout, QWidget
-)
+from PyQt6.QtWidgets import QDialogButtonBox, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatLink, readTextFile
@@ -65,15 +64,16 @@ class GuiAbout(NDialog):
 
         self.nwInfo = VersionInfoWidget(self)
 
-        self.nwLicence = QLabel(self.tr("This application is licenced under {0}").format(
-            formatLink("https://www.gnu.org/licenses/gpl-3.0.html", "GPL v3.0")
-        ), self)
+        self.nwLicence = QLabel(
+            self.tr("This application is licenced under {0}").format(
+                formatLink("https://www.gnu.org/licenses/gpl-3.0.html", "GPL v3.0")
+            ),
+            self,
+        )
         self.nwLicence.setOpenExternalLinks(True)
 
         # Credits
-        self.lblCredits = NColorLabel(
-            self.tr("Credits"), self, scale=1.6, bold=True
-        )
+        self.lblCredits = NColorLabel(self.tr("Credits"), self, scale=1.6, bold=True)
 
         self.txtCredits = QTextBrowser(self)
         self.txtCredits.setOpenExternalLinks(True)
@@ -138,6 +138,4 @@ class GuiAbout(NDialog):
     def _setStyleSheet(self) -> None:
         """Set stylesheet text document."""
         baseCol = self.palette().window().color().name(QtHexArgb)
-        self.txtCredits.setStyleSheet(
-            f"QTextBrowser {{border: none; background: {baseCol};}} "
-        )
+        self.txtCredits.setStyleSheet(f"QTextBrowser {{border: none; background: {baseCol};}} ")

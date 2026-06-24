@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -31,8 +32,12 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.enum import nwNovelExtra
 from novelwriter.types import (
-    QtAccessibleTextRole, QtAlignRight, QtDecorationRole, QtDisplayRole,
-    QtTextAlignmentRole, QtToolTipRole
+    QtAccessibleTextRole,
+    QtAlignRight,
+    QtDecorationRole,
+    QtDisplayRole,
+    QtTextAlignmentRole,
+    QtToolTipRole,
 )
 
 if TYPE_CHECKING:
@@ -41,8 +46,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 C_FACTOR = 0x0100
-R_HANDLE = 0xff01
-R_KEY    = 0xff02
+R_HANDLE = 0xFF01
+R_KEY = 0xFF02
 
 T_NodeData = str | QIcon | QPixmap | Qt.AlignmentFlag | None
 
@@ -112,7 +117,7 @@ class NovelModel(QAbstractTableModel):
     def data(self, index: QModelIndex, role: Qt.ItemDataRole) -> T_NodeData:
         """Return display data for a node."""
         try:
-            return self._rows[index.row()].get(C_FACTOR*index.column() | role)
+            return self._rows[index.row()].get(C_FACTOR * index.column() | role)
         except Exception:
             logger.error("Novel model index is inconsistent")
         return None
@@ -184,7 +189,7 @@ class NovelModel(QAbstractTableModel):
         elif current:
             # Deleting ranges are safe for out of bounds indices
             self.beginRemoveRows(QModelIndex(), current[0], current[-1])
-            del self._rows[current[0]:current[-1] + 1]
+            del self._rows[current[0] : current[-1] + 1]
             self.endRemoveRows()
 
         return True
@@ -200,22 +205,22 @@ class NovelModel(QAbstractTableModel):
         countInfo = f"{countValue} {CONFIG.countUnit}"
 
         data = {}
-        data[C_FACTOR*0 | QtToolTipRole] = head.title
-        data[C_FACTOR*0 | QtDisplayRole] = head.title
-        data[C_FACTOR*0 | QtDecorationRole] = SHARED.theme.getHeaderDecoration(iLevel)
-        data[C_FACTOR*1 | QtDisplayRole] = countValue
-        data[C_FACTOR*1 | QtToolTipRole] = countInfo
-        data[C_FACTOR*1 | QtAccessibleTextRole] = countInfo
-        data[C_FACTOR*1 | QtTextAlignmentRole] = QtAlignRight
+        data[C_FACTOR * 0 | QtToolTipRole] = head.title
+        data[C_FACTOR * 0 | QtDisplayRole] = head.title
+        data[C_FACTOR * 0 | QtDecorationRole] = SHARED.theme.getHeaderDecoration(iLevel)
+        data[C_FACTOR * 1 | QtDisplayRole] = countValue
+        data[C_FACTOR * 1 | QtToolTipRole] = countInfo
+        data[C_FACTOR * 1 | QtAccessibleTextRole] = countInfo
+        data[C_FACTOR * 1 | QtTextAlignmentRole] = QtAlignRight
         if self._columns == 3:
-            data[C_FACTOR*2 | QtDecorationRole] = self._more
+            data[C_FACTOR * 2 | QtDecorationRole] = self._more
         else:
             if self._extraKey and (refs := head.getReferencesByKeyword(self._extraKey)):
                 text = ", ".join(refs)
-                data[C_FACTOR*2 | QtDisplayRole] = text
-                data[C_FACTOR*2 | QtToolTipRole] = f"<b>{self._extraLabel}:</b> {text}"
-                data[C_FACTOR*2 | QtAccessibleTextRole] = f"{self._extraLabel}: {text}"
-            data[C_FACTOR*3 | QtDecorationRole] = self._more
+                data[C_FACTOR * 2 | QtDisplayRole] = text
+                data[C_FACTOR * 2 | QtToolTipRole] = f"<b>{self._extraLabel}:</b> {text}"
+                data[C_FACTOR * 2 | QtAccessibleTextRole] = f"{self._extraLabel}: {text}"
+            data[C_FACTOR * 3 | QtDecorationRole] = self._more
         data[R_HANDLE] = handle
         data[R_KEY] = key
         return data

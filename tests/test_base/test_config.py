@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import datetime
@@ -112,8 +113,13 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
     # Check that we have a default file
     copyfile(confFile, testFile)
     ignore = (
-        "timestamp", "lastnotes", "localisation",
-        "lastpath", "backuppath", "font", "textfont"
+        "timestamp",
+        "lastnotes",
+        "localisation",
+        "lastpath",
+        "backuppath",
+        "font",
+        "textfont",
     )
     assert cmpFiles(testFile, compFile, ignoreStart=ignore)
     conf.errorText()  # This clears the error cache
@@ -417,9 +423,9 @@ def testBaseConfig_RecentPaths(monkeypatch, tstPaths):
     # Check valid paths
     assert recent.getPath("default") == str(tstPaths.cnfDir / "default")
     assert recent.getPath("project") == str(tstPaths.cnfDir / "project")
-    assert recent.getPath("import")  == str(tstPaths.cnfDir / "import")
+    assert recent.getPath("import") == str(tstPaths.cnfDir / "import")
     assert recent.getPath("outline") == str(tstPaths.cnfDir / "outline")
-    assert recent.getPath("stats")   == str(tstPaths.cnfDir / "stats")
+    assert recent.getPath("stats") == str(tstPaths.cnfDir / "stats")
 
     # Check invalid path
     assert recent.getPath("foobar") is None
@@ -428,9 +434,9 @@ def testBaseConfig_RecentPaths(monkeypatch, tstPaths):
     expected = {
         "default": str(tstPaths.cnfDir / "default"),
         "project": str(tstPaths.cnfDir / "project"),
-        "import":  str(tstPaths.cnfDir / "import"),
+        "import": str(tstPaths.cnfDir / "import"),
         "outline": str(tstPaths.cnfDir / "outline"),
-        "stats":   str(tstPaths.cnfDir / "stats"),
+        "stats": str(tstPaths.cnfDir / "stats"),
     }
 
     assert cacheFile.exists()

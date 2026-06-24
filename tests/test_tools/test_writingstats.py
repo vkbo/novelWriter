@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
+
 from __future__ import annotations
 
 import json
@@ -167,30 +168,69 @@ def testToolWritingStats_Export(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     assert jsonData == [
         {
-            "date": "2021-01-31 19:00:00", "length": 1800.0,
-            "newWords": 1, "novelWords": 700, "noteWords": 375, "idleTime": 0
-        }, {
-            "date": "2021-02-01 20:00:00", "length": 1800.0,
-            "newWords": -200, "novelWords": 600, "noteWords": 275, "idleTime": 20
-        }, {
-            "date": "2021-02-02 19:00:00", "length": 1800.0,
-            "newWords": 300, "novelWords": 750, "noteWords": 425, "idleTime": 30
-        }, {
-            "date": "2021-02-02 20:00:00", "length": 1800.0,
-            "newWords": -120, "novelWords": 690, "noteWords": 365, "idleTime": 40
-        }, {
-            "date": "2021-02-03 19:00:00", "length": 1800.0,
-            "newWords": -20, "novelWords": 680, "noteWords": 355, "idleTime": 50
-        }, {
-            "date": "2021-02-04 19:00:00", "length": 1800.0,
-            "newWords": 40, "novelWords": 700, "noteWords": 375, "idleTime": 60
-        }, {
-            "date": "2021-02-05 19:00:00", "length": 1800.0,
-            "newWords": -400, "novelWords": 500, "noteWords": 175, "idleTime": 70
-        }, {
-            "date": "2021-02-06 19:00:00", "length": 1800.0,
-            "newWords": 200, "novelWords": 600, "noteWords": 275, "idleTime": 80
-        }
+            "date": "2021-01-31 19:00:00",
+            "length": 1800.0,
+            "newWords": 1,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 0,
+        },
+        {
+            "date": "2021-02-01 20:00:00",
+            "length": 1800.0,
+            "newWords": -200,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 20,
+        },
+        {
+            "date": "2021-02-02 19:00:00",
+            "length": 1800.0,
+            "newWords": 300,
+            "novelWords": 750,
+            "noteWords": 425,
+            "idleTime": 30,
+        },
+        {
+            "date": "2021-02-02 20:00:00",
+            "length": 1800.0,
+            "newWords": -120,
+            "novelWords": 690,
+            "noteWords": 365,
+            "idleTime": 40,
+        },
+        {
+            "date": "2021-02-03 19:00:00",
+            "length": 1800.0,
+            "newWords": -20,
+            "novelWords": 680,
+            "noteWords": 355,
+            "idleTime": 50,
+        },
+        {
+            "date": "2021-02-04 19:00:00",
+            "length": 1800.0,
+            "newWords": 40,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 60,
+        },
+        {
+            "date": "2021-02-05 19:00:00",
+            "length": 1800.0,
+            "newWords": -400,
+            "novelWords": 500,
+            "noteWords": 175,
+            "idleTime": 70,
+        },
+        {
+            "date": "2021-02-06 19:00:00",
+            "length": 1800.0,
+            "newWords": 200,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 80,
+        },
     ]
 
     # I/O Error
@@ -302,30 +342,69 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     assert jsonData == [
         {
-            "date": "2021-01-31 19:00:00", "length": 1800.0,
-            "newWords": 1, "novelWords": 700, "noteWords": 375, "idleTime": 0
-        }, {
-            "date": "2021-02-01 20:00:00", "length": 1800.0,
-            "newWords": -100, "novelWords": 600, "noteWords": 275, "idleTime": 20
-        }, {
-            "date": "2021-02-02 19:00:00", "length": 1800.0,
-            "newWords": 150, "novelWords": 750, "noteWords": 425, "idleTime": 30
-        }, {
-            "date": "2021-02-02 20:00:00", "length": 1800.0,
-            "newWords": -60, "novelWords": 690, "noteWords": 365, "idleTime": 40
-        }, {
-            "date": "2021-02-03 19:00:00", "length": 1800.0,
-            "newWords": -10, "novelWords": 680, "noteWords": 355, "idleTime": 50
-        }, {
-            "date": "2021-02-04 19:00:00", "length": 1800.0,
-            "newWords": 20, "novelWords": 700, "noteWords": 375, "idleTime": 60
-        }, {
-            "date": "2021-02-05 19:00:00", "length": 1800.0,
-            "newWords": -200, "novelWords": 500, "noteWords": 175, "idleTime": 70
-        }, {
-            "date": "2021-02-06 19:00:00", "length": 1800.0,
-            "newWords": 100, "novelWords": 600, "noteWords": 275, "idleTime": 80
-        }
+            "date": "2021-01-31 19:00:00",
+            "length": 1800.0,
+            "newWords": 1,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 0,
+        },
+        {
+            "date": "2021-02-01 20:00:00",
+            "length": 1800.0,
+            "newWords": -100,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 20,
+        },
+        {
+            "date": "2021-02-02 19:00:00",
+            "length": 1800.0,
+            "newWords": 150,
+            "novelWords": 750,
+            "noteWords": 425,
+            "idleTime": 30,
+        },
+        {
+            "date": "2021-02-02 20:00:00",
+            "length": 1800.0,
+            "newWords": -60,
+            "novelWords": 690,
+            "noteWords": 365,
+            "idleTime": 40,
+        },
+        {
+            "date": "2021-02-03 19:00:00",
+            "length": 1800.0,
+            "newWords": -10,
+            "novelWords": 680,
+            "noteWords": 355,
+            "idleTime": 50,
+        },
+        {
+            "date": "2021-02-04 19:00:00",
+            "length": 1800.0,
+            "newWords": 20,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 60,
+        },
+        {
+            "date": "2021-02-05 19:00:00",
+            "length": 1800.0,
+            "newWords": -200,
+            "novelWords": 500,
+            "noteWords": 175,
+            "idleTime": 70,
+        },
+        {
+            "date": "2021-02-06 19:00:00",
+            "length": 1800.0,
+            "newWords": 100,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 80,
+        },
     ]
 
     # No Note Files
@@ -371,30 +450,69 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     assert jsonData == [
         {
-            "date": "2021-01-31 19:00:00", "length": 1800.0,
-            "newWords": 1, "novelWords": 700, "noteWords": 375, "idleTime": 0
-        }, {
-            "date": "2021-02-01 20:00:00", "length": 1800.0,
-            "newWords": -100, "novelWords": 600, "noteWords": 275, "idleTime": 20
-        }, {
-            "date": "2021-02-02 19:00:00", "length": 1800.0,
-            "newWords": 150, "novelWords": 750, "noteWords": 425, "idleTime": 30
-        }, {
-            "date": "2021-02-02 20:00:00", "length": 1800.0,
-            "newWords": -60, "novelWords": 690, "noteWords": 365, "idleTime": 40
-        }, {
-            "date": "2021-02-03 19:00:00", "length": 1800.0,
-            "newWords": -10, "novelWords": 680, "noteWords": 355, "idleTime": 50
-        }, {
-            "date": "2021-02-04 19:00:00", "length": 1800.0,
-            "newWords": 20, "novelWords": 700, "noteWords": 375, "idleTime": 60
-        }, {
-            "date": "2021-02-05 19:00:00", "length": 1800.0,
-            "newWords": -200, "novelWords": 500, "noteWords": 175, "idleTime": 70
-        }, {
-            "date": "2021-02-06 19:00:00", "length": 1800.0,
-            "newWords": 100, "novelWords": 600, "noteWords": 275, "idleTime": 80
-        }
+            "date": "2021-01-31 19:00:00",
+            "length": 1800.0,
+            "newWords": 1,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 0,
+        },
+        {
+            "date": "2021-02-01 20:00:00",
+            "length": 1800.0,
+            "newWords": -100,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 20,
+        },
+        {
+            "date": "2021-02-02 19:00:00",
+            "length": 1800.0,
+            "newWords": 150,
+            "novelWords": 750,
+            "noteWords": 425,
+            "idleTime": 30,
+        },
+        {
+            "date": "2021-02-02 20:00:00",
+            "length": 1800.0,
+            "newWords": -60,
+            "novelWords": 690,
+            "noteWords": 365,
+            "idleTime": 40,
+        },
+        {
+            "date": "2021-02-03 19:00:00",
+            "length": 1800.0,
+            "newWords": -10,
+            "novelWords": 680,
+            "noteWords": 355,
+            "idleTime": 50,
+        },
+        {
+            "date": "2021-02-04 19:00:00",
+            "length": 1800.0,
+            "newWords": 20,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 60,
+        },
+        {
+            "date": "2021-02-05 19:00:00",
+            "length": 1800.0,
+            "newWords": -200,
+            "novelWords": 500,
+            "noteWords": 175,
+            "idleTime": 70,
+        },
+        {
+            "date": "2021-02-06 19:00:00",
+            "length": 1800.0,
+            "newWords": 100,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 80,
+        },
     ]
 
     # No Negative Entries
@@ -424,18 +542,37 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     assert jsonData == [
         {
-            "date": "2021-01-31 19:00:00", "length": 1800.0,
-            "newWords": 1, "novelWords": 700, "noteWords": 375, "idleTime": 0
-        }, {
-            "date": "2021-02-02 19:00:00", "length": 1800.0,
-            "newWords": 300, "novelWords": 750, "noteWords": 425, "idleTime": 30
-        }, {
-            "date": "2021-02-04 19:00:00", "length": 1800.0,
-            "newWords": 40, "novelWords": 700, "noteWords": 375, "idleTime": 60
-        }, {
-            "date": "2021-02-06 19:00:00", "length": 1800.0,
-            "newWords": 200, "novelWords": 600, "noteWords": 275, "idleTime": 80
-        }
+            "date": "2021-01-31 19:00:00",
+            "length": 1800.0,
+            "newWords": 1,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 0,
+        },
+        {
+            "date": "2021-02-02 19:00:00",
+            "length": 1800.0,
+            "newWords": 300,
+            "novelWords": 750,
+            "noteWords": 425,
+            "idleTime": 30,
+        },
+        {
+            "date": "2021-02-04 19:00:00",
+            "length": 1800.0,
+            "newWords": 40,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 60,
+        },
+        {
+            "date": "2021-02-06 19:00:00",
+            "length": 1800.0,
+            "newWords": 200,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 80,
+        },
     ]
 
     # Un-hide Zero Entries
@@ -489,36 +626,85 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     assert jsonData == [
         {
-            "date": "2021-01-31 19:00:00", "length": 1800.0,
-            "newWords": 1, "novelWords": 700, "noteWords": 375, "idleTime": 0
-        }, {
-            "date": "2021-02-01 19:00:00", "length": 1800.0,
-            "newWords": 0, "novelWords": 700, "noteWords": 375, "idleTime": 10
-        }, {
-            "date": "2021-02-01 20:00:00", "length": 1800.0,
-            "newWords": -200, "novelWords": 600, "noteWords": 275, "idleTime": 20
-        }, {
-            "date": "2021-02-02 19:00:00", "length": 1800.0,
-            "newWords": 300, "novelWords": 750, "noteWords": 425, "idleTime": 30
-        }, {
-            "date": "2021-02-02 20:00:00", "length": 1800.0,
-            "newWords": -120, "novelWords": 690, "noteWords": 365, "idleTime": 40
-        }, {
-            "date": "2021-02-03 19:00:00", "length": 1800.0,
-            "newWords": -20, "novelWords": 680, "noteWords": 355, "idleTime": 50
-        }, {
-            "date": "2021-02-04 19:00:00", "length": 1800.0,
-            "newWords": 40, "novelWords": 700, "noteWords": 375, "idleTime": 60
-        }, {
-            "date": "2021-02-05 19:00:00", "length": 1800.0,
-            "newWords": -400, "novelWords": 500, "noteWords": 175, "idleTime": 70
-        }, {
-            "date": "2021-02-06 19:00:00", "length": 1800.0,
-            "newWords": 200, "novelWords": 600, "noteWords": 275, "idleTime": 80
-        }, {
-            "date": "2021-02-07 19:00:00", "length": 1800.0,
-            "newWords": 0, "novelWords": 600, "noteWords": 275, "idleTime": 90
-        }
+            "date": "2021-01-31 19:00:00",
+            "length": 1800.0,
+            "newWords": 1,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 0,
+        },
+        {
+            "date": "2021-02-01 19:00:00",
+            "length": 1800.0,
+            "newWords": 0,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 10,
+        },
+        {
+            "date": "2021-02-01 20:00:00",
+            "length": 1800.0,
+            "newWords": -200,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 20,
+        },
+        {
+            "date": "2021-02-02 19:00:00",
+            "length": 1800.0,
+            "newWords": 300,
+            "novelWords": 750,
+            "noteWords": 425,
+            "idleTime": 30,
+        },
+        {
+            "date": "2021-02-02 20:00:00",
+            "length": 1800.0,
+            "newWords": -120,
+            "novelWords": 690,
+            "noteWords": 365,
+            "idleTime": 40,
+        },
+        {
+            "date": "2021-02-03 19:00:00",
+            "length": 1800.0,
+            "newWords": -20,
+            "novelWords": 680,
+            "noteWords": 355,
+            "idleTime": 50,
+        },
+        {
+            "date": "2021-02-04 19:00:00",
+            "length": 1800.0,
+            "newWords": 40,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 60,
+        },
+        {
+            "date": "2021-02-05 19:00:00",
+            "length": 1800.0,
+            "newWords": -400,
+            "novelWords": 500,
+            "noteWords": 175,
+            "idleTime": 70,
+        },
+        {
+            "date": "2021-02-06 19:00:00",
+            "length": 1800.0,
+            "newWords": 200,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 80,
+        },
+        {
+            "date": "2021-02-07 19:00:00",
+            "length": 1800.0,
+            "newWords": 0,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 90,
+        },
     ]
 
     # Toggle Idle Time
@@ -574,30 +760,69 @@ def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     assert jsonData == [
         {
-            "date": "2021-01-31", "length": 1800.0,
-            "newWords": 1, "novelWords": 700, "noteWords": 375, "idleTime": 0
-        }, {
-            "date": "2021-02-01", "length": 3600.0,
-            "newWords": -200, "novelWords": 600, "noteWords": 275, "idleTime": 30
-        }, {
-            "date": "2021-02-02", "length": 3600.0,
-            "newWords": 180, "novelWords": 690, "noteWords": 365, "idleTime": 70
-        }, {
-            "date": "2021-02-03", "length": 1800.0,
-            "newWords": -20, "novelWords": 680, "noteWords": 355, "idleTime": 50
-        }, {
-            "date": "2021-02-04", "length": 1800.0,
-            "newWords": 40, "novelWords": 700, "noteWords": 375, "idleTime": 60
-        }, {
-            "date": "2021-02-05", "length": 1800.0,
-            "newWords": -400, "novelWords": 500, "noteWords": 175, "idleTime": 70
-        }, {
-            "date": "2021-02-06", "length": 1800.0,
-            "newWords": 200, "novelWords": 600, "noteWords": 275, "idleTime": 80
-        }, {
-            "date": "2021-02-07", "length": 1800.0,
-            "newWords": 0, "novelWords": 600, "noteWords": 275, "idleTime": 90
-        }
+            "date": "2021-01-31",
+            "length": 1800.0,
+            "newWords": 1,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 0,
+        },
+        {
+            "date": "2021-02-01",
+            "length": 3600.0,
+            "newWords": -200,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 30,
+        },
+        {
+            "date": "2021-02-02",
+            "length": 3600.0,
+            "newWords": 180,
+            "novelWords": 690,
+            "noteWords": 365,
+            "idleTime": 70,
+        },
+        {
+            "date": "2021-02-03",
+            "length": 1800.0,
+            "newWords": -20,
+            "novelWords": 680,
+            "noteWords": 355,
+            "idleTime": 50,
+        },
+        {
+            "date": "2021-02-04",
+            "length": 1800.0,
+            "newWords": 40,
+            "novelWords": 700,
+            "noteWords": 375,
+            "idleTime": 60,
+        },
+        {
+            "date": "2021-02-05",
+            "length": 1800.0,
+            "newWords": -400,
+            "novelWords": 500,
+            "noteWords": 175,
+            "idleTime": 70,
+        },
+        {
+            "date": "2021-02-06",
+            "length": 1800.0,
+            "newWords": 200,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 80,
+        },
+        {
+            "date": "2021-02-07",
+            "length": 1800.0,
+            "newWords": 0,
+            "novelWords": 600,
+            "noteWords": 275,
+            "idleTime": 90,
+        },
     ]
 
     # qtbot.stop()
