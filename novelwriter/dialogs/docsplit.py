@@ -2,10 +2,6 @@
 novelWriter – GUI Doc Split Dialog
 ==================================
 
-File History:
-Created:   2020-02-01 [0.4.3]  GuiDocSplit
-Rewritten: 2022-10-12 [2.0rc1] GuiDocSplit
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 

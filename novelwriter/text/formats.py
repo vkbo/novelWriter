@@ -2,10 +2,6 @@
 novelWriter – Text Comments
 ===========================
 
-File History:
-Created: 2023-11-23 [2.2b1]
-Moved:   2025-02-09 [2.7b1]
-
 This file is a part of novelWriter
 Copyright (C) 2025 Veronica Berglyd Olsen and novelWriter contributors
 

@@ -2,9 +2,6 @@
 novelWriter – GUI Quotes Dialog
 ===============================
 
-File History:
-Created: 2020-06-18 [0.9.0] GuiQuoteSelect
-
 This file is a part of novelWriter
 Copyright (C) 2021 Veronica Berglyd Olsen and novelWriter contributors
 

@@ -2,9 +2,6 @@
 novelWriter – GUI Main Menu
 ===========================
 
-File History:
-Created: 2019-04-27 [0.0.1] GuiMainMenu
-
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 

@@ -2,10 +2,6 @@
 novelWriter – GUI Doc Merge Dialog
 ==================================
 
-File History:
-Created:   2020-01-23 [0.4.3]  GuiDocMerge
-Rewritten: 2022-10-06 [2.0rc1] GuiDocMerge
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 

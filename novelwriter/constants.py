@@ -2,9 +2,6 @@
 novelWriter – Constants
 =======================
 
-File History:
-Created: 2019-04-28 [0.0.1]
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 

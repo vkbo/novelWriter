@@ -133,13 +133,6 @@ def copyPackageFiles(dst: Path, oldLicense: bool = False) -> None:
         shutil.copyfile(copyFile, dst / copyFile.name)
         print("Copied:", copyFile, flush=True)
 
-    writeFile(dst / "MANIFEST.in", (
-        "include LICENSE.md\n"
-        "include LICENSE-Apache-2.0.txt\n"
-        "include CREDITS.md\n"
-        "recursive-include novelwriter/assets *\n"
-    ))
-
     text = readFile(ROOT_DIR / "pyproject.toml")
     text = text.replace("setup/description_pypi.md", "data/description_short.txt")
     if oldLicense:

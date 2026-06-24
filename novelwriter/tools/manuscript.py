@@ -2,9 +2,6 @@
 novelWriter – GUI Manuscript Tool
 =================================
 
-File History:
-Created: 2023-05-13 [2.1b1] GuiManuscript
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 

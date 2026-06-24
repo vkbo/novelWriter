@@ -2,14 +2,6 @@
 novelWriter – GUI Project Tree
 ==============================
 
-File History:
-Created:   2018-09-29 [0.0.1]  GuiProjectTree
-Created:   2022-06-06 [2.0rc1] GuiProjectView
-Created:   2022-06-06 [2.0rc1] GuiProjectToolBar
-Created:   2023-11-22 [2.2rc1] _TreeContextMenu
-Rewritten: 2024-11-17 [2.6b2]  GuiProjectTree
-Rewritten: 2024-11-20 [2.6b2]  _TreeContextMenu
-
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 
