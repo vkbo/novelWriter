@@ -2,10 +2,6 @@
 novelWriter – Custom Widget: Progress Bars
 ==========================================
 
-File History:
-Created: 2023-06-07 [2.1b1] NProgressCircle
-Created: 2023-06-09 [2.1b1] NProgressSimple
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 

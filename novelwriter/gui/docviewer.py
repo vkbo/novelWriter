@@ -2,12 +2,6 @@
 novelWriter – GUI Document Viewer
 =================================
 
-File History:
-Created: 2019-05-10 [0.0.1] GuiDocViewer
-Created: 2020-04-25 [0.4.5] GuiDocViewHeader
-Created: 2020-06-09 [0.8]   GuiDocViewFooter
-Created: 2020-09-08 [1.0b1] GuiDocViewHistory
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 

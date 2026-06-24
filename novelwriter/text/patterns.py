@@ -2,10 +2,6 @@
 novelWriter – Text Pattern Functions
 ====================================
 
-File History:
-Created: 2024-06-01 [2.5rc1] RegExPatterns
-Created: 2024-11-04 [2.6b1]  DialogParser
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 

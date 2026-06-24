@@ -2,9 +2,6 @@
 novelWriter – GUI Text Document
 ===============================
 
-File History:
-Created: 2023-09-07 [2.2b1] GuiTextDocument
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 

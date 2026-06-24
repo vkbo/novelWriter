@@ -2,9 +2,6 @@
 novelWriter – Custom Widget: Switch
 ===================================
 
-File History:
-Created: 2020-05-03 [0.4.5]
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 

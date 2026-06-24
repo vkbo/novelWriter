@@ -129,7 +129,7 @@ cp -R $CONDA_PATH/envs/$CONDA_ENV_NAME/* novelWriter.app/Contents/Resources/
 
 echo "Copying novelWriter to bundle ..."
 FILES_COPY=(
-    "CHANGELOG.md" "MANIFEST.in" "CREDITS.md" "LICENSE.md"
+    "CHANGELOG.md" "CREDITS.md" "LICENSE.md"
     "CONTRIBUTING.md" "CODE_OF_CONDUCT.md" "novelwriter"
     "novelWriter.py"
 )

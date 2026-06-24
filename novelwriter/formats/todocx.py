@@ -2,10 +2,6 @@
 novelWriter – DocX Text Converter
 =================================
 
-File History:
-Created: 2024-10-18 [2.6b1] ToDocX
-Created: 2024-10-18 [2.6b1] DocXParagraph
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 
