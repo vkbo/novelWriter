@@ -306,10 +306,7 @@ class ToDocX(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 self._processFragments(par, S_NORM, "")
 
-            elif tType in COMMENT_BLOCKS:
-                self._processFragments(par, S_META, tText, tFormat)
-
-            elif tType == BlockTyp.KEYWORD:
+            elif tType in COMMENT_BLOCKS or tType == BlockTyp.KEYWORD:
                 self._processFragments(par, S_META, tText, tFormat)
 
     def closeDocument(self) -> None:

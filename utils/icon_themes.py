@@ -281,9 +281,7 @@ def processFontAwesome(workDir: Path, iconsDir: Path, jobs: dict) -> None:
             iconRegular = iconSrc / "regular" / f"{icon}.svg"
             if forced == "regular":
                 iconFile = iconRegular
-            elif forced == "solid":
-                iconFile = iconSolid
-            elif iconSolid.is_file():
+            elif forced == "solid" or iconSolid.is_file():
                 iconFile = iconSolid
             elif iconRegular.is_file():
                 iconFile = iconRegular

@@ -122,9 +122,8 @@ def checkPath(value: Any, default: Path) -> Path:
     """Check if a value is a valid path."""
     if isinstance(value, Path):
         return value
-    elif isinstance(value, str):
-        if value.strip():
-            return Path(value)
+    elif isinstance(value, str) and value.strip():
+        return Path(value)
     return default
 
 
@@ -141,10 +140,7 @@ def isHandle(value: Any) -> TypeGuard[str]:
         return False
     if len(value) != 13:
         return False
-    for c in value:
-        if c not in "0123456789abcdef":
-            return False
-    return True
+    return all(c in "0123456789abcdef" for c in value)
 
 
 def isTitleTag(value: Any) -> TypeGuard[str]:
@@ -155,10 +151,7 @@ def isTitleTag(value: Any) -> TypeGuard[str]:
         return False
     if not value.startswith("T"):
         return False
-    for c in value[1:]:
-        if c not in "0123456789":
-            return False
-    return True
+    return all(c in "0123456789" for c in value[1:])
 
 
 def isItemClass(value: Any) -> TypeGuard[str]:
@@ -200,9 +193,8 @@ def checkIntTuple(value: int, valid: tuple | list | set, default: int) -> int:
     """Check that an int is an element of a tuple. If it isn't, return
     the default value.
     """
-    if isinstance(value, int):
-        if value in valid:
-            return value
+    if isinstance(value, int) and value in valid:
+        return value
     return default
 
 

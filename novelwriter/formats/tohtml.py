@@ -416,10 +416,9 @@ class ToHtml(Tokenizer):
                     tags.append((pos, f"<sup><a href='#footnote_{index}'>{index}</a></sup>"))
                 else:
                     tags.append((pos, "<sup>ERR</sup>"))
-            elif fmt == TextFmt.FIELD:
-                if field := data.partition(":")[2]:
-                    self._usedFields.append((len(self._pages), field))
-                    tags.append((pos, f"{{{{{field}}}}}"))
+            elif fmt == TextFmt.FIELD and (field := data.partition(":")[2]):
+                self._usedFields.append((len(self._pages), field))
+                tags.append((pos, f"{{{{{field}}}}}"))
 
         # Check all format types and close any tag that is still open. This
         # ensures that unclosed tags don't spill over to the next paragraph.

@@ -36,7 +36,7 @@ ESCAPES = {
     r"\]": "]",
     r"\ ": "",
 }
-RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
+RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES]), flags=re.DOTALL)
 
 
 def stripEscape(text: str) -> str:

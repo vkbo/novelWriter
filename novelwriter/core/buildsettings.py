@@ -493,7 +493,7 @@ class BuildSettings:
         self.setName(data.get("name", ""))
         self.setBuildID(data.get("uuid", ""))
         self.setOrder(data.get("order", 0))
-        self.setLastBuildPath(data.get("path", None))
+        self.setLastBuildPath(data.get("path"))
         self.setLastBuildName(data.get("build", ""))
 
         buildFmt = str(data.get("format", ""))

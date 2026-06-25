@@ -436,10 +436,9 @@ class ToQTextDocument(Tokenizer):
                     cursor.insertText(f"[{index}]", xFmt)
                 else:
                     cursor.insertText("[ERR]", cFmt)
-            elif fmt == TextFmt.FIELD:
-                if field := data.partition(":")[2]:
-                    self._usedFields.append((cursor.position(), field))
-                    cursor.insertText("0", cFmt)
+            elif fmt == TextFmt.FIELD and (field := data.partition(":")[2]):
+                self._usedFields.append((cursor.position(), field))
+                cursor.insertText("0", cFmt)
 
             # Move pos for next pass
             start = pos

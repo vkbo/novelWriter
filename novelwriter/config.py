@@ -417,9 +417,7 @@ class Config:
             self.osLinux = True
         elif self.osType.startswith("darwin"):
             self.osDarwin = True
-        elif self.osType.startswith("win32"):
-            self.osWindows = True
-        elif self.osType.startswith("cygwin"):
+        elif self.osType.startswith("win32") or self.osType.startswith("cygwin"):
             self.osWindows = True
         else:
             self.osUnknown = True
@@ -594,9 +592,8 @@ class Config:
 
     def lastPath(self, key: str) -> Path:
         """Return the last path used by the user, if it exists."""
-        if path := self._recentPaths.getPath(key):
-            if safeIsDir(asPath := Path(path)):
-                return asPath
+        if (path := self._recentPaths.getPath(key)) and safeIsDir(asPath := Path(path)):
+            return asPath
         return self._homePath
 
     def backupPath(self) -> Path:
@@ -728,11 +725,10 @@ class Config:
             for lngCode in self._qLocale.uiLanguages():
                 qTrans = QTranslator()
                 lngFile = "{0}_{1}".format(lngBase, lngCode.replace("-", "_"))
-                if lngFile not in self._qtTrans:
-                    if qTrans.load(lngFile, lngPath):
-                        logger.debug("Loaded: %s.qm", lngFile)
-                        nwApp.installTranslator(qTrans)
-                        self._qtTrans[lngFile] = qTrans
+                if lngFile not in self._qtTrans and qTrans.load(lngFile, lngPath):
+                    logger.debug("Loaded: %s.qm", lngFile)
+                    nwApp.installTranslator(qTrans)
+                    self._qtTrans[lngFile] = qTrans
 
         # Refresh translated values
         self.setPrimaryCount(self.useCharCount)

@@ -586,9 +586,12 @@ class GuiProjectTree(QTreeView):
         tHandle = None
         if itemType == nwItemType.ROOT and isinstance(itemClass, nwItemClass):
             sPos = -1
-            if (node := self._getNode(self.currentIndex())) and (itemRoot := node.item.itemRoot):
-                if root := SHARED.project.tree.nodes.get(itemRoot):
-                    sPos = root.row() + 1
+            if (
+                (node := self._getNode(self.currentIndex()))
+                and (itemRoot := node.item.itemRoot)
+                and (root := SHARED.project.tree.nodes.get(itemRoot))
+            ):
+                sPos = root.row() + 1
 
             tHandle = SHARED.project.newRoot(itemClass, sPos)
             self.restoreExpandedState()
@@ -778,9 +781,12 @@ class GuiProjectTree(QTreeView):
         if event.button() == QtMouseLeft:
             if not self.indexAt(event.pos()).isValid():
                 self._clearSelection()
-        elif event.button() == QtMouseMiddle:
-            if (node := self._getNode(self.indexAt(event.pos()))) and node.item.isFileType():
-                self.projView.openDocumentRequest.emit(node.item.itemHandle, nwDocMode.VIEW, "", False)
+        elif (
+            event.button() == QtMouseMiddle
+            and (node := self._getNode(self.indexAt(event.pos())))
+            and node.item.isFileType()
+        ):
+            self.projView.openDocumentRequest.emit(node.item.itemHandle, nwDocMode.VIEW, "", False)
 
     def drawRow(self, painter: QPainter, opt: QStyleOptionViewItem, index: QModelIndex) -> None:
         """Draw a box on the active row."""
@@ -807,16 +813,24 @@ class GuiProjectTree(QTreeView):
     @pyqtSlot()
     def goToSiblingUp(self) -> None:
         """Skip to the previous sibling."""
-        if (node := self._getNode(self.currentIndex())) and (parent := node.parent()):
-            if (move := parent.child(node.row() - 1)) and (model := self._getModel()):
-                self.setCurrentIndex(model.indexFromNode(move))
+        if (
+            (node := self._getNode(self.currentIndex()))
+            and (parent := node.parent())
+            and (move := parent.child(node.row() - 1))
+            and (model := self._getModel())
+        ):
+            self.setCurrentIndex(model.indexFromNode(move))
 
     @pyqtSlot()
     def goToSiblingDown(self) -> None:
         """Skip to the next sibling."""
-        if (node := self._getNode(self.currentIndex())) and (parent := node.parent()):
-            if (move := parent.child(node.row() + 1)) and (model := self._getModel()):
-                self.setCurrentIndex(model.indexFromNode(move))
+        if (
+            (node := self._getNode(self.currentIndex()))
+            and (parent := node.parent())
+            and (move := parent.child(node.row() + 1))
+            and (model := self._getModel())
+        ):
+            self.setCurrentIndex(model.indexFromNode(move))
 
     @pyqtSlot()
     def goToParent(self) -> None:

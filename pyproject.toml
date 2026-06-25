@@ -100,6 +100,7 @@ select = [
     "Q",     # flake8-quotes (Q)
     "RET",   # flake8-return (RET)
     "RUF",   # Ruff-specific rules (RUF)
+    "SIM",   # flake8-simplify (SIM)
     "SLF",   # flake8-self (SLF)
     "SLOT",  # flake8-slots (SLOT)
     "TC",    # flake8-type-checking (TC)
@@ -122,6 +123,7 @@ ignore = [
     "RUF015",  # unnecessary-iterable-allocation-for-first-element
     "RUF067",  # non-empty-init-module
     "RUF076",  # pytest-fixture-autouse
+    "SIM108",  # if-else-block-instead-of-if-exp
     "UP015",   # redundant-open-modes
     "UP030",   # format-literals
 ]

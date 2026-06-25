@@ -637,7 +637,7 @@ class GuiDocEditor(QPlainTextEdit):
         """Check if the cursor is visible in the editor."""
         viewport = self.viewport()
         height = viewport.height() if viewport else 0
-        return 0 < self.cursorRect().top() and self.cursorRect().bottom() < height
+        return self.cursorRect().top() > 0 and self.cursorRect().bottom() < height
 
     def ensureCursorVisibleNoCentre(self) -> None:
         """Ensure cursor is visible, but don't force it to centre."""
@@ -1128,9 +1128,8 @@ class GuiDocEditor(QPlainTextEdit):
     def dropEvent(self, event: QDropEvent) -> None:
         """Overload drop event to handle dragged items."""
         if (data := event.mimeData()) and data.hasFormat(nwConst.MIME_HANDLE):
-            if handles := decodeMimeHandles(data):
-                if SHARED.project.tree.checkType(handles[0], nwItemType.FILE):
-                    self.openDocumentRequest.emit(handles[0], nwDocMode.EDIT, "", True)
+            if (handles := decodeMimeHandles(data)) and SHARED.project.tree.checkType(handles[0], nwItemType.FILE):
+                self.openDocumentRequest.emit(handles[0], nwDocMode.EDIT, "", True)
         else:
             super().dropEvent(event)
 
@@ -1899,10 +1898,7 @@ class GuiDocEditor(QPlainTextEdit):
         elif text.startswith(">> "):
             temp = text[3:]
             offset = 3
-        elif text.startswith("> ") and action != nwDocAction.INDENT_R:
-            temp = text[2:]
-            offset = 2
-        elif text.startswith(">>"):
+        elif (text.startswith("> ") and action != nwDocAction.INDENT_R) or text.startswith(">>"):
             temp = text[2:]
             offset = 2
         elif text.startswith(">") and action != nwDocAction.INDENT_R:
@@ -1915,9 +1911,7 @@ class GuiDocEditor(QPlainTextEdit):
         # Also remove formatting tags at the end
         if text.endswith(" <<"):
             temp = temp[:-3]
-        elif text.endswith(" <") and action != nwDocAction.INDENT_L:
-            temp = temp[:-2]
-        elif text.endswith("<<"):
+        elif (text.endswith(" <") and action != nwDocAction.INDENT_L) or text.endswith("<<"):
             temp = temp[:-2]
         elif text.endswith("<") and action != nwDocAction.INDENT_L:
             temp = temp[:-1]
@@ -2129,9 +2123,7 @@ class GuiDocEditor(QPlainTextEdit):
         cursor = self.textCursor()
         # -- NORMAL mode PREFIX
         if self._vim.mode == nwVimMode.NORMAL:
-            if key in self._vim.PREFIX_KEYS:
-                self._vim.pushCommandKey(key)
-            elif key in self._vim.SUFFIX_KEYS:
+            if key in self._vim.PREFIX_KEYS or key in self._vim.SUFFIX_KEYS:
                 self._vim.pushCommandKey(key)
             else:
                 self._vim.setCommand(key)
@@ -2849,19 +2841,27 @@ class TextAutoReplace:
         delete, insert = self._determine(last, bPos)
 
         check = insert
-        if self._doPadBefore and check and check in self._padBefore:
-            if not (check == ":" and length > 1 and text[0] == "@"):
-                delete = max(delete, 1)
-                chkPos = len(last) - delete - 1
-                if chkPos >= 0 and last[chkPos].isspace():
-                    # Strip existing space before inserting a new (#1061)
-                    delete += 1
-                insert = self._padChar + insert
+        if (
+            self._doPadBefore
+            and check
+            and check in self._padBefore
+            and not (check == ":" and length > 1 and text[0] == "@")
+        ):
+            delete = max(delete, 1)
+            chkPos = len(last) - delete - 1
+            if chkPos >= 0 and last[chkPos].isspace():
+                # Strip existing space before inserting a new (#1061)
+                delete += 1
+            insert = self._padChar + insert
 
-        if self._doPadAfter and check and check in self._padAfter:
-            if not (check == ":" and length > 1 and text[0] == "@"):
-                delete = max(delete, 1)
-                insert = insert + self._padChar
+        if (
+            self._doPadAfter
+            and check
+            and check in self._padAfter
+            and not (check == ":" and length > 1 and text[0] == "@")
+        ):
+            delete = max(delete, 1)
+            insert = insert + self._padChar
 
         if delete > 0:
             cursor.setPosition(aPos)
@@ -2880,42 +2880,32 @@ class TextAutoReplace:
 
         if self._replaceDQuote and t1 == '"':
             # Process Double Quote
-            if pos == 1:
-                return 1, self._quoteDO
-            elif t2[:1].isspace() and t2.endswith('"'):
-                return 1, self._quoteDO
-            elif pos == 2 and t2 == '>"':
-                return 1, self._quoteDO
-            elif pos == 3 and t3 == '>>"':
-                return 1, self._quoteDO
-            elif pos == 2 and t2 == '_"':
-                return 1, self._quoteDO
-            elif t3[:1].isspace() and t3.endswith('_"'):
-                return 1, self._quoteDO
-            elif pos == 3 and t3 in ('**"', '=="', '~~"'):
-                return 1, self._quoteDO
-            elif t4[:1].isspace() and t4.endswith(('**"', '=="', '~~"')):
+            if (
+                pos == 1
+                or (t2[:1].isspace() and t2.endswith('"'))
+                or (pos == 2 and t2 == '>"')
+                or (pos == 3 and t3 == '>>"')
+                or (pos == 2 and t2 == '_"')
+                or (t3[:1].isspace() and t3.endswith('_"'))
+                or (pos == 3 and t3 in ('**"', '=="', '~~"'))
+                or (t4[:1].isspace() and t4.endswith(('**"', '=="', '~~"')))
+            ):
                 return 1, self._quoteDO
             else:
                 return 1, self._quoteDC
 
         if self._replaceSQuote and t1 == "'":
             # Process Single Quote
-            if pos == 1:
-                return 1, self._quoteSO
-            elif t2[:1].isspace() and t2.endswith("'"):
-                return 1, self._quoteSO
-            elif pos == 2 and t2 == ">'":
-                return 1, self._quoteSO
-            elif pos == 3 and t3 == ">>'":
-                return 1, self._quoteSO
-            elif pos == 2 and t2 == "_'":
-                return 1, self._quoteSO
-            elif t3[:1].isspace() and t3.endswith("_'"):
-                return 1, self._quoteSO
-            elif pos == 3 and t3 in ("**'", "=='", "~~'"):
-                return 1, self._quoteSO
-            elif t4[:1].isspace() and t4.endswith(("**'", "=='", "~~'")):
+            if (
+                pos == 1
+                or (t2[:1].isspace() and t2.endswith("'"))
+                or (pos == 2 and t2 == ">'")
+                or (pos == 3 and t3 == ">>'")
+                or (pos == 2 and t2 == "_'")
+                or (t3[:1].isspace() and t3.endswith("_'"))
+                or (pos == 3 and t3 in ("**'", "=='", "~~'"))
+                or (t4[:1].isspace() and t4.endswith(("**'", "=='", "~~'")))
+            ):
                 return 1, self._quoteSO
             else:
                 return 1, self._quoteSC
