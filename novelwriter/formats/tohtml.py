@@ -77,8 +77,7 @@ HTML_NONE = (0, "")
 class ToHtml(Tokenizer):
     """Core: HTML Document Writer.
 
-    Extend the Tokenizer class to writer HTML output. This class is
-    also used by the Document Viewer, and Manuscript Build Preview.
+    Extend the Tokenizer class to writer HTML output.
     """
 
     def __init__(self, project: NWProject) -> None:

@@ -84,6 +84,7 @@ select = [
     "E",     # pycodestyle (E)
     "F",     # Pyflakes (F)
     "FA",    # flake8-future-annotations (FA)
+    "I",     # isort (I)
     "PERF",  # Perflint (PERF)
     "PLC",   # Pylint Convention (PLC)
     "PLE",   # Pylint Error (PLE)
@@ -130,6 +131,10 @@ ignore-decorators = [
     "typing.overload",
     "pytest.fixture",
 ]
+
+[tool.ruff.lint.isort]
+lines-between-types = 1
+forced-separate = ["tests"]
 
 [tool.ruff.lint.pylint]
 max-nested-blocks = 10

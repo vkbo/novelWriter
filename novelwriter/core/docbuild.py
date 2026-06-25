@@ -33,6 +33,7 @@ from novelwriter.core.item import NWItem
 from novelwriter.enum import nwBuildFmt, nwComment
 from novelwriter.error import formatException, logException
 from novelwriter.formats.todocx import ToDocX
+from novelwriter.formats.toepub import ToEPub
 from novelwriter.formats.tohtml import ToHtml
 from novelwriter.formats.tomarkdown import ToMarkdown
 from novelwriter.formats.toodt import ToOdt
@@ -173,6 +174,13 @@ class NWBuildDocument:
 
         elif bFormat == nwBuildFmt.DOCX:
             makeObj = ToDocX(self._project)
+            filtered = self._setupBuild(makeObj)
+            makeObj.initDocument()
+            yield from self._iterBuild(makeObj, filtered)
+            makeObj.closeDocument()
+
+        elif bFormat == nwBuildFmt.EPUB:
+            makeObj = ToEPub(self._project)
             filtered = self._setupBuild(makeObj)
             makeObj.initDocument()
             yield from self._iterBuild(makeObj, filtered)
