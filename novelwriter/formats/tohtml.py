@@ -29,7 +29,7 @@ from typing import TYPE_CHECKING
 
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHtmlUnicode
-from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, processHtmlEntities, stripEscape
 from novelwriter.formats.tokenizer import COMMENT_BLOCKS, Tokenizer
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS, QtHexRgb
 
@@ -130,27 +130,7 @@ class ToHtml(Tokenizer):
         """Convert the list of text tokens into an HTML document."""
         lines = []
         for tType, tMeta, tText, tFmt, tStyle in self._blocks:
-            # Replace < and > with HTML entities
-            if tFmt:
-                # If we have formatting, we must recompute the locations
-                cText = []
-                i = 0
-                for c in tText:
-                    if c == "<":
-                        cText.append("&lt;")
-                        tFmt = [(p + 3 if p > i else p, f, k) for p, f, k in tFmt]
-                        i += 4
-                    elif c == ">":
-                        cText.append("&gt;")
-                        tFmt = [(p + 3 if p > i else p, f, k) for p, f, k in tFmt]
-                        i += 4
-                    else:
-                        cText.append(c)
-                        i += 1
-                tText = "".join(cText)
-            else:
-                # If we don't have formatting, we can do a plain replace
-                tText = tText.replace("<", "&lt;").replace(">", "&gt;")
+            tText, tFmt = processHtmlEntities(tText, tFmt)
 
             # Inline Styles
             aStyle = []

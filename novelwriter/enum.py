@@ -215,11 +215,12 @@ class nwBuildFmt(Enum):
     DOCX = 2
     PDF = 3
     HTML = 4
-    STD_MD = 5
-    EXT_MD = 6
-    NWD = 7
-    J_HTML = 8
-    J_NWD = 9
+    EPUB = 5
+    STD_MD = 6
+    EXT_MD = 7
+    NWD = 8
+    J_HTML = 9
+    J_NWD = 10
 
 
 class nwStatusShape(Enum):
