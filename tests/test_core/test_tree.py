@@ -38,7 +38,7 @@ from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def mockItems(mockGUI, mockRnd, fncPath):
     """Create a list of mock items."""
     project = NWProject()

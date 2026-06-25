@@ -96,6 +96,7 @@ select = [
     "PLE",   # Pylint Error (PLE)
     "PLR17", # Refactor (PLR) - Only PLR17xx
     "PLW",   # Pylint Warning (PLW)
+    "PT",    # flake8-pytest-style (PT)
     "Q",     # flake8-quotes (Q)
     "RET",   # flake8-return (RET)
     "RUF",   # Ruff-specific rules (RUF)

@@ -258,11 +258,16 @@ def testToolManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert listView.topLevelItemCount() == 5
     keyRole = manus.buildOutline.D_LINE
 
-    assert (item := listView.topLevelItem(0)) and item.data(0, keyRole) == "000000000000c:T0001"
-    assert (item := listView.topLevelItem(1)) and item.data(0, keyRole) == "000000000000c:T0002"
-    assert (item := listView.topLevelItem(2)) and item.data(0, keyRole) == "000000000000c:T0003"
-    assert (item := listView.topLevelItem(3)) and item.data(0, keyRole) == "000000000000c:T0006"
-    assert (item := listView.topLevelItem(4)) and item.data(0, keyRole) == "000000000000e:T0001"
+    assert (item := listView.topLevelItem(0))
+    assert item.data(0, keyRole) == "000000000000c:T0001"
+    assert (item := listView.topLevelItem(1))
+    assert item.data(0, keyRole) == "000000000000c:T0002"
+    assert (item := listView.topLevelItem(2))
+    assert item.data(0, keyRole) == "000000000000c:T0003"
+    assert (item := listView.topLevelItem(3))
+    assert item.data(0, keyRole) == "000000000000c:T0006"
+    assert (item := listView.topLevelItem(4))
+    assert item.data(0, keyRole) == "000000000000e:T0001"
 
     # Click outline
     item = listView.topLevelItem(4)

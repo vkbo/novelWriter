@@ -1094,11 +1094,11 @@ def testCoreIndex_TagsIndex():
     tagsIndex.clear()
 
     # Invalid data type
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="tagsIndex is not a dict"):
         tagsIndex.unpackData([])  # type: ignore
 
     # Invalid key
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="tagsIndex key must be a string"):
         tagsIndex.unpackData(
             {
                 1234: {
@@ -1112,11 +1112,11 @@ def testCoreIndex_TagsIndex():
         )
 
     # Invalid entry
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="tagsIndex entry is not a dict"):
         tagsIndex.unpackData({"tag1": None})
 
     # Invalid name
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="tagsIndex name is not a string"):
         tagsIndex.unpackData(
             {
                 "tag1": {
@@ -1130,7 +1130,7 @@ def testCoreIndex_TagsIndex():
         )
 
     # Invalid display
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="tagsIndex display is not a string"):
         tagsIndex.unpackData(
             {
                 "tag1": {
@@ -1144,7 +1144,7 @@ def testCoreIndex_TagsIndex():
         )
 
     # Invalid handle
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="tagsIndex handle must be a handle"):
         tagsIndex.unpackData(
             {
                 "tag1": {
@@ -1158,7 +1158,7 @@ def testCoreIndex_TagsIndex():
         )
 
     # Invalid heading
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="tagsIndex heading must be a title tag"):
         tagsIndex.unpackData(
             {
                 "tag1": {
@@ -1172,7 +1172,7 @@ def testCoreIndex_TagsIndex():
         )
 
     # Invalid class
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="tagsIndex handle must be an nwItemClass"):
         tagsIndex.unpackData(
             {
                 "tag1": {
@@ -1362,11 +1362,9 @@ def testCoreIndex_ItemIndex(nwGUI, fncPath, mockRnd):
     itemIndex.clear()
 
     # Data must be dictionary
-    with pytest.raises(ValueError) as exc:
+    with pytest.raises(ValueError, match="itemIndex is not a dict"):
         itemIndex.unpackData("stuff")  # type: ignore
-    assert str(exc.value) == "itemIndex is not a dict"
 
     # Keys must be valid handles
-    with pytest.raises(ValueError) as exc:
+    with pytest.raises(ValueError, match="itemIndex keys must be handles"):
         itemIndex.unpackData({"stuff": "more stuff"})
-    assert str(exc.value) == "itemIndex keys must be handles"

@@ -1110,7 +1110,7 @@ def testFmtToken_MarginFormat(mockGUI):
 
 
 @pytest.mark.core
-@pytest.mark.parametrize("singleBold", (True, False))
+@pytest.mark.parametrize("singleBold", [True, False])
 def testFmtToken_ExtractFormats(mockGUI, singleBold):
     """Test the extraction of formats in the Tokenizer class.
     This test is run twice, with single and with double asterisk support
