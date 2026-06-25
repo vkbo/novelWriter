@@ -358,7 +358,7 @@ class IndexHeading:
             "counts": self._counts,
         }
         if self._refs:
-            data["refs"] = {k: ",".join(sorted(list(v))) for k, v in self._refs.items()}
+            data["refs"] = {k: ",".join(sorted(v)) for k, v in self._refs.items()}
         if self._comments:
             data.update(self._comments)
         return data

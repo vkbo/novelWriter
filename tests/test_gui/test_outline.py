@@ -81,7 +81,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
 
     pOptions = SHARED.project.options
     colNames = [h.name for h in nwOutline]
-    colItems = [h for h in nwOutline]
+    colItems = list(nwOutline)
     colWidth = {h: outlineTree.DEF_WIDTH[h] for h in nwOutline}
     colHidden = {h: outlineTree.DEF_HIDDEN[h] for h in nwOutline}
 

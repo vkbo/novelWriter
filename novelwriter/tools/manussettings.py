@@ -1895,5 +1895,5 @@ class _FormattingTab(NScrollableForm):
         current = [x.lower().strip() for x in self.ignoredKeywords.text().split(",")]
         if keyword:
             current.append(keyword)
-        verified = set(x for x in current if x in nwKeyWords.VALID_KEYS)
+        verified = {x for x in current if x in nwKeyWords.VALID_KEYS}
         self.ignoredKeywords.setText(", ".join(verified))

@@ -1812,8 +1812,8 @@ def testFmtToken_Dialogue(mockGUI):
             [
                 (0, TextFmt.I_B, ""),
                 (0, TextFmt.COL_B, "dialog"),
-                (16, TextFmt.I_E, ""),
                 (16, TextFmt.COL_E, ""),
+                (16, TextFmt.I_E, ""),
             ],
             BlockFmt.NONE,
         )

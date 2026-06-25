@@ -254,7 +254,7 @@ class DocDuplicator:
         result = []
         after = True
         if items:
-            hMap: dict[str, str | None] = {t: None for t in items}
+            hMap: dict[str, str | None] = dict.fromkeys(items)
             SHARED.initMainProgress(len(items))
             for tHandle in items:
                 SHARED.incMainProgress()
