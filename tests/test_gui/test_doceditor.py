@@ -3228,7 +3228,7 @@ def testGuiEditor_Vim_NormalMode(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClicks(docEditor, "TEST", delay=inputDelay)
     qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)
     newText = docEditor.getText()
-    assert newText.startswith("LTESSTine1") or newText.startswith("LTESTine1")
+    assert newText.startswith(("LTESSTine1", "LTESTine1"))
 
     # w: Move forward by word
     resetText()

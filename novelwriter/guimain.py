@@ -533,9 +533,8 @@ class GuiMain(QMainWindow):
             logger.error("Nothing to open")
             return False
 
-        if sTitle and tLine is None:
-            if hItem := SHARED.project.index.getItemHeading(tHandle, sTitle):
-                tLine = hItem.line
+        if sTitle and tLine is None and (hItem := SHARED.project.index.getItemHeading(tHandle, sTitle)):
+            tLine = hItem.line
 
         self._changeView(nwView.EDITOR)
         if tHandle == self.docEditor.docHandle:
@@ -1271,9 +1270,8 @@ class GuiMain(QMainWindow):
     @pyqtSlot(int)
     def _mainStackChanged(self, index: int) -> None:
         """Process main window tab change."""
-        if self.mainStack.widget(index) == self.outlineView:
-            if SHARED.hasProject:
-                self.outlineView.refreshTree()
+        if self.mainStack.widget(index) == self.outlineView and SHARED.hasProject:
+            self.outlineView.refreshTree()
 
     @pyqtSlot(int)
     def _projStackChanged(self, index: int) -> None:

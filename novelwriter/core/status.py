@@ -242,10 +242,7 @@ class NWStatus:
             return False
         if value[0] != self._prefix:
             return False
-        for c in value[1:]:
-            if c not in "0123456789abcdef":
-                return False
-        return True
+        return all(c in "0123456789abcdef" for c in value[1:])
 
     def _checkKey(self, key: str | None) -> str:
         """Check key is valid, and if not, generate one."""

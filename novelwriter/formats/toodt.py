@@ -412,10 +412,7 @@ class ToOdt(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 self._addTextPar(xText, S_TEXT, oStyle, "")
 
-            elif tType in COMMENT_BLOCKS:
-                self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
-
-            elif tType == BlockTyp.KEYWORD:
+            elif tType in COMMENT_BLOCKS or tType == BlockTyp.KEYWORD:
                 self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
 
     def closeDocument(self) -> None:
@@ -1292,13 +1289,11 @@ class ODTParagraphStyle:
         those in this object. Unset styles are ignored as they can be
         inherited from the parent style.
         """
-        if any(v and v != self._mAttr[m][1] for m, (_, v) in style._mAttr.items()):
-            return True
-        if any(v and v != self._pAttr[m][1] for m, (_, v) in style._pAttr.items()):
-            return True
-        if any(v and v != self._tAttr[m][1] for m, (_, v) in style._tAttr.items()):
-            return True
-        return False
+        return (
+            any(v and v != self._mAttr[m][1] for m, (_, v) in style._mAttr.items())
+            or any(v and v != self._pAttr[m][1] for m, (_, v) in style._pAttr.items())
+            or any(v and v != self._tAttr[m][1] for m, (_, v) in style._tAttr.items())
+        )
 
     def getID(self) -> str:
         """Generate a unique ID from the settings."""

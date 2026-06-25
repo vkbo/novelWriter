@@ -439,13 +439,12 @@ class NWItem:
         """Set the default values based on the item's class and the
         project settings.
         """
-        if self._parent is not None:
+        if self._parent is not None and itemClass != self._class:
             # Only update for child items
-            if itemClass != self._class:
-                self.setClass(itemClass)
-                if self._type == nwItemType.FILE:
-                    # Notify the index of the class change
-                    self._project.index.refreshHandle(self._handle)
+            self.setClass(itemClass)
+            if self._type == nwItemType.FILE:
+                # Notify the index of the class change
+                self._project.index.refreshHandle(self._handle)
 
         if self._layout == nwItemLayout.NO_LAYOUT:
             # If no layout is set, pick one

@@ -291,9 +291,7 @@ class GuiDocViewer(QTextBrowser):
         if self._docHandle is None:
             logger.error("No document open")
             return False
-        if action == nwDocAction.CUT:
-            self.copy()
-        elif action == nwDocAction.COPY:
+        if action in (nwDocAction.CUT, nwDocAction.COPY):
             self.copy()
         elif action == nwDocAction.SEL_ALL:
             self._makeSelection(QtSelectDocument)
@@ -455,9 +453,8 @@ class GuiDocViewer(QTextBrowser):
     def dropEvent(self, event: QDropEvent) -> None:
         """Overload drop event to handle dragged items."""
         if (data := event.mimeData()) and data.hasFormat(nwConst.MIME_HANDLE):
-            if handles := decodeMimeHandles(data):
-                if SHARED.project.tree.checkType(handles[0], nwItemType.FILE):
-                    self.openDocumentRequest.emit(handles[0], nwDocMode.VIEW, "", True)
+            if (handles := decodeMimeHandles(data)) and SHARED.project.tree.checkType(handles[0], nwItemType.FILE):
+                self.openDocumentRequest.emit(handles[0], nwDocMode.VIEW, "", True)
         else:
             super().dropEvent(event)
 
@@ -516,10 +513,9 @@ class GuiDocViewHistory:
         history, but only if the document is different than the current
         active entry. Any further entries are truncated.
         """
-        if self._currPos >= 0 and self._currPos < len(self._navHistory):
-            if tHandle == self._navHistory[self._currPos]:
-                logger.debug("Not updating view hsitory")
-                return False
+        if self._currPos >= 0 and self._currPos < len(self._navHistory) and tHandle == self._navHistory[self._currPos]:
+            logger.debug("Not updating view hsitory")
+            return False
 
         self._truncateHistory(self._currPos)
 
@@ -593,7 +589,7 @@ class GuiDocViewHistory:
         if CONFIG.isDebug:  # pragma: no cover
             for i, (h, p) in enumerate(zip(self._navHistory, self._posHistory, strict=False)):
                 a = ">" if i == self._currPos else " "
-                logger.debug(f"History {i + 1:02d}: {a} {h:13s} [x:{p}]")
+                logger.debug(f"History {i + 1:02d}: {a} {h:13s} [x:{p}]")  # noqa: G004
 
 
 class GuiDocViewHeader(QWidget):

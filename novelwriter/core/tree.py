@@ -491,9 +491,8 @@ class NWTree:
     def iterRoots(self, itemClass: nwItemClass | None) -> Iterable[tuple[str, NWItem]]:
         """Iterate over all root items of a given class in order."""
         for node in self._model.root.children:
-            if node.item.isRootType():
-                if itemClass is None or node.item.itemClass == itemClass:
-                    yield node.item.itemHandle, node.item
+            if node.item.isRootType() and (itemClass is None or node.item.itemClass == itemClass):
+                yield node.item.itemHandle, node.item
         return
 
     def findRoot(self, itemClass: nwItemClass | None) -> str | None:

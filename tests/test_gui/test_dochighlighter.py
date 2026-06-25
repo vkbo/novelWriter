@@ -35,7 +35,7 @@ R_HANDLE = "3456789abcdef"
 T_HANDLE = "0123456789abc"
 
 
-@pytest.fixture()
+@pytest.fixture
 def syntax(nwGUI):
     """Create a syntax object for use with testing."""
     CONFIG.lightTheme = "default_light"
@@ -71,7 +71,7 @@ def syntax(nwGUI):
     SHARED.project.tree.add(tRoot)
     SHARED.project.tree.add(tItem)
 
-    yield syntax
+    yield syntax  # noqa: PT022 (This is deliberate to keep the objects in scope)
 
 
 def getFragments(syntax: GuiDocHighlighter) -> tuple[list[tuple[int, str]], list[QTextCharFormat]]:

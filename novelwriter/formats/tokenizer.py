@@ -440,7 +440,7 @@ class Tokenizer(ABC):
 
     def setIgnoredKeywords(self, keywords: str) -> None:
         """Comma separated string of keywords to ignore."""
-        self._skipKeywords = set(x.lower().strip() for x in keywords.split(","))
+        self._skipKeywords = {x.lower().strip() for x in keywords.split(",")}
 
     def setKeepLineBreaks(self, state: bool) -> None:
         """Keep line breaks in paragraphs."""
@@ -1175,7 +1175,7 @@ class Tokenizer(ABC):
         # Post-process text and format
         result = text
         formats = []
-        for pos, end, fmt, meta in reversed(sorted(temp, key=lambda x: x[0])):
+        for pos, end, fmt, meta in sorted(temp, key=lambda x: x[0], reverse=True):
             if fmt > 0:
                 if end > pos:
                     result = result[:pos] + result[end:]

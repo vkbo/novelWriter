@@ -254,7 +254,7 @@ class DocDuplicator:
         result = []
         after = True
         if items:
-            hMap: dict[str, str | None] = {t: None for t in items}
+            hMap: dict[str, str | None] = dict.fromkeys(items)
             SHARED.initMainProgress(len(items))
             for tHandle in items:
                 SHARED.incMainProgress()
@@ -368,7 +368,7 @@ class ProjectBuilder:
     def buildProject(self, data: dict) -> bool:
         """Build or copy a project from a data dictionary."""
         if isinstance(data, dict):
-            path = data.get("path", None) or None
+            path = data.get("path") or None
             if author := data.get("author"):
                 CONFIG.setLastAuthor(author)
             if isinstance(path, str | Path):
@@ -528,9 +528,7 @@ class ProjectBuilder:
             if is_zipfile(source):
                 with ZipFile(source) as zipObj:
                     for member in zipObj.namelist():
-                        if member == nwFiles.PROJ_FILE:
-                            zipObj.extract(member, dstPath)
-                        elif member.startswith("content") and member.endswith(".nwd"):
+                        if member == nwFiles.PROJ_FILE or (member.startswith("content") and member.endswith(".nwd")):
                             zipObj.extract(member, dstPath)
             else:
                 shutil.copy2(srcPath / nwFiles.PROJ_FILE, dstPath)

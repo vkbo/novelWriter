@@ -47,10 +47,9 @@ class MockProject:
 
     def setProjectChanged(self, *a):
         """Fake project method."""
-        pass
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(autouse=True)
 def mockVersion(monkeypatch):
     """Mock the version info to prevent diff from failing."""
     monkeypatch.setattr("novelwriter.core.projectxml.__version__", "2.7b1")

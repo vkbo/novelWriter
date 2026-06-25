@@ -105,11 +105,10 @@ class GuiTextDocument(QTextDocument):
         cursor.setPosition(pos)
         block = cursor.block()
         data = block.userData()
-        if block.isValid() and isinstance(data, TextBlockData):
-            if (check := pos - block.position()) >= 0:
-                for cPos, cEnd, cData, cType in data.metaData:
-                    if cPos <= check <= cEnd:
-                        return cData, cType
+        if block.isValid() and isinstance(data, TextBlockData) and (check := pos - block.position()) >= 0:
+            for cPos, cEnd, cData, cType in data.metaData:
+                if cPos <= check <= cEnd:
+                    return cData, cType
         return "", ""
 
     def spellErrorAtPos(self, pos: int) -> tuple[str, int, list[str]]:
@@ -120,11 +119,10 @@ class GuiTextDocument(QTextDocument):
         cursor.setPosition(pos)
         block = cursor.block()
         data = block.userData()
-        if block.isValid() and isinstance(data, TextBlockData):
-            if (check := pos - block.position()) >= 0:
-                for start, end, word in data.spellErrors:
-                    if start <= check <= end:
-                        return word, start, SHARED.spelling.suggestWords(word)
+        if block.isValid() and isinstance(data, TextBlockData) and (check := pos - block.position()) >= 0:
+            for start, end, word in data.spellErrors:
+                if start <= check <= end:
+                    return word, start, SHARED.spelling.suggestWords(word)
         return "", -1, []
 
     def iterBlockByType(self, cType: int, maxCount: int = 1000) -> Iterable[QTextBlock]:

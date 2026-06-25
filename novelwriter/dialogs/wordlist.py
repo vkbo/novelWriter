@@ -197,7 +197,7 @@ class GuiWordList(NDialog):
         )[0]:
             try:
                 with open(path, mode="r", encoding="utf-8") as fo:
-                    words = set(w.strip() for w in fo.read().split())
+                    words = {w.strip() for w in fo.read().split()}
             except Exception as exc:
                 SHARED.error("Could not read file.", exc=exc)
                 return

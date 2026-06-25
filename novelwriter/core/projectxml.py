@@ -407,9 +407,9 @@ class ProjectXMLReader:
 
             # Status was split into separate status/import with a key in 1.4
             if item.get("class", "") in ("NOVEL", "ARCHIVE"):
-                name["status"] = sMap.get(tmpStatus, None)
+                name["status"] = sMap.get(tmpStatus)
             else:
-                name["import"] = iMap.get(tmpStatus, None)
+                name["import"] = iMap.get(tmpStatus)
 
             # A number of layouts were removed in 1.3
             if item.get("layout", "") in ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"):
