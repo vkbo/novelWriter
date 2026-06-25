@@ -593,7 +593,7 @@ class GuiDocViewHistory:
         if CONFIG.isDebug:  # pragma: no cover
             for i, (h, p) in enumerate(zip(self._navHistory, self._posHistory, strict=False)):
                 a = ">" if i == self._currPos else " "
-                logger.debug(f"History {i + 1:02d}: {a} {h:13s} [x:{p}]")
+                logger.debug(f"History {i + 1:02d}: {a} {h:13s} [x:{p}]")  # noqa: G004
 
 
 class GuiDocViewHeader(QWidget):

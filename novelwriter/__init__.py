@@ -124,7 +124,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     )
 
     # Defaults
-    logLevel = logging.WARN
+    logLevel = logging.WARNING
     fmtColor = FORCE_COLOR
     fmtLong = False
     confPath = None
