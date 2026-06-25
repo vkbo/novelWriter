@@ -104,6 +104,7 @@ select = [
     "SLF",   # flake8-self (SLF)
     "SLOT",  # flake8-slots (SLOT)
     "TC",    # flake8-type-checking (TC)
+    "TID",   # flake8-tidy-imports (TID)
     "UP",    # pyupgrade (UP)
     "W",     # pycodestyle (W)
 ]
