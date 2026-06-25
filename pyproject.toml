@@ -81,6 +81,7 @@ select = [
     "ANN",   # flake8-annotations (ANN)
     "B",     # flake8-bugbear (B)
     "C4",    # flake8-comprehensions (C4)
+    "CPY",   # flake8-copyright (CPY)
     "D",     # pydocstyle (D)
     "E",     # pycodestyle (E)
     "F",     # Pyflakes (F)
