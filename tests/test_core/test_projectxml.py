@@ -47,7 +47,6 @@ class MockProject:
 
     def setProjectChanged(self, *a):
         """Fake project method."""
-        pass
 
 
 @pytest.fixture(scope="function", autouse=True)

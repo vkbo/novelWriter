@@ -91,6 +91,7 @@ select = [
     "ISC",   # flake8-implicit-str-concat (ISC)
     "LOG",   # flake8-logging (LOG)
     "PERF",  # Perflint (PERF)
+    "PIE",   # flake8-pie (PIE)
     "PLC",   # Pylint Convention (PLC)
     "PLE",   # Pylint Error (PLE)
     "PLR17", # Refactor (PLR) - Only PLR17xx

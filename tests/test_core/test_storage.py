@@ -42,8 +42,6 @@ from tests.tools import C, buildTestProject
 class MockProject:
     """Test class for projects."""
 
-    pass
-
 
 @pytest.mark.core
 def testCoreStorage_CreateNewProject(mockGUI, fncPath):

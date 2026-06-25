@@ -583,7 +583,7 @@ def utf16CharMap(text: str) -> list[int]:
     ASCII, UCS-2 or UCS-4. QStrings are in UTF-16, so wide characters
     use 2 indices, and thus create an offset.
     """
-    utf16Map = list(range(0, len(text) + 1))
+    utf16Map = list(range(len(text) + 1))
     offset = 0
     for i, c in enumerate(text, 1):
         if ord(c) > 0xFFFF:
