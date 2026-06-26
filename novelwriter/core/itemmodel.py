@@ -400,12 +400,19 @@ class ProjectModel(QAbstractItemModel):
         if data.hasFormat(nwConst.MIME_HANDLE) is False or action != Qt.DropAction.MoveAction:
             return False
 
+        # Restrict drops to the label column and valid insert positions
+        if column != 0:
+            return False
+        targetNode: ProjectNode = parent.internalPointer()
+        if row < -1 or row > targetNode.childCount():
+            return False
+
         # Prevent moving a node into itself or one of its descendants
         handles = {h for h in decodeMimeHandles(data) if self.indexFromHandle(h).isValid()}
         if not handles:
             return False
 
-        target: ProjectNode | None = parent.internalPointer()
+        target: ProjectNode | None = targetNode
         while target:
             if target.item.itemHandle in handles:
                 return False

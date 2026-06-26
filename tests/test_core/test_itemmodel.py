@@ -26,7 +26,7 @@ import pytest
 from PyQt6.QtCore import QMimeData, QModelIndex, Qt
 from PyQt6.QtTest import QAbstractItemModelTester
 
-from novelwriter.common import decodeMimeHandles
+from novelwriter.common import decodeMimeHandles, encodeMimeHandles
 from novelwriter.constants import nwConst
 from novelwriter.core.item import NWItem
 from novelwriter.core.itemmodel import INV_ROOT, NODE_FLAGS, ProjectModel, ProjectNode
@@ -386,10 +386,18 @@ def testCoreItemModel_ProjectModel_DragNDrop(mockGUI, mockRnd, fncPath):
     # Check that drop is possible, but only with valid items and not on root
     invalidMime = QMimeData()
     invalidMime.setData("plain/text", b"foobar")
+    unknownHandleMime = QMimeData()
+    encodeMimeHandles(unknownHandleMime, ["fffffffffffff"])
 
     assert model.canDropMimeData(invalidMime, Qt.DropAction.MoveAction, 0, 0, novelIdx) is False
+    assert model.canDropMimeData(unknownHandleMime, Qt.DropAction.MoveAction, 0, 0, novelIdx) is False
     assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 0, 0, rootIdx) is False
     assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 0, 0, novelIdx) is True
+    assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 0, 1, novelIdx) is False
+    assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, -2, 0, novelIdx) is False
+    assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 3, 0, novelIdx) is False
+    assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, -1, 0, novelIdx) is True
+    assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 2, 0, novelIdx) is True
     assert model.canDropMimeData(folderMime, Qt.DropAction.MoveAction, 0, 0, folderIdx) is False
     assert model.canDropMimeData(folderMime, Qt.DropAction.MoveAction, 0, 0, chapterIdx) is False
 
