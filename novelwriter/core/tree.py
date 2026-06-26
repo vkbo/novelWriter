@@ -144,6 +144,10 @@ class NWTree:
 
     def add(self, item: NWItem, pos: int = -1) -> bool:
         """Add a project item into the project tree."""
+        if item.itemHandle in self._nodes or item.itemHandle in self._items:
+            logger.error("Item handle '%s' already exists in project tree", item.itemHandle)
+            return False
+
         if pHandle := item.itemParent:
             if parent := self._nodes.get(pHandle):
                 node = ProjectNode(item)
@@ -169,11 +173,15 @@ class NWTree:
     def remove(self, tHandle: str) -> bool:
         """Remove an item from the project tree."""
         if (node := self._nodes.get(tHandle)) and tHandle in self._items:
+            handles = [tHandle]
+            if node.childCount() > 0:
+                handles.extend(child.item.itemHandle for child in node.allChildren())
             index = self._model.indexFromNode(node)
             if index.isValid() and self._model.removeChild(index.parent(), index.row()):
                 self._itemChange(node.item, nwChange.DELETE)
-                del self._nodes[tHandle]
-                del self._items[tHandle]
+                for handle in handles:
+                    self._nodes.pop(handle, None)
+                    self._items.pop(handle, None)
                 return True
         return False
 
@@ -531,6 +539,9 @@ class NWTree:
         """
         remains: dict[str, NWItem] = {}
         for handle, item in items.items():
+            if handle in self._nodes or handle in self._items:
+                logger.warning("Skipping duplicate item handle '%s' while unpacking project tree", handle)
+                continue
             if pHandle := item.itemParent:
                 if parent := self._nodes.get(pHandle):
                     node = ProjectNode(item)

@@ -330,6 +330,15 @@ def testCoreTree_ManipulateTree(mockGUI, mockItems):
         "Trash",
     ]
 
+    # Remove a subtree and ensure descendants are purged from maps
+    assert tree.remove(C.hChapterDir) is True
+    assert C.hChapterDir not in tree._items
+    assert C.hChapterDoc not in tree._items
+    assert C.hSceneDoc not in tree._items
+    assert C.hChapterDir not in tree._nodes
+    assert C.hChapterDoc not in tree._nodes
+    assert C.hSceneDoc not in tree._nodes
+
 
 @pytest.mark.core
 def testCoreTree_PickParent(mockGUI, mockItems):
@@ -687,6 +696,35 @@ def testCoreTree_MakeHandles(mockGUI):
     random.seed(42)
     tHandle = tree._makeHandle()
     assert tHandle == handles[3]
+
+
+@pytest.mark.core
+def testCoreTree_DuplicateHandleGuards(mockGUI, mockItems):
+    """Test duplicate handle guards in add and _addItems."""
+    project = NWProject()
+    tree = NWTree(project)
+    tree.unpack(mockItems)
+
+    beforeNames = [n.item.itemName for n in tree.model.root.allChildren()]
+    beforeItems = len(tree._items)
+    beforeNodes = len(tree._nodes)
+
+    # add() should reject duplicate handles
+    dupAdd = NWItem(project, C.hNovelRoot)
+    dupAdd.setType(nwItemType.ROOT)
+    dupAdd.setClass(nwItemClass.NOVEL)
+    assert tree.add(dupAdd) is False
+    assert len(tree._items) == beforeItems
+    assert len(tree._nodes) == beforeNodes
+
+    # _addItems() should also skip duplicate handles
+    dupUnpack = NWItem(project, C.hNovelRoot)
+    dupUnpack.setType(nwItemType.ROOT)
+    dupUnpack.setClass(nwItemClass.NOVEL)
+    assert tree._addItems({C.hNovelRoot: dupUnpack}) == {}
+    assert len(tree._items) == beforeItems
+    assert len(tree._nodes) == beforeNodes
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == beforeNames
 
 
 @pytest.mark.core
