@@ -47,6 +47,9 @@
 
 ## Validation
 
+- When making code changes, run `uv run ruff format`.
+- When making code changes, run `uv run ruff check` and address relevant issues in touched files.
+- When making code changes, run `uv run pyright` and address relevant issues in touched files.
 - Run the most relevant tests for the changed area when available.
 - If tests are missing for the touched path, add focused tests alongside the change when practical.
 - Do not fix unrelated failures unless they block the requested task.

@@ -483,14 +483,14 @@ class Index:
         if (item := self._project.tree[tHandle]) and item.isRootType() and item.isNovelLike():
             model = NovelModel()
             model.setExtraColumn(self._novelExtra)
-            self._appendSubTreeToModel(tHandle, model)
+            self._appendSubTreeToModel(tHandle, model, notify=False)
             self._novelModels[tHandle] = model
 
-    def _appendSubTreeToModel(self, tHandle: str, model: NovelModel) -> None:
+    def _appendSubTreeToModel(self, tHandle: str, model: NovelModel, notify: bool = False) -> None:
         """Append all active novel documents to a novel model."""
         for handle in self._project.tree.subTree(tHandle):
             if (node := self._itemIndex[handle]) and node.item.isDocumentLayout() and node.item.isActive:
-                model.append(node)
+                model.append(node, notify=notify)
 
     ##
     #  Check @ Lines
