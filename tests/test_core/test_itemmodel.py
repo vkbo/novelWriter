@@ -546,6 +546,11 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     assert model.removeChild(novelIdx, -1) is None
     assert model.removeChild(novelIdx, 99) is None
 
+    # _moveNode should return False for detached nodes
+    orphan = ProjectNode(NWItem(project, "123456789abcd"))
+    orphan.detach()
+    assert model._moveNode(orphan, novelIdx, -1) is False
+
     # Remove Child
     with qtbot.waitSignal(model.rowsAboutToBeRemoved) as signal:
         child = model.removeChild(novelIdx, titleIdx.row())
@@ -733,3 +738,53 @@ def testCoreItemModel_ProjectModel_Other(qtbot, mockGUI, mockRnd, fncPath):
     assert model.rowCount(rootIdx) == 0
     assert model.index(0, 0, rootIdx).isValid() is False
     assert [n.item.itemName for n in model.root.allChildren()] == []
+
+
+@pytest.mark.core
+def testCoreItemModel_ProjectModel_DeepMoveMaintainsLineage(mockGUI, mockRnd, fncPath):
+    """Check deep descendant parent/root metadata after subtree move."""
+    project = NWProject()
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+    model = project.tree.model
+
+    root = model.root
+    novel = root.child(0)
+    assert novel is not None
+    folder = novel.child(1)
+    assert folder is not None
+    chapter = folder.child(0)
+    assert chapter is not None
+
+    deepHandle = project.newFile("Deep Child", chapter.item.itemHandle)
+    assert deepHandle is not None
+    deepIdx = model.indexFromHandle(deepHandle)
+    deepNode = model.node(deepIdx)
+    assert deepNode is not None
+    assert deepNode.parent() is chapter
+
+    trash = project.tree.trash
+    assert trash is not None
+
+    folderIdx = model.indexFromNode(folder)
+    trashIdx = model.indexFromNode(trash)
+    model.multiMove([folderIdx], trashIdx)
+
+    assert folder.parent() is trash
+    assert chapter.parent() is folder
+    assert deepNode.parent() is chapter
+
+    folderItem = project.tree[folder.item.itemHandle]
+    chapterItem = project.tree[chapter.item.itemHandle]
+    deepItem = project.tree[deepHandle]
+    assert folderItem is not None
+    assert chapterItem is not None
+    assert deepItem is not None
+
+    trashHandle = trash.item.itemHandle
+    assert folderItem.itemParent == trashHandle
+    assert folderItem.itemRoot == trashHandle
+    assert chapterItem.itemParent == folder.item.itemHandle
+    assert chapterItem.itemRoot == trashHandle
+    assert deepItem.itemParent == chapter.item.itemHandle
+    assert deepItem.itemRoot == trashHandle

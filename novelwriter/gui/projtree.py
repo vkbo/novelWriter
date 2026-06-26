@@ -885,9 +885,7 @@ class GuiProjectTree(QTreeView):
                 self.setEnabled(False)
                 for index in indices:
                     if node := model.node(index):
-                        for child in reversed(node.allChildren()):
-                            SHARED.project.removeItem(child.item.itemHandle)
-                        SHARED.project.removeItem(node.item.itemHandle)
+                        self._deleteSubTree(node)
                 self.setEnabled(True)
 
             elif trashNode := SHARED.project.tree.trash:
@@ -914,8 +912,8 @@ class GuiProjectTree(QTreeView):
             if not SHARED.question(self.tr("Permanently delete {0} file(s) from Trash?").format(len(nodes))):
                 logger.info("Action cancelled by user")
                 return
-            for node in reversed(nodes):
-                SHARED.project.removeItem(node.item.itemHandle)
+            for node in list(trash.children):
+                self._deleteSubTree(node)
         return
 
     @pyqtSlot()
@@ -982,6 +980,12 @@ class GuiProjectTree(QTreeView):
         if model := self.selectionModel():
             # Selection model can be None (#2173)
             model.clearCurrentIndex()
+
+    def _deleteSubTree(self, node: ProjectNode) -> None:
+        """Permanently delete a node and its descendants."""
+        for child in reversed(node.allChildren()):
+            SHARED.project.removeItem(child.item.itemHandle)
+        SHARED.project.removeItem(node.item.itemHandle)
 
     def _selectedRows(self) -> list[QModelIndex]:
         """Return all column 0 indexes."""

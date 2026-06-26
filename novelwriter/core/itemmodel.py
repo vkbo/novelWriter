@@ -502,24 +502,11 @@ class ProjectModel(QAbstractItemModel):
             # move those items that don't have a parent also scheduled
             # for moving or have already been moved. Child items are
             # moved with the parent.
-            pruned = []
-            handles = set()
-            for index in indices:
-                if index.isValid():
-                    node: ProjectNode = index.internalPointer()
-                    handle = node.item.itemHandle
-                    if node.item.isRootType() is False and handle not in handles:
-                        pruned.append(node)
-                        handles.add(handle)
+            pruned, handles = self._collectMovableNodes(indices)
             for node in reversed(pruned) if pos >= 0 else pruned:
-                if node.item.itemParent not in handles:
-                    index = self.indexFromNode(node)
-                    if temp := self.removeChild(index.parent(), index.row()):
-                        self.insertChild(temp, target, pos)
-                        for child in reversed(node.allChildren()):
-                            node._updateRelationships(child)  # noqa: SLF001
-                            child.item.notifyToRefresh()
-                        node.item.notifyToRefresh()
+                if node.item.itemParent not in handles and self._moveNode(node, target, pos):
+                    self._refreshSubtreeRelationships(node)
+                    node.item.notifyToRefresh()
 
     ##
     #  Other Methods
@@ -543,3 +530,35 @@ class ProjectModel(QAbstractItemModel):
                 if node.item.itemClass != nwItemClass.TRASH:
                     return False
         return True
+
+    ##
+    #  Internal Methods
+    ##
+
+    def _collectMovableNodes(self, indices: list[QModelIndex]) -> tuple[list[ProjectNode], set[str]]:
+        """Collect unique non-root nodes selected for move."""
+        pruned: list[ProjectNode] = []
+        handles: set[str] = set()
+        for index in indices:
+            if index.isValid():
+                node: ProjectNode = index.internalPointer()
+                handle = node.item.itemHandle
+                if node.item.isRootType() is False and handle not in handles:
+                    pruned.append(node)
+                    handles.add(handle)
+        return pruned, handles
+
+    def _moveNode(self, node: ProjectNode, target: QModelIndex, pos: int) -> bool:
+        """Move a node to target and return True if successful."""
+        index = self.indexFromNode(node)
+        if temp := self.removeChild(index.parent(), index.row()):
+            self.insertChild(temp, target, pos)
+            return True
+        return False
+
+    def _refreshSubtreeRelationships(self, node: ProjectNode) -> None:
+        """Refresh parent/root relationships after moving a subtree."""
+        for child in node.allChildren():
+            if parent := child.parent():
+                parent._updateRelationships(child)  # noqa: SLF001
+            child.item.notifyToRefresh()
