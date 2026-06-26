@@ -835,7 +835,12 @@ class GuiProjectTree(QTreeView):
     @pyqtSlot()
     def goToParent(self) -> None:
         """Move to parent item."""
-        if (model := self._getModel()) and (node := model.node(self.currentIndex())) and (parent := node.parent()):
+        if (
+            (model := self._getModel())
+            and (node := model.node(self.currentIndex()))
+            and (parent := node.parent())
+            and parent is not model.root
+        ):
             self.setCurrentIndex(model.indexFromNode(parent))
 
     @pyqtSlot()

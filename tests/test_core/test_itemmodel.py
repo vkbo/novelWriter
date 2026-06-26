@@ -217,6 +217,8 @@ def testCoreItemModel_ProjectNode_Modify(mockGUI, mockRnd, fncPath):
     removed = folder.takeChild(1)
     assert removed is not None
     assert removed.item.itemName == "New Scene"
+    assert removed.parent() is None
+    assert removed.row() == -1
     assert folder.childCount() == 3
     assert [n.item.itemName for n in folder.children] == [
         "New Chapter",
@@ -303,11 +305,9 @@ def testCoreItemModel_ProjectModel_Interface(mockGUI, mockRnd, fncPath):
     assert model.rowCount(novelIdx) == 2
     assert model.columnCount(novelIdx) == 4
 
-    # Parent of Novel
+    # Parent of top-level node should be invalid (root is invisible)
     parent = model.parent(novelIdx)
-    assert parent.row() == 0
-    assert parent.column() == 0
-    assert parent.internalPointer() is model.root
+    assert parent.isValid() is False
 
     # Parent of Root
     parent = model.parent(rootIdx)
@@ -367,6 +367,9 @@ def testCoreItemModel_ProjectModel_DragNDrop(mockGUI, mockRnd, fncPath):
     sceneMime = model.mimeData([sceneIdx])
     assert decodeMimeHandles(sceneMime) == [scene.item.itemHandle]
 
+    folderMime = model.mimeData([folderIdx])
+    assert decodeMimeHandles(folderMime) == [folder.item.itemHandle]
+
     sceneChapterMime = model.mimeData([chapterIdx, sceneIdx])
     assert decodeMimeHandles(sceneChapterMime) == [
         chapter.item.itemHandle,
@@ -387,6 +390,8 @@ def testCoreItemModel_ProjectModel_DragNDrop(mockGUI, mockRnd, fncPath):
     assert model.canDropMimeData(invalidMime, Qt.DropAction.MoveAction, 0, 0, novelIdx) is False
     assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 0, 0, rootIdx) is False
     assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 0, 0, novelIdx) is True
+    assert model.canDropMimeData(folderMime, Qt.DropAction.MoveAction, 0, 0, folderIdx) is False
+    assert model.canDropMimeData(folderMime, Qt.DropAction.MoveAction, 0, 0, chapterIdx) is False
 
     # Drop the scene on the novel folder
     assert [n.item.itemName for n in model.root.allChildren()] == [
@@ -541,6 +546,8 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     assert signal.args[2] == 0
     assert child is not None
     assert child.item.itemName == "Title Page"
+    assert child.parent() is None
+    assert child.row() == -1
     assert [n.item.itemName for n in model.root.allChildren()] == [
         "Novel",
         "New Folder",
@@ -683,6 +690,7 @@ def testCoreItemModel_ProjectModel_Other(qtbot, mockGUI, mockRnd, fncPath):
     ]
 
     # Indices
+    rootIdx = QModelIndex()
     chapterIdx = model.indexFromNode(chapter)
     sceneIdx = model.indexFromNode(scene)
     trashIdx = model.indexFromNode(trash)
@@ -714,4 +722,6 @@ def testCoreItemModel_ProjectModel_Other(qtbot, mockGUI, mockRnd, fncPath):
 
     # Clear
     model.clear()
+    assert model.rowCount(rootIdx) == 0
+    assert model.index(0, 0, rootIdx).isValid() is False
     assert [n.item.itemName for n in model.root.allChildren()] == []

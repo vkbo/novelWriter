@@ -171,6 +171,11 @@ class ProjectNode:
         self._cache[C_STATUS_TIP] = sText
         self._cache[C_STATUS_ACCESS] = sText
 
+    def detach(self) -> None:
+        """Detach the node from parent node state."""
+        self._parent = None
+        self._row = -1
+
     def updateCount(self, propagate: bool = True) -> None:
         """Update counts, and propagate upwards in the tree."""
         self._count = self._item.mainCount + sum(c._count for c in self._children)  # noqa: SLF001
@@ -241,6 +246,7 @@ class ProjectNode:
             self._refreshChildrenPos()
             self.updateCount()
             self._item.notifyNovelStructureChange()
+            node.detach()
             return node
         return None
 
@@ -337,7 +343,7 @@ class ProjectModel(QAbstractItemModel):
     def parent(self, index: QModelIndex) -> QModelIndex:
         """Get the parent model index of another index."""
         if index.isValid() and (node := index.internalPointer()) and (parent := node.parent()):
-            return self.createIndex(parent.row(), 0, parent)
+            return QModelIndex() if parent is self._root else self.createIndex(parent.row(), 0, parent)
         return QModelIndex()
 
     def index(self, row: int, column: int, parent: QModelIndex | None = None) -> QModelIndex:
@@ -381,12 +387,31 @@ class ProjectModel(QAbstractItemModel):
         return mime
 
     def canDropMimeData(
-        self, data: QMimeData, action: Qt.DropAction, row: int, column: int, parent: QModelIndex
+        self,
+        data: QMimeData,
+        action: Qt.DropAction,
+        row: int,
+        column: int,
+        parent: QModelIndex,
     ) -> bool:
         """Check if mime data can be dropped on the current location."""
-        if parent.isValid() and parent.internalPointer() is not self._root:
-            return data.hasFormat(nwConst.MIME_HANDLE) and action == Qt.DropAction.MoveAction
-        return False
+        if parent.isValid() is False or parent.internalPointer() is self._root:
+            return False
+        if data.hasFormat(nwConst.MIME_HANDLE) is False or action != Qt.DropAction.MoveAction:
+            return False
+
+        # Prevent moving a node into itself or one of its descendants
+        handles = {h for h in decodeMimeHandles(data) if self.indexFromHandle(h).isValid()}
+        if not handles:
+            return False
+
+        target: ProjectNode | None = parent.internalPointer()
+        while target:
+            if target.item.itemHandle in handles:
+                return False
+            target = target.parent()
+
+        return True
 
     def dropMimeData(self, data: QMimeData, action: Qt.DropAction, row: int, column: int, parent: QModelIndex) -> bool:
         """Process mime data drop."""
@@ -495,7 +520,9 @@ class ProjectModel(QAbstractItemModel):
 
     def clear(self) -> None:
         """Clear the project model."""
+        self.beginResetModel()
         self._root.children.clear()
+        self.endResetModel()
 
     def allExpanded(self) -> list[QModelIndex]:
         """Return a list of all expanded items."""

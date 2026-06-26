@@ -137,6 +137,7 @@ class NWTree:
         self._model = ProjectModel(self)
         self._items.clear()
         self._nodes.clear()
+        self._ready = False
         self._trash = None
         oldModel.deleteLater()
         del oldModel
@@ -253,18 +254,17 @@ class NWTree:
                 items[nwItem.itemHandle] = nwItem
 
         later = items
-        self._model.beginInsertRows(self._model.index(0, 0), 0, 0)
+        self._model.beginResetModel()
         for _ in range(MAX_DEPTH):
             later = self._addItems(later)
             if len(later) == 0:
                 break
         else:
             logger.error("Not all items could be added to project tree")
+        self._model.endResetModel()
 
         self._trash = self._getTrashNode()
         self._ready = True
-        self._model.endInsertRows()
-        self._model.layoutChanged.emit()
 
     def subTreePos(self, tHandle: str) -> int:
         """Return the position of an item under its parent."""
