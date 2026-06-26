@@ -768,6 +768,38 @@ def testCoreTree_DuplicateHandleGuards(mockGUI, mockItems):
 
 
 @pytest.mark.core
+def testCoreTree_RootParentIsNormalisedToTopLevel(mockGUI, mockItems):
+    """Check malformed root parent references are normalised."""
+    project = NWProject()
+    tree = NWTree(project)
+    tree.unpack(mockItems)
+    assertTreeModelConsistency(tree)
+
+    badRootOne = NWItem(project, tree._makeHandle())
+    badRootOne.setName("Bad Root One")
+    badRootOne.setType(nwItemType.ROOT)
+    badRootOne.setClass(nwItemClass.NOVEL)
+    badRootOne.setParent(C.hNovelRoot)
+
+    assert tree.add(badRootOne) is True
+    assert badRootOne.itemParent is None
+    assert badRootOne.itemRoot == badRootOne.itemHandle
+    assert tree.nodes[badRootOne.itemHandle].parent() is tree.model.root
+
+    badRootTwo = NWItem(project, tree._makeHandle())
+    badRootTwo.setName("Bad Root Two")
+    badRootTwo.setType(nwItemType.ROOT)
+    badRootTwo.setClass(nwItemClass.PLOT)
+    badRootTwo.setParent(C.hNovelRoot)
+
+    assert tree._addItems({badRootTwo.itemHandle: badRootTwo}) == {}
+    assert badRootTwo.itemParent is None
+    assert badRootTwo.itemRoot == badRootTwo.itemHandle
+    assert tree.nodes[badRootTwo.itemHandle].parent() is tree.model.root
+    assertTreeModelConsistency(tree)
+
+
+@pytest.mark.core
 def testCoreTree_UnresolvedItemsKeepLoadedTreeConsistent(monkeypatch, mockGUI, mockItems):
     """Check unresolved unpack entries do not break loaded tree consistency."""
     project = NWProject()

@@ -122,10 +122,12 @@ class NWTree:
 
     @property
     def model(self) -> ProjectModel:
+        """Return the project model."""
         return self._model
 
     @property
     def nodes(self) -> dict[str, ProjectNode]:
+        """Return the project nodes."""
         return self._nodes
 
     ##
@@ -149,6 +151,10 @@ class NWTree:
         if item.itemHandle in self._nodes or item.itemHandle in self._items:
             logger.error("Item handle '%s' already exists in project tree", item.itemHandle)
             return False
+
+        if item.isRootType() and item.itemParent is not None:
+            logger.warning("Root item '%s' cannot have a parent ('%s')", item.itemHandle, item.itemParent)
+            item.setParent(None)
 
         if pHandle := item.itemParent:
             if parent := self._nodes.get(pHandle):
@@ -546,6 +552,9 @@ class NWTree:
             if handle in self._nodes or handle in self._items:
                 logger.warning("Skipping duplicate item handle '%s' while unpacking project tree", handle)
                 continue
+            if item.isRootType() and item.itemParent is not None:
+                logger.warning("Root item '%s' cannot have a parent ('%s')", handle, item.itemParent)
+                item.setParent(None)
             if pHandle := item.itemParent:
                 if parent := self._nodes.get(pHandle):
                     node = ProjectNode(item)
