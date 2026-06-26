@@ -602,6 +602,38 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
+def testCoreIndex_ChangedRefsSignal(qtbot, nwGUI, fncPath, mockRnd):
+    """Check that scanning emits updated backreference handles."""
+    project = NWProject()
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+    index = project.index
+
+    # The SharedData signal proxy only emits for the active project
+    SHARED._project = project
+
+    nHandle = project.newFile("Hello", C.hNovelRoot)
+    cHandle = project.newFile("Jane", C.hCharRoot)
+    wHandle = project.newFile("Earth", C.hWorldRoot)
+    assert isinstance(nHandle, str)
+    assert isinstance(cHandle, str)
+    assert isinstance(wHandle, str)
+
+    assert index.scanText(cHandle, "# Jane Smith\n@tag: Jane\n")
+    assert index.scanText(wHandle, "# Earth\n@tag: Earth\n")
+
+    with qtbot.waitSignal(SHARED.indexChangedRefs, timeout=1000) as blocker:
+        assert index.scanText(nHandle, "# Hello\n@char: Jane\n@location: Earth\n")
+    assert blocker.args == [[cHandle, wHandle]]
+
+    with qtbot.waitSignal(SHARED.indexChangedRefs, timeout=1000) as blocker:
+        assert index.scanText(nHandle, "# Hello\n@char: Jane\n")
+    assert blocker.args == [[cHandle, wHandle]]
+
+    project.closeProject()
+
+
+@pytest.mark.core
 def testCoreIndex_CommentKeys(monkeypatch, nwGUI, fncPath, mockRnd):
     """Check the index comment key generator."""
     project = NWProject()

@@ -325,6 +325,7 @@ class Index:
         text.
         """
         tItem = self._project.tree[tHandle]
+        oldRefs = self._itemRefHandles(tHandle)
         if tItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
             return False
@@ -365,6 +366,8 @@ class Index:
         self._indexChange = nowTime
         self._rootChange[tItem.itemRoot] = nowTime
         if not blockSignal:
+            if changedRefs := sorted(oldRefs | self._itemRefHandles(tHandle)):
+                SHARED.emitIndexChangedRefs(self._project, changedRefs)
             tItem.notifyToRefresh()
 
         return True
@@ -452,7 +455,12 @@ class Index:
         self._itemIndex.setHeadingCounts(tHandle, sTitle, cC, wC, pC)
 
     def _indexKeyword(
-        self, tHandle: str, line: str, sTitle: str, itemClass: nwItemClass, tags: dict[str, bool]
+        self,
+        tHandle: str,
+        line: str,
+        sTitle: str,
+        itemClass: nwItemClass,
+        tags: dict[str, bool],
     ) -> None:
         """Validate and save the information about a reference to a tag
         in another file, or the setting of a tag in the file. A record
@@ -491,6 +499,18 @@ class Index:
         for handle in self._project.tree.subTree(tHandle):
             if (node := self._itemIndex[handle]) and node.item.isDocumentLayout() and node.item.isActive:
                 model.append(node, notify=notify)
+
+    def _itemRefHandles(self, tHandle: str) -> set[str]:
+        """Get the handles referenced by an indexed item."""
+        if iItem := self._itemIndex[tHandle]:
+            return {
+                rHandle
+                for sTitle in iItem.headings()
+                if (hItem := iItem[sTitle])
+                for tTag in hItem.references
+                if (rHandle := self._tagsIndex.tagHandle(tTag))
+            }
+        return set()
 
     ##
     #  Check @ Lines
@@ -638,7 +658,10 @@ class Index:
         return hCount
 
     def getTableOfContents(
-        self, rHandle: str | None, maxDepth: int, activeOnly: bool = True
+        self,
+        rHandle: str | None,
+        maxDepth: int,
+        activeOnly: bool = True,
     ) -> list[tuple[str, int, str, int]]:
         """Generate a table of contents up to a maximum depth."""
         tOrder = []

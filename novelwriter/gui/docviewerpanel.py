@@ -195,6 +195,12 @@ class GuiDocViewerPanel(QWidget):
                 logger.warning("Could not remove tag '%s' from view panel", key)
         self._updateTabVisibility()
 
+    @pyqtSlot(list)
+    def updateChangedRefs(self, updated: list[str]) -> None:
+        """Refresh back references when a tracked handle has changed."""
+        if self._lastHandle in updated:
+            self.tabBackRefs.refreshContent(self._lastHandle)
+
     @pyqtSlot(str)
     def updateStatusLabels(self, kind: str) -> None:
         """Update the importance labels."""
