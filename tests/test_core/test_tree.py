@@ -38,6 +38,33 @@ from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
 
 
+def assertTreeModelConsistency(tree: NWTree) -> None:
+    """Assert map and model consistency for the loaded tree."""
+    modelNodes = tree.model.root.allChildren()
+    modelHandles = {node.item.itemHandle for node in modelNodes}
+
+    assert len(modelHandles) == len(modelNodes)
+    assert set(tree._nodes.keys()) == modelHandles
+    assert set(tree._items.keys()) == modelHandles
+
+    for node in modelNodes:
+        handle = node.item.itemHandle
+        assert tree._nodes[handle] is node
+        assert tree._items[handle] is node.item
+
+        parent = node.parent()
+        assert parent is not None
+        assert parent.child(node.row()) is node
+
+        if parent is tree.model.root:
+            assert node.item.itemParent is None
+            assert node.item.itemRoot == handle
+        else:
+            pHandle = parent.item.itemHandle
+            assert node.item.itemParent == pHandle
+            assert node.item.itemRoot == parent.item.itemRoot
+
+
 @pytest.fixture
 def mockItems(mockGUI, mockRnd, fncPath):
     """Create a list of mock items."""
@@ -80,6 +107,7 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
         "Trash",
     ]
     assert tree.allDocs() == [C.hTitlePage, C.hChapterDoc, C.hSceneDoc]
+    assertTreeModelConsistency(tree)
 
     # Pack the data again
     assert [n["name"] for n in tree.pack()] == [
@@ -97,6 +125,8 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
     # Inject a node in the map, but not in the tree (inconsistent tree)
     # This should be ignored
     tree._nodes["123456789abc"] = tree.model.root
+    with pytest.raises(AssertionError):
+        assertTreeModelConsistency(tree)
     assert [n["name"] for n in tree.pack()] == [
         "Novel",
         "Title Page",
@@ -125,6 +155,7 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
         "Title Page",
         "Trash",
     ]
+    assertTreeModelConsistency(tree)
 
     # Clear, and populate with one item being its own parent
     tree.clear()
@@ -146,6 +177,7 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
         "Locations",
         "Trash",
     ]
+    assertTreeModelConsistency(tree)
 
     # Clear and populate reversed with max depth limit very low
     with monkeypatch.context() as mp:
@@ -161,6 +193,7 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
             "Novel",
             "Trash",
         ]
+        assertTreeModelConsistency(tree)
 
 
 @pytest.mark.core
@@ -169,6 +202,7 @@ def testCoreTree_ManipulateTree(mockGUI, mockItems):
     project = NWProject()
     tree = NWTree(project)
     tree.unpack(mockItems)
+    assertTreeModelConsistency(tree)
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
         "Novel",
@@ -288,6 +322,7 @@ def testCoreTree_ManipulateTree(mockGUI, mockItems):
     ]
     assert len(tree._items) == len(tree.model.root.allChildren())
     assert len(tree._items) == len(tree._nodes)
+    assertTreeModelConsistency(tree)
 
     # Remove non-existing
     assert tree.remove("bob") is False
@@ -338,6 +373,7 @@ def testCoreTree_ManipulateTree(mockGUI, mockItems):
     assert C.hChapterDir not in tree._nodes
     assert C.hChapterDoc not in tree._nodes
     assert C.hSceneDoc not in tree._nodes
+    assertTreeModelConsistency(tree)
 
 
 @pytest.mark.core
@@ -704,6 +740,7 @@ def testCoreTree_DuplicateHandleGuards(mockGUI, mockItems):
     project = NWProject()
     tree = NWTree(project)
     tree.unpack(mockItems)
+    assertTreeModelConsistency(tree)
 
     beforeNames = [n.item.itemName for n in tree.model.root.allChildren()]
     beforeItems = len(tree._items)
@@ -725,6 +762,27 @@ def testCoreTree_DuplicateHandleGuards(mockGUI, mockItems):
     assert len(tree._items) == beforeItems
     assert len(tree._nodes) == beforeNodes
     assert [n.item.itemName for n in tree.model.root.allChildren()] == beforeNames
+    assertTreeModelConsistency(tree)
+
+
+@pytest.mark.core
+def testCoreTree_UnresolvedItemsKeepLoadedTreeConsistent(monkeypatch, mockGUI, mockItems):
+    """Check unresolved unpack entries do not break loaded tree consistency."""
+    project = NWProject()
+    tree = NWTree(project)
+
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.tree.MAX_DEPTH", 1)
+        tree.unpack(list(reversed(mockItems)))
+
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Locations",
+        "Characters",
+        "Plot",
+        "Novel",
+        "Trash",
+    ]
+    assertTreeModelConsistency(tree)
 
 
 @pytest.mark.core
