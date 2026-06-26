@@ -320,9 +320,7 @@ class NWTree:
         return sNode.item.itemParent, sNode.row() + 1
 
     def refreshItems(self, items: list[str]) -> None:
-        """Refresh these items on the GUI. If they are an ordered range,
-        also set the isRange flag to True.
-        """
+        """Refresh item nodes in the model and emit update notifications."""
         for tHandle in items:
             if node := self._nodes.get(tHandle):
                 node.refresh()

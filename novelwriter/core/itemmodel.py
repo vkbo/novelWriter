@@ -503,10 +503,13 @@ class ProjectModel(QAbstractItemModel):
             # for moving or have already been moved. Child items are
             # moved with the parent.
             pruned, handles = self._collectMovableNodes(indices)
+            refresh: list[str] = []
             for node in reversed(pruned) if pos >= 0 else pruned:
                 if node.item.itemParent not in handles and self._moveNode(node, target, pos):
-                    self._refreshSubtreeRelationships(node)
-                    node.item.notifyToRefresh()
+                    refresh.extend(self._refreshSubtreeRelationships(node))
+                    refresh.append(node.item.itemHandle)
+            if refresh:
+                self._tree.refreshItems(list(dict.fromkeys(refresh)))
 
     ##
     #  Other Methods
@@ -556,9 +559,11 @@ class ProjectModel(QAbstractItemModel):
             return True
         return False
 
-    def _refreshSubtreeRelationships(self, node: ProjectNode) -> None:
-        """Refresh parent/root relationships after moving a subtree."""
+    def _refreshSubtreeRelationships(self, node: ProjectNode) -> list[str]:
+        """Refresh parent/root relationships and return child handles to refresh."""
+        refresh: list[str] = []
         for child in node.allChildren():
             if parent := child.parent():
                 parent._updateRelationships(child)  # noqa: SLF001
-            child.item.notifyToRefresh()
+            refresh.append(child.item.itemHandle)
+        return refresh

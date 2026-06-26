@@ -304,7 +304,7 @@ class NWItem:
     ##
 
     def notifyToRefresh(self) -> None:
-        """Notify GUI that item info needs to be refreshed."""
+        """Notify the project model/view that item data has changed."""
         self._project.tree.refreshItems([self._handle])
 
     def notifyNovelStructureChange(self) -> None:
