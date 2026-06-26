@@ -58,6 +58,8 @@ def testCoreNovelModel_Interface(nwGUI, fncPath, mockRnd):
     # Initial structure
     assert model.rowCount(root) == 3
     assert model.columnCount(root) == 3
+    assert model.rowCount(model.createIndex(0, 0)) == 0
+    assert model.columnCount(model.createIndex(0, 0)) == 0
     assert model.data(model.createIndex(0, 0), QtDisplayRole) == "New Novel"
     assert model.handle(model.createIndex(0, 0)) == C.hTitlePage
     assert model.key(model.createIndex(0, 0)) == "T0001"

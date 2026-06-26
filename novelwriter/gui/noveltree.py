@@ -496,7 +496,7 @@ class GuiNovelTree(NTreeView):
             and (sTitle := model.key(index))
         ):
             self.novelView.selectedItemChanged.emit(tHandle)
-            if index.column() == model.columnCount(index) - 1:
+            if index.column() == model.columns - 1:
                 pos = self.mapToGlobal(self.visualRect(index).topRight())
                 self._popMetaBox(pos, tHandle, sTitle)
 

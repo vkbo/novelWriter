@@ -171,6 +171,11 @@ class ProjectNode:
         self._cache[C_STATUS_TIP] = sText
         self._cache[C_STATUS_ACCESS] = sText
 
+    def detach(self) -> None:
+        """Detach the node from parent node state."""
+        self._parent = None
+        self._row = -1
+
     def updateCount(self, propagate: bool = True) -> None:
         """Update counts, and propagate upwards in the tree."""
         self._count = self._item.mainCount + sum(c._count for c in self._children)  # noqa: SLF001
@@ -241,6 +246,7 @@ class ProjectNode:
             self._refreshChildrenPos()
             self.updateCount()
             self._item.notifyNovelStructureChange()
+            node.detach()
             return node
         return None
 
@@ -337,7 +343,7 @@ class ProjectModel(QAbstractItemModel):
     def parent(self, index: QModelIndex) -> QModelIndex:
         """Get the parent model index of another index."""
         if index.isValid() and (node := index.internalPointer()) and (parent := node.parent()):
-            return self.createIndex(parent.row(), 0, parent)
+            return QModelIndex() if parent is self._root else self.createIndex(parent.row(), 0, parent)
         return QModelIndex()
 
     def index(self, row: int, column: int, parent: QModelIndex | None = None) -> QModelIndex:
@@ -381,12 +387,38 @@ class ProjectModel(QAbstractItemModel):
         return mime
 
     def canDropMimeData(
-        self, data: QMimeData, action: Qt.DropAction, row: int, column: int, parent: QModelIndex
+        self,
+        data: QMimeData,
+        action: Qt.DropAction,
+        row: int,
+        column: int,
+        parent: QModelIndex,
     ) -> bool:
         """Check if mime data can be dropped on the current location."""
-        if parent.isValid() and parent.internalPointer() is not self._root:
-            return data.hasFormat(nwConst.MIME_HANDLE) and action == Qt.DropAction.MoveAction
-        return False
+        if parent.isValid() is False or parent.internalPointer() is self._root:
+            return False
+        if data.hasFormat(nwConst.MIME_HANDLE) is False or action != Qt.DropAction.MoveAction:
+            return False
+
+        # Restrict drops to the label column and valid insert positions
+        if column != 0:
+            return False
+        targetNode: ProjectNode = parent.internalPointer()
+        if row < -1 or row > targetNode.childCount():
+            return False
+
+        # Prevent moving a node into itself or one of its descendants
+        handles = {h for h in decodeMimeHandles(data) if self.indexFromHandle(h).isValid()}
+        if not handles:
+            return False
+
+        target: ProjectNode | None = targetNode
+        while target:
+            if target.item.itemHandle in handles:
+                return False
+            target = target.parent()
+
+        return True
 
     def dropMimeData(self, data: QMimeData, action: Qt.DropAction, row: int, column: int, parent: QModelIndex) -> bool:
         """Process mime data drop."""
@@ -470,24 +502,14 @@ class ProjectModel(QAbstractItemModel):
             # move those items that don't have a parent also scheduled
             # for moving or have already been moved. Child items are
             # moved with the parent.
-            pruned = []
-            handles = set()
-            for index in indices:
-                if index.isValid():
-                    node: ProjectNode = index.internalPointer()
-                    handle = node.item.itemHandle
-                    if node.item.isRootType() is False and handle not in handles:
-                        pruned.append(node)
-                        handles.add(handle)
+            pruned, handles = self._collectMovableNodes(indices)
+            refresh: list[str] = []
             for node in reversed(pruned) if pos >= 0 else pruned:
-                if node.item.itemParent not in handles:
-                    index = self.indexFromNode(node)
-                    if temp := self.removeChild(index.parent(), index.row()):
-                        self.insertChild(temp, target, pos)
-                        for child in reversed(node.allChildren()):
-                            node._updateRelationships(child)  # noqa: SLF001
-                            child.item.notifyToRefresh()
-                        node.item.notifyToRefresh()
+                if node.item.itemParent not in handles and self._moveNode(node, target, pos):
+                    refresh.extend(self._refreshSubtreeRelationships(node))
+                    refresh.append(node.item.itemHandle)
+            if refresh:
+                self._tree.refreshItems(list(dict.fromkeys(refresh)))
 
     ##
     #  Other Methods
@@ -495,7 +517,9 @@ class ProjectModel(QAbstractItemModel):
 
     def clear(self) -> None:
         """Clear the project model."""
+        self.beginResetModel()
         self._root.children.clear()
+        self.endResetModel()
 
     def allExpanded(self) -> list[QModelIndex]:
         """Return a list of all expanded items."""
@@ -509,3 +533,37 @@ class ProjectModel(QAbstractItemModel):
                 if node.item.itemClass != nwItemClass.TRASH:
                     return False
         return True
+
+    ##
+    #  Internal Methods
+    ##
+
+    def _collectMovableNodes(self, indices: list[QModelIndex]) -> tuple[list[ProjectNode], set[str]]:
+        """Collect unique non-root nodes selected for move."""
+        pruned: list[ProjectNode] = []
+        handles: set[str] = set()
+        for index in indices:
+            if index.isValid():
+                node: ProjectNode = index.internalPointer()
+                handle = node.item.itemHandle
+                if node.item.isRootType() is False and handle not in handles:
+                    pruned.append(node)
+                    handles.add(handle)
+        return pruned, handles
+
+    def _moveNode(self, node: ProjectNode, target: QModelIndex, pos: int) -> bool:
+        """Move a node to target and return True if successful."""
+        index = self.indexFromNode(node)
+        if temp := self.removeChild(index.parent(), index.row()):
+            self.insertChild(temp, target, pos)
+            return True
+        return False
+
+    def _refreshSubtreeRelationships(self, node: ProjectNode) -> list[str]:
+        """Refresh parent/root relationships and return child handles to refresh."""
+        refresh: list[str] = []
+        for child in node.allChildren():
+            if parent := child.parent():
+                parent._updateRelationships(child)  # noqa: SLF001
+            refresh.append(child.item.itemHandle)
+        return refresh

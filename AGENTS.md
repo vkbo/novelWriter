@@ -19,6 +19,7 @@
 - When editing code, keep diffs minimal and update only the relevant files.
 - Prefer project-local helpers and conventions over introducing new abstractions.
 - The code base should use camelCase style to match the Qt library style.
+- Single-sentence inline comments should not end with punctuation.
 - For Qt enums and related Qt type constants, prefer aliases imported from `novelwriter/types.py`
   instead of direct enum members from PyQt6 modules where aliases are already available.
 - When connecting Qt signals and passing parameters, prefer `qtLambda` from `novelwriter/common.py`
@@ -47,11 +48,15 @@
 
 ## Validation
 
+- When making code changes, run `uv run ruff format`.
+- When making code changes, run `uv run ruff check` and address relevant issues in touched files.
+- When making code changes, run `uv run pyright` and address relevant issues in touched files.
 - Run the most relevant tests for the changed area when available.
 - If tests are missing for the touched path, add focused tests alongside the change when practical.
 - Do not fix unrelated failures unless they block the requested task.
 - When running tests, set `QT_QPA_PLATFORM=offscreen` to disable the Qt GUI. Use `./run_tests.py -o`
   or `QT_QPA_PLATFORM=offscreen python -m pytest`.
+- Avoid adding test-specific code to the main code base.
 
 ## Documentation
 
