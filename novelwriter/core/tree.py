@@ -147,19 +147,19 @@ class NWTree:
         if pHandle := item.itemParent:
             if parent := self._nodes.get(pHandle):
                 node = ProjectNode(item)
-                index = self._model.indexFromNode(parent)
-                self._model.insertChild(node, index, pos)
                 self._nodes[item.itemHandle] = node
                 self._items[item.itemHandle] = item
+                index = self._model.indexFromNode(parent)
+                self._model.insertChild(node, index, pos)
                 self._itemChange(item, nwChange.CREATE)
             else:
                 logger.error("Could not locate parent of '%s'", item.itemHandle)
                 return False
         elif item.isRootType():
             node = ProjectNode(item)
-            self._model.insertChild(node, QModelIndex(), pos)
             self._nodes[item.itemHandle] = node
             self._items[item.itemHandle] = item
+            self._model.insertChild(node, QModelIndex(), pos)
             self._itemChange(item, nwChange.CREATE)
         else:
             logger.error("Invalid project item '%s'", item.itemHandle)
