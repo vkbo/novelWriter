@@ -115,7 +115,9 @@ class NWTree:
     def trash(self) -> ProjectNode | None:
         """Return trash node, if it exists."""
         if self._trash:
-            return self._trash
+            if self._nodes.get(self._trash.item.itemHandle) is self._trash:
+                return self._trash
+            self._trash = None
         return self._getTrashNode()
 
     @property
@@ -179,6 +181,8 @@ class NWTree:
             index = self._model.indexFromNode(node)
             if index.isValid() and self._model.removeChild(index.parent(), index.row()):
                 self._itemChange(node.item, nwChange.DELETE)
+                if self._trash and self._trash.item.itemHandle in handles:
+                    self._trash = None
                 for handle in handles:
                     self._nodes.pop(handle, None)
                     self._items.pop(handle, None)

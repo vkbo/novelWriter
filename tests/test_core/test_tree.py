@@ -642,12 +642,14 @@ def testCoreTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
     # Trash can't be created
     assert trash is not None
     assert tree._getTrashNode() is trash
-    tree._trash = None
-    assert tree._getTrashNode() is trash
+    tree._trash = trash
     tree.remove(trash.item.itemHandle)
+    assert tree._trash is None
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.tree.NWTree.create", lambda *a, **k: None)
+        tree._trash = trash
+        assert tree.trash is None
         assert tree._getTrashNode() is None
 
 
