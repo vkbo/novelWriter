@@ -1080,6 +1080,7 @@ class GuiMain(QMainWindow):
         logger.debug("Applying new project settings")
         SHARED.updateSpellCheckLanguage()
         self.itemDetails.refreshDetails()
+        self.mainMenu.setSelectedProjectSpellCheckLanguage()
         self._updateWindowTitle(SHARED.project.data.name)
 
     @pyqtSlot()
