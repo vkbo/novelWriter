@@ -1178,6 +1178,14 @@ class _TreeContextMenu(QMenu):
         else:
             action = qtAddAction(self, self.tr("Toggle Active"))
             action.triggered.connect(self._toggleItemActive)
+            if self._children > 0:
+                mSub = qtAddMenu(self, self.tr("Set Children to ..."))
+                aOne = qtAddAction(mSub, self._tree.trActive)
+                aOne.setIcon(SHARED.theme.getIcon("checked", "accept"))
+                aOne.triggered.connect(qtLambda(self._recurseItemActive, True))
+                aTwo = qtAddAction(mSub, self._tree.trInactive)
+                aTwo.setIcon(SHARED.theme.getIcon("unchecked", "reject"))
+                aTwo.triggered.connect(qtLambda(self._recurseItemActive, False))
 
     def _itemStatusImport(self, multi: bool) -> None:
         """Add actions for changing status or importance."""
@@ -1293,6 +1301,18 @@ class _TreeContextMenu(QMenu):
             if node.item.isFileType():
                 node.item.setActive(state)
                 refresh.append(node.item.itemHandle)
+        SHARED.project.tree.refreshItems(refresh)
+
+    def _recurseItemActive(self, state: bool) -> None:
+        """Set the active status of an item and all its children."""
+        refresh = []
+        if self._item.isFileType():
+            self._item.setActive(state)
+            refresh.append(self._item.itemHandle)
+        for child in self._node.allChildren():
+            if child.item.isFileType():
+                child.item.setActive(state)
+                refresh.append(child.item.itemHandle)
         SHARED.project.tree.refreshItems(refresh)
 
     def _changeItemStatus(self, key: str) -> None:
