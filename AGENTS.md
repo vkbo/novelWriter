@@ -33,7 +33,9 @@
 - Run `uv run ruff format`, `uv run ruff check`, and `uv run pyright` on touched files when making code changes
 - Run the most relevant tests for the changed area when available
 - If tests are missing for the touched path, add focused tests alongside the change when practical
-- Do not run bare `pytest` without `QT_QPA_PLATFORM=offscreen`
+- Always run tests with `QT_QPA_PLATFORM=offscreen` in this repository
+- If a test tool does not allow setting environment variables, run tests in terminal as `QT_QPA_PLATFORM=offscreen uv run pytest ...`
+- Never run GUI tests in this repository without the offscreen environment variable
 - Avoid adding test-specific code to the main code base
 
 ## Documentation
