@@ -80,7 +80,7 @@ part of a mutually agreed upon resolution.
 ## Addressing and Repairing Harm
 
 Given the tools available on the project's GitHub repository, the following reactions may be
-applied to violations when using the public issues and discussions features:
+applied to violations when using the public pull request, issues and discussions features:
 
 * Minor violations may result in a public warning and/or the comment being hidden or closed.
 * More severe violations may result in the content being deleted without warning.
@@ -89,7 +89,7 @@ applied to violations when using the public issues and discussions features:
 * Content that may violate GitHub community polices will be reported to GitHub.
 
 On other platforms related to this project, similar steps will apply. Private communication will be
-used when possible, but cannot be guaranteed.
+used when possible.
 
 
 ## Scope
