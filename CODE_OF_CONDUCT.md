@@ -66,8 +66,7 @@ Not every conflict represents a code of conduct violation, and this Code of Cond
 encouraged behaviors and norms that can help avoid conflicts and minimize harm.
 
 When an incident does occur, it is important to report it promptly. To report a possible violation,
-**contact the owner. Contact details can be found at [github.com/vkbo](https://github.com/vkbo).
-You can also use the GitHub report functions.**
+**contact the owner**. Contact details can be found at [github.com/vkbo](https://github.com/vkbo).
 
 Community Moderators take reports of violations seriously and will make every effort to respond in
 a timely manner. They will investigate all reports of code of conduct violations, reviewing
