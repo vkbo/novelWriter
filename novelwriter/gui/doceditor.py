@@ -1238,6 +1238,11 @@ class GuiDocEditor(QPlainTextEdit):
         if updated or deleted:
             self._qDocument.syntaxHighlighter.rehighlightByType(BLOCK_META)
 
+    @pyqtSlot(str, str)
+    def processSpellCheckChange(self, language: str, provider: str) -> None:
+        """Process a change in the spell check language or provider."""
+        self.spellCheckDocument()
+
     ##
     #  Private Slots
     ##
