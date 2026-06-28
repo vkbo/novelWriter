@@ -45,7 +45,7 @@ if TYPE_CHECKING:
 # ============
 
 __package__ = "novelwriter"
-__copyright__ = "Copyright 2018-2025 Veronica Berglyd Olsen"
+__copyright__ = "Copyright 2018-2026 Veronica Berglyd Olsen"
 __license__ = "GPLv3"
 __author__ = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
@@ -283,11 +283,13 @@ def _createApp(style: str) -> QApplication:
     """Create the app. This is done in a function to make it easier to
     block app creation during testing.
     """
+    QApplication.setDesktopFileName(CONFIG.appHandle)
+
     app = QApplication([CONFIG.appName])
     app.setStyle(style)
     app.setApplicationName(CONFIG.appName)
     app.setApplicationVersion(__version__)
     app.setOrganizationDomain(__domain__)
     app.setOrganizationName(__domain__)
-    app.setDesktopFileName(CONFIG.appName)
+
     return app
