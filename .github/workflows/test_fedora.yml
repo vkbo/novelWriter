@@ -16,18 +16,20 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: fedora:rawhide
+    permissions:
+      contents: read
     steps:
       - name: Install System Packages
         run: |
           dnf -y update
           dnf -y install \
             git \
-            python3-qt6 \
-            python3-qt6-qtsvg \
+            python3-enchant \
+            python3-pyqt6 \
             python3-pytest \
             python3-pytest-qt \
-            python3-pyenchant \
             python3-pytest-timeout \
+            qt6-linguist \
             qt6-qtimageformats
 
       - name: Checkout Source
