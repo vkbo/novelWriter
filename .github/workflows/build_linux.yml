@@ -1,4 +1,4 @@
-name: BuildAppimage
+name: BuildLinux
 
 on: workflow_dispatch
 
