@@ -2,10 +2,6 @@
 novelWriter – Build Settings
 ============================
 
-File History:
-Created: 2023-02-14 [2.1b1] BuildSettings
-Created: 2023-05-22 [2.1b1] BuildCollection
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import json
@@ -35,7 +32,7 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
 from novelwriter import CONFIG
-from novelwriter.common import checkUuid, isHandle, jsonEncode
+from novelwriter.common import checkUuid, isHandle, jsonEncode, safeExists, safeIsDir
 from novelwriter.constants import nwFiles, nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
@@ -52,6 +49,7 @@ T_BuildValue = str | int | float | bool
 # =====================
 # Each entry contains a tuple on the form: (type, default)
 
+# fmt: off
 SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "filter.includeNovel":     (bool, True),
     "filter.includeNotes":     (bool, False),
@@ -76,24 +74,33 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "headings.breakPart":      (bool, True),
     "headings.breakChapter":   (bool, True),
     "headings.breakScene":     (bool, False),
+    "text.includeBodyText":    (bool, True),
     "text.includeSynopsis":    (bool, False),
     "text.includeComments":    (bool, False),
     "text.includeStory":       (bool, False),
     "text.includeNotes":       (bool, False),
     "text.includeKeywords":    (bool, False),
-    "text.includeBodyText":    (bool, True),
     "text.ignoredKeywords":    (str, ""),
     "text.addNoteHeadings":    (bool, True),
     "format.textFont":         (str, CONFIG.textFont.toString()),
     "format.lineHeight":       (float, 1.15),
     "format.justifyText":      (bool, False),
+    "format.justifyOnBreak":   (bool, True),
     "format.stripUnicode":     (bool, False),
     "format.replaceTabs":      (bool, False),
     "format.keepBreaks":       (bool, True),
     "format.showDialogue":     (bool, False),
+    "format.colorHeadings":    (bool, True),
+    "format.boldHeadings":     (bool, True),
+    "format.upperHeadings":    (bool, False),
     "format.firstLineIndent":  (bool, False),
     "format.firstIndentWidth": (float, 1.4),
     "format.indentFirstPar":   (bool, False),
+    "format.titleSize":        (float, nwStyles.H_SIZES[0]),
+    "format.h1Size":           (float, nwStyles.H_SIZES[1]),
+    "format.h2Size":           (float, nwStyles.H_SIZES[2]),
+    "format.h3Size":           (float, nwStyles.H_SIZES[3]),
+    "format.h4Size":           (float, nwStyles.H_SIZES[4]),
     "format.titleMarginT":     (float, nwStyles.T_MARGIN["H0"][0]),
     "format.titleMarginB":     (float, nwStyles.T_MARGIN["H0"][1]),
     "format.h1MarginT":        (float, nwStyles.T_MARGIN["H1"][0]),
@@ -108,6 +115,7 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "format.textMarginB":      (float, nwStyles.T_MARGIN["TT"][1]),
     "format.sepMarginT":       (float, nwStyles.T_MARGIN["SP"][0]),
     "format.sepMarginB":       (float, nwStyles.T_MARGIN["SP"][1]),
+    "format.lineForMargin":    (bool, False),
     "format.pageUnit":         (str, "cm"),
     "format.pageSize":         (str, "A4"),
     "format.pageWidth":        (float, 21.0),
@@ -118,9 +126,7 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "format.rightMargin":      (float, 2.0),
     "doc.pageHeader":          (str, nwHeadFmt.DOC_AUTO),
     "doc.pageCountOffset":     (int, 0),
-    "doc.colorHeadings":       (bool, True),
-    "doc.scaleHeadings":       (bool, True),
-    "doc.boldHeadings":        (bool, True),
+    "doc.metaLanguage":        (str, ""),
     "html.addStyles":          (bool, True),
     "html.preserveTabs":       (bool, False),
 }
@@ -132,86 +138,94 @@ SETTINGS_LABELS = {
     "filter.includeInactive":  QT_TRANSLATE_NOOP("Builds", "Inactive Documents"),
 
     "headings":                QT_TRANSLATE_NOOP("Builds", "Headings"),
-    "headings.fmtPart":        QT_TRANSLATE_NOOP("Builds", "Partition Format"),
-    "headings.fmtChapter":     QT_TRANSLATE_NOOP("Builds", "Chapter Format"),
-    "headings.fmtUnnumbered":  QT_TRANSLATE_NOOP("Builds", "Unnumbered Format"),
-    "headings.fmtScene":       QT_TRANSLATE_NOOP("Builds", "Scene Format"),
-    "headings.fmtAltScene":    QT_TRANSLATE_NOOP("Builds", "Alt. Scene Format"),
-    "headings.fmtSection":     QT_TRANSLATE_NOOP("Builds", "Section Format"),
-    "headings.styleTitle":     QT_TRANSLATE_NOOP("Builds", "Title Styling"),
-    "headings.stylePart":      QT_TRANSLATE_NOOP("Builds", "Partition Styling"),
-    "headings.styleChapter":   QT_TRANSLATE_NOOP("Builds", "Chapter Styling"),
-    "headings.styleScene":     QT_TRANSLATE_NOOP("Builds", "Scene Styling"),
+    "headings.fmtPart":        QT_TRANSLATE_NOOP("Builds", "Partition format"),
+    "headings.fmtChapter":     QT_TRANSLATE_NOOP("Builds", "Chapter format"),
+    "headings.fmtUnnumbered":  QT_TRANSLATE_NOOP("Builds", "Unnumbered format"),
+    "headings.fmtScene":       QT_TRANSLATE_NOOP("Builds", "Scene format"),
+    "headings.fmtAltScene":    QT_TRANSLATE_NOOP("Builds", "Alt. Scene format"),
+    "headings.fmtSection":     QT_TRANSLATE_NOOP("Builds", "Section format"),
+    "headings.styleTitle":     QT_TRANSLATE_NOOP("Builds", "Title styling"),
+    "headings.stylePart":      QT_TRANSLATE_NOOP("Builds", "Partition styling"),
+    "headings.styleChapter":   QT_TRANSLATE_NOOP("Builds", "Chapter styling"),
+    "headings.styleScene":     QT_TRANSLATE_NOOP("Builds", "Scene styling"),
 
     "text.grpContent":         QT_TRANSLATE_NOOP("Builds", "Text Content"),
-    "text.includeSynopsis":    QT_TRANSLATE_NOOP("Builds", "Include Synopsis"),
-    "text.includeComments":    QT_TRANSLATE_NOOP("Builds", "Include Comments"),
-    "text.includeStory":       QT_TRANSLATE_NOOP("Builds", "Include Story Structure"),
-    "text.includeNotes":       QT_TRANSLATE_NOOP("Builds", "Include Manuscript Notes"),
-    "text.includeKeywords":    QT_TRANSLATE_NOOP("Builds", "Include Keywords"),
-    "text.includeBodyText":    QT_TRANSLATE_NOOP("Builds", "Include Body Text"),
-    "text.ignoredKeywords":    QT_TRANSLATE_NOOP("Builds", "Ignore These Keywords"),
-    "text.addNoteHeadings":    QT_TRANSLATE_NOOP("Builds", "Add Titles for Notes"),
+    "text.includeBodyText":    QT_TRANSLATE_NOOP("Builds", "Include body text"),
+    "text.includeSynopsis":    QT_TRANSLATE_NOOP("Builds", "Include synopsis"),
+    "text.includeComments":    QT_TRANSLATE_NOOP("Builds", "Include comments"),
+    "text.includeStory":       QT_TRANSLATE_NOOP("Builds", "Include story structure"),
+    "text.includeNotes":       QT_TRANSLATE_NOOP("Builds", "Include manuscript notes"),
+    "text.includeKeywords":    QT_TRANSLATE_NOOP("Builds", "Include keywords"),
+    "text.ignoredKeywords":    QT_TRANSLATE_NOOP("Builds", "Ignore these keywords"),
+    "text.addNoteHeadings":    QT_TRANSLATE_NOOP("Builds", "Add titles for note root folders"),
 
     "format.grpFormat":        QT_TRANSLATE_NOOP("Builds", "Text Format"),
-    "format.textFont":         QT_TRANSLATE_NOOP("Builds", "Text Font"),
-    "format.lineHeight":       QT_TRANSLATE_NOOP("Builds", "Line Height"),
-    "format.justifyText":      QT_TRANSLATE_NOOP("Builds", "Justify Text Margins"),
-    "format.stripUnicode":     QT_TRANSLATE_NOOP("Builds", "Replace Unicode Characters"),
-    "format.replaceTabs":      QT_TRANSLATE_NOOP("Builds", "Replace Tabs with Spaces"),
-    "format.keepBreaks":       QT_TRANSLATE_NOOP("Builds", "Preserve Hard Line Breaks"),
-    "format.showDialogue":     QT_TRANSLATE_NOOP("Builds", "Apply Dialogue Highlighting"),
+    "format.textFont":         QT_TRANSLATE_NOOP("Builds", "Text font"),
+    "format.lineHeight":       QT_TRANSLATE_NOOP("Builds", "Line height"),
+    "format.justifyText":      QT_TRANSLATE_NOOP("Builds", "Justify text margins"),
+    "format.justifyOnBreak":   QT_TRANSLATE_NOOP("Builds", "Justify text on manual line breaks"),
+    "format.stripUnicode":     QT_TRANSLATE_NOOP("Builds", "Replace Unicode characters"),
+    "format.replaceTabs":      QT_TRANSLATE_NOOP("Builds", "Replace tabs with spaces"),
+    "format.keepBreaks":       QT_TRANSLATE_NOOP("Builds", "Preserve hard line breaks"),
+    "format.showDialogue":     QT_TRANSLATE_NOOP("Builds", "Apply dialogue highlighting"),
+
+    "format.grpHeadings":      QT_TRANSLATE_NOOP("Builds", "Heading Format"),
+    "format.colorHeadings":    QT_TRANSLATE_NOOP("Builds", "Add colours to headings"),
+    "format.boldHeadings":     QT_TRANSLATE_NOOP("Builds", "Bold headings"),
+    "format.upperHeadings":    QT_TRANSLATE_NOOP("Builds", "Uppercase headings"),
 
     "format.grpParIndent":     QT_TRANSLATE_NOOP("Builds", "First Line Indent"),
-    "format.firstLineIndent":  QT_TRANSLATE_NOOP("Builds", "Enable Indent"),
-    "format.firstIndentWidth": QT_TRANSLATE_NOOP("Builds", "Indent Width"),
-    "format.indentFirstPar":   QT_TRANSLATE_NOOP("Builds", "Indent First Paragraph"),
+    "format.firstLineIndent":  QT_TRANSLATE_NOOP("Builds", "Enable indent"),
+    "format.firstIndentWidth": QT_TRANSLATE_NOOP("Builds", "Indent width"),
+    "format.indentFirstPar":   QT_TRANSLATE_NOOP("Builds", "Indent first paragraph"),
 
-    "format.grpMargins":       QT_TRANSLATE_NOOP("Builds", "Text Margins"),
+    "format.grpMargins":       QT_TRANSLATE_NOOP("Builds", "Size & Margins"),
     "format.titleMargin":      QT_TRANSLATE_NOOP("Builds", "Title and Partition"),
     "format.h1Margin":         QT_TRANSLATE_NOOP("Builds", "Heading 1 and Chapter"),
     "format.h2Margin":         QT_TRANSLATE_NOOP("Builds", "Heading 2 and Scene"),
     "format.h3Margin":         QT_TRANSLATE_NOOP("Builds", "Heading 3 and Section"),
     "format.h4Margin":         QT_TRANSLATE_NOOP("Builds", "Heading 4"),
-    "format.textMargin":       QT_TRANSLATE_NOOP("Builds", "Text Paragraph"),
-    "format.sepMargin":        QT_TRANSLATE_NOOP("Builds", "Scene Separator"),
+    "format.textMargin":       QT_TRANSLATE_NOOP("Builds", "Text paragraph"),
+    "format.sepMargin":        QT_TRANSLATE_NOOP("Builds", "Scene separator"),
+    "format.lineForMargin":    QT_TRANSLATE_NOOP("Builds", "Add empty lines instead of margins"),
 
     "format.grpPage":          QT_TRANSLATE_NOOP("Builds", "Page Layout"),
     "format.pageUnit":         QT_TRANSLATE_NOOP("Builds", "Unit"),
-    "format.pageSize":         QT_TRANSLATE_NOOP("Builds", "Page Size"),
-    "format.pageMargins":      QT_TRANSLATE_NOOP("Builds", "Page Margins"),
+    "format.pageSize":         QT_TRANSLATE_NOOP("Builds", "Page size"),
+    "format.pageMargins":      QT_TRANSLATE_NOOP("Builds", "Page margins"),
 
     "doc":                     QT_TRANSLATE_NOOP("Builds", "Document Style"),
-    "doc.pageHeader":          QT_TRANSLATE_NOOP("Builds", "Page Header"),
-    "doc.pageCountOffset":     QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
-    "doc.colorHeadings":       QT_TRANSLATE_NOOP("Builds", "Add Colours to Headings"),
-    "doc.scaleHeadings":       QT_TRANSLATE_NOOP("Builds", "Increase Size of Headings"),
-    "doc.boldHeadings":        QT_TRANSLATE_NOOP("Builds", "Bold Headings"),
+    "doc.pageHeader":          QT_TRANSLATE_NOOP("Builds", "Page header"),
+    "doc.pageCountOffset":     QT_TRANSLATE_NOOP("Builds", "Page counter offset"),
+    "doc.metaLanguage":        QT_TRANSLATE_NOOP("Builds", "Override document language"),
 
     "html":                    QT_TRANSLATE_NOOP("Builds", "HTML Options"),
-    "html.addStyles":          QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
-    "html.preserveTabs":       QT_TRANSLATE_NOOP("Builds", "Preserve Tab Characters"),
+    "html.addStyles":          QT_TRANSLATE_NOOP("Builds", "Add CSS styles"),
+    "html.preserveTabs":       QT_TRANSLATE_NOOP("Builds", "Preserve tab characters"),
 }
+# fmt: on
 
 RENAMED = {
     "odt.pageHeader": "doc.pageHeader",
     "odt.pageCountOffset": "doc.pageCountOffset",
+    "doc.colorHeadings": "format.colorHeadings",
+    "doc.boldHeadings": "format.boldHeadings",
 }
 
 
 class FilterMode(Enum):
     """The decision reason for an item in a filtered project."""
 
-    UNKNOWN  = 0
+    UNKNOWN = 0
     FILTERED = 1
     INCLUDED = 2
     EXCLUDED = 3
-    SKIPPED  = 4
-    ROOT     = 5
+    SKIPPED = 4
+    ROOT = 5
 
 
 class BuildSettings:
-    """Core: Build Settings Class
+    """Core: Build Settings Class.
 
     This class manages the build settings for a Manuscript build job.
     The settings can be packed/unpacked to/from a dictionary for JSON.
@@ -229,7 +243,6 @@ class BuildSettings:
         self._included = set()
         self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
         self._changed = False
-        return
 
     @classmethod
     def fromDict(cls, data: dict) -> BuildSettings:
@@ -260,7 +273,7 @@ class BuildSettings:
     @property
     def lastBuildPath(self) -> Path:
         """The last used build path."""
-        if self._path.is_dir():
+        if safeIsDir(self._path):
             return self._path
         return CONFIG.homePath()
 
@@ -315,7 +328,6 @@ class BuildSettings:
     def setName(self, name: str) -> None:
         """Set the build setting display name."""
         self._name = str(name)
-        return
 
     def setBuildID(self, value: str | uuid.UUID) -> None:
         """Set a UUID build ID."""
@@ -324,58 +336,50 @@ class BuildSettings:
             self._uuid = str(uuid.uuid4())
         elif value != self._uuid:
             self._uuid = value
-        return
 
     def setOrder(self, value: int) -> None:
         """Set the build order."""
         if isinstance(value, int):
             self._order = value
-        return
 
     def setLastBuildPath(self, path: Path | str | None) -> None:
         """Set the last used build path."""
         if isinstance(path, str):
             path = Path(path)
-        if isinstance(path, Path) and path.is_dir():
+        if isinstance(path, Path) and safeIsDir(path):
             self._path = path
         else:
             self._path = CONFIG.homePath()
         self._changed = True
-        return
 
     def setLastBuildName(self, name: str) -> None:
         """Set the last used build name."""
         self._build = str(name).strip()
         self._changed = True
-        return
 
     def setLastFormat(self, value: nwBuildFmt) -> None:
         """Set the last used build format."""
         if isinstance(value, nwBuildFmt):
             self._format = value
             self._changed = True
-        return
 
     def setFiltered(self, tHandle: str) -> None:
         """Set an item as filtered."""
         self._excluded.discard(tHandle)
         self._included.discard(tHandle)
         self._changed = True
-        return
 
     def setIncluded(self, tHandle: str) -> None:
         """Set an item as explicitly included."""
         self._excluded.discard(tHandle)
         self._included.add(tHandle)
         self._changed = True
-        return
 
     def setExcluded(self, tHandle: str) -> None:
         """Set an item as explicitly excluded."""
         self._excluded.add(tHandle)
         self._included.discard(tHandle)
         self._changed = True
-        return
 
     def setAllowRoot(self, tHandle: str, state: bool) -> None:
         """Set a specific root folder as allowed or not."""
@@ -385,14 +389,12 @@ class BuildSettings:
         elif state is False:
             self._skipRoot.add(tHandle)
             self._changed = True
-        return
 
     def setValue(self, key: str, value: T_BuildValue) -> None:
         """Set a specific value for a build setting."""
         if (d := SETTINGS_TEMPLATE.get(key)) and len(d) == 2 and isinstance(value, d[0]):
-            self._changed |= (value != self._settings[key])
+            self._changed |= value != self._settings[key]
             self._settings[key] = value
-        return
 
     ##
     #  Methods
@@ -402,9 +404,7 @@ class BuildSettings:
         """Check if a root handle is allowed in the build."""
         return tHandle not in self._skipRoot
 
-    def buildItemFilter(
-        self, project: NWProject, withRoots: bool = False
-    ) -> dict[str, tuple[bool, FilterMode]]:
+    def buildItemFilter(self, project: NWProject, withRoots: bool = False) -> dict[str, tuple[bool, FilterMode]]:
         """Return a dictionary of item handles with filter decisions
         applied.
         """
@@ -463,7 +463,6 @@ class BuildSettings:
         called when the changes have been safely saved or passed on.
         """
         self._changed = False
-        return
 
     def pack(self) -> dict:
         """Pack all content into a JSON compatible dictionary."""
@@ -480,7 +479,7 @@ class BuildSettings:
                 "included": list(self._included),
                 "excluded": list(self._excluded),
                 "skipRoot": list(self._skipRoot),
-            }
+            },
         }
 
     def unpack(self, data: dict) -> None:
@@ -494,7 +493,7 @@ class BuildSettings:
         self.setName(data.get("name", ""))
         self.setBuildID(data.get("uuid", ""))
         self.setOrder(data.get("order", 0))
-        self.setLastBuildPath(data.get("path", None))
+        self.setLastBuildPath(data.get("path"))
         self.setLastBuildName(data.get("build", ""))
 
         buildFmt = str(data.get("format", ""))
@@ -502,11 +501,11 @@ class BuildSettings:
             self.setLastFormat(nwBuildFmt[buildFmt])
 
         if isinstance(included, list):
-            self._included = set([h for h in included if isHandle(h)])
+            self._included = {h for h in included if isHandle(h)}
         if isinstance(excluded, list):
-            self._excluded = set([h for h in excluded if isHandle(h)])
+            self._excluded = {h for h in excluded if isHandle(h)}
         if isinstance(skipRoot, list):
-            self._skipRoot = set([h for h in skipRoot if isHandle(h)])
+            self._skipRoot = {h for h in skipRoot if isHandle(h)}
 
         self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
         if isinstance(settings, dict):
@@ -515,8 +514,6 @@ class BuildSettings:
                     self.setValue(RENAMED.get(key, key), value)
 
         self._changed = False
-
-        return
 
     @classmethod
     def duplicate(cls, source: BuildSettings) -> BuildSettings:
@@ -529,7 +526,7 @@ class BuildSettings:
 
 
 class BuildCollection:
-    """Core: Build Collection Class
+    """Core: Build Collection Class.
 
     This object holds all the build setting objects defined by the given
     project. The build settings are saved as a single JSON file in the
@@ -542,7 +539,6 @@ class BuildCollection:
         self._defaultBuild = ""
         self._builds: dict[str, BuildSettings] = {}
         self._loadCollection()
-        return
 
     def __len__(self) -> int:
         """Return the number of builds."""
@@ -581,21 +577,18 @@ class BuildCollection:
                 build.setOrder(i)
         self._lastBuild = lastBuild
         self._saveCollection()
-        return
 
     def setDefaultBuild(self, buildID: str) -> None:
         """Set the default build id."""
         if buildID != self._defaultBuild:
             self._defaultBuild = buildID
             self._saveCollection()
-        return
 
     def setBuild(self, build: BuildSettings) -> None:
         """Set build settings data in the collection."""
         if isinstance(build, BuildSettings):
             self._builds[build.buildID] = build
             self._saveCollection()
-        return
 
     ##
     #  Methods
@@ -605,7 +598,6 @@ class BuildCollection:
         """Remove a build from the collection."""
         self._builds.pop(buildID, None)
         self._saveCollection()
-        return
 
     def builds(self) -> Iterable[tuple[str, str]]:
         """Iterate over all available builds."""
@@ -624,7 +616,7 @@ class BuildCollection:
             return False
 
         data = {}
-        if buildsFile.exists():
+        if safeExists(buildsFile):
             logger.debug("Loading builds file")
             try:
                 with open(buildsFile, mode="r", encoding="utf-8") as inFile:

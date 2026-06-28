@@ -17,23 +17,41 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import shutil
 import subprocess
 import sys
+import tomllib
 
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).parent.parent
 SETUP_DIR = ROOT_DIR / "setup"
 
+MIN_QT_VERS = "6.4"
+MIN_PY_VERSION = "3.11"
+
+
+def extractReqs(groups: list[str]) -> list[str]:
+    """Extract dependency groups from pyproject.toml."""
+    data = tomllib.loads((ROOT_DIR / "pyproject.toml").read_text(encoding="utf-8"))
+    reqs = []
+    if "app" in groups or "all" in groups:
+        reqs += data["project"]["dependencies"]
+    for group in data["dependency-groups"]:
+        if group in groups or "all" in groups:
+            reqs += [d for d in data["dependency-groups"][group] if isinstance(d, str)]
+    return reqs
+
 
 def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
     """Extract the novelWriter version number without having to import
     anything else from the main package.
     """
+
     def getValue(text: str) -> str:
         bits = text.partition("=")
         return bits[2].strip().strip('"')
@@ -72,6 +90,21 @@ def stripVersion(version: str) -> str:
         return version
 
 
+def formatVersion(value: str) -> str:
+    """Format a version number into a more human readable form."""
+    major, _, version = value.partition(".")
+    prefix = "20" if int(major) >= 20 else ""
+    if "." in version:
+        version = version.replace(".", " Patch ")
+    elif "a" in version:
+        version = version.replace("a", " Alpha ")
+    elif "b" in version:
+        version = version.replace("b", " Beta ")
+    elif "rc" in version:
+        version = version.replace("rc", " RC ")
+    return f"{prefix}{major}.{version}" if major and version else ""
+
+
 def copySourceCode(dst: Path) -> None:
     """Copy the novelwriter source tree to path."""
     src = ROOT_DIR / "novelwriter"
@@ -88,33 +121,32 @@ def copySourceCode(dst: Path) -> None:
         if item.is_file():
             shutil.copyfile(item, dst / relSrc)
             print("Copied:", relSrc, flush=True)
-    return
 
 
-def copyPackageFiles(dst: Path, setupPy: bool = False) -> None:
+def copyPackageFiles(dst: Path, oldLicense: bool = False) -> None:
     """Copy files needed for packaging."""
-    copyFiles = ["LICENSE.md", "CREDITS.md", "pyproject.toml"]
+    copyFiles = [
+        ROOT_DIR / "LICENSE.md",
+        SETUP_DIR / "LICENSE-Apache-2.0.txt",
+        ROOT_DIR / "CREDITS.md",
+        ROOT_DIR / "pyproject.toml",
+    ]
     for copyFile in copyFiles:
-        shutil.copyfile(copyFile, dst / copyFile)
+        shutil.copyfile(copyFile, dst / copyFile.name)
         print("Copied:", copyFile, flush=True)
-
-    writeFile(dst / "MANIFEST.in", (
-        "include LICENSE.md\n"
-        "include CREDITS.md\n"
-        "recursive-include novelwriter/assets *\n"
-    ))
-
-    if setupPy:
-        writeFile(dst / "setup.py", (
-            "import setuptools\n"
-            "setuptools.setup()\n"
-        ))
 
     text = readFile(ROOT_DIR / "pyproject.toml")
     text = text.replace("setup/description_pypi.md", "data/description_short.txt")
+    if oldLicense:
+        new = []
+        for line in text.splitlines():
+            if line.startswith("license = "):
+                line = 'license = {text = "GPL-3.0-or-later AND Apache-2.0 AND CC-BY-4.0"}'
+            if line.startswith("license-files = "):
+                continue
+            new.append(line)
+        text = "\n".join(new)
     writeFile(dst / "pyproject.toml", text)
-
-    return
 
 
 def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
@@ -125,7 +157,6 @@ def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
     uplDir.mkdir(exist_ok=True)
     srcPath = Path(srcPath)
     shutil.copyfile(srcPath, uplDir / (dstName or srcPath.name))
-    return
 
 
 def makeCheckSum(sumFile: str, cwd: Path | None = None) -> str:
@@ -174,9 +205,7 @@ def appdataXml() -> str:
     """Generate the appdata XML content."""
     raw = readFile(SETUP_DIR / "description_short.txt")
     desc = " ".join(raw.strip().splitlines()).strip()
-    xml = readFile(SETUP_DIR / "novelwriter.appdata.xml")
-    xml = xml.format(description=desc)
-    return xml
+    return readFile(SETUP_DIR / "novelwriter.appdata.xml").format(description=desc)
 
 
 def readFile(file: Path) -> str:
@@ -197,7 +226,6 @@ def freshFolder(path: Path) -> None:
         print("Removing:", str(path), flush=True)
         shutil.rmtree(path)
     path.mkdir()
-    return
 
 
 def systemCall(cmd: list, cwd: Path | str | None = None, env: dict | None = None) -> int:
@@ -213,7 +241,7 @@ def systemCall(cmd: list, cwd: Path | str | None = None, env: dict | None = None
 
 
 def removeRedundantQt(qtBase: Path) -> None:
-    """Delete Qt files that are not needed"""
+    """Delete Qt files that are not needed."""
 
     def unlinkIfFound(file: Path) -> None:
         if file.is_file():
@@ -237,13 +265,13 @@ def removeRedundantQt(qtBase: Path) -> None:
     print("Deleting redundant files ...")
 
     pyQt6Dir = qtBase / "PyQt6"
-    bindDir  = qtBase / "PyQt6" / "bindings"
-    qt6Dir   = qtBase / "PyQt6" / "Qt6"
-    binDir   = qtBase / "PyQt6" / "Qt6" / "bin"
-    libDir   = qtBase / "PyQt6" / "Qt6" / "lib"
-    plugDir  = qtBase / "PyQt6" / "Qt6" / "plugins"
-    qmDir    = qtBase / "PyQt6" / "Qt6" / "translations"
-    dictDir  = qtBase / "enchant" / "data" / "mingw64" / "share" / "enchant" / "hunspell"
+    bindDir = qtBase / "PyQt6" / "bindings"
+    qt6Dir = qtBase / "PyQt6" / "Qt6"
+    binDir = qtBase / "PyQt6" / "Qt6" / "bin"
+    libDir = qtBase / "PyQt6" / "Qt6" / "lib"
+    plugDir = qtBase / "PyQt6" / "Qt6" / "plugins"
+    qmDir = qtBase / "PyQt6" / "Qt6" / "translations"
+    dictDir = qtBase / "enchant" / "data" / "mingw64" / "share" / "enchant" / "hunspell"
 
     # Prune Dictionaries
     if dictDir.exists():
@@ -258,8 +286,13 @@ def removeRedundantQt(qtBase: Path) -> None:
 
     # Delete Modules
     modules = [
-        "Qt6Qml", "Qt6Quick", "Qt6Bluetooth", "Qt6Nfc",
-        "Qt6Sensors", "Qt6SerialPort", "Qt6Test",
+        "Qt6Qml",
+        "Qt6Quick",
+        "Qt6Bluetooth",
+        "Qt6Nfc",
+        "Qt6Sensors",
+        "Qt6SerialPort",
+        "Qt6Test",
     ]
     modules.extend([x.replace("Qt6", "Qt") for x in modules])
     modules.extend([f"lib{x}" for x in modules])
@@ -274,5 +307,3 @@ def removeRedundantQt(qtBase: Path) -> None:
     deleteFolder(qt6Dir / "qml")
     deleteFolder(plugDir / "qmlls")
     deleteFolder(plugDir / "qmllint")
-
-    return

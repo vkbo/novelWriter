@@ -2,10 +2,6 @@
 novelWriter – Project Item Model
 ================================
 
-File History:
-Created: 2024-11-16 [2.6b2] ProjectNode
-Created: 2024-11-16 [2.6b2] ProjectModel
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -31,11 +28,20 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import QAbstractItemModel, QMimeData, QModelIndex, Qt
 from PyQt6.QtGui import QFont, QIcon
 
+from novelwriter import CONFIG
 from novelwriter.common import decodeMimeHandles, encodeMimeHandles, minmax
 from novelwriter.constants import nwConst
 from novelwriter.core.item import NWItem
 from novelwriter.enum import nwItemClass
-from novelwriter.types import QtAlignRight
+from novelwriter.types import (
+    QtAccessibleTextRole,
+    QtAlignRight,
+    QtDecorationRole,
+    QtDisplayRole,
+    QtFontRole,
+    QtTextAlignmentRole,
+    QtToolTipRole,
+)
 
 if TYPE_CHECKING:
     from novelwriter.core.tree import NWTree
@@ -45,18 +51,20 @@ logger = logging.getLogger(__name__)
 INV_ROOT = "invisibleRoot"
 C_FACTOR = 0x0100
 
-C_LABEL_TEXT    = 0x0000 | Qt.ItemDataRole.DisplayRole
-C_LABEL_ICON    = 0x0000 | Qt.ItemDataRole.DecorationRole
-C_LABEL_FONT    = 0x0000 | Qt.ItemDataRole.FontRole
-C_COUNT_TEXT    = 0x0100 | Qt.ItemDataRole.DisplayRole
-C_COUNT_ICON    = 0x0100 | Qt.ItemDataRole.DecorationRole
-C_COUNT_ALIGN   = 0x0100 | Qt.ItemDataRole.TextAlignmentRole
-C_ACTIVE_ICON   = 0x0200 | Qt.ItemDataRole.DecorationRole
-C_ACTIVE_TIP    = 0x0200 | Qt.ItemDataRole.ToolTipRole
-C_ACTIVE_ACCESS = 0x0200 | Qt.ItemDataRole.AccessibleTextRole
-C_STATUS_ICON   = 0x0300 | Qt.ItemDataRole.DecorationRole
-C_STATUS_TIP    = 0x0300 | Qt.ItemDataRole.ToolTipRole
-C_STATUS_ACCESS = 0x0300 | Qt.ItemDataRole.AccessibleTextRole
+C_LABEL_TEXT = 0x0000 | QtDisplayRole
+C_LABEL_ICON = 0x0000 | QtDecorationRole
+C_LABEL_FONT = 0x0000 | QtFontRole
+C_COUNT_TEXT = 0x0100 | QtDisplayRole
+C_COUNT_ICON = 0x0100 | QtDecorationRole
+C_COUNT_ALIGN = 0x0100 | QtTextAlignmentRole
+C_COUNT_TIP = 0x0100 | QtToolTipRole
+C_COUNT_ACCESS = 0x0100 | QtAccessibleTextRole
+C_ACTIVE_ICON = 0x0200 | QtDecorationRole
+C_ACTIVE_TIP = 0x0200 | QtToolTipRole
+C_ACTIVE_ACCESS = 0x0200 | QtAccessibleTextRole
+C_STATUS_ICON = 0x0300 | QtDecorationRole
+C_STATUS_TIP = 0x0300 | QtToolTipRole
+C_STATUS_ACCESS = 0x0300 | QtAccessibleTextRole
 
 NODE_FLAGS = Qt.ItemFlag.ItemIsEnabled
 NODE_FLAGS |= Qt.ItemFlag.ItemIsSelectable
@@ -66,7 +74,7 @@ T_NodeData = str | QIcon | QFont | Qt.AlignmentFlag | None
 
 
 class ProjectNode:
-    """Core: Project Model Node Class
+    """Core: Project Model Node Class.
 
     The project tree structure is saved as nodes in a tree, starting
     from a root node. This class makes up these nodes.
@@ -86,8 +94,8 @@ class ProjectNode:
     cached, as the GUI will pull this information often.
     """
 
-    C_NAME   = 0
-    C_COUNT  = 1
+    C_NAME = 0
+    C_COUNT = 1
     C_ACTIVE = 2
     C_STATUS = 3
 
@@ -103,9 +111,9 @@ class ProjectNode:
         self._count = 0
         self.refresh()
         self.updateCount()
-        return
 
     def __repr__(self) -> str:
+        """Return a string representation of the node."""
         return (
             f"<ProjectNode handle={self._item.itemHandle} "
             f"parent={self._parent.item.itemHandle if self._parent else None} "
@@ -114,7 +122,8 @@ class ProjectNode:
         )
 
     def __bool__(self) -> bool:
-        """A node should always evaluate to True."""
+        """Return True if the node is valid."""
+        # A node should always evaluate to True.
         return True
 
     ##
@@ -162,15 +171,21 @@ class ProjectNode:
         self._cache[C_STATUS_TIP] = sText
         self._cache[C_STATUS_ACCESS] = sText
 
-        return
+    def detach(self) -> None:
+        """Detach the node from parent node state."""
+        self._parent = None
+        self._row = -1
 
     def updateCount(self, propagate: bool = True) -> None:
         """Update counts, and propagate upwards in the tree."""
         self._count = self._item.mainCount + sum(c._count for c in self._children)  # noqa: SLF001
-        self._cache[C_COUNT_TEXT] = f"{self._count:n}"
+        text = f"{self._count:n}"
+        info = f"{text} {CONFIG.countUnit}"
+        self._cache[C_COUNT_TEXT] = text
+        self._cache[C_COUNT_TIP] = info
+        self._cache[C_COUNT_ACCESS] = info
         if propagate and (parent := self._parent):
             parent.updateCount()
-        return
 
     ##
     #  Data Access
@@ -186,7 +201,7 @@ class ProjectNode:
 
     def data(self, column: int, role: Qt.ItemDataRole) -> T_NodeData:
         """Return cached node data."""
-        return self._cache.get(C_FACTOR*column | role)
+        return self._cache.get(C_FACTOR * column | role)
 
     def flags(self) -> Qt.ItemFlag:
         """Return cached node flags."""
@@ -223,7 +238,6 @@ class ProjectNode:
             self._children.append(child)
         self._refreshChildrenPos()
         self._item.notifyNovelStructureChange()
-        return
 
     def takeChild(self, pos: int) -> ProjectNode | None:
         """Remove a child item and return it."""
@@ -232,6 +246,7 @@ class ProjectNode:
             self._refreshChildrenPos()
             self.updateCount()
             self._item.notifyNovelStructureChange()
+            node.detach()
             return node
         return None
 
@@ -243,7 +258,6 @@ class ProjectNode:
             self._children.insert(target, node)
             self._refreshChildrenPos()
             self._item.notifyNovelStructureChange()
-        return
 
     def setExpanded(self, state: bool) -> None:
         """Set the node's expanded state."""
@@ -251,7 +265,6 @@ class ProjectNode:
             self._item.setExpanded(True)
         else:
             self._item.setExpanded(False)
-        return
 
     ##
     #  Internal Functions
@@ -262,14 +275,12 @@ class ProjectNode:
         for node in self._children:
             children.append(node)
             node._recursiveAppendChildren(children)  # noqa: SLF001
-        return
 
     def _refreshChildrenPos(self) -> None:
         """Update the row value on all children."""
         for n, child in enumerate(self._children):
             child._row = n  # noqa: SLF001
             child.item.setOrder(n)
-        return
 
     def _updateRelationships(self, child: ProjectNode) -> None:
         """Update a child item's relationships."""
@@ -282,11 +293,10 @@ class ProjectNode:
             child.item.setParent(None)
             child.item.setRoot(child.item.itemHandle)
             child.item.setClassDefaults(child.item.itemClass)
-        return
 
 
 class ProjectModel(QAbstractItemModel):
-    """Core: Project Model Class
+    """Core: Project Model Class.
 
     This class provides the interface for the tree widget used on the
     GUI. It implements the QModelIndex based interface required, adds
@@ -302,11 +312,10 @@ class ProjectModel(QAbstractItemModel):
         self._root = ProjectNode(NWItem(tree.project, INV_ROOT))
         self._root.item.setName("Invisible Root")
         logger.debug("Ready: ProjectModel")
-        return
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: ProjectModel")
-        return
 
     ##
     #  Properties
@@ -334,7 +343,7 @@ class ProjectModel(QAbstractItemModel):
     def parent(self, index: QModelIndex) -> QModelIndex:
         """Get the parent model index of another index."""
         if index.isValid() and (node := index.internalPointer()) and (parent := node.parent()):
-            return self.createIndex(parent.row(), 0, parent)
+            return QModelIndex() if parent is self._root else self.createIndex(parent.row(), 0, parent)
         return QModelIndex()
 
     def index(self, row: int, column: int, parent: QModelIndex | None = None) -> QModelIndex:
@@ -363,7 +372,7 @@ class ProjectModel(QAbstractItemModel):
     ##
 
     def supportedDropActions(self) -> Qt.DropAction:
-        """Return supported drop actions"""
+        """Return supported drop actions."""
         return Qt.DropAction.MoveAction
 
     def mimeTypes(self) -> list[str]:
@@ -372,33 +381,49 @@ class ProjectModel(QAbstractItemModel):
 
     def mimeData(self, indices: list[QModelIndex]) -> QMimeData:
         """Encode mime data about a selection."""
-        handles = [
-            i.internalPointer().item.itemHandle
-            for i in indices if i.isValid() and i.column() == 0
-        ]
+        handles = [i.internalPointer().item.itemHandle for i in indices if i.isValid() and i.column() == 0]
         mime = QMimeData()
         encodeMimeHandles(mime, handles)
         return mime
 
     def canDropMimeData(
-        self, data: QMimeData, action: Qt.DropAction,
-        row: int, column: int, parent: QModelIndex
+        self,
+        data: QMimeData,
+        action: Qt.DropAction,
+        row: int,
+        column: int,
+        parent: QModelIndex,
     ) -> bool:
         """Check if mime data can be dropped on the current location."""
-        if parent.isValid() and parent.internalPointer() is not self._root:
-            return data.hasFormat(nwConst.MIME_HANDLE) and action == Qt.DropAction.MoveAction
-        return False
+        if parent.isValid() is False or parent.internalPointer() is self._root:
+            return False
+        if data.hasFormat(nwConst.MIME_HANDLE) is False or action != Qt.DropAction.MoveAction:
+            return False
 
-    def dropMimeData(
-        self, data: QMimeData, action: Qt.DropAction,
-        row: int, column: int, parent: QModelIndex
-    ) -> bool:
+        # Restrict drops to the label column and valid insert positions
+        if column != 0:
+            return False
+        targetNode: ProjectNode = parent.internalPointer()
+        if row < -1 or row > targetNode.childCount():
+            return False
+
+        # Prevent moving a node into itself or one of its descendants
+        handles = {h for h in decodeMimeHandles(data) if self.indexFromHandle(h).isValid()}
+        if not handles:
+            return False
+
+        target: ProjectNode | None = targetNode
+        while target:
+            if target.item.itemHandle in handles:
+                return False
+            target = target.parent()
+
+        return True
+
+    def dropMimeData(self, data: QMimeData, action: Qt.DropAction, row: int, column: int, parent: QModelIndex) -> bool:
         """Process mime data drop."""
         if self.canDropMimeData(data, action, row, column, parent):
-            items = [
-                index for handle in decodeMimeHandles(data)
-                if (index := self.indexFromHandle(handle)).isValid()
-            ]
+            items = [index for handle in decodeMimeHandles(data) if (index := self.indexFromHandle(handle)).isValid()]
             self.multiMove(items, parent, row)
             return True
         return False
@@ -445,7 +470,6 @@ class ProjectModel(QAbstractItemModel):
         self.beginInsertRows(parent, row, row)
         node.addChild(child, row)
         self.endInsertRows()
-        return
 
     def removeChild(self, parent: QModelIndex, pos: int) -> ProjectNode | None:
         """Remove a node from the model and return it."""
@@ -469,7 +493,6 @@ class ProjectModel(QAbstractItemModel):
                     self.beginMoveRows(index.parent(), pos, pos, index.parent(), end)
                     parent.moveChild(pos, new)
                     self.endMoveRows()
-        return
 
     def multiMove(self, indices: list[QModelIndex], target: QModelIndex, pos: int = -1) -> None:
         """Move multiple items to a new location."""
@@ -479,25 +502,14 @@ class ProjectModel(QAbstractItemModel):
             # move those items that don't have a parent also scheduled
             # for moving or have already been moved. Child items are
             # moved with the parent.
-            pruned = []
-            handles = set()
-            for index in indices:
-                if index.isValid():
-                    node: ProjectNode = index.internalPointer()
-                    handle = node.item.itemHandle
-                    if node.item.isRootType() is False and handle not in handles:
-                        pruned.append(node)
-                        handles.add(handle)
-            for node in (reversed(pruned) if pos >= 0 else pruned):
-                if node.item.itemParent not in handles:
-                    index = self.indexFromNode(node)
-                    if temp := self.removeChild(index.parent(), index.row()):
-                        self.insertChild(temp, target, pos)
-                        for child in reversed(node.allChildren()):
-                            node._updateRelationships(child)  # noqa: SLF001
-                            child.item.notifyToRefresh()
-                        node.item.notifyToRefresh()
-        return
+            pruned, handles = self._collectMovableNodes(indices)
+            refresh: list[str] = []
+            for node in reversed(pruned) if pos >= 0 else pruned:
+                if node.item.itemParent not in handles and self._moveNode(node, target, pos):
+                    refresh.extend(self._refreshSubtreeRelationships(node))
+                    refresh.append(node.item.itemHandle)
+            if refresh:
+                self._tree.refreshItems(list(dict.fromkeys(refresh)))
 
     ##
     #  Other Methods
@@ -505,15 +517,13 @@ class ProjectModel(QAbstractItemModel):
 
     def clear(self) -> None:
         """Clear the project model."""
+        self.beginResetModel()
         self._root.children.clear()
-        return
+        self.endResetModel()
 
     def allExpanded(self) -> list[QModelIndex]:
         """Return a list of all expanded items."""
-        return [
-            self.createIndex(node.row(), 0, node) for node in self._root.allChildren()
-            if node.item.isExpanded
-        ]
+        return [self.createIndex(node.row(), 0, node) for node in self._root.allChildren() if node.item.isExpanded]
 
     def trashSelection(self, indices: list[QModelIndex]) -> bool:
         """Check if a selection of indices are all in trash or not."""
@@ -523,3 +533,37 @@ class ProjectModel(QAbstractItemModel):
                 if node.item.itemClass != nwItemClass.TRASH:
                     return False
         return True
+
+    ##
+    #  Internal Methods
+    ##
+
+    def _collectMovableNodes(self, indices: list[QModelIndex]) -> tuple[list[ProjectNode], set[str]]:
+        """Collect unique non-root nodes selected for move."""
+        pruned: list[ProjectNode] = []
+        handles: set[str] = set()
+        for index in indices:
+            if index.isValid():
+                node: ProjectNode = index.internalPointer()
+                handle = node.item.itemHandle
+                if node.item.isRootType() is False and handle not in handles:
+                    pruned.append(node)
+                    handles.add(handle)
+        return pruned, handles
+
+    def _moveNode(self, node: ProjectNode, target: QModelIndex, pos: int) -> bool:
+        """Move a node to target and return True if successful."""
+        index = self.indexFromNode(node)
+        if temp := self.removeChild(index.parent(), index.row()):
+            self.insertChild(temp, target, pos)
+            return True
+        return False
+
+    def _refreshSubtreeRelationships(self, node: ProjectNode) -> list[str]:
+        """Refresh parent/root relationships and return child handles to refresh."""
+        refresh: list[str] = []
+        for child in node.allChildren():
+            if parent := child.parent():
+                parent._updateRelationships(child)  # noqa: SLF001
+            refresh.append(child.item.itemHandle)
+        return refresh

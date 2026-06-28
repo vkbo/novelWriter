@@ -2,9 +2,6 @@
 novelWriter – GUI Welcome Dialog
 ================================
 
-File History:
-Created: 2023-12-14 [2.3b1] GuiWelcome
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,42 +17,66 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
 
 from datetime import datetime
 from pathlib import Path
+from typing import NamedTuple
 
-from PyQt6.QtCore import (
-    QAbstractListModel, QModelIndex, QObject, QPoint, QSize, Qt, pyqtSignal,
-    pyqtSlot
-)
-from PyQt6.QtGui import QAction, QCloseEvent, QFont, QPainter, QPaintEvent, QPen, QShortcut
+from PyQt6.QtCore import QAbstractListModel, QModelIndex, QObject, QPoint, QSize, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QAction, QCloseEvent, QKeyEvent, QPainter, QPaintEvent, QPen, QShortcut
 from PyQt6.QtWidgets import (
-    QApplication, QFileDialog, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
-    QListView, QMenu, QPushButton, QScrollArea, QStackedWidget,
-    QStyledItemDelegate, QStyleOptionViewItem, QVBoxLayout, QWidget
+    QApplication,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListView,
+    QMenu,
+    QScrollArea,
+    QStackedWidget,
+    QStyledItemDelegate,
+    QStyleOptionViewItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatInt, makeFileNameSafe, qtAddAction, qtLambda
+from novelwriter.common import formatInt, makeFileNameSafe, qtAddAction, safeIsFile
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
-from novelwriter.enum import nwItemClass
-from novelwriter.extensions.configlayout import NWrappedWidgetBox
+from novelwriter.enum import nwItemClass, nwStandardButton
+from novelwriter.extensions.configlayout import NColorLabel, NWrappedWidgetBox
 from novelwriter.extensions.modified import NDialog, NIconToolButton, NSpinBox
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.versioninfo import VersionInfoWidget
-from novelwriter.types import QtAlignLeft, QtAlignRightTop, QtHexArgb, QtScrollAsNeeded, QtSelected
+from novelwriter.types import (
+    QtAccessibleTextRole,
+    QtAlignLeft,
+    QtAlignRightTop,
+    QtDisplayRole,
+    QtHexArgb,
+    QtScrollAsNeeded,
+    QtSelected,
+)
 
 logger = logging.getLogger(__name__)
 
 PANEL_ALPHA = 178
+SAMPLE_KEY = "%CREATE_SAMPLE%"
+SAMPLE_NAME = "Sample Project"
 
 
 class GuiWelcome(NDialog):
+    """GUI: Welcome Dialog.
+
+    This is the main dialog shown when novelWriter launches or when the
+    user wants to create or open another project.
+    """
 
     openProjectRequest = pyqtSignal(Path)
 
@@ -69,8 +90,6 @@ class GuiWelcome(NDialog):
         self.setMinimumWidth(650)
         self.setMinimumHeight(450)
         self.resize(*CONFIG.welcomeWinSize)
-
-        btnIconSize = SHARED.theme.buttonIconSize
 
         # Elements
         # ========
@@ -99,34 +118,22 @@ class GuiWelcome(NDialog):
         # Buttons
         # =======
 
-        self.btnList = QPushButton(self.tr("List"), self)
-        self.btnList.setIcon(SHARED.theme.getIcon("list", "blue"))
-        self.btnList.setIconSize(btnIconSize)
+        self.btnList = SHARED.theme.getStandardButton(nwStandardButton.LIST, self)
         self.btnList.clicked.connect(self._showOpenProjectPage)
 
-        self.btnNew = QPushButton(self.tr("New"), self)
-        self.btnNew.setIcon(SHARED.theme.getIcon("add", "green"))
-        self.btnNew.setIconSize(btnIconSize)
+        self.btnNew = SHARED.theme.getStandardButton(nwStandardButton.NEW, self)
         self.btnNew.clicked.connect(self._showNewProjectPage)
 
-        self.btnBrowse = QPushButton(self.tr("Browse"), self)
-        self.btnBrowse.setIcon(SHARED.theme.getIcon("browse", "yellow"))
-        self.btnBrowse.setIconSize(btnIconSize)
+        self.btnBrowse = SHARED.theme.getStandardButton(nwStandardButton.BROWSE, self)
         self.btnBrowse.clicked.connect(self._browseForProject)
 
-        self.btnCancel = QPushButton(self.tr("Cancel"), self)
-        self.btnCancel.setIcon(SHARED.theme.getIcon("cancel", "red"))
-        self.btnCancel.setIconSize(btnIconSize)
-        self.btnCancel.clicked.connect(qtLambda(self.close))
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.closeDialog)
 
-        self.btnCreate = QPushButton(self.tr("Create"), self)
-        self.btnCreate.setIcon(SHARED.theme.getIcon("star", "yellow"))
-        self.btnCreate.setIconSize(btnIconSize)
+        self.btnCreate = SHARED.theme.getStandardButton(nwStandardButton.CREATE, self)
         self.btnCreate.clicked.connect(self.tabNew.createNewProject)
 
-        self.btnOpen = QPushButton(self.tr("Open"), self)
-        self.btnOpen.setIcon(SHARED.theme.getIcon("open", "blue"))
-        self.btnOpen.setIconSize(btnIconSize)
+        self.btnOpen = SHARED.theme.getStandardButton(nwStandardButton.OPEN, self)
         self.btnOpen.clicked.connect(self._openSelectedItem)
 
         self.btnBox = QHBoxLayout()
@@ -161,11 +168,9 @@ class GuiWelcome(NDialog):
 
         logger.debug("Ready: GuiWelcome")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiWelcome")
-        return
 
     ##
     #  Events
@@ -180,14 +185,12 @@ class GuiWelcome(NDialog):
         painter.drawPixmap(0, hWin - hPix, self.bgImage.scaledToHeight(hPix, tMode))
         painter.end()
         super().paintEvent(event)
-        return
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """Capture the user closing the window and save settings."""
         self._saveSettings()
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Private Slots
@@ -199,28 +202,24 @@ class GuiWelcome(NDialog):
         self.mainStack.setCurrentWidget(self.tabNew)
         self._setButtonVisibility()
         self.tabNew.enterForm()
-        return
 
     @pyqtSlot()
     def _showOpenProjectPage(self) -> None:
         """Show the open exiting project page."""
         self.mainStack.setCurrentWidget(self.tabOpen)
         self._setButtonVisibility()
-        return
 
     @pyqtSlot()
     def _browseForProject(self) -> None:
         """Browse for a project to open."""
         if path := SHARED.getProjectPath(self, path=CONFIG.homePath(), allowZip=False):
             self._openProjectPath(path)
-        return
 
     @pyqtSlot()
     def _openSelectedItem(self) -> None:
         """Open the currently selected project item."""
         if self.mainStack.currentWidget() == self.tabOpen:
             self.tabOpen.openSelectedItem()
-        return
 
     @pyqtSlot(Path)
     def _openProjectPath(self, path: Path) -> None:
@@ -231,7 +230,6 @@ class GuiWelcome(NDialog):
             self.hide()
             self.openProjectRequest.emit(path)
         self.close()
-        return
 
     ##
     #  Internal Functions
@@ -240,8 +238,7 @@ class GuiWelcome(NDialog):
     def _saveSettings(self) -> None:
         """Save the user GUI settings."""
         logger.debug("Saving State: GuiWelcome")
-        CONFIG.setWelcomeWinSize(self.width(), self.height())
-        return
+        CONFIG.setWelcomeWinSize(self.geometry())
 
     def _setButtonVisibility(self) -> None:
         """Change the visibility of the dialog buttons."""
@@ -255,11 +252,9 @@ class GuiWelcome(NDialog):
             self.btnOpen.setFocus()
         else:
             self.btnCreate.setFocus()
-        return
 
 
 class _OpenProjectPage(QWidget):
-
     openProjectRequest = pyqtSignal(Path)
 
     def __init__(self, parent: QWidget) -> None:
@@ -273,18 +268,27 @@ class _OpenProjectPage(QWidget):
         self.listWidget.setItemDelegate(self.itemDelegate)
         self.listWidget.setModel(self.listModel)
         self.listWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.listWidget.clicked.connect(self._projectClicked)
+        self.listWidget.clicked.connect(self._projectSelected)
         self.listWidget.doubleClicked.connect(self._projectDoubleClicked)
         self.listWidget.customContextMenuRequested.connect(self._openContextMenu)
 
+        if selectionModel := self.listWidget.selectionModel():
+            selectionModel.currentChanged.connect(self._selectionChange)
+
         # Info / Tool
         self.aMissing = QAction(self)
-        self.aMissing.setIcon(SHARED.theme.getIcon("alert_warn", "orange"))
+        self.aMissing.setIcon(SHARED.theme.getIcon("alert_warn", "warning"))
         self.aMissing.setToolTip(self.tr("The project path is not reachable."))
 
         self.selectedPath = QLineEdit(self)
         self.selectedPath.setReadOnly(True)
         self.selectedPath.addAction(self.aMissing, QLineEdit.ActionPosition.TrailingPosition)
+        self._trPath = self.tr("Path")
+
+        self.keyEnter = QShortcut(self.listWidget)
+        self.keyEnter.setKeys([Qt.Key.Key_Enter, Qt.Key.Key_Return])
+        self.keyEnter.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self.keyEnter.activated.connect(self.openSelectedItem)
 
         self.keyDelete = QShortcut(self)
         self.keyDelete.setKey("Del")
@@ -308,7 +312,17 @@ class _OpenProjectPage(QWidget):
             f"QLineEdit {{border: none; background: {baseCol}; padding: 4px;}} "
         )
 
-        return
+    ##
+    #  Events
+    ##
+
+    def keyPressEvent(self, event: QKeyEvent | None) -> None:
+        """Capture key press events."""
+        if event and event.key() in (Qt.Key.Key_Up, Qt.Key.Key_Down):
+            self.listWidget.setFocus()
+            self.listWidget.keyPressEvent(event)
+        else:
+            super().keyPressEvent(event)
 
     ##
     #  Public Slots
@@ -317,45 +331,45 @@ class _OpenProjectPage(QWidget):
     @pyqtSlot()
     def openSelectedItem(self) -> None:
         """Open the currently selected project item."""
-        if (selection := self.listWidget.selectedIndexes()) and (index := selection[0]).isValid():
-            self.openProjectRequest.emit(Path(str(index.data()[1])))
-        return
+        if (sel := self.listWidget.selectedIndexes()) and (entry := self.listModel.entry(sel[0])):
+            self._processOpenProjectRequest(entry.path)
 
     ##
     #  Private Slots
     ##
 
+    @pyqtSlot(QModelIndex, QModelIndex)
+    def _selectionChange(self, current: QModelIndex, previous: QModelIndex) -> None:
+        """Process user changing which item is selected."""
+        self._projectSelected(current)
+
     @pyqtSlot(QModelIndex)
-    def _projectClicked(self, index: QModelIndex) -> None:
+    def _projectSelected(self, index: QModelIndex) -> None:
         """Process single click on project item."""
-        path = self.tr("Path")
-        value = index.data()[1] if index.isValid() else ""
-        text = f"{path}: {value}"
+        value = entry.path if (entry := self.listModel.entry(index)) else ""
+        value = "" if value == SAMPLE_KEY else value
+        text = f"{self._trPath}: {value}"
         self.selectedPath.setText(text)
         self.selectedPath.setToolTip(text)
         self.selectedPath.setCursorPosition(0)
-        self.aMissing.setVisible(not (Path(value) / nwFiles.PROJ_FILE).is_file())
-        return
+        self.aMissing.setVisible(value != "" and not safeIsFile(Path(value) / nwFiles.PROJ_FILE))
 
     @pyqtSlot(QModelIndex)
     def _projectDoubleClicked(self, index: QModelIndex) -> None:
         """Process double click on project item."""
-        if index.isValid():
-            self.openProjectRequest.emit(Path(str(index.data()[1])))
-        return
+        if entry := self.listModel.entry(index):
+            self._processOpenProjectRequest(entry.path)
 
     @pyqtSlot()
     def _deleteSelectedItem(self) -> None:
         """Delete the currently selected project item."""
-        if (selection := self.listWidget.selectedIndexes()) and (index := selection[0]).isValid():
-            text = self.tr(
-                "Remove '{0}' from the recent projects list? "
-                "The project files will not be deleted."
-            ).format(index.data()[0])
+        if (sel := self.listWidget.selectedIndexes()) and (entry := self.listModel.entry(sel[0])):
+            text = self.tr("Remove '{0}' from the recent projects list? The project files will not be deleted.").format(
+                entry.title
+            )
             if SHARED.question(text):
-                self.listModel.removeEntry(index)
+                self.listModel.removeEntry(sel[0])
             self._selectFirstItem()
-        return
 
     @pyqtSlot("QPoint")
     def _openContextMenu(self, pos: QPoint) -> None:
@@ -368,116 +382,148 @@ class _OpenProjectPage(QWidget):
         action.triggered.connect(self._deleteSelectedItem)
         ctxMenu.exec(self.mapToGlobal(pos))
         ctxMenu.setParent(None)
-        return
 
     ##
     #  Internal Functions
     ##
 
+    def _processOpenProjectRequest(self, path: str) -> None:
+        """Process an open project request which may involve create."""
+        if path == SAMPLE_KEY:
+            if location := SHARED.getProjectFolder(self, CONFIG.homePath()):
+                sample = location / SAMPLE_NAME
+                data = {
+                    "name": SAMPLE_NAME,
+                    "path": sample,
+                    "sample": True,
+                }
+                builder = ProjectBuilder()
+                if builder.buildProject(data):
+                    self.openProjectRequest.emit(sample)
+            else:
+                SHARED.error(self.tr("You must select a location for the example project."))
+                return
+        else:
+            self.openProjectRequest.emit(Path(path))
+
     def _selectFirstItem(self) -> None:
         """Select the first item, if any are available."""
         index = self.listModel.index(0)
         self.listWidget.setCurrentIndex(index)
-        self._projectClicked(index)
-        return
+        self._projectSelected(index)
 
 
 class _ProjectListItem(QStyledItemDelegate):
-
     __slots__ = ("_dFont", "_dPen", "_hPx", "_icon", "_pPx", "_tFont")
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         fPx = SHARED.theme.fontPixelSize
-        fPt = SHARED.theme.fontPointSize
-        tPx = round(1.2 * fPx)
+        tPx = SHARED.theme.fontPixelSizeLarge
         iPx = tPx + fPx
 
         self._pPx = (iPx + 4, tPx + 4)  # Painter coordinates
         self._hPx = 8 + tPx + fPx  # Fixed height
 
-        self._tFont = QApplication.font()
-        self._tFont.setPointSizeF(1.2*fPt)
-        self._tFont.setWeight(QFont.Weight.Bold)
-
-        self._dFont = QApplication.font()
-        self._dFont.setPointSizeF(fPt)
+        self._tFont = SHARED.theme.guiFontLargeB
+        self._dFont = SHARED.theme.guiFont
         self._dPen = QPen(SHARED.theme.helpText)
 
         self._icon = SHARED.theme.getPixmap("proj_nwx", (iPx, iPx))
 
-        return
-
     def paint(self, painter: QPainter, opt: QStyleOptionViewItem, index: QModelIndex) -> None:
         """Paint a project entry on the canvas."""
-        rect = opt.rect
-        title, _, details = index.data()
-        tFlag = Qt.TextFlag.TextSingleLine
-        x, y = self._pPx
+        if isinstance(entry := index.data(QtDisplayRole), _ProjectListEntry):
+            rect = opt.rect
+            tFlag = Qt.TextFlag.TextSingleLine
+            x, y = self._pPx
 
-        painter.save()
-        if opt.state & QtSelected == QtSelected:
-            painter.setOpacity(0.25)
-            painter.fillRect(rect, QApplication.palette().text())
-            painter.setOpacity(1.0)
+            painter.save()
+            if opt.state & QtSelected == QtSelected:
+                painter.setOpacity(0.25)
+                painter.fillRect(rect, QApplication.palette().text())
+                painter.setOpacity(1.0)
 
-        painter.drawPixmap(2, rect.top() + 6, self._icon)
-        painter.setFont(self._tFont)
-        painter.drawText(rect.adjusted(x, 4, 0, 0), tFlag, title)
-        painter.setFont(self._dFont)
-        painter.setPen(self._dPen)
-        painter.drawText(rect.adjusted(x, y, 0, 0), tFlag, details)
-        painter.restore()
-
-        return
+            painter.drawPixmap(2, rect.top() + 6, self._icon)
+            painter.setFont(self._tFont)
+            painter.drawText(rect.adjusted(x, 4, 0, 0), tFlag, entry.title)
+            painter.setFont(self._dFont)
+            painter.setPen(self._dPen)
+            painter.drawText(rect.adjusted(x, y, 0, 0), tFlag, entry.details)
+            painter.restore()
 
     def sizeHint(self, opt: QStyleOptionViewItem, index: QModelIndex) -> QSize:
         """Set the size hint to fixed height."""
         return QSize(opt.rect.width(), self._hPx)
 
 
+class _ProjectListEntry(NamedTuple):
+    title: str
+    path: str
+    details: str
+    accessible: str
+
+
 class _ProjectListModel(QAbstractListModel):
+    __slots__ = ("_data",)
 
     def __init__(self, parent: QObject) -> None:
         super().__init__(parent=parent)
-        data = []
+
+        self._data: list[_ProjectListEntry] = []
+
         words = self.tr("Word Count")
         opened = self.tr("Last Opened")
         records = sorted(CONFIG.recentProjects.listEntries(), key=lambda x: x[3], reverse=True)
         for path, title, count, time in records:
             when = CONFIG.localDate(datetime.fromtimestamp(time))
-            data.append((title, path, f"{opened}: {when}, {words}: {formatInt(count)}"))
-        self._data = data
-        return
+            self._data.append(
+                _ProjectListEntry(
+                    title=title,
+                    path=path,
+                    details=f"{opened}: {when}, {words}: {formatInt(count)}",
+                    accessible=f"{title}, {opened} {when}, {words} {formatInt(count)}",
+                )
+            )
+
+        if not self._data:
+            details = self.tr("Select to create an example project")
+            self._data.append(
+                _ProjectListEntry(title=SAMPLE_NAME, path=SAMPLE_KEY, details=details, accessible=details)
+            )
 
     def rowCount(self, parent: QModelIndex | None = None) -> int:
         """Return the size of the model."""
         return len(self._data)
 
-    def data(self, index: QModelIndex, role: int = 0) -> tuple[str, str, str]:
+    def entry(self, index: QModelIndex) -> _ProjectListEntry | None:
+        """Return an entry in the model."""
+        if index.isValid() and 0 <= (idx := index.row()) < len(self._data):
+            return self._data[idx]
+        return None
+
+    def data(self, index: QModelIndex, role: Qt.ItemDataRole) -> _ProjectListEntry | str | None:
         """Return data for an individual item."""
-        try:
-            return self._data[index.row()] if index.isValid() else ("", "", "")
-        except IndexError:
-            return "", "", ""
+        if entry := self.entry(index):
+            if role == QtDisplayRole:
+                return entry
+            elif role == QtAccessibleTextRole:
+                return entry.accessible
+        return None
 
     def removeEntry(self, index: QModelIndex) -> bool:
         """Remove an entry in the model."""
-        if index.isValid() and (path := index.data()[1]):
-            try:
-                self.beginRemoveRows(index.parent(), index.row(), index.row())
-                self._data.pop(index.row())
-                self.endRemoveRows()
-            except IndexError:
-                return False
-            CONFIG.recentProjects.remove(path)
+        if entry := self.entry(index):
+            self.beginRemoveRows(index.parent(), index.row(), index.row())
+            self._data.pop(index.row())
+            self.endRemoveRows()
+            CONFIG.recentProjects.remove(entry.path)
             return True
         return False
 
 
 class _NewProjectPage(QWidget):
-
     openProjectRequest = pyqtSignal(Path)
 
     def __init__(self, parent: QWidget) -> None:
@@ -516,8 +562,6 @@ class _NewProjectPage(QWidget):
             f"_NewProjectForm {{border: none; background: {baseCol};}} "
         )
 
-        return
-
     ##
     #  Public Slots
     ##
@@ -536,7 +580,6 @@ class _NewProjectPage(QWidget):
 
 
 class _NewProjectForm(QWidget):
-
     FILL_BLANK = 0
     FILL_SAMPLE = 1
     FILL_COPY = 2
@@ -560,41 +603,52 @@ class _NewProjectForm(QWidget):
         self.projName.setPlaceholderText(self.tr("Required"))
         self.projName.textChanged.connect(self._updateProjPath)
 
-        # Author(s)
+        self.projNameLabel = QLabel(self.tr("Project Name"), self)
+        self.projNameLabel.setBuddy(self.projName)
+
+        # Author
         self.projAuthor = QLineEdit(self)
         self.projAuthor.setMaxLength(200)
         self.projAuthor.setPlaceholderText(self.tr("Optional"))
         self.projAuthor.setText(CONFIG.lastAuthor)
 
+        self.projAuthorLabel = QLabel(self.tr("Author"), self)
+        self.projAuthorLabel.setBuddy(self.projAuthor)
+
         # Project Path
         self.projPath = QLineEdit(self)
         self.projPath.setReadOnly(True)
 
-        self.browsePath = NIconToolButton(self, iSz, "browse")
+        self.browsePath = NIconToolButton(self, iSz, "browse", "systemio")
+        self.browsePath.setToolTip(self.tr("Browse for new project path"))
         self.browsePath.clicked.connect(self._doBrowse)
 
         self.pathBox = QHBoxLayout()
         self.pathBox.addWidget(self.projPath)
         self.pathBox.addWidget(self.browsePath)
 
+        self.projPathLabel = QLabel(self.tr("Project Path"), self)
+        self.projPathLabel.setBuddy(self.projPath)
+
         # Fill Project
         self.projFill = QLineEdit(self)
         self.projFill.setReadOnly(True)
 
-        self.browseFill = NIconToolButton(self, iSz, "document_add", "blue")
+        self.browseFill = NIconToolButton(self, iSz, "document_add", "add")
+        self.browseFill.setToolTip(self.tr("Fill new project"))
 
         self.fillMenu = QMenu(self.browseFill)
 
         self.fillBlank = qtAddAction(self.fillMenu, self.tr("Create a fresh project"))
-        self.fillBlank.setIcon(SHARED.theme.getIcon("document"))
+        self.fillBlank.setIcon(SHARED.theme.getIcon("document", "file"))
         self.fillBlank.triggered.connect(self._setFillBlank)
 
         self.fillSample = qtAddAction(self.fillMenu, self.tr("Create an example project"))
-        self.fillSample.setIcon(SHARED.theme.getIcon("document_add", "blue"))
+        self.fillSample.setIcon(SHARED.theme.getIcon("document_add", "add"))
         self.fillSample.triggered.connect(self._setFillSample)
 
         self.fillCopy = qtAddAction(self.fillMenu, self.tr("Copy an existing project"))
-        self.fillCopy.setIcon(SHARED.theme.getIcon("project_copy", "green"))
+        self.fillCopy.setIcon(SHARED.theme.getIcon("project_copy", "action"))
         self.fillCopy.triggered.connect(self._setFillCopy)
 
         self.browseFill.setMenu(self.fillMenu)
@@ -603,34 +657,33 @@ class _NewProjectForm(QWidget):
         self.fillBox.addWidget(self.projFill)
         self.fillBox.addWidget(self.browseFill)
 
+        self.projFillLabel = QLabel(self.tr("Prefill Project"), self)
+        self.projFillLabel.setBuddy(self.projFill)
+
         # Project Form
         self.projectForm = QFormLayout()
         self.projectForm.setAlignment(QtAlignLeft)
-        self.projectForm.addRow(self.tr("Project Name"), self.projName)
-        self.projectForm.addRow(self.tr("Author"), self.projAuthor)
-        self.projectForm.addRow(self.tr("Project Path"), self.pathBox)
-        self.projectForm.addRow(self.tr("Prefill Project"), self.fillBox)
+        self.projectForm.addRow(self.projNameLabel, self.projName)
+        self.projectForm.addRow(self.projAuthorLabel, self.projAuthor)
+        self.projectForm.addRow(self.projPathLabel, self.pathBox)
+        self.projectForm.addRow(self.projFillLabel, self.fillBox)
 
         # Chapters and Scenes
         # ===================
 
-        self.numChapters = NSpinBox(self)
-        self.numChapters.setRange(0, 200)
+        self.numChapters = NSpinBox(self, minVal=0, maxVal=200)
+        self.numChapters.setFixedNumbersWidth(3)
         self.numChapters.setValue(0)
         self.numChapters.setToolTip(self.tr("Set to 0 to only add scenes"))
 
-        self.chapterBox = NWrappedWidgetBox(
-            self.tr("Add {0} chapter documents"), self.numChapters
-        )
+        self.chapterBox = NWrappedWidgetBox(self.tr("Add {0} chapter documents"), self.numChapters)
         self.chapterBox.addStretch(1)
 
-        self.numScenes = NSpinBox(self)
-        self.numScenes.setRange(0, 200)
+        self.numScenes = NSpinBox(self, minVal=0, maxVal=200)
+        self.numScenes.setFixedNumbersWidth(3)
         self.numScenes.setValue(0)
 
-        self.sceneBox = NWrappedWidgetBox(
-            self.tr("Add {0} scene documents (to each chapter)"), self.numScenes
-        )
+        self.sceneBox = NWrappedWidgetBox(self.tr("Add {0} scene documents (to each chapter)"), self.numScenes)
         self.sceneBox.addStretch(1)
 
         self.novelForm = QVBoxLayout()
@@ -665,11 +718,15 @@ class _NewProjectForm(QWidget):
         # Assemble
         # ========
 
+        self.lblChSc = NColorLabel(self.tr("Chapters and Scenes"), self, scale=1.15, bold=True)
+        self.lblNotes = NColorLabel(self.tr("Project Notes"), self, scale=1.15, bold=True)
+        self.lblNew = NColorLabel(self.tr("Create New Project"), self, scale=1.15, bold=True)
+
         self.extraBox = QVBoxLayout()
-        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Chapters and Scenes")), self))
+        self.extraBox.addWidget(self.lblChSc)
         self.extraBox.addLayout(self.novelForm)
         self.extraBox.addSpacing(16)
-        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Project Notes")), self))
+        self.extraBox.addWidget(self.lblNotes)
         self.extraBox.addLayout(self.notesForm)
         self.extraBox.setContentsMargins(0, 0, 0, 0)
 
@@ -678,7 +735,7 @@ class _NewProjectForm(QWidget):
         self.extraWidget.setContentsMargins(0, 0, 0, 0)
 
         self.formBox = QVBoxLayout()
-        self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Create New Project")), self))
+        self.formBox.addWidget(self.lblNew)
         self.formBox.addLayout(self.projectForm)
         self.formBox.addSpacing(16)
         self.formBox.addWidget(self.extraWidget)
@@ -689,13 +746,10 @@ class _NewProjectForm(QWidget):
         self._updateProjPath()
         self._updateFillInfo()
 
-        return
-
     def enterForm(self) -> None:
         """Focus the project name field when entering the form."""
         self.projName.setFocus()
         self.projName.selectAll()
-        return
 
     def getProjectData(self) -> dict:
         """Collect form data and return it as a dictionary."""
@@ -726,21 +780,16 @@ class _NewProjectForm(QWidget):
     @pyqtSlot()
     def _doBrowse(self) -> None:
         """Select a project folder."""
-        if path := QFileDialog.getExistingDirectory(
-            self, self.tr("Select Project Folder"),
-            str(self._basePath), options=QFileDialog.Option.ShowDirsOnly
-        ):
-            self._basePath = Path(path)
+        if path := SHARED.getProjectFolder(self, self._basePath):
+            self._basePath = path
             self._updateProjPath()
             CONFIG.setLastPath("project", path)
-        return
 
     @pyqtSlot()
     def _updateProjPath(self) -> None:
         """Update the path box to show the full project path."""
         projName = makeFileNameSafe(self.projName.text().strip())
         self.projPath.setText(str(self._basePath / projName))
-        return
 
     @pyqtSlot()
     def _syncSwitches(self) -> None:
@@ -750,21 +799,18 @@ class _NewProjectForm(QWidget):
         addWorld = self.addWorld.isChecked()
         if not (addPlot or addChar or addWorld):
             self.addNotes.setChecked(False)
-        return
 
     @pyqtSlot()
     def _setFillBlank(self) -> None:
         """Set fill mode to blank project."""
         self._fillMode = self.FILL_BLANK
         self._updateFillInfo()
-        return
 
     @pyqtSlot()
     def _setFillSample(self) -> None:
         """Set fill mode to sample project."""
         self._fillMode = self.FILL_SAMPLE
         self._updateFillInfo()
-        return
 
     @pyqtSlot()
     def _setFillCopy(self) -> None:
@@ -773,7 +819,6 @@ class _NewProjectForm(QWidget):
             self._fillMode = self.FILL_COPY
             self._copyPath = copyPath
             self._updateFillInfo()
-        return
 
     ##
     #  Internal Functions
@@ -793,5 +838,3 @@ class _NewProjectForm(QWidget):
         self.projFill.setToolTip(text)
         self.projFill.setCursorPosition(0)
         self.extraWidget.setVisible(self._fillMode == self.FILL_BLANK)
-
-        return

@@ -2,9 +2,6 @@
 novelWriter – GUI About Box
 ===========================
 
-File History:
-Created: 2020-05-21 [0.5.2] GuiAbout
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,23 +17,23 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtWidgets import (
-    QDialogButtonBox, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout, QWidget
-)
+from PyQt6.QtWidgets import QDialogButtonBox, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import readTextFile
+from novelwriter.common import formatLink, readTextFile
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.versioninfo import VersionInfoWidget
-from novelwriter.types import QtAlignRightTop, QtDialogClose, QtHexArgb
+from novelwriter.types import QtAlignRightTop, QtHexArgb, QtRoleDestruct
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
@@ -45,6 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiAbout(NDialog):
+    """GUI: About novelWriter Dialog."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -66,23 +64,27 @@ class GuiAbout(NDialog):
 
         self.nwInfo = VersionInfoWidget(self)
 
-        self.nwLicence = QLabel(self.tr("This application is licenced under {0}").format(
-            "<a href='https://www.gnu.org/licenses/gpl-3.0.html'>GPL v3.0</a>"
-        ), self)
+        self.nwLicence = QLabel(
+            self.tr("This application is licenced under {0}").format(
+                formatLink("https://www.gnu.org/licenses/gpl-3.0.html", "GPL v3.0")
+            ),
+            self,
+        )
         self.nwLicence.setOpenExternalLinks(True)
 
         # Credits
-        self.lblCredits = NColorLabel(
-            self.tr("Credits"), self, scale=1.6, bold=True
-        )
+        self.lblCredits = NColorLabel(self.tr("Credits"), self, scale=1.6, bold=True)
 
         self.txtCredits = QTextBrowser(self)
         self.txtCredits.setOpenExternalLinks(True)
         self.txtCredits.setViewportMargins(0, 8, 8, 0)
 
         # Buttons
-        self.btnBox = QDialogButtonBox(QtDialogClose, self)
-        self.btnBox.rejected.connect(self.reject)
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.clicked.connect(self.closeDialog)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
 
         # Assemble
         self.innerBox = QVBoxLayout()
@@ -109,11 +111,9 @@ class GuiAbout(NDialog):
 
         logger.debug("Ready: GuiAbout")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiAbout")
-        return
 
     ##
     #  Events
@@ -123,7 +123,6 @@ class GuiAbout(NDialog):
         """Capture the close event and perform cleanup."""
         event.accept()
         self.softDelete()
-        return
 
     ##
     #  Internal Functions
@@ -135,12 +134,8 @@ class GuiAbout(NDialog):
             self.txtCredits.setHtml(html)
         else:
             self.txtCredits.setHtml("Error loading credits text ...")
-        return
 
     def _setStyleSheet(self) -> None:
         """Set stylesheet text document."""
         baseCol = self.palette().window().color().name(QtHexArgb)
-        self.txtCredits.setStyleSheet(
-            f"QTextBrowser {{border: none; background: {baseCol};}} "
-        )
-        return
+        self.txtCredits.setStyleSheet(f"QTextBrowser {{border: none; background: {baseCol};}} ")

@@ -2,9 +2,6 @@
 novelWriter – GUI Quotes Dialog
 ===============================
 
-File History:
-Created: 2020-06-18 [0.9.0] GuiQuoteSelect
-
 This file is a part of novelWriter
 Copyright (C) 2021 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -28,21 +26,27 @@ import logging
 from PyQt6.QtCore import QSize, pyqtSlot
 from PyQt6.QtGui import QFontMetrics
 from PyQt6.QtWidgets import (
-    QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget,
-    QListWidgetItem, QVBoxLayout, QWidget
+    QDialogButtonBox,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
+    QVBoxLayout,
+    QWidget,
 )
 
+from novelwriter import SHARED
 from novelwriter.constants import nwQuotes, trConst
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NDialog
-from novelwriter.types import (
-    QtAccepted, QtAlignCenter, QtAlignTop, QtDialogCancel, QtDialogOk,
-    QtUserRole
-)
+from novelwriter.types import QtAccepted, QtAlignCenter, QtAlignTop, QtRoleAccept, QtRoleReject, QtUserRole
 
 logger = logging.getLogger(__name__)
 
 
 class GuiQuoteSelect(NDialog):
+    """GUI: Quote Selector Dialog."""
 
     _selected = ""
 
@@ -62,13 +66,13 @@ class GuiQuoteSelect(NDialog):
         self._selected = current
 
         lblFont = self.font()
-        lblFont.setPointSizeF(4*lblFont.pointSizeF())
+        lblFont.setPointSizeF(4 * lblFont.pointSizeF())
         metrics = QFontMetrics(self.font())
 
         # Preview Label
         self.previewLabel = QLabel(current, self)
         self.previewLabel.setFont(lblFont)
-        self.previewLabel.setFixedSize(QSize(4*metrics.maxWidth(), 5*metrics.height()))
+        self.previewLabel.setFixedSize(QSize(4 * metrics.maxWidth(), 5 * metrics.height()))
         self.previewLabel.setAlignment(QtAlignCenter)
         self.previewLabel.setFrameStyle(QFrame.Shape.Box | QFrame.Shadow.Plain)
 
@@ -90,9 +94,15 @@ class GuiQuoteSelect(NDialog):
         self.listBox.setMinimumHeight(150)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnOk = SHARED.theme.getStandardButton(nwStandardButton.OK, self)
+        self.btnOk.clicked.connect(self.accept)
+
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.reject)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnOk, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Assemble
         self.labelBox.addWidget(self.previewLabel, 0, QtAlignTop)
@@ -102,17 +112,15 @@ class GuiQuoteSelect(NDialog):
         self.innerBox.addWidget(self.listBox)
 
         self.outerBox.addLayout(self.innerBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
 
         self.setLayout(self.outerBox)
 
         logger.debug("Ready: GuiQuoteSelect")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiQuoteSelect")
-        return
 
     @property
     def selectedQuote(self) -> str:
@@ -140,4 +148,3 @@ class GuiQuoteSelect(NDialog):
             quote = items[0].data(self.D_KEY)
             self.previewLabel.setText(quote)
             self._selected = quote
-        return

@@ -4,6 +4,7 @@
     <w:numFmt w:val="decimal" />
   </w:footnotePr>
   <w:compat>
+    <w:doNotExpandShiftReturn />
     <w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="12" />
   </w:compat>
   <w:docVars>

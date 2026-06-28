@@ -2,9 +2,6 @@
 novelWriter – Project Document
 ==============================
 
-File History:
-Created: 2018-09-29 [0.0.1]
-
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import hashlib
@@ -30,7 +28,7 @@ from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
 
-from novelwriter.common import formatTimeStamp, isHandle
+from novelwriter.common import formatTimeStamp, isHandle, safeExists, safeIsFile
 from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.error import formatException, logException
 
@@ -42,7 +40,7 @@ logger = logging.getLogger(__name__)
 
 
 class NWDocument:
-    """Core: Document Class
+    """Core: Document Class.
 
     A Class wrapping a single novelWriter document file. It represents
     a project item of nwItemType FILE. The file is not guaranteed to
@@ -54,12 +52,12 @@ class NWDocument:
 
         self._project = project
 
-        self._item      = None   # The currently open item
-        self._handle    = None   # The handle of the currently open item
-        self._fileLoc   = None   # The file location of the currently open item
-        self._docMeta   = {}     # The meta data of the currently open item
-        self._docError  = ""     # The latest encountered IO error
-        self._lastHash  = ""     # The last known SHA hash
+        self._item = None  # The currently open item
+        self._handle = None  # The handle of the currently open item
+        self._fileLoc = None  # The file location of the currently open item
+        self._docMeta = {}  # The meta data of the currently open item
+        self._docError = ""  # The latest encountered IO error
+        self._lastHash = ""  # The last known SHA hash
         self._hashError = False  # Hash mismatch on last write attempt
 
         if isHandle(tHandle):
@@ -68,12 +66,12 @@ class NWDocument:
         if self._handle is not None:
             self._item = self._project.tree[tHandle]
 
-        return
-
     def __repr__(self) -> str:
+        """Return a string representation of the document."""
         return f"<NWDocument handle={self._handle}>"
 
     def __bool__(self) -> bool:
+        """Return True if the document has a valid handle and item."""
         return self._handle is not None and self._item is not None
 
     ##
@@ -112,18 +110,17 @@ class NWDocument:
     @staticmethod
     def quickReadText(content: Path, tHandle: str) -> str:
         """Return the text of a document in a fast and efficient way."""
-        if (path := content / f"{tHandle}.nwd").is_file():
-            try:
+        try:
+            if (path := content / f"{tHandle}.nwd").is_file():
                 with open(path, mode="r", encoding="utf-8") as inFile:
                     line = ""
                     for _ in range(10):
                         if not (line := inFile.readline()).startswith(r"%%~"):
                             break
                     return line + inFile.read()
-            except Exception:
-                logger.error("Cannot read document with handle '%s'", tHandle)
-                logException()
-                return ""
+        except Exception:
+            logger.error("Cannot read document with handle '%s'", tHandle)
+            logException()
         return ""
 
     ##
@@ -140,7 +137,7 @@ class NWDocument:
             logger.error("No content path set")
             return False
 
-        return (contentPath / f"{self._handle}.nwd").is_file()
+        return safeIsFile(contentPath / f"{self._handle}.nwd")
 
     def readDocument(self, isOrphan: bool = False) -> str | None:
         """Read the document specified by the handle set in the
@@ -172,7 +169,7 @@ class NWDocument:
         self._docMeta = {}
         self._lastHash = ""
 
-        if docPath.exists():
+        if safeExists(docPath):
             try:
                 with open(docPath, mode="r", encoding="utf-8") as inFile:
                     # Check the first <= 10 lines for metadata
@@ -229,13 +226,16 @@ class NWDocument:
             self._hashError = True
             return False
 
+        if text and not text.endswith("\n"):
+            text += "\n"
+
         currTime = formatTimeStamp(time())
-        writeHash = hashlib.sha1(text.encode()).hexdigest()
+        writeHash = hashlib.sha1(text.encode(encoding="utf-8")).hexdigest()
         createdDate = self._docMeta.get("created", "Unknown")
         updatedDate = self._docMeta.get("updated", "Unknown")
         if writeHash != self._lastHash:
             updatedDate = currTime
-        if not docPath.is_file():
+        if not safeIsFile(docPath):
             createdDate = currTime
             updatedDate = currTime
 
@@ -357,5 +357,3 @@ class NWDocument:
 
         else:
             logger.debug("Unknown meta data: '%s'", metaLine.strip())
-
-        return

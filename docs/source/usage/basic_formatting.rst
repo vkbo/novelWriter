@@ -64,8 +64,14 @@ A minimal set of Markdown text emphasis styles are supported for text paragraphs
 ``**text**``
    The text is rendered as strongly emphasised text (bold).
 
+``*text*`` (optional)
+   The text is also rendered as strongly emphasised text (bold).
+
 ``~~text~~``
    Strike through text.
+
+``==text==``
+   The text is highlighted.
 
 In Markdown guides it is often recommended to differentiate between strong emphasis and emphasis
 by using ``**`` for strong and ``_`` for emphasis, although Markdown generally also supports ``__``
@@ -73,10 +79,16 @@ for strong and ``*`` for emphasis. However, since the differentiation makes the 
 conversion significantly simpler and faster, in novelWriter this is a rule, not just a
 recommendation.
 
-In addition, the following rules apply:
+As of version 2026.1, it is possible to enable ``*text*`` for bold text. This has become a very
+common notation in many user interfaces, and is now also supported by novelWriter. It can be
+enabled in **Preferences** in the **Text Editing** section. Enabling this will not disable
+``**text**`` as bold, but will allow both formats. It will, however, change the format button and
+:kbd:`Ctrl+B` to use a single asterisk instead of two.
 
-1. The emphasis and strike through formatting tags do not allow spaces between the words and the
-   tag itself. That is, ``**text**`` is valid, ``**text **`` is not.
+In general, the following rules apply:
+
+1. The emphasis, strike through and highlight formatting tags do not allow spaces between the words
+   and the tag itself. That is, ``**text**`` is valid, ``**text **`` is not.
 2. More generally, the delimiters must be on the outer edge of words. That is, ``some **text in
    bold** here`` is valid, ``some** text in bold** here`` is not.
 3. If using both ``**`` and ``_`` to wrap the same text, the underscore must be the **inner**

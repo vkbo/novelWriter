@@ -17,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import argparse
@@ -45,9 +46,7 @@ def buildSampleZip(args: argparse.Namespace | None = None) -> None:
 
     if srcSample.is_dir():
         dstSample.unlink(missing_ok=True)
-        with zipfile.ZipFile(
-            dstSample, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=3
-        ) as zipObj:
+        with zipfile.ZipFile(dstSample, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=3) as zipObj:
             print("Compressing: nwProject.nwx")
             zipObj.write(srcSample / "nwProject.nwx", "nwProject.nwx")
             for doc in (srcSample / "content").iterdir():
@@ -61,8 +60,6 @@ def buildSampleZip(args: argparse.Namespace | None = None) -> None:
     print("")
     print(f"Built file: {dstSample}")
     print("")
-
-    return
 
 
 def importI18nUpdates(args: argparse.Namespace) -> None:
@@ -94,8 +91,6 @@ def importI18nUpdates(args: argparse.Namespace) -> None:
 
     print("")
 
-    return
-
 
 def updateTranslationSources(args: argparse.Namespace) -> None:
     """Build the lang.ts files for Qt Linguist."""
@@ -115,7 +110,6 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
     print("")
 
     sources = list((ROOT_DIR / "novelwriter").glob("**/*.py"))
-    sources.insert(0, ROOT_DIR / "i18n" / "qtbase.py")
     for source in sources:
         print(source.relative_to(ROOT_DIR))
 
@@ -136,11 +130,14 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
             continue
         else:  # Create an empty new language file
             langCode = item.name[3:-3]
-            writeFile(item, (
-                '<?xml version="1.0" encoding="utf-8"?>\n'
-                "<!DOCTYPE TS>\n"
-                f'<TS version="2.0" language="{langCode}" sourcelanguage="en_GB"/>\n'
-            ))
+            writeFile(
+                item,
+                (
+                    '<?xml version="1.0" encoding="utf-8"?>\n'
+                    "<!DOCTYPE TS>\n"
+                    f'<TS version="2.0" language="{langCode}" sourcelanguage="en_GB"/>\n'
+                ),
+            )
             translations.append(item)
             print(f"Created: {item}")
 
@@ -156,8 +153,6 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
     )
 
     print("")
-
-    return
 
 
 def getLReleaseExec() -> str | None:
@@ -214,8 +209,6 @@ def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
 
     print("")
 
-    return
-
 
 def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
     """Remove assets built by this script."""
@@ -234,8 +227,6 @@ def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
 
     print("")
 
-    return
-
 
 def buildAllAssets(args: argparse.Namespace) -> None:
     """Build all assets."""
@@ -243,4 +234,3 @@ def buildAllAssets(args: argparse.Namespace) -> None:
     buildSampleZip()
     buildTranslationAssets()
     buildPdfDocAssets()
-    return

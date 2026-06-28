@@ -17,15 +17,17 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import argparse
 import os
 import shutil
 import subprocess
+import tomllib
 
-from utils.common import ROOT_DIR, systemCall
+from utils.common import ROOT_DIR, extractVersion, formatVersion, systemCall
 
 
 def updateDocsTranslationSources(args: argparse.Namespace) -> None:
@@ -61,12 +63,9 @@ def updateDocsTranslationSources(args: argparse.Namespace) -> None:
     print("Done")
     print("")
 
-    return
-
 
 def buildHtmlDocs(args: argparse.Namespace | None = None) -> None:
     """Build the documentation files."""
-
     print("")
     print("Building HTML Docs")
     print("==================")
@@ -77,6 +76,7 @@ def buildHtmlDocs(args: argparse.Namespace | None = None) -> None:
     locsDir = ROOT_DIR / "docs" / "source" / "locales"
     locsDir.mkdir(exist_ok=True)
     bldRoot.mkdir(exist_ok=True, parents=True)
+    locConf = tomllib.loads((locsDir / "config.toml").read_text(encoding="utf-8"))
 
     lang = args.lang if args else ["all"]
     build = []
@@ -88,11 +88,13 @@ def buildHtmlDocs(args: argparse.Namespace | None = None) -> None:
     for code in build:
         outDir = bldRoot / code
         env = os.environ.copy()
+        env["SPHINX_I18N_VERSION"] = formatVersion(extractVersion()[0])
         cmd = "make clean html"
         if code != "en":
-            data = (locsDir / f"authors_{code}.conf").read_text(encoding="utf-8")
-            authors = [x for x in data.splitlines() if x and not x.startswith("#")]
-            env["SPHINX_I18N_AUTHORS"] = ", ".join(authors)
+            if code not in locConf:
+                print(f"ERROR: No config for language code '{code}' in config.toml")
+            env["SPHINX_I18N_VERSION"] = formatVersion(locConf[code].get("version", ""))
+            env["SPHINX_I18N_AUTHORS"] = ", ".join(locConf[code].get("authors", []))
             cmd += f" -e SPHINXOPTS=\"-D language='{code}'\""
 
         if (ex := subprocess.call(cmd, cwd=docsDir, env=env, shell=True)) == 0:
@@ -105,12 +107,9 @@ def buildHtmlDocs(args: argparse.Namespace | None = None) -> None:
 
     print("")
 
-    return
-
 
 def buildPdfDocAssets(args: argparse.Namespace | None = None) -> None:
     """Build the documentation PDF files."""
-
     print("")
     print("Building Docs Manuals")
     print("=====================")
@@ -120,6 +119,7 @@ def buildPdfDocAssets(args: argparse.Namespace | None = None) -> None:
     locsDir = ROOT_DIR / "docs" / "source" / "locales"
     pdfFile = ROOT_DIR / "docs" / "build" / "latex" / "manual.pdf"
     locsDir.mkdir(exist_ok=True)
+    locConf = tomllib.loads((locsDir / "config.toml").read_text(encoding="utf-8"))
 
     lang = args.lang if args else ["all"]
     build = []
@@ -130,12 +130,14 @@ def buildPdfDocAssets(args: argparse.Namespace | None = None) -> None:
 
     for code in build:
         env = os.environ.copy()
+        env["SPHINX_I18N_VERSION"] = formatVersion(extractVersion()[0])
         cmd = "make clean latexpdf"
         name = "manual.pdf"
         if code != "en":
-            data = (locsDir / f"authors_{code}.conf").read_text(encoding="utf-8")
-            authors = [x for x in data.splitlines() if x and not x.startswith("#")]
-            env["SPHINX_I18N_AUTHORS"] = ", ".join(authors)
+            if code not in locConf:
+                print(f"ERROR: No config for language code '{code}' in config.toml")
+            env["SPHINX_I18N_VERSION"] = formatVersion(locConf[code].get("version", ""))
+            env["SPHINX_I18N_AUTHORS"] = ", ".join(locConf[code].get("authors", []))
             cmd += f" -e SPHINXOPTS=\"-D language='{code}'\""
             name = f"manual_{code}.pdf"
 
@@ -146,5 +148,3 @@ def buildPdfDocAssets(args: argparse.Namespace | None = None) -> None:
             raise Exception(f"Build returned error code {ex}")
 
     print("")
-
-    return

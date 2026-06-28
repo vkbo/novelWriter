@@ -2,9 +2,6 @@
 novelWriter – Custom Widget: Switch Box
 =======================================
 
-File History:
-Created: 2023-04-16 [2.1b1]
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -28,18 +26,16 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QGridLayout, QLabel, QScrollArea, QWidget
 
+from novelwriter import SHARED
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import (
-    QtAlignLeft, QtAlignRight, QtAlignRightMiddle, QtSizeMinimum,
-    QtSizeMinimumExpanding
-)
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtAlignRightMiddle, QtSizeMinimum, QtSizeMinimumExpanding
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QIcon
 
 
 class NSwitchBox(QScrollArea):
-    """Extension: Switch Box Widget
+    """Extension: Switch Box Widget.
 
     A widget that can hold a list of switches with labels and optional
     icons. The switch toggles emits a common signal with a switch key.
@@ -51,11 +47,10 @@ class NSwitchBox(QScrollArea):
         super().__init__(parent=parent)
         self._index = 0
         self._hSwitch = baseSize
-        self._wSwitch = 2*self._hSwitch
+        self._wSwitch = 2 * self._hSwitch
         self._sIcon = baseSize
         self._widgets = []
         self.clear()
-        return
 
     def clear(self) -> None:
         """Rebuild the content of the core widget."""
@@ -72,18 +67,13 @@ class NSwitchBox(QScrollArea):
         self.setWidgetResizable(True)
         self.setWidget(self._widget)
 
-        return
-
     def addLabel(self, text: str) -> None:
         """Add a header label to the content box."""
         label = QLabel(text, self)
-        font = label.font()
-        font.setBold(True)
-        label.setFont(font)
+        label.setFont(SHARED.theme.guiFontB)
         self._content.addWidget(label, self._index, 0, 1, 3, QtAlignLeft)
         self._widgets.append(label)
         self._bumpIndex()
-        return
 
     def addItem(self, qIcon: QIcon, text: str, identifier: str, default: bool = False) -> None:
         """Add an item to the content box."""
@@ -104,16 +94,13 @@ class NSwitchBox(QScrollArea):
         self._widgets.append(switch)
         self._bumpIndex()
 
-        return
-
     def addSeparator(self) -> None:
         """Add a blank entry in the content box."""
         spacer = QWidget(self)
-        spacer.setFixedHeight(int(0.5*self._sIcon))
+        spacer.setFixedHeight(int(0.5 * self._sIcon))
         self._content.addWidget(spacer, self._index, 0, 1, 3, QtAlignLeft)
         self._widgets.append(spacer)
         self._bumpIndex()
-        return
 
     ##
     #  Internal Functions
@@ -122,7 +109,6 @@ class NSwitchBox(QScrollArea):
     def _emitSwitchSignal(self, identifier: str, state: bool) -> None:
         """Emit a signal for a switch toggle."""
         self.switchToggled.emit(identifier, state)
-        return
 
     def _bumpIndex(self) -> None:
         """Increase the index counter and make sure only the last
@@ -131,4 +117,3 @@ class NSwitchBox(QScrollArea):
         self._content.setRowStretch(self._index, 0)
         self._content.setRowStretch(self._index + 1, 1)
         self._index += 1
-        return

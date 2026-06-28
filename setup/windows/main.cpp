@@ -21,12 +21,13 @@
 
 #ifndef UNICODE
 #define UNICODE
-#endif 
+#endif
 
 #include <windows.h>
 #include <stdio.h>
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+{
 
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
@@ -41,11 +42,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     SetCurrentDirectory(path);
 
     wchar_t cmd[MAX_PATH] = L"pythonw.exe novelWriter.pyw";
-    if (__argc > 1) {
-        wcsncat_s(cmd, L" ", 1);
-        wcsncat_s(cmd, __wargv[1], MAX_PATH-28);
+    if (__argc > 1)
+    {
+        wcsncat_s(cmd, L" \"", 2);
+        wcsncat_s(cmd, __wargv[1], MAX_PATH - 30);
+        wcsncat_s(cmd, L"\"", 1);
     }
-
     CreateProcess(NULL, cmd, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 
     return 0;

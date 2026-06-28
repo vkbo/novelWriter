@@ -2,9 +2,6 @@
 novelWriter – Novel Model
 =========================
 
-File History:
-Created: 2025-02-22 [2.7b1] NovelModel
-
 This file is a part of novelWriter
 Copyright (C) 2025 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -30,10 +28,17 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt
 from PyQt6.QtGui import QIcon, QPixmap
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.enum import nwNovelExtra
-from novelwriter.types import QtAlignRight
+from novelwriter.types import (
+    QtAccessibleTextRole,
+    QtAlignRight,
+    QtDecorationRole,
+    QtDisplayRole,
+    QtTextAlignmentRole,
+    QtToolTipRole,
+)
 
 if TYPE_CHECKING:
     from novelwriter.core.indexdata import IndexHeading, IndexNode
@@ -41,34 +46,28 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 C_FACTOR = 0x0100
-
-R_TEXT   = Qt.ItemDataRole.DisplayRole
-R_ICON   = Qt.ItemDataRole.DecorationRole
-R_ALIGN  = Qt.ItemDataRole.TextAlignmentRole
-R_TIP    = Qt.ItemDataRole.ToolTipRole
-R_ACCESS = Qt.ItemDataRole.AccessibleTextRole
-R_HANDLE = 0xff01
-R_KEY    = 0xff02
+R_HANDLE = 0xFF01
+R_KEY = 0xFF02
 
 T_NodeData = str | QIcon | QPixmap | Qt.AlignmentFlag | None
 
 
 class NovelModel(QAbstractTableModel):
+    """Core: Novel Model Class."""
 
     __slots__ = ("_columns", "_extraKey", "_extraLabel", "_more", "_rows")
 
     def __init__(self) -> None:
         super().__init__()
         self._rows: list[dict[int, T_NodeData]] = []
-        self._more = SHARED.theme.getIcon("more_arrow")
+        self._more = SHARED.theme.getIcon("more_arrow", "tool")
         self._columns = 3
         self._extraKey = ""
         self._extraLabel = ""
-        return
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NovelModel")
-        return
 
     ##
     #  Properties
@@ -102,24 +101,23 @@ class NovelModel(QAbstractTableModel):
                 self._columns = 4
                 self._extraKey = nwKeyWords.PLOT_KEY
                 self._extraLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY])
-        return
 
     ##
     #  Model Interface
     ##
 
-    def rowCount(self, index: QModelIndex) -> int:
+    def rowCount(self, parent: QModelIndex) -> int:
         """Return the number of rows."""
-        return len(self._rows)
+        return 0 if parent.isValid() else len(self._rows)
 
-    def columnCount(self, index: QModelIndex) -> int:
+    def columnCount(self, parent: QModelIndex) -> int:
         """Return the number of columns."""
-        return self._columns
+        return 0 if parent.isValid() else self._columns
 
     def data(self, index: QModelIndex, role: Qt.ItemDataRole) -> T_NodeData:
         """Return display data for a node."""
         try:
-            return self._rows[index.row()].get(C_FACTOR*index.column() | role)
+            return self._rows[index.row()].get(C_FACTOR * index.column() | role)
         except Exception:
             logger.error("Novel model index is inconsistent")
         return None
@@ -145,27 +143,36 @@ class NovelModel(QAbstractTableModel):
     ##
 
     def clear(self) -> None:
-        """Clear the model."""
+        """Clear the model.
+        Begin/end reset model must be handled by the caller.
+        """
         self._rows.clear()
-        return
 
-    def append(self, node: IndexNode) -> None:
+    def append(self, node: IndexNode, notify: bool = True) -> None:
         """Append a node to the model."""
         handle = node.handle
-        for key, head in node.items():
-            if key != "T0000":
-                self._rows.append(self._generateEntry(handle, key, head))
-        return
+
+        # Build all rows first so we can emit one contiguous insert range.
+        entries = [self._generateEntry(handle, key, head) for key, head in node.items() if key != "T0000"]
+        if not entries:
+            return
+
+        if notify:
+            # Use model signals when appending to a live model in a view.
+            first = len(self._rows)
+            last = first + len(entries) - 1
+            self.beginInsertRows(QModelIndex(), first, last)
+            self._rows.extend(entries)
+            self.endInsertRows()
+        else:
+            # Skip per-insert signals when the caller already wraps a reset.
+            self._rows.extend(entries)
 
     def refresh(self, node: IndexNode) -> bool:
         """Refresh an index node."""
         handle = node.handle
-        current = []
-        for i, row in enumerate(self._rows):
-            if row.get(R_HANDLE) == handle:
-                current.append(i)
-
-        if current == []:
+        current = [i for i, row in enumerate(self._rows) if row.get(R_HANDLE) == handle]
+        if not current:
             logger.warning("No novel model entries for '%s'", handle)
             return False
 
@@ -186,14 +193,14 @@ class NovelModel(QAbstractTableModel):
 
         if remains:
             # Inserting is safe for out of bounds indices
-            self.beginInsertRows(QModelIndex(), last, last + len(remains) - 1)
+            self.beginInsertRows(QModelIndex(), last + 1, last + len(remains))
             for k, (key, head) in enumerate(remains, last + 1):
                 self._rows.insert(k, self._generateEntry(handle, key, head))
             self.endInsertRows()
         elif current:
             # Deleting ranges are safe for out of bounds indices
             self.beginRemoveRows(QModelIndex(), current[0], current[-1])
-            del self._rows[current[0]:current[-1] + 1]
+            del self._rows[current[0] : current[-1] + 1]
             self.endRemoveRows()
 
         return True
@@ -205,21 +212,26 @@ class NovelModel(QAbstractTableModel):
     def _generateEntry(self, handle: str, key: str, head: IndexHeading) -> dict[int, T_NodeData]:
         """Generate a cache entry."""
         iLevel = nwStyles.H_LEVEL.get(head.level, 0)
+        countValue = f"{head.mainCount:n}"
+        countInfo = f"{countValue} {CONFIG.countUnit}"
+
         data = {}
-        data[C_FACTOR*0 | R_TIP] = head.title
-        data[C_FACTOR*0 | R_TEXT] = head.title
-        data[C_FACTOR*0 | R_ICON] = SHARED.theme.getHeaderDecoration(iLevel)
-        data[C_FACTOR*1 | R_TEXT] = f"{head.mainCount:n}"
-        data[C_FACTOR*1 | R_ALIGN] = QtAlignRight
+        data[C_FACTOR * 0 | QtToolTipRole] = head.title
+        data[C_FACTOR * 0 | QtDisplayRole] = head.title
+        data[C_FACTOR * 0 | QtDecorationRole] = SHARED.theme.getHeaderDecoration(iLevel)
+        data[C_FACTOR * 1 | QtDisplayRole] = countValue
+        data[C_FACTOR * 1 | QtToolTipRole] = countInfo
+        data[C_FACTOR * 1 | QtAccessibleTextRole] = countInfo
+        data[C_FACTOR * 1 | QtTextAlignmentRole] = QtAlignRight
         if self._columns == 3:
-            data[C_FACTOR*2 | R_ICON] = self._more
+            data[C_FACTOR * 2 | QtDecorationRole] = self._more
         else:
             if self._extraKey and (refs := head.getReferencesByKeyword(self._extraKey)):
                 text = ", ".join(refs)
-                data[C_FACTOR*2 | R_TEXT] = text
-                data[C_FACTOR*2 | R_TIP] = f"<b>{self._extraLabel}:</b> {text}"
-                data[C_FACTOR*2 | R_ACCESS] = f"{self._extraLabel}: {text}"
-            data[C_FACTOR*3 | R_ICON] = self._more
+                data[C_FACTOR * 2 | QtDisplayRole] = text
+                data[C_FACTOR * 2 | QtToolTipRole] = f"<b>{self._extraLabel}:</b> {text}"
+                data[C_FACTOR * 2 | QtAccessibleTextRole] = f"{self._extraLabel}: {text}"
+            data[C_FACTOR * 3 | QtDecorationRole] = self._more
         data[R_HANDLE] = handle
         data[R_KEY] = key
         return data

@@ -2,9 +2,6 @@
 novelWriter – GUI Text Document
 ===============================
 
-File History:
-Created: 2023-09-07 [2.2b1] GuiTextDocument
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -42,6 +40,11 @@ logger = logging.getLogger(__name__)
 
 
 class GuiTextDocument(QTextDocument):
+    """Custom: Modified QTextDocument.
+
+    A special text document format that incorporates a few additional
+    features including spell checking.
+    """
 
     def __init__(self, parent: QObject) -> None:
         super().__init__(parent=parent)
@@ -52,11 +55,9 @@ class GuiTextDocument(QTextDocument):
 
         logger.debug("Ready: GuiTextDocument")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiTextDocument")
-        return
 
     ##
     #  Properties
@@ -93,10 +94,8 @@ class GuiTextDocument(QTextDocument):
 
         tEnd = time()
 
-        logger.debug("Loaded %d text blocks in %.3f ms", count, 1000*(tMid - tStart))
-        logger.debug("Highlighted document in %.3f ms", 1000*(tEnd - tMid))
-
-        return
+        logger.debug("Loaded %d text blocks in %.3f ms", count, 1000 * (tMid - tStart))
+        logger.debug("Highlighted document in %.3f ms", 1000 * (tEnd - tMid))
 
     def metaDataAtPos(self, pos: int) -> tuple[str, str]:
         """Check if there is meta data available at a given position in
@@ -106,14 +105,13 @@ class GuiTextDocument(QTextDocument):
         cursor.setPosition(pos)
         block = cursor.block()
         data = block.userData()
-        if block.isValid() and isinstance(data, TextBlockData):
-            if (check := pos - block.position()) >= 0:
-                for cPos, cEnd, cData, cType in data.metaData:
-                    if cPos <= check <= cEnd:
-                        return cData, cType
+        if block.isValid() and isinstance(data, TextBlockData) and (check := pos - block.position()) >= 0:
+            for cPos, cEnd, cData, cType in data.metaData:
+                if cPos <= check <= cEnd:
+                    return cData, cType
         return "", ""
 
-    def spellErrorAtPos(self, pos: int) -> tuple[str, int, int, list[str]]:
+    def spellErrorAtPos(self, pos: int) -> tuple[str, int, list[str]]:
         """Check if there is a misspelled word at a given position in
         the document, and if so, return it.
         """
@@ -121,16 +119,11 @@ class GuiTextDocument(QTextDocument):
         cursor.setPosition(pos)
         block = cursor.block()
         data = block.userData()
-        if block.isValid() and isinstance(data, TextBlockData):
-            text = block.text()
-            check = pos - block.position()
-            if check >= 0:
-                for cPos, cEnd in data.spellErrors:
-                    cLen = cEnd - cPos
-                    if cPos <= check <= cEnd:
-                        word = text[cPos:cEnd]
-                        return word, cPos, cLen, SHARED.spelling.suggestWords(word)
-        return "", -1, -1, []
+        if block.isValid() and isinstance(data, TextBlockData) and (check := pos - block.position()) >= 0:
+            for start, end, word in data.spellErrors:
+                if start <= check <= end:
+                    return word, start, SHARED.spelling.suggestWords(word)
+        return "", -1, []
 
     def iterBlockByType(self, cType: int, maxCount: int = 1000) -> Iterable[QTextBlock]:
         """Iterate over all text blocks of a given type."""
@@ -150,4 +143,3 @@ class GuiTextDocument(QTextDocument):
     def setSpellCheckState(self, state: bool) -> None:
         """Set the spell check state of the syntax highlighter."""
         self._syntax.setSpellCheck(state)
-        return

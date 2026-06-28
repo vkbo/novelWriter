@@ -1,13 +1,21 @@
-%%~name: Chapter One
+%%~name: Basic Formatting
 %%~path: 7031beac91f75/6a2d6d5f4f401
 %%~kind: NOVEL/DOCUMENT
-%%~hash: 89687756c204742d17f1d37a0ba7fa3aadaf00f2
-%%~date: Unknown/2023-08-25 16:51:56
-## So it Begins
+%%~hash: 469808b1602e18df6e59abc5007cb5cf47217c58
+%%~date: Unknown/2025-11-01 16:15:49
+## Basic Formatting
 
-@pov: Jane
-@location: Earth
+% Any document or note can be given a tag that you can reference from another document or note. These tags have to be unique across the entire project. You can define a new tag for each heading in a document.
 
-% Synopsis: We can add a chapter document, but keep the scene files separate. In the chapter document we can set the meta data that applies to the whole chapter if we wish to. You can add the scenes as child documents directly under the chapter.
+@tag: Formatting
 
-A chapter can contain leading text before the first scene, like this piece of text.
+% You can add your own comments anywhere in your text. Comments are never included in the word count, and you can select to include or exclude them from your manuscript.
+
+%Story.Resolution: You can describe the scene structure with story comments.
+%Note.Consistency: You can also make notes about things like consistency of the story.
+
+% The part after the dot in your story or note comment is a keyword of your choosing.
+
+The headings define the story structure. Two # symbols means a chapter, and three means a scene. Adding the exclamation point changes the formatting of the heading in your manuscript. For chapters, it means they are excluded from chapter number generation. See the ‘Interlude’ file for an example.
+
+This document is understood by novelWriter as a chapter. You can add scene document below it either as child documents or just below it on the same level.

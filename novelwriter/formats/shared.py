@@ -2,9 +2,6 @@
 novelWriter – Formats Shared
 ============================
 
-File History:
-Created: 2024-10-21 [2.6b1]
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import re
@@ -38,7 +36,7 @@ ESCAPES = {
     r"\]": "]",
     r"\ ": "",
 }
-RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
+RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES]), flags=re.DOTALL)
 
 
 def stripEscape(text: str) -> str:
@@ -51,23 +49,24 @@ def stripEscape(text: str) -> str:
 class TextDocumentTheme:
     """Default document theme."""
 
-    text:      QColor = QColor(0, 0, 0)
+    text: QColor = QColor(0, 0, 0)
     highlight: QColor = QColor(255, 255, 166)
-    head:      QColor = QColor(66, 113, 174)
-    link:      QColor = QColor(66, 113, 174)
-    comment:   QColor = QColor(100, 100, 100)
-    note:      QColor = QColor(129, 55, 9)
-    code:      QColor = QColor(66, 113, 174)
-    modifier:  QColor = QColor(129, 55, 9)
-    keyword:   QColor = QColor(245, 135, 31)
-    tag:       QColor = QColor(66, 113, 174)
-    optional:  QColor = QColor(66, 113, 174)
-    dialog:    QColor = QColor(66, 113, 174)
+    head: QColor = QColor(66, 113, 174)
+    link: QColor = QColor(66, 113, 174)
+    comment: QColor = QColor(100, 100, 100)
+    note: QColor = QColor(129, 55, 9)
+    code: QColor = QColor(66, 113, 174)
+    modifier: QColor = QColor(129, 55, 9)
+    keyword: QColor = QColor(245, 135, 31)
+    tag: QColor = QColor(66, 113, 174)
+    optional: QColor = QColor(66, 113, 174)
+    dialog: QColor = QColor(66, 113, 174)
     altdialog: QColor = QColor(129, 55, 9)
 
 
 # Enums
 # =====
+
 
 class TextFmt(IntEnum):
     """Text Format.
@@ -77,16 +76,16 @@ class TextFmt(IntEnum):
     text block.
     """
 
-    B_B   = 1   # Begin bold
-    B_E   = 2   # End bold
-    I_B   = 3   # Begin italics
-    I_E   = 4   # End italics
-    D_B   = 5   # Begin strikeout
-    D_E   = 6   # End strikeout
-    U_B   = 7   # Begin underline
-    U_E   = 8   # End underline
-    M_B   = 9   # Begin mark
-    M_E   = 10  # End mark
+    B_B = 1  # Begin bold
+    B_E = 2  # End bold
+    I_B = 3  # Begin italics
+    I_E = 4  # End italics
+    D_B = 5  # Begin strikeout
+    D_E = 6  # End strikeout
+    U_B = 7  # Begin underline
+    U_E = 8  # End underline
+    M_B = 9  # Begin mark
+    M_E = 10  # End mark
     SUP_B = 11  # Begin superscript
     SUP_E = 12  # End superscript
     SUB_B = 13  # Begin subscript
@@ -110,20 +109,21 @@ class BlockTyp(IntEnum):
     An enum indicating the type of a text block.
     """
 
-    EMPTY   = 1   # Empty line (new paragraph)
-    TITLE   = 2   # Title
-    PART    = 3   # Partition
-    HEAD1   = 4   # Heading 1 or Chapter
-    HEAD2   = 5   # Heading 2 or Scene
-    HEAD3   = 6   # Heading 3 or Section
-    HEAD4   = 7   # Heading 4
-    TEXT    = 8   # Text line
-    SEP     = 9   # Scene separator
-    SKIP    = 10  # Paragraph break
-    SUMMARY = 11  # Synopsis/short comment
-    NOTE    = 12  # Note
-    COMMENT = 13  # Comment
-    KEYWORD = 14  # Tag/reference keywords
+    EMPTY = 1  # Empty line (new paragraph)
+    TITLE = 2  # Title
+    PART = 3  # Partition
+    HEAD1 = 4  # Heading 1 or Chapter
+    HEAD2 = 5  # Heading 2 or Scene
+    HEAD3 = 6  # Heading 3 or Section
+    HEAD4 = 7  # Heading 4
+    TEXT = 8  # Text line
+    SEP = 9  # Scene separator
+    HRULE = 10  # Horizontal rule
+    SKIP = 11  # Paragraph break
+    SUMMARY = 12  # Synopsis/short comment
+    NOTE = 13  # Note
+    COMMENT = 14  # Comment
+    KEYWORD = 15  # Tag/reference keywords
 
 
 class BlockFmt(Flag):
@@ -132,18 +132,18 @@ class BlockFmt(Flag):
     An enum of flags that can be combined to format a text block.
     """
 
-    NONE    = 0x0000  # No special style
-    LEFT    = 0x0001  # Left aligned
-    RIGHT   = 0x0002  # Right aligned
-    CENTRE  = 0x0004  # Centred
+    NONE = 0x0000  # No special style
+    LEFT = 0x0001  # Left aligned
+    RIGHT = 0x0002  # Right aligned
+    CENTRE = 0x0004  # Centred
     JUSTIFY = 0x0008  # Justified
-    PBB     = 0x0010  # Page break before
-    PBA     = 0x0020  # Page break after
-    Z_TOP   = 0x0040  # Zero top margin
-    Z_BTM   = 0x0080  # Zero bottom margin
-    IND_L   = 0x0100  # Left indentation
-    IND_R   = 0x0200  # Right indentation
-    IND_T   = 0x0400  # Text indentation
+    PBB = 0x0010  # Page break before
+    PBA = 0x0020  # Page break after
+    Z_TOP = 0x0040  # Zero top margin
+    Z_BTM = 0x0080  # Zero bottom margin
+    IND_L = 0x0100  # Left indentation
+    IND_R = 0x0200  # Right indentation
+    IND_T = 0x0400  # Text indentation
 
     # Masks
     ALIGNED = LEFT | RIGHT | CENTRE | JUSTIFY

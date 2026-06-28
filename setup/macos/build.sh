@@ -1,7 +1,7 @@
 #! /bin/bash
 
 if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
-    echo "Not enouch input arguments"
+    echo "Not enough input arguments"
     exit 1
 fi
 
@@ -55,6 +55,8 @@ else
     echo "Missing: setup/macos/Info.plist"
     exit 1
 fi
+echo "Generating requirements.txt"
+python3 pkgutils.py gen-req
 
 # Check that other assets are present
 echo "Checking assets"
@@ -109,7 +111,6 @@ conda install -c conda-forge enchant hunspell-en --yes
 # Install dependencies
 echo "Installing Python dependencies ..."
 pip install -r "$SRC_DIR/requirements.txt"
-pip install pyenchant==3.3.0rc1
 
 # Leave conda env
 conda deactivate
@@ -128,7 +129,7 @@ cp -R $CONDA_PATH/envs/$CONDA_ENV_NAME/* novelWriter.app/Contents/Resources/
 
 echo "Copying novelWriter to bundle ..."
 FILES_COPY=(
-    "CHANGELOG.md" "MANIFEST.in" "CREDITS.md" "LICENSE.md"
+    "CHANGELOG.md" "CREDITS.md" "LICENSE.md"
     "CONTRIBUTING.md" "CODE_OF_CONDUCT.md" "novelwriter"
     "novelWriter.py"
 )

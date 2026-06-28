@@ -2,9 +2,6 @@
 novelWriter – GUI Writing Statistics
 ====================================
 
-File History:
-Created: 2019-10-20 [0.3.0] GuiWritingStats
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import json
@@ -32,19 +30,33 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QAction, QCloseEvent, QCursor, QPixmap
 from PyQt6.QtWidgets import (
-    QApplication, QDialogButtonBox, QFileDialog, QGridLayout, QGroupBox,
-    QHBoxLayout, QLabel, QMenu, QSpinBox, QTreeWidget, QTreeWidgetItem
+    QApplication,
+    QDialogButtonBox,
+    QFileDialog,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QMenu,
+    QSpinBox,
+    QTreeWidget,
+    QTreeWidgetItem,
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, checkIntTuple, formatTime, minmax, qtLambda
 from novelwriter.constants import nwConst
+from novelwriter.enum import nwStandardButton
 from novelwriter.error import formatException
-from novelwriter.extensions.modified import NToolDialog
+from novelwriter.extensions.modified import NPushButton, NToolDialog
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import (
-    QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle, QtDecoration,
-    QtDialogClose, QtRoleAction
+    QtAlignLeftMiddle,
+    QtAlignRight,
+    QtAlignRightMiddle,
+    QtDecorationRole,
+    QtRoleAction,
+    QtRoleDestruct,
 )
 
 if TYPE_CHECKING:
@@ -54,19 +66,19 @@ logger = logging.getLogger(__name__)
 
 
 class GuiWritingStats(NToolDialog):
-    """GUI Tools: Writing Statistics
+    """GUI Tools: Writing Statistics.
 
     Displays data from the NWSessionLog object.
     """
 
-    C_TIME   = 0
+    C_TIME = 0
     C_LENGTH = 1
-    C_IDLE   = 2
-    C_COUNT  = 3
-    C_BAR    = 4
+    C_IDLE = 2
+    C_COUNT = 3
+    C_BAR = 4
 
     FMT_JSON = 0
-    FMT_CSV  = 1
+    FMT_CSV = 1
 
     def __init__(self, parent: GuiMain) -> None:
         super().__init__(parent=parent)
@@ -74,7 +86,7 @@ class GuiWritingStats(NToolDialog):
         logger.debug("Create: GuiWritingStats")
         self.setObjectName("GuiWritingStats")
 
-        self.logData    = []
+        self.logData = []
         self.filterData = []
         self.timeFilter = 0.0
         self.wordOffset = 0
@@ -96,13 +108,15 @@ class GuiWritingStats(NToolDialog):
         wCol3 = pOptions.getInt("GuiWritingStats", "widthCol3", 80)
 
         self.listBox = QTreeWidget(self)
-        self.listBox.setHeaderLabels([
-            self.tr("Session Start"),
-            self.tr("Length"),
-            self.tr("Idle"),
-            self.tr("Words"),
-            self.tr("Histogram"),
-        ])
+        self.listBox.setHeaderLabels(
+            [
+                self.tr("Session Start"),
+                self.tr("Length"),
+                self.tr("Idle"),
+                self.tr("Words"),
+                self.tr("Histogram"),
+            ]
+        )
         self.listBox.setIndentation(0)
         self.listBox.setColumnWidth(self.C_TIME, wCol0)
         self.listBox.setColumnWidth(self.C_LENGTH, wCol1)
@@ -116,15 +130,13 @@ class GuiWritingStats(NToolDialog):
             hHeader.setTextAlignment(self.C_COUNT, QtAlignRight)
 
         sortCol = minmax(pOptions.getInt("GuiWritingStats", "sortCol", 0), 0, 2)
-        sortOrder = checkIntTuple(
-            pOptions.getInt("GuiWritingStats", "sortOrder", 1), (0, 1), 1
-        )
+        sortOrder = checkIntTuple(pOptions.getInt("GuiWritingStats", "sortOrder", 1), (0, 1), 1)
         sortOrders = (Qt.SortOrder.AscendingOrder, Qt.SortOrder.DescendingOrder)
         self.listBox.sortByColumn(sortCol, sortOrders[sortOrder])
         self.listBox.setSortingEnabled(True)
 
         # Word Bar
-        self.barHeight = round(0.5*SHARED.theme.fontPixelSize)
+        self.barHeight = round(0.5 * SHARED.theme.fontPixelSize)
         self.barImage = QPixmap(self.barHeight, self.barHeight)
         self.barImage.fill(self.palette().highlight().color())
 
@@ -157,31 +169,32 @@ class GuiWritingStats(NToolDialog):
         self.totalWords.setFont(SHARED.theme.guiFontFixed)
         self.totalWords.setAlignment(QtAlignRightMiddle)
 
-        lblTTime   = QLabel(self.tr("Total Time:"), self)
-        lblITime   = QLabel(self.tr("Idle Time:"), self)
-        lblFTime   = QLabel(self.tr("Filtered Time:"), self)
+        lblTTime = QLabel(self.tr("Total Time:"), self)
+        lblITime = QLabel(self.tr("Idle Time:"), self)
+        lblFTime = QLabel(self.tr("Filtered Time:"), self)
         lblNvCount = QLabel(self.tr("Novel Word Count:"), self)
         lblNtCount = QLabel(self.tr("Notes Word Count:"), self)
         lblTtCount = QLabel(self.tr("Total Word Count:"), self)
 
-        self.infoForm.addWidget(lblTTime,   0, 0)
-        self.infoForm.addWidget(lblITime,   1, 0)
-        self.infoForm.addWidget(lblFTime,   2, 0)
+        self.infoForm.addWidget(lblTTime, 0, 0)
+        self.infoForm.addWidget(lblITime, 1, 0)
+        self.infoForm.addWidget(lblFTime, 2, 0)
         self.infoForm.addWidget(lblNvCount, 3, 0)
         self.infoForm.addWidget(lblNtCount, 4, 0)
         self.infoForm.addWidget(lblTtCount, 5, 0)
 
-        self.infoForm.addWidget(self.labelTotal,  0, 1)
-        self.infoForm.addWidget(self.labelIdleT,  1, 1)
+        self.infoForm.addWidget(self.labelTotal, 0, 1)
+        self.infoForm.addWidget(self.labelIdleT, 1, 1)
         self.infoForm.addWidget(self.labelFilter, 2, 1)
-        self.infoForm.addWidget(self.novelWords,  3, 1)
-        self.infoForm.addWidget(self.notesWords,  4, 1)
-        self.infoForm.addWidget(self.totalWords,  5, 1)
+        self.infoForm.addWidget(self.novelWords, 3, 1)
+        self.infoForm.addWidget(self.notesWords, 4, 1)
+        self.infoForm.addWidget(self.totalWords, 5, 1)
 
         self.infoForm.setRowStretch(6, 1)
 
         # Filter Options
         iPx = SHARED.theme.baseIconHeight
+        bSz = SHARED.theme.toolButtonIconSize
 
         self.filterForm = QGridLayout(self)
         self.filterForm.setRowStretch(6, 1)
@@ -190,9 +203,7 @@ class GuiWritingStats(NToolDialog):
 
         # Include Novel Files
         self.swtIncNovel = NSwitch(self, height=iPx)
-        self.swtIncNovel.setChecked(
-            pOptions.getBool("GuiWritingStats", "incNovel", True)
-        )
+        self.swtIncNovel.setChecked(pOptions.getBool("GuiWritingStats", "incNovel", True))
         self.swtIncNovel.clicked.connect(self._updateListBox)
         self.lblIncNovel = QLabel(self.tr("Count novel files"), self)
         self.lblIncNovel.setBuddy(self.swtIncNovel)
@@ -202,9 +213,7 @@ class GuiWritingStats(NToolDialog):
 
         # Include Note Files
         self.swtIncNotes = NSwitch(self, height=iPx)
-        self.swtIncNotes.setChecked(
-            pOptions.getBool("GuiWritingStats", "incNotes", True)
-        )
+        self.swtIncNotes.setChecked(pOptions.getBool("GuiWritingStats", "incNotes", True))
         self.swtIncNotes.clicked.connect(self._updateListBox)
         self.lblIncNotes = QLabel(self.tr("Count note files"), self)
         self.lblIncNotes.setBuddy(self.swtIncNotes)
@@ -214,9 +223,7 @@ class GuiWritingStats(NToolDialog):
 
         # Hide Zero Counts
         self.swtHideZeros = NSwitch(self, height=iPx)
-        self.swtHideZeros.setChecked(
-            pOptions.getBool("GuiWritingStats", "hideZeros", True)
-        )
+        self.swtHideZeros.setChecked(pOptions.getBool("GuiWritingStats", "hideZeros", True))
         self.swtHideZeros.clicked.connect(self._updateListBox)
         self.lblHideZeros = QLabel(self.tr("Hide zero word count"), self)
         self.lblHideZeros.setBuddy(self.swtHideZeros)
@@ -226,9 +233,7 @@ class GuiWritingStats(NToolDialog):
 
         # Hide Negative Counts
         self.swtHideNegative = NSwitch(self, height=iPx)
-        self.swtHideNegative.setChecked(
-            pOptions.getBool("GuiWritingStats", "hideNegative", False)
-        )
+        self.swtHideNegative.setChecked(pOptions.getBool("GuiWritingStats", "hideNegative", False))
         self.swtHideNegative.clicked.connect(self._updateListBox)
         self.lblHideNegative = QLabel(self.tr("Hide negative word count"), self)
         self.lblHideNegative.setBuddy(self.swtHideNegative)
@@ -238,9 +243,7 @@ class GuiWritingStats(NToolDialog):
 
         # Group Entries
         self.swtGroupByDay = NSwitch(self, height=iPx)
-        self.swtGroupByDay.setChecked(
-            pOptions.getBool("GuiWritingStats", "groupByDay", False)
-        )
+        self.swtGroupByDay.setChecked(pOptions.getBool("GuiWritingStats", "groupByDay", False))
         self.swtGroupByDay.clicked.connect(self._updateListBox)
         self.lblGroupByDay = QLabel(self.tr("Group entries by day"), self)
         self.lblGroupByDay.setBuddy(self.swtGroupByDay)
@@ -250,9 +253,7 @@ class GuiWritingStats(NToolDialog):
 
         # Show Idle
         self.swtShowIdleTime = NSwitch(self, height=iPx)
-        self.swtShowIdleTime.setChecked(
-            pOptions.getBool("GuiWritingStats", "showIdleTime", False)
-        )
+        self.swtShowIdleTime.setChecked(pOptions.getBool("GuiWritingStats", "showIdleTime", False))
         self.swtShowIdleTime.clicked.connect(self._updateListBox)
         self.lblShowIdleTime = QLabel(self.tr("Show idle time"), self)
         self.lblShowIdleTime.setBuddy(self.swtShowIdleTime)
@@ -265,9 +266,7 @@ class GuiWritingStats(NToolDialog):
         self.histMax.setMinimum(100)
         self.histMax.setMaximum(100000)
         self.histMax.setSingleStep(100)
-        self.histMax.setValue(
-            pOptions.getInt("GuiWritingStats", "histMax", 2000)
-        )
+        self.histMax.setValue(pOptions.getInt("GuiWritingStats", "histMax", 2000))
         self.histMax.valueChanged.connect(self._updateListBox)
 
         self.optsBox = QHBoxLayout()
@@ -276,6 +275,10 @@ class GuiWritingStats(NToolDialog):
         self.optsBox.addWidget(self.histMax, 0)
 
         # Buttons
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.clicked.connect(self.closeDialog)
+        self.btnClose.setAutoDefault(False)
+
         self.saveJSON = QAction(self.tr("JSON Data File (.json)"), self)
         self.saveJSON.triggered.connect(qtLambda(self._saveData, self.FMT_JSON))
 
@@ -286,36 +289,30 @@ class GuiWritingStats(NToolDialog):
         self.saveMenu.addAction(self.saveJSON)
         self.saveMenu.addAction(self.saveCSV)
 
-        self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.btnSave = NPushButton(self, self.tr("Save As"), bSz, "btn_save", "action")
+        self.btnSave.setAutoDefault(False)
+        self.btnSave.setMenu(self.saveMenu)
 
-        self.btnClose = self.buttonBox.addButton(QtDialogClose)
-        if self.btnClose:
-            self.btnClose.setAutoDefault(False)
-
-        self.btnSave = self.buttonBox.addButton(self.tr("Save As"), QtRoleAction)
-        if self.btnSave:
-            self.btnSave.setAutoDefault(False)
-            self.btnSave.setMenu(self.saveMenu)
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnSave, QtRoleAction)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
 
         # Assemble
         self.outerBox = QGridLayout()
-        self.outerBox.addWidget(self.listBox,   0, 0, 1, 2)
-        self.outerBox.addLayout(self.optsBox,   1, 0, 1, 2)
-        self.outerBox.addWidget(self.infoBox,   2, 0)
+        self.outerBox.addWidget(self.listBox, 0, 0, 1, 2)
+        self.outerBox.addLayout(self.optsBox, 1, 0, 1, 2)
+        self.outerBox.addWidget(self.infoBox, 2, 0)
         self.outerBox.addWidget(self.filterBox, 2, 1)
-        self.outerBox.addWidget(self.buttonBox, 3, 0, 1, 2)
+        self.outerBox.addWidget(self.btnBox, 3, 0, 1, 2)
         self.outerBox.setRowStretch(0, 1)
 
         self.setLayout(self.outerBox)
 
         logger.debug("Ready: GuiWritingStats")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiWritingStats")
-        return
 
     def populateGUI(self) -> None:
         """Populate list box with data from the log file."""
@@ -323,7 +320,6 @@ class GuiWritingStats(NToolDialog):
         self._loadLogFile()
         self._updateListBox()
         QApplication.restoreOverrideCursor()
-        return
 
     ##
     #  Events
@@ -331,53 +327,48 @@ class GuiWritingStats(NToolDialog):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """Capture the user closing the window."""
+        self._saveSettings()
         event.accept()
         self.softDelete()
-        return
 
     ##
-    #  Private Slots
+    #  Internal Functions
     ##
 
-    @pyqtSlot()
-    def _doClose(self) -> None:
+    def _saveSettings(self) -> None:
         """Save the state of the window, clear cache, end close."""
         self.logData = []
 
         header = self.listBox.header()
 
-        sortCol      = self.listBox.sortColumn()
-        sortOrder    = header.sortIndicatorOrder() if header else 0
-        incNovel     = self.swtIncNovel.isChecked()
-        incNotes     = self.swtIncNotes.isChecked()
-        hideZeros    = self.swtHideZeros.isChecked()
+        sortCol = self.listBox.sortColumn()
+        sortOrder = header.sortIndicatorOrder() if header else 0
+        incNovel = self.swtIncNovel.isChecked()
+        incNotes = self.swtIncNotes.isChecked()
+        hideZeros = self.swtHideZeros.isChecked()
         hideNegative = self.swtHideNegative.isChecked()
-        groupByDay   = self.swtGroupByDay.isChecked()
+        groupByDay = self.swtGroupByDay.isChecked()
         showIdleTime = self.swtShowIdleTime.isChecked()
-        histMax      = self.histMax.value()
+        histMax = self.histMax.value()
 
         logger.debug("Saving State: GuiWritingStats")
         pOptions = SHARED.project.options
-        pOptions.setValue("GuiWritingStats", "winWidth",     self.width())
-        pOptions.setValue("GuiWritingStats", "winHeight",    self.height())
-        pOptions.setValue("GuiWritingStats", "widthCol0",    self.listBox.columnWidth(0))
-        pOptions.setValue("GuiWritingStats", "widthCol1",    self.listBox.columnWidth(1))
-        pOptions.setValue("GuiWritingStats", "widthCol2",    self.listBox.columnWidth(2))
-        pOptions.setValue("GuiWritingStats", "widthCol3",    self.listBox.columnWidth(3))
-        pOptions.setValue("GuiWritingStats", "sortCol",      sortCol)
-        pOptions.setValue("GuiWritingStats", "sortOrder",    sortOrder)
-        pOptions.setValue("GuiWritingStats", "incNovel",     incNovel)
-        pOptions.setValue("GuiWritingStats", "incNotes",     incNotes)
-        pOptions.setValue("GuiWritingStats", "hideZeros",    hideZeros)
+        pOptions.setValue("GuiWritingStats", "winWidth", self.width())
+        pOptions.setValue("GuiWritingStats", "winHeight", self.height())
+        pOptions.setValue("GuiWritingStats", "widthCol0", self.listBox.columnWidth(0))
+        pOptions.setValue("GuiWritingStats", "widthCol1", self.listBox.columnWidth(1))
+        pOptions.setValue("GuiWritingStats", "widthCol2", self.listBox.columnWidth(2))
+        pOptions.setValue("GuiWritingStats", "widthCol3", self.listBox.columnWidth(3))
+        pOptions.setValue("GuiWritingStats", "sortCol", sortCol)
+        pOptions.setValue("GuiWritingStats", "sortOrder", sortOrder)
+        pOptions.setValue("GuiWritingStats", "incNovel", incNovel)
+        pOptions.setValue("GuiWritingStats", "incNotes", incNotes)
+        pOptions.setValue("GuiWritingStats", "hideZeros", hideZeros)
         pOptions.setValue("GuiWritingStats", "hideNegative", hideNegative)
-        pOptions.setValue("GuiWritingStats", "groupByDay",   groupByDay)
+        pOptions.setValue("GuiWritingStats", "groupByDay", groupByDay)
         pOptions.setValue("GuiWritingStats", "showIdleTime", showIdleTime)
-        pOptions.setValue("GuiWritingStats", "histMax",      histMax)
+        pOptions.setValue("GuiWritingStats", "histMax", histMax)
         pOptions.saveSettings()
-
-        self.close()
-
-        return
 
     def _saveData(self, dataFmt: int) -> bool:
         """Save the content of the list box to a file."""
@@ -412,21 +403,22 @@ class GuiWritingStats(NToolDialog):
                 if dataFmt == self.FMT_JSON:
                     jsonData = []
                     for _, sD, tT, wD, wA, wB, tI in self.filterData:
-                        jsonData.append({
-                            "date": sD,
-                            "length": tT,
-                            "newWords": wD,
-                            "novelWords": wA,
-                            "noteWords": wB,
-                            "idleTime": tI,
-                        })
+                        jsonData.append(
+                            {
+                                "date": sD,
+                                "length": tT,
+                                "newWords": wD,
+                                "novelWords": wA,
+                                "noteWords": wB,
+                                "idleTime": tI,
+                            }
+                        )
                     json.dump(jsonData, outFile, indent=2)
                     wSuccess = True
 
                 if dataFmt == self.FMT_CSV:
                     outFile.write(
-                        '"Date","Length (sec)","Words Changed",'
-                        '"Novel Words","Note Words","Idle Time (sec)"\n'
+                        '"Date","Length (sec)","Words Changed","Novel Words","Note Words","Idle Time (sec)"\n'
                     )
                     for _, sD, tT, wD, wA, wB, tI in self.filterData:
                         outFile.write(f'"{sD}",{tT:.0f},{wD},{wA},{wB},{tI}\n')
@@ -438,21 +430,11 @@ class GuiWritingStats(NToolDialog):
 
         # Report to user
         if wSuccess:
-            SHARED.info(
-                self.tr("{0} file successfully written to:").format(textFmt),
-                info=savePath
-            )
+            SHARED.info(self.tr("{0} file successfully written to:").format(textFmt), info=savePath)
         else:
-            SHARED.error(
-                self.tr("Failed to write {0} file.").format(textFmt),
-                info=errMsg
-            )
+            SHARED.error(self.tr("Failed to write {0} file.").format(textFmt), info=errMsg)
 
         return wSuccess
-
-    ##
-    #  Internal Functions
-    ##
 
     def _loadLogFile(self) -> None:
         """Load the content of the log file into a buffer."""
@@ -474,7 +456,7 @@ class GuiWritingStats(NToolDialog):
             elif rType == "record":
                 try:
                     dStart = datetime.fromisoformat(str(record.get("start")))
-                    dEnd   = datetime.fromisoformat(str(record.get("end")))
+                    dEnd = datetime.fromisoformat(str(record.get("end")))
                 except Exception:
                     logger.error("Invalid session log record")
                     continue
@@ -498,8 +480,6 @@ class GuiWritingStats(NToolDialog):
         self.notesWords.setText(f"{ttNotes:n}")
         self.totalWords.setText(f"{ttWords:n}")
 
-        return
-
     ##
     #  Private Slots
     ##
@@ -510,12 +490,12 @@ class GuiWritingStats(NToolDialog):
         self.listBox.clear()
         self.timeFilter = 0.0
 
-        incNovel     = self.swtIncNovel.isChecked()
-        incNotes     = self.swtIncNotes.isChecked()
-        hideZeros    = self.swtHideZeros.isChecked()
+        incNovel = self.swtIncNovel.isChecked()
+        incNotes = self.swtIncNotes.isChecked()
+        hideZeros = self.swtHideZeros.isChecked()
         hideNegative = self.swtHideNegative.isChecked()
-        groupByDay   = self.swtGroupByDay.isChecked()
-        histMax      = self.histMax.value()
+        groupByDay = self.swtGroupByDay.isChecked()
+        histMax = self.histMax.value()
 
         # Group the data
         if groupByDay:
@@ -554,7 +534,6 @@ class GuiWritingStats(NToolDialog):
         listMax = 0
         isFirst = True
         for dStart, sDiff, wcNovel, wcNotes, sIdle in tempData:
-
             wcTotal = 0
             if incNovel:
                 wcTotal += wcNovel
@@ -588,11 +567,10 @@ class GuiWritingStats(NToolDialog):
         mAspect = Qt.AspectRatioMode.IgnoreAspectRatio
         showIdleTime = self.swtShowIdleTime.isChecked()
         for _, sStart, sDiff, nWords, _, _, sIdle in self.filterData:
-
             if showIdleTime:
                 idleEntry = formatTime(sIdle)
             else:
-                sRatio = sIdle/sDiff if sDiff > 0.0 else 0.0
+                sRatio = sIdle / sDiff if sDiff > 0.0 else 0.0
                 idleEntry = f"{round(100.0 * sRatio)} %"
 
             newItem = QTreeWidgetItem()
@@ -602,11 +580,8 @@ class GuiWritingStats(NToolDialog):
             newItem.setText(self.C_COUNT, f"{nWords:n}")
 
             if nWords > 0 and listMax > 0:
-                wBar = self.barImage.scaled(
-                    int(200*min(nWords, histMax)/listMax),
-                    self.barHeight, mAspect, mTrans
-                )
-                newItem.setData(self.C_BAR, QtDecoration, wBar)
+                wBar = self.barImage.scaled(int(200 * min(nWords, histMax) / listMax), self.barHeight, mAspect, mTrans)
+                newItem.setData(self.C_BAR, QtDecorationRole, wBar)
 
             newItem.setTextAlignment(self.C_LENGTH, QtAlignRight)
             newItem.setTextAlignment(self.C_IDLE, QtAlignRight)
@@ -622,5 +597,3 @@ class GuiWritingStats(NToolDialog):
             self.timeFilter += sDiff
 
         self.labelFilter.setText(formatTime(round(self.timeFilter)))
-
-        return

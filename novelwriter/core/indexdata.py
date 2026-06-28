@@ -2,12 +2,6 @@
 novelWriter – Project Index Data
 ================================
 
-File History:
-Created: 2022-05-28 [2.0rc1] IndexNode
-Created: 2022-05-28 [2.0rc1] IndexHeading
-Moved:   2025-02-22 [2.7b1]  IndexNode
-Moved:   2025-02-22 [2.7b1]  IndexHeading
-
 This file is a part of novelWriter
 Copyright (C) 2025 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -23,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -50,7 +45,7 @@ NOTE_TYPES: list[T_NoteTypes] = ["footnotes", "comments"]
 
 
 class IndexNode:
-    """Core: Single Index Item Node Class
+    """Core: Single Index Item Node Class.
 
     This object represents the index data of a project item (NWItem).
     It holds a record of all the headings in the text, and the meta data
@@ -68,18 +63,21 @@ class IndexNode:
         self._headings: dict[str, IndexHeading] = {TT_NONE: IndexHeading(self._cache, TT_NONE)}
         self._notes: dict[str, set[str]] = {}
         self._count = 0
-        return
 
     def __repr__(self) -> str:
+        """Return a string representation of the index node."""
         return f"<IndexNode handle='{self._handle}'>"
 
     def __len__(self) -> int:
+        """Return the number of headings in the index node."""
         return len(self._headings)
 
     def __getitem__(self, sTitle: str) -> IndexHeading | None:
+        """Return the IndexHeading for the given title."""
         return self._headings.get(sTitle, None)
 
     def __contains__(self, sTitle: str) -> bool:
+        """Return True if the given title is in the index node."""
         return sTitle in self._headings
 
     ##
@@ -107,39 +105,33 @@ class IndexNode:
         if TT_NONE in self._headings:
             self._headings.pop(TT_NONE)
         self._headings[tHeading.key] = tHeading
-        return
 
     def setHeadingCounts(self, sTitle: str, cCount: int, wCount: int, pCount: int) -> None:
         """Set the character, word and paragraph count of a heading."""
         if sTitle in self._headings:
             self._headings[sTitle].setCounts([cCount, wCount, pCount])
-        return
 
     def setHeadingComment(self, sTitle: str, comment: nwComment, key: str, text: str) -> None:
         """Set the comment text of a heading."""
         if sTitle in self._headings:
             self._headings[sTitle].setComment(comment.name, key, text)
-        return
 
     def setHeadingTag(self, sTitle: str, tag: str) -> None:
         """Set the tag of a heading."""
         if sTitle in self._headings:
             self._headings[sTitle].setTag(tag)
-        return
 
     def addHeadingRef(self, sTitle: str, tags: list[str], keyword: str) -> None:
         """Add a reference key and all its types to a heading."""
         if sTitle in self._headings:
             for tag in tags:
                 self._headings[sTitle].addReference(tag, keyword)
-        return
 
     def addNoteKey(self, style: T_NoteTypes, key: str) -> None:
         """Add a note key to the index."""
         if style not in self._notes:
             self._notes[style] = set()
         self._notes[style].add(key)
-        return
 
     ##
     #  Data Methods
@@ -174,7 +166,7 @@ class IndexNode:
         """Pack the indexed item's data into a dictionary."""
         data = {}
         for sTitle, hItem in self._headings.items():
-            data[sTitle]  = hItem.packData()
+            data[sTitle] = hItem.packData()
         if self._notes:
             data["document"] = {style: list(keys) for style, keys in self._notes.items()}
         return data
@@ -195,26 +187,19 @@ class IndexNode:
                     self._notes[style] = set(keys)
             else:
                 raise KeyError("Index node contains an invalid key")
-        return
 
 
 class IndexHeading:
-    """Core: Single Index Heading Class
+    """Core: Single Index Heading Class.
 
     This object represents a section of text in a project item
     associated with a single (valid) heading. It holds a separate record
     of all references made under the heading.
     """
 
-    __slots__ = (
-        "_cache", "_comments", "_counts", "_key", "_level", "_line", "_refs",
-        "_tag", "_title",
-    )
+    __slots__ = ("_cache", "_comments", "_counts", "_key", "_level", "_line", "_refs", "_tag", "_title")
 
-    def __init__(
-        self, cache: IndexCache, key: str, line: int = 0,
-        level: str = "H0", title: str = "",
-    ) -> None:
+    def __init__(self, cache: IndexCache, key: str, line: int = 0, level: str = "H0", title: str = "") -> None:
         self._cache = cache
         self._key = key
         self._line = line
@@ -224,9 +209,9 @@ class IndexHeading:
         self._tag = ""
         self._refs: dict[str, set[str]] = {}
         self._comments: dict[str, str] = {}
-        return
 
     def __repr__(self) -> str:
+        """Return a string representation of the index heading."""
         return f"<IndexHeading key='{self._key}'>"
 
     ##
@@ -289,12 +274,10 @@ class IndexHeading:
         """Set the level of the heading if it's a valid value."""
         if level in nwStyles.H_VALID:
             self._level = level
-        return
 
     def setLine(self, line: int) -> None:
         """Set the line number of a heading."""
         self._line = max(0, checkInt(line, 0))
-        return
 
     def setCounts(self, counts: Sequence[int]) -> None:
         """Set the character, word and paragraph count. Make sure the
@@ -306,25 +289,22 @@ class IndexHeading:
                 max(0, checkInt(counts[1], 0)),
                 max(0, checkInt(counts[2], 0)),
             )
-        return
 
     def setComment(self, comment: str, key: str, text: str) -> None:
         """Set the text for a comment and make sure it is a string."""
         match comment.lower():
             case "short" | "synopsis" | "summary":
-                self._comments["summary"] = str(text)
+                self._appendCommentText("summary", text)
             case "story" if key:
                 self._cache.story.add(key)
-                self._comments[f"story.{key}"] = str(text)
+                self._appendCommentText(f"story.{key}", text)
             case "note" if key:
                 self._cache.note.add(key)
-                self._comments[f"note.{key}"] = str(text)
-        return
+                self._appendCommentText(f"note.{key}", text)
 
     def setTag(self, tag: str) -> None:
         """Set the tag for references, and make sure it is a string."""
         self._tag = str(tag).lower()
-        return
 
     def addReference(self, tag: str, keyword: str) -> None:
         """Add a record of a reference tag, and what keyword types it is
@@ -335,7 +315,6 @@ class IndexHeading:
             if tag not in self._refs:
                 self._refs[tag] = set()
             self._refs[tag].add(keyword)
-        return
 
     ##
     #  Getters
@@ -379,13 +358,14 @@ class IndexHeading:
             "counts": self._counts,
         }
         if self._refs:
-            data["refs"] = {k: ",".join(sorted(list(v))) for k, v in self._refs.items()}
+            data["refs"] = {k: ",".join(sorted(v)) for k, v in self._refs.items()}
         if self._comments:
             data.update(self._comments)
         return data
 
     def unpackData(self, data: dict) -> None:
         """Unpack a heading entry from a dictionary."""
+        self._comments = {}  # These are accumulative and should be reset here
         for key, entry in data.items():
             if key == "meta":
                 self.setLevel(entry.get("level", "H0"))
@@ -409,4 +389,13 @@ class IndexHeading:
                 self.setComment(comment, compact(kind), str(entry))
             else:
                 raise KeyError("Unknown key in heading entry")
-        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _appendCommentText(self, key: str, text: str) -> None:
+        """Append text to a comment."""
+        if current := self._comments.get(key):
+            text = f"{current:s}\n\n{text:s}"
+        self._comments[key] = str(text)

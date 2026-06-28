@@ -17,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import argparse
@@ -29,9 +30,18 @@ import sys
 from pathlib import Path
 
 from utils.common import (
-    ROOT_DIR, SETUP_DIR, appdataXml, copyPackageFiles, copySourceCode,
-    extractVersion, freshFolder, makeCheckSum, removeRedundantQt, systemCall,
-    toUpload, writeFile
+    ROOT_DIR,
+    SETUP_DIR,
+    appdataXml,
+    copyPackageFiles,
+    copySourceCode,
+    extractVersion,
+    freshFolder,
+    makeCheckSum,
+    removeRedundantQt,
+    systemCall,
+    toUpload,
+    writeFile,
 )
 
 
@@ -52,7 +62,7 @@ def appImage(args: argparse.Namespace) -> None:
 
     print("")
     print("Build AppImage")
-    print("="*120)
+    print("=" * 120)
 
     mLinux = args.linux
     mArch = args.arch
@@ -91,10 +101,13 @@ def appImage(args: argparse.Namespace) -> None:
     # Write Metadata
     writeFile(imgDir / "novelwriter.appdata.xml", appdataXml())
     writeFile(imgDir / "requirements.txt", str(outDir))
-    writeFile(imgDir / "entrypoint.sh", (
-        # f"export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{APPDIR}}/usr/lib/{mArch}-linux-gnu/\n"
-        '{{ python-executable }} -sE ${APPDIR}/opt/python{{ python-version }}/bin/novelwriter "$@"'
-    ))
+    writeFile(
+        imgDir / "entrypoint.sh",
+        (
+            # f"export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{APPDIR}}/usr/lib/{mArch}-linux-gnu/\n"
+            '{{ python-executable }} -sE ${APPDIR}/opt/python{{ python-version }}/bin/novelwriter "$@"'
+        ),
+    )
 
     shutil.copyfile(SETUP_DIR / "data" / "novelwriter.desktop", imgDir / "novelwriter.desktop")
     print("Copied: novelwriter.desktop")
@@ -103,10 +116,22 @@ def appImage(args: argparse.Namespace) -> None:
     print("Copied: novelwriter.png")
 
     # Build AppDir
-    systemCall([
-        sys.executable, "-m", "python_appimage", "build", "app", "--no-packaging",
-        "-l", f"{mLinux}_{mArch}", "-p", pyVer, "appimage"
-    ], cwd=bldDir)
+    systemCall(
+        [
+            sys.executable,
+            "-m",
+            "python_appimage",
+            "build",
+            "app",
+            "--no-packaging",
+            "-l",
+            f"{mLinux}_{mArch}",
+            "-p",
+            pyVer,
+            "appimage",
+        ],
+        cwd=bldDir,
+    )
 
     # Copy Libraries
     libPath = Path(f"/usr/lib/{mArch}-linux-gnu")
@@ -121,11 +146,18 @@ def appImage(args: argparse.Namespace) -> None:
     appToolExec = os.environ.get("APPIMAGE_TOOL_EXEC", "appimagetool")
     env = os.environ.copy()
     env["ARCH"] = mArch
-    systemCall([
-        appToolExec, "--no-appstream", "--updateinformation",
-        f"gh-releases-zsync|vkbo|novelwriter|latest|novelwriter-*-{mArch}.AppImage.zsync",
-        str(appDir), bldImg
-    ], cwd=bldDir, env=env)
+    systemCall(
+        [
+            appToolExec,
+            "--no-appstream",
+            "--updateinformation",
+            f"gh-releases-zsync|vkbo|novelwriter|latest|novelwriter-*-{mArch}.AppImage.zsync",
+            str(appDir),
+            bldImg,
+        ],
+        cwd=bldDir,
+        env=env,
+    )
 
     updFile = bldDir / f"{bldImg}.zsync"
     bldFile = bldDir / bldImg
@@ -134,5 +166,3 @@ def appImage(args: argparse.Namespace) -> None:
     toUpload(bldFile)
     toUpload(updFile)
     toUpload(shaFile)
-
-    return

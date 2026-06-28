@@ -2,9 +2,6 @@
 novelWriter – Init File
 =======================
 
-File History:
-Created: 2018-09-22 [0.0.1]  main
-
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import getopt
@@ -43,17 +41,17 @@ if TYPE_CHECKING:
 # Package Meta
 # ============
 
-__package__    = "novelwriter"
-__copyright__  = "Copyright 2018-2025 Veronica Berglyd Olsen"
-__license__    = "GPLv3"
-__author__     = "Veronica Berglyd Olsen"
+__package__ = "novelwriter"
+__copyright__ = "Copyright 2018-2025 Veronica Berglyd Olsen"
+__license__ = "GPLv3"
+__author__ = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
-__email__      = "code@vkbo.net"
-__version__    = "2.8a1"
-__hexversion__ = "0x020800a1"
-__date__       = "2025-06-13"
-__status__     = "Stable"
-__domain__     = "novelwriter.io"
+__email__ = "code@vkbo.net"
+__version__ = "26.2a0"
+__hexversion__ = "0x260200a0"
+__date__ = "2026-04-13"
+__status__ = "Stable"
+__domain__ = "novelwriter.io"
 
 logger = logging.getLogger(__name__)
 
@@ -67,12 +65,12 @@ CONFIG = Config()
 SHARED = SharedData()
 
 # ANSI Colours
-RED    = "\033[91m"
-GREEN  = "\033[92m"
+RED = "\033[91m"
+GREEN = "\033[92m"
 YELLOW = "\033[93m"
-BLUE   = "\033[94m"
-WHITE  = "\033[97m"
-END    = "\033[0m"
+BLUE = "\033[94m"
+WHITE = "\033[97m"
+END = "\033[0m"
 
 # Log Format Components
 TIME = "[{asctime:}]"
@@ -84,7 +82,7 @@ TEXT = "{message:}"
 
 # Read Environment
 FORCE_COLOR = bool(os.environ.get("FORCE_COLOR"))
-NO_COLOR    = bool(os.environ.get("NO_COLOR"))
+NO_COLOR = bool(os.environ.get("NO_COLOR"))
 
 
 def main(sysArgs: list | None = None) -> GuiMain | None:
@@ -94,17 +92,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
 
     # Valid Input Options
     shortOpt = "hvidc"
-    longOpt = [
-        "help",
-        "version",
-        "info",
-        "debug",
-        "color",
-        "style=",
-        "config=",
-        "data=",
-        "meminfo"
-    ]
+    longOpt = ["help", "version", "info", "debug", "color", "style=", "config=", "data=", "meminfo"]
 
     helpMsg = (
         f"novelWriter {__version__} ({__date__})\n"
@@ -136,13 +124,13 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     )
 
     # Defaults
-    logLevel = logging.WARN
+    logLevel = logging.WARNING
     fmtColor = FORCE_COLOR
-    fmtLong  = False
+    fmtLong = False
     confPath = None
     dataPath = None
-    qtStyle  = "Fusion"
-    cmdOpen  = None
+    qtStyle = "Fusion"
+    cmdOpen = None
 
     # Parse Options
     try:
@@ -182,10 +170,10 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     if fmtColor:
         # This will overwrite the default level names, and also ensure that
         # they can be converted back to integer levels
-        logging.addLevelName(logging.DEBUG,    f"{BLUE}DEBUG{END}")
-        logging.addLevelName(logging.INFO,     f"{GREEN}INFO{END}")
-        logging.addLevelName(logging.WARNING,  f"{YELLOW}WARNING{END}")
-        logging.addLevelName(logging.ERROR,    f"{RED}ERROR{END}")
+        logging.addLevelName(logging.DEBUG, f"{BLUE}DEBUG{END}")
+        logging.addLevelName(logging.INFO, f"{GREEN}INFO{END}")
+        logging.addLevelName(logging.WARNING, f"{YELLOW}WARNING{END}")
+        logging.addLevelName(logging.ERROR, f"{RED}ERROR{END}")
         logging.addLevelName(logging.CRITICAL, f"{RED}CRITICAL{END}")
 
     logTxt = f"{LVLC}  {TEXT}" if fmtColor else f"{LVLP}  {TEXT}"
@@ -206,34 +194,28 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     # Check Packages and Versions
     errorData = []
     errorCode = 0
-    if sys.hexversion < 0x030a00f0:
-        errorData.append(
-            f"At least Python 3.10 is required, found {CONFIG.verPyString}"
-        )
+    if sys.hexversion < 0x030B00F0:
+        errorData.append(f"At least Python 3.11 is required, found {CONFIG.verPyString}")
         errorCode |= 0x04
     if CONFIG.verQtValue < 0x060400:
-        errorData.append(
-            f"At least Qt6 version 6.4 is required, found {CONFIG.verQtString}"
-        )
+        errorData.append(f"At least Qt6 version 6.4 is required, found {CONFIG.verQtString}")
         errorCode |= 0x08
     if CONFIG.verPyQtValue < 0x060400:
-        errorData.append(
-            f"At least PyQt6 version 6.4 is required, found {CONFIG.verPyQtString}"
-        )
+        errorData.append(f"At least PyQt6 version 6.4 is required, found {CONFIG.verPyQtString}")
         errorCode |= 0x10
 
     if errorData:
         errApp = QApplication([])
         errDlg = QErrorMessage()
         errDlg.resize(500, 300)
-        errDlg.showMessage((
-            "<h3>A critical error was encountered</h3>"
-            "<p>novelWriter cannot start due to the following issues:<p>"
-            "<p>&nbsp;-&nbsp;{0}</p>"
-            "<p>Shutting down ...</p>"
-        ).format(
-            "<br>&nbsp;-&nbsp;".join(errorData)
-        ))
+        errDlg.showMessage(
+            (
+                "<h3>A critical error was encountered</h3>"
+                "<p>novelWriter cannot start due to the following issues:<p>"
+                "<p>&nbsp;-&nbsp;{0}</p>"
+                "<p>Shutting down ...</p>"
+            ).format("<br>&nbsp;-&nbsp;".join(errorData))
+        )
         for errLine in errorData:
             logger.critical(errLine)
         errApp.exec()
@@ -245,6 +227,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     if sys.platform == "darwin":
         try:
             from Foundation import NSBundle  # type: ignore
+
             bundle = NSBundle.mainBundle()
             info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
             info["CFBundleName"] = "novelWriter"
@@ -253,6 +236,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     elif sys.platform == "win32":
         try:
             import ctypes
+
             appID = f"io.novelwriter.{__version__}"
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)  # type: ignore
         except Exception:

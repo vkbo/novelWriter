@@ -2,9 +2,6 @@
 novelWriter – Custom Widget: Switch
 ===================================
 
-File History:
-Created: 2020-05-03 [0.4.5]
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 from PyQt6.QtCore import QPropertyAnimation, Qt, pyqtProperty, pyqtSlot  # pyright: ignore
@@ -32,30 +30,27 @@ from novelwriter.types import QtNoPen, QtPaintAntiAlias, QtSizeFixed
 
 
 class NSwitch(QAbstractButton):
+    """Custom: Toggle Switch."""
 
-    __slots__ = ("_cOff", "_cOn", "_offset", "_rH", "_rR", "_xH", "_xR", "_xW")
+    __slots__ = ("_offset", "_rH", "_rR", "_xH", "_xR", "_xW")
 
     def __init__(self, parent: QWidget, height: int = 0) -> None:
         super().__init__(parent=parent)
 
         self._xH = height or SHARED.theme.baseButtonHeight
-        self._xW = 2*self._xH
-        self._xR = int(self._xH*0.5)
+        self._xW = 2 * self._xH
+        self._xR = int(self._xH * 0.5)
         self._rH = self._xH - 4
         self._rR = self._xR - 2
-
-        self._cOn = SHARED.theme.accentCol
-        self._cOff = self.palette().alternateBase()
 
         self.setCheckable(True)
         self.setSizePolicy(QtSizeFixed, QtSizeFixed)
         self.setFixedWidth(self._xW)
         self.setFixedHeight(self._xH)
+        self.setUpdatesEnabled(True)
         self._offset = self._xR
 
         self.clicked.connect(self._onClick)
-
-        return
 
     ##
     #  Properties
@@ -69,7 +64,6 @@ class NSwitch(QAbstractButton):
     def offset(self, offset: int) -> None:
         self._offset = offset
         self.update()
-        return
 
     ##
     #  Getters and Setters
@@ -79,7 +73,6 @@ class NSwitch(QAbstractButton):
         """Overload setChecked to also alter the offset."""
         super().setChecked(checked)
         self._offset = (self._xW - self._xR) if checked else self._xR
-        return
 
     ##
     #  Events
@@ -89,7 +82,6 @@ class NSwitch(QAbstractButton):
         """Overload resize to ensure correct offset."""
         super().resizeEvent(event)
         self._offset = (self._xW - self._xR) if self.isChecked() else self._xR
-        return
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Drawing the switch itself."""
@@ -100,7 +92,7 @@ class NSwitch(QAbstractButton):
         painter.setOpacity(1.0 if self.isEnabled() else 0.5)
 
         painter.setPen(palette.highlight().color() if self.hasFocus() else palette.mid().color())
-        painter.setBrush(self._cOn if self.isChecked() else self._cOff)
+        painter.setBrush(SHARED.theme.accentCol if self.isChecked() else palette.alternateBase())
         painter.drawRoundedRect(0, 0, self._xW, self._xH, self._xR, self._xR)
 
         painter.setPen(QtNoPen)
@@ -109,13 +101,14 @@ class NSwitch(QAbstractButton):
 
         painter.end()
 
-        return
-
     def enterEvent(self, event: QEnterEvent) -> None:
         """Change the cursor when hovering the button."""
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         super().enterEvent(event)
-        return
+
+    ##
+    #  Internal Functions
+    ##
 
     @pyqtSlot(bool)
     def _onClick(self, checked: bool) -> None:
@@ -125,4 +118,3 @@ class NSwitch(QAbstractButton):
         anim.setStartValue(self._offset)
         anim.setEndValue((self._xW - self._xR) if checked else self._xR)
         anim.start()
-        return
