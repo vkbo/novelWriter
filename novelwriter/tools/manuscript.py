@@ -168,12 +168,10 @@ class GuiManuscript(NToolDialog):
         self.buildSplit = QSplitter(Qt.Orientation.Vertical, self)
         self.buildSplit.addWidget(self.buildList)
         self.buildSplit.addWidget(self.detailsTabs)
-        self.buildSplit.setSizes(
-            [
-                options.getInt("GuiManuscript", "listHeight", 50),
-                options.getInt("GuiManuscript", "detailsHeight", 50),
-            ]
-        )
+        self.buildSplit.setSizes([
+            options.getInt("GuiManuscript", "listHeight", 50),
+            options.getInt("GuiManuscript", "detailsHeight", 50),
+        ])
 
         # Process Controls
         # ================
@@ -242,12 +240,10 @@ class GuiManuscript(NToolDialog):
         self.mainSplit.setCollapsible(1, False)
         self.mainSplit.setStretchFactor(0, 0)
         self.mainSplit.setStretchFactor(1, 1)
-        self.mainSplit.setSizes(
-            [
-                options.getInt("GuiManuscript", "optsWidth", 225),
-                options.getInt("GuiManuscript", "viewWidth", 675),
-            ]
-        )
+        self.mainSplit.setSizes([
+            options.getInt("GuiManuscript", "optsWidth", 225),
+            options.getInt("GuiManuscript", "viewWidth", 675),
+        ])
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.mainSplit)

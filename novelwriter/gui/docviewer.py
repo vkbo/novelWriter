@@ -267,12 +267,10 @@ class GuiDocViewer(QTextBrowser):
         self._docHandle = tHandle
         SHARED.project.data.setLastHandle(tHandle, "viewer")
         self.docHeader.setHandle(tHandle)
-        self.docHeader.setOutline(
-            {
-                sTitle: (hItem.title, nwStyles.H_LEVEL.get(hItem.level, 0))
-                for sTitle, hItem in SHARED.project.index.iterItemHeadings(tHandle)
-            }
-        )
+        self.docHeader.setOutline({
+            sTitle: (hItem.title, nwStyles.H_LEVEL.get(hItem.level, 0))
+            for sTitle, hItem in SHARED.project.index.iterItemHeadings(tHandle)
+        })
         self.updateDocMargins()
 
         QApplication.restoreOverrideCursor()

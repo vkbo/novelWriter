@@ -212,12 +212,10 @@ class GuiManuscriptBuild(NDialog):
         self.mainSplit.setCollapsible(1, False)
         self.mainSplit.setStretchFactor(0, 0)
         self.mainSplit.setStretchFactor(1, 1)
-        self.mainSplit.setSizes(
-            [
-                pOptions.getInt("GuiManuscriptBuild", "fmtWidth", 360),
-                pOptions.getInt("GuiManuscriptBuild", "sumWidth", 360),
-            ]
-        )
+        self.mainSplit.setSizes([
+            pOptions.getInt("GuiManuscriptBuild", "fmtWidth", 360),
+            pOptions.getInt("GuiManuscriptBuild", "sumWidth", 360),
+        ])
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.lblMain, 0, QtAlignCenter)

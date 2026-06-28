@@ -345,14 +345,12 @@ class ProjectXMLReader:
                     if xVal.tag == "name" and "exported" in xVal.attrib:
                         name["active"] = checkBool(xVal.attrib.get("exported"), False)
 
-            content.append(
-                {
-                    "name": itemName,
-                    "itemAttr": item,
-                    "metaAttr": meta,
-                    "nameAttr": name,
-                }
-            )
+            content.append({
+                "name": itemName,
+                "itemAttr": item,
+                "metaAttr": meta,
+                "nameAttr": name,
+            })
 
     def _parseProjectContentLegacy(self, xSection: ET.Element, data: NWProjectData, content: list) -> None:
         """Parse the content section of the XML file for older versions."""
@@ -419,14 +417,12 @@ class ProjectXMLReader:
             if item.get("type", "") == "TRASH":
                 item["type"] = "ROOT"
 
-            content.append(
-                {
-                    "name": itemName,
-                    "itemAttr": item,
-                    "metaAttr": meta,
-                    "nameAttr": name,
-                }
-            )
+            content.append({
+                "name": itemName,
+                "itemAttr": item,
+                "metaAttr": meta,
+                "nameAttr": name,
+            })
 
     def _parseStatusImport(self, xItem: ET.Element, sObject: NWStatus) -> None:
         """Parse a status or importance entry."""

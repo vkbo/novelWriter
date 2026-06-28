@@ -1252,12 +1252,10 @@ class GuiPreferences(NDialog):
         # Features
         vimMode = self.vimMode.isChecked()
         if vimMode and not CONFIG.vimMode:
-            vimMode = SHARED.question(
-                [
-                    self.tr("Are you sure you want to enable Vim mode?"),
-                    self.tr("This changes how the editor accepts input."),
-                ]
-            )
+            vimMode = SHARED.question([
+                self.tr("Are you sure you want to enable Vim mode?"),
+                self.tr("This changes how the editor accepts input."),
+            ])
         self.vimMode.setChecked(vimMode)
         CONFIG.vimMode = vimMode
 

@@ -295,13 +295,11 @@ class Index:
             meta = {"version": __hexversion__, "timestamp": formatTimeStamp(start)}
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write(
-                    jsonCombine(
-                        {
-                            "novelWriter.meta": jsonEncode(meta, n=1),
-                            "novelWriter.tagsIndex": jsonEncode(self._tagsIndex.packData(), n=1, nmax=2),
-                            "novelWriter.itemIndex": jsonEncode(self._itemIndex.packData(), n=1, nmax=4),
-                        }
-                    )
+                    jsonCombine({
+                        "novelWriter.meta": jsonEncode(meta, n=1),
+                        "novelWriter.tagsIndex": jsonEncode(self._tagsIndex.packData(), n=1, nmax=2),
+                        "novelWriter.itemIndex": jsonEncode(self._itemIndex.packData(), n=1, nmax=4),
+                    })
                 )
         except Exception as exc:
             SHARED.appendErrorMessage(exc)

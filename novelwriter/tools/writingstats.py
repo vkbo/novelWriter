@@ -108,15 +108,13 @@ class GuiWritingStats(NToolDialog):
         wCol3 = pOptions.getInt("GuiWritingStats", "widthCol3", 80)
 
         self.listBox = QTreeWidget(self)
-        self.listBox.setHeaderLabels(
-            [
-                self.tr("Session Start"),
-                self.tr("Length"),
-                self.tr("Idle"),
-                self.tr("Words"),
-                self.tr("Histogram"),
-            ]
-        )
+        self.listBox.setHeaderLabels([
+            self.tr("Session Start"),
+            self.tr("Length"),
+            self.tr("Idle"),
+            self.tr("Words"),
+            self.tr("Histogram"),
+        ])
         self.listBox.setIndentation(0)
         self.listBox.setColumnWidth(self.C_TIME, wCol0)
         self.listBox.setColumnWidth(self.C_LENGTH, wCol1)
@@ -403,16 +401,14 @@ class GuiWritingStats(NToolDialog):
                 if dataFmt == self.FMT_JSON:
                     jsonData = []
                     for _, sD, tT, wD, wA, wB, tI in self.filterData:
-                        jsonData.append(
-                            {
-                                "date": sD,
-                                "length": tT,
-                                "newWords": wD,
-                                "novelWords": wA,
-                                "noteWords": wB,
-                                "idleTime": tI,
-                            }
-                        )
+                        jsonData.append({
+                            "date": sD,
+                            "length": tT,
+                            "newWords": wD,
+                            "novelWords": wA,
+                            "noteWords": wB,
+                            "idleTime": tI,
+                        })
                     json.dump(jsonData, outFile, indent=2)
                     wSuccess = True
 

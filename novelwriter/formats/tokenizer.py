@@ -552,20 +552,16 @@ class Tokenizer(ABC):
         text = REGEX_PATTERNS.lineBreak.sub(nwUnicode.U_NAC2, self._text)
 
         # Translation Maps
-        transMapA = str.maketrans(
-            {
-                nwUnicode.U_NAC2: "",  # Used when [br] is ignored
-                nwUnicode.U_MAPOS: nwUnicode.U_RSQUO,
-                nwUnicode.U_HBAR: nwUnicode.U_EMDASH,
-            }
-        )
-        transMapB = str.maketrans(
-            {
-                nwUnicode.U_NAC2: "\n",  # Used when [br] is not ignored
-                nwUnicode.U_MAPOS: nwUnicode.U_RSQUO,
-                nwUnicode.U_HBAR: nwUnicode.U_EMDASH,
-            }
-        )
+        transMapA = str.maketrans({
+            nwUnicode.U_NAC2: "",  # Used when [br] is ignored
+            nwUnicode.U_MAPOS: nwUnicode.U_RSQUO,
+            nwUnicode.U_HBAR: nwUnicode.U_EMDASH,
+        })
+        transMapB = str.maketrans({
+            nwUnicode.U_NAC2: "\n",  # Used when [br] is not ignored
+            nwUnicode.U_MAPOS: nwUnicode.U_RSQUO,
+            nwUnicode.U_HBAR: nwUnicode.U_EMDASH,
+        })
 
         nHead = 0
         tHandle = self._handle or ""
@@ -1152,14 +1148,12 @@ class Tokenizer(ABC):
         tHandle = self._handle or ""
         for res in REGEX_PATTERNS.shortcodeValue.finditer(text):
             kind = self._shortCodeVals.get(res.group(1).lower(), 0)
-            temp.append(
-                (
-                    res.start(0),
-                    res.end(0),
-                    TextFmt.STRIP if kind == skip else kind,
-                    f"{tHandle}:{res.group(2)}",
-                )
-            )
+            temp.append((
+                res.start(0),
+                res.end(0),
+                TextFmt.STRIP if kind == skip else kind,
+                f"{tHandle}:{res.group(2)}",
+            ))
 
         # Match Dialogue
         if self._hlightDialog and hDialog:

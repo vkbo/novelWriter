@@ -143,16 +143,14 @@ class NWSessionLog:
         cnotes: int = 0,
     ) -> str:
         """Low level function to create a log record."""
-        data = json.dumps(
-            {
-                "type": "record",
-                "start": start,
-                "end": end,
-                "novel": novel,
-                "notes": notes,
-                "cnovel": cnovel,
-                "cnotes": cnotes,
-                "idle": idle,
-            }
-        )
+        data = json.dumps({
+            "type": "record",
+            "start": start,
+            "end": end,
+            "novel": novel,
+            "notes": notes,
+            "cnovel": cnovel,
+            "cnotes": cnotes,
+            "idle": idle,
+        })
         return f"{data}\n"

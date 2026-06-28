@@ -24,12 +24,43 @@ from __future__ import annotations
 import argparse
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 import zipfile
 
 from pathlib import Path
 
 from utils.common import ROOT_DIR, writeFile
 from utils.docs import buildPdfDocAssets
+
+
+def _normaliseTsLocations(tsFile: Path) -> tuple[int, int]:
+    """Strip volatile TS line locations and merge duplicate file locations."""
+    tree = ET.parse(tsFile)
+    root = tree.getroot()
+
+    nLines = 0
+    nMerged = 0
+
+    for message in root.findall("./context/message"):
+        seenFiles: set[str] = set()
+        for location in list(message.findall("location")):
+            if "line" in location.attrib:
+                del location.attrib["line"]
+                nLines += 1
+
+            if (filename := location.attrib.get("filename", "")) in seenFiles:
+                message.remove(location)
+                nMerged += 1
+            else:
+                seenFiles.add(filename)
+
+    if nLines > 0 or nMerged > 0:
+        ET.indent(tree, space="  ")
+        header = '<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE TS>\n'
+        xmlBody = ET.tostring(root, encoding="unicode", short_empty_elements=True)
+        tsFile.write_text(f"{header}{xmlBody}\n", encoding="utf-8")
+
+    return nLines, nMerged
 
 
 def buildSampleZip(args: argparse.Namespace | None = None) -> None:
@@ -151,6 +182,17 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
         no_obsolete=True,
         no_summary=False,
     )
+
+    print("")
+    print("Normalising TS Location Metadata:")
+    print("")
+
+    for item in translations:
+        nLines, nMerged = _normaliseTsLocations(item)
+        if nLines > 0 or nMerged > 0:
+            print(f"Updated: {item} ({nLines} line refs, {nMerged} merged)")
+        else:
+            print(f"No Change: {item}")
 
     print("")
 

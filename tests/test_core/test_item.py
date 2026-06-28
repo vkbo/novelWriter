@@ -553,33 +553,31 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
     # File
     item = NWItem(project, "")
     assert (
-        item.unpack(
-            {
-                "name": "A File",
-                "itemAttr": {
-                    "handle": "0000000000003",
-                    "parent": "0000000000002",
-                    "root": "0000000000001",
-                    "order": 1,
-                    "type": "FILE",
-                    "class": "NOVEL",
-                    "layout": "DOCUMENT",
-                },
-                "metaAttr": {
-                    "expanded": True,
-                    "heading": "H1",
-                    "charCount": 100,
-                    "wordCount": 20,
-                    "paraCount": 2,
-                    "cursorPos": 50,
-                },
-                "nameAttr": {
-                    "status": None,
-                    "import": None,
-                    "active": False,
-                },
-            }
-        )
+        item.unpack({
+            "name": "A File",
+            "itemAttr": {
+                "handle": "0000000000003",
+                "parent": "0000000000002",
+                "root": "0000000000001",
+                "order": 1,
+                "type": "FILE",
+                "class": "NOVEL",
+                "layout": "DOCUMENT",
+            },
+            "metaAttr": {
+                "expanded": True,
+                "heading": "H1",
+                "charCount": 100,
+                "wordCount": 20,
+                "paraCount": 2,
+                "cursorPos": 50,
+            },
+            "nameAttr": {
+                "status": None,
+                "import": None,
+                "active": False,
+            },
+        })
         is True
     )
 
@@ -630,33 +628,31 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
     # Folder
     item = NWItem(project, "")
     assert (
-        item.unpack(
-            {
-                "name": "A Folder",
-                "itemAttr": {
-                    "handle": "0000000000003",
-                    "parent": "0000000000002",
-                    "root": "0000000000001",
-                    "order": 1,
-                    "type": "FOLDER",
-                    "class": "NOVEL",
-                    "layout": "DOCUMENT",
-                },
-                "metaAttr": {
-                    "expanded": True,
-                    "heading": "H1",
-                    "charCount": 100,
-                    "wordCount": 20,
-                    "paraCount": 2,
-                    "cursorPos": 50,
-                },
-                "nameAttr": {
-                    "status": "",
-                    "import": "",
-                    "active": True,
-                },
-            }
-        )
+        item.unpack({
+            "name": "A Folder",
+            "itemAttr": {
+                "handle": "0000000000003",
+                "parent": "0000000000002",
+                "root": "0000000000001",
+                "order": 1,
+                "type": "FOLDER",
+                "class": "NOVEL",
+                "layout": "DOCUMENT",
+            },
+            "metaAttr": {
+                "expanded": True,
+                "heading": "H1",
+                "charCount": 100,
+                "wordCount": 20,
+                "paraCount": 2,
+                "cursorPos": 50,
+            },
+            "nameAttr": {
+                "status": "",
+                "import": "",
+                "active": True,
+            },
+        })
         is True
     )
 
@@ -700,33 +696,31 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
     # Root
     item = NWItem(project, "")
     assert (
-        item.unpack(
-            {
-                "name": "A Novel",
-                "itemAttr": {
-                    "handle": "0000000000003",
-                    "parent": "0000000000002",
-                    "root": "0000000000001",
-                    "order": 1,
-                    "type": "ROOT",
-                    "class": "NOVEL",
-                    "layout": "DOCUMENT",
-                },
-                "metaAttr": {
-                    "expanded": True,
-                    "heading": "H1",
-                    "charCount": 100,
-                    "wordCount": 20,
-                    "paraCount": 2,
-                    "cursorPos": 50,
-                },
-                "nameAttr": {
-                    "status": None,
-                    "import": None,
-                    "active": True,
-                },
-            }
-        )
+        item.unpack({
+            "name": "A Novel",
+            "itemAttr": {
+                "handle": "0000000000003",
+                "parent": "0000000000002",
+                "root": "0000000000001",
+                "order": 1,
+                "type": "ROOT",
+                "class": "NOVEL",
+                "layout": "DOCUMENT",
+            },
+            "metaAttr": {
+                "expanded": True,
+                "heading": "H1",
+                "charCount": 100,
+                "wordCount": 20,
+                "paraCount": 2,
+                "cursorPos": 50,
+            },
+            "nameAttr": {
+                "status": None,
+                "import": None,
+                "active": True,
+            },
+        })
         is True
     )
 

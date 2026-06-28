@@ -417,12 +417,10 @@ class _FilterTab(NFixedPage):
         self.mainSplit.setCollapsible(1, False)
         self.mainSplit.setStretchFactor(0, 1)
         self.mainSplit.setStretchFactor(1, 0)
-        self.mainSplit.setSizes(
-            [
-                pOptions.getInt("GuiBuildSettings", "treeWidth", 300),
-                pOptions.getInt("GuiBuildSettings", "filterWidth", 300),
-            ]
-        )
+        self.mainSplit.setSizes([
+            pOptions.getInt("GuiBuildSettings", "treeWidth", 300),
+            pOptions.getInt("GuiBuildSettings", "filterWidth", 300),
+        ])
 
         self.updateTheme(init=True)
         self.setCentralWidget(self.mainSplit)

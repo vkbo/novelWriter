@@ -345,14 +345,12 @@ class GuiMain(QMainWindow):
         # If this is a new release, let the user know
         if hexToInt(CONFIG.lastNotes) < hexToInt(__hexversion__):
             CONFIG.lastNotes = __hexversion__
-            SHARED.info(
-                [
-                    self.tr("You are now running novelWriter version {0}.").format(formatVersion(__version__)),
-                    self.tr("Please check the {0}release notes{1} for further details.").format(
-                        f"<a href='{nwConst.URL_RELEASES}'>", "</a>"
-                    ),
-                ]
-            )
+            SHARED.info([
+                self.tr("You are now running novelWriter version {0}.").format(formatVersion(__version__)),
+                self.tr("Please check the {0}release notes{1} for further details.").format(
+                    f"<a href='{nwConst.URL_RELEASES}'>", "</a>"
+                ),
+            ])
 
     ##
     #  Project Actions
@@ -368,12 +366,10 @@ class GuiMain(QMainWindow):
             return True
 
         if not isYes:
-            msgYes = SHARED.question(
-                [
-                    self.tr("Close the current project?"),
-                    self.tr("Changes are saved automatically."),
-                ]
-            )
+            msgYes = SHARED.question([
+                self.tr("Close the current project?"),
+                self.tr("Changes are saved automatically."),
+            ])
             if not msgYes:
                 return False
 
@@ -829,12 +825,10 @@ class GuiMain(QMainWindow):
         if (
             SHARED.hasProject
             and CONFIG.askBeforeExit
-            and not SHARED.question(
-                [
-                    self.tr("Do you want to exit novelWriter?"),
-                    self.tr("Changes are saved automatically."),
-                ]
-            )
+            and not SHARED.question([
+                self.tr("Do you want to exit novelWriter?"),
+                self.tr("Changes are saved automatically."),
+            ])
         ):
             return False
 
