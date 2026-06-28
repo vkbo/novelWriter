@@ -324,16 +324,14 @@ class _ContentsPage(NFixedPage):
         self.tocTree.setIndentation(0)
         self.tocTree.setColumnCount(6)
         self.tocTree.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
-        self.tocTree.setHeaderLabels(
-            [
-                self.tr("Title"),
-                self.tr("Words"),
-                self.tr("Pages"),
-                self.tr("Page"),
-                self.tr("Progress"),
-                "",
-            ]
-        )
+        self.tocTree.setHeaderLabels([
+            self.tr("Title"),
+            self.tr("Words"),
+            self.tr("Pages"),
+            self.tr("Page"),
+            self.tr("Progress"),
+            "",
+        ])
 
         treeHeadItem = self.tocTree.headerItem()
         if treeHeadItem:

@@ -1131,17 +1131,15 @@ def testCoreIndex_TagsIndex():
 
     # Invalid key
     with pytest.raises(ValueError, match="tagsIndex key must be a string"):
-        tagsIndex.unpackData(
-            {
-                1234: {
-                    "name": "Tag1",
-                    "display": "Tag1",
-                    "handle": "0000000000001",
-                    "heading": "T0001",
-                    "class": "NOVEL",
-                }
+        tagsIndex.unpackData({
+            1234: {
+                "name": "Tag1",
+                "display": "Tag1",
+                "handle": "0000000000001",
+                "heading": "T0001",
+                "class": "NOVEL",
             }
-        )
+        })
 
     # Invalid entry
     with pytest.raises(ValueError, match="tagsIndex entry is not a dict"):
@@ -1149,73 +1147,63 @@ def testCoreIndex_TagsIndex():
 
     # Invalid name
     with pytest.raises(ValueError, match="tagsIndex name is not a string"):
-        tagsIndex.unpackData(
-            {
-                "tag1": {
-                    "name": 1234,
-                    "display": "Tag1",
-                    "handle": "0000000000001",
-                    "heading": "T0001",
-                    "class": "NOVEL",
-                }
+        tagsIndex.unpackData({
+            "tag1": {
+                "name": 1234,
+                "display": "Tag1",
+                "handle": "0000000000001",
+                "heading": "T0001",
+                "class": "NOVEL",
             }
-        )
+        })
 
     # Invalid display
     with pytest.raises(ValueError, match="tagsIndex display is not a string"):
-        tagsIndex.unpackData(
-            {
-                "tag1": {
-                    "name": "Tag1",
-                    "display": 1234,
-                    "handle": "0000000000001",
-                    "heading": "T0001",
-                    "class": "NOVEL",
-                }
+        tagsIndex.unpackData({
+            "tag1": {
+                "name": "Tag1",
+                "display": 1234,
+                "handle": "0000000000001",
+                "heading": "T0001",
+                "class": "NOVEL",
             }
-        )
+        })
 
     # Invalid handle
     with pytest.raises(ValueError, match="tagsIndex handle must be a handle"):
-        tagsIndex.unpackData(
-            {
-                "tag1": {
-                    "name": "Tag1",
-                    "display": "Tag1",
-                    "handle": "blablabla",
-                    "heading": "T0001",
-                    "class": "NOVEL",
-                }
+        tagsIndex.unpackData({
+            "tag1": {
+                "name": "Tag1",
+                "display": "Tag1",
+                "handle": "blablabla",
+                "heading": "T0001",
+                "class": "NOVEL",
             }
-        )
+        })
 
     # Invalid heading
     with pytest.raises(ValueError, match="tagsIndex heading must be a title tag"):
-        tagsIndex.unpackData(
-            {
-                "tag1": {
-                    "name": "Tag1",
-                    "display": "Tag1",
-                    "handle": "0000000000001",
-                    "heading": "stuff",
-                    "class": "NOVEL",
-                }
+        tagsIndex.unpackData({
+            "tag1": {
+                "name": "Tag1",
+                "display": "Tag1",
+                "handle": "0000000000001",
+                "heading": "stuff",
+                "class": "NOVEL",
             }
-        )
+        })
 
     # Invalid class
     with pytest.raises(ValueError, match="tagsIndex handle must be an nwItemClass"):
-        tagsIndex.unpackData(
-            {
-                "tag1": {
-                    "name": "Tag1",
-                    "display": "Tag1",
-                    "handle": "0000000000001",
-                    "heading": "T0001",
-                    "class": "STUFF",
-                }
+        tagsIndex.unpackData({
+            "tag1": {
+                "name": "Tag1",
+                "display": "Tag1",
+                "handle": "0000000000001",
+                "heading": "T0001",
+                "class": "STUFF",
             }
-        )
+        })
 
 
 @pytest.mark.core

@@ -1407,12 +1407,9 @@ class GuiDocEditor(QPlainTextEdit):
             if not self._wCounterDoc.isRunning():
                 SHARED.runInThreadPool(self._wCounterDoc)
 
-            self.docHeader.setOutline(
-                {
-                    block.blockNumber(): block.text()
-                    for block in self._qDocument.iterBlockByType(BLOCK_TITLE, maxCount=30)
-                }
-            )
+            self.docHeader.setOutline({
+                block.blockNumber(): block.text() for block in self._qDocument.iterBlockByType(BLOCK_TITLE, maxCount=30)
+            })
 
             if self._docChanged:
                 self.docTextChanged.emit(self._docHandle, self._lastEdit)

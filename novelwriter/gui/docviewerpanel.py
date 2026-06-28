@@ -382,17 +382,15 @@ class _ViewPanelKeyWords(QTreeWidget):
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
 
-        self.setHeaderLabels(
-            [
-                self.tr("Tag"),
-                "",
-                "",
-                self.tr("Importance"),
-                self.tr("Document"),
-                self.tr("Heading"),
-                self.tr("Short Description"),
-            ]
-        )
+        self.setHeaderLabels([
+            self.tr("Tag"),
+            "",
+            "",
+            self.tr("Importance"),
+            self.tr("Document"),
+            self.tr("Heading"),
+            self.tr("Short Description"),
+        ])
         self.setIndentation(0)
         self.setIconSize(iSz)
         self.setFrameStyle(QFrame.Shape.NoFrame)

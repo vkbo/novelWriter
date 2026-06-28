@@ -760,32 +760,30 @@ class GuiOutlineTree(QTreeWidget):
                 comments = dict(novIdx.comments.items())
                 story = [comments.get(k, "") for k in sMatch]
                 notes = [comments.get(k, "") for k in nMatch]
-                data.append(
-                    [
-                        novIdx.level,
-                        novIdx.title,
-                        nwItem.itemName,
-                        novIdx.line,
-                        nwItem.getImportStatus()[0],
-                        novIdx.charCount,
-                        novIdx.wordCount,
-                        novIdx.paraCount,
-                        ", ".join(refs[nwKeyWords.POV_KEY]),
-                        ", ".join(refs[nwKeyWords.FOCUS_KEY]),
-                        ", ".join(refs[nwKeyWords.CHAR_KEY]),
-                        ", ".join(refs[nwKeyWords.PLOT_KEY]),
-                        ", ".join(refs[nwKeyWords.TIME_KEY]),
-                        ", ".join(refs[nwKeyWords.WORLD_KEY]),
-                        ", ".join(refs[nwKeyWords.OBJECT_KEY]),
-                        ", ".join(refs[nwKeyWords.ENTITY_KEY]),
-                        ", ".join(refs[nwKeyWords.CUSTOM_KEY]),
-                        ", ".join(refs[nwKeyWords.STORY_KEY]),
-                        ", ".join(refs[nwKeyWords.MENTION_KEY]),
-                        novIdx.synopsis,
-                        *story,
-                        *notes,
-                    ]
-                )
+                data.append([
+                    novIdx.level,
+                    novIdx.title,
+                    nwItem.itemName,
+                    novIdx.line,
+                    nwItem.getImportStatus()[0],
+                    novIdx.charCount,
+                    novIdx.wordCount,
+                    novIdx.paraCount,
+                    ", ".join(refs[nwKeyWords.POV_KEY]),
+                    ", ".join(refs[nwKeyWords.FOCUS_KEY]),
+                    ", ".join(refs[nwKeyWords.CHAR_KEY]),
+                    ", ".join(refs[nwKeyWords.PLOT_KEY]),
+                    ", ".join(refs[nwKeyWords.TIME_KEY]),
+                    ", ".join(refs[nwKeyWords.WORLD_KEY]),
+                    ", ".join(refs[nwKeyWords.OBJECT_KEY]),
+                    ", ".join(refs[nwKeyWords.ENTITY_KEY]),
+                    ", ".join(refs[nwKeyWords.CUSTOM_KEY]),
+                    ", ".join(refs[nwKeyWords.STORY_KEY]),
+                    ", ".join(refs[nwKeyWords.MENTION_KEY]),
+                    novIdx.synopsis,
+                    *story,
+                    *notes,
+                ])
 
         return data
 
@@ -992,12 +990,10 @@ class GuiOutlineDetails(QScrollArea):
         parent = self.outlineView.parent()  # This widget is rendered already
         width = parent.width() if isinstance(parent, QWidget) else 1000
         pOptions = SHARED.project.options
-        self.mainSplit.setSizes(
-            [
-                pOptions.getInt("GuiOutlineDetails", "detailsWidth", width // 3),
-                pOptions.getInt("GuiOutlineDetails", "tagsWidth", 2 * width // 3),
-            ]
-        )
+        self.mainSplit.setSizes([
+            pOptions.getInt("GuiOutlineDetails", "detailsWidth", width // 3),
+            pOptions.getInt("GuiOutlineDetails", "tagsWidth", 2 * width // 3),
+        ])
 
     def saveGuiSettings(self) -> None:
         """Run close project tasks."""
