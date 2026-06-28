@@ -73,7 +73,7 @@ jobs:
             image: fedora:40
           - distro: arch-linux
             image: archlinux:latest
-          - distro: manjaro-xfce
+          - distro: manjaro
             image: manjarolinux/base:latest
     container:
       image: ${{ matrix.image }}
@@ -82,11 +82,11 @@ jobs:
         run: |
           if command -v apt-get >/dev/null 2>&1; then
             apt-get update
-            apt-get install -y ca-certificates
+            apt-get install -y ca-certificates libgl1
           elif command -v dnf >/dev/null 2>&1; then
-            dnf install -y ca-certificates coreutils
+            dnf install -y ca-certificates coreutils mesa-libGL
           elif command -v pacman >/dev/null 2>&1; then
-            pacman -Syu --noconfirm --needed ca-certificates coreutils
+            pacman -Syu --noconfirm --needed ca-certificates coreutils mesa
           fi
 
       - name: Download AppImage Artifact
