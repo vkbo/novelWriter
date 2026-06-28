@@ -1,5 +1,43 @@
 # novelWriter Changelog
 
+## Version 26.1.1 [2026-06-28]
+
+### Release Notes
+
+This is a patch release that adds Catalan language to the app, and updates translation files for
+other languages. Some user interface labels for the Manuscript tool have been improved, and the
+documentation updated. A small fix resolves an error message printed to the log when launching the
+app on Linux.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed a DBus error message from Qt on Linux. PR #2790.
+
+**Improvements**
+
+* Clarified some of the GUI labels on the Manuscript tool. Issue #2762. PR #2768.
+
+**Internationalisation**
+
+* Catalan translations added by @jaumeplanas. PR #2793.
+* Norwegian and US English translations updated by @vkbo. PR #2793.
+* Japanese translation updated bu @hebekeg. PR #2793.
+* German translation updated by @HeyMyian. PR #2793.
+* Polish translation updated by @Nauthizz. PR #2793.
+* Dutch translation updated by @risingphoenix73. PR #2793.
+* Italian translation updated by Lou Cyper. PR #2793.
+* Chinese translation updated by wcxu21 and @longqzh. PR #2793.
+
+**Documentation**
+
+* Fixed some typos in the documentation. PR #2773.
+* Improved the documentation for the Manuscript tool. Issue #2763. PR #2768.
+* Switched the documentation back to using `uv` for examples. PR #2766.
+
+----
+
 ## Version 26.1 [2026-04-26]
 
 ### Release Notes
