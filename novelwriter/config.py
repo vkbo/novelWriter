@@ -235,6 +235,7 @@ class Config:
         # Set Application Variables
         self.appName = "novelWriter"
         self.appHandle = "novelwriter"
+
         # Set Paths
         confRoot = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.ConfigLocation))
         dataRoot = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation))
