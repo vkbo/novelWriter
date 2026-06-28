@@ -227,26 +227,25 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     # Finish initialising config
     CONFIG.initConfig(confPath, dataPath)
 
-    match sys.platform:
-        case "linux":
-            QApplication.setDesktopFileName(CONFIG.appHandle)
-        case "darwin":
-            try:
-                from Foundation import NSBundle  # type: ignore
+    if sys.platform == "linux":
+        QApplication.setDesktopFileName(CONFIG.appHandle)
+    elif sys.platform == "darwin":
+        try:
+            from Foundation import NSBundle  # type: ignore
 
-                bundle = NSBundle.mainBundle()
-                info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
-                info["CFBundleName"] = "novelWriter"
-            except Exception:
-                pass  # Quietly ignore error
-        case "win32":
-            try:
-                import ctypes
+            bundle = NSBundle.mainBundle()
+            info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
+            info["CFBundleName"] = "novelWriter"
+        except Exception:
+            pass  # Quietly ignore error
+    elif sys.platform == "win32":
+        try:
+            import ctypes
 
-                appID = f"io.novelwriter.{__version__}"
-                ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)  # type: ignore
-            except Exception:
-                pass  # Quietly ignore error
+            appID = f"io.novelwriter.{__version__}"
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)  # type: ignore
+        except Exception:
+            pass  # Quietly ignore error
 
     # Import GUI (after dependency checks), and launch
     from novelwriter.gui.theme import GuiTheme
