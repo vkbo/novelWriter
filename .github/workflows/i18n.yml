@@ -1,9 +1,12 @@
 name: i18n
 
 on:
-  push:
+  pull_request:
     branches:
-      - i18n*
+      - main
+      - release
+    paths:
+      - i18n/*.ts
 
 jobs:
   buildI18n:
