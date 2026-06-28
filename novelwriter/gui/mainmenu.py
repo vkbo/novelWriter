@@ -97,6 +97,14 @@ class GuiMainMenu(QMenuBar):
         self.aSpellCheck.setChecked(state)
 
     @pyqtSlot()
+    def setSelectedProjectSpellCheckLanguage(self) -> None:
+        """Set the selected spell check language in the menu to match
+        the project's setting.
+        """
+        for action in self.mSelectLanguage.actions():
+            action.setChecked(action.data() == (SHARED.project.data.spellLang or "None"))
+
+    @pyqtSlot()
     def updateSpellCheckLanguages(self) -> None:
         """Update the list of available spell check languages."""
         self.mSelectLanguage.clear()
@@ -105,8 +113,11 @@ class GuiMainMenu(QMenuBar):
         for tag, language in languages:
             aSpell = QAction(self.mSelectLanguage)
             aSpell.setText(language)
+            aSpell.setCheckable(True)
+            aSpell.setData(tag)
             aSpell.triggered.connect(qtLambda(self._changeSpelling, tag))
             self.mSelectLanguage.addAction(aSpell)
+        self.setSelectedProjectSpellCheckLanguage()
 
     ##
     #  Private Slots
@@ -131,6 +142,7 @@ class GuiMainMenu(QMenuBar):
         """Change the spell check language."""
         SHARED.project.data.setSpellLang(language)
         SHARED.updateSpellCheckLanguage()
+        self.setSelectedProjectSpellCheckLanguage()
 
     ##
     #  Internal Functions

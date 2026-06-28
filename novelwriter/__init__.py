@@ -2,9 +2,6 @@
 novelWriter – Init File
 =======================
 
-File History:
-Created: 2018-09-22 [0.0.1]  main
-
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -50,9 +47,9 @@ __license__ = "GPLv3"
 __author__ = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__ = "code@vkbo.net"
-__version__ = "26.1.1"
-__hexversion__ = "0x260101f0"
-__date__ = "2026-06-28"
+__version__ = "26.2a0"
+__hexversion__ = "0x260200a0"
+__date__ = "2026-04-13"
 __status__ = "Stable"
 __domain__ = "novelwriter.io"
 
@@ -127,7 +124,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     )
 
     # Defaults
-    logLevel = logging.WARN
+    logLevel = logging.WARNING
     fmtColor = FORCE_COLOR
     fmtLong = False
     confPath = None

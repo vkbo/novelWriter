@@ -112,6 +112,7 @@ class GuiAbout(NDialog):
         logger.debug("Ready: GuiAbout")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiAbout")
 
     ##

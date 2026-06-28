@@ -494,14 +494,29 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     headTab.btnApply.click()
     assert sBuild.getStr("headings.fmtSection") == nwHeadFmt.TITLE
 
+    # Check that horizontal rule replaces all
+    headTab.btnScene.click()
+    headTab.aInsTitle.trigger()
+    headTab.aInsHRule.trigger()
+    headTab.btnApply.click()
+    assert sBuild.getStr("headings.fmtScene") == nwHeadFmt.HRULE
+
     # Check hide switches
+    headTab.swtPart.setChecked(True)
+    headTab.swtChapter.setChecked(True)
+    headTab.swtUnnumbered.setChecked(True)
     headTab.swtScene.setChecked(True)
+    headTab.swtAScene.setChecked(True)
     headTab.swtSection.setChecked(True)
     headTab.saveContent()
     sBuild = bSettings._build
     assert sBuild.buildID == build.buildID
 
+    assert sBuild.getBool("headings.hidePart") is True
+    assert sBuild.getBool("headings.hideChapter") is True
+    assert sBuild.getBool("headings.hideUnnumbered") is True
     assert sBuild.getBool("headings.hideScene") is True
+    assert sBuild.getBool("headings.hideAltScene") is True
     assert sBuild.getBool("headings.hideSection") is True
 
     # Finish
@@ -591,6 +606,7 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
     build.setValue("format.lineHeight", 1.2)
 
     build.setValue("format.justifyText", False)
+    build.setValue("format.justifyOnBreak", False)
     build.setValue("format.stripUnicode", False)
     build.setValue("format.replaceTabs", False)
     build.setValue("format.keepBreaks", True)
@@ -611,6 +627,7 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
     assert fmtTab.lineHeight.value() == 1.2
 
     assert fmtTab.justifyText.isChecked() is False
+    assert fmtTab.justifyOnBreak.isChecked() is False
     assert fmtTab.stripUnicode.isChecked() is False
     assert fmtTab.replaceTabs.isChecked() is False
     assert fmtTab.keepBreaks.isChecked() is True
@@ -623,6 +640,7 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
     fmtTab.lineHeight.setValue(1.15)
 
     fmtTab.justifyText.setChecked(True)
+    fmtTab.justifyOnBreak.setChecked(True)
     fmtTab.stripUnicode.setChecked(True)
     fmtTab.replaceTabs.setChecked(True)
     fmtTab.keepBreaks.setChecked(False)
@@ -637,6 +655,7 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
     assert sBuild.getFloat("format.lineHeight") == 1.15
 
     assert sBuild.getBool("format.justifyText") is True
+    assert sBuild.getBool("format.justifyOnBreak") is True
     assert sBuild.getBool("format.stripUnicode") is True
     assert sBuild.getBool("format.replaceTabs") is True
     assert sBuild.getBool("format.keepBreaks") is False

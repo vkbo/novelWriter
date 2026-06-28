@@ -2,12 +2,6 @@
 novelWriter – Project Document Tools
 ====================================
 
-File History:
-Created: 2022-10-02 [2.0rc1] DocMerger
-Created: 2022-10-11 [2.0rc1] DocSplitter
-Created: 2022-11-03 [2.0rc2] ProjectBuilder
-Created: 2023-07-20 [2.1b1]  DocDuplicator
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -158,6 +152,7 @@ class DocSplitter:
             self._srcItem = srcItem
 
     def __len__(self) -> int:
+        """Return the number of raw data entries."""
         return len(self._rawData)
 
     ##
@@ -259,7 +254,7 @@ class DocDuplicator:
         result = []
         after = True
         if items:
-            hMap: dict[str, str | None] = {t: None for t in items}
+            hMap: dict[str, str | None] = dict.fromkeys(items)
             SHARED.initMainProgress(len(items))
             for tHandle in items:
                 SHARED.incMainProgress()
@@ -373,7 +368,7 @@ class ProjectBuilder:
     def buildProject(self, data: dict) -> bool:
         """Build or copy a project from a data dictionary."""
         if isinstance(data, dict):
-            path = data.get("path", None) or None
+            path = data.get("path") or None
             if author := data.get("author"):
                 CONFIG.setLastAuthor(author)
             if isinstance(path, str | Path):
@@ -399,7 +394,10 @@ class ProjectBuilder:
             SHARED.error(self.tr("The target folder is not empty. Please choose another folder."))
             return False
         elif status == NWStorageCreate.OS_ERROR:
-            SHARED.error(self.tr("An error occurred while trying to create the project."), exc=project.storage.exc)
+            SHARED.error(
+                self.tr("An error occurred while trying to create the project."),
+                exc=project.storage.exc,
+            )
             return False
 
         self._path = project.storage.storagePath
@@ -530,9 +528,7 @@ class ProjectBuilder:
             if is_zipfile(source):
                 with ZipFile(source) as zipObj:
                     for member in zipObj.namelist():
-                        if member == nwFiles.PROJ_FILE:
-                            zipObj.extract(member, dstPath)
-                        elif member.startswith("content") and member.endswith(".nwd"):
+                        if member == nwFiles.PROJ_FILE or (member.startswith("content") and member.endswith(".nwd")):
                             zipObj.extract(member, dstPath)
             else:
                 shutil.copy2(srcPath / nwFiles.PROJ_FILE, dstPath)

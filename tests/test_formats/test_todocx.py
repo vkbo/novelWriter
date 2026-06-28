@@ -59,11 +59,8 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
         "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
-    # Partition
-    # =========
+    # Plain Partition
     doc._text = "# Hello World"
-
-    # Plain
     xTest = ET.Element(_wTag("body"))
     doc.tokenizeText()
     doc.doConvert()
@@ -74,7 +71,8 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
         "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
-    # Formatted
+    # Formatted Partition
+    doc._text = "# Hello World"
     xTest = ET.Element(_wTag("body"))
     doc.setPartitionFormat(f"Part{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     doc.tokenizeText()
@@ -86,11 +84,8 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
         "<w:r><w:rPr /><w:t>Part</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
-    # Chapter
-    # =======
+    # Plain Chapter
     doc._text = "## Hello World"
-
-    # Plain
     xTest = ET.Element(_wTag("body"))
     doc.tokenizeText()
     doc.doConvert()
@@ -101,7 +96,8 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
         "<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
-    # Formatted
+    # Formatted Chapter
+    doc._text = "## Hello World"
     xTest = ET.Element(_wTag("body"))
     doc.setChapterFormat(f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     doc.tokenizeText()
@@ -113,11 +109,8 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
         "<w:r><w:rPr /><w:t>Chapter 2</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
-    # Scene
-    # =====
+    # Plain Scene
     doc._text = "### Hello World"
-
-    # Plain
     xTest = ET.Element(_wTag("body"))
     doc.tokenizeText()
     doc.doConvert()
@@ -127,7 +120,8 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
         "<w:t>Hello World</w:t></w:r></w:p></w:body>"
     )
 
-    # Formatted
+    # Formatted Scene
+    doc._text = "### Hello World"
     xTest = ET.Element(_wTag("body"))
     doc.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     doc.tokenizeText()
@@ -139,9 +133,7 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
     )
 
     # Section
-    # =======
     doc._text = "#### Hello World"
-
     xTest = ET.Element(_wTag("body"))
     doc.tokenizeText()
     doc.doConvert()
@@ -161,8 +153,6 @@ def testFmtToDocX_NotesHeadingStyles(mockGUI):
     doc.initDocument()
 
     # Title
-    # =====
-
     xTest = ET.Element(_wTag("body"))
     doc._text = "#! Hello World"
     doc.tokenizeText()
@@ -174,7 +164,6 @@ def testFmtToDocX_NotesHeadingStyles(mockGUI):
     )
 
     # Heading 1
-    # =========
     doc._text = "# Hello World"
     xTest = ET.Element(_wTag("body"))
     doc.tokenizeText()
@@ -186,7 +175,6 @@ def testFmtToDocX_NotesHeadingStyles(mockGUI):
     )
 
     # Heading 2
-    # =========
     doc._text = "## Hello World"
     xTest = ET.Element(_wTag("body"))
     doc.tokenizeText()
@@ -198,7 +186,6 @@ def testFmtToDocX_NotesHeadingStyles(mockGUI):
     )
 
     # Heading 3
-    # =========
     doc._text = "### Hello World"
     xTest = ET.Element(_wTag("body"))
     doc.tokenizeText()
@@ -210,7 +197,6 @@ def testFmtToDocX_NotesHeadingStyles(mockGUI):
     )
 
     # Heading 4
-    # =========
     doc._text = "#### Hello World"
     xTest = ET.Element(_wTag("body"))
     doc.tokenizeText()
@@ -251,6 +237,17 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         '<w:body><w:p><w:pPr><w:pStyle w:val="Separator" /></w:pPr><w:r><w:rPr /><w:t>* * *</w:t></w:r></w:p></w:body>'
+    )
+
+    # Horizontal Rule
+    xTest = ET.Element(_wTag("body"))
+    doc._blocks = [(BlockTyp.HRULE, "", "", [], BlockFmt.NONE)]
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" />'
+        '<w:pBdr><w:bottom w:val="single" w:color="646464" w:sz="6" w:space="1" /></w:pBdr>'
+        '<w:ind w:left="2400" w:right="2400" /></w:pPr></w:p></w:body>'
     )
 
     # Empty Paragraph
@@ -716,6 +713,7 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
     build.setValue("text.includeKeywords", True)
     build.setValue("format.textFont", "Source Sans Pro,12")
     build.setValue("format.firstLineIndent", True)
+    build.setValue("format.justifyOnBreak", False)
     build.setValue("doc.pageHeader", pageHeader)
 
     docBuild = NWBuildDocument(project, build)

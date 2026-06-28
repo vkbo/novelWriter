@@ -146,6 +146,7 @@ class GuiNovelDetails(NNonBlockingDialog):
         logger.debug("Ready: GuiNovelDetails")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiNovelDetails")
 
     ##
@@ -225,7 +226,10 @@ class _OverviewPage(NScrollablePage):
 
         # Novel Info
         self.novelLabel = NColorLabel(
-            self.tr("Selected Novel"), self, color=SHARED.theme.helpText, scale=NColorLabel.HEADER_SCALE
+            self.tr("Selected Novel"),
+            self,
+            color=SHARED.theme.helpText,
+            scale=NColorLabel.HEADER_SCALE,
         )
 
         self.novelName = QLabel("", self)
@@ -308,7 +312,10 @@ class _ContentsPage(NFixedPage):
 
         # Title
         self.contentLabel = NColorLabel(
-            self.tr("Table of Contents"), self, color=SHARED.theme.helpText, scale=NColorLabel.HEADER_SCALE
+            self.tr("Table of Contents"),
+            self,
+            color=SHARED.theme.helpText,
+            scale=NColorLabel.HEADER_SCALE,
         )
 
         # Contents Tree

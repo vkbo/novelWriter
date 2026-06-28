@@ -71,7 +71,8 @@ def testToolWelcome_Main(qtbot, monkeypatch, nwGUI, fncPath):
         mp.setattr(SHARED, "getProjectPath", lambda *a, **k: fncPath)
         with qtbot.waitSignal(welcome.openProjectRequest) as signal:
             welcome.btnBrowse.click()
-        assert signal.args and signal.args[0] == fncPath
+        assert signal.args
+        assert signal.args[0] == fncPath
 
     # Create sample project when list is empty
     assert welcome.tabOpen.listModel.rowCount() == 1
@@ -192,7 +193,8 @@ def testToolWelcome_Open(qtbot, monkeypatch, nwGUI):
         mp.setattr(welcome, "close", lambda *a: None)
         with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
             qtbot.mouseDClick(vPort, QtMouseLeft, pos=posTwo, delay=10)
-        assert signal.args and signal.args[0] == Path("/stuff/project_one")
+        assert signal.args
+        assert signal.args[0] == Path("/stuff/project_one")
 
     # Press open button
     qtbot.mouseClick(vPort, QtMouseLeft, pos=posTwo, delay=10)
@@ -200,7 +202,8 @@ def testToolWelcome_Open(qtbot, monkeypatch, nwGUI):
         mp.setattr(welcome, "close", lambda *a: None)
         with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
             welcome.btnOpen.click()
-        assert signal.args and signal.args[0] == Path("/stuff/project_one")
+        assert signal.args
+        assert signal.args[0] == Path("/stuff/project_one")
 
     # Context Menu
     def getMenuForPos(pos: QPoint) -> QMenu | None:
@@ -221,7 +224,8 @@ def testToolWelcome_Open(qtbot, monkeypatch, nwGUI):
         mp.setattr(welcome, "close", lambda *a: None)
         with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
             ctxMenu.actions()[0].activate(QAction.ActionEvent.Trigger)
-        assert signal.args and signal.args[0] == Path("/stuff/project_two")
+        assert signal.args
+        assert signal.args[0] == Path("/stuff/project_two")
 
     ctxMenu.setObjectName("")
     ctxMenu.deleteLater()
@@ -320,7 +324,8 @@ def testToolWelcome_New(qtbot, caplog, monkeypatch, nwGUI, fncPath):
     # Create a project with these values
     with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
         welcome.btnCreate.click()
-    assert signal.args and signal.args[0] == projPath
+    assert signal.args
+    assert signal.args[0] == projPath
     assert (projPath / nwFiles.PROJ_FILE).exists()
 
     # qtbot.stop()

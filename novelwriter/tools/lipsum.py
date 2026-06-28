@@ -109,6 +109,7 @@ class GuiLipsum(NDialog):
         logger.debug("Ready: GuiLipsum")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiLipsum")
 
     @property

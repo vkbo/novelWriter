@@ -293,7 +293,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 block = document.findBlockByNumber(i)
                 if block.userState() & cType > 0:
                     self.rehighlightBlock(block)
-            logger.debug("Document highlighted in %.3f ms" % (1000 * (time() - tStart)))
+            logger.debug("Document highlighted in %.3f ms", (1000 * (time() - tStart)))
 
     ##
     #  Highlight Block
@@ -473,7 +473,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     ##
 
     def _addCharFormat(
-        self, name: str, color: QColor | None = None, style: str | None = None, size: float | None = None
+        self,
+        name: str,
+        color: QColor | None = None,
+        style: str | None = None,
+        size: float | None = None,
     ) -> None:
         """Generate a highlighter character format."""
         charFormat = QTextCharFormat()

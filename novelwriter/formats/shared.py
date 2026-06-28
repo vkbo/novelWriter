@@ -36,7 +36,7 @@ ESCAPES = {
     r"\]": "]",
     r"\ ": "",
 }
-RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
+RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES]), flags=re.DOTALL)
 
 
 def stripEscape(text: str) -> str:
@@ -118,11 +118,12 @@ class BlockTyp(IntEnum):
     HEAD4 = 7  # Heading 4
     TEXT = 8  # Text line
     SEP = 9  # Scene separator
-    SKIP = 10  # Paragraph break
-    SUMMARY = 11  # Synopsis/short comment
-    NOTE = 12  # Note
-    COMMENT = 13  # Comment
-    KEYWORD = 14  # Tag/reference keywords
+    HRULE = 10  # Horizontal rule
+    SKIP = 11  # Paragraph break
+    SUMMARY = 12  # Synopsis/short comment
+    NOTE = 13  # Note
+    COMMENT = 14  # Comment
+    KEYWORD = 15  # Tag/reference keywords
 
 
 class BlockFmt(Flag):

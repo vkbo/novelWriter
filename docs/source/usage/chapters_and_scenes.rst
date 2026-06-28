@@ -45,7 +45,7 @@ manuscript. The chapter and scenes headings are also displayed in the
 ``## Chapter Title``
    This is a heading level two. This heading indicates the start of a new chapter. Chapter numbers
    can be inserted automatically when building the manuscript, so you don't have to do this in the
-   title. See :ref:`docs_ui_manuscript_head_numbers` for more details.
+   title. See :ref:`docs_ui_manuscript_formatting_head_numbers` for more details.
 
 ``### Scene Title``
    This is a heading level three. This heading indicates the start of a new scene. Scene numbers or
@@ -78,11 +78,11 @@ want to keep the use cases in mind while writing.
 ``###! Scene Title``
    This is an alternative scene heading that can be formatted differently in the **Manuscript
    Build** tool. It is intended for separating "soft" and "hard" scene breaks. Aside from this, it
-   behaves identically to a regular scene heading. See :ref:`docs_ui_manuscript_head_hard_soft`
-   for more details.
+   behaves identically to a regular scene heading.
+   See :ref:`docs_ui_manuscript_formatting_head_hard_soft` for more details.
 
 The formatting of these headings can be customised quite extensively in the
-:ref:`Manuscript Tool <docs_ui_manuscript>`, which is covered in a separate part of the
+:ref:`Manuscript Tool <docs_ui_manuscript_formatting>`, which is covered in a separate part of the
 documentation.
 
 .. note::
@@ -98,4 +98,4 @@ See :ref:`docs_usage_formatting_breaks` for more details.
 .. note::
 
    When you build a manuscript from your project, the level of the headings in your document will
-   change. See :ref:`docs_ui_manuscript_head_promote` for more details.
+   change. See :ref:`docs_ui_manuscript_formatting_head_promote` for more details.

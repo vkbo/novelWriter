@@ -580,7 +580,10 @@ def testGuiProjTree_SimpleOperations(qtbot, monkeypatch, nwGUI, projPath, mockRn
     # =========
 
     # Default State
-    assert [n.item.itemHandle for n in [model.node(i) for i in model.allExpanded()] if n] == [C.hNovelRoot, hFolder]
+    assert [n.item.itemHandle for n in [model.node(i) for i in model.allExpanded()] if n] == [
+        C.hNovelRoot,
+        hFolder,
+    ]
 
     # Expand Novel
     projTree.expandFromIndex(model.indexFromHandle(C.hNovelRoot))
@@ -1647,6 +1650,14 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
                 return [x.text() for x in submenu.actions() if x.text()]
         return []
 
+    def getChildrenActiveSubMenu(menu: QMenu) -> list[str]:
+        for action in menu.actions():
+            if action.text() == "Set Children to ...":
+                submenu = action.menu()
+                assert submenu is not None
+                return [x.text() for x in submenu.actions() if x.text()]
+        return []
+
     # Context Menu on Document File Item
     node = tree.nodes[C.hChapterDoc]
     indices = [model.indexFromHandle(C.hChapterDoc)]
@@ -1665,7 +1676,10 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         "Duplicate",
         "Move to Trash",
     ]
-    assert getTransformSubMenu(ctxMenu) == ["Convert to Project Note", "Split Document by Headings"]
+    assert getTransformSubMenu(ctxMenu) == [
+        "Convert to Project Note",
+        "Split Document by Headings",
+    ]
 
     # Context Menu on Note File Item in Character Folder
     node = tree.nodes[hCharNote]
@@ -1702,12 +1716,17 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         "Rename",
         "Rename to Heading",
         "Toggle Active",
+        "Set Children to ...",
         "Set Status to ...",
         "Transform ...",
         "Expand All",
         "Collapse All",
         "Duplicate",
         "Move to Trash",
+    ]
+    assert getChildrenActiveSubMenu(ctxMenu) == [
+        projTree.trActive,
+        projTree.trInactive,
     ]
     assert getTransformSubMenu(ctxMenu) == [
         "Convert to Novel Document",
@@ -1760,6 +1779,22 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert node.item.isActive is True
     ctxMenu._toggleItemActive()
     assert node.item.isActive is False
+
+    # Set active flag recursively
+    nodeSub = tree.nodes[hSubNote]
+    nodeCNote = tree.nodes[hCharNote]
+    node.item.setActive(False)
+    nodeSub.item.setActive(True)
+    nodeCNote.item.setActive(True)
+    ctxMenu._recurseItemActive(False)
+    assert node.item.isActive is False
+    assert nodeSub.item.isActive is False
+    assert nodeCNote.item.isActive is True
+    ctxMenu._recurseItemActive(True)
+    assert node.item.isActive is True
+    assert nodeSub.item.isActive is True
+    assert nodeCNote.item.isActive is True
+    node.item.setActive(False)
 
     # Change item status
     assert node.item.itemStatus == "s000000"

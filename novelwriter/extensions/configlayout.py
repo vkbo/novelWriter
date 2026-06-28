@@ -197,7 +197,12 @@ class NScrollableForm(QScrollArea):
 
         if helpText:
             qHelp = NColorLabel(
-                str(helpText), self, color=self._helpCol, scale=self._fontScale, wrap=True, indent=self._indent
+                str(helpText),
+                self,
+                color=self._helpCol,
+                scale=self._fontScale,
+                wrap=True,
+                indent=self._indent,
             )
             qHelp.setBuddy(qWidget)
             qWidget.setAccessibleDescription(helpText)

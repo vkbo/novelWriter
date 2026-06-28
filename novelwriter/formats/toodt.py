@@ -26,7 +26,7 @@ import xml.etree.ElementTree as ET
 
 from datetime import datetime
 from hashlib import sha256
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Literal, NamedTuple
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from PyQt6.QtGui import QColor, QFont
@@ -48,6 +48,7 @@ logger = logging.getLogger(__name__)
 
 # Main XML NameSpaces
 XML_NS = {
+    "config": "urn:oasis:names:tc:opendocument:xmlns:config:1.0",
     "dc": "http://purl.org/dc/elements/1.1/",
     "fo": "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
     "loext": "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
@@ -55,6 +56,7 @@ XML_NS = {
     "meta": "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
     "number": "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0",
     "office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
+    "ooo": "http://openoffice.org/2004/office",
     "style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
     "text": "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
     "xlink": "http://www.w3.org/1999/xlink",
@@ -69,6 +71,11 @@ def _mkTag(ns: str, tag: str) -> str:
         return f"{{{uri}}}{tag}"
     logger.warning("Missing xml namespace '%s'", ns)
     return tag
+
+
+def formatBool(value: bool) -> str:
+    """Format a boolean value as 'true' or 'false'."""
+    return "true" if value else "false"
 
 
 # Mimetype and Version
@@ -111,6 +118,7 @@ S_HEAD2 = "Heading_20_2"
 S_HEAD3 = "Heading_20_3"
 S_HEAD4 = "Heading_20_4"
 S_SEP = "Separator"
+S_HLINE = "Horizontal_20_Line"
 S_FIND = "First_20_line_20_indent"
 S_TEXT = "Text_20_body"
 S_META = "Text_20_Meta"
@@ -139,9 +147,11 @@ class ToOdt(Tokenizer):
         self._dFlat = ET.Element("")  # FODT file XML root
         self._dCont = ET.Element("")  # ODT content.xml root
         self._dMeta = ET.Element("")  # ODT meta.xml root
+        self._dSett = ET.Element("")  # ODT settings.xml root
         self._dStyl = ET.Element("")  # ODT styles.xml root
 
         self._xMeta = ET.Element("")  # Office meta root
+        self._xSett = ET.Element("")  # Office settings root
         self._xFont = ET.Element("")  # Office font face declaration
         self._xFnt2 = ET.Element("")  # Office font face declaration, secondary
         self._xStyl = ET.Element("")  # Office styles root
@@ -184,6 +194,9 @@ class ToOdt(Tokenizer):
         self._mDocLeft = "2.000cm"
         self._mDocRight = "2.000cm"
 
+        # Horizontal Line Margin
+        self._mHorLine = "4.250cm"  # Quarter of the text width
+
     ##
     #  Setters
     ##
@@ -196,6 +209,7 @@ class ToOdt(Tokenizer):
         self._mDocBtm = f"{bottom / 10.0:.3f}cm"
         self._mDocLeft = f"{left / 10.0:.3f}cm"
         self._mDocRight = f"{right / 10.0:.3f}cm"
+        self._mHorLine = f"{(width - left - right) / 40.0:.3f}cm"  # Quarter of the text width
 
     def setHeaderFormat(self, value: str, offset: int) -> None:
         """Set the document header format."""
@@ -247,6 +261,7 @@ class ToOdt(Tokenizer):
             self._dFlat = ET.Element(tFlat, attrib=tAttr)
 
             self._xMeta = ET.SubElement(self._dFlat, _mkTag("office", "meta"))
+            self._xSett = ET.SubElement(self._dFlat, _mkTag("office", "settings"))
             self._xFont = ET.SubElement(self._dFlat, _mkTag("office", "font-face-decls"))
             self._xStyl = ET.SubElement(self._dFlat, _mkTag("office", "styles"))
             self._xAuto = ET.SubElement(self._dFlat, _mkTag("office", "automatic-styles"))
@@ -261,6 +276,7 @@ class ToOdt(Tokenizer):
 
             tCont = _mkTag("office", "document-content")
             tMeta = _mkTag("office", "document-meta")
+            tSett = _mkTag("office", "document-settings")
             tStyl = _mkTag("office", "document-styles")
 
             # content.xml
@@ -272,6 +288,10 @@ class ToOdt(Tokenizer):
             # meta.xml
             self._dMeta = ET.Element(tMeta, attrib=tAttr)
             self._xMeta = ET.SubElement(self._dMeta, _mkTag("office", "meta"))
+
+            # settings.xml
+            self._dSett = ET.Element(tSett, attrib=tAttr)
+            self._xSett = ET.SubElement(self._dSett, _mkTag("office", "settings"))
 
             # styles.xml
             self._dStyl = ET.Element(tStyl, attrib=tAttr)
@@ -306,6 +326,22 @@ class ToOdt(Tokenizer):
         xmlSubElem(self._xMeta, _mkTag("dc", "title"), self._project.data.name)
         xmlSubElem(self._xMeta, _mkTag("dc", "date"), timeStamp)
         xmlSubElem(self._xMeta, _mkTag("dc", "creator"), self._project.data.author)
+
+        # Settings
+        cAttr = {}
+        cAttr[_mkTag("config", "name")] = ET.QName(XML_NS["ooo"], "configuration-settings")
+        xCSet = xmlSubElem(self._xSett, _mkTag("config", "config-item-set"), attrib=cAttr)
+
+        cItem = _mkTag("config", "config-item")
+        cName = _mkTag("config", "name")
+        cType = _mkTag("config", "type")
+
+        cSettings = [
+            ("JustifyLinesWithShrinking", "boolean", formatBool(False)),
+            ("DoNotJustifyLinesWithManualBreak", "boolean", formatBool(not self._justifyOnBreak)),
+        ]
+        for sName, sType, sValue in cSettings:
+            xmlSubElem(xCSet, cItem, sValue, attrib={cName: sName, cType: sType})
 
         self._pageStyles()
         self._defaultStyles()
@@ -370,13 +406,13 @@ class ToOdt(Tokenizer):
             elif tType == BlockTyp.SEP:
                 self._addTextPar(xText, S_SEP, oStyle, tText)
 
+            elif tType == BlockTyp.HRULE:
+                self._addTextPar(xText, S_HLINE, oStyle, "")
+
             elif tType == BlockTyp.SKIP:
                 self._addTextPar(xText, S_TEXT, oStyle, "")
 
-            elif tType in COMMENT_BLOCKS:
-                self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
-
-            elif tType == BlockTyp.KEYWORD:
+            elif tType in COMMENT_BLOCKS or tType == BlockTyp.KEYWORD:
                 self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
 
     def closeDocument(self) -> None:
@@ -421,10 +457,6 @@ class ToOdt(Tokenizer):
             ET.SubElement(xMani, mFile, attrib={mPath: "meta.xml", mType: "text/xml"})
             ET.SubElement(xMani, mFile, attrib={mPath: "styles.xml", mType: "text/xml"})
 
-            oRoot = _mkTag("office", "document-settings")
-            oVers = _mkTag("office", "version")
-            xSett = ET.Element(oRoot, attrib={oVers: X_VERS})
-
             def xmlToZip(name: str, root: ET.Element, zipObj: ZipFile) -> None:
                 zipObj.writestr(
                     name,
@@ -436,7 +468,7 @@ class ToOdt(Tokenizer):
             with ZipFile(path, mode="w") as outZip:
                 outZip.writestr("mimetype", X_MIME, compress_type=None, compresslevel=None)
                 xmlToZip("META-INF/manifest.xml", xMani, outZip)
-                xmlToZip("settings.xml", xSett, outZip)
+                xmlToZip("settings.xml", self._dSett, outZip)
                 xmlToZip("content.xml", self._dCont, outZip)
                 xmlToZip("meta.xml", self._dMeta, outZip)
                 xmlToZip("styles.xml", self._dStyl, outZip)
@@ -910,6 +942,23 @@ class ToOdt(Tokenizer):
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
+        # Add Horizontal Line Style
+        style = ODTParagraphStyle(S_HLINE)
+        style.setDisplayName("Horizontal Line")
+        style.setParentStyleName("Standard")
+        style.setNextStyleName(S_TEXT)
+        style.setClass("html")
+        style.setMarginTop(self._emToCm(0))
+        style.setMarginBottom(self._emToCm(self._marginSep[1]))
+        style.setMarginLeft(self._mHorLine)
+        style.setMarginRight(self._mHorLine)
+        style.setBorderLeft(ODTBorderStyle("none"))
+        style.setBorderRight(ODTBorderStyle("none"))
+        style.setBorderTop(ODTBorderStyle("none"))
+        style.setBorderBottom(ODTBorderStyle("solid", 0.75, self._theme.comment))
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
+
         # Add Heading 1 Style
         style = ODTParagraphStyle(S_HEAD1)
         style.setDisplayName("Heading 1")
@@ -1049,7 +1098,7 @@ class ODTParagraphStyle:
     VALID_ALIGN: Final[list[str]] = ["start", "center", "end", "justify", "left", "right"]
     VALID_BREAK: Final[list[str]] = ["auto", "page", "even-page", "odd-page", "inherit"]
     VALID_LEVEL: Final[list[str]] = ["1", "2", "3", "4"]
-    VALID_CLASS: Final[list[str]] = ["text", "chapter", "extra"]
+    VALID_CLASS: Final[list[str]] = ["text", "chapter", "extra", "html"]
     VALID_WEIGHT: Final[list[str]] = ["normal", "bold", *FONT_WEIGHT_NUM]
 
     def __init__(self, name: str) -> None:
@@ -1071,6 +1120,10 @@ class ODTParagraphStyle:
             "margin-bottom": ["fo", None],
             "margin-left": ["fo", None],
             "margin-right": ["fo", None],
+            "border-left": ["fo", None],
+            "border-right": ["fo", None],
+            "border-top": ["fo", None],
+            "border-bottom": ["fo", None],
             "text-indent": ["fo", None],
             "line-height": ["fo", None],
             "text-align": ["fo", None],
@@ -1150,6 +1203,22 @@ class ODTParagraphStyle:
         """Set paragraph right margin."""
         self._pAttr["margin-right"][1] = value
 
+    def setBorderLeft(self, value: ODTBorderStyle | None) -> None:
+        """Set paragraph left border."""
+        self._pAttr["border-left"][1] = None if value is None else str(value)
+
+    def setBorderRight(self, value: ODTBorderStyle | None) -> None:
+        """Set paragraph right border."""
+        self._pAttr["border-right"][1] = None if value is None else str(value)
+
+    def setBorderTop(self, value: ODTBorderStyle | None) -> None:
+        """Set paragraph top border."""
+        self._pAttr["border-top"][1] = None if value is None else str(value)
+
+    def setBorderBottom(self, value: ODTBorderStyle | None) -> None:
+        """Set paragraph bottom border."""
+        self._pAttr["border-bottom"][1] = None if value is None else str(value)
+
     def setTextIndent(self, value: str | None) -> None:
         """Set text indentation."""
         self._pAttr["text-indent"][1] = value
@@ -1220,13 +1289,11 @@ class ODTParagraphStyle:
         those in this object. Unset styles are ignored as they can be
         inherited from the parent style.
         """
-        if any(v and v != self._mAttr[m][1] for m, (_, v) in style._mAttr.items()):
-            return True
-        if any(v and v != self._pAttr[m][1] for m, (_, v) in style._pAttr.items()):
-            return True
-        if any(v and v != self._tAttr[m][1] for m, (_, v) in style._tAttr.items()):
-            return True
-        return False
+        return (
+            any(v and v != self._mAttr[m][1] for m, (_, v) in style._mAttr.items())
+            or any(v and v != self._pAttr[m][1] for m, (_, v) in style._pAttr.items())
+            or any(v and v != self._tAttr[m][1] for m, (_, v) in style._tAttr.items())
+        )
 
     def getID(self) -> str:
         """Generate a unique ID from the settings."""
@@ -1248,6 +1315,23 @@ class ODTParagraphStyle:
 
         if attr := {_mkTag(n, m): v for m, (n, v) in self._tAttr.items() if v}:
             ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=attr)
+
+
+class ODTBorderStyle(NamedTuple):
+    """Named tuple for border styles."""
+
+    style: Literal["none", "solid", "dashed", "dotted", "double"] = "none"
+    width: float | None = None
+    color: QColor | None = None
+
+    def __str__(self) -> str:
+        """Convert the border style to a string that can be used in ODT XML."""
+        values = [self.style]
+        if self.width is not None:
+            values.insert(0, f"{self.width:.2f}pt")
+        if self.color is not None:
+            values.append(self.color.name(QtHexRgb))
+        return " ".join(values)
 
 
 class ODTTextStyle:

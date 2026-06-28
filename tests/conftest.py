@@ -91,7 +91,7 @@ def sessionFixture():
     (_SRC_ROOT / "novelwriter" / "assets" / "manual_fr.pdf").touch()
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(autouse=True)
 def functionFixture(qtbot):
     """A default function fixture that:
     * Ensures that the main Qt thread is always available
@@ -133,7 +133,7 @@ def tstPaths():
     return store
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def fncPath():
     """A temporary folder for a single test function."""
     fncPath = _TMP_ROOT / "function"
@@ -143,7 +143,7 @@ def fncPath():
     return fncPath
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def projPath(fncPath):
     """A temp folder for a single test function + project folder."""
     prjDir = fncPath / "project"
@@ -158,7 +158,7 @@ def projPath(fncPath):
 ##
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def mockGUI(qtbot, monkeypatch):
     """Create a mock instance of novelWriter's main GUI class."""
     from novelwriter.gui.theme import GuiTheme
@@ -175,7 +175,7 @@ def mockGUI(qtbot, monkeypatch):
     return gui
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def mockGUIwithTheme(mockGUI):
     """Create a mock instance of novelWriter's main GUI class with the
     theme instance initialised.
@@ -184,7 +184,7 @@ def mockGUIwithTheme(mockGUI):
     return mockGUI
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def nwGUI(qtbot, monkeypatch, functionFixture):
     """Create an instance of the novelWriter GUI."""
     from novelwriter.gui.theme import GuiTheme
@@ -213,7 +213,7 @@ def nwGUI(qtbot, monkeypatch, functionFixture):
 ##
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def mockRnd(monkeypatch):
     """Create a mock random number generator that just counts upwards
     from 0. This one will generate status/importance flags and handles
@@ -239,7 +239,7 @@ def mockRnd(monkeypatch):
 ##
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def prjLipsum():
     """A medium sized novelWriter example project with a lot of Lorem
     Ipsum text.

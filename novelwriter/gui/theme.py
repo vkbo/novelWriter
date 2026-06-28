@@ -972,7 +972,11 @@ class GuiIcons:
         """Return a standard button with icon and text."""
         text, icon, color = STANDARD_BUTTONS.get(button, ("", "", ""))
         return NPushButton(
-            parent, QCoreApplication.translate("Button", text), self._theme.pushButtonIconSize, icon, color
+            parent,
+            QCoreApplication.translate("Button", text),
+            self._theme.pushButtonIconSize,
+            icon,
+            color,
         )
 
     def getToolButton(self, button: nwToolButton, parent: QWidget) -> NIconToolButton:

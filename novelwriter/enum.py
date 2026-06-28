@@ -2,9 +2,6 @@
 novelWriter – Enums
 ===================
 
-File History:
-Created: 2018-11-02 [0.0.1]
-
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 

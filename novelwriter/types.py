@@ -2,9 +2,6 @@
 novelWriter – Types and Flags
 =============================
 
-File History:
-Created: 2024-04-01 [2.4rc1]
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 

@@ -2,10 +2,6 @@
 novelWriter – Build Settings
 ============================
 
-File History:
-Created: 2023-02-14 [2.1b1] BuildSettings
-Created: 2023-05-22 [2.1b1] BuildCollection
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -89,6 +85,7 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
     "format.textFont":         (str, CONFIG.textFont.toString()),
     "format.lineHeight":       (float, 1.15),
     "format.justifyText":      (bool, False),
+    "format.justifyOnBreak":   (bool, True),
     "format.stripUnicode":     (bool, False),
     "format.replaceTabs":      (bool, False),
     "format.keepBreaks":       (bool, True),
@@ -166,6 +163,7 @@ SETTINGS_LABELS = {
     "format.textFont":         QT_TRANSLATE_NOOP("Builds", "Text font"),
     "format.lineHeight":       QT_TRANSLATE_NOOP("Builds", "Line height"),
     "format.justifyText":      QT_TRANSLATE_NOOP("Builds", "Justify text margins"),
+    "format.justifyOnBreak":   QT_TRANSLATE_NOOP("Builds", "Justify text on manual line breaks"),
     "format.stripUnicode":     QT_TRANSLATE_NOOP("Builds", "Replace Unicode characters"),
     "format.replaceTabs":      QT_TRANSLATE_NOOP("Builds", "Replace tabs with spaces"),
     "format.keepBreaks":       QT_TRANSLATE_NOOP("Builds", "Preserve hard line breaks"),
@@ -495,7 +493,7 @@ class BuildSettings:
         self.setName(data.get("name", ""))
         self.setBuildID(data.get("uuid", ""))
         self.setOrder(data.get("order", 0))
-        self.setLastBuildPath(data.get("path", None))
+        self.setLastBuildPath(data.get("path"))
         self.setLastBuildName(data.get("build", ""))
 
         buildFmt = str(data.get("format", ""))
@@ -503,11 +501,11 @@ class BuildSettings:
             self.setLastFormat(nwBuildFmt[buildFmt])
 
         if isinstance(included, list):
-            self._included = set([h for h in included if isHandle(h)])
+            self._included = {h for h in included if isHandle(h)}
         if isinstance(excluded, list):
-            self._excluded = set([h for h in excluded if isHandle(h)])
+            self._excluded = {h for h in excluded if isHandle(h)}
         if isinstance(skipRoot, list):
-            self._skipRoot = set([h for h in skipRoot if isHandle(h)])
+            self._skipRoot = {h for h in skipRoot if isHandle(h)}
 
         self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
         if isinstance(settings, dict):

@@ -2,9 +2,6 @@
 novelWriter – Manuscript Document Builder
 =========================================
 
-File History:
-Created: 2022-12-01 [2.1b1] NWBuildDocument
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -228,24 +225,51 @@ class NWBuildDocument:
         bldObj.setTextFont(textFont)
         bldObj.setLanguage(self._build.getStr("doc.metaLanguage") or self._project.data.language)
 
-        bldObj.setPartitionFormat(self._build.getStr("headings.fmtPart"), self._build.getBool("headings.hidePart"))
-        bldObj.setChapterFormat(self._build.getStr("headings.fmtChapter"), self._build.getBool("headings.hideChapter"))
+        bldObj.setPartitionFormat(
+            self._build.getStr("headings.fmtPart"),
+            self._build.getBool("headings.hidePart"),
+        )
+        bldObj.setChapterFormat(
+            self._build.getStr("headings.fmtChapter"),
+            self._build.getBool("headings.hideChapter"),
+        )
         bldObj.setUnNumberedFormat(
-            self._build.getStr("headings.fmtUnnumbered"), self._build.getBool("headings.hideUnnumbered")
+            self._build.getStr("headings.fmtUnnumbered"),
+            self._build.getBool("headings.hideUnnumbered"),
         )
-        bldObj.setSceneFormat(self._build.getStr("headings.fmtScene"), self._build.getBool("headings.hideScene"))
+        bldObj.setSceneFormat(
+            self._build.getStr("headings.fmtScene"),
+            self._build.getBool("headings.hideScene"),
+        )
         bldObj.setHardSceneFormat(
-            self._build.getStr("headings.fmtAltScene"), self._build.getBool("headings.hideAltScene")
+            self._build.getStr("headings.fmtAltScene"),
+            self._build.getBool("headings.hideAltScene"),
         )
-        bldObj.setSectionFormat(self._build.getStr("headings.fmtSection"), self._build.getBool("headings.hideSection"))
-        bldObj.setTitleStyle(self._build.getBool("headings.centerTitle"), self._build.getBool("headings.breakTitle"))
-        bldObj.setPartitionStyle(self._build.getBool("headings.centerPart"), self._build.getBool("headings.breakPart"))
+        bldObj.setSectionFormat(
+            self._build.getStr("headings.fmtSection"),
+            self._build.getBool("headings.hideSection"),
+        )
+        bldObj.setTitleStyle(
+            self._build.getBool("headings.centerTitle"),
+            self._build.getBool("headings.breakTitle"),
+        )
+        bldObj.setPartitionStyle(
+            self._build.getBool("headings.centerPart"),
+            self._build.getBool("headings.breakPart"),
+        )
         bldObj.setChapterStyle(
-            self._build.getBool("headings.centerChapter"), self._build.getBool("headings.breakChapter")
+            self._build.getBool("headings.centerChapter"),
+            self._build.getBool("headings.breakChapter"),
         )
-        bldObj.setSceneStyle(self._build.getBool("headings.centerScene"), self._build.getBool("headings.breakScene"))
+        bldObj.setSceneStyle(
+            self._build.getBool("headings.centerScene"),
+            self._build.getBool("headings.breakScene"),
+        )
 
-        bldObj.setJustify(self._build.getBool("format.justifyText"))
+        bldObj.setJustify(
+            self._build.getBool("format.justifyText"),
+            self._build.getBool("format.justifyOnBreak"),
+        )
         bldObj.setLineHeight(self._build.getFloat("format.lineHeight"))
         bldObj.setKeepLineBreaks(self._build.getBool("format.keepBreaks"))
         bldObj.setDialogHighlight(self._build.getBool("format.showDialogue"))

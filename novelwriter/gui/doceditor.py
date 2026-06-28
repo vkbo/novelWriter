@@ -26,6 +26,7 @@ import logging
 
 from enum import Enum, IntFlag
 from time import time
+from typing import NamedTuple
 
 from PyQt6 import sip
 from PyQt6.QtCore import (
@@ -636,7 +637,7 @@ class GuiDocEditor(QPlainTextEdit):
         """Check if the cursor is visible in the editor."""
         viewport = self.viewport()
         height = viewport.height() if viewport else 0
-        return 0 < self.cursorRect().top() and self.cursorRect().bottom() < height
+        return self.cursorRect().top() > 0 and self.cursorRect().bottom() < height
 
     def ensureCursorVisibleNoCentre(self) -> None:
         """Ensure cursor is visible, but don't force it to centre."""
@@ -1127,9 +1128,8 @@ class GuiDocEditor(QPlainTextEdit):
     def dropEvent(self, event: QDropEvent) -> None:
         """Overload drop event to handle dragged items."""
         if (data := event.mimeData()) and data.hasFormat(nwConst.MIME_HANDLE):
-            if handles := decodeMimeHandles(data):
-                if SHARED.project.tree.checkType(handles[0], nwItemType.FILE):
-                    self.openDocumentRequest.emit(handles[0], nwDocMode.EDIT, "", True)
+            if (handles := decodeMimeHandles(data)) and SHARED.project.tree.checkType(handles[0], nwItemType.FILE):
+                self.openDocumentRequest.emit(handles[0], nwDocMode.EDIT, "", True)
         else:
             super().dropEvent(event)
 
@@ -1237,6 +1237,11 @@ class GuiDocEditor(QPlainTextEdit):
         """Tags have changed, so just in case we rehighlight them."""
         if updated or deleted:
             self._qDocument.syntaxHighlighter.rehighlightByType(BLOCK_META)
+
+    @pyqtSlot(str, str)
+    def processSpellCheckChange(self, language: str, provider: str) -> None:
+        """Process a change in the spell check language or provider."""
+        self.spellCheckDocument()
 
     ##
     #  Private Slots
@@ -1431,7 +1436,9 @@ class GuiDocEditor(QPlainTextEdit):
         ):
             heading, title = processHeading(text.partition("\n")[0])
             label, dlgOk = GuiEditLabel.getLabel(
-                self, text=title or f"{item.itemName} (1)", info=self.tr("Create a new document from selected text?")
+                self,
+                text=title or f"{item.itemName} (1)",
+                info=self.tr("Create a new document from selected text?"),
             )
             if dlgOk and (
                 tHandle := SHARED.project.newFile(label, parent, SHARED.project.tree.subTreePos(item.itemHandle) + 1)
@@ -1674,7 +1681,10 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.setPosition(cursor.selectionEnd())
             self.setTextCursor(cursor)
             logger.debug(
-                "Replaced occurrence of '%s' with '%s' on line %d", searchFor, replWith, cursor.blockNumber() + 1
+                "Replaced occurrence of '%s' with '%s' on line %d",
+                searchFor,
+                replWith,
+                cursor.blockNumber() + 1,
             )
 
         self.findNext()
@@ -1893,10 +1903,7 @@ class GuiDocEditor(QPlainTextEdit):
         elif text.startswith(">> "):
             temp = text[3:]
             offset = 3
-        elif text.startswith("> ") and action != nwDocAction.INDENT_R:
-            temp = text[2:]
-            offset = 2
-        elif text.startswith(">>"):
+        elif (text.startswith("> ") and action != nwDocAction.INDENT_R) or text.startswith(">>"):
             temp = text[2:]
             offset = 2
         elif text.startswith(">") and action != nwDocAction.INDENT_R:
@@ -1909,9 +1916,7 @@ class GuiDocEditor(QPlainTextEdit):
         # Also remove formatting tags at the end
         if text.endswith(" <<"):
             temp = temp[:-3]
-        elif text.endswith(" <") and action != nwDocAction.INDENT_L:
-            temp = temp[:-2]
-        elif text.endswith("<<"):
+        elif (text.endswith(" <") and action != nwDocAction.INDENT_L) or text.endswith("<<"):
             temp = temp[:-2]
         elif text.endswith("<") and action != nwDocAction.INDENT_L:
             temp = temp[:-1]
@@ -2123,9 +2128,7 @@ class GuiDocEditor(QPlainTextEdit):
         cursor = self.textCursor()
         # -- NORMAL mode PREFIX
         if self._vim.mode == nwVimMode.NORMAL:
-            if key in self._vim.PREFIX_KEYS:
-                self._vim.pushCommandKey(key)
-            elif key in self._vim.SUFFIX_KEYS:
+            if key in self._vim.PREFIX_KEYS or key in self._vim.SUFFIX_KEYS:
                 self._vim.pushCommandKey(key)
             else:
                 self._vim.setCommand(key)
@@ -2439,7 +2442,12 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument.syntaxHighlighter.rehighlightBlock(block)
 
     def _processTag(
-        self, cursor: QTextCursor | None = None, *, follow: bool = True, edit: bool = False, create: bool = False
+        self,
+        cursor: QTextCursor | None = None,
+        *,
+        follow: bool = True,
+        edit: bool = False,
+        create: bool = False,
     ) -> _TagAction:
         """Activated by Ctrl+Enter. Checks that we're in a block
         starting with '@'. We then find the tag under the cursor and
@@ -2593,6 +2601,14 @@ class GuiDocEditor(QPlainTextEdit):
                     break
 
 
+class CompleterAction(NamedTuple):
+    """Values needed to complete a completer action."""
+
+    pos: int
+    length: int
+    value: str
+
+
 class CommandCompleter(QMenu):
     """GuiWidget: Command Completer Menu.
 
@@ -2609,9 +2625,10 @@ class CommandCompleter(QMenu):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
         self._parent = parent
+        self.triggered.connect(self._emitComplete)
 
     def updateMetaText(self, text: str, pos: int) -> bool:
-        """Update the menu options based on the line of text."""
+        """Update the menu options based on the line of meta text."""
         self.clear()
         kw, sep, _ = text.partition(":")
         if pos <= len(kw):
@@ -2638,12 +2655,12 @@ class CommandCompleter(QMenu):
         for value in options:
             rep = value + suffix
             action = qtAddAction(self, value)
-            action.triggered.connect(qtLambda(self._emitComplete, offset, length, rep))
+            action.setData(CompleterAction(pos=offset, length=length, value=rep))
 
         return True
 
     def updateCommentText(self, text: str, pos: int) -> bool:
-        """Update the menu options based on the line of text."""
+        """Update the menu options based on the line of comment text."""
         self.clear()
         cmd, sep, _ = text.partition(":")
         if pos <= len(cmd):
@@ -2687,7 +2704,7 @@ class CommandCompleter(QMenu):
                 for value in options:
                     rep = value + suffix
                     action = qtAddAction(self, rep.rstrip(":. "))
-                    action.triggered.connect(qtLambda(self._emitComplete, offset, length, rep))
+                    action.setData(CompleterAction(pos=offset, length=length, value=rep))
                 return True
 
         return False
@@ -2698,19 +2715,37 @@ class CommandCompleter(QMenu):
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Capture keypresses and forward most of them to the editor."""
-        if event.key() in (Qt.Key.Key_Up, Qt.Key.Key_Down, Qt.Key.Key_Return, Qt.Key.Key_Enter, Qt.Key.Key_Escape):
-            super().keyPressEvent(event)
-        else:
-            self.close()  # Close to release the event lock before forwarding the key press (#2510)
-            self._parent.keyPressEvent(event)
+        match event.key():
+            case Qt.Key.Key_Up | Qt.Key.Key_Down:
+                # Let the menu handle navigation
+                super().keyPressEvent(event)
+            case Qt.Key.Key_Right | Qt.Key.Key_Return | Qt.Key.Key_Enter | Qt.Key.Key_Tab:
+                # Activate the selection if there is one, otherwise close the completer
+                if action := self.activeAction():
+                    action.trigger()
+                else:
+                    self.clear()
+                    self.close()
+            case Qt.Key.Key_Left | Qt.Key.Key_Escape:
+                # Cancel the completer
+                self.clear()
+                self.close()
+            case _:
+                # Any other keys, send back to the editor
+                # Also close to release the event lock before forwarding key press (#2510)
+                self.clear()
+                self.close()
+                self._parent.keyPressEvent(event)
 
     ##
-    #  Internal Functions
+    #  Internal Slots
     ##
 
-    def _emitComplete(self, pos: int, length: int, value: str) -> None:
+    @pyqtSlot(QAction)
+    def _emitComplete(self, action: QAction) -> None:
         """Emit the signal to indicate a selection has been made."""
-        self.insertText.emit(pos, length, value)
+        if isinstance(data := action.data(), CompleterAction):
+            self.insertText.emit(data.pos, data.length, data.value)
 
 
 class BackgroundWordCounter(QRunnable):
@@ -2811,19 +2846,27 @@ class TextAutoReplace:
         delete, insert = self._determine(last, bPos)
 
         check = insert
-        if self._doPadBefore and check and check in self._padBefore:
-            if not (check == ":" and length > 1 and text[0] == "@"):
-                delete = max(delete, 1)
-                chkPos = len(last) - delete - 1
-                if chkPos >= 0 and last[chkPos].isspace():
-                    # Strip existing space before inserting a new (#1061)
-                    delete += 1
-                insert = self._padChar + insert
+        if (
+            self._doPadBefore
+            and check
+            and check in self._padBefore
+            and not (check == ":" and length > 1 and text[0] == "@")
+        ):
+            delete = max(delete, 1)
+            chkPos = len(last) - delete - 1
+            if chkPos >= 0 and last[chkPos].isspace():
+                # Strip existing space before inserting a new (#1061)
+                delete += 1
+            insert = self._padChar + insert
 
-        if self._doPadAfter and check and check in self._padAfter:
-            if not (check == ":" and length > 1 and text[0] == "@"):
-                delete = max(delete, 1)
-                insert = insert + self._padChar
+        if (
+            self._doPadAfter
+            and check
+            and check in self._padAfter
+            and not (check == ":" and length > 1 and text[0] == "@")
+        ):
+            delete = max(delete, 1)
+            insert = insert + self._padChar
 
         if delete > 0:
             cursor.setPosition(aPos)
@@ -2842,42 +2885,32 @@ class TextAutoReplace:
 
         if self._replaceDQuote and t1 == '"':
             # Process Double Quote
-            if pos == 1:
-                return 1, self._quoteDO
-            elif t2[:1].isspace() and t2.endswith('"'):
-                return 1, self._quoteDO
-            elif pos == 2 and t2 == '>"':
-                return 1, self._quoteDO
-            elif pos == 3 and t3 == '>>"':
-                return 1, self._quoteDO
-            elif pos == 2 and t2 == '_"':
-                return 1, self._quoteDO
-            elif t3[:1].isspace() and t3.endswith('_"'):
-                return 1, self._quoteDO
-            elif pos == 3 and t3 in ('**"', '=="', '~~"'):
-                return 1, self._quoteDO
-            elif t4[:1].isspace() and t4.endswith(('**"', '=="', '~~"')):
+            if (
+                pos == 1
+                or (t2[:1].isspace() and t2.endswith('"'))
+                or (pos == 2 and t2 == '>"')
+                or (pos == 3 and t3 == '>>"')
+                or (pos == 2 and t2 == '_"')
+                or (t3[:1].isspace() and t3.endswith('_"'))
+                or (pos == 3 and t3 in ('**"', '=="', '~~"'))
+                or (t4[:1].isspace() and t4.endswith(('**"', '=="', '~~"')))
+            ):
                 return 1, self._quoteDO
             else:
                 return 1, self._quoteDC
 
         if self._replaceSQuote and t1 == "'":
             # Process Single Quote
-            if pos == 1:
-                return 1, self._quoteSO
-            elif t2[:1].isspace() and t2.endswith("'"):
-                return 1, self._quoteSO
-            elif pos == 2 and t2 == ">'":
-                return 1, self._quoteSO
-            elif pos == 3 and t3 == ">>'":
-                return 1, self._quoteSO
-            elif pos == 2 and t2 == "_'":
-                return 1, self._quoteSO
-            elif t3[:1].isspace() and t3.endswith("_'"):
-                return 1, self._quoteSO
-            elif pos == 3 and t3 in ("**'", "=='", "~~'"):
-                return 1, self._quoteSO
-            elif t4[:1].isspace() and t4.endswith(("**'", "=='", "~~'")):
+            if (
+                pos == 1
+                or (t2[:1].isspace() and t2.endswith("'"))
+                or (pos == 2 and t2 == ">'")
+                or (pos == 3 and t3 == ">>'")
+                or (pos == 2 and t2 == "_'")
+                or (t3[:1].isspace() and t3.endswith("_'"))
+                or (pos == 3 and t3 in ("**'", "=='", "~~'"))
+                or (t4[:1].isspace() and t4.endswith(("**'", "=='", "~~'")))
+            ):
                 return 1, self._quoteSO
             else:
                 return 1, self._quoteSC

@@ -34,40 +34,37 @@ from novelwriter.formats.tohtml import ToHtml
 
 
 @pytest.mark.core
-def testFmtToHtml_ConvertHeaders(mockGUI):
+def testFmtToHtml_ConvertNovelHeaders(mockGUI):
     """Test header formats in the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
     html.initDocument()
 
-    # Novel Files Headers
-    # ===================
-
     html._isNovel = True
     html._isFirst = True
 
-    # Header 1
+    # Partition
     html._text = "# Title\n"
     html.setPartitionFormat(f"Part{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == ("<p class='title' style='text-align: center;'>Part<br>Title</p>\n")
 
-    # Header 2
+    # Chapter
     html._text = "## Title\n"
     html.setChapterFormat(f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == ("<h1 style='page-break-before: always;'>Chapter 1<br>Title</h1>\n")
 
-    # Header 3
+    # Scene
     html._text = "### Title\n"
     html.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == "<h2>Scene 1<br>Title</h2>\n"
 
-    # Header 4
+    # Section
     html._text = "#### Title\n"
     html.tokenizeText()
     html.doConvert()
@@ -85,33 +82,45 @@ def testFmtToHtml_ConvertHeaders(mockGUI):
     html.doConvert()
     assert html._pages[-1] == "<h1 style='page-break-before: always;'>Prologue</h1>\n"
 
-    # Note Files Headers
-    # ==================
+    # Alt Scene
+    html._text = "###! Title\n"
+    html.setHardSceneFormat(f"Scene {nwHeadFmt.SC_ABS}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == "<h2>Scene 1<br>Title</h2>\n"
+
+
+@pytest.mark.core
+def testFmtToHtml_ConvertNotesHeaders(mockGUI):
+    """Test header formats in the ToHtml class."""
+    project = NWProject()
+    html = ToHtml(project)
+    html.initDocument()
 
     html._isNovel = False
     html._isFirst = True
     html._handle = "0000000000000"
     html.setLinkHeadings(True)
 
-    # Header 1
+    # Heading 1
     html._text = "# Heading One\n"
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == "<h1><a name='0000000000000:T0001'></a>Heading One</h1>\n"
 
-    # Header 2
+    # Heading 2
     html._text = "## Heading Two\n"
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == "<h2><a name='0000000000000:T0001'></a>Heading Two</h2>\n"
 
-    # Header 3
+    # Heading 3
     html._text = "### Heading Three\n"
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == "<h3><a name='0000000000000:T0001'></a>Heading Three</h3>\n"
 
-    # Header 4
+    # Heading 4
     html._text = "#### Heading Four\n"
     html.tokenizeText()
     html.doConvert()
@@ -126,11 +135,17 @@ def testFmtToHtml_ConvertHeaders(mockGUI):
         "<a name='0000000000000:T0001'></a>Heading One</p>\n"
     )
 
-    # Unnumbered
+    # Alt Heading 2
     html._text = "##! Heading Two\n"
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == "<h2><a name='0000000000000:T0001'></a>Heading Two</h2>\n"
+
+    # Alt Heading 3
+    html._text = "###! Heading Three\n"
+    html.tokenizeText()
+    html.doConvert()
+    assert html._pages[-1] == "<h3><a name='0000000000000:T0001'></a>Heading Three</h3>\n"
 
 
 @pytest.mark.core
@@ -486,6 +501,13 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     ]
     html.doConvert()
     assert html._pages[-1] == "<p class='sep' style='text-align: center;'>* * *</p>\n"
+
+    # Horizontal Rule
+    html._blocks = [
+        (BlockTyp.HRULE, tMeta, "", [], BlockFmt.CENTRE),
+    ]
+    html.doConvert()
+    assert html._pages[-1] == "<hr style='text-align: center;'>\n"
 
     # Skip
     html._blocks = [

@@ -2,9 +2,6 @@
 novelWriter – Project Item Class
 ================================
 
-File History:
-Created: 2018-10-27 [0.0.1] NWItem
-
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -99,6 +96,7 @@ class NWItem:
         self._charInit = 0  # Initial word count
 
     def __repr__(self) -> str:
+        """Return a string representation of the item."""
         return f"<NWItem handle={self._handle}, parent={self._parent}, name='{self._name}'>"
 
     def __bool__(self) -> bool:
@@ -306,7 +304,7 @@ class NWItem:
     ##
 
     def notifyToRefresh(self) -> None:
-        """Notify GUI that item info needs to be refreshed."""
+        """Notify the project model/view that item data has changed."""
         self._project.tree.refreshItems([self._handle])
 
     def notifyNovelStructureChange(self) -> None:
@@ -441,13 +439,12 @@ class NWItem:
         """Set the default values based on the item's class and the
         project settings.
         """
-        if self._parent is not None:
+        if self._parent is not None and itemClass != self._class:
             # Only update for child items
-            if itemClass != self._class:
-                self.setClass(itemClass)
-                if self._type == nwItemType.FILE:
-                    # Notify the index of the class change
-                    self._project.index.refreshHandle(self._handle)
+            self.setClass(itemClass)
+            if self._type == nwItemType.FILE:
+                # Notify the index of the class change
+                self._project.index.refreshHandle(self._handle)
 
         if self._layout == nwItemLayout.NO_LAYOUT:
             # If no layout is set, pick one

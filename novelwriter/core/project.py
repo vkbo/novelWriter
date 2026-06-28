@@ -2,9 +2,6 @@
 novelWriter – Project Wrapper
 =============================
 
-File History:
-Created: 2018-09-29 [0.0.1] NWProject
-
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -115,6 +112,7 @@ class NWProject:
         logger.debug("Ready: NWProject")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NWProject")
 
     def clear(self) -> None:
@@ -306,10 +304,14 @@ class NWProject:
         if status != NWStorageOpen.READY:
             if status == NWStorageOpen.UNKOWN:
                 SHARED.error(
-                    self.tr("Not a known project file format."), info=self.tr("Path: {0}").format(str(projPath))
+                    self.tr("Not a known project file format."),
+                    info=self.tr("Path: {0}").format(str(projPath)),
                 )
             elif status == NWStorageOpen.NOT_FOUND:
-                SHARED.error(self.tr("Project file not found."), info=self.tr("Path: {0}").format(str(projPath)))
+                SHARED.error(
+                    self.tr("Project file not found."),
+                    info=self.tr("Path: {0}").format(str(projPath)),
+                )
             elif status == NWStorageOpen.FAILED:
                 SHARED.error(
                     self.tr("Failed to open project."),

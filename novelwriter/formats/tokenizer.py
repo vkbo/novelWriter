@@ -32,9 +32,26 @@ from PyQt6.QtGui import QColor, QFont
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, fontMatcher, numberToRoman
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwStats, nwStyles, nwUnicode, trConst
+from novelwriter.constants import (
+    nwHeadFmt,
+    nwKeyWords,
+    nwLabels,
+    nwShortcode,
+    nwStats,
+    nwStyles,
+    nwUnicode,
+    trConst,
+)
 from novelwriter.enum import nwComment, nwItemLayout
-from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Block, T_Formats, T_Note, TextDocumentTheme, TextFmt
+from novelwriter.formats.shared import (
+    BlockFmt,
+    BlockTyp,
+    T_Block,
+    T_Formats,
+    T_Note,
+    TextDocumentTheme,
+    TextFmt,
+)
 from novelwriter.text.formats import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 
@@ -128,6 +145,7 @@ class Tokenizer(ABC):
         self._firstWidth = 1.40  # First line indent in units of em
         self._indentFirst = False  # Indent first paragraph
         self._doJustify = False  # Justify text
+        self._justifyOnBreak = True  # Justify text on manual line breaks
         self._doBodyText = True  # Include body text
         self._doComments = set()  # Comment styles to allow
         self._doKeywords = False  # Also process keywords like tags and references
@@ -342,9 +360,10 @@ class Tokenizer(ABC):
         self._firstWidth = indent
         self._indentFirst = first
 
-    def setJustify(self, state: bool) -> None:
+    def setJustify(self, enabled: bool, onBreak: bool) -> None:
         """Enable or disable text justification."""
-        self._doJustify = state
+        self._doJustify = enabled
+        self._justifyOnBreak = onBreak
 
     def setDialogHighlight(self, state: bool) -> None:
         """Enable or disable dialogue highlighting."""
@@ -421,7 +440,7 @@ class Tokenizer(ABC):
 
     def setIgnoredKeywords(self, keywords: str) -> None:
         """Comma separated string of keywords to ignore."""
-        self._skipKeywords = set(x.lower().strip() for x in keywords.split(","))
+        self._skipKeywords = {x.lower().strip() for x in keywords.split(",")}
 
     def setKeepLineBreaks(self, state: bool) -> None:
         """Keep line breaks in paragraphs."""
@@ -727,10 +746,15 @@ class Tokenizer(ABC):
                         tStyle |= self._sceneStyle
                         if tText == "":  # Empty Format
                             tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SKIP
-                        elif tText == tFormat:  # Static Format
+                        elif tFormat == nwHeadFmt.HRULE:  # Horizontal Rule Format
+                            tText = ""
+                            tType = BlockTyp.EMPTY if self._noSep else BlockTyp.HRULE
+                            tStyle = BlockFmt.NONE
+                        elif tText == tFormat:  # Separator Format
                             tText = "" if self._noSep else tText
                             tType = BlockTyp.EMPTY if self._noSep else BlockTyp.SEP
                             tStyle |= BlockFmt.NONE if self._noSep else BlockFmt.CENTRE
+
                     self._noSep = False
 
                 tBlocks.append((tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle))
@@ -746,16 +770,21 @@ class Tokenizer(ABC):
                 nHead += 1
                 tText = aLine[5:].strip()
                 tType = BlockTyp.HEAD4
+                tFormat = self._fmtSection
                 if isNovel:
                     tType = BlockTyp.HEAD3  # Promote
                     if self._hideSection:
                         tText = ""
                         tType = BlockTyp.EMPTY
                     else:
-                        tText = self._hFormatter.apply(self._fmtSection, tText, nHead)
+                        tText = self._hFormatter.apply(tFormat, tText, nHead)
                         if tText == "":  # Empty Format
                             tType = BlockTyp.SKIP
-                        elif tText == self._fmtSection:  # Static Format
+                        elif tFormat == nwHeadFmt.HRULE:  # Horizontal Rule Format
+                            tText = ""
+                            tType = BlockTyp.HRULE
+                            tStyle = BlockFmt.NONE
+                        elif tText == tFormat:  # Separator Format
                             tType = BlockTyp.SEP
                             tStyle |= BlockFmt.CENTRE
 
@@ -1146,7 +1175,7 @@ class Tokenizer(ABC):
         # Post-process text and format
         result = text
         formats = []
-        for pos, end, fmt, meta in reversed(sorted(temp, key=lambda x: x[0])):
+        for pos, end, fmt, meta in sorted(temp, key=lambda x: x[0], reverse=True):
             if fmt > 0:
                 if end > pos:
                     result = result[:pos] + result[end:]

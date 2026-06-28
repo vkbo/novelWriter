@@ -2,9 +2,6 @@
 novelWriter – Project Storage Class
 ===================================
 
-File History:
-Created: 2022-11-01 [2.0rc2] NWStorage
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -112,9 +109,8 @@ class NWStorage:
         """Return the path used for project content. The folder must
         already exist, otherwise this property is None.
         """
-        if isinstance(self._runtimePath, Path):
-            if safeIsDir(contentPath := self._runtimePath / "content", alert=True):
-                return contentPath
+        if isinstance(self._runtimePath, Path) and safeIsDir(contentPath := self._runtimePath / "content", alert=True):
+            return contentPath
         logger.error("Content path cannot be resolved")
         return None
 
@@ -373,7 +369,8 @@ class NWStorage:
             return False
         try:
             self._lockFilePath.write_text(
-                f"{CONFIG.hostName};{CONFIG.osType};{CONFIG.kernelVer};{int(time())}", encoding="utf-8"
+                f"{CONFIG.hostName};{CONFIG.osType};{CONFIG.kernelVer};{int(time())}",
+                encoding="utf-8",
             )
         except Exception:
             logger.error("Failed to write project lockfile")

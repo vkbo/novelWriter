@@ -2,9 +2,6 @@
 novelWriter – Project Data Class
 ================================
 
-File History:
-Created: 2022-10-30 [2.0rc2] NWProjectData
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 

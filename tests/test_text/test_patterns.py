@@ -87,28 +87,60 @@ def testTextPatterns_Words():
     regEx = REGEX_PATTERNS.wordSplit
 
     # Spaces
-    assert allMatches(regEx, "one two three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
+    assert allMatches(regEx, "one two three") == [
+        [("one", 0, 3)],
+        [("two", 4, 7)],
+        [("three", 8, 13)],
+    ]
 
     # Hyphens
-    assert allMatches(regEx, "one-two-three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
+    assert allMatches(regEx, "one-two-three") == [
+        [("one", 0, 3)],
+        [("two", 4, 7)],
+        [("three", 8, 13)],
+    ]
 
     # En Dashes
-    assert allMatches(regEx, "one\u2013two\u2013three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
+    assert allMatches(regEx, "one\u2013two\u2013three") == [
+        [("one", 0, 3)],
+        [("two", 4, 7)],
+        [("three", 8, 13)],
+    ]
 
     # Em Dashes
-    assert allMatches(regEx, "one\u2014two\u2014three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
+    assert allMatches(regEx, "one\u2014two\u2014three") == [
+        [("one", 0, 3)],
+        [("two", 4, 7)],
+        [("three", 8, 13)],
+    ]
 
     # Plus
-    assert allMatches(regEx, "one+two+three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
+    assert allMatches(regEx, "one+two+three") == [
+        [("one", 0, 3)],
+        [("two", 4, 7)],
+        [("three", 8, 13)],
+    ]
 
     # Slash
-    assert allMatches(regEx, "one/two/three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
+    assert allMatches(regEx, "one/two/three") == [
+        [("one", 0, 3)],
+        [("two", 4, 7)],
+        [("three", 8, 13)],
+    ]
 
     # Brackets
-    assert allMatches(regEx, "one[two]three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
+    assert allMatches(regEx, "one[two]three") == [
+        [("one", 0, 3)],
+        [("two", 4, 7)],
+        [("three", 8, 13)],
+    ]
 
     # Colon
-    assert allMatches(regEx, "one:two:three") == [[("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]]
+    assert allMatches(regEx, "one:two:three") == [
+        [("one", 0, 3)],
+        [("two", 4, 7)],
+        [("three", 8, 13)],
+    ]
 
 
 @pytest.mark.core

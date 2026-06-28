@@ -586,9 +586,12 @@ class GuiProjectTree(QTreeView):
         tHandle = None
         if itemType == nwItemType.ROOT and isinstance(itemClass, nwItemClass):
             sPos = -1
-            if (node := self._getNode(self.currentIndex())) and (itemRoot := node.item.itemRoot):
-                if root := SHARED.project.tree.nodes.get(itemRoot):
-                    sPos = root.row() + 1
+            if (
+                (node := self._getNode(self.currentIndex()))
+                and (itemRoot := node.item.itemRoot)
+                and (root := SHARED.project.tree.nodes.get(itemRoot))
+            ):
+                sPos = root.row() + 1
 
             tHandle = SHARED.project.newRoot(itemClass, sPos)
             self.restoreExpandedState()
@@ -778,9 +781,12 @@ class GuiProjectTree(QTreeView):
         if event.button() == QtMouseLeft:
             if not self.indexAt(event.pos()).isValid():
                 self._clearSelection()
-        elif event.button() == QtMouseMiddle:
-            if (node := self._getNode(self.indexAt(event.pos()))) and node.item.isFileType():
-                self.projView.openDocumentRequest.emit(node.item.itemHandle, nwDocMode.VIEW, "", False)
+        elif (
+            event.button() == QtMouseMiddle
+            and (node := self._getNode(self.indexAt(event.pos())))
+            and node.item.isFileType()
+        ):
+            self.projView.openDocumentRequest.emit(node.item.itemHandle, nwDocMode.VIEW, "", False)
 
     def drawRow(self, painter: QPainter, opt: QStyleOptionViewItem, index: QModelIndex) -> None:
         """Draw a box on the active row."""
@@ -807,21 +813,34 @@ class GuiProjectTree(QTreeView):
     @pyqtSlot()
     def goToSiblingUp(self) -> None:
         """Skip to the previous sibling."""
-        if (node := self._getNode(self.currentIndex())) and (parent := node.parent()):
-            if (move := parent.child(node.row() - 1)) and (model := self._getModel()):
-                self.setCurrentIndex(model.indexFromNode(move))
+        if (
+            (node := self._getNode(self.currentIndex()))
+            and (parent := node.parent())
+            and (move := parent.child(node.row() - 1))
+            and (model := self._getModel())
+        ):
+            self.setCurrentIndex(model.indexFromNode(move))
 
     @pyqtSlot()
     def goToSiblingDown(self) -> None:
         """Skip to the next sibling."""
-        if (node := self._getNode(self.currentIndex())) and (parent := node.parent()):
-            if (move := parent.child(node.row() + 1)) and (model := self._getModel()):
-                self.setCurrentIndex(model.indexFromNode(move))
+        if (
+            (node := self._getNode(self.currentIndex()))
+            and (parent := node.parent())
+            and (move := parent.child(node.row() + 1))
+            and (model := self._getModel())
+        ):
+            self.setCurrentIndex(model.indexFromNode(move))
 
     @pyqtSlot()
     def goToParent(self) -> None:
         """Move to parent item."""
-        if (model := self._getModel()) and (node := model.node(self.currentIndex())) and (parent := node.parent()):
+        if (
+            (model := self._getModel())
+            and (node := model.node(self.currentIndex()))
+            and (parent := node.parent())
+            and parent is not model.root
+        ):
             self.setCurrentIndex(model.indexFromNode(parent))
 
     @pyqtSlot()
@@ -866,9 +885,7 @@ class GuiProjectTree(QTreeView):
                 self.setEnabled(False)
                 for index in indices:
                     if node := model.node(index):
-                        for child in reversed(node.allChildren()):
-                            SHARED.project.removeItem(child.item.itemHandle)
-                        SHARED.project.removeItem(node.item.itemHandle)
+                        self._deleteSubTree(node)
                 self.setEnabled(True)
 
             elif trashNode := SHARED.project.tree.trash:
@@ -895,8 +912,8 @@ class GuiProjectTree(QTreeView):
             if not SHARED.question(self.tr("Permanently delete {0} file(s) from Trash?").format(len(nodes))):
                 logger.info("Action cancelled by user")
                 return
-            for node in reversed(nodes):
-                SHARED.project.removeItem(node.item.itemHandle)
+            for node in list(trash.children):
+                self._deleteSubTree(node)
         return
 
     @pyqtSlot()
@@ -963,6 +980,12 @@ class GuiProjectTree(QTreeView):
         if model := self.selectionModel():
             # Selection model can be None (#2173)
             model.clearCurrentIndex()
+
+    def _deleteSubTree(self, node: ProjectNode) -> None:
+        """Permanently delete a node and its descendants."""
+        for child in reversed(node.allChildren()):
+            SHARED.project.removeItem(child.item.itemHandle)
+        SHARED.project.removeItem(node.item.itemHandle)
 
     def _selectedRows(self) -> list[QModelIndex]:
         """Return all column 0 indexes."""
@@ -1042,7 +1065,11 @@ class _TreeContextMenu(QMenu):
     __slots__ = ("_children", "_handle", "_indices", "_item", "_model", "_node", "_tree", "_view")
 
     def __init__(
-        self, projTree: GuiProjectTree, model: ProjectModel, node: ProjectNode, indices: list[QModelIndex]
+        self,
+        projTree: GuiProjectTree,
+        model: ProjectModel,
+        node: ProjectNode,
+        indices: list[QModelIndex],
     ) -> None:
         super().__init__(parent=projTree)
         self._tree = projTree
@@ -1151,6 +1178,14 @@ class _TreeContextMenu(QMenu):
         else:
             action = qtAddAction(self, self.tr("Toggle Active"))
             action.triggered.connect(self._toggleItemActive)
+            if self._children > 0:
+                mSub = qtAddMenu(self, self.tr("Set Children to ..."))
+                aOne = qtAddAction(mSub, self._tree.trActive)
+                aOne.setIcon(SHARED.theme.getIcon("checked", "accept"))
+                aOne.triggered.connect(qtLambda(self._recurseItemActive, True))
+                aTwo = qtAddAction(mSub, self._tree.trInactive)
+                aTwo.setIcon(SHARED.theme.getIcon("unchecked", "reject"))
+                aTwo.triggered.connect(qtLambda(self._recurseItemActive, False))
 
     def _itemStatusImport(self, multi: bool) -> None:
         """Add actions for changing status or importance."""
@@ -1266,6 +1301,18 @@ class _TreeContextMenu(QMenu):
             if node.item.isFileType():
                 node.item.setActive(state)
                 refresh.append(node.item.itemHandle)
+        SHARED.project.tree.refreshItems(refresh)
+
+    def _recurseItemActive(self, state: bool) -> None:
+        """Set the active status of an item and all its children."""
+        refresh = []
+        if self._item.isFileType():
+            self._item.setActive(state)
+            refresh.append(self._item.itemHandle)
+        for child in self._node.allChildren():
+            if child.item.isFileType():
+                child.item.setActive(state)
+                refresh.append(child.item.itemHandle)
         SHARED.project.tree.refreshItems(refresh)
 
     def _changeItemStatus(self, key: str) -> None:

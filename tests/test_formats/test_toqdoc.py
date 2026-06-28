@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt6.QtGui import QTextBlock, QTextCharFormat, QTextCursor
+from PyQt6.QtGui import QTextBlock, QTextCharFormat, QTextCursor, QTextFormat, QTextLength
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwHeadFmt, nwUnicode
@@ -38,6 +38,7 @@ from novelwriter.types import (
     QtAlignLeft,
     QtAlignRight,
     QtFontBold,
+    QtMoveEnd,
     QtPageBreakAfter,
     QtPageBreakAuto,
     QtPageBreakBefore,
@@ -203,6 +204,36 @@ def testFmtToQTextDocument_SeparatorSkip(mockGUI):
     # 6: Text 3
     block = doc.document.findBlockByNumber(6)
     assert block.text() == "Text 3"
+
+
+@pytest.mark.core
+def testFmtToQTextDocument_HorizontalRule(mockGUI):
+    """Test horizontal rule helper in the ToQTextDocument class."""
+    project = NWProject()
+    doc = ToQTextDocument(project)
+    doc.initDocument()
+
+    doc._isNovel = True
+    doc._isFirst = True
+    doc._text = "#! Title\n## Chapter\n### Scene 1\nText 1\n### Scene 2\nText 2\n#### Section\nText 3\n"
+    doc.setSceneFormat(nwHeadFmt.HRULE, False)
+    doc.setSectionFormat("", False)
+    doc.tokenizeText()
+    doc.doConvert()
+    assert doc.document.blockCount() == 7
+
+    cursor = QTextCursor(doc.document)
+    cursor.movePosition(QtMoveEnd)
+    doc._insertHorizontalRule(cursor)
+
+    block = doc.document.findBlockByNumber(3)
+    bFmt = block.blockFormat()
+    assert bFmt.alignment() == QtAlignCenter
+    assert bFmt.hasProperty(QTextFormat.Property.BlockTrailingHorizontalRulerWidth)
+
+    width = bFmt.lengthProperty(QTextFormat.Property.BlockTrailingHorizontalRulerWidth)
+    assert width.type() == QTextLength.Type.PercentageLength
+    assert width.rawValue() == pytest.approx(50.0)
 
 
 @pytest.mark.core

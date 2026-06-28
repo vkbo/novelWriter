@@ -66,7 +66,10 @@ class GuiDocSplit(NDialog):
         self.headLabel = QLabel(self.tr("Document Headings"), self)
         self.headLabel.setFont(SHARED.theme.guiFontB)
         self.helpLabel = NColorLabel(
-            self.tr("Select the maximum level to split into files."), self, color=SHARED.theme.helpText, wrap=True
+            self.tr("Select the maximum level to split into files."),
+            self,
+            color=SHARED.theme.helpText,
+            wrap=True,
         )
 
         # Values
@@ -150,6 +153,7 @@ class GuiDocSplit(NDialog):
         logger.debug("Ready: GuiDocSplit")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiDocSplit")
 
     def data(self) -> tuple[dict, list[str]]:

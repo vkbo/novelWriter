@@ -139,6 +139,7 @@ class GuiPreferences(NDialog):
         logger.debug("Ready: GuiPreferences")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiPreferences")
 
     def buildForm(self) -> None:
@@ -170,7 +171,10 @@ class GuiPreferences(NDialog):
         self.guiLocale.setCurrentData(CONFIG.guiLocale, "en_GB")
 
         self.mainForm.addRow(
-            self.tr("Display language"), self.guiLocale, self.tr("Requires restart to take effect."), stretch=(3, 2)
+            self.tr("Display language"),
+            self.guiLocale,
+            self.tr("Requires restart to take effect."),
+            stretch=(3, 2),
         )
 
         # Colour Theme
@@ -209,7 +213,10 @@ class GuiPreferences(NDialog):
         self.iconTheme.setCurrentData(CONFIG.iconTheme, DEF_ICONS)
 
         self.mainForm.addRow(
-            self.tr("Icon theme"), self.iconTheme, self.tr("User interface icon theme."), stretch=(3, 2)
+            self.tr("Icon theme"),
+            self.iconTheme,
+            self.tr("User interface icon theme."),
+            stretch=(3, 2),
         )
 
         # Application Font Family
@@ -302,7 +309,10 @@ class GuiPreferences(NDialog):
         # Include Notes in Word Count
         self.incNotesWCount = NSwitch(self)
         self.incNotesWCount.setChecked(CONFIG.incNotesWCount)
-        self.mainForm.addRow(self.tr("Include project notes in status bar word count"), self.incNotesWCount)
+        self.mainForm.addRow(
+            self.tr("Include project notes in status bar word count"),
+            self.incNotesWCount,
+        )
 
         # Project View
         # ============
@@ -388,7 +398,9 @@ class GuiPreferences(NDialog):
         self.moveMainWin = NSwitch(self)
         self.moveMainWin.setChecked(CONFIG.moveMainWin)
         self.mainForm.addRow(
-            self.tr("Centre window on startup"), self.moveMainWin, self.tr("Applies to main window and welcome dialog.")
+            self.tr("Centre window on startup"),
+            self.moveMainWin,
+            self.tr("Applies to main window and welcome dialog."),
         )
 
         # Project Backup
@@ -603,17 +615,26 @@ class GuiPreferences(NDialog):
         # Highlight Current Line
         self.lineHighlight = NSwitch(self)
         self.lineHighlight.setChecked(CONFIG.lineHighlight)
-        self.mainForm.addRow(self.tr("Highlight current line"), self.lineHighlight)
+        self.mainForm.addRow(
+            self.tr("Highlight current line"),
+            self.lineHighlight,
+        )
 
         # Show Tabs and Spaces
         self.showTabsNSpaces = NSwitch(self)
         self.showTabsNSpaces.setChecked(CONFIG.showTabsNSpaces)
-        self.mainForm.addRow(self.tr("Show tabs and spaces"), self.showTabsNSpaces)
+        self.mainForm.addRow(
+            self.tr("Show tabs and spaces"),
+            self.showTabsNSpaces,
+        )
 
         # Show Line Endings
         self.showLineEndings = NSwitch(self)
         self.showLineEndings.setChecked(CONFIG.showLineEndings)
-        self.mainForm.addRow(self.tr("Show line endings"), self.showLineEndings)
+        self.mainForm.addRow(
+            self.tr("Show line endings"),
+            self.showLineEndings,
+        )
 
         # Editor Scrolling
         # ================
@@ -668,7 +689,9 @@ class GuiPreferences(NDialog):
         self.dialogStyle.addItem(self.tr("Both"), 3)
         self.dialogStyle.setCurrentData(CONFIG.dialogStyle, 2)
         self.mainForm.addRow(
-            self.tr("Highlight dialogue"), self.dialogStyle, self.tr("Applies to the selected quote styles.")
+            self.tr("Highlight dialogue"),
+            self.dialogStyle,
+            self.tr("Applies to the selected quote styles."),
         )
 
         # Open-Ended Dialogue
@@ -825,7 +848,9 @@ class GuiPreferences(NDialog):
         self.doReplaceDots.setChecked(CONFIG.doReplaceDots)
         self.doReplaceDots.setEnabled(CONFIG.doReplace)
         self.mainForm.addRow(
-            self.tr("Auto-replace dots"), self.doReplaceDots, self.tr("Three consecutive dots become ellipsis.")
+            self.tr("Auto-replace dots"),
+            self.doReplaceDots,
+            self.tr("Three consecutive dots become ellipsis."),
         )
 
         # Pad Before
@@ -1012,7 +1037,10 @@ class GuiPreferences(NDialog):
     def _backupFolder(self) -> None:
         """Open a dialog to select the backup folder."""
         if path := QFileDialog.getExistingDirectory(
-            self, self.tr("Backup Directory"), str(self.backupPath) or "", options=QFileDialog.Option.ShowDirsOnly
+            self,
+            self.tr("Backup Directory"),
+            str(self.backupPath) or "",
+            options=QFileDialog.Option.ShowDirsOnly,
         ):
             self.backupPath = path
             self.mainForm.setHelpText("backupPath", self.tr("Path: {0}").format(path))

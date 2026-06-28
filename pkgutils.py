@@ -3,11 +3,6 @@
 novelWriter – Packaging Utils
 =============================
 
-File History:
-Created: 2019-05-16 [0.5.1]
-Renamed: 2023-07-26 [2.1b1]
-Split:   2025-01-16 [2.7b1]
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -96,7 +91,7 @@ def genMacOSPlist(args: argparse.Namespace) -> None:
         macosBundleVers=numVers,
         macosBundleVersMajor=pkgVersMaj,
         macosBundleVersMinor=pkgVersMin,
-        macosBundleCopyright=f"Copyright 2018–{copyrightYear}, Veronica Berglyd Olsen",
+        macosBundleCopyright=f"Copyright {copyrightYear}, Veronica Berglyd Olsen",
     )
 
     print(f"Writing Info.plist to {outDir}/Info.plist")

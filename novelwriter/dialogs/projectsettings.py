@@ -154,6 +154,7 @@ class GuiProjectSettings(NDialog):
         logger.debug("Ready: GuiProjectSettings")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiProjectSettings")
 
     ##
@@ -259,7 +260,10 @@ class _SettingsPage(NScrollableForm):
         self.projAuthor.setMinimumWidth(200)
         self.projAuthor.setText(data.author)
         self.addRow(
-            self.tr("Author"), self.projAuthor, self.tr("Only used when building the manuscript."), stretch=(3, 2)
+            self.tr("Author"),
+            self.projAuthor,
+            self.tr("Only used when building the manuscript."),
+            stretch=(3, 2),
         )
 
         # Project Language
@@ -284,7 +288,10 @@ class _SettingsPage(NScrollableForm):
             for tag, language in SHARED.spelling.listDictionaries():
                 self.spellLang.addItem(language, tag)
         self.addRow(
-            self.tr("Spell check language"), self.spellLang, self.tr("Overrides main preferences."), stretch=(3, 2)
+            self.tr("Spell check language"),
+            self.spellLang,
+            self.tr("Overrides main preferences."),
+            stretch=(3, 2),
         )
         if (idx := self.spellLang.findData(data.spellLang)) != -1:
             self.spellLang.setCurrentIndex(idx)
@@ -292,7 +299,11 @@ class _SettingsPage(NScrollableForm):
         # Backup on Close
         self.noBackup = NSwitch(self)
         self.noBackup.setChecked(not data.doBackup)
-        self.addRow(self.tr("Disable backup on close"), self.noBackup, self.tr("Overrides main preferences."))
+        self.addRow(
+            self.tr("Disable backup on close"),
+            self.noBackup,
+            self.tr("Overrides main preferences."),
+        )
 
         self.finalise()
 
@@ -778,9 +789,8 @@ class _ReplacePage(NFixedPage):
         """Extract the list from the widget."""
         new = {}
         for n in range(self.listBox.topLevelItemCount()):
-            if item := self.listBox.topLevelItem(n):
-                if key := self._stripKey(item.text(self.C_KEY)):
-                    new[key] = item.text(self.C_REPL)
+            if (item := self.listBox.topLevelItem(n)) and (key := self._stripKey(item.text(self.C_KEY))):
+                new[key] = item.text(self.C_REPL)
         return new
 
     def columnWidth(self) -> int:

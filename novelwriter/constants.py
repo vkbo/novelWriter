@@ -522,8 +522,19 @@ class nwHeadFmt:
     SC_ABS = "{Scene:Abs}"
     CHAR_POV = "{Char:POV}"
     CHAR_FOCUS = "{Char:Focus}"
+    HRULE = "----"
 
-    PAGE_HEADERS: Final[list[str]] = [TITLE, CH_NUM, CH_WORD, CH_ROMU, CH_ROML, SC_NUM, SC_ABS, CHAR_POV, CHAR_FOCUS]
+    PAGE_HEADERS: Final[list[str]] = [
+        TITLE,
+        CH_NUM,
+        CH_WORD,
+        CH_ROMU,
+        CH_ROML,
+        SC_NUM,
+        SC_ABS,
+        CHAR_POV,
+        CHAR_FOCUS,
+    ]
 
     # Document Page Header
     DOC_PROJECT = "{Project}"

@@ -148,6 +148,7 @@ class GuiDictionaries(NNonBlockingDialog):
         logger.debug("Ready: GuiDictionaries")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiDictionaries")
 
     def initDialog(self) -> bool:
@@ -167,7 +168,7 @@ class GuiDictionaries(NNonBlockingDialog):
                 self.inPath.setText(str(path))
                 hunspell = path / "hunspell"
                 if hunspell.is_dir():
-                    self._currDicts = set(i.stem for i in hunspell.iterdir() if i.is_file() and i.suffix == ".aff")
+                    self._currDicts = {i.stem for i in hunspell.iterdir() if i.is_file() and i.suffix == ".aff"}
                 self._appendLog(self.tr("Additional dictionaries found: {0}").format(len(self._currDicts)))
         except Exception as exc:
             SHARED.newStatusMessage(exc, "error")

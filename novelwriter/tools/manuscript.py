@@ -263,6 +263,7 @@ class GuiManuscript(NToolDialog):
         logger.debug("Ready: GuiManuscript")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiManuscript")
 
     def loadContent(self) -> None:
@@ -364,12 +365,11 @@ class GuiManuscript(NToolDialog):
     @pyqtSlot()
     def _deleteSelectedBuild(self) -> None:
         """Delete the currently selected build settings entry."""
-        if build := self._getSelectedBuild():
-            if SHARED.question(self.tr("Delete build '{0}'?").format(build.name)):
-                if dialog := self._findSettingsDialog(build.buildID):
-                    dialog.close()
-                self._builds.removeBuild(build.buildID)
-                self._updateBuildsList()
+        if (build := self._getSelectedBuild()) and SHARED.question(self.tr("Delete build '{0}'?").format(build.name)):
+            if dialog := self._findSettingsDialog(build.buildID):
+                dialog.close()
+            self._builds.removeBuild(build.buildID)
+            self._updateBuildsList()
 
     @pyqtSlot(BuildSettings, bool)
     def _processNewSettings(self, build: BuildSettings, refreshPreview: bool) -> None:

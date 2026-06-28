@@ -37,17 +37,7 @@ class NProgressCircle(QProgressBar):
     a straight bar. It is also possible to set custom text for iṫ.
     """
 
-    __slots__ = (
-        "_bPen",
-        "_cPen",
-        "_cRect",
-        "_dBrush",
-        "_dPen",
-        "_dRect",
-        "_point",
-        "_tColor",
-        "_text",
-    )
+    __slots__ = ("_bPen", "_cPen", "_cRect", "_dBrush", "_dPen", "_dRect", "_point", "_tColor", "_text")
 
     def __init__(self, parent: QWidget, size: int, point: int) -> None:
         super().__init__(parent=parent)

@@ -137,6 +137,9 @@ class ToMarkdown(Tokenizer):
             elif tType == BlockTyp.SEP:
                 lines.append(f"{tText}\n\n")
 
+            elif tType == BlockTyp.HRULE:
+                lines.append("----\n\n")
+
             elif tType == BlockTyp.SKIP:
                 lines.append(f"{cSkip}\n\n")
 

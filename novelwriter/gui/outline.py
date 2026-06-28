@@ -627,7 +627,10 @@ class GuiOutlineTree(QTreeWidget):
                 logHidden = self.isColumnHidden(iLog)
                 orgWidth = self._colWidth[hItem]
                 logWidth = self.columnWidth(iLog)
-                colState[hItem.name] = [logHidden, orgWidth if logHidden and logWidth == 0 else logWidth]
+                colState[hItem.name] = [
+                    logHidden,
+                    orgWidth if logHidden and logWidth == 0 else logWidth,
+                ]
 
             logger.debug("Saving State: GuiOutline")
             pOptions = SHARED.project.options

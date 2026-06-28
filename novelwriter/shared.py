@@ -2,10 +2,6 @@
 novelWriter – Shared Data Class
 ===============================
 
-File History:
-Created: 2023-08-10 [2.1rc1] SharedData
-Created: 2023-08-14 [2.1rc1] _GuiAlert
-
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -68,19 +64,11 @@ class SharedData(QObject):
     the main GUI, the current project, and the GUI theme.
     """
 
-    __slots__ = (
-        "_gui",
-        "_idleRefTime",
-        "_idleTime",
-        "_lastAlert",
-        "_lockedBy",
-        "_project",
-        "_spelling",
-        "_theme",
-    )
+    __slots__ = ("_gui", "_idleRefTime", "_idleTime", "_lastAlert", "_lockedBy", "_project", "_spelling", "_theme")
 
     focusModeChanged = pyqtSignal(bool)
     indexAvailable = pyqtSignal()
+    indexChangedRefs = pyqtSignal(list)
     indexChangedTags = pyqtSignal(list, list)
     indexCleared = pyqtSignal()
     mainClockTick = pyqtSignal()
@@ -364,6 +352,11 @@ class SharedData(QObject):
         if self._project and self._project.data.uuid == project.data.uuid:
             self.indexChangedTags.emit(updated, deleted)
 
+    def emitIndexChangedRefs(self, project: NWProject, updated: list[str]) -> None:
+        """Emit the indexChangedRefs signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
+            self.indexChangedRefs.emit(updated)
+
     def emitIndexCleared(self, project: NWProject) -> None:
         """Emit the indexCleared signal."""
         if self._project and self._project.data.uuid == project.data.uuid:
@@ -434,7 +427,12 @@ class SharedData(QObject):
         alert.pop()
 
     def error(
-        self, text: T_Msg, info: str = "", details: str = "", log: bool = True, exc: Exception | None = None
+        self,
+        text: T_Msg,
+        info: str = "",
+        details: str = "",
+        log: bool = True,
+        exc: Exception | None = None,
     ) -> None:
         """Open an error alert box."""
         alert = _GuiAlert(self.mainGui, self.theme)

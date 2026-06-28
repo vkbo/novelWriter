@@ -26,7 +26,7 @@ import re
 import xml.etree.ElementTree as ET
 
 from datetime import datetime
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING, Literal, NamedTuple
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from PyQt6.QtCore import QMargins, QSize
@@ -36,7 +36,7 @@ from novelwriter.common import firstFloat, xmlElement, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import COMMENT_BLOCKS, Tokenizer
-from novelwriter.types import QtHexRgb
+from novelwriter.types import QtBlack, QtHexRgb
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -175,6 +175,16 @@ class DocXParStyle(NamedTuple):
     bold: bool = False
 
 
+class DocXBorder(NamedTuple):
+    """DocX Border Data."""
+
+    line: Literal["single", "double", "dashed", "dotted"] = "single"
+    color: QColor = QtBlack
+    size: int = 6
+    space: int = 1
+    margin: int = 0
+
+
 class ToDocX(Tokenizer):
     """Core: DocX Document Writer.
 
@@ -193,6 +203,7 @@ class ToDocX(Tokenizer):
         self._fontSize = 12.0
         self._pageSize = QSize(_mmToSz(210.0), _mmToSz(297.0))
         self._pageMargins = QMargins(_mmToSz(20.0), _mmToSz(20.0), _mmToSz(20.0), _mmToSz(20.0))
+        self._mHorLine = _mmToSz(42.5 / 20.0)
 
         # Data Variables
         self._pars: list[DocXParagraph] = []
@@ -210,6 +221,7 @@ class ToDocX(Tokenizer):
         """Set the document page size and margins in millimetres."""
         self._pageSize = QSize(_mmToSz(width), _mmToSz(height))
         self._pageMargins = QMargins(_mmToSz(left), _mmToSz(top), _mmToSz(right), _mmToSz(bottom))
+        self._mHorLine = _mmToSz((width - left - right) / 80.0)
 
     def setHeaderFormat(self, value: str, offset: int) -> None:
         """Set the document header format."""
@@ -285,13 +297,16 @@ class ToDocX(Tokenizer):
             elif tType == BlockTyp.SEP:
                 self._processFragments(par, S_SEP, tText)
 
+            elif tType == BlockTyp.HRULE:
+                par.setBorder("bottom", DocXBorder(line="single", color=self._theme.comment))
+                par.setMarginLeft(self._mHorLine)
+                par.setMarginRight(self._mHorLine)
+                self._processFragments(par, S_NORM, "")
+
             elif tType == BlockTyp.SKIP:
                 self._processFragments(par, S_NORM, "")
 
-            elif tType in COMMENT_BLOCKS:
-                self._processFragments(par, S_META, tText, tFormat)
-
-            elif tType == BlockTyp.KEYWORD:
+            elif tType in COMMENT_BLOCKS or tType == BlockTyp.KEYWORD:
                 self._processFragments(par, S_META, tText, tFormat)
 
     def closeDocument(self) -> None:
@@ -825,7 +840,11 @@ class ToDocX(Tokenizer):
             xmlSubElem(rPr, _wTag("szCs"), attrib={W_VAL: str(int(2.0 * size))})
 
         # Character Style
-        xStyl = xmlSubElem(xRoot, _wTag("style"), attrib={_wTag("type"): "character", _wTag("styleId"): "InternetLink"})
+        xStyl = xmlSubElem(
+            xRoot,
+            _wTag("style"),
+            attrib={_wTag("type"): "character", _wTag("styleId"): "InternetLink"},
+        )
         xmlSubElem(xStyl, _wTag("name"), attrib={W_VAL: "Hyperlink"})
         rPr = xmlSubElem(xStyl, _wTag("rPr"))
         xmlSubElem(rPr, _wTag("color"), attrib={W_VAL: _docXCol(self._theme.link)})
@@ -1073,7 +1092,8 @@ class ToDocX(Tokenizer):
         xmlSubElem(xSet, _wTag("numFmt"), attrib={W_VAL: "decimal"})
 
         xSet = xmlSubElem(xRoot, _wTag("compat"))
-        xmlSubElem(xSet, _wTag("doNotExpandShiftReturn"))
+        if not self._justifyOnBreak:
+            xmlSubElem(xSet, _wTag("doNotExpandShiftReturn"))
         xmlSubElem(
             xSet,
             _wTag("compatSetting"),
@@ -1106,6 +1126,7 @@ class DocXParagraph:
     """
 
     __slots__ = (
+        "_borders",
         "_bottomMargin",
         "_breakAfter",
         "_breakBefore",
@@ -1131,6 +1152,7 @@ class DocXParagraph:
         self._breakBefore = False
         self._breakAfter = False
         self._footnoteRef = False
+        self._borders: dict[str, DocXBorder] = {}
 
     ##
     #  Properties
@@ -1169,6 +1191,10 @@ class DocXParagraph:
     def setMarginRight(self, value: float) -> None:
         """Set margin right in pt."""
         self._rightMargin = value
+
+    def setBorder(self, position: str, value: DocXBorder) -> None:
+        """Set border for a specific position."""
+        self._borders[position] = value
 
     def setIndentFirst(self, state: bool) -> None:
         """Set first line indent."""
@@ -1222,6 +1248,19 @@ class DocXParagraph:
                         _wTag("lineRule"): "auto",
                     },
                 )
+            if self._borders:
+                pBdr = xmlSubElem(pPr, _wTag("pBdr"))
+                for position, border in self._borders.items():
+                    xmlSubElem(
+                        pBdr,
+                        _wTag(position),
+                        attrib={
+                            _wTag("val"): border.line,
+                            _wTag("color"): _docXCol(border.color),
+                            _wTag("sz"): str(border.size),
+                            _wTag("space"): str(border.space),
+                        },
+                    )
             if indent:
                 xmlSubElem(pPr, _wTag("ind"), attrib=indent)
             if self._textAlign:

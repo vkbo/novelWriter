@@ -2,10 +2,6 @@
 novelWriter – Project Item Status Class
 =======================================
 
-File History:
-Created:   2019-05-19 [0.1.3] NWStatus
-Rewritten: 2022-04-05 [2.0b1] NWStatus
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -88,7 +84,12 @@ class NWStatus:
         self._prefix = prefix[:1]
         self._height = SHARED.theme.baseIconHeight
 
+    def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
+        logger.debug("Delete: NWStatus")
+
     def __len__(self) -> int:
+        """Return the number of entries in the status list."""
         return len(self._store)
 
     def __getitem__(self, key: str | None) -> StatusEntry:
@@ -210,7 +211,10 @@ class NWStatus:
 
         return QIcon(
             pixmap.scaled(
-                height, height, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation
+                height,
+                height,
+                Qt.AspectRatioMode.IgnoreAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
             )
         )
 
@@ -238,10 +242,7 @@ class NWStatus:
             return False
         if value[0] != self._prefix:
             return False
-        for c in value[1:]:
-            if c not in "0123456789abcdef":
-                return False
-        return True
+        return all(c in "0123456789abcdef" for c in value[1:])
 
     def _checkKey(self, key: str | None) -> str:
         """Check key is valid, and if not, generate one."""

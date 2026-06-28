@@ -218,6 +218,9 @@ class ToHtml(Tokenizer):
             elif tType == BlockTyp.SEP:
                 lines.append(f"<p class='sep'{hStyle}>{tText}</p>\n")
 
+            elif tType == BlockTyp.HRULE:
+                lines.append(f"<hr{hStyle}>\n")
+
             elif tType == BlockTyp.SKIP:
                 lines.append(f"<p{hStyle}>&nbsp;</p>\n")
 
@@ -308,9 +311,10 @@ class ToHtml(Tokenizer):
             return []
 
         tColor = self._theme.text.name(QtHexRgb)
-        hColor = self._theme.head.name(QtHexRgb) if self._colorHeads else tColor
         lColor = self._theme.head.name(QtHexRgb)
         mColor = self._theme.highlight.name(QtHexRgb)
+        cColor = self._theme.comment.name(QtHexRgb)
+        hColor = lColor if self._colorHeads else tColor
 
         mtH0 = self._marginTitle[0]
         mbH0 = self._marginTitle[1]
@@ -352,6 +356,7 @@ class ToHtml(Tokenizer):
         )
         styles.append(f"a {{color: {lColor};}}")
         styles.append(f"mark {{background: {mColor};}}")
+        styles.append(f"hr {{width: 50%; color: {cColor}; margin: {mtSP:.2f}em auto {mbSP:.2f}em auto;}}")
         styles.append(f"h1, h2, h3, h4 {{color: {hColor}; page-break-after: avoid;}}")
         styles.append(
             f"h1 {{font-size: {fSz1:.2f}em; font-weight: {hW}; margin-top: {mtH1:.2f}em; margin-bottom: {mbH1:.2f}em;}}"
@@ -411,10 +416,9 @@ class ToHtml(Tokenizer):
                     tags.append((pos, f"<sup><a href='#footnote_{index}'>{index}</a></sup>"))
                 else:
                     tags.append((pos, "<sup>ERR</sup>"))
-            elif fmt == TextFmt.FIELD:
-                if field := data.partition(":")[2]:
-                    self._usedFields.append((len(self._pages), field))
-                    tags.append((pos, f"{{{{{field}}}}}"))
+            elif fmt == TextFmt.FIELD and (field := data.partition(":")[2]):
+                self._usedFields.append((len(self._pages), field))
+                tags.append((pos, f"{{{{{field}}}}}"))
 
         # Check all format types and close any tag that is still open. This
         # ensures that unclosed tags don't spill over to the next paragraph.

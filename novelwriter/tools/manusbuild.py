@@ -250,6 +250,7 @@ class GuiManuscriptBuild(NDialog):
         logger.debug("Ready: GuiManuscriptBuild")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiManuscriptBuild")
 
     ##
@@ -323,9 +324,10 @@ class GuiManuscriptBuild(NDialog):
         bExt = nwLabels.BUILD_EXT[bFormat]
         buildPath = (bPath / makeFileNameSafe(bName)).with_suffix(bExt)
 
-        if safeExists(buildPath):
-            if not SHARED.question(self.tr("The file already exists. Do you want to overwrite it?")):
-                return False
+        if safeExists(buildPath) and not SHARED.question(
+            self.tr("The file already exists. Do you want to overwrite it?")
+        ):
+            return False
 
         # Make sure editor content is saved before we start
         SHARED.saveEditor()

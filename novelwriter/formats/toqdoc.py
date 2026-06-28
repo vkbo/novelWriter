@@ -27,6 +27,7 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QMarginsF, QSizeF
 from PyQt6.QtGui import (
+    QBrush,
     QColor,
     QFont,
     QPageLayout,
@@ -36,6 +37,7 @@ from PyQt6.QtGui import (
     QTextCursor,
     QTextDocument,
     QTextFrameFormat,
+    QTextLength,
 )
 from PyQt6.QtPrintSupport import QPrinter
 
@@ -288,6 +290,9 @@ class ToQTextDocument(Tokenizer):
                 newBlock(cursor, bFmt)
                 cursor.insertText(tText, self._charFmt)
 
+            elif tType == BlockTyp.HRULE:
+                self._insertHorizontalRule(cursor)
+
             elif tType == BlockTyp.SKIP:
                 newBlock(cursor, bFmt)
                 cursor.insertText(nwUnicode.U_NBSP, self._charFmt)
@@ -431,10 +436,9 @@ class ToQTextDocument(Tokenizer):
                     cursor.insertText(f"[{index}]", xFmt)
                 else:
                     cursor.insertText("[ERR]", cFmt)
-            elif fmt == TextFmt.FIELD:
-                if field := data.partition(":")[2]:
-                    self._usedFields.append((cursor.position(), field))
-                    cursor.insertText("0", cFmt)
+            elif fmt == TextFmt.FIELD and (field := data.partition(":")[2]):
+                self._usedFields.append((cursor.position(), field))
+                cursor.insertText("0", cFmt)
 
             # Move pos for next pass
             start = pos
@@ -475,6 +479,21 @@ class ToQTextDocument(Tokenizer):
             cursor.insertText(self._project.localLookup("New Page"), cFmt)
             if root := self._document.rootFrame():
                 cursor.swap(root.lastCursorPosition())
+
+    def _insertHorizontalRule(self, cursor: QTextCursor) -> None:
+        """Insert a horizontal rule marker."""
+        bFmt = QTextBlockFormat(self._blockFmt)
+        bFmt.setAlignment(QtAlignCenter)
+        bFmt.setTopMargin(self._mSep[0])
+        bFmt.setBottomMargin(self._mSep[1])
+        bFmt.setLineHeight(100.0, QtPropLineHeight)
+        bFmt.setProperty(
+            QTextBlockFormat.Property.BlockTrailingHorizontalRulerWidth,
+            QTextLength(QTextLength.Type.PercentageLength, 50.0),
+        )
+        bFmt.setProperty(QTextBlockFormat.Property.BackgroundBrush, QBrush(self._theme.text))
+
+        newBlock(cursor, bFmt)
 
     def _genHeadStyle(self, hType: BlockTyp, hKey: str, rFmt: QTextBlockFormat) -> T_TextStyle:
         """Generate a heading style set."""

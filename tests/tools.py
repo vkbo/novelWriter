@@ -64,7 +64,10 @@ class C:
 
 
 def cmpFiles(
-    fileOne: str | Path, fileTwo: str | Path, ignoreLines: list[int] | None = None, ignoreStart: tuple | None = None
+    fileOne: str | Path,
+    fileTwo: str | Path,
+    ignoreLines: list[int] | None = None,
+    ignoreStart: tuple | None = None,
 ) -> bool:
     """Compare two files, with optional line ignore."""
     if ignoreLines is None:
@@ -97,10 +100,9 @@ def cmpFiles(
             print(f"Ignoring line {n + 1}")
             continue
 
-        if ignoreStart is not None:
-            if lnOne.startswith(ignoreStart):
-                print(f"Ignoring line {n + 1}")
-                continue
+        if ignoreStart is not None and lnOne.startswith(ignoreStart):
+            print(f"Ignoring line {n + 1}")
+            continue
 
         if lnOne != lnTwo:
             print(f"Diff on line {n + 1}:")

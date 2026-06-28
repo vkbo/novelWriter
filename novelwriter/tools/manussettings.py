@@ -66,6 +66,7 @@ from novelwriter.types import (
     QtRoleAccept,
     QtRoleApply,
     QtRoleDestruct,
+    QtSelectDocument,
     QtUserRole,
 )
 
@@ -194,6 +195,7 @@ class GuiBuildSettings(NToolDialog):
         logger.debug("Ready: GuiBuildSettings")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiBuildSettings")
 
     def loadContent(self) -> None:
@@ -536,7 +538,10 @@ class _FilterTab(NFixedPage):
         for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
             if not nwItem.isInactiveClass():
                 self.filterOpt.addItem(
-                    nwItem.getMainIcon(), nwItem.itemName, f"root:{tHandle}", default=self._build.isRootAllowed(tHandle)
+                    nwItem.getMainIcon(),
+                    nwItem.itemName,
+                    f"root:{tHandle}",
+                    default=self._build.isRootAllowed(tHandle),
                 )
 
     def _setSelectedMode(self, mode: int) -> None:
@@ -732,6 +737,7 @@ class _HeadingsTab(NScrollablePage):
         self.aInsScAbs = qtAddAction(self.mInsert, self.tr("Scene Number (Absolute)"))
         self.aInsCharPOV = qtAddAction(self.mInsert, self.tr("Point of View Character"))
         self.aInsCharFocus = qtAddAction(self.mInsert, self.tr("Focus Character"))
+        self.aInsHRule = qtAddAction(self.mInsert, self.tr("Horizontal Rule"))
 
         self.aInsTitle.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.TITLE))
         self.aInsChNum.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CH_NUM))
@@ -742,6 +748,7 @@ class _HeadingsTab(NScrollablePage):
         self.aInsScAbs.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.SC_ABS))
         self.aInsCharPOV.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CHAR_POV))
         self.aInsCharFocus.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.CHAR_FOCUS))
+        self.aInsHRule.triggered.connect(qtLambda(self._insertIntoForm, nwHeadFmt.HRULE, True))
 
         self.btnInsert = QPushButton(self.tr("Insert"), self)
         self.btnInsert.setMenu(self.mInsert)
@@ -903,10 +910,13 @@ class _HeadingsTab(NScrollablePage):
     #  Internal Functions
     ##
 
-    def _insertIntoForm(self, text: str) -> None:
+    def _insertIntoForm(self, text: str, replace: bool = False) -> None:
         """Insert formatting text from the dropdown menu."""
         if self._editing > 0:
             cursor = self.editTextBox.textCursor()
+            if replace:
+                cursor.select(QtSelectDocument)
+                cursor.removeSelectedText()
             cursor.insertText(text)
             self.editTextBox.setFocus()
 
@@ -993,15 +1003,19 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
 
     def highlightBlock(self, text: str) -> None:
         """Add syntax highlighting to the text block."""
-        for heading in nwHeadFmt.PAGE_HEADERS:
-            pos = text.find(heading)
-            if pos >= 0:
-                chars = len(heading)
-                self.setFormat(pos, chars, self._fmtSymbol)
-                self.setFormat(pos + 1, chars - 2, self._fmtFormat)
-                ddots = heading.find(":")
-                if ddots > 0:
-                    self.setFormat(pos + ddots, 1, self._fmtSymbol)
+        if text == nwHeadFmt.HRULE:
+            # Special case for horizontal rule, which is a single symbol
+            self.setFormat(0, len(text), self._fmtSymbol)
+        else:
+            for heading in nwHeadFmt.PAGE_HEADERS:
+                if (chars := len(heading)) > 0:
+                    offset = 0
+                    while (pos := text.find(heading, offset)) >= 0:
+                        offset = pos + chars
+                        self.setFormat(pos, chars, self._fmtSymbol)
+                        self.setFormat(pos + 1, chars - 2, self._fmtFormat)
+                        if (ddots := heading.find(":")) > 0:
+                            self.setFormat(pos + ddots, 1, self._fmtSymbol)
 
 
 class _FormattingTab(NScrollableForm):
@@ -1052,7 +1066,8 @@ class _FormattingTab(NScrollableForm):
         self.mnKeywords = QMenu(self)
         for keyword in nwKeyWords.VALID_KEYS:
             self.mnKeywords.addAction(
-                trConst(nwLabels.KEY_NAME[keyword]), lambda keyword=keyword: self._updateIgnoredKeywords(keyword)
+                trConst(nwLabels.KEY_NAME[keyword]),
+                lambda keyword=keyword: self._updateIgnoredKeywords(keyword),
             )
 
         self.ignoredKeywordsButton = NIconToolButton(self, iSz, "add", "add")
@@ -1083,7 +1098,12 @@ class _FormattingTab(NScrollableForm):
         self.btnTextFont = NIconToolButton(self, iSz, "font", "tool")
         self.btnTextFont.setToolTip(self.tr("Select Font"))
         self.btnTextFont.clicked.connect(self._selectFont)
-        self.addRow(self._build.getLabel("format.textFont"), self.textFont, button=self.btnTextFont, stretch=(1, 1))
+        self.addRow(
+            self._build.getLabel("format.textFont"),
+            self.textFont,
+            button=self.btnTextFont,
+            stretch=(1, 1),
+        )
 
         # Line Height
         self.lineHeight = NDoubleSpinBox(self, minVal=0.75, maxVal=3.0, step=0.05, prec=2)
@@ -1092,12 +1112,14 @@ class _FormattingTab(NScrollableForm):
 
         # Text Options
         self.justifyText = NSwitch(self, height=iPx)
+        self.justifyOnBreak = NSwitch(self, height=iPx)
         self.stripUnicode = NSwitch(self, height=iPx)
         self.replaceTabs = NSwitch(self, height=iPx)
         self.keepBreaks = NSwitch(self, height=iPx)
         self.showDialogue = NSwitch(self, height=iPx)
 
         self.addRow(self._build.getLabel("format.justifyText"), self.justifyText)
+        self.addRow(self._build.getLabel("format.justifyOnBreak"), self.justifyOnBreak)
         self.addRow(self._build.getLabel("format.stripUnicode"), self.stripUnicode)
         self.addRow(self._build.getLabel("format.replaceTabs"), self.replaceTabs)
         self.addRow(self._build.getLabel("format.keepBreaks"), self.keepBreaks)
@@ -1393,8 +1415,8 @@ class _FormattingTab(NScrollableForm):
             [self.pixPML, self.leftMargin, iSp, self.pixPMR, self.rightMargin],
         )
 
-        # Open Document
-        # =============
+        # Document Style
+        # ==============
 
         title = self._build.getLabel("doc")
         section += 1
@@ -1406,7 +1428,12 @@ class _FormattingTab(NScrollableForm):
         self.pageHeader.setMinimumWidth(200)
         self.btnPageHeader = SHARED.theme.getToolButton(nwToolButton.REVERT, self)
         self.btnPageHeader.clicked.connect(self._resetPageHeader)
-        self.addRow(self._build.getLabel("doc.pageHeader"), self.pageHeader, button=self.btnPageHeader, stretch=(1, 1))
+        self.addRow(
+            self._build.getLabel("doc.pageHeader"),
+            self.pageHeader,
+            button=self.btnPageHeader,
+            stretch=(1, 1),
+        )
 
         self.pageCountOffset = NSpinBox(self, minVal=0, maxVal=999)
         self.pageCountOffset.setFixedNumbersWidth(4)
@@ -1520,6 +1547,7 @@ class _FormattingTab(NScrollableForm):
 
         self.lineHeight.setValue(self._build.getFloat("format.lineHeight"))
         self.justifyText.setChecked(self._build.getBool("format.justifyText"))
+        self.justifyOnBreak.setChecked(self._build.getBool("format.justifyOnBreak"))
         self.stripUnicode.setChecked(self._build.getBool("format.stripUnicode"))
         self.replaceTabs.setChecked(self._build.getBool("format.replaceTabs"))
         self.keepBreaks.setChecked(self._build.getBool("format.keepBreaks"))
@@ -1624,6 +1652,7 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.lineHeight", self.lineHeight.value())
 
         self._build.setValue("format.justifyText", self.justifyText.isChecked())
+        self._build.setValue("format.justifyOnBreak", self.justifyOnBreak.isChecked())
         self._build.setValue("format.stripUnicode", self.stripUnicode.isChecked())
         self._build.setValue("format.replaceTabs", self.replaceTabs.isChecked())
         self._build.setValue("format.keepBreaks", self.keepBreaks.isChecked())
@@ -1866,5 +1895,5 @@ class _FormattingTab(NScrollableForm):
         current = [x.lower().strip() for x in self.ignoredKeywords.text().split(",")]
         if keyword:
             current.append(keyword)
-        verified = set(x for x in current if x in nwKeyWords.VALID_KEYS)
+        verified = {x for x in current if x in nwKeyWords.VALID_KEYS}
         self.ignoredKeywords.setText(", ".join(verified))

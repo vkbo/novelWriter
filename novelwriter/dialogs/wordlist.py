@@ -74,7 +74,10 @@ class GuiWordList(NDialog):
 
         # Header
         self.headLabel = NColorLabel(
-            self.tr("Project Word List"), self, color=SHARED.theme.helpText, scale=NColorLabel.HEADER_SCALE
+            self.tr("Project Word List"),
+            self,
+            color=SHARED.theme.helpText,
+            scale=NColorLabel.HEADER_SCALE,
         )
 
         self.importButton = SHARED.theme.getToolButton(nwToolButton.IMPORT, self)
@@ -137,6 +140,7 @@ class GuiWordList(NDialog):
         logger.debug("Ready: GuiWordList")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiWordList")
 
     ##
@@ -193,7 +197,7 @@ class GuiWordList(NDialog):
         )[0]:
             try:
                 with open(path, mode="r", encoding="utf-8") as fo:
-                    words = set(w.strip() for w in fo.read().split())
+                    words = {w.strip() for w in fo.read().split()}
             except Exception as exc:
                 SHARED.error("Could not read file.", exc=exc)
                 return

@@ -82,6 +82,7 @@ class GuiEditLabel(NDialog):
         logger.debug("Ready: GuiEditLabel")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiEditLabel")
 
     @property

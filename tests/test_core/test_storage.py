@@ -42,8 +42,6 @@ from tests.tools import C, buildTestProject
 class MockProject:
     """Test class for projects."""
 
-    pass
-
 
 @pytest.mark.core
 def testCoreStorage_CreateNewProject(mockGUI, fncPath):
@@ -530,7 +528,10 @@ def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
 
     # Check Options File
     data = json.loads(optionsNew.read_text(encoding="utf-8"))
-    assert data["novelWriter.guiOptions"]["GuiProjectSettings"] == {"winWidth": 570, "winHeight": 375}
+    assert data["novelWriter.guiOptions"]["GuiProjectSettings"] == {
+        "winWidth": 570,
+        "winHeight": 375,
+    }
     assert data["novelWriter.guiOptions"]["GuiOutline"]["columnState"] == {
         "TITLE": [False, 325],
         "LEVEL": [True, 40],

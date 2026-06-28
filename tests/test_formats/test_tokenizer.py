@@ -118,7 +118,7 @@ def testFmtToken_Setters(mockGUI):
     tokens.setTextFont(QFont("Monospace", 10))
     tokens.setLineHeight(2.0)
     tokens.setBlockIndent(6.0)
-    tokens.setJustify(True)
+    tokens.setJustify(True, False)
     tokens.setTitleProperties(2.0, 2.0, 8.0)
     tokens.setHead1Properties(2.0, 2.0, 7.0)
     tokens.setHead2Properties(2.0, 2.0, 6.0)
@@ -229,7 +229,13 @@ def testFmtToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     # First Page
     tokens.addRootHeading(C.hPlotRoot)
     assert tokens._raw[-1] == "#! Notes: Plot\n\n"
-    assert tokens._blocks[-1] == (BlockTyp.TITLE, "0000000000009:T0001", "Notes: Plot", [], BlockFmt.CENTRE)
+    assert tokens._blocks[-1] == (
+        BlockTyp.TITLE,
+        "0000000000009:T0001",
+        "Notes: Plot",
+        [],
+        BlockFmt.CENTRE,
+    )
 
     # Not First Page
     tokens.addRootHeading(C.hPlotRoot)
@@ -761,6 +767,59 @@ def testFmtToken_HeaderStyleSeparation(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToken_HeaderStyleHorizontalRule(mockGUI):
+    """Test header style processing with static horizontal rule format."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+
+    tokens._isNovel = True
+    tokens._handle = TMH
+
+    # Scene rule as static four hyphens emits a centred HRULE block
+    tokens.setSceneFormat(nwHeadFmt.HRULE, False)
+    tokens._noSep = False
+    tokens._text = "### Scene One\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HRULE, TM1, "", [], BlockFmt.NONE),
+    ]
+
+    # Immediately after chapter, scene separators and HRULE are suppressed
+    tokens.setSceneFormat(nwHeadFmt.HRULE, False)
+    tokens._noSep = True
+    tokens._text = "### Scene Two\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == []
+
+    # Mixed format is not allowed and treated as a normal header
+    tokens.setSceneFormat(f"{nwHeadFmt.HRULE}{nwHeadFmt.BR}{nwHeadFmt.TITLE}", False)
+    tokens._noSep = False
+    tokens._text = "### Scene Three\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HEAD2, TM1, f"{nwHeadFmt.HRULE}\nScene Three", [], BlockFmt.NONE),
+    ]
+
+    # The same static four hyphens rule applies to hard scenes
+    tokens.setHardSceneFormat(nwHeadFmt.HRULE, False)
+    tokens._noSep = False
+    tokens._text = "###! Scene Four\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HRULE, TM1, "", [], BlockFmt.NONE),
+    ]
+
+    # Sections still treat static four hyphens as a centred HRULE block
+    tokens.setSectionFormat(nwHeadFmt.HRULE, False)
+    tokens._noSep = True
+    tokens._text = "#### Section\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HRULE, TM1, "", [], BlockFmt.NONE),
+    ]
+
+
+@pytest.mark.core
 def testFmtToken_MetaFormat(mockGUI):
     """Test the tokenization of meta formats in the Tokenizer class."""
     project = NWProject()
@@ -1051,7 +1110,7 @@ def testFmtToken_MarginFormat(mockGUI):
 
 
 @pytest.mark.core
-@pytest.mark.parametrize("singleBold", (True, False))
+@pytest.mark.parametrize("singleBold", [True, False])
 def testFmtToken_ExtractFormats(mockGUI, singleBold):
     """Test the extraction of formats in the Tokenizer class.
     This test is run twice, with single and with double asterisk support
@@ -1323,7 +1382,7 @@ def testFmtToken_BreakAlignIndent(mockGUI):
         # With Justify
         # This should disable justify
         tokens.setKeepLineBreaks(True)
-        tokens.setJustify(True)
+        tokens.setJustify(True, False)
         tokens._text = text
         tokens.tokenizeText()
         assert tokens._blocks == [
@@ -1347,7 +1406,7 @@ def testFmtToken_BreakJustify(mockGUI):
     project = NWProject()
     tokens = BareTokenizer(project)
     tokens._handle = TMH
-    tokens.setJustify(True)
+    tokens.setJustify(True, False)
 
     # Applied to all lines when breaks are preserved
     tokens._text = "This is text\nspanning multiple\nlines"
@@ -1753,8 +1812,8 @@ def testFmtToken_Dialogue(mockGUI):
             [
                 (0, TextFmt.I_B, ""),
                 (0, TextFmt.COL_B, "dialog"),
-                (16, TextFmt.I_E, ""),
                 (16, TextFmt.COL_E, ""),
+                (16, TextFmt.I_E, ""),
             ],
             BlockFmt.NONE,
         )

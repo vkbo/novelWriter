@@ -26,7 +26,7 @@ import pytest
 from PyQt6.QtCore import QMimeData, QModelIndex, Qt
 from PyQt6.QtTest import QAbstractItemModelTester
 
-from novelwriter.common import decodeMimeHandles
+from novelwriter.common import decodeMimeHandles, encodeMimeHandles
 from novelwriter.constants import nwConst
 from novelwriter.core.item import NWItem
 from novelwriter.core.itemmodel import INV_ROOT, NODE_FLAGS, ProjectModel, ProjectNode
@@ -217,6 +217,8 @@ def testCoreItemModel_ProjectNode_Modify(mockGUI, mockRnd, fncPath):
     removed = folder.takeChild(1)
     assert removed is not None
     assert removed.item.itemName == "New Scene"
+    assert removed.parent() is None
+    assert removed.row() == -1
     assert folder.childCount() == 3
     assert [n.item.itemName for n in folder.children] == [
         "New Chapter",
@@ -303,11 +305,9 @@ def testCoreItemModel_ProjectModel_Interface(mockGUI, mockRnd, fncPath):
     assert model.rowCount(novelIdx) == 2
     assert model.columnCount(novelIdx) == 4
 
-    # Parent of Novel
+    # Parent of top-level node should be invalid (root is invisible)
     parent = model.parent(novelIdx)
-    assert parent.row() == 0
-    assert parent.column() == 0
-    assert parent.internalPointer() is model.root
+    assert parent.isValid() is False
 
     # Parent of Root
     parent = model.parent(rootIdx)
@@ -367,6 +367,9 @@ def testCoreItemModel_ProjectModel_DragNDrop(mockGUI, mockRnd, fncPath):
     sceneMime = model.mimeData([sceneIdx])
     assert decodeMimeHandles(sceneMime) == [scene.item.itemHandle]
 
+    folderMime = model.mimeData([folderIdx])
+    assert decodeMimeHandles(folderMime) == [folder.item.itemHandle]
+
     sceneChapterMime = model.mimeData([chapterIdx, sceneIdx])
     assert decodeMimeHandles(sceneChapterMime) == [
         chapter.item.itemHandle,
@@ -383,10 +386,20 @@ def testCoreItemModel_ProjectModel_DragNDrop(mockGUI, mockRnd, fncPath):
     # Check that drop is possible, but only with valid items and not on root
     invalidMime = QMimeData()
     invalidMime.setData("plain/text", b"foobar")
+    unknownHandleMime = QMimeData()
+    encodeMimeHandles(unknownHandleMime, ["fffffffffffff"])
 
     assert model.canDropMimeData(invalidMime, Qt.DropAction.MoveAction, 0, 0, novelIdx) is False
+    assert model.canDropMimeData(unknownHandleMime, Qt.DropAction.MoveAction, 0, 0, novelIdx) is False
     assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 0, 0, rootIdx) is False
     assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 0, 0, novelIdx) is True
+    assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 0, 1, novelIdx) is False
+    assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, -2, 0, novelIdx) is False
+    assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 3, 0, novelIdx) is False
+    assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, -1, 0, novelIdx) is True
+    assert model.canDropMimeData(sceneMime, Qt.DropAction.MoveAction, 2, 0, novelIdx) is True
+    assert model.canDropMimeData(folderMime, Qt.DropAction.MoveAction, 0, 0, folderIdx) is False
+    assert model.canDropMimeData(folderMime, Qt.DropAction.MoveAction, 0, 0, chapterIdx) is False
 
     # Drop the scene on the novel folder
     assert [n.item.itemName for n in model.root.allChildren()] == [
@@ -533,6 +546,11 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     assert model.removeChild(novelIdx, -1) is None
     assert model.removeChild(novelIdx, 99) is None
 
+    # _moveNode should return False for detached nodes
+    orphan = ProjectNode(NWItem(project, "123456789abcd"))
+    orphan.detach()
+    assert model._moveNode(orphan, novelIdx, -1) is False
+
     # Remove Child
     with qtbot.waitSignal(model.rowsAboutToBeRemoved) as signal:
         child = model.removeChild(novelIdx, titleIdx.row())
@@ -541,6 +559,8 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     assert signal.args[2] == 0
     assert child is not None
     assert child.item.itemName == "Title Page"
+    assert child.parent() is None
+    assert child.row() == -1
     assert [n.item.itemName for n in model.root.allChildren()] == [
         "Novel",
         "New Folder",
@@ -683,6 +703,7 @@ def testCoreItemModel_ProjectModel_Other(qtbot, mockGUI, mockRnd, fncPath):
     ]
 
     # Indices
+    rootIdx = QModelIndex()
     chapterIdx = model.indexFromNode(chapter)
     sceneIdx = model.indexFromNode(scene)
     trashIdx = model.indexFromNode(trash)
@@ -714,4 +735,56 @@ def testCoreItemModel_ProjectModel_Other(qtbot, mockGUI, mockRnd, fncPath):
 
     # Clear
     model.clear()
+    assert model.rowCount(rootIdx) == 0
+    assert model.index(0, 0, rootIdx).isValid() is False
     assert [n.item.itemName for n in model.root.allChildren()] == []
+
+
+@pytest.mark.core
+def testCoreItemModel_ProjectModel_DeepMoveMaintainsLineage(mockGUI, mockRnd, fncPath):
+    """Check deep descendant parent/root metadata after subtree move."""
+    project = NWProject()
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+    model = project.tree.model
+
+    root = model.root
+    novel = root.child(0)
+    assert novel is not None
+    folder = novel.child(1)
+    assert folder is not None
+    chapter = folder.child(0)
+    assert chapter is not None
+
+    deepHandle = project.newFile("Deep Child", chapter.item.itemHandle)
+    assert deepHandle is not None
+    deepIdx = model.indexFromHandle(deepHandle)
+    deepNode = model.node(deepIdx)
+    assert deepNode is not None
+    assert deepNode.parent() is chapter
+
+    trash = project.tree.trash
+    assert trash is not None
+
+    folderIdx = model.indexFromNode(folder)
+    trashIdx = model.indexFromNode(trash)
+    model.multiMove([folderIdx], trashIdx)
+
+    assert folder.parent() is trash
+    assert chapter.parent() is folder
+    assert deepNode.parent() is chapter
+
+    folderItem = project.tree[folder.item.itemHandle]
+    chapterItem = project.tree[chapter.item.itemHandle]
+    deepItem = project.tree[deepHandle]
+    assert folderItem is not None
+    assert chapterItem is not None
+    assert deepItem is not None
+
+    trashHandle = trash.item.itemHandle
+    assert folderItem.itemParent == trashHandle
+    assert folderItem.itemRoot == trashHandle
+    assert chapterItem.itemParent == folder.item.itemHandle
+    assert chapterItem.itemRoot == trashHandle
+    assert deepItem.itemParent == chapter.item.itemHandle
+    assert deepItem.itemRoot == trashHandle

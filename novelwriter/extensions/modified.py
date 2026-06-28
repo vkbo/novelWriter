@@ -131,6 +131,7 @@ class NFontDialog(QFontDialog):
         logger.debug("Ready: NFontDialog")
 
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NFontDialog")
 
     @staticmethod
@@ -279,7 +280,12 @@ class NPushButton(QPushButton):
     """
 
     def __init__(
-        self, parent: QWidget, text: str, iconSize: QSize, icon: str | None = None, color: str | None = None
+        self,
+        parent: QWidget,
+        text: str,
+        iconSize: QSize,
+        icon: str | None = None,
+        color: str | None = None,
     ) -> None:
         super().__init__(parent=parent)
         self._icon = icon

@@ -133,16 +133,7 @@ REGEX_PATTERNS = RegExPatterns()
 class DialogParser:
     """A callable parser for finding dialog regions in text."""
 
-    __slots__ = (
-        "_alternate",
-        "_breakD",
-        "_breakQ",
-        "_dialog",
-        "_enabled",
-        "_mode",
-        "_narrator",
-        "_quotes",
-    )
+    __slots__ = ("_alternate", "_breakD", "_breakQ", "_dialog", "_enabled", "_mode", "_narrator", "_quotes")
 
     def __init__(self) -> None:
         self._quotes = None

@@ -2,10 +2,6 @@
 novelWriter – Project Options Cache
 ===================================
 
-File History:
-Created:   2019-10-21 [0.3.1] OptionState
-Rewritten: 2020-02-19 [0.4.5] OptionState
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -256,10 +252,8 @@ class OptionState:
         """Return the value mapped to an enum. Otherwise return the
         default value.
         """
-        if issubclass(lookup, type(default)):
-            if group in self._state:
-                if name in self._state[group]:
-                    value = self._state[group][name]
-                    if value in lookup.__members__:
-                        return lookup[value]
+        if issubclass(lookup, type(default)) and group in self._state and name in self._state[group]:
+            value = self._state[group][name]
+            if value in lookup.__members__:
+                return lookup[value]
         return default
