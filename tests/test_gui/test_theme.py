@@ -426,7 +426,11 @@ def testGuiTheme_IconThemes(monkeypatch):
 
 @pytest.mark.gui
 def testGuiTheme_LoadIcons():
-    """Test the icon cache class."""
+    """Test the icon cache class.
+
+    This test requires the SVG library to be installed for PyQt6.
+    It is called python3-pyqt6.qtsvg on Debian/Ubuntu.
+    """
     theme = GuiTheme()
     theme.initThemes()
     iconCache = theme.iconCache
@@ -442,7 +446,7 @@ def testGuiTheme_LoadIcons():
     # Load an icon, it is likely already cached
     qIcon = iconCache.getIcon("add", "tool")
     assert isinstance(qIcon, QIcon)
-    assert qIcon.isNull() is False
+    assert qIcon.isNull() is False, "No image data, SVG library may be missing"
 
     # Load it as a pixmap with a size
     # If this part of the test fails, you may need to set the
@@ -534,7 +538,12 @@ def testGuiTheme_LoadIcons():
 
 @pytest.mark.gui
 def testGuiTheme_LoadDecorations(monkeypatch):
-    """Test the icon cache class."""
+    """Test the icon cache class.
+
+    This test requires the image formats library to be installed for Qt6.
+    It is called qt6-image-formats-plugins on Debian/Ubuntu,
+    and qt6-qtimageformats on Fedora.
+    """
     theme = GuiTheme()
     theme.initThemes()
     iconCache = theme.iconCache
@@ -548,7 +557,7 @@ def testGuiTheme_LoadDecorations(monkeypatch):
 
     # Load an image
     qPix = iconCache.getDecoration("welcome")
-    assert qPix.isNull() is False
+    assert qPix.isNull() is False, "No image data, Qt6 image formats library may be missing"
 
     # Fail finding the file
     with monkeypatch.context() as mp:
