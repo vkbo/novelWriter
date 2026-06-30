@@ -29,7 +29,15 @@ from typing import TYPE_CHECKING
 
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHtmlUnicode
-from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, processHtmlEntities, stripEscape
+from novelwriter.formats.shared import (
+    BlockFmt,
+    BlockTyp,
+    T_Formats,
+    TextFmt,
+    cssBuilder,
+    processHtmlEntities,
+    stripEscape,
+)
 from novelwriter.formats.tokenizer import COMMENT_BLOCKS, Tokenizer
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS, QtHexRgb
 
@@ -327,33 +335,129 @@ class ToHtml(Tokenizer):
 
         styles = []
         styles.append(
-            f"body {{color: {tColor}; font-family: '{fFam}'; font-size: {fSz}pt; font-weight: {fW}; font-style: {fS};}}"
+            cssBuilder(
+                "body",
+                {
+                    "color": tColor,
+                    "font-family": f"'{fFam}'",
+                    "font-size": f"{fSz}pt",
+                    "font-weight": fW,
+                    "font-style": fS,
+                },
+            )
         )
         styles.append(
-            f"p {{text-align: {self._defaultAlign}; line-height: {lHeight}%; "
-            f"margin-top: {mtTT:.2f}em; margin-bottom: {mbTT:.2f}em;}}"
-        )
-        styles.append(f"a {{color: {lColor};}}")
-        styles.append(f"mark {{background: {mColor};}}")
-        styles.append(f"hr {{width: 50%; color: {cColor}; margin: {mtSP:.2f}em auto {mbSP:.2f}em auto;}}")
-        styles.append(f"h1, h2, h3, h4 {{color: {hColor}; page-break-after: avoid;}}")
-        styles.append(
-            f"h1 {{font-size: {fSz1:.2f}em; font-weight: {hW}; margin-top: {mtH1:.2f}em; margin-bottom: {mbH1:.2f}em;}}"
-        )
-        styles.append(
-            f"h2 {{font-size: {fSz2:.2f}em; font-weight: {hW}; margin-top: {mtH2:.2f}em; margin-bottom: {mbH2:.2f}em;}}"
+            cssBuilder(
+                "p",
+                {
+                    "text-align": self._defaultAlign,
+                    "line-height": f"{lHeight}%",
+                    "margin-top": f"{mtTT:.2f}em",
+                    "margin-bottom": f"{mbTT:.2f}em",
+                },
+            )
         )
         styles.append(
-            f"h3 {{font-size: {fSz3:.2f}em; font-weight: {hW}; margin-top: {mtH3:.2f}em; margin-bottom: {mbH3:.2f}em;}}"
+            cssBuilder(
+                "a",
+                {
+                    "color": lColor,
+                },
+            )
         )
         styles.append(
-            f"h4 {{font-size: {fSz4:.2f}em; font-weight: {hW}; margin-top: {mtH4:.2f}em; margin-bottom: {mbH4:.2f}em;}}"
+            cssBuilder(
+                "mark",
+                {
+                    "background": mColor,
+                },
+            )
         )
         styles.append(
-            f".title {{font-size: {fSz0:.2f}em; font-weight: {hW}; "
-            f"margin-top: {mtH0:.2f}em; margin-bottom: {mbH0:.2f}em;}}"
+            cssBuilder(
+                "hr",
+                {
+                    "width": "50%",
+                    "color": cColor,
+                    "margin": f"{mtSP:.2f}em auto {mbSP:.2f}em auto",
+                },
+            )
         )
-        styles.append(f".sep {{text-align: center; margin-top: {mtSP:.2f}em; margin-bottom: {mbSP:.2f}em;}}")
+        styles.append(
+            cssBuilder(
+                "h1, h2, h3, h4",
+                {
+                    "color": hColor,
+                    "page-break-after": "avoid",
+                },
+            )
+        )
+        styles.append(
+            cssBuilder(
+                "h1",
+                {
+                    "font-size": f"{fSz1:.2f}em",
+                    "font-weight": f"{hW}",
+                    "margin-top": f"{mtH1:.2f}em",
+                    "margin-bottom": f"{mbH1:.2f}em",
+                },
+            )
+        )
+
+        styles.append(
+            cssBuilder(
+                "h2",
+                {
+                    "font-size": f"{fSz2:.2f}em",
+                    "font-weight": f"{hW}",
+                    "margin-top": f"{mtH2:.2f}em",
+                    "margin-bottom": f"{mbH2:.2f}em",
+                },
+            )
+        )
+        styles.append(
+            cssBuilder(
+                "h3",
+                {
+                    "font-size": f"{fSz3:.2f}em",
+                    "font-weight": f"{hW}",
+                    "margin-top": f"{mtH3:.2f}em",
+                    "margin-bottom": f"{mbH3:.2f}em",
+                },
+            )
+        )
+        styles.append(
+            cssBuilder(
+                "h4",
+                {
+                    "font-size": f"{fSz4:.2f}em",
+                    "font-weight": f"{hW}",
+                    "margin-top": f"{mtH4:.2f}em",
+                    "margin-bottom": f"{mbH4:.2f}em",
+                },
+            )
+        )
+        styles.append(
+            cssBuilder(
+                ".title",
+                {
+                    "font-size": f"{fSz0:.2f}em",
+                    "font-weight": f"{hW}",
+                    "margin-top": f"{mtH0:.2f}em",
+                    "margin-bottom": f"{mbH0:.2f}em",
+                },
+            )
+        )
+        styles.append(
+            cssBuilder(
+                ".sep",
+                {
+                    "text-align": "center",
+                    "margin-top": f"{mtSP:.2f}em",
+                    "margin-bottom": f"{mbSP:.2f}em",
+                },
+            )
+        )
 
         return styles
 

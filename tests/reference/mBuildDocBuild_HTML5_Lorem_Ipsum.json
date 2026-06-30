@@ -2,23 +2,23 @@
   "meta": {
     "projectName": "Lorem Ipsum",
     "novelAuthor": "lipsum.com",
-    "buildTime": 1781972667,
-    "buildTimeStr": "2026-06-20 18:24:27"
+    "buildTime": 1782856578,
+    "buildTimeStr": "2026-06-30 23:56:18"
   },
   "text": {
     "css": [
-      "body {color: #000000; font-family: 'Arial'; font-size: 12pt; font-weight: 400; font-style: normal;}",
-      "p {text-align: left; line-height: 150%; margin-top: 0.00em; margin-bottom: 0.60em;}",
-      "a {color: #4271ae;}",
-      "mark {background: #ffffa6;}",
-      "hr {width: 50%; color: #646464; margin: 1.20em auto 1.20em auto;}",
-      "h1, h2, h3, h4 {color: #4271ae; page-break-after: avoid;}",
-      "h1 {font-size: 2.00em; font-weight: 700; margin-top: 1.50em; margin-bottom: 0.60em;}",
-      "h2 {font-size: 1.75em; font-weight: 700; margin-top: 1.50em; margin-bottom: 0.60em;}",
-      "h3 {font-size: 1.50em; font-weight: 700; margin-top: 1.20em; margin-bottom: 0.60em;}",
-      "h4 {font-size: 1.25em; font-weight: 700; margin-top: 1.20em; margin-bottom: 0.60em;}",
-      ".title {font-size: 2.50em; font-weight: 700; margin-top: 1.50em; margin-bottom: 0.60em;}",
-      ".sep {text-align: center; margin-top: 1.20em; margin-bottom: 1.20em;}"
+      "body {color: #000000; font-family: 'Arial'; font-size: 12pt; font-weight: 400; font-style: normal}",
+      "p {text-align: left; line-height: 150%; margin-top: 0.00em; margin-bottom: 0.60em}",
+      "a {color: #4271ae}",
+      "mark {background: #ffffa6}",
+      "hr {width: 50%; color: #646464; margin: 1.20em auto 1.20em auto}",
+      "h1, h2, h3, h4 {color: #4271ae; page-break-after: avoid}",
+      "h1 {font-size: 2.00em; font-weight: 700; margin-top: 1.50em; margin-bottom: 0.60em}",
+      "h2 {font-size: 1.75em; font-weight: 700; margin-top: 1.50em; margin-bottom: 0.60em}",
+      "h3 {font-size: 1.50em; font-weight: 700; margin-top: 1.20em; margin-bottom: 0.60em}",
+      "h4 {font-size: 1.25em; font-weight: 700; margin-top: 1.20em; margin-bottom: 0.60em}",
+      ".title {font-size: 2.50em; font-weight: 700; margin-top: 1.50em; margin-bottom: 0.60em}",
+      ".sep {text-align: center; margin-top: 1.20em; margin-bottom: 1.20em}"
     ],
     "html": [
       [

@@ -193,3 +193,12 @@ def processHtmlEntities(text: str, fmt: T_Formats) -> tuple[str, T_Formats]:
         text = text.replace("<", "&lt;").replace(">", "&gt;")
 
     return text, fmt
+
+
+def cssBuilder(selector: str, styles: dict[str, str | int], compact: bool = True) -> str:
+    """Build a CSS style string from a dictionary of style properties."""
+    br = "" if compact else "\n"
+    ind = "" if compact else "  "
+    sep = "; " if compact else ";\n"
+    content = sep.join(f"{ind}{k}: {v}" for k, v in styles.items())
+    return f"{selector} {{{br}{content.rstrip(' ')}{br}}}"
