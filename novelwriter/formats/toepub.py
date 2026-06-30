@@ -214,6 +214,9 @@ class ToEPub(Tokenizer):
 
         # Meta Data
         timeStamp = datetime.now(UTC).isoformat(sep="T", timespec="seconds")
+        aPubID = {"refines": "#pub-id", "property": "identifier-type", "scheme": "xsd:string"}
+        aCreator = {"refines": "#creator", "property": "role", "scheme": "marc:relators"}
+
         xMetaData = xmlSubElem(xRoot, "metadata")
         xmlSubElem(xMetaData, _mkTag("dc", "title"), self._project.data.name)
         xmlSubElem(xMetaData, _mkTag("dc", "creator"), self._project.data.author)
@@ -221,53 +224,13 @@ class ToEPub(Tokenizer):
         xmlSubElem(xMetaData, _mkTag("dc", "language"), self._dLocale.name())
         xmlSubElem(xMetaData, _mkTag("dc", "date"), timeStamp[:10])
         xmlSubElem(xMetaData, _mkTag("dc", "identifier"), f"urn:uuid:{self._project.data.uuid}", attrib={"id": "uid"})
-        xmlSubElem(
-            xMetaData,
-            "meta",
-            "uuid",
-            attrib={
-                "refines": "#pub-id",
-                "property": "identifier-type",
-                "scheme": "xsd:string",
-            },
-        )
-        xmlSubElem(
-            xMetaData,
-            "meta",
-            "aut",
-            attrib={
-                "refines": "#creator",
-                "property": "role",
-                "scheme": "marc:relators",
-            },
-        )
-        xmlSubElem(
-            xMetaData,
-            "meta",
-            timeStamp[:10],
-            attrib={
-                "property": "dcterms:date",
-            },
-        )
-        xmlSubElem(
-            xMetaData,
-            "meta",
-            timeStamp,
-            attrib={
-                "property": "dcterms:modified",
-            },
-        )
-        xmlSubElem(
-            xMetaData,
-            "meta",
-            self._project.data.author,
-            attrib={
-                "property": "dcterms:creator",
-            },
-        )
+        xmlSubElem(xMetaData, "meta", "uuid", attrib=aPubID)
+        xmlSubElem(xMetaData, "meta", "aut", attrib=aCreator)
+        xmlSubElem(xMetaData, "meta", timeStamp[:10], attrib={"property": "dcterms:date"})
+        xmlSubElem(xMetaData, "meta", timeStamp, attrib={"property": "dcterms:modified"})
+        xmlSubElem(xMetaData, "meta", self._project.data.author, attrib={"property": "dcterms:creator"})
 
-        xManifest = xmlSubElem(xRoot, "manifest")
-
+        # Manifest
         manifest: list[ManifestEntry] = [
             ManifestEntry(id=section.sectionID, href=f"xhtml/{section.name}.xhtml", mediaType="application/xhtml+xml")
             for section in self._sections
@@ -276,6 +239,7 @@ class ToEPub(Tokenizer):
         manifest.append(ManifestEntry(id="css", href="styles/stylesheet.css", mediaType="text/css"))
         manifest.append(ManifestEntry(id="toc", href="toc.ncx", mediaType="application/x-dtbncx+xml"))
 
+        xManifest = xmlSubElem(xRoot, "manifest")
         for entry in manifest:
             attrib = {
                 "id": entry.id,
@@ -286,6 +250,7 @@ class ToEPub(Tokenizer):
                 attrib["properties"] = entry.properties
             xmlSubElem(xManifest, "item", attrib=attrib)
 
+        # Spine
         xSpine = xmlSubElem(xRoot, "spine", attrib={"toc": "toc"})
         for section in self._sections:
             xmlSubElem(xSpine, "itemref", attrib={"idref": section.sectionID})
