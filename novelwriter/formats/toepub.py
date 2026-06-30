@@ -26,11 +26,12 @@ import xml.etree.ElementTree as ET
 
 from datetime import UTC, datetime
 from enum import Enum
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, NamedTuple
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from novelwriter.common import xmlElement, xmlIndent, xmlSubElem
-from novelwriter.formats.shared import BlockTyp, processHtmlEntities
+from novelwriter.constants import nwUnicode
+from novelwriter.formats.shared import BlockTyp, cssBuilder, processHtmlEntities
 from novelwriter.formats.tokenizer import Tokenizer
 
 if TYPE_CHECKING:
@@ -67,6 +68,15 @@ class EPubType(Enum):
     PART = 2
     CHAPTER = 3
     BACKMATTER = 4
+
+
+class ManifestEntry(NamedTuple):
+    """EPub Manifest Entry."""
+
+    id: str
+    href: str
+    mediaType: str
+    properties: str | None = None
 
 
 class ToEPub(Tokenizer):
@@ -126,7 +136,7 @@ class ToEPub(Tokenizer):
                 self._section.text.append(f"<p>{tText}</p>")
 
             elif tType == BlockTyp.SKIP:
-                self._section.text.append("<p>&nbsp;</p>")
+                self._section.text.append(f"<p>{nwUnicode.U_NBSP}</p>")
 
     def closeDocument(self) -> None:
         """Run close document tasks."""
@@ -257,26 +267,24 @@ class ToEPub(Tokenizer):
         )
 
         xManifest = xmlSubElem(xRoot, "manifest")
-        xmlSubElem(
-            xManifest,
-            "item",
-            attrib={
-                "properties": "nav",
-                "id": "nav",
-                "href": "nav.xhtml",
-                "media-type": "application/xhtml+xml",
-            },
-        )
-        for section in self._sections:
-            xmlSubElem(
-                xManifest,
-                "item",
-                attrib={
-                    "id": section.sectionID,
-                    "href": f"xhtml/{section.name}.xhtml",
-                    "media-type": "application/xhtml+xml",
-                },
-            )
+
+        manifest: list[ManifestEntry] = [
+            ManifestEntry(id=section.sectionID, href=f"xhtml/{section.name}.xhtml", mediaType="application/xhtml+xml")
+            for section in self._sections
+        ]
+        manifest.append(ManifestEntry(id="nav", href="nav.xhtml", mediaType="application/xhtml+xml", properties="nav"))
+        manifest.append(ManifestEntry(id="css", href="styles/stylesheet.css", mediaType="text/css"))
+        manifest.append(ManifestEntry(id="toc", href="toc.ncx", mediaType="application/x-dtbncx+xml"))
+
+        for entry in manifest:
+            attrib = {
+                "id": entry.id,
+                "href": entry.href,
+                "media-type": entry.mediaType,
+            }
+            if entry.properties:
+                attrib["properties"] = entry.properties
+            xmlSubElem(xManifest, "item", attrib=attrib)
 
         xSpine = xmlSubElem(xRoot, "spine", attrib={"toc": "toc"})
         for section in self._sections:
@@ -351,13 +359,13 @@ class ToEPub(Tokenizer):
         xHtml.append(f'<h1 id="toc">{title}</h1>')
         xHtml.append("</header>")
         xHtml.append('<nav epub:type="toc" role="doc-toc" aria-labelledby="toc">')
-        xHtml.append('<ul epub:type="list">')
+        xHtml.append('<ol epub:type="list">')
         xHtml.extend(
             f'<li><a href="xhtml/{section.name}.xhtml#{section.sectionID}">{title}</a></li>'
             for section in self._sections
             if (title := section.title) and section.epubType != EPubType.COVER
         )
-        xHtml.append("</ul>")
+        xHtml.append("</ol>")
         xHtml.append("</nav>")
         xHtml.append("</body>")
         xHtml.append("</html>")
@@ -365,7 +373,18 @@ class ToEPub(Tokenizer):
 
     def _generateStyleSheet(self) -> str:
         """Generate the book style sheet."""
-        return "H1 {}"
+        styles: list[str] = []
+        styles.append(
+            cssBuilder(
+                "a",
+                {
+                    "text-decoration": "underline",
+                    "display": "inline",
+                },
+                compact=False,
+            )
+        )
+        return "\n\n".join(styles)
 
 
 class EPubSection:

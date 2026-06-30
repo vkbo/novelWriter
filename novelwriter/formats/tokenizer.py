@@ -483,6 +483,7 @@ class Tokenizer(ABC):
         self._handle = None
 
         if (item := self._project.tree[tHandle]) and item.isRootType():
+            self._isNovel = item.isNovelLike()
             self._handle = tHandle
             style = BlockFmt.CENTRE
             if self._isFirst:
@@ -491,7 +492,7 @@ class Tokenizer(ABC):
                 style |= BlockFmt.PBB
 
             title = item.itemName
-            if not item.isNovelLike():
+            if not self._isNovel:
                 notes = self._localLookup("Notes")
                 title = f"{notes}: {title}"
 
