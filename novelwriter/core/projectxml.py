@@ -345,14 +345,12 @@ class ProjectXMLReader:
                     if xVal.tag == "name" and "exported" in xVal.attrib:
                         name["active"] = checkBool(xVal.attrib.get("exported"), False)
 
-            content.append(
-                {
-                    "name": itemName,
-                    "itemAttr": item,
-                    "metaAttr": meta,
-                    "nameAttr": name,
-                }
-            )
+            content.append({
+                "name": itemName,
+                "itemAttr": item,
+                "metaAttr": meta,
+                "nameAttr": name,
+            })
 
     def _parseProjectContentLegacy(self, xSection: ET.Element, data: NWProjectData, content: list) -> None:
         """Parse the content section of the XML file for older versions."""
@@ -407,9 +405,9 @@ class ProjectXMLReader:
 
             # Status was split into separate status/import with a key in 1.4
             if item.get("class", "") in ("NOVEL", "ARCHIVE"):
-                name["status"] = sMap.get(tmpStatus, None)
+                name["status"] = sMap.get(tmpStatus)
             else:
-                name["import"] = iMap.get(tmpStatus, None)
+                name["import"] = iMap.get(tmpStatus)
 
             # A number of layouts were removed in 1.3
             if item.get("layout", "") in ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"):
@@ -419,14 +417,12 @@ class ProjectXMLReader:
             if item.get("type", "") == "TRASH":
                 item["type"] = "ROOT"
 
-            content.append(
-                {
-                    "name": itemName,
-                    "itemAttr": item,
-                    "metaAttr": meta,
-                    "nameAttr": name,
-                }
-            )
+            content.append({
+                "name": itemName,
+                "itemAttr": item,
+                "metaAttr": meta,
+                "nameAttr": name,
+            })
 
     def _parseStatusImport(self, xItem: ET.Element, sObject: NWStatus) -> None:
         """Parse a status or importance entry."""

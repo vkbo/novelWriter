@@ -493,7 +493,7 @@ class BuildSettings:
         self.setName(data.get("name", ""))
         self.setBuildID(data.get("uuid", ""))
         self.setOrder(data.get("order", 0))
-        self.setLastBuildPath(data.get("path", None))
+        self.setLastBuildPath(data.get("path"))
         self.setLastBuildName(data.get("build", ""))
 
         buildFmt = str(data.get("format", ""))
@@ -501,11 +501,11 @@ class BuildSettings:
             self.setLastFormat(nwBuildFmt[buildFmt])
 
         if isinstance(included, list):
-            self._included = set([h for h in included if isHandle(h)])
+            self._included = {h for h in included if isHandle(h)}
         if isinstance(excluded, list):
-            self._excluded = set([h for h in excluded if isHandle(h)])
+            self._excluded = {h for h in excluded if isHandle(h)}
         if isinstance(skipRoot, list):
-            self._skipRoot = set([h for h in skipRoot if isHandle(h)])
+            self._skipRoot = {h for h in skipRoot if isHandle(h)}
 
         self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
         if isinstance(settings, dict):

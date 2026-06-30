@@ -789,9 +789,8 @@ class _ReplacePage(NFixedPage):
         """Extract the list from the widget."""
         new = {}
         for n in range(self.listBox.topLevelItemCount()):
-            if item := self.listBox.topLevelItem(n):
-                if key := self._stripKey(item.text(self.C_KEY)):
-                    new[key] = item.text(self.C_REPL)
+            if (item := self.listBox.topLevelItem(n)) and (key := self._stripKey(item.text(self.C_KEY))):
+                new[key] = item.text(self.C_REPL)
         return new
 
     def columnWidth(self) -> int:

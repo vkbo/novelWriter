@@ -295,13 +295,11 @@ class Index:
             meta = {"version": __hexversion__, "timestamp": formatTimeStamp(start)}
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write(
-                    jsonCombine(
-                        {
-                            "novelWriter.meta": jsonEncode(meta, n=1),
-                            "novelWriter.tagsIndex": jsonEncode(self._tagsIndex.packData(), n=1, nmax=2),
-                            "novelWriter.itemIndex": jsonEncode(self._itemIndex.packData(), n=1, nmax=4),
-                        }
-                    )
+                    jsonCombine({
+                        "novelWriter.meta": jsonEncode(meta, n=1),
+                        "novelWriter.tagsIndex": jsonEncode(self._tagsIndex.packData(), n=1, nmax=2),
+                        "novelWriter.itemIndex": jsonEncode(self._itemIndex.packData(), n=1, nmax=4),
+                    })
                 )
         except Exception as exc:
             SHARED.appendErrorMessage(exc)
@@ -325,6 +323,7 @@ class Index:
         text.
         """
         tItem = self._project.tree[tHandle]
+        oldRefs = self._itemRefHandles(tHandle)
         if tItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
             return False
@@ -357,15 +356,16 @@ class Index:
         else:
             self._scanActive(tHandle, tItem, text, itemTags)
 
-        if tItem.itemClass == nwItemClass.NOVEL and not blockSignal:
-            if not self.updateNovelModelData(tItem):
-                self.refreshNovelModel(tItem.itemRoot)
+        if tItem.itemClass == nwItemClass.NOVEL and not blockSignal and not self.updateNovelModelData(tItem):
+            self.refreshNovelModel(tItem.itemRoot)
 
         # Update timestamps for index changes
         nowTime = time()
         self._indexChange = nowTime
         self._rootChange[tItem.itemRoot] = nowTime
         if not blockSignal:
+            if changedRefs := sorted(oldRefs | self._itemRefHandles(tHandle)):
+                SHARED.emitIndexChangedRefs(self._project, changedRefs)
             tItem.notifyToRefresh()
 
         return True
@@ -453,7 +453,12 @@ class Index:
         self._itemIndex.setHeadingCounts(tHandle, sTitle, cC, wC, pC)
 
     def _indexKeyword(
-        self, tHandle: str, line: str, sTitle: str, itemClass: nwItemClass, tags: dict[str, bool]
+        self,
+        tHandle: str,
+        line: str,
+        sTitle: str,
+        itemClass: nwItemClass,
+        tags: dict[str, bool],
     ) -> None:
         """Validate and save the information about a reference to a tag
         in another file, or the setting of a tag in the file. A record
@@ -484,14 +489,26 @@ class Index:
         if (item := self._project.tree[tHandle]) and item.isRootType() and item.isNovelLike():
             model = NovelModel()
             model.setExtraColumn(self._novelExtra)
-            self._appendSubTreeToModel(tHandle, model)
+            self._appendSubTreeToModel(tHandle, model, notify=False)
             self._novelModels[tHandle] = model
 
-    def _appendSubTreeToModel(self, tHandle: str, model: NovelModel) -> None:
+    def _appendSubTreeToModel(self, tHandle: str, model: NovelModel, notify: bool = False) -> None:
         """Append all active novel documents to a novel model."""
         for handle in self._project.tree.subTree(tHandle):
             if (node := self._itemIndex[handle]) and node.item.isDocumentLayout() and node.item.isActive:
-                model.append(node)
+                model.append(node, notify=notify)
+
+    def _itemRefHandles(self, tHandle: str) -> set[str]:
+        """Get the handles referenced by an indexed item."""
+        if iItem := self._itemIndex[tHandle]:
+            return {
+                rHandle
+                for sTitle in iItem.headings()
+                if (hItem := iItem[sTitle])
+                for tTag in hItem.references
+                if (rHandle := self._tagsIndex.tagHandle(tTag))
+            }
+        return set()
 
     ##
     #  Check @ Lines
@@ -639,7 +656,10 @@ class Index:
         return hCount
 
     def getTableOfContents(
-        self, rHandle: str | None, maxDepth: int, activeOnly: bool = True
+        self,
+        rHandle: str | None,
+        maxDepth: int,
+        activeOnly: bool = True,
     ) -> list[tuple[str, int, str, int]]:
         """Generate a table of contents up to a maximum depth."""
         tOrder = []
@@ -699,10 +719,9 @@ class Index:
         """Get the display names for a tags class for insertion into a
         heading by one of the build classes.
         """
-        if iItem := self._itemIndex[tHandle]:
-            if hItem := iItem[f"T{nHead:04d}"]:
-                hRefs = [k for k, v in hItem.references.items() if keyClass in v]
-                return [self._tagsIndex.tagDisplay(k) for k in hRefs]
+        if (iItem := self._itemIndex[tHandle]) and (hItem := iItem[f"T{nHead:04d}"]):
+            hRefs = [k for k, v in hItem.references.items() if keyClass in v]
+            return [self._tagsIndex.tagDisplay(k) for k in hRefs]
         return []
 
     def getBackReferenceList(self, tHandle: str) -> dict[str, tuple[str, IndexHeading]]:
@@ -995,11 +1014,7 @@ class ItemIndex:
             if tHandle is None or tHandle not in self._items:
                 continue
 
-            if rHandle is None:
-                for sTitle in self._items[tHandle].headings():
-                    if hItem := self._items[tHandle][sTitle]:
-                        yield tHandle, sTitle, hItem
-            elif tItem.itemRoot == rHandle:
+            if rHandle is None or tItem.itemRoot == rHandle:
                 for sTitle in self._items[tHandle].headings():
                     if hItem := self._items[tHandle][sTitle]:
                         yield tHandle, sTitle, hItem

@@ -417,12 +417,10 @@ class _FilterTab(NFixedPage):
         self.mainSplit.setCollapsible(1, False)
         self.mainSplit.setStretchFactor(0, 1)
         self.mainSplit.setStretchFactor(1, 0)
-        self.mainSplit.setSizes(
-            [
-                pOptions.getInt("GuiBuildSettings", "treeWidth", 300),
-                pOptions.getInt("GuiBuildSettings", "filterWidth", 300),
-            ]
-        )
+        self.mainSplit.setSizes([
+            pOptions.getInt("GuiBuildSettings", "treeWidth", 300),
+            pOptions.getInt("GuiBuildSettings", "filterWidth", 300),
+        ])
 
         self.updateTheme(init=True)
         self.setCentralWidget(self.mainSplit)
@@ -1895,5 +1893,5 @@ class _FormattingTab(NScrollableForm):
         current = [x.lower().strip() for x in self.ignoredKeywords.text().split(",")]
         if keyword:
             current.append(keyword)
-        verified = set(x for x in current if x in nwKeyWords.VALID_KEYS)
+        verified = {x for x in current if x in nwKeyWords.VALID_KEYS}
         self.ignoredKeywords.setText(", ".join(verified))

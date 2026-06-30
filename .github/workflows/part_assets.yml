@@ -20,7 +20,7 @@ jobs:
       - name: Install UV and Python
         uses: astral-sh/setup-uv@v8.2.0
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           enable-cache: true
 
       - name: Install Dependencies

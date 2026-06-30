@@ -118,6 +118,20 @@ def testGuiViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     tabBackRefs._treeItemDoubleClicked(tabBackRefs.model().index(0, tabBackRefs.C_DOC))
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
 
+    # Regression: Adding/removing references while viewing target should refresh panel
+    nwGUI.viewDocument(hJane)
+    assert nwGUI.docViewer.docHandle == hJane
+    assert tabBackRefs.topLevelItemCount() == 1
+
+    nwGUI.openDocument(C.hSceneDoc)
+    nwGUI.docEditor.setPlainText("### Scene One\n\nNo references in this section.\n")
+    nwGUI.saveDocument()
+    assert tabBackRefs.topLevelItemCount() == 0
+
+    nwGUI.docEditor.setPlainText("### Scene One\n\n@char: Jane\n")
+    nwGUI.saveDocument()
+    assert tabBackRefs.topLevelItemCount() == 1
+
     # qtbot.stop()
 
 

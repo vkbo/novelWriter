@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run novelWriter Tests."""
+"""Run novelWriter Tests."""  # noqa: CPY001
 
 import argparse
 import os

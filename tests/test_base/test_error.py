@@ -88,7 +88,7 @@ def testBaseError_Handler(qtbot, monkeypatch, nwGUI):
     with monkeypatch.context() as mp:
         mp.setattr(NWErrorMessage, "exec", lambda *a: None)
         mp.setattr("PyQt6.QtWidgets.QApplication.exit", lambda *a: None)
-        mp.setattr("PyQt6.QtWidgets.QApplication.topLevelWidgets", lambda: [])
+        mp.setattr("PyQt6.QtWidgets.QApplication.topLevelWidgets", list)
         exceptionHandler(Exception, "Error Message", None)  # type: ignore
 
     # Should handle QApplication failing

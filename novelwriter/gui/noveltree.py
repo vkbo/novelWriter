@@ -489,12 +489,16 @@ class GuiNovelTree(NTreeView):
     @pyqtSlot(QModelIndex)
     def _onSingleClick(self, index: QModelIndex) -> None:
         """Process user single-click on an index."""
-        if index.isValid() and (model := self._getModel()):
-            if (tHandle := model.handle(index)) and (sTitle := model.key(index)):
-                self.novelView.selectedItemChanged.emit(tHandle)
-                if index.column() == model.columnCount(index) - 1:
-                    pos = self.mapToGlobal(self.visualRect(index).topRight())
-                    self._popMetaBox(pos, tHandle, sTitle)
+        if (
+            index.isValid()
+            and (model := self._getModel())
+            and (tHandle := model.handle(index))
+            and (sTitle := model.key(index))
+        ):
+            self.novelView.selectedItemChanged.emit(tHandle)
+            if index.column() == model.columns - 1:
+                pos = self.mapToGlobal(self.visualRect(index).topRight())
+                self._popMetaBox(pos, tHandle, sTitle)
 
     @pyqtSlot(QModelIndex)
     def _onDoubleClick(self, index: QModelIndex) -> None:

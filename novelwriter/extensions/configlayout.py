@@ -330,9 +330,9 @@ class NPathColorLabel(NColorLabel):
         else:
             self._text = "<font style='color: #000000'>{inner}</font>".format(
                 inner=f"  {nwUnicode.U_RSAQUO}  ".join(
-                    reversed(
-                        [f"<a href='#{h}' style='color: #000000; text-decoration: none'>{n}</a>" for h, n in value]
-                    )
+                    reversed([
+                        f"<a href='#{h}' style='color: #000000; text-decoration: none'>{n}</a>" for h, n in value
+                    ])
                 )
             )
             self._refreshTextColor()

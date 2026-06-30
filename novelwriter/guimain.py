@@ -217,6 +217,7 @@ class GuiMain(QMainWindow):
 
         SHARED.focusModeChanged.connect(self._focusModeChanged)
         SHARED.indexAvailable.connect(self.docViewerPanel.indexHasAppeared)
+        SHARED.indexChangedRefs.connect(self.docViewerPanel.updateChangedRefs)
         SHARED.indexChangedTags.connect(self.docEditor.updateChangedTags)
         SHARED.indexChangedTags.connect(self.docViewerPanel.updateChangedTags)
         SHARED.indexCleared.connect(self.docViewerPanel.indexWasCleared)
@@ -231,6 +232,7 @@ class GuiMain(QMainWindow):
         SHARED.rootFolderChanged.connect(self.novelView.updateRootItem)
         SHARED.rootFolderChanged.connect(self.outlineView.updateRootItem)
         SHARED.rootFolderChanged.connect(self.projView.updateRootItem)
+        SHARED.spellLanguageChanged.connect(self.docEditor.processSpellCheckChange)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
         SHARED.statusLabelsChanged.connect(self.docViewerPanel.updateStatusLabels)
 
@@ -343,14 +345,12 @@ class GuiMain(QMainWindow):
         # If this is a new release, let the user know
         if hexToInt(CONFIG.lastNotes) < hexToInt(__hexversion__):
             CONFIG.lastNotes = __hexversion__
-            SHARED.info(
-                [
-                    self.tr("You are now running novelWriter version {0}.").format(formatVersion(__version__)),
-                    self.tr("Please check the {0}release notes{1} for further details.").format(
-                        f"<a href='{nwConst.URL_RELEASES}'>", "</a>"
-                    ),
-                ]
-            )
+            SHARED.info([
+                self.tr("You are now running novelWriter version {0}.").format(formatVersion(__version__)),
+                self.tr("Please check the {0}release notes{1} for further details.").format(
+                    f"<a href='{nwConst.URL_RELEASES}'>", "</a>"
+                ),
+            ])
 
     ##
     #  Project Actions
@@ -366,12 +366,10 @@ class GuiMain(QMainWindow):
             return True
 
         if not isYes:
-            msgYes = SHARED.question(
-                [
-                    self.tr("Close the current project?"),
-                    self.tr("Changes are saved automatically."),
-                ]
-            )
+            msgYes = SHARED.question([
+                self.tr("Close the current project?"),
+                self.tr("Changes are saved automatically."),
+            ])
             if not msgYes:
                 return False
 
@@ -533,9 +531,8 @@ class GuiMain(QMainWindow):
             logger.error("Nothing to open")
             return False
 
-        if sTitle and tLine is None:
-            if hItem := SHARED.project.index.getItemHeading(tHandle, sTitle):
-                tLine = hItem.line
+        if sTitle and tLine is None and (hItem := SHARED.project.index.getItemHeading(tHandle, sTitle)):
+            tLine = hItem.line
 
         self._changeView(nwView.EDITOR)
         if tHandle == self.docEditor.docHandle:
@@ -828,12 +825,10 @@ class GuiMain(QMainWindow):
         if (
             SHARED.hasProject
             and CONFIG.askBeforeExit
-            and not SHARED.question(
-                [
-                    self.tr("Do you want to exit novelWriter?"),
-                    self.tr("Changes are saved automatically."),
-                ]
-            )
+            and not SHARED.question([
+                self.tr("Do you want to exit novelWriter?"),
+                self.tr("Changes are saved automatically."),
+            ])
         ):
             return False
 
@@ -1080,6 +1075,7 @@ class GuiMain(QMainWindow):
         logger.debug("Applying new project settings")
         SHARED.updateSpellCheckLanguage()
         self.itemDetails.refreshDetails()
+        self.mainMenu.setSelectedProjectSpellCheckLanguage()
         self._updateWindowTitle(SHARED.project.data.name)
 
     @pyqtSlot()
@@ -1271,9 +1267,8 @@ class GuiMain(QMainWindow):
     @pyqtSlot(int)
     def _mainStackChanged(self, index: int) -> None:
         """Process main window tab change."""
-        if self.mainStack.widget(index) == self.outlineView:
-            if SHARED.hasProject:
-                self.outlineView.refreshTree()
+        if self.mainStack.widget(index) == self.outlineView and SHARED.hasProject:
+            self.outlineView.refreshTree()
 
     @pyqtSlot(int)
     def _projStackChanged(self, index: int) -> None:

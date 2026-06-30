@@ -42,7 +42,7 @@ if TYPE_CHECKING:
 # ============
 
 __package__ = "novelwriter"
-__copyright__ = "Copyright 2018-2025 Veronica Berglyd Olsen"
+__copyright__ = "Copyright 2018-2026 Veronica Berglyd Olsen"
 __license__ = "GPLv3"
 __author__ = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
@@ -124,7 +124,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     )
 
     # Defaults
-    logLevel = logging.WARN
+    logLevel = logging.WARNING
     fmtColor = FORCE_COLOR
     fmtLong = False
     confPath = None
@@ -224,7 +224,9 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     # Finish initialising config
     CONFIG.initConfig(confPath, dataPath)
 
-    if sys.platform == "darwin":
+    if sys.platform == "linux":
+        QApplication.setDesktopFileName(CONFIG.appHandle)
+    elif sys.platform == "darwin":
         try:
             from Foundation import NSBundle  # type: ignore
 
@@ -286,5 +288,5 @@ def _createApp(style: str) -> QApplication:
     app.setApplicationVersion(__version__)
     app.setOrganizationDomain(__domain__)
     app.setOrganizationName(__domain__)
-    app.setDesktopFileName(CONFIG.appName)
+
     return app

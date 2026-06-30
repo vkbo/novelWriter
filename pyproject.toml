@@ -71,31 +71,39 @@ novelwriter = ["assets/**/*"]
 
 [tool.ruff]
 line-length = 120
-
-[tool.ruff.lint]
 preview = true
 
+[tool.ruff.lint]
 # Rules: https://docs.astral.sh/ruff/rules
 select = [
     "A",     # flake8-builtins (A)
     "ANN",   # flake8-annotations (ANN)
     "B",     # flake8-bugbear (B)
+    "C4",    # flake8-comprehensions (C4)
+    "CPY",   # flake8-copyright (CPY)
     "D",     # pydocstyle (D)
     "E",     # pycodestyle (E)
     "F",     # Pyflakes (F)
     "FA",    # flake8-future-annotations (FA)
+    "G",     # flake8-logging-format (G)
     "I",     # isort (I)
+    "ISC",   # flake8-implicit-str-concat (ISC)
+    "LOG",   # flake8-logging (LOG)
     "PERF",  # Perflint (PERF)
+    "PIE",   # flake8-pie (PIE)
     "PLC",   # Pylint Convention (PLC)
     "PLE",   # Pylint Error (PLE)
     "PLR17", # Refactor (PLR) - Only PLR17xx
     "PLW",   # Pylint Warning (PLW)
+    "PT",    # flake8-pytest-style (PT)
     "Q",     # flake8-quotes (Q)
     "RET",   # flake8-return (RET)
     "RUF",   # Ruff-specific rules (RUF)
+    "SIM",   # flake8-simplify (SIM)
     "SLF",   # flake8-self (SLF)
     "SLOT",  # flake8-slots (SLOT)
     "TC",    # flake8-type-checking (TC)
+    "TID",   # flake8-tidy-imports (TID)
     "UP",    # pyupgrade (UP)
     "W",     # pycodestyle (W)
 ]
@@ -114,7 +122,7 @@ ignore = [
     "RUF001",  # ambiguous-unicode-character-string
     "RUF015",  # unnecessary-iterable-allocation-for-first-element
     "RUF067",  # non-empty-init-module
-    "RUF076",  # pytest-fixture-autouse
+    "SIM108",  # if-else-block-instead-of-if-exp
     "UP015",   # redundant-open-modes
     "UP030",   # format-literals
 ]

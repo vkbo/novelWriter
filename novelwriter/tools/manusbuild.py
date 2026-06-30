@@ -212,12 +212,10 @@ class GuiManuscriptBuild(NDialog):
         self.mainSplit.setCollapsible(1, False)
         self.mainSplit.setStretchFactor(0, 0)
         self.mainSplit.setStretchFactor(1, 1)
-        self.mainSplit.setSizes(
-            [
-                pOptions.getInt("GuiManuscriptBuild", "fmtWidth", 360),
-                pOptions.getInt("GuiManuscriptBuild", "sumWidth", 360),
-            ]
-        )
+        self.mainSplit.setSizes([
+            pOptions.getInt("GuiManuscriptBuild", "fmtWidth", 360),
+            pOptions.getInt("GuiManuscriptBuild", "sumWidth", 360),
+        ])
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.lblMain, 0, QtAlignCenter)
@@ -324,9 +322,10 @@ class GuiManuscriptBuild(NDialog):
         bExt = nwLabels.BUILD_EXT[bFormat]
         buildPath = (bPath / makeFileNameSafe(bName)).with_suffix(bExt)
 
-        if safeExists(buildPath):
-            if not SHARED.question(self.tr("The file already exists. Do you want to overwrite it?")):
-                return False
+        if safeExists(buildPath) and not SHARED.question(
+            self.tr("The file already exists. Do you want to overwrite it?")
+        ):
+            return False
 
         # Make sure editor content is saved before we start
         SHARED.saveEditor()

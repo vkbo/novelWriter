@@ -68,6 +68,7 @@ class SharedData(QObject):
 
     focusModeChanged = pyqtSignal(bool)
     indexAvailable = pyqtSignal()
+    indexChangedRefs = pyqtSignal(list)
     indexChangedTags = pyqtSignal(list, list)
     indexCleared = pyqtSignal()
     mainClockTick = pyqtSignal()
@@ -350,6 +351,11 @@ class SharedData(QObject):
         """Emit the indexChangedTags signal."""
         if self._project and self._project.data.uuid == project.data.uuid:
             self.indexChangedTags.emit(updated, deleted)
+
+    def emitIndexChangedRefs(self, project: NWProject, updated: list[str]) -> None:
+        """Emit the indexChangedRefs signal."""
+        if self._project and self._project.data.uuid == project.data.uuid:
+            self.indexChangedRefs.emit(updated)
 
     def emitIndexCleared(self, project: NWProject) -> None:
         """Emit the indexCleared signal."""
