@@ -422,6 +422,12 @@ class ToHtml(Tokenizer):
 
         return styles
 
+    def _genFootnoteReferences(self, key: str) -> str:
+        """Generate footnote references in the text."""
+        index = len(self._usedNotes) + 1
+        self._usedNotes[key] = index
+        return f"<sup><a href='#footnote_{index}'>{index}</a></sup>"
+
     ##
     #  Protected Functions (Shared with EPub)
     ##
@@ -491,9 +497,7 @@ class ToHtml(Tokenizer):
                     state[m[0]] = False
             elif fmt == TextFmt.FNOTE:
                 if data in self._footnotes:
-                    index = len(self._usedNotes) + 1
-                    self._usedNotes[data] = index
-                    tags.append((pos, f"<sup><a href='#footnote_{index}'>{index}</a></sup>"))
+                    tags.append((pos, self._genFootnoteReferences(data)))
                 else:
                     tags.append((pos, "<sup>ERR</sup>"))
             elif fmt == TextFmt.FIELD and (field := data.partition(":")[2]):

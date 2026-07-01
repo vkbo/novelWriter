@@ -85,7 +85,7 @@ class ToEPub(ToHtml):
     Extend the ToHtml class to write EPub output.
     """
 
-    __slots__ = ("_isFront", "_section", "_sections")
+    __slots__ = ("_isFront", "_nextFnIndex", "_section", "_sections")
 
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
@@ -93,6 +93,7 @@ class ToEPub(ToHtml):
         self._sections = [self._section]
         self._isFront = True
         self._brTag = "<br />"
+        self._nextFnIndex = 1
 
     ##
     #  Setters
@@ -365,6 +366,23 @@ class ToEPub(ToHtml):
         )
         return "\n\n".join(styles)
 
+    ##
+    #  Internal Functions
+    ##
+
+    def _genFootnoteReferences(self, key: str) -> str:
+        """Generate footnote references in the text."""
+        index = self._nextFnIndex
+        self._nextFnIndex += 1
+
+        if content := self._footnotes.get(key):
+            text = self._formatText(*content)
+            self._section.footnotes.append(
+                f"<aside epub:type='footnote' id='fn_{index}'><p><a href='#fns_{index}'>{index}.</a> {text}</p></aside>"
+            )
+
+        return f"<sup><a epub:type='noteref' href='#fn_{index}' id='fns_{index}'>{index}</a></sup>"
+
 
 class EPubSection:
     """A section of a book.
@@ -376,7 +394,7 @@ class EPubSection:
     See: https://www.w3.org/TR/epub-ssv/#sec-partitions
     """
 
-    __slots__ = ("_class", "_id", "_name", "_text", "_title", "_type")
+    __slots__ = ("_class", "_footnotes", "_id", "_name", "_text", "_title", "_type")
 
     BODY_TYPE: Final[dict[EPubType, str]] = {
         EPubType.COVER: "cover",
@@ -400,6 +418,7 @@ class EPubSection:
         self._title = ""
         self._class = ""
         self._text: list[str] = []
+        self._footnotes: list[str] = []
 
     @property
     def title(self) -> str:
@@ -410,6 +429,11 @@ class EPubSection:
     def text(self) -> list[str]:
         """Return the text buffer."""
         return self._text
+
+    @property
+    def footnotes(self) -> list[str]:
+        """Return the footnotes buffer."""
+        return self._footnotes
 
     @property
     def epubType(self) -> EPubType:
@@ -476,6 +500,7 @@ class EPubSection:
             xHtml.append("</header>")
         xHtml.extend(self._text)
         xHtml.append("</section>")
+        xHtml.extend(self._footnotes)
         xHtml.append("</body>")
         xHtml.append("</html>")
         return "\n".join(xHtml)
