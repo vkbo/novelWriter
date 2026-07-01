@@ -91,6 +91,32 @@ class ToQTextDocument(Tokenizer):
     is intended for usage in the document viewer and build tool preview.
     """
 
+    __slots__ = (
+        "_anchors",
+        "_blockFmt",
+        "_charFmt",
+        "_dItalic",
+        "_dStrike",
+        "_dUnderline",
+        "_dWeight",
+        "_document",
+        "_hWeight",
+        "_init",
+        "_mHead",
+        "_mIndent",
+        "_mMeta",
+        "_mSep",
+        "_mText",
+        "_newPage",
+        "_pageMargins",
+        "_pageSize",
+        "_printer",
+        "_sHead",
+        "_tIndent",
+        "_usedFields",
+        "_usedNotes",
+    )
+
     def __init__(self, project: NWProject, pdf: bool = False) -> None:
         super().__init__(project)
         self._document = QTextDocument()
@@ -119,6 +145,16 @@ class ToQTextDocument(Tokenizer):
 
         self._pageSize = QPageSize(QPageSize.PageSizeId.A4)
         self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
+
+        self._mHead: dict[BlockTyp, tuple[float, float]] = {}
+        self._sHead: dict[BlockTyp, float] = {}
+        self._mText: tuple[float, float] = (1.0, 1.0)
+        self._mMeta: tuple[float, float] = (1.0, 1.0)
+        self._mSep: tuple[float, float] = (1.0, 1.0)
+        self._mIndent = 1.0
+        self._tIndent = 1.0
+        self._blockFmt = QTextBlockFormat()
+        self._charFmt = QTextCharFormat()
 
     ##
     #  Properties
@@ -214,13 +250,11 @@ class ToQTextDocument(Tokenizer):
         self._tIndent = mPx * self._firstWidth
 
         # Text Formats
-        self._blockFmt = QTextBlockFormat()
         self._blockFmt.setTopMargin(self._mText[0])
         self._blockFmt.setBottomMargin(self._mText[1])
         self._blockFmt.setAlignment(QtAlignAbsolute)
         self._blockFmt.setLineHeight(100.0 * self._lineHeight, QtPropLineHeight)
 
-        self._charFmt = QTextCharFormat()
         self._charFmt.setBackground(QtTransparent)
         self._charFmt.setForeground(self._theme.text)
 

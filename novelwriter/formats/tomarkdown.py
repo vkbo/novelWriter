@@ -84,6 +84,8 @@ class ToMarkdown(Tokenizer):
     supports concatenating novelWriter markup files.
     """
 
+    __slots__ = ("_extended", "_usedFields", "_usedNotes")
+
     def __init__(self, project: NWProject, extended: bool) -> None:
         super().__init__(project)
         self._extended = extended

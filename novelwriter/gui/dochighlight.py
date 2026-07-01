@@ -144,7 +144,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         self._dialogParser.initParser()
 
-        # Multiple or Trailing Spaces
+        # Multiple Spaces
         if CONFIG.showMultiSpaces:
             rxRule = re.compile(r"[ ]{2,}")
             hlRule = {

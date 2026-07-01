@@ -32,26 +32,9 @@ from PyQt6.QtGui import QColor, QFont
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, fontMatcher, numberToRoman
-from novelwriter.constants import (
-    nwHeadFmt,
-    nwKeyWords,
-    nwLabels,
-    nwShortcode,
-    nwStats,
-    nwStyles,
-    nwUnicode,
-    trConst,
-)
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwStats, nwStyles, nwUnicode, trConst
 from novelwriter.enum import nwComment, nwItemLayout
-from novelwriter.formats.shared import (
-    BlockFmt,
-    BlockTyp,
-    T_Block,
-    T_Formats,
-    T_Note,
-    TextDocumentTheme,
-    TextFmt,
-)
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Block, T_Formats, T_Note, TextDocumentTheme, TextFmt
 from novelwriter.text.formats import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 
@@ -113,6 +96,85 @@ class Tokenizer(ABC):
     text that can be further processed into other output formats by
     subclasses.
     """
+
+    __slots__ = (
+        "_blockIndent",
+        "_blocks",
+        "_boldHeads",
+        "_breakNext",
+        "_chapterStyle",
+        "_classes",
+        "_colorHeads",
+        "_counts",
+        "_dLocale",
+        "_defaultAlign",
+        "_dialogParser",
+        "_doBodyText",
+        "_doComments",
+        "_doJustify",
+        "_doKeywords",
+        "_errData",
+        "_firstIndent",
+        "_firstWidth",
+        "_fmtChapter",
+        "_fmtHScene",
+        "_fmtPart",
+        "_fmtScene",
+        "_fmtSection",
+        "_fmtUnNum",
+        "_footnotes",
+        "_hFormatter",
+        "_handle",
+        "_hideChapter",
+        "_hideHScene",
+        "_hidePart",
+        "_hideScene",
+        "_hideSection",
+        "_hideUnNum",
+        "_hlightDialog",
+        "_indentFirst",
+        "_isFirst",
+        "_isNovel",
+        "_justifyOnBreak",
+        "_keepBreaks",
+        "_keepRaw",
+        "_lineHeight",
+        "_lineMargins",
+        "_linkHeadings",
+        "_localLookup",
+        "_marginFoot",
+        "_marginHead1",
+        "_marginHead2",
+        "_marginHead3",
+        "_marginHead4",
+        "_marginMeta",
+        "_marginSep",
+        "_marginText",
+        "_marginTitle",
+        "_noIndent",
+        "_noSep",
+        "_noTokens",
+        "_outline",
+        "_pages",
+        "_partStyle",
+        "_project",
+        "_raw",
+        "_rxAltDialog",
+        "_rxMarkdown",
+        "_sceneStyle",
+        "_shortCodeFmt",
+        "_shortCodeVals",
+        "_sizeHead1",
+        "_sizeHead2",
+        "_sizeHead3",
+        "_sizeHead4",
+        "_sizeTitle",
+        "_skipKeywords",
+        "_text",
+        "_textFont",
+        "_theme",
+        "_titleStyle",
+    )
 
     def __init__(self, project: NWProject) -> None:
 
