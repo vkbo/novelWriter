@@ -186,6 +186,15 @@ class ToEPub(ToHtml):
 
     def saveDocument(self, path: Path) -> None:
         """Save the data to a .epub file."""
+        # Replace fields if there are stats available
+        if self._usedFields and self._counts:
+            pages = len(self._sections)
+            for doc, field in self._usedFields:
+                if doc >= 0 and doc < pages and (value := self._counts.get(field)) is not None:
+                    for i, text in enumerate(self._sections[doc].text):
+                        self._sections[doc].text[i] = text.replace(f"{{{{{field}}}}}", self._formatInt(value))
+
+        # Generate the XML files and save to a zip file
         xContainer = self._containerXml()
         xPackage = self._packageXml()
         xToc = self._tocXml()

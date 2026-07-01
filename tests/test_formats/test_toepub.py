@@ -21,6 +21,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import zipfile
+
+from shutil import copyfile
+
 import pytest
 
 from novelwriter.constants import nwHeadFmt, nwUnicode
@@ -28,6 +32,16 @@ from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.toepub import EPubType, ToEPub, _mkTag
+
+from tests.tools import EPUB_IGNORE, cmpFiles
+
+
+@pytest.mark.core
+def testFmtToEPub_MkTag():
+    """Test the tag maker function."""
+    assert _mkTag("dc", "text") == "{http://purl.org/dc/elements/1.1/}text"
+    assert _mkTag("xml", "text") == "{http://www.w3.org/XML/1998/namespace}text"
+    assert _mkTag("blabla", "text") == "text"
 
 
 @pytest.mark.core
@@ -537,8 +551,89 @@ def testFmtToEPub_ConvertDirect(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToEPub_MkTag():
-    """Test the tag maker function."""
-    assert _mkTag("dc", "text") == "{http://purl.org/dc/elements/1.1/}text"
-    assert _mkTag("xml", "text") == "{http://www.w3.org/XML/1998/namespace}text"
-    assert _mkTag("blabla", "text") == "text"
+def testFmtToEPub_Save(mockGUI, fncPath, tstPaths, ipsumText):
+    """Test the save method of the ToEPub class."""
+    project = NWProject()
+    project.data.setAuthor("Jane Smith")
+
+    epub = ToEPub(project)
+    epub.initDocument()
+    epub._isNovel = True
+
+    epub._text = (
+        "#! My Novel\n\n"
+        "**Word Count: [field:allWords]**\n"
+        "[field:paragraphCount] paragraphs\n"
+        "Web: http://example.com\n\n"
+        "## Chapter One\n\n"
+        f"{ipsumText[0]}\n\n"
+        "## Chapter Two\n\n"
+        f"{ipsumText[1]}[footnote:abc]\n\n"
+        "%Footnote.abc: Lorem ipsum\n\n"
+    )
+    epub.tokenizeText()
+    epub.initDocument()
+    epub.doConvert()
+    epub.countStats()
+    epub.closeDocument()
+
+    saveFile = fncPath / "outFile.epub"
+    epub.saveDocument(saveFile)
+    assert saveFile.exists()
+    assert zipfile.is_zipfile(saveFile)
+
+    extaxtTo = tstPaths.outDir / "fmtToEPub_SaveFull"
+    with zipfile.ZipFile(saveFile, mode="r") as zipObj:
+        assert sorted(zipObj.namelist()) == [
+            "META-INF/container.xml",
+            "OEBPS/nav.xhtml",
+            "OEBPS/package.opf",
+            "OEBPS/styles/stylesheet.css",
+            "OEBPS/toc.ncx",
+            "OEBPS/xhtml/chapter1.xhtml",
+            "OEBPS/xhtml/chapter2.xhtml",
+            "OEBPS/xhtml/frontmatter1.xhtml",
+            "mimetype",
+        ]
+        for file in zipObj.namelist():
+            zipObj.extract(file, extaxtTo)
+
+    navOut = extaxtTo / "OEBPS" / "nav.xhtml"
+    opfOut = extaxtTo / "OEBPS" / "package.opf"
+    cssOut = extaxtTo / "OEBPS" / "styles" / "stylesheet.css"
+    tocOut = extaxtTo / "OEBPS" / "toc.ncx"
+    ch1Out = extaxtTo / "OEBPS" / "xhtml" / "chapter1.xhtml"
+    ch2Out = extaxtTo / "OEBPS" / "xhtml" / "chapter2.xhtml"
+    fm1Out = extaxtTo / "OEBPS" / "xhtml" / "frontmatter1.xhtml"
+
+    navFile = tstPaths.outDir / "fmtToEPub_Save_nav.xhtml"
+    opfFile = tstPaths.outDir / "fmtToEPub_Save_package.opf"
+    cssFile = tstPaths.outDir / "fmtToEPub_Save_stylesheet.css"
+    tocFile = tstPaths.outDir / "fmtToEPub_Save_toc.ncx"
+    ch1File = tstPaths.outDir / "fmtToEPub_Save_chapter1.xhtml"
+    ch2File = tstPaths.outDir / "fmtToEPub_Save_chapter2.xhtml"
+    fm1File = tstPaths.outDir / "fmtToEPub_Save_frontmatter1.xhtml"
+
+    navComp = tstPaths.refDir / "fmtToEPub_Save_nav.xhtml"
+    opfComp = tstPaths.refDir / "fmtToEPub_Save_package.opf"
+    cssComp = tstPaths.refDir / "fmtToEPub_Save_stylesheet.css"
+    tocComp = tstPaths.refDir / "fmtToEPub_Save_toc.ncx"
+    ch1Comp = tstPaths.refDir / "fmtToEPub_Save_chapter1.xhtml"
+    ch2Comp = tstPaths.refDir / "fmtToEPub_Save_chapter2.xhtml"
+    fm1Comp = tstPaths.refDir / "fmtToEPub_Save_frontmatter1.xhtml"
+
+    copyfile(navOut, navFile)
+    copyfile(opfOut, opfFile)
+    copyfile(cssOut, cssFile)
+    copyfile(tocOut, tocFile)
+    copyfile(ch1Out, ch1File)
+    copyfile(ch2Out, ch2File)
+    copyfile(fm1Out, fm1File)
+
+    assert cmpFiles(navFile, navComp)
+    assert cmpFiles(opfFile, opfComp, ignoreStart=EPUB_IGNORE)
+    assert cmpFiles(cssFile, cssComp)
+    assert cmpFiles(tocFile, tocComp)
+    assert cmpFiles(ch1File, ch1Comp)
+    assert cmpFiles(ch2File, ch2Comp)
+    assert cmpFiles(fm1File, fm1Comp)
