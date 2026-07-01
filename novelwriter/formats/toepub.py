@@ -31,8 +31,8 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 from novelwriter.common import xmlElement, xmlIndent, xmlSubElem
 from novelwriter.constants import nwUnicode
-from novelwriter.formats.shared import BlockTyp, cssBuilder, processHtmlEntities
-from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.formats.shared import BlockTyp
+from novelwriter.formats.tohtml import ToHtml
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -79,17 +79,20 @@ class ManifestEntry(NamedTuple):
     properties: str | None = None
 
 
-class ToEPub(Tokenizer):
+class ToEPub(ToHtml):
     """Core: EPub Writer.
 
-    Extend the Tokenizer class to writer EPub output.
+    Extend the ToHtml class to write EPub output.
     """
+
+    __slots__ = ("_brTag", "_isFront", "_section", "_sections")
 
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
         self._section = EPubSection(EPubType.FRONTMATTER)
         self._sections = [self._section]
         self._isFront = True
+        self._brTag = "<br />"
 
     ##
     #  Class Methods
@@ -100,43 +103,47 @@ class ToEPub(Tokenizer):
         if not self._isNovel:
             return
 
-        for tType, _, tText, tFmt, _ in self._blocks:
-            tText, tFmt = processHtmlEntities(tText, tFmt)
+        for tType, _, tText, tFmt, tStyle in self._blocks:
+            tText, tFmt = self._processHtmlEntities(tText, tFmt)
+            hStyle = self._genInlineStyles(tStyle)
 
             # Process Text Type
             if tType == BlockTyp.TEXT:
-                self._section.text.append(f"<p>{tText}</p>")
+                self._section.text.append(f"<p{hStyle}>{self._formatText(tText, tFmt)}</p>")
 
             elif tType == BlockTyp.TITLE and self._isFront:
-                tHead = tText.replace("\n", "<br />")
-                self._section.text.append(f"<h1>{tHead}</h1>")
+                tHead = tText.replace("\n", self._brTag)
+                self._section.text.append(f"<h1{hStyle}>{tHead}</h1>")
 
             elif tType in (BlockTyp.TITLE, EPubType.PART, BlockTyp.HEAD1):
                 eType = EPubType.CHAPTER if tType == BlockTyp.HEAD1 else EPubType.PART
                 self._section = EPubSection(eType)
                 self._sections.append(self._section)
 
-                tHead = tText.replace("\n", "<br />")
+                tHead = tText.replace("\n", self._brTag)
                 self._section.setTitle(tHead, "H1")
                 self._isFront = False
 
             elif tType == BlockTyp.HEAD2:
-                tHead = tText.replace("\n", "<br />")
-                self._section.text.append(f"<h2>{tHead}</h2>")
+                tHead = tText.replace("\n", self._brTag)
+                self._section.text.append(f"<h2{hStyle}>{tHead}</h2>")
 
             elif tType == BlockTyp.HEAD3:
-                tHead = tText.replace("\n", "<br />")
-                self._section.text.append(f"<h3>{tHead}</h3>")
+                tHead = tText.replace("\n", self._brTag)
+                self._section.text.append(f"<h3{hStyle}>{tHead}</h3>")
 
             elif tType == BlockTyp.HEAD4:
-                tHead = tText.replace("\n", "<br />")
-                self._section.text.append(f"<h4>{tHead}</h4>")
+                tHead = tText.replace("\n", self._brTag)
+                self._section.text.append(f"<h4{hStyle}>{tHead}</h4>")
 
             elif tType == BlockTyp.SEP:
-                self._section.text.append(f"<p>{tText}</p>")
+                self._section.text.append(f"<p class='sep'>{tText}</p>")
+
+            elif tType == BlockTyp.HRULE:
+                self._section.text.append(f"<hr{hStyle}/>")
 
             elif tType == BlockTyp.SKIP:
-                self._section.text.append(f"<p>{nwUnicode.U_NBSP}</p>")
+                self._section.text.append(f"<p{hStyle}>{nwUnicode.U_NBSP}</p>")
 
     def closeDocument(self) -> None:
         """Run close document tasks."""
@@ -171,10 +178,6 @@ class ToEPub(Tokenizer):
             outZip.writestr("OEBPS/styles/stylesheet.css", self._generateStyleSheet())
             for section in self._sections:
                 outZip.writestr(f"OEBPS/xhtml/{section.name}.xhtml", section.sectionToXHtml(lang))
-
-    ##
-    #  Internal Functions
-    ##
 
     ##
     #  EPub Files
@@ -340,7 +343,7 @@ class ToEPub(Tokenizer):
         """Generate the book style sheet."""
         styles: list[str] = []
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 "a",
                 {
                     "text-decoration": "underline",

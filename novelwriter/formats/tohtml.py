@@ -29,15 +29,7 @@ from typing import TYPE_CHECKING
 
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHtmlUnicode
-from novelwriter.formats.shared import (
-    BlockFmt,
-    BlockTyp,
-    T_Formats,
-    TextFmt,
-    cssBuilder,
-    processHtmlEntities,
-    stripEscape,
-)
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import COMMENT_BLOCKS, Tokenizer
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS, QtHexRgb
 
@@ -85,8 +77,10 @@ HTML_NONE = (0, "")
 class ToHtml(Tokenizer):
     """Core: HTML Document Writer.
 
-    Extend the Tokenizer class to writer HTML output.
+    Extend the Tokenizer class to write HTML output.
     """
+
+    __slots__ = ("_brTag", "_cssStyles", "_trMap", "_usedFields", "_usedNotes")
 
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
@@ -94,6 +88,7 @@ class ToHtml(Tokenizer):
         self._cssStyles = True
         self._usedNotes: dict[str, int] = {}
         self._usedFields: list[tuple[int, str]] = []
+        self._brTag = "<br>"
         self.setReplaceUnicode(False)
 
     ##
@@ -137,69 +132,35 @@ class ToHtml(Tokenizer):
         """Convert the list of text tokens into an HTML document."""
         lines = []
         for tType, tMeta, tText, tFmt, tStyle in self._blocks:
-            tText, tFmt = processHtmlEntities(tText, tFmt)
+            tText, tFmt = self._processHtmlEntities(tText, tFmt)
+            hStyle = self._genInlineStyles(tStyle)
 
-            # Inline Styles
-            aStyle = []
-            if tStyle & BlockFmt.LEFT:
-                aStyle.append("text-align: left;")
-            elif tStyle & BlockFmt.RIGHT:
-                aStyle.append("text-align: right;")
-            elif tStyle & BlockFmt.CENTRE:
-                aStyle.append("text-align: center;")
-            elif tStyle & BlockFmt.JUSTIFY:
-                aStyle.append("text-align: justify;")
-
-            if tStyle & BlockFmt.PBB:
-                aStyle.append("page-break-before: always;")
-            if tStyle & BlockFmt.PBA:
-                aStyle.append("page-break-after: always;")
-
-            if tStyle & BlockFmt.Z_BTM:
-                aStyle.append("margin-bottom: 0;")
-            if tStyle & BlockFmt.Z_TOP:
-                aStyle.append("margin-top: 0;")
-
-            if tStyle & BlockFmt.IND_L:
-                aStyle.append(f"margin-left: {self._blockIndent:.2f}em;")
-            if tStyle & BlockFmt.IND_R:
-                aStyle.append(f"margin-right: {self._blockIndent:.2f}em;")
-            if tStyle & BlockFmt.IND_T:
-                aStyle.append(f"text-indent: {self._firstWidth:.2f}em;")
-
-            if aStyle:
-                stVals = " ".join(aStyle)
-                hStyle = f" style='{stVals}'"
-            else:
-                hStyle = ""
-
+            aNm = ""
             if self._linkHeadings and tMeta:
                 aNm = f"<a name='{tMeta}'></a>"
-            else:
-                aNm = ""
 
             # Process Text Type
             if tType == BlockTyp.TEXT:
                 lines.append(f"<p{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
             elif tType in (BlockTyp.TITLE, BlockTyp.PART):
-                tHead = tText.replace("\n", "<br>")
+                tHead = tText.replace("\n", self._brTag)
                 lines.append(f"<p class='title'{hStyle}>{aNm}{tHead}</p>\n")
 
             elif tType == BlockTyp.HEAD1:
-                tHead = tText.replace("\n", "<br>")
+                tHead = tText.replace("\n", self._brTag)
                 lines.append(f"<h1{hStyle}>{aNm}{tHead}</h1>\n")
 
             elif tType == BlockTyp.HEAD2:
-                tHead = tText.replace("\n", "<br>")
+                tHead = tText.replace("\n", self._brTag)
                 lines.append(f"<h2{hStyle}>{aNm}{tHead}</h2>\n")
 
             elif tType == BlockTyp.HEAD3:
-                tHead = tText.replace("\n", "<br>")
+                tHead = tText.replace("\n", self._brTag)
                 lines.append(f"<h3{hStyle}>{aNm}{tHead}</h3>\n")
 
             elif tType == BlockTyp.HEAD4:
-                tHead = tText.replace("\n", "<br>")
+                tHead = tText.replace("\n", self._brTag)
                 lines.append(f"<h4{hStyle}>{aNm}{tHead}</h4>\n")
 
             elif tType == BlockTyp.SEP:
@@ -335,7 +296,7 @@ class ToHtml(Tokenizer):
 
         styles = []
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 "body",
                 {
                     "color": tColor,
@@ -347,7 +308,7 @@ class ToHtml(Tokenizer):
             )
         )
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 "p",
                 {
                     "text-align": self._defaultAlign,
@@ -358,7 +319,7 @@ class ToHtml(Tokenizer):
             )
         )
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 "a",
                 {
                     "color": lColor,
@@ -366,7 +327,7 @@ class ToHtml(Tokenizer):
             )
         )
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 "mark",
                 {
                     "background": mColor,
@@ -374,7 +335,7 @@ class ToHtml(Tokenizer):
             )
         )
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 "hr",
                 {
                     "width": "50%",
@@ -384,7 +345,7 @@ class ToHtml(Tokenizer):
             )
         )
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 "h1, h2, h3, h4",
                 {
                     "color": hColor,
@@ -393,7 +354,7 @@ class ToHtml(Tokenizer):
             )
         )
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 "h1",
                 {
                     "font-size": f"{fSz1:.2f}em",
@@ -405,7 +366,7 @@ class ToHtml(Tokenizer):
         )
 
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 "h2",
                 {
                     "font-size": f"{fSz2:.2f}em",
@@ -416,7 +377,7 @@ class ToHtml(Tokenizer):
             )
         )
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 "h3",
                 {
                     "font-size": f"{fSz3:.2f}em",
@@ -427,7 +388,7 @@ class ToHtml(Tokenizer):
             )
         )
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 "h4",
                 {
                     "font-size": f"{fSz4:.2f}em",
@@ -438,7 +399,7 @@ class ToHtml(Tokenizer):
             )
         )
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 ".title",
                 {
                     "font-size": f"{fSz0:.2f}em",
@@ -449,7 +410,7 @@ class ToHtml(Tokenizer):
             )
         )
         styles.append(
-            cssBuilder(
+            self._cssBuilder(
                 ".sep",
                 {
                     "text-align": "center",
@@ -464,6 +425,42 @@ class ToHtml(Tokenizer):
     ##
     #  Internal Functions
     ##
+
+    def _genInlineStyles(self, tStyle: BlockFmt) -> str:
+        """Generate inline styles for a block of text."""
+        aStyle = []
+        if tStyle & BlockFmt.LEFT:
+            aStyle.append("text-align: left;")
+        elif tStyle & BlockFmt.RIGHT:
+            aStyle.append("text-align: right;")
+        elif tStyle & BlockFmt.CENTRE:
+            aStyle.append("text-align: center;")
+        elif tStyle & BlockFmt.JUSTIFY:
+            aStyle.append("text-align: justify;")
+
+        if tStyle & BlockFmt.PBB:
+            aStyle.append("page-break-before: always;")
+        if tStyle & BlockFmt.PBA:
+            aStyle.append("page-break-after: always;")
+
+        if tStyle & BlockFmt.Z_BTM:
+            aStyle.append("margin-bottom: 0;")
+        if tStyle & BlockFmt.Z_TOP:
+            aStyle.append("margin-top: 0;")
+
+        if tStyle & BlockFmt.IND_L:
+            aStyle.append(f"margin-left: {self._blockIndent:.2f}em;")
+        if tStyle & BlockFmt.IND_R:
+            aStyle.append(f"margin-right: {self._blockIndent:.2f}em;")
+        if tStyle & BlockFmt.IND_T:
+            aStyle.append(f"text-indent: {self._firstWidth:.2f}em;")
+
+        hStyle = ""
+        if aStyle:
+            stVals = " ".join(aStyle)
+            hStyle = f" style='{stVals}'"
+
+        return hStyle
 
     def _formatText(self, text: str, tFmt: T_Formats) -> str:
         """Apply formatting tags to text."""
@@ -518,6 +515,40 @@ class ToHtml(Tokenizer):
             temp = f"{temp[:pos]}{tag}{temp[pos:]}"
 
         # Replace all line breaks with proper HTML break tags
-        temp = temp.replace("\n", "<br>")
+        temp = temp.replace("\n", self._brTag)
 
         return stripEscape(temp)
+
+    def _processHtmlEntities(self, text: str, fmt: T_Formats) -> tuple[str, T_Formats]:
+        """Replace < and > with HTML entities."""
+        # Replace < and > with HTML entities
+        if fmt:
+            # If we have formatting, we must recompute the locations
+            temp = []
+            i = 0
+            for c in text:
+                if c == "<":
+                    temp.append("&lt;")
+                    fmt = [(p + 3 if p > i else p, f, k) for p, f, k in fmt]
+                    i += 4
+                elif c == ">":
+                    temp.append("&gt;")
+                    fmt = [(p + 3 if p > i else p, f, k) for p, f, k in fmt]
+                    i += 4
+                else:
+                    temp.append(c)
+                    i += 1
+            text = "".join(temp)
+        else:
+            # If we don't have formatting, we can do a plain replace
+            text = text.replace("<", "&lt;").replace(">", "&gt;")
+
+        return text, fmt
+
+    def _cssBuilder(self, selector: str, styles: dict[str, str | int], compact: bool = True) -> str:
+        """Build a CSS style string from a dictionary of style properties."""
+        br = "" if compact else "\n"
+        ind = "" if compact else "  "
+        sep = "; " if compact else ";\n"
+        content = sep.join(f"{ind}{k}: {v}" for k, v in styles.items())
+        return f"{selector} {{{br}{content.rstrip(' ')}{br}}}"
