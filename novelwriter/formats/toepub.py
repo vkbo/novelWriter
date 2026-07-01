@@ -85,7 +85,7 @@ class ToEPub(ToHtml):
     Extend the ToHtml class to write EPub output.
     """
 
-    __slots__ = ("_brTag", "_isFront", "_section", "_sections")
+    __slots__ = ("_isFront", "_section", "_sections")
 
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
@@ -93,6 +93,17 @@ class ToEPub(ToHtml):
         self._sections = [self._section]
         self._isFront = True
         self._brTag = "<br />"
+
+    ##
+    #  Setters
+    ##
+
+    def setReplaceUnicode(self, doReplace: bool) -> None:
+        """Set translation map.
+
+        Replace Unicode is ignored for EPub.
+        """
+        self._trMap = str.maketrans({"&": "&amp;"})
 
     ##
     #  Class Methods

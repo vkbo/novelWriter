@@ -117,10 +117,6 @@ class ToHtml(Tokenizer):
     #  Class Methods
     ##
 
-    def getFullResultSize(self) -> int:
-        """Return the size of the full HTML result."""
-        return sum(len(x) for x in self._pages)
-
     def doPreProcessing(self) -> None:
         """Extend the auto-replace to also properly encode some unicode
         characters into their respective HTML entities.
@@ -217,7 +213,7 @@ class ToHtml(Tokenizer):
                     "buildTimeStr": formatTimeStamp(ts),
                 },
                 "text": {
-                    "css": self.getStyleSheet(),
+                    "css": self._generateStyleSheet(),
                     "html": [t.replace("\t", "&#09;").rstrip().split("\n") for t in self._pages],
                 },
             }
@@ -234,7 +230,7 @@ class ToHtml(Tokenizer):
             if self._cssStyles:
                 html.append("<meta name='viewport' content='width=device-width, initial-scale=1'>")
                 html.append("<style>")
-                html.extend(self.getStyleSheet())
+                html.extend(self._generateStyleSheet())
                 html.append("</style>")
             html.append("</head>")
             html.append("<body>")
@@ -253,7 +249,11 @@ class ToHtml(Tokenizer):
         pages = [aLine.replace("\t", tabSpace) for aLine in self._pages]
         self._pages = pages
 
-    def getStyleSheet(self) -> list[str]:
+    ##
+    #  Internal Functions
+    ##
+
+    def _generateStyleSheet(self) -> list[str]:
         """Generate a stylesheet for the current settings."""
         if not self._cssStyles:
             return []
@@ -423,7 +423,7 @@ class ToHtml(Tokenizer):
         return styles
 
     ##
-    #  Internal Functions
+    #  Protected Functions (Shared with EPub)
     ##
 
     def _genInlineStyles(self, tStyle: BlockFmt) -> str:

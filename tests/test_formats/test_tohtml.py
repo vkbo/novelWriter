@@ -693,7 +693,7 @@ def testFmtToHtml_Save(mockGUI, fncPath):
 
     # Check Files
     # ===========
-    hStyle = html.getStyleSheet()
+    hStyle = html._generateStyleSheet()
 
     # HTML w/Styles
     html.setStyles(True)
@@ -776,14 +776,14 @@ def testFmtToHtml_Methods(mockGUI):
     assert html._pages[-1] == ("<p>Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;</p>\n")
 
     # Result Size
-    assert html.getFullResultSize() == 147
+    assert sum(len(x) for x in html._pages) == 147
 
     # CSS
     # ===
 
-    assert len(html.getStyleSheet()) > 1
-    assert "p {text-align: left;" in " ".join(html.getStyleSheet())
-    assert "p {text-align: justify;" not in " ".join(html.getStyleSheet())
+    assert len(html._generateStyleSheet()) > 1
+    assert "p {text-align: left;" in " ".join(html._generateStyleSheet())
+    assert "p {text-align: justify;" not in " ".join(html._generateStyleSheet())
 
     html.setStyles(False)
-    assert html.getStyleSheet() == []
+    assert html._generateStyleSheet() == []

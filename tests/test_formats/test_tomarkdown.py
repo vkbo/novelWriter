@@ -333,7 +333,7 @@ def testFmtToMarkdown_Save(mockGUI, fncPath):
         md.doConvert()
 
     assert md._pages == resText
-    assert md.getFullResultSize() == len("".join(resText))
+    assert sum(len(x) for x in md._pages) == len("".join(resText))
 
     md.replaceTabs(nSpaces=4, spaceChar=" ")
     resText[6] = "### A Section\n\n    More text in scene two.\n\n"
