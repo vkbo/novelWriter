@@ -33,6 +33,7 @@ from novelwriter.common import xmlElement, xmlIndent, xmlSubElem
 from novelwriter.constants import nwUnicode
 from novelwriter.formats.shared import BlockTyp
 from novelwriter.formats.tohtml import ToHtml
+from novelwriter.formats.tokenizer import COMMENT_BLOCKS
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -112,10 +113,7 @@ class ToEPub(ToHtml):
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into HTML."""
-        if not self._isNovel:
-            return
-
-        for tType, _, tText, tFmt, tStyle in self._blocks:
+        for tType, tMeta, tText, tFmt, tStyle in self._blocks:
             tText, tFmt = self._processHtmlEntities(tText, tFmt)
             hStyle = self._genInlineStyles(tStyle)
 
@@ -127,14 +125,23 @@ class ToEPub(ToHtml):
                 tHead = tText.replace("\n", self._brTag)
                 self._section.text.append(f"<h1{hStyle}>{tHead}</h1>")
 
-            elif tType in (BlockTyp.TITLE, EPubType.PART, BlockTyp.HEAD1):
-                eType = EPubType.CHAPTER if tType == BlockTyp.HEAD1 else EPubType.PART
-                self._section = EPubSection(eType)
+            elif tType in (BlockTyp.TITLE, BlockTyp.PART):
+                self._section = EPubSection(EPubType.PART)
                 self._sections.append(self._section)
 
                 tHead = tText.replace("\n", self._brTag)
                 self._section.setTitle(tHead, "H1")
                 self._isFront = False
+
+            elif tType == BlockTyp.HEAD1:
+                tHead = tText.replace("\n", self._brTag)
+                if self._isNovel:
+                    self._section = EPubSection(EPubType.CHAPTER)
+                    self._sections.append(self._section)
+                    self._section.setTitle(tHead, "H1")
+                    self._isFront = False
+                else:
+                    self._section.text.append(f"<h1{hStyle}>{tHead}</h1>")
 
             elif tType == BlockTyp.HEAD2:
                 tHead = tText.replace("\n", self._brTag)
@@ -156,6 +163,13 @@ class ToEPub(ToHtml):
 
             elif tType == BlockTyp.SKIP:
                 self._section.text.append(f"<p{hStyle}>{nwUnicode.U_NBSP}</p>")
+
+            elif tType in COMMENT_BLOCKS:
+                self._section.text.append(f"<p class='comment'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
+
+            elif tType == BlockTyp.KEYWORD:
+                tClass = f"meta meta-{tMeta}"
+                self._section.text.append(f"<p class='{tClass}'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
     def closeDocument(self) -> None:
         """Run close document tasks."""
@@ -353,18 +367,25 @@ class ToEPub(ToHtml):
 
     def _generateStyleSheet(self) -> str:
         """Generate the book style sheet."""
-        styles: list[str] = []
-        styles.append(
+        return "\n\n".join(
             self._cssBuilder(
-                "a",
                 {
-                    "text-decoration": "underline",
-                    "display": "inline",
+                    "a": {
+                        "text-decoration": "underline",
+                        "display": "inline",
+                    },
+                    "hr": {
+                        "width": "50%",
+                        "margin-left": "auto",
+                        "margin-right": "auto",
+                    },
+                    ".sep": {
+                        "text-align": "center",
+                    },
                 },
                 compact=False,
             )
         )
-        return "\n\n".join(styles)
 
     ##
     #  Internal Functions
