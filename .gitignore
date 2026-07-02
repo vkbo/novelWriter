@@ -56,6 +56,7 @@ ToC.txt
 
 # Coverage
 /.coverage
+/.coveragerc
 /coverage.*
 
 # Other

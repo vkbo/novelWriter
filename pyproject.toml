@@ -172,4 +172,3 @@ source = ["novelwriter"]
 
 [tool.coverage.report]
 precision = 2
-exclude_also = ["if TYPE_CHECKING:"]
