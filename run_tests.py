@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 
-def _genCoverageConfig(path: Path) -> None:
+def _genCoverageConfig(path: Path, branch: bool) -> None:
     """Generate a config file for coverage.py."""
     exclude = []  # ["if TYPE_CHECKING:"]
     if sys.platform != "linux":
@@ -25,7 +25,7 @@ def _genCoverageConfig(path: Path) -> None:
 
     config = [
         "[run]",
-        "branch = false",
+        f"branch = {str(branch).lower()}",
         "source = novelwriter",
         "",
         "[report]",
@@ -45,6 +45,7 @@ if __name__ == "__main__":
     parser.add_argument("-t", action="store_true", help="Generate terminal report")
     parser.add_argument("-u", action="store_true", help="Generate uncovered terminal report")
     parser.add_argument("-x", action="store_true", help="Ignore OS-specific tests in reports")
+    parser.add_argument("-b", action="store_true", help="Check branch coverage")
     parser.add_argument("-lf", action="store_true", help="Re-run failed tests")
     parser.add_argument("-sw", action="store_true", help="Run tests stepwise")
     parser.add_argument("-m", help="Test modules", metavar="MARKEXPR")
@@ -58,7 +59,7 @@ if __name__ == "__main__":
 
     if args.r or args.t or args.u:
         if args.x:
-            _genCoverageConfig(tmpConf)
+            _genCoverageConfig(tmpConf, args.b)
         cmd = ["coverage", "run"]
         if args.lf or args.sw:
             cmd += ["--append"]

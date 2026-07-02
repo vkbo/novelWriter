@@ -69,6 +69,7 @@ class EPubType(Enum):
     PART = 2
     CHAPTER = 3
     BACKMATTER = 4
+    NOTES = 5
 
 
 class ManifestEntry(NamedTuple):
@@ -95,6 +96,7 @@ class ToEPub(ToHtml):
         self._isFront = True
         self._brTag = "<br />"
         self._nextFnIndex = 1
+        self._useAnchors = False
 
     ##
     #  Setters
@@ -126,7 +128,7 @@ class ToEPub(ToHtml):
                 self._section.text.append(f"<h1{hStyle}>{tHead}</h1>")
 
             elif tType in (BlockTyp.TITLE, BlockTyp.PART):
-                self._section = EPubSection(EPubType.PART)
+                self._section = EPubSection(EPubType.PART if self._isNovel else EPubType.NOTES)
                 self._sections.append(self._section)
 
                 tHead = tText.replace("\n", self._brTag)
@@ -432,6 +434,7 @@ class EPubSection:
         EPubType.PART: "bodymatter",
         EPubType.CHAPTER: "bodymatter",
         EPubType.BACKMATTER: "backmatter",
+        EPubType.NOTES: "bodymatter",
     }
     SECTION_TYPE: Final[dict[EPubType, tuple[str, str]]] = {
         EPubType.COVER: ("cover", ""),
@@ -439,6 +442,7 @@ class EPubSection:
         EPubType.PART: ("part", " doc-part"),
         EPubType.CHAPTER: ("chapter", "doc-chapter"),
         EPubType.BACKMATTER: ("backmatter", ""),
+        EPubType.NOTES: ("notes", " doc-chapter"),
     }
 
     def __init__(self, eType: EPubType) -> None:
