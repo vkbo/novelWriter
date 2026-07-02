@@ -223,6 +223,10 @@ novelWriter HTML
    is suitable for further processing by document conversion tools like Pandoc_, for importing in
    word processors, or for printing from browser.
 
+Electronic Publication E-book (EPub)
+   The EPub format writes a single ``.epub`` file with minimal style formatting. You can include
+   your notes in this format, but each notes root folder will be packaged as a chapter.
+
 Standard/Extended Markdown
    The Markdown format comes in both Standard and Extended flavour. The *only* difference in terms
    of novelWriter functionality is the support for strike through text, which is not supported by
