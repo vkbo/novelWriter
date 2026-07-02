@@ -33,6 +33,7 @@ from novelwriter import logger
 
 XML_IGNORE = ("<novelWriterXML", "<project")
 ODT_IGNORE = ("<meta:generator", "<meta:creation-date", "<dc:date", "<meta:editing")
+EPUB_IGNORE = ('<meta property="dcterms:date">', '<meta property="dcterms:modified">', "<dc:date>")
 NWD_IGNORE = ("%%~date:",)
 DOCX_IGNORE = ("<dcterms:created", "<dcterms:modified", "<ns0:Application")
 MOCK_TIME = datetime(2019, 5, 10, 18, 52, 0).timestamp()

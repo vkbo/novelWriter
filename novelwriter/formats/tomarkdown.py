@@ -84,6 +84,8 @@ class ToMarkdown(Tokenizer):
     supports concatenating novelWriter markup files.
     """
 
+    __slots__ = ("_extended", "_usedFields", "_usedNotes")
+
     def __init__(self, project: NWProject, extended: bool) -> None:
         super().__init__(project)
         self._extended = extended
@@ -93,10 +95,6 @@ class ToMarkdown(Tokenizer):
     ##
     #  Class Methods
     ##
-
-    def getFullResultSize(self) -> int:
-        """Return the size of the full Markdown result."""
-        return sum(len(x) for x in self._pages)
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into a Markdown document."""

@@ -191,6 +191,22 @@ class ToDocX(Tokenizer):
     Extend the Tokenizer class to writer DocX Document files.
     """
 
+    __slots__ = (
+        "_files",
+        "_fontFamily",
+        "_fontSize",
+        "_headerFormat",
+        "_mHorLine",
+        "_pageMargins",
+        "_pageOffset",
+        "_pageSize",
+        "_pars",
+        "_rels",
+        "_styles",
+        "_usedFields",
+        "_usedNotes",
+    )
+
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
 

@@ -32,26 +32,9 @@ from PyQt6.QtGui import QColor, QFont
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, fontMatcher, numberToRoman
-from novelwriter.constants import (
-    nwHeadFmt,
-    nwKeyWords,
-    nwLabels,
-    nwShortcode,
-    nwStats,
-    nwStyles,
-    nwUnicode,
-    trConst,
-)
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwStats, nwStyles, nwUnicode, trConst
 from novelwriter.enum import nwComment, nwItemLayout
-from novelwriter.formats.shared import (
-    BlockFmt,
-    BlockTyp,
-    T_Block,
-    T_Formats,
-    T_Note,
-    TextDocumentTheme,
-    TextFmt,
-)
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Block, T_Formats, T_Note, TextDocumentTheme, TextFmt
 from novelwriter.text.formats import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 
@@ -114,6 +97,86 @@ class Tokenizer(ABC):
     subclasses.
     """
 
+    __slots__ = (
+        "_blockIndent",
+        "_blocks",
+        "_boldHeads",
+        "_breakNext",
+        "_chapterStyle",
+        "_classes",
+        "_colorHeads",
+        "_counts",
+        "_dLocale",
+        "_defaultAlign",
+        "_dialogParser",
+        "_doBodyText",
+        "_doComments",
+        "_doJustify",
+        "_doKeywords",
+        "_errData",
+        "_firstIndent",
+        "_firstWidth",
+        "_fmtChapter",
+        "_fmtHScene",
+        "_fmtPart",
+        "_fmtScene",
+        "_fmtSection",
+        "_fmtUnNum",
+        "_footnotes",
+        "_hFormatter",
+        "_handle",
+        "_hideChapter",
+        "_hideHScene",
+        "_hidePart",
+        "_hideScene",
+        "_hideSection",
+        "_hideUnNum",
+        "_hlightDialog",
+        "_indentFirst",
+        "_isFirst",
+        "_isNovel",
+        "_justifyOnBreak",
+        "_keepBreaks",
+        "_keepRaw",
+        "_lineHeight",
+        "_lineMargins",
+        "_linkHeadings",
+        "_localLookup",
+        "_marginFoot",
+        "_marginHead1",
+        "_marginHead2",
+        "_marginHead3",
+        "_marginHead4",
+        "_marginMeta",
+        "_marginSep",
+        "_marginText",
+        "_marginTitle",
+        "_noIndent",
+        "_noSep",
+        "_noTokens",
+        "_outline",
+        "_pages",
+        "_partStyle",
+        "_project",
+        "_raw",
+        "_rxAltDialog",
+        "_rxMarkdown",
+        "_sceneStyle",
+        "_shortCodeFmt",
+        "_shortCodeVals",
+        "_sizeHead1",
+        "_sizeHead2",
+        "_sizeHead3",
+        "_sizeHead4",
+        "_sizeTitle",
+        "_skipKeywords",
+        "_text",
+        "_textFont",
+        "_theme",
+        "_titleStyle",
+        "_useAnchors",
+    )
+
     def __init__(self, project: NWProject) -> None:
 
         self._project = project
@@ -151,6 +214,7 @@ class Tokenizer(ABC):
         self._doKeywords = False  # Also process keywords like tags and references
         self._keepBreaks = True  # Keep line breaks in paragraphs
         self._defaultAlign = "left"  # The default text alignment
+        self._useAnchors = True  # Enable anchors for headings
 
         self._skipKeywords: set[str] = set()  # Keywords to ignore
 
@@ -446,6 +510,10 @@ class Tokenizer(ABC):
         """Keep line breaks in paragraphs."""
         self._keepBreaks = state
 
+    def setAnchorsEnabled(self, state: bool) -> None:
+        """Enable or disable anchors."""
+        self._useAnchors = state
+
     ##
     #  Class Methods
     ##
@@ -483,6 +551,7 @@ class Tokenizer(ABC):
         self._handle = None
 
         if (item := self._project.tree[tHandle]) and item.isRootType():
+            self._isNovel = item.isNovelLike()
             self._handle = tHandle
             style = BlockFmt.CENTRE
             if self._isFirst:
@@ -491,7 +560,7 @@ class Tokenizer(ABC):
                 style |= BlockFmt.PBB
 
             title = item.itemName
-            if not item.isNovelLike():
+            if not self._isNovel:
                 notes = self._localLookup("Notes")
                 title = f"{notes}: {title}"
 
@@ -1093,8 +1162,9 @@ class Tokenizer(ABC):
                     one, two = self._project.index.parseValue(bits[1])
                     end = pos + len(one)
                     fmt.append((pos, TextFmt.COL_B, "tag"))
-                    fmt.append((pos, TextFmt.ANM_B, f"tag_{one}".lower()))
-                    fmt.append((end, TextFmt.ANM_E, ""))
+                    if self._useAnchors:
+                        fmt.append((pos, TextFmt.ANM_B, f"tag_{one}".lower()))
+                        fmt.append((end, TextFmt.ANM_E, ""))
                     fmt.append((end, TextFmt.COL_E, ""))
                     txt.append(one)
                     pos = end
@@ -1110,8 +1180,9 @@ class Tokenizer(ABC):
                     for n, bit in enumerate(bits[1:], 2):
                         end = pos + len(bit)
                         fmt.append((pos, TextFmt.COL_B, "tag"))
-                        fmt.append((pos, TextFmt.ARF_B, f"#tag_{bit}".lower()))
-                        fmt.append((end, TextFmt.ARF_E, ""))
+                        if self._useAnchors:
+                            fmt.append((pos, TextFmt.ARF_B, f"#tag_{bit}".lower()))
+                            fmt.append((end, TextFmt.ARF_E, ""))
                         fmt.append((end, TextFmt.COL_E, ""))
                         txt.append(bit)
                         pos = end

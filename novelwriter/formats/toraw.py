@@ -45,6 +45,8 @@ class ToRaw(Tokenizer):
     and write it to either a text or JSON file.
     """
 
+    __slots__ = ("_keepRaw", "_noTokens")
+
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
         self._keepRaw = True
