@@ -92,7 +92,6 @@ class ToQTextDocument(Tokenizer):
     """
 
     __slots__ = (
-        "_anchors",
         "_blockFmt",
         "_charFmt",
         "_dItalic",
@@ -135,7 +134,6 @@ class ToQTextDocument(Tokenizer):
 
         self._init = False
         self._newPage = False
-        self._anchors = True
 
         self._hWeight = QtFontBold
         self._dWeight = QtFontNormal
@@ -177,10 +175,6 @@ class ToQTextDocument(Tokenizer):
     def setShowNewPage(self, state: bool) -> None:
         """Add markers for page breaks."""
         self._newPage = state
-
-    def disableAnchors(self) -> None:
-        """Disable anchors for when writing to file."""
-        self._anchors = False
 
     ##
     #  Class Methods
@@ -431,22 +425,18 @@ class ToQTextDocument(Tokenizer):
                 cFmt.setForeground(self._theme.text)
                 primary = None
             elif fmt == TextFmt.ANM_B:
-                if self._anchors:
-                    cFmt.setAnchor(True)
-                    cFmt.setAnchorNames([data])
+                cFmt.setAnchor(True)
+                cFmt.setAnchorNames([data])
             elif fmt == TextFmt.ANM_E:
-                if self._anchors:
-                    cFmt.setAnchor(False)
+                cFmt.setAnchor(False)
             elif fmt == TextFmt.ARF_B:
-                if self._anchors:
-                    cFmt.setFontUnderline(True)
-                    cFmt.setAnchor(True)
-                    cFmt.setAnchorHref(data)
+                cFmt.setFontUnderline(True)
+                cFmt.setAnchor(True)
+                cFmt.setAnchorHref(data)
             elif fmt == TextFmt.ARF_E:
-                if self._anchors:
-                    cFmt.setFontUnderline(False)
-                    cFmt.setAnchor(False)
-                    cFmt.setAnchorHref("")
+                cFmt.setFontUnderline(False)
+                cFmt.setAnchor(False)
+                cFmt.setAnchorHref("")
             elif fmt == TextFmt.HRF_B:
                 cFmt.setForeground(self._theme.link)
                 cFmt.setFontUnderline(True)
@@ -542,7 +532,7 @@ class ToQTextDocument(Tokenizer):
         cFmt.setForeground(self._theme.head if hCol else self._theme.text)
         cFmt.setFontWeight(self._hWeight)
         cFmt.setFontPointSize(self._sHead.get(hType, 1.0))
-        if hKey and self._anchors:
+        if hKey and self._useAnchors:
             cFmt.setAnchorNames([hKey])
             cFmt.setAnchor(True)
 

@@ -174,6 +174,7 @@ class Tokenizer(ABC):
         "_textFont",
         "_theme",
         "_titleStyle",
+        "_useAnchors",
     )
 
     def __init__(self, project: NWProject) -> None:
@@ -213,6 +214,7 @@ class Tokenizer(ABC):
         self._doKeywords = False  # Also process keywords like tags and references
         self._keepBreaks = True  # Keep line breaks in paragraphs
         self._defaultAlign = "left"  # The default text alignment
+        self._useAnchors = True  # Enable anchors for headings
 
         self._skipKeywords: set[str] = set()  # Keywords to ignore
 
@@ -507,6 +509,10 @@ class Tokenizer(ABC):
     def setKeepLineBreaks(self, state: bool) -> None:
         """Keep line breaks in paragraphs."""
         self._keepBreaks = state
+
+    def setAnchorsEnabled(self, state: bool) -> None:
+        """Enable or disable anchors."""
+        self._useAnchors = state
 
     ##
     #  Class Methods
@@ -1156,8 +1162,9 @@ class Tokenizer(ABC):
                     one, two = self._project.index.parseValue(bits[1])
                     end = pos + len(one)
                     fmt.append((pos, TextFmt.COL_B, "tag"))
-                    fmt.append((pos, TextFmt.ANM_B, f"tag_{one}".lower()))
-                    fmt.append((end, TextFmt.ANM_E, ""))
+                    if self._useAnchors:
+                        fmt.append((pos, TextFmt.ANM_B, f"tag_{one}".lower()))
+                        fmt.append((end, TextFmt.ANM_E, ""))
                     fmt.append((end, TextFmt.COL_E, ""))
                     txt.append(one)
                     pos = end
@@ -1173,8 +1180,9 @@ class Tokenizer(ABC):
                     for n, bit in enumerate(bits[1:], 2):
                         end = pos + len(bit)
                         fmt.append((pos, TextFmt.COL_B, "tag"))
-                        fmt.append((pos, TextFmt.ARF_B, f"#tag_{bit}".lower()))
-                        fmt.append((end, TextFmt.ARF_E, ""))
+                        if self._useAnchors:
+                            fmt.append((pos, TextFmt.ARF_B, f"#tag_{bit}".lower()))
+                            fmt.append((end, TextFmt.ARF_E, ""))
                         fmt.append((end, TextFmt.COL_E, ""))
                         txt.append(bit)
                         pos = end

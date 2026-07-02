@@ -266,8 +266,8 @@ def testFmtToEPub_ConvertMeta(mockGUI):
     assert epub._sections[-1].text[-1] == (
         "<p class='meta meta-char'><strong><span style='color: #f5871f'>"
         "Characters:</span></strong> "
-        "<span style='color: #4271ae'><a href='#tag_bod'>Bod</a></span>, "
-        "<span style='color: #4271ae'><a href='#tag_jane'>Jane</a></span></p>\n"
+        "<span style='color: #4271ae'>Bod</span>, "
+        "<span style='color: #4271ae'>Jane</span></p>\n"
     )
 
     # Tags w/Colour
@@ -277,7 +277,7 @@ def testFmtToEPub_ConvertMeta(mockGUI):
     epub.doConvert()
     assert epub._sections[-1].text[-1] == (
         "<p class='meta meta-tag'><strong><span style='color: #f5871f'>Tag:</span></strong> "
-        "<span style='color: #4271ae'><a name='tag_bod'>Bod</a></span></p>\n"
+        "<span style='color: #4271ae'>Bod</span></p>\n"
     )
 
     epub._text = "@tag: Bod | Nobody Owens\n"
@@ -285,7 +285,7 @@ def testFmtToEPub_ConvertMeta(mockGUI):
     epub.doConvert()
     assert epub._sections[-1].text[-1] == (
         "<p class='meta meta-tag'><strong><span style='color: #f5871f'>Tag:</span></strong> "
-        "<span style='color: #4271ae'><a name='tag_bod'>Bod</a></span> | "
+        "<span style='color: #4271ae'>Bod</span> | "
         "<span style='color: #4271ae'>Nobody Owens</span></p>\n"
     )
 
@@ -294,16 +294,12 @@ def testFmtToEPub_ConvertMeta(mockGUI):
     epub._text = "@tag: Bod\n"
     epub.tokenizeText()
     epub.doConvert()
-    assert (
-        epub._sections[-1].text[-1] == "<p class='meta meta-tag'><strong>Tag:</strong> <a name='tag_bod'>Bod</a></p>\n"
-    )
+    assert epub._sections[-1].text[-1] == "<p class='meta meta-tag'><strong>Tag:</strong> Bod</p>\n"
 
     epub._text = "@tag: Bod | Nobody Owens\n"
     epub.tokenizeText()
     epub.doConvert()
-    assert epub._sections[-1].text[-1] == (
-        "<p class='meta meta-tag'><strong>Tag:</strong> <a name='tag_bod'>Bod</a> | Nobody Owens</p>\n"
-    )
+    assert epub._sections[-1].text[-1] == "<p class='meta meta-tag'><strong>Tag:</strong> Bod | Nobody Owens</p>\n"
 
     # Multiple Keywords w/Colour
     epub.setStyles(True)
@@ -316,15 +312,15 @@ def testFmtToEPub_ConvertMeta(mockGUI):
     assert epub._sections[-1].text[-3:] == [
         (
             "<p class='meta meta-pov' style='margin-bottom: 0;'><strong><span style='color: #f5871f'>"
-            "Point of View:</span></strong> <span style='color: #4271ae'><a href='#tag_bod'>Bod</a></span></p>\n"
+            "Point of View:</span></strong> <span style='color: #4271ae'>Bod</span></p>\n"
         ),
         (
             "<p class='meta meta-plot' style='margin-bottom: 0; margin-top: 0;'><strong><span style='color: #f5871f'>"
-            "Plot:</span></strong> <span style='color: #4271ae'><a href='#tag_main'>Main</a></span></p>\n"
+            "Plot:</span></strong> <span style='color: #4271ae'>Main</span></p>\n"
         ),
         (
             "<p class='meta meta-location' style='margin-top: 0;'><strong><span style='color: #f5871f'>"
-            "Locations:</span></strong> <span style='color: #4271ae'><a href='#tag_europe'>Europe</a></span></p>\n"
+            "Locations:</span></strong> <span style='color: #4271ae'>Europe</span></p>\n"
         ),
     ]
 
@@ -337,18 +333,9 @@ def testFmtToEPub_ConvertMeta(mockGUI):
     epub.doConvert()
     assert epub._sections[-1].title == "Chapter"
     assert epub._sections[-1].text[-3:] == [
-        (
-            "<p class='meta meta-pov' style='margin-bottom: 0;'><strong>Point of View:</strong> "
-            "<a href='#tag_bod'>Bod</a></p>\n"
-        ),
-        (
-            "<p class='meta meta-plot' style='margin-bottom: 0; margin-top: 0;'><strong>Plot:</strong> "
-            "<a href='#tag_main'>Main</a></p>\n"
-        ),
-        (
-            "<p class='meta meta-location' style='margin-top: 0;'><strong>Locations:</strong> "
-            "<a href='#tag_europe'>Europe</a></p>\n"
-        ),
+        "<p class='meta meta-pov' style='margin-bottom: 0;'><strong>Point of View:</strong> Bod</p>\n",
+        "<p class='meta meta-plot' style='margin-bottom: 0; margin-top: 0;'><strong>Plot:</strong> Main</p>\n",
+        "<p class='meta meta-location' style='margin-top: 0;'><strong>Locations:</strong> Europe</p>\n",
     ]
 
 
