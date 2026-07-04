@@ -68,6 +68,7 @@ jobs:
           file: coverage.xml
           language: python
           label: Test Ubuntu ${{ matrix.python-version }}
+          fail-on-error: false
 
   testUbuntu24:
     name: Test Ubuntu 24.04 & Sys Packages
