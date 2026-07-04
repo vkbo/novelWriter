@@ -24,6 +24,7 @@ jobs:
     name: Test Python ${{ matrix.python-version }}
     permissions:
       contents: read
+      code-quality: write
     steps:
       - name: Checkout Source
         uses: actions/checkout@v7
@@ -59,6 +60,14 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
+
+      - name: Upload Coverage Report
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/upload-code-coverage@v1
+        with:
+          file: coverage.xml
+          language: python
+          label: Test Ubuntu ${{ matrix.python-version }}
 
   testUbuntu24:
     name: Test Ubuntu 24.04 & Sys Packages
