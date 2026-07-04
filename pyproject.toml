@@ -167,7 +167,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-branch = false
+branch = true
 source = ["novelwriter"]
 
 [tool.coverage.report]
