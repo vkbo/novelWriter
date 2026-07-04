@@ -431,7 +431,7 @@ class GuiNovelTree(NTreeView):
     def setActiveHandle(self, tHandle: str | None) -> None:
         """Set the handle to be highlighted."""
         self._actHandle = tHandle
-        if viewport := self.viewport():
+        if viewport := self.viewport():  # pragma: no branch
             viewport.repaint()
 
     def setLastColType(self, colType: nwNovelExtra) -> None:
@@ -536,23 +536,23 @@ class GuiNovelTree(NTreeView):
                 label = trConst(nwLabels.OUTLINE_COLS[nwOutline.SYNOP])
                 synopsis = f"<p><b>{label}:</b> {synopsis}</p>"
 
-            lines = []
-            if head := SHARED.project.index.getItemHeading(tHandle, sTitle):
-                tags = head.getReferences()
-                appendTags(tags, nwKeyWords.TAG_KEY, lines)
-                appendTags(tags, nwKeyWords.POV_KEY, lines)
-                appendTags(tags, nwKeyWords.FOCUS_KEY, lines)
-                appendTags(tags, nwKeyWords.CHAR_KEY, lines)
-                appendTags(tags, nwKeyWords.PLOT_KEY, lines)
-                appendTags(tags, nwKeyWords.TIME_KEY, lines)
-                appendTags(tags, nwKeyWords.WORLD_KEY, lines)
-                appendTags(tags, nwKeyWords.OBJECT_KEY, lines)
-                appendTags(tags, nwKeyWords.ENTITY_KEY, lines)
-                appendTags(tags, nwKeyWords.CUSTOM_KEY, lines)
+            lines: list[str] = []
+            tags = head.getReferences()
+            appendTags(tags, nwKeyWords.TAG_KEY, lines)
+            appendTags(tags, nwKeyWords.POV_KEY, lines)
+            appendTags(tags, nwKeyWords.FOCUS_KEY, lines)
+            appendTags(tags, nwKeyWords.CHAR_KEY, lines)
+            appendTags(tags, nwKeyWords.PLOT_KEY, lines)
+            appendTags(tags, nwKeyWords.TIME_KEY, lines)
+            appendTags(tags, nwKeyWords.WORLD_KEY, lines)
+            appendTags(tags, nwKeyWords.OBJECT_KEY, lines)
+            appendTags(tags, nwKeyWords.ENTITY_KEY, lines)
+            appendTags(tags, nwKeyWords.CUSTOM_KEY, lines)
 
             text = ""
             if lines:
                 refs = "<br>".join(lines)
                 text = f"<p>{refs}</p>"
-            if tooltip := (text + synopsis or self.tr("No meta data")):
-                QToolTip.showText(qPos, tooltip)
+
+            tooltip = text + synopsis or self.tr("No meta data")
+            QToolTip.showText(qPos, tooltip)

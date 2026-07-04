@@ -123,6 +123,12 @@ def testGuiDocHighlighter_Basic(syntax):
     assert syntax._isNovel is True
     assert syntax._isInactive is True
 
+    # Unknown handle resets the flags
+    syntax.setHandle("0000000000000")
+    assert syntax._tHandle == "0000000000000"
+    assert syntax._isNovel is False
+    assert syntax._isInactive is False
+
 
 @pytest.mark.gui
 def testGuiDocHighlighter_Keywords(syntax):
@@ -195,6 +201,18 @@ def testGuiDocHighlighter_Keywords(syntax):
     assert formats[2].foreground().color().getRgb() == colOpt
     assert formats[3].foreground().color().getRgb() == colKey
     assert formats[4].underlineColor().getRgb() == colErr
+
+    # Invalid tags in an inactive item are not marked as errors
+    syntax._isInactive = True
+    doc.setPlainText("@char: Someone\n")
+    syntax.rehighlightByType(BLOCK_META)
+
+    pieces, formats = getFragments(syntax)
+    assert pieces == [
+        (0, 0, 5, "@char"),
+    ]
+    assert formats[0].foreground().color().getRgb() == colKey
+    syntax._isInactive = False
 
 
 @pytest.mark.gui
@@ -653,4 +671,51 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
         (18, 21, "and"),
         (22, 26, "then"),
         (32, 37, "shush"),
+    ]
+
+    # Dialogue is not highlighted in notes
+    syntax._isNovel = False
+    doc.setPlainText("Text with “dialogue” in a note.\n")
+    syntax.rehighlight()
+
+    pieces, formats = getFragments(syntax)
+    assert all(f.foreground().color().getRgb() != colDialogue for f in formats)
+    syntax._isNovel = True
+
+
+@pytest.mark.gui
+def testGuiDocHighlighter_UnknownCommand(syntax):
+    """An unrecognised bracketed command falls back to plain rules."""
+    doc = syntax.document()
+    assert doc is not None
+
+    syntax._tHandle = T_HANDLE
+    doc.setPlainText("[unknown command]\n")
+    syntax.rehighlight()
+
+    pieces, _ = getFragments(syntax)
+    assert pieces == []
+
+
+@pytest.mark.gui
+def testGuiDocHighlighter_OverlappingMarkup(syntax):
+    """Nested markup (e.g. italic inside bold) must not have the
+    outer rule overwrite the markup already applied by the inner
+    rule, including when a 4-byte unicode character forces the
+    UTF-16 code unit map to be used.
+    """
+    doc = syntax.document()
+    assert doc is not None
+
+    syntax._tHandle = T_HANDLE
+    syntax._isNovel = True
+
+    doc.setPlainText("**_word_** \U0001f604\n")
+    syntax.rehighlight()
+
+    pieces, _ = getFragments(syntax)
+    assert pieces == [
+        (0, 0, 3, "**_"),
+        (0, 3, 4, "word"),
+        (0, 7, 3, "_**"),
     ]

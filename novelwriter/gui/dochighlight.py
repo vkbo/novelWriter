@@ -286,7 +286,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """Loop through all blocks and re-highlight those of a given
         content type.
         """
-        if document := self.document():
+        if document := self.document():  # pragma: no branch
             nBlocks = document.blockCount()
             tStart = time()
             for i in range(nBlocks):
@@ -375,6 +375,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             elif text.startswith("###! "):  # Alternative Scene
                 self.setFormat(0, 4, self._hStyles["head3h"])
                 self.setFormat(4, blockLen, self._hStyles["header3"])
+
+            else:  # pragma: no cover
+                pass
 
         elif text.startswith("%"):  # Comments
             self.setCurrentBlockState(BLOCK_TEXT)
@@ -545,14 +548,14 @@ class TextBlockData(QTextBlockUserData):
             # Strip shortcodes
             for regEx in [RX_FMT_SC, RX_FMT_SV]:
                 for res in regEx.finditer(text, offset):
-                    if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:
+                    if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:  # pragma: no branch
                         pad = " " * (e - s)
                         text = f"{text[:s]}{pad}{text[e:]}"
 
         if "http" in text:
             # Strip URLs
             for res in RX_URL.finditer(text, offset):
-                if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:
+                if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:  # pragma: no branch
                     pad = " " * (e - s)
                     text = f"{text[:s]}{pad}{text[e:]}"
                     self._metaData.append((s, e, res.group(0), "url"))

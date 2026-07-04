@@ -99,6 +99,17 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
         search._searchResultDoubleClicked(firstResult, 0)
         assert signal.args == [handle, 3, 5, True]
 
+    # Double-click on a document-level entry does nothing
+    with qtbot.assertNotEmitted(search.openDocumentSelectRequest):
+        search._searchResultDoubleClicked(firstDoc, 0)
+
+    # Press return with no selection does nothing
+    search.searchResult.clearSelection()
+    with monkeypatch.context() as mp:
+        mp.setattr(search.searchResult, "hasFocus", lambda *a: True)
+        with qtbot.assertNotEmitted(search.openDocumentSelectRequest):
+            qtbot.keyClick(search, Qt.Key.Key_Return)
+
     # Case Sensitive
     search.toggleCase.setChecked(True)
     search.searchAction.activate(QAction.ActionEvent.Trigger)
@@ -131,6 +142,21 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     search.textChanged(handle, time() + 1000.0)
     assert search.searchResult.topLevelItemCount() == 10
     assert totalCount() == 34
+
+    # A re-entrant search call is a no-op
+    search._blocked = True
+    search._processSearch()
+    assert search.searchResult.topLevelItemCount() == 10
+    search._blocked = False
+
+    # An empty search text clears the result without searching
+    search.searchText.setText("")
+    search.searchAction.activate(QAction.ActionEvent.Trigger)
+    assert search.searchResult.topLevelItemCount() == 0
+
+    # Refresh with no prior search does nothing
+    search.refreshCurrentSearch()
+    assert search.searchResult.topLevelItemCount() == 0
 
     # qtbot.stop()
     nwGUI.closeProject()

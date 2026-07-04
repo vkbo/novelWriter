@@ -383,7 +383,7 @@ class GuiOutlineTree(QTreeWidget):
         self.setIconSize(SHARED.theme.baseIconSize)
         self.setIndentation(0)
 
-        if header := self.header():
+        if header := self.header():  # pragma: no branch
             header.sectionMoved.connect(self._columnMoved)
 
         # Pre-Generate Tree Formatting
@@ -663,7 +663,7 @@ class GuiOutlineTree(QTreeWidget):
             self.setColumnHidden(self._colIdx[nwOutline.TITLE], False)
 
             headItem = self.headerItem()
-            if isinstance(headItem, QTreeWidgetItem):
+            if isinstance(headItem, QTreeWidgetItem):  # pragma: no branch
                 headItem.setTextAlignment(self._colIdx[nwOutline.CCOUNT], QtAlignRight)
                 headItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], QtAlignRight)
                 headItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], QtAlignRight)
@@ -1056,7 +1056,7 @@ class GuiOutlineDetails(QScrollArea):
         usedClasses = SHARED.project.tree.rootClasses()
         for key, itemClass in nwKeyWords.KEY_CLASS.items():
             visible = itemClass in usedClasses
-            if key in self.tagValues:
+            if key in self.tagValues:  # pragma: no branch
                 label, value = self.tagValues[key]
                 label.setVisible(visible)
                 value.setVisible(visible)

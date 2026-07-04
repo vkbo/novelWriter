@@ -1054,7 +1054,7 @@ class GuiIcons:
             return QIcon(str(CONFIG.assetPath("icons") / "x-novelwriter-project.svg"))
 
         if svg := self._svgData.get(name, b""):
-            if fill := self._theme.getRawBaseColor(color or "default"):
+            if fill := self._theme.getRawBaseColor(color or "default"):  # pragma: no branch
                 svg = svg.replace(b"#000000", fill)
             pixmap = QPixmap(w, h)
             pixmap.fill(QtTransparent)
@@ -1076,7 +1076,7 @@ class GuiIcons:
 
         painter = QPainter(pixmap)
         painter.setRenderHint(QtPaintAntiAlias)
-        if fill := self._theme.getRawBaseColor(color or "default"):
+        if fill := self._theme.getRawBaseColor(color or "default"):  # pragma: no branch
             painter.fillPath(path, QColor(fill.decode(encoding="utf-8")))
         painter.end()
 
