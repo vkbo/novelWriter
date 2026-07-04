@@ -581,7 +581,9 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     # Multiple entries: the first doesn't match, the second does
     blockPos = cursor.block().position()
     data._spellErrors = [(0, 5, "Lorem"), (6, 11, "ipsum")]
-    assert docEditor._qDocument.spellErrorAtPos(blockPos + 8) == ("ipsum", 6, [])
+    with monkeypatch.context() as mp:
+        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [])
+        assert docEditor._qDocument.spellErrorAtPos(blockPos + 8) == ("ipsum", 6, [])
 
     # No entry matches the given position
     assert docEditor._qDocument.spellErrorAtPos(blockPos + 20) == ("", -1, [])
