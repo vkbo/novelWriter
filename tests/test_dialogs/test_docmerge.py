@@ -88,6 +88,10 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert data["moveToTrash"] is True
     assert data["finalItems"] == [C.hChapterDoc, C.hSceneDoc]
 
+    # Reset with no handle set does nothing
+    nwMerge._data.pop("sHandle", None)
+    nwMerge._resetList()
+
     # Test Class Method
     with monkeypatch.context() as mp:
         mp.setattr(GuiDocMerge, "result", lambda *a: QtAccepted)

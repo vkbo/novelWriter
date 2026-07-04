@@ -24,7 +24,7 @@ from __future__ import annotations
 import pytest
 
 from PyQt6.QtGui import QAction, QColor
-from PyQt6.QtWidgets import QColorDialog, QFileDialog
+from PyQt6.QtWidgets import QColorDialog, QFileDialog, QToolButton
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -75,6 +75,14 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     assert projSettings.mainStack.currentWidget() == projSettings.importPage
 
     projSettings.sidebar.button(GuiProjectSettings.PAGE_REPLACE).click()
+    assert projSettings.mainStack.currentWidget() == projSettings.replacePage
+
+    # Selecting an unknown page does nothing
+    projSettings.sidebar.setSelected(9999)
+
+    # A button that isn't part of the sidebar's group is ignored
+    otherButton = QToolButton()
+    projSettings.sidebar._buttonClicked(otherButton)
     assert projSettings.mainStack.currentWidget() == projSettings.replacePage
 
     # Clean Up

@@ -28,7 +28,7 @@ import pytest
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
 
-from novelwriter.enum import nwDocMode, nwView
+from novelwriter.enum import nwChange, nwDocMode, nwView
 from novelwriter.gui.search import GuiProjectSearch
 
 
@@ -74,6 +74,9 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Selecting updates details
     firstDoc.setSelected(True)
     assert nwGUI.itemDetails._handle == handle
+
+    # Other change types for the selected item are ignored
+    nwGUI.itemDetails.onProjectItemChanged(handle, nwChange.CREATE)
 
     # Press return
     search.searchResult.setFocus()

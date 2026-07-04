@@ -59,6 +59,9 @@ def testExtProgressBars_NProgressCircle(qtbot):
     progress.setCentreText("Done!")
     assert progress._text == "Done!"
 
+    # Track and text colours are optional
+    progress.setColors(back=QColor(255, 255, 255), bar=QColor(255, 0, 0))
+
     # qtbot.stop()
 
 

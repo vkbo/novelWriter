@@ -62,6 +62,22 @@ class MockPayload:
         return MockData()
 
 
+class MockListData:
+    def decode(self, *a):
+        return "[]"
+
+
+class MockListPayload:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        return
+
+    def read(self):
+        return MockListData()
+
+
 class MockHTTPError:
     def __enter__(self):
         raise HTTPError("http://example.com", 403, "Rate limit", None, None)  # type: ignore
@@ -101,6 +117,9 @@ def testExtVersionInfo_Main(qtbot, monkeypatch):
         version._processLink("#update")
         assert version._lblRelease.text() == "Latest Version: Checking ..."
 
+    # Unknown links do nothing
+    version._processLink("#unknown")
+
     version._updateReleaseInfo("v2.0", "")
     assert version._lblRelease.text() == ("Latest Version: 2.0 – Download from <a href='#website'>novelwriter.io</a>")
 
@@ -125,6 +144,14 @@ def testExtVersionInfo_Retriever(qtbot, monkeypatch):
 
     def httpErr():
         raise HTTPError("http://example.com", 403, "Rate limit")  # type: ignore
+
+    # Non-Dict Response
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.extensions.versioninfo.urlopen", lambda *a, **k: MockListPayload())
+        received = []
+        task.signals.dataReady.connect(lambda tag, reason: received.append((tag, reason)))
+        task.run()
+        assert received == []
 
     # HTTP Error
     with monkeypatch.context() as mp:

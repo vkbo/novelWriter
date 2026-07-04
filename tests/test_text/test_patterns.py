@@ -392,6 +392,16 @@ def testTextPatterns_DialogueStyle():
     # Defined double quotes are recognised also when open
     assert allMatches(regEx, "one \u201ctwo three") == [[("\u201ctwo three", 4, 14)]]
 
+    # Single Quotes Only
+    # ==================
+
+    CONFIG.dialogStyle = 1
+    regEx = REGEX_PATTERNS.dialogStyle
+    assert regEx is not None
+
+    # Single quotes are recognised, double quotes are not
+    assert allMatches(regEx, "one \u2018two\u2019 three \u201cfour\u201d five") == [[("\u2018two\u2019", 4, 9)]]
+
 
 @pytest.mark.core
 def testTextPatterns_DialoguePlain():
@@ -523,6 +533,9 @@ def testTextPatterns_DialogParserEnglish():
     assert parser("“Simple dialogue, —argued John”") == [
         (0, 31),
     ]
+
+    # Empty text yields no results
+    assert parser("") == []
 
 
 @pytest.mark.core

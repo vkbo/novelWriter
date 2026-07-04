@@ -198,6 +198,11 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert outlineBar.novelValue.itemData(1) is None  # Separator
     assert outlineBar.novelValue.itemData(2) == ""  # All novels
 
+    # An invalid list format is rejected
+    listFormat = outlineBar.novelValue._listFormat
+    outlineBar.novelValue.setListFormat("No placeholder here")
+    assert outlineBar.novelValue._listFormat == listFormat
+
     # Add a second novel folder
     with qtbot.waitSignal(SHARED.rootFolderChanged):
         newHandle = SHARED.project.newRoot(nwItemClass.NOVEL)

@@ -119,6 +119,12 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     impFile = fncPath / "wordlist_import.txt"
     wList.show()
 
+    # Export File, Cancelled
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: ("", ""))
+        wList.exportButton.click()
+        assert not expFile.exists()
+
     # Export File, OS Error
     with monkeypatch.context() as mp:
         mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: (str(expFile), ""))
@@ -135,6 +141,12 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncPath, projPath):
 
     # Write File
     impFile.write_text("word_d\nword_e\nword_f\tword_g word_h word_i\n\n\n")
+
+    # Import File, Cancelled
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: ("", ""))
+        wList.importButton.click()
+        assert wList.listBox.count() == 6
 
     # Import File, OS Error
     with monkeypatch.context() as mp:

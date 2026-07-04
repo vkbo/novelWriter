@@ -53,10 +53,26 @@ def testGuiMainMenu_Slots(qtbot, monkeypatch, nwGUI, projPath):
         assert openUrl.called is True
         assert "manual.pdf" in openUrl.call_args[0][0].url()
 
+    # No Manual Available
+    with monkeypatch.context() as mp:
+        openUrl = MagicMock()
+        mp.setattr(QDesktopServices, "openUrl", openUrl)
+        CONFIG._manuals = {}
+        nwGUI.mainMenu._openUserManualFile()
+        assert openUrl.called is False
+        nwGUI.mainMenu._buildHelpMenu()
+        assert "User Manual (PDF)" not in [a.text() for a in nwGUI.mainMenu.helpMenu.actions()]
+
     # Spell Checking
     assert SHARED.project.data.spellLang is None
     nwGUI.mainMenu._changeSpelling("en")
     assert SHARED.project.data.spellLang == "en"
+
+    # Add Dictionaries Menu Entry
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "osWindows", True)
+        nwGUI.mainMenu._buildToolsMenu()
+        assert "Add Dictionaries" in [a.text() for a in nwGUI.mainMenu.toolsMenu.actions()]
 
 
 @pytest.mark.gui
