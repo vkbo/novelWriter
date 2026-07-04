@@ -486,7 +486,7 @@ class ProjectBuilder:
 
         addNotes = data.get("notes", False)
         for newRoot in data.get("roots", []):
-            if newRoot in nwItemClass:
+            if isinstance(newRoot, nwItemClass):
                 rHandle = project.newRoot(newRoot)
                 if addNotes:
                     aHandle = project.newFile(noteTitles[newRoot], rHandle)

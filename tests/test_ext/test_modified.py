@@ -29,7 +29,6 @@ from PyQt6.QtCore import QEvent, QPoint, QPointF, QSize, Qt
 from PyQt6.QtGui import QFont, QKeyEvent, QMouseEvent, QStandardItem, QStandardItemModel, QWheelEvent
 from PyQt6.QtWidgets import QFontDialog, QWidget
 
-from novelwriter import CONFIG
 from novelwriter.extensions.modified import (
     NClickableLabel,
     NComboBox,
@@ -83,28 +82,21 @@ def testExtModified_NDialog(qtbot, monkeypatch):
 
 
 @pytest.mark.gui
-def testExtModified_NToolDialog(qtbot, monkeypatch, nwGUI):
+def testExtModified_NToolDialog(qtbot, nwGUI):
     """Test the NToolDialog class."""
-    with monkeypatch.context() as mp:
-        mp.setattr(CONFIG, "osDarwin", True)
-        dialog = NToolDialog(nwGUI)
-        qtbot.addWidget(dialog)
-
-    with monkeypatch.context() as mp:
-        mp.setattr(CONFIG, "osWindows", True)
-        dialog.activateDialog()
-        dialog.close()
+    dialog = NToolDialog(nwGUI)
+    qtbot.addWidget(dialog)
+    dialog.activateDialog()
+    dialog.close()
 
 
 @pytest.mark.gui
-def testExtModified_NNonBlockingDialog(qtbot, monkeypatch):
+def testExtModified_NNonBlockingDialog(qtbot):
     """Test the NNonBlockingDialog class."""
     dialog = NNonBlockingDialog()
     qtbot.addWidget(dialog)
-    with monkeypatch.context() as mp:
-        mp.setattr(CONFIG, "osWindows", True)
-        dialog.activateDialog()
-        dialog.close()
+    dialog.activateDialog()
+    dialog.close()
 
 
 def testExtModified_NFontDialog(qtbot, monkeypatch, nwGUI):
