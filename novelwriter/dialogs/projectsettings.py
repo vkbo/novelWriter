@@ -182,6 +182,8 @@ class GuiProjectSettings(NDialog):
             self.mainStack.setCurrentWidget(self.importPage)
         elif pageId == self.PAGE_REPLACE:
             self.mainStack.setCurrentWidget(self.replacePage)
+        else:  # pragma: no cover
+            pass
 
     @pyqtSlot()
     def _doSave(self) -> None:
@@ -416,7 +418,7 @@ class _StatusPage(NFixedPage):
         self.colorButton.clicked.connect(self._onColorSelect)
 
         def buildMenu(menu: QMenu | None, items: dict[nwStatusShape, str]) -> None:
-            if menu is not None:
+            if menu is not None:  # pragma: no branch
                 for shape, label in items.items():
                     icon = NWStatus.createIcon(self._iPx, iColor, shape)
                     action = qtAddAction(menu, trConst(label))
@@ -489,7 +491,7 @@ class _StatusPage(NFixedPage):
         if self._changed:
             update = []
             for n in range(self.listBox.topLevelItemCount()):
-                if item := self.listBox.topLevelItem(n):
+                if item := self.listBox.topLevelItem(n):  # pragma: no branch
                     key = item.data(self.C_DATA, self.D_KEY)
                     entry = item.data(self.C_DATA, self.D_ENTRY)
                     update.append((key, entry))
@@ -618,7 +620,7 @@ class _StatusPage(NFixedPage):
                 with open(path, mode="w", encoding="utf-8") as fo:
                     writer = csv.writer(fo)
                     for n in range(self.listBox.topLevelItemCount()):
-                        if item := self.listBox.topLevelItem(n):
+                        if item := self.listBox.topLevelItem(n):  # pragma: no branch
                             entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
                             writer.writerow([entry.shape.name, entry.color.name(), entry.name])
             except Exception as exc:

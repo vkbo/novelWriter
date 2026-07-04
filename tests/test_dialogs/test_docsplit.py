@@ -95,6 +95,16 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwSplit._loadContent(C.hNovelRoot)
     assert nwSplit.listBox.count() == 0
 
+    # Reloading does nothing if no handle has been set yet
+    nwSplit._data.pop("sHandle", None)
+    nwSplit._reloadList()
+
+    # An invalid saved split level does not preselect an entry
+    SHARED.project.options.setValue("GuiDocSplit", "spLevel", 99)
+    otherSplit = GuiDocSplit(nwGUI, hSplitDoc)
+    qtbot.addWidget(otherSplit)
+    assert otherSplit.splitLevel.currentIndex() == 0
+
     # Test Class Method
     with monkeypatch.context() as mp:
         mp.setattr(GuiDocSplit, "result", lambda *a: QtAccepted)

@@ -134,6 +134,12 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     prefs.keyPressEvent(event)
     assert prefs.isHidden() is True
 
+    # Other keys do not close the dialog
+    prefs.show()
+    event = QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_A, QtModNone)
+    prefs.keyPressEvent(event)
+    assert prefs.isHidden() is False
+
     # qtbot.stop()
 
 
@@ -162,6 +168,10 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.lightTheme.setCurrentIndex(prefs.lightTheme.findData("theme1"))
     prefs.darkTheme.setCurrentIndex(prefs.darkTheme.findData("theme3"))
     with monkeypatch.context() as mp:
+        mp.setattr(NFontDialog, "selectFont", lambda *a, **k: (QFont(), False))
+        prefs.guiFontButton.click()  # Cancelled, so no change
+
+    with monkeypatch.context() as mp:
         mp.setattr(NFontDialog, "selectFont", lambda *a, **k: (QFont(), True))
         prefs.nativeFont.setChecked(True)  # Use OS font dialog
         prefs.guiFontButton.click()
@@ -179,6 +189,10 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.useCharCount is False
 
     # Document Style
+    with monkeypatch.context() as mp:
+        mp.setattr(NFontDialog, "selectFont", lambda *a, **k: (QFont(), False))
+        prefs.textFontButton.click()  # Cancelled, so no change
+
     with monkeypatch.context() as mp:
         mp.setattr(NFontDialog, "selectFont", lambda *a, **k: (QFont(), True))
         prefs.nativeFont.setChecked(False)  # Use Qt font dialog
@@ -212,6 +226,10 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.moveMainWin is True
 
     # Project Backup
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: "")
+        prefs.backupGetPath.click()  # Cancelled, so no change
+
     with monkeypatch.context() as mp:
         mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: str(tstPaths.testDir))
         prefs.backupGetPath.click()
@@ -327,14 +345,26 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
 
     # Quotation Style
     with monkeypatch.context() as mp:
+        mp.setattr(GuiQuoteSelect, "getQuote", lambda *a, **k: (nwUnicode.U_LSAQUO, False))
+        prefs.btnSQuoteOpen.click()  # Cancelled, so no change
+    with monkeypatch.context() as mp:
         mp.setattr(GuiQuoteSelect, "getQuote", lambda *a, **k: (nwUnicode.U_LSAQUO, True))
         prefs.btnSQuoteOpen.click()
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiQuoteSelect, "getQuote", lambda *a, **k: (nwUnicode.U_RSAQUO, False))
+        prefs.btnSQuoteClose.click()  # Cancelled, so no change
     with monkeypatch.context() as mp:
         mp.setattr(GuiQuoteSelect, "getQuote", lambda *a, **k: (nwUnicode.U_RSAQUO, True))
         prefs.btnSQuoteClose.click()
     with monkeypatch.context() as mp:
+        mp.setattr(GuiQuoteSelect, "getQuote", lambda *a, **k: (nwUnicode.U_LAQUO, False))
+        prefs.btnDQuoteOpen.click()  # Cancelled, so no change
+    with monkeypatch.context() as mp:
         mp.setattr(GuiQuoteSelect, "getQuote", lambda *a, **k: (nwUnicode.U_LAQUO, True))
         prefs.btnDQuoteOpen.click()
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiQuoteSelect, "getQuote", lambda *a, **k: (nwUnicode.U_RAQUO, False))
+        prefs.btnDQuoteClose.click()  # Cancelled, so no change
     with monkeypatch.context() as mp:
         mp.setattr(GuiQuoteSelect, "getQuote", lambda *a, **k: (nwUnicode.U_RAQUO, True))
         prefs.btnDQuoteClose.click()
