@@ -1,6 +1,6 @@
 """
 novelWriter – Index Data Class Tester
-====================================
+=====================================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
@@ -96,6 +96,12 @@ def testCoreIndexData_IndexNode(mockGUI):
     assert head1.references["john"] == {"@char"}
     assert head2.references["earth"] == {"@location"}
     assert head2.references["space"] == {"@location"}
+
+    # Unknown headings are silently ignored
+    node.setHeadingCounts("T9999", 1, 1, 1)
+    node.setHeadingComment("T9999", nwComment.SYNOPSIS, "", "Ignored")
+    node.setHeadingTag("T9999", "ignored")
+    node.addHeadingRef("T9999", ["jane"], "@pov")
 
     # Add note keys
     assert node.noteKeys("footnotes") == set()
@@ -288,6 +294,7 @@ def testCoreIndexData_IndexHeadingReferences():
         "@char": [],
         "@location": [],
     }
+    assert head.getReferencesByKeyword("@tag") == []
 
     # Set names
     cache.tags.add("Scene", "Scene", "0000000000000", "T00001", "NOVEL")

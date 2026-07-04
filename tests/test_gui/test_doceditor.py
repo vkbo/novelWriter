@@ -578,6 +578,21 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     # No known position
     assert docEditor._qDocument.spellErrorAtPos(-1) == ("", -1, [])
 
+    # Multiple entries: the first doesn't match, the second does
+    blockPos = cursor.block().position()
+    data._spellErrors = [(0, 5, "Lorem"), (6, 11, "ipsum")]
+    assert docEditor._qDocument.spellErrorAtPos(blockPos + 8) == ("ipsum", 6, [])
+
+    # No entry matches the given position
+    assert docEditor._qDocument.spellErrorAtPos(blockPos + 20) == ("", -1, [])
+
+    # Meta data lookup follows the same pattern
+    data._metaData = [(0, 5, "Lorem", "url"), (6, 11, "ipsum", "url")]
+    assert docEditor._qDocument.metaDataAtPos(blockPos + 8) == ("ipsum", "url")
+    assert docEditor._qDocument.metaDataAtPos(blockPos + 20) == ("", "")
+
+    data._spellErrors = [(0, 5, "Lorem")]
+
     # With Suggestion
     with monkeypatch.context() as mp:
         mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [LORAX])

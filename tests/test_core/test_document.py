@@ -175,6 +175,23 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
         mp.setattr("builtins.open", causeOSError)
         assert NWDocument.quickReadText(contPath, xHandle) == ""
 
+    # A document with more than 10 consecutive meta lines returns the 10th line onwards
+    (contPath / f"{xHandle}.nwd").write_text("".join(f"%%~meta{i}\n" for i in range(15)), encoding="utf-8")
+    assert NWDocument.quickReadText(contPath, xHandle) == "".join(f"%%~meta{i}\n" for i in range(9, 15))
+
+    # A document that is all meta data lines returns just the trailing content
+    doc = NWDocument(project, xHandle)
+    metaOnly = "".join(f"%%~meta{i}\n" for i in range(9)) + "%%~kind: NOVEL/DOCUMENT\nTrailing Text\n"
+    (contPath / f"{xHandle}.nwd").write_text(metaOnly, encoding="utf-8")
+    assert doc.readDocument() == "Trailing Text\n"
+
+    # Malformed meta lines are parsed defensively and otherwise ignored
+    doc._parseMeta("%%~path: onlyonepart\n")
+    doc._parseMeta("%%~path: notahandle/alsonotahandle\n")
+    doc._parseMeta("%%~kind: onlyonepart\n")
+    doc._parseMeta("%%~kind: BADCLASS/BADLAYOUT\n")
+    doc._parseMeta("%%~date: onlyonepart\n")
+
     # Delete Document
     # ===============
 

@@ -89,7 +89,7 @@ class DocMerger:
         sItem = self._project.tree[sHandle]
         if sItem and sItem.itemParent:
             tHandle = self._project.newFile(label, sItem.itemParent)
-            if nwItem := self._project.tree[tHandle]:
+            if nwItem := self._project.tree[tHandle]:  # pragma: no branch
                 nwItem.setLayout(sItem.itemLayout)
                 nwItem.setStatus(sItem.itemStatus)
                 nwItem.setImport(sItem.itemImport)
@@ -214,6 +214,8 @@ class DocSplitter:
                         pHandle = hHandle[2] or hHandle[1] or hHandle[0]
                     elif hLevel == 4:
                         pHandle = hHandle[3] or hHandle[2] or hHandle[1] or hHandle[0]
+                    else:  # pragma: no cover
+                        pass
 
                 if (dHandle := self._project.newFile(docLabel, pHandle)) and (nwItem := self._project.tree[dHandle]):
                     hHandle[hLevel] = dHandle

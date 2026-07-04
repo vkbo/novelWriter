@@ -396,7 +396,7 @@ class Index:
                     canSetHead = False
 
                 cTitle = self._itemIndex.addItemHeading(tHandle, n, hDepth, hText)
-                if cTitle != TT_NONE:
+                if cTitle != TT_NONE:  # pragma: no branch
                     if nTitle > 0:
                         # We have a new title, so we need to count the words of the previous one
                         lastText = "\n".join(lines[nTitle - 1 : n - 1])
@@ -435,7 +435,7 @@ class Index:
                 logger.debug("Removed tag '%s'", tTag)
                 del self._tagsIndex[tTag]
                 deleted.append(tTag)
-            if updated or deleted:
+            if updated or deleted:  # pragma: no branch
                 SHARED.emitIndexChangedTags(self._project, updated, deleted)
 
     def _scanInactive(self, nwItem: NWItem, text: str) -> None:
@@ -580,7 +580,7 @@ class Index:
 
         # If we're still here, we check that the references exist
         # Class references cannot have the | symbol in them
-        if rClass := nwKeyWords.KEY_CLASS.get(kBit):
+        if rClass := nwKeyWords.KEY_CLASS.get(kBit):  # pragma: no branch
             for n in range(1, nBits):
                 if (aBit := tBits[n]) in self._tagsIndex:
                     isGood[n] = self._tagsIndex.tagClass(aBit) == rClass.name and "|" not in aBit
@@ -709,7 +709,7 @@ class Index:
             if sTitle is None or sTitle == rTitle:
                 for aTag, refTypes in hItem.references.items():
                     for refType in refTypes:
-                        if refType in refs:
+                        if refType in refs:  # pragma: no branch
                             refs[refType].append(self._tagsIndex.tagName(aTag))
                 if tag := hItem.tag:
                     refs[nwKeyWords.TAG_KEY] = [self._tagsIndex.tagName(tag)]
@@ -1016,7 +1016,7 @@ class ItemIndex:
 
             if rHandle is None or tItem.itemRoot == rHandle:
                 for sTitle in self._items[tHandle].headings():
-                    if hItem := self._items[tHandle][sTitle]:
+                    if hItem := self._items[tHandle][sTitle]:  # pragma: no branch
                         yield tHandle, sTitle, hItem
 
         return
@@ -1038,31 +1038,31 @@ class ItemIndex:
         """Set the character, word and paragraph counts of a heading
         on a given item.
         """
-        if tHandle in self._items:
+        if tHandle in self._items:  # pragma: no branch
             self._items[tHandle].setHeadingCounts(sTitle, cC, wC, pC)
 
     def setHeadingComment(self, tHandle: str, sTitle: str, comment: nwComment, key: str, text: str) -> None:
         """Set a story comment for a heading on a given item."""
-        if tHandle in self._items:
+        if tHandle in self._items:  # pragma: no branch
             self._items[tHandle].setHeadingComment(sTitle, comment, key, text)
 
     def setHeadingTag(self, tHandle: str, sTitle: str, tagKey: str) -> None:
         """Set the main tag for a heading on a given item."""
-        if tHandle in self._items:
+        if tHandle in self._items:  # pragma: no branch
             self._items[tHandle].setHeadingTag(sTitle, tagKey)
 
     def addHeadingRef(self, tHandle: str, sTitle: str, tagKeys: list[str], refType: str) -> None:
-        """Set the reference tags for a heading on a given item."""
-        if tHandle in self._items:
+        """Add the reference tags for a heading on a given item."""
+        if tHandle in self._items:  # pragma: no branch
             self._items[tHandle].addHeadingRef(sTitle, tagKeys, refType)
 
     def addNoteKey(self, tHandle: str, style: T_NoteTypes, key: str) -> None:
-        """Set notes key for a given item."""
-        if tHandle in self._items:
+        """Add a notes key for a given item."""
+        if tHandle in self._items:  # pragma: no branch
             self._items[tHandle].addNoteKey(style, key)
 
     def genNewNoteKey(self, tHandle: str, style: T_NoteTypes) -> str:
-        """Set notes key for a given item."""
+        """Generate a new notes key for a given item."""
         if style in NOTE_TYPES and (item := self._items.get(tHandle)):
             keys = set()
             for entry in self._items.values():

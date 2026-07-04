@@ -141,6 +141,10 @@ def testCoreStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
     storage._clearLockFile()
     storage.clear()
 
+    # Locking does nothing before the storage is ready
+    unreadyStorage = NWStorage(MockProject())  # type: ignore
+    unreadyStorage.lockSession()
+
     # Open twice, where second should fail due to lockfile
     # Note that locking is only possible after a successful open
     assert storage.initProjectStorage(fncPath) == NWStorageOpen.READY
@@ -291,6 +295,10 @@ def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
         mp.setattr("novelwriter.core.storage.ZipFile.write", causeOSError)
         assert storage.zipIt(zipFile) is False
 
+    # Add a stray file that should not be included
+    strayFile = fncPath / "content" / "not-a-handle.txt"
+    strayFile.write_text("stray")
+
     # Create archive
     assert storage.zipIt(zipFile) is True
 
@@ -303,6 +311,7 @@ def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
         assert f"content/{C.hTitlePage}.nwd" in names
         assert f"content/{C.hChapterDoc}.nwd" in names
         assert f"content/{C.hSceneDoc}.nwd" in names
+        assert "content/not-a-handle.txt" not in names
 
     project.closeProject()
 
@@ -429,7 +438,7 @@ def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
     wordListOld: Path = fncPath / "meta" / "wordlist.txt"
     wordListNew: Path = fncPath / "meta" / nwFiles.DICT_FILE
 
-    wordListOld.write_text(("word_a\nword_b\nword_c\n"), encoding="utf-8")
+    wordListOld.write_text(("word_a\n\nword_b\nword_c\n"), encoding="utf-8")
 
     assert wordListOld.exists() is True
     assert wordListNew.exists() is False
@@ -538,3 +547,11 @@ def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
         "LABEL": [False, 267],
         "LINE": [True, 40],
     }
+
+    # An old options file without a GuiOutline section is converted as-is
+    otherOld = fncPath / "meta" / "otherOptions.json"
+    otherNew = fncPath / "meta" / "otherOptions.new.json"
+    otherOld.write_text(json.dumps({"GuiProjectSettings": {"winWidth": 100}}), encoding="utf-8")
+    legacy._convertOldOptionsFile(otherOld, otherNew)
+    data = json.loads(otherNew.read_text(encoding="utf-8"))
+    assert data["novelWriter.guiOptions"] == {"GuiProjectSettings": {"winWidth": 100}}

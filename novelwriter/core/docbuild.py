@@ -113,9 +113,10 @@ class NWBuildDocument:
     def queueAll(self) -> None:
         """Queue all document as defined by the build settings."""
         self._queue = []
-        filtered = self._build.buildItemFilter(self._project)
+        withRoots = self._build.getBool("text.addNoteHeadings")
+        filtered = self._build.buildItemFilter(self._project, withRoots=withRoots)
         for item in self._project.tree:
-            if filtered.get(item.itemHandle, False):
+            if filtered.get(item.itemHandle, (False, 0))[0]:
                 self._queue.append(item.itemHandle)
 
     def iterBuildPreview(self, newPage: bool) -> Iterable[tuple[int, bool]]:

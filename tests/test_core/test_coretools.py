@@ -21,6 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import re
 import shutil
 import uuid
 
@@ -140,6 +141,12 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
     assert docMerger.writeTargetDoc() is True
     copyfile(saveFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
+
+    # Appending without a comment header
+    countBefore = len(docMerger._text)
+    docMerger.appendText(hSceneOne13, False, "Merge")
+    assert len(docMerger._text) == countBefore + 1
+    assert not docMerger._text[-1].startswith("%")
 
     # Just for debugging
     docMerger.writeTargetDoc()
@@ -302,6 +309,14 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
         assert project.tree[rHandle].itemStatus == C.sFinished  # type: ignore
         assert project.tree[rHandle].itemImport == C.iMain  # type: ignore
 
+    # An invalid parent handle results in no new item being created
+    docSplitter.newParentFolder(C.hInvalid, "Bad Folder")
+    assert docSplitter._parHandle is None
+
+    # An invalid parent handle deeper in the hierarchy results in no documents written
+    docSplitter.setParentItem(C.hInvalid)
+    assert list(docSplitter.writeDocuments(True)) == []
+
     # Check handling of improper initialisation
     docSplitter = DocSplitter(project, C.hInvalid)
     assert docSplitter._srcHandle is None
@@ -313,7 +328,7 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
 
 
 @pytest.mark.core
-def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
+def testCoreTools_DocDuplicator(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
     """Test the DocDuplicator utility."""
     project = NWProject()
     mockRnd.reset()
@@ -470,6 +485,21 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
+    # If duplicating an item fails, later items are still processed
+    with monkeypatch.context() as mp:
+        original = type(project.tree).duplicate
+        state = {"count": 0}
+
+        def flaky(self, handle, pHandle, after):
+            state["count"] += 1
+            return None if state["count"] == 1 else original(self, handle, pHandle, after)
+
+        mp.setattr(type(project.tree), "duplicate", flaky)
+        before = set(project.tree._items.keys())
+        result = list(dup.duplicate([C.hChapterDoc, C.hSceneDoc]))
+        assert len(result) == 1
+        assert result[0] not in before
+
 
 @pytest.mark.core
 def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
@@ -557,6 +587,10 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     search.setCaseSensitive(True)
     assert pruneResult(search.iterSearch(project, "Lorem"), 2) == [(15, 5, "Lorem")]
     search.setCaseSensitive(False)
+
+    # A match with no preceding context text yields nothing
+    search._regEx = re.compile(r"$")
+    assert search.searchText("word ") == ([], False)
 
 
 @pytest.mark.core
@@ -684,6 +718,50 @@ def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths, mockGUI, mockR
 
 
 @pytest.mark.core
+def testCoreTools_ProjectBuilderNoScenesAndRoots(monkeypatch, fncPath, mockGUI, mockRnd):
+    """Create a new project with chapters but no scenes, and check handling
+    of invalid root entries and disabled notes.
+    """
+    monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
+
+    data = {
+        "name": "Test Project C",
+        "author": "Jane Doe",
+        "language": -1,
+        "path": fncPath,
+        "sample": False,
+        "template": None,
+        "chapters": 2,
+        "scenes": 0,
+        "roots": [
+            nwItemClass.PLOT,
+            "not_a_valid_root",
+        ],
+        "notes": False,
+    }
+
+    builder = ProjectBuilder()
+    assert builder.buildProject(data) is True
+
+    project = NWProject()
+    project.openProject(fncPath)
+
+    # Chapters were created, but no scenes underneath them
+    novelRoot = project.tree.findRoot(nwItemClass.NOVEL)
+    assert novelRoot is not None
+    for cHandle in project.tree.subTree(novelRoot):
+        assert project.tree[cHandle].isFileType()  # type: ignore
+
+    # The valid root was created, but no notes since "notes" is False
+    plotRoot = project.tree.findRoot(nwItemClass.PLOT)
+    assert plotRoot is not None
+    assert project.tree.subTree(plotRoot) == []
+
+    # The invalid root entry was ignored (only Novel, Plot, Archive, and Trash exist)
+    assert project.tree.rootClasses() == {nwItemClass.NOVEL, nwItemClass.PLOT, nwItemClass.ARCHIVE, nwItemClass.TRASH}
+
+
+@pytest.mark.core
 def testCoreTools_ProjectBuilderCopyPlain(monkeypatch, caplog, mockGUI, prjLipsum, fncPath):
     """Create a new project copied from existing project."""
     srcPath = prjLipsum / nwFiles.PROJ_FILE
@@ -714,8 +792,13 @@ def testCoreTools_ProjectBuilderCopyPlain(monkeypatch, caplog, mockGUI, prjLipsu
         assert "Could not copy project files." in caplog.text
         dstPath.unlink(missing_ok=True)  # The failed mkdir leaves an empty file
 
+    # Add a stray file that should not be copied
+    strayFile = prjLipsum / "content" / "not-a-handle.txt"
+    strayFile.write_text("stray")
+
     # Copy project properly
     assert builder.buildProject(data) is True
+    assert not (dstPath / "content" / "not-a-handle.txt").exists()
 
     # Check Copy
     # ==========
@@ -862,4 +945,14 @@ def testCoreTools_ProjectBuilderSample(monkeypatch, mockGUI, fncPath, tstPaths):
 
     # Can't create to the same target again
     assert builder.buildProject(data) is False
+
+    # Building without a name or author keeps the sample's own values
+    dataNoNameAuthor = {"path": fncPath / "project2", "sample": True}
+    assert builder.buildProject(dataNoNameAuthor) is True
+
+    sampleProject = NWProject()
+    sampleProject.openProject(fncPath / "project2")
+    assert sampleProject.data.name != ""
+    assert sampleProject.data.author != ""
+
     dstSample.unlink()

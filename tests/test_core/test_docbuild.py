@@ -32,7 +32,7 @@ import pytest
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
-from novelwriter.enum import nwBuildFmt
+from novelwriter.enum import nwBuildFmt, nwItemClass
 from novelwriter.formats.tohtml import ToHtml
 from novelwriter.formats.tomarkdown import ToMarkdown
 from novelwriter.formats.toodt import ToOdt
@@ -94,7 +94,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
 
     assert docBuild._outline is True
 
-    assert len(docBuild) == 22
+    assert len(docBuild) == 19
 
     # Check FODT Build
     # ================
@@ -152,7 +152,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.formats.toodt.ToOdt.doConvert", causeException)
-        assert len(docBuild) == 22
+        assert len(docBuild) == 19
 
         count = 0
         error = []
@@ -197,7 +197,7 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert len(docBuild) == 22
+    assert len(docBuild) == 19
 
     # Check HTML5 Build
     # =================
@@ -252,6 +252,14 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
         assert docBuild.error == "OSError: Mock OSError"
         assert not docFile.is_file()
 
+    # Preserve Tabs
+    # =============
+
+    build.setValue("html.preserveTabs", True)
+    docFile = fncPath / "Lorem Ipsum Tabs.htm"
+    assert all(success for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.HTML))
+    assert docFile.is_file()
+
 
 @pytest.mark.core
 def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
@@ -265,7 +273,7 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert len(docBuild) == 22
+    assert len(docBuild) == 19
 
     # Check Standard Markdown Build
     # =============================
@@ -333,7 +341,7 @@ def testCoreDocBuild_DocX(mockGUI, prjLipsum, fncPath):
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert len(docBuild) == 22
+    assert len(docBuild) == 19
 
     # Check Build
     # ===========
@@ -366,7 +374,7 @@ def testCoreDocBuild_PDF(mockGUI, prjLipsum, fncPath):
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert len(docBuild) == 22
+    assert len(docBuild) == 19
 
     # Check Build
     # ===========
@@ -398,7 +406,7 @@ def testCoreDocBuild_NWD(mockGUI, prjLipsum, fncPath, tstPaths):
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert len(docBuild) == 22
+    assert len(docBuild) == 19
 
     # Check NWD Build
     # ===============
@@ -442,7 +450,7 @@ def testCoreDocBuild_NWD(mockGUI, prjLipsum, fncPath, tstPaths):
 
 
 @pytest.mark.core
-def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
+def testCoreDocBuild_Custom(mockGUI, fncPath: Path, mockRnd):
     """Test custom builds and some error handling."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -452,7 +460,7 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
 
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
-    assert len(docBuild) == 8
+    assert len(docBuild) == 4
 
     # Build a simple text doc
     count = 0
@@ -476,10 +484,10 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
     project.tree._nodes[nHandle] = None  # type: ignore
 
     docBuild.queueAll()
-    assert len(docBuild) == 8
+    assert len(docBuild) == 4
 
     docBuild.addDocument(nHandle)
-    assert len(docBuild) == 9
+    assert len(docBuild) == 5
 
     # Build the doc again with broken items
     count = 0
@@ -496,6 +504,28 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
         "#! New Novel\n\n>> By Jane Doe <<\n\n## New Chapter\n\n### New Scene\n\n"
     )
     docFile.unlink()
+
+    # Direct _doBuild Calls
+    # =====================
+
+    rawObj = ToRaw(project)
+
+    # A handle that isn't a real tree item is a no-op success
+    assert docBuild._doBuild(rawObj, nHandle) is True
+
+    # A folder item is neither root nor file type, and is also a no-op success
+    assert project.tree[C.hChapterDir].isFolderType() is True  # type: ignore
+    assert docBuild._doBuild(rawObj, C.hChapterDir) is True
+
+    # A non-novel-like root item, with counting, outline, and convert all disabled
+    assert project.tree[C.hPlotRoot].itemClass == nwItemClass.PLOT  # type: ignore
+    docBuild._count = False
+    docBuild._outline = False
+    assert docBuild._doBuild(rawObj, C.hPlotRoot, convert=False) is True
+
+    # A file item, with counting, outline, and convert all disabled
+    assert project.tree[C.hSceneDoc].isFileType() is True  # type: ignore
+    assert docBuild._doBuild(rawObj, C.hSceneDoc, convert=False) is True
 
 
 @pytest.mark.core
@@ -514,21 +544,19 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
 
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
-    assert len(docBuild) == 10
+    assert len(docBuild) == 8
 
     # ODT Format
     docFile = fncPath / "Minimal.odt"
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.ODT)) == [
         (0, True),
         (1, True),
-        (2, False),
+        (2, True),
         (3, True),
         (4, True),
         (5, True),
         (6, True),
         (7, True),
-        (8, True),
-        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToOdt)
     assert docFile.is_file()
@@ -539,14 +567,12 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.FODT)) == [
         (0, True),
         (1, True),
-        (2, False),
+        (2, True),
         (3, True),
         (4, True),
         (5, True),
         (6, True),
         (7, True),
-        (8, True),
-        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToOdt)
     assert docFile.read_text(encoding="utf-8").startswith("<?xml")
@@ -557,14 +583,12 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.HTML)) == [
         (0, True),
         (1, True),
-        (2, False),
+        (2, True),
         (3, True),
         (4, True),
         (5, True),
         (6, True),
         (7, True),
-        (8, True),
-        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToHtml)
     assert docFile.read_text(encoding="utf-8").startswith("<!DOCTYPE html>")
@@ -575,14 +599,12 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.J_HTML)) == [
         (0, True),
         (1, True),
-        (2, False),
+        (2, True),
         (3, True),
         (4, True),
         (5, True),
         (6, True),
         (7, True),
-        (8, True),
-        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToHtml)
     data = json.loads(docFile.read_text(encoding="utf-8"))
@@ -595,14 +617,12 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.STD_MD)) == [
         (0, True),
         (1, True),
-        (2, False),
+        (2, True),
         (3, True),
         (4, True),
         (5, True),
         (6, True),
         (7, True),
-        (8, True),
-        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToMarkdown)
     assert docFile.read_text(encoding="utf-8") == (
@@ -627,14 +647,12 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.EXT_MD)) == [
         (0, True),
         (1, True),
-        (2, False),
+        (2, True),
         (3, True),
         (4, True),
         (5, True),
         (6, True),
         (7, True),
-        (8, True),
-        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToMarkdown)
     assert docFile.read_text(encoding="utf-8") == (
@@ -659,14 +677,12 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.NWD)) == [
         (0, True),
         (1, True),
-        (2, False),
+        (2, True),
         (3, True),
         (4, True),
         (5, True),
         (6, True),
         (7, True),
-        (8, True),
-        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToRaw)
     assert docFile.read_text(encoding="utf-8") == (
@@ -688,14 +704,12 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.J_NWD)) == [
         (0, True),
         (1, True),
-        (2, False),
+        (2, True),
         (3, True),
         (4, True),
         (5, True),
         (6, True),
         (7, True),
-        (8, True),
-        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToRaw)
     data = json.loads(docFile.read_text(encoding="utf-8"))
@@ -708,14 +722,12 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.PDF)) == [
         (0, True),
         (1, True),
-        (2, False),
+        (2, True),
         (3, True),
         (4, True),
         (5, True),
         (6, True),
         (7, True),
-        (8, True),
-        (9, False),
     ]
     assert isinstance(docBuild.lastBuild, ToQTextDocument)
     assert docFile.is_file()

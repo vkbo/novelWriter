@@ -193,6 +193,41 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
 
 
 @pytest.mark.core
+def testCoreProject_CreateNewNote(monkeypatch, fncPath, mockGUI, mockRnd):
+    """Check that new notes can be created for a given tag."""
+    project = NWProject()
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+
+    # A NO_CLASS item class does nothing
+    project.createNewNote("jane", nwItemClass.NO_CLASS)
+    assert project.tree.findRoot(nwItemClass.CHARACTER) == C.hCharRoot
+    assert list(project.tree.subTree(C.hCharRoot)) == []
+
+    # A valid class creates the root folder and the note file
+    project.createNewNote("jane", nwItemClass.CHARACTER)
+    noteHandles = project.tree.subTree(C.hCharRoot)
+    assert len(noteHandles) == 1
+    assert project.tree[noteHandles[0]].itemName == "Jane"  # type: ignore
+    assert project.storage.getDocument(noteHandles[0]).readDocument() == "# Jane\n\n@tag: jane\n\n"
+
+    # A class with no existing root folder creates a new one
+    assert project.tree.findRoot(nwItemClass.OBJECT) is None
+    project.createNewNote("gun", nwItemClass.OBJECT)
+    objRoot = project.tree.findRoot(nwItemClass.OBJECT)
+    assert objRoot is not None
+    assert len(project.tree.subTree(objRoot)) == 1
+
+    # If the note file cannot be created, nothing else happens
+    with monkeypatch.context() as mp:
+        mp.setattr(NWProject, "newFile", lambda *a, **k: None)
+        project.createNewNote("mike", nwItemClass.OBJECT)
+    assert len(project.tree.subTree(objRoot)) == 1
+
+    project.closeProject()
+
+
+@pytest.mark.core
 def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     """Test opening a project."""
     project = NWProject()
@@ -283,6 +318,16 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         assert project.openProject(fncPath, clearLock=True) is False
         assert "This project was saved by a newer version" in SHARED.lastAlert[0]
 
+    # Will open a newer version project if the user accepts
+    with monkeypatch.context() as mp:
+        mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: 0x99999999))
+        assert project.openProject(fncPath, clearLock=True) is True
+
+    # If the storage path is unavailable, recent projects are not updated
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.storagePath", property(lambda *a: None))
+        assert project.openProject(fncPath, clearLock=True) is True
+
     # Fail checking items should still pass
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.tree.NWTree.checkConsistency", lambda *a: (1, 0))
@@ -324,6 +369,12 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
     # Save with and without autosave
     assert project.saveProject(autoSave=False) is True
     assert project.saveProject(autoSave=True) is True
+
+    # If the storage path is unavailable, recent projects are not updated
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.storagePath", property(lambda *a: None))
+        assert project.saveProject() is True
+
     project.closeProject()
 
 
@@ -373,6 +424,14 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     assert project.data.language is None
     project.setProjectLang("en_GB")
     assert project.data.language == "en_GB"
+
+    # Setting the same language again does nothing
+    project.setProjectChanged(False)
+    project.setProjectLang("en_GB")
+    assert project.projChanged is False
+
+    # A non-bool value does not change the project changed flag
+    assert project.setProjectChanged("not a bool") is False  # type: ignore
 
     # Language Lookup
     assert project.localLookup(1) == "One"

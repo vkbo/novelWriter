@@ -59,11 +59,19 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
     assert isinstance(model, NovelModel)
     assert model.columns == 3
 
+    # A non-novel root, or an invalid handle, has no novel model
+    assert index.getNovelModel("67a8707f2f249") is None
+    assert index.getNovelModel("0000000000000") is None
+
     index.setNovelModelExtraColumn(nwNovelExtra.POV)
     index.refreshNovelModel("b3643d0f92e32")
     model = index.getNovelModel("b3643d0f92e32")
     assert isinstance(model, NovelModel)
     assert model.columns == 4
+
+    # Refreshing with no handle or an unknown handle does nothing
+    index.refreshNovelModel(None)
+    index.refreshNovelModel("0000000000000")
 
     # Re-index
     notIndexable = {
@@ -414,6 +422,14 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     assert index.scanText(xHandle, "### Hello World!") is True
     assert xItem.mainHeading == "H3"
 
+    # Non-heading lines are skipped, and an invalid (H0) heading is ignored
+    assert index.scanText(xHandle, "Just some text\n#####\n#### Hello World!") is True
+    assert xItem.mainHeading == "H4"
+
+    # A page with no valid heading at all leaves the main heading unchanged
+    assert index.scanText(xHandle, "Just some text\n#####\n") is True
+    assert xItem.mainHeading == "H4"
+
     # Make some usable items
     tHandle = project.newFile("Title", C.hNovelRoot)
     pHandle = project.newFile("Page", C.hNovelRoot)
@@ -448,6 +464,9 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     assert index._tagsIndex.tagClass("Jane") == "CHARACTER"
     assert index.getItemHeading(nHandle, "T0001").title == "Hello World!"  # type: ignore
     assert index._itemIndex[nHandle].noteKeys("footnotes") == {"key"}  # type: ignore
+
+    # A keyword line before any heading has been set is ignored
+    assert index.scanText(pHandle, "@char: Jane\n# Page\n")
 
     # Title Indexing
     # ==============
@@ -1378,6 +1397,20 @@ def testCoreIndex_ItemIndex(nwGUI, fncPath, mockRnd):
     content = itemIndex.packData()
     itemIndex.clear()
     itemIndex.unpackData(content)
+    assert itemIndex.packData() == content
+    itemIndex.clear()
+
+    # Generating a note key fails for an invalid style or handle
+    assert itemIndex.genNewNoteKey(cHandle, "invalid_style") == "err"  # type: ignore
+    assert itemIndex.genNewNoteKey(C.hInvalid, "footnotes") == "err"
+
+    # Entries for handles no longer in the project tree are dropped
+    staleHandle = "0000000000099"
+    assert project.tree[staleHandle] is None
+    withStale = dict(content)
+    withStale[staleHandle] = next(iter(content.values()))
+    itemIndex.unpackData(withStale)
+    assert staleHandle not in itemIndex
     assert itemIndex.packData() == content
     itemIndex.clear()
 

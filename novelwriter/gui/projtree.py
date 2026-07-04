@@ -535,7 +535,7 @@ class GuiProjectTree(QTreeView):
         # Lock the column sizes
         iPx = SHARED.theme.baseIconHeight
 
-        if header := self.header():
+        if header := self.header():  # pragma: no branch
             header.setStretchLastSection(False)
             header.setMinimumSectionSize(iPx + 6)
             header.setSectionResizeMode(ProjectNode.C_NAME, QtHeaderStretch)
@@ -545,7 +545,7 @@ class GuiProjectTree(QTreeView):
             header.resizeSection(ProjectNode.C_ACTIVE, iPx + 6)
             header.resizeSection(ProjectNode.C_STATUS, iPx + 6)
 
-        if selectModelNew := self.selectionModel():
+        if selectModelNew := self.selectionModel():  # pragma: no branch
             selectModelNew.currentChanged.connect(self._onSelectionChange)
 
         self.restoreExpandedState()

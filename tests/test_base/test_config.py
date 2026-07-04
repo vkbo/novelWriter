@@ -438,10 +438,13 @@ def testBaseConfig_RecentCache(monkeypatch, tstPaths, nwGUI):
     ]
 
     # Entries missing a path or a title are skipped
-    cacheFile.write_text(json.dumps({
-        "": {"uuid": "abc", "title": "No Path", "words": 1, "chars": 1, "time": 1},
-        str(pathTwo): {"uuid": "abc", "title": "", "words": 1, "chars": 1, "time": 1},
-    }), encoding="utf-8")
+    cacheFile.write_text(
+        json.dumps({
+            "": {"uuid": "abc", "title": "No Path", "words": 1, "chars": 1, "time": 1},
+            str(pathTwo): {"uuid": "abc", "title": "", "words": 1, "chars": 1, "time": 1},
+        }),
+        encoding="utf-8",
+    )
     assert recent.loadCache() is True
     assert recent.listEntries() == []
 
@@ -505,11 +508,14 @@ def testBaseConfig_RecentPaths(monkeypatch, tstPaths):
     assert recent._data == {}
 
     # Invalid keys and non-string values are skipped
-    cacheFile.write_text(json.dumps({
-        "default": str(tstPaths.cnfDir / "default"),
-        "foobar": str(tstPaths.cnfDir / "foobar"),
-        "project": 1234,
-    }), encoding="utf-8")
+    cacheFile.write_text(
+        json.dumps({
+            "default": str(tstPaths.cnfDir / "default"),
+            "foobar": str(tstPaths.cnfDir / "foobar"),
+            "project": 1234,
+        }),
+        encoding="utf-8",
+    )
     recent._data = {}
     assert recent.loadCache() is True
     assert recent._data == {"default": str(tstPaths.cnfDir / "default")}

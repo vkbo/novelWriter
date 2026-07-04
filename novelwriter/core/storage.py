@@ -495,8 +495,7 @@ class _LegacyStorage:
             logger.info("Converting: %s", wordList)
             with open(wordList, mode="r", encoding="utf-8") as fObj:
                 for line in fObj:
-                    word = line.strip()
-                    if word:
+                    if word := line.strip():
                         userDict.add(word)
 
             # Save dictionary and clean up old file
