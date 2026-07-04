@@ -437,6 +437,8 @@ def numberToRoman(value: int, toLower: bool = False) -> str:
         value -= n * divisor
         if value <= 0:
             break
+    else:  # pragma: no cover
+        pass
 
     return roman.lower() if toLower else roman
 

@@ -403,6 +403,9 @@ def testBaseCommon_formatFileFilter():
         "Stuff (*.stuff);;Text files (*.txt);;All files (*)"
     )
 
+    # Invalid entries are skipped
+    assert formatFileFilter([123, ("Too", "Many", "Items"), "*.txt"]) == "Text files (*.txt)"  # type: ignore
+
 
 @pytest.mark.base
 def testBaseCommon_formatLink():
@@ -544,6 +547,9 @@ def testBaseCommon_formatInt():
     assert formatInt(123456789) == "123\u2009M"
     assert formatInt(1234567890) == "1.23\u2009G"
 
+    # Beyond the largest supported suffix, the raw value is returned
+    assert formatInt(10**22) == str(10**22)
+
     # Exceptions
     assert formatInt(12.3) == "ERR"  # type: ignore
     assert formatInt(None) == "ERR"  # type: ignore
@@ -633,6 +639,7 @@ def testBaseCommon_safeIterDir(fncPath: Path):
 
     assert sorted(safeIterDir(fncPath, alert=True)) == files
     assert list(safeIterDir(None, alert=True)) == []  # type: ignore
+    assert list(safeIterDir(None)) == []  # type: ignore
 
 
 @pytest.mark.base
@@ -643,6 +650,7 @@ def testBaseCommon_safeExists(fncPath: Path):
 
     assert safeExists(file, alert=True) is True
     assert safeExists(None, alert=True) is False  # type: ignore
+    assert safeExists(None) is False  # type: ignore
 
 
 @pytest.mark.base
@@ -653,6 +661,7 @@ def testBaseCommon_safeIsFile(fncPath: Path):
 
     assert safeIsFile(file, alert=True) is True
     assert safeIsFile(None, alert=True) is False  # type: ignore
+    assert safeIsFile(None) is False  # type: ignore
 
 
 @pytest.mark.base
@@ -663,6 +672,7 @@ def testBaseCommon_safeIsDir(fncPath: Path):
 
     assert safeIsDir(folder, alert=True) is True
     assert safeIsDir(None, alert=True) is False  # type: ignore
+    assert safeIsDir(None) is False  # type: ignore
 
 
 @pytest.mark.base
@@ -812,6 +822,11 @@ def testBaseCommon_xmlIndent():
     data = "foobar"
     xmlIndent(data)  # type: ignore
     assert data == "foobar"
+
+    # An element with no children has no child indentation applied
+    xEmpty = ET.fromstring("<xml />")
+    xmlIndent(xEmpty)
+    assert ET.tostring(xEmpty) == b"<xml />\n"
 
 
 @pytest.mark.base

@@ -31,6 +31,7 @@ from shutil import copyfile
 import pytest
 
 from PyQt6.QtCore import QRect
+from PyQt6.QtGui import QFontDatabase
 
 from novelwriter import CONFIG
 from novelwriter.config import Config, RecentPaths, RecentProjects
@@ -149,6 +150,14 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
     assert newConf.lightTheme == "foo"
     assert newConf.darkTheme == "bar"
 
+    # If the data path doesn't materialise as a folder, sub-folders are skipped
+    with monkeypatch.context() as mp:
+        freshDataPath = fncPath / "freshdata"
+        origIsDir = Path.is_dir
+        mp.setattr(Path, "is_dir", lambda self: False if self == freshDataPath else origIsDir(self))
+        conf.initConfig(confPath=fncPath, dataPath=freshDataPath)
+        assert not (freshDataPath / "cache").exists()
+
     # Test Correcting Quote Settings
     conf.fmtDQuoteOpen = '"'
     conf.fmtDQuoteClose = '"'
@@ -242,6 +251,14 @@ def testBaseConfig_Methods(fncPath):
     tmpStuff.rmdir()
     assert conf.lastPath("project") == Path.home().absolute()
 
+    # Invalid type does nothing
+    conf.setLastPath("project", None)  # type: ignore
+    assert conf.lastPath("project") == Path.home().absolute()
+
+    # A path where neither it nor its parent exist does nothing
+    conf.setLastPath("project", fncPath / "missing" / "deeper" / "file.txt")
+    assert conf.lastPath("project") == Path.home().absolute()
+
     # Backup Path
     assert conf.backupPath() == conf._backPath
     conf.setBackupPath(fncPath)
@@ -254,6 +271,28 @@ def testBaseConfig_Methods(fncPath):
     assert CONFIG.lastAuthor == ""
     CONFIG.setLastAuthor(" Jane    Doe  ")
     assert CONFIG.lastAuthor == "Jane Doe"
+
+
+@pytest.mark.base
+def testBaseConfig_Fonts(monkeypatch, fncPath):
+    """Check the OS-specific default font selection."""
+    conf = Config()
+    conf.initConfig(confPath=fncPath, dataPath=fncPath)
+
+    with monkeypatch.context() as mp:
+        mp.setattr(conf, "osWindows", True)
+        mp.setattr(QFontDatabase, "families", lambda *a: ["Arial"])
+        conf.setGuiFont(None)
+        assert conf.guiFont.family() == "Arial"
+
+        conf.setTextFont(None)
+        assert conf.textFont.family() == "Arial"
+
+    with monkeypatch.context() as mp:
+        mp.setattr(conf, "osDarwin", True)
+        mp.setattr(QFontDatabase, "families", lambda *a: ["Helvetica"])
+        conf.setTextFont(None)
+        assert conf.textFont.family() == "Helvetica"
 
 
 @pytest.mark.base
@@ -398,6 +437,18 @@ def testBaseConfig_RecentCache(monkeypatch, tstPaths, nwGUI):
         (str(pathOne), "Proj One", 100, 1600002000),
     ]
 
+    # Entries missing a path or a title are skipped
+    cacheFile.write_text(json.dumps({
+        "": {"uuid": "abc", "title": "No Path", "words": 1, "chars": 1, "time": 1},
+        str(pathTwo): {"uuid": "abc", "title": "", "words": 1, "chars": 1, "time": 1},
+    }), encoding="utf-8")
+    assert recent.loadCache() is True
+    assert recent.listEntries() == []
+
+    # Entries without a UUID are not mapped
+    recent._setEntry("", str(pathOne), "No UUID", 10, 0, 0)
+    assert recent._map.get("") is None
+
 
 @pytest.mark.base
 def testBaseConfig_RecentPaths(monkeypatch, tstPaths):
@@ -447,6 +498,22 @@ def testBaseConfig_RecentPaths(monkeypatch, tstPaths):
     recent.loadCache()
     assert recent._data == expected
 
+    # A non-dict cache file is ignored
+    cacheFile.write_text(json.dumps(["not", "a", "dict"]), encoding="utf-8")
+    recent._data = {}
+    assert recent.loadCache() is True
+    assert recent._data == {}
+
+    # Invalid keys and non-string values are skipped
+    cacheFile.write_text(json.dumps({
+        "default": str(tstPaths.cnfDir / "default"),
+        "foobar": str(tstPaths.cnfDir / "foobar"),
+        "project": 1234,
+    }), encoding="utf-8")
+    recent._data = {}
+    assert recent.loadCache() is True
+    assert recent._data == {"default": str(tstPaths.cnfDir / "default")}
+
     # Check error handling
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
@@ -461,6 +528,13 @@ def testBaseConfig_IOError(monkeypatch):
         mp.setattr(Path, "iterdir", causeOSError)
         config = Config()  # Loading manuals will fail if not handled
         assert config.listLanguages(config.LANG_NW) == [("en_GB", "British English")]
+
+    # No assets folder found
+    with monkeypatch.context() as mp:
+        origIsDir = Path.is_dir
+        mp.setattr(Path, "is_dir", lambda self: False if self.name == "assets" else origIsDir(self))
+        config = Config()
+        assert config._manuals == {}
 
     with monkeypatch.context() as mp:
         config = Config()
