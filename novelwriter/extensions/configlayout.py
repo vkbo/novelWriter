@@ -141,14 +141,14 @@ class NScrollableForm(QScrollArea):
         """Scroll to the requested section identifier."""
         if identifier in self._sections:
             yPos = self._sections[identifier].pos().y() - 8
-            if vBar := self.verticalScrollBar():
+            if vBar := self.verticalScrollBar():  # pragma: no branch
                 vBar.setValue(yPos)
 
     def scrollToLabel(self, label: str) -> None:
         """Scroll to the requested label."""
         if label in self._index:
             yPos = self._index[label].pos().y() - 8
-            if vBar := self.verticalScrollBar():
+            if vBar := self.verticalScrollBar():  # pragma: no branch
                 vBar.setValue(yPos)
 
     def addGroupLabel(self, label: str, identifier: int | None = None) -> None:
@@ -314,6 +314,8 @@ class NColorLabel(QLabel):
                 palette.setColor(QPalette.ColorRole.WindowText, self._faded)
             case nwState.ERROR:
                 palette.setColor(QPalette.ColorRole.WindowText, self._error)
+            case _:  # pragma: no cover
+                pass
         self.setPalette(palette)
 
 

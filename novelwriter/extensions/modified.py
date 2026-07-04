@@ -117,7 +117,7 @@ class NFontDialog(QFontDialog):
         super().__init__(initial, parent)
 
         # Look for the button box and replace the buttons
-        if dlgBox := self.findChild(QDialogButtonBox):
+        if dlgBox := self.findChild(QDialogButtonBox):  # pragma: no branch
             self.btnOk = SHARED.theme.getStandardButton(nwStandardButton.OK, self)
             self.btnOk.clicked.connect(self.accept)
 

@@ -29,6 +29,7 @@ from PyQt6.QtCore import QEvent, QPoint, QPointF, QSize, Qt
 from PyQt6.QtGui import QFont, QKeyEvent, QMouseEvent, QStandardItem, QStandardItemModel, QWheelEvent
 from PyQt6.QtWidgets import QFontDialog, QWidget
 
+from novelwriter import CONFIG
 from novelwriter.extensions.modified import (
     NClickableLabel,
     NComboBox,
@@ -37,7 +38,9 @@ from novelwriter.extensions.modified import (
     NFontDialog,
     NIconToggleButton,
     NIconToolButton,
+    NNonBlockingDialog,
     NSpinBox,
+    NToolDialog,
     NTreeView,
 )
 from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
@@ -77,6 +80,31 @@ def testExtModified_NDialog(qtbot, monkeypatch):
     with qtbot.waitSignal(dialog.rejected, timeout=1000):
         dialog.keyPressEvent(QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModNone))
         assert dialog.result() == QtRejected
+
+
+@pytest.mark.gui
+def testExtModified_NToolDialog(qtbot, monkeypatch, nwGUI):
+    """Test the NToolDialog class."""
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "osDarwin", True)
+        dialog = NToolDialog(nwGUI)
+        qtbot.addWidget(dialog)
+
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "osWindows", True)
+        dialog.activateDialog()
+        dialog.close()
+
+
+@pytest.mark.gui
+def testExtModified_NNonBlockingDialog(qtbot, monkeypatch):
+    """Test the NNonBlockingDialog class."""
+    dialog = NNonBlockingDialog()
+    qtbot.addWidget(dialog)
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "osWindows", True)
+        dialog.activateDialog()
+        dialog.close()
 
 
 def testExtModified_NFontDialog(qtbot, monkeypatch, nwGUI):
@@ -127,6 +155,21 @@ def testExtModified_NTreeView(qtbot, monkeypatch):
     event = QMouseEvent(QEvent.Type.MouseButtonPress, position, QtMouseMiddle, QtMouseMiddle, QtModNone)
     with qtbot.waitSignal(widget.middleClicked):
         widget.mousePressEvent(event)
+
+    # A non-middle click does not emit the signal
+    leftEvent = QMouseEvent(
+        QEvent.Type.MouseButtonPress, position, Qt.MouseButton.LeftButton, Qt.MouseButton.LeftButton, QtModNone
+    )
+    received = []
+    widget.middleClicked.connect(lambda idx: received.append(idx))
+    widget.mousePressEvent(leftEvent)
+    assert received == []
+
+    # A middle click on an invalid position does not emit the signal
+    invalidPos = QPointF(-10, -10)
+    invalidEvent = QMouseEvent(QEvent.Type.MouseButtonPress, invalidPos, QtMouseMiddle, QtMouseMiddle, QtModNone)
+    widget.mousePressEvent(invalidEvent)
+    assert received == []
 
     # qtbot.stop()
 
@@ -220,6 +263,15 @@ def testExtModified_NClickableLabel(qtbot):
 
     with qtbot.waitSignal(widget.mouseClicked):
         widget.mousePressEvent(event)
+
+    # A non-left click does not emit the signal
+    received = []
+    widget.mouseClicked.connect(lambda: received.append(True))
+    rightEvent = QMouseEvent(
+        QEvent.Type.MouseButtonPress, position, Qt.MouseButton.RightButton, Qt.MouseButton.RightButton, QtModNone
+    )
+    widget.mousePressEvent(rightEvent)
+    assert received == []
 
 
 @pytest.mark.gui
