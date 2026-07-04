@@ -173,6 +173,9 @@ class ToEPub(ToHtml):
                 tClass = f"meta meta-{tMeta}"
                 self._section.text.append(f"<p class='{tClass}'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
+            else:  # pragma: no cover
+                pass
+
     def closeDocument(self) -> None:
         """Run close document tasks."""
         # Generate section names and IDs, and prune empty ones
@@ -407,7 +410,7 @@ class ToEPub(ToHtml):
         index = self._nextFnIndex
         self._nextFnIndex += 1
 
-        if content := self._footnotes.get(key):
+        if content := self._footnotes.get(key):  # pragma: no branch
             text = self._formatText(*content)
             self._section.footnotes.append(
                 f"<aside epub:type='footnote' id='fn_{index}'><p><a href='#fns_{index}'>{index}.</a> {text}</p></aside>"

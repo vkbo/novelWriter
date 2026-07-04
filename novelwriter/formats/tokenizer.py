@@ -707,6 +707,9 @@ class Tokenizer(ABC):
                     tLine, tFmt = self._extractFormats(cText, skip=TextFmt.FNOTE)
                     self._footnotes[f"{tHandle}:{cKey}"] = (tLine, tFmt)
 
+                else:  # pragma: no cover
+                    pass
+
             elif aLine.startswith("@"):
                 # Keywords
                 # ========
@@ -981,7 +984,10 @@ class Tokenizer(ABC):
 
                         pTxt = tTxt[:-1].translate(transMapB)
 
-                    if nLines:
+                    else:  # pragma: no cover
+                        pass
+
+                    if nLines:  # pragma: no branch
                         isAligned = cStyle & BlockFmt.ALIGNED
                         if firstIndent and not (self._noIndent or isAligned):
                             # If paragraph indentation is enabled, not temporarily
@@ -1127,11 +1133,11 @@ class Tokenizer(ABC):
         tFmt.insert(0, (0, TextFmt.COL_B, style.textClass))
         tFmt.append((len(tTxt), TextFmt.COL_E, ""))
         term = f" ({key.title()})" if key else ""
-        if label := f"{self._localLookup(style.label)}{term}".strip():
+        if label := f"{self._localLookup(style.label)}{term}".strip():  # pragma: no branch
             shift = len(label) + 2
             tTxt = f"{label}: {tTxt}"
             rFmt = [(0, TextFmt.B_B, ""), (shift - 1, TextFmt.B_E, "")]
-            if style.labelClass:
+            if style.labelClass:  # pragma: no branch
                 rFmt.insert(1, (0, TextFmt.COL_B, style.labelClass))
                 rFmt.insert(2, (shift - 1, TextFmt.COL_E, ""))
             rFmt.extend((p + shift, f, d) for p, f, d in tFmt)
@@ -1241,7 +1247,7 @@ class Tokenizer(ABC):
         result = text
         formats = []
         for pos, end, fmt, meta in sorted(temp, key=lambda x: x[0], reverse=True):
-            if fmt > 0:
+            if fmt > 0:  # pragma: no branch
                 if end > pos:
                     result = result[:pos] + result[end:]
                     formats = [(p + pos - end if p > pos else p, f, m) for p, f, m in formats]

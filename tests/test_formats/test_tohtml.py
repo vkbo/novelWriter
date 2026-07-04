@@ -408,7 +408,11 @@ def testFmtToHtml_Footnotes(mockGUI):
     html._isNovel = True
     html._isFirst = True
 
-    html._text = "Text with one[footnote:fa] or two[footnote:fb] footnotes.\n\n%footnote.fa: Footnote text A.\n\n"
+    html._text = (
+        "Text with one[footnote:fa] or two[footnote:fb] footnotes.\n\n"
+        "%footnote.fa: Footnote text A.[footnote:fc]\n\n"
+        "%footnote.fc: This nested footnote is skipped.\n\n"
+    )
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == (
@@ -419,7 +423,25 @@ def testFmtToHtml_Footnotes(mockGUI):
     assert html._pages[-2] == (
         "<p>Text with one<sup><a href='#footnote_1'>1</a></sup> or two<sup>ERR</sup> footnotes.</p>\n"
     )
+    # The nested footnote reference is stripped, not rendered
     assert html._pages[-1] == ("<h3>Footnotes</h3>\n<ol>\n<li id='footnote_1'><p>Footnote text A.</p></li>\n</ol>\n")
+
+
+@pytest.mark.core
+def testFmtToHtml_Fields(mockGUI):
+    """Test field substitution in the ToHtml class."""
+    project = NWProject()
+    html = ToHtml(project)
+    html.initDocument()
+
+    html._text = "Word Count: [field:allWords], Unknown: [field:unknownField]\n"
+    html.tokenizeText()
+    html.doConvert()
+    html.countStats()
+    html.closeDocument()
+
+    # The known field is substituted, the unknown one is left untouched
+    assert html._pages[-1] == "<p>Word Count: 4, Unknown: {{unknownField}}</p>\n"
 
 
 @pytest.mark.core

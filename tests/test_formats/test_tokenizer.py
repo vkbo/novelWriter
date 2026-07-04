@@ -248,6 +248,17 @@ def testFmtToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
         BlockFmt.CENTRE | BlockFmt.PBB,
     )
 
+    # A novel-like root has no "Notes:" prefix on the title
+    tokens.addRootHeading(C.hNovelRoot)
+    assert tokens._raw[-1] == "#! Novel\n\n"
+    assert tokens._blocks[-1] == (
+        BlockTyp.TITLE,
+        "0000000000008:T0001",
+        "Novel",
+        [],
+        BlockFmt.CENTRE | BlockFmt.PBB,
+    )
+
     # Set Text
     tokens.setText("stuff")
     assert tokens._text == ""
@@ -1821,6 +1832,36 @@ def testFmtToken_Dialogue(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToken_DialogueDisabled(monkeypatch, mockGUI):
+    """The dialogue parser is disabled when no dialogue settings are
+    active, even if highlighting is otherwise turned on.
+    """
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "dialogStyle", 0)
+        mp.setattr(CONFIG, "dialogLine", "")
+        mp.setattr(CONFIG, "narratorDialog", "")
+        mp.setattr(CONFIG, "altDialogOpen", "")
+        mp.setattr(CONFIG, "altDialogClose", "")
+
+        project = NWProject()
+        tokens = BareTokenizer(project)
+        tokens.setDialogHighlight(True)
+        tokens._handle = TMH
+        tokens._isNovel = True
+        tokens._text = "Text with “dialogue” that is not highlighted.\n"
+        tokens.tokenizeText()
+        assert tokens._blocks == [
+            (
+                BlockTyp.TEXT,
+                "",
+                "Text with “dialogue” that is not highlighted.",
+                [],
+                BlockFmt.NONE,
+            )
+        ]
+
+
+@pytest.mark.core
 def testFmtToken_SpecialFormat(mockGUI):
     """Test the tokenization of special formats in the Tokenizer class."""
     project = NWProject()
@@ -2281,6 +2322,18 @@ def testFmtToken_FormatMeta(mockGUI):
             (18, TextFmt.ARF_B, "#tag_john"),
             (22, TextFmt.ARF_E, ""),
             (22, TextFmt.COL_E, ""),
+        ],
+    )
+
+    # A keyword with no values only produces the label
+    assert tokens._formatMeta("@char:") == (
+        "@char",
+        "Characters: ",
+        [
+            (0, TextFmt.B_B, ""),
+            (0, TextFmt.COL_B, "keyword"),
+            (11, TextFmt.COL_E, ""),
+            (11, TextFmt.B_E, ""),
         ],
     )
 
@@ -3019,3 +3072,18 @@ def testFmtToken_HeadingFormatter(fncPath, mockGUI, mockRnd):
     # Uppercase Headings
     formatter.setUppercase(True)
     assert formatter.apply(nwHeadFmt.TITLE, "Chapter One", 0) == "CHAPTER ONE"
+
+
+@pytest.mark.core
+def testFmtToken_FirstPageAllEmpty(mockGUI):
+    """A first page consisting only of blank lines has no non-empty
+    block to strip a leading page break from.
+    """
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens._handle = TMH
+    tokens._isFirst = True
+    tokens._text = "\n\n\n"
+    tokens.tokenizeText()
+    assert tokens._blocks == []
+    assert tokens._isFirst is False
