@@ -110,11 +110,11 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor._autoReplace._padChar == nwUnicode.U_NBSP
     assert docEditor.docHeader.itemTitle.text() == (
         "<font style='color: #ff303030'>"
-        "<a href='#ff3030300000008' style='color: #ff303030; text-decoration: none'>Novel</a>"
+        "<a href='#0000000000008' style='color: #ff303030; text-decoration: none'>Novel</a>"
         "  \u203a  "
-        "<a href='#ff303030000000d' style='color: #ff303030; text-decoration: none'>New Folder</a>"
+        "<a href='#000000000000d' style='color: #ff303030; text-decoration: none'>New Folder</a>"
         "  \u203a  "
-        "<a href='#ff303030000000f' style='color: #ff303030; text-decoration: none'>New Scene</a>"
+        "<a href='#000000000000f' style='color: #ff303030; text-decoration: none'>New Scene</a>"
         "</font>"
     )
     assert docEditor.docHeader._docOutline == {0: "### New Scene"}
@@ -141,7 +141,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor._autoReplace._padChar == nwUnicode.U_THNBSP
     assert docEditor.docHeader.itemTitle.text() == (
         "<font style='color: #ff303030'>"
-        "<a href='#ff303030000000f' style='color: #ff303030; text-decoration: none'>New Scene</a>"
+        "<a href='#000000000000f' style='color: #ff303030; text-decoration: none'>New Scene</a>"
         "</font>"
     )
 

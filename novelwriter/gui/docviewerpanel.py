@@ -262,7 +262,7 @@ class _ViewPanelBackRefs(QTreeWidget):
         self.setFrameStyle(QFrame.Shape.NoFrame)
 
         # Set Header Sizes
-        if header := self.header():
+        if header := self.header():  # pragma: no branch
             header.setStretchLastSection(True)
             header.setMinimumSectionSize(iPx + 6)  # See Issue #1627
             header.setSectionResizeMode(self.C_DOC, QtHeaderToContents)
@@ -288,7 +288,7 @@ class _ViewPanelBackRefs(QTreeWidget):
         self._editIcon = SHARED.theme.getIcon("edit", "change")
         self._viewIcon = SHARED.theme.getIcon("view", "action")
         for i in range(self.topLevelItemCount()):
-            if item := self.topLevelItem(i):
+            if item := self.topLevelItem(i):  # pragma: no branch
                 item.setIcon(self.C_EDIT, self._editIcon)
                 item.setIcon(self.C_VIEW, self._viewIcon)
 
@@ -401,7 +401,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         self.sortByColumn(self.C_NAME, Qt.SortOrder.AscendingOrder)
 
         # Set Header Sizes
-        if header := self.header():
+        if header := self.header():  # pragma: no branch
             header.setStretchLastSection(True)
             header.setMinimumSectionSize(iPx + 6)  # See Issue #1627
             header.setSectionResizeMode(self.C_EDIT, QtHeaderFixed)

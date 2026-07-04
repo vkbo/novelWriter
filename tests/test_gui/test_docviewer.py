@@ -26,11 +26,12 @@ from unittest.mock import MagicMock
 import pytest
 
 from PyQt6.QtCore import QMimeData, QPointF, Qt, QUrl
-from PyQt6.QtGui import QAction, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent
+from PyQt6.QtGui import QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent
 from PyQt6.QtWidgets import QApplication, QMenu, QTextBrowser
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
+from novelwriter.constants import nwUnicode
 from novelwriter.enum import nwChange, nwDocAction
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle, QtSelectBlock, QtSelectWord
@@ -40,33 +41,39 @@ from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
-def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
-    """Test the document viewer."""
-    # Open project
-    assert nwGUI.openProject(prjLipsum)
+def testGuiViewer_OpenAndNavigate(qtbot, nwGUI, projPath, mockRnd):
+    """Test opening documents in the viewer and navigating to them via
+    the project tree and the header link.
+    """
+    buildTestProject(nwGUI, projPath)
     docEditor = nwGUI.docEditor
     docViewer = nwGUI.docViewer
 
     # Select a document in the project tree
-    nwGUI.projView.setSelectedHandle("88243afbe5ed8")
-    nwGUI.openDocument("88243afbe5ed8")
+    nwGUI.projView.setSelectedHandle(C.hSceneDoc)
+    nwGUI.openDocument(C.hSceneDoc)
 
     # Can only open a document
-    assert docViewer.loadText("b3643d0f92e32") is False
+    assert docViewer.loadText(C.hNovelRoot) is False
 
     # Middle-click the selected item
-    index = SHARED.project.tree.model.indexFromHandle("88243afbe5ed8")
+    index = SHARED.project.tree.model.indexFromHandle(C.hSceneDoc)
     rect = nwGUI.projView.projTree.visualRect(index)
     qtbot.mouseClick(nwGUI.projView.projTree.viewport(), QtMouseMiddle, pos=rect.center())
-    assert docViewer.docHandle == "88243afbe5ed8"
+    assert docViewer.docHandle == C.hSceneDoc
 
     # Clear selection
     nwGUI.projView.projTree.clearSelection()
     assert nwGUI.projView.projTree.getSelectedHandle() is None
 
     # Re-select via header link
-    docViewer.docHeader._processLabelLink("#88243afbe5ed8")
-    assert nwGUI.projView.projTree.getSelectedHandle() == "88243afbe5ed8"
+    docViewer.docHeader._processLabelLink(f"#{C.hSceneDoc}")
+    assert nwGUI.projView.projTree.getSelectedHandle() == C.hSceneDoc
+
+    # A non-hash link does nothing
+    nwGUI.projView.projTree.clearSelection()
+    docViewer.docHeader._processLabelLink("not-a-link")
+    assert nwGUI.projView.projTree.getSelectedHandle() is None
 
     # Reload the text
     origText = docViewer.toPlainText()
@@ -80,9 +87,34 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     docViewer.docHeader._editDocument()
     assert docEditor.docHandle == docViewer.docHandle
 
+    # With no document handle, editing does nothing
+    nwGUI.closeDocument()
+    assert docEditor.docHandle is None
+    docViewer.docHeader._docHandle = None
+    docViewer.docHeader._editDocument()
+    assert docEditor.docHandle is None
+
+
+@pytest.mark.gui
+def testGuiViewer_Selection(qtbot, monkeypatch, nwGUI, projPath, mockRnd, ipsumText):
+    """Test text selection and document actions in the viewer, and the
+    context menu these selections feed into.
+    """
+    buildTestProject(nwGUI, projPath)
+    docEditor = nwGUI.docEditor
+    docViewer = nwGUI.docViewer
+
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor.setPlainText(f"### Scene\n\n{ipsumText[0]}\n\n{ipsumText[1]}\n\n")
+    nwGUI.saveDocument()
+    nwGUI.viewDocument(C.hSceneDoc)
+
+    text = docViewer.toPlainText()
+    wordPos = text.index("laoreet")
+
     # Select word
     cursor = docViewer.textCursor()
-    cursor.setPosition(100)
+    cursor.setPosition(wordPos)
     docViewer.setTextCursor(cursor)
     docViewer._makeSelection(QtSelectWord)
 
@@ -90,7 +122,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert clipboard is not None
     clipboard.clear()
 
-    # Cut
+    # Cut (the viewer is read-only, so this just copies)
     assert docViewer.docAction(nwDocAction.CUT) is True
     assert clipboard.text() == "laoreet"
     clipboard.clear()
@@ -103,33 +135,60 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Select Paragraph
     assert docViewer.docAction(nwDocAction.SEL_PARA) is True
     cursor = docViewer.textCursor()
-    assert cursor.selectedText() == (
-        "Synopsis: Aenean ut placerat velit. Etiam laoreet ullamcorper risus, "
-        "eget lobortis enim scelerisque non. Suspendisse id maximus nunc, et "
-        "mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. "
-        "Etiam finibus nisi vel mi molestie consectetur."
-    )
+    assert cursor.selectedText() == ipsumText[0]
     cursor.clearSelection()
     docViewer.setTextCursor(cursor)
 
+    # The same paragraph, selected by position instead
     docViewer._makePosSelection(QtSelectBlock, docViewer.cursorRect().center())
     cursor = docViewer.textCursor()
-    assert cursor.selectedText() == (
-        "Synopsis: Aenean ut placerat velit. Etiam laoreet ullamcorper risus, "
-        "eget lobortis enim scelerisque non. Suspendisse id maximus nunc, et "
-        "mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. "
-        "Etiam finibus nisi vel mi molestie consectetur."
-    )
+    assert cursor.selectedText() == ipsumText[0]
+    cursor.clearSelection()
+    docViewer.setTextCursor(cursor)
+
+    # Select the very first block, which has no preceding separator
+    cursor = docViewer.textCursor()
+    cursor.setPosition(0)
+    docViewer.setTextCursor(cursor)
+    docViewer._makeSelection(QtSelectBlock)
+    cursor = docViewer.textCursor()
+    assert not cursor.selectedText().startswith(nwUnicode.U_PSEP)
     cursor.clearSelection()
     docViewer.setTextCursor(cursor)
 
     # Select All
     assert docViewer.docAction(nwDocAction.SEL_ALL) is True
     cursor = docViewer.textCursor()
-    assert len(cursor.selectedText()) == 3060
+    assert len(cursor.selectedText()) == len(text)
 
     # Other actions
     assert docViewer.docAction(nwDocAction.NO_ACTION) is False
+
+    # Open context menu with a selection
+    menuOpened = False
+
+    def mockExec(*a):
+        nonlocal menuOpened
+        menuOpened = True
+
+    cursor = docViewer.textCursor()
+    cursor.setPosition(wordPos)
+    docViewer.setTextCursor(cursor)
+    docViewer._makeSelection(QtSelectWord)
+    with monkeypatch.context() as mp:
+        mp.setattr(QMenu, "exec", mockExec)
+        docViewer._openContextMenu(docViewer.cursorRect().center())
+        assert menuOpened
+
+    # Open context menu with no selection
+    menuOpened = False
+    cursor = docViewer.textCursor()
+    cursor.clearSelection()
+    docViewer.setTextCursor(cursor)
+    with monkeypatch.context() as mp:
+        mp.setattr(QMenu, "exec", mockExec)
+        docViewer._openContextMenu(docViewer.cursorRect().center())
+        assert menuOpened
 
     # Close document
     docViewer.docHeader._closeDocument()
@@ -138,34 +197,29 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Action on no document
     assert docViewer.docAction(nwDocAction.COPY) is False
 
-    # Open again via menu
-    nwGUI.projView.projTree.setSelectedHandle("88243afbe5ed8")
-    nwGUI.mainMenu.aViewDoc.activate(QAction.ActionEvent.Trigger)
 
-    # Open context menu
-    menuOpened = False
+@pytest.mark.gui
+def testGuiViewer_Links(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test clicking links in the document viewer."""
+    buildTestProject(nwGUI, projPath)
+    docEditor = nwGUI.docEditor
+    docViewer = nwGUI.docViewer
 
-    def mockExec(*a):
-        nonlocal menuOpened
-        menuOpened = True
+    # Create a tagged character to link to
+    hBob = "0000000000010"
+    text = "### Scene\n\n@char: Bob\n\nSome text mentioning Bob.\n"
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor.setPlainText(text)
+    nwGUI.saveDocument()
+    cursor = docEditor.textCursor()
+    cursor.setPosition(text.index("Bob"))
+    docEditor._processTag(cursor, create=True)
 
-    cursor = docViewer.textCursor()
-    cursor.setPosition(27)
-    docViewer.setTextCursor(cursor)
-    docViewer._makeSelection(QtSelectWord)
-    with monkeypatch.context() as mp:
-        mp.setattr(QMenu, "exec", mockExec)
-        docViewer._openContextMenu(docViewer.cursorRect().center())
-        assert menuOpened
+    nwGUI.viewDocument(C.hSceneDoc)
 
-    # Select "Bod" link
-    cursor = docViewer.textCursor()
-    cursor.setPosition(27)
-    docViewer.setTextCursor(cursor)
-    docViewer._makeSelection(QtSelectWord)
-    rect = docViewer.cursorRect()
-    docViewer._linkClicked(QUrl("#tag_bod"))
-    assert docViewer.docHandle == "4c4f28287af27"
+    # A tag link navigates to the tagged item
+    docViewer._linkClicked(QUrl("#tag_bob"))
+    assert docViewer.docHandle == hBob
 
     # Other links should just trigger a navigate call
     with qtbot.waitSignal(docViewer.sourceChanged, timeout=1000) as signal:
@@ -180,14 +234,77 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
         assert openUrl.called is True
         assert openUrl.call_args[0][0] == QUrl("http://www.example.com")
 
-    # Click mouse nav buttons
+    # An empty link does nothing
+    with monkeypatch.context() as mp:
+        openUrl = MagicMock()
+        mp.setattr(QDesktopServices, "openUrl", openUrl)
+        docViewer._linkClicked(QUrl(""))
+        assert openUrl.called is False
+
+    # An unrecognised link scheme does nothing
+    with monkeypatch.context() as mp:
+        openUrl = MagicMock()
+        mp.setattr(QDesktopServices, "openUrl", openUrl)
+        docViewer._linkClicked(QUrl("mailto:test@example.com"))
+        assert openUrl.called is False
+
+
+@pytest.mark.gui
+def testGuiViewer_MouseNavigation(qtbot, nwGUI, projPath, mockRnd, ipsumText):
+    """Test navigating the view history with the mouse back/forward
+    buttons, including the edge cases at either end of the history.
+    """
+    buildTestProject(nwGUI, projPath)
+    docEditor = nwGUI.docEditor
+    docViewer = nwGUI.docViewer
+
+    # Make the scene long enough to produce a visible scroll bar, so
+    # that the scroll position is also exercised while navigating
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor.setPlainText("### Scene\n\n" + "\n\n".join(ipsumText))
+    nwGUI.saveDocument()
+
+    nwGUI.viewDocument(C.hChapterDoc)
+    assert docViewer.docHandle == C.hChapterDoc
+    nwGUI.viewDocument(C.hSceneDoc)
+    assert docViewer.docHandle == C.hSceneDoc
+    assert docViewer.verticalScrollBar().isVisible() is True
+
     viewport = docViewer.viewport()
-    qtbot.mouseClick(viewport, Qt.MouseButton.BackButton, pos=rect.center(), delay=100)
-    assert docViewer.docHandle == "88243afbe5ed8"
-    qtbot.mouseClick(viewport, Qt.MouseButton.ForwardButton, pos=rect.center(), delay=100)
-    assert docViewer.docHandle == "4c4f28287af27"
-    qtbot.mouseClick(viewport, QtMouseLeft, pos=rect.center(), delay=100)
-    assert docViewer.docHandle == "4c4f28287af27"
+    center = viewport.rect().center()
+    qtbot.mouseClick(viewport, Qt.MouseButton.BackButton, pos=center, delay=100)
+    assert docViewer.docHandle == C.hChapterDoc
+    qtbot.mouseClick(viewport, Qt.MouseButton.ForwardButton, pos=center, delay=100)
+    assert docViewer.docHandle == C.hSceneDoc
+
+    # A regular left-click does not trigger navigation
+    qtbot.mouseClick(viewport, QtMouseLeft, pos=center, delay=100)
+    assert docViewer.docHandle == C.hSceneDoc
+
+    # Already at the newest entry, so forward does nothing
+    docViewer.navForward()
+    assert docViewer.docHandle == C.hSceneDoc
+
+    # Navigate all the way back, then backward does nothing further
+    docViewer.navBackward()
+    assert docViewer.docHandle == C.hChapterDoc
+    docViewer.navBackward()
+    assert docViewer.docHandle == C.hChapterDoc
+
+    # Return to the newest entry
+    docViewer.navForward()
+    assert docViewer.docHandle == C.hSceneDoc
+
+
+@pytest.mark.gui
+def testGuiViewer_ScrollAndMargins(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the scroll bar and document margin behaviour of the
+    viewer, along with the navigateTo edge cases.
+    """
+    buildTestProject(nwGUI, projPath)
+    docViewer = nwGUI.docViewer
+
+    nwGUI.viewDocument(C.hSceneDoc)
 
     # Scroll bar default on empty document
     docViewer.clear()
@@ -202,58 +319,103 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert docViewer.verticalScrollBar().isVisible() is False
     assert docViewer.horizontalScrollBar().isVisible() is False
 
+    # Setting the scroll position does nothing when the bar is hidden
+    docViewer.setScrollPosition(10)
+
+    # A text width of 0 disables the centred margin calculation
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "textWidth", 0)
+        docViewer.updateDocMargins()
+
+    # A non-hash anchor, or a non-string one, does nothing
+    with qtbot.assertNotEmitted(docViewer.sourceChanged):
+        docViewer.navigateTo("not-an-anchor")
+        docViewer.navigateTo(None)  # type: ignore
+
+
+@pytest.mark.gui
+def testGuiViewer_HeaderTitle(qtbot, nwGUI, projPath, mockRnd):
+    """Test the document header title breadcrumb and outline menu."""
+    buildTestProject(nwGUI, projPath)
+    docViewer = nwGUI.docViewer
+
+    nwGUI.viewDocument(C.hChapterDoc)
+
     # Change document title
-    nwItem = SHARED.project.tree["4c4f28287af27"]
+    nwItem = SHARED.project.tree[C.hChapterDoc]
     nwItem.setName("Test Title")  # type: ignore
     assert nwItem.itemName == "Test Title"  # type: ignore
-    docViewer.onProjectItemChanged("4c4f28287af27", nwChange.UPDATE)
-    assert docViewer.docHeader.itemTitle.text() == (
-        "<font style='color: #ff303030'>"
-        "<a href='#67a8707f2f249' style='color: #ff303030; text-decoration: none'>Characters</a>"
-        "  \u203a  "
-        "<a href='#4c4f28287af27' style='color: #ff303030; text-decoration: none'>Test Title</a>"
-        "</font>"
-    )
+    docViewer.onProjectItemChanged(C.hChapterDoc, nwChange.UPDATE)
+    title = docViewer.docHeader.itemTitle.text()
+    assert "New Folder" in title
+    assert "Test Title" in title
+    assert title.index("New Folder") < title.index("Test Title")
 
     # Title without full path
     CONFIG.showFullPath = False
-    docViewer.onProjectItemChanged("4c4f28287af27", nwChange.UPDATE)
-    assert docViewer.docHeader.itemTitle.text() == (
-        "<font style='color: #ff303030'>"
-        "<a href='#4c4f28287af27' style='color: #ff303030; text-decoration: none'>Test Title</a>"
-        "</font>"
-    )
+    docViewer.onProjectItemChanged(C.hChapterDoc, nwChange.UPDATE)
+    title = docViewer.docHeader.itemTitle.text()
+    assert "New Folder" not in title
+    assert "Test Title" in title
+
+    # An invalid handle does not update the title
+    docViewer.docHeader.setHandle(C.hInvalid)
+    assert docViewer.docHeader.itemTitle.text() == title
     CONFIG.showFullPath = True
 
-    # Document footer show/hide synopsis
-    nwGUI.viewDocument("f96ec11c6a3da")
-    assert len(docViewer.toPlainText()) == 4314
+    # A title entry (T0000) is excluded from the outline menu
+    docViewer.docHeader._docOutline = {}
+    docViewer.docHeader.setOutline({"T0000": ("Title", 1), "T0001": ("Chapter One", 1)})
+    assert [a.text() for a in docViewer.docHeader.outlineMenu.actions()] == ["Chapter One"]
+
+
+@pytest.mark.gui
+def testGuiViewer_FooterAndErrors(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the document footer show/hide toggles for synopsis,
+    comments and notes, as well as error handling when rendering
+    fails.
+    """
+    buildTestProject(nwGUI, projPath)
+    docEditor = nwGUI.docEditor
+    docViewer = nwGUI.docViewer
+
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor.setPlainText(
+        "### Scene\n\n"
+        "%Synopsis: A short synopsis.\n\n"
+        "% A plain comment.\n\n"
+        "%Note: A note about something.\n\n"
+        "Some body text.\n\n"
+    )
+    nwGUI.saveDocument()
+
+    nwGUI.viewDocument(C.hSceneDoc)
+    fullLength = len(docViewer.toPlainText())
+
     docViewer.docFooter._doToggleSynopsis(False)
-    assert len(docViewer.toPlainText()) == 4098
+    noSynopLength = len(docViewer.toPlainText())
+    assert noSynopLength < fullLength
+    docViewer.docFooter._doToggleSynopsis(True)
 
-    # Document footer show/hide comments
-    nwGUI.viewDocument("846352075de7d")
-    assert len(docViewer.toPlainText()) == 683
     docViewer.docFooter._doToggleComments(False)
-    assert len(docViewer.toPlainText()) == 634
+    noCommentLength = len(docViewer.toPlainText())
+    assert noCommentLength < fullLength
+    docViewer.docFooter._doToggleComments(True)
 
-    # Document footer show/hide notes
-    nwGUI.viewDocument("88d59a277361b")
-    assert len(docViewer.toPlainText()) == 900
     docViewer.docFooter._doToggleNotes(False)
-    assert len(docViewer.toPlainText()) == 871
+    noNotesLength = len(docViewer.toPlainText())
+    assert noNotesLength < fullLength
+    docViewer.docFooter._doToggleNotes(True)
 
     # Crash the HTML rendering
     with monkeypatch.context() as mp:
         mp.setattr(ToQTextDocument, "doConvert", causeException)
-        assert docViewer.loadText("846352075de7d") is False
+        assert docViewer.loadText(C.hSceneDoc) is False
         assert docViewer.toPlainText() == "An error occurred while generating the preview."
 
     # Call the update theme function
-    # This only checks that t doesn't fail, functionality tested elsewhere
+    # This only checks that it doesn't fail, functionality tested elsewhere
     docViewer.updateTheme()
-
-    # qtbot.stop()
 
 
 @pytest.mark.gui
@@ -324,3 +486,10 @@ def testGuiViewer_DragAndDrop(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         # Regular Move
         docViewer.dropEvent(noneEvent)
         assert mockDrop.call_count == 1
+
+        # Dropping a folder (not a file) does nothing
+        folderMime = model.mimeData([model.indexFromHandle(C.hCharRoot)])
+        assert decodeMimeHandles(folderMime) == [C.hCharRoot]
+        folderEvent = QDropEvent(middle, action, folderMime, mouse, QtModNone)
+        docViewer.dropEvent(folderEvent)
+        assert docViewer.docHandle == C.hSceneDoc

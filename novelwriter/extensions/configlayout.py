@@ -322,28 +322,27 @@ class NColorLabel(QLabel):
 class NPathColorLabel(NColorLabel):
     """Extension: A Coloured Label for Paths."""
 
-    _text = ""
+    _crumbs: list[tuple[str, str]] | None = None
 
     def setText(self, value: str | list[tuple[str, str]]) -> None:
         """Set the text or a clickable crumb-trail of links."""
         if isinstance(value, str):
-            self._text = ""
+            self._crumbs = None
             super().setText(value)
         else:
-            self._text = "<font style='color: #000000'>{inner}</font>".format(
-                inner=f"  {nwUnicode.U_RSAQUO}  ".join(
-                    reversed([
-                        f"<a href='#{h}' style='color: #000000; text-decoration: none'>{n}</a>" for h, n in value
-                    ])
-                )
-            )
+            self._crumbs = value
             self._refreshTextColor()
 
     def _refreshTextColor(self) -> None:
         """Refresh the colour of the text on the label."""
         super()._refreshTextColor()
-        color = self.palette().windowText().color().name(QtHexArgb)
-        super().setText(self._text.replace("#000000", color))
+        if self._crumbs is not None:
+            color = self.palette().windowText().color().name(QtHexArgb)
+            style = f"color: {color}; text-decoration: none"
+            inner = f"  {nwUnicode.U_RSAQUO}  ".join(
+                reversed([f"<a href='#{h}' style='{style}'>{n}</a>" for h, n in self._crumbs])
+            )
+            super().setText(f"<font style='color: {color}'>{inner}</font>")
 
 
 class NWrappedWidgetBox(QHBoxLayout):
