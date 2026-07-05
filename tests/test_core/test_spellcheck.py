@@ -193,3 +193,41 @@ def testCoreSpell_Enchant(monkeypatch, mockGUI, fncPath):
         mp.setattr("enchant.Broker.request_dict", lambda *a: None)
         spChk.setLanguage("en_US")
         assert isinstance(spChk._enchant, FakeEnchant)
+
+
+@pytest.mark.core
+def testCoreSpell_Cache(monkeypatch, mockGUI, fncPath):
+    """Test the spell checker word cache."""
+    project = NWProject()
+    buildTestProject(project, fncPath)
+
+    spChk = NWSpellEnchant(project)
+    spChk.setLanguage("en_US")
+    assert spChk._cache == {}
+
+    # Checked words should be cached with their result
+    assert spChk.checkWord("word") is True
+    assert spChk.checkWord("wrod") is False
+    assert spChk._cache == {"word": True, "wrod": False}
+
+    # Cached results should be returned without calling enchant,
+    # which we check by swapping in FakeEnchant, which always says True
+    spChk._enchant = FakeEnchant()
+    assert spChk.checkWord("wrod") is False  # Cached result
+    assert spChk.checkWord("wrodd") is True  # New word, hits FakeEnchant
+    assert spChk._cache == {"word": True, "wrod": False, "wrodd": True}
+
+    # When the cache is full, it should be cleared before the next add
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.spellcheck.MAX_CACHE_SIZE", 2)
+        assert spChk.checkWord("stuff") is True
+        assert spChk._cache == {"stuff": True}
+
+    # Adding a word to the dictionary should also add it to the cache
+    spChk.addWord("zpqxy", save=False)
+    assert spChk._cache == {"stuff": True, "zpqxy": True}
+    assert spChk.checkWord("zpqxy") is True
+
+    # Changing the language should clear the cache
+    spChk.setLanguage("en_US")
+    assert spChk._cache == {}
