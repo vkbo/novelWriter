@@ -775,6 +775,33 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     assert docEditor._suppressed is False
     assert len(docEditor._spellSelections) == 1
 
+    # Background Spell Pass
+    # =====================
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.gui.doceditor.SPELL_PASS_CHUNK", 2)
+
+        # The pass starts with the visible blocks checked
+        docEditor._beginSpellPass()
+        assert docEditor._spellPassNo == 0
+        assert docEditor._timerSpellPass.isActive()
+
+        # The first chunk should leave the pass incomplete
+        docEditor._runSpellPass()
+        assert docEditor._spellPassNo == 2
+        assert docEditor._timerSpellPass.isActive()
+
+        # Running the remaining chunks should end the pass
+        while docEditor._spellPassNo >= 0:
+            docEditor._runSpellPass()
+        assert not docEditor._timerSpellPass.isActive()
+
+        # A full spell check requests a notification when it ends
+        docEditor.spellCheckDocument()
+        assert docEditor._spellPassNotify is True
+        while docEditor._spellPassNo >= 0:
+            docEditor._runSpellPass()
+        assert docEditor._spellPassNotify is False
+
     # qtbot.stop()
 
 

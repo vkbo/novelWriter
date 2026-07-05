@@ -149,6 +149,9 @@ class _SelectAction(Enum):
     MOVE_AFTER = 3
 
 
+SPELL_PASS_CHUNK = 100
+
+
 class _TagAction(IntFlag):
     NONE = 0b00
     FOLLOW = 0b01
@@ -175,12 +178,15 @@ class GuiDocEditor(QPlainTextEdit):
         "_nwItem",
         "_qDocument",
         "_spellFormat",
+        "_spellPassNo",
+        "_spellPassNotify",
         "_spellSelections",
         "_suppressed",
         "_timerDoc",
         "_timerSel",
         "_timerSpell",
         "_timerSpellCheck",
+        "_timerSpellPass",
         "_trActions",
         "_trAddWord",
         "_trCopy",
@@ -253,6 +259,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._spellSelections: list[QTextEdit.ExtraSelection] = []
         self._dirtySpell: dict[int, QTextBlock] = {}
         self._suppressed = False
+        self._spellPassNo = -1
+        self._spellPassNotify = False
 
         # Context Menu Translation
         self._trSetName = self.tr("Set as Document Name")
@@ -370,6 +378,11 @@ class GuiDocEditor(QPlainTextEdit):
         self._timerSpellCheck.setSingleShot(True)
         self._timerSpellCheck.setInterval(300)
 
+        # Set Up Background Spell Check Pass
+        self._timerSpellPass = QTimer(self)
+        self._timerSpellPass.timeout.connect(self._runSpellPass)
+        self._timerSpellPass.setInterval(0)
+
         # Install Event Filter for Mouse Wheel
         self.wheelEventFilter = WheelEventFilter(self)
         self.installEventFilter(self.wheelEventFilter)
@@ -438,6 +451,8 @@ class GuiDocEditor(QPlainTextEdit):
         self.docToolBar.setVisible(False)
         self._timerSpell.stop()
         self._timerSpellCheck.stop()
+        self._timerSpellPass.stop()
+        self._spellPassNo = -1
         self._dirtySpell.clear()
         self._spellSelections.clear()
         self.setExtraSelections([])
@@ -544,7 +559,7 @@ class GuiDocEditor(QPlainTextEdit):
         # which makes it read only.
         if self._docHandle:
             self._qDocument.syntaxHighlighter.rehighlight()
-            self._spellCheckAll()
+            self._beginSpellPass()
             self.docHeader.setHandle(self._docHandle)
         else:
             self.clearEditor()
@@ -579,7 +594,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._allowAutoReplace(False)
         self._qDocument.setTextContent(text, tHandle)
         self._allowAutoReplace(True)
-        self._spellCheckAll()
+        self._beginSpellPass()
         QApplication.processEvents()
 
         self._lastEdit = time()
@@ -848,13 +863,9 @@ class GuiDocEditor(QPlainTextEdit):
         """Spell check the entire document, and update the status of the
         currently loaded text.
         """
-        start = time()
         logger.debug("Running spell checker")
-        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        self._spellCheckAll()
-        QApplication.restoreOverrideCursor()
-        logger.debug("Document spell checked in %.3f ms", 1000 * (time() - start))
-        SHARED.newStatusMessage(self.tr("Spell check complete"))
+        self._beginSpellPass()
+        self._spellPassNotify = self._spellPassNo >= 0
 
     ##
     #  General Class Methods
@@ -1379,6 +1390,30 @@ class GuiDocEditor(QPlainTextEdit):
                 data.spellCheck()
         self._dirtySpell.clear()
         self._updateSpellSelections()
+
+    @pyqtSlot()
+    def _runSpellPass(self) -> None:
+        """Process a chunk of the background document spell check. The
+        position is tracked by block number, which may drift when the
+        document is edited during the pass, but modified blocks are
+        covered by the debounced spell check anyway.
+        """
+        block = self._qDocument.findBlockByNumber(self._spellPassNo)
+        count = 0
+        while block.isValid() and count < SPELL_PASS_CHUNK:
+            if isinstance(data := block.userData(), TextBlockData):
+                data.spellCheck()
+            block = block.next()
+            count += 1
+        if block.isValid():
+            self._spellPassNo += count
+        else:
+            self._timerSpellPass.stop()
+            self._spellPassNo = -1
+            self._updateSpellSelections()
+            if self._spellPassNotify:
+                self._spellPassNotify = False
+                SHARED.newStatusMessage(self.tr("Spell check complete"))
 
     @pyqtSlot(int, int, str)
     def _insertCompletion(self, pos: int, length: int, text: str) -> None:
@@ -2528,18 +2563,27 @@ class GuiDocEditor(QPlainTextEdit):
         selections.extend(self._spellSelections)
         self.setExtraSelections(selections)
 
-    def _spellCheckAll(self) -> None:
-        """Spell check all text blocks and update the underlines. If
-        spell checking is disabled, only the underlines are updated.
+    def _beginSpellPass(self) -> None:
+        """Spell check the visible blocks, and start a chunked check of
+        the entire document in the background. If spell checking is
+        disabled, only the underlines are updated.
         """
         self._timerSpellCheck.stop()
+        self._timerSpellPass.stop()
         self._dirtySpell.clear()
+        self._spellPassNo = -1
         if SHARED.project.data.spellCheck:
-            block = self._qDocument.begin()
-            while block.isValid():
-                if isinstance(data := block.userData(), TextBlockData):
-                    data.spellCheck()
-                block = block.next()
+            if viewport := self.viewport():  # pragma: no branch
+                # Check the visible blocks first so that their result
+                # is available immediately
+                last = self.cursorForPosition(viewport.rect().bottomLeft()).blockNumber()
+                block = self.firstVisibleBlock()
+                while block.isValid() and block.blockNumber() <= last:
+                    if isinstance(data := block.userData(), TextBlockData):
+                        data.spellCheck()
+                    block = block.next()
+            self._spellPassNo = 0
+            self._timerSpellPass.start()
         self._updateSpellSelections()
 
     def _completerToCursor(self) -> None:
