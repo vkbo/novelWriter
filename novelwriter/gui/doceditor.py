@@ -1386,7 +1386,7 @@ class GuiDocEditor(QPlainTextEdit):
     def _runSpellCheck(self) -> None:
         """Spell check the text blocks that have been modified."""
         for block in self._dirtySpell.values():
-            if block.isValid() and isinstance(data := block.userData(), TextBlockData):
+            if block.isValid() and isinstance(data := block.userData(), TextBlockData):  # pragma: no branch
                 data.spellCheck()
         self._dirtySpell.clear()
         self._updateSpellSelections()

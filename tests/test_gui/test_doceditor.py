@@ -608,6 +608,11 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     monkeypatch.setattr(QMenu, "setParent", lambda *a: None)
 
     buildTestProject(nwGUI, projPath)
+
+    # The test must not depend on which dictionaries are available on
+    # the host system, so all words are accepted from the start
+    monkeypatch.setattr(SHARED.spelling, "checkWord", lambda *a: True)
+
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
 
