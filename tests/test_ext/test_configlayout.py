@@ -1,6 +1,6 @@
 """
 novelWriter – ConfigLayout Extension Tester
-============================================
+===========================================
 
 This file is a part of novelWriter
 Copyright (C) 2026 Veronica Berglyd Olsen and novelWriter contributors

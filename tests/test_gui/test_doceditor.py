@@ -2282,13 +2282,11 @@ def testGuiEditor_InternalSlotEdgeCases(qtbot, nwGUI, projPath, mockRnd):
     # A content change at an invalid document position is ignored
     docEditor._docChange(-1, 0, 1)
 
-    # With line highlighting off, the cursor moved slot doesn't set up
-    # an extra selection
+    # With line highlighting off, the cursor moved slot doesn't set up an extra selection
     CONFIG.lineHighlight = False
     docEditor._cursorMoved()
 
-    # Mime data insertion with no source, or a source with no text, is
-    # a no-op
+    # Mime data insertion with no source, or a source with no text, is a no-op
     text = docEditor.getText()
     docEditor.insertFromMimeData(None)
     assert docEditor.getText() == text

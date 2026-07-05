@@ -180,8 +180,7 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
     manus._updateBuildsList()  # Restore the list from the underlying collection
     assert manus.buildList.count() == 2
 
-    # An item whose build ID isn't in the collection is treated as no
-    # selection
+    # An item whose build ID isn't in the collection is treated as no selection
     bogus = QListWidgetItem()
     bogus.setData(GuiManuscript.D_KEY, "0000000000000")
     manus.buildList.insertItem(0, bogus)
