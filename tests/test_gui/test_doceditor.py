@@ -38,6 +38,7 @@ from PyQt6.QtGui import (
     QInputMethodEvent,
     QMouseEvent,
     QTextBlock,
+    QTextCharFormat,
     QTextCursor,
     QTextDocument,
     QTextOption,
@@ -669,6 +670,23 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     assert docEditor._qDocument.metaDataAtPos(blockPos + 20) == ("", "")
 
     data._spellErrors = [(0, 5, "Lorem")]
+
+    # The spell error should be rendered as an extra selection
+    docEditor._updateSpellSelections()
+    spellSel = [
+        s
+        for s in docEditor.extraSelections()
+        if s.format.underlineStyle() == QTextCharFormat.UnderlineStyle.SpellCheckUnderline
+    ]
+    assert len(spellSel) == 1
+    assert spellSel[0].cursor.selectionStart() == blockPos
+    assert spellSel[0].cursor.selectionEnd() == blockPos + 5
+
+    # With spell check disabled, the selections should be cleared
+    SHARED.project.data.setSpellCheck(False)
+    docEditor._updateSpellSelections()
+    assert docEditor._spellSelections == []
+    SHARED.project.data.setSpellCheck(True)
 
     # With Suggestion
     with monkeypatch.context() as mp:

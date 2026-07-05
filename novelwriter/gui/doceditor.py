@@ -57,6 +57,7 @@ from PyQt6.QtGui import (
     QResizeEvent,
     QShortcut,
     QTextBlock,
+    QTextCharFormat,
     QTextCursor,
     QTextDocument,
     QTextFormat,
@@ -96,7 +97,7 @@ from novelwriter.enum import (
 from novelwriter.extensions.configlayout import NPathColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
-from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
+from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE, TextBlockData
 from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.text.counting import standardCounter
@@ -172,8 +173,11 @@ class GuiDocEditor(QPlainTextEdit):
         "_nwDocument",
         "_nwItem",
         "_qDocument",
+        "_spellFormat",
+        "_spellSelections",
         "_timerDoc",
         "_timerSel",
+        "_timerSpell",
         "_trActions",
         "_trAddWord",
         "_trCopy",
@@ -242,6 +246,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._doReplace = False  # Switch to temporarily disable auto-replace
         self._lineColor = QtTransparent
         self._selection = QTextEdit.ExtraSelection()
+        self._spellFormat = QTextCharFormat()
+        self._spellSelections: list[QTextEdit.ExtraSelection] = []
 
         # Context Menu Translation
         self._trSetName = self.tr("Set as Document Name")
@@ -345,6 +351,15 @@ class GuiDocEditor(QPlainTextEdit):
         self._wCounterSel.setAutoDelete(False)
         self._wCounterSel.signals.countsReady.connect(self._updateSelCounts)
 
+        # Set Up Spell Underline Refresh
+        self._timerSpell = QTimer(self)
+        self._timerSpell.timeout.connect(self._updateSpellSelections)
+        self._timerSpell.setSingleShot(True)
+        self._timerSpell.setInterval(0)
+
+        if vBar := self.verticalScrollBar():  # pragma: no branch
+            vBar.valueChanged.connect(qtLambda(self._timerSpell.start))
+
         # Install Event Filter for Mouse Wheel
         self.wheelEventFilter = WheelEventFilter(self)
         self.installEventFilter(self.wheelEventFilter)
@@ -411,6 +426,8 @@ class GuiDocEditor(QPlainTextEdit):
         self.docHeader.clearHeader()
         self.docFooter.setHandle(self._docHandle)
         self.docToolBar.setVisible(False)
+        self._timerSpell.stop()
+        self._spellSelections.clear()
         self.setExtraSelections([])
 
         self.itemHandleChanged.emit("")
@@ -446,6 +463,10 @@ class GuiDocEditor(QPlainTextEdit):
         self._lineColor = syntax.line
         self._selection.format.setBackground(self._lineColor)
         self._selection.format.setProperty(QTextFormat.Property.FullWidthSelection, True)
+
+        self._spellFormat = QTextCharFormat()
+        self._spellFormat.setUnderlineColor(syntax.spell)
+        self._spellFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
 
     def initEditor(self) -> None:
         """Initialise or re-initialise the editor with the user's
@@ -502,6 +523,7 @@ class GuiDocEditor(QPlainTextEdit):
         # Refresh sizes
         self.setTabStopDistance(CONFIG.tabWidth)
         self.setCursorWidth(CONFIG.cursorWidth)
+        self._spellSelections.clear()
         self.setExtraSelections([])
         self._cursorMoved()
 
@@ -816,6 +838,7 @@ class GuiDocEditor(QPlainTextEdit):
         logger.debug("Running spell checker")
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self._qDocument.syntaxHighlighter.rehighlight()
+        self._updateSpellSelections()
         QApplication.restoreOverrideCursor()
         logger.debug("Document highlighted in %.3f ms", 1000 * (time() - start))
         SHARED.newStatusMessage(self.tr("Spell check complete"))
@@ -1163,6 +1186,7 @@ class GuiDocEditor(QPlainTextEdit):
         has its margins adjusted according to user preferences.
         """
         self.updateDocMargins()
+        self._timerSpell.start()
         super().resizeEvent(event)
 
     def inputMethodEvent(self, event: QInputMethodEvent) -> None:
@@ -1260,6 +1284,8 @@ class GuiDocEditor(QPlainTextEdit):
         if not self._timerDoc.isActive():
             self._timerDoc.start()
 
+        self._timerSpell.start()
+
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
 
@@ -1289,7 +1315,29 @@ class GuiDocEditor(QPlainTextEdit):
         if CONFIG.lineHighlight:
             self._selection.cursor = self.textCursor()
             self._selection.cursor.clearSelection()
-            self.setExtraSelections([self._selection])
+            self._applyExtraSelections()
+
+    @pyqtSlot()
+    def _updateSpellSelections(self) -> None:
+        """Rebuild the spell error underlines for all visible blocks."""
+        selections = []
+        if SHARED.project.data.spellCheck and (viewport := self.viewport()):
+            last = self.cursorForPosition(viewport.rect().bottomLeft()).blockNumber()
+            block = self.firstVisibleBlock()
+            while block.isValid() and block.blockNumber() <= last:
+                if isinstance(data := block.userData(), TextBlockData):
+                    position = block.position()
+                    for start, end, _ in data.spellErrors:
+                        cursor = QTextCursor(self._qDocument)
+                        cursor.setPosition(position + start)
+                        cursor.setPosition(position + end, QtKeepAnchor)
+                        selection = QTextEdit.ExtraSelection()
+                        selection.format = self._spellFormat
+                        selection.cursor = cursor
+                        selections.append(selection)
+                block = block.next()
+        self._spellSelections = selections
+        self._applyExtraSelections()
 
     @pyqtSlot(int, int, str)
     def _insertCompletion(self, pos: int, length: int, text: str) -> None:
@@ -2428,6 +2476,16 @@ class GuiDocEditor(QPlainTextEdit):
     ##
     #  Internal Functions
     ##
+
+    def _applyExtraSelections(self) -> None:
+        """Set the editor's extra selections from the line highlight
+        and the cached spell error underlines.
+        """
+        selections = []
+        if CONFIG.lineHighlight:
+            selections.append(self._selection)
+        selections.extend(self._spellSelections)
+        self.setExtraSelections(selections)
 
     def _completerToCursor(self) -> None:
         """Make sure the completer menu is positioned by the cursor."""

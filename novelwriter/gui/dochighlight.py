@@ -61,7 +61,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         "_isNovel",
         "_minRules",
         "_spellCheck",
-        "_spellErr",
         "_tHandle",
         "_txtRules",
     )
@@ -75,7 +74,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._isNovel = False
         self._isInactive = False
         self._spellCheck = False
-        self._spellErr = QTextCharFormat()
 
         self._hStyles: dict[str, QTextCharFormat] = {}
         self._minRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
@@ -133,11 +131,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._addCharFormat("value", syntax.val, fmtCodes)
         self._addCharFormat("optional", syntax.opt)
         self._addCharFormat("invalid", None, "err")
-
-        # Cache Spell Error Format
-        self._spellErr = QTextCharFormat()
-        self._spellErr.setUnderlineColor(syntax.spell)
-        self._spellErr.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
 
         self._txtRules.clear()
         self._cmnRules.clear()
@@ -463,11 +456,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         data.processText(text, offset, utf16Map)
         if self._spellCheck:
-            for pos, end, _ in data.spellCheck():
-                for x in range(pos, end):
-                    cFmt = self.format(x)
-                    cFmt.merge(self._spellErr)
-                    self.setFormat(x, 1, cFmt)
+            # The result is cached and rendered by the editor
+            data.spellCheck()
 
         return
 

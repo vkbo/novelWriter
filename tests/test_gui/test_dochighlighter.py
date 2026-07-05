@@ -526,7 +526,6 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
     colHidden = theme.syntaxTheme.hidden.getRgb()
     colEmph = theme.syntaxTheme.emph.getRgb()
     colLink = theme.syntaxTheme.link.getRgb()
-    colSpell = theme.syntaxTheme.spell.getRgb()
     colCode = theme.syntaxTheme.code.getRgb()
     colDialogue = theme.syntaxTheme.dialN.getRgb()
     colAltDialogue = theme.syntaxTheme.dialA.getRgb()
@@ -538,45 +537,32 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
 
     pieces, formats = getFragments(syntax)
     assert pieces == [
-        (0, 0, 4, "Text"),
         (0, 5, 2, "**"),
         (0, 7, 4, "bold"),
         (0, 11, 2, "**"),
-        (0, 14, 4, "text"),
         (0, 19, 1, "_"),
         (0, 20, 6, "italic"),
         (0, 26, 1, "_"),
-        (0, 28, 4, "text"),
         (0, 33, 2, "~~"),
         (0, 35, 6, "strike"),
         (0, 41, 2, "~~"),
-        (0, 44, 4, "text"),
         (0, 49, 3, "[b]"),
-        (0, 52, 4, "bold"),
         (0, 56, 4, "[/b]"),
         (0, 62, 18, "http://example.com"),
     ]
-    assert formats[0].underlineColor().getRgb() == colSpell  # Text
-    assert formats[1].foreground().color().getRgb() == colHidden  # **
-    assert formats[2].foreground().color().getRgb() == colEmph  # bold
-    assert formats[2].underlineColor().getRgb() == colSpell
-    assert formats[3].foreground().color().getRgb() == colHidden  # **
-    assert formats[4].underlineColor().getRgb() == colSpell  # text
+    assert formats[0].foreground().color().getRgb() == colHidden  # **
+    assert formats[1].foreground().color().getRgb() == colEmph  # bold
+    assert formats[2].foreground().color().getRgb() == colHidden  # **
+    assert formats[3].foreground().color().getRgb() == colHidden  # _
+    assert formats[4].foreground().color().getRgb() == colEmph  # italic
     assert formats[5].foreground().color().getRgb() == colHidden  # _
-    assert formats[6].foreground().color().getRgb() == colEmph  # italic
-    assert formats[6].underlineColor().getRgb() == colSpell
-    assert formats[7].foreground().color().getRgb() == colHidden  # _
-    assert formats[8].underlineColor().getRgb() == colSpell  # text
-    assert formats[9].foreground().color().getRgb() == colHidden  # ~~
-    assert formats[10].foreground().color().getRgb() == colHidden  # strike
-    assert formats[10].fontStrikeOut() is True
-    assert formats[10].underlineColor().getRgb() == colSpell
-    assert formats[11].foreground().color().getRgb() == colHidden  # ~~
-    assert formats[12].underlineColor().getRgb() == colSpell  # text
-    assert formats[13].foreground().color().getRgb() == colCode  # [b]
-    assert formats[14].underlineColor().getRgb() == colSpell  # bold
-    assert formats[15].foreground().color().getRgb() == colCode  # [/b]
-    assert formats[16].foreground().color().getRgb() == colLink  # http://example.com
+    assert formats[6].foreground().color().getRgb() == colHidden  # ~~
+    assert formats[7].foreground().color().getRgb() == colHidden  # strike
+    assert formats[7].fontStrikeOut() is True
+    assert formats[8].foreground().color().getRgb() == colHidden  # ~~
+    assert formats[9].foreground().color().getRgb() == colCode  # [b]
+    assert formats[10].foreground().color().getRgb() == colCode  # [/b]
+    assert formats[11].foreground().color().getRgb() == colLink  # http://example.com
 
     # Spell Check
     data = doc.findBlockByNumber(0).userData()
@@ -600,27 +586,13 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
 
     pieces, formats = getFragments(syntax)
     assert pieces == [
-        (0, 0, 1, "\u201c"),
-        (0, 1, 8, "Dialogue"),
-        (0, 9, 2, ",\u201d"),
-        (0, 12, 3, "and"),
-        (0, 16, 4, "then"),
-        (0, 21, 2, "::"),
-        (0, 23, 8, "dialogue"),
-        (0, 31, 2, "::"),
+        (0, 0, 11, "\u201cDialogue,\u201d"),
+        (0, 21, 12, "::dialogue::"),
         (0, 35, 18, "http://example.com"),
     ]
-    assert formats[0].foreground().color().getRgb() == colDialogue  # Quote
-    assert formats[1].foreground().color().getRgb() == colDialogue  # Dialogue
-    assert formats[1].underlineColor().getRgb() == colSpell
-    assert formats[2].foreground().color().getRgb() == colDialogue  # Quote
-    assert formats[3].underlineColor().getRgb() == colSpell  # and
-    assert formats[4].underlineColor().getRgb() == colSpell  # then
-    assert formats[5].foreground().color().getRgb() == colAltDialogue  # ::
-    assert formats[6].foreground().color().getRgb() == colAltDialogue  # dialogue
-    assert formats[6].underlineColor().getRgb() == colSpell
-    assert formats[7].foreground().color().getRgb() == colAltDialogue  # ::
-    assert formats[8].foreground().color().getRgb() == colLink  # http://example.com
+    assert formats[0].foreground().color().getRgb() == colDialogue  # Dialogue
+    assert formats[1].foreground().color().getRgb() == colAltDialogue  # Alt dialogue
+    assert formats[2].foreground().color().getRgb() == colLink  # http://example.com
 
     # Spell Check
     data = doc.findBlockByNumber(0).userData()
@@ -640,27 +612,13 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
 
     pieces, formats = getFragments(syntax)
     assert pieces == [
-        (0, 0, 4, "\u201c😁 "),
-        (0, 4, 8, "Grinning"),
-        (0, 12, 5, " 😁,\u201d"),
-        (0, 18, 3, "and"),
-        (0, 22, 4, "then"),
-        (0, 27, 5, "::🙊 "),
-        (0, 32, 5, "shush"),
-        (0, 37, 5, " 🙊::"),
+        (0, 0, 17, "\u201c😁 Grinning 😁,\u201d"),
+        (0, 27, 15, "::🙊 shush 🙊::"),
         (0, 44, 18, "http://example.com"),
     ]
-    assert formats[0].foreground().color().getRgb() == colDialogue  # Quote😁
-    assert formats[1].foreground().color().getRgb() == colDialogue  # Grinning
-    assert formats[1].underlineColor().getRgb() == colSpell
-    assert formats[2].foreground().color().getRgb() == colDialogue  # 😁Quote
-    assert formats[3].underlineColor().getRgb() == colSpell  # and
-    assert formats[4].underlineColor().getRgb() == colSpell  # then
-    assert formats[5].foreground().color().getRgb() == colAltDialogue  # ::🙊
-    assert formats[6].foreground().color().getRgb() == colAltDialogue  # shush
-    assert formats[6].underlineColor().getRgb() == colSpell
-    assert formats[7].foreground().color().getRgb() == colAltDialogue  # 🙊::
-    assert formats[8].foreground().color().getRgb() == colLink  # http://example.com
+    assert formats[0].foreground().color().getRgb() == colDialogue  # Dialogue
+    assert formats[1].foreground().color().getRgb() == colAltDialogue  # Alt dialogue
+    assert formats[2].foreground().color().getRgb() == colLink  # http://example.com
 
     # Spell Check
     data = doc.findBlockByNumber(0).userData()
