@@ -25,9 +25,19 @@ import sys
 
 import pytest
 
-from novelwriter.error import NWErrorMessage, exceptionHandler
+from novelwriter.error import NWErrorMessage, exceptionHandler, logException
 
 from tests.mocked import causeException
+
+
+@pytest.mark.base
+def testBaseError_LogException(caplog):
+    """Test that logging an exception outside of an except block, where
+    there is no active exception, does nothing.
+    """
+    caplog.clear()
+    logException()
+    assert caplog.text == ""
 
 
 @pytest.mark.base

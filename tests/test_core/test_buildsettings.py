@@ -73,6 +73,21 @@ def testCoreBuildSettings_ClassAttributes(fncPath: Path):
     assert build.buildID != "qcf45d24-f496-42c9-8733-529a9e52a62b"
     assert isUUID(build.buildID)
 
+    # Setting the same UUID again does nothing
+    sameID = build.buildID
+    build.setBuildID(sameID)
+    assert build.buildID == sameID
+
+    # Order is only set if the value is an integer
+    build.setOrder(3)
+    assert build.order == 3
+    build.setOrder("not an int")  # type: ignore
+    assert build.order == 3
+
+    # Allow root only accepts True or False
+    build.setAllowRoot(C.hCharRoot, None)  # type: ignore
+    assert build.changed is False
+
     # Last path must be valid, if not it defaults to $HOME
     build.setLastBuildPath("/path/to/nowhere")
     assert build.lastBuildPath == CONFIG.homePath()
@@ -141,6 +156,20 @@ def testCoreBuildSettings_ClassAttributes(fncPath: Path):
     assert more["path"] == str(fncPath)
     assert more["build"] == "Build Name"
     assert more["format"] == nwBuildFmt.HTML.name
+
+    # Malformed data is ignored
+    malformed = BuildSettings()
+    malformed.unpack({
+        "content": {
+            "included": "not a list",
+            "excluded": None,
+            "skipRoot": 123,
+        },
+        "settings": ["not", "a", "dict"],
+    })
+    assert malformed._included == set()
+    assert malformed._excluded == set()
+    assert malformed._skipRoot == set()
 
 
 @pytest.mark.core
@@ -214,6 +243,11 @@ def testCoreBuildSettings_BuildValues():
     assert more["settings"][intSetting] == 42
     assert more["settings"][boolSetting] is True
     assert more["settings"][floatSetting] == 2.5
+
+    # Invalid keys and values in the settings dict are skipped
+    skipped = BuildSettings()
+    skipped.unpack({"settings": {123: "value", strSetting: object()}})
+    assert skipped.getStr(strSetting) == nwHeadFmt.TITLE
 
 
 @pytest.mark.core
@@ -428,7 +462,10 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
         (buildIDTwo, "Build Two"),
         (buildIDOne, "Build One"),
     ]
-    builds.setBuildsState(buildIDOne, [buildIDTwo, buildIDOne])
+    builds.setBuildsState(buildIDOne, [buildIDTwo, buildIDOne, "not-a-real-id"])
+    builds.setDefaultBuild(buildIDTwo)
+
+    # Setting the same default build again does nothing new
     builds.setDefaultBuild(buildIDTwo)
 
     # Check errors: No valid path
@@ -462,6 +499,17 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
     ]
     assert another.lastBuild == buildIDOne
     assert another.defaultBuild == buildIDTwo
+
+    # Entries that aren't objects are skipped
+    data = json.loads(buildsFile.read_text(encoding="utf-8"))
+    data["novelWriter.builds"]["garbage"] = "not a build entry"
+    buildsFile.write_text(json.dumps(data), encoding="utf-8")
+
+    garbageLoaded = BuildCollection(project)
+    assert list(garbageLoaded.builds()) == [
+        (buildIDTwo, "Build Two"),
+        (buildIDOne, "Build One"),
+    ]
 
 
 @pytest.mark.core

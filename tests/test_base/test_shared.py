@@ -27,10 +27,11 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt6.QtCore import QUrl
+from PyQt6.QtCore import QThreadPool, QUrl
 from PyQt6.QtGui import QDesktopServices
 from PyQt6.QtWidgets import QFileDialog, QWidget
 
+from novelwriter import CONFIG
 from novelwriter.core.project import NWProject
 from novelwriter.shared import SharedData, _GuiAlert
 
@@ -146,6 +147,47 @@ def testBaseSharedData_Projects(monkeypatch, caplog, fncPath):
 
 
 @pytest.mark.base
+def testBaseSharedData_EdgeCases(qtbot, monkeypatch, mockGUI):
+    """Test defensive branches in SharedData not covered by the other
+    functional tests: spell check no-ops, progress bar and thread pool
+    calls with no GUI, and a signal proxy for a stale project.
+    """
+    monkeypatch.setattr(CONFIG, "spellLanguage", None)
+
+    shared = SharedData()
+    mockGui = MockGuiMain()
+    mockTheme = MockTheme()
+    shared.initTheme(mockTheme)  # type: ignore
+    shared.initSharedData(mockGui)  # type: ignore
+
+    # No requested spell check language yet: nothing to report
+    assert shared.spelling.requestedLanguage is None
+    shared.reportSpellCheckStatus()  # Should not raise or warn
+
+    # The same (unset) language, with no reload requested, is a no-op
+    with qtbot.assertNotEmitted(shared.spellLanguageChanged, wait=100):
+        shared.updateSpellCheckLanguage()
+
+    # No GUI instance: progress bar helpers do nothing
+    shared._gui = None
+    shared.initMainProgress(10)
+    shared.incMainProgress()
+    shared.clearMainProgress()
+
+    # No thread pool available: nothing is queued
+    with monkeypatch.context() as mp:
+        mp.setattr(QThreadPool, "globalInstance", lambda *a: None)
+        shared.runInThreadPool(MagicMock())
+
+    # A signal proxy call for a project that isn't the active one is ignored
+    shared._gui = mockGui  # type: ignore
+    otherProject = NWProject()
+    otherProject.data.setUuid("00000000-0000-0000-0000-000000000000")
+    with qtbot.assertNotEmitted(shared.statusLabelsChanged, wait=100):
+        shared.emitStatusLabelsChanged(otherProject, "s")
+
+
+@pytest.mark.base
 def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog, mockGUI):
     """Test SharedData class alert helper functions."""
     monkeypatch.setattr(_GuiAlert, "exec", lambda *a: None)
@@ -174,12 +216,24 @@ def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog, mockGUI):
     assert caplog.text.strip().startswith("WARNING")
     assert caplog.text.strip().endswith("bar")
 
+    # Warning box, not logged
+    caplog.clear()
+    shared.warn("Oops!", info="foo", details="bar", log=False)
+    assert shared.lastAlert == ["Oops!", "foo", "bar"]
+    assert caplog.text == ""
+
     # Error box
     caplog.clear()
     shared.error("Oh noes!", info="foo", details="bar")
     assert shared.lastAlert == ["Oh noes!", "foo", "bar"]
     assert caplog.text.strip().startswith("ERROR")
     assert caplog.text.strip().endswith("bar")
+
+    # Error box, not logged
+    caplog.clear()
+    shared.error("Oh noes!", info="foo", details="bar", log=False)
+    assert shared.lastAlert == ["Oh noes!", "foo", "bar"]
+    assert caplog.text == ""
 
     # Error box with exception
     caplog.clear()

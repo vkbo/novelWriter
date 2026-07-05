@@ -38,6 +38,7 @@
 - If a test tool does not allow setting environment variables, run tests in terminal as `QT_QPA_PLATFORM=offscreen uv run pytest ...`
 - Never run GUI tests in this repository without the offscreen environment variable
 - Avoid adding test-specific code to the main code base
+- `CONFIG` is fully reset before every test by the autouse `functionFixture` fixture in `tests/conftest.py`; never save/restore `CONFIG.*` values in a test, just set them directly
 
 ## Documentation
 

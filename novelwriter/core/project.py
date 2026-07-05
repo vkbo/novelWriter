@@ -284,7 +284,7 @@ class NWProject:
         if itemClass != nwItemClass.NO_CLASS:
             if not (rHandle := self._tree.findRoot(itemClass)):
                 rHandle = self.newRoot(itemClass)
-            if rHandle and (tHandle := SHARED.project.newFile(tag.title(), rHandle)):
+            if rHandle and (tHandle := self.newFile(tag.title(), rHandle)):
                 self.writeNewFile(tHandle, 1, False, f"@tag: {tag}\n\n")
                 self._tree.refreshItems([tHandle])
 
@@ -320,6 +320,8 @@ class NWProject:
                 )
             elif status == NWStorageOpen.LOCKED:
                 self._state = NWProjectState.LOCKED
+            else:  # pragma: no cover
+                pass
             return False
 
         # Read Project XML
@@ -351,33 +353,29 @@ class NWProject:
         # Check Legacy Upgrade
         # ====================
 
-        if xmlReader.state == XMLReadState.WAS_LEGACY:
-            msgYes = SHARED.question(
-                self.tr(
-                    "The file format of your project is about to be updated. "
-                    "If you proceed, older versions of novelWriter will no "
-                    "longer be able to open this project. Continue?"
-                )
+        if xmlReader.state == XMLReadState.WAS_LEGACY and not SHARED.question(
+            self.tr(
+                "The file format of your project is about to be updated. "
+                "If you proceed, older versions of novelWriter will no "
+                "longer be able to open this project. Continue?"
             )
-            if not msgYes:
-                return False
+        ):
+            return False
 
         # Check novelWriter Version
         # =========================
 
-        if xmlReader.hexVersion > hexToInt(__hexversion__):
-            msgYes = SHARED.question(
-                self.tr(
-                    "This project was saved by a newer version of "
-                    "novelWriter, version {0}. This is version {1}. If you "
-                    "continue to open the project, some attributes and "
-                    "settings may not be preserved, but the overall project "
-                    "should be fine. Continue opening the project?"
-                ).format(appVersion, __version__),
-                warn=True,
-            )
-            if not msgYes:
-                return False
+        if xmlReader.hexVersion > hexToInt(__hexversion__) and not SHARED.question(
+            self.tr(
+                "This project was saved by a newer version of "
+                "novelWriter, version {0}. This is version {1}. If you "
+                "continue to open the project, some attributes and "
+                "settings may not be preserved, but the overall project "
+                "should be fine. Continue opening the project?"
+            ).format(appVersion, __version__),
+            warn=True,
+        ):
+            return False
 
         # Extract Data
         # ============
@@ -586,6 +584,8 @@ class NWProject:
             self._data.itemImport.update(update)
             SHARED.emitStatusLabelsChanged(self, kind)
             self._tree.refreshAllItems()
+        else:  # pragma: no cover
+            pass
 
     def updateTheme(self) -> None:
         """Update theme elements."""

@@ -169,6 +169,39 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
     assert current is not None
     assert current.name == "Test Build"
 
+    # With no builds available, editing, copying, deleting or building
+    # from an empty list all do nothing
+    manus.buildList.clear()
+    assert manus._getSelectedBuild() is None
+    manus._editSelectedBuild()
+    manus._copySelectedBuild()
+    manus._deleteSelectedBuild()
+    manus._buildManuscript()
+    manus._updateBuildsList()  # Restore the list from the underlying collection
+    assert manus.buildList.count() == 2
+
+    # An item whose build ID isn't in the collection is treated as no selection
+    bogus = QListWidgetItem()
+    bogus.setData(GuiManuscript.D_KEY, "0000000000000")
+    manus.buildList.insertItem(0, bogus)
+    manus.buildList.clearSelection()
+    manus.buildList.setCurrentRow(0)
+    assert manus._getSelectedBuild() is None
+    manus.buildList.takeItem(0)
+
+    # Deleting a build with no open settings dialog for it just removes it
+    manus.buildList.clearSelection()
+    for i in range(manus.buildList.count()):
+        item = manus.buildList.item(i)
+        if item is not None and item.data(GuiManuscript.D_KEY) == new.buildID:
+            item.setSelected(True)
+            break
+    else:
+        raise AssertionError
+    countBefore = manus.buildList.count()
+    manus._deleteSelectedBuild()
+    assert manus.buildList.count() == countBefore - 1
+
     # Trigger a theme update, which should propagate to settings
     nwGUI.refreshThemeColors()
 
@@ -318,6 +351,33 @@ def testToolManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
                 break
         else:
             raise AssertionError
+
+    # An unchanged build is not written back to the collection
+    build._changed = False
+    manus.buildList.clearSelection()
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.tools.manusbuild.GuiManuscriptBuild.exec", lambda *a: None)
+
+        manus.buildList.setCurrentRow(0)
+        manus.btnBuild.click()
+        for obj in manus.children():
+            if isinstance(obj, GuiManuscriptBuild):
+                obj.close()
+                break
+        else:
+            raise AssertionError
+
+    # Outline entries with an unrecognised prefix are skipped
+    manus.buildOutline.updateOutline({"stale:T0001": "XX|Stale Entry"}, force=True)
+    assert manus.buildOutline.listView.topLevelItemCount() == 0
+
+    # Preview link edge cases
+    manus.docPreview._linkClicked(QUrl(""))  # An empty link does nothing
+    with monkeypatch.context() as mp:
+        openUrl = MagicMock()
+        mp.setattr(QDesktopServices, "openUrl", openUrl)
+        manus.docPreview._linkClicked(QUrl("ftp://example.com"))  # Neither internal nor http(s)
+        assert openUrl.called is False
 
     # Finish
     manus.close()

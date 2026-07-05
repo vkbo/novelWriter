@@ -84,6 +84,23 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     assert sessLog.wordOffset == 123
     assert len(sessLog.logData) == 4
 
+    # A record with an unrecognised type is skipped
+    data = (
+        '{"type": "initial", "offset": 123}\n'
+        '{"type": "unknown"}\n'
+        f"{project.session.createRecord('2020-01-01 21:00:00', '2020-01-01 21:00:05', 6, 0, 0)}"
+    )
+    sessFile.write_text(data, encoding="utf-8")
+    sessLog._loadLogFile()
+    assert len(sessLog.logData) == 1
+
+    # Grouping by day with no log data does nothing
+    emptyLog = GuiWritingStats(nwGUI)
+    assert emptyLog.logData == []
+    qtbot.mouseClick(emptyLog.swtGroupByDay, QtMouseLeft)
+    assert emptyLog.listBox.topLevelItemCount() == 0
+    emptyLog.closeDialog()
+
 
 @pytest.mark.gui
 def testToolWritingStats_Export(qtbot, monkeypatch, nwGUI, projPath, tstPaths):

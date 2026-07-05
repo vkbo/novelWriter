@@ -24,7 +24,7 @@ from __future__ import annotations
 import pytest
 
 from PyQt6.QtGui import QAction, QColor
-from PyQt6.QtWidgets import QColorDialog, QFileDialog
+from PyQt6.QtWidgets import QColorDialog, QFileDialog, QToolButton
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -75,6 +75,14 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     assert projSettings.mainStack.currentWidget() == projSettings.importPage
 
     projSettings.sidebar.button(GuiProjectSettings.PAGE_REPLACE).click()
+    assert projSettings.mainStack.currentWidget() == projSettings.replacePage
+
+    # Selecting an unknown page does nothing
+    projSettings.sidebar.setSelected(9999)
+
+    # A button that isn't part of the sidebar's group is ignored
+    otherButton = QToolButton()
+    projSettings.sidebar._buttonClicked(otherButton)
     assert projSettings.mainStack.currentWidget() == projSettings.replacePage
 
     # Clean Up
@@ -136,6 +144,13 @@ def testDlgProjSettings_SettingsPage(qtbot, monkeypatch, nwGUI, fncPath, projPat
     nwGUI._processProjectSettingsChanges()
     assert nwGUI.windowTitle() == "Project Name - novelWriter"
 
+    # Without Enchant, only the default spell check entry is available
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "hasEnchant", False)
+        noEnchant = GuiProjectSettings(nwGUI, GuiProjectSettings.PAGE_SETTINGS)
+        qtbot.addWidget(noEnchant)
+        assert noEnchant.settingsPage.spellLang.count() == 1
+
     # qtbot.stop()
 
 
@@ -185,6 +200,18 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     assert status.changed is False
     assert status.getNewList() == []
     assert status.listBox.topLevelItemCount() == 4
+
+    # Nothing happens when no item is selected
+    status.listBox.clearSelection()
+    status.delButton.click()
+    assert status.listBox.topLevelItemCount() == 4
+    status._onNameEdit("Ignored")
+
+    # Cancelling the colour dialog does nothing
+    with monkeypatch.context() as mp:
+        mp.setattr(QColorDialog, "getColor", lambda *a: QColor())
+        status.listBox.setCurrentItem(status.listBox.topLevelItem(0))
+        status.colorButton.click()
 
     # Can't delete the first item (it's in use)
     status.listBox.clearSelection()
@@ -330,6 +357,18 @@ def testDlgProjSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPath, 
     assert status.listBox.topLevelItemCount() == 4
     expFile = projPath / "status.csv"
 
+    # Export Cancelled
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: ("", ""))
+        status._exportLabels()
+    assert expFile.is_file() is False
+
+    # Import Cancelled
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: ("", ""))
+        status._importLabels()
+    assert status.listBox.topLevelItemCount() == 4
+
     # Export Error
     with monkeypatch.context() as mp:
         mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: (str(expFile), ""))
@@ -384,6 +423,14 @@ def testDlgProjSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPath, 
     assert item7 is not None
     assert item7.text(0) == "Finished"
 
+    # Invalid rows in the import file are skipped
+    badFile = projPath / "status_bad.csv"
+    badFile.write_text("NOT_A_SHAPE,#000000,Bad\nSTAR,#123456,Good\n", encoding="utf-8")
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (str(badFile), ""))
+        status._importLabels()
+    assert status.listBox.topLevelItemCount() == 9
+
 
 @pytest.mark.gui
 def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
@@ -423,11 +470,28 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert replace.listBox.topLevelItem(2).text(1) == ""  # type: ignore
 
     # Edit the entry
-    replace.listBox.setCurrentItem(replace.listBox.topLevelItem(2))
+    newItem = replace.listBox.topLevelItem(2)
+    replace.listBox.setCurrentItem(newItem)
     replace._onKeyEdit("Th is ")
     replace._onValueEdit("With This Stuff ")
-    assert replace.listBox.topLevelItem(2).text(0) == "<This>"  # type: ignore
-    assert replace.listBox.topLevelItem(2).text(1) == "With This Stuff "  # type: ignore
+    assert newItem.text(0) == "<This>"  # type: ignore
+    assert newItem.text(1) == "With This Stuff "  # type: ignore
+
+    # A key that strips to empty is not applied
+    replace._onKeyEdit("!!!")
+    assert newItem.text(0) == "<This>"  # type: ignore
+
+    # Nothing happens for key/value edits when no item is selected
+    replace.listBox.clearSelection()
+    replace._onKeyEdit("Other")
+    replace._onValueEdit("Other")
+    assert newItem.text(0) == "<This>"  # type: ignore
+    assert newItem.text(1) == "With This Stuff "  # type: ignore
+
+    # Items whose key strips to empty are skipped when building the new list
+    newItem.setText(0, "!!!")  # type: ignore
+    assert "This" not in replace.getNewList()
+    newItem.setText(0, "<This>")  # type: ignore
 
     # Create a new entry again
     replace.listBox.clearSelection()

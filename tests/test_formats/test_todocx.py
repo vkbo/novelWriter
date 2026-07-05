@@ -33,7 +33,7 @@ from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt, nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp
-from novelwriter.formats.todocx import OOXML_SCM, ToDocX, _mkTag, _wTag
+from novelwriter.formats.todocx import OOXML_SCM, DocXParagraph, ToDocX, _mkTag, _wTag
 
 from tests.tools import DOCX_IGNORE, cmpFiles, xmlToText
 
@@ -697,6 +697,66 @@ def testFmtToDocX_Fields(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToDocX_MinimalClose(mockGUI):
+    """Test closing a document with no header format and no counts."""
+    project = NWProject()
+    doc = ToDocX(project)
+    doc.initDocument()
+
+    doc._text = "## Hello World"
+    doc.tokenizeText()
+    doc.doConvert()
+
+    # No header format and no stats have been computed, so the header
+    # and stats-dependent branches should all be skipped without error
+    doc.closeDocument()
+    assert "header1.xml" not in doc._files
+    assert "footnotes.xml" not in doc._files
+
+    xVars = doc._files["settings.xml"].xml.find(_wTag("docVars"))
+    assert xVars is None
+
+    # A header format consisting only of the page marker has no
+    # leading or trailing text
+    doc.setHeaderFormat(nwHeadFmt.DOC_PAGE, 0)
+    doc.closeDocument()
+    assert xmlToText(doc._files["header1.xml"].xml) == (
+        '<w:hdr><w:p><w:pPr><w:pStyle w:val="Header" /><w:jc w:val="right" />'
+        "<w:rPr /></w:pPr>"
+        '<w:r><w:fldChar w:fldCharType="begin" /></w:r>'
+        '<w:r><w:instrText xml:space="preserve">PAGE</w:instrText></w:r>'
+        '<w:r><w:fldChar w:fldCharType="separate" /></w:r>'
+        '<w:r><w:fldChar w:fldCharType="end" /></w:r>'
+        "</w:p></w:hdr>"
+    )
+
+    # A header format without a page marker has no page field
+    doc.setHeaderFormat("Just Text", 0)
+    doc.closeDocument()
+    assert xmlToText(doc._files["header1.xml"].xml) == (
+        '<w:hdr><w:p><w:pPr><w:pStyle w:val="Header" /><w:jc w:val="right" />'
+        "<w:rPr /></w:pPr>"
+        "<w:r><w:t>Just Text</w:t></w:r>"
+        "</w:p></w:hdr>"
+    )
+
+
+@pytest.mark.core
+def testFmtToDocX_ParagraphEdgeCases():
+    """Test edge cases of the DocXParagraph class."""
+    par = DocXParagraph()
+
+    # An invalid alignment value is ignored
+    par.setAlignment("diagonal")  # type: ignore
+    assert par._textAlign is None
+
+    # A paragraph without a style produces no XML
+    xTest = ET.Element(_wTag("body"))
+    par.toXml(xTest)
+    assert len(xTest) == 0
+
+
+@pytest.mark.core
 def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
     """Test document output."""
     project = NWProject()
@@ -726,12 +786,12 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
         (2, True),
         (3, True),
         (4, True),
-        (5, False),
+        (5, True),
         (6, True),
         (7, True),
         (8, True),
-        (9, False),
-        (10, False),
+        (9, True),
+        (10, True),
         (11, True),
         (12, True),
         (13, True),
@@ -739,10 +799,6 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
         (15, True),
         (16, True),
         (17, True),
-        (18, True),
-        (19, True),
-        (20, True),
-        (21, False),
     ]
 
     assert docPath.exists()

@@ -459,6 +459,9 @@ class ToOdt(Tokenizer):
             elif tType in COMMENT_BLOCKS or tType == BlockTyp.KEYWORD:
                 self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
 
+            else:  # pragma: no cover
+                pass
+
     def closeDocument(self) -> None:
         """Add additional collected information to the XML."""
         for style in self._autoPara.values():
@@ -1674,7 +1677,7 @@ class XMLParagraph:
         See: http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html
         Sections: 6.1.2, 6.1.3, and 19.763
         """
-        if nSpaces > 0:
+        if nSpaces > 0:  # pragma: no branch
             if self._chrPos > 0:
                 if self._nState == X_ROOT_TEXT:
                     self._xRoot.text = (self._xRoot.text or "") + " "
@@ -1697,7 +1700,6 @@ class XMLParagraph:
                 self._xTail.tail = ""
                 self._nState = X_ROOT_TAIL
                 self._chrPos += nSpaces - 1
-
             elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                 self._xSing = ET.SubElement(self._xTail, TAG_SPC)
                 self._xSing.tail = ""
@@ -1710,7 +1712,6 @@ class XMLParagraph:
                 self._xTail.tail = ""
                 self._nState = X_ROOT_TAIL
                 self._chrPos += nSpaces - 1
-
             elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                 self._xSing = ET.SubElement(self._xTail, TAG_SPC, attrib={TAG_NSPC: str(nSpaces - 1)})
                 self._xSing.tail = ""

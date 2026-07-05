@@ -29,6 +29,7 @@ from novelwriter import SHARED
 from novelwriter.constants import nwLists
 from novelwriter.core.item import NWItem
 from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.enum import nwChange
 
 from tests.tools import C, buildTestProject
 
@@ -112,11 +113,23 @@ def testGuiViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     tabBackRefs._treeItemClicked(tabBackRefs.model().index(0, tabBackRefs.C_VIEW))
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
 
+    # Clicking any other column does nothing
+    nwGUI.viewDocument(hJane)
+    assert nwGUI.docViewer.docHandle == hJane
+    tabBackRefs._treeItemClicked(tabBackRefs.model().index(0, tabBackRefs.C_DOC))
+    assert nwGUI.docViewer.docHandle == hJane
+
     # Double-Click
     nwGUI.viewDocument(hJane)
     assert nwGUI.docViewer.docHandle == hJane
     tabBackRefs._treeItemDoubleClicked(tabBackRefs.model().index(0, tabBackRefs.C_DOC))
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
+
+    # Double-clicking the edit/view columns does nothing
+    nwGUI.viewDocument(hJane)
+    assert nwGUI.docViewer.docHandle == hJane
+    tabBackRefs._treeItemDoubleClicked(tabBackRefs.model().index(0, tabBackRefs.C_EDIT))
+    assert nwGUI.docViewer.docHandle == hJane
 
     # Regression: Adding/removing references while viewing target should refresh panel
     nwGUI.viewDocument(hJane)
@@ -131,6 +144,16 @@ def testGuiViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.docEditor.setPlainText("### Scene One\n\n@char: Jane\n")
     nwGUI.saveDocument()
     assert tabBackRefs.topLevelItemCount() == 1
+
+    # A None handle just clears the content
+    tabBackRefs.refreshContent(None)
+    assert tabBackRefs.topLevelItemCount() == 0
+
+    # A stale back-reference to a deleted item is skipped
+    with monkeypatch.context() as mp:
+        mp.setattr(type(SHARED.project.index), "getBackReferenceList", lambda *a: {"0000000000000": ("T0001", None)})
+        tabBackRefs.refreshContent(hJane)
+        assert tabBackRefs.topLevelItemCount() == 0
 
     # qtbot.stop()
 
@@ -224,7 +247,16 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
     charTab._treeItemClicked(charTab.model().index(1, charTab.C_VIEW))
     assert nwGUI.docViewer.docHandle == hJohn
+
+    # Clicking any other column does nothing
+    charTab._treeItemClicked(charTab.model().index(0, charTab.C_NAME))
+    assert nwGUI.docViewer.docHandle == hJohn
+
     charTab._treeItemDoubleClicked(charTab.model().index(0, charTab.C_NAME))
+    assert nwGUI.docViewer.docHandle == hJane
+
+    # Double-clicking the edit/view columns does nothing
+    charTab._treeItemDoubleClicked(charTab.model().index(0, charTab.C_EDIT))
     assert nwGUI.docViewer.docHandle == hJane
 
     # Hide Inactive Tags
@@ -242,5 +274,33 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     SHARED.project.data.itemImport.add(C.iNew, "Stuff", "#646464", "SQUARE", 0)
     viewPanel.updateStatusLabels("i")
     assert charTab.topLevelItem(0).text(charTab.C_IMPORT) == "Stuff"
+
+    # A stale tag reference with no resolved item is skipped
+    indexClass = type(SHARED.project.index)
+    with monkeypatch.context() as mp:
+        mp.setattr(indexClass, "getDocumentTags", lambda *a: ["stale"])
+        mp.setattr(indexClass, "getSingleTag", lambda *a: ("", "", None, None))
+        viewPanel.onProjectItemChanged(hJane, nwChange.UPDATE)
+        assert charTab.topLevelItemCount() == 1
+
+    with monkeypatch.context() as mp:
+        mp.setattr(indexClass, "getTagsData", lambda *a, **k: [("stale", "", "", None, None)])
+        viewPanel._loadAllTags()
+        assert charTab.topLevelItemCount() == 1
+
+    # Open Project Tasks
+    # ==================
+
+    # Column widths that aren't a dict, or entries that aren't lists, are silently ignored
+    SHARED.project.options.setValue("GuiDocViewerPanel", "colWidths", "not-a-dict")
+    viewPanel.openProjectTasks()
+
+    SHARED.project.options.setValue("GuiDocViewerPanel", "colWidths", {"CHARACTER": "not-a-list", "BOGUS": [1, 2]})
+    viewPanel.openProjectTasks()
+
+    # A column width list that's too short is ignored
+    widths = charTab.getColumnWidths()
+    charTab.setColumnWidths([1, 2])
+    assert charTab.getColumnWidths() == widths
 
     # qtbot.stop()

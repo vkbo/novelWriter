@@ -36,6 +36,7 @@ from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp, TextFmt
 from novelwriter.formats.toodt import (
+    X_ROOT_TEXT,
     ODTBorderStyle,
     ODTParagraphStyle,
     ODTTextStyle,
@@ -1240,6 +1241,13 @@ def testFmtToOdt_ODTParagraphStyle():
         "</test>"
     )
 
+    # A style with no paragraph or text attributes set skips both
+    # the paragraph-properties and text-properties elements
+    blankStyle = ODTParagraphStyle("blank")
+    xBlank = ET.Element("test")
+    blankStyle.packXML(xBlank)
+    assert xmlToText(xBlank) == ('<test><style:style style:name="blank" style:family="paragraph" /></test>')
+
     # Changes
     # =======
 
@@ -1421,6 +1429,12 @@ def testFmtToOdt_ODTTextStyle():
         "</style:style></test>"
     )
 
+    # A style with no text attributes set skips the text-properties element
+    blankStyle = ODTTextStyle("blank")
+    xBlank = ET.Element("test")
+    blankStyle.packXML(xBlank)
+    assert xmlToText(xBlank) == ('<test><style:style style:name="blank" style:family="text" /></test>')
+
 
 @pytest.mark.core
 def testFmtToOdt_XMLParagraph():
@@ -1593,8 +1607,21 @@ def testFmtToOdt_XMLParagraph():
     xmlPar.appendText("A")
     xmlPar._nState = 5
     xmlPar.appendText("B")
+    xmlPar.appendText("\n")
+    xmlPar.appendText("\t")
+    xmlPar.appendText("  ")
+    xmlPar.appendText("   ")
 
-    assert xmlPar.checkError() == (1, "1 char(s) were not written: 'AB'")
+    assert xmlPar.checkError() == (8, "8 char(s) were not written: 'AB\n\t     '")
+
+    # A node is not appended in an invalid or unsupported state
+    xImg = ET.Element(_mkTag("draw", "frame"))
+    xmlPar.appendNode(xImg)
+    assert list(xElem) == []
+
+    xmlPar._nState = X_ROOT_TEXT
+    xmlPar.appendNode(None)
+    assert list(xElem) == []
 
 
 @pytest.mark.core

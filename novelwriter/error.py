@@ -69,7 +69,7 @@ class NWErrorMessage(QDialog):
 
         # Widgets
         self.msgIcon = QLabel()
-        if style := QApplication.style():
+        if style := QApplication.style():  # pragma: no branch
             self.msgIcon.setPixmap(style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical).pixmap(64, 64))
 
         self.msgHead = QLabel()

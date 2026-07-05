@@ -151,4 +151,19 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     assert nwDicts.infoBox.blockCount() == 10
     assert nwDicts.infoBox.toPlainText().splitlines()[-1] == ("Additional dictionaries found: 2")
 
+    # Browsing without selecting a file leaves the input unchanged
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: ("", ""))
+        huInputBefore = nwDicts.huInput.text()
+        nwDicts._doBrowseHunspell()
+        assert nwDicts.huInput.text() == huInputBefore
+
+    # Importing without an install path does nothing
+    blockCount = nwDicts.infoBox.blockCount()
+    installPath = nwDicts._installPath
+    nwDicts._installPath = None
+    nwDicts._doImportHunspell()
+    assert nwDicts.infoBox.blockCount() == blockCount
+    nwDicts._installPath = installPath
+
     # qtbot.stop()

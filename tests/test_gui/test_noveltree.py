@@ -124,6 +124,12 @@ def testGuiNovelView_Content(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         novelBar._selectLastColumnSize()
     assert novelTree.lastColSize == 40
 
+    # Cancelling the dialog leaves the size unchanged
+    with monkeypatch.context() as mp:
+        mp.setattr(QInputDialog, "getInt", lambda *a, **k: (60, False))
+        novelBar._selectLastColumnSize()
+    assert novelTree.lastColSize == 40
+
     # Open Items
     # ==========
 
@@ -143,6 +149,18 @@ def testGuiNovelView_Content(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     novelTree._onMiddleClick(model.createIndex(2, 0))
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
 
+    # Clicks on an invalid index do nothing
+    novelTree._onSingleClick(QModelIndex())
+    novelTree._onDoubleClick(QModelIndex())
+    novelTree._onMiddleClick(QModelIndex())
+
+    # Clicks with no model set do nothing
+    novelTree.clearContent()
+    novelTree._onSingleClick(model.createIndex(2, 0))
+    novelTree._onDoubleClick(model.createIndex(2, 0))
+    novelTree._onMiddleClick(model.createIndex(2, 0))
+    novelTree.setModel(model)
+
     # Item Meta
     # =========
 
@@ -161,9 +179,24 @@ def testGuiNovelView_Content(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
             "<p><b>Point of View:</b> Jane<br><b>Focus:</b> Jane</p><p><b>Synopsis:</b> This is a scene.</p>"
         )
 
+        # A click on a non-meta column does not pop the tooltip
+        toolTip = ""
+        novelTree._onSingleClick(model.createIndex(2, 0))
+        assert toolTip == ""
+
         toolTip = ""
         novelTree._popMetaBox(QPoint(1, 1), C.hInvalid, "T0001")
         assert toolTip == ""
+
+        # A heading with no synopsis and no references shows the fallback text
+        SHARED.project.index.scanText(
+            C.hSceneDoc,
+            "### Scene One\n\n@pov: Jane\n@focus: Jane\n\n% Synopsis: This is a scene.\n\nText.\n\n"
+            "### Scene Two\n\nJust some plain text with no tags.\n",
+        )
+        toolTip = ""
+        novelTree._popMetaBox(QPoint(1, 1), C.hSceneDoc, "T0002")
+        assert toolTip == "No meta data"
 
     # Active Status
     # =============

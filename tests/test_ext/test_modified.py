@@ -37,7 +37,9 @@ from novelwriter.extensions.modified import (
     NFontDialog,
     NIconToggleButton,
     NIconToolButton,
+    NNonBlockingDialog,
     NSpinBox,
+    NToolDialog,
     NTreeView,
 )
 from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
@@ -77,6 +79,24 @@ def testExtModified_NDialog(qtbot, monkeypatch):
     with qtbot.waitSignal(dialog.rejected, timeout=1000):
         dialog.keyPressEvent(QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModNone))
         assert dialog.result() == QtRejected
+
+
+@pytest.mark.gui
+def testExtModified_NToolDialog(qtbot, nwGUI):
+    """Test the NToolDialog class."""
+    dialog = NToolDialog(nwGUI)
+    qtbot.addWidget(dialog)
+    dialog.activateDialog()
+    dialog.close()
+
+
+@pytest.mark.gui
+def testExtModified_NNonBlockingDialog(qtbot):
+    """Test the NNonBlockingDialog class."""
+    dialog = NNonBlockingDialog()
+    qtbot.addWidget(dialog)
+    dialog.activateDialog()
+    dialog.close()
 
 
 def testExtModified_NFontDialog(qtbot, monkeypatch, nwGUI):
@@ -127,6 +147,21 @@ def testExtModified_NTreeView(qtbot, monkeypatch):
     event = QMouseEvent(QEvent.Type.MouseButtonPress, position, QtMouseMiddle, QtMouseMiddle, QtModNone)
     with qtbot.waitSignal(widget.middleClicked):
         widget.mousePressEvent(event)
+
+    # A non-middle click does not emit the signal
+    leftEvent = QMouseEvent(
+        QEvent.Type.MouseButtonPress, position, Qt.MouseButton.LeftButton, Qt.MouseButton.LeftButton, QtModNone
+    )
+    received = []
+    widget.middleClicked.connect(lambda idx: received.append(idx))
+    widget.mousePressEvent(leftEvent)
+    assert received == []
+
+    # A middle click on an invalid position does not emit the signal
+    invalidPos = QPointF(-10, -10)
+    invalidEvent = QMouseEvent(QEvent.Type.MouseButtonPress, invalidPos, QtMouseMiddle, QtMouseMiddle, QtModNone)
+    widget.mousePressEvent(invalidEvent)
+    assert received == []
 
     # qtbot.stop()
 
@@ -220,6 +255,15 @@ def testExtModified_NClickableLabel(qtbot):
 
     with qtbot.waitSignal(widget.mouseClicked):
         widget.mousePressEvent(event)
+
+    # A non-left click does not emit the signal
+    received = []
+    widget.mouseClicked.connect(lambda: received.append(True))
+    rightEvent = QMouseEvent(
+        QEvent.Type.MouseButtonPress, position, Qt.MouseButton.RightButton, Qt.MouseButton.RightButton, QtModNone
+    )
+    widget.mousePressEvent(rightEvent)
+    assert received == []
 
 
 @pytest.mark.gui

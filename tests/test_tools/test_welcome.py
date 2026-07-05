@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -32,8 +33,10 @@ from PyQt6.QtWidgets import QFileDialog, QMenu
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwFiles
+from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.enum import nwItemClass
+from novelwriter.shared import _GuiAlert
 from novelwriter.tools.welcome import SAMPLE_KEY, SAMPLE_NAME, GuiWelcome, _ProjectListEntry
 from novelwriter.types import (
     QtAccessibleTextRole,
@@ -66,6 +69,12 @@ def testToolWelcome_Main(qtbot, monkeypatch, nwGUI, fncPath):
     welcome.btnList.click()
     assert welcome.mainStack.currentIndex() == 0
 
+    # Cancelling the browse dialog does nothing
+    with monkeypatch.context() as mp:
+        mp.setattr(SHARED, "getProjectPath", lambda *a, **k: None)
+        with qtbot.assertNotEmitted(welcome.openProjectRequest, wait=100):
+            welcome.btnBrowse.click()
+
     # Open a project
     with monkeypatch.context() as mp:
         mp.setattr(SHARED, "getProjectPath", lambda *a, **k: fncPath)
@@ -73,6 +82,23 @@ def testToolWelcome_Main(qtbot, monkeypatch, nwGUI, fncPath):
             welcome.btnBrowse.click()
         assert signal.args
         assert signal.args[0] == fncPath
+
+    # Opening the selected item only applies while on the Open tab
+    welcome.btnNew.click()
+    assert welcome.mainStack.currentIndex() == 1
+    with monkeypatch.context() as mp:
+        openMock = MagicMock()
+        mp.setattr(welcome.tabOpen, "openSelectedItem", openMock)
+        welcome._openSelectedItem()
+        assert openMock.called is False
+    welcome.btnList.click()
+    assert welcome.mainStack.currentIndex() == 0
+
+    # A non-Path value emits nothing, but still closes the dialog
+    with monkeypatch.context() as mp:
+        mp.setattr(welcome, "close", lambda *a: None)
+        with qtbot.assertNotEmitted(welcome.openProjectRequest, wait=100):
+            welcome._openProjectPath(None)  # type: ignore
 
     # Create sample project when list is empty
     assert welcome.tabOpen.listModel.rowCount() == 1
@@ -243,6 +269,28 @@ def testToolWelcome_Open(qtbot, monkeypatch, nwGUI):
     assert listModel.data(listModel.createIndex(1, 0), QtDisplayRole) is None
     assert listModel.removeEntry(listModel.createIndex(1, 0)) is False
 
+    # With nothing selected, opening or deleting the selection does nothing
+    tabOpen.listWidget.clearSelection()
+    tabOpen.listWidget.selectionModel().clearCurrentIndex()  # type: ignore
+    with qtbot.assertNotEmitted(welcome.openProjectRequest, wait=100):
+        tabOpen.openSelectedItem()
+
+    countBefore = len(CONFIG.recentProjects.listEntries())
+    tabOpen._deleteSelectedItem()
+    assert len(CONFIG.recentProjects.listEntries()) == countBefore
+
+    # Double-clicking an invalid index does nothing
+    with qtbot.assertNotEmitted(welcome.openProjectRequest, wait=100):
+        tabOpen._projectDoubleClicked(listModel.createIndex(99, 0))
+
+    # Declining the delete confirmation leaves the entry in place
+    qtbot.mouseClick(vPort, QtMouseLeft, pos=posOne, delay=10)
+    with monkeypatch.context() as mp:
+        mp.setattr(_GuiAlert, "finalState", False)
+        countBefore = len(CONFIG.recentProjects.listEntries())
+        tabOpen._deleteSelectedItem()
+        assert len(CONFIG.recentProjects.listEntries()) == countBefore
+
     # qtbot.stop()
     welcome.close()
 
@@ -259,6 +307,13 @@ def testToolWelcome_New(qtbot, caplog, monkeypatch, nwGUI, fncPath):
     tabNew = welcome.tabNew
     newForm = tabNew.projectForm
 
+    # Cancelling the browse dialog leaves the path unchanged
+    pathBefore = newForm.projPath.text()
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: "")
+        newForm.browsePath.click()
+        assert newForm.projPath.text() == pathBefore
+
     # Populate the path
     with monkeypatch.context() as mp:
         mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: fncPath)
@@ -273,11 +328,25 @@ def testToolWelcome_New(qtbot, caplog, monkeypatch, nwGUI, fncPath):
     newForm._syncSwitches()
     assert newForm.addNotes.isChecked() is False
 
+    # With at least one root folder enabled, the notes switch is untouched
+    newForm.addNotes.setChecked(True)
+    newForm.addPlot.setChecked(True)
+    newForm._syncSwitches()
+    assert newForm.addNotes.isChecked() is True
+    newForm.addPlot.setChecked(False)
+
     # Change fill info to sample
     newForm.fillSample.trigger()
     assert newForm._fillMode == newForm.FILL_SAMPLE
     assert newForm.projFill.text() == "Example Project"
     assert newForm.extraWidget.isVisible() is False
+
+    # Cancelling the template picker leaves the fill mode unchanged
+    fillModeBefore = newForm._fillMode
+    with monkeypatch.context() as mp:
+        mp.setattr(SHARED, "getProjectPath", lambda *a, **k: None)
+        newForm.fillCopy.trigger()
+        assert newForm._fillMode == fillModeBefore
 
     # Change fill info to template
     with monkeypatch.context() as mp:
@@ -320,6 +389,13 @@ def testToolWelcome_New(qtbot, caplog, monkeypatch, nwGUI, fncPath):
         "roots": [nwItemClass.PLOT, nwItemClass.CHARACTER, nwItemClass.WORLD],
         "notes": True,
     }
+
+    # A failed build does not request opening the project
+    with monkeypatch.context() as mp:
+        mp.setattr(ProjectBuilder, "buildProject", lambda *a, **k: False)
+        with qtbot.assertNotEmitted(welcome.openProjectRequest, wait=100):
+            welcome.btnCreate.click()
+    assert not (projPath / nwFiles.PROJ_FILE).exists()
 
     # Create a project with these values
     with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:

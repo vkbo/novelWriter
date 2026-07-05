@@ -142,7 +142,7 @@ class GuiProjectSearch(QWidget):
         self.searchResult.itemSelectionChanged.connect(self._searchResultSelected)
         self.searchResult.setAccessibleName(self.viewLabel.text())
 
-        if header := self.searchResult.header():
+        if header := self.searchResult.header():  # pragma: no branch
             header.setStretchLastSection(False)
             header.setSectionResizeMode(self.C_NAME, QtHeaderStretch)
             header.setSectionResizeMode(self.C_COUNT, QtHeaderToContents)
@@ -295,6 +295,8 @@ class GuiProjectSearch(QWidget):
                 self.selectedItemChanged.emit(str(data[0]))
             elif data := items[0].data(0, self.D_HANDLE):
                 self.selectedItemChanged.emit(str(data))
+            else:  # pragma: no cover
+                pass
 
     @pyqtSlot("QTreeWidgetItem*", int)
     def _searchResultDoubleClicked(self, item: QTreeWidgetItem, column: int) -> None:

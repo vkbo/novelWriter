@@ -32,7 +32,7 @@ from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.core.tree import NWTree
-from novelwriter.enum import nwItemClass, nwItemType
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 
 from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
@@ -179,6 +179,36 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
     ]
     assertTreeModelConsistency(tree)
 
+    # Clear, and populate with one item that has an invalid handle
+    tree.clear()
+    assert bool(tree) is False
+    assert len(tree) == 0
+    badItems = deepcopy(mockItems)
+    badItems[1]["itemAttr"]["handle"] = "not-a-handle"
+    tree.unpack(badItems)
+    assert len(tree) == 8  # One less than the full set
+    assertTreeModelConsistency(tree)
+
+    # Clear, and populate with an item whose parent handle doesn't exist anywhere
+    tree.clear()
+    assert bool(tree) is False
+    assert len(tree) == 0
+    orphanItems = deepcopy(mockItems)
+    orphanItems[1]["itemAttr"]["parent"] = "9999999999999"
+    tree.unpack(orphanItems)
+    assert len(tree) == 8  # Title Page could not be added
+    assertTreeModelConsistency(tree)
+
+    # Clear, and populate with a non-root item that has no parent
+    tree.clear()
+    assert bool(tree) is False
+    assert len(tree) == 0
+    noParentItems = deepcopy(mockItems)
+    noParentItems[1]["itemAttr"]["parent"] = None
+    tree.unpack(noParentItems)
+    assert len(tree) == 8  # Title Page could not be added
+    assertTreeModelConsistency(tree)
+
     # Clear and populate reversed with max depth limit very low
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.tree.MAX_DEPTH", 1)
@@ -197,7 +227,7 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_ManipulateTree(mockGUI, mockItems):
+def testCoreTree_ManipulateTree(monkeypatch, mockGUI, mockItems):
     """Check create, add, remove and duplicate items."""
     project = NWProject()
     tree = NWTree(project)
@@ -304,6 +334,24 @@ def testCoreTree_ManipulateTree(mockGUI, mockItems):
         "Trash",
     ]
 
+    # Duplicate with an invalid parent
+    assert tree.duplicate(bHandle, "not-a-parent", True) is None
+    assert [n.item.itemName for n in tree.model.root.allChildren()] == [
+        "Novel",
+        "Title Page",
+        "New Folder",
+        "New Chapter",
+        "New Scene",
+        "Plot",
+        "Characters",
+        "Locations",
+        "Objects",
+        "Foo",
+        "Bar",
+        "Baz",
+        "Trash",
+    ]
+
     # Remove Baz
     assert tree.remove(zHandle) is True
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
@@ -326,6 +374,11 @@ def testCoreTree_ManipulateTree(mockGUI, mockItems):
 
     # Remove non-existing
     assert tree.remove("bob") is False
+
+    # Remove where the model refuses to remove the child
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.itemmodel.ProjectModel.removeChild", lambda *a: False)
+        assert tree.remove(bHandle) is False
 
     # Add item with non-existing parent
     item = NWItem(project, tree._makeHandle())
@@ -563,6 +616,9 @@ def testCoreTree_ItemMethods(monkeypatch, mockGUI, mockItems):
             ("000000000000f", "New Scene"),
         ]
 
+    # An unknown handle returns an empty path
+    assert tree.itemPath(C.hInvalid, withName=True) == []
+
     # Sub Tree
     assert tree.subTree(C.hInvalid) == []
     assert tree.subTree(C.hNovelRoot) == [
@@ -627,6 +683,14 @@ def testCoreTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
     assert tree.sumCounts() == (9, 0, 40, 0)
     assert tree.model.root.count == 9
 
+    # Items with no layout (e.g. folders created directly) are not counted
+    noLayoutHandle = tree.create("No Layout", C.hNovelRoot, nwItemType.FILE)
+    assert noLayoutHandle is not None
+    tree[noLayoutHandle].setLayout(nwItemLayout.NO_LAYOUT)  # type: ignore
+    tree[noLayoutHandle].setWordCount(99)  # type: ignore
+    assert tree.sumCounts() == (9, 0, 40, 0)
+    tree.remove(noLayoutHandle)
+
     for node in tree.nodes.values():
         if node.item.isFileType():
             node.item.setWordCount(5)
@@ -638,6 +702,9 @@ def testCoreTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
     project.index.rebuild()
     tree.refreshAllItems()
     assert tree.model.root.count == 9
+
+    # Refresh a specific item, and ignore an unknown handle
+    tree.refreshItems([C.hTitlePage, "not-a-handle"])
 
     # Trash can't be created
     assert trash is not None
@@ -654,7 +721,7 @@ def testCoreTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTree_CheckConsistency(caplog, mockGUI, fncPath, mockRnd):
+def testCoreTree_CheckConsistency(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     """Check the project tree's consistency."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -701,12 +768,38 @@ def testCoreTree_CheckConsistency(caplog, mockGUI, fncPath, mockRnd):
     assert itemX.itemClass == nwItemClass.NOVEL
     assert itemX.itemName == "[Recovered] Stuff"
 
+    # An orphan with valid metadata pointing to an existing parent
+    # is added to that parent directly
+    yHandle = "0123456789abd"
+    (contentPath / f"{yHandle}.nwd").write_text(
+        (
+            "%%~name: Stuff\n"
+            f"%%~path: {C.hNovelRoot}/{yHandle}\n"
+            "%%~kind: NOVEL/DOCUMENT\n"
+            "%%~hash: 0000000000000000000000000000000000000000\n"
+            "%%~date: Unknown/Unknown\n"
+            "### Stuff\n"
+        ),
+        encoding="utf-8",
+    )
+    assert project.tree.checkConsistency("Recovered") == (1, 1)
+    itemY = project.tree[yHandle]
+    assert isinstance(itemY, NWItem)
+    assert itemY.itemParent == C.hNovelRoot
+
     # If the tree is empty, a new root folder is created
     project.tree.clear()
-    assert project.tree.checkConsistency("Recovered") == (4, 4)
-    assert len(project.tree) == 5
+    assert project.tree.checkConsistency("Recovered") == (5, 5)
+    assert len(project.tree) == 6
     nHandle = project.tree.findRoot(nwItemClass.NOVEL)
     assert project.tree[nHandle].itemName == "Recovered"  # type: ignore
+
+    # If the recovered item cannot be added, it is not counted
+    project.tree.remove(yHandle)
+    (contentPath / f"{yHandle}.nwd").write_text("### Stuff", encoding="utf-8")
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.tree.NWTree.add", lambda *a: False)
+        assert project.tree.checkConsistency("Recovered") == (1, 0)
 
 
 @pytest.mark.core

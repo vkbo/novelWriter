@@ -256,6 +256,22 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToMarkdown_Fields(mockGUI):
+    """Test field substitution in the ToMarkdown class."""
+    project = NWProject()
+    md = ToMarkdown(project, False)
+    md.initDocument()
+
+    # A known field is substituted, an unknown one is left untouched
+    md._text = "Word Count: [field:allWords], Unknown: [field:unknownField]\n"
+    md.tokenizeText()
+    md.doConvert()
+    md.countStats()
+    md.closeDocument()
+    assert md._pages[-1] == "Word Count: 4, Unknown: {{unknownField}}\n\n"
+
+
+@pytest.mark.core
 def testFmtToMarkdown_ConvertDirect(mockGUI):
     """Test the converter directly using the ToMarkdown class."""
     project = NWProject()

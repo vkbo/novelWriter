@@ -21,9 +21,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import ctypes
 import logging
 import sys
 
+from types import ModuleType
 from unittest.mock import Mock
 
 import pytest
@@ -52,12 +54,40 @@ def testBaseInit_Launch(caplog, monkeypatch, fncPath):
 
     # Darwin Launch Error Handling
     with monkeypatch.context() as mp:
+        mp.setattr(sys, "platform", "darwin")
         mp.setitem(sys.modules, "Foundation", None)
         main([f"--config={fncPath}", f"--data={fncPath}"])
 
+    # Darwin Launch, Success
+    with monkeypatch.context() as mp:
+        bundleInfo = {}
+        mockBundle = Mock()
+        mockBundle.localizedInfoDictionary = Mock(return_value=None)
+        mockBundle.infoDictionary = Mock(return_value=bundleInfo)
+        mockNSBundle = Mock()
+        mockNSBundle.mainBundle = Mock(return_value=mockBundle)
+        mockFoundation = ModuleType("Foundation")
+        mockFoundation.NSBundle = mockNSBundle  # type: ignore
+        mp.setattr(sys, "platform", "darwin")
+        mp.setitem(sys.modules, "Foundation", mockFoundation)
+        main([f"--config={fncPath}", f"--data={fncPath}"])
+        assert bundleInfo["CFBundleName"] == "novelWriter"
+
     # Windows Launch Error Handling
     with monkeypatch.context() as mp:
+        mp.setattr(sys, "platform", "win32")
         mp.setitem(sys.modules, "ctypes", None)
+        main([f"--config={fncPath}", f"--data={fncPath}"])
+
+    # Windows Launch, Success
+    with monkeypatch.context() as mp:
+        mp.setattr(sys, "platform", "win32")
+        mp.setattr(ctypes, "windll", Mock(), raising=False)
+        main([f"--config={fncPath}", f"--data={fncPath}"])
+
+    # Other Platform
+    with monkeypatch.context() as mp:
+        mp.setattr(sys, "platform", "freebsd")
         main([f"--config={fncPath}", f"--data={fncPath}"])
 
 

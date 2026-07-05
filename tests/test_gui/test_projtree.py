@@ -30,6 +30,7 @@ from PyQt6.QtGui import QMouseEvent
 from PyQt6.QtWidgets import QMenu
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.core.coretools import DocMerger
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -48,6 +49,32 @@ from novelwriter.types import (
 
 from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
+
+
+@pytest.mark.gui
+def testGuiProjTree_NoProjectEdgeCases(qtbot, nwGUI):
+    """Test project tree and view methods called when no project is
+    open, and thus no model has been assigned to the tree view.
+    """
+    projView = nwGUI.projView
+    projTree = projView.projTree
+
+    assert projTree._getModel() is None
+
+    # None of these should raise, and should just do nothing
+    projTree.restoreExpandedState()
+    projTree.setSelectedHandle(C.hNovelRoot)
+    projTree.moveItemUp()
+    projTree.moveItemDown()
+    projTree._clearSelection()
+    projTree.collapseFromIndex(QModelIndex())
+    projTree.openContextMenu()
+    projTree._onDoubleClick(QModelIndex())
+    projTree._onNodeCollapsed(QModelIndex())
+    projTree._onNodeExpanded(QModelIndex())
+
+    # Renaming with no selection and no valid handle does nothing
+    projView.renameTreeItem()
 
 
 @pytest.mark.gui
@@ -506,6 +533,53 @@ def testGuiProjTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, moc
 
 
 @pytest.mark.gui
+def testGuiProjTree_RenameCancelled(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test that cancelling the rename dialog leaves the item name
+    unchanged.
+    """
+    buildTestProject(nwGUI, projPath)
+    project = SHARED.project
+    projView = nwGUI.projView
+
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, **k: ("New Name", False))
+    projView.renameTreeItem(C.hNovelRoot)
+    item = project.tree[C.hNovelRoot]
+    assert item is not None
+    assert item.itemName == "Novel"
+
+
+@pytest.mark.gui
+def testGuiProjTree_NewTreeItemFailures(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the defensive checks in newTreeItem for when the tree
+    cannot find a valid parent, or the file creation itself fails.
+    """
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, **k: ("New Item", True))
+
+    projView = nwGUI.projView
+    projTree = projView.projTree
+    project = SHARED.project
+    tree = project.tree
+
+    buildTestProject(nwGUI, projPath)
+
+    # No valid parent handle is found for the new item
+    with monkeypatch.context() as mp:
+        mp.setattr(type(tree), "pickParent", lambda *a, **k: (None, -1))
+        projView.setSelectedHandle(C.hChapterDoc, doScroll=True)
+        countBefore = len(tree)
+        projTree.newTreeItem(nwItemType.FILE)
+        assert len(tree) == countBefore
+
+    # File creation itself fails
+    with monkeypatch.context() as mp:
+        mp.setattr(type(project), "newFile", lambda *a, **k: None)
+        projView.setSelectedHandle(C.hChapterDoc, doScroll=True)
+        countBefore = len(tree)
+        projTree.newTreeItem(nwItemType.FILE)
+        assert len(tree) == countBefore
+
+
+@pytest.mark.gui
 def testGuiProjTree_SimpleOperations(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test simple operations in the project tree like internal move,
     change selection and expand/collapse nodes.
@@ -750,6 +824,44 @@ def testGuiProjTree_MouseClicks(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     projTree.mousePressEvent(event)
     assert projView.getSelectedHandle() is None
+
+
+@pytest.mark.gui
+def testGuiProjTree_MouseAndNavEdgeCases(qtbot, nwGUI, projPath, mockRnd):
+    """Test mouse press and keyboard navigation edge cases not covered
+    by the other tests.
+    """
+    projView = nwGUI.projView
+    projTree = projView.projTree
+    model = SHARED.project.tree.model
+
+    buildTestProject(nwGUI, projPath)
+    projTree.expandAll()
+
+    eType = QEvent.Type.MouseButtonPress
+    modifier = QtModNone
+
+    # Left click on a valid item does not clear the selection
+    projTree.setSelectedHandle(C.hChapterDoc)
+    pos = QPointF(projTree.visualRect(model.indexFromHandle(C.hChapterDoc)).center())
+    event = QMouseEvent(eType, pos, QtMouseLeft, QtMouseLeft, modifier)
+    projTree.mousePressEvent(event)
+    assert projView.getSelectedHandle() == C.hChapterDoc
+
+    # Middle click on a folder does not open the viewer
+    assert nwGUI.docViewer.docHandle is None
+    pos = QPointF(projTree.visualRect(model.indexFromHandle(C.hChapterDir)).center())
+    event = QMouseEvent(eType, pos, QtMouseMiddle, QtMouseMiddle, modifier)
+    projTree.mousePressEvent(event)
+    assert nwGUI.docViewer.docHandle is None
+
+    # A leaf item has no first child to move to
+    projTree.setSelectedHandle(C.hSceneDoc)
+    projTree.goToFirstChild()
+    assert projView.getSelectedHandle() == C.hSceneDoc
+
+    # Collapsing an invalid index does nothing
+    projTree.collapseFromIndex(QModelIndex())
 
 
 @pytest.mark.gui
@@ -1039,6 +1151,43 @@ def testGuiProjTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath, m
 
 
 @pytest.mark.gui
+def testGuiProjTree_DeleteEdgeCases(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test defensive branches in the delete/trash handling that are
+    not covered by the main delete request test.
+    """
+    projTree = nwGUI.projView.projTree
+    project = SHARED.project
+    tree = project.tree
+
+    buildTestProject(nwGUI, projPath)
+
+    # Move a scene to trash so there is one valid trash handle
+    projTree.processDeleteRequest([C.hSceneDoc], askFirst=False)
+    trash = tree.trash
+    assert trash is not None
+    assert [n.item.itemHandle for n in trash.allChildren()] == [C.hSceneDoc]
+
+    # A bogus handle in the list resolves to an invalid index in the
+    # model, and is silently skipped while the valid one is deleted
+    projTree.processDeleteRequest([C.hSceneDoc, C.hInvalid], askFirst=False)
+    assert trash.childCount() == 0
+
+    # If there is no trash root, and the selection isn't already trash,
+    # the request falls through and does nothing
+    with monkeypatch.context() as mp:
+        mp.setattr(type(tree), "trash", property(lambda self: None))
+        projTree.processDeleteRequest([C.hChapterDoc], askFirst=False)
+    assert C.hChapterDoc in tree
+
+    # Emptying the trash when it doesn't exist does nothing
+    countBefore = len(tree)
+    with monkeypatch.context() as mp:
+        mp.setattr(type(tree), "trash", property(lambda self: None))
+        projTree.emptyTrash()
+    assert len(tree) == countBefore
+
+
+@pytest.mark.gui
 def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd, ipsumText):
     """Test the merge document function."""
     mergeData = {}
@@ -1203,6 +1352,36 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
     ]
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiProjTree_MergeTargetHandleEdgeCase(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the defensive check after a successful merge, in case the
+    merger somehow ends up without a valid target handle.
+    """
+    mergeData = {"finalItems": [], "moveToTrash": False}
+
+    monkeypatch.setattr(GuiDocMerge, "__init__", lambda *a: None)
+    monkeypatch.setattr(GuiDocMerge, "exec", lambda *a: None)
+    monkeypatch.setattr(GuiDocMerge, "softDelete", lambda *a: None)
+    monkeypatch.setattr(GuiDocMerge, "result", lambda *a: QtAccepted)
+    monkeypatch.setattr(GuiDocMerge, "data", lambda *a: mergeData)
+    monkeypatch.setattr(DocMerger, "writeTargetDoc", lambda *a: True)
+    monkeypatch.setattr(DocMerger, "targetHandle", property(lambda self: None))
+
+    projView = nwGUI.projView
+    projTree = projView.projTree
+    project = SHARED.project
+
+    buildTestProject(nwGUI, projPath)
+
+    hChapter1 = project.newFile("Chapter 1", C.hNovelRoot)
+    assert hChapter1 is not None
+
+    mergeData["finalItems"] = [hChapter1]
+
+    assert projTree.mergeDocuments(hChapter1, False) is True
+    assert projView.getSelectedHandle() != hChapter1
 
 
 @pytest.mark.gui
@@ -1912,6 +2091,105 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert nodeSNote.item.itemImport == "i000004"
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiProjTree_ContextMenuEdgeCases(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test defensive branches in the context menu builders and their
+    associated actions that aren't covered by the main context menu test.
+    """
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, **k: (k.get("text", ""), True))
+
+    projView = nwGUI.projView
+    projTree = projView.projTree
+    project = SHARED.project
+    tree = project.tree
+    model = tree.model
+
+    buildTestProject(nwGUI, projPath)
+
+    # Trash menu with no children in the Trash folder
+    trashNode = tree.trash
+    assert trashNode is not None
+    assert trashNode.childCount() == 0
+    indices = [model.indexFromHandle(trashNode.item.itemHandle)]
+    ctxMenu = _TreeContextMenu(projTree, model, trashNode, indices)
+    ctxMenu.buildTrashMenu()
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == ["Empty Trash"]
+
+    # A brand new empty document has no heading to offer as a rename
+    projView.setSelectedHandle(C.hChapterDir, doScroll=True)
+    projTree.newTreeItem(nwItemType.FILE, hLevel=0)
+    hEmptyDoc = "0000000000011"
+    assert hEmptyDoc in tree
+    node = tree.nodes[hEmptyDoc]
+    ctxMenu = _TreeContextMenu(projTree, model, node, [model.indexFromHandle(hEmptyDoc)])
+    ctxMenu.buildSingleSelectMenu()
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert "Rename to Heading" not in actions
+
+    # Toggling active on a folder does nothing
+    folderNode = tree.nodes[C.hChapterDir]
+    ctxMenu = _TreeContextMenu(projTree, model, folderNode, [model.indexFromHandle(C.hChapterDir)])
+    assert folderNode.item.isActive is True
+    ctxMenu._toggleItemActive()
+    assert folderNode.item.isActive is True
+
+    # Iterating active status skips non-file items in the selection
+    fileNode = tree.nodes[C.hChapterDoc]
+    indices = [model.indexFromHandle(C.hChapterDoc), model.indexFromHandle(C.hChapterDir)]
+    ctxMenu = _TreeContextMenu(projTree, model, fileNode, indices)
+    fileNode.item.setActive(True)
+    ctxMenu._iterItemActive(False)
+    assert fileNode.item.isActive is False
+    assert folderNode.item.isFolderType()
+
+    # Recursing active status on a folder applies only to file children,
+    # since the folder itself isn't a file
+    chapNode = tree.nodes[C.hChapterDoc]
+    sceneNode = tree.nodes[C.hSceneDoc]
+    ctxMenu = _TreeContextMenu(projTree, model, folderNode, [model.indexFromHandle(C.hChapterDir)])
+    chapNode.item.setActive(True)
+    sceneNode.item.setActive(True)
+    ctxMenu._recurseItemActive(False)
+    assert chapNode.item.isActive is False
+    assert sceneNode.item.isActive is False
+
+    # A folder among the children is also skipped by the recursion
+    projView.setSelectedHandle(C.hChapterDir, doScroll=True)
+    projTree.newTreeItem(nwItemType.FOLDER)
+    hSubFolder = "0000000000012"
+    assert hSubFolder in tree
+    ctxMenu._recurseItemActive(True)
+    assert tree.nodes[hSubFolder].item.isFolderType()
+    assert chapNode.item.isActive is True
+    assert sceneNode.item.isActive is True
+
+    # Changing the layout of a character note to Document does nothing,
+    # since the class doesn't allow document layout
+    projView.setSelectedHandle(C.hCharRoot, doScroll=True)
+    projTree.newTreeItem(nwItemType.FILE, isNote=True)
+    hCharNote = "0000000000013"
+    assert hCharNote in tree
+    charNode = tree.nodes[hCharNote]
+    ctxMenu = _TreeContextMenu(projTree, model, charNode, [model.indexFromHandle(hCharNote)])
+    assert charNode.item.itemLayout == nwItemLayout.NOTE
+    ctxMenu._changeItemLayout(nwItemLayout.DOCUMENT)
+    assert charNode.item.itemLayout == nwItemLayout.NOTE
+
+    # Converting a non-folder item does nothing
+    ctxMenu._convertFolderToFile(nwItemLayout.NOTE)
+    assert charNode.item.isFileType()
+
+
+@pytest.mark.gui
+def testGuiProjTree_TemplateMenuEdgeCase(qtbot, nwGUI):
+    """Test that removing a template handle that isn't currently in the
+    templates menu does nothing.
+    """
+    mTemplates = nwGUI.projView.projBar.mTemplates
+    mTemplates.remove("0000000000099")
 
 
 @pytest.mark.gui

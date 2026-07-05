@@ -41,6 +41,7 @@ from novelwriter.gui.theme import (
     STYLES_FLAT_TABS,
     STYLES_MIN_TOOLBUTTON,
     GuiTheme,
+    ThemeEntry,
     ThemeMeta,
     _listContent,
 )
@@ -94,13 +95,17 @@ def testGuiTheme_ParseColor():
 
 
 @pytest.mark.gui
-def testGuiTheme_ScanThemes(monkeypatch):
+def testGuiTheme_ScanThemes(monkeypatch, tstPaths):
     """Test the themes scanning."""
     theme = GuiTheme()
     files = []
 
     # Invalid path should be handled silently
     _listContent(files, None, ".conf")  # type: ignore
+    assert len(files) == 0
+
+    # A path that doesn't exist is handled silently
+    _listContent(files, tstPaths.cnfDir / "does_not_exist", ".conf")
     assert len(files) == 0
 
     # Load built-in themes
@@ -124,6 +129,12 @@ def testGuiTheme_ScanThemes(monkeypatch):
     assert dark.dark is True
     assert light.name == "Default Light Theme"
     assert light.dark is False
+
+    # A theme file with an invalid or missing mode is skipped
+    badTheme = tstPaths.cnfDir / "themes" / "bad.conf"
+    badTheme.write_text("[Main]\nname = Bad Theme\nmode = sideways\n", encoding="utf-8")
+    theme._scanThemes([*files, badTheme])
+    assert "Bad Theme" not in [entry.name for entry in theme.colourThemes.values()]
 
 
 @pytest.mark.gui
@@ -308,6 +319,19 @@ def testGuiTheme_SpecialColors(tstPaths):
     assert theme.getRawBaseColor("scene") == b"#ff00ff"
     assert theme.getRawBaseColor("note") == b"#ff00ff"
 
+    # A theme file missing the Main, Base, Project and Palette sections
+    # does not crash, and simply skips setting those colours
+    minimalTheme: Path = tstPaths.cnfDir / "themes" / "minimal.conf"
+    minimalTheme.write_text(
+        ("[Icon]\ntool = #123456\n\n[GUI]\nsyntaxfile = None\n"),
+        encoding="utf-8",
+    )
+    theme._allThemes["minimal"] = ThemeEntry("Minimal", False, minimalTheme)
+    CONFIG.themeMode = nwTheme.LIGHT
+    CONFIG.lightTheme = "minimal"
+    theme.loadTheme(force=True)
+    assert theme._meta.name == ""
+
 
 @pytest.mark.gui
 def testGuiTheme_Methods(monkeypatch):
@@ -366,7 +390,7 @@ def testGuiTheme_Methods(monkeypatch):
 
 
 @pytest.mark.gui
-def testGuiTheme_ScanIcons(monkeypatch):
+def testGuiTheme_ScanIcons(monkeypatch, tstPaths):
     """Test the icon theme scanning."""
     theme = GuiTheme()
 
@@ -384,6 +408,17 @@ def testGuiTheme_ScanIcons(monkeypatch):
     # Read all themes correctly
     theme.iconCache._scanThemes(files)
     assert len(theme.iconCache.iconThemes) > 0
+
+    # An empty file, and a file with an empty meta:name are both skipped
+    emptyFile = tstPaths.cnfDir / "empty.icons"
+    emptyFile.write_text("", encoding="utf-8")
+
+    blankNameFile = tstPaths.cnfDir / "blankname.icons"
+    blankNameFile.write_text("meta:name = \nicon:add = some-svg-data\n", encoding="utf-8")
+
+    countBefore = len(theme.iconCache.iconThemes)
+    theme.iconCache._scanThemes([*files, emptyFile, blankNameFile])
+    assert len(theme.iconCache.iconThemes) == countBefore
 
 
 @pytest.mark.gui
@@ -422,6 +457,21 @@ def testGuiTheme_IconThemes(monkeypatch):
     theme.iconCache._meta = ThemeMeta()
     theme.iconCache.loadTheme("not_a_theme")
     assert theme.iconCache._meta.name == ""
+
+
+@pytest.mark.gui
+def testGuiTheme_IconThemeUnknownMeta(tstPaths):
+    """An unrecognised meta key in an icon theme file is ignored."""
+    theme = GuiTheme()
+
+    iconsFile = tstPaths.cnfDir / "icons.icons"
+    iconsFile.write_text(
+        "meta:name = Test Icons\nmeta:unknown = ignored\nicon:add = some-svg-data\n",
+        encoding="utf-8",
+    )
+    theme.iconCache._allThemes["test_icons"] = ThemeEntry("Test Icons", False, iconsFile)
+    theme.iconCache.loadTheme("test_icons")
+    assert theme.iconCache._meta.name == "Test Icons"
 
 
 @pytest.mark.gui

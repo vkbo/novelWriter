@@ -351,7 +351,7 @@ class ProjectModel(QAbstractItemModel):
         parent = parent or QModelIndex()
         if self.hasIndex(row, column, parent):
             node: ProjectNode = parent.internalPointer() if parent.isValid() else self._root
-            if child := node.child(row):
+            if child := node.child(row):  # pragma: no branch
                 return self.createIndex(row, column, child)
         return QModelIndex()
 
@@ -563,7 +563,7 @@ class ProjectModel(QAbstractItemModel):
         """Refresh parent/root relationships and return child handles to refresh."""
         refresh: list[str] = []
         for child in node.allChildren():
-            if parent := child.parent():
+            if parent := child.parent():  # pragma: no branch
                 parent._updateRelationships(child)  # noqa: SLF001
             refresh.append(child.item.itemHandle)
         return refresh

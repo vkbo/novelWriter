@@ -412,6 +412,39 @@ def testFmtToEPub_Footnotes(mockGUI):
 
 
 @pytest.mark.core
+def testFmtToEPub_CloseDocument(mockGUI, fncPath):
+    """Test pruning of empty sections and field substitution on close/save."""
+    project = NWProject()
+    epub = ToEPub(project)
+    epub.initDocument()
+    epub._isNovel = True
+
+    # A document with no leading title or text leaves the initial front
+    # matter section empty, and it should be pruned on close
+    epub._text = "## Chapter One\n\n[field:allWords] words[field:unknownField]\n\n"
+    epub.tokenizeText()
+    epub.doConvert()
+    epub.countStats()
+    epub.closeDocument()
+    assert len(epub._sections) == 1
+    assert epub._sections[0].epubType == EPubType.CHAPTER
+
+    # An unknown field is left untouched, since there is no matching count
+    epub.saveDocument(fncPath / "closeDocument.epub")
+    assert epub._sections[0].text[-1] == "<p>3 words{{unknownField}}</p>"
+
+    # With no fields used, the substitution step is skipped entirely
+    epub2 = ToEPub(project)
+    epub2.initDocument()
+    epub2._text = "## Chapter One\n\nSome text\n\n"
+    epub2.tokenizeText()
+    epub2.doConvert()
+    epub2.closeDocument()
+    epub2.saveDocument(fncPath / "closeDocumentNoFields.epub")
+    assert epub2._sections[0].text[-1] == "<p>Some text</p>"
+
+
+@pytest.mark.core
 def testFmtToEPub_ConvertDirect(mockGUI):
     """Test the converter directly using the ToEPub class."""
     project = NWProject()

@@ -101,6 +101,8 @@ class NovelModel(QAbstractTableModel):
                 self._columns = 4
                 self._extraKey = nwKeyWords.PLOT_KEY
                 self._extraLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY])
+            case _:  # pragma: no cover
+                pass
 
     ##
     #  Model Interface

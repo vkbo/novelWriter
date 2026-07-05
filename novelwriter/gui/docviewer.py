@@ -166,7 +166,7 @@ class GuiDocViewer(QTextBrowser):
         palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
 
-        if viewport := self.viewport():
+        if viewport := self.viewport():  # pragma: no branch
             palette = viewport.palette()
             palette.setColor(QPalette.ColorRole.Base, syntax.back)
             palette.setColor(QPalette.ColorRole.Text, syntax.text)
@@ -190,7 +190,7 @@ class GuiDocViewer(QTextBrowser):
         self._docTheme.altdialog = syntax.dialA
 
         # Set default text margins
-        if document := self.document():
+        if document := self.document():  # pragma: no branch
             document.setDocumentMargin(0)
 
         # Scroll bars
@@ -411,7 +411,7 @@ class GuiDocViewer(QTextBrowser):
         action.triggered.connect(qtLambda(self._makePosSelection, QtSelectBlock, point))
 
         # Open the context menu
-        if viewport := self.viewport():
+        if viewport := self.viewport():  # pragma: no branch
             ctxMenu.exec(viewport.mapToGlobal(point))
 
         ctxMenu.setParent(None)

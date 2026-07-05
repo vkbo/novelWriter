@@ -147,7 +147,11 @@ def testCoreOptions_SetGet(mockGUI):
     assert options.getBool("GuiNovelDetails", "mockItem", None) is None  # type: ignore
     assert options.getEnum("GuiNovelView", "lastCol", nwNovelExtra, nwColHidden) == nwColHidden
 
-    # Get from non-existent  groups
+    # Get enum, invalid value
+    assert options.setValue("GuiNovelView", "lastCol", "invalidValue") is True
+    assert options.getEnum("GuiNovelView", "lastCol", nwNovelExtra, nwColHidden) == nwColHidden
+
+    # Get from non-existent groups
     assert options.getValue("SomeGroup", "mockItem", None) is None
     assert options.getString("SomeGroup", "mockItem", None) is None  # type: ignore
     assert options.getInt("SomeGroup", "mockItem", None) is None  # type: ignore

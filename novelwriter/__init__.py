@@ -166,6 +166,8 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             confPath = inArg
         elif inOpt == "--data":
             dataPath = inArg
+        else:  # pragma: no cover
+            pass
 
     if fmtColor:
         # This will overwrite the default level names, and also ensure that

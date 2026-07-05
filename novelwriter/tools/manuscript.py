@@ -349,7 +349,7 @@ class GuiManuscript(NToolDialog):
             new = BuildSettings.duplicate(build)
             self._builds.setBuild(new)
             self._updateBuildsList()
-            if item := self._buildMap.get(new.buildID):
+            if item := self._buildMap.get(new.buildID):  # pragma: no branch
                 item.setSelected(True)
 
     @pyqtSlot("QListWidgetItem*", "QListWidgetItem*")
@@ -553,7 +553,7 @@ class _DetailsWidget(QWidget):
         state = []
         for i in range(self.listView.topLevelItemCount()):
             item = self.listView.topLevelItem(i)
-            if isinstance(item, QTreeWidgetItem):
+            if isinstance(item, QTreeWidgetItem):  # pragma: no branch
                 state.append(item.isExpanded())
         return state
 
@@ -570,7 +570,7 @@ class _DetailsWidget(QWidget):
         count = len(state)
         for i in range(self.listView.topLevelItemCount()):
             item = self.listView.topLevelItem(i)
-            if isinstance(item, QTreeWidgetItem):
+            if isinstance(item, QTreeWidgetItem):  # pragma: no branch
                 item.setExpanded((state[i] if i < count else True) and item.childCount() > 0)
 
     ##
@@ -697,7 +697,7 @@ class _OutlineWidget(QWidget):
             tBrush = self.palette().highlight()
 
             indent = False
-            if root := self.listView.invisibleRootItem():
+            if root := self.listView.invisibleRootItem():  # pragma: no branch
                 parent = root
                 for anchor, entry in data.items():
                     prefix, _, text = entry.partition("|")
@@ -716,7 +716,7 @@ class _OutlineWidget(QWidget):
                         elif prefix in ("CH", "H1"):
                             root.addChild(item)
                             parent = item
-                        elif prefix in ("SC", "H2"):
+                        elif prefix in ("SC", "H2"):  # pragma: no branch
                             parent.addChild(item)
                             indent = True
 
@@ -756,7 +756,7 @@ class _PreviewWidget(QTextBrowser):
         self.setOpenExternalLinks(False)
         self.setOpenLinks(False)
 
-        if document := self.document():
+        if document := self.document():  # pragma: no branch
             document.setDocumentMargin(CONFIG.textMargin)
 
         self.setPlaceholderText(self.tr('Press the "Preview" button to generate ...'))
@@ -826,7 +826,7 @@ class _PreviewWidget(QTextBrowser):
         self.buildProgress.setValue(0)
         self.buildProgress.setCentreText(None)
         self.buildProgress.setVisible(True)
-        if vBar := self.verticalScrollBar():
+        if vBar := self.verticalScrollBar():  # pragma: no branch
             self._scrollPos = vBar.value()
         self.setPlaceholderText("")
         self.clear()
@@ -880,7 +880,7 @@ class _PreviewWidget(QTextBrowser):
     @pyqtSlot("QPrinter*")
     def printPreview(self, printer: QPrinter) -> None:
         """Connect the print preview painter to the document viewer."""
-        if document := self.document():
+        if document := self.document():  # pragma: no branch
             QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             printer.setPageOrientation(QPageLayout.Orientation.Portrait)
             document.print(printer)
@@ -924,7 +924,7 @@ class _PreviewWidget(QTextBrowser):
     def _postUpdate(self) -> None:
         """Run tasks after content update."""
         self.buildProgress.setVisible(False)
-        if vBar := self.verticalScrollBar():
+        if vBar := self.verticalScrollBar():  # pragma: no branch
             vBar.setValue(self._scrollPos)
 
     ##

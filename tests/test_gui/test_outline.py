@@ -198,6 +198,11 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert outlineBar.novelValue.itemData(1) is None  # Separator
     assert outlineBar.novelValue.itemData(2) == ""  # All novels
 
+    # An invalid list format is rejected
+    listFormat = outlineBar.novelValue._listFormat
+    outlineBar.novelValue.setListFormat("No placeholder here")
+    assert outlineBar.novelValue._listFormat == listFormat
+
     # Add a second novel folder
     with qtbot.waitSignal(SHARED.rootFolderChanged):
         newHandle = SHARED.project.newRoot(nwItemClass.NOVEL)
@@ -268,10 +273,19 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert outlineData.fileValue.text() == "Scene One"
     assert outlineData.itemValue.text() == "Finished"
 
+    # An invalid handle does not update the details
+    outlineData.showItem("0000000000000", "T0001")
+    assert outlineData.titleValue.text() == "Scene One"
+
     # Click POV Link
     assert outlineData.tagValues[nwKeyWords.POV_KEY][1].text() == "<a href='Bod'>Bod</a>"
     outlineView._tagClicked("Bod")
     assert nwGUI.docViewer.docHandle == "4c4f28287af27"
+
+    # An empty link does nothing
+    nwGUI.docViewer._docHandle = None
+    outlineView._tagClicked("")
+    assert nwGUI.docViewer.docHandle is None
 
     # Scene One, Section Two
     selItem = outlineTree.topLevelItem(5)
@@ -289,8 +303,20 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     outlineTree._onItemDoubleClicked(selItem, 0)
     assert nwGUI.docEditor.docHandle == "88243afbe5ed8"
 
+    # Double-clicking with no selection does nothing
+    nwGUI.docEditor._docHandle = None
+    outlineTree.clearSelection()
+    outlineTree._onItemDoubleClicked(selItem, 0)
+    assert nwGUI.docEditor.docHandle is None
+
     # Dump to CSV
     # ===========
+
+    # Cancelling the save dialog does nothing
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: ("", ""))
+        outlineBar.aExport.trigger()
+
     with monkeypatch.context() as mp:
         csvFile = fncPath / "outline.csv"
         mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: (str(csvFile), ""))
@@ -301,5 +327,18 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
 
     copyfile(csvFile, testFile)
     assert cmpFiles(testFile, compFile)
+
+    # Open Project Tasks
+    # ==================
+
+    # A valid, previously saved handle is kept as-is
+    SHARED.project.data.setLastHandle(newHandle, "outline")
+    outlineView.openProjectTasks()
+    assert outlineBar.novelValue.handle == newHandle
+
+    # An invalid or missing handle falls back to the first novel root
+    SHARED.project.data.setLastHandle(None, "outline")
+    outlineView.openProjectTasks()
+    assert outlineBar.novelValue.handle == lipHandle
 
     # qtbot.stop()

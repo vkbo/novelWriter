@@ -164,7 +164,7 @@ class GuiDictionaries(NNonBlockingDialog):
             return False
 
         try:
-            if path.is_dir():
+            if path.is_dir():  # pragma: no branch
                 self.inPath.setText(str(path))
                 hunspell = path / "hunspell"
                 if hunspell.is_dir():

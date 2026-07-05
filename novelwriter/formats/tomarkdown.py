@@ -148,6 +148,9 @@ class ToMarkdown(Tokenizer):
                 end = "  \n" if tStyle & BlockFmt.Z_BTM else "\n\n"
                 lines.append(f"{self._formatText(tText, tFormat, mTags)}{end}")
 
+            else:  # pragma: no cover
+                pass
+
         self._pages.append("".join(lines))
 
     def closeDocument(self) -> None:
@@ -167,7 +170,7 @@ class ToMarkdown(Tokenizer):
             lines = []
             lines.append(f"### {footnotes}\n\n")
             for key, index in self._usedNotes.items():
-                if content := self._footnotes.get(key):
+                if content := self._footnotes.get(key):  # pragma: no branch
                     marker = f"{index}. "
                     text = self._formatText(content[0], content[1], tags)
                     lines.append(f"{marker}{text}\n")
@@ -202,7 +205,7 @@ class ToMarkdown(Tokenizer):
                 else:
                     md = "[ERR]"
             elif fmt == TextFmt.FIELD:
-                if field := data.partition(":")[2]:
+                if field := data.partition(":")[2]:  # pragma: no branch
                     self._usedFields.append((len(self._pages), field))
                     md = f"{{{{{field}}}}}"
             else:

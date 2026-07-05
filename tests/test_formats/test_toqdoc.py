@@ -630,7 +630,8 @@ def testFmtToQTextDocument_Footnotes(mockGUI):
     doc._text = (
         "### Scene\n\n"
         "Text with valid[footnote:fn1] and invalid[footnote:fn2] footnotes.\n\n"
-        "%Footnote.fn1: Here's the first note.\n\n"
+        "%Footnote.fn1: Here's the first note.[footnote:fn3]\n\n"
+        "%Footnote.fn3: This nested footnote is skipped.\n\n"
     )
     doc.tokenizeText()
     doc.doConvert()
@@ -649,6 +650,23 @@ def testFmtToQTextDocument_Footnotes(mockGUI):
     block = doc.document.findBlockByNumber(2)
     assert block.text() == "Footnotes"
 
-    # 3: Footnote 1
+    # 3: Footnote 1, with the nested footnote reference stripped
     block = doc.document.findBlockByNumber(3)
     assert block.text() == "1. Here's the first note."
+
+
+@pytest.mark.core
+def testFmtToQTextDocument_Fields(mockGUI):
+    """Test field substitution in the ToQTextDocument class."""
+    project = NWProject()
+    doc = ToQTextDocument(project)
+    doc.initDocument()
+
+    doc._text = "Word Count: [field:allWords], Unknown: [field:unknownField]\n"
+    doc.tokenizeText()
+    doc.doConvert()
+    doc.countStats()
+    doc.closeDocument()
+
+    block = doc.document.findBlockByNumber(0)
+    assert block.text() == "Word Count: 4, Unknown: 0"

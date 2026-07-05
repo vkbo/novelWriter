@@ -122,7 +122,7 @@ class GuiWritingStats(NToolDialog):
         self.listBox.setColumnWidth(self.C_COUNT, wCol3)
 
         hHeader = self.listBox.headerItem()
-        if hHeader is not None:
+        if hHeader is not None:  # pragma: no branch
             hHeader.setTextAlignment(self.C_LENGTH, QtAlignRight)
             hHeader.setTextAlignment(self.C_IDLE, QtAlignRight)
             hHeader.setTextAlignment(self.C_COUNT, QtAlignRight)

@@ -535,7 +535,7 @@ class GuiProjectTree(QTreeView):
         # Lock the column sizes
         iPx = SHARED.theme.baseIconHeight
 
-        if header := self.header():
+        if header := self.header():  # pragma: no branch
             header.setStretchLastSection(False)
             header.setMinimumSectionSize(iPx + 6)
             header.setSectionResizeMode(ProjectNode.C_NAME, QtHeaderStretch)
@@ -545,7 +545,7 @@ class GuiProjectTree(QTreeView):
             header.resizeSection(ProjectNode.C_ACTIVE, iPx + 6)
             header.resizeSection(ProjectNode.C_STATUS, iPx + 6)
 
-        if selectModelNew := self.selectionModel():
+        if selectModelNew := self.selectionModel():  # pragma: no branch
             selectModelNew.currentChanged.connect(self._onSelectionChange)
 
         self.restoreExpandedState()
@@ -754,7 +754,7 @@ class GuiProjectTree(QTreeView):
         """Duplicate the item hierarchy from a given item."""
         itemTree = [tHandle]
         itemTree.extend(SHARED.project.tree.subTree(tHandle))
-        if itemTree:
+        if itemTree:  # pragma: no branch
             if len(itemTree) == 1:
                 question = self.tr("Do you want to duplicate this document?")
             else:
@@ -923,7 +923,7 @@ class GuiProjectTree(QTreeView):
         if model := self._getModel():
             if point is None:
                 point = self.visualRect(self.currentIndex()).center()
-            if point is not None:
+            if point is not None:  # pragma: no branch
                 index = self.indexAt(point)
                 if (node := self._getNode(index)) and (indices := self._selectedRows()):
                     ctxMenu = _TreeContextMenu(self, model, node, indices)
@@ -933,7 +933,7 @@ class GuiProjectTree(QTreeView):
                         ctxMenu.buildMultiSelectMenu()
                     else:
                         ctxMenu.buildSingleSelectMenu()
-                    if viewport := self.viewport():
+                    if viewport := self.viewport():  # pragma: no branch
                         ctxMenu.exec(viewport.mapToGlobal(point))
                     ctxMenu.setParent(None)
 
@@ -1048,7 +1048,7 @@ class _UpdatableMenu(QMenu):
 
     def setActionsVisible(self, value: bool) -> None:
         """Set the visibility of root action."""
-        if action := self.menuAction():
+        if action := self.menuAction():  # pragma: no branch
             action.setVisible(value)
 
     ##

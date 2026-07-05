@@ -551,6 +551,25 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     orphan.detach()
     assert model._moveNode(orphan, novelIdx, -1) is False
 
+    # Internal move does nothing for an invalid index
+    model.internalMove(invalidIdx, -1)
+
+    # Internal move does nothing when the step doesn't change the position
+    model.internalMove(novelIdx, 0)
+
+    # Internal move does nothing for a detached (parentless) node
+    orphanIdx = model.createIndex(0, 0, orphan)
+    model.internalMove(orphanIdx, -1)
+
+    # Multi-move does nothing for an invalid target
+    model.multiMove([novelIdx], invalidIdx)
+
+    # Multi-move with nothing to move does not trigger a refresh
+    model.multiMove([], novelIdx)
+
+    # Trash selection ignores invalid indices
+    assert model.trashSelection([invalidIdx]) is True
+
     # Remove Child
     with qtbot.waitSignal(model.rowsAboutToBeRemoved) as signal:
         child = model.removeChild(novelIdx, titleIdx.row())
@@ -622,7 +641,7 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     # Move Multiple, with parent
     # Chapter and scene selection is flipped, but they should be deselected
     # because folder is also selected, so their order should not change
-    model.multiMove([folderIdx, sceneIdx, chapterIdx, invalidIdx], novelIdx, 0)
+    model.multiMove([folderIdx, sceneIdx, chapterIdx, invalidIdx, folderIdx], novelIdx, 0)
     assert [n.item.itemName for n in model.root.allChildren()] == [
         "Novel",
         "New Folder",

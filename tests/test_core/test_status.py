@@ -259,6 +259,11 @@ def testCoreStatus_Entries(mockGUI, mockRnd):
     assert nStatus[statusKeys[3]].count == countTo[3]
     assert nStatus["blablabla"].count == countTo[0]
 
+    # Incrementing an unknown or empty key does nothing
+    nStatus.increment("not-a-key")
+    nStatus.increment(None)
+    assert nStatus[statusKeys[0]].count == countTo[0]
+
     nStatus.resetCounts()
 
     assert nStatus[statusKeys[0]].count == 0

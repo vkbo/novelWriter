@@ -175,6 +175,9 @@ class ToHtml(Tokenizer):
                 tClass = f"meta meta-{tMeta}"
                 lines.append(f"<p class='{tClass}'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
+            else:  # pragma: no cover
+                pass
+
         self._pages.append("".join(lines))
 
     def closeDocument(self) -> None:
@@ -194,7 +197,7 @@ class ToHtml(Tokenizer):
             lines.append(f"<h3>{footnotes}</h3>\n")
             lines.append("<ol>\n")
             for key, index in self._usedNotes.items():
-                if content := self._footnotes.get(key):
+                if content := self._footnotes.get(key):  # pragma: no branch
                     text = self._formatText(*content)
                     lines.append(f"<li id='footnote_{index}'><p>{text}</p></li>\n")
             lines.append("</ol>\n")

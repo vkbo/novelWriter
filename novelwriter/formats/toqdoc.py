@@ -199,7 +199,7 @@ class ToQTextDocument(Tokenizer):
             self._printer.setPageMargins(self._pageMargins, QPageLayout.Unit.Millimeter)
             self._textFont.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
             self._document.setPageSize(self._printer.pageRect(QPrinter.Unit.DevicePixel).size())
-            if layout := self._document.documentLayout():
+            if layout := self._document.documentLayout():  # pragma: no branch
                 layout.setPaintDevice(self._printer)
 
         self._document.setDefaultFont(self._textFont)
@@ -325,6 +325,9 @@ class ToQTextDocument(Tokenizer):
                 newBlock(cursor, bFmt)
                 cursor.insertText(nwUnicode.U_NBSP, self._charFmt)
 
+            else:  # pragma: no cover
+                pass
+
             if tStyle & BlockFmt.PBA:
                 self._insertNewPageMarker(cursor)
 
@@ -334,7 +337,7 @@ class ToQTextDocument(Tokenizer):
 
     def saveDocument(self, path: Path) -> None:
         """Save the document as a PDF file."""
-        if self._printer:
+        if self._printer:  # pragma: no branch
             logger.info("Writing PDF ...")
             self._printer.setOutputFileName(str(path))
             self._document.print(self._printer)
@@ -363,7 +366,7 @@ class ToQTextDocument(Tokenizer):
             cursor.insertText(self._localLookup("Footnotes"), cFmt)
 
             for key, index in self._usedNotes.items():
-                if content := self._footnotes.get(key):
+                if content := self._footnotes.get(key):  # pragma: no branch
                     cFmt = QTextCharFormat(self._charFmt)
                     cFmt.setForeground(self._theme.code)
                     cFmt.setAnchor(True)
@@ -418,7 +421,7 @@ class ToQTextDocument(Tokenizer):
             elif fmt == TextFmt.SUB_E:
                 cFmt.setVerticalAlignment(QtVAlignNormal)
             elif fmt == TextFmt.COL_B:
-                if color := self._classes.get(data):
+                if color := self._classes.get(data):  # pragma: no branch
                     cFmt.setForeground(color)
                     primary = color
             elif fmt == TextFmt.COL_E:
@@ -501,7 +504,7 @@ class ToQTextDocument(Tokenizer):
             cursor.insertFrame(fFmt)
             cursor.setBlockFormat(bFmt)
             cursor.insertText(self._project.localLookup("New Page"), cFmt)
-            if root := self._document.rootFrame():
+            if root := self._document.rootFrame():  # pragma: no branch
                 cursor.swap(root.lastCursorPosition())
 
     def _insertHorizontalRule(self, cursor: QTextCursor) -> None:

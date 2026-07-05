@@ -22,6 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
+import xml.etree.ElementTree as ET
 
 from datetime import datetime
 from shutil import copyfile
@@ -33,7 +34,7 @@ from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
-from novelwriter.core.status import CUSTOM_COL
+from novelwriter.core.status import CUSTOM_COL, NWStatus
 from novelwriter.enum import nwStatusShape
 
 from tests.mocked import causeOSError
@@ -1069,3 +1070,27 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockGUI, mockRnd):
     compFile = tstPaths.refDir / "projectXML_ReadLegacy14.nwx"
     copyfile(outFile, testFile)
     assert cmpFiles(testFile, compFile)
+
+
+@pytest.mark.core
+def testCoreProjectXML_ParsePackHelpers(mockGUI, fncPath):
+    """Test the internal parse/pack helper functions directly."""
+    xmlReader = ProjectXMLReader(fncPath / nwFiles.PROJ_FILE)
+    xmlWriter = ProjectXMLWriter(fncPath / nwFiles.PROJ_FILE)
+
+    # Non-entry elements in a status/importance list are skipped
+    status = NWStatus(NWStatus.STATUS)
+    xItem = ET.fromstring('<status><entry key="s000001" color="#ff0000">New</entry><other>Ignored</other></status>')
+    xmlReader._parseStatusImport(xItem, status)
+    assert len(status) == 1
+
+    # Non-entry elements in a key/text dict are skipped
+    xItem = ET.fromstring('<autoReplace><entry key="one">1</entry><other>Ignored</other></autoReplace>')
+    assert xmlReader._parseDictKeyText(xItem) == {"one": "1"}
+
+    # Empty keys are skipped when packing a dict
+    xParent = ET.Element("project")
+    xmlWriter._packDictKeyValue(xParent, "autoReplace", {"": "ignored", "one": "1"})
+    packed = xParent.find("autoReplace")
+    assert packed is not None
+    assert [e.attrib["key"] for e in packed] == ["one"]

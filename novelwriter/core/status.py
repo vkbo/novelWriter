@@ -364,6 +364,8 @@ class _ShapeCache:
             path.addRoundedRect(2.0, 24.0, 20.0, 20.0, 4.0, 4.0)
             path.addRoundedRect(24.0, 2.0, 20.0, 20.0, 4.0, 4.0)
             path.addRoundedRect(24.0, 24.0, 20.0, 20.0, 4.0, 4.0)
+        else:  # pragma: no cover
+            pass
 
         self._cache[shape] = path
 

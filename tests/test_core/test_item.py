@@ -246,6 +246,9 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
     assert item.isNoteLayout() is True
     assert item.describeMe() == "Project Note"
 
+    item.setLayout("NO_LAYOUT")
+    assert item.describeMe() == "None"
+
     # Status + Icon
     # =============
 
