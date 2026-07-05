@@ -27,22 +27,19 @@ import re
 from time import time
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QBrush, QColor, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextDocument
+from PyQt6.QtGui import QBrush, QColor, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, utf16CharMap
 from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.enum import nwComment
+from novelwriter.gui.doctextblock import TextBlockData
 from novelwriter.text.formats import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 from novelwriter.types import QtFontBold, QtTextUserProperty
 
 logger = logging.getLogger(__name__)
 
-RX_URL = REGEX_PATTERNS.url
-RX_WORDS = REGEX_PATTERNS.wordSplit
-RX_FMT_SC = REGEX_PATTERNS.shortcodePlain
-RX_FMT_SV = REGEX_PATTERNS.shortcodeValue
 
 BLOCK_NONE = 0
 BLOCK_TEXT = 1
@@ -504,110 +501,3 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             charFormat.setFontPointSize(round(size * CONFIG.textFont.pointSize()))
 
         self._hStyles[name] = charFormat
-
-
-class TextBlockData(QTextBlockUserData):
-    """Custom QTextBlock Data.
-
-    Custom data stored in a single text block. The spell check state is
-    cached here and used when correcting misspelled text. All cached
-    positions are in UTF-16 units, matching Qt document positions.
-    """
-
-    __slots__ = ("_metaData", "_offset", "_revision", "_spellErrors", "_text", "_utf16Map")
-
-    def __init__(self) -> None:
-        super().__init__()
-        self._text = ""
-        self._offset = 0
-        self._revision = 0
-        self._utf16Map: list[int] | None = None
-        self._metaData: list[tuple[int, int, str, str]] = []
-        self._spellErrors: list[tuple[int, int, str]] = []
-
-    @property
-    def metaData(self) -> list[tuple[int, int, str, str]]:
-        """Return meta data from last check."""
-        return self._metaData
-
-    @property
-    def spellErrors(self) -> list[tuple[int, int, str]]:
-        """Return spell error data from last check."""
-        return self._spellErrors
-
-    @property
-    def revision(self) -> int:
-        """Return the revision number of the cached text."""
-        return self._revision
-
-    def clear(self) -> None:
-        """Clear all cached data."""
-        self._text = ""
-        self._offset = 0
-        self._revision += 1
-        self._utf16Map = None
-        self._metaData = []
-        self._spellErrors = []
-
-    def spellData(self) -> tuple[str, int, list[int] | None]:
-        """Return a snapshot of the text for external spell checking."""
-        return self._text, self._offset, self._utf16Map
-
-    def setSpellErrors(self, errors: list[tuple[int, int, str]]) -> None:
-        """Store spell error data computed from a text snapshot."""
-        self._spellErrors = errors
-
-    def processText(self, text: str, offset: int, utf16Map: list[int] | None) -> None:
-        """Extract meta data from the text. The map, when set, converts
-        cached positions to UTF-16 units.
-        """
-        self._metaData = []
-        if "[" in text:
-            # Strip shortcodes
-            for regEx in [RX_FMT_SC, RX_FMT_SV]:
-                for res in regEx.finditer(text, offset):
-                    if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:  # pragma: no branch
-                        pad = " " * (e - s)
-                        text = f"{text[:s]}{pad}{text[e:]}"
-
-        if "http" in text:
-            # Strip URLs
-            for res in RX_URL.finditer(text, offset):
-                if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:  # pragma: no branch
-                    pad = " " * (e - s)
-                    text = f"{text[:s]}{pad}{text[e:]}"
-                    if utf16Map:
-                        s = utf16Map[s]
-                        e = utf16Map[e]
-                    self._metaData.append((s, e, res.group(0), "url"))
-
-        self._text = text.replace("\u02bc", "'").replace("_", " ")
-        self._offset = offset
-        self._revision += 1
-        self._utf16Map = utf16Map
-
-    def spellCheck(self) -> list[tuple[int, int, str]]:
-        """Run the spell checker and cache the result, and return the
-        list of spell check errors.
-        """
-        self._spellErrors = spellCheckText(self._text, self._offset, self._utf16Map)
-        return self._spellErrors
-
-
-def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
-    """Spell check a piece of text and return the list of errors. This
-    function does not touch any Qt document classes, so it is safe to
-    call from a worker thread.
-    """
-    spell = SHARED.spelling
-    if utf16Map:
-        return [
-            (utf16Map[r.start(0)], utf16Map[r.end(0)], w)
-            for r in RX_WORDS.finditer(text, offset)
-            if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
-        ]
-    return [
-        (r.start(0), r.end(0), w)
-        for r in RX_WORDS.finditer(text, offset)
-        if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
-    ]
