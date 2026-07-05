@@ -2284,12 +2284,8 @@ def testGuiEditor_InternalSlotEdgeCases(qtbot, nwGUI, projPath, mockRnd):
 
     # With line highlighting off, the cursor moved slot doesn't set up
     # an extra selection
-    lineHighlight = CONFIG.lineHighlight
-    try:
-        CONFIG.lineHighlight = False
-        docEditor._cursorMoved()
-    finally:
-        CONFIG.lineHighlight = lineHighlight
+    CONFIG.lineHighlight = False
+    docEditor._cursorMoved()
 
     # Mime data insertion with no source, or a source with no text, is
     # a no-op
@@ -2313,30 +2309,22 @@ def testGuiEditor_InternalSlotEdgeCases(qtbot, nwGUI, projPath, mockRnd):
 
     # With auto-select disabled, or with an existing selection, the
     # cursor is returned unchanged
-    autoSelect = CONFIG.autoSelect
-    try:
-        docEditor.setPlainText("hello world")
-        docEditor.setCursorPosition(2)
+    docEditor.setPlainText("hello world")
+    docEditor.setCursorPosition(2)
 
-        CONFIG.autoSelect = False
-        assert docEditor._autoSelect().hasSelection() is False
+    CONFIG.autoSelect = False
+    assert docEditor._autoSelect().hasSelection() is False
 
-        CONFIG.autoSelect = True
-        docEditor.docAction(nwDocAction.SEL_ALL)
-        assert docEditor._autoSelect().selectedText() == "hello world"
-    finally:
-        CONFIG.autoSelect = autoSelect
+    CONFIG.autoSelect = True
+    docEditor.docAction(nwDocAction.SEL_ALL)
+    assert docEditor._autoSelect().selectedText() == "hello world"
 
     # A word that is the entire (and only) block, with the cursor at
     # its start, exhausts both the backward and forward scans
     docEditor.setPlainText("hello")
     docEditor.setCursorPosition(0)
-    CONFIG.autoSelect = True
-    try:
-        cursor = docEditor._autoSelect()
-        assert cursor.selectedText() != ""
-    finally:
-        CONFIG.autoSelect = autoSelect
+    cursor = docEditor._autoSelect()
+    assert cursor.selectedText() != ""
 
 
 @pytest.mark.gui
@@ -2497,15 +2485,9 @@ def testGuiEditor_UpdateDocMargins(qtbot, nwGUI, projPath, mockRnd):
     nwGUI.openDocument(C.hSceneDoc)
     docEditor = nwGUI.docEditor
 
-    textWidth = CONFIG.textWidth
-    focusMode = SHARED.focusMode
-    try:
-        CONFIG.textWidth = 0
-        SHARED.setFocusMode(False)
-        docEditor.updateDocMargins()
-    finally:
-        CONFIG.textWidth = textWidth
-        SHARED.setFocusMode(focusMode)
+    CONFIG.textWidth = 0
+    SHARED.setFocusMode(False)
+    docEditor.updateDocMargins()
 
 
 @pytest.mark.gui
@@ -2560,17 +2542,13 @@ def testGuiEditor_ReplaceNextEdgeCases(qtbot, monkeypatch, nwGUI, projPath, mock
     docSearch.setSearchText("Foo")
     docSearch.setReplaceText("Baz")
 
-    searchMatchCap = CONFIG.searchMatchCap
-    try:
-        # With match-case disabled, the replacement text is used verbatim
-        CONFIG.searchMatchCap = False
-        docEditor.setCursorPosition(0)
-        docEditor._lastFind = None
-        docEditor.replaceNext()  # First call just finds and selects "Foo"
-        docEditor.replaceNext()  # Second call performs the replacement
-        assert docEditor.getText().count("Baz") == 1
-    finally:
-        CONFIG.searchMatchCap = searchMatchCap
+    # With match-case disabled, the replacement text is used verbatim
+    CONFIG.searchMatchCap = False
+    docEditor.setCursorPosition(0)
+    docEditor._lastFind = None
+    docEditor.replaceNext()  # First call just finds and selects "Foo"
+    docEditor.replaceNext()  # Second call performs the replacement
+    assert docEditor.getText().count("Baz") == 1
 
     # A selection that doesn't match the last recorded find is treated
     # as a user selection, and is left untouched
