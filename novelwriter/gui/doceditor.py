@@ -1538,10 +1538,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.docSearch.setResultCount(0, 0)
             self._lastFind = None
             if CONFIG.searchNextFile:
-                self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop, goBack)
-                QApplication.processEvents()
-                self.beginSearch()
-                prevFocus.setFocus()
+                self._openNextFindDocument(prevFocus, goBack)
             return
 
         cursor = self.textCursor()
@@ -1553,26 +1550,44 @@ class GuiDocEditor(QPlainTextEdit):
         if goBack:
             resIdx -= 2
 
-        if ((resIdx < 0 and goBack) or (resIdx > maxIdx and not goBack)) and self._docHandle:
-            if CONFIG.searchNextFile:
-                self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop, goBack)
-                QApplication.processEvents()
-                self.beginSearch()
-                prevFocus.setFocus()
+        if (resIdx < 0 and goBack) or (resIdx > maxIdx and not goBack):
+            if self._docHandle and CONFIG.searchNextFile:
+                self._openNextFindDocument(prevFocus, goBack)
                 return
             elif goBack:
                 resIdx = maxIdx if doLoop else 0
             else:
                 resIdx = 0 if doLoop else maxIdx
 
+        resIdx = max(0, min(resIdx, maxIdx))
+
+        self._setFindSelection(resS, resE, resIdx)
+
+        return
+
+    def _openNextFindDocument(self, prevFocus: QWidget, goBack: bool) -> None:
+        """Open the adjacent document and select its edge-most match."""
+        if self._docHandle:
+            self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop, goBack)
+            QApplication.processEvents()
+            self.beginSearch()
+            prevFocus.setFocus()
+
+            resS, resE = self.findAllOccurences()
+            if len(resS) == 0:
+                return
+
+            self._setFindSelection(resS, resE, len(resS) - 1 if goBack else 0)
+
+    def _setFindSelection(self, resS: list[int], resE: list[int], resIdx: int) -> None:
+        """Select one search result and update the search state."""
+        cursor = self.textCursor()
         cursor.setPosition(resS[resIdx], QtMoveAnchor)
         cursor.setPosition(resE[resIdx], QtKeepAnchor)
         self.setTextCursor(cursor)
 
         self.docSearch.setResultCount(resIdx + 1, len(resS))
         self._lastFind = (resS[resIdx], resE[resIdx])
-
-        return
 
     def findAllOccurences(self) -> tuple[list[int], list[int]]:
         """Create a list of all search results of the current search

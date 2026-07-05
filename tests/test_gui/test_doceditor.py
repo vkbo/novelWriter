@@ -2466,6 +2466,16 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwGUI.mainMenu.aFindNext.activate(QAction.ActionEvent.Trigger)
     assert abs(docEditor.getCursorPosition() - 665) < 3
 
+    with monkeypatch.context() as mp:
+        mp.setattr(docEditor, "_docHandle", None)
+        docEditor.setCursorPosition(len(docEditor.getText()))
+        docEditor.findNext()
+        assert abs(docEditor.getCursorPosition() - 665) < 3
+
+        docEditor.setCursorPosition(0)
+        docEditor.findNext(goBack=True)
+        assert abs(docEditor.getCursorPosition() - 665) < 3
+
     # Enable next doc search
     docSearch.toggleProject.activate(QAction.ActionEvent.Trigger)
     assert docSearch.toggleProject.isChecked()
@@ -2474,7 +2484,12 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Next match
     nwGUI.mainMenu.aFindNext.activate(QAction.ActionEvent.Trigger)
     assert docEditor.docHandle == "2426c6f0ca922"  # Next document
+    assert abs(docEditor.getCursorPosition() - 651) < 3
+    nwGUI.mainMenu.aFindPrev.activate(QAction.ActionEvent.Trigger)
+    assert docEditor.docHandle == "4c4f28287af27"
+    assert abs(docEditor.getCursorPosition() - 665) < 3
     nwGUI.mainMenu.aFindNext.activate(QAction.ActionEvent.Trigger)
+    assert docEditor.docHandle == "2426c6f0ca922"
     assert abs(docEditor.getCursorPosition() - 651) < 3
     nwGUI.mainMenu.aFindNext.activate(QAction.ActionEvent.Trigger)
     assert abs(docEditor.getCursorPosition() - 1157) < 3
