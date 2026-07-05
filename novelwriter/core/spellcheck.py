@@ -45,9 +45,11 @@ MAX_CACHE_SIZE = 100_000
 class NWSpellEnchant:
     """Core: Enchant Spell Checking Wrapper.
 
-    This is a rapper class for Enchant to keep the API consistent
+    This is a wrapper class for Enchant to keep the API consistent
     between spell check tools.
     """
+
+    __slots__ = ("_broker", "_cache", "_enchant", "_language", "_lock", "_project", "_requested", "_userDict")
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
@@ -85,10 +87,14 @@ class NWSpellEnchant:
     def setLanguage(self, language: str | None) -> None:
         """Load a dictionary for the language specified in the config.
         If that fails, we load a mock dictionary so that lookups don't
-        crash. Note that enchant will allow loading an empty string as
-        a tag, but this will fail later on. See issue #1096. The whole
-        swap is locked so that a worker thread never sees a partially
-        loaded dictionary.
+        crash.
+
+        Note:
+        * Enchant will allow loading an empty string as a tag, but this
+          will fail later on. See issue #1096.
+        * The whole swap is locked so that a worker thread never sees a
+          partially loaded dictionary.
+
         """
         with self._lock:
             self._enchant = FakeEnchant()
@@ -123,10 +129,14 @@ class NWSpellEnchant:
     ##
 
     def checkWord(self, word: str) -> bool:
-        """Forward check to pyenchant. The results are cached, since the
-        same words tend to be checked over and over again. The enchant
-        call is locked as the library is not guaranteed thread safe, but
-        cache hits are lock-free.
+        """Forward check to pyenchant.
+
+        Note:
+        * The results are cached, since the same words tend to be
+          checked over and over again.
+        * The enchant call is locked as the library is not guaranteed thread safe, but
+          cache hits are lock-free.
+
         """
         if (result := self._cache.get(word)) is None:
             with self._lock:
@@ -188,6 +198,8 @@ class NWSpellEnchant:
 class FakeEnchant:
     """Fallback for when Enchant is selected, but not installed."""
 
+    __slots__ = ("provider", "tag")
+
     def __init__(self) -> None:
 
         class FakeProvider:
@@ -215,6 +227,8 @@ class UserDictionary:
     This class holds all the user's own words for spell checking
     purposes. The dictionary is per-project.
     """
+
+    __slots__ = ("_project", "_words")
 
     def __init__(self, project: NWProject) -> None:
         self._project = project

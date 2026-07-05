@@ -257,6 +257,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._doReplace = False  # Switch to temporarily disable auto-replace
         self._lineColor = QtTransparent
         self._selection = QTextEdit.ExtraSelection()
+
+        # Spell Check Variables
         self._spellFormat = QTextCharFormat()
         self._spellSelections: list[QTextEdit.ExtraSelection] = []
         self._dirtySpell: dict[int, QTextBlock] = {}
@@ -448,6 +450,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.docHeader.clearHeader()
         self.docFooter.setHandle(self._docHandle)
         self.docToolBar.setVisible(False)
+
         self._timerSpell.stop()
         self._timerSpellCheck.stop()
         self._spellPassNo = -1
