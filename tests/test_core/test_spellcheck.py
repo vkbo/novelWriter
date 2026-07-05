@@ -201,8 +201,12 @@ def testCoreSpell_Cache(monkeypatch, mockGUI, fncPath):
     project = NWProject()
     buildTestProject(project, fncPath)
 
+    class MockEnchant(FakeEnchant):
+        def check(self, word: str) -> bool:
+            return word != "wrod"
+
     spChk = NWSpellEnchant(project)
-    spChk.setLanguage("en_US")
+    spChk._enchant = MockEnchant()
     assert spChk._cache == {}
 
     # Checked words should be cached with their result
@@ -210,8 +214,8 @@ def testCoreSpell_Cache(monkeypatch, mockGUI, fncPath):
     assert spChk.checkWord("wrod") is False
     assert spChk._cache == {"word": True, "wrod": False}
 
-    # Cached results should be returned without calling enchant,
-    # which we check by swapping in FakeEnchant, which always says True
+    # Cached results should be returned without calling the checker,
+    # which we verify by swapping in FakeEnchant, which always says True
     spChk._enchant = FakeEnchant()
     assert spChk.checkWord("wrod") is False  # Cached result
     assert spChk.checkWord("wrodd") is True  # New word, hits FakeEnchant
@@ -229,5 +233,5 @@ def testCoreSpell_Cache(monkeypatch, mockGUI, fncPath):
     assert spChk.checkWord("zpqxy") is True
 
     # Changing the language should clear the cache
-    spChk.setLanguage("en_US")
+    spChk.setLanguage(None)
     assert spChk._cache == {}
