@@ -749,6 +749,32 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
         ctxMenu.setObjectName("")
         ctxMenu.deleteLater()
 
+    # Editing a block flags it for the debounced spell check
+    docEditor._dirtySpell.clear()
+    docEditor.setCursorPosition(blockPos + 5)
+    docEditor.textCursor().insertText("x")
+    assert docEditor._dirtySpell != {}
+    assert docEditor._timerSpellCheck.isActive()
+
+    # Running the check consumes the dirty blocks
+    docEditor._runSpellCheck()
+    assert docEditor._dirtySpell == {}
+
+    # An error under the caret is not underlined
+    data = docEditor.textCursor().block().userData()
+    assert isinstance(data, TextBlockData)
+    data._spellErrors = [(0, 5, "Lorem")]
+    docEditor.setCursorPosition(blockPos + 3)
+    docEditor._updateSpellSelections()
+    assert docEditor._suppressed is True
+    assert docEditor._spellSelections == []
+
+    # Moving the caret out of the word restores the underline
+    docEditor.setCursorPosition(blockPos + 10)
+    docEditor._updateSpellSelections()
+    assert docEditor._suppressed is False
+    assert len(docEditor._spellSelections) == 1
+
     # qtbot.stop()
 
 

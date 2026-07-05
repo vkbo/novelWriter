@@ -102,11 +102,6 @@ def maxOrd(text: str) -> int:
 @pytest.mark.gui
 def testGuiDocHighlighter_Basic(syntax):
     """Test the basic functionality of the syntax highlighter."""
-    # Alternate Spell Check
-    assert syntax._spellCheck is False
-    syntax.setSpellCheck(True)
-    assert syntax._spellCheck is True
-
     # Check Handle
     assert syntax._tHandle is None
     syntax.setHandle(T_HANDLE)
@@ -520,7 +515,6 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
     # Settings
     syntax._tHandle = T_HANDLE
     syntax._isNovel = True
-    syntax.setSpellCheck(True)
     monkeypatch.setattr(SHARED.spelling, "checkWord", lambda *a: False)
 
     colHidden = theme.syntaxTheme.hidden.getRgb()
@@ -568,7 +562,7 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
     data = doc.findBlockByNumber(0).userData()
     assert isinstance(data, TextBlockData)
     assert data.metaData == [(62, 80, "http://example.com", "url")]
-    assert data.spellErrors == [
+    assert data.spellCheck() == [
         (0, 4, "Text"),
         (7, 11, "bold"),
         (14, 18, "text"),
@@ -598,7 +592,7 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
     data = doc.findBlockByNumber(0).userData()
     assert isinstance(data, TextBlockData)
     assert data.metaData == [(35, 53, "http://example.com", "url")]
-    assert data.spellErrors == [
+    assert data.spellCheck() == [
         (1, 9, "Dialogue"),
         (12, 15, "and"),
         (16, 20, "then"),
@@ -624,7 +618,7 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
     data = doc.findBlockByNumber(0).userData()
     assert isinstance(data, TextBlockData)
     assert data.metaData == [(44, 62, "http://example.com", "url")]
-    assert data.spellErrors == [
+    assert data.spellCheck() == [
         (4, 12, "Grinning"),
         (18, 21, "and"),
         (22, 26, "then"),

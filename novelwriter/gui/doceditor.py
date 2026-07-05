@@ -161,6 +161,7 @@ class GuiDocEditor(QPlainTextEdit):
     __slots__ = (
         "_autoReplace",
         "_completer",
+        "_dirtySpell",
         "_doReplace",
         "_docChanged",
         "_docHandle",
@@ -175,9 +176,11 @@ class GuiDocEditor(QPlainTextEdit):
         "_qDocument",
         "_spellFormat",
         "_spellSelections",
+        "_suppressed",
         "_timerDoc",
         "_timerSel",
         "_timerSpell",
+        "_timerSpellCheck",
         "_trActions",
         "_trAddWord",
         "_trCopy",
@@ -248,6 +251,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._selection = QTextEdit.ExtraSelection()
         self._spellFormat = QTextCharFormat()
         self._spellSelections: list[QTextEdit.ExtraSelection] = []
+        self._dirtySpell: dict[int, QTextBlock] = {}
+        self._suppressed = False
 
         # Context Menu Translation
         self._trSetName = self.tr("Set as Document Name")
@@ -284,7 +289,6 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument.contentsChange.connect(self._docChange)
         self.selectionChanged.connect(self._updateSelectedStatus)
         self.cursorPositionChanged.connect(self._cursorMoved)
-        self.spellCheckStateChanged.connect(self._qDocument.setSpellCheckState)
 
         # Document Title
         self.docHeader = GuiDocEditHeader(self)
@@ -360,6 +364,12 @@ class GuiDocEditor(QPlainTextEdit):
         if vBar := self.verticalScrollBar():  # pragma: no branch
             vBar.valueChanged.connect(qtLambda(self._timerSpell.start))
 
+        # Set Up Spell Check Debounce
+        self._timerSpellCheck = QTimer(self)
+        self._timerSpellCheck.timeout.connect(self._runSpellCheck)
+        self._timerSpellCheck.setSingleShot(True)
+        self._timerSpellCheck.setInterval(300)
+
         # Install Event Filter for Mouse Wheel
         self.wheelEventFilter = WheelEventFilter(self)
         self.installEventFilter(self.wheelEventFilter)
@@ -427,6 +437,8 @@ class GuiDocEditor(QPlainTextEdit):
         self.docFooter.setHandle(self._docHandle)
         self.docToolBar.setVisible(False)
         self._timerSpell.stop()
+        self._timerSpellCheck.stop()
+        self._dirtySpell.clear()
         self._spellSelections.clear()
         self.setExtraSelections([])
 
@@ -532,6 +544,7 @@ class GuiDocEditor(QPlainTextEdit):
         # which makes it read only.
         if self._docHandle:
             self._qDocument.syntaxHighlighter.rehighlight()
+            self._spellCheckAll()
             self.docHeader.setHandle(self._docHandle)
         else:
             self.clearEditor()
@@ -566,6 +579,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._allowAutoReplace(False)
         self._qDocument.setTextContent(text, tHandle)
         self._allowAutoReplace(True)
+        self._spellCheckAll()
         QApplication.processEvents()
 
         self._lastEdit = time()
@@ -831,16 +845,15 @@ class GuiDocEditor(QPlainTextEdit):
         logger.debug("Spell check is set to '%s'", state)
 
     def spellCheckDocument(self) -> None:
-        """Rerun the highlighter to update spell checking status of the
+        """Spell check the entire document, and update the status of the
         currently loaded text.
         """
         start = time()
         logger.debug("Running spell checker")
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        self._qDocument.syntaxHighlighter.rehighlight()
-        self._updateSpellSelections()
+        self._spellCheckAll()
         QApplication.restoreOverrideCursor()
-        logger.debug("Document highlighted in %.3f ms", 1000 * (time() - start))
+        logger.debug("Document spell checked in %.3f ms", 1000 * (time() - start))
         SHARED.newStatusMessage(self.tr("Spell check complete"))
 
     ##
@@ -1284,6 +1297,14 @@ class GuiDocEditor(QPlainTextEdit):
         if not self._timerDoc.isActive():
             self._timerDoc.start()
 
+        if SHARED.project.data.spellCheck:
+            # Flag the affected blocks for the debounced spell check
+            block = self._qDocument.findBlock(pos)
+            while block.isValid() and block.position() <= pos + added:
+                self._dirtySpell[block.blockNumber()] = block
+                block = block.next()
+            self._timerSpellCheck.start()
+
         self._timerSpell.start()
 
         if (block := self._qDocument.findBlock(pos)).isValid():
@@ -1312,6 +1333,10 @@ class GuiDocEditor(QPlainTextEdit):
     def _cursorMoved(self) -> None:
         """Triggered when the cursor moved in the editor."""
         self.docFooter.updateLineCount(self.textCursor())
+        if self._suppressed:
+            # An underline was suppressed at the previous cursor
+            # position, so the underlines must be refreshed
+            self._timerSpell.start()
         if CONFIG.lineHighlight:
             self._selection.cursor = self.textCursor()
             self._selection.cursor.clearSelection()
@@ -1321,13 +1346,19 @@ class GuiDocEditor(QPlainTextEdit):
     def _updateSpellSelections(self) -> None:
         """Rebuild the spell error underlines for all visible blocks."""
         selections = []
+        suppressed = False
         if SHARED.project.data.spellCheck and (viewport := self.viewport()):
+            cPos = self.textCursor().position()
             last = self.cursorForPosition(viewport.rect().bottomLeft()).blockNumber()
             block = self.firstVisibleBlock()
             while block.isValid() and block.blockNumber() <= last:
                 if isinstance(data := block.userData(), TextBlockData):
                     position = block.position()
                     for start, end, _ in data.spellErrors:
+                        if position + start < cPos <= position + end:
+                            # Don't underline the word under the caret
+                            suppressed = True
+                            continue
                         cursor = QTextCursor(self._qDocument)
                         cursor.setPosition(position + start)
                         cursor.setPosition(position + end, QtKeepAnchor)
@@ -1336,8 +1367,18 @@ class GuiDocEditor(QPlainTextEdit):
                         selection.cursor = cursor
                         selections.append(selection)
                 block = block.next()
+        self._suppressed = suppressed
         self._spellSelections = selections
         self._applyExtraSelections()
+
+    @pyqtSlot()
+    def _runSpellCheck(self) -> None:
+        """Spell check the text blocks that have been modified."""
+        for block in self._dirtySpell.values():
+            if block.isValid() and isinstance(data := block.userData(), TextBlockData):
+                data.spellCheck()
+        self._dirtySpell.clear()
+        self._updateSpellSelections()
 
     @pyqtSlot(int, int, str)
     def _insertCompletion(self, pos: int, length: int, text: str) -> None:
@@ -2487,6 +2528,20 @@ class GuiDocEditor(QPlainTextEdit):
         selections.extend(self._spellSelections)
         self.setExtraSelections(selections)
 
+    def _spellCheckAll(self) -> None:
+        """Spell check all text blocks and update the underlines. If
+        spell checking is disabled, only the underlines are updated.
+        """
+        self._timerSpellCheck.stop()
+        self._dirtySpell.clear()
+        if SHARED.project.data.spellCheck:
+            block = self._qDocument.begin()
+            while block.isValid():
+                if isinstance(data := block.userData(), TextBlockData):
+                    data.spellCheck()
+                block = block.next()
+        self._updateSpellSelections()
+
     def _completerToCursor(self) -> None:
         """Make sure the completer menu is positioned by the cursor."""
         if self._completer.isVisible() and (viewport := self.viewport()):
@@ -2511,7 +2566,9 @@ class GuiDocEditor(QPlainTextEdit):
         """
         logger.debug("Added '%s' to project dictionary, %s", word, "saved" if save else "unsaved")
         SHARED.spelling.addWord(word, save=save)
-        self._qDocument.syntaxHighlighter.rehighlightBlock(block)
+        if isinstance(data := block.userData(), TextBlockData):  # pragma: no branch
+            data.spellCheck()
+        self._updateSpellSelections()
 
     def _processTag(
         self,

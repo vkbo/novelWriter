@@ -26,7 +26,6 @@ import logging
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QObject, pyqtSlot
 from PyQt6.QtGui import QTextBlock, QTextCursor, QTextDocument
 from PyQt6.QtWidgets import QApplication, QPlainTextDocumentLayout
 
@@ -35,6 +34,8 @@ from novelwriter.gui.dochighlight import GuiDocHighlighter, TextBlockData
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+    from PyQt6.QtCore import QObject
 
 logger = logging.getLogger(__name__)
 
@@ -135,12 +136,3 @@ class GuiTextDocument(QTextDocument):
                 count += 1
                 yield block
         return
-
-    ##
-    #  Public Slots
-    ##
-
-    @pyqtSlot(bool)
-    def setSpellCheckState(self, state: bool) -> None:
-        """Set the spell check state of the syntax highlighter."""
-        self._syntax.setSpellCheck(state)

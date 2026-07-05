@@ -60,7 +60,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         "_isInactive",
         "_isNovel",
         "_minRules",
-        "_spellCheck",
         "_tHandle",
         "_txtRules",
     )
@@ -73,7 +72,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._tHandle = None
         self._isNovel = False
         self._isInactive = False
-        self._spellCheck = False
 
         self._hStyles: dict[str, QTextCharFormat] = {}
         self._minRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
@@ -257,10 +255,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     #  Setters
     ##
 
-    def setSpellCheck(self, state: bool) -> None:
-        """Enable/disable the real time spell checker."""
-        self._spellCheck = state
-
     def setHandle(self, tHandle: str) -> None:
         """Set the handle of the currently highlighted document."""
         self._tHandle = tHandle
@@ -300,6 +294,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """
         self.setCurrentBlockState(BLOCK_NONE)
         if self._tHandle is None or not text:
+            self._clearBlockData()
             return
 
         blockLen = self.currentBlock().length()
@@ -335,7 +330,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         self.setFormat(pos, length, self._hStyles["invalid"])
 
             # We never want to run the spell checker on keyword/values,
-            # so we force a return here
+            # so we clear the cached data and force a return here
+            self._clearBlockData()
             return
 
         elif text.startswith(("# ", "#! ", "## ", "##! ", "### ", "###! ", "#### ")):
@@ -386,6 +382,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, length, self._hStyles["hidden"])
             elif style == nwComment.IGNORE:
                 self.setFormat(0, length, self._hStyles["strike"])
+                self._clearBlockData()
                 return  # No more processing for these
             elif mod:
                 self.setFormat(0, dot, self._hStyles["modifier"])
@@ -402,6 +399,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             check = text.rstrip().lower()
             if check in ("[newpage]", "[new page]", "[vspace]"):
                 self.setFormat(0, blockLen, self._hStyles["code"])
+                self._clearBlockData()
                 return
             elif check.startswith("[vspace:") and check.endswith("]"):
                 value = checkInt(check[8:-1], 0)
@@ -409,6 +407,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, 8, self._hStyles["code"])
                 self.setFormat(8, blockLen - 10, self._hStyles[style])
                 self.setFormat(blockLen - 2, blockLen, self._hStyles["code"])
+                self._clearBlockData()
                 return
 
         else:  # Text Paragraph
@@ -455,15 +454,17 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.setCurrentBlockUserData(data)
 
         data.processText(text, offset, utf16Map)
-        if self._spellCheck:
-            # The result is cached and rendered by the editor
-            data.spellCheck()
 
         return
 
     ##
     #  Internal Functions
     ##
+
+    def _clearBlockData(self) -> None:
+        """Clear the cached user data of the current block."""
+        if isinstance(data := self.currentBlockUserData(), TextBlockData):
+            data.clear()
 
     def _addCharFormat(
         self,
@@ -532,6 +533,14 @@ class TextBlockData(QTextBlockUserData):
     def spellErrors(self) -> list[tuple[int, int, str]]:
         """Return spell error data from last check."""
         return self._spellErrors
+
+    def clear(self) -> None:
+        """Clear all cached data."""
+        self._text = ""
+        self._offset = 0
+        self._utf16Map = None
+        self._metaData = []
+        self._spellErrors = []
 
     def processText(self, text: str, offset: int, utf16Map: list[int] | None) -> None:
         """Extract meta data from the text. The map, when set, converts
