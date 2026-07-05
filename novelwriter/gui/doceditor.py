@@ -97,7 +97,7 @@ from novelwriter.enum import (
 from novelwriter.extensions.configlayout import NPathColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
-from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE, TextBlockData
+from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE, TextBlockData, spellCheckText
 from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.text.counting import standardCounter
@@ -178,6 +178,8 @@ class GuiDocEditor(QPlainTextEdit):
         "_nwItem",
         "_qDocument",
         "_spellFormat",
+        "_spellJob",
+        "_spellJobId",
         "_spellPassNo",
         "_spellPassNotify",
         "_spellSelections",
@@ -186,7 +188,6 @@ class GuiDocEditor(QPlainTextEdit):
         "_timerSel",
         "_timerSpell",
         "_timerSpellCheck",
-        "_timerSpellPass",
         "_trActions",
         "_trAddWord",
         "_trCopy",
@@ -261,6 +262,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._suppressed = False
         self._spellPassNo = -1
         self._spellPassNotify = False
+        self._spellJob: tuple[int, list[tuple[QTextBlock, TextBlockData, int]]] | None = None
+        self._spellJobId = 0
 
         # Context Menu Translation
         self._trSetName = self.tr("Set as Document Name")
@@ -374,14 +377,9 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Set Up Spell Check Debounce
         self._timerSpellCheck = QTimer(self)
-        self._timerSpellCheck.timeout.connect(self._runSpellCheck)
+        self._timerSpellCheck.timeout.connect(self._dispatchSpellCheck)
         self._timerSpellCheck.setSingleShot(True)
         self._timerSpellCheck.setInterval(300)
-
-        # Set Up Background Spell Check Pass
-        self._timerSpellPass = QTimer(self)
-        self._timerSpellPass.timeout.connect(self._runSpellPass)
-        self._timerSpellPass.setInterval(0)
 
         # Install Event Filter for Mouse Wheel
         self.wheelEventFilter = WheelEventFilter(self)
@@ -451,8 +449,9 @@ class GuiDocEditor(QPlainTextEdit):
         self.docToolBar.setVisible(False)
         self._timerSpell.stop()
         self._timerSpellCheck.stop()
-        self._timerSpellPass.stop()
         self._spellPassNo = -1
+        self._spellPassNotify = False
+        self._spellJob = None
         self._dirtySpell.clear()
         self._spellSelections.clear()
         self.setExtraSelections([])
@@ -864,8 +863,8 @@ class GuiDocEditor(QPlainTextEdit):
         currently loaded text.
         """
         logger.debug("Running spell checker")
+        self._spellPassNotify = SHARED.project.data.spellCheck
         self._beginSpellPass()
-        self._spellPassNotify = self._spellPassNo >= 0
 
     ##
     #  General Class Methods
@@ -1383,37 +1382,61 @@ class GuiDocEditor(QPlainTextEdit):
         self._applyExtraSelections()
 
     @pyqtSlot()
-    def _runSpellCheck(self) -> None:
-        """Spell check the text blocks that have been modified."""
-        for block in self._dirtySpell.values():
-            if block.isValid() and isinstance(data := block.userData(), TextBlockData):  # pragma: no branch
-                data.spellCheck()
-        self._dirtySpell.clear()
-        self._updateSpellSelections()
-
-    @pyqtSlot()
-    def _runSpellPass(self) -> None:
-        """Process a chunk of the background document spell check. The
-        position is tracked by block number, which may drift when the
-        document is edited during the pass, but modified blocks are
-        covered by the debounced spell check anyway.
+    def _dispatchSpellCheck(self) -> None:
+        """Send the next batch of text blocks to the spell check worker.
+        Modified blocks are prioritised, then the blocks queued for the
+        background document pass. The pass position is tracked by block
+        number, which may drift when the document is edited during the
+        pass, but modified blocks are covered by the debounce anyway.
         """
-        block = self._qDocument.findBlockByNumber(self._spellPassNo)
-        count = 0
-        while block.isValid() and count < SPELL_PASS_CHUNK:
-            if isinstance(data := block.userData(), TextBlockData):
-                data.spellCheck()
-            block = block.next()
-            count += 1
-        if block.isValid():
-            self._spellPassNo += count
-        else:
-            self._timerSpellPass.stop()
-            self._spellPassNo = -1
-            self._updateSpellSelections()
-            if self._spellPassNotify:
-                self._spellPassNotify = False
-                SHARED.newStatusMessage(self.tr("Spell check complete"))
+        if self._spellJob is not None:
+            # There is already a job running, and a new dispatch is
+            # made when its results come in
+            return
+
+        job = []
+        payload = []
+        while self._dirtySpell and len(job) < SPELL_PASS_CHUNK:
+            _, block = self._dirtySpell.popitem()
+            if block.isValid() and isinstance(data := block.userData(), TextBlockData):  # pragma: no branch
+                payload.append((len(job), *data.spellData()))
+                job.append((block, data, data.revision))
+
+        while self._spellPassNo >= 0 and len(job) < SPELL_PASS_CHUNK:
+            block = self._qDocument.findBlockByNumber(self._spellPassNo)
+            if block.isValid():
+                if isinstance(data := block.userData(), TextBlockData):
+                    payload.append((len(job), *data.spellData()))
+                    job.append((block, data, data.revision))
+                self._spellPassNo += 1
+            else:
+                self._spellPassNo = -1
+
+        if job:
+            self._spellJobId += 1
+            self._spellJob = (self._spellJobId, job)
+            runnable = BackgroundSpellCheck(self._spellJobId, payload)
+            runnable.signals.resultsReady.connect(self._spellCheckResults)
+            SHARED.runInThreadPool(runnable)
+        elif self._spellPassNotify:
+            self._spellPassNotify = False
+            SHARED.newStatusMessage(self.tr("Spell check complete"))
+
+    @pyqtSlot(int, object)
+    def _spellCheckResults(self, jobId: int, results: list[tuple[int, list[tuple[int, int, str]]]]) -> None:
+        """Process the results from the spell check worker. Results are
+        discarded if the job was cancelled, or per block if the block
+        was modified or removed while the worker was running.
+        """
+        if self._spellJob and self._spellJob[0] == jobId:
+            job = self._spellJob[1]
+            self._spellJob = None
+            for index, errors in results:
+                block, data, revision = job[index]
+                if block.isValid() and block.userData() is data and data.revision == revision:
+                    data.setSpellErrors(errors)
+            self._timerSpell.start()
+            self._dispatchSpellCheck()
 
     @pyqtSlot(int, int, str)
     def _insertCompletion(self, pos: int, length: int, text: str) -> None:
@@ -2565,12 +2588,12 @@ class GuiDocEditor(QPlainTextEdit):
 
     def _beginSpellPass(self) -> None:
         """Spell check the visible blocks, and start a chunked check of
-        the entire document in the background. If spell checking is
+        the entire document on the worker thread. If spell checking is
         disabled, only the underlines are updated.
         """
         self._timerSpellCheck.stop()
-        self._timerSpellPass.stop()
         self._dirtySpell.clear()
+        self._spellJob = None
         self._spellPassNo = -1
         if SHARED.project.data.spellCheck:
             if viewport := self.viewport():  # pragma: no branch
@@ -2583,7 +2606,7 @@ class GuiDocEditor(QPlainTextEdit):
                         data.spellCheck()
                     block = block.next()
             self._spellPassNo = 0
-            self._timerSpellPass.start()
+            self._dispatchSpellCheck()
         self._updateSpellSelections()
 
     def _completerToCursor(self) -> None:
@@ -2964,6 +2987,37 @@ class BackgroundWordCounterSignals(QObject):
     """
 
     countsReady = pyqtSignal(int, int, int)
+
+
+class BackgroundSpellCheck(QRunnable):
+    """The Off-GUI Thread Spell Checker.
+
+    A runnable that spell checks a batch of text block snapshots in the
+    thread pool off the main GUI thread. It only receives plain text
+    snapshots, and never touches the text document itself.
+    """
+
+    def __init__(self, jobId: int, payload: list[tuple[int, str, int, list[int] | None]]) -> None:
+        super().__init__()
+        self._jobId = jobId
+        self._payload = payload
+        self.signals = BackgroundSpellCheckSignals()
+
+    @pyqtSlot()
+    def run(self) -> None:
+        """Spell check the text snapshots and emit the results."""
+        self.signals.resultsReady.emit(
+            self._jobId,
+            [(index, spellCheckText(text, offset, utf16Map)) for index, text, offset, utf16Map in self._payload],
+        )
+
+
+class BackgroundSpellCheckSignals(QObject):
+    """The QRunnable cannot emit a signal, so we need a simple QObject
+    to hold the spell check result signal.
+    """
+
+    resultsReady = pyqtSignal(int, object)
 
 
 class TextAutoReplace:

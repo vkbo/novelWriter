@@ -610,8 +610,10 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     buildTestProject(nwGUI, projPath)
 
     # The test must not depend on which dictionaries are available on
-    # the host system, so all words are accepted from the start
+    # the host system, so all words are accepted from the start, and
+    # the spell check worker must run synchronously
     monkeypatch.setattr(SHARED.spelling, "checkWord", lambda *a: True)
+    monkeypatch.setattr(SHARED, "runInThreadPool", lambda r: r.run())
 
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
@@ -761,9 +763,10 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     assert docEditor._dirtySpell != {}
     assert docEditor._timerSpellCheck.isActive()
 
-    # Running the check consumes the dirty blocks
-    docEditor._runSpellCheck()
+    # Running the check dispatches the dirty blocks to the worker
+    docEditor._dispatchSpellCheck()
     assert docEditor._dirtySpell == {}
+    assert docEditor._spellJob is None
 
     # An error under the caret is not underlined
     data = docEditor.textCursor().block().userData()
@@ -785,27 +788,30 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.gui.doceditor.SPELL_PASS_CHUNK", 2)
 
-        # The pass starts with the visible blocks checked
+        # A full pass runs chunked worker jobs until the document is
+        # done, which with a synchronous worker completes immediately
         docEditor._beginSpellPass()
-        assert docEditor._spellPassNo == 0
-        assert docEditor._timerSpellPass.isActive()
+        assert docEditor._spellPassNo == -1
+        assert docEditor._spellJob is None
 
-        # The first chunk should leave the pass incomplete
-        docEditor._runSpellPass()
-        assert docEditor._spellPassNo == 2
-        assert docEditor._timerSpellPass.isActive()
-
-        # Running the remaining chunks should end the pass
-        while docEditor._spellPassNo >= 0:
-            docEditor._runSpellPass()
-        assert not docEditor._timerSpellPass.isActive()
-
-        # A full spell check requests a notification when it ends
+        # A full spell check notifies when the pass completes
         docEditor.spellCheckDocument()
-        assert docEditor._spellPassNotify is True
-        while docEditor._spellPassNo >= 0:
-            docEditor._runSpellPass()
         assert docEditor._spellPassNotify is False
+
+    # Results from a cancelled job are dropped
+    docEditor._spellCheckResults(docEditor._spellJobId + 1, [])
+    assert docEditor._spellJob is None
+
+    # Results for blocks modified while checking are discarded
+    block = docEditor.textCursor().block()
+    data = block.userData()
+    assert isinstance(data, TextBlockData)
+    data._spellErrors = []
+    docEditor._spellJobId += 1
+    docEditor._spellJob = (docEditor._spellJobId, [(block, data, data.revision - 1)])
+    docEditor._spellCheckResults(docEditor._spellJobId, [(0, [(0, 5, "wrong")])])
+    assert data.spellErrors == []
+    assert docEditor._spellJob is None
 
     # qtbot.stop()
 

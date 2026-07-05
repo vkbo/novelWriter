@@ -514,12 +514,13 @@ class TextBlockData(QTextBlockUserData):
     positions are in UTF-16 units, matching Qt document positions.
     """
 
-    __slots__ = ("_metaData", "_offset", "_spellErrors", "_text", "_utf16Map")
+    __slots__ = ("_metaData", "_offset", "_revision", "_spellErrors", "_text", "_utf16Map")
 
     def __init__(self) -> None:
         super().__init__()
         self._text = ""
         self._offset = 0
+        self._revision = 0
         self._utf16Map: list[int] | None = None
         self._metaData: list[tuple[int, int, str, str]] = []
         self._spellErrors: list[tuple[int, int, str]] = []
@@ -534,13 +535,27 @@ class TextBlockData(QTextBlockUserData):
         """Return spell error data from last check."""
         return self._spellErrors
 
+    @property
+    def revision(self) -> int:
+        """Return the revision number of the cached text."""
+        return self._revision
+
     def clear(self) -> None:
         """Clear all cached data."""
         self._text = ""
         self._offset = 0
+        self._revision += 1
         self._utf16Map = None
         self._metaData = []
         self._spellErrors = []
+
+    def spellData(self) -> tuple[str, int, list[int] | None]:
+        """Return a snapshot of the text for external spell checking."""
+        return self._text, self._offset, self._utf16Map
+
+    def setSpellErrors(self, errors: list[tuple[int, int, str]]) -> None:
+        """Store spell error data computed from a text snapshot."""
+        self._spellErrors = errors
 
     def processText(self, text: str, offset: int, utf16Map: list[int] | None) -> None:
         """Extract meta data from the text. The map, when set, converts
@@ -568,23 +583,31 @@ class TextBlockData(QTextBlockUserData):
 
         self._text = text.replace("\u02bc", "'").replace("_", " ")
         self._offset = offset
+        self._revision += 1
         self._utf16Map = utf16Map
 
     def spellCheck(self) -> list[tuple[int, int, str]]:
         """Run the spell checker and cache the result, and return the
         list of spell check errors.
         """
-        spell = SHARED.spelling
-        if utf16Map := self._utf16Map:
-            self._spellErrors = [
-                (utf16Map[r.start(0)], utf16Map[r.end(0)], w)
-                for r in RX_WORDS.finditer(self._text, self._offset)
-                if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
-            ]
-        else:
-            self._spellErrors = [
-                (r.start(0), r.end(0), w)
-                for r in RX_WORDS.finditer(self._text, self._offset)
-                if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
-            ]
+        self._spellErrors = spellCheckText(self._text, self._offset, self._utf16Map)
         return self._spellErrors
+
+
+def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
+    """Spell check a piece of text and return the list of errors. This
+    function does not touch any Qt document classes, so it is safe to
+    call from a worker thread.
+    """
+    spell = SHARED.spelling
+    if utf16Map:
+        return [
+            (utf16Map[r.start(0)], utf16Map[r.end(0)], w)
+            for r in RX_WORDS.finditer(text, offset)
+            if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
+        ]
+    return [
+        (r.start(0), r.end(0), w)
+        for r in RX_WORDS.finditer(text, offset)
+        if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
+    ]
