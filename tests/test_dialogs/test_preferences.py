@@ -30,6 +30,7 @@ from PyQt6.QtWidgets import QFileDialog
 from novelwriter import CONFIG, SHARED
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_TREECOL
 from novelwriter.constants import nwUnicode
+from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.modified import NFontDialog
@@ -42,7 +43,7 @@ KEY_DELAY = 1
 @pytest.mark.gui
 def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     """Test the preferences dialog loading."""
-    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
+    monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: [("en", "English [en]")])
     monkeypatch.setattr(GuiPreferences, "exec", lambda *a: None)
 
     # Load GUI with standard values
@@ -89,7 +90,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
 @pytest.mark.gui
 def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     """Test the preferences dialog actions."""
-    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
+    monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: [("en", "English [en]")])
     prefs = GuiPreferences(nwGUI)
     with qtbot.waitExposed(prefs):
         prefs.show()
@@ -147,7 +148,7 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
 def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     """Test the preferences dialog settings."""
     spelling = [("en", "English [en]"), ("de", "Deutch [de]")]
-    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: spelling)
+    monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: spelling)
 
     (fncPath / "nw_en_US.qm").touch()
     (fncPath / "project_en_US.json").touch()

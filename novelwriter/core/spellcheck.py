@@ -25,6 +25,7 @@ import json
 import logging
 
 from pathlib import Path
+from threading import Lock
 from typing import TYPE_CHECKING
 
 from novelwriter.common import languageName
@@ -44,15 +45,18 @@ MAX_CACHE_SIZE = 100_000
 class NWSpellEnchant:
     """Core: Enchant Spell Checking Wrapper.
 
-    This is a rapper class for Enchant to keep the API consistent
+    This is a wrapper class for Enchant to keep the API consistent
     between spell check tools.
     """
+
+    __slots__ = ("_broker", "_cache", "_enchant", "_language", "_lock", "_project", "_requested", "_userDict")
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
         self._enchant = FakeEnchant()
         self._userDict = UserDictionary(project)
         self._cache: dict[str, bool] = {}
+        self._lock = Lock()
         self._language = None
         self._requested = None
         self._broker = None
@@ -83,49 +87,63 @@ class NWSpellEnchant:
     def setLanguage(self, language: str | None) -> None:
         """Load a dictionary for the language specified in the config.
         If that fails, we load a mock dictionary so that lookups don't
-        crash. Note that enchant will allow loading an empty string as
-        a tag, but this will fail later on. See issue #1096.
+        crash.
+
+        Note:
+        * Enchant will allow loading an empty string as a tag, but this
+          will fail later on. See issue #1096.
+        * The whole swap is locked so that a worker thread never sees a
+          partially loaded dictionary.
+
         """
-        self._enchant = FakeEnchant()
-        self._broker = None
-        self._language = None
-        self._requested = language or None
-        self._cache.clear()
-
-        try:
-            import enchant
-
-            if language and enchant.dict_exists(language):
-                self._broker = enchant.Broker()
-                self._enchant = self._broker.request_dict(language)
-                self._language = language
-                logger.debug("Enchant spell checking for language '%s' loaded", language)
-            else:
-                logger.warning("Enchant found no dictionary for language '%s'", language)
-
-        except Exception:
-            logger.error("Failed to load enchant spell checking for language '%s'", language)
-
-        if self._enchant is None:
+        with self._lock:
             self._enchant = FakeEnchant()
-        else:
-            self._userDict.load()
-            for word in self._userDict:
-                self._enchant.add_to_session(word)
+            self._broker = None
+            self._language = None
+            self._requested = language or None
+            self._cache.clear()
+
+            try:
+                import enchant
+
+                if language and enchant.dict_exists(language):
+                    self._broker = enchant.Broker()
+                    self._enchant = self._broker.request_dict(language)
+                    self._language = language
+                    logger.debug("Enchant spell checking for language '%s' loaded", language)
+                else:
+                    logger.warning("Enchant found no dictionary for language '%s'", language)
+
+            except Exception:
+                logger.error("Failed to load enchant spell checking for language '%s'", language)
+
+            if self._enchant is None:
+                self._enchant = FakeEnchant()
+            else:
+                self._userDict.load()
+                for word in self._userDict:
+                    self._enchant.add_to_session(word)
 
     ##
     #  Methods
     ##
 
     def checkWord(self, word: str) -> bool:
-        """Forward check to pyenchant. The results are cached, since the
-        same words tend to be checked over and over again.
+        """Forward check to pyenchant.
+
+        Note:
+        * The results are cached, since the same words tend to be
+          checked over and over again.
+        * The enchant call is locked as the library is not guaranteed thread safe, but
+          cache hits are lock-free.
+
         """
         if (result := self._cache.get(word)) is None:
-            try:
-                result = bool(self._enchant.check(word))
-            except Exception:
-                result = True
+            with self._lock:
+                try:
+                    result = bool(self._enchant.check(word))
+                except Exception:
+                    result = True
             if len(self._cache) >= MAX_CACHE_SIZE:
                 self._cache.clear()
             self._cache[word] = result
@@ -133,18 +151,20 @@ class NWSpellEnchant:
 
     def suggestWords(self, word: str) -> list[str]:
         """Ask pyenchant for suggestions."""
-        try:
-            return self._enchant.suggest(word)
-        except Exception:
-            return []
+        with self._lock:
+            try:
+                return self._enchant.suggest(word)
+            except Exception:
+                return []
 
     def addWord(self, word: str, save: bool = True) -> None:
         """Add a word to the project dictionary."""
         if word := word.strip():
-            try:
-                self._enchant.add_to_session(word)
-            except Exception:
-                return
+            with self._lock:
+                try:
+                    self._enchant.add_to_session(word)
+                except Exception:
+                    return
             self._cache[word] = True
             if save and self._userDict.add(word):
                 self._userDict.save()
@@ -178,6 +198,8 @@ class NWSpellEnchant:
 class FakeEnchant:
     """Fallback for when Enchant is selected, but not installed."""
 
+    __slots__ = ("provider", "tag")
+
     def __init__(self) -> None:
 
         class FakeProvider:
@@ -205,6 +227,8 @@ class UserDictionary:
     This class holds all the user's own words for spell checking
     purposes. The dictionary is per-project.
     """
+
+    __slots__ = ("_project", "_words")
 
     def __init__(self, project: NWProject) -> None:
         self._project = project

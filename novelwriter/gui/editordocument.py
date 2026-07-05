@@ -26,15 +26,17 @@ import logging
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QObject, pyqtSlot
 from PyQt6.QtGui import QTextBlock, QTextCursor, QTextDocument
 from PyQt6.QtWidgets import QApplication, QPlainTextDocumentLayout
 
 from novelwriter import SHARED
-from novelwriter.gui.dochighlight import GuiDocHighlighter, TextBlockData
+from novelwriter.gui.dochighlight import GuiDocHighlighter
+from novelwriter.gui.doctextblock import TextBlockData
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+    from PyQt6.QtCore import QObject
 
 logger = logging.getLogger(__name__)
 
@@ -111,9 +113,10 @@ class GuiTextDocument(QTextDocument):
                     return cData, cType
         return "", ""
 
-    def spellErrorAtPos(self, pos: int) -> tuple[str, int, list[str]]:
+    def spellErrorAtPos(self, pos: int) -> tuple[str, int, int, list[str]]:
         """Check if there is a misspelled word at a given position in
-        the document, and if so, return it.
+        the document, and if so, return it with its start and end
+        positions within the block.
         """
         cursor = QTextCursor(self)
         cursor.setPosition(pos)
@@ -122,8 +125,8 @@ class GuiTextDocument(QTextDocument):
         if block.isValid() and isinstance(data, TextBlockData) and (check := pos - block.position()) >= 0:
             for start, end, word in data.spellErrors:
                 if start <= check <= end:
-                    return word, start, SHARED.spelling.suggestWords(word)
-        return "", -1, []
+                    return word, start, end, SHARED.spelling.suggestWords(word)
+        return "", -1, -1, []
 
     def iterBlockByType(self, cType: int, maxCount: int = 1000) -> Iterable[QTextBlock]:
         """Iterate over all text blocks of a given type."""
@@ -134,12 +137,3 @@ class GuiTextDocument(QTextDocument):
                 count += 1
                 yield block
         return
-
-    ##
-    #  Public Slots
-    ##
-
-    @pyqtSlot(bool)
-    def setSpellCheckState(self, state: bool) -> None:
-        """Set the spell check state of the syntax highlighter."""
-        self._syntax.setSpellCheck(state)

@@ -39,6 +39,7 @@
 - Never run GUI tests in this repository without the offscreen environment variable
 - Avoid adding test-specific code to the main code base
 - `CONFIG` is fully reset before every test by the autouse `functionFixture` fixture in `tests/conftest.py`; never save/restore `CONFIG.*` values in a test, just set them directly
+- Both line and branch test coverage should be complete and at 100%
 
 ## Documentation
 

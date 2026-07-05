@@ -27,22 +27,19 @@ import re
 from time import time
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QBrush, QColor, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextDocument
+from PyQt6.QtGui import QBrush, QColor, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, utf16CharMap
 from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.enum import nwComment
+from novelwriter.gui.doctextblock import TextBlockData
 from novelwriter.text.formats import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 from novelwriter.types import QtFontBold, QtTextUserProperty
 
 logger = logging.getLogger(__name__)
 
-RX_URL = REGEX_PATTERNS.url
-RX_WORDS = REGEX_PATTERNS.wordSplit
-RX_FMT_SC = REGEX_PATTERNS.shortcodePlain
-RX_FMT_SV = REGEX_PATTERNS.shortcodeValue
 
 BLOCK_NONE = 0
 BLOCK_TEXT = 1
@@ -60,8 +57,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         "_isInactive",
         "_isNovel",
         "_minRules",
-        "_spellCheck",
-        "_spellErr",
         "_tHandle",
         "_txtRules",
     )
@@ -74,8 +69,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._tHandle = None
         self._isNovel = False
         self._isInactive = False
-        self._spellCheck = False
-        self._spellErr = QTextCharFormat()
 
         self._hStyles: dict[str, QTextCharFormat] = {}
         self._minRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
@@ -133,11 +126,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._addCharFormat("value", syntax.val, fmtCodes)
         self._addCharFormat("optional", syntax.opt)
         self._addCharFormat("invalid", None, "err")
-
-        # Cache Spell Error Format
-        self._spellErr = QTextCharFormat()
-        self._spellErr.setUnderlineColor(syntax.spell)
-        self._spellErr.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
 
         self._txtRules.clear()
         self._cmnRules.clear()
@@ -264,10 +252,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     #  Setters
     ##
 
-    def setSpellCheck(self, state: bool) -> None:
-        """Enable/disable the real time spell checker."""
-        self._spellCheck = state
-
     def setHandle(self, tHandle: str) -> None:
         """Set the handle of the currently highlighted document."""
         self._tHandle = tHandle
@@ -307,6 +291,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """
         self.setCurrentBlockState(BLOCK_NONE)
         if self._tHandle is None or not text:
+            self._clearBlockData()
             return
 
         blockLen = self.currentBlock().length()
@@ -342,7 +327,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         self.setFormat(pos, length, self._hStyles["invalid"])
 
             # We never want to run the spell checker on keyword/values,
-            # so we force a return here
+            # so we clear the cached data and force a return here
+            self._clearBlockData()
             return
 
         elif text.startswith(("# ", "#! ", "## ", "##! ", "### ", "###! ", "#### ")):
@@ -393,6 +379,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, length, self._hStyles["hidden"])
             elif style == nwComment.IGNORE:
                 self.setFormat(0, length, self._hStyles["strike"])
+                self._clearBlockData()
                 return  # No more processing for these
             elif mod:
                 self.setFormat(0, dot, self._hStyles["modifier"])
@@ -409,6 +396,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             check = text.rstrip().lower()
             if check in ("[newpage]", "[new page]", "[vspace]"):
                 self.setFormat(0, blockLen, self._hStyles["code"])
+                self._clearBlockData()
                 return
             elif check.startswith("[vspace:") and check.endswith("]"):
                 value = checkInt(check[8:-1], 0)
@@ -416,6 +404,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, 8, self._hStyles["code"])
                 self.setFormat(8, blockLen - 10, self._hStyles[style])
                 self.setFormat(blockLen - 2, blockLen, self._hStyles["code"])
+                self._clearBlockData()
                 return
 
         else:  # Text Paragraph
@@ -461,19 +450,18 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             data = TextBlockData()
             self.setCurrentBlockUserData(data)
 
-        data.processText(text, offset)
-        if self._spellCheck:
-            for pos, end, _ in data.spellCheck(utf16Map):
-                for x in range(pos, end):
-                    cFmt = self.format(x)
-                    cFmt.merge(self._spellErr)
-                    self.setFormat(x, 1, cFmt)
+        data.processText(text, offset, utf16Map)
 
         return
 
     ##
     #  Internal Functions
     ##
+
+    def _clearBlockData(self) -> None:
+        """Clear the cached user data of the current block."""
+        if isinstance(data := self.currentBlockUserData(), TextBlockData):
+            data.clear()
 
     def _addCharFormat(
         self,
@@ -513,71 +501,3 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             charFormat.setFontPointSize(round(size * CONFIG.textFont.pointSize()))
 
         self._hStyles[name] = charFormat
-
-
-class TextBlockData(QTextBlockUserData):
-    """Custom QTextBlock Data.
-
-    Custom data stored in a single text block. The spell check state is
-    cached here and used when correcting misspelled text.
-    """
-
-    __slots__ = ("_metaData", "_offset", "_spellErrors", "_text")
-
-    def __init__(self) -> None:
-        super().__init__()
-        self._text = ""
-        self._offset = 0
-        self._metaData: list[tuple[int, int, str, str]] = []
-        self._spellErrors: list[tuple[int, int, str]] = []
-
-    @property
-    def metaData(self) -> list[tuple[int, int, str, str]]:
-        """Return meta data from last check."""
-        return self._metaData
-
-    @property
-    def spellErrors(self) -> list[tuple[int, int, str]]:
-        """Return spell error data from last check."""
-        return self._spellErrors
-
-    def processText(self, text: str, offset: int) -> None:
-        """Extract meta data from the text."""
-        self._metaData = []
-        if "[" in text:
-            # Strip shortcodes
-            for regEx in [RX_FMT_SC, RX_FMT_SV]:
-                for res in regEx.finditer(text, offset):
-                    if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:  # pragma: no branch
-                        pad = " " * (e - s)
-                        text = f"{text[:s]}{pad}{text[e:]}"
-
-        if "http" in text:
-            # Strip URLs
-            for res in RX_URL.finditer(text, offset):
-                if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:  # pragma: no branch
-                    pad = " " * (e - s)
-                    text = f"{text[:s]}{pad}{text[e:]}"
-                    self._metaData.append((s, e, res.group(0), "url"))
-
-        self._text = text.replace("\u02bc", "'").replace("_", " ")
-        self._offset = offset
-
-    def spellCheck(self, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
-        """Run the spell checker and cache the result, and return the
-        list of spell check errors.
-        """
-        spell = SHARED.spelling
-        if utf16Map:
-            self._spellErrors = [
-                (utf16Map[r.start(0)], utf16Map[r.end(0)], w)
-                for r in RX_WORDS.finditer(self._text, self._offset)
-                if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
-            ]
-        else:
-            self._spellErrors = [
-                (r.start(0), r.end(0), w)
-                for r in RX_WORDS.finditer(self._text, self._offset)
-                if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
-            ]
-        return self._spellErrors

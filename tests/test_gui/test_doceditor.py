@@ -38,6 +38,7 @@ from PyQt6.QtGui import (
     QInputMethodEvent,
     QMouseEvent,
     QTextBlock,
+    QTextCharFormat,
     QTextCursor,
     QTextDocument,
     QTextOption,
@@ -48,10 +49,11 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.item import NWItem
+from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwState, nwVimMode
 from novelwriter.gui.doceditor import CommandCompleter, GuiDocEditor, TextAutoReplace, _TagAction
-from novelwriter.gui.dochighlight import TextBlockData
+from novelwriter.gui.doctextblock import TextBlockData
 from novelwriter.shared import _GuiAlert
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
@@ -607,6 +609,13 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     monkeypatch.setattr(QMenu, "setParent", lambda *a: None)
 
     buildTestProject(nwGUI, projPath)
+
+    # The test must not depend on which dictionaries are available on
+    # the host system, so all words are accepted from the start, and
+    # the spell check worker must run synchronously
+    monkeypatch.setattr(NWSpellEnchant, "checkWord", lambda *a: True)
+    monkeypatch.setattr(SHARED, "runInThreadPool", lambda r: r.run())
+
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
 
@@ -651,17 +660,17 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     data._spellErrors = [(0, 5, "Lorem")]
 
     # No known position
-    assert docEditor._qDocument.spellErrorAtPos(-1) == ("", -1, [])
+    assert docEditor._qDocument.spellErrorAtPos(-1) == ("", -1, -1, [])
 
     # Multiple entries: the first doesn't match, the second does
     blockPos = cursor.block().position()
     data._spellErrors = [(0, 5, "Lorem"), (6, 11, "ipsum")]
     with monkeypatch.context() as mp:
-        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [])
-        assert docEditor._qDocument.spellErrorAtPos(blockPos + 8) == ("ipsum", 6, [])
+        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [])
+        assert docEditor._qDocument.spellErrorAtPos(blockPos + 8) == ("ipsum", 6, 11, [])
 
     # No entry matches the given position
-    assert docEditor._qDocument.spellErrorAtPos(blockPos + 20) == ("", -1, [])
+    assert docEditor._qDocument.spellErrorAtPos(blockPos + 20) == ("", -1, -1, [])
 
     # Meta data lookup follows the same pattern
     data._metaData = [(0, 5, "Lorem", "url"), (6, 11, "ipsum", "url")]
@@ -670,9 +679,26 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
     data._spellErrors = [(0, 5, "Lorem")]
 
+    # The spell error should be rendered as an extra selection
+    docEditor._updateSpellSelections()
+    spellSel = [
+        s
+        for s in docEditor.extraSelections()
+        if s.format.underlineStyle() == QTextCharFormat.UnderlineStyle.SpellCheckUnderline
+    ]
+    assert len(spellSel) == 1
+    assert spellSel[0].cursor.selectionStart() == blockPos
+    assert spellSel[0].cursor.selectionEnd() == blockPos + 5
+
+    # With spell check disabled, the selections should be cleared
+    SHARED.project.data.setSpellCheck(False)
+    docEditor._updateSpellSelections()
+    assert docEditor._spellSelections == []
+    SHARED.project.data.setSpellCheck(True)
+
     # With Suggestion
     with monkeypatch.context() as mp:
-        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [LORAX])
+        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [LORAX])
         suggestion = f"{nwUnicode.U_ENDASH} {LORAX}"
 
         ctxMenu = getMenuForPos(docEditor, 16)
@@ -691,7 +717,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
     # Without Suggestion
     with monkeypatch.context() as mp:
-        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [])
+        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [])
 
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
@@ -703,7 +729,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
     # Add to Dictionary
     with monkeypatch.context() as mp:
-        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [])
+        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [])
 
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
@@ -721,7 +747,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
     # No spelling error at the clicked position: no spelling actions
     with monkeypatch.context() as mp:
-        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [])
+        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [])
 
         ctxMenu = getMenuForPos(docEditor, blockPos + 20)
         assert ctxMenu is not None
@@ -730,6 +756,71 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
         assert "Spelling Suggestion(s)" not in actions
         ctxMenu.setObjectName("")
         ctxMenu.deleteLater()
+
+    # Editing a block flags it for the debounced spell check
+    docEditor._dirtySpell.clear()
+    docEditor.setCursorPosition(blockPos + 5)
+    docEditor.textCursor().insertText("x")
+    assert docEditor._dirtySpell != {}
+    assert docEditor._timerSpellCheck.isActive()
+
+    # Running the check dispatches the dirty blocks to the worker
+    docEditor._dispatchSpellCheck()
+    assert docEditor._dirtySpell == {}
+    assert docEditor._spellJob is None
+
+    # An error under the caret is not underlined
+    data = docEditor.textCursor().block().userData()
+    assert isinstance(data, TextBlockData)
+    data._spellErrors = [(0, 5, "Lorem")]
+    docEditor.setCursorPosition(blockPos + 3)
+    docEditor._updateSpellSelections()
+    assert docEditor._suppressed is True
+    assert docEditor._spellSelections == []
+
+    # Moving the caret out of the word restores the underline
+    docEditor.setCursorPosition(blockPos + 10)
+    docEditor._updateSpellSelections()
+    assert docEditor._suppressed is False
+    assert len(docEditor._spellSelections) == 1
+
+    # Background Spell Pass
+    # =====================
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.gui.doceditor.SPELL_PASS_CHUNK", 2)
+
+        # A full pass runs chunked worker jobs until the document is
+        # done, which with a synchronous worker completes immediately
+        docEditor._beginSpellPass()
+        assert docEditor._spellPassNo == -1
+        assert docEditor._spellJob is None
+
+        # A full spell check notifies when the pass completes
+        docEditor.spellCheckDocument()
+        assert docEditor._spellPassNotify is False
+
+    # Results from a cancelled job are dropped
+    docEditor._spellCheckResults(docEditor._spellJobId + 1, [])
+    assert docEditor._spellJob is None
+
+    # Results for blocks modified while checking are discarded
+    block = docEditor.textCursor().block()
+    data = block.userData()
+    assert isinstance(data, TextBlockData)
+    data._spellErrors = []
+    docEditor._spellJobId += 1
+    docEditor._spellJob = (docEditor._spellJobId, [(block, data, data.revision - 1)])
+    docEditor._spellCheckResults(docEditor._spellJobId, [(0, [(0, 5, "wrong")])])
+    assert data.spellErrors == []
+    assert docEditor._spellJob is None
+
+    # No new dispatch is made while a job is still in flight
+    docEditor._dirtySpell[block.blockNumber()] = block
+    docEditor._spellJob = (docEditor._spellJobId, [])
+    docEditor._dispatchSpellCheck()
+    assert docEditor._dirtySpell != {}
+    docEditor._spellJob = None
+    docEditor._dirtySpell.clear()
 
     # qtbot.stop()
 
