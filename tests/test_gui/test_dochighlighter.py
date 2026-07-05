@@ -27,8 +27,10 @@ from PyQt6.QtGui import QTextCharFormat, QTextCursor, QTextDocument
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.core.item import NWItem
+from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwTheme
-from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE, GuiDocHighlighter, TextBlockData
+from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE, GuiDocHighlighter
+from novelwriter.gui.doctextblock import TextBlockData
 from novelwriter.types import QtKeepAnchor
 
 R_HANDLE = "3456789abcdef"
@@ -515,7 +517,7 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
     # Settings
     syntax._tHandle = T_HANDLE
     syntax._isNovel = True
-    monkeypatch.setattr(SHARED.spelling, "checkWord", lambda *a: False)
+    monkeypatch.setattr(NWSpellEnchant, "checkWord", lambda *a: False)
 
     colHidden = theme.syntaxTheme.hidden.getRgb()
     colEmph = theme.syntaxTheme.emph.getRgb()

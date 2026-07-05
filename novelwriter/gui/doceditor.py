@@ -97,8 +97,8 @@ from novelwriter.enum import (
 from novelwriter.extensions.configlayout import NPathColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
-from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE, TextBlockData
-from novelwriter.gui.doctextblock import spellCheckText
+from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
+from novelwriter.gui.doctextblock import TextBlockData, spellCheckText
 from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.text.counting import standardCounter

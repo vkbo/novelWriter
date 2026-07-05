@@ -27,6 +27,7 @@ from PyQt6.QtGui import QAction, QColor
 from PyQt6.QtWidgets import QColorDialog, QFileDialog, QToolButton
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import nwItemType, nwStatusShape
@@ -94,7 +95,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
 def testDlgProjSettings_SettingsPage(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     """Test the settings page of the dialog."""
     languages = [("en", "English"), ("de", "German")]
-    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda *a: languages)
+    monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: languages)
 
     (fncPath / "nw_en.qm").touch()
     (fncPath / "nw_de.qm").touch()

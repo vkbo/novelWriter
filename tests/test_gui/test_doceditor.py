@@ -49,10 +49,11 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.item import NWItem
+from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwState, nwVimMode
 from novelwriter.gui.doceditor import CommandCompleter, GuiDocEditor, TextAutoReplace, _TagAction
-from novelwriter.gui.dochighlight import TextBlockData
+from novelwriter.gui.doctextblock import TextBlockData
 from novelwriter.shared import _GuiAlert
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
@@ -612,7 +613,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     # The test must not depend on which dictionaries are available on
     # the host system, so all words are accepted from the start, and
     # the spell check worker must run synchronously
-    monkeypatch.setattr(SHARED.spelling, "checkWord", lambda *a: True)
+    monkeypatch.setattr(NWSpellEnchant, "checkWord", lambda *a: True)
     monkeypatch.setattr(SHARED, "runInThreadPool", lambda r: r.run())
 
     assert nwGUI.openDocument(C.hSceneDoc) is True
@@ -665,7 +666,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     blockPos = cursor.block().position()
     data._spellErrors = [(0, 5, "Lorem"), (6, 11, "ipsum")]
     with monkeypatch.context() as mp:
-        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [])
+        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [])
         assert docEditor._qDocument.spellErrorAtPos(blockPos + 8) == ("ipsum", 6, 11, [])
 
     # No entry matches the given position
@@ -697,7 +698,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
     # With Suggestion
     with monkeypatch.context() as mp:
-        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [LORAX])
+        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [LORAX])
         suggestion = f"{nwUnicode.U_ENDASH} {LORAX}"
 
         ctxMenu = getMenuForPos(docEditor, 16)
@@ -716,7 +717,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
     # Without Suggestion
     with monkeypatch.context() as mp:
-        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [])
+        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [])
 
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
@@ -728,7 +729,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
     # Add to Dictionary
     with monkeypatch.context() as mp:
-        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [])
+        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [])
 
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
@@ -746,7 +747,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
     # No spelling error at the clicked position: no spelling actions
     with monkeypatch.context() as mp:
-        mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [])
+        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [])
 
         ctxMenu = getMenuForPos(docEditor, blockPos + 20)
         assert ctxMenu is not None
