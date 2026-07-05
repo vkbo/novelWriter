@@ -1567,19 +1567,17 @@ class GuiDocEditor(QPlainTextEdit):
 
     def _openNextFindDocument(self, prevFocus: QWidget, goBack: bool) -> None:
         """Open the adjacent document and select its edge-most match."""
-        if self._docHandle is None:
-            return
+        if self._docHandle:
+            self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop, goBack)
+            QApplication.processEvents()
+            self.beginSearch()
+            prevFocus.setFocus()
 
-        self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop, goBack)
-        QApplication.processEvents()
-        self.beginSearch()
-        prevFocus.setFocus()
+            resS, resE = self.findAllOccurences()
+            if len(resS) == 0:
+                return
 
-        resS, resE = self.findAllOccurences()
-        if len(resS) == 0:
-            return
-
-        self._setFindSelection(resS, resE, len(resS) - 1 if goBack else 0)
+            self._setFindSelection(resS, resE, len(resS) - 1 if goBack else 0)
 
     def _setFindSelection(self, resS: list[int], resE: list[int], resIdx: int) -> None:
         """Select one search result and update the search state."""
