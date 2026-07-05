@@ -25,27 +25,29 @@ import shutil
 
 from pathlib import Path
 from shutil import copyfile
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 import pytest
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QRect, QSize, Qt
 from PyQt6.QtGui import QPalette
-from PyQt6.QtWidgets import QInputDialog
+from PyQt6.QtWidgets import QApplication, QFileDialog, QInputDialog, QWidget
 
 from novelwriter import CONFIG, SHARED, __hexversion__
 from novelwriter.common import jsonEncode
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.constants import nwFiles
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemType, nwState, nwTheme, nwView
+from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemClass, nwItemType, nwState, nwTheme, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.guimain import GuiMain
 from novelwriter.shared import _GuiAlert
+from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.welcome import GuiWelcome
+from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.types import QtModCtrl, QtModShift
 
 from tests.mocked import causeOSError
@@ -64,9 +66,21 @@ def testGuiMain_ProjectBlocker(nwGUI):
     assert nwGUI.viewDocument(None) is False
     assert nwGUI.importDocument() is False
 
+    # These should all just do nothing and not raise
+    nwGUI.closeDocument()
+    nwGUI.rebuildIndex()
+    nwGUI.openSelectedItem()
+    nwGUI.openNextDocument(C.hSceneDoc, False, True)
+    nwGUI._autoSaveProject()
+    nwGUI.showProjectSettingsDialog()
+    nwGUI.showNovelDetailsDialog()
+    nwGUI.showBuildManuscriptDialog()
+    nwGUI.showProjectWordListDialog()
+    nwGUI.showWritingStatsDialog()
+
 
 @pytest.mark.gui
-def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
+def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath, fncPath):
     """Test the handling of launch tasks."""
     monkeypatch.setattr(GuiWelcome, "exec", lambda *a: None)
     CONFIG.lastNotes = "0x0"
@@ -77,6 +91,11 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     assert SHARED.hasProject is True
     nwGUI.closeProject()
     assert SHARED.hasProject is False
+
+    # Launch tasks still run fine without a QApplication instance to connect to
+    with monkeypatch.context() as mp:
+        mp.setattr(QApplication, "instance", lambda: None)
+        nwGUI.postLaunchTasks(None)
 
     # Open as if called from Welcome
     nwGUI._openProjectFromWelcome(projPath)
@@ -105,6 +124,42 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     assert nwGUI.openProject(projPath) is True
     nwGUI.closeProject()
 
+    # Opening a project with no documents at all leaves the editor and
+    # viewer empty
+    emptyPath = fncPath / "empty"
+    emptyPath.mkdir()
+    project = SHARED.project
+    project.storage.createNewProject(emptyPath)
+    project.setDefaultStatusImport()
+    project.data.setName("Empty")
+    project.newRoot(nwItemClass.NOVEL)
+    project.session.startSession()
+    project.saveProject()
+    project.closeProject(0.0)
+
+    assert nwGUI.openProject(emptyPath) is True
+    assert nwGUI.docEditor.docHandle is None
+    assert nwGUI.docViewer.docHandle is None
+    nwGUI.closeProject()
+
+    # A broken index caused by a version upgrade does not show the
+    # "index is broken" warning, but still rebuilds the index
+    assert nwGUI.openProject(projPath) is True
+    nwGUI.closeProject()
+
+    warnMock = Mock()
+    rebuildMock = Mock()
+    with monkeypatch.context() as mp:
+        mp.setattr(type(SHARED.project.index), "indexBroken", property(lambda self: True))
+        mp.setattr(type(SHARED.project.index), "indexUpgrade", property(lambda self: True))
+        mp.setattr(SHARED, "warn", warnMock)
+        mp.setattr(nwGUI, "rebuildIndex", rebuildMock)
+        assert nwGUI.openProject(projPath) is True
+
+    assert not any("index is broken" in str(call) for call in warnMock.call_args_list)
+    assert rebuildMock.called is True
+    nwGUI.closeProject()
+
     # Check that closes can be blocked
     with monkeypatch.context() as mp:
         mp.setattr(_GuiAlert, "finalState", False)
@@ -131,6 +186,22 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     assert SHARED.lastAlert == ["Foo"]
     assert CONFIG._hasError is False
 
+    # The welcome dialog isn't repositioned when moveMainWin is disabled
+    CONFIG.moveMainWin = False
+    nwGUI.showWelcomeDialog()
+
+    # Window sizing tolerates an invalid size list, and skips moving the
+    # window when the size already matches the available screen
+    nwGUI._setWindowSize([100])  # Wrong length, should not raise
+
+    mockScreen = MagicMock()
+    mockScreen.availableSize.return_value = QSize(1000, 700)
+    mockScreen.geometry.return_value = QRect(0, 0, 1000, 700)
+    with monkeypatch.context() as mp:
+        mp.setattr(type(SHARED), "mainScreen", property(lambda self: mockScreen))
+        CONFIG.moveMainWin = False
+        nwGUI._setWindowSize([1000, 700])
+
     # qtbot.stop()
 
 
@@ -155,6 +226,11 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         assert nwGUI.docEditor.docHandle == sHandle
         nwGUI.closeDocument()
 
+        # A selected item that isn't a file is ignored
+        nwGUI.projView.projTree.setSelectedHandle(C.hChapterDir)
+        nwGUI.openSelectedItem()
+        assert nwGUI.docEditor.docHandle is None
+
     # Novel Tree has focus
     nwGUI._changeView(nwView.NOVEL)
     with monkeypatch.context() as mp:
@@ -178,6 +254,13 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         nwGUI._keyPressReturn()
         assert nwGUI.docEditor.docHandle == sHandle
         nwGUI.closeDocument()
+
+    # Internal open-document slots ignore a missing or invalid handle
+    nwGUI._openDocument(None, nwDocMode.EDIT, "", True)
+    assert nwGUI.docEditor.docHandle is None
+
+    nwGUI._openDocumentSelection(C.hInvalid, 0, 3, True)
+    assert nwGUI.docEditor.docHandle is None
 
     # qtbot.stop()
 
@@ -204,6 +287,10 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
 
     # Update by check
     CONFIG.themeMode = nwTheme.LIGHT
+    nwGUI.checkThemeUpdate()
+    assert theme.isDarkTheme is False
+
+    # Checking again without any further change does nothing
     nwGUI.checkThemeUpdate()
     assert theme.isDarkTheme is False
 
@@ -715,6 +802,33 @@ def testGuiMain_Viewing(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         qtbot.keyClick(nwGUI.projView.projTree, Qt.Key.Key_Return, modifier=QtModShift, delay=KEY_DELAY)
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
 
+    # If the viewer fails to load the document, nothing else happens
+    nwGUI.closeDocViewer()
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docViewer, "loadText", lambda *a, **k: False)
+        assert nwGUI.viewDocument(C.hSceneDoc) is True
+    assert nwGUI.splitView.isVisible() is False
+
+    # If the editor's cursor isn't visible when the viewer panel first
+    # appears, its visibility isn't restored either
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "cursorIsVisible", lambda: False)
+        assert nwGUI.viewDocument(C.hSceneDoc) is True
+    assert nwGUI.splitView.isVisible() is True
+
+    # Closing the viewer panel doesn't restore cursor visibility either,
+    # if the cursor wasn't visible to begin with
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "cursorIsVisible", lambda: False)
+        assert nwGUI.closeViewerPanel() is True
+
+    # Reloading the viewer only saves the editor first if the two
+    # panels show the same document
+    nwGUI.openDocument(C.hChapterDoc)
+    nwGUI.viewDocument(C.hSceneDoc)
+    assert nwGUI.docEditor.docHandle != nwGUI.docViewer.docHandle
+    nwGUI._reloadViewer()  # Should not raise, and skip saving the editor
+
     # qtbot.stop()
 
 
@@ -738,6 +852,19 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert nwGUI.mainStatus.isVisible() is True
     assert nwGUI.mainMenu.isVisible() is True
     assert nwGUI.sideBar.isVisible() is True
+
+    # Open a file only in the editor, with the viewer untouched and the
+    # cursor hidden: toggling focus mode doesn't touch the viewer panel
+    # or try to restore cursor visibility
+    assert nwGUI.openDocument(C.hSceneDoc)
+    assert nwGUI.docViewer.docHandle is None
+    assert nwGUI.splitView.isVisible() is False
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "cursorIsVisible", lambda: False)
+        nwGUI.toggleFocusMode()
+        assert SHARED.focusMode is True
+        nwGUI.toggleFocusMode()
+        assert SHARED.focusMode is False
 
     # Open a file in editor and viewer
     assert nwGUI.openDocument(C.hSceneDoc)
@@ -780,6 +907,15 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.docEditor.beginSearch()
     qtbot.keyClick(nwGUI, Qt.Key.Key_Escape)
     assert SHARED.focusMode is True
+
+    # With search closed, Vim mode off, and Focus Mode inactive, Escape
+    # does nothing
+    nwGUI.docEditor.closeSearch()
+    nwGUI.toggleFocusMode()
+    assert nwGUI.docEditor.searchVisible() is False
+    assert CONFIG.vimMode is False
+    assert SHARED.focusMode is False
+    nwGUI._keyPressEscape()
 
     # Full Screen Mode
     # ================
@@ -826,6 +962,53 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         mp.setattr("builtins.open", causeOSError)
         assert nwGUI.openDocument(C.hChapterDoc) is False
 
+    # Import Document
+    # ===============
+
+    # Importing into an empty document does not prompt for overwrite
+    # confirmation
+    assert nwGUI.openDocument(C.hSceneDoc)
+    nwGUI.docEditor.replaceText("")
+    assert nwGUI.docEditor.isEmpty is True
+
+    importFile = projPath / "import.txt"
+    importFile.write_text("Imported text.", encoding="utf-8")
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (str(importFile), ""))
+        assert nwGUI.importDocument() is True
+    assert nwGUI.docEditor.getText() == "Imported text."
+
+    # Dialogs
+    # =======
+
+    # Reopening the manuscript and writing stats dialogs reuses the
+    # existing instance rather than creating a new one
+    nwGUI.showBuildManuscriptDialog()
+    dialog = SHARED.findTopLevelWidget(GuiManuscript)
+    assert dialog is not None
+    nwGUI.showBuildManuscriptDialog()
+    assert SHARED.findTopLevelWidget(GuiManuscript) is dialog
+
+    nwGUI.showWritingStatsDialog()
+    dialog = SHARED.findTopLevelWidget(GuiWritingStats)
+    assert dialog is not None
+    nwGUI.showWritingStatsDialog()
+    assert SHARED.findTopLevelWidget(GuiWritingStats) is dialog
+
+    # Closing Down
+    # ============
+
+    # closeMain skips saving pane sizes while Focus Mode is active
+    assert nwGUI.openDocument(C.hSceneDoc)
+    nwGUI.toggleFocusMode()
+    assert SHARED.focusMode is True
+    assert nwGUI.closeMain() is True
+
+    # closeMain skips saving the window size while in full screen mode
+    assert nwGUI.openProject(projPath) is True
+    nwGUI.setWindowState(nwGUI.windowState() | Qt.WindowState.WindowFullScreen)
+    assert nwGUI.closeMain() is True
+
     # qtbot.stop()
 
 
@@ -851,6 +1034,27 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI: GuiMain, projPath, fncPath,
     assert nwGUI.docEditor._docHandle == C.hSceneDoc
     nwGUI.openNextDocument(C.hNovelRoot, True, True)
     assert nwGUI.docEditor._docHandle == C.hSceneDoc
+
+    # No wraparound at the very first or last document stays put
+    allDocs = SHARED.project.tree.allDocs()
+    firstDoc = allDocs[0]
+    lastDoc = allDocs[-1]
+
+    nwGUI.openDocument(firstDoc)
+    nwGUI.openNextDocument(firstDoc, False, True)  # Backwards, no wraparound
+    assert nwGUI.docEditor.docHandle == firstDoc
+
+    nwGUI.openDocument(lastDoc)
+    nwGUI.openNextDocument(lastDoc, False, False)  # Forwards, no wraparound
+    assert nwGUI.docEditor.docHandle == lastDoc
+
+    # Autosaving does nothing when there are no changes to save
+    assert nwGUI.saveProject() is True
+    assert SHARED.project.projChanged is False
+    nwGUI._autoSaveProject()
+
+    assert nwGUI.docEditor.docChanged is False
+    nwGUI._autoSaveDocument()
 
     # Open some test documents
     nwGUI.openDocument(C.hSceneDoc)
@@ -900,6 +1104,18 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI: GuiMain, projPath, fncPath,
     assert backDir.exists()
     assert len(list(backDir.iterdir())) > 0
 
+    # Backing up without prompting first, when askBeforeBackup is disabled
+    CONFIG.askBeforeBackup = False
+    questionMock = Mock()
+    backupMock = Mock()
+    with monkeypatch.context() as mp:
+        mp.setattr(SHARED, "question", questionMock)
+        mp.setattr(type(SHARED.project), "backupProject", backupMock)
+        assert nwGUI.openProject(projPath) is True
+        assert nwGUI.closeProject(isYes=True) is True
+    assert questionMock.called is False
+    assert backupMock.called is True
+
 
 @pytest.mark.gui
 def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
@@ -922,6 +1138,11 @@ def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Simulate focus change to editor
     nwGUI._appFocusChanged(None, nwGUI.docEditor)
     assert nwGUI.docEditor.docHeader.itemTitle._state == nwState.NORMAL
+    assert nwGUI.docViewer.docHeader.itemTitle._state == nwState.INACTIVE
+
+    # Simulate focus change to an unrelated widget: neither is focused
+    nwGUI._appFocusChanged(None, QWidget())
+    assert nwGUI.docEditor.docHeader.itemTitle._state == nwState.INACTIVE
     assert nwGUI.docViewer.docHeader.itemTitle._state == nwState.INACTIVE
 
     # Focus Tree
@@ -1012,5 +1233,13 @@ def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         mp.setattr(nwGUI.docViewer, "hasFocus", lambda *a: True)
         nwGUI._passDocumentAction(nwDocAction.SEL_ALL)
         assert nwGUI.docViewer.textCursor().hasSelection() is True
+
+    # Pass to neither, since neither has focus: nothing changes
+    hadSelection = nwGUI.docEditor.textCursor().hasSelection()
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: False)
+        mp.setattr(nwGUI.docViewer, "hasFocus", lambda *a: False)
+        nwGUI._passDocumentAction(nwDocAction.MOVE_TEXT)
+        assert nwGUI.docEditor.textCursor().hasSelection() is hadSelection
 
     # qtbot.stop()

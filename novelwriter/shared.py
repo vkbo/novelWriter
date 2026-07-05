@@ -193,7 +193,7 @@ class SharedData(QObject):
         self._gui = gui
         self._resetProject()
         logger.debug("Ready: SharedData")
-        if pool := QThreadPool.globalInstance():
+        if pool := QThreadPool.globalInstance():  # pragma: no branch
             logger.debug("Thread Pool Max Count: %d", pool.maxThreadCount())
 
     def closeDocument(self, tHandle: str | None = None) -> None:
@@ -518,7 +518,7 @@ class _GuiAlert(QMessageBox):
         """Make sure the message box isn't too small."""
         # See https://stackoverflow.com/a/50549396
         self._spacer = QSpacerItem(20 * self._theme.fontPixelSize, 0, QtSizeMinimum, QtSizeExpanding)
-        if isinstance(layout := self.layout(), QGridLayout):
+        if isinstance(layout := self.layout(), QGridLayout):  # pragma: no branch
             layout.addItem(self._spacer, layout.rowCount(), 0, 1, layout.columnCount())
         return self.exec()
 
@@ -566,6 +566,8 @@ class _GuiAlert(QMessageBox):
         elif level == self.ASK:
             self.setIconPixmap(self._theme.getPixmap("alert_question", (pSz, pSz), "info"))
             self.setWindowTitle(self.tr("Question"))
+        else:  # pragma: no cover
+            pass
 
     @pyqtSlot()
     def _onAccept(self) -> None:

@@ -1102,6 +1102,8 @@ class GuiMain(QMainWindow):
                 self.openDocument(tHandle, sTitle=sTitle)
             elif mode == nwDocMode.VIEW:
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
+            else:  # pragma: no cover
+                pass
 
     @pyqtSlot(Path)
     def _openProjectFromWelcome(self, path: Path) -> None:
@@ -1119,6 +1121,8 @@ class GuiMain(QMainWindow):
                 self.openDocument(tHandle, sTitle=sTitle, changeFocus=setFocus)
             elif mode == nwDocMode.VIEW:
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
+            else:  # pragma: no cover
+                pass
 
     @pyqtSlot(str, int, int, bool)
     def _openDocumentSelection(self, tHandle: str, selStart: int, selLength: int, changeFocus: bool) -> None:
@@ -1155,6 +1159,8 @@ class GuiMain(QMainWindow):
             self.projSearch.beginSearch(self.docEditor.getSelectedText() if self.docEditor.anyFocus() else "")
         elif view == nwView.OUTLINE:
             self.mainStack.setCurrentWidget(self.outlineView)
+        else:  # pragma: no cover
+            pass
 
         # Set active status
         isMain = self.mainStack.currentWidget() == self.splitMain
