@@ -163,6 +163,27 @@ jobs:
             EXTRA=(--codesign-identity "$SIGN_IDENTITY"
                    --osx-entitlements-file setup/macos/App.entitlements)
           fi
+
+          # Bundle enchant explicitly. PyInstaller's stock enchant hook does
+          # NOT ship a working spell checker here: pyenchant is pip-installed
+          # (so the hook's brew/macports collection branch is skipped), and
+          # the enchant backend plugins are dlopen-ed at runtime, so Mach-O
+          # dependency analysis never sees them. Without this the shipped app
+          # has an empty dictionary list (see issue #2705). We add libenchant
+          # and its backends from Homebrew, keeping the lib/ + lib/enchant-2/
+          # sibling layout that relocatable enchant-2 uses to find backends.
+          # The macOS applespell backend is what exposes the OS dictionaries.
+          # brew --prefix is arch-agnostic (/opt/homebrew or /usr/local).
+          ENCHANT_PREFIX="$(brew --prefix enchant)"
+          LIBENCHANT="$(ls "$ENCHANT_PREFIX"/lib/libenchant-2.*.dylib | head -n1)"
+          EXTRA+=(--add-binary "$LIBENCHANT:lib")
+          for so in "$ENCHANT_PREFIX"/lib/enchant-2/*.so; do
+            EXTRA+=(--add-binary "$so:lib/enchant-2")
+          done
+          # Runtime hook points pyenchant at the bundled libenchant (via
+          # PYENCHANT_LIBRARY_PATH) before novelWriter lazily imports enchant.
+          EXTRA+=(--runtime-hook setup/macos/pyinstaller_rthook_enchant.py)
+
           # novelwriter itself is bundled by module-graph analysis of the
           # entry script (no dynamic imports), so --collect-all novelwriter
           # is unnecessary — and on case-insensitive macOS it resolves the
@@ -213,6 +234,13 @@ jobs:
             || { echo "ERROR: compiled .qm files not bundled"; exit 1; }
           test -n "$(find "$APP_FW/assets/icons" -name '*.icons' 2>/dev/null)" \
             || { echo "ERROR: icon themes not bundled"; exit 1; }
+          # Guard against silently shipping a spell checker with no backend
+          # (the empty-dropdown regression from #2705). libenchant and at
+          # least one enchant-2 backend plugin must be present.
+          test -n "$(ls "$APP_FW"/lib/libenchant-2.*.dylib 2>/dev/null)" \
+            || { echo "ERROR: libenchant not bundled"; exit 1; }
+          test -n "$(find "$APP_FW/lib/enchant-2" -name '*.so' 2>/dev/null)" \
+            || { echo "ERROR: enchant backend plugins not bundled"; exit 1; }
           plutil -extract CFBundleIdentifier raw dist/novelWriter.app/Contents/Info.plist
           plutil -extract CFBundleShortVersionString raw dist/novelWriter.app/Contents/Info.plist
 
