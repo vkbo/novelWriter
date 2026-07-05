@@ -334,13 +334,13 @@ class _ContentsPage(NFixedPage):
         ])
 
         treeHeadItem = self.tocTree.headerItem()
-        if treeHeadItem:
+        if treeHeadItem:  # pragma: no branch
             treeHeadItem.setTextAlignment(self.C_WORDS, QtAlignRight)
             treeHeadItem.setTextAlignment(self.C_PAGES, QtAlignRight)
             treeHeadItem.setTextAlignment(self.C_PAGE, QtAlignRight)
             treeHeadItem.setTextAlignment(self.C_PROG, QtAlignRight)
 
-        if header := self.tocTree.header():
+        if header := self.tocTree.header():  # pragma: no branch
             header.setStretchLastSection(True)
             header.setMinimumSectionSize(12)
 

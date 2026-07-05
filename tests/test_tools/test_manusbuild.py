@@ -21,27 +21,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 
 from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QDesktopServices
-from PyQt6.QtWidgets import QFileDialog, QListWidgetItem
-from pytestqt.qtbot import QtBot
+from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QPushButton
 
+from novelwriter import SHARED
 from novelwriter.constants import nwLabels
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.enum import nwBuildFmt
-from novelwriter.guimain import GuiMain
 from novelwriter.shared import _GuiAlert
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 
-from tests.tools import buildTestProject
+from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
-def testToolManuscriptBuild_Main(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, fncPath: Path, projPath: Path, mockRnd):
+def testToolManuscriptBuild_Main(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockRnd):
     """Test the GuiManuscriptBuild dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -100,16 +97,34 @@ def testToolManuscriptBuild_Main(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, fncP
     assert build.lastFormat == lastFmt
     assert build.lastBuildPath == fncPath
 
-    # Error Handling
-    # ==============
+
+@pytest.mark.gui
+def testToolManuscriptBuild_ErrorHandling(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockRnd):
+    """Test error handling in the GuiManuscriptBuild dialog."""
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openProject(projPath)
+    build = BuildSettings()
+    build.setName("Test Build")
+    build.setLastBuildPath(fncPath)
+    build.setLastBuildName("TestBuild")
+    build.setLastFormat(nwBuildFmt.ODT)
 
     manus = GuiManuscriptBuild(nwGUI, build)
     manus.show()
 
+    def selectFormat(fmt):
+        for i in range(manus.listFormats.count()):
+            item = manus.listFormats.item(i)
+            assert isinstance(item, QListWidgetItem)
+            if item.data(manus.D_KEY) == fmt:
+                manus.listFormats.setCurrentItem(item)
+                return
+        raise ValueError("No such key in format list")
+
     # Name, path and format should be remembered
     assert manus.buildPath.text() == str(fncPath)
     assert manus.buildName.text() == "TestBuild"
-    assert manus._getSelectedFormat() == lastFmt
+    assert manus._getSelectedFormat() == nwBuildFmt.ODT
 
     # Check handling of no selected build
     manus.listFormats.clearSelection()
@@ -128,6 +143,7 @@ def testToolManuscriptBuild_Main(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, fncP
     assert manus._runBuild() is False
 
     # Blocking overwrite should also fail
+    (fncPath / "TestBuild.odt").touch()
     manus.buildPath.setText(str(fncPath))
     manus.buildName.setText("TestBuild")
     with monkeypatch.context() as mp:
@@ -148,4 +164,54 @@ def testToolManuscriptBuild_Main(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, fncP
 
     # Finish
     manus._dialogButtonClicked(manus.btnClose)
-    # qtbot.stop()
+    manus.deleteLater()
+
+
+@pytest.mark.gui
+def testToolManuscriptBuild_EdgeCases(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockRnd):
+    """Test edge cases in the GuiManuscriptBuild dialog."""
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openProject(projPath)
+    build = BuildSettings()
+    build.setLastBuildPath(fncPath)
+
+    # Edge Cases
+    # ==========
+
+    # No format matches the last used format: nothing is preselected
+    with monkeypatch.context() as mp:
+        mp.setattr(type(build), "lastFormat", property(lambda self: None))
+        manus = GuiManuscriptBuild(nwGUI, build)
+        assert manus._getSelectedFormat() is None
+        manus.deleteLater()
+
+    manus = GuiManuscriptBuild(nwGUI, build)
+    manus.show()
+
+    # A button that isn't part of the dialog is ignored
+    manus._dialogButtonClicked(QPushButton())
+
+    # Cancelling the folder browse dialog leaves the path unchanged
+    pathBefore = manus.buildPath.text()
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getExistingDirectory", lambda *a: "")
+        manus._doSelectPath()
+        assert manus.buildPath.text() == pathBefore
+
+    # A note file is filtered out of the content list by default
+    SHARED.project.newFile("A Note", C.hCharRoot)
+    manus._populateContentList()
+    assert manus.listContent.count() == 3
+
+    # An item whose root can't be looked up is still listed, just
+    # without a proper root name
+    with monkeypatch.context() as mp:
+        mp.setattr(type(SHARED.project.tree), "__getitem__", lambda self, handle: None)
+        manus._populateContentList()
+        assert manus.listContent.count() == 3
+        firstItem = manus.listContent.item(0)
+        assert firstItem is not None
+        assert firstItem.text().startswith("??????: ")
+
+    manus._dialogButtonClicked(manus.btnClose)
+    manus.deleteLater()

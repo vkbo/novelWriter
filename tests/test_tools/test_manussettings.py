@@ -31,13 +31,14 @@ from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.modified import NFontDialog
+from novelwriter.shared import _GuiAlert
 from novelwriter.tools.manussettings import GuiBuildSettings, _FilterTab, _FormattingTab, _HeadingsTab
 
 from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
-def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
+def testToolBuildSettings_Init(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the initialisation of the GuiBuildSettings dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -101,6 +102,16 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
         bSettings.close()
 
     assert triggered
+
+    # Close manually, but decline to save the changes
+    triggered = False
+    bSettings.show()
+    with monkeypatch.context() as mp:
+        mp.setattr(_GuiAlert, "finalState", False)
+        bSettings._build._changed = True
+        bSettings.close()
+    assert triggered is False
+    assert bSettings._build.changed is False
 
     # Finish
     bSettings._dialogButtonClicked(bSettings.btnClose)
@@ -384,6 +395,10 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     assert headTab.editTextBox.isEnabled() is False
     headTab.btnApply.click()
     assert headTab.editTextBox.isEnabled() is False
+
+    # Inserting text with no heading selected for editing does nothing
+    headTab._insertIntoForm(nwHeadFmt.TITLE)
+    assert headTab.editTextBox.toPlainText() == ""
 
     # Title
     headTab.btnPart.click()
@@ -671,6 +686,12 @@ def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
         fmtTab.btnTextFont.click()
         assert fmtTab._textFont == font
 
+    # Cancelling the font dialog leaves the font unchanged
+    with monkeypatch.context() as mp:
+        mp.setattr(NFontDialog, "selectFont", lambda *a, **k: (font, False))
+        fmtTab.btnTextFont.click()
+        assert fmtTab._textFont == font
+
     # Finish
     bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
@@ -950,6 +971,15 @@ def testToolBuildSettings_FormatPageLayout(monkeypatch, qtbot, nwGUI):
     assert fmtTab.bottomMargin.value() == 2.5
     assert fmtTab.leftMargin.value() == 1.5
     assert fmtTab.rightMargin.value() == 1.5
+
+    # Stale/unknown unit and page size values are ignored on load
+    bSettings._build.setValue("format.pageUnit", "furlongs")
+    bSettings._build.setValue("format.pageSize", "Tabloid")
+    unitBefore = fmtTab.pageUnit.currentData()
+    sizeBefore = fmtTab.pageSize.currentData()
+    bSettings.loadContent()
+    assert fmtTab.pageUnit.currentData() == unitBefore
+    assert fmtTab.pageSize.currentData() == sizeBefore
 
     # Finish
     bSettings._dialogButtonClicked(bSettings.btnClose)

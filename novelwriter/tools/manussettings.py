@@ -259,6 +259,8 @@ class GuiBuildSettings(NToolDialog):
         elif pageId >= self.OPT_FORMATTING:
             self.toolStack.setCurrentWidget(self.optTabFormatting)
             self.optTabFormatting.scrollToSection(pageId)
+        else:  # pragma: no cover
+            pass
 
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
@@ -273,6 +275,8 @@ class GuiBuildSettings(NToolDialog):
         elif button == self.btnClose:
             self._build.resetChangedState()
             self.close()
+        else:  # pragma: no cover
+            pass
 
     ##
     #  Internal Functions
@@ -356,7 +360,7 @@ class _FilterTab(NFixedPage):
         self.optTree.setIndentation(iPx)
         self.optTree.setColumnCount(3)
 
-        if header := self.optTree.header():
+        if header := self.optTree.header():  # pragma: no branch
             header.setStretchLastSection(False)
             header.setMinimumSectionSize(iPx + 6)  # See Issue #1551
             header.setSectionResizeMode(self.C_NAME, QtHeaderStretch)
@@ -463,6 +467,8 @@ class _FilterTab(NFixedPage):
         elif key.startswith("root:"):
             self._build.setAllowRoot(key[5:], state)
             self._populateTree()
+        else:  # pragma: no cover
+            pass
 
     ##
     #  Internal Functions
@@ -549,7 +555,7 @@ class _FilterTab(NFixedPage):
             items = self._scanChildren(items[0], [])
 
         for item in items:
-            if isinstance(item, QTreeWidgetItem):
+            if isinstance(item, QTreeWidgetItem):  # pragma: no branch
                 tHandle = item.data(self.C_DATA, self.D_HANDLE)
                 isFile = item.data(self.C_DATA, self.D_FILE)
                 if isFile:
@@ -559,6 +565,8 @@ class _FilterTab(NFixedPage):
                         self._build.setIncluded(tHandle)
                     elif mode == self.F_EXCLUDED:
                         self._build.setExcluded(tHandle)
+                    else:  # pragma: no cover
+                        pass
 
         self._setTreeItemMode()
 
@@ -583,7 +591,7 @@ class _FilterTab(NFixedPage):
         """Recursively return all items in a tree starting at a given
         QTreeWidgetItem.
         """
-        if isinstance(item, QTreeWidgetItem):
+        if isinstance(item, QTreeWidgetItem):  # pragma: no branch
             items.append(item)
             for i in range(item.childCount()):
                 self._scanChildren(item.child(i), items)
@@ -1006,7 +1014,7 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
             self.setFormat(0, len(text), self._fmtSymbol)
         else:
             for heading in nwHeadFmt.PAGE_HEADERS:
-                if (chars := len(heading)) > 0:
+                if (chars := len(heading)) > 0:  # pragma: no branch
                     offset = 0
                     while (pos := text.find(heading, offset)) >= 0:
                         offset = pos + chars
@@ -1802,8 +1810,7 @@ class _FormattingTab(NScrollableForm):
         """Process that the user has changed the page size spin boxes,
         so we flip the page size box to Custom.
         """
-        index = self.pageSize.findData("Custom")
-        if index >= 0:
+        if (index := self.pageSize.findData("Custom")) >= 0:  # pragma: no branch
             self.pageSize.setCurrentIndex(index)
 
     @pyqtSlot()

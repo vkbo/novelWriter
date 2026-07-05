@@ -130,5 +130,22 @@ def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
     details.sidebar.button(details.PAGE_OVERVIEW).click()
     assert details.mainStack.currentIndex() == 0
 
+    # Selecting the same root again does not rebuild the contents tree
+    contents.novelValueChanged(nHandle)
+
+    # A sidebar click with an unknown page ID does nothing
+    details._sidebarClicked(-1)
+    assert details.mainStack.currentIndex() == 0
+
+    # An unknown handle leaves the overview novel data unchanged
+    novelName = overview.novelName.text()
+    overview.novelValueChanged("0000000000000")
+    assert overview.novelName.text() == novelName
+
+    # With no novel selected, updating the dialog values does nothing
+    details.novelSelector.setCurrentIndex(-1)
+    assert details.novelSelector.handle is None
+    details.updateValues()
+
     # qtbot.stop()
     details.close()
