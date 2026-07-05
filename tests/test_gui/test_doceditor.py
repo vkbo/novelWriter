@@ -651,17 +651,17 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     data._spellErrors = [(0, 5, "Lorem")]
 
     # No known position
-    assert docEditor._qDocument.spellErrorAtPos(-1) == ("", -1, [])
+    assert docEditor._qDocument.spellErrorAtPos(-1) == ("", -1, -1, [])
 
     # Multiple entries: the first doesn't match, the second does
     blockPos = cursor.block().position()
     data._spellErrors = [(0, 5, "Lorem"), (6, 11, "ipsum")]
     with monkeypatch.context() as mp:
         mp.setattr(SHARED.spelling, "suggestWords", lambda *a: [])
-        assert docEditor._qDocument.spellErrorAtPos(blockPos + 8) == ("ipsum", 6, [])
+        assert docEditor._qDocument.spellErrorAtPos(blockPos + 8) == ("ipsum", 6, 11, [])
 
     # No entry matches the given position
-    assert docEditor._qDocument.spellErrorAtPos(blockPos + 20) == ("", -1, [])
+    assert docEditor._qDocument.spellErrorAtPos(blockPos + 20) == ("", -1, -1, [])
 
     # Meta data lookup follows the same pattern
     data._metaData = [(0, 5, "Lorem", "url"), (6, 11, "ipsum", "url")]

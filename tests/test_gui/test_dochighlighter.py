@@ -665,7 +665,7 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
     # Spell Check
     data = doc.findBlockByNumber(0).userData()
     assert isinstance(data, TextBlockData)
-    assert data.metaData == [(40, 58, "http://example.com", "url")]
+    assert data.metaData == [(44, 62, "http://example.com", "url")]
     assert data.spellErrors == [
         (4, 12, "Grinning"),
         (18, 21, "and"),

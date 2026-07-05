@@ -461,9 +461,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             data = TextBlockData()
             self.setCurrentBlockUserData(data)
 
-        data.processText(text, offset)
+        data.processText(text, offset, utf16Map)
         if self._spellCheck:
-            for pos, end, _ in data.spellCheck(utf16Map):
+            for pos, end, _ in data.spellCheck():
                 for x in range(pos, end):
                     cFmt = self.format(x)
                     cFmt.merge(self._spellErr)
@@ -519,15 +519,17 @@ class TextBlockData(QTextBlockUserData):
     """Custom QTextBlock Data.
 
     Custom data stored in a single text block. The spell check state is
-    cached here and used when correcting misspelled text.
+    cached here and used when correcting misspelled text. All cached
+    positions are in UTF-16 units, matching Qt document positions.
     """
 
-    __slots__ = ("_metaData", "_offset", "_spellErrors", "_text")
+    __slots__ = ("_metaData", "_offset", "_spellErrors", "_text", "_utf16Map")
 
     def __init__(self) -> None:
         super().__init__()
         self._text = ""
         self._offset = 0
+        self._utf16Map: list[int] | None = None
         self._metaData: list[tuple[int, int, str, str]] = []
         self._spellErrors: list[tuple[int, int, str]] = []
 
@@ -541,8 +543,10 @@ class TextBlockData(QTextBlockUserData):
         """Return spell error data from last check."""
         return self._spellErrors
 
-    def processText(self, text: str, offset: int) -> None:
-        """Extract meta data from the text."""
+    def processText(self, text: str, offset: int, utf16Map: list[int] | None) -> None:
+        """Extract meta data from the text. The map, when set, converts
+        cached positions to UTF-16 units.
+        """
         self._metaData = []
         if "[" in text:
             # Strip shortcodes
@@ -558,17 +562,21 @@ class TextBlockData(QTextBlockUserData):
                 if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:  # pragma: no branch
                     pad = " " * (e - s)
                     text = f"{text[:s]}{pad}{text[e:]}"
+                    if utf16Map:
+                        s = utf16Map[s]
+                        e = utf16Map[e]
                     self._metaData.append((s, e, res.group(0), "url"))
 
         self._text = text.replace("\u02bc", "'").replace("_", " ")
         self._offset = offset
+        self._utf16Map = utf16Map
 
-    def spellCheck(self, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
+    def spellCheck(self) -> list[tuple[int, int, str]]:
         """Run the spell checker and cache the result, and return the
         list of spell check errors.
         """
         spell = SHARED.spelling
-        if utf16Map:
+        if utf16Map := self._utf16Map:
             self._spellErrors = [
                 (utf16Map[r.start(0)], utf16Map[r.end(0)], w)
                 for r in RX_WORDS.finditer(self._text, self._offset)
