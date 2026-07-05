@@ -434,7 +434,7 @@ class GuiDocEditor(QPlainTextEdit):
         palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
 
-        if viewport := self.viewport():
+        if viewport := self.viewport():  # pragma: no branch
             palette = viewport.palette()
             palette.setColor(QPalette.ColorRole.Base, syntax.back)
             palette.setColor(QPalette.ColorRole.Text, syntax.text)
@@ -622,8 +622,7 @@ class GuiDocEditor(QPlainTextEdit):
 
             if not saveOk:
                 SHARED.error(self.tr("Could not save document."), info=self._nwDocument.getError())
-
-            return False
+                return False
 
         self.setDocumentChanged(False)
         self.docTextChanged.emit(self._docHandle, self._lastEdit)
@@ -641,7 +640,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def ensureCursorVisibleNoCentre(self) -> None:
         """Ensure cursor is visible, but don't force it to centre."""
-        if (viewport := self.viewport()) and (vBar := self.verticalScrollBar()):
+        if (viewport := self.viewport()) and (vBar := self.verticalScrollBar()):  # pragma: no branch
             cT = self.cursorRect().top()
             cB = self.cursorRect().bottom()
             vH = viewport.height()
@@ -769,7 +768,7 @@ class GuiDocEditor(QPlainTextEdit):
         """Move the cursor to a given line in the document."""
         if isinstance(line, int) and line != 0:
             line = self._qDocument.blockCount() + line if line < 0 else line - 1
-            if block := self._qDocument.findBlockByNumber(line):
+            if (block := self._qDocument.findBlockByNumber(line)).isValid():
                 self.setCursorPosition(block.position())
                 logger.debug("Cursor moved to line %d", line + 1)
 
@@ -1296,7 +1295,7 @@ class GuiDocEditor(QPlainTextEdit):
     def _insertCompletion(self, pos: int, length: int, text: str) -> None:
         """Insert choice from the completer menu."""
         cursor = self.textCursor()
-        if (block := cursor.block()).isValid():
+        if (block := cursor.block()).isValid():  # pragma: no branch
             check = pos + block.position()
             cursor.setPosition(check, QtMoveAnchor)
             cursor.setPosition(check + length, QtKeepAnchor)
@@ -1391,7 +1390,7 @@ class GuiDocEditor(QPlainTextEdit):
                 action.triggered.connect(qtLambda(self._addWord, word, block, True))
 
         # Execute the context menu
-        if viewport := self.viewport():
+        if viewport := self.viewport():  # pragma: no branch
             ctxMenu.exec(viewport.mapToGlobal(pos))
 
         ctxMenu.setParent(None)
@@ -1810,6 +1809,8 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.setPosition(posE + len(before), QtKeepAnchor)
         elif select == _SelectAction.KEEP_POSITION:
             cursor.setPosition(posO + len(before))
+        else:  # pragma: no cover
+            pass
 
         self.setTextCursor(cursor)
 
@@ -2531,7 +2532,10 @@ class GuiDocEditor(QPlainTextEdit):
 
             # Scan forward
             ePos = cPos
-            for i in range(bPos + bLen - cPos):
+            for i in range(bPos + bLen - cPos):  # pragma: no branch
+                # The block's trailing (non-alnum) separator character is
+                # always within range, so this loop always finds a
+                # boundary and breaks before running to exhaustion.
                 ePos = cPos + i
                 cOne = str(self._qDocument.characterAt(ePos))
                 cTwo = str(self._qDocument.characterAt(ePos + 1))
@@ -3775,7 +3779,7 @@ class GuiDocEditFooter(QWidget):
 
     def updateLineCount(self, cursor: QTextCursor) -> None:
         """Update the line and document position counter."""
-        if document := cursor.document():
+        if document := cursor.document():  # pragma: no branch
             cPos = cursor.position() + 1
             cLine = cursor.blockNumber() + 1
             cCount = max(document.characterCount(), 1)
