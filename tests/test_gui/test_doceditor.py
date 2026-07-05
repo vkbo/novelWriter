@@ -2822,6 +2822,10 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
         docEditor.findNext(goBack=True)
         assert abs(docEditor.getCursorPosition() - 665) < 3
 
+        cursorPos = docEditor.getCursorPosition()
+        docEditor._openNextFindDocument(docEditor, False)
+        assert docEditor.getCursorPosition() == cursorPos
+
     # Enable next doc search
     docSearch.toggleProject.activate(QAction.ActionEvent.Trigger)
     assert docSearch.toggleProject.isChecked()
