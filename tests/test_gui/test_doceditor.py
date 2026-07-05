@@ -813,6 +813,14 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     assert data.spellErrors == []
     assert docEditor._spellJob is None
 
+    # No new dispatch is made while a job is still in flight
+    docEditor._dirtySpell[block.blockNumber()] = block
+    docEditor._spellJob = (docEditor._spellJobId, [])
+    docEditor._dispatchSpellCheck()
+    assert docEditor._dirtySpell != {}
+    docEditor._spellJob = None
+    docEditor._dirtySpell.clear()
+
     # qtbot.stop()
 
 
