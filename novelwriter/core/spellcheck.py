@@ -38,6 +38,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+MAX_CACHE_SIZE = 100_000
+
 
 class NWSpellEnchant:
     """Core: Enchant Spell Checking Wrapper.
@@ -50,6 +52,7 @@ class NWSpellEnchant:
         self._project = project
         self._enchant = FakeEnchant()
         self._userDict = UserDictionary(project)
+        self._cache: dict[str, bool] = {}
         self._language = None
         self._requested = None
         self._broker = None
@@ -87,6 +90,7 @@ class NWSpellEnchant:
         self._broker = None
         self._language = None
         self._requested = language or None
+        self._cache.clear()
 
         try:
             import enchant
@@ -114,11 +118,18 @@ class NWSpellEnchant:
     ##
 
     def checkWord(self, word: str) -> bool:
-        """Forward check to pyenchant."""
-        try:
-            return bool(self._enchant.check(word))
-        except Exception:
-            return True
+        """Forward check to pyenchant. The results are cached, since the
+        same words tend to be checked over and over again.
+        """
+        if (result := self._cache.get(word)) is None:
+            try:
+                result = bool(self._enchant.check(word))
+            except Exception:
+                result = True
+            if len(self._cache) >= MAX_CACHE_SIZE:
+                self._cache.clear()
+            self._cache[word] = result
+        return result
 
     def suggestWords(self, word: str) -> list[str]:
         """Ask pyenchant for suggestions."""
@@ -134,6 +145,7 @@ class NWSpellEnchant:
                 self._enchant.add_to_session(word)
             except Exception:
                 return
+            self._cache[word] = True
             if save and self._userDict.add(word):
                 self._userDict.save()
         return
