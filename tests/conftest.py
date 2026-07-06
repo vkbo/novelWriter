@@ -38,12 +38,12 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.enum import nwTheme
 
+from tests.helpers import cleanProject
 from tests.mocked import MockGuiMain
-from tests.tools import cleanProject
 
 _TST_ROOT = Path(__file__).parent
 _SRC_ROOT = _TST_ROOT.parent
-_TMP_ROOT = _TST_ROOT / "temp"
+_TMP_ROOT = _TST_ROOT / "_temp"
 _TMP_CONF = _TMP_ROOT / "conf"
 
 
@@ -121,8 +121,8 @@ def tstPaths():
 
     class _Store:
         testDir = _TST_ROOT
-        filesDir = _TST_ROOT / "files"
-        refDir = _TST_ROOT / "reference"
+        filesDir = _TST_ROOT / "_files"
+        refDir = _TST_ROOT / "_reference"
         outDir = _TMP_ROOT / "results"
         tmpDir = _TMP_ROOT
         cnfDir = _TMP_CONF
@@ -244,7 +244,7 @@ def prjLipsum():
     """A medium sized novelWriter example project with a lot of Lorem
     Ipsum text.
     """
-    srcDir = _TST_ROOT / "lipsum"
+    srcDir = _TST_ROOT / "_lipsum"
     dstDir = _TMP_ROOT / "lipsum"
     if dstDir.exists():
         shutil.rmtree(dstDir)
