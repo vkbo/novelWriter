@@ -52,7 +52,9 @@ from novelwriter.core.item import NWItem
 from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwState, nwVimMode
-from novelwriter.gui_doc.editor import CommandCompleter, GuiDocEditor, TextAutoReplace, _TagAction
+from novelwriter.gui_doc.autoreplace import TextAutoReplace
+from novelwriter.gui_doc.completer import CommandCompleter
+from novelwriter.gui_doc.editor import GuiDocEditor, _TagAction
 from novelwriter.gui_doc.textblock import TextBlockData
 from novelwriter.shared import _GuiAlert
 from novelwriter.text.counting import standardCounter
