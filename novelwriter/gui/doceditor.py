@@ -1174,32 +1174,6 @@ class GuiDocEditor(QTextEdit):
 
         return
 
-    def _dispatchKeyPress(self, event: QKeyEvent) -> None:
-        """Send a key event on to the base class for regular handling,
-        except for a plain Return/Enter press, which is handled
-        directly instead.
-
-        Qt's own Return handling (QWidgetTextControlPrivate::
-        insertParagraphSeparator) resets the current block's format to
-        a bare default and swallows the keypress whenever the cursor
-        is on an empty block whose format isn't already default. That
-        heuristic exists so rich-text users can hit Enter twice to
-        escape a list/heading/quote, but every block here always
-        carries a non-default line height, so it fires on every
-        ordinary blank-line paragraph break and silently eats every
-        second Return. novelWriter never uses Qt's native list/heading
-        block formatting, so the heuristic serves no purpose here, and
-        can be bypassed entirely by inserting the new block directly.
-        """
-        if event.key() in self.ENTER_KEYS and event.modifiers() == QtModNone:
-            cursor = self.textCursor()
-            cursor.insertBlock()
-            self.setTextCursor(cursor)
-            self.ensureCursorVisible(centre=False)
-            event.accept()
-        else:
-            super().keyPressEvent(event)
-
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         """Overload drag enter event to handle dragged items."""
         if (data := event.mimeData()) and data.hasFormat(nwConst.MIME_HANDLE):
@@ -2619,6 +2593,32 @@ class GuiDocEditor(QTextEdit):
     ##
     #  Internal Functions
     ##
+
+    def _dispatchKeyPress(self, event: QKeyEvent) -> None:
+        """Send a key event on to the base class for regular handling,
+        except for a plain Return/Enter press, which is handled
+        directly instead.
+
+        Qt's own Return handling (QWidgetTextControlPrivate::
+        insertParagraphSeparator) resets the current block's format to
+        a bare default and swallows the keypress whenever the cursor
+        is on an empty block whose format isn't already default. That
+        heuristic exists so rich-text users can hit Enter twice to
+        escape a list/heading/quote, but every block here always
+        carries a non-default line height, so it fires on every
+        ordinary blank-line paragraph break and silently eats every
+        second Return. novelWriter never uses Qt's native list/heading
+        block formatting, so the heuristic serves no purpose here, and
+        can be bypassed entirely by inserting the new block directly.
+        """
+        if event.key() in self.ENTER_KEYS and event.modifiers() == QtModNone:
+            cursor = self.textCursor()
+            cursor.insertBlock()
+            self.setTextCursor(cursor)
+            self.ensureCursorVisible(centre=False)
+            event.accept()
+        else:
+            super().keyPressEvent(event)
 
     def _applyExtraSelections(self) -> None:
         """Set the editor's extra selections from the line highlight
