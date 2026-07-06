@@ -61,6 +61,7 @@ from novelwriter.types import (
     QtScrollAlwaysOff,
     QtScrollAsNeeded,
     QtSizeExpanding,
+    QtWidgetShortcut,
 )
 
 logger = logging.getLogger(__name__)
@@ -98,37 +99,37 @@ class GuiProjectView(QWidget):
         # Keyboard Shortcuts
         self.keyMoveUp = QShortcut(self.projTree)
         self.keyMoveUp.setKey("Ctrl+Up")
-        self.keyMoveUp.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self.keyMoveUp.setContext(QtWidgetShortcut)
         self.keyMoveUp.activated.connect(self.projTree.moveItemUp)
 
         self.keyMoveDn = QShortcut(self.projTree)
         self.keyMoveDn.setKey("Ctrl+Down")
-        self.keyMoveDn.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self.keyMoveDn.setContext(QtWidgetShortcut)
         self.keyMoveDn.activated.connect(self.projTree.moveItemDown)
 
         self.keyGoPrev = QShortcut(self.projTree)
         self.keyGoPrev.setKey("Alt+Up")
-        self.keyGoPrev.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self.keyGoPrev.setContext(QtWidgetShortcut)
         self.keyGoPrev.activated.connect(self.projTree.goToSiblingUp)
 
         self.keyGoNext = QShortcut(self.projTree)
         self.keyGoNext.setKey("Alt+Down")
-        self.keyGoNext.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self.keyGoNext.setContext(QtWidgetShortcut)
         self.keyGoNext.activated.connect(self.projTree.goToSiblingDown)
 
         self.keyGoUp = QShortcut(self.projTree)
         self.keyGoUp.setKey("Alt+Left")
-        self.keyGoUp.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self.keyGoUp.setContext(QtWidgetShortcut)
         self.keyGoUp.activated.connect(self.projTree.goToParent)
 
         self.keyGoDown = QShortcut(self.projTree)
         self.keyGoDown.setKey("Alt+Right")
-        self.keyGoDown.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self.keyGoDown.setContext(QtWidgetShortcut)
         self.keyGoDown.activated.connect(self.projTree.goToFirstChild)
 
         self.keyContext = QShortcut(self.projTree)
         self.keyContext.setKey("Ctrl+.")
-        self.keyContext.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self.keyContext.setContext(QtWidgetShortcut)
         self.keyContext.activated.connect(self.projTree.openContextMenu)
 
         # Signals

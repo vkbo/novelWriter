@@ -126,6 +126,7 @@ from novelwriter.types import (
     QtSelectLine,
     QtSelectWord,
     QtTransparent,
+    QtWidgetShortcut,
 )
 
 logger = logging.getLogger(__name__)
@@ -163,9 +164,15 @@ class GuiDocEditor(QTextEdit):
         "_lastActive",
         "_lastEdit",
         "_lastFind",
+        "_lineColor",
+        "_nextLine",
         "_nwDocument",
         "_nwItem",
+        "_prevLine",
         "_qDocument",
+        "_searchFormat",
+        "_searchSelections",
+        "_selection",
         "_spellFormat",
         "_spellJob",
         "_spellJobId",
@@ -199,6 +206,14 @@ class GuiDocEditor(QTextEdit):
         "_vpMargin",
         "_wCounterDoc",
         "_wCounterSel",
+        "changeFocusState",
+        "closeSearch",
+        "docFooter",
+        "docHeader",
+        "docSearch",
+        "docToolBar",
+        "searchVisible",
+        "wheelEventFilter",
     )
 
     MOVE_KEYS = (QtKeyLeft, QtKeyRight, QtKeyUp, QtKeyDown, QtKeyPageUp, QtKeyPageDown)
@@ -238,6 +253,10 @@ class GuiDocEditor(QTextEdit):
         self._doReplace = False  # Switch to temporarily disable auto-replace
         self._lineColor = QtTransparent
         self._selection = QTextEdit.ExtraSelection()
+
+        # Search Variables
+        self._searchFormat = QTextCharFormat()
+        self._searchSelections: list[QTextEdit.ExtraSelection] = []
 
         # Spell Check Variables
         self._spellFormat = QTextCharFormat()
@@ -310,27 +329,27 @@ class GuiDocEditor(QTextEdit):
         # Custom Shortcuts
         self._keyContext = QShortcut(self)
         self._keyContext.setKey("Ctrl+.")
-        self._keyContext.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._keyContext.setContext(QtWidgetShortcut)
         self._keyContext.activated.connect(self._openContextFromCursor)
 
         self._followTagView = QShortcut(self)
         self._followTagView.setKeys(["Ctrl+Return", "Ctrl+Enter"])
-        self._followTagView.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._followTagView.setContext(QtWidgetShortcut)
         self._followTagView.activated.connect(qtLambda(self._processTag))
 
         self._followTagEdit = QShortcut(self)
         self._followTagEdit.setKeys(["Ctrl+Shift+Return", "Ctrl+Shift+Enter"])
-        self._followTagEdit.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._followTagEdit.setContext(QtWidgetShortcut)
         self._followTagEdit.activated.connect(qtLambda(self._processTag, edit=True))
 
         self._prevLine = QShortcut(self)
         self._prevLine.setKey("Ctrl+Up")
-        self._prevLine.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._prevLine.setContext(QtWidgetShortcut)
         self._prevLine.activated.connect(qtLambda(self._skipToParagraph, -1))
 
         self._nextLine = QShortcut(self)
         self._nextLine.setKey("Ctrl+Down")
-        self._nextLine.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._nextLine.setContext(QtWidgetShortcut)
         self._nextLine.activated.connect(qtLambda(self._skipToParagraph, 1))
 
         # Set Up Document Word Counter
@@ -440,6 +459,7 @@ class GuiDocEditor(QTextEdit):
         self._spellJob = None
         self._dirtySpell.clear()
         self._spellSelections.clear()
+        self._searchSelections.clear()
         self.setExtraSelections([])
 
         self.itemHandleChanged.emit("")
@@ -479,6 +499,11 @@ class GuiDocEditor(QTextEdit):
         self._spellFormat = QTextCharFormat()
         self._spellFormat.setUnderlineColor(syntax.spell)
         self._spellFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
+
+        searchColor = self.palette().color(QPalette.ColorRole.Highlight)
+        searchColor.setAlpha(128)
+        self._searchFormat = QTextCharFormat()
+        self._searchFormat.setBackground(searchColor)
 
     def initEditor(self) -> None:
         """Initialise or re-initialise the editor with the user's
@@ -1782,8 +1807,27 @@ class GuiDocEditor(QTextEdit):
             cursor.setPosition(origA)
 
         self.setTextCursor(cursor)
+        self._setSearchSelections(resS, resE)
 
         return resS, resE
+
+    def clearSearchSelections(self) -> None:
+        """Clear the highlight of all search results in the document."""
+        self._setSearchSelections([], [])
+
+    def _setSearchSelections(self, resS: list[int], resE: list[int]) -> None:
+        """Highlight all search results in the document."""
+        selections = []
+        for start, end in zip(resS, resE, strict=True):
+            cursor = QTextCursor(self._qDocument)
+            cursor.setPosition(start)
+            cursor.setPosition(end, QtKeepAnchor)
+            selection = QTextEdit.ExtraSelection()
+            selection.format = self._searchFormat
+            selection.cursor = cursor
+            selections.append(selection)
+        self._searchSelections = selections
+        self._applyExtraSelections()
 
     def replaceNext(self) -> None:
         """Search for the next occurrence of the search bar text in the
@@ -2607,6 +2651,7 @@ class GuiDocEditor(QTextEdit):
         selections = []
         if CONFIG.lineHighlight:
             selections.append(self._selection)
+        selections.extend(self._searchSelections)
         selections.extend(self._spellSelections)
         self.setExtraSelections(selections)
 

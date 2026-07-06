@@ -26,7 +26,7 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMenuBar
 
@@ -45,6 +45,7 @@ from novelwriter.constants import (
 )
 from novelwriter.enum import nwDocAction, nwDocInsert, nwFocus, nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
+from novelwriter.types import QtWidgetShortcut
 
 if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
@@ -192,7 +193,7 @@ class GuiMainMenu(QMenuBar):
         # Project > Delete
         self.aDeleteItem = qtAddAction(self.projMenu, self.tr("Delete Item"))
         self.aDeleteItem.setShortcut("Del")
-        self.aDeleteItem.setShortcutContext(Qt.ShortcutContext.WidgetShortcut)
+        self.aDeleteItem.setShortcutContext(QtWidgetShortcut)
 
         # Project > Empty Trash
         self.aEmptyTrash = qtAddAction(self.projMenu, self.tr("Empty Trash"))
@@ -340,14 +341,14 @@ class GuiMainMenu(QMenuBar):
         # View > Go Backward
         self.aViewPrev = qtAddAction(self.viewMenu, self.tr("Navigate Backward"))
         self.aViewPrev.setShortcut("Alt+Left")
-        self.aViewPrev.setShortcutContext(Qt.ShortcutContext.WidgetShortcut)
+        self.aViewPrev.setShortcutContext(QtWidgetShortcut)
         self.aViewPrev.triggered.connect(self.mainGui.docViewer.navBackward)
         self.mainGui.docViewer.addAction(self.aViewPrev)
 
         # View > Go Forward
         self.aViewNext = qtAddAction(self.viewMenu, self.tr("Navigate Forward"))
         self.aViewNext.setShortcut("Alt+Right")
-        self.aViewNext.setShortcutContext(Qt.ShortcutContext.WidgetShortcut)
+        self.aViewNext.setShortcutContext(QtWidgetShortcut)
         self.aViewNext.triggered.connect(self.mainGui.docViewer.navForward)
         self.mainGui.docViewer.addAction(self.aViewNext)
 
