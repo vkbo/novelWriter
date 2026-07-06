@@ -44,9 +44,9 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
     from pathlib import Path
 
-    from novelwriter.core.buildsettings import BuildSettings
     from novelwriter.core.project import NWProject
     from novelwriter.formats.tokenizer import Tokenizer
+    from novelwriter.manuscript.buildsettings import BuildSettings
 
 logger = logging.getLogger(__name__)
 

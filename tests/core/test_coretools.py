@@ -33,11 +33,11 @@ import pytest
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwConst, nwFiles, nwItemClass
-from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSearch, DocSplitter, ProjectBuilder
-from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
+from novelwriter.manuscript.buildsettings import BuildSettings
+from novelwriter.manuscript.docbuild import NWBuildDocument
 
 from tests.helpers import NWD_IGNORE, XML_IGNORE, C, buildTestProject, cmpFiles
 from tests.mocked import causeOSError

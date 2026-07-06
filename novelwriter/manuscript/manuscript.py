@@ -61,8 +61,6 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import fuzzyTime
 from novelwriter.constants import nwHeadFmt, nwLabels, nwStats, nwUnicode, trStats
-from novelwriter.core.buildsettings import BuildCollection, BuildSettings
-from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
 from novelwriter.extensions.progressbars import NProgressCircle
@@ -70,8 +68,10 @@ from novelwriter.extensions.switch import NSwitch
 from novelwriter.formats.tokenizer import HeadingFormatter
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
-from novelwriter.tools.manusbuild import GuiManuscriptBuild
-from novelwriter.tools.manussettings import GuiBuildSettings
+from novelwriter.manuscript.buildsettings import BuildCollection, BuildSettings
+from novelwriter.manuscript.docbuild import NWBuildDocument
+from novelwriter.manuscript.manusbuild import GuiManuscriptBuild
+from novelwriter.manuscript.manussettings import GuiBuildSettings
 from novelwriter.types import QtAlignCenter, QtAlignRight, QtAlignTop, QtSizeExpanding, QtSizeIgnored, QtUserRole
 
 if TYPE_CHECKING:

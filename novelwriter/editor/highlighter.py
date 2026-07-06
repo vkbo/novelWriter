@@ -32,8 +32,8 @@ from PyQt6.QtGui import QBrush, QColor, QSyntaxHighlighter, QTextCharFormat, QTe
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, utf16CharMap
 from novelwriter.constants import nwStyles, nwUnicode
+from novelwriter.editor.textblock import TextBlockData
 from novelwriter.enum import nwComment
-from novelwriter.gui.doctextblock import TextBlockData
 from novelwriter.text.formats import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 from novelwriter.types import QtFontBold, QtTextUserProperty

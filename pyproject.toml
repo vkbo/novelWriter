@@ -143,6 +143,7 @@ ignore-decorators = [
 [tool.ruff.lint.isort]
 lines-between-types = 1
 forced-separate = ["tests"]
+required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.pylint]
 max-nested-blocks = 10

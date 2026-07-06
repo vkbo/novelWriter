@@ -28,9 +28,9 @@ from PyQt6.QtGui import QTextCharFormat, QTextCursor, QTextDocument
 from novelwriter import CONFIG, SHARED
 from novelwriter.core.item import NWItem
 from novelwriter.core.spellcheck import NWSpellEnchant
+from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE, GuiDocHighlighter
+from novelwriter.editor.textblock import TextBlockData
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwTheme
-from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE, GuiDocHighlighter
-from novelwriter.gui.doctextblock import TextBlockData
 from novelwriter.types import QtKeepAnchor
 
 R_HANDLE = "3456789abcdef"

@@ -48,18 +48,18 @@ from PyQt6.QtWidgets import (
 from novelwriter import SHARED
 from novelwriter.common import makeFileNameSafe, openExternalPath, safeExists, safeIsDir
 from novelwriter.constants import nwLabels
-from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.item import NWItem
 from novelwriter.enum import nwBuildFmt, nwStandardButton, nwToolButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog, NIconToolButton, NPushButton
 from novelwriter.extensions.progressbars import NProgressSimple
+from novelwriter.manuscript.docbuild import NWBuildDocument
 from novelwriter.types import QtAlignCenter, QtRoleAction, QtRoleDestruct, QtUserRole
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QCloseEvent
 
-    from novelwriter.core.buildsettings import BuildSettings
+    from novelwriter.manuscript.buildsettings import BuildSettings
 
 logger = logging.getLogger(__name__)
 
