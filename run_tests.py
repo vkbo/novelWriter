@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Run novelWriter Tests."""  # noqa: CPY001
 
+from __future__ import annotations
+
 import argparse
 import os
 import shlex
