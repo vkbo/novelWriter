@@ -545,6 +545,17 @@ class GuiPreferences(NDialog):
             unit=self.tr("px"),
         )
 
+        # Line Height
+        self.lineHeight = NDoubleSpinBox(self, minVal=0.5, maxVal=3.0, step=0.05, prec=2)
+        self.lineHeight.setValue(CONFIG.lineHeight)
+        self.lineHeight.setFixedNumbersWidth(4)
+        self.mainForm.addRow(
+            self.tr("Line height"),
+            self.lineHeight,
+            self.tr("The relative line height in the editor and viewer."),
+            unit=self.tr("em"),
+        )
+
         # Text Editing
         # ============
 
@@ -1175,6 +1186,7 @@ class GuiPreferences(NDialog):
         CONFIG.doJustify = self.doJustify.isChecked()
         CONFIG.textMargin = self.textMargin.value()
         CONFIG.tabWidth = self.tabWidth.value()
+        CONFIG.lineHeight = self.lineHeight.value()
 
         # Text Editing
         scaleHeadings = self.scaleHeadings.isChecked()

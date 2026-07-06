@@ -257,6 +257,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.doJustify.setChecked(True)
     prefs.textMargin.stepUp()
     prefs.tabWidth.stepUp()
+    prefs.lineHeight.stepUp()
 
     assert CONFIG.textWidth == 700
     assert CONFIG.focusWidth == 800
@@ -264,6 +265,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.doJustify is False
     assert CONFIG.textMargin == 40
     assert CONFIG.tabWidth == 40
+    assert CONFIG.lineHeight == 1.0
 
     # Text Editing
     prefs.spellLanguage.setCurrentIndex(prefs.spellLanguage.findData("de"))
@@ -431,6 +433,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     assert CONFIG.doJustify is True
     assert CONFIG.textMargin == 41
     assert CONFIG.tabWidth == 41
+    assert CONFIG.lineHeight == 1.05
 
     # Text Editing
     assert CONFIG.spellLanguage == "de"

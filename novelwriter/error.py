@@ -184,7 +184,7 @@ def exceptionHandler(exType: type, exValue: BaseException, exTrace: TracebackTyp
     try:
         nwGUI = None
         for qWin in QApplication.topLevelWidgets():
-            if qWin.objectName() == "GuiMain":
+            if qWin.objectName() == "GuiMain":  # pragma: no branch (this branch is flaky)
                 nwGUI = qWin
                 break
 
