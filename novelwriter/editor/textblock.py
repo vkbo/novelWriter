@@ -19,6 +19,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
 
+import re
+
 from PyQt6.QtGui import QTextBlockUserData
 
 from novelwriter import SHARED
@@ -28,6 +30,8 @@ RX_URL = REGEX_PATTERNS.url
 RX_WORDS = REGEX_PATTERNS.wordSplit
 RX_FMT_SC = REGEX_PATTERNS.shortcodePlain
 RX_FMT_SV = REGEX_PATTERNS.shortcodeValue
+RX_MULTI_SPACE = re.compile(r" {2,}")
+RX_TRAIL_SPACE = re.compile(r"[ \t]+$")
 
 
 class TextBlockData(QTextBlockUserData):
@@ -38,16 +42,27 @@ class TextBlockData(QTextBlockUserData):
     positions are in UTF-16 units, matching Qt document positions.
     """
 
-    __slots__ = ("_metaData", "_offset", "_revision", "_spellErrors", "_text", "_utf16Map")
+    __slots__ = (
+        "_metaData",
+        "_offset",
+        "_rawText",
+        "_revision",
+        "_spaceErrors",
+        "_spellErrors",
+        "_text",
+        "_utf16Map",
+    )
 
     def __init__(self) -> None:
         super().__init__()
         self._text = ""
+        self._rawText = ""
         self._offset = 0
         self._revision = 0
         self._utf16Map: list[int] | None = None
         self._metaData: list[tuple[int, int, str, str]] = []
         self._spellErrors: list[tuple[int, int, str]] = []
+        self._spaceErrors: list[tuple[int, int, str]] = []
 
     @property
     def metaData(self) -> list[tuple[int, int, str, str]]:
@@ -60,6 +75,11 @@ class TextBlockData(QTextBlockUserData):
         return self._spellErrors
 
     @property
+    def spaceErrors(self) -> list[tuple[int, int, str]]:
+        """Return space error data from last check."""
+        return self._spaceErrors
+
+    @property
     def revision(self) -> int:
         """Return the revision number of the cached text."""
         return self._revision
@@ -67,25 +87,35 @@ class TextBlockData(QTextBlockUserData):
     def clear(self) -> None:
         """Clear all cached data."""
         self._text = ""
+        self._rawText = ""
         self._offset = 0
         self._revision += 1
         self._utf16Map = None
         self._metaData = []
         self._spellErrors = []
+        self._spaceErrors = []
 
-    def spellData(self) -> tuple[str, int, list[int] | None]:
-        """Return a snapshot of the text for external spell checking."""
-        return self._text, self._offset, self._utf16Map
+    def checkData(self) -> tuple[str, str, int, list[int] | None]:
+        """Return a snapshot of the text for external spell and space
+        checking. The spell text has shortcodes and URLs stripped, while
+        the space text is the raw, unmodified block text.
+        """
+        return self._text, self._rawText, self._offset, self._utf16Map
 
     def setSpellErrors(self, errors: list[tuple[int, int, str]]) -> None:
         """Store spell error data computed from a text snapshot."""
         self._spellErrors = errors
+
+    def setSpaceErrors(self, errors: list[tuple[int, int, str]]) -> None:
+        """Store space error data computed from a text snapshot."""
+        self._spaceErrors = errors
 
     def processText(self, text: str, offset: int, utf16Map: list[int] | None) -> None:
         """Extract meta data from the text. The map, when set, converts
         cached positions to UTF-16 units.
         """
         self._metaData = []
+        self._rawText = text
         if "[" in text:
             # Strip shortcodes
             for regEx in [RX_FMT_SC, RX_FMT_SV]:
@@ -117,6 +147,13 @@ class TextBlockData(QTextBlockUserData):
         self._spellErrors = spellCheckText(self._text, self._offset, self._utf16Map)
         return self._spellErrors
 
+    def spaceCheck(self) -> list[tuple[int, int, str]]:
+        """Run the multi-space and trailing-space check and cache the
+        result, and return the list of space errors.
+        """
+        self._spaceErrors = spaceCheckText(self._rawText, self._offset, self._utf16Map)
+        return self._spaceErrors
+
 
 def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
     """Spell check a piece of text and return the list of errors. This
@@ -135,3 +172,25 @@ def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> list[t
         for r in RX_WORDS.finditer(text, offset)
         if (w := r.group(0)) and not (w.isnumeric() or w.isupper() or spell.checkWord(w))
     ]
+
+
+def spaceCheckText(text: str, offset: int, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
+    """Check a piece of text for runs of multiple spaces and trailing
+    whitespace, and return the list of matches. This function does not
+    touch any Qt document classes, so it is safe to call from a worker
+    thread.
+    """
+    results = []
+    for res in RX_MULTI_SPACE.finditer(text, offset):
+        s, e = res.start(0), res.end(0)
+        if utf16Map:
+            s, e = utf16Map[s], utf16Map[e]
+        results.append((s, e, "multi"))
+
+    if res := RX_TRAIL_SPACE.search(text, offset):
+        s, e = res.start(0), res.end(0)
+        if utf16Map:
+            s, e = utf16Map[s], utf16Map[e]
+        results.append((s, e, "trail"))
+
+    return results

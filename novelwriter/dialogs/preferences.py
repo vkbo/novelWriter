@@ -1275,7 +1275,7 @@ class GuiPreferences(NDialog):
         updateSyntax |= CONFIG.altDialogClose != altDialogClose
         updateSyntax |= CONFIG.highlightEmph != highlightEmph
         updateSyntax |= CONFIG.dottedModCodes != dottedModCodes
-        updateSyntax |= CONFIG.showMultiSpaces != showMultiSpaces
+        initEditor |= CONFIG.showMultiSpaces != showMultiSpaces
 
         CONFIG.dialogStyle = dialogueStyle
         CONFIG.allowOpenDial = allowOpenDial

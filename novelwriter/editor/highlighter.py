@@ -110,7 +110,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._addCharFormat("italic", colEmph, "i")
         self._addCharFormat("strike", syntax.hidden, "s")
         self._addCharFormat("mark", syntax.mark, "bg")
-        self._addCharFormat("mspaces", syntax.error, "err")
         self._addCharFormat("nobreak", syntax.space, "bg")
         self._addCharFormat("altdialog", syntax.dialA)
         self._addCharFormat("dialog", syntax.dialN)
@@ -131,16 +130,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._cmnRules.clear()
 
         self._dialogParser.initParser()
-
-        # Multiple Spaces
-        if CONFIG.showMultiSpaces:
-            rxRule = re.compile(r"[ ]{2,}")
-            hlRule = {
-                0: self._hStyles["mspaces"],
-            }
-            self._minRules.append((rxRule, hlRule))
-            self._txtRules.append((rxRule, hlRule))
-            self._cmnRules.append((rxRule, hlRule))
 
         # Non-Breaking Spaces
         rxRule = re.compile(f"[{nwUnicode.U_NBSP}{nwUnicode.U_THNBSP}]+")

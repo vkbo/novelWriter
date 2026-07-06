@@ -41,6 +41,7 @@ from PyQt6.QtCore import (
     pyqtSlot,
 )
 from PyQt6.QtGui import (
+    QBrush,
     QCursor,
     QDragEnterEvent,
     QDragMoveEvent,
@@ -165,6 +166,7 @@ class GuiDocEditor(QTextEdit):
         "_lastEdit",
         "_lastFind",
         "_lineColor",
+        "_mspaceFormat",
         "_nextLine",
         "_nwDocument",
         "_nwItem",
@@ -173,6 +175,7 @@ class GuiDocEditor(QTextEdit):
         "_searchFormat",
         "_searchSelections",
         "_selection",
+        "_spaceSelections",
         "_spellFormat",
         "_spellJob",
         "_spellJobId",
@@ -202,6 +205,7 @@ class GuiDocEditor(QTextEdit):
         "_trSpellSuggest",
         "_trSplitDoc",
         "_trViewTag",
+        "_trailFormat",
         "_vim",
         "_vpMargin",
         "_wCounterDoc",
@@ -258,9 +262,12 @@ class GuiDocEditor(QTextEdit):
         self._searchFormat = QTextCharFormat()
         self._searchSelections: list[QTextEdit.ExtraSelection] = []
 
-        # Spell Check Variables
+        # Spell and Space Check Variables
         self._spellFormat = QTextCharFormat()
+        self._mspaceFormat = QTextCharFormat()
+        self._trailFormat = QTextCharFormat()
         self._spellSelections: list[QTextEdit.ExtraSelection] = []
+        self._spaceSelections: list[QTextEdit.ExtraSelection] = []
         self._dirtySpell: dict[int, QTextBlock] = {}
         self._suppressed = False
         self._spellPassNo = -1
@@ -459,6 +466,7 @@ class GuiDocEditor(QTextEdit):
         self._spellJob = None
         self._dirtySpell.clear()
         self._spellSelections.clear()
+        self._spaceSelections.clear()
         self._searchSelections.clear()
         self.setExtraSelections([])
 
@@ -499,6 +507,13 @@ class GuiDocEditor(QTextEdit):
         self._spellFormat = QTextCharFormat()
         self._spellFormat.setUnderlineColor(syntax.spell)
         self._spellFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
+
+        self._mspaceFormat = QTextCharFormat()
+        self._mspaceFormat.setUnderlineColor(syntax.error)
+        self._mspaceFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
+
+        self._trailFormat = QTextCharFormat()
+        self._trailFormat.setBackground(QBrush(syntax.space, Qt.BrushStyle.SolidPattern))
 
         searchColor = self.palette().color(QPalette.ColorRole.Highlight)
         searchColor.setAlpha(128)
@@ -560,6 +575,7 @@ class GuiDocEditor(QTextEdit):
         self.setTabStopDistance(CONFIG.tabWidth)
         self.setCursorWidth(CONFIG.cursorWidth)
         self._spellSelections.clear()
+        self._spaceSelections.clear()
         self.setExtraSelections([])
         self._cursorMoved()
 
@@ -1330,8 +1346,8 @@ class GuiDocEditor(QTextEdit):
         if not self._timerDoc.isActive():
             self._timerDoc.start()
 
-        if SHARED.project.data.spellCheck:
-            # Flag the affected blocks for the debounced spell check
+        if SHARED.project.data.spellCheck or CONFIG.showMultiSpaces:
+            # Flag the affected blocks for the debounced spell/space check
             block = self._qDocument.findBlock(pos)
             while block.isValid() and block.position() <= pos + added:
                 self._dirtySpell[block.blockNumber()] = block
@@ -1377,31 +1393,48 @@ class GuiDocEditor(QTextEdit):
 
     @pyqtSlot()
     def _updateSpellSelections(self) -> None:
-        """Rebuild the spell error underlines for all visible blocks."""
-        selections = []
+        """Rebuild the spell and space error markers for all visible
+        blocks. Both are cached per block, so a single pass over the
+        visible blocks is enough to build both sets of markers.
+        """
+        checkSpell = SHARED.project.data.spellCheck
+        checkSpace = CONFIG.showMultiSpaces
+        spellSelections = []
+        spaceSelections = []
         suppressed = False
-        if SHARED.project.data.spellCheck and (viewport := self.viewport()):
+        if (checkSpell or checkSpace) and (viewport := self.viewport()):
             cPos = self.textCursor().position()
             last = self.cursorForPosition(viewport.rect().bottomLeft()).blockNumber()
             block = self.cursorForPosition(viewport.rect().topLeft()).block()
             while block.isValid() and block.blockNumber() <= last:
                 if isinstance(data := block.userData(), TextBlockData):
                     position = block.position()
-                    for start, end, _ in data.spellErrors:
-                        if position + start < cPos <= position + end:
-                            # Don't underline the word under the caret
-                            suppressed = True
-                            continue
-                        cursor = QTextCursor(self._qDocument)
-                        cursor.setPosition(position + start)
-                        cursor.setPosition(position + end, QtKeepAnchor)
-                        selection = QTextEdit.ExtraSelection()
-                        selection.format = self._spellFormat
-                        selection.cursor = cursor
-                        selections.append(selection)
+                    if checkSpell:
+                        for start, end, _ in data.spellErrors:
+                            if position + start < cPos <= position + end:
+                                # Don't underline the word under the caret
+                                suppressed = True
+                                continue
+                            cursor = QTextCursor(self._qDocument)
+                            cursor.setPosition(position + start)
+                            cursor.setPosition(position + end, QtKeepAnchor)
+                            selection = QTextEdit.ExtraSelection()
+                            selection.format = self._spellFormat
+                            selection.cursor = cursor
+                            spellSelections.append(selection)
+                    if checkSpace:
+                        for start, end, kind in data.spaceErrors:
+                            cursor = QTextCursor(self._qDocument)
+                            cursor.setPosition(position + start)
+                            cursor.setPosition(position + end, QtKeepAnchor)
+                            selection = QTextEdit.ExtraSelection()
+                            selection.format = self._mspaceFormat if kind == "multi" else self._trailFormat
+                            selection.cursor = cursor
+                            spaceSelections.append(selection)
                 block = block.next()
         self._suppressed = suppressed
-        self._spellSelections = selections
+        self._spellSelections = spellSelections
+        self._spaceSelections = spaceSelections
         self._applyExtraSelections()
 
     @pyqtSlot()
@@ -1422,14 +1455,14 @@ class GuiDocEditor(QTextEdit):
         while self._dirtySpell and len(job) < SPELL_PASS_CHUNK:
             _, block = self._dirtySpell.popitem()
             if block.isValid() and isinstance(data := block.userData(), TextBlockData):  # pragma: no branch
-                payload.append((len(job), *data.spellData()))
+                payload.append((len(job), *data.checkData()))
                 job.append((block, data, data.revision))
 
         while self._spellPassNo >= 0 and len(job) < SPELL_PASS_CHUNK:
             block = self._qDocument.findBlockByNumber(self._spellPassNo)
             if block.isValid():
                 if isinstance(data := block.userData(), TextBlockData):
-                    payload.append((len(job), *data.spellData()))
+                    payload.append((len(job), *data.checkData()))
                     job.append((block, data, data.revision))
                 self._spellPassNo += 1
             else:
@@ -1438,7 +1471,12 @@ class GuiDocEditor(QTextEdit):
         if job:
             self._spellJobId += 1
             self._spellJob = (self._spellJobId, job)
-            runnable = BackgroundSpellCheck(self._spellJobId, payload)
+            runnable = BackgroundSpellCheck(
+                self._spellJobId,
+                payload,
+                checkSpell=SHARED.project.data.spellCheck,
+                checkSpace=CONFIG.showMultiSpaces,
+            )
             runnable.signals.resultsReady.connect(self._spellCheckResults)
             SHARED.runInThreadPool(runnable)
         elif self._spellPassNotify:
@@ -1446,18 +1484,21 @@ class GuiDocEditor(QTextEdit):
             SHARED.newStatusMessage(self.tr("Spell check complete"))
 
     @pyqtSlot(int, object)
-    def _spellCheckResults(self, jobId: int, results: list[tuple[int, list[tuple[int, int, str]]]]) -> None:
-        """Process the results from the spell check worker. Results are
-        discarded if the job was cancelled, or per block if the block
-        was modified or removed while the worker was running.
+    def _spellCheckResults(
+        self, jobId: int, results: list[tuple[int, list[tuple[int, int, str]], list[tuple[int, int, str]]]]
+    ) -> None:
+        """Process the results from the spell/space check worker.
+        Results are discarded if the job was cancelled, or per block if
+        the block was modified or removed while the worker was running.
         """
         if self._spellJob and self._spellJob[0] == jobId:
             job = self._spellJob[1]
             self._spellJob = None
-            for index, errors in results:
+            for index, spellErrors, spaceErrors in results:
                 block, data, revision = job[index]
                 if block.isValid() and block.userData() is data and data.revision == revision:
-                    data.setSpellErrors(errors)
+                    data.setSpellErrors(spellErrors)
+                    data.setSpaceErrors(spaceErrors)
             self._timerSpell.start()
             self._dispatchSpellCheck()
 
@@ -2646,25 +2687,28 @@ class GuiDocEditor(QTextEdit):
 
     def _applyExtraSelections(self) -> None:
         """Set the editor's extra selections from the line highlight
-        and the cached spell error underlines.
+        and the cached spell and space error markers.
         """
         selections = []
         if CONFIG.lineHighlight:
             selections.append(self._selection)
         selections.extend(self._searchSelections)
         selections.extend(self._spellSelections)
+        selections.extend(self._spaceSelections)
         self.setExtraSelections(selections)
 
     def _beginSpellPass(self) -> None:
-        """Spell check the visible blocks, and start a chunked check of
-        the entire document on the worker thread. If spell checking is
-        disabled, only the underlines are updated.
+        """Spell and space check the visible blocks, and start a chunked
+        check of the entire document on the worker thread. If neither
+        check is enabled, only the markers are cleared.
         """
+        checkSpell = SHARED.project.data.spellCheck
+        checkSpace = CONFIG.showMultiSpaces
         self._timerSpellCheck.stop()
         self._dirtySpell.clear()
         self._spellJob = None
         self._spellPassNo = -1
-        if SHARED.project.data.spellCheck:
+        if checkSpell or checkSpace:
             if viewport := self.viewport():  # pragma: no branch
                 # Check the visible blocks first so that their result
                 # is available immediately
@@ -2672,7 +2716,10 @@ class GuiDocEditor(QTextEdit):
                 block = self.cursorForPosition(viewport.rect().topLeft()).block()
                 while block.isValid() and block.blockNumber() <= last:
                     if isinstance(data := block.userData(), TextBlockData):
-                        data.spellCheck()
+                        if checkSpell:
+                            data.spellCheck()
+                        if checkSpace:
+                            data.spaceCheck()
                     block = block.next()
             self._spellPassNo = 0
             self._dispatchSpellCheck()

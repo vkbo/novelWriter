@@ -46,7 +46,7 @@ from PyQt6.QtGui import (
 from PyQt6.QtWidgets import QApplication, QMenu, QTextEdit
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import decodeMimeHandles
+from novelwriter.common import decodeMimeHandles, utf16CharMap
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.item import NWItem
 from novelwriter.core.spellcheck import NWSpellEnchant
@@ -54,7 +54,7 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.editor.autoreplace import TextAutoReplace
 from novelwriter.editor.completer import CommandCompleter
 from novelwriter.editor.editor import GuiDocEditor, _TagAction
-from novelwriter.editor.textblock import TextBlockData
+from novelwriter.editor.textblock import TextBlockData, spaceCheckText
 from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwState, nwVimMode
 from novelwriter.shared import _GuiAlert
 from novelwriter.text.counting import standardCounter
@@ -817,7 +817,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     data._spellErrors = []
     docEditor._spellJobId += 1
     docEditor._spellJob = (docEditor._spellJobId, [(block, data, data.revision - 1)])
-    docEditor._spellCheckResults(docEditor._spellJobId, [(0, [(0, 5, "wrong")])])
+    docEditor._spellCheckResults(docEditor._spellJobId, [(0, [(0, 5, "wrong")], [])])
     assert data.spellErrors == []
     assert docEditor._spellJob is None
 
@@ -830,6 +830,87 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     docEditor._dirtySpell.clear()
 
     # qtbot.stop()
+
+
+def testGuiEditor_SpaceCheckText():
+    """Test the raw multi-space and trailing-space checker function."""
+    # Multiple runs of multiple spaces
+    assert spaceCheckText("one  two   three", 0, None) == [(3, 5, "multi"), (8, 11, "multi")]
+
+    # Trailing space only
+    assert spaceCheckText("one two ", 0, None) == [(7, 8, "trail")]
+
+    # A trailing run is reported as both kinds
+    assert spaceCheckText("one  two  ", 0, None) == [(3, 5, "multi"), (8, 10, "multi"), (8, 10, "trail")]
+
+    # No errors
+    assert spaceCheckText("one two three", 0, None) == []
+
+    # The offset is respected
+    assert spaceCheckText("one  two", 4, None) == []
+
+    # Positions are translated through a UTF-16 map
+    text = "a\U0001f605  b "
+    utf16Map = utf16CharMap(text)
+    assert spaceCheckText(text, 0, utf16Map) == [(3, 5, "multi"), (6, 7, "trail")]
+
+    # A URL padded to spaces of equal length by TextBlockData.processText
+    # must not be mistaken for a real run of multiple spaces, or every
+    # comment/text line containing a URL would be flagged
+    data = TextBlockData()
+    text = "See http://example.com for details.  "
+    data.processText(text, 0, None)
+    assert spaceCheckText(data._text, 0, None) == [(3, 23, "multi"), (35, 37, "multi"), (35, 37, "trail")]
+    assert data.spaceCheck() == [(35, 37, "multi"), (35, 37, "trail")]
+
+
+@pytest.mark.gui
+def testGuiEditor_SpaceChecking(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the document multi-space and trailing-space checker."""
+    buildTestProject(nwGUI, projPath)
+    monkeypatch.setattr(SHARED, "runInThreadPool", lambda r: r.run())
+
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
+
+    text = "### A Scene\n\nA  double space, and a trailing space \n"
+    docEditor.replaceText(text)
+
+    blockPos = text.index("A  double")
+
+    # With the feature disabled, no markers are generated
+    CONFIG.showMultiSpaces = False
+    docEditor._beginSpellPass()
+    assert docEditor._spaceSelections == []
+
+    # With the feature enabled, both errors are found and rendered as
+    # extra selections with the appropriate format
+    CONFIG.showMultiSpaces = True
+    docEditor._beginSpellPass()
+
+    data = docEditor.textCursor().document().findBlock(blockPos).userData()
+    assert isinstance(data, TextBlockData)
+    assert data.spaceErrors == [(1, 3, "multi"), (37, 38, "trail")]
+
+    trailColor = docEditor._trailFormat.background().color()
+    mspaceSel = [
+        s
+        for s in docEditor.extraSelections()
+        if s.format.underlineStyle() == QTextCharFormat.UnderlineStyle.SpellCheckUnderline
+    ]
+    trailSel = [s for s in docEditor.extraSelections() if s.format.background().color() == trailColor]
+    assert len(mspaceSel) == 1
+    assert mspaceSel[0].cursor.selectionStart() == blockPos + 1
+    assert mspaceSel[0].cursor.selectionEnd() == blockPos + 3
+
+    assert len(trailSel) == 1
+    assert trailSel[0].cursor.selectionStart() == blockPos + 37
+    assert trailSel[0].cursor.selectionEnd() == blockPos + 38
+
+    # Toggling the feature back off clears the markers
+    CONFIG.showMultiSpaces = False
+    docEditor._beginSpellPass()
+    assert docEditor._spaceSelections == []
 
 
 @pytest.mark.gui
