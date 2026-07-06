@@ -24,6 +24,7 @@
 #endif
 
 #include <windows.h>
+#include <wchar.h>
 #include <stdio.h>
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
@@ -37,18 +38,34 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     ZeroMemory(&pi, sizeof(pi));
 
     wchar_t path[MAX_PATH];
-    auto pathlen = GetModuleFileNameW(NULL, path, MAX_PATH);
-    path[pathlen - 15] = 0;
+    GetModuleFileNameW(NULL, path, MAX_PATH);
+    wchar_t *lastSlash = wcsrchr(path, L'\\');
+    if (lastSlash != NULL)
+    {
+        *lastSlash = 0;
+    }
     SetCurrentDirectory(path);
 
-    wchar_t cmd[MAX_PATH] = L"pythonw.exe novelWriter.pyw";
+    // 32767 chars is the maximum length of a Windows command line
+    wchar_t cmd[32768] = L"pythonw.exe novelWriter.pyw";
     if (__argc > 1)
     {
         wcsncat_s(cmd, L" \"", 2);
-        wcsncat_s(cmd, __wargv[1], MAX_PATH - 30);
+        wcsncat_s(cmd, __wargv[1], _TRUNCATE);
         wcsncat_s(cmd, L"\"", 1);
     }
-    CreateProcess(NULL, cmd, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 
-    return 0;
+    DWORD exitCode = 0;
+    if (CreateProcess(NULL, cmd, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
+    {
+        // Keep the launcher process alive until the app exits so that
+        // Windows treats them as one continuously-running process for
+        // taskbar/shell purposes, and so the app's exit code propagates.
+        WaitForSingleObject(pi.hProcess, INFINITE);
+        GetExitCodeProcess(pi.hProcess, &exitCode);
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+    }
+
+    return static_cast<int>(exitCode);
 }
