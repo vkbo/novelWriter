@@ -27,7 +27,7 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt6.QtGui import QTextBlock, QTextCursor, QTextDocument
-from PyQt6.QtWidgets import QApplication, QPlainTextDocumentLayout
+from PyQt6.QtWidgets import QApplication
 
 from novelwriter import SHARED
 from novelwriter.gui.dochighlight import GuiDocHighlighter
@@ -53,7 +53,6 @@ class GuiTextDocument(QTextDocument):
 
         self._handle = None
         self._syntax = GuiDocHighlighter(self)
-        self.setDocumentLayout(QPlainTextDocumentLayout(self))
 
         logger.debug("Ready: GuiTextDocument")
 

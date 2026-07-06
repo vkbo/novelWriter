@@ -43,7 +43,7 @@ from PyQt6.QtGui import (
     QTextDocument,
     QTextOption,
 )
-from PyQt6.QtWidgets import QApplication, QMenu, QPlainTextEdit
+from PyQt6.QtWidgets import QApplication, QMenu, QTextEdit
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
@@ -313,7 +313,7 @@ def testGuiEditor_DragAndDrop(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     docEvent = QDragEnterEvent(middle, action, docMime, mouse, QtModNone)
     noneEvent = QDragEnterEvent(middle, action, noneMime, mouse, QtModNone)
     with monkeypatch.context() as mp:
-        mp.setattr(QPlainTextEdit, "dragEnterEvent", mockEnter)
+        mp.setattr(QTextEdit, "dragEnterEvent", mockEnter)
 
         # Document Enter
         docEditor.dragEnterEvent(docEvent)
@@ -329,7 +329,7 @@ def testGuiEditor_DragAndDrop(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     docEvent = QDragMoveEvent(middle, action, docMime, mouse, QtModNone)
     noneEvent = QDragMoveEvent(middle, action, noneMime, mouse, QtModNone)
     with monkeypatch.context() as mp:
-        mp.setattr(QPlainTextEdit, "dragMoveEvent", mockMove)
+        mp.setattr(QTextEdit, "dragMoveEvent", mockMove)
 
         # Document Move
         docEditor.dragMoveEvent(docEvent)
@@ -346,7 +346,7 @@ def testGuiEditor_DragAndDrop(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     docEvent = QDropEvent(middle, action, docMime, mouse, QtModNone)
     noneEvent = QDropEvent(middle, action, noneMime, mouse, QtModNone)
     with monkeypatch.context() as mp:
-        mp.setattr(QPlainTextEdit, "dropEvent", mockDrop)
+        mp.setattr(QTextEdit, "dropEvent", mockDrop)
 
         # Document Drop
         docEditor.dropEvent(docEvent)
@@ -2580,6 +2580,61 @@ def testGuiEditor_UpdateDocMargins(qtbot, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
+def testGuiEditor_ScrollPastEnd(qtbot, nwGUI, projPath, mockRnd):
+    """Test the scroll-past-end feature, which fakes QPlainTextEdit's
+    centerOnScroll via a bottom margin on the document's root frame.
+    """
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor = nwGUI.docEditor
+    docEditor.resize(400, 300)
+
+    rootFrame = docEditor.document().rootFrame()
+
+    CONFIG.scrollPastEnd = True
+    docEditor.updateDocMargins()
+    assert rootFrame.frameFormat().bottomMargin() > 0
+    maxWithScrollPastEnd = docEditor.verticalScrollBar().maximum()
+
+    CONFIG.scrollPastEnd = False
+    docEditor.updateDocMargins()
+    assert rootFrame.frameFormat().bottomMargin() == 0
+    assert docEditor.verticalScrollBar().maximum() < maxWithScrollPastEnd
+
+
+@pytest.mark.gui
+def testGuiEditor_TypewriterScrolling(qtbot, nwGUI, projPath, mockRnd):
+    """Test the typewriter scrolling (auto-scroll) feature, which
+    animates the scrollbar by the actual pixel movement of the cursor.
+    """
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor = nwGUI.docEditor
+    docEditor.resize(400, 300)
+
+    docEditor.setPlainText("Text\n\n" * 100)
+    cursor = docEditor.textCursor()
+    cursor.setPosition(0)
+    docEditor.setTextCursor(cursor)
+    docEditor.verticalScrollBar().setValue(0)
+
+    CONFIG.autoScroll = True
+    CONFIG.autoScrollPos = 30
+
+    vBar = docEditor.verticalScrollBar()
+    assert vBar.value() == 0
+
+    # Move the cursor down past the auto-scroll threshold by inserting
+    # newlines, which advances the cursor without hitting the MOVE_KEYS
+    # exclusion used for arrow-key navigation
+    for _ in range(30):
+        qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+
+    qtbot.wait(200)  # Let the scroll animation finish
+    assert vBar.value() > 0
+
+
+@pytest.mark.gui
 def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the custom ensure cursor visible feature."""
     buildTestProject(nwGUI, projPath)
@@ -2588,7 +2643,6 @@ def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
 
     docEditor.setPlainText("### Scene\n\n" + "".join(["Text\n\n"] * 100))
     assert docEditor.cursorIsVisible() is True
-    docEditor.setCenterOnScroll(False)
 
     # Scroll Down
     cursor = docEditor.textCursor()
@@ -2596,7 +2650,7 @@ def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
     docEditor.setTextCursor(cursor)
     docEditor.verticalScrollBar().setValue(0)
     assert docEditor.verticalScrollBar().value() == 0
-    docEditor.ensureCursorVisibleNoCentre()
+    docEditor.ensureCursorVisible(centre=False)
     assert docEditor.verticalScrollBar().value() > 0
     assert docEditor.cursorIsVisible() is True
 
@@ -2606,9 +2660,33 @@ def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
     docEditor.setTextCursor(cursor)
     docEditor.verticalScrollBar().setValue(200)
     assert docEditor.verticalScrollBar().value() > 100
-    docEditor.ensureCursorVisibleNoCentre()
-    assert docEditor.verticalScrollBar().value() == 0
+    docEditor.ensureCursorVisible(centre=False)
+    assert docEditor.verticalScrollBar().value() < 100
     assert docEditor.cursorIsVisible() is True
+
+    # Centre Cursor
+    viewport = docEditor.viewport()
+    cursor = docEditor.textCursor()
+    cursor.setPosition(300)
+    docEditor.setTextCursor(cursor)
+    docEditor.verticalScrollBar().setValue(0)
+    docEditor.ensureCursorVisible(centre=True)
+    cRect = docEditor.cursorRect()
+    cCentre = (cRect.top() + cRect.bottom()) // 2
+    assert abs(cCentre - viewport.height() // 2) <= 1
+    assert docEditor.cursorIsVisible() is True
+
+    # Centre Cursor, Already Visible
+    # Even if the cursor is already visible but off-centre, centre=True
+    # should still move it, rather than no-op like centre=False does
+    vBarAfterCentre = docEditor.verticalScrollBar().value()
+    docEditor.verticalScrollBar().setValue(vBarAfterCentre - 5)
+    assert docEditor.cursorIsVisible() is True
+    docEditor.ensureCursorVisible(centre=True)
+    assert docEditor.verticalScrollBar().value() == vBarAfterCentre
+    cRect = docEditor.cursorRect()
+    cCentre = (cRect.top() + cRect.bottom()) // 2
+    assert abs(cCentre - viewport.height() // 2) <= 1
 
     # qtbot.stop()
 

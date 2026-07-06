@@ -30,9 +30,11 @@ from typing import NamedTuple
 
 from PyQt6 import sip
 from PyQt6.QtCore import (
+    QAbstractAnimation,
     QMimeData,
     QObject,
     QPoint,
+    QPropertyAnimation,
     QRect,
     QRegularExpression,
     QRunnable,
@@ -71,7 +73,6 @@ from PyQt6.QtWidgets import (
     QLabel,
     QLineEdit,
     QMenu,
-    QPlainTextEdit,
     QTextEdit,
     QToolBar,
     QVBoxLayout,
@@ -159,7 +160,7 @@ class _TagAction(IntFlag):
     CREATE = 0b10
 
 
-class GuiDocEditor(QPlainTextEdit):
+class GuiDocEditor(QTextEdit):
     """Gui Widget: Main Document Editor."""
 
     __slots__ = (
@@ -324,6 +325,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.setAutoFillBackground(True)
         self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setAcceptDrops(True)
+        self.setAcceptRichText(False)
 
         # Custom Shortcuts
         self._keyContext = QShortcut(self)
@@ -539,7 +541,6 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument.setDefaultTextOption(options)
 
         # Scrolling
-        self.setCenterOnScroll(CONFIG.scrollPastEnd)
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
@@ -562,6 +563,7 @@ class GuiDocEditor(QPlainTextEdit):
         # which makes it read only.
         if self._docHandle:
             self._qDocument.syntaxHighlighter.rehighlight()
+            self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
             self._beginSpellPass()
             self.docHeader.setHandle(self._docHandle)
         else:
@@ -692,22 +694,19 @@ class GuiDocEditor(QPlainTextEdit):
         height = viewport.height() if viewport else 0
         return self.cursorRect().top() > 0 and self.cursorRect().bottom() < height
 
-    def ensureCursorVisibleNoCentre(self) -> None:
-        """Ensure cursor is visible, but don't force it to centre."""
+    def ensureCursorVisible(self, *, centre: bool) -> None:
+        """Ensure cursor is visible, and optionally centre it."""
         if (viewport := self.viewport()) and (vBar := self.verticalScrollBar()):  # pragma: no branch
             cT = self.cursorRect().top()
             cB = self.cursorRect().bottom()
             vH = viewport.height()
-            if cT < 0:
-                count = 0
-                while self.cursorRect().top() < 0 and count < 100000:
-                    vBar.setValue(vBar.value() - 1)
-                    count += 1
+            if centre:
+                cY = (cT + cB) // 2
+                vBar.setValue(vBar.value() + cY - vH // 2)
+            elif cT < 0:
+                vBar.setValue(vBar.value() + cT - 1)
             elif cB > vH:
-                count = 0
-                while self.cursorRect().bottom() > vH and count < 100000:
-                    vBar.setValue(vBar.value() + 1)
-                    count += 1
+                vBar.setValue(vBar.value() + (cB - vH) + 1)
             QApplication.processEvents()
 
     def updateDocMargins(self) -> None:
@@ -748,6 +747,14 @@ class GuiDocEditor(QPlainTextEdit):
         uM = max(self._vpMargin, tH, rH)
         lM = max(self._vpMargin, fH)
         self.setViewportMargins(tM, uM, tM, lM)
+
+        # Scroll Past End
+        if rootFrame := self._qDocument.rootFrame():  # pragma: no branch
+            frameFormat = rootFrame.frameFormat()
+            bottomMargin = max(wH - 2 * tB - uM - lM - sH, 0) if CONFIG.scrollPastEnd else 0
+            if frameFormat.bottomMargin() != bottomMargin:
+                frameFormat.setBottomMargin(bottomMargin)
+                rootFrame.setFrameFormat(frameFormat)
 
     ##
     #  Getters
@@ -810,7 +817,7 @@ class GuiDocEditor(QPlainTextEdit):
             cursor = self.textCursor()
             cursor.setPosition(minmax(position, 0, chars - 1))
             self.setTextCursor(cursor)
-            self.centerCursor()
+            self.ensureCursorVisible(centre=True)
 
     def saveCursorPosition(self) -> None:
         """Save the cursor position to the current project item."""
@@ -1154,7 +1161,12 @@ class GuiDocEditor(QPlainTextEdit):
             if nPos != cPos and okMod and okKey and (viewport := self.viewport()):
                 mPos = CONFIG.autoScrollPos * 0.01 * viewport.height()
                 if cPos > mPos and (vBar := self.verticalScrollBar()):
-                    vBar.setValue(vBar.value() + (1 if nPos > cPos else -1))
+                    cMov = nPos - cPos
+                    anim = QPropertyAnimation(vBar, b"value", self)
+                    anim.setDuration(120)
+                    anim.setStartValue(vBar.value())
+                    anim.setEndValue(vBar.value() + cMov)
+                    anim.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
         else:
             super().keyPressEvent(event)
 
@@ -1221,7 +1233,7 @@ class GuiDocEditor(QPlainTextEdit):
         super().inputMethodEvent(event)
         if event.commitString():
             # See issues #2267 and #2517
-            self.ensureCursorVisible()
+            self.ensureCursorVisible(centre=False)
             self._completerToCursor()
 
     def inputMethodQuery(self, query: Qt.InputMethodQuery) -> QRect | QVariant:
@@ -1364,7 +1376,7 @@ class GuiDocEditor(QPlainTextEdit):
         if SHARED.project.data.spellCheck and (viewport := self.viewport()):
             cPos = self.textCursor().position()
             last = self.cursorForPosition(viewport.rect().bottomLeft()).blockNumber()
-            block = self.firstVisibleBlock()
+            block = self.cursorForPosition(viewport.rect().topLeft()).block()
             while block.isValid() and block.blockNumber() <= last:
                 if isinstance(data := block.userData(), TextBlockData):
                     position = block.position()
@@ -2467,8 +2479,8 @@ class GuiDocEditor(QPlainTextEdit):
             self._vim.resetCommand()
 
         elif command == "zz":
-            self.centerCursor()
             self.setTextCursor(cursor)
+            self.ensureCursorVisible(centre=True)
             self._vim.resetCommand()
 
         # Single-step navigation
@@ -2604,7 +2616,7 @@ class GuiDocEditor(QPlainTextEdit):
                 # Check the visible blocks first so that their result
                 # is available immediately
                 last = self.cursorForPosition(viewport.rect().bottomLeft()).blockNumber()
-                block = self.firstVisibleBlock()
+                block = self.cursorForPosition(viewport.rect().topLeft()).block()
                 while block.isValid() and block.blockNumber() <= last:
                     if isinstance(data := block.userData(), TextBlockData):
                         data.spellCheck()
