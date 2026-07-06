@@ -232,7 +232,8 @@ class GuiDocEditSearch(QFrame):
         numCount = f"{lim:n}+" if (resCount or 0) > lim else f"{resCount:n}"
         sCurrRes = "?" if currRes is None else str(currRes)
         sResCount = "?" if resCount is None else numCount
-        minWidth = SHARED.theme.getTextWidth(f"{sResCount}//{sResCount}", SHARED.theme.guiFontSmall)
+        widthRef = "0" * max(2 * len(sResCount) + 1, 5)
+        minWidth = SHARED.theme.getTextWidth(widthRef, SHARED.theme.guiFontSmall)
         self.resultLabel.setText(f"{sCurrRes}/{sResCount}")
         self.resultLabel.setMinimumWidth(minWidth)
         self.adjustSize()
