@@ -323,6 +323,7 @@ class GuiDocEditor(QTextEdit):
         self.setAutoFillBackground(True)
         self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setAcceptDrops(True)
+        self.setAcceptRichText(False)
 
         # Custom Shortcuts
         self._keyContext = QShortcut(self)
@@ -692,22 +693,19 @@ class GuiDocEditor(QTextEdit):
         height = viewport.height() if viewport else 0
         return self.cursorRect().top() > 0 and self.cursorRect().bottom() < height
 
-    def ensureCursorVisibleNoCentre(self) -> None:
-        """Ensure cursor is visible, but don't force it to centre."""
+    def ensureCursorVisible(self, *, centre: bool) -> None:
+        """Ensure cursor is visible, and optionally centre it."""
         if (viewport := self.viewport()) and (vBar := self.verticalScrollBar()):  # pragma: no branch
             cT = self.cursorRect().top()
             cB = self.cursorRect().bottom()
             vH = viewport.height()
-            if cT < 0:
-                count = 0
-                while self.cursorRect().top() < 0 and count < 100000:
-                    vBar.setValue(vBar.value() - 1)
-                    count += 1
+            if centre:
+                cY = (cT + cB) // 2
+                vBar.setValue(vBar.value() + cY - vH // 2)
+            elif cT < 0:
+                vBar.setValue(vBar.value() + cT - 1)
             elif cB > vH:
-                count = 0
-                while self.cursorRect().bottom() > vH and count < 100000:
-                    vBar.setValue(vBar.value() + 1)
-                    count += 1
+                vBar.setValue(vBar.value() + (cB - vH) + 1)
             QApplication.processEvents()
 
     def updateDocMargins(self) -> None:
@@ -810,7 +808,7 @@ class GuiDocEditor(QTextEdit):
             cursor = self.textCursor()
             cursor.setPosition(minmax(position, 0, chars - 1))
             self.setTextCursor(cursor)
-            # self.centerCursor()
+            self.ensureCursorVisible(centre=True)
 
     def saveCursorPosition(self) -> None:
         """Save the cursor position to the current project item."""
@@ -1221,7 +1219,7 @@ class GuiDocEditor(QTextEdit):
         super().inputMethodEvent(event)
         if event.commitString():
             # See issues #2267 and #2517
-            self.ensureCursorVisible()
+            self.ensureCursorVisible(centre=False)
             self._completerToCursor()
 
     def inputMethodQuery(self, query: Qt.InputMethodQuery) -> QRect | QVariant:
@@ -2467,8 +2465,8 @@ class GuiDocEditor(QTextEdit):
             self._vim.resetCommand()
 
         elif command == "zz":
-            # self.centerCursor()
             self.setTextCursor(cursor)
+            self.ensureCursorVisible(centre=True)
             self._vim.resetCommand()
 
         # Single-step navigation

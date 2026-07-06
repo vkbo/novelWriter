@@ -43,7 +43,7 @@ from PyQt6.QtGui import (
     QTextDocument,
     QTextOption,
 )
-from PyQt6.QtWidgets import QApplication, QMenu, QPlainTextEdit
+from PyQt6.QtWidgets import QApplication, QMenu, QTextEdit
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
@@ -313,7 +313,7 @@ def testGuiEditor_DragAndDrop(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     docEvent = QDragEnterEvent(middle, action, docMime, mouse, QtModNone)
     noneEvent = QDragEnterEvent(middle, action, noneMime, mouse, QtModNone)
     with monkeypatch.context() as mp:
-        mp.setattr(QPlainTextEdit, "dragEnterEvent", mockEnter)
+        mp.setattr(QTextEdit, "dragEnterEvent", mockEnter)
 
         # Document Enter
         docEditor.dragEnterEvent(docEvent)
@@ -329,7 +329,7 @@ def testGuiEditor_DragAndDrop(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     docEvent = QDragMoveEvent(middle, action, docMime, mouse, QtModNone)
     noneEvent = QDragMoveEvent(middle, action, noneMime, mouse, QtModNone)
     with monkeypatch.context() as mp:
-        mp.setattr(QPlainTextEdit, "dragMoveEvent", mockMove)
+        mp.setattr(QTextEdit, "dragMoveEvent", mockMove)
 
         # Document Move
         docEditor.dragMoveEvent(docEvent)
@@ -346,7 +346,7 @@ def testGuiEditor_DragAndDrop(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     docEvent = QDropEvent(middle, action, docMime, mouse, QtModNone)
     noneEvent = QDropEvent(middle, action, noneMime, mouse, QtModNone)
     with monkeypatch.context() as mp:
-        mp.setattr(QPlainTextEdit, "dropEvent", mockDrop)
+        mp.setattr(QTextEdit, "dropEvent", mockDrop)
 
         # Document Drop
         docEditor.dropEvent(docEvent)
@@ -2588,7 +2588,6 @@ def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
 
     docEditor.setPlainText("### Scene\n\n" + "".join(["Text\n\n"] * 100))
     assert docEditor.cursorIsVisible() is True
-    docEditor.setCenterOnScroll(False)
 
     # Scroll Down
     cursor = docEditor.textCursor()
@@ -2596,7 +2595,7 @@ def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
     docEditor.setTextCursor(cursor)
     docEditor.verticalScrollBar().setValue(0)
     assert docEditor.verticalScrollBar().value() == 0
-    docEditor.ensureCursorVisibleNoCentre()
+    docEditor.ensureCursorVisible(centre=False)
     assert docEditor.verticalScrollBar().value() > 0
     assert docEditor.cursorIsVisible() is True
 
@@ -2606,9 +2605,33 @@ def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
     docEditor.setTextCursor(cursor)
     docEditor.verticalScrollBar().setValue(200)
     assert docEditor.verticalScrollBar().value() > 100
-    docEditor.ensureCursorVisibleNoCentre()
-    assert docEditor.verticalScrollBar().value() == 0
+    docEditor.ensureCursorVisible(centre=False)
+    assert docEditor.verticalScrollBar().value() < 100
     assert docEditor.cursorIsVisible() is True
+
+    # Centre Cursor
+    viewport = docEditor.viewport()
+    cursor = docEditor.textCursor()
+    cursor.setPosition(300)
+    docEditor.setTextCursor(cursor)
+    docEditor.verticalScrollBar().setValue(0)
+    docEditor.ensureCursorVisible(centre=True)
+    cRect = docEditor.cursorRect()
+    cCentre = (cRect.top() + cRect.bottom()) // 2
+    assert abs(cCentre - viewport.height() // 2) <= 1
+    assert docEditor.cursorIsVisible() is True
+
+    # Centre Cursor, Already Visible
+    # Even if the cursor is already visible but off-centre, centre=True
+    # should still move it, rather than no-op like centre=False does
+    vBarAfterCentre = docEditor.verticalScrollBar().value()
+    docEditor.verticalScrollBar().setValue(vBarAfterCentre - 5)
+    assert docEditor.cursorIsVisible() is True
+    docEditor.ensureCursorVisible(centre=True)
+    assert docEditor.verticalScrollBar().value() == vBarAfterCentre
+    cRect = docEditor.cursorRect()
+    cCentre = (cRect.top() + cRect.bottom()) // 2
+    assert abs(cCentre - viewport.height() // 2) <= 1
 
     # qtbot.stop()
 

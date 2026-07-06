@@ -627,7 +627,7 @@ class GuiMain(QMainWindow):
                 # Since editor width changes, we need to make sure we
                 # restore cursor visibility in the editor. See #1302
                 if cursorVisible:
-                    self.docEditor.ensureCursorVisibleNoCentre()
+                    self.docEditor.ensureCursorVisible(centre=False)
 
             if sTitle:
                 self.docViewer.navigateTo(f"#{tHandle}:{sTitle}")
@@ -871,7 +871,7 @@ class GuiMain(QMainWindow):
         # Since editor width changes, we need to make sure we restore
         # cursor visibility in the editor. See #1302
         if cursorVisible:
-            self.docEditor.ensureCursorVisibleNoCentre()
+            self.docEditor.ensureCursorVisible(centre=False)
 
         return not self.splitView.isVisible()
 
@@ -992,7 +992,7 @@ class GuiMain(QMainWindow):
             self.splitView.setVisible(True)
 
         if cursorVisible:
-            self.docEditor.ensureCursorVisibleNoCentre()
+            self.docEditor.ensureCursorVisible(centre=False)
 
     @pyqtSlot(nwFocus)
     def _switchFocus(self, paneNo: nwFocus) -> None:

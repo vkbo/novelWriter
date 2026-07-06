@@ -53,7 +53,6 @@ class GuiTextDocument(QTextDocument):
 
         self._handle = None
         self._syntax = GuiDocHighlighter(self)
-        # self.setDocumentLayout(QPlainTextDocumentLayout(self))
 
         logger.debug("Ready: GuiTextDocument")
 
