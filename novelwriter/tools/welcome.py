@@ -60,6 +60,10 @@ from novelwriter.types import (
     QtAlignRightTop,
     QtDisplayRole,
     QtHexArgb,
+    QtKeyDown,
+    QtKeyEnter,
+    QtKeyReturn,
+    QtKeyUp,
     QtScrollAsNeeded,
     QtSelected,
 )
@@ -286,7 +290,7 @@ class _OpenProjectPage(QWidget):
         self._trPath = self.tr("Path")
 
         self.keyEnter = QShortcut(self.listWidget)
-        self.keyEnter.setKeys([Qt.Key.Key_Enter, Qt.Key.Key_Return])
+        self.keyEnter.setKeys([QtKeyEnter, QtKeyReturn])
         self.keyEnter.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.keyEnter.activated.connect(self.openSelectedItem)
 
@@ -318,7 +322,7 @@ class _OpenProjectPage(QWidget):
 
     def keyPressEvent(self, event: QKeyEvent | None) -> None:
         """Capture key press events."""
-        if event and event.key() in (Qt.Key.Key_Up, Qt.Key.Key_Down):
+        if event and event.key() in (QtKeyUp, QtKeyDown):
             self.listWidget.setFocus()
             self.listWidget.keyPressEvent(event)
         else:

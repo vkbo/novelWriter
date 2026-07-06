@@ -116,6 +116,16 @@ from novelwriter.types import (
     QtImCurrentSelection,
     QtImCursorRectangle,
     QtKeepAnchor,
+    QtKeyDown,
+    QtKeyEnter,
+    QtKeyEscape,
+    QtKeyLeft,
+    QtKeyPageDown,
+    QtKeyPageUp,
+    QtKeyReturn,
+    QtKeyRight,
+    QtKeyTab,
+    QtKeyUp,
     QtModCtrl,
     QtModNone,
     QtModShift,
@@ -214,15 +224,8 @@ class GuiDocEditor(QTextEdit):
         "_wCounterSel",
     )
 
-    MOVE_KEYS = (
-        Qt.Key.Key_Left,
-        Qt.Key.Key_Right,
-        Qt.Key.Key_Up,
-        Qt.Key.Key_Down,
-        Qt.Key.Key_PageUp,
-        Qt.Key.Key_PageDown,
-    )
-    ENTER_KEYS = (Qt.Key.Key_Return, Qt.Key.Key_Enter)
+    MOVE_KEYS = (QtKeyLeft, QtKeyRight, QtKeyUp, QtKeyDown, QtKeyPageUp, QtKeyPageDown)
+    ENTER_KEYS = (QtKeyReturn, QtKeyEnter)
 
     # Custom Signals
     closeEditorRequest = pyqtSignal()
@@ -2958,27 +2961,27 @@ class CommandCompleter(QMenu):
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Capture keypresses and forward most of them to the editor."""
-        match event.key():
-            case Qt.Key.Key_Up | Qt.Key.Key_Down:
-                # Let the menu handle navigation
-                super().keyPressEvent(event)
-            case Qt.Key.Key_Right | Qt.Key.Key_Return | Qt.Key.Key_Enter | Qt.Key.Key_Tab:
-                # Activate the selection if there is one, otherwise close the completer
-                if action := self.activeAction():
-                    action.trigger()
-                else:
-                    self.clear()
-                    self.close()
-            case Qt.Key.Key_Left | Qt.Key.Key_Escape:
-                # Cancel the completer
+        key = event.key()
+        if key in (QtKeyUp, QtKeyDown):
+            # Let the menu handle navigation
+            super().keyPressEvent(event)
+        elif key in (QtKeyRight, QtKeyReturn, QtKeyEnter, QtKeyTab):
+            # Activate the selection if there is one, otherwise close the completer
+            if action := self.activeAction():
+                action.trigger()
+            else:
                 self.clear()
                 self.close()
-            case _:
-                # Any other keys, send back to the editor
-                # Also close to release the event lock before forwarding key press (#2510)
-                self.clear()
-                self.close()
-                self._parent.keyPressEvent(event)
+        elif key in (QtKeyLeft, QtKeyEscape):
+            # Cancel the completer
+            self.clear()
+            self.close()
+        else:
+            # Any other keys, send back to the editor
+            # Also close to release the event lock before forwarding key press (#2510)
+            self.clear()
+            self.close()
+            self._parent.keyPressEvent(event)
 
     ##
     #  Internal Slots

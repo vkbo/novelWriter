@@ -52,6 +52,8 @@ from novelwriter.types import (
     QtHeaderStretch,
     QtHeaderToContents,
     QtHexArgb,
+    QtKeyDown,
+    QtKeyUp,
     QtModShift,
     QtUserRole,
 )
@@ -231,15 +233,11 @@ class GuiProjectSearch(QWidget):
         """Process key press events. This handles up and down arrow key
         presses to jump between search text box and result tree.
         """
-        if (
-            event.key() == Qt.Key.Key_Down
-            and self.searchText.hasFocus()
-            and (first := self.searchResult.topLevelItem(0))
-        ):
+        if event.key() == QtKeyDown and self.searchText.hasFocus() and (first := self.searchResult.topLevelItem(0)):
             first.setSelected(True)
             self.searchResult.setFocus()
         elif (
-            event.key() == Qt.Key.Key_Up
+            event.key() == QtKeyUp
             and self.searchResult.hasFocus()
             and (first := self.searchResult.topLevelItem(0))
             and first.isSelected()
