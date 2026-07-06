@@ -54,7 +54,7 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.editor.autoreplace import TextAutoReplace
 from novelwriter.editor.completer import CommandCompleter
 from novelwriter.editor.editor import GuiDocEditor, _TagAction
-from novelwriter.editor.textblock import TextBlockData, spaceCheckText
+from novelwriter.editor.textblock import TextBlockData, formatCheckText
 from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwState, nwVimMode
 from novelwriter.shared import _GuiAlert
 from novelwriter.text.counting import standardCounter
@@ -687,7 +687,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     data._spellErrors = [(0, 5, "Lorem")]
 
     # The spell error should be rendered as an extra selection
-    docEditor._updateSpellSelections()
+    docEditor._updateCheckSelections()
     spellSel = [
         s
         for s in docEditor.extraSelections()
@@ -699,7 +699,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
 
     # With spell check disabled, the selections should be cleared
     SHARED.project.data.setSpellCheck(False)
-    docEditor._updateSpellSelections()
+    docEditor._updateCheckSelections()
     assert docEditor._spellSelections == []
     SHARED.project.data.setSpellCheck(True)
 
@@ -765,94 +765,94 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
         ctxMenu.deleteLater()
 
     # Editing a block flags it for the debounced spell check
-    docEditor._dirtySpell.clear()
+    docEditor._dirtyBlocks.clear()
     docEditor.setCursorPosition(blockPos + 5)
     docEditor.textCursor().insertText("x")
-    assert docEditor._dirtySpell != {}
-    assert docEditor._timerSpellCheck.isActive()
+    assert docEditor._dirtyBlocks != {}
+    assert docEditor._timerTextCheck.isActive()
 
     # Running the check dispatches the dirty blocks to the worker
-    docEditor._dispatchSpellCheck()
-    assert docEditor._dirtySpell == {}
-    assert docEditor._spellJob is None
+    docEditor._dispatchTextCheck()
+    assert docEditor._dirtyBlocks == {}
+    assert docEditor._checkJob is None
 
     # An error under the caret is not underlined
     data = docEditor.textCursor().block().userData()
     assert isinstance(data, TextBlockData)
     data._spellErrors = [(0, 5, "Lorem")]
     docEditor.setCursorPosition(blockPos + 3)
-    docEditor._updateSpellSelections()
+    docEditor._updateCheckSelections()
     assert docEditor._suppressed is True
     assert docEditor._spellSelections == []
 
     # Moving the caret out of the word restores the underline
     docEditor.setCursorPosition(blockPos + 10)
-    docEditor._updateSpellSelections()
+    docEditor._updateCheckSelections()
     assert docEditor._suppressed is False
     assert len(docEditor._spellSelections) == 1
 
     # Background Spell Pass
     # =====================
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.editor.editor.SPELL_PASS_CHUNK", 2)
+        mp.setattr("novelwriter.editor.editor.CHECK_PASS_CHUNK", 2)
 
         # A full pass runs chunked worker jobs until the document is
         # done, which with a synchronous worker completes immediately
-        docEditor._beginSpellPass()
-        assert docEditor._spellPassNo == -1
-        assert docEditor._spellJob is None
+        docEditor._beginCheckPass()
+        assert docEditor._checkPassNo == -1
+        assert docEditor._checkJob is None
 
         # A full spell check notifies when the pass completes
         docEditor.spellCheckDocument()
         assert docEditor._spellPassNotify is False
 
     # Results from a cancelled job are dropped
-    docEditor._spellCheckResults(docEditor._spellJobId + 1, [])
-    assert docEditor._spellJob is None
+    docEditor._textCheckResults(docEditor._checkJobId + 1, [])
+    assert docEditor._checkJob is None
 
     # Results for blocks modified while checking are discarded
     block = docEditor.textCursor().block()
     data = block.userData()
     assert isinstance(data, TextBlockData)
     data._spellErrors = []
-    docEditor._spellJobId += 1
-    docEditor._spellJob = (docEditor._spellJobId, [(block, data, data.revision - 1)])
-    docEditor._spellCheckResults(docEditor._spellJobId, [(0, [(0, 5, "wrong")], [])])
+    docEditor._checkJobId += 1
+    docEditor._checkJob = (docEditor._checkJobId, [(block, data, data.revision - 1)])
+    docEditor._textCheckResults(docEditor._checkJobId, [(0, [(0, 5, "wrong")], [])])
     assert data.spellErrors == []
-    assert docEditor._spellJob is None
+    assert docEditor._checkJob is None
 
     # No new dispatch is made while a job is still in flight
-    docEditor._dirtySpell[block.blockNumber()] = block
-    docEditor._spellJob = (docEditor._spellJobId, [])
-    docEditor._dispatchSpellCheck()
-    assert docEditor._dirtySpell != {}
-    docEditor._spellJob = None
-    docEditor._dirtySpell.clear()
+    docEditor._dirtyBlocks[block.blockNumber()] = block
+    docEditor._checkJob = (docEditor._checkJobId, [])
+    docEditor._dispatchTextCheck()
+    assert docEditor._dirtyBlocks != {}
+    docEditor._checkJob = None
+    docEditor._dirtyBlocks.clear()
 
     # qtbot.stop()
 
 
-def testGuiEditor_SpaceCheckText():
+def testGuiEditor_FormatCheckText():
     """Test the raw multi-space and trailing-space checker function."""
     # Multiple runs of multiple spaces
-    assert spaceCheckText("one  two   three", 0, None) == [(3, 5, "multi"), (8, 11, "multi")]
+    assert formatCheckText("one  two   three", 0, None) == [(3, 5, "multi"), (8, 11, "multi")]
 
     # Trailing space only
-    assert spaceCheckText("one two ", 0, None) == [(7, 8, "trail")]
+    assert formatCheckText("one two ", 0, None) == [(7, 8, "trail")]
 
     # A trailing run is reported as both kinds
-    assert spaceCheckText("one  two  ", 0, None) == [(3, 5, "multi"), (8, 10, "multi"), (8, 10, "trail")]
+    assert formatCheckText("one  two  ", 0, None) == [(3, 5, "multi"), (8, 10, "multi"), (8, 10, "trail")]
 
     # No errors
-    assert spaceCheckText("one two three", 0, None) == []
+    assert formatCheckText("one two three", 0, None) == []
 
     # The offset is respected
-    assert spaceCheckText("one  two", 4, None) == []
+    assert formatCheckText("one  two", 4, None) == []
 
     # Positions are translated through a UTF-16 map
     text = "a\U0001f605  b "
     utf16Map = utf16CharMap(text)
-    assert spaceCheckText(text, 0, utf16Map) == [(3, 5, "multi"), (6, 7, "trail")]
+    assert formatCheckText(text, 0, utf16Map) == [(3, 5, "multi"), (6, 7, "trail")]
 
     # A URL padded to spaces of equal length by TextBlockData.processText
     # must not be mistaken for a real run of multiple spaces, or every
@@ -860,12 +860,12 @@ def testGuiEditor_SpaceCheckText():
     data = TextBlockData()
     text = "See http://example.com for details.  "
     data.processText(text, 0, None)
-    assert spaceCheckText(data._text, 0, None) == [(3, 23, "multi"), (35, 37, "multi"), (35, 37, "trail")]
-    assert data.spaceCheck() == [(35, 37, "multi"), (35, 37, "trail")]
+    assert formatCheckText(data._text, 0, None) == [(3, 23, "multi"), (35, 37, "multi"), (35, 37, "trail")]
+    assert data.formatCheck() == [(35, 37, "multi"), (35, 37, "trail")]
 
 
 @pytest.mark.gui
-def testGuiEditor_SpaceChecking(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+def testGuiEditor_FormatChecking(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the document multi-space and trailing-space checker."""
     buildTestProject(nwGUI, projPath)
     monkeypatch.setattr(SHARED, "runInThreadPool", lambda r: r.run())
@@ -880,17 +880,17 @@ def testGuiEditor_SpaceChecking(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # With the feature disabled, no markers are generated
     CONFIG.showMultiSpaces = False
-    docEditor._beginSpellPass()
-    assert docEditor._spaceSelections == []
+    docEditor._beginCheckPass()
+    assert docEditor._formatSelections == []
 
     # With the feature enabled, both errors are found and rendered as
     # extra selections with the appropriate format
     CONFIG.showMultiSpaces = True
-    docEditor._beginSpellPass()
+    docEditor._beginCheckPass()
 
     data = docEditor.textCursor().document().findBlock(blockPos).userData()
     assert isinstance(data, TextBlockData)
-    assert data.spaceErrors == [(1, 3, "multi"), (37, 38, "trail")]
+    assert data.formatErrors == [(1, 3, "multi"), (37, 38, "trail")]
 
     trailColor = docEditor._trailFormat.background().color()
     mspaceSel = [
@@ -909,8 +909,8 @@ def testGuiEditor_SpaceChecking(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Toggling the feature back off clears the markers
     CONFIG.showMultiSpaces = False
-    docEditor._beginSpellPass()
-    assert docEditor._spaceSelections == []
+    docEditor._beginCheckPass()
+    assert docEditor._formatSelections == []
 
 
 @pytest.mark.gui

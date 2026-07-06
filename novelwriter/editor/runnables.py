@@ -27,7 +27,7 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
 
-from novelwriter.editor.textblock import spaceCheckText, spellCheckText
+from novelwriter.editor.textblock import formatCheckText, spellCheckText
 from novelwriter.text.counting import standardCounter
 
 if TYPE_CHECKING:
@@ -78,10 +78,10 @@ class BackgroundWordCounterSignals(QObject):
     countsReady = pyqtSignal(int, int, int)
 
 
-class BackgroundSpellCheck(QRunnable):
-    """The Off-GUI Thread Spell and Space Checker.
+class BackgroundTextCheck(QRunnable):
+    """The Off-GUI Thread Text Checker.
 
-    A runnable that spell and/or space checks a batch of text block
+    A runnable that spell and/or format checks a batch of text block
     snapshots in the thread pool off the main GUI thread. It only
     receives plain text snapshots, and never touches the text document
     itself.
@@ -92,29 +92,29 @@ class BackgroundSpellCheck(QRunnable):
         jobId: int,
         payload: list[tuple[int, str, str, int, list[int] | None]],
         checkSpell: bool,
-        checkSpace: bool,
+        checkFormat: bool,
     ) -> None:
         super().__init__()
         self._jobId = jobId
         self._payload = payload
         self._checkSpell = checkSpell
-        self._checkSpace = checkSpace
-        self.signals = BackgroundSpellCheckSignals()
+        self._checkFormat = checkFormat
+        self.signals = BackgroundTextCheckSignals()
 
     @pyqtSlot()
     def run(self) -> None:
-        """Spell and space check the text snapshots and emit the results."""
+        """Spell and format check the text snapshots and emit the results."""
         results = []
-        for index, spellText, spaceText, offset, utf16Map in self._payload:
+        for index, spellText, formatText, offset, utf16Map in self._payload:
             spellErrors = spellCheckText(spellText, offset, utf16Map) if self._checkSpell else []
-            spaceErrors = spaceCheckText(spaceText, offset, utf16Map) if self._checkSpace else []
-            results.append((index, spellErrors, spaceErrors))
+            formatErrors = formatCheckText(formatText, offset, utf16Map) if self._checkFormat else []
+            results.append((index, spellErrors, formatErrors))
         self.signals.resultsReady.emit(self._jobId, results)
 
 
-class BackgroundSpellCheckSignals(QObject):
+class BackgroundTextCheckSignals(QObject):
     """The QRunnable cannot emit a signal, so we need a simple QObject
-    to hold the spell and space check result signal.
+    to hold the text check result signal.
     """
 
     resultsReady = pyqtSignal(int, object)

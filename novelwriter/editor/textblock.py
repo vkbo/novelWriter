@@ -43,11 +43,11 @@ class TextBlockData(QTextBlockUserData):
     """
 
     __slots__ = (
+        "_formatErrors",
         "_metaData",
         "_offset",
         "_rawText",
         "_revision",
-        "_spaceErrors",
         "_spellErrors",
         "_text",
         "_utf16Map",
@@ -62,7 +62,7 @@ class TextBlockData(QTextBlockUserData):
         self._utf16Map: list[int] | None = None
         self._metaData: list[tuple[int, int, str, str]] = []
         self._spellErrors: list[tuple[int, int, str]] = []
-        self._spaceErrors: list[tuple[int, int, str]] = []
+        self._formatErrors: list[tuple[int, int, str]] = []
 
     @property
     def metaData(self) -> list[tuple[int, int, str, str]]:
@@ -75,9 +75,9 @@ class TextBlockData(QTextBlockUserData):
         return self._spellErrors
 
     @property
-    def spaceErrors(self) -> list[tuple[int, int, str]]:
-        """Return space error data from last check."""
-        return self._spaceErrors
+    def formatErrors(self) -> list[tuple[int, int, str]]:
+        """Return format error data from last check."""
+        return self._formatErrors
 
     @property
     def revision(self) -> int:
@@ -93,12 +93,12 @@ class TextBlockData(QTextBlockUserData):
         self._utf16Map = None
         self._metaData = []
         self._spellErrors = []
-        self._spaceErrors = []
+        self._formatErrors = []
 
     def checkData(self) -> tuple[str, str, int, list[int] | None]:
-        """Return a snapshot of the text for external spell and space
+        """Return a snapshot of the text for external spell and format
         checking. The spell text has shortcodes and URLs stripped, while
-        the space text is the raw, unmodified block text.
+        the format text is the raw, unmodified block text.
         """
         return self._text, self._rawText, self._offset, self._utf16Map
 
@@ -106,9 +106,9 @@ class TextBlockData(QTextBlockUserData):
         """Store spell error data computed from a text snapshot."""
         self._spellErrors = errors
 
-    def setSpaceErrors(self, errors: list[tuple[int, int, str]]) -> None:
-        """Store space error data computed from a text snapshot."""
-        self._spaceErrors = errors
+    def setFormatErrors(self, errors: list[tuple[int, int, str]]) -> None:
+        """Store format error data computed from a text snapshot."""
+        self._formatErrors = errors
 
     def processText(self, text: str, offset: int, utf16Map: list[int] | None) -> None:
         """Extract meta data from the text. The map, when set, converts
@@ -147,12 +147,12 @@ class TextBlockData(QTextBlockUserData):
         self._spellErrors = spellCheckText(self._text, self._offset, self._utf16Map)
         return self._spellErrors
 
-    def spaceCheck(self) -> list[tuple[int, int, str]]:
+    def formatCheck(self) -> list[tuple[int, int, str]]:
         """Run the multi-space and trailing-space check and cache the
-        result, and return the list of space errors.
+        result, and return the list of format errors.
         """
-        self._spaceErrors = spaceCheckText(self._rawText, self._offset, self._utf16Map)
-        return self._spaceErrors
+        self._formatErrors = formatCheckText(self._rawText, self._offset, self._utf16Map)
+        return self._formatErrors
 
 
 def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
@@ -174,7 +174,7 @@ def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> list[t
     ]
 
 
-def spaceCheckText(text: str, offset: int, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
+def formatCheckText(text: str, offset: int, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
     """Check a piece of text for runs of multiple spaces and trailing
     whitespace, and return the list of matches. This function does not
     touch any Qt document classes, so it is safe to call from a worker
