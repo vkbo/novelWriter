@@ -2635,6 +2635,41 @@ def testGuiEditor_TypewriterScrolling(qtbot, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
+def testGuiEditor_LineHeight(qtbot, nwGUI, projPath, mockRnd):
+    """Test that CONFIG.lineHeight is applied to all blocks in the
+    document, both on load and when settings are refreshed. The last
+    block is deliberately excluded (see setLineHeight docstring) and
+    keeps its previous height until the document is reloaded.
+    """
+    buildTestProject(nwGUI, projPath)
+    docEditor = nwGUI.docEditor
+    document = docEditor.document()
+
+    def blocksExceptLastHaveLineHeight(height: int) -> bool:
+        block = document.firstBlock()
+        last = document.lastBlock()
+        while block.isValid() and block != last:
+            if block.blockFormat().lineHeight() != height:
+                return False
+            block = block.next()
+        return True
+
+    CONFIG.lineHeight = 1.50
+    assert docEditor.loadText(C.hSceneDoc) is True
+    assert blocksExceptLastHaveLineHeight(150)
+
+    CONFIG.lineHeight = 2.00
+    docEditor.initEditor()
+    assert blocksExceptLastHaveLineHeight(200)
+    assert document.lastBlock().blockFormat().lineHeight() == 0.0
+
+    # A fresh reload picks up the current height for all blocks except
+    # whatever is the last one at that point
+    assert docEditor.loadText(C.hSceneDoc) is True
+    assert blocksExceptLastHaveLineHeight(200)
+
+
+@pytest.mark.gui
 def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the custom ensure cursor visible feature."""
     buildTestProject(nwGUI, projPath)
