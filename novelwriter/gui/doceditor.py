@@ -562,8 +562,8 @@ class GuiDocEditor(QTextEdit):
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
         if self._docHandle:
-            print("Ping!")
             self._qDocument.syntaxHighlighter.rehighlight()
+            self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
             self._beginSpellPass()
             self.docHeader.setHandle(self._docHandle)
         else:
