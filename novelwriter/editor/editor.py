@@ -169,6 +169,8 @@ class GuiDocEditor(QTextEdit):
         "_nwItem",
         "_prevLine",
         "_qDocument",
+        "_searchFormat",
+        "_searchSelections",
         "_selection",
         "_spellFormat",
         "_spellJob",
@@ -250,6 +252,10 @@ class GuiDocEditor(QTextEdit):
         self._doReplace = False  # Switch to temporarily disable auto-replace
         self._lineColor = QtTransparent
         self._selection = QTextEdit.ExtraSelection()
+
+        # Search Variables
+        self._searchFormat = QTextCharFormat()
+        self._searchSelections: list[QTextEdit.ExtraSelection] = []
 
         # Spell Check Variables
         self._spellFormat = QTextCharFormat()
@@ -452,6 +458,7 @@ class GuiDocEditor(QTextEdit):
         self._spellJob = None
         self._dirtySpell.clear()
         self._spellSelections.clear()
+        self._searchSelections.clear()
         self.setExtraSelections([])
 
         self.itemHandleChanged.emit("")
@@ -491,6 +498,11 @@ class GuiDocEditor(QTextEdit):
         self._spellFormat = QTextCharFormat()
         self._spellFormat.setUnderlineColor(syntax.spell)
         self._spellFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
+
+        searchColor = self.palette().color(QPalette.ColorRole.Highlight)
+        searchColor.setAlpha(128)
+        self._searchFormat = QTextCharFormat()
+        self._searchFormat.setBackground(searchColor)
 
     def initEditor(self) -> None:
         """Initialise or re-initialise the editor with the user's
@@ -1794,8 +1806,27 @@ class GuiDocEditor(QTextEdit):
             cursor.setPosition(origA)
 
         self.setTextCursor(cursor)
+        self._setSearchSelections(resS, resE)
 
         return resS, resE
+
+    def clearSearchSelections(self) -> None:
+        """Clear the highlight of all search results in the document."""
+        self._setSearchSelections([], [])
+
+    def _setSearchSelections(self, resS: list[int], resE: list[int]) -> None:
+        """Highlight all search results in the document."""
+        selections = []
+        for start, end in zip(resS, resE, strict=True):
+            cursor = QTextCursor(self._qDocument)
+            cursor.setPosition(start)
+            cursor.setPosition(end, QtKeepAnchor)
+            selection = QTextEdit.ExtraSelection()
+            selection.format = self._searchFormat
+            selection.cursor = cursor
+            selections.append(selection)
+        self._searchSelections = selections
+        self._applyExtraSelections()
 
     def replaceNext(self) -> None:
         """Search for the next occurrence of the search bar text in the
@@ -2619,6 +2650,7 @@ class GuiDocEditor(QTextEdit):
         selections = []
         if CONFIG.lineHighlight:
             selections.append(self._selection)
+        selections.extend(self._searchSelections)
         selections.extend(self._spellSelections)
         self.setExtraSelections(selections)
 

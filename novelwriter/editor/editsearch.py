@@ -301,6 +301,7 @@ class GuiDocEditSearch(QFrame):
         """Close the search box."""
         self.showReplace.setChecked(False)
         self.setVisible(False)
+        self.docEditor.clearSearchSelections()
         self.docEditor.updateDocMargins()
         self.docEditor.setFocus()
 
