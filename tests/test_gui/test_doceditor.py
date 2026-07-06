@@ -2637,18 +2637,15 @@ def testGuiEditor_TypewriterScrolling(qtbot, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiEditor_LineHeight(qtbot, nwGUI, projPath, mockRnd):
     """Test that CONFIG.lineHeight is applied to all blocks in the
-    document, both on load and when settings are refreshed. The last
-    block is deliberately excluded (see setLineHeight docstring) and
-    keeps its previous height until the document is reloaded.
+    document, both on load and when settings are refreshed.
     """
     buildTestProject(nwGUI, projPath)
     docEditor = nwGUI.docEditor
     document = docEditor.document()
 
-    def blocksExceptLastHaveLineHeight(height: int) -> bool:
+    def allBlocksHaveLineHeight(height: int) -> bool:
         block = document.firstBlock()
-        last = document.lastBlock()
-        while block.isValid() and block != last:
+        while block.isValid():
             if block.blockFormat().lineHeight() != height:
                 return False
             block = block.next()
@@ -2656,17 +2653,35 @@ def testGuiEditor_LineHeight(qtbot, nwGUI, projPath, mockRnd):
 
     CONFIG.lineHeight = 1.50
     assert docEditor.loadText(C.hSceneDoc) is True
-    assert blocksExceptLastHaveLineHeight(150)
+    assert allBlocksHaveLineHeight(150)
 
     CONFIG.lineHeight = 2.00
     docEditor.initEditor()
-    assert blocksExceptLastHaveLineHeight(200)
-    assert document.lastBlock().blockFormat().lineHeight() == 0.0
+    assert allBlocksHaveLineHeight(200)
 
-    # A fresh reload picks up the current height for all blocks except
-    # whatever is the last one at that point
+
+@pytest.mark.gui
+def testGuiEditor_LineHeightDoubleReturn(qtbot, nwGUI, projPath, mockRnd):
+    """Test that a blank-line paragraph break (two consecutive Return
+    presses) works normally with a non-default line height set on
+    every block. Qt's own Return handling otherwise treats the second
+    Return, landing on an empty block whose format isn't bare default,
+    as a request to reset the block back to default formatting instead
+    of inserting a new one (meant for escaping list/heading formatting
+    in rich-text editors), silently eating the keypress.
+    """
+    buildTestProject(nwGUI, projPath)
+    docEditor = nwGUI.docEditor
+
+    CONFIG.lineHeight = 1.50
     assert docEditor.loadText(C.hSceneDoc) is True
-    assert blocksExceptLastHaveLineHeight(200)
+
+    qtbot.keyClicks(docEditor, "# Heading")
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClicks(docEditor, "Body text.")
+
+    assert docEditor.getText().startswith("# Heading\n\nBody text.")
 
 
 @pytest.mark.gui

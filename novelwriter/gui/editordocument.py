@@ -101,27 +101,11 @@ class GuiTextDocument(QTextDocument):
         logger.debug("Highlighted document in %.3f ms", 1000 * (tEnd - tMid))
 
     def setLineHeight(self, height: float) -> None:
-        """Apply a line height to all blocks in the document.
-
-        The last block is deliberately excluded. Merging a block
-        format onto the block a live QTextCursor currently occupies
-        corrupts the following Return keypress (it silently fails to
-        split the block) for reasons that trace into Qt/PyQt6
-        internals rather than anything in this codebase. The excluded
-        block keeps its old height until the document is reloaded, or
-        until more text is added after it and this is called again.
-        """
-        end = self.lastBlock().position() - 1
-        if end <= 0:
-            # Single-block document: there is nothing to select before
-            # the last (and only) block, so it can't be touched safely
-            return
-
+        """Apply a line height to all blocks in the document."""
         blockFormat = QTextBlockFormat()
         blockFormat.setLineHeight(int(height * 100), QtPropLineHeight)
         cursor = QTextCursor(self)
-        cursor.setPosition(0)
-        cursor.setPosition(end, QTextCursor.MoveMode.KeepAnchor)
+        cursor.select(QTextCursor.SelectionType.Document)
         cursor.mergeBlockFormat(blockFormat)
 
     def metaDataAtPos(self, pos: int) -> tuple[str, str]:
