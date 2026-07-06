@@ -1389,7 +1389,10 @@ class GuiDocEditor(QTextEdit):
     def _updateCheckSelections(self) -> None:
         """Rebuild the spell and format error markers for all visible
         blocks. Both are cached per block, so a single pass over the
-        visible blocks is enough to build both sets of markers.
+        visible blocks is enough to build both sets of markers. A
+        trailing space under the caret is not flagged, since it is a
+        natural, transient state while the line is still being typed.
+        See issue discussion #1347.
         """
         checkSpell = SHARED.project.data.spellCheck
         checkFormat = CONFIG.showMultiSpaces
@@ -1417,7 +1420,11 @@ class GuiDocEditor(QTextEdit):
                             selection.cursor = cursor
                             spellSelections.append(selection)
                     if checkFormat:
-                        for start, end, _ in data.formatErrors:
+                        for start, end, kind in data.formatErrors:
+                            if kind == "trail" and position + start < cPos <= position + end:
+                                # Not yet a real trailing space, still being typed
+                                suppressed = True
+                                continue
                             cursor = QTextCursor(self._qDocument)
                             cursor.setPosition(position + start)
                             cursor.setPosition(position + end, QtKeepAnchor)

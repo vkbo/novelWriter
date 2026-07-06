@@ -918,6 +918,22 @@ def testGuiEditor_FormatChecking(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert formatSel[1].cursor.selectionStart() == blockPos + 37
     assert formatSel[1].cursor.selectionEnd() == blockPos + 38
 
+    # A trailing space right under the caret is not yet flagged, since
+    # it's a natural, transient state while the line is still being
+    # typed. Other errors in the same block remain visible
+    docEditor.setCursorPosition(blockPos + 38)
+    docEditor._updateCheckSelections()
+    assert docEditor._suppressed is True
+    assert len(docEditor._formatSelections) == 1
+    assert docEditor._formatSelections[0].cursor.selectionStart() == blockPos + 1
+
+    # Moving the caret elsewhere in the same block, away from the
+    # trailing space itself, does not suppress it
+    docEditor.setCursorPosition(blockPos + 5)
+    docEditor._updateCheckSelections()
+    assert docEditor._suppressed is False
+    assert len(docEditor._formatSelections) == 2
+
     # Toggling the feature back off clears the markers
     CONFIG.showMultiSpaces = False
     docEditor._beginCheckPass()
