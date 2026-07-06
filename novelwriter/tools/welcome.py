@@ -66,6 +66,7 @@ from novelwriter.types import (
     QtKeyUp,
     QtScrollAsNeeded,
     QtSelected,
+    QtWidgetShortcut,
 )
 
 logger = logging.getLogger(__name__)
@@ -291,7 +292,7 @@ class _OpenProjectPage(QWidget):
 
         self.keyEnter = QShortcut(self.listWidget)
         self.keyEnter.setKeys([QtKeyEnter, QtKeyReturn])
-        self.keyEnter.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self.keyEnter.setContext(QtWidgetShortcut)
         self.keyEnter.activated.connect(self.openSelectedItem)
 
         self.keyDelete = QShortcut(self)

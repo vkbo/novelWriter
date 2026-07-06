@@ -126,6 +126,7 @@ from novelwriter.types import (
     QtSelectLine,
     QtSelectWord,
     QtTransparent,
+    QtWidgetShortcut,
 )
 
 logger = logging.getLogger(__name__)
@@ -328,27 +329,27 @@ class GuiDocEditor(QTextEdit):
         # Custom Shortcuts
         self._keyContext = QShortcut(self)
         self._keyContext.setKey("Ctrl+.")
-        self._keyContext.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._keyContext.setContext(QtWidgetShortcut)
         self._keyContext.activated.connect(self._openContextFromCursor)
 
         self._followTagView = QShortcut(self)
         self._followTagView.setKeys(["Ctrl+Return", "Ctrl+Enter"])
-        self._followTagView.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._followTagView.setContext(QtWidgetShortcut)
         self._followTagView.activated.connect(qtLambda(self._processTag))
 
         self._followTagEdit = QShortcut(self)
         self._followTagEdit.setKeys(["Ctrl+Shift+Return", "Ctrl+Shift+Enter"])
-        self._followTagEdit.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._followTagEdit.setContext(QtWidgetShortcut)
         self._followTagEdit.activated.connect(qtLambda(self._processTag, edit=True))
 
         self._prevLine = QShortcut(self)
         self._prevLine.setKey("Ctrl+Up")
-        self._prevLine.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._prevLine.setContext(QtWidgetShortcut)
         self._prevLine.activated.connect(qtLambda(self._skipToParagraph, -1))
 
         self._nextLine = QShortcut(self)
         self._nextLine.setKey("Ctrl+Down")
-        self._nextLine.setContext(Qt.ShortcutContext.WidgetShortcut)
+        self._nextLine.setContext(QtWidgetShortcut)
         self._nextLine.activated.connect(qtLambda(self._skipToParagraph, 1))
 
         # Set Up Document Word Counter
