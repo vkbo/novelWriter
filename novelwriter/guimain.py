@@ -60,8 +60,8 @@ from novelwriter.gui.projtree import GuiProjectView
 from novelwriter.gui.search import GuiProjectSearch
 from novelwriter.gui.sidebar import GuiSideBar
 from novelwriter.gui.statusbar import GuiMainStatus
+from novelwriter.manuscript.manuscript import GuiManuscript
 from novelwriter.tools.dictionaries import GuiDictionaries
-from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.noveldetails import GuiNovelDetails
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.writingstats import GuiWritingStats

@@ -45,8 +45,8 @@ from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.guimain import GuiMain
+from novelwriter.manuscript.manuscript import GuiManuscript
 from novelwriter.shared import _GuiAlert
-from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.types import (

@@ -29,10 +29,10 @@ from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QPushButton
 
 from novelwriter import SHARED
 from novelwriter.constants import nwLabels
-from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.enum import nwBuildFmt
+from novelwriter.manuscript.buildsettings import BuildSettings
+from novelwriter.manuscript.manusbuild import GuiManuscriptBuild
 from novelwriter.shared import _GuiAlert
-from novelwriter.tools.manusbuild import GuiManuscriptBuild
 
 from tests.helpers import C, buildTestProject
 

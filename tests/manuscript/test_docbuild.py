@@ -29,8 +29,6 @@ from shutil import copyfile
 
 import pytest
 
-from novelwriter.core.buildsettings import BuildSettings
-from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt, nwItemClass
 from novelwriter.formats.tohtml import ToHtml
@@ -38,6 +36,8 @@ from novelwriter.formats.tomarkdown import ToMarkdown
 from novelwriter.formats.toodt import ToOdt
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.formats.toraw import ToRaw
+from novelwriter.manuscript.buildsettings import BuildSettings
+from novelwriter.manuscript.docbuild import NWBuildDocument
 
 from tests.helpers import ODT_IGNORE, C, buildTestProject, cmpFiles
 from tests.mocked import causeException, causeOSError

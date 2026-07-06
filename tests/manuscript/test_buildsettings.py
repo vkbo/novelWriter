@@ -31,9 +31,9 @@ import pytest
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwFiles, nwHeadFmt
-from novelwriter.core.buildsettings import BuildCollection, BuildSettings, FilterMode
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt, nwItemClass
+from novelwriter.manuscript.buildsettings import BuildCollection, BuildSettings, FilterMode
 
 from tests.helpers import C, buildTestProject
 from tests.mocked import causeOSError

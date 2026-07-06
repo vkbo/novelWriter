@@ -28,12 +28,12 @@ import pytest
 
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt
-from novelwriter.core.buildsettings import BuildSettings
-from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt, nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.todocx import OOXML_SCM, DocXParagraph, ToDocX, _mkTag, _wTag
+from novelwriter.manuscript.buildsettings import BuildSettings
+from novelwriter.manuscript.docbuild import NWBuildDocument
 
 from tests.helpers import DOCX_IGNORE, cmpFiles, xmlToText
 

@@ -29,10 +29,10 @@ from PyQt6.QtGui import QFont
 from novelwriter import SHARED
 from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt, nwStyles
-from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.modified import NFontDialog
+from novelwriter.manuscript.buildsettings import BuildSettings, FilterMode
+from novelwriter.manuscript.manussettings import GuiBuildSettings, _FilterTab, _FormattingTab, _HeadingsTab
 from novelwriter.shared import _GuiAlert
-from novelwriter.tools.manussettings import GuiBuildSettings, _FilterTab, _FormattingTab, _HeadingsTab
 
 from tests.helpers import C, buildTestProject
 

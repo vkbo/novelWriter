@@ -34,10 +34,10 @@ from PyQt6.QtWidgets import QListWidgetItem
 
 from novelwriter import SHARED
 from novelwriter.constants import nwHeadFmt
-from novelwriter.core.buildsettings import BuildSettings
-from novelwriter.tools.manusbuild import GuiManuscriptBuild
-from novelwriter.tools.manuscript import GuiManuscript
-from novelwriter.tools.manussettings import GuiBuildSettings
+from novelwriter.manuscript.buildsettings import BuildSettings
+from novelwriter.manuscript.manusbuild import GuiManuscriptBuild
+from novelwriter.manuscript.manuscript import GuiManuscript
+from novelwriter.manuscript.manussettings import GuiBuildSettings
 
 from tests.helpers import C, buildTestProject
 
@@ -341,7 +341,7 @@ def testToolManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     build._changed = True
     manus.buildList.clearSelection()
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.tools.manusbuild.GuiManuscriptBuild.exec", lambda *a: None)
+        mp.setattr("novelwriter.manuscript.manusbuild.GuiManuscriptBuild.exec", lambda *a: None)
 
         manus.buildList.setCurrentRow(0)
         manus.btnBuild.click()
@@ -356,7 +356,7 @@ def testToolManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     build._changed = False
     manus.buildList.clearSelection()
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.tools.manusbuild.GuiManuscriptBuild.exec", lambda *a: None)
+        mp.setattr("novelwriter.manuscript.manusbuild.GuiManuscriptBuild.exec", lambda *a: None)
 
         manus.buildList.setCurrentRow(0)
         manus.btnBuild.click()
