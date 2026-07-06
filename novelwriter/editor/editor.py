@@ -163,9 +163,13 @@ class GuiDocEditor(QTextEdit):
         "_lastActive",
         "_lastEdit",
         "_lastFind",
+        "_lineColor",
+        "_nextLine",
         "_nwDocument",
         "_nwItem",
+        "_prevLine",
         "_qDocument",
+        "_selection",
         "_spellFormat",
         "_spellJob",
         "_spellJobId",
@@ -199,6 +203,14 @@ class GuiDocEditor(QTextEdit):
         "_vpMargin",
         "_wCounterDoc",
         "_wCounterSel",
+        "changeFocusState",
+        "closeSearch",
+        "docFooter",
+        "docHeader",
+        "docSearch",
+        "docToolBar",
+        "searchVisible",
+        "wheelEventFilter",
     )
 
     MOVE_KEYS = (QtKeyLeft, QtKeyRight, QtKeyUp, QtKeyDown, QtKeyPageUp, QtKeyPageDown)
