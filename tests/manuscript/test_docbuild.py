@@ -80,7 +80,7 @@ BUILD_CONF = {
 
 
 @pytest.mark.core
-def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
+def testManusDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test building an open document manuscript."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -186,7 +186,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
 
 
 @pytest.mark.core
-def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
+def testManusDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test building an HTML manuscript."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -262,7 +262,7 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
 
 
 @pytest.mark.core
-def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
+def testManusDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test building an Markdown manuscript."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -330,7 +330,7 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
 
 
 @pytest.mark.core
-def testCoreDocBuild_DocX(mockGUI, prjLipsum, fncPath):
+def testManusDocBuild_DocX(mockGUI, prjLipsum, fncPath):
     """Test building a Word manuscript."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -363,7 +363,7 @@ def testCoreDocBuild_DocX(mockGUI, prjLipsum, fncPath):
 
 
 @pytest.mark.core
-def testCoreDocBuild_PDF(mockGUI, prjLipsum, fncPath):
+def testManusDocBuild_PDF(mockGUI, prjLipsum, fncPath):
     """Test building a PDF manuscript."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -395,7 +395,7 @@ def testCoreDocBuild_PDF(mockGUI, prjLipsum, fncPath):
 
 
 @pytest.mark.core
-def testCoreDocBuild_NWD(mockGUI, prjLipsum, fncPath, tstPaths):
+def testManusDocBuild_NWD(mockGUI, prjLipsum, fncPath, tstPaths):
     """Test building a NWD manuscript."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -450,7 +450,7 @@ def testCoreDocBuild_NWD(mockGUI, prjLipsum, fncPath, tstPaths):
 
 
 @pytest.mark.core
-def testCoreDocBuild_Custom(mockGUI, fncPath: Path, mockRnd):
+def testManusDocBuild_Custom(mockGUI, fncPath: Path, mockRnd):
     """Test custom builds and some error handling."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -529,7 +529,7 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path, mockRnd):
 
 
 @pytest.mark.core
-def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
+def testManusDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     """Test iter build wrapper."""
     project = NWProject()
     buildTestProject(project, fncPath)

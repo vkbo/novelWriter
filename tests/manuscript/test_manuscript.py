@@ -43,7 +43,7 @@ from tests.helpers import C, buildTestProject
 
 
 @pytest.mark.gui
-def testToolManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
+def testManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     """Test the init/main functionality of the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -82,7 +82,7 @@ def testToolManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
-def testToolManuscript_Builds(qtbot, nwGUI, projPath):
+def testManuscript_Builds(qtbot, nwGUI, projPath):
     """Test the handling of builds in the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -215,7 +215,7 @@ def testToolManuscript_Builds(qtbot, nwGUI, projPath):
 
 
 @pytest.mark.gui
-def testToolManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
+def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     """Test other features of the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -386,7 +386,7 @@ def testToolManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
 
 @pytest.mark.gui
 @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
-def testToolManuscript_Print(monkeypatch, qtbot, nwGUI, projPath):
+def testManuscript_Print(monkeypatch, qtbot, nwGUI, projPath):
     """Test the print feature of the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)

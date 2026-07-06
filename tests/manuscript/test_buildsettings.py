@@ -49,7 +49,7 @@ def isUUID(value):
 
 
 @pytest.mark.core
-def testCoreBuildSettings_ClassAttributes(fncPath: Path):
+def testManusBuildSettings_ClassAttributes(fncPath: Path):
     """Test the BuildSettings class attributes."""
     build = BuildSettings()
     assert build.changed is False
@@ -173,7 +173,7 @@ def testCoreBuildSettings_ClassAttributes(fncPath: Path):
 
 
 @pytest.mark.core
-def testCoreBuildSettings_BuildValues():
+def testManusBuildSettings_BuildValues():
     """Test BuildSettings get/set of build values."""
     build = BuildSettings()
 
@@ -251,7 +251,7 @@ def testCoreBuildSettings_BuildValues():
 
 
 @pytest.mark.core
-def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
+def testManusBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     """Test filters for project items."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -397,7 +397,7 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
 
 
 @pytest.mark.core
-def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRnd):
+def testManusBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRnd):
     """Test the collections class for builds."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -513,7 +513,7 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
 
 
 @pytest.mark.core
-def testCoreBuildSettings_Duplicate(monkeypatch, mockGUI, fncPath: Path, mockRnd):
+def testManusBuildSettings_Duplicate(monkeypatch, mockGUI, fncPath: Path, mockRnd):
     """Test duplicating builds."""
     project = NWProject()
     buildTestProject(project, fncPath)
