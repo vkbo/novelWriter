@@ -182,9 +182,9 @@ class GuiDocEditor(QTextEdit):
         "_spellPassNotify",
         "_spellSelections",
         "_suppressed",
+        "_timerCheck",
         "_timerDoc",
         "_timerSel",
-        "_timerSpell",
         "_timerTextCheck",
         "_trActions",
         "_trAddWord",
@@ -375,13 +375,13 @@ class GuiDocEditor(QTextEdit):
         self._wCounterSel.signals.countsReady.connect(self._updateSelCounts)
 
         # Set Up Spell Underline Refresh
-        self._timerSpell = QTimer(self)
-        self._timerSpell.timeout.connect(self._updateCheckSelections)
-        self._timerSpell.setSingleShot(True)
-        self._timerSpell.setInterval(0)
+        self._timerCheck = QTimer(self)
+        self._timerCheck.timeout.connect(self._updateCheckSelections)
+        self._timerCheck.setSingleShot(True)
+        self._timerCheck.setInterval(0)
 
         if vBar := self.verticalScrollBar():  # pragma: no branch
-            vBar.valueChanged.connect(qtLambda(self._timerSpell.start))
+            vBar.valueChanged.connect(qtLambda(self._timerCheck.start))
 
         # Set Up Spell Check Debounce
         self._timerTextCheck = QTimer(self)
@@ -456,7 +456,7 @@ class GuiDocEditor(QTextEdit):
         self.docFooter.setHandle(self._docHandle)
         self.docToolBar.setVisible(False)
 
-        self._timerSpell.stop()
+        self._timerCheck.stop()
         self._timerTextCheck.stop()
         self._checkPassNo = -1
         self._spellPassNotify = False
@@ -1242,7 +1242,7 @@ class GuiDocEditor(QTextEdit):
         has its margins adjusted according to user preferences.
         """
         self.updateDocMargins()
-        self._timerSpell.start()
+        self._timerCheck.start()
         super().resizeEvent(event)
 
     def inputMethodEvent(self, event: QInputMethodEvent) -> None:
@@ -1348,7 +1348,7 @@ class GuiDocEditor(QTextEdit):
                 block = block.next()
             self._timerTextCheck.start()
 
-        self._timerSpell.start()
+        self._timerCheck.start()
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
@@ -1379,7 +1379,7 @@ class GuiDocEditor(QTextEdit):
         if self._suppressed:
             # An underline was suppressed at the previous cursor
             # position, so the underlines must be refreshed
-            self._timerSpell.start()
+            self._timerCheck.start()
         if CONFIG.lineHighlight:
             self._selection.cursor = self.textCursor()
             self._selection.cursor.clearSelection()
@@ -1500,7 +1500,7 @@ class GuiDocEditor(QTextEdit):
                 if block.isValid() and block.userData() is data and data.revision == revision:
                     data.setSpellErrors(spellErrors)
                     data.setFormatErrors(formatErrors)
-            self._timerSpell.start()
+            self._timerCheck.start()
             self._dispatchTextCheck()
 
     @pyqtSlot(int, int, str)
