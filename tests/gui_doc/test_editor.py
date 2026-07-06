@@ -52,8 +52,8 @@ from novelwriter.core.item import NWItem
 from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwState, nwVimMode
-from novelwriter.gui.doceditor import CommandCompleter, GuiDocEditor, TextAutoReplace, _TagAction
-from novelwriter.gui.doctextblock import TextBlockData
+from novelwriter.gui_doc.editor import CommandCompleter, GuiDocEditor, TextAutoReplace, _TagAction
+from novelwriter.gui_doc.textblock import TextBlockData
 from novelwriter.shared import _GuiAlert
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
@@ -792,7 +792,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     # Background Spell Pass
     # =====================
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.gui.doceditor.SPELL_PASS_CHUNK", 2)
+        mp.setattr("novelwriter.gui_doc.editor.SPELL_PASS_CHUNK", 2)
 
         # A full pass runs chunked worker jobs until the document is
         # done, which with a synchronous worker completes immediately

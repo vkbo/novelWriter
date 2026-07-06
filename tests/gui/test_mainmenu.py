@@ -31,7 +31,7 @@ from PyQt6.QtWidgets import QFileDialog
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwShortcode, nwStats, nwUnicode
 from novelwriter.enum import nwDocAction, nwDocInsert
-from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.gui_doc.editor import GuiDocEditor
 from novelwriter.shared import _GuiAlert
 from novelwriter.types import QtKeepAnchor, QtMoveRight, QtSelectWord
 

@@ -30,8 +30,8 @@ from PyQt6.QtGui import QTextBlock, QTextBlockFormat, QTextCursor, QTextDocument
 from PyQt6.QtWidgets import QApplication
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.gui.dochighlight import GuiDocHighlighter
-from novelwriter.gui.doctextblock import TextBlockData
+from novelwriter.gui_doc.highlighter import GuiDocHighlighter
+from novelwriter.gui_doc.textblock import TextBlockData
 from novelwriter.types import QtPropLineHeight
 
 if TYPE_CHECKING:
