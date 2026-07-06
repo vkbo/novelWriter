@@ -127,6 +127,9 @@ class nwDocAction(Enum):
     SC_SUP = 37
     SC_SUB = 38
     MOVE_TEXT = 39
+    ZOOM_IN = 40
+    ZOOM_OUT = 41
+    ZOOM_RESET = 42
 
 
 class nwDocInsert(Enum):

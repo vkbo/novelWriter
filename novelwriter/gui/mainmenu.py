@@ -367,6 +367,27 @@ class GuiMainMenu(QMenuBar):
         self.aFullScreen.triggered.connect(self.mainGui.toggleFullScreenMode)
         self.mainGui.addAction(self.aFullScreen)
 
+        # View > Separator
+        self.viewMenu.addSeparator()
+
+        # View > Zoom In
+        self.aZoomIn = qtAddAction(self.viewMenu, self.tr("Zoom In"))
+        self.aZoomIn.setShortcuts(["Ctrl++", "Ctrl+="])
+        self.aZoomIn.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.ZOOM_IN))
+        self.mainGui.addAction(self.aZoomIn)
+
+        # View > Zoom Out
+        self.aZoomOut = qtAddAction(self.viewMenu, self.tr("Zoom Out"))
+        self.aZoomOut.setShortcuts(["Ctrl+-", "Ctrl+_"])
+        self.aZoomOut.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.ZOOM_OUT))
+        self.mainGui.addAction(self.aZoomOut)
+
+        # View > Reset Zoom
+        self.aZoomReset = qtAddAction(self.viewMenu, self.tr("Reset Zoom"))
+        self.aZoomReset.setShortcut("Ctrl+0")
+        self.aZoomReset.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.ZOOM_RESET))
+        self.mainGui.addAction(self.aZoomReset)
+
     def _buildInsertMenu(self) -> None:
         """Assemble the Insert menu."""
         # Insert
@@ -754,7 +775,7 @@ class GuiMainMenu(QMenuBar):
 
         # Format > Remove Block Format
         self.aFmtNoFormat = qtAddAction(self.fmtMenu, self.tr("Remove Block Format"))
-        self.aFmtNoFormat.setShortcuts(["Ctrl+0", "Ctrl+Shift+/"])
+        self.aFmtNoFormat.setShortcut("Ctrl+Shift+/")
         self.aFmtNoFormat.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.BLOCK_TXT))
         self.mainGui.addAction(self.aFmtNoFormat)
 

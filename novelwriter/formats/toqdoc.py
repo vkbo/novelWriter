@@ -99,6 +99,8 @@ class ToQTextDocument(Tokenizer):
         "_dUnderline",
         "_dWeight",
         "_document",
+        "_fHead",
+        "_fixedHeadings",
         "_hWeight",
         "_init",
         "_mHead",
@@ -143,9 +145,11 @@ class ToQTextDocument(Tokenizer):
 
         self._pageSize = QPageSize(QPageSize.PageSizeId.A4)
         self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
+        self._fixedHeadings = False
 
         self._mHead: dict[BlockTyp, tuple[float, float]] = {}
         self._sHead: dict[BlockTyp, float] = {}
+        self._fHead: dict[BlockTyp, int] = {}
         self._mText: tuple[float, float] = (1.0, 1.0)
         self._mMeta: tuple[float, float] = (1.0, 1.0)
         self._mSep: tuple[float, float] = (1.0, 1.0)
@@ -175,6 +179,10 @@ class ToQTextDocument(Tokenizer):
     def setShowNewPage(self, state: bool) -> None:
         """Add markers for page breaks."""
         self._newPage = state
+
+    def setFixedHeadings(self, state: bool) -> None:
+        """Use fixed heading sizes rather than scaling with the text font."""
+        self._fixedHeadings = state
 
     ##
     #  Class Methods
@@ -234,6 +242,14 @@ class ToQTextDocument(Tokenizer):
             BlockTyp.HEAD2: fPt * self._sizeHead2,
             BlockTyp.HEAD3: fPt * self._sizeHead3,
             BlockTyp.HEAD4: fPt * self._sizeHead4,
+        }
+        self._fHead = {
+            BlockTyp.TITLE: 4,
+            BlockTyp.PART: 4,
+            BlockTyp.HEAD1: 4,
+            BlockTyp.HEAD2: 3,
+            BlockTyp.HEAD3: 2,
+            BlockTyp.HEAD4: 1,
         }
 
         self._mText = (fPx * self._marginText[0], fPx * self._marginText[1])
@@ -534,7 +550,10 @@ class ToQTextDocument(Tokenizer):
         cFmt = QTextCharFormat(self._charFmt)
         cFmt.setForeground(self._theme.head if hCol else self._theme.text)
         cFmt.setFontWeight(self._hWeight)
-        cFmt.setFontPointSize(self._sHead.get(hType, 1.0))
+        if self._fixedHeadings:
+            cFmt.setProperty(QTextCharFormat.Property.FontSizeAdjustment, self._fHead.get(hType, 0))
+        else:
+            cFmt.setFontPointSize(self._sHead.get(hType, 1.0))
         if hKey and self._useAnchors:
             cFmt.setAnchorNames([hKey])
             cFmt.setAnchor(True)

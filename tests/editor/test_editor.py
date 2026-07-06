@@ -26,7 +26,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt6.QtCore import QEvent, QMimeData, QPointF, QRect, Qt, QThreadPool, QUrl, QVariant
+from PyQt6.QtCore import QEvent, QMimeData, QPoint, QPointF, QRect, Qt, QThreadPool, QUrl, QVariant
 from PyQt6.QtGui import (
     QAction,
     QClipboard,
@@ -42,6 +42,7 @@ from PyQt6.QtGui import (
     QTextCursor,
     QTextDocument,
     QTextOption,
+    QWheelEvent,
 )
 from PyQt6.QtWidgets import QApplication, QMenu, QTextEdit
 
@@ -1293,6 +1294,89 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docAction(nwDocAction.NO_ACTION) is False
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiEditor_Zoom(qtbot, nwGUI, projPath, mockRnd):
+    """Test zooming the editor font via docAction and Ctrl+Scroll, and
+    resetting it back to the configured font size.
+    """
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc)
+    docEditor = nwGUI.docEditor
+
+    basePt = docEditor.font().pointSizeF()
+
+    # Zoom in and out via docAction (menu and shortcut path)
+    assert docEditor.docAction(nwDocAction.ZOOM_IN) is True
+    assert docEditor.font().pointSizeF() == basePt + 1
+
+    assert docEditor.docAction(nwDocAction.ZOOM_OUT) is True
+    assert docEditor.font().pointSizeF() == basePt
+
+    assert docEditor.docAction(nwDocAction.ZOOM_IN) is True
+    assert docEditor.docAction(nwDocAction.ZOOM_IN) is True
+    assert docEditor.font().pointSizeF() == basePt + 2
+
+    assert docEditor.docAction(nwDocAction.ZOOM_RESET) is True
+    assert docEditor.font().pointSizeF() == basePt
+
+    # Zoom in and out with Ctrl+Scroll wheel
+    position = QPointF(10, 10)
+    zoomInEvent = QWheelEvent(
+        position,
+        position,
+        QPoint(0, 0),
+        QPoint(0, 120),
+        Qt.MouseButton.NoButton,
+        QtModCtrl,
+        Qt.ScrollPhase.NoScrollPhase,
+        False,
+    )
+    docEditor.wheelEvent(zoomInEvent)
+    assert docEditor.font().pointSizeF() == basePt + 1
+
+    zoomOutEvent = QWheelEvent(
+        position,
+        position,
+        QPoint(0, 0),
+        QPoint(0, -120),
+        Qt.MouseButton.NoButton,
+        QtModCtrl,
+        Qt.ScrollPhase.NoScrollPhase,
+        False,
+    )
+    docEditor.wheelEvent(zoomOutEvent)
+    assert docEditor.font().pointSizeF() == basePt
+
+    # A no-op Ctrl+Scroll (no vertical delta) does not zoom either way
+    noopEvent = QWheelEvent(
+        position,
+        position,
+        QPoint(0, 0),
+        QPoint(0, 0),
+        Qt.MouseButton.NoButton,
+        QtModCtrl,
+        Qt.ScrollPhase.NoScrollPhase,
+        False,
+    )
+    docEditor.wheelEvent(noopEvent)
+    assert docEditor.font().pointSizeF() == basePt
+
+    # A regular (non-Ctrl) wheel scroll does not zoom, and instead falls
+    # through to the normal scroll handling
+    scrollEvent = QWheelEvent(
+        position,
+        position,
+        QPoint(0, 0),
+        QPoint(0, 120),
+        Qt.MouseButton.NoButton,
+        QtModNone,
+        Qt.ScrollPhase.NoScrollPhase,
+        False,
+    )
+    docEditor.wheelEvent(scrollEvent)
+    assert docEditor.font().pointSizeF() == basePt
 
 
 @pytest.mark.gui

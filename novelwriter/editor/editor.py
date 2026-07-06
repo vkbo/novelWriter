@@ -58,6 +58,7 @@ from PyQt6.QtGui import (
     QTextDocument,
     QTextFormat,
     QTextOption,
+    QWheelEvent,
 )
 from PyQt6.QtWidgets import QApplication, QFrame, QMenu, QTextEdit, QWidget
 
@@ -205,6 +206,9 @@ class GuiDocEditor(QTextEdit):
         "_vpMargin",
         "_wCounterDoc",
         "_wCounterSel",
+        "_zoomIn",
+        "_zoomOut",
+        "_zoomReset",
         "changeFocusState",
         "closeSearch",
         "docFooter",
@@ -999,6 +1003,12 @@ class GuiDocEditor(QTextEdit):
             self._wrapSelection(nwShortcode.SUB_O, nwShortcode.SUB_C)
         elif action == nwDocAction.MOVE_TEXT:
             self._moveTextToNewDocument()
+        elif action == nwDocAction.ZOOM_IN:
+            self.zoomIn()
+        elif action == nwDocAction.ZOOM_OUT:
+            self.zoomOut()
+        elif action == nwDocAction.ZOOM_RESET:
+            self.zoomReset()
         else:
             if noFormat:
                 logger.warning("Action '%s' not alowed on current block", action)
@@ -1235,6 +1245,18 @@ class GuiDocEditor(QTextEdit):
                 self._processTag(cursor)
         super().mouseReleaseEvent(event)
 
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        """Zoom the editor font with Ctrl+Scroll wheel."""
+        if event.modifiers() & QtModCtrl == QtModCtrl:
+            delta = event.angleDelta().y() // 120
+            if delta > 0:
+                self.zoomIn(delta)
+            elif delta < 0:
+                self.zoomOut(-delta)
+            event.accept()
+            return
+        super().wheelEvent(event)
+
     def resizeEvent(self, event: QResizeEvent) -> None:
         """If the text editor is resized, we must make sure the document
         has its margins adjusted according to user preferences.
@@ -1319,6 +1341,13 @@ class GuiDocEditor(QTextEdit):
     def processSpellCheckChange(self, language: str, provider: str) -> None:
         """Process a change in the spell check language or provider."""
         self.spellCheckDocument()
+
+    @pyqtSlot()
+    def zoomReset(self) -> None:
+        """Reset the editor's font size to the user's configured size."""
+        font = fontMatcher(CONFIG.textFont)
+        self.setFont(font)
+        self._qDocument.setDefaultFont(font)
 
     ##
     #  Private Slots
