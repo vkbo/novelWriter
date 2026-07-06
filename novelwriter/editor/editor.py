@@ -139,9 +139,6 @@ class _SelectAction(Enum):
     MOVE_AFTER = 3
 
 
-CHECK_PASS_CHUNK = 100
-
-
 class _TagAction(IntFlag):
     NONE = 0b00
     FOLLOW = 0b01
@@ -1454,13 +1451,13 @@ class GuiDocEditor(QTextEdit):
 
         job = []
         payload = []
-        while self._dirtyBlocks and len(job) < CHECK_PASS_CHUNK:
+        while self._dirtyBlocks and len(job) < nwConst.CHECK_PASS_CHUNK:
             _, block = self._dirtyBlocks.popitem()
             if block.isValid() and isinstance(data := block.userData(), TextBlockData):  # pragma: no branch
                 payload.append((len(job), *data.checkData()))
                 job.append((block, data, data.revision))
 
-        while self._checkPassNo >= 0 and len(job) < CHECK_PASS_CHUNK:
+        while self._checkPassNo >= 0 and len(job) < nwConst.CHECK_PASS_CHUNK:
             block = self._qDocument.findBlockByNumber(self._checkPassNo)
             if block.isValid():
                 if isinstance(data := block.userData(), TextBlockData):

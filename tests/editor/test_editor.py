@@ -794,7 +794,7 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
     # Background Spell Pass
     # =====================
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.editor.editor.CHECK_PASS_CHUNK", 2)
+        mp.setattr("novelwriter.constants.nwConst.CHECK_PASS_CHUNK", 2)
 
         # A full pass runs chunked worker jobs until the document is
         # done, which with a synchronous worker completes immediately
