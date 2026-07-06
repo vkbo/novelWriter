@@ -28,7 +28,7 @@ from typing import TYPE_CHECKING
 from novelwriter import CONFIG
 
 if TYPE_CHECKING:
-    from novelwriter.gui_doc.viewer import GuiDocViewer
+    from novelwriter.viewer.viewer import GuiDocViewer
 
 logger = logging.getLogger(__name__)
 

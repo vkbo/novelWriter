@@ -66,6 +66,16 @@ from novelwriter.common import decodeMimeHandles, fontMatcher, minmax, qtAddActi
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwStyles, nwUnicode
 from novelwriter.core.document import NWDocument
 from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.editor.autoreplace import TextAutoReplace
+from novelwriter.editor.completer import CommandCompleter
+from novelwriter.editor.editfooter import GuiDocEditFooter
+from novelwriter.editor.editheader import GuiDocEditHeader
+from novelwriter.editor.editordocument import GuiTextDocument
+from novelwriter.editor.editsearch import GuiDocEditSearch
+from novelwriter.editor.edittoolbar import GuiDocToolBar
+from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE
+from novelwriter.editor.runnables import BackgroundSpellCheck, BackgroundWordCounter
+from novelwriter.editor.textblock import TextBlockData
 from novelwriter.enum import (
     nwChange,
     nwComment,
@@ -77,16 +87,6 @@ from novelwriter.enum import (
     nwVimMode,
 )
 from novelwriter.extensions.eventfilters import WheelEventFilter
-from novelwriter.gui_doc.autoreplace import TextAutoReplace
-from novelwriter.gui_doc.completer import CommandCompleter
-from novelwriter.gui_doc.editfooter import GuiDocEditFooter
-from novelwriter.gui_doc.editheader import GuiDocEditHeader
-from novelwriter.gui_doc.editordocument import GuiTextDocument
-from novelwriter.gui_doc.editsearch import GuiDocEditSearch
-from novelwriter.gui_doc.edittoolbar import GuiDocToolBar
-from novelwriter.gui_doc.highlighter import BLOCK_META, BLOCK_TITLE
-from novelwriter.gui_doc.runnables import BackgroundSpellCheck, BackgroundWordCounter
-from novelwriter.gui_doc.textblock import TextBlockData
 from novelwriter.text.counting import standardCounter
 from novelwriter.text.formats import processHeading
 from novelwriter.tools.lipsum import GuiLipsum

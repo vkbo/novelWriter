@@ -39,11 +39,11 @@ from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.constants import nwFiles
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.preferences import GuiNeedsUpdate
+from novelwriter.editor.editor import GuiDocEditor
 from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemClass, nwItemType, nwState, nwTheme, nwView
-from novelwriter.gui_doc.editor import GuiDocEditor
-from novelwriter.gui_side.noveltree import GuiNovelView
-from novelwriter.gui_side.outline import GuiOutlineView
-from novelwriter.gui_side.projtree import GuiProjectTree
+from novelwriter.gui.noveltree import GuiNovelView
+from novelwriter.gui.outline import GuiOutlineView
+from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.guimain import GuiMain
 from novelwriter.shared import _GuiAlert
 from novelwriter.tools.manuscript import GuiManuscript

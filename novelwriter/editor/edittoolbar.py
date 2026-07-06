@@ -35,7 +35,7 @@ from novelwriter.enum import nwDocAction
 from novelwriter.extensions.modified import NIconToolButton
 
 if TYPE_CHECKING:
-    from novelwriter.gui_doc.editor import GuiDocEditor
+    from novelwriter.editor.editor import GuiDocEditor
 
 logger = logging.getLogger(__name__)
 

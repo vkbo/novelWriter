@@ -247,7 +247,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
             pass  # Quietly ignore error
 
     # Import GUI (after dependency checks), and launch
-    from novelwriter.gui_side.theme import GuiTheme
+    from novelwriter.gui.theme import GuiTheme
     from novelwriter.guimain import GuiMain
 
     # Create App

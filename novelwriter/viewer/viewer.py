@@ -47,9 +47,6 @@ from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.formats.shared import TextDocumentTheme
 from novelwriter.formats.toqdoc import ToQTextDocument
-from novelwriter.gui_doc.viewfooter import GuiDocViewFooter
-from novelwriter.gui_doc.viewheader import GuiDocViewHeader
-from novelwriter.gui_doc.viewhistory import GuiDocViewHistory
 from novelwriter.types import (
     QtKeepAnchor,
     QtMoveAnchor,
@@ -59,6 +56,9 @@ from novelwriter.types import (
     QtSelectDocument,
     QtSelectWord,
 )
+from novelwriter.viewer.viewfooter import GuiDocViewFooter
+from novelwriter.viewer.viewheader import GuiDocViewHeader
+from novelwriter.viewer.viewhistory import GuiDocViewHistory
 
 logger = logging.getLogger(__name__)
 

@@ -35,7 +35,7 @@ from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType
-from novelwriter.gui_side.projtree import _TreeContextMenu
+from novelwriter.gui.projtree import _TreeContextMenu
 from novelwriter.shared import _GuiAlert
 from novelwriter.types import (
     QtAccepted,

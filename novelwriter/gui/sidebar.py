@@ -34,7 +34,7 @@ from novelwriter.constants import nwLabels, trConst
 from novelwriter.enum import nwTheme, nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
 from novelwriter.extensions.modified import NIconToolButton
-from novelwriter.gui_side.theme import STYLES_BIG_TOOLBUTTON
+from novelwriter.gui.theme import STYLES_BIG_TOOLBUTTON
 
 if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain

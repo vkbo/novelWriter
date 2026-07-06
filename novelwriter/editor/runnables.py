@@ -27,11 +27,11 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
 
-from novelwriter.gui_doc.textblock import spellCheckText
+from novelwriter.editor.textblock import spellCheckText
 from novelwriter.text.counting import standardCounter
 
 if TYPE_CHECKING:
-    from novelwriter.gui_doc.editor import GuiDocEditor
+    from novelwriter.editor.editor import GuiDocEditor
 
 logger = logging.getLogger(__name__)
 

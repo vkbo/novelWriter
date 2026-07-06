@@ -49,25 +49,25 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiNeedsUpdate, GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
+from novelwriter.editor.editor import GuiDocEditor
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView, nwVimMode
 from novelwriter.extensions.progressbars import NProgressSimple
-from novelwriter.gui_doc.editor import GuiDocEditor
-from novelwriter.gui_doc.viewer import GuiDocViewer
-from novelwriter.gui_doc.viewerpanel import GuiDocViewerPanel
-from novelwriter.gui_side.itemdetails import GuiItemDetails
-from novelwriter.gui_side.mainmenu import GuiMainMenu
-from novelwriter.gui_side.noveltree import GuiNovelView
-from novelwriter.gui_side.outline import GuiOutlineView
-from novelwriter.gui_side.projtree import GuiProjectView
-from novelwriter.gui_side.search import GuiProjectSearch
-from novelwriter.gui_side.sidebar import GuiSideBar
-from novelwriter.gui_side.statusbar import GuiMainStatus
+from novelwriter.gui.itemdetails import GuiItemDetails
+from novelwriter.gui.mainmenu import GuiMainMenu
+from novelwriter.gui.noveltree import GuiNovelView
+from novelwriter.gui.outline import GuiOutlineView
+from novelwriter.gui.projtree import GuiProjectView
+from novelwriter.gui.search import GuiProjectSearch
+from novelwriter.gui.sidebar import GuiSideBar
+from novelwriter.gui.statusbar import GuiMainStatus
 from novelwriter.tools.dictionaries import GuiDictionaries
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.noveldetails import GuiNovelDetails
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.types import QtModShift
+from novelwriter.viewer.viewer import GuiDocViewer
+from novelwriter.viewer.viewerpanel import GuiDocViewerPanel
 
 logger = logging.getLogger(__name__)
 

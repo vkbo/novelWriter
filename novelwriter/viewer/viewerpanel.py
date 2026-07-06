@@ -44,7 +44,7 @@ from novelwriter.common import checkInt, qtAddAction
 from novelwriter.constants import nwLabels, nwLists, nwStyles, trConst
 from novelwriter.enum import nwChange, nwDocMode, nwItemClass
 from novelwriter.extensions.modified import NIconToolButton
-from novelwriter.gui_side.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
+from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.types import QtDecorationRole, QtHeaderFixed, QtHeaderToContents, QtUserRole
 
 if TYPE_CHECKING:

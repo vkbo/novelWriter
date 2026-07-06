@@ -35,7 +35,7 @@ from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
 from novelwriter.types import QtAlignLeft, QtAlignRight, QtModShift
 
 if TYPE_CHECKING:
-    from novelwriter.gui_doc.editor import GuiDocEditor
+    from novelwriter.editor.editor import GuiDocEditor
 
 logger = logging.getLogger(__name__)
 

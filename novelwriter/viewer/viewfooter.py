@@ -31,10 +31,10 @@ from PyQt6.QtWidgets import QHBoxLayout, QToolButton, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.modified import NIconToolButton
-from novelwriter.gui_side.theme import STYLES_MIN_TOOLBUTTON
+from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 
 if TYPE_CHECKING:
-    from novelwriter.gui_doc.viewer import GuiDocViewer
+    from novelwriter.viewer.viewer import GuiDocViewer
 
 logger = logging.getLogger(__name__)
 

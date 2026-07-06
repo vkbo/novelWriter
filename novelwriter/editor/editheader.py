@@ -1,5 +1,5 @@
 """
-novelWriter – GUI Viewer Header
+novelWriter – GUI Editor Header
 ===============================
 
 This file is a part of novelWriter
@@ -23,44 +23,49 @@ from __future__ import annotations
 
 import logging
 
+from time import time
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtCore import QTimer, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QHBoxLayout, QMenu, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import qtAddAction
-from novelwriter.enum import nwDocMode, nwState
+from novelwriter.common import qtAddAction, qtLambda
+from novelwriter.enum import nwState
 from novelwriter.extensions.configlayout import NPathColorLabel
 from novelwriter.extensions.modified import NIconToolButton
-from novelwriter.gui_side.theme import STYLES_MIN_TOOLBUTTON
+from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import QtAlignCenterTop, QtAlignMiddle
 
 if TYPE_CHECKING:
-    from novelwriter.gui_doc.viewer import GuiDocViewer
+    from novelwriter.editor.editor import GuiDocEditor
 
 logger = logging.getLogger(__name__)
 
 
-class GuiDocViewHeader(QWidget):
+class GuiDocEditHeader(QWidget):
     """The Embedded Document Header.
 
-    Only used by DocViewer, and is at a fixed position in the
-    QTextBrowser's viewport.
+    Only used by DocEditor, and is at a fixed position in the
+    QTextEdit's viewport.
     """
 
-    def __init__(self, docViewer: GuiDocViewer) -> None:
-        super().__init__(parent=docViewer)
+    closeDocumentRequest = pyqtSignal()
+    toggleToolBarRequest = pyqtSignal()
 
-        logger.debug("Create: GuiDocViewHeader")
+    def __init__(self, docEditor: GuiDocEditor) -> None:
+        super().__init__(parent=docEditor)
 
-        self.docViewer = docViewer
+        logger.debug("Create: GuiDocEditHeader")
 
-        # Internal Variables
+        self.docEditor = docEditor
+
         self._docHandle = None
-        self._docOutline: dict[str, tuple[str, int]] = {}
+        self._docOutline: dict[int, str] = {}
+        self._state = nwState.NORMAL
 
+        iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
         fPx = SHARED.theme.fontPixelSize
 
@@ -68,7 +73,7 @@ class GuiDocViewHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = NPathColorLabel("", self, faded=SHARED.theme.fadedText)
+        self.itemTitle = NPathColorLabel("", self)
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
@@ -80,30 +85,25 @@ class GuiDocViewHeader(QWidget):
         self.outlineMenu = QMenu(self)
 
         # Buttons
+        self.tbButton = NIconToolButton(self, iSz)
+        self.tbButton.setVisible(False)
+        self.tbButton.setToolTip(self.tr("Toggle Tool Bar"))
+        self.tbButton.clicked.connect(qtLambda(self.toggleToolBarRequest.emit))
+
         self.outlineButton = NIconToolButton(self, iSz)
         self.outlineButton.setVisible(False)
         self.outlineButton.setToolTip(self.tr("Outline"))
         self.outlineButton.setMenu(self.outlineMenu)
 
-        self.backButton = NIconToolButton(self, iSz)
-        self.backButton.setVisible(False)
-        self.backButton.setToolTip(self.tr("Go Backward"))
-        self.backButton.clicked.connect(self.docViewer.navBackward)
+        self.searchButton = NIconToolButton(self, iSz)
+        self.searchButton.setVisible(False)
+        self.searchButton.setToolTip(self.tr("Search"))
+        self.searchButton.clicked.connect(self.docEditor.toggleSearch)
 
-        self.forwardButton = NIconToolButton(self, iSz)
-        self.forwardButton.setVisible(False)
-        self.forwardButton.setToolTip(self.tr("Go Forward"))
-        self.forwardButton.clicked.connect(self.docViewer.navForward)
-
-        self.editButton = NIconToolButton(self, iSz)
-        self.editButton.setVisible(False)
-        self.editButton.setToolTip(self.tr("Open in Editor"))
-        self.editButton.clicked.connect(self._editDocument)
-
-        self.refreshButton = NIconToolButton(self, iSz)
-        self.refreshButton.setVisible(False)
-        self.refreshButton.setToolTip(self.tr("Reload"))
-        self.refreshButton.clicked.connect(self._refreshDocument)
+        self.minmaxButton = NIconToolButton(self, iSz)
+        self.minmaxButton.setVisible(False)
+        self.minmaxButton.setToolTip(self.tr("Toggle Focus Mode"))
+        self.minmaxButton.clicked.connect(qtLambda(self.docEditor.toggleFocusModeRequest.emit))
 
         self.closeButton = NIconToolButton(self, iSz)
         self.closeButton.setVisible(False)
@@ -112,29 +112,32 @@ class GuiDocViewHeader(QWidget):
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
+        self.outerBox.addWidget(self.tbButton, 0, QtAlignMiddle)
         self.outerBox.addWidget(self.outlineButton, 0, QtAlignMiddle)
-        self.outerBox.addWidget(self.backButton, 0, QtAlignMiddle)
-        self.outerBox.addWidget(self.forwardButton, 0, QtAlignMiddle)
+        self.outerBox.addWidget(self.searchButton, 0, QtAlignMiddle)
         self.outerBox.addSpacing(4)
         self.outerBox.addWidget(self.itemTitle, 1, QtAlignMiddle)
         self.outerBox.addSpacing(4)
-        self.outerBox.addWidget(self.editButton, 0, QtAlignMiddle)
-        self.outerBox.addWidget(self.refreshButton, 0, QtAlignMiddle)
+        self.outerBox.addSpacing(iPx)
+        self.outerBox.addWidget(self.minmaxButton, 0, QtAlignMiddle)
         self.outerBox.addWidget(self.closeButton, 0, QtAlignMiddle)
+        self.outerBox.setContentsMargins(4, 4, 4, 4)
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
 
+        # Other Signals
+        SHARED.focusModeChanged.connect(self._focusModeChanged)
+
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
         self.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setContentsMargins(4, 4, 4, 4)
         self.setMinimumHeight(fPx + 4)
 
         self.updateFont()
         self.updateTheme()
 
-        logger.debug("Ready: GuiDocViewHeader")
+        logger.debug("Ready: GuiDocEditHeader")
 
     ##
     #  Methods
@@ -147,29 +150,22 @@ class GuiDocViewHeader(QWidget):
 
         self.itemTitle.setText("")
         self.outlineMenu.clear()
+        self.tbButton.setVisible(False)
         self.outlineButton.setVisible(False)
-        self.backButton.setVisible(False)
-        self.forwardButton.setVisible(False)
-        self.editButton.setVisible(False)
-        self.refreshButton.setVisible(False)
+        self.searchButton.setVisible(False)
         self.closeButton.setVisible(False)
+        self.minmaxButton.setVisible(False)
 
-    def setOutline(self, data: dict[str, tuple[str, int]]) -> None:
+    def setOutline(self, data: dict[int, str]) -> None:
         """Set the document outline dataset."""
-        tHandle = self._docHandle
-        if data != self._docOutline and tHandle:
+        if data != self._docOutline:
+            tStart = time()
             self.outlineMenu.clear()
-            entries = []
-            minLevel = 5
-            for title, (text, level) in data.items():
-                if title != "T0000":
-                    entries.append((title, text, level))
-                    minLevel = min(minLevel, level)
-            for title, text, level in entries[:30]:
-                indent = "    " * (level - minLevel)
-                action = qtAddAction(self.outlineMenu, f"{indent}{text}")
-                action.triggered.connect(lambda _, title=title: self.docViewer.navigateTo(f"#{tHandle}:{title}"))
+            for number, text in data.items():
+                action = qtAddAction(self.outlineMenu, text)
+                action.triggered.connect(qtLambda(self._gotoBlock, number))
             self._docOutline = data
+            logger.debug("Document outline updated in %.3f ms", 1000 * (time() - tStart))
 
     def updateFont(self) -> None:
         """Update the font settings."""
@@ -178,21 +174,19 @@ class GuiDocViewHeader(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        logger.debug("Theme Update: GuiDocViewHeader")
+        logger.debug("Theme Update: GuiDocEditHeader")
 
+        self.tbButton.setThemeIcon("fmt_toolbar", "action")
         self.outlineButton.setThemeIcon("list", "action")
-        self.backButton.setThemeIcon("chevron_left", "action")
-        self.forwardButton.setThemeIcon("chevron_right", "action")
-        self.editButton.setThemeIcon("edit", "change")
-        self.refreshButton.setThemeIcon("refresh", "change")
+        self.searchButton.setThemeIcon("search", "action")
+        self.minmaxButton.setThemeIcon("maximise", "action")
         self.closeButton.setThemeIcon("close", "reject")
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
+        self.tbButton.setStyleSheet(buttonStyle)
         self.outlineButton.setStyleSheet(buttonStyle)
-        self.backButton.setStyleSheet(buttonStyle)
-        self.forwardButton.setStyleSheet(buttonStyle)
-        self.editButton.setStyleSheet(buttonStyle)
-        self.refreshButton.setStyleSheet(buttonStyle)
+        self.searchButton.setStyleSheet(buttonStyle)
+        self.minmaxButton.setStyleSheet(buttonStyle)
         self.closeButton.setStyleSheet(buttonStyle)
 
         self.matchColors()
@@ -210,11 +204,18 @@ class GuiDocViewHeader(QWidget):
         self.itemTitle.setTextColors(
             color=palette.windowText().color(),
             faded=SHARED.theme.fadedText,
+            error=SHARED.theme.errorText,
         )
 
     def changeFocusState(self, state: bool) -> None:
         """Toggle focus state."""
-        self.itemTitle.setColorState(nwState.NORMAL if state else nwState.INACTIVE)
+        self._state = nwState.NORMAL if state else nwState.INACTIVE
+        self.itemTitle.setColorState(self._state)
+
+    def flashError(self) -> None:
+        """Flash a red colour for the header for a moment."""
+        self.itemTitle.setColorState(nwState.ERROR)
+        QTimer.singleShot(250, self._resetColourState)
 
     def setHandle(self, tHandle: str) -> None:
         """Set the document title from the handle, or alternatively, set
@@ -226,17 +227,11 @@ class GuiDocViewHeader(QWidget):
         elif item := SHARED.project.tree[tHandle]:
             self.itemTitle.setText([(item.itemHandle, item.itemName)])
 
-        self.backButton.setVisible(True)
-        self.forwardButton.setVisible(True)
+        self.tbButton.setVisible(True)
+        self.searchButton.setVisible(True)
         self.outlineButton.setVisible(True)
-        self.editButton.setVisible(True)
-        self.refreshButton.setVisible(True)
         self.closeButton.setVisible(True)
-
-    def updateNavButtons(self, firstIdx: int, lastIdx: int, currIdx: int) -> None:
-        """Enable and disable nav buttons based on index in history."""
-        self.backButton.setEnabled(currIdx > firstIdx)
-        self.forwardButton.setEnabled(currIdx < lastIdx)
+        self.minmaxButton.setVisible(True)
 
     ##
     #  Private Slots
@@ -244,23 +239,27 @@ class GuiDocViewHeader(QWidget):
 
     @pyqtSlot()
     def _closeDocument(self) -> None:
-        """Trigger the close editor/viewer on the main window."""
+        """Trigger the close editor on the main window."""
         self.clearHeader()
-        self.docViewer.closeDocumentRequest.emit()
+        self.closeDocumentRequest.emit()
+
+    @pyqtSlot(int)
+    def _gotoBlock(self, blockNumber: int) -> None:
+        """Move cursor to a specific heading."""
+        self.docEditor.setCursorLine(blockNumber + 1)
+
+    @pyqtSlot(bool)
+    def _focusModeChanged(self, focusMode: bool) -> None:
+        """Update minimise/maximise icon of the Focus Mode button."""
+        self.minmaxButton.setThemeIcon("minimise" if focusMode else "maximise", "action")
 
     @pyqtSlot()
-    def _refreshDocument(self) -> None:
-        """Reload the content of the document."""
-        self.docViewer.reloadDocumentRequest.emit()
-
-    @pyqtSlot()
-    def _editDocument(self) -> None:
-        """Open the document in the editor."""
-        if tHandle := self._docHandle:
-            self.docViewer.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "", True)
+    def _resetColourState(self) -> None:
+        """Reset the colour state of the header title."""
+        self.itemTitle.setColorState(self._state)
 
     @pyqtSlot(str)
     def _processLabelLink(self, link: str) -> None:
         """Process an activated link in the label."""
         if link.startswith("#"):
-            self.docViewer.requestProjectItemSelected.emit(link.lstrip("#"), True)
+            self.docEditor.requestProjectItemSelected.emit(link.lstrip("#"), True)

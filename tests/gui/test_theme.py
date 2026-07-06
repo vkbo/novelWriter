@@ -36,7 +36,7 @@ from novelwriter import CONFIG
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS
 from novelwriter.constants import nwLabels
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwTheme
-from novelwriter.gui_side.theme import (
+from novelwriter.gui.theme import (
     STYLES_BIG_TOOLBUTTON,
     STYLES_FLAT_TABS,
     STYLES_MIN_TOOLBUTTON,
