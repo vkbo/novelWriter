@@ -51,17 +51,17 @@ from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView, nwVimMode
 from novelwriter.extensions.progressbars import NProgressSimple
-from novelwriter.gui.itemdetails import GuiItemDetails
-from novelwriter.gui.mainmenu import GuiMainMenu
-from novelwriter.gui.noveltree import GuiNovelView
-from novelwriter.gui.outline import GuiOutlineView
-from novelwriter.gui.projtree import GuiProjectView
-from novelwriter.gui.search import GuiProjectSearch
-from novelwriter.gui.sidebar import GuiSideBar
-from novelwriter.gui.statusbar import GuiMainStatus
 from novelwriter.gui_doc.editor import GuiDocEditor
 from novelwriter.gui_doc.viewer import GuiDocViewer
 from novelwriter.gui_doc.viewerpanel import GuiDocViewerPanel
+from novelwriter.gui_side.itemdetails import GuiItemDetails
+from novelwriter.gui_side.mainmenu import GuiMainMenu
+from novelwriter.gui_side.noveltree import GuiNovelView
+from novelwriter.gui_side.outline import GuiOutlineView
+from novelwriter.gui_side.projtree import GuiProjectView
+from novelwriter.gui_side.search import GuiProjectSearch
+from novelwriter.gui_side.sidebar import GuiSideBar
+from novelwriter.gui_side.statusbar import GuiMainStatus
 from novelwriter.tools.dictionaries import GuiDictionaries
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.noveldetails import GuiNovelDetails

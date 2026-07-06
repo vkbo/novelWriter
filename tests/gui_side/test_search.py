@@ -29,7 +29,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
 
 from novelwriter.enum import nwChange, nwDocMode, nwView
-from novelwriter.gui.search import GuiProjectSearch
+from novelwriter.gui_side.search import GuiProjectSearch
 from novelwriter.types import QtKeyDown, QtKeyReturn, QtKeyRight, QtKeyUp
 
 

@@ -44,7 +44,7 @@ if TYPE_CHECKING:
 
     from novelwriter.core.project import NWProject
     from novelwriter.core.status import T_StatusKind
-    from novelwriter.gui.theme import GuiTheme
+    from novelwriter.gui_side.theme import GuiTheme
     from novelwriter.guimain import GuiMain
     from novelwriter.types import T_MsgSeverity
 

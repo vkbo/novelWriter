@@ -98,10 +98,10 @@ from novelwriter.enum import (
 from novelwriter.extensions.configlayout import NPathColorLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
-from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.gui_doc.editordocument import GuiTextDocument
 from novelwriter.gui_doc.highlighter import BLOCK_META, BLOCK_TITLE
 from novelwriter.gui_doc.textblock import TextBlockData, spellCheckText
+from novelwriter.gui_side.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.text.counting import standardCounter
 from novelwriter.text.formats import processHeading
 from novelwriter.tools.lipsum import GuiLipsum

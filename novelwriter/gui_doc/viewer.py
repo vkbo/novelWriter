@@ -49,7 +49,7 @@ from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.formats.shared import TextDocumentTheme
 from novelwriter.formats.toqdoc import ToQTextDocument
-from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
+from novelwriter.gui_side.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
     QtAlignCenterTop,
     QtAlignMiddle,

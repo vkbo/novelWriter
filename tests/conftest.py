@@ -161,7 +161,7 @@ def projPath(fncPath):
 @pytest.fixture
 def mockGUI(qtbot, monkeypatch):
     """Create a mock instance of novelWriter's main GUI class."""
-    from novelwriter.gui.theme import GuiTheme
+    from novelwriter.gui_side.theme import GuiTheme
     from novelwriter.shared import _GuiAlert
 
     monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
@@ -187,7 +187,7 @@ def mockGUIwithTheme(mockGUI):
 @pytest.fixture
 def nwGUI(qtbot, monkeypatch, functionFixture):
     """Create an instance of the novelWriter GUI."""
-    from novelwriter.gui.theme import GuiTheme
+    from novelwriter.gui_side.theme import GuiTheme
     from novelwriter.guimain import GuiMain
     from novelwriter.shared import _GuiAlert
 

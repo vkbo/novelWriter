@@ -34,7 +34,7 @@ from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.dialogs.preferences import GuiNeedsUpdate, GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.modified import NFontDialog
-from novelwriter.gui.theme import ThemeEntry
+from novelwriter.gui_side.theme import ThemeEntry
 from novelwriter.types import QtKeyEscape, QtModNone
 
 KEY_DELAY = 1
