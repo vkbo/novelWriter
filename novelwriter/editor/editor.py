@@ -359,6 +359,7 @@ class GuiDocEditor(QTextEdit):
         # Set Up Document Word Counter
         self._timerDoc = QTimer(self)
         self._timerDoc.timeout.connect(self._runDocumentTasks)
+        self._timerDoc.setSingleShot(True)
         self._timerDoc.setInterval(5000)
 
         self._wCounterDoc = BackgroundWordCounter(self)
@@ -368,6 +369,7 @@ class GuiDocEditor(QTextEdit):
         # Set Up Selection Word Counter
         self._timerSel = QTimer(self)
         self._timerSel.timeout.connect(self._runSelCounter)
+        self._timerSel.setSingleShot(True)
         self._timerSel.setInterval(500)
 
         self._wCounterSel = BackgroundWordCounter(self, forSelection=True)
@@ -621,7 +623,6 @@ class GuiDocEditor(QTextEdit):
         self._lastEdit = time()
         self._lastActive = time()
         self._runDocumentTasks()
-        self._timerDoc.start()
 
         self.setReadOnly(False)
         self.updateDocMargins()
@@ -1611,10 +1612,7 @@ class GuiDocEditor(QTextEdit):
     @pyqtSlot()
     def _runDocumentTasks(self) -> None:
         """Run timer document tasks."""
-        if self._docHandle is None:
-            return
-
-        if time() - self._lastEdit < 25.0:
+        if self._docHandle:
             logger.debug("Running document tasks")
             if not self._wCounterDoc.isRunning():
                 SHARED.runInThreadPool(self._wCounterDoc)
@@ -1625,8 +1623,6 @@ class GuiDocEditor(QTextEdit):
 
             if self._docChanged:
                 self.docTextChanged.emit(self._docHandle, self._lastEdit)
-
-        return
 
     @pyqtSlot()
     def _moveTextToNewDocument(self) -> None:

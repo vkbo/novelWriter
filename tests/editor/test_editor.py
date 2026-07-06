@@ -2974,11 +2974,16 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     docEditor._wCounterSel.run()
     assert docEditor.docFooter.wordsText.text() == f"Selected: {wC}"
 
-    # If the last edit is old, no document tasks are run
+    # Document tasks run regardless of how long ago the last edit was,
+    # since the timer is only started in response to an actual edit,
+    # fires once, and then stops rather than polling indefinitely
     threadPool._objID = None
     docEditor._lastEdit = time() - 100.0
     docEditor._runDocumentTasks()
-    assert threadPool.objectID() is None
+    assert threadPool.objectID() == id(docEditor._wCounterDoc)
+
+    assert docEditor._timerDoc.isSingleShot() is True
+    assert docEditor._timerSel.isSingleShot() is True
 
     # qtbot.stop()
 
