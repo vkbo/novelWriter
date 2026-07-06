@@ -38,6 +38,7 @@ from novelwriter.common import jsonEncode
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.constants import nwFiles
 from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.dialogs.preferences import GuiNeedsUpdate
 from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemClass, nwItemType, nwState, nwTheme, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
@@ -284,8 +285,8 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
     theme.loadTheme()
     assert theme.isDarkTheme is True
 
-    nwGUI._processConfigChanges(False, True, False, False)
-    nwGUI._processConfigChanges(True, True, True, True)
+    nwGUI._processConfigChanges(GuiNeedsUpdate(False, True, False, False, False, False))
+    nwGUI._processConfigChanges(GuiNeedsUpdate(True, True, True, True, True, True))
 
     # Check editor syntax
     syntax = SHARED.theme.syntaxTheme

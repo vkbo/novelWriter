@@ -31,11 +31,11 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_TREECOL
 from novelwriter.constants import nwUnicode
 from novelwriter.core.spellcheck import NWSpellEnchant
-from novelwriter.dialogs.preferences import GuiPreferences
+from novelwriter.dialogs.preferences import GuiNeedsUpdate, GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.modified import NFontDialog
 from novelwriter.gui.theme import ThemeEntry
-from novelwriter.types import QtModNone
+from novelwriter.types import QtKeyEscape, QtModNone
 
 KEY_DELAY = 1
 
@@ -122,7 +122,8 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     prefs.show()
     with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
         prefs.btnSave.click()
-        assert len(signal.args) == 4
+        assert len(signal.args) == 1
+        assert isinstance(signal.args[0], GuiNeedsUpdate)
 
     # Check Close Button
     prefs.show()
@@ -131,7 +132,7 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
 
     # Close Using Escape Key
     prefs.show()
-    event = QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModNone)
+    event = QKeyEvent(QEvent.Type.KeyPress, QtKeyEscape, QtModNone)
     prefs.keyPressEvent(event)
     assert prefs.isHidden() is True
 
@@ -387,7 +388,9 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
         mp.setattr(QFontDatabase, "families", lambda *a: ["TestFont"])
         with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
             prefs.btnSave.click()
-            assert signal.args == [True, True, True, True]
+            assert signal.args == [
+                GuiNeedsUpdate(restart=True, tree=True, theme=True, syntax=True, editor=True, viewer=True)
+            ]
 
     # Check Settings
     # ==============
