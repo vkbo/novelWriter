@@ -1324,23 +1324,41 @@ def testGuiEditor_Zoom(qtbot, nwGUI, projPath, mockRnd):
     # Zoom in and out with Ctrl+Scroll wheel
     position = QPointF(10, 10)
     zoomInEvent = QWheelEvent(
-        position, position, QPoint(0, 0), QPoint(0, 120),
-        Qt.MouseButton.NoButton, QtModCtrl, Qt.ScrollPhase.NoScrollPhase, False,
+        position,
+        position,
+        QPoint(0, 0),
+        QPoint(0, 120),
+        Qt.MouseButton.NoButton,
+        QtModCtrl,
+        Qt.ScrollPhase.NoScrollPhase,
+        False,
     )
     docEditor.wheelEvent(zoomInEvent)
     assert docEditor.font().pointSizeF() == basePt + 1
 
     zoomOutEvent = QWheelEvent(
-        position, position, QPoint(0, 0), QPoint(0, -120),
-        Qt.MouseButton.NoButton, QtModCtrl, Qt.ScrollPhase.NoScrollPhase, False,
+        position,
+        position,
+        QPoint(0, 0),
+        QPoint(0, -120),
+        Qt.MouseButton.NoButton,
+        QtModCtrl,
+        Qt.ScrollPhase.NoScrollPhase,
+        False,
     )
     docEditor.wheelEvent(zoomOutEvent)
     assert docEditor.font().pointSizeF() == basePt
 
     # A no-op Ctrl+Scroll (no vertical delta) does not zoom either way
     noopEvent = QWheelEvent(
-        position, position, QPoint(0, 0), QPoint(0, 0),
-        Qt.MouseButton.NoButton, QtModCtrl, Qt.ScrollPhase.NoScrollPhase, False,
+        position,
+        position,
+        QPoint(0, 0),
+        QPoint(0, 0),
+        Qt.MouseButton.NoButton,
+        QtModCtrl,
+        Qt.ScrollPhase.NoScrollPhase,
+        False,
     )
     docEditor.wheelEvent(noopEvent)
     assert docEditor.font().pointSizeF() == basePt
@@ -1348,8 +1366,14 @@ def testGuiEditor_Zoom(qtbot, nwGUI, projPath, mockRnd):
     # A regular (non-Ctrl) wheel scroll does not zoom, and instead falls
     # through to the normal scroll handling
     scrollEvent = QWheelEvent(
-        position, position, QPoint(0, 0), QPoint(0, 120),
-        Qt.MouseButton.NoButton, QtModNone, Qt.ScrollPhase.NoScrollPhase, False,
+        position,
+        position,
+        QPoint(0, 0),
+        QPoint(0, 120),
+        Qt.MouseButton.NoButton,
+        QtModNone,
+        Qt.ScrollPhase.NoScrollPhase,
+        False,
     )
     docEditor.wheelEvent(scrollEvent)
     assert docEditor.font().pointSizeF() == basePt
