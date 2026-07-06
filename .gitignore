@@ -39,18 +39,16 @@ __pycache__
 
 # Sample Project
 /novelwriter/assets/sample.zip
-/sample/cache
 /sample/meta
 /sample/**/*.bak
 /sample/*.lock
-ToC.txt
+/sample/ToC.txt
 
 # PyTest
 /prof/
 /htmlcov/
 /tests/temp
-/tests/lipsum/cache
-/tests/lipsum/meta
+/tests/_temp
 /.pytest_cache
 /pytestdebug.log
 
