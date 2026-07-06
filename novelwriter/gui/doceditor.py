@@ -30,9 +30,11 @@ from typing import NamedTuple
 
 from PyQt6 import sip
 from PyQt6.QtCore import (
+    QAbstractAnimation,
     QMimeData,
     QObject,
     QPoint,
+    QPropertyAnimation,
     QRect,
     QRegularExpression,
     QRunnable,
@@ -539,7 +541,6 @@ class GuiDocEditor(QTextEdit):
         self._qDocument.setDefaultTextOption(options)
 
         # Scrolling
-        # self.setCenterOnScroll(CONFIG.scrollPastEnd)
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
@@ -746,6 +747,14 @@ class GuiDocEditor(QTextEdit):
         uM = max(self._vpMargin, tH, rH)
         lM = max(self._vpMargin, fH)
         self.setViewportMargins(tM, uM, tM, lM)
+
+        # Scroll Past End
+        if rootFrame := self._qDocument.rootFrame():  # pragma: no branch
+            frameFormat = rootFrame.frameFormat()
+            bottomMargin = max(wH - 2 * tB - uM - lM - sH, 0) if CONFIG.scrollPastEnd else 0
+            if frameFormat.bottomMargin() != bottomMargin:
+                frameFormat.setBottomMargin(bottomMargin)
+                rootFrame.setFrameFormat(frameFormat)
 
     ##
     #  Getters
@@ -1152,7 +1161,12 @@ class GuiDocEditor(QTextEdit):
             if nPos != cPos and okMod and okKey and (viewport := self.viewport()):
                 mPos = CONFIG.autoScrollPos * 0.01 * viewport.height()
                 if cPos > mPos and (vBar := self.verticalScrollBar()):
-                    vBar.setValue(vBar.value() + (1 if nPos > cPos else -1))
+                    cMov = nPos - cPos
+                    anim = QPropertyAnimation(vBar, b"value", self)
+                    anim.setDuration(120)
+                    anim.setStartValue(vBar.value())
+                    anim.setEndValue(vBar.value() + cMov)
+                    anim.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
         else:
             super().keyPressEvent(event)
 

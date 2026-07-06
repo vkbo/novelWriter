@@ -2580,6 +2580,61 @@ def testGuiEditor_UpdateDocMargins(qtbot, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
+def testGuiEditor_ScrollPastEnd(qtbot, nwGUI, projPath, mockRnd):
+    """Test the scroll-past-end feature, which fakes QPlainTextEdit's
+    centerOnScroll via a bottom margin on the document's root frame.
+    """
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor = nwGUI.docEditor
+    docEditor.resize(400, 300)
+
+    rootFrame = docEditor.document().rootFrame()
+
+    CONFIG.scrollPastEnd = True
+    docEditor.updateDocMargins()
+    assert rootFrame.frameFormat().bottomMargin() > 0
+    maxWithScrollPastEnd = docEditor.verticalScrollBar().maximum()
+
+    CONFIG.scrollPastEnd = False
+    docEditor.updateDocMargins()
+    assert rootFrame.frameFormat().bottomMargin() == 0
+    assert docEditor.verticalScrollBar().maximum() < maxWithScrollPastEnd
+
+
+@pytest.mark.gui
+def testGuiEditor_TypewriterScrolling(qtbot, nwGUI, projPath, mockRnd):
+    """Test the typewriter scrolling (auto-scroll) feature, which
+    animates the scrollbar by the actual pixel movement of the cursor.
+    """
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor = nwGUI.docEditor
+    docEditor.resize(400, 300)
+
+    docEditor.setPlainText("Text\n\n" * 100)
+    cursor = docEditor.textCursor()
+    cursor.setPosition(0)
+    docEditor.setTextCursor(cursor)
+    docEditor.verticalScrollBar().setValue(0)
+
+    CONFIG.autoScroll = True
+    CONFIG.autoScrollPos = 30
+
+    vBar = docEditor.verticalScrollBar()
+    assert vBar.value() == 0
+
+    # Move the cursor down past the auto-scroll threshold by inserting
+    # newlines, which advances the cursor without hitting the MOVE_KEYS
+    # exclusion used for arrow-key navigation
+    for _ in range(30):
+        qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+
+    qtbot.wait(200)  # Let the scroll animation finish
+    assert vBar.value() > 0
+
+
+@pytest.mark.gui
 def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the custom ensure cursor visible feature."""
     buildTestProject(nwGUI, projPath)
