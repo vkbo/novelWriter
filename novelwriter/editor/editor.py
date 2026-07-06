@@ -41,7 +41,6 @@ from PyQt6.QtCore import (
     pyqtSlot,
 )
 from PyQt6.QtGui import (
-    QBrush,
     QCursor,
     QDragEnterEvent,
     QDragMoveEvent,
@@ -164,13 +163,13 @@ class GuiDocEditor(QTextEdit):
         "_docHandle",
         "_followTagEdit",
         "_followTagView",
+        "_formatErrFormat",
         "_formatSelections",
         "_keyContext",
         "_lastActive",
         "_lastEdit",
         "_lastFind",
         "_lineColor",
-        "_mspaceFormat",
         "_nextLine",
         "_nwDocument",
         "_nwItem",
@@ -179,7 +178,7 @@ class GuiDocEditor(QTextEdit):
         "_searchFormat",
         "_searchSelections",
         "_selection",
-        "_spellFormat",
+        "_spellErrFormat",
         "_spellPassNotify",
         "_spellSelections",
         "_suppressed",
@@ -205,7 +204,6 @@ class GuiDocEditor(QTextEdit):
         "_trSpellSuggest",
         "_trSplitDoc",
         "_trViewTag",
-        "_trailFormat",
         "_vim",
         "_vpMargin",
         "_wCounterDoc",
@@ -263,9 +261,8 @@ class GuiDocEditor(QTextEdit):
         self._searchSelections: list[QTextEdit.ExtraSelection] = []
 
         # Spell and Format Check Variables
-        self._spellFormat = QTextCharFormat()
-        self._mspaceFormat = QTextCharFormat()
-        self._trailFormat = QTextCharFormat()
+        self._spellErrFormat = QTextCharFormat()
+        self._formatErrFormat = QTextCharFormat()
         self._spellSelections: list[QTextEdit.ExtraSelection] = []
         self._formatSelections: list[QTextEdit.ExtraSelection] = []
         self._dirtyBlocks: dict[int, QTextBlock] = {}
@@ -504,16 +501,13 @@ class GuiDocEditor(QTextEdit):
         self._selection.format.setBackground(self._lineColor)
         self._selection.format.setProperty(QTextFormat.Property.FullWidthSelection, True)
 
-        self._spellFormat = QTextCharFormat()
-        self._spellFormat.setUnderlineColor(syntax.spell)
-        self._spellFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
+        self._spellErrFormat = QTextCharFormat()
+        self._spellErrFormat.setUnderlineColor(syntax.spell)
+        self._spellErrFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
 
-        self._mspaceFormat = QTextCharFormat()
-        self._mspaceFormat.setUnderlineColor(syntax.error)
-        self._mspaceFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
-
-        self._trailFormat = QTextCharFormat()
-        self._trailFormat.setBackground(QBrush(syntax.space, Qt.BrushStyle.SolidPattern))
+        self._formatErrFormat = QTextCharFormat()
+        self._formatErrFormat.setUnderlineColor(syntax.error)
+        self._formatErrFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SingleUnderline)
 
         searchColor = self.palette().color(QPalette.ColorRole.Highlight)
         searchColor.setAlpha(128)
@@ -1419,16 +1413,16 @@ class GuiDocEditor(QTextEdit):
                             cursor.setPosition(position + start)
                             cursor.setPosition(position + end, QtKeepAnchor)
                             selection = QTextEdit.ExtraSelection()
-                            selection.format = self._spellFormat
+                            selection.format = self._spellErrFormat
                             selection.cursor = cursor
                             spellSelections.append(selection)
                     if checkFormat:
-                        for start, end, kind in data.formatErrors:
+                        for start, end, _ in data.formatErrors:
                             cursor = QTextCursor(self._qDocument)
                             cursor.setPosition(position + start)
                             cursor.setPosition(position + end, QtKeepAnchor)
                             selection = QTextEdit.ExtraSelection()
-                            selection.format = self._mspaceFormat if kind == "multi" else self._trailFormat
+                            selection.format = self._formatErrFormat
                             selection.cursor = cursor
                             formatSelections.append(selection)
                 block = block.next()

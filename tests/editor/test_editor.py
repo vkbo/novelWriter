@@ -895,7 +895,7 @@ def testGuiEditor_FormatChecking(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert docEditor._formatSelections == []
 
     # With the feature enabled, both errors are found and rendered as
-    # extra selections with the appropriate format
+    # extra selections with the same format, regardless of kind
     CONFIG.showMultiSpaces = True
     docEditor._beginCheckPass()
 
@@ -903,20 +903,20 @@ def testGuiEditor_FormatChecking(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert isinstance(data, TextBlockData)
     assert data.formatErrors == [(1, 3, "multi"), (37, 38, "trail")]
 
-    trailColor = docEditor._trailFormat.background().color()
-    mspaceSel = [
-        s
-        for s in docEditor.extraSelections()
-        if s.format.underlineStyle() == QTextCharFormat.UnderlineStyle.SpellCheckUnderline
-    ]
-    trailSel = [s for s in docEditor.extraSelections() if s.format.background().color() == trailColor]
-    assert len(mspaceSel) == 1
-    assert mspaceSel[0].cursor.selectionStart() == blockPos + 1
-    assert mspaceSel[0].cursor.selectionEnd() == blockPos + 3
+    formatSel = sorted(
+        (
+            s
+            for s in docEditor.extraSelections()
+            if s.format.underlineStyle() == QTextCharFormat.UnderlineStyle.SingleUnderline
+        ),
+        key=lambda s: s.cursor.selectionStart(),
+    )
+    assert len(formatSel) == 2
+    assert formatSel[0].cursor.selectionStart() == blockPos + 1
+    assert formatSel[0].cursor.selectionEnd() == blockPos + 3
 
-    assert len(trailSel) == 1
-    assert trailSel[0].cursor.selectionStart() == blockPos + 37
-    assert trailSel[0].cursor.selectionEnd() == blockPos + 38
+    assert formatSel[1].cursor.selectionStart() == blockPos + 37
+    assert formatSel[1].cursor.selectionEnd() == blockPos + 38
 
     # Toggling the feature back off clears the markers
     CONFIG.showMultiSpaces = False
