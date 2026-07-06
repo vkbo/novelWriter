@@ -357,21 +357,6 @@ class GuiDocEditor(QTextEdit):
         self._nextLine.setContext(QtWidgetShortcut)
         self._nextLine.activated.connect(qtLambda(self._skipToParagraph, 1))
 
-        self._zoomIn = QShortcut(self)
-        self._zoomIn.setKeys(["Ctrl+=", "Ctrl++"])
-        self._zoomIn.setContext(QtWidgetShortcut)
-        self._zoomIn.activated.connect(qtLambda(self.zoomIn, 1))
-
-        self._zoomOut = QShortcut(self)
-        self._zoomOut.setKey("Ctrl+-")
-        self._zoomOut.setContext(QtWidgetShortcut)
-        self._zoomOut.activated.connect(qtLambda(self.zoomOut, 1))
-
-        self._zoomReset = QShortcut(self)
-        self._zoomReset.setKey("Ctrl+0")
-        self._zoomReset.setContext(QtWidgetShortcut)
-        self._zoomReset.activated.connect(self._resetZoom)
-
         # Set Up Document Word Counter
         self._timerDoc = QTimer(self)
         self._timerDoc.timeout.connect(self._runDocumentTasks)
@@ -1018,6 +1003,12 @@ class GuiDocEditor(QTextEdit):
             self._wrapSelection(nwShortcode.SUB_O, nwShortcode.SUB_C)
         elif action == nwDocAction.MOVE_TEXT:
             self._moveTextToNewDocument()
+        elif action == nwDocAction.ZOOM_IN:
+            self.zoomIn()
+        elif action == nwDocAction.ZOOM_OUT:
+            self.zoomOut()
+        elif action == nwDocAction.ZOOM_RESET:
+            self.zoomReset()
         else:
             if noFormat:
                 logger.warning("Action '%s' not alowed on current block", action)
@@ -1350,6 +1341,13 @@ class GuiDocEditor(QTextEdit):
     def processSpellCheckChange(self, language: str, provider: str) -> None:
         """Process a change in the spell check language or provider."""
         self.spellCheckDocument()
+
+    @pyqtSlot()
+    def zoomReset(self) -> None:
+        """Reset the editor's font size to the user's configured size."""
+        font = fontMatcher(CONFIG.textFont)
+        self.setFont(font)
+        self._qDocument.setDefaultFont(font)
 
     ##
     #  Private Slots
@@ -2939,12 +2937,6 @@ class GuiDocEditor(QTextEdit):
                     cursor.setPosition(block.position())
                     self.setTextCursor(cursor)
                     break
-
-    def _resetZoom(self) -> None:
-        """Reset the editor's font size to the user's configured size."""
-        font = fontMatcher(CONFIG.textFont)
-        self.setFont(font)
-        self._qDocument.setDefaultFont(font)
 
 
 class VimState:

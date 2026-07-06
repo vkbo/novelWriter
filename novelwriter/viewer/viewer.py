@@ -40,7 +40,7 @@ from PyQt6.QtGui import (
 from PyQt6.QtWidgets import QApplication, QFrame, QMenu, QTextBrowser, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import decodeMimeHandles, qtAddAction, qtLambda
+from novelwriter.common import decodeMimeHandles, fontMatcher, qtAddAction, qtLambda
 from novelwriter.constants import nwConst, nwStyles, nwUnicode
 from novelwriter.enum import nwChange, nwComment, nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
@@ -225,6 +225,7 @@ class GuiDocViewer(QTextBrowser):
         qDoc.setJustify(CONFIG.doJustify, False)
         qDoc.setDialogHighlight(True)
         qDoc.setTextFont(CONFIG.textFont)
+        qDoc.setFixedHeadings(True)
         qDoc.setLineHeight(CONFIG.lineHeight)
         qDoc.setTheme(self._docTheme)
         qDoc.initDocument()
@@ -294,6 +295,12 @@ class GuiDocViewer(QTextBrowser):
             self._makeSelection(QtSelectDocument)
         elif action == nwDocAction.SEL_PARA:
             self._makeSelection(QtSelectBlock)
+        elif action == nwDocAction.ZOOM_IN:
+            self.zoomIn()
+        elif action == nwDocAction.ZOOM_OUT:
+            self.zoomOut()
+        elif action == nwDocAction.ZOOM_RESET:
+            self.zoomReset()
         else:
             logger.debug("Unknown or unsupported document action '%s'", action)
             return False
@@ -360,6 +367,14 @@ class GuiDocViewer(QTextBrowser):
         if isinstance(anchor, str) and anchor.startswith("#"):
             logger.debug("Moving to anchor '%s'", anchor)
             self.setSource(QUrl(anchor))
+
+    @pyqtSlot()
+    def zoomReset(self) -> None:
+        """Reset the editor's font size to the user's configured size."""
+        if document := self.document():  # pragma: no branch
+            font = fontMatcher(CONFIG.textFont)
+            self.setFont(font)
+            document.setDefaultFont(font)
 
     ##
     #  Private Slots
