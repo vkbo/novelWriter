@@ -74,7 +74,7 @@ from novelwriter.editor.editordocument import GuiTextDocument
 from novelwriter.editor.editsearch import GuiDocEditSearch
 from novelwriter.editor.edittoolbar import GuiDocToolBar
 from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE
-from novelwriter.editor.runnables import BackgroundSpellCheck, BackgroundWordCounter
+from novelwriter.editor.runnables import BackgroundTextCheck, BackgroundWordCounter
 from novelwriter.editor.textblock import TextBlockData
 from novelwriter.enum import (
     nwChange,
@@ -139,9 +139,6 @@ class _SelectAction(Enum):
     MOVE_AFTER = 3
 
 
-SPELL_PASS_CHUNK = 100
-
-
 class _TagAction(IntFlag):
     NONE = 0b00
     FOLLOW = 0b01
@@ -153,13 +150,18 @@ class GuiDocEditor(QTextEdit):
 
     __slots__ = (
         "_autoReplace",
+        "_checkJob",
+        "_checkJobId",
+        "_checkPassNo",
         "_completer",
-        "_dirtySpell",
+        "_dirtyBlocks",
         "_doReplace",
         "_docChanged",
         "_docHandle",
         "_followTagEdit",
         "_followTagView",
+        "_formatErrFormat",
+        "_formatSelections",
         "_keyContext",
         "_lastActive",
         "_lastEdit",
@@ -173,17 +175,14 @@ class GuiDocEditor(QTextEdit):
         "_searchFormat",
         "_searchSelections",
         "_selection",
-        "_spellFormat",
-        "_spellJob",
-        "_spellJobId",
-        "_spellPassNo",
+        "_spellErrFormat",
         "_spellPassNotify",
         "_spellSelections",
         "_suppressed",
+        "_timerCheck",
         "_timerDoc",
         "_timerSel",
-        "_timerSpell",
-        "_timerSpellCheck",
+        "_timerTextCheck",
         "_trActions",
         "_trAddWord",
         "_trCopy",
@@ -258,15 +257,17 @@ class GuiDocEditor(QTextEdit):
         self._searchFormat = QTextCharFormat()
         self._searchSelections: list[QTextEdit.ExtraSelection] = []
 
-        # Spell Check Variables
-        self._spellFormat = QTextCharFormat()
+        # Spell and Format Check Variables
+        self._spellErrFormat = QTextCharFormat()
+        self._formatErrFormat = QTextCharFormat()
         self._spellSelections: list[QTextEdit.ExtraSelection] = []
-        self._dirtySpell: dict[int, QTextBlock] = {}
+        self._formatSelections: list[QTextEdit.ExtraSelection] = []
+        self._dirtyBlocks: dict[int, QTextBlock] = {}
         self._suppressed = False
-        self._spellPassNo = -1
+        self._checkPassNo = -1
         self._spellPassNotify = False
-        self._spellJob: tuple[int, list[tuple[QTextBlock, TextBlockData, int]]] | None = None
-        self._spellJobId = 0
+        self._checkJob: tuple[int, list[tuple[QTextBlock, TextBlockData, int]]] | None = None
+        self._checkJobId = 0
 
         # Context Menu Translation
         self._trSetName = self.tr("Set as Document Name")
@@ -355,6 +356,7 @@ class GuiDocEditor(QTextEdit):
         # Set Up Document Word Counter
         self._timerDoc = QTimer(self)
         self._timerDoc.timeout.connect(self._runDocumentTasks)
+        self._timerDoc.setSingleShot(True)
         self._timerDoc.setInterval(5000)
 
         self._wCounterDoc = BackgroundWordCounter(self)
@@ -364,6 +366,7 @@ class GuiDocEditor(QTextEdit):
         # Set Up Selection Word Counter
         self._timerSel = QTimer(self)
         self._timerSel.timeout.connect(self._runSelCounter)
+        self._timerSel.setSingleShot(True)
         self._timerSel.setInterval(500)
 
         self._wCounterSel = BackgroundWordCounter(self, forSelection=True)
@@ -371,19 +374,19 @@ class GuiDocEditor(QTextEdit):
         self._wCounterSel.signals.countsReady.connect(self._updateSelCounts)
 
         # Set Up Spell Underline Refresh
-        self._timerSpell = QTimer(self)
-        self._timerSpell.timeout.connect(self._updateSpellSelections)
-        self._timerSpell.setSingleShot(True)
-        self._timerSpell.setInterval(0)
+        self._timerCheck = QTimer(self)
+        self._timerCheck.timeout.connect(self._updateCheckSelections)
+        self._timerCheck.setSingleShot(True)
+        self._timerCheck.setInterval(0)
 
         if vBar := self.verticalScrollBar():  # pragma: no branch
-            vBar.valueChanged.connect(qtLambda(self._timerSpell.start))
+            vBar.valueChanged.connect(qtLambda(self._timerCheck.start))
 
         # Set Up Spell Check Debounce
-        self._timerSpellCheck = QTimer(self)
-        self._timerSpellCheck.timeout.connect(self._dispatchSpellCheck)
-        self._timerSpellCheck.setSingleShot(True)
-        self._timerSpellCheck.setInterval(300)
+        self._timerTextCheck = QTimer(self)
+        self._timerTextCheck.timeout.connect(self._dispatchTextCheck)
+        self._timerTextCheck.setSingleShot(True)
+        self._timerTextCheck.setInterval(300)
 
         # Install Event Filter for Mouse Wheel
         self.wheelEventFilter = WheelEventFilter(self)
@@ -452,13 +455,14 @@ class GuiDocEditor(QTextEdit):
         self.docFooter.setHandle(self._docHandle)
         self.docToolBar.setVisible(False)
 
-        self._timerSpell.stop()
-        self._timerSpellCheck.stop()
-        self._spellPassNo = -1
+        self._timerCheck.stop()
+        self._timerTextCheck.stop()
+        self._checkPassNo = -1
         self._spellPassNotify = False
-        self._spellJob = None
-        self._dirtySpell.clear()
+        self._checkJob = None
+        self._dirtyBlocks.clear()
         self._spellSelections.clear()
+        self._formatSelections.clear()
         self._searchSelections.clear()
         self.setExtraSelections([])
 
@@ -496,9 +500,13 @@ class GuiDocEditor(QTextEdit):
         self._selection.format.setBackground(self._lineColor)
         self._selection.format.setProperty(QTextFormat.Property.FullWidthSelection, True)
 
-        self._spellFormat = QTextCharFormat()
-        self._spellFormat.setUnderlineColor(syntax.spell)
-        self._spellFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
+        self._spellErrFormat = QTextCharFormat()
+        self._spellErrFormat.setUnderlineColor(syntax.spell)
+        self._spellErrFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
+
+        self._formatErrFormat = QTextCharFormat()
+        self._formatErrFormat.setUnderlineColor(syntax.error)
+        self._formatErrFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SingleUnderline)
 
         searchColor = self.palette().color(QPalette.ColorRole.Highlight)
         searchColor.setAlpha(128)
@@ -560,6 +568,7 @@ class GuiDocEditor(QTextEdit):
         self.setTabStopDistance(CONFIG.tabWidth)
         self.setCursorWidth(CONFIG.cursorWidth)
         self._spellSelections.clear()
+        self._formatSelections.clear()
         self.setExtraSelections([])
         self._cursorMoved()
 
@@ -570,7 +579,7 @@ class GuiDocEditor(QTextEdit):
             self._qDocument.setLineHeight(CONFIG.lineHeight)
             self._qDocument.syntaxHighlighter.rehighlight()
             self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
-            self._beginSpellPass()
+            self._beginCheckPass()
             self.docHeader.setHandle(self._docHandle)
         else:
             self.clearEditor()
@@ -605,13 +614,12 @@ class GuiDocEditor(QTextEdit):
         self._allowAutoReplace(False)
         self._qDocument.setTextContent(text, tHandle)
         self._allowAutoReplace(True)
-        self._beginSpellPass()
+        self._beginCheckPass()
         QApplication.processEvents()
 
         self._lastEdit = time()
         self._lastActive = time()
         self._runDocumentTasks()
-        self._timerDoc.start()
 
         self.setReadOnly(False)
         self.updateDocMargins()
@@ -882,7 +890,7 @@ class GuiDocEditor(QTextEdit):
         """
         logger.debug("Running spell checker")
         self._spellPassNotify = SHARED.project.data.spellCheck
-        self._beginSpellPass()
+        self._beginCheckPass()
 
     ##
     #  General Class Methods
@@ -1232,7 +1240,7 @@ class GuiDocEditor(QTextEdit):
         has its margins adjusted according to user preferences.
         """
         self.updateDocMargins()
-        self._timerSpell.start()
+        self._timerCheck.start()
         super().resizeEvent(event)
 
     def inputMethodEvent(self, event: QInputMethodEvent) -> None:
@@ -1330,15 +1338,15 @@ class GuiDocEditor(QTextEdit):
         if not self._timerDoc.isActive():
             self._timerDoc.start()
 
-        if SHARED.project.data.spellCheck:
-            # Flag the affected blocks for the debounced spell check
+        if SHARED.project.data.spellCheck or CONFIG.showMultiSpaces:
+            # Flag the affected blocks for the debounced spell/format check
             block = self._qDocument.findBlock(pos)
             while block.isValid() and block.position() <= pos + added:
-                self._dirtySpell[block.blockNumber()] = block
+                self._dirtyBlocks[block.blockNumber()] = block
                 block = block.next()
-            self._timerSpellCheck.start()
+            self._timerTextCheck.start()
 
-        self._timerSpell.start()
+        self._timerCheck.start()
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
@@ -1369,97 +1377,129 @@ class GuiDocEditor(QTextEdit):
         if self._suppressed:
             # An underline was suppressed at the previous cursor
             # position, so the underlines must be refreshed
-            self._timerSpell.start()
+            self._timerCheck.start()
         if CONFIG.lineHighlight:
             self._selection.cursor = self.textCursor()
             self._selection.cursor.clearSelection()
             self._applyExtraSelections()
 
     @pyqtSlot()
-    def _updateSpellSelections(self) -> None:
-        """Rebuild the spell error underlines for all visible blocks."""
-        selections = []
+    def _updateCheckSelections(self) -> None:
+        """Rebuild the spell and format error markers for all visible
+        blocks. Both are cached per block, so a single pass over the
+        visible blocks is enough to build both sets of markers. A
+        trailing space under the caret is not flagged, since it is a
+        natural, transient state while the line is still being typed.
+        See issue discussion #1347.
+        """
+        checkSpell = SHARED.project.data.spellCheck
+        checkFormat = CONFIG.showMultiSpaces
+        spellSelections = []
+        formatSelections = []
         suppressed = False
-        if SHARED.project.data.spellCheck and (viewport := self.viewport()):
+        if (checkSpell or checkFormat) and (viewport := self.viewport()):
             cPos = self.textCursor().position()
             last = self.cursorForPosition(viewport.rect().bottomLeft()).blockNumber()
             block = self.cursorForPosition(viewport.rect().topLeft()).block()
             while block.isValid() and block.blockNumber() <= last:
                 if isinstance(data := block.userData(), TextBlockData):
                     position = block.position()
-                    for start, end, _ in data.spellErrors:
-                        if position + start < cPos <= position + end:
-                            # Don't underline the word under the caret
-                            suppressed = True
-                            continue
-                        cursor = QTextCursor(self._qDocument)
-                        cursor.setPosition(position + start)
-                        cursor.setPosition(position + end, QtKeepAnchor)
-                        selection = QTextEdit.ExtraSelection()
-                        selection.format = self._spellFormat
-                        selection.cursor = cursor
-                        selections.append(selection)
+                    if checkSpell:
+                        for start, end, _ in data.spellErrors:
+                            if position + start < cPos <= position + end:
+                                # Don't underline the word under the caret
+                                suppressed = True
+                                continue
+                            cursor = QTextCursor(self._qDocument)
+                            cursor.setPosition(position + start)
+                            cursor.setPosition(position + end, QtKeepAnchor)
+                            selection = QTextEdit.ExtraSelection()
+                            selection.format = self._spellErrFormat
+                            selection.cursor = cursor
+                            spellSelections.append(selection)
+                    if checkFormat:
+                        for start, end, kind in data.formatErrors:
+                            if kind == "trail" and position + start < cPos <= position + end:
+                                # Not yet a real trailing space, still being typed
+                                suppressed = True
+                                continue
+                            cursor = QTextCursor(self._qDocument)
+                            cursor.setPosition(position + start)
+                            cursor.setPosition(position + end, QtKeepAnchor)
+                            selection = QTextEdit.ExtraSelection()
+                            selection.format = self._formatErrFormat
+                            selection.cursor = cursor
+                            formatSelections.append(selection)
                 block = block.next()
         self._suppressed = suppressed
-        self._spellSelections = selections
+        self._spellSelections = spellSelections
+        self._formatSelections = formatSelections
         self._applyExtraSelections()
 
     @pyqtSlot()
-    def _dispatchSpellCheck(self) -> None:
-        """Send the next batch of text blocks to the spell check worker.
+    def _dispatchTextCheck(self) -> None:
+        """Send the next batch of text blocks to the text check worker.
         Modified blocks are prioritised, then the blocks queued for the
         background document pass. The pass position is tracked by block
         number, which may drift when the document is edited during the
         pass, but modified blocks are covered by the debounce anyway.
         """
-        if self._spellJob is not None:
+        if self._checkJob is not None:
             # There is already a job running, and a new dispatch is
             # made when its results come in
             return
 
         job = []
         payload = []
-        while self._dirtySpell and len(job) < SPELL_PASS_CHUNK:
-            _, block = self._dirtySpell.popitem()
+        while self._dirtyBlocks and len(job) < nwConst.CHECK_PASS_CHUNK:
+            _, block = self._dirtyBlocks.popitem()
             if block.isValid() and isinstance(data := block.userData(), TextBlockData):  # pragma: no branch
-                payload.append((len(job), *data.spellData()))
+                payload.append((len(job), *data.checkData()))
                 job.append((block, data, data.revision))
 
-        while self._spellPassNo >= 0 and len(job) < SPELL_PASS_CHUNK:
-            block = self._qDocument.findBlockByNumber(self._spellPassNo)
+        while self._checkPassNo >= 0 and len(job) < nwConst.CHECK_PASS_CHUNK:
+            block = self._qDocument.findBlockByNumber(self._checkPassNo)
             if block.isValid():
                 if isinstance(data := block.userData(), TextBlockData):
-                    payload.append((len(job), *data.spellData()))
+                    payload.append((len(job), *data.checkData()))
                     job.append((block, data, data.revision))
-                self._spellPassNo += 1
+                self._checkPassNo += 1
             else:
-                self._spellPassNo = -1
+                self._checkPassNo = -1
 
         if job:
-            self._spellJobId += 1
-            self._spellJob = (self._spellJobId, job)
-            runnable = BackgroundSpellCheck(self._spellJobId, payload)
-            runnable.signals.resultsReady.connect(self._spellCheckResults)
+            self._checkJobId += 1
+            self._checkJob = (self._checkJobId, job)
+            runnable = BackgroundTextCheck(
+                self._checkJobId,
+                payload,
+                checkSpell=SHARED.project.data.spellCheck,
+                checkFormat=CONFIG.showMultiSpaces,
+            )
+            runnable.signals.resultsReady.connect(self._textCheckResults)
             SHARED.runInThreadPool(runnable)
         elif self._spellPassNotify:
             self._spellPassNotify = False
             SHARED.newStatusMessage(self.tr("Spell check complete"))
 
     @pyqtSlot(int, object)
-    def _spellCheckResults(self, jobId: int, results: list[tuple[int, list[tuple[int, int, str]]]]) -> None:
-        """Process the results from the spell check worker. Results are
-        discarded if the job was cancelled, or per block if the block
-        was modified or removed while the worker was running.
+    def _textCheckResults(
+        self, jobId: int, results: list[tuple[int, list[tuple[int, int, str]], list[tuple[int, int, str]]]]
+    ) -> None:
+        """Process the results from the spell/format check worker.
+        Results are discarded if the job was cancelled, or per block if
+        the block was modified or removed while the worker was running.
         """
-        if self._spellJob and self._spellJob[0] == jobId:
-            job = self._spellJob[1]
-            self._spellJob = None
-            for index, errors in results:
+        if self._checkJob and self._checkJob[0] == jobId:
+            job = self._checkJob[1]
+            self._checkJob = None
+            for index, spellErrors, formatErrors in results:
                 block, data, revision = job[index]
                 if block.isValid() and block.userData() is data and data.revision == revision:
-                    data.setSpellErrors(errors)
-            self._timerSpell.start()
-            self._dispatchSpellCheck()
+                    data.setSpellErrors(spellErrors)
+                    data.setFormatErrors(formatErrors)
+            self._timerCheck.start()
+            self._dispatchTextCheck()
 
     @pyqtSlot(int, int, str)
     def _insertCompletion(self, pos: int, length: int, text: str) -> None:
@@ -1569,10 +1609,7 @@ class GuiDocEditor(QTextEdit):
     @pyqtSlot()
     def _runDocumentTasks(self) -> None:
         """Run timer document tasks."""
-        if self._docHandle is None:
-            return
-
-        if time() - self._lastEdit < 25.0:
+        if self._docHandle:
             logger.debug("Running document tasks")
             if not self._wCounterDoc.isRunning():
                 SHARED.runInThreadPool(self._wCounterDoc)
@@ -1583,8 +1620,6 @@ class GuiDocEditor(QTextEdit):
 
             if self._docChanged:
                 self.docTextChanged.emit(self._docHandle, self._lastEdit)
-
-        return
 
     @pyqtSlot()
     def _moveTextToNewDocument(self) -> None:
@@ -2646,25 +2681,28 @@ class GuiDocEditor(QTextEdit):
 
     def _applyExtraSelections(self) -> None:
         """Set the editor's extra selections from the line highlight
-        and the cached spell error underlines.
+        and the cached spell and format error markers.
         """
         selections = []
         if CONFIG.lineHighlight:
             selections.append(self._selection)
         selections.extend(self._searchSelections)
         selections.extend(self._spellSelections)
+        selections.extend(self._formatSelections)
         self.setExtraSelections(selections)
 
-    def _beginSpellPass(self) -> None:
-        """Spell check the visible blocks, and start a chunked check of
-        the entire document on the worker thread. If spell checking is
-        disabled, only the underlines are updated.
+    def _beginCheckPass(self) -> None:
+        """Spell and format check the visible blocks, and start a chunked
+        check of the entire document on the worker thread. If neither
+        check is enabled, only the markers are cleared.
         """
-        self._timerSpellCheck.stop()
-        self._dirtySpell.clear()
-        self._spellJob = None
-        self._spellPassNo = -1
-        if SHARED.project.data.spellCheck:
+        checkSpell = SHARED.project.data.spellCheck
+        checkFormat = CONFIG.showMultiSpaces
+        self._timerTextCheck.stop()
+        self._dirtyBlocks.clear()
+        self._checkJob = None
+        self._checkPassNo = -1
+        if checkSpell or checkFormat:
             if viewport := self.viewport():  # pragma: no branch
                 # Check the visible blocks first so that their result
                 # is available immediately
@@ -2672,11 +2710,14 @@ class GuiDocEditor(QTextEdit):
                 block = self.cursorForPosition(viewport.rect().topLeft()).block()
                 while block.isValid() and block.blockNumber() <= last:
                     if isinstance(data := block.userData(), TextBlockData):
-                        data.spellCheck()
+                        if checkSpell:
+                            data.spellCheck()
+                        if checkFormat:
+                            data.formatCheck()
                     block = block.next()
-            self._spellPassNo = 0
-            self._dispatchSpellCheck()
-        self._updateSpellSelections()
+            self._checkPassNo = 0
+            self._dispatchTextCheck()
+        self._updateCheckSelections()
 
     def _completerToCursor(self) -> None:
         """Make sure the completer menu is positioned by the cursor."""
@@ -2704,7 +2745,7 @@ class GuiDocEditor(QTextEdit):
         SHARED.spelling.addWord(word, save=save)
         if isinstance(data := block.userData(), TextBlockData):  # pragma: no branch
             data.spellCheck()
-        self._updateSpellSelections()
+        self._updateCheckSelections()
 
     def _processTag(
         self,

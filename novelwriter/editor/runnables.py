@@ -27,7 +27,7 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
 
-from novelwriter.editor.textblock import spellCheckText
+from novelwriter.editor.textblock import formatCheckText, spellCheckText
 from novelwriter.text.counting import standardCounter
 
 if TYPE_CHECKING:
@@ -78,32 +78,43 @@ class BackgroundWordCounterSignals(QObject):
     countsReady = pyqtSignal(int, int, int)
 
 
-class BackgroundSpellCheck(QRunnable):
-    """The Off-GUI Thread Spell Checker.
+class BackgroundTextCheck(QRunnable):
+    """The Off-GUI Thread Text Checker.
 
-    A runnable that spell checks a batch of text block snapshots in the
-    thread pool off the main GUI thread. It only receives plain text
-    snapshots, and never touches the text document itself.
+    A runnable that spell and/or format checks a batch of text block
+    snapshots in the thread pool off the main GUI thread. It only
+    receives plain text snapshots, and never touches the text document
+    itself.
     """
 
-    def __init__(self, jobId: int, payload: list[tuple[int, str, int, list[int] | None]]) -> None:
+    def __init__(
+        self,
+        jobId: int,
+        payload: list[tuple[int, str, str, int, list[int] | None]],
+        checkSpell: bool,
+        checkFormat: bool,
+    ) -> None:
         super().__init__()
         self._jobId = jobId
         self._payload = payload
-        self.signals = BackgroundSpellCheckSignals()
+        self._checkSpell = checkSpell
+        self._checkFormat = checkFormat
+        self.signals = BackgroundTextCheckSignals()
 
     @pyqtSlot()
     def run(self) -> None:
-        """Spell check the text snapshots and emit the results."""
-        self.signals.resultsReady.emit(
-            self._jobId,
-            [(index, spellCheckText(text, offset, utf16Map)) for index, text, offset, utf16Map in self._payload],
-        )
+        """Spell and format check the text snapshots and emit the results."""
+        results = []
+        for index, spellText, formatText, offset, utf16Map in self._payload:
+            spellErrors = spellCheckText(spellText, offset, utf16Map) if self._checkSpell else []
+            formatErrors = formatCheckText(formatText, offset, utf16Map) if self._checkFormat else []
+            results.append((index, spellErrors, formatErrors))
+        self.signals.resultsReady.emit(self._jobId, results)
 
 
-class BackgroundSpellCheckSignals(QObject):
+class BackgroundTextCheckSignals(QObject):
     """The QRunnable cannot emit a signal, so we need a simple QObject
-    to hold the spell check result signal.
+    to hold the text check result signal.
     """
 
     resultsReady = pyqtSignal(int, object)
