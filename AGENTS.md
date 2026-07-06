@@ -17,16 +17,14 @@
 - For Qt enums and related Qt constants, prefer aliases from `novelwriter/types.py` when available
 - When connecting Qt signals and passing parameters, prefer `qtLambda` from `novelwriter/common.py` over inline lambdas where it fits the existing pattern
 - The `i18n/*.ts` files are auto-generated and must never be edited manually
-- Do not edit files under `sample/` and `tests/lipsum/` unless explicitly requested
-- Treat unstaged changes under `sample/` and `tests/lipsum/` as expected test/runtime churn (timestamps, counters, hashes) and ignore them completely during reviews, status checks, and commit preparation unless explicitly requested
+- Do not edit files under `sample/` and `tests/_lipsum/` unless explicitly requested
+- Treat unstaged changes under `sample/` and `tests/_lipsum/` as expected test/runtime churn (timestamps, counters, hashes) and ignore them completely during reviews, status checks, and commit preparation unless explicitly requested
 - Any folder containing `nwProject.nwx` is a novelWriter project storage folder and must not be edited unless explicitly requested
 
 ## Codebase Navigation
 
 - Application code lives under `novelwriter/`; everything else is supporting code and build scripts
-- The `novelwriter/` root contains shared code, constants, variables, and utility functions
-- `novelwriter/{core,dialogs,extensions,formats,gui,text,tools}/` covers project logic, dialog UI, Qt extensions, exports, the main GUI, text utilities, and larger tools
-- Build getter key strings used with `BuildSettings` are defined in `novelwriter/core/buildsettings.py`
+- Build getter key strings used with `BuildSettings` are defined in `novelwriter/manuscript/buildsettings.py`
 - For format changes, check adjacent implementations before modifying shared logic; format classes are write-only and do not need to read the same file formats
 
 ## Validation
