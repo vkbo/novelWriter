@@ -113,8 +113,17 @@ class TextBlockData(QTextBlockUserData):
     def processText(self, text: str, offset: int, utf16Map: list[int] | None) -> None:
         """Extract meta data from the text. The map, when set, converts
         cached positions to UTF-16 units.
+
+        The cached spell and format errors are also invalidated here,
+        since they may hold positions from before this edit that no
+        longer fit within the block's new, possibly shorter, text. They
+        are recomputed by the debounced background check shortly after.
+        Leaving them in place until then risks briefly rendering marker
+        selections that spill into the following block.
         """
         self._metaData = []
+        self._spellErrors = []
+        self._formatErrors = []
         self._rawText = text
         if "[" in text:
             # Strip shortcodes

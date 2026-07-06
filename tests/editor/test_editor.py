@@ -863,6 +863,17 @@ def testGuiEditor_FormatCheckText():
     assert formatCheckText(data._text, 0, None) == [(3, 23, "multi"), (35, 37, "multi"), (35, 37, "trail")]
     assert data.formatCheck() == [(35, 37, "multi"), (35, 37, "trail")]
 
+    # A cached spell/format error may hold a position past the end of a
+    # shortened block, e.g. right after an undo removes previously typed
+    # text. processText() must drop the stale cache immediately, rather
+    # than waiting for the debounced recheck, or the stale, out-of-range
+    # positions can briefly render into the following block
+    data.setSpellErrors([(0, 100, "wrong")])
+    data.setFormatErrors([(0, 100, "multi")])
+    data.processText("short", 0, None)
+    assert data.spellErrors == []
+    assert data.formatErrors == []
+
 
 @pytest.mark.gui
 def testGuiEditor_FormatChecking(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
