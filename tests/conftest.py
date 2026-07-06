@@ -38,8 +38,8 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.enum import nwTheme
 
+from tests.helpers import cleanProject
 from tests.mocked import MockGuiMain
-from tests.tools import cleanProject
 
 _TST_ROOT = Path(__file__).parent
 _SRC_ROOT = _TST_ROOT.parent
