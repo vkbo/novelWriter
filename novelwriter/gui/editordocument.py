@@ -26,12 +26,13 @@ import logging
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt6.QtGui import QTextBlock, QTextCursor, QTextDocument
+from PyQt6.QtGui import QTextBlock, QTextBlockFormat, QTextCursor, QTextDocument
 from PyQt6.QtWidgets import QApplication
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 from novelwriter.gui.doctextblock import TextBlockData
+from novelwriter.types import QtPropLineHeight
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -84,6 +85,7 @@ class GuiTextDocument(QTextDocument):
         tStart = time()
 
         self.setPlainText(text)
+        self.setLineHeight(CONFIG.lineHeight)
         count = self.lineCount()
 
         tMid = time()
@@ -97,6 +99,14 @@ class GuiTextDocument(QTextDocument):
 
         logger.debug("Loaded %d text blocks in %.3f ms", count, 1000 * (tMid - tStart))
         logger.debug("Highlighted document in %.3f ms", 1000 * (tEnd - tMid))
+
+    def setLineHeight(self, height: float) -> None:
+        """Apply a line height to all blocks in the document."""
+        blockFormat = QTextBlockFormat()
+        blockFormat.setLineHeight(int(height * 100), QtPropLineHeight)
+        cursor = QTextCursor(self)
+        cursor.select(QTextCursor.SelectionType.Document)
+        cursor.mergeBlockFormat(blockFormat)
 
     def metaDataAtPos(self, pos: int) -> tuple[str, str]:
         """Check if there is meta data available at a given position in

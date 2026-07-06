@@ -227,6 +227,7 @@ class GuiDocViewer(QTextBrowser):
         qDoc.setJustify(CONFIG.doJustify, False)
         qDoc.setDialogHighlight(True)
         qDoc.setTextFont(CONFIG.textFont)
+        qDoc.setLineHeight(CONFIG.lineHeight)
         qDoc.setTheme(self._docTheme)
         qDoc.initDocument()
         qDoc.setKeywords(True)

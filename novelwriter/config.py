@@ -161,6 +161,7 @@ class Config:
         "kernelVer",
         "lastNotes",
         "lightTheme",
+        "lineHeight",
         "lineHighlight",
         "mainPanePos",
         "mainWinSize",
@@ -322,6 +323,7 @@ class Config:
         self.textWidth = 700  # Editor text width
         self.textMargin = 40  # Editor/viewer text margin
         self.tabWidth = 40  # Editor tabulator width
+        self.lineHeight = 1.0  # Editor line height
         self.cursorWidth = 1  # Editor cursor width
         self.lineHighlight = False  # Highlight current line in editor
 
@@ -807,6 +809,7 @@ class Config:
         self.textWidth = conf.rdInt(sec, "width", self.textWidth)
         self.textMargin = conf.rdInt(sec, "margin", self.textMargin)
         self.tabWidth = conf.rdInt(sec, "tabwidth", self.tabWidth)
+        self.lineHeight = conf.rdFlt(sec, "lineheight", self.lineHeight)
         self.cursorWidth = conf.rdInt(sec, "cursorwidth", self.cursorWidth)
         self.lineHighlight = conf.rdBool(sec, "linehighlight", self.lineHighlight)
         self.focusWidth = conf.rdInt(sec, "focuswidth", self.focusWidth)
@@ -941,6 +944,7 @@ class Config:
             "width": str(self.textWidth),
             "margin": str(self.textMargin),
             "tabwidth": str(self.tabWidth),
+            "lineheight": str(self.lineHeight),
             "cursorwidth": str(self.cursorWidth),
             "lineHighlight": str(self.lineHighlight),
             "focuswidth": str(self.focusWidth),

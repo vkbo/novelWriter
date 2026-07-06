@@ -30,6 +30,7 @@ from PyQt6.QtGui import QAction
 
 from novelwriter.enum import nwChange, nwDocMode, nwView
 from novelwriter.gui.search import GuiProjectSearch
+from novelwriter.types import QtKeyDown, QtKeyReturn, QtKeyRight, QtKeyUp
 
 
 @pytest.mark.gui
@@ -60,15 +61,15 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Move down
     search.searchText.setFocus()
-    qtbot.keyClick(search, Qt.Key.Key_Down)
+    qtbot.keyClick(search, QtKeyDown)
     assert firstDoc.isSelected() is True
 
     # Move up
-    qtbot.keyClick(search, Qt.Key.Key_Up)
+    qtbot.keyClick(search, QtKeyUp)
     assert firstDoc.isSelected() is False
 
     # Move right does nothing
-    qtbot.keyClick(search, Qt.Key.Key_Right)
+    qtbot.keyClick(search, QtKeyRight)
     assert firstDoc.isSelected() is False
 
     # Selecting updates details
@@ -85,10 +86,10 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     with monkeypatch.context() as mp:
         mp.setattr(search.searchResult, "hasFocus", lambda *a: True)
         with qtbot.waitSignal(search.openDocumentSelectRequest, timeout=1000) as signal:
-            qtbot.keyClick(search, Qt.Key.Key_Return)
+            qtbot.keyClick(search, QtKeyReturn)
             assert signal.args == [handle, 3, 5, False]
         with qtbot.waitSignal(search.openDocumentRequest, timeout=1000) as signal:
-            qtbot.keyClick(search, Qt.Key.Key_Return, Qt.KeyboardModifier.ShiftModifier)
+            qtbot.keyClick(search, QtKeyReturn, Qt.KeyboardModifier.ShiftModifier)
             assert signal.args == [handle, nwDocMode.VIEW, "", True]
 
     assert nwGUI.docEditor.docHandle == handle
@@ -108,7 +109,7 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     with monkeypatch.context() as mp:
         mp.setattr(search.searchResult, "hasFocus", lambda *a: True)
         with qtbot.assertNotEmitted(search.openDocumentSelectRequest):
-            qtbot.keyClick(search, Qt.Key.Key_Return)
+            qtbot.keyClick(search, QtKeyReturn)
 
     # Case Sensitive
     search.toggleCase.setChecked(True)
@@ -121,7 +122,7 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     search.searchText.setText("dolor")
     with monkeypatch.context() as mp:
         mp.setattr(search.searchText, "hasFocus", lambda *a: True)
-        qtbot.keyClick(search, Qt.Key.Key_Return)
+        qtbot.keyClick(search, QtKeyReturn)
 
     assert search.searchResult.topLevelItemCount() == 10
     assert totalCount() == 34

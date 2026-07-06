@@ -27,7 +27,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt6.QtCore import QPoint, Qt
+from PyQt6.QtCore import QPoint
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QFileDialog, QMenu
 
@@ -43,6 +43,10 @@ from novelwriter.types import (
     QtDecorationRole,
     QtDisplayRole,
     QtFontRole,
+    QtKeyDown,
+    QtKeyLeft,
+    QtKeyRight,
+    QtKeyUp,
     QtMouseLeft,
     QtTextAlignmentRole,
     QtToolTipRole,
@@ -194,17 +198,17 @@ def testToolWelcome_Open(qtbot, monkeypatch, nwGUI):
 
     # Change selection with arrow keys
     assert tabOpen.selectedPath.text() == "Path: /stuff/project_two"
-    qtbot.keyClick(tabOpen, Qt.Key.Key_Left)  # Does nothing
+    qtbot.keyClick(tabOpen, QtKeyLeft)  # Does nothing
     assert tabOpen.selectedPath.text() == "Path: /stuff/project_two"
-    qtbot.keyClick(tabOpen, Qt.Key.Key_Right)  # Does nothing
+    qtbot.keyClick(tabOpen, QtKeyRight)  # Does nothing
     assert tabOpen.selectedPath.text() == "Path: /stuff/project_two"
-    qtbot.keyClick(tabOpen, Qt.Key.Key_Down)  # Selects lower
+    qtbot.keyClick(tabOpen, QtKeyDown)  # Selects lower
     assert tabOpen.selectedPath.text() == "Path: /stuff/project_one"
-    qtbot.keyClick(tabOpen, Qt.Key.Key_Down)  # Does nothing (already on last)
+    qtbot.keyClick(tabOpen, QtKeyDown)  # Does nothing (already on last)
     assert tabOpen.selectedPath.text() == "Path: /stuff/project_one"
-    qtbot.keyClick(tabOpen, Qt.Key.Key_Up)  # Selects upper
+    qtbot.keyClick(tabOpen, QtKeyUp)  # Selects upper
     assert tabOpen.selectedPath.text() == "Path: /stuff/project_two"
-    qtbot.keyClick(tabOpen, Qt.Key.Key_Up)  # Does nothing (already on first)
+    qtbot.keyClick(tabOpen, QtKeyUp)  # Does nothing (already on first)
     assert tabOpen.selectedPath.text() == "Path: /stuff/project_two"
 
     # Single click item

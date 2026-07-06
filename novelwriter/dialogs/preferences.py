@@ -23,6 +23,8 @@ from __future__ import annotations
 
 import logging
 
+from typing import NamedTuple
+
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QAction, QCloseEvent, QKeyEvent, QKeySequence
 from PyQt6.QtWidgets import (
@@ -52,10 +54,21 @@ from novelwriter.types import QtAlignCenter, QtRoleAccept, QtRoleReject
 logger = logging.getLogger(__name__)
 
 
+class GuiNeedsUpdate(NamedTuple):
+    """The update flags after settings have been processed."""
+
+    restart: bool
+    tree: bool
+    theme: bool
+    syntax: bool
+    editor: bool
+    viewer: bool
+
+
 class GuiPreferences(NDialog):
     """GUI: Preferences Dialog."""
 
-    newPreferencesReady = pyqtSignal(bool, bool, bool, bool)
+    newPreferencesReady = pyqtSignal(GuiNeedsUpdate)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -543,6 +556,17 @@ class GuiPreferences(NDialog):
             self.tabWidth,
             self.tr("The width of a tab key press in the editor and viewer."),
             unit=self.tr("px"),
+        )
+
+        # Line Height
+        self.lineHeight = NDoubleSpinBox(self, minVal=0.5, maxVal=3.0, step=0.05, prec=2)
+        self.lineHeight.setValue(CONFIG.lineHeight)
+        self.lineHeight.setFixedNumbersWidth(4)
+        self.mainForm.addRow(
+            self.tr("Line height"),
+            self.lineHeight,
+            self.tr("The relative line height in the editor and viewer."),
+            unit=self.tr("em"),
         )
 
         # Text Editing
@@ -1108,12 +1132,16 @@ class GuiPreferences(NDialog):
         needsRestart = False
         updateSyntax = False
         refreshTree = False
+        initEditor = False
+        initViewer = False
 
         # Appearance
         guiLocale = self.guiLocale.currentData()
         lightTheme = self.lightTheme.currentData()
         darkTheme = self.darkTheme.currentData()
         iconTheme = self.iconTheme.currentData()
+        hideVScroll = self.hideVScroll.isChecked()
+        hideHScroll = self.hideHScroll.isChecked()
         useCharCount = self.useCharCount.isChecked()
 
         updateTheme |= CONFIG.lightTheme != lightTheme
@@ -1124,21 +1152,30 @@ class GuiPreferences(NDialog):
         refreshTree |= CONFIG.useCharCount != useCharCount
         updateSyntax |= CONFIG.lightTheme != lightTheme
         updateSyntax |= CONFIG.darkTheme != darkTheme
+        initEditor |= CONFIG.hideVScroll != hideVScroll
+        initEditor |= CONFIG.hideHScroll != hideHScroll
+        initViewer |= CONFIG.hideVScroll != hideVScroll
+        initViewer |= CONFIG.hideHScroll != hideHScroll
 
         CONFIG.guiLocale = guiLocale
         CONFIG.lightTheme = lightTheme
         CONFIG.darkTheme = darkTheme
         CONFIG.iconTheme = iconTheme
-        CONFIG.hideVScroll = self.hideVScroll.isChecked()
-        CONFIG.hideHScroll = self.hideHScroll.isChecked()
+        CONFIG.hideVScroll = hideVScroll
+        CONFIG.hideHScroll = hideHScroll
         CONFIG.nativeFont = self.nativeFont.isChecked()
         CONFIG.setGuiFont(self._guiFont)
         CONFIG.setPrimaryCount(useCharCount)
 
         # Document Style
+        textFont = self._textFont
+
+        initEditor |= CONFIG.textFont != textFont
+        initViewer |= CONFIG.textFont != textFont
+
         CONFIG.showFullPath = self.showFullPath.isChecked()
         CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
-        CONFIG.setTextFont(self._textFont)
+        CONFIG.setTextFont(textFont)
 
         # Project View
         iconColTree = self.iconColTree.currentData()
@@ -1169,30 +1206,48 @@ class GuiPreferences(NDialog):
         CONFIG.userIdleTime = round(self.userIdleTime.value() * 60)
 
         # Text Flow
+        doJustify = self.doJustify.isChecked()
+        tabWidth = self.tabWidth.value()
+        lineHeight = self.lineHeight.value()
+
+        initEditor |= CONFIG.doJustify != doJustify
+        initEditor |= CONFIG.tabWidth != tabWidth
+        initEditor |= CONFIG.lineHeight != lineHeight
+        initViewer |= CONFIG.doJustify != doJustify
+        initViewer |= CONFIG.tabWidth != tabWidth
+        initViewer |= CONFIG.lineHeight != lineHeight
+
         CONFIG.textWidth = self.textWidth.value()
         CONFIG.focusWidth = self.focusWidth.value()
         CONFIG.hideFocusFooter = self.hideFocusFooter.isChecked()
-        CONFIG.doJustify = self.doJustify.isChecked()
+        CONFIG.doJustify = doJustify
         CONFIG.textMargin = self.textMargin.value()
-        CONFIG.tabWidth = self.tabWidth.value()
+        CONFIG.tabWidth = tabWidth
+        CONFIG.lineHeight = lineHeight
 
         # Text Editing
+        cursorWidth = self.cursorWidth.value()
         scaleHeadings = self.scaleHeadings.isChecked()
         singleStarBold = self.singleStarBold.isChecked()
         lineHighlight = self.lineHighlight.isChecked()
+        showTabsNSpaces = self.showTabsNSpaces.isChecked()
+        showLineEndings = self.showLineEndings.isChecked()
 
         updateSyntax |= CONFIG.scaleHeadings != scaleHeadings
         updateSyntax |= CONFIG.singleStarBold != singleStarBold
         updateSyntax |= CONFIG.lineHighlight != lineHighlight
+        initEditor |= CONFIG.cursorWidth != cursorWidth
+        initEditor |= CONFIG.showTabsNSpaces != showTabsNSpaces
+        initEditor |= CONFIG.showLineEndings != showLineEndings
 
         CONFIG.spellLanguage = self.spellLanguage.currentData()
         CONFIG.autoSelect = self.autoSelect.isChecked()
-        CONFIG.cursorWidth = self.cursorWidth.value()
+        CONFIG.cursorWidth = cursorWidth
         CONFIG.scaleHeadings = scaleHeadings
         CONFIG.singleStarBold = singleStarBold
         CONFIG.lineHighlight = lineHighlight
-        CONFIG.showTabsNSpaces = self.showTabsNSpaces.isChecked()
-        CONFIG.showLineEndings = self.showLineEndings.isChecked()
+        CONFIG.showTabsNSpaces = showTabsNSpaces
+        CONFIG.showLineEndings = showLineEndings
 
         # Editor Scrolling
         CONFIG.autoScroll = self.autoScroll.isChecked()
@@ -1261,6 +1316,15 @@ class GuiPreferences(NDialog):
 
         # Finalise
         CONFIG.saveConfig()
-        self.newPreferencesReady.emit(needsRestart, refreshTree, updateTheme, updateSyntax)
+        self.newPreferencesReady.emit(
+            GuiNeedsUpdate(
+                restart=needsRestart,
+                tree=refreshTree,
+                theme=updateTheme,
+                syntax=updateSyntax,
+                editor=initEditor,
+                viewer=initViewer,
+            )
+        )
 
         self.close()

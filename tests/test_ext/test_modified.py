@@ -42,7 +42,7 @@ from novelwriter.extensions.modified import (
     NToolDialog,
     NTreeView,
 )
-from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
+from novelwriter.types import QtKeyEscape, QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
 
 from tests.tools import SimpleDialog
 
@@ -77,7 +77,7 @@ def testExtModified_NDialog(qtbot, monkeypatch):
     assert dialog.parent() is None
 
     with qtbot.waitSignal(dialog.rejected, timeout=1000):
-        dialog.keyPressEvent(QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModNone))
+        dialog.keyPressEvent(QKeyEvent(QEvent.Type.KeyPress, QtKeyEscape, QtModNone))
         assert dialog.result() == QtRejected
 
 

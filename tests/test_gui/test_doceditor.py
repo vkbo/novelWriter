@@ -62,6 +62,11 @@ from novelwriter.types import (
     QtImCurrentSelection,
     QtImCursorRectangle,
     QtKeepAnchor,
+    QtKeyBackspace,
+    QtKeyDown,
+    QtKeyEscape,
+    QtKeyReturn,
+    QtKeyTab,
     QtModCtrl,
     QtModNone,
     QtMouseLeft,
@@ -2437,8 +2442,8 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     nwGUI.docEditor.setFocus()
     for c in "### Scene One":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     # Type Keyword @
     qtbot.keyClick(docEditor, "@", delay=KEY_DELAY)
@@ -2453,7 +2458,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     assert len(completer.actions()) == 0
 
     # Delete character and go select @char
-    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
     assert len(completer.actions()) == 2
     completer.actions()[0].trigger()
     assert docEditor.getText() == ("### Scene One\n\n@char:")
@@ -2467,7 +2472,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     assert [a.text() for a in completer.actions()] == []
 
     # Deleting it and typing "a", should leave "Jane"
-    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, "a", delay=KEY_DELAY)
     assert [a.text() for a in completer.actions()] == ["Jane"]
 
@@ -2481,70 +2486,70 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     assert [a.text() for a in completer.actions()] == ["Jane", "John"]
 
     # Pressing return without selecting anything should just close it
-    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyReturn, delay=KEY_DELAY)
     assert [a.text() for a in completer.actions()] == []
-    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
 
     # Start a new line with a nonsense keyword, which should be handled
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     for c in "@: ":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
 
     # Send keypresses to the completer object
     qtbot.keyClick(docEditor, "@", delay=KEY_DELAY)
     assert len(completer.actions()) == len(nwKeyWords.VALID_KEYS)
     qtbot.keyClick(completer, "f", delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyReturn, delay=KEY_DELAY)
     qtbot.keyClick(completer, " ", delay=KEY_DELAY)
     qtbot.keyClick(completer, "h", delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Escape, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyEscape, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     assert docEditor.getText() == ("### Scene One\n\n@char: Jane\n@focus: John\n")
 
     # Send keypresses to the completer object for a comment
     qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
     assert len(completer.actions()) == 4
-    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     assert docEditor.getText() == ("### Scene One\n\n@char: Jane\n@focus: John\n%Synopsis: \n")
 
     # Auto-complete story comment
     SHARED.project.index._itemIndex._cache.story.add("Resolution")
     qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
     assert len(completer.actions()) == 4
-    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyReturn, delay=KEY_DELAY)
     qtbot.keyClick(completer, ".", delay=KEY_DELAY)
     assert len(completer.actions()) == 1
-    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     assert docEditor.getText() == ("### Scene One\n\n@char: Jane\n@focus: John\n%Synopsis: \n%Story.Resolution: \n")
 
     # Auto-complete note comment, but select with Tab
     SHARED.project.index._itemIndex._cache.note.add("Consistency")
     qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
     assert len(completer.actions()) == 4
-    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Tab, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyTab, delay=KEY_DELAY)
     qtbot.keyClick(completer, ".", delay=KEY_DELAY)
     assert len(completer.actions()) == 1
-    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key.Key_Tab, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
+    qtbot.keyClick(completer, QtKeyTab, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     assert docEditor.getText() == (
         "### Scene One\n\n@char: Jane\n@focus: John\n%Synopsis: \n%Story.Resolution: \n%Note.Consistency: \n"
     )
@@ -2628,10 +2633,60 @@ def testGuiEditor_TypewriterScrolling(qtbot, nwGUI, projPath, mockRnd):
     # newlines, which advances the cursor without hitting the MOVE_KEYS
     # exclusion used for arrow-key navigation
     for _ in range(30):
-        qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+        qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     qtbot.wait(200)  # Let the scroll animation finish
     assert vBar.value() > 0
+
+
+@pytest.mark.gui
+def testGuiEditor_LineHeight(qtbot, nwGUI, projPath, mockRnd):
+    """Test that CONFIG.lineHeight is applied to all blocks in the
+    document, both on load and when settings are refreshed.
+    """
+    buildTestProject(nwGUI, projPath)
+    docEditor = nwGUI.docEditor
+    document = docEditor.document()
+
+    def allBlocksHaveLineHeight(height: int) -> bool:
+        block = document.firstBlock()
+        while block.isValid():
+            if block.blockFormat().lineHeight() != height:
+                return False
+            block = block.next()
+        return True
+
+    CONFIG.lineHeight = 1.50
+    assert docEditor.loadText(C.hSceneDoc) is True
+    assert allBlocksHaveLineHeight(150)
+
+    CONFIG.lineHeight = 2.00
+    docEditor.initEditor()
+    assert allBlocksHaveLineHeight(200)
+
+
+@pytest.mark.gui
+def testGuiEditor_LineHeightDoubleReturn(qtbot, nwGUI, projPath, mockRnd):
+    """Test that a blank-line paragraph break (two consecutive Return
+    presses) works normally with a non-default line height set on
+    every block. Qt's own Return handling otherwise treats the second
+    Return, landing on an empty block whose format isn't bare default,
+    as a request to reset the block back to default formatting instead
+    of inserting a new one (meant for escaping list/heading formatting
+    in rich-text editors), silently eating the keypress.
+    """
+    buildTestProject(nwGUI, projPath)
+    docEditor = nwGUI.docEditor
+
+    CONFIG.lineHeight = 1.50
+    assert docEditor.loadText(C.hSceneDoc) is True
+
+    qtbot.keyClicks(docEditor, "# Heading")
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClicks(docEditor, "Body text.")
+
+    assert docEditor.getText().startswith("# Heading\n\nBody text.")
 
 
 @pytest.mark.gui
@@ -2842,7 +2897,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Find next by enter key
     monkeypatch.setattr(docSearch.searchBox, "hasFocus", lambda: True)
-    qtbot.keyClick(docSearch.searchBox, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docSearch.searchBox, QtKeyReturn, delay=KEY_DELAY)
     assert abs(docEditor.getCursorPosition() - 1317) < 3
 
     # Find next by button
@@ -3296,7 +3351,7 @@ def testGuiEditor_Vim_EnableVimMode(qtbot, nwGUI, projPath, mockRnd):
     # Enter insert mode with "i"
     qtbot.keyClick(docEditor, "i", delay=inputDelay)
     qtbot.keyClicks(docEditor, "TEST", delay=inputDelay)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+    qtbot.keyClick(docEditor, QtKeyEscape)
 
     # Text must have changed now
     new_text = docEditor.getText()
@@ -3344,17 +3399,17 @@ def testGuiEditor_Vim_InsertMode(qtbot, nwGUI, projPath, mockRnd):
     resetText()
     qtbot.keyClick(docEditor, "i", delay=inputDelay)
     qtbot.keyClicks(docEditor, "X", delay=inputDelay)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+    qtbot.keyClick(docEditor, QtKeyEscape)
     assert "X" in docEditor.getText()
 
     # I: Insert at beginning of line
     resetText()
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+    qtbot.keyClick(docEditor, QtKeyEscape)
     qtbot.keyClick(docEditor, "h", delay=inputDelay)  # Move forward 1
     qtbot.keyClick(docEditor, "h", delay=inputDelay)  # Move forward 1
     qtbot.keyClick(docEditor, "I", delay=inputDelay)
     qtbot.keyClicks(docEditor, "START", delay=inputDelay)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+    qtbot.keyClick(docEditor, QtKeyEscape)
     lines = docEditor.getText().splitlines()
     assert lines[0].startswith("START")
 
@@ -3362,7 +3417,7 @@ def testGuiEditor_Vim_InsertMode(qtbot, nwGUI, projPath, mockRnd):
     resetText()
     qtbot.keyClick(docEditor, "A", delay=inputDelay)
     qtbot.keyClicks(docEditor, "END", delay=inputDelay)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+    qtbot.keyClick(docEditor, QtKeyEscape)
     lines = docEditor.getText().splitlines()
     assert lines[0].endswith("END")
 
@@ -3370,7 +3425,7 @@ def testGuiEditor_Vim_InsertMode(qtbot, nwGUI, projPath, mockRnd):
     resetText()
     qtbot.keyClick(docEditor, "o", delay=inputDelay)
     qtbot.keyClicks(docEditor, "below", delay=inputDelay)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+    qtbot.keyClick(docEditor, QtKeyEscape)
     lines = docEditor.getText().splitlines()
     assert "below" in lines[1]  # Inserted after Line1
 
@@ -3378,7 +3433,7 @@ def testGuiEditor_Vim_InsertMode(qtbot, nwGUI, projPath, mockRnd):
     resetText()
     qtbot.keyClick(docEditor, "O", delay=inputDelay)
     qtbot.keyClicks(docEditor, "above", delay=inputDelay)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape)
+    qtbot.keyClick(docEditor, QtKeyEscape)
     lines = docEditor.getText().splitlines()
     assert "above" in lines[0]  # Inserted before Line1
 
@@ -3389,21 +3444,21 @@ def testGuiEditor_Vim_InsertMode(qtbot, nwGUI, projPath, mockRnd):
     resetText()
     qtbot.keyClick(docEditor, "i", delay=inputDelay)
     qtbot.keyClicks(docEditor, "TEST", delay=inputDelay)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)
+    qtbot.keyClick(docEditor, QtKeyEscape, delay=inputDelay)
     assert "TEST" in docEditor.getText()
 
     # aX: Append after cursor
     resetText()
     qtbot.keyClick(docEditor, "a", delay=inputDelay)
     qtbot.keyClicks(docEditor, "X", delay=inputDelay)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)
+    qtbot.keyClick(docEditor, QtKeyEscape, delay=inputDelay)
     assert "X" in docEditor.getText()
 
     # New line below
     resetText()
     qtbot.keyClick(docEditor, "o", delay=inputDelay)
     qtbot.keyClicks(docEditor, "below", delay=inputDelay)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)
+    qtbot.keyClick(docEditor, QtKeyEscape, delay=inputDelay)
     lines = docEditor.getText().splitlines()
     assert "below" in lines[1]
 
@@ -3411,7 +3466,7 @@ def testGuiEditor_Vim_InsertMode(qtbot, nwGUI, projPath, mockRnd):
     resetText()
     qtbot.keyClick(docEditor, "O", delay=inputDelay)
     qtbot.keyClicks(docEditor, "above", delay=inputDelay)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)
+    qtbot.keyClick(docEditor, QtKeyEscape, delay=inputDelay)
     lines = docEditor.getText().splitlines()
     assert "above" in lines[0]
 
@@ -3798,7 +3853,7 @@ def testGuiEditor_Vim_NormalMode(qtbot, nwGUI, projPath, mockRnd):
     assert cursorPos == 1
     # Insert some text
     qtbot.keyClicks(docEditor, "TEST", delay=inputDelay)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Escape, delay=inputDelay)
+    qtbot.keyClick(docEditor, QtKeyEscape, delay=inputDelay)
     newText = docEditor.getText()
     assert newText.startswith(("LTESSTine1", "LTESTine1"))
 

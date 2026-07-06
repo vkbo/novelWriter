@@ -165,6 +165,20 @@ QtFontNormal = QFont.Weight.Normal
 QtFontSemiBold = QFont.Weight.DemiBold
 QtFontBold = QFont.Weight.Bold
 
+# Keys
+
+QtKeyReturn = Qt.Key.Key_Return
+QtKeyEnter = Qt.Key.Key_Enter
+QtKeyLeft = Qt.Key.Key_Left
+QtKeyRight = Qt.Key.Key_Right
+QtKeyUp = Qt.Key.Key_Up
+QtKeyDown = Qt.Key.Key_Down
+QtKeyPageUp = Qt.Key.Key_PageUp
+QtKeyPageDown = Qt.Key.Key_PageDown
+QtKeyTab = Qt.Key.Key_Tab
+QtKeyEscape = Qt.Key.Key_Escape
+QtKeyBackspace = Qt.Key.Key_Backspace
+
 # Maps
 
 FONT_WEIGHTS: dict[int, int] = {

@@ -38,6 +38,7 @@ from novelwriter.common import jsonEncode
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.constants import nwFiles
 from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.dialogs.preferences import GuiNeedsUpdate
 from novelwriter.enum import nwDocAction, nwDocMode, nwFocus, nwItemClass, nwItemType, nwState, nwTheme, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
@@ -48,7 +49,16 @@ from novelwriter.shared import _GuiAlert
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.writingstats import GuiWritingStats
-from novelwriter.types import QtModCtrl, QtModShift
+from novelwriter.types import (
+    QtKeyBackspace,
+    QtKeyEnter,
+    QtKeyEscape,
+    QtKeyLeft,
+    QtKeyReturn,
+    QtKeyRight,
+    QtModCtrl,
+    QtModShift,
+)
 
 from tests.mocked import causeOSError
 from tests.tools import NWD_IGNORE, XML_IGNORE, C, buildTestProject, cmpFiles
@@ -275,8 +285,8 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
     theme.loadTheme()
     assert theme.isDarkTheme is True
 
-    nwGUI._processConfigChanges(False, True, False, False)
-    nwGUI._processConfigChanges(True, True, True, True)
+    nwGUI._processConfigChanges(GuiNeedsUpdate(False, True, False, False, False, False))
+    nwGUI._processConfigChanges(GuiNeedsUpdate(True, True, True, True, True, True))
 
     # Check editor syntax
     syntax = SHARED.theme.syntaxTheme
@@ -386,15 +396,15 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, "a", modifier=QtModCtrl, delay=KEY_DELAY)
     for c in "# Jane Doe":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     for c in "@tag: Jane":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     for c in "This is a file about Jane.":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     # Add a Plot File
     nwGUI.projView.projTree.expandAll()
@@ -409,15 +419,15 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, "a", modifier=QtModCtrl, delay=KEY_DELAY)
     for c in "# Main Plot":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     for c in "@tag: MainPlot":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     for c in "This is a file [i]detailing[/i] the main plot.":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     # Add a World File
     nwGUI.projView.projTree.expandAll()
@@ -437,15 +447,15 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, "a", modifier=QtModCtrl, delay=KEY_DELAY)
     for c in "# Main Location":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     for c in "@tag: Home":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     for c in "This is a file describing Jane's home.":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     # Trigger autosaves before making more changes
     nwGUI._autoSaveDocument()
@@ -462,64 +472,64 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, "a", modifier=QtModCtrl, delay=KEY_DELAY)
     for c in "# Novel":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "## Chapter":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "@pov: Jane":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     for c in "@plot: MainPlot":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "### Scene":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "% How about a comment?":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     for c in "@pov: Jane":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     for c in "@plot: MainPlot":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     for c in "@location: Home":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "#### Some Section":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "@char: Jane":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "This is a paragraph of nonsense text.":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     # Don't allow Shift+Enter to insert a line separator (issue #1150)
     for c in "This is another paragraph":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Enter, modifier=QtModShift, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyEnter, modifier=QtModShift, delay=KEY_DELAY)
     for c in "with a line separator in it.":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     # Auto-Replace
     # ============
@@ -540,36 +550,36 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     for c in "How about three hyphens - -":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyLeft, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyRight, delay=KEY_DELAY)
     for c in "- for long dash? It works too. ":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     for c in "Even four hyphens - - -":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyLeft, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyLeft, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyRight, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyRight, delay=KEY_DELAY)
     for c in "- for a horizontal works!":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     # Dialogue
     # ========
 
     for c in '"Full line double quoted text."':
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "'Full line single quoted text.'":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     # Insert spaces before and after quotes
     CONFIG.fmtPadBefore = "\u201d"
@@ -581,16 +591,16 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 
     # Check that we can insert a line break in the text without
     # triggering the padding (Issue #2586)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Left, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Right, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyLeft, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyLeft, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyLeft, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyRight, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyRight, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyRight, delay=KEY_DELAY)
 
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     CONFIG.fmtPadBefore = ""
     CONFIG.fmtPadAfter = ""
@@ -599,8 +609,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     # Dialogue Line
     for c in "-- Hi, I am a character speaking.":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     # Narrator Break
     CONFIG.narratorBreak = "–"
@@ -609,8 +619,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 
     for c in "-- Hi, I am also a character speaking, -- said another character. -- How are you?":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     # Special Formatting
     # ==================
@@ -621,28 +631,28 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 
     for c in "@object: NoSpaceAdded":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "% synopsis: Space before this is OK.":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "%Footnote.abc: A simple footnote.":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "Add space before this colon: See?":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "But don't add a double space : See?":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     CONFIG.fmtPadBefore = ""
     docEditor.initEditor()
@@ -653,33 +663,33 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI._switchFocus(nwView.EDITOR)
     for c in '\t"Tab-indented text"':
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in '>"Paragraph-indented text"':
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in '>>"Right-aligned text"':
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in "\t'Tab-indented text'":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in ">'Paragraph-indented text'":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     for c in ">>'Right-aligned text'":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
     docEditor._wCounterDoc.run()
 
@@ -799,7 +809,7 @@ def testGuiMain_Viewing(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.projView.setSelectedHandle(C.hSceneDoc)
     with monkeypatch.context() as mp:
         mp.setattr(nwGUI.projView.projTree, "hasFocus", lambda *a: True)
-        qtbot.keyClick(nwGUI.projView.projTree, Qt.Key.Key_Return, modifier=QtModShift, delay=KEY_DELAY)
+        qtbot.keyClick(nwGUI.projView.projTree, QtKeyReturn, modifier=QtModShift, delay=KEY_DELAY)
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
 
     # If the viewer fails to load the document, nothing else happens
@@ -898,14 +908,14 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Pressing Escape turns off focus mode
     nwGUI.toggleFocusMode()
     assert SHARED.focusMode is True
-    qtbot.keyClick(nwGUI, Qt.Key.Key_Escape)
+    qtbot.keyClick(nwGUI, QtKeyEscape)
     assert SHARED.focusMode is False
 
     # If search is active, Escape is redirected to editor
     nwGUI.toggleFocusMode()
     assert SHARED.focusMode is True
     nwGUI.docEditor.beginSearch()
-    qtbot.keyClick(nwGUI, Qt.Key.Key_Escape)
+    qtbot.keyClick(nwGUI, QtKeyEscape)
     assert SHARED.focusMode is True
 
     # With search closed, Vim mode off, and Focus Mode inactive, Escape

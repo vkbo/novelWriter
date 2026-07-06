@@ -46,7 +46,7 @@ from novelwriter import CONFIG, SHARED, __hexversion__, __version__
 from novelwriter.common import formatFileFilter, formatVersion, hexToInt, minmax, safeIsFile
 from novelwriter.constants import nwConst
 from novelwriter.dialogs.about import GuiAbout
-from novelwriter.dialogs.preferences import GuiPreferences
+from novelwriter.dialogs.preferences import GuiNeedsUpdate, GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView, nwVimMode
@@ -1040,23 +1040,25 @@ class GuiMain(QMainWindow):
             self._changeView(nwView.OUTLINE, exitFocus=True)
             self.outlineView.setTreeFocus()
 
-    @pyqtSlot(bool, bool, bool, bool)
-    def _processConfigChanges(self, restart: bool, tree: bool, theme: bool, syntax: bool) -> None:
+    @pyqtSlot(GuiNeedsUpdate)
+    def _processConfigChanges(self, updateFlags: GuiNeedsUpdate) -> None:
         """Refresh GUI based on flags from the Preferences dialog."""
         logger.debug("Applying new preferences")
         self.initMain()
         self.saveDocument()
 
-        if tree and not theme:
+        if updateFlags.tree and not updateFlags.theme:
             # These are also updated by a theme refresh
             SHARED.project.tree.refreshAllItems()
             self.novelView.refreshCurrentTree()
 
-        if theme:
-            self.refreshThemeColors(syntax=syntax, force=True)
+        if updateFlags.theme:
+            self.refreshThemeColors(syntax=updateFlags.syntax, force=True)
+        if updateFlags.editor or updateFlags.theme:
+            self.docEditor.initEditor()
+        if updateFlags.viewer or updateFlags.theme:
+            self.docViewer.initViewer()
 
-        self.docEditor.initEditor()
-        self.docViewer.initViewer()
         self.projView.initSettings()
         self.novelView.initSettings()
         self.outlineView.initSettings()
@@ -1066,7 +1068,7 @@ class GuiMain(QMainWindow):
         self._lastTotalCount = 0
         self._updateStatusWordCount()
 
-        if restart:
+        if updateFlags.restart:
             SHARED.info(self.tr("Some changes will not be applied until novelWriter has been restarted."))
 
     @pyqtSlot()

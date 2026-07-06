@@ -116,6 +116,16 @@ from novelwriter.types import (
     QtImCurrentSelection,
     QtImCursorRectangle,
     QtKeepAnchor,
+    QtKeyDown,
+    QtKeyEnter,
+    QtKeyEscape,
+    QtKeyLeft,
+    QtKeyPageDown,
+    QtKeyPageUp,
+    QtKeyReturn,
+    QtKeyRight,
+    QtKeyTab,
+    QtKeyUp,
     QtModCtrl,
     QtModNone,
     QtModShift,
@@ -214,15 +224,8 @@ class GuiDocEditor(QTextEdit):
         "_wCounterSel",
     )
 
-    MOVE_KEYS = (
-        Qt.Key.Key_Left,
-        Qt.Key.Key_Right,
-        Qt.Key.Key_Up,
-        Qt.Key.Key_Down,
-        Qt.Key.Key_PageUp,
-        Qt.Key.Key_PageDown,
-    )
-    ENTER_KEYS = (Qt.Key.Key_Return, Qt.Key.Key_Enter)
+    MOVE_KEYS = (QtKeyLeft, QtKeyRight, QtKeyUp, QtKeyDown, QtKeyPageUp, QtKeyPageDown)
+    ENTER_KEYS = (QtKeyReturn, QtKeyEnter)
 
     # Custom Signals
     closeEditorRequest = pyqtSignal()
@@ -562,6 +565,7 @@ class GuiDocEditor(QTextEdit):
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
         if self._docHandle:
+            self._qDocument.setLineHeight(CONFIG.lineHeight)
             self._qDocument.syntaxHighlighter.rehighlight()
             self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
             self._beginSpellPass()
@@ -645,6 +649,7 @@ class GuiDocEditor(QTextEdit):
         """
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self.setPlainText(text)
+        self._qDocument.setLineHeight(CONFIG.lineHeight)
         self.updateDocMargins()
         self.setDocumentChanged(True)
         QApplication.restoreOverrideCursor()
@@ -1152,7 +1157,7 @@ class GuiDocEditor(QTextEdit):
 
         if CONFIG.autoScroll:
             cPos = self.cursorRect().topLeft().y()
-            super().keyPressEvent(event)
+            self._dispatchKeyPress(event)
             nPos = self.cursorRect().topLeft().y()
             kMod = event.modifiers()
             okMod = kMod in (QtModNone, QtModShift)
@@ -1168,7 +1173,7 @@ class GuiDocEditor(QTextEdit):
                     anim.setEndValue(vBar.value() + cMov)
                     anim.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
         else:
-            super().keyPressEvent(event)
+            self._dispatchKeyPress(event)
 
         return
 
@@ -2592,6 +2597,32 @@ class GuiDocEditor(QTextEdit):
     #  Internal Functions
     ##
 
+    def _dispatchKeyPress(self, event: QKeyEvent) -> None:
+        """Send a key event on to the base class for regular handling,
+        except for a plain Return/Enter press, which is handled
+        directly instead.
+
+        Qt's own Return handling (QWidgetTextControlPrivate::
+        insertParagraphSeparator) resets the current block's format to
+        a bare default and swallows the keypress whenever the cursor
+        is on an empty block whose format isn't already default. That
+        heuristic exists so rich-text users can hit Enter twice to
+        escape a list/heading/quote, but every block here always
+        carries a non-default line height, so it fires on every
+        ordinary blank-line paragraph break and silently eats every
+        second Return. novelWriter never uses Qt's native list/heading
+        block formatting, so the heuristic serves no purpose here, and
+        can be bypassed entirely by inserting the new block directly.
+        """
+        if event.key() in self.ENTER_KEYS and event.modifiers() == QtModNone:
+            cursor = self.textCursor()
+            cursor.insertBlock()
+            self.setTextCursor(cursor)
+            self.ensureCursorVisible(centre=False)
+            event.accept()
+        else:
+            super().keyPressEvent(event)
+
     def _applyExtraSelections(self) -> None:
         """Set the editor's extra selections from the line highlight
         and the cached spell error underlines.
@@ -2930,27 +2961,27 @@ class CommandCompleter(QMenu):
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Capture keypresses and forward most of them to the editor."""
-        match event.key():
-            case Qt.Key.Key_Up | Qt.Key.Key_Down:
-                # Let the menu handle navigation
-                super().keyPressEvent(event)
-            case Qt.Key.Key_Right | Qt.Key.Key_Return | Qt.Key.Key_Enter | Qt.Key.Key_Tab:
-                # Activate the selection if there is one, otherwise close the completer
-                if action := self.activeAction():
-                    action.trigger()
-                else:
-                    self.clear()
-                    self.close()
-            case Qt.Key.Key_Left | Qt.Key.Key_Escape:
-                # Cancel the completer
+        key = event.key()
+        if key in (QtKeyUp, QtKeyDown):
+            # Let the menu handle navigation
+            super().keyPressEvent(event)
+        elif key in (QtKeyRight, QtKeyReturn, QtKeyEnter, QtKeyTab):
+            # Activate the selection if there is one, otherwise close the completer
+            if action := self.activeAction():
+                action.trigger()
+            else:
                 self.clear()
                 self.close()
-            case _:
-                # Any other keys, send back to the editor
-                # Also close to release the event lock before forwarding key press (#2510)
-                self.clear()
-                self.close()
-                self._parent.keyPressEvent(event)
+        elif key in (QtKeyLeft, QtKeyEscape):
+            # Cancel the completer
+            self.clear()
+            self.close()
+        else:
+            # Any other keys, send back to the editor
+            # Also close to release the event lock before forwarding key press (#2510)
+            self.clear()
+            self.close()
+            self._parent.keyPressEvent(event)
 
     ##
     #  Internal Slots
