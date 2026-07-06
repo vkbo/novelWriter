@@ -199,6 +199,36 @@ def testGuiViewer_Selection(qtbot, monkeypatch, nwGUI, projPath, mockRnd, ipsumT
 
 
 @pytest.mark.gui
+def testGuiViewer_Zoom(qtbot, nwGUI, projPath, mockRnd, ipsumText):
+    """Test zooming the viewer font via docAction, and resetting it
+    back to the configured font size.
+    """
+    buildTestProject(nwGUI, projPath)
+    docEditor = nwGUI.docEditor
+    docViewer = nwGUI.docViewer
+
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor.setPlainText(f"### Scene\n\n{ipsumText[0]}\n\n")
+    nwGUI.saveDocument()
+    nwGUI.viewDocument(C.hSceneDoc)
+
+    basePt = docViewer.font().pointSizeF()
+
+    assert docViewer.docAction(nwDocAction.ZOOM_IN) is True
+    assert docViewer.font().pointSizeF() == basePt + 1
+
+    assert docViewer.docAction(nwDocAction.ZOOM_OUT) is True
+    assert docViewer.font().pointSizeF() == basePt
+
+    assert docViewer.docAction(nwDocAction.ZOOM_IN) is True
+    assert docViewer.docAction(nwDocAction.ZOOM_IN) is True
+    assert docViewer.font().pointSizeF() == basePt + 2
+
+    assert docViewer.docAction(nwDocAction.ZOOM_RESET) is True
+    assert docViewer.font().pointSizeF() == basePt
+
+
+@pytest.mark.gui
 def testGuiViewer_Links(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test clicking links in the document viewer."""
     buildTestProject(nwGUI, projPath)
