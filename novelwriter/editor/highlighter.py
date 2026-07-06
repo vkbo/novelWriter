@@ -31,7 +31,7 @@ from PyQt6.QtGui import QBrush, QColor, QSyntaxHighlighter, QTextCharFormat, QTe
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, utf16CharMap
-from novelwriter.constants import nwStyles, nwUnicode
+from novelwriter.constants import nwUnicode
 from novelwriter.editor.textblock import TextBlockData
 from novelwriter.enum import nwComment
 from novelwriter.text.formats import processComment
@@ -91,10 +91,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         colEmph = syntax.emph if CONFIG.highlightEmph else None
         fmtCodes = "dot" if CONFIG.dottedModCodes else ""
 
-        h1Size = nwStyles.H_SIZES[1] if CONFIG.scaleHeadings else None
-        h2Size = nwStyles.H_SIZES[2] if CONFIG.scaleHeadings else None
-        h3Size = nwStyles.H_SIZES[3] if CONFIG.scaleHeadings else None
-        h4Size = nwStyles.H_SIZES[4] if CONFIG.scaleHeadings else None
+        # Map to Qt's fixed relative font sizes for heading
+        h1Size = 4 if CONFIG.scaleHeadings else None
+        h2Size = 3 if CONFIG.scaleHeadings else None
+        h3Size = 2 if CONFIG.scaleHeadings else None
+        h4Size = 1 if CONFIG.scaleHeadings else None
 
         # Create Character Formats
         self._addCharFormat("text", syntax.text)
@@ -457,7 +458,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         name: str,
         color: QColor | None = None,
         style: str | None = None,
-        size: float | None = None,
+        size: int | None = None,
     ) -> None:
         """Generate a highlighter character format."""
         charFormat = QTextCharFormat()
@@ -486,7 +487,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         if color:
             charFormat.setForeground(color)
 
-        if size:
-            charFormat.setFontPointSize(round(size * CONFIG.textFont.pointSize()))
+        if size is not None:
+            charFormat.setProperty(QTextCharFormat.Property.FontSizeAdjustment, size)
 
         self._hStyles[name] = charFormat
