@@ -58,6 +58,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     DWORD exitCode = 0;
     if (CreateProcess(NULL, cmd, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
     {
+        // Explicitly grant the child the right to bring its own window to
+        // the foreground. Without this, the implicit grace period Windows
+        // gives a newly launched process expires by the time the splash
+        // screen finishes and the main window is ready to show, so it
+        // opens behind other windows instead of in the foreground.
+        AllowSetForegroundWindow(pi.dwProcessId);
+
         // Keep the launcher process alive until the app exits so that
         // Windows treats them as one continuously-running process for
         // taskbar/shell purposes, and so the app's exit code propagates.
