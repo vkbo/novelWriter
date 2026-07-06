@@ -58,6 +58,7 @@ from PyQt6.QtGui import (
     QTextDocument,
     QTextFormat,
     QTextOption,
+    QWheelEvent,
 )
 from PyQt6.QtWidgets import QApplication, QFrame, QMenu, QTextEdit, QWidget
 
@@ -205,6 +206,9 @@ class GuiDocEditor(QTextEdit):
         "_vpMargin",
         "_wCounterDoc",
         "_wCounterSel",
+        "_zoomIn",
+        "_zoomOut",
+        "_zoomReset",
         "changeFocusState",
         "closeSearch",
         "docFooter",
@@ -352,6 +356,21 @@ class GuiDocEditor(QTextEdit):
         self._nextLine.setKey("Ctrl+Down")
         self._nextLine.setContext(QtWidgetShortcut)
         self._nextLine.activated.connect(qtLambda(self._skipToParagraph, 1))
+
+        self._zoomIn = QShortcut(self)
+        self._zoomIn.setKeys(["Ctrl+=", "Ctrl++"])
+        self._zoomIn.setContext(QtWidgetShortcut)
+        self._zoomIn.activated.connect(qtLambda(self.zoomIn, 1))
+
+        self._zoomOut = QShortcut(self)
+        self._zoomOut.setKey("Ctrl+-")
+        self._zoomOut.setContext(QtWidgetShortcut)
+        self._zoomOut.activated.connect(qtLambda(self.zoomOut, 1))
+
+        self._zoomReset = QShortcut(self)
+        self._zoomReset.setKey("Ctrl+0")
+        self._zoomReset.setContext(QtWidgetShortcut)
+        self._zoomReset.activated.connect(self._resetZoom)
 
         # Set Up Document Word Counter
         self._timerDoc = QTimer(self)
@@ -1234,6 +1253,18 @@ class GuiDocEditor(QTextEdit):
             else:
                 self._processTag(cursor)
         super().mouseReleaseEvent(event)
+
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        """Zoom the editor font with Ctrl+Scroll wheel."""
+        if event.modifiers() & QtModCtrl == QtModCtrl:
+            delta = event.angleDelta().y() // 120
+            if delta > 0:
+                self.zoomIn(delta)
+            elif delta < 0:
+                self.zoomOut(-delta)
+            event.accept()
+            return
+        super().wheelEvent(event)
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         """If the text editor is resized, we must make sure the document
@@ -2908,6 +2939,12 @@ class GuiDocEditor(QTextEdit):
                     cursor.setPosition(block.position())
                     self.setTextCursor(cursor)
                     break
+
+    def _resetZoom(self) -> None:
+        """Reset the editor's font size to the user's configured size."""
+        font = fontMatcher(CONFIG.textFont)
+        self.setFont(font)
+        self._qDocument.setDefaultFont(font)
 
 
 class VimState:

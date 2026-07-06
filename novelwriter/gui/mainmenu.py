@@ -754,7 +754,7 @@ class GuiMainMenu(QMenuBar):
 
         # Format > Remove Block Format
         self.aFmtNoFormat = qtAddAction(self.fmtMenu, self.tr("Remove Block Format"))
-        self.aFmtNoFormat.setShortcuts(["Ctrl+0", "Ctrl+Shift+/"])
+        self.aFmtNoFormat.setShortcut("Ctrl+Shift+/")
         self.aFmtNoFormat.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.BLOCK_TXT))
         self.mainGui.addAction(self.aFmtNoFormat)
 
