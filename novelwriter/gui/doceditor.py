@@ -71,7 +71,6 @@ from PyQt6.QtWidgets import (
     QLabel,
     QLineEdit,
     QMenu,
-    QPlainTextEdit,
     QTextEdit,
     QToolBar,
     QVBoxLayout,
@@ -159,7 +158,7 @@ class _TagAction(IntFlag):
     CREATE = 0b10
 
 
-class GuiDocEditor(QPlainTextEdit):
+class GuiDocEditor(QTextEdit):
     """Gui Widget: Main Document Editor."""
 
     __slots__ = (
@@ -539,7 +538,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument.setDefaultTextOption(options)
 
         # Scrolling
-        self.setCenterOnScroll(CONFIG.scrollPastEnd)
+        # self.setCenterOnScroll(CONFIG.scrollPastEnd)
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
@@ -561,6 +560,7 @@ class GuiDocEditor(QPlainTextEdit):
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
         if self._docHandle:
+            print("Ping!")
             self._qDocument.syntaxHighlighter.rehighlight()
             self._beginSpellPass()
             self.docHeader.setHandle(self._docHandle)
@@ -810,7 +810,7 @@ class GuiDocEditor(QPlainTextEdit):
             cursor = self.textCursor()
             cursor.setPosition(minmax(position, 0, chars - 1))
             self.setTextCursor(cursor)
-            self.centerCursor()
+            # self.centerCursor()
 
     def saveCursorPosition(self) -> None:
         """Save the cursor position to the current project item."""
@@ -1364,7 +1364,7 @@ class GuiDocEditor(QPlainTextEdit):
         if SHARED.project.data.spellCheck and (viewport := self.viewport()):
             cPos = self.textCursor().position()
             last = self.cursorForPosition(viewport.rect().bottomLeft()).blockNumber()
-            block = self.firstVisibleBlock()
+            block = self.cursorForPosition(viewport.rect().topLeft()).block()
             while block.isValid() and block.blockNumber() <= last:
                 if isinstance(data := block.userData(), TextBlockData):
                     position = block.position()
@@ -2467,7 +2467,7 @@ class GuiDocEditor(QPlainTextEdit):
             self._vim.resetCommand()
 
         elif command == "zz":
-            self.centerCursor()
+            # self.centerCursor()
             self.setTextCursor(cursor)
             self._vim.resetCommand()
 
@@ -2604,7 +2604,7 @@ class GuiDocEditor(QPlainTextEdit):
                 # Check the visible blocks first so that their result
                 # is available immediately
                 last = self.cursorForPosition(viewport.rect().bottomLeft()).blockNumber()
-                block = self.firstVisibleBlock()
+                block = self.cursorForPosition(viewport.rect().topLeft()).block()
                 while block.isValid() and block.blockNumber() <= last:
                     if isinstance(data := block.userData(), TextBlockData):
                         data.spellCheck()
