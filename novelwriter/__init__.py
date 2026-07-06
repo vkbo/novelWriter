@@ -242,8 +242,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         try:
             import ctypes
 
-            appID = f"io.novelwriter.{__version__}"
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)  # type: ignore
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("io.novelwriter.app")  # type: ignore
         except Exception:
             pass  # Quietly ignore error
 
