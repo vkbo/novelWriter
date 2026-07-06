@@ -161,6 +161,7 @@ class Config:
         "kernelVer",
         "lastNotes",
         "lightTheme",
+        "lineHeight",
         "lineHighlight",
         "mainPanePos",
         "mainWinSize",
@@ -322,6 +323,7 @@ class Config:
         self.textWidth = 700  # Editor text width
         self.textMargin = 40  # Editor/viewer text margin
         self.tabWidth = 40  # Editor tabulator width
+        self.lineHeight = 1.0  # Editor line height
         self.cursorWidth = 1  # Editor cursor width
         self.lineHighlight = False  # Highlight current line in editor
 

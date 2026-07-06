@@ -562,6 +562,7 @@ class GuiDocEditor(QTextEdit):
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
         if self._docHandle:
+            self._qDocument.setLineHeight(CONFIG.lineHeight)
             self._qDocument.syntaxHighlighter.rehighlight()
             self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
             self._beginSpellPass()
@@ -645,6 +646,7 @@ class GuiDocEditor(QTextEdit):
         """
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self.setPlainText(text)
+        self._qDocument.setLineHeight(CONFIG.lineHeight)
         self.updateDocMargins()
         self.setDocumentChanged(True)
         QApplication.restoreOverrideCursor()
