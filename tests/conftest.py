@@ -250,7 +250,7 @@ def prjLipsum():
 
     shutil.copytree(src, dst)
 
-    # Delete all generated files in a project
+    # Delete all generated files
     (dst / "nwProject.bak").unlink(missing_ok=True)
     (dst / "ToC.txt").unlink(missing_ok=True)
     if (meta := dst / "meta").is_dir():

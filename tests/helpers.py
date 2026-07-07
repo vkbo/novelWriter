@@ -84,13 +84,11 @@ def cmpFiles(
         except Exception as exc:
             print(str(exc))
             return None
-        result = []
-        for n, line in enumerate(lines, start=1):
-            text = line.strip()
-            if n in ignLines or text.startswith(ignStart):
-                continue
-            result.append(text)
-        return result
+        return [
+            line
+            for num, line in enumerate(lines, start=1)
+            if not (num in ignLines or line.lstrip().startswith(ignStart))
+        ]
 
     def colourDiffLine(line: str) -> str:
         """Add bright ANSI colours to a line of a unified diff."""
@@ -104,15 +102,15 @@ def cmpFiles(
             return f"\033[96m{line}\033[0m"
         return line
 
-    txtOne = loadLines(fromFile)
-    txtTwo = loadLines(toFile)
-    if txtOne is None or txtTwo is None:
+    fromText = loadLines(fromFile)
+    toText = loadLines(toFile)
+    if fromText is None or toText is None:
         return False
 
-    if txtOne == txtTwo:
+    if fromText == toText:
         return True
 
-    diff = difflib.unified_diff(txtOne, txtTwo, fromfile=str(fromFile), tofile=str(toFile), lineterm="")
+    diff = difflib.unified_diff(fromText, toText, fromfile=str(fromFile), tofile=str(toFile), lineterm="")
     print("\n".join(colourDiffLine(line) for line in diff))
 
     return False
