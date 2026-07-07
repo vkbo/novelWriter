@@ -887,7 +887,7 @@ def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths, ipsumText):
     assert flatFile.exists()
 
     copyfile(flatFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=ODT_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=ODT_IGNORE)
 
 
 @pytest.mark.core
@@ -939,7 +939,7 @@ def testFmtToOdt_SaveFlatWithEmptyLines(mockGUI, fncPath, tstPaths, ipsumText):
     assert flatFile.exists()
 
     copyfile(flatFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=ODT_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=ODT_IGNORE)
 
 
 @pytest.mark.core
@@ -1022,7 +1022,7 @@ def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths, ipsumText):
     assert cmpFiles(maniFile, maniComp)
     assert cmpFiles(settFile, settComp)
     assert cmpFiles(contFile, contComp)
-    assert cmpFiles(metaFile, metaComp, ignoreStart=ODT_IGNORE)
+    assert cmpFiles(metaFile, metaComp, ignStart=ODT_IGNORE)
     assert cmpFiles(stylFile, stylComp)
 
 

@@ -339,7 +339,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     testFile = tstPaths.outDir / "guiEditor_Main_Initial_nwProject.nwx"
     compFile = tstPaths.refDir / "guiEditor_Main_Initial_nwProject.nwx"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=XML_IGNORE)
 
     # Re-open project
     assert nwGUI.openProject(projPath)
@@ -716,31 +716,31 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     testFile = tstPaths.outDir / "guiEditor_Main_Final_nwProject.nwx"
     compFile = tstPaths.refDir / "guiEditor_Main_Final_nwProject.nwx"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=(*XML_IGNORE, "<spellCheck"))
+    assert cmpFiles(testFile, compFile, ignStart=(*XML_IGNORE, "<spellCheck"))
 
     projFile = projPath / "content" / "000000000000f.nwd"
     testFile = tstPaths.outDir / "guiEditor_Main_Final_000000000000f.nwd"
     compFile = tstPaths.refDir / "guiEditor_Main_Final_000000000000f.nwd"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=NWD_IGNORE)
 
     projFile = projPath / "content" / "0000000000011.nwd"
     testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000011.nwd"
     compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000011.nwd"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=NWD_IGNORE)
 
     projFile = projPath / "content" / "0000000000012.nwd"
     testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000012.nwd"
     compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000012.nwd"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=NWD_IGNORE)
 
     projFile = projPath / "content" / "0000000000013.nwd"
     testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000013.nwd"
     compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000013.nwd"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=NWD_IGNORE)
 
     # qtbot.stop()
 

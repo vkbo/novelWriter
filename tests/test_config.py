@@ -122,7 +122,7 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
         "font",
         "textfont",
     )
-    assert cmpFiles(testFile, compFile, ignoreStart=ignore)
+    assert cmpFiles(testFile, compFile, ignStart=ignore)
     conf.errorText()  # This clears the error cache
 
     # Block saving the file

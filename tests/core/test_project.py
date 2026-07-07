@@ -62,7 +62,7 @@ def testCoreProject_NewRoot(fncPath, tstPaths, mockGUI, mockRnd):
     project.closeProject()
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=XML_IGNORE)
     assert project.projChanged is False
 
     # Delete the new items
@@ -161,7 +161,7 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     assert project.saveProject() is True
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=XML_IGNORE)
     assert project.projChanged is False
 
     # Delete new file, but block access

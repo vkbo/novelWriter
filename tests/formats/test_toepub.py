@@ -651,7 +651,7 @@ def testFmtToEPub_Save(mockGUI, fncPath, tstPaths, ipsumText):
     copyfile(fm1Out, fm1File)
 
     assert cmpFiles(navFile, navComp)
-    assert cmpFiles(opfFile, opfComp, ignoreStart=EPUB_IGNORE)
+    assert cmpFiles(opfFile, opfComp, ignStart=EPUB_IGNORE)
     assert cmpFiles(cssFile, cssComp)
     assert cmpFiles(tocFile, tocComp)
     assert cmpFiles(ch1File, ch1Comp)

@@ -22,9 +22,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import difflib
-import shutil
 import xml.etree.ElementTree as ET
 
+from collections.abc import Sequence
 from datetime import datetime
 from pathlib import Path
 
@@ -66,27 +66,28 @@ class C:
 
 
 def cmpFiles(
-    fromFile: str | Path,
-    toFile: str | Path,
-    ignoreLines: list[int] | None = None,
-    ignoreStart: tuple | None = None,
+    fromFile: Path,
+    toFile: Path,
+    ignLines: Sequence[int] | None = None,
+    ignStart: Sequence[str] | None = None,
 ) -> bool:
     """Compare two files, with optional line ignore by line number, or
     by matching the start of a line, ignoring leading whitespace.
     """
-    ignoreLines = ignoreLines or []
+    ignLines = ignLines or []
+    ignStart = tuple(ignStart or [])
 
-    def loadLines(path: str | Path) -> list[str] | None:
+    def loadLines(path: Path) -> list[str] | None:
+        """Load a file and return its lines, stripping ignored lines."""
         try:
-            with open(path, mode="r", encoding="utf-8") as fo:
-                lines = fo.read().strip().splitlines()
+            lines = path.read_text(encoding="utf-8").strip().splitlines()
         except Exception as exc:
             print(str(exc))
             return None
         result = []
-        for n, line in enumerate(lines):
+        for n, line in enumerate(lines, start=1):
             text = line.strip()
-            if n + 1 in ignoreLines or (ignoreStart is not None and text.startswith(ignoreStart)):
+            if n in ignLines or text.startswith(ignStart):
                 continue
             result.append(text)
         return result
@@ -126,36 +127,14 @@ def xmlToText(xElem):
     return f"{node[0]}{rest}{bits[1]}{bits[2]}"
 
 
-def readFile(fileName: str | Path):
+def readFile(file: Path):
     """Return the content of a file as a string."""
-    with open(fileName, mode="r", encoding="utf-8") as inFile:
-        return inFile.read()
+    return file.read_text(encoding="utf-8")
 
 
-def writeFile(fileName: str | Path, fileData: str):
+def writeFile(file: Path, data: str):
     """Write the contents of a string to a file."""
-    with open(fileName, mode="w", encoding="utf-8") as outFile:
-        outFile.write(fileData)
-
-
-def cleanProject(path: str | Path):
-    """Delete all generated files in a project."""
-    path = Path(path)
-    cacheDir = path / "cache"
-    if cacheDir.is_dir():
-        shutil.rmtree(cacheDir)
-
-    metaDir = path / "meta"
-    if metaDir.is_dir():
-        shutil.rmtree(metaDir)
-
-    bakFile = path / "nwProject.bak"
-    if bakFile.is_file():
-        bakFile.unlink()
-
-    tocFile = path / "ToC.txt"
-    if tocFile.is_file():
-        tocFile.unlink()
+    file.write_text(data, encoding="utf-8")
 
 
 def clearLogHandlers():
@@ -164,7 +143,7 @@ def clearLogHandlers():
         logger.removeHandler(handler)
 
 
-def buildTestProject(obj: object, projPath: Path) -> None:
+def buildTestProject(obj: object, path: Path) -> None:
     """Build a standard test project in projPath using the project
     object as the parent.
     """
@@ -183,7 +162,7 @@ def buildTestProject(obj: object, projPath: Path) -> None:
     else:
         return
 
-    project.storage.createNewProject(projPath)
+    project.storage.createNewProject(path)
     project.setDefaultStatusImport()
 
     project.data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
