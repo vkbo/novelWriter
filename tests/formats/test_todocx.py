@@ -836,7 +836,7 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
         outFile = outDir / name
         refFile = tstPaths.refDir / f"fmtToDocX_SaveDocument_{name}"
         prettifyXml(file, outFile)
-        assert cmpFiles(outFile, refFile, ignoreStart=DOCX_IGNORE)
+        assert cmpFiles(outFile, refFile, ignStart=DOCX_IGNORE)
 
 
 @pytest.mark.core

@@ -21,9 +21,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-import shutil
+import difflib
 import xml.etree.ElementTree as ET
 
+from collections.abc import Sequence
 from datetime import datetime
 from pathlib import Path
 
@@ -65,53 +66,54 @@ class C:
 
 
 def cmpFiles(
-    fileOne: str | Path,
-    fileTwo: str | Path,
-    ignoreLines: list[int] | None = None,
-    ignoreStart: tuple | None = None,
+    fromFile: Path,
+    toFile: Path,
+    ignLines: Sequence[int] | None = None,
+    ignStart: Sequence[str] | None = None,
 ) -> bool:
-    """Compare two files, with optional line ignore."""
-    if ignoreLines is None:
-        ignoreLines = []
+    """Compare two files, with optional line ignore by line number, or
+    by matching the start of a line, ignoring leading whitespace.
+    """
+    ignLines = ignLines or []
+    ignStart = tuple(ignStart or [])
 
-    try:
-        with open(fileOne, mode="r", encoding="utf-8") as fo:
-            txtOne = fo.read().strip().splitlines()
-    except Exception as exc:
-        print(str(exc))
+    def loadLines(path: Path) -> list[str] | None:
+        """Load a file and return its lines, stripping ignored lines."""
+        try:
+            lines = path.read_text(encoding="utf-8").strip().splitlines()
+        except Exception as exc:
+            print(str(exc))
+            return None
+        return [
+            line
+            for num, line in enumerate(lines, start=1)
+            if not (num in ignLines or line.lstrip().startswith(ignStart))
+        ]
+
+    def colourDiffLine(line: str) -> str:
+        """Add bright ANSI colours to a line of a unified diff."""
+        if line.startswith(("+++", "---")):
+            return f"\033[1m{line}\033[0m"
+        elif line.startswith("+"):
+            return f"\033[92m{line}\033[0m"
+        elif line.startswith("-"):
+            return f"\033[91m{line}\033[0m"
+        elif line.startswith("@@"):
+            return f"\033[96m{line}\033[0m"
+        return line
+
+    fromText = loadLines(fromFile)
+    toText = loadLines(toFile)
+    if fromText is None or toText is None:
         return False
 
-    try:
-        with open(fileTwo, mode="r", encoding="utf-8") as fo:
-            txtTwo = fo.read().strip().splitlines()
-    except Exception as exc:
-        print(str(exc))
-        return False
+    if fromText == toText:
+        return True
 
-    if len(txtOne) != len(txtTwo):
-        print("Files are not the same length")
-        return False
+    diff = difflib.unified_diff(fromText, toText, fromfile=str(fromFile), tofile=str(toFile), lineterm="")
+    print("\n".join(colourDiffLine(line) for line in diff))
 
-    diffFound = False
-    for n in range(len(txtOne)):
-        lnOne = txtOne[n].strip()
-        lnTwo = txtTwo[n].strip()
-
-        if n + 1 in ignoreLines:
-            print(f"Ignoring line {n + 1}")
-            continue
-
-        if ignoreStart is not None and lnOne.startswith(ignoreStart):
-            print(f"Ignoring line {n + 1}")
-            continue
-
-        if lnOne != lnTwo:
-            print(f"Diff on line {n + 1}:")
-            print(f" << '{lnOne}'")
-            print(f" >> '{lnTwo}'")
-            diffFound = True
-
-    return not diffFound
+    return False
 
 
 def xmlToText(xElem):
@@ -123,36 +125,14 @@ def xmlToText(xElem):
     return f"{node[0]}{rest}{bits[1]}{bits[2]}"
 
 
-def readFile(fileName: str | Path):
+def readFile(file: Path):
     """Return the content of a file as a string."""
-    with open(fileName, mode="r", encoding="utf-8") as inFile:
-        return inFile.read()
+    return file.read_text(encoding="utf-8")
 
 
-def writeFile(fileName: str | Path, fileData: str):
+def writeFile(file: Path, data: str):
     """Write the contents of a string to a file."""
-    with open(fileName, mode="w", encoding="utf-8") as outFile:
-        outFile.write(fileData)
-
-
-def cleanProject(path: str | Path):
-    """Delete all generated files in a project."""
-    path = Path(path)
-    cacheDir = path / "cache"
-    if cacheDir.is_dir():
-        shutil.rmtree(cacheDir)
-
-    metaDir = path / "meta"
-    if metaDir.is_dir():
-        shutil.rmtree(metaDir)
-
-    bakFile = path / "nwProject.bak"
-    if bakFile.is_file():
-        bakFile.unlink()
-
-    tocFile = path / "ToC.txt"
-    if tocFile.is_file():
-        tocFile.unlink()
+    file.write_text(data, encoding="utf-8")
 
 
 def clearLogHandlers():
@@ -161,7 +141,7 @@ def clearLogHandlers():
         logger.removeHandler(handler)
 
 
-def buildTestProject(obj: object, projPath: Path) -> None:
+def buildTestProject(obj: object, path: Path) -> None:
     """Build a standard test project in projPath using the project
     object as the parent.
     """
@@ -180,7 +160,7 @@ def buildTestProject(obj: object, projPath: Path) -> None:
     else:
         return
 
-    project.storage.createNewProject(projPath)
+    project.storage.createNewProject(path)
     project.setDefaultStatusImport()
 
     project.data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")

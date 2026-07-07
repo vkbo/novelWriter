@@ -2,13 +2,14 @@
 
 ## AI Policy
 
-- This repository does not allow large AI-generated contributions. Such PRs will be rejected.
+- This repository does not allow large AI-generated contributions, and such PRs will be rejected
 - Code can be written with AI assistance, but it must stay concise, performant, and match the existing code quality
 
 ## Scope
 
-- This repository is `novelWriter`, a Python application using PyQt6
+- This repository is `novelWriter`, a Python application using PyQt6 (Qt6)
 - The root import path for application code is `novelwriter`
+- This code base uses British English as the main language for documents, docstrings, and comments
 
 ## Working Rules
 
@@ -24,7 +25,7 @@
 ## Codebase Navigation
 
 - Application code lives under `novelwriter/`; everything else is supporting code and build scripts
-- Build getter key strings used with `BuildSettings` are defined in `novelwriter/manuscript/buildsettings.py`
+- Manuscript build getter key strings used with `BuildSettings` are defined in `novelwriter/manuscript/buildsettings.py`
 - For format changes, check adjacent implementations before modifying shared logic; format classes are write-only and do not need to read the same file formats
 
 ## Validation

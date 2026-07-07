@@ -120,7 +120,7 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
     # Write properly, and compare
     assert docMerger.writeTargetDoc() is True
     copyfile(saveFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=NWD_IGNORE)
 
     # Merge into Existing
     # ===================
@@ -140,7 +140,7 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
 
     assert docMerger.writeTargetDoc() is True
     copyfile(saveFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=NWD_IGNORE)
 
     # Appending without a comment header
     countBefore = len(docMerger._text)
@@ -483,7 +483,7 @@ def testCoreTools_DocDuplicator(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd
     compFile = tstPaths.refDir / "coreTools_DocDuplicator_nwProject.nwx"
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=XML_IGNORE)
 
     # If duplicating an item fails, later items are still processed
     with monkeypatch.context() as mp:
@@ -651,7 +651,7 @@ def testCoreTools_ProjectBuilderA(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     compFile = tstPaths.refDir / "coreTools_ProjectBuilderA_nwProject.nwx"
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=XML_IGNORE)
 
     # Check Content
     project = NWProject()
@@ -666,7 +666,7 @@ def testCoreTools_ProjectBuilderA(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     compFile = tstPaths.refDir / "coreTools_ProjectBuilderA_Project.md"
 
     assert list(docBuild.iterBuildDocument(testFile, nwBuildFmt.EXT_MD))
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=XML_IGNORE)
 
 
 @pytest.mark.core
@@ -699,7 +699,7 @@ def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     compFile = tstPaths.refDir / "coreTools_ProjectBuilderB_nwProject.nwx"
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=XML_IGNORE)
 
     # Check Content
     project = NWProject()
@@ -714,7 +714,7 @@ def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     compFile = tstPaths.refDir / "coreTools_ProjectBuilderB_Project.md"
 
     assert list(docBuild.iterBuildDocument(testFile, nwBuildFmt.EXT_MD))
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile, ignStart=XML_IGNORE)
 
 
 @pytest.mark.core

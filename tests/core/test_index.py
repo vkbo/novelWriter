@@ -166,7 +166,7 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
 
     # Check File
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreLines=[3, 4])
+    assert cmpFiles(testFile, compFile, ignLines=[3, 4])
 
     # Write an empty index file and load it
     projFile.write_text("{}", encoding="utf-8")

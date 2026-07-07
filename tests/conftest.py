@@ -38,7 +38,6 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.enum import nwTheme
 
-from tests.helpers import cleanProject
 from tests.mocked import MockGuiMain
 
 _TST_ROOT = Path(__file__).parent
@@ -244,18 +243,23 @@ def prjLipsum():
     """A medium sized novelWriter example project with a lot of Lorem
     Ipsum text.
     """
-    srcDir = _TST_ROOT / "_lipsum"
-    dstDir = _TMP_ROOT / "lipsum"
-    if dstDir.exists():
-        shutil.rmtree(dstDir)
+    src = _TST_ROOT / "_lipsum"
+    dst = _TMP_ROOT / "lipsum"
+    if dst.exists():
+        shutil.rmtree(dst)
 
-    shutil.copytree(srcDir, dstDir)
-    cleanProject(dstDir)
+    shutil.copytree(src, dst)
 
-    yield dstDir
+    # Delete all generated files
+    (dst / "nwProject.bak").unlink(missing_ok=True)
+    (dst / "ToC.txt").unlink(missing_ok=True)
+    if (meta := dst / "meta").is_dir():
+        shutil.rmtree(meta)
 
-    if dstDir.exists():
-        shutil.rmtree(dstDir)
+    yield dst
+
+    if dst.exists():
+        shutil.rmtree(dst)
 
 
 @pytest.fixture(scope="session")

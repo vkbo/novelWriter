@@ -114,7 +114,7 @@ def testManusDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tst
     assert error == []
 
     copyfile(docFile, tstFile)
-    assert cmpFiles(tstFile, cmpFile, ignoreStart=ODT_IGNORE)
+    assert cmpFiles(tstFile, cmpFile, ignStart=ODT_IGNORE)
 
     # Check ODT Build
     # ===============
@@ -237,7 +237,7 @@ def testManusDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     assert error == []
 
     copyfile(docFile, tstFile)
-    assert cmpFiles(tstFile, cmpFile, ignoreLines=[5, 6])
+    assert cmpFiles(tstFile, cmpFile, ignLines=[5, 6])
 
     # Check Error Handling
     # ====================
@@ -446,7 +446,7 @@ def testManusDocBuild_NWD(mockGUI, prjLipsum, fncPath, tstPaths):
     assert error == []
 
     copyfile(docFile, tstFile)
-    assert cmpFiles(tstFile, cmpFile, ignoreLines=[5, 6])
+    assert cmpFiles(tstFile, cmpFile, ignLines=[5, 6])
 
 
 @pytest.mark.core
