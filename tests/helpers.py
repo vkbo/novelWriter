@@ -21,6 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import difflib
 import shutil
 import xml.etree.ElementTree as ET
 
@@ -65,53 +66,55 @@ class C:
 
 
 def cmpFiles(
-    fileOne: str | Path,
-    fileTwo: str | Path,
+    fromFile: str | Path,
+    toFile: str | Path,
     ignoreLines: list[int] | None = None,
     ignoreStart: tuple | None = None,
 ) -> bool:
-    """Compare two files, with optional line ignore."""
-    if ignoreLines is None:
-        ignoreLines = []
+    """Compare two files, with optional line ignore by line number, or
+    by matching the start of a line, ignoring leading whitespace.
+    """
+    ignoreLines = ignoreLines or []
 
-    try:
-        with open(fileOne, mode="r", encoding="utf-8") as fo:
-            txtOne = fo.read().strip().splitlines()
-    except Exception as exc:
-        print(str(exc))
+    def loadLines(path: str | Path) -> list[str] | None:
+        try:
+            with open(path, mode="r", encoding="utf-8") as fo:
+                lines = fo.read().strip().splitlines()
+        except Exception as exc:
+            print(str(exc))
+            return None
+        result = []
+        for n, line in enumerate(lines):
+            text = line.strip()
+            if n + 1 in ignoreLines or (ignoreStart is not None and text.startswith(ignoreStart)):
+                continue
+            result.append(text)
+        return result
+
+    def colourDiffLine(line: str) -> str:
+        """Add bright ANSI colours to a line of a unified diff."""
+        if line.startswith(("+++", "---")):
+            return f"\033[1m{line}\033[0m"
+        elif line.startswith("+"):
+            return f"\033[92m{line}\033[0m"
+        elif line.startswith("-"):
+            return f"\033[91m{line}\033[0m"
+        elif line.startswith("@@"):
+            return f"\033[96m{line}\033[0m"
+        return line
+
+    txtOne = loadLines(fromFile)
+    txtTwo = loadLines(toFile)
+    if txtOne is None or txtTwo is None:
         return False
 
-    try:
-        with open(fileTwo, mode="r", encoding="utf-8") as fo:
-            txtTwo = fo.read().strip().splitlines()
-    except Exception as exc:
-        print(str(exc))
-        return False
+    if txtOne == txtTwo:
+        return True
 
-    if len(txtOne) != len(txtTwo):
-        print("Files are not the same length")
-        return False
+    diff = difflib.unified_diff(txtOne, txtTwo, fromfile=str(fromFile), tofile=str(toFile), lineterm="")
+    print("\n".join(colourDiffLine(line) for line in diff))
 
-    diffFound = False
-    for n in range(len(txtOne)):
-        lnOne = txtOne[n].strip()
-        lnTwo = txtTwo[n].strip()
-
-        if n + 1 in ignoreLines:
-            print(f"Ignoring line {n + 1}")
-            continue
-
-        if ignoreStart is not None and lnOne.startswith(ignoreStart):
-            print(f"Ignoring line {n + 1}")
-            continue
-
-        if lnOne != lnTwo:
-            print(f"Diff on line {n + 1}:")
-            print(f" << '{lnOne}'")
-            print(f" >> '{lnTwo}'")
-            diffFound = True
-
-    return not diffFound
+    return False
 
 
 def xmlToText(xElem):
