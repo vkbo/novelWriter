@@ -750,9 +750,10 @@ class GuiPreferences(NDialog):
         self.mnLineSymbols = QMenu(self)
         for symbol in nwQuotes.ALLOWED:
             label = trConst(nwQuotes.SYMBOLS.get(symbol, nwQuotes.DASHES.get(symbol, "None")))
-            self.mnLineSymbols.addAction(
-                f"[ {symbol} ] {label}", lambda symbol=symbol: self._insertDialogLineSymbol(symbol)
-            )
+            if action := self.mnLineSymbols.addAction(f"[ {symbol} ] {label}"):  # pragma: no branch
+                action.setData(symbol)
+
+        self.mnLineSymbols.triggered.connect(self._insertDialogLineSymbol)
 
         self.dialogLine = QLineEdit(self)
         self.dialogLine.setMinimumWidth(100)
@@ -1074,11 +1075,11 @@ class GuiPreferences(NDialog):
         """Toggle switch that depends on the backup on close switch."""
         self.askBeforeBackup.setEnabled(state)
 
-    @pyqtSlot(str)
-    def _insertDialogLineSymbol(self, symbol: str) -> None:
+    @pyqtSlot(QAction)
+    def _insertDialogLineSymbol(self, action: QAction) -> None:
         """Insert a symbol in the dialogue line box."""
         current = self.dialogLine.text()
-        values = processDialogSymbols(f"{current} {symbol}")
+        values = processDialogSymbols(f"{current} {action.data()}")
         self.dialogLine.setText(" ".join(values))
 
     @pyqtSlot(bool)
