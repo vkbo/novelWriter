@@ -1549,10 +1549,9 @@ class GuiDocEditor(QTextEdit):
     @pyqtSlot("QPoint")
     def _openContextMenu(self, pos: QPoint) -> None:
         """Open the editor context menu at a given coordinate."""
-        uCursor = self.textCursor()
         pCursor = self.cursorForPosition(pos)
         pBlock = pCursor.block()
-        hasSelection = uCursor.hasSelection()
+        hasSelection = self.textCursor().hasSelection()
 
         ctxMenu = QMenu(self)
         ctxMenu.setObjectName("ContextMenu")
@@ -1609,25 +1608,25 @@ class GuiDocEditor(QTextEdit):
             word, sPos, ePos, suggest = self._qDocument.spellErrorAtPos(pCursor.position())
             if word and sPos >= 0:
                 logger.debug("Word '%s' is misspelled", word)
-                block = pCursor.block()
-                bPos = block.position()
-                sCursor = self.textCursor()
-                sCursor.setPosition(bPos + sPos)
-                sCursor.setPosition(bPos + ePos, QtKeepAnchor)
+                wBlock = pCursor.block()
+                wPos = wBlock.position()
+                wCursor = self.textCursor()
+                wCursor.setPosition(wPos + sPos)
+                wCursor.setPosition(wPos + ePos, QtKeepAnchor)
                 if suggest:
                     ctxMenu.addSeparator()
                     qtAddAction(ctxMenu, self._trSpellSuggest)
                     for option in suggest[:15]:
                         action = qtAddAction(ctxMenu, f"{nwUnicode.U_ENDASH} {option}")
-                        action.triggered.connect(qtLambda(self._correctWord, sCursor, option))
+                        action.triggered.connect(qtLambda(self._correctWord, wCursor, option))
                 else:
                     qtAddAction(ctxMenu, f"{nwUnicode.U_ENDASH} {self._trNoSuggest}")
 
                 ctxMenu.addSeparator()
                 action = qtAddAction(ctxMenu, self._trIgnoreWord)
-                action.triggered.connect(qtLambda(self._addWord, word, block, False))
+                action.triggered.connect(qtLambda(self._addWord, word, wBlock, False))
                 action = qtAddAction(ctxMenu, self._trAddWord)
-                action.triggered.connect(qtLambda(self._addWord, word, block, True))
+                action.triggered.connect(qtLambda(self._addWord, word, wBlock, True))
 
         # Execute the context menu
         if viewport := self.viewport():  # pragma: no branch
