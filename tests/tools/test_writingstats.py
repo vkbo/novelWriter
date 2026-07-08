@@ -135,6 +135,8 @@ def testGuiWritingStats_Export(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
         assert not sessLog._saveData(sessLog.FMT_CSV)
         assert not sessLog._saveData(sessLog.FMT_JSON)
         assert not sessLog._saveData(None)  # type: ignore
+        sessLog.saveJSON.trigger()
+        sessLog.saveCSV.trigger()
 
     # Sort by time
     sessLog.listBox.sortByColumn(sessLog.C_TIME, Qt.SortOrder.AscendingOrder)
