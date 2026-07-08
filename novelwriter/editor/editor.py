@@ -75,8 +75,8 @@ from novelwriter.editor.editordocument import GuiTextDocument
 from novelwriter.editor.editsearch import GuiDocEditSearch
 from novelwriter.editor.edittoolbar import GuiDocToolBar
 from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE
-from novelwriter.editor.runnables import BackgroundTextCheck, BackgroundWordCounter
-from novelwriter.editor.textblock import TextBlockData
+from novelwriter.editor.runnables import BackgroundTextCheck, BackgroundWordCounter, T_TextCheckPayload
+from novelwriter.editor.textblock import T_TextCheckResult, TextBlockData
 from novelwriter.enum import (
     nwChange,
     nwComment,
@@ -131,6 +131,9 @@ from novelwriter.types import (
 )
 
 logger = logging.getLogger(__name__)
+
+T_TextCheckBlock = tuple[QTextBlock, TextBlockData, int]
+T_TextCheckJob = tuple[int, list[T_TextCheckBlock]]
 
 
 class _SelectAction(Enum):
@@ -270,7 +273,7 @@ class GuiDocEditor(QTextEdit):
         self._suppressed = False
         self._checkPassNo = -1
         self._spellPassNotify = False
-        self._checkJob: tuple[int, list[tuple[QTextBlock, TextBlockData, int]]] | None = None
+        self._checkJob: T_TextCheckJob | None = None
         self._checkJobId = 0
 
         # Context Menu Translation
@@ -1474,12 +1477,11 @@ class GuiDocEditor(QTextEdit):
         pass, but modified blocks are covered by the debounce anyway.
         """
         if self._checkJob is not None:
-            # There is already a job running, and a new dispatch is
-            # made when its results come in
+            # There is already a job running, and a new dispatch is made when its results come in
             return
 
-        job = []
-        payload = []
+        job: list[T_TextCheckBlock] = []
+        payload: T_TextCheckPayload = []
         while self._dirtyBlocks and len(job) < nwConst.CHECK_PASS_CHUNK:
             _, block = self._dirtyBlocks.popitem()
             if block.isValid() and isinstance(data := block.userData(), TextBlockData):  # pragma: no branch
@@ -1511,10 +1513,8 @@ class GuiDocEditor(QTextEdit):
             self._spellPassNotify = False
             SHARED.newStatusMessage(self.tr("Spell check complete"))
 
-    @pyqtSlot(int, object)
-    def _textCheckResults(
-        self, jobId: int, results: list[tuple[int, list[tuple[int, int, str]], list[tuple[int, int, str]]]]
-    ) -> None:
+    @pyqtSlot(int, list)
+    def _textCheckResults(self, jobId: int, results: list[tuple[int, T_TextCheckResult, T_TextCheckResult]]) -> None:
         """Process the results from the spell/format check worker.
         Results are discarded if the job was cancelled, or per block if
         the block was modified or removed while the worker was running.
@@ -1549,10 +1549,9 @@ class GuiDocEditor(QTextEdit):
     @pyqtSlot("QPoint")
     def _openContextMenu(self, pos: QPoint) -> None:
         """Open the editor context menu at a given coordinate."""
-        uCursor = self.textCursor()
         pCursor = self.cursorForPosition(pos)
         pBlock = pCursor.block()
-        hasSelection = uCursor.hasSelection()
+        hasSelection = self.textCursor().hasSelection()
 
         ctxMenu = QMenu(self)
         ctxMenu.setObjectName("ContextMenu")
@@ -1609,25 +1608,25 @@ class GuiDocEditor(QTextEdit):
             word, sPos, ePos, suggest = self._qDocument.spellErrorAtPos(pCursor.position())
             if word and sPos >= 0:
                 logger.debug("Word '%s' is misspelled", word)
-                block = pCursor.block()
-                bPos = block.position()
-                sCursor = self.textCursor()
-                sCursor.setPosition(bPos + sPos)
-                sCursor.setPosition(bPos + ePos, QtKeepAnchor)
+                wBlock = pCursor.block()
+                wPos = wBlock.position()
+                wCursor = self.textCursor()
+                wCursor.setPosition(wPos + sPos)
+                wCursor.setPosition(wPos + ePos, QtKeepAnchor)
                 if suggest:
                     ctxMenu.addSeparator()
                     qtAddAction(ctxMenu, self._trSpellSuggest)
                     for option in suggest[:15]:
                         action = qtAddAction(ctxMenu, f"{nwUnicode.U_ENDASH} {option}")
-                        action.triggered.connect(qtLambda(self._correctWord, sCursor, option))
+                        action.triggered.connect(qtLambda(self._correctWord, wCursor, option))
                 else:
                     qtAddAction(ctxMenu, f"{nwUnicode.U_ENDASH} {self._trNoSuggest}")
 
                 ctxMenu.addSeparator()
                 action = qtAddAction(ctxMenu, self._trIgnoreWord)
-                action.triggered.connect(qtLambda(self._addWord, word, block, False))
+                action.triggered.connect(qtLambda(self._addWord, word, wBlock, False))
                 action = qtAddAction(ctxMenu, self._trAddWord)
-                action.triggered.connect(qtLambda(self._addWord, word, block, True))
+                action.triggered.connect(qtLambda(self._addWord, word, wBlock, True))
 
         # Execute the context menu
         if viewport := self.viewport():  # pragma: no branch

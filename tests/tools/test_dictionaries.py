@@ -37,7 +37,7 @@ from tests.mocked import causeException, causeOSError
 
 
 @pytest.mark.gui
-def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
+def testGuiDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     """Test the Dictionaries downloader tool."""
     # Must also create the enchant folder, see issue #1874
     enchPath = fncPath / "enchant"

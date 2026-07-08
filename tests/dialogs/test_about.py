@@ -33,7 +33,7 @@ from novelwriter.dialogs.about import GuiAbout
 
 
 @pytest.mark.gui
-def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
+def testGuiAbout_NWDialog(qtbot, monkeypatch, nwGUI):
     """Test the novelWriter about dialogs."""
     monkeypatch.setattr(GuiAbout, "exec", lambda *a: None)
 
@@ -55,7 +55,7 @@ def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
 
 
 @pytest.mark.gui
-def testDlgAbout_QtDialog(monkeypatch, nwGUI):
+def testGuiAbout_QtDialog(monkeypatch, nwGUI):
     """Test the Qt about dialogs."""
     monkeypatch.setattr(QMessageBox, "aboutQt", lambda *a, **k: None)
 

@@ -35,7 +35,7 @@ from tests.mocked import causeOSError
 
 
 @pytest.mark.core
-def testCoreSessions_Main(monkeypatch, mockGUI, fncPath):
+def testNWSessionLog_Main(monkeypatch, mockGUI, fncPath):
     """Test log file handling of the NWSessionLog class."""
     project = NWProject()
     buildTestProject(project, fncPath)

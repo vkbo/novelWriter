@@ -33,7 +33,7 @@ from tests.helpers import SimpleDialog
 
 
 @pytest.mark.gui
-def testExtSwitch_Main(qtbot):
+def testNSwitch_Main(qtbot):
     """Test the NSwitch class. This is mostly a check that all the calls
     work as the result is visual.
     """

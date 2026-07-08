@@ -1,6 +1,6 @@
 """
-novelWriter – GUI Syntax Highlighter Tester
-===========================================
+novelWriter – Syntax Highlighter Class Tester
+=============================================
 
 This file is a part of novelWriter
 Copyright (C) 2025 Veronica Berglyd Olsen and novelWriter contributors

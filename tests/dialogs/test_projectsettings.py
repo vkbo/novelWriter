@@ -40,7 +40,7 @@ KEY_DELAY = 1
 
 
 @pytest.mark.gui
-def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
+def testGuiProjectSettings_Dialog(qtbot, monkeypatch, nwGUI):
     """Test the main dialog class. Saving settings is not tested in this
     test, but are instead tested in the individual tab tests.
     """
@@ -92,7 +92,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
 
 
 @pytest.mark.gui
-def testDlgProjSettings_SettingsPage(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
+def testGuiProjectSettings_SettingsPage(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     """Test the settings page of the dialog."""
     languages = [("en", "English"), ("de", "German")]
     monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: languages)
@@ -156,7 +156,7 @@ def testDlgProjSettings_SettingsPage(qtbot, monkeypatch, nwGUI, fncPath, projPat
 
 
 @pytest.mark.gui
-def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+def testGuiProjectSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the status and importance pages of the dialog."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
     buildTestProject(nwGUI, projPath)
@@ -345,7 +345,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
 
 
 @pytest.mark.gui
-def testDlgProjSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+def testGuiProjectSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the status and importance import/export."""
     buildTestProject(nwGUI, projPath)
 
@@ -434,7 +434,7 @@ def testDlgProjSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPath, 
 
 
 @pytest.mark.gui
-def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+def testGuiProjectSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the auto-replace page of the dialog."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
     buildTestProject(nwGUI, projPath)

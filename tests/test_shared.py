@@ -40,7 +40,7 @@ from tests.mocked import MockGuiMain, MockTheme
 
 
 @pytest.mark.base
-def testBaseSharedData_Init():
+def testSharedData_Init():
     """Test SharedData class initialisation."""
     shared = SharedData()
 
@@ -73,7 +73,7 @@ def testBaseSharedData_Init():
 
 
 @pytest.mark.base
-def testBaseSharedData_Functions(monkeypatch):
+def testSharedData_Functions(monkeypatch):
     """Test SharedData class functions."""
     shared = SharedData()
 
@@ -87,7 +87,7 @@ def testBaseSharedData_Functions(monkeypatch):
 
 
 @pytest.mark.base
-def testBaseSharedData_Projects(monkeypatch, caplog, fncPath):
+def testSharedData_Projects(monkeypatch, caplog, fncPath):
     """Test SharedData handling of projects."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -147,7 +147,7 @@ def testBaseSharedData_Projects(monkeypatch, caplog, fncPath):
 
 
 @pytest.mark.base
-def testBaseSharedData_EdgeCases(qtbot, monkeypatch, mockGUI):
+def testSharedData_EdgeCases(qtbot, monkeypatch, mockGUI):
     """Test defensive branches in SharedData not covered by the other
     functional tests: spell check no-ops, progress bar and thread pool
     calls with no GUI, and a signal proxy for a stale project.
@@ -188,7 +188,7 @@ def testBaseSharedData_EdgeCases(qtbot, monkeypatch, mockGUI):
 
 
 @pytest.mark.base
-def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog, mockGUI):
+def testSharedData_Alerts(qtbot, monkeypatch, caplog, mockGUI):
     """Test SharedData class alert helper functions."""
     monkeypatch.setattr(_GuiAlert, "exec", lambda *a: None)
     monkeypatch.setattr(_GuiAlert, "finalState", True)
@@ -248,7 +248,7 @@ def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog, mockGUI):
 
 
 @pytest.mark.base
-def testBaseSharedData_GuiAlert():
+def testSharedData_GuiAlert():
     """Test the _GuiAlert class."""
     alert = _GuiAlert(None, MockTheme())  # type: ignore
 

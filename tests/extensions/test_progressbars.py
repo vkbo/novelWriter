@@ -33,7 +33,7 @@ from tests.helpers import SimpleDialog
 
 
 @pytest.mark.gui
-def testExtProgressBars_NProgressCircle(qtbot):
+def testNProgressCircle_Main(qtbot):
     """Test the NProgressCircle class."""
     dialog = SimpleDialog()
     progress = NProgressCircle(dialog, 200, 16)
@@ -66,7 +66,7 @@ def testExtProgressBars_NProgressCircle(qtbot):
 
 
 @pytest.mark.gui
-def testExtProgressBars_NProgressSimple(qtbot):
+def testNProgressSimple_Main(qtbot):
     """Test the NProgressSimple class."""
     dialog = SimpleDialog()
     progress = NProgressSimple(dialog)

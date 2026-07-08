@@ -75,7 +75,7 @@ def mockItems(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
+def testNWTree_Populate(monkeypatch, mockGUI, mockItems):
     """Test populating the project tree."""
     project = NWProject()
     tree = NWTree(project)
@@ -227,7 +227,7 @@ def testCoreTree_Populate(monkeypatch, mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_ManipulateTree(monkeypatch, mockGUI, mockItems):
+def testNWTree_ManipulateTree(monkeypatch, mockGUI, mockItems):
     """Check create, add, remove and duplicate items."""
     project = NWProject()
     tree = NWTree(project)
@@ -430,7 +430,7 @@ def testCoreTree_ManipulateTree(monkeypatch, mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_PickParent(mockGUI, mockItems):
+def testNWTree_PickParent(mockGUI, mockItems):
     """Check the parent item picker."""
     project = NWProject()
     tree = NWTree(project)
@@ -569,7 +569,7 @@ def testCoreTree_PickParent(mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_ItemMethods(monkeypatch, mockGUI, mockItems):
+def testNWTree_ItemMethods(monkeypatch, mockGUI, mockItems):
     """Check the item methods of the tree."""
     project = NWProject()
     tree = NWTree(project)
@@ -659,7 +659,7 @@ def testCoreTree_ItemMethods(monkeypatch, mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
+def testNWTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
     """Check other methods in the tree."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -721,7 +721,7 @@ def testCoreTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTree_CheckConsistency(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
+def testNWTree_CheckConsistency(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     """Check the project tree's consistency."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -803,7 +803,7 @@ def testCoreTree_CheckConsistency(monkeypatch, caplog, mockGUI, fncPath, mockRnd
 
 
 @pytest.mark.core
-def testCoreTree_MakeHandles(mockGUI):
+def testNWTree_MakeHandles(mockGUI):
     """Test generating item handles."""
     random.seed(42)
     project = NWProject()
@@ -830,7 +830,7 @@ def testCoreTree_MakeHandles(mockGUI):
 
 
 @pytest.mark.core
-def testCoreTree_DuplicateHandleGuards(mockGUI, mockItems):
+def testNWTree_DuplicateHandleGuards(mockGUI, mockItems):
     """Test duplicate handle guards in add and _addItems."""
     project = NWProject()
     tree = NWTree(project)
@@ -861,7 +861,7 @@ def testCoreTree_DuplicateHandleGuards(mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_RootParentIsNormalisedToTopLevel(mockGUI, mockItems):
+def testNWTree_RootParentIsNormalisedToTopLevel(mockGUI, mockItems):
     """Check malformed root parent references are normalised."""
     project = NWProject()
     tree = NWTree(project)
@@ -893,7 +893,7 @@ def testCoreTree_RootParentIsNormalisedToTopLevel(mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_UnresolvedItemsKeepLoadedTreeConsistent(monkeypatch, mockGUI, mockItems):
+def testNWTree_UnresolvedItemsKeepLoadedTreeConsistent(monkeypatch, mockGUI, mockItems):
     """Check unresolved unpack entries do not break loaded tree consistency."""
     project = NWProject()
     tree = NWTree(project)
@@ -913,7 +913,7 @@ def testCoreTree_UnresolvedItemsKeepLoadedTreeConsistent(monkeypatch, mockGUI, m
 
 
 @pytest.mark.core
-def testCoreTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
+def testNWTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
     """Test writing the ToC.txt file."""
     project = NWProject()
     tree = NWTree(project)

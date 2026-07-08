@@ -38,7 +38,7 @@ from tests.helpers import C, buildTestProject
 
 
 @pytest.mark.gui
-def testManuscriptBuild_Main(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockRnd):
+def testGuiManuscriptBuild_Main(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockRnd):
     """Test the GuiManuscriptBuild dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -99,7 +99,7 @@ def testManuscriptBuild_Main(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockR
 
 
 @pytest.mark.gui
-def testManuscriptBuild_ErrorHandling(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockRnd):
+def testGuiManuscriptBuild_ErrorHandling(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockRnd):
     """Test error handling in the GuiManuscriptBuild dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -168,7 +168,7 @@ def testManuscriptBuild_ErrorHandling(monkeypatch, qtbot, nwGUI, fncPath, projPa
 
 
 @pytest.mark.gui
-def testManuscriptBuild_EdgeCases(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockRnd):
+def testGuiManuscriptBuild_EdgeCases(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockRnd):
     """Test edge cases in the GuiManuscriptBuild dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)

@@ -45,7 +45,7 @@ def testFmtToEPub_MkTag():
 
 
 @pytest.mark.core
-def testFmtToEPub_ConvertNovelHeaders(mockGUI):
+def testToEPub_ConvertNovelHeaders(mockGUI):
     """Test header formats in the ToEPub class."""
     project = NWProject()
     epub = ToEPub(project)
@@ -106,7 +106,7 @@ def testFmtToEPub_ConvertNovelHeaders(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToEPub_ConvertNotesHeaders(mockGUI):
+def testToEPub_ConvertNotesHeaders(mockGUI):
     """Test note header formats in the ToEPub class."""
     project = NWProject()
     epub = ToEPub(project)
@@ -159,7 +159,7 @@ def testFmtToEPub_ConvertNotesHeaders(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToEPub_ConvertParagraphs(mockGUI):
+def testToEPub_ConvertParagraphs(mockGUI):
     """Test paragraph formats in the ToEPub class."""
     project = NWProject()
     epub = ToEPub(project)
@@ -242,7 +242,7 @@ def testFmtToEPub_ConvertParagraphs(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToEPub_ConvertMeta(mockGUI):
+def testToEPub_ConvertMeta(mockGUI):
     """Test meta data formats in the ToEPub class."""
     project = NWProject()
     epub = ToEPub(project)
@@ -340,7 +340,7 @@ def testFmtToEPub_ConvertMeta(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToEPub_Alignment(mockGUI):
+def testToEPub_Alignment(mockGUI):
     """Test paragraph alignment in the ToEPub class."""
     project = NWProject()
     epub = ToEPub(project)
@@ -391,7 +391,7 @@ def testFmtToEPub_Alignment(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToEPub_Footnotes(mockGUI):
+def testToEPub_Footnotes(mockGUI):
     """Test paragraph formats with footnotes in the ToEPub class."""
     project = NWProject()
     epub = ToEPub(project)
@@ -412,7 +412,7 @@ def testFmtToEPub_Footnotes(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToEPub_CloseDocument(mockGUI, fncPath):
+def testToEPub_CloseDocument(mockGUI, fncPath):
     """Test pruning of empty sections and field substitution on close/save."""
     project = NWProject()
     epub = ToEPub(project)
@@ -445,7 +445,7 @@ def testFmtToEPub_CloseDocument(mockGUI, fncPath):
 
 
 @pytest.mark.core
-def testFmtToEPub_ConvertDirect(mockGUI):
+def testToEPub_ConvertDirect(mockGUI):
     """Test the converter directly using the ToEPub class."""
     project = NWProject()
     epub = ToEPub(project)
@@ -571,7 +571,7 @@ def testFmtToEPub_ConvertDirect(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToEPub_Save(mockGUI, fncPath, tstPaths, ipsumText):
+def testToEPub_Save(mockGUI, fncPath, tstPaths, ipsumText):
     """Test the save method of the ToEPub class."""
     project = NWProject()
     project.data.setAuthor("Jane Smith")

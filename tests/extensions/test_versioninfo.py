@@ -95,7 +95,7 @@ class MockException:
 
 
 @pytest.mark.gui
-def testExtVersionInfo_Main(qtbot, monkeypatch):
+def testVersionInfoWidget_Main(qtbot, monkeypatch):
     """Test the VersionInfoWidget class."""
     version = VersionInfoWidget(None)  # type: ignore
     dialog = SimpleDialog(version)
@@ -131,7 +131,7 @@ def testExtVersionInfo_Main(qtbot, monkeypatch):
 
 
 @pytest.mark.gui
-def testExtVersionInfo_Retriever(qtbot, monkeypatch):
+def testVersionInfoWidget_Retriever(qtbot, monkeypatch):
     """Test the _Retriever class."""
     task = _Retriever()
 

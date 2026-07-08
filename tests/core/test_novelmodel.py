@@ -36,14 +36,14 @@ from tests.helpers import C, buildTestProject
 
 
 @pytest.mark.core
-def testCoreNovelModel_ModelTest(nwGUI):
+def testNovelModel_ModelTest(nwGUI):
     """Run the Qt model tester on the model."""
     model = NovelModel()
     QAbstractItemModelTester(model)
 
 
 @pytest.mark.core
-def testCoreNovelModel_Interface(nwGUI, fncPath, mockRnd):
+def testNovelModel_Interface(nwGUI, fncPath, mockRnd):
     """Test the novel model interface."""
     project = NWProject()
     mockRnd.reset()
@@ -73,7 +73,7 @@ def testCoreNovelModel_Interface(nwGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreNovelModel_Extra(nwGUI, fncPath, mockRnd):
+def testNovelModel_Extra(nwGUI, fncPath, mockRnd):
     """Test the novel model extra column."""
     project = NWProject()
     mockRnd.reset()
@@ -136,7 +136,7 @@ def testCoreNovelModel_Extra(nwGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreNovelModel_Data(nwGUI, fncPath, mockRnd):
+def testNovelModel_Data(nwGUI, fncPath, mockRnd):
     """Test the novel model data methods."""
     project = NWProject()
     mockRnd.reset()

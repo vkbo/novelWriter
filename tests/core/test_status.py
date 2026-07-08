@@ -35,7 +35,7 @@ importKeys = [C.iNew, C.iMinor, C.iMajor, C.iMain]
 
 
 @pytest.mark.core
-def testCoreStatus_StatusEntry():
+def testNWStatus_StatusEntry():
     """Test the StatusEntry class."""
     color = QColor(255, 0, 0)
     icon = NWStatus.createIcon(24, color, nwStatusShape.CIRCLE)
@@ -64,7 +64,7 @@ def testCoreStatus_StatusEntry():
 
 
 @pytest.mark.core
-def testCoreStatus_Internal(mockGUI, mockRnd):
+def testNWStatus_Internal(mockGUI, mockRnd):
     """Test all the internal functions of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
     nImport = NWStatus(NWStatus.IMPORT)
@@ -119,7 +119,7 @@ def testCoreStatus_Internal(mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreStatus_Iterator(mockGUI, mockRnd):
+def testNWStatus_Iterator(mockGUI, mockRnd):
     """Test the iterator functions of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
     nStatus.add(None, "New", "#646464", "SQUARE", 0)
@@ -165,7 +165,7 @@ def testCoreStatus_Iterator(mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreStatus_Entries(mockGUI, mockRnd):
+def testNWStatus_Entries(mockGUI, mockRnd):
     """Test all the simple setters for the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
 
@@ -332,7 +332,7 @@ def testCoreStatus_Entries(mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreStatus_RefreshIcons_Theme(mockGUIwithTheme, mockRnd):
+def testNWStatus_RefreshIcons_Theme(mockGUIwithTheme, mockRnd):
     """Test refreshing the icons with theme colours."""
     nStatus = NWStatus(NWStatus.STATUS)
     nStatus.add(None, "New", "default", "SQUARE", 0)
@@ -355,7 +355,7 @@ def testCoreStatus_RefreshIcons_Theme(mockGUIwithTheme, mockRnd):
 
 
 @pytest.mark.core
-def testCoreStatus_RefreshIcons_Custom(mockGUIwithTheme, mockRnd):
+def testNWStatus_RefreshIcons_Custom(mockGUIwithTheme, mockRnd):
     """Test refreshing the icons with custom colours."""
     nStatus = NWStatus(NWStatus.STATUS)
     nStatus.add(None, "New", "#707070", "SQUARE", 0)
@@ -383,7 +383,7 @@ def testCoreStatus_RefreshIcons_Custom(mockGUIwithTheme, mockRnd):
 
 
 @pytest.mark.core
-def testCoreStatus_Pack(mockGUIwithTheme, mockRnd):
+def testNWStatus_Pack(mockGUIwithTheme, mockRnd):
     """Test data packing of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
     nStatus.add(None, "New", "#646464", "SQUARE", 0)
@@ -438,7 +438,7 @@ def testCoreStatus_Pack(mockGUIwithTheme, mockRnd):
 
 
 @pytest.mark.core
-def testCoreStatus_ShapeCache():
+def testNWStatus_ShapeCache():
     """Test the _ShapeCache class."""
     shapes = _ShapeCache()
 

@@ -41,7 +41,7 @@ class MockWidget(QWidget):
 
 
 @pytest.mark.gui
-def testExtEventFilters_WheelEventFilter():
+def testWheelEventFilter_Main():
     """Test the WheelEventFilter class."""
     obj = QObject()
     widget = MockWidget()

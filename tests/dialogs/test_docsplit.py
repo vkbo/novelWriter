@@ -1,6 +1,6 @@
 """
-novelWriter – Merge and Split Dialog Classes Tester
-===================================================
+novelWriter – Split Dialog Class Tester
+=======================================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
@@ -32,7 +32,7 @@ from tests.helpers import C, buildTestProject
 
 
 @pytest.mark.gui
-def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+def testGuiDocSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the split document tool."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
     monkeypatch.setattr(GuiDocSplit, "exec", lambda *a: None)

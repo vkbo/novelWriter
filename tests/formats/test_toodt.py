@@ -49,7 +49,7 @@ from tests.helpers import ODT_IGNORE, cmpFiles, xmlToText
 
 
 @pytest.mark.core
-def testFmtToOdt_Init(mockGUI):
+def testToOdt_Init(mockGUI):
     """Test initialisation of the ODT document."""
     project = NWProject()
 
@@ -101,7 +101,7 @@ def testFmtToOdt_Init(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToOdt_TextFormatting(mockGUI):
+def testToOdt_TextFormatting(mockGUI):
     """Test formatting of paragraphs."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
@@ -225,7 +225,7 @@ def testFmtToOdt_TextFormatting(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToOdt_Fields(mockGUI):
+def testToOdt_Fields(mockGUI):
     """Test formatting of footnotes."""
     project = NWProject()
     odt = ToOdt(project, True)
@@ -260,7 +260,7 @@ def testFmtToOdt_Fields(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToOdt_DialogueFormatting(mockGUI):
+def testToOdt_DialogueFormatting(mockGUI):
     """Test formatting of dialogue."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
@@ -296,7 +296,7 @@ def testFmtToOdt_DialogueFormatting(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToOdt_ConvertNovelHeadings(mockGUI):
+def testToOdt_ConvertNovelHeadings(mockGUI):
     """Test the novel heading converter of the ToOdt class."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
@@ -393,7 +393,7 @@ def testFmtToOdt_ConvertNovelHeadings(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToOdt_ConvertNotesHeadings(mockGUI):
+def testToOdt_ConvertNotesHeadings(mockGUI):
     """Test the notes headings converter of the ToOdt class."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
@@ -445,7 +445,7 @@ def testFmtToOdt_ConvertNotesHeadings(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToOdt_ConvertParagraphs(mockGUI):
+def testToOdt_ConvertParagraphs(mockGUI):
     """Test the converter of the ToOdt class."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
@@ -794,7 +794,7 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToOdt_ConvertDirect(mockGUI):
+def testToOdt_ConvertDirect(mockGUI):
     """Test the converter directly using the ToOdt class to reach some
     otherwise hard to reach conditions.
     """
@@ -841,7 +841,7 @@ def testFmtToOdt_ConvertDirect(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths, ipsumText):
+def testToOdt_SaveFlat(mockGUI, fncPath, tstPaths, ipsumText):
     """Test the document save functions."""
     project = NWProject()
     project.data.setAuthor("Jane Smith")
@@ -891,7 +891,7 @@ def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths, ipsumText):
 
 
 @pytest.mark.core
-def testFmtToOdt_SaveFlatWithEmptyLines(mockGUI, fncPath, tstPaths, ipsumText):
+def testToOdt_SaveFlatWithEmptyLines(mockGUI, fncPath, tstPaths, ipsumText):
     """Test the document save functions."""
     project = NWProject()
     project.data.setAuthor("Jane Smith")
@@ -943,7 +943,7 @@ def testFmtToOdt_SaveFlatWithEmptyLines(mockGUI, fncPath, tstPaths, ipsumText):
 
 
 @pytest.mark.core
-def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths, ipsumText):
+def testToOdt_SaveFull(mockGUI, fncPath, tstPaths, ipsumText):
     """Test the document save functions."""
     project = NWProject()
     project.data.setAuthor("Jane Smith")
@@ -1027,7 +1027,7 @@ def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths, ipsumText):
 
 
 @pytest.mark.core
-def testFmtToOdt_ODTParagraphStyle():
+def testToOdt_ODTParagraphStyle():
     """Test the ODTParagraphStyle class."""
     parStyle = ODTParagraphStyle("test")
 
@@ -1277,7 +1277,7 @@ def testFmtToOdt_ODTParagraphStyle():
 
 
 @pytest.mark.core
-def testFmtToOdt_ODTBorderStyle():
+def testToOdt_ODTBorderStyle():
     """Test the ODTBorderStyle class."""
     assert str(ODTBorderStyle("none")) == "none"
     assert str(ODTBorderStyle("dashed", 0.50)) == "0.50pt dashed"
@@ -1285,7 +1285,7 @@ def testFmtToOdt_ODTBorderStyle():
 
 
 @pytest.mark.core
-def testFmtToOdt_ODTTextStyle():
+def testToOdt_ODTTextStyle():
     """Test the ODTTextStyle class."""
     txtStyle = ODTTextStyle("test")
 
@@ -1437,7 +1437,7 @@ def testFmtToOdt_ODTTextStyle():
 
 
 @pytest.mark.core
-def testFmtToOdt_XMLParagraph():
+def testToOdt_XMLParagraph():
     """Test XML encoding of paragraph."""
     # Stage 1 : Text
     # ==============
@@ -1625,7 +1625,7 @@ def testFmtToOdt_XMLParagraph():
 
 
 @pytest.mark.core
-def testFmtToOdt_MkTag():
+def testToOdt_MkTag():
     """Test the tag maker function."""
     assert _mkTag("office", "text") == "{urn:oasis:names:tc:opendocument:xmlns:office:1.0}text"
     assert _mkTag("style", "text") == "{urn:oasis:names:tc:opendocument:xmlns:style:1.0}text"

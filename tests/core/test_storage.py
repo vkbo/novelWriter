@@ -44,7 +44,7 @@ class MockProject:
 
 
 @pytest.mark.core
-def testCoreStorage_CreateNewProject(mockGUI, fncPath):
+def testNWStorage_CreateNewProject(mockGUI, fncPath):
     """Test creating a project in a folder."""
     project = NWProject()
 
@@ -85,7 +85,7 @@ def testCoreStorage_CreateNewProject(mockGUI, fncPath):
 
 
 @pytest.mark.core
-def testCoreStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
+def testNWStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
     """Test initialising a project in a folder."""
     project = NWProject()
 
@@ -170,7 +170,7 @@ def testCoreStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreStorage_InitProjectStorage_Invalid(monkeypatch, mockGUI, fncPath):
+def testNWStorage_InitProjectStorage_Invalid(monkeypatch, mockGUI, fncPath):
     """Test initialising a project in an invalid folder."""
     project = NWProject()
 
@@ -214,7 +214,7 @@ def testCoreStorage_InitProjectStorage_Invalid(monkeypatch, mockGUI, fncPath):
 
 
 @pytest.mark.core
-def testCoreStorage_LockFile(monkeypatch, fncPath):
+def testNWStorage_LockFile(monkeypatch, fncPath):
     """Test the project lock file."""
     monkeypatch.setattr("novelwriter.core.storage.time", lambda: 1000.0)
 
@@ -278,7 +278,7 @@ def testCoreStorage_LockFile(monkeypatch, fncPath):
 
 
 @pytest.mark.core
-def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
+def testNWStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
     """Test making a zip archive of a project."""
     zipFile = tstPaths.tmpDir / "project.zip"
 
@@ -317,7 +317,7 @@ def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
 
 
 @pytest.mark.core
-def testCoreStorage_LegacyDataFolder(monkeypatch, fncPath):
+def testNWStorage_LegacyDataFolder(monkeypatch, fncPath):
     """Test project file format 1.0 folder structure conversion."""
     project = MockProject()
     storage = NWStorage(project)  # type: ignore
@@ -383,7 +383,7 @@ def testCoreStorage_LegacyDataFolder(monkeypatch, fncPath):
 
 
 @pytest.mark.core
-def testCoreStorage_DeprecatedFiles(monkeypatch, fncPath):
+def testNWStorage_DeprecatedFiles(monkeypatch, fncPath):
     """Test cleanup of deprecated files."""
     project = MockProject()
     storage = NWStorage(project)  # type: ignore
@@ -424,7 +424,7 @@ def testCoreStorage_DeprecatedFiles(monkeypatch, fncPath):
 
 
 @pytest.mark.core
-def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
+def testNWStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
     """Test cleanup of deprecated files that needs to be converted."""
     project = NWProject()
     buildTestProject(project, fncPath)

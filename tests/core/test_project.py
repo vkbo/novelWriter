@@ -38,7 +38,7 @@ from tests.mocked import causeOSError
 
 
 @pytest.mark.core
-def testCoreProject_NewRoot(fncPath, tstPaths, mockGUI, mockRnd):
+def testNWProject_NewRoot(fncPath, tstPaths, mockGUI, mockRnd):
     """Check that new root folders can be added to the project."""
     projFile = fncPath / "nwProject.nwx"
     testFile = tstPaths.outDir / "coreProject_NewRoot_nwProject.nwx"
@@ -86,7 +86,7 @@ def testCoreProject_NewRoot(fncPath, tstPaths, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
+def testNWProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     """Check that new files can be added to the project."""
     projFile = fncPath / "nwProject.nwx"
     testFile = tstPaths.outDir / "coreProject_NewFileFolder_nwProject.nwx"
@@ -193,7 +193,7 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
 
 
 @pytest.mark.core
-def testCoreProject_CreateNewNote(monkeypatch, fncPath, mockGUI, mockRnd):
+def testNWProject_CreateNewNote(monkeypatch, fncPath, mockGUI, mockRnd):
     """Check that new notes can be created for a given tag."""
     project = NWProject()
     mockRnd.reset()
@@ -228,7 +228,7 @@ def testCoreProject_CreateNewNote(monkeypatch, fncPath, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
+def testNWProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     """Test opening a project."""
     project = NWProject()
     mockRnd.reset()
@@ -346,7 +346,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
+def testNWProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
     """Test saving a project."""
     project = NWProject()
 
@@ -379,7 +379,7 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
+def testNWProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     """Test other project class methods and functions."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -477,7 +477,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
+def testNWProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
     """Test the automated backup feature of the project class. The test
     creates a backup of the Minimal test project, and then unzips the
     backup file and checks that the project XML file is identical to
