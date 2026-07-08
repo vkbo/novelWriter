@@ -34,7 +34,7 @@ from novelwriter.types import QtKeyDown, QtKeyReturn, QtKeyRight, QtKeyUp
 
 
 @pytest.mark.gui
-def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
+def testGuiProjectSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     """Test navigating the novel tree."""
     nwGUI.openProject(prjLipsum)
     nwGUI._changeView(nwView.SEARCH)

@@ -31,7 +31,7 @@ from novelwriter.tools.noveldetails import GuiNovelDetails
 
 
 @pytest.mark.gui
-def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
+def testGuiNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
     """Test the Novel Details main dialog."""
     nwGUI.openProject(prjLipsum)
     nHandle = "b3643d0f92e32"

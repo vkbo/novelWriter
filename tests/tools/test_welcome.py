@@ -55,7 +55,7 @@ from novelwriter.types import (
 
 
 @pytest.mark.gui
-def testToolWelcome_Main(qtbot, monkeypatch, nwGUI, fncPath):
+def testGuiWelcome_Main(qtbot, monkeypatch, nwGUI, fncPath):
     """Test the main Welcome window."""
     welcome = GuiWelcome(nwGUI)
     with qtbot.waitExposed(welcome):
@@ -137,7 +137,7 @@ def testToolWelcome_Main(qtbot, monkeypatch, nwGUI, fncPath):
 
 
 @pytest.mark.gui
-def testToolWelcome_Open(qtbot, monkeypatch, nwGUI):
+def testGuiWelcome_Open(qtbot, monkeypatch, nwGUI):
     """Test the open tab in the Welcome window."""
     monkeypatch.setattr(QMenu, "exec", lambda *a: None)
     monkeypatch.setattr(QMenu, "setParent", lambda *a: None)
@@ -300,7 +300,7 @@ def testToolWelcome_Open(qtbot, monkeypatch, nwGUI):
 
 
 @pytest.mark.gui
-def testToolWelcome_New(qtbot, caplog, monkeypatch, nwGUI, fncPath):
+def testGuiWelcome_New(qtbot, caplog, monkeypatch, nwGUI, fncPath):
     """Test the new project tab in the Welcome window."""
     welcome = GuiWelcome(nwGUI)
     with qtbot.waitExposed(welcome):

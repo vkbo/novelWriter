@@ -39,7 +39,7 @@ from tests.helpers import clearLogHandlers
 
 
 @pytest.mark.base
-def testBaseInit_Launch(caplog, monkeypatch, fncPath):
+def testInit_Launch(caplog, monkeypatch, fncPath):
     """Check launching the main GUI."""
     monkeypatch.setattr(NSplashScreen, "finish", lambda *a: None)
     monkeypatch.setattr("novelwriter.splash.sleep", lambda *a: None)
@@ -92,7 +92,7 @@ def testBaseInit_Launch(caplog, monkeypatch, fncPath):
 
 
 @pytest.mark.base
-def testBaseInit_CreateApp(caplog, monkeypatch, fncPath):
+def testInit_CreateApp(caplog, monkeypatch, fncPath):
     """Check creating the Qt app."""
     monkeypatch.setattr("PyQt6.QtWidgets.QApplication.__init__", lambda *a: None)
     monkeypatch.setattr("PyQt6.QtWidgets.QApplication.setApplicationName", lambda *a: None)
@@ -106,7 +106,7 @@ def testBaseInit_CreateApp(caplog, monkeypatch, fncPath):
 
 
 @pytest.mark.base
-def testBaseInit_Options(monkeypatch, fncPath):
+def testInit_Options(monkeypatch, fncPath):
     """Test command line options for logging level."""
     monkeypatch.setattr(NSplashScreen, "finish", lambda *a: None)
     monkeypatch.setattr("novelwriter.splash.sleep", lambda *a: None)
@@ -195,7 +195,7 @@ def testBaseInit_Options(monkeypatch, fncPath):
 
 
 @pytest.mark.base
-def testBaseInit_Imports(caplog, monkeypatch, fncPath):
+def testInit_Imports(caplog, monkeypatch, fncPath):
     """Check import error handling."""
     monkeypatch.setattr("novelwriter._createApp", lambda *a: Mock())
     monkeypatch.setattr("novelwriter.guimain.GuiMain", lambda *a: Mock())

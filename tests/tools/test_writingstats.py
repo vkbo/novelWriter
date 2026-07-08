@@ -39,7 +39,7 @@ from tests.mocked import causeOSError
 
 
 @pytest.mark.gui
-def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
+def testGuiWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     """Test the full writing stats tool."""
     # Create a project to work on
     buildTestProject(nwGUI, projPath)
@@ -103,7 +103,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
 
 @pytest.mark.gui
-def testToolWritingStats_Export(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
+def testGuiWritingStats_Export(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     """Test the export feature."""
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
 
@@ -258,7 +258,7 @@ def testToolWritingStats_Export(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
 
 @pytest.mark.gui
-def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
+def testGuiWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     """Test the filters."""
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
 

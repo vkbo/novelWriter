@@ -43,7 +43,7 @@ from tests.mocked import MockApp, causeOSError
 
 
 @pytest.mark.base
-def testBaseConfig_Constructor(monkeypatch):
+def testConfig_Constructor(monkeypatch):
     """Test config constructor."""
     # Linux
     with monkeypatch.context() as mp:
@@ -92,7 +92,7 @@ def testBaseConfig_Constructor(monkeypatch):
 
 
 @pytest.mark.base
-def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
+def testConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
     """Test config initialisation."""
     conf = Config()
 
@@ -173,7 +173,7 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
 
 
 @pytest.mark.base
-def testBaseConfig_Localisation(fncPath, tstPaths):
+def testConfig_Localisation(fncPath, tstPaths):
     """Test localisation."""
     conf = Config()
     conf.initConfig(confPath=fncPath, dataPath=fncPath)
@@ -217,7 +217,7 @@ def testBaseConfig_Localisation(fncPath, tstPaths):
 
 
 @pytest.mark.base
-def testBaseConfig_Methods(fncPath):
+def testConfig_Methods(fncPath):
     """Check class methods."""
     conf = Config()
     conf.initConfig(confPath=fncPath, dataPath=fncPath)
@@ -274,7 +274,7 @@ def testBaseConfig_Methods(fncPath):
 
 
 @pytest.mark.base
-def testBaseConfig_Fonts(monkeypatch, fncPath):
+def testConfig_Fonts(monkeypatch, fncPath):
     """Check the OS-specific default font selection."""
     conf = Config()
     conf.initConfig(confPath=fncPath, dataPath=fncPath)
@@ -296,7 +296,7 @@ def testBaseConfig_Fonts(monkeypatch, fncPath):
 
 
 @pytest.mark.base
-def testBaseConfig_SettersGetters(fncPath):
+def testConfig_SettersGetters(fncPath):
     """Set various sizes and positions."""
     conf = Config()
     conf.initConfig(confPath=fncPath, dataPath=fncPath)
@@ -339,7 +339,7 @@ def testBaseConfig_SettersGetters(fncPath):
 
 
 @pytest.mark.base
-def testBaseConfig_Internal(monkeypatch, fncPath):
+def testConfig_Internal(monkeypatch, fncPath):
     """Check internal functions."""
     conf = Config()
     conf.initConfig(confPath=fncPath, dataPath=fncPath)
@@ -359,7 +359,7 @@ def testBaseConfig_Internal(monkeypatch, fncPath):
 
 
 @pytest.mark.base
-def testBaseConfig_RecentCache(monkeypatch, tstPaths, nwGUI):
+def testConfig_RecentCache(monkeypatch, tstPaths, nwGUI):
     """Test recent cache file."""
     cacheFile = tstPaths.cnfDir / nwFiles.RECENT_FILE
     recent = RecentProjects(CONFIG)
@@ -454,7 +454,7 @@ def testBaseConfig_RecentCache(monkeypatch, tstPaths, nwGUI):
 
 
 @pytest.mark.base
-def testBaseConfig_RecentPaths(monkeypatch, tstPaths):
+def testConfig_RecentPaths(monkeypatch, tstPaths):
     """Test recent paths file."""
     cacheFile = tstPaths.cnfDir / nwFiles.RECENT_PATH
     recent = RecentPaths(CONFIG)
@@ -528,7 +528,7 @@ def testBaseConfig_RecentPaths(monkeypatch, tstPaths):
 
 
 @pytest.mark.base
-def testBaseConfig_IOError(monkeypatch):
+def testConfig_IOError(monkeypatch):
     """Test handling of I/O errors when using pathlib."""
     with monkeypatch.context() as mp:
         mp.setattr(Path, "iterdir", causeOSError)

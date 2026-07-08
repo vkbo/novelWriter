@@ -36,7 +36,7 @@ from tests.helpers import C, buildTestProject
 
 
 @pytest.mark.core
-def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
+def testNWItem_Setters(mockGUI, mockRnd, fncPath):
     """Test all the simple setters for the NWItem class."""
     project = NWProject()
     mockRnd.reset()
@@ -189,7 +189,7 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
+def testNWItem_Methods(mockGUI, mockRnd, fncPath):
     """Test the simple methods of the NWItem class."""
     project = NWProject()
     mockRnd.reset()
@@ -332,7 +332,7 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreItem_TypeSetter(mockGUI):
+def testNWItem_TypeSetter(mockGUI):
     """Test the setter for all the nwItemType values for the NWItem
     class.
     """
@@ -359,7 +359,7 @@ def testCoreItem_TypeSetter(mockGUI):
 
 
 @pytest.mark.core
-def testCoreItem_ClassSetter(mockGUI):
+def testNWItem_ClassSetter(mockGUI):
     """Test the setter for all the nwItemClass values for the NWItem
     class.
     """
@@ -463,7 +463,7 @@ def testCoreItem_ClassSetter(mockGUI):
 
 
 @pytest.mark.core
-def testCoreItem_LayoutSetter(mockGUI):
+def testNWItem_LayoutSetter(mockGUI):
     """Test the setter for all the nwItemLayout values for the NWItem
     class.
     """
@@ -490,7 +490,7 @@ def testCoreItem_LayoutSetter(mockGUI):
 
 
 @pytest.mark.core
-def testCoreItem_ClassDefaults(mockGUI):
+def testNWItem_ClassDefaults(mockGUI):
     """Test the setter for the default values."""
     project = NWProject()
     item = NWItem(project, "0000000000000")
@@ -543,7 +543,7 @@ def testCoreItem_ClassDefaults(mockGUI):
 
 
 @pytest.mark.core
-def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
+def testNWItem_PackUnpack(mockGUI, caplog, mockRnd):
     """Test packing and unpacking entries for the NWItem class."""
     project = NWProject()
     project.data.itemStatus.add(None, "New", "#646464", "SQUARE", 0)

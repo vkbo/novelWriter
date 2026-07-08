@@ -95,7 +95,7 @@ from tests.mocked import causeOSError
 
 
 @pytest.mark.base
-def testBaseCommon_checkStringNone():
+def testCommon_checkStringNone():
     """Test the checkStringNone function."""
     assert checkStringNone("Stuff", "NotNone") == "Stuff"
     assert checkStringNone("None", "NotNone") is None
@@ -106,7 +106,7 @@ def testBaseCommon_checkStringNone():
 
 
 @pytest.mark.base
-def testBaseCommon_checkString():
+def testCommon_checkString():
     """Test the checkString function. Anything that is a string should
     be returned, otherwise it returns the default.
     """
@@ -119,7 +119,7 @@ def testBaseCommon_checkString():
 
 
 @pytest.mark.base
-def testBaseCommon_checkInt():
+def testCommon_checkInt():
     """Test the checkInt function. Anything that can be converted to an
     integer should be returned, otherwise it returns the default.
     """
@@ -133,7 +133,7 @@ def testBaseCommon_checkInt():
 
 
 @pytest.mark.base
-def testBaseCommon_checkFloat():
+def testCommon_checkFloat():
     """Test the checkFloat function. Anything that can be converted to an
     integer should be returned, otherwise it returns the default.
     """
@@ -147,7 +147,7 @@ def testBaseCommon_checkFloat():
 
 
 @pytest.mark.base
-def testBaseCommon_checkBool():
+def testCommon_checkBool():
     """Test the checkBool function. Any bool, string version of Python
     bool, or integer 1 or 0, are returned as bool. Otherwise, the
     default is returned.
@@ -194,7 +194,7 @@ def testBaseCommon_checkBool():
 
 
 @pytest.mark.base
-def testBaseCommon_checkUuid():
+def testCommon_checkUuid():
     """Test the checkUuid function."""
     testUuid = "e2be99af-f9bf-4403-857a-c3d1ac25abea"
     assert checkUuid("", None) is None  # type: ignore
@@ -205,7 +205,7 @@ def testBaseCommon_checkUuid():
 
 
 @pytest.mark.base
-def testBaseCommon_checkPath():
+def testCommon_checkPath():
     """Test the checkPath function."""
     assert checkPath(Path("test"), None) == Path("test")  # type: ignore
     assert checkPath("test", None) == Path("test")  # type: ignore
@@ -215,7 +215,7 @@ def testBaseCommon_checkPath():
 
 
 @pytest.mark.base
-def testBaseCommon_isHandle():
+def testCommon_isHandle():
     """Test the isHandle function."""
     assert isHandle("47666c91c7ccf") is True
     assert isHandle("47666C91C7CCF") is False
@@ -226,7 +226,7 @@ def testBaseCommon_isHandle():
 
 
 @pytest.mark.base
-def testBaseCommon_isTitleTag():
+def testCommon_isTitleTag():
     """Test the isTitleTag function."""
     assert isTitleTag("T1234") is True
 
@@ -241,7 +241,7 @@ def testBaseCommon_isTitleTag():
 
 
 @pytest.mark.base
-def testBaseCommon_isItemClass():
+def testCommon_isItemClass():
     """Test the isItemClass function."""
     assert isItemClass("NO_CLASS") is True
     assert isItemClass("NOVEL") is True
@@ -262,7 +262,7 @@ def testBaseCommon_isItemClass():
 
 
 @pytest.mark.base
-def testBaseCommon_isItemType():
+def testCommon_isItemType():
     """Test the isItemType function."""
     assert isItemType("NO_TYPE") is True
     assert isItemType("ROOT") is True
@@ -279,7 +279,7 @@ def testBaseCommon_isItemType():
 
 
 @pytest.mark.base
-def testBaseCommon_isItemLayout():
+def testCommon_isItemLayout():
     """Test the isItemLayout function."""
     assert isItemLayout("NO_LAYOUT") is True
     assert isItemLayout("DOCUMENT") is True
@@ -301,7 +301,7 @@ def testBaseCommon_isItemLayout():
 
 
 @pytest.mark.base
-def testBaseCommon_isListInstance():
+def testCommon_isListInstance():
     """Test the isListInstance function."""
     # String
     assert isListInstance("stuff", str) is False
@@ -317,7 +317,7 @@ def testBaseCommon_isListInstance():
 
 
 @pytest.mark.base
-def testBaseCommon_hexToInt():
+def testCommon_hexToInt():
     """Test the hexToInt function."""
     assert hexToInt(1) == 0
     assert hexToInt("1") == 1
@@ -328,21 +328,21 @@ def testBaseCommon_hexToInt():
 
 
 @pytest.mark.base
-def testBaseCommon_minmax():
+def testCommon_minmax():
     """Test the minmax function."""
     for i in range(-5, 15):
         assert 0 <= minmax(i, 0, 10) <= 10
 
 
 @pytest.mark.base
-def testBaseCommon_checkIntTuple():
+def testCommon_checkIntTuple():
     """Test the checkIntTuple function."""
     assert checkIntTuple(0, (0, 1, 2), 3) == 0
     assert checkIntTuple(5, (0, 1, 2), 3) == 3
 
 
 @pytest.mark.base
-def testBaseCommon_firstFloat():
+def testCommon_firstFloat():
     """Test the firstFloat function."""
     assert firstFloat(None, 1.0) == 1.0
     assert firstFloat(1.0, None) == 1.0
@@ -351,7 +351,7 @@ def testBaseCommon_firstFloat():
 
 
 @pytest.mark.base
-def testBaseCommon_formatTimeStamp():
+def testCommon_formatTimeStamp():
     """Test the formatTimeStamp function."""
     tTime = time.mktime(time.gmtime(0))
     assert formatTimeStamp(tTime, False) == "1970-01-01 00:00:00"
@@ -359,7 +359,7 @@ def testBaseCommon_formatTimeStamp():
 
 
 @pytest.mark.base
-def testBaseCommon_formatTime():
+def testCommon_formatTime():
     """Test the formatTime function."""
     assert formatTime("1") == "ERROR"  # type: ignore
     assert formatTime(1.0) == "ERROR"  # type: ignore
@@ -379,7 +379,7 @@ def testBaseCommon_formatTime():
 
 
 @pytest.mark.base
-def testBaseCommon_formatVersion():
+def testCommon_formatVersion():
     """Test the formatVersion function."""
     assert formatVersion("1.2") == "1.2"
     assert formatVersion("1.2.1") == "1.2 Patch 1"
@@ -395,7 +395,7 @@ def testBaseCommon_formatVersion():
 
 
 @pytest.mark.base
-def testBaseCommon_formatFileFilter():
+def testCommon_formatFileFilter():
     """Test the formatFileFilter function."""
     assert formatFileFilter(["*.txt"]) == "Text files (*.txt)"
     assert formatFileFilter(["*.txt", "*"]) == "Text files (*.txt);;All files (*)"
@@ -408,14 +408,14 @@ def testBaseCommon_formatFileFilter():
 
 
 @pytest.mark.base
-def testBaseCommon_formatLink():
+def testCommon_formatLink():
     """Test the formatLink function."""
     assert formatLink("a") == "<a href='a'>a</a>"
     assert formatLink("a", "b") == "<a href='a'>b</a>"
 
 
 @pytest.mark.base
-def testBaseCommon_simplified():
+def testCommon_simplified():
     """Test the simplified function."""
     assert simplified("Hello World") == "Hello World"
     assert simplified("  Hello    World   ") == "Hello World"
@@ -423,7 +423,7 @@ def testBaseCommon_simplified():
 
 
 @pytest.mark.base
-def testBaseCommon_compact():
+def testCommon_compact():
     """Test the compact function."""
     assert compact("! ! !") == "!!!"
     assert compact("1\t2\t3") == "123"
@@ -433,7 +433,7 @@ def testBaseCommon_compact():
 
 
 @pytest.mark.base
-def testBaseCommon_uniqueCompact():
+def testCommon_uniqueCompact():
     """Test the uniqueCompact function."""
     assert uniqueCompact("! ! !") == "!"
     assert uniqueCompact("1\t2\t3") == "123"
@@ -444,7 +444,7 @@ def testBaseCommon_uniqueCompact():
 
 
 @pytest.mark.base
-def testBaseCommon_joinLines():
+def testCommon_joinLines():
     """Test the joinLines function."""
     assert joinLines("abc") == "abc"
     assert joinLines(["abc"]) == "abc"
@@ -455,7 +455,7 @@ def testBaseCommon_joinLines():
 
 
 @pytest.mark.base
-def testBaseCommon_appendIfSet():
+def testCommon_appendIfSet():
     """Test the appendIfSet function."""
     data = []
     appendIfSet(data, "")
@@ -467,7 +467,7 @@ def testBaseCommon_appendIfSet():
 
 
 @pytest.mark.base
-def testBaseCommon_processDialogSymbols():
+def testCommon_processDialogSymbols():
     """Test the processDialogSymbols function."""
     assert processDialogSymbols("abc") == ""
     assert processDialogSymbols("\u00ab\u00ab\u00bb\u00bb") == "\u00ab\u00bb"
@@ -475,7 +475,7 @@ def testBaseCommon_processDialogSymbols():
 
 
 @pytest.mark.base
-def testBaseCommon_processLangCode():
+def testCommon_processLangCode():
     """Test the processLangCode function."""
     assert processLangCode("") == ""
     assert processLangCode(" ") == ""
@@ -484,13 +484,13 @@ def testBaseCommon_processLangCode():
 
 
 @pytest.mark.base
-def testBaseCommon_languageName():
+def testCommon_languageName():
     """Test the languageName function."""
     assert languageName("en-GB") == "British English"
 
 
 @pytest.mark.base
-def testBaseCommon_elide():
+def testCommon_elide():
     """Test the elide function."""
     assert elide("Hello World!", 12) == "Hello World!"
     assert elide("Hello World!", 11) == "Hello W ..."
@@ -508,7 +508,7 @@ def testBaseCommon_elide():
 
 
 @pytest.mark.base
-def testBaseCommon_yesNo():
+def testCommon_yesNo():
     """Test the yesNo function."""
     # Bool
     assert yesNo(True) == "yes"
@@ -533,7 +533,7 @@ def testBaseCommon_yesNo():
 
 
 @pytest.mark.base
-def testBaseCommon_formatInt():
+def testCommon_formatInt():
     """Test the formatInt function."""
     # Normal Cases
     assert formatInt(1) == "1"
@@ -557,7 +557,7 @@ def testBaseCommon_formatInt():
 
 
 @pytest.mark.base
-def testBaseCommon_transferCase():
+def testCommon_transferCase():
     """Test the transferCase function."""
     assert transferCase(1, "TaRgEt") == "TaRgEt"  # type: ignore
     assert transferCase("source", 1) == 1  # type: ignore
@@ -569,7 +569,7 @@ def testBaseCommon_transferCase():
 
 
 @pytest.mark.base
-def testBaseCommon_fuzzyTime():
+def testCommon_fuzzyTime():
     """Test the fuzzyTime function."""
     assert fuzzyTime(-1) == "in the future"
     assert fuzzyTime(0) == "just now"
@@ -602,7 +602,7 @@ def testBaseCommon_fuzzyTime():
 
 
 @pytest.mark.core
-def testBaseCommon_numberToRoman():
+def testCommon_numberToRoman():
     """Test conversion of integers to Roman numbers."""
     assert numberToRoman(None, False) == "NAN"  # type: ignore
     assert numberToRoman(0, False) == "OOR"
@@ -627,7 +627,7 @@ def testBaseCommon_numberToRoman():
 
 
 @pytest.mark.base
-def testBaseCommon_safeIterDir(fncPath: Path):
+def testCommon_safeIterDir(fncPath: Path):
     """Test the safeIterDir function."""
     files = [
         fncPath / "file1.txt",
@@ -643,7 +643,7 @@ def testBaseCommon_safeIterDir(fncPath: Path):
 
 
 @pytest.mark.base
-def testBaseCommon_safeExists(fncPath: Path):
+def testCommon_safeExists(fncPath: Path):
     """Test the safeExists function."""
     file = fncPath / "file1.txt"
     file.touch()
@@ -654,7 +654,7 @@ def testBaseCommon_safeExists(fncPath: Path):
 
 
 @pytest.mark.base
-def testBaseCommon_safeIsFile(fncPath: Path):
+def testCommon_safeIsFile(fncPath: Path):
     """Test the safeIsFile function."""
     file = fncPath / "file1.txt"
     file.touch()
@@ -665,7 +665,7 @@ def testBaseCommon_safeIsFile(fncPath: Path):
 
 
 @pytest.mark.base
-def testBaseCommon_safeIsDir(fncPath: Path):
+def testCommon_safeIsDir(fncPath: Path):
     """Test the safeIsDir function."""
     folder = fncPath / "folder1"
     folder.mkdir()
@@ -676,7 +676,7 @@ def testBaseCommon_safeIsDir(fncPath: Path):
 
 
 @pytest.mark.base
-def testBaseCommon_describeFont():
+def testCommon_describeFont():
     """Test the describeFont function."""
     font = QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont)
     font.setPointSize(12)
@@ -685,7 +685,7 @@ def testBaseCommon_describeFont():
 
 
 @pytest.mark.base
-def testBaseCommon_fontMatcher(monkeypatch):
+def testCommon_fontMatcher(monkeypatch):
     """Test the fontMatcher function."""
     # Nonsense font is just returned
     nonsense = QFont("nonesense", 10)
@@ -708,7 +708,7 @@ def testBaseCommon_fontMatcher(monkeypatch):
 
 
 @pytest.mark.base
-def testBaseCommon_encodeDecodeMimeHandles(monkeypatch):
+def testCommon_encodeDecodeMimeHandles(monkeypatch):
     """Test the encodeMimeHandles and decodeMimeHandles functions."""
     handles = ["0123456789abc", "123456789abcd", "23456789abcde"]
     mimeData = QMimeData()
@@ -717,7 +717,7 @@ def testBaseCommon_encodeDecodeMimeHandles(monkeypatch):
 
 
 @pytest.mark.base
-def testBaseCommon_utf16CharMap(monkeypatch):
+def testCommon_utf16CharMap(monkeypatch):
     """Test the utf16CharMap function."""
     assert utf16CharMap("abc") == [0, 1, 2, 3]
     assert utf16CharMap("a\u2014b\u2014c") == [0, 1, 2, 3, 4, 5]
@@ -725,7 +725,7 @@ def testBaseCommon_utf16CharMap(monkeypatch):
 
 
 @pytest.mark.base
-def testBaseCommon_jsonEncode():
+def testCommon_jsonEncode():
     """Test the jsonEncode function."""
     # Wrong type
     assert jsonEncode(None) == "[]"  # type: ignore
@@ -806,13 +806,13 @@ def testBaseCommon_jsonEncode():
 
 
 @pytest.mark.base
-def testBaseCommon_jsonCombine():
+def testCommon_jsonCombine():
     """Test the jsonCombine function."""
     assert jsonCombine({"a": "[1, 2]", "b": "[3, 4]"}) == ('{\n  "a": [1, 2],\n  "b": [3, 4]\n}\n')
 
 
 @pytest.mark.base
-def testBaseCommon_xmlIndent():
+def testCommon_xmlIndent():
     """Test the xmlIndent function."""
     xRoot = ET.fromstring("<xml><group><item>foo</item></group></xml>")
     xmlIndent(ET.ElementTree(xRoot))
@@ -830,7 +830,7 @@ def testBaseCommon_xmlIndent():
 
 
 @pytest.mark.base
-def testBaseCommon_xmlElement():
+def testCommon_xmlElement():
     """Test the xmlElement function."""
     assert ET.tostring(xmlElement("node", None, attrib={"a": "b"})) == b'<node a="b" />'
     assert ET.tostring(xmlElement("node", "text", attrib={"a": "b"})) == b'<node a="b">text</node>'
@@ -841,7 +841,7 @@ def testBaseCommon_xmlElement():
 
 
 @pytest.mark.base
-def testBaseCommon_xmlSubElem():
+def testCommon_xmlSubElem():
     """Test the xmlSubElem function."""
     assert ET.tostring(xmlSubElem(ET.Element("r"), "node", None, attrib={"a": "b"})) == b'<node a="b" />'
     assert ET.tostring(xmlSubElem(ET.Element("r"), "node", "text", attrib={"a": "b"})) == b'<node a="b">text</node>'
@@ -855,7 +855,7 @@ def testBaseCommon_xmlSubElem():
 
 
 @pytest.mark.base
-def testBaseCommon_readTextFile(monkeypatch, fncPath, ipsumText):
+def testCommon_readTextFile(monkeypatch, fncPath, ipsumText):
     """Test the readTextFile function."""
     testText = "\n\n".join(ipsumText) + "\n"
     testFile = fncPath / "ipsum.txt"
@@ -870,7 +870,7 @@ def testBaseCommon_readTextFile(monkeypatch, fncPath, ipsumText):
 
 
 @pytest.mark.base
-def testBaseCommon_makeFileNameSafe():
+def testCommon_makeFileNameSafe():
     """Test the makeFileNameSafe function."""
     # Trim edges
     assert makeFileNameSafe(" Name ") == "Name"
@@ -908,7 +908,7 @@ def testBaseCommon_makeFileNameSafe():
 
 
 @pytest.mark.base
-def testBaseCommon_getFileSize(fncPath):
+def testCommon_getFileSize(fncPath):
     """Test the getFileSize function."""
     (fncPath / "one.txt").write_bytes(b"foobar")
     (fncPath / "two.txt").touch()
@@ -919,7 +919,7 @@ def testBaseCommon_getFileSize(fncPath):
 
 
 @pytest.mark.base
-def testBaseCommon_openExternalPath(monkeypatch, tstPaths):
+def testCommon_openExternalPath(monkeypatch, tstPaths):
     """Test the openExternalPath function."""
     lastUrl = ""
 
@@ -934,7 +934,7 @@ def testBaseCommon_openExternalPath(monkeypatch, tstPaths):
 
 
 @pytest.mark.base
-def testBaseCommon_NWConfigParser(fncPath):
+def testCommon_NWConfigParser(fncPath):
     """Test the NWConfigParser subclass."""
     conf = fncPath / "test.cfg"
     writeFile(

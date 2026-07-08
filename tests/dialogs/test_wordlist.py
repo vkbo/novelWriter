@@ -37,7 +37,7 @@ from tests.mocked import causeOSError
 
 
 @pytest.mark.gui
-def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncPath, projPath):
+def testGuiWordList_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     """Test the word list editor."""
     buildTestProject(nwGUI, projPath)
 

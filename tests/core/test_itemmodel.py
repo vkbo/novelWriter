@@ -38,7 +38,7 @@ from tests.helpers import buildTestProject
 
 
 @pytest.mark.core
-def testCoreItemModel_ProjectNode_Root(mockGUI):
+def testProjectNode_Root(mockGUI):
     """Test the project node class for the root."""
     project = NWProject()
     root = ProjectNode(NWItem(project, INV_ROOT))
@@ -59,7 +59,7 @@ def testCoreItemModel_ProjectNode_Root(mockGUI):
 
 
 @pytest.mark.core
-def testCoreItemModel_ProjectNode_Children(mockGUI, mockRnd, fncPath):
+def testProjectNode_Children(mockGUI, mockRnd, fncPath):
     """Test the project node class for children."""
     project = NWProject()
     mockRnd.reset()
@@ -131,7 +131,7 @@ def testCoreItemModel_ProjectNode_Children(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreItemModel_ProjectNode_Modify(mockGUI, mockRnd, fncPath):
+def testProjectNode_Modify(mockGUI, mockRnd, fncPath):
     """Test modifying project nodes."""
     project = NWProject()
     mockRnd.reset()
@@ -228,7 +228,7 @@ def testCoreItemModel_ProjectNode_Modify(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreItemModel_ProjectNode_Data(mockGUI, mockRnd, fncPath):
+def testProjectNode_Data(mockGUI, mockRnd, fncPath):
     """Test data access from project nodes."""
     project = NWProject()
     mockRnd.reset()
@@ -267,7 +267,7 @@ def testCoreItemModel_ProjectNode_Data(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreItemModel_ProjectModel_ModelTest(mockGUI):
+def testProjectModel_ModelTest(mockGUI):
     """Run the Qt model tester on the model."""
     project = NWProject()
     model = ProjectModel(project.tree)
@@ -275,7 +275,7 @@ def testCoreItemModel_ProjectModel_ModelTest(mockGUI):
 
 
 @pytest.mark.core
-def testCoreItemModel_ProjectModel_Interface(mockGUI, mockRnd, fncPath):
+def testProjectModel_Interface(mockGUI, mockRnd, fncPath):
     """Test the model interface for the project model."""
     project = NWProject()
     mockRnd.reset()
@@ -323,7 +323,7 @@ def testCoreItemModel_ProjectModel_Interface(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreItemModel_ProjectModel_DragNDrop(mockGUI, mockRnd, fncPath):
+def testProjectModel_DragNDrop(mockGUI, mockRnd, fncPath):
     """Test drag and drop for the project model."""
     project = NWProject()
     mockRnd.reset()
@@ -427,7 +427,7 @@ def testCoreItemModel_ProjectModel_DragNDrop(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreItemModel_ProjectModel_Data(mockGUI, mockRnd, fncPath):
+def testProjectModel_Data(mockGUI, mockRnd, fncPath):
     """Test data access for the project model."""
     project = NWProject()
     mockRnd.reset()
@@ -496,7 +496,7 @@ def testCoreItemModel_ProjectModel_Data(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
+def testProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     """Test editing the project model."""
     project = NWProject()
     mockRnd.reset()
@@ -681,7 +681,7 @@ def testCoreItemModel_ProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreItemModel_ProjectModel_Other(qtbot, mockGUI, mockRnd, fncPath):
+def testProjectModel_Other(qtbot, mockGUI, mockRnd, fncPath):
     """Test other methods of the project model."""
     project = NWProject()
     mockRnd.reset()
@@ -760,7 +760,7 @@ def testCoreItemModel_ProjectModel_Other(qtbot, mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreItemModel_ProjectModel_DeepMoveMaintainsLineage(mockGUI, mockRnd, fncPath):
+def testProjectModel_DeepMoveMaintainsLineage(mockGUI, mockRnd, fncPath):
     """Check deep descendant parent/root metadata after subtree move."""
     project = NWProject()
     mockRnd.reset()

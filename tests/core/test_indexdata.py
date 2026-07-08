@@ -32,7 +32,7 @@ from novelwriter.enum import nwComment
 
 
 @pytest.mark.core
-def testCoreIndexData_IndexNode(mockGUI):
+def testIndexData_IndexNode(mockGUI):
     """Test the IndexNode class."""
     handle = "0123456789abc"
     project = NWProject()
@@ -111,7 +111,7 @@ def testCoreIndexData_IndexNode(mockGUI):
 
 
 @pytest.mark.core
-def testCoreIndexData_IndexNodePackUnpack(mockGUI):
+def testIndexData_IndexNodePackUnpack(mockGUI):
     """Test the pack and unpack methods of the IndexNode class."""
     handle = "0123456789abc"
     project = NWProject()
@@ -168,7 +168,7 @@ def testCoreIndexData_IndexNodePackUnpack(mockGUI):
 
 
 @pytest.mark.core
-def testCoreIndexData_IndexHeading():
+def testIndexData_IndexHeading():
     """Test the IndexHeading class."""
     # Defaults
     cache = IndexCache(TagsIndex())
@@ -266,7 +266,7 @@ def testCoreIndexData_IndexHeading():
 
 
 @pytest.mark.core
-def testCoreIndexData_IndexHeadingReferences():
+def testIndexHeading_References():
     """Test the IndexHeading references handling."""
     cache = IndexCache(TagsIndex())
     head = IndexHeading(cache, "T0001")
@@ -335,7 +335,7 @@ def testCoreIndexData_IndexHeadingReferences():
 
 
 @pytest.mark.core
-def testCoreIndexData_IndexHeadingUnpackMeta():
+def testIndexHeading_UnpackMeta():
     """Test IndexHeading class meta unpacking."""
     cache = IndexCache(TagsIndex())
 
@@ -377,7 +377,7 @@ def testCoreIndexData_IndexHeadingUnpackMeta():
 
 
 @pytest.mark.core
-def testCoreIndexData_IndexHeadingUnpackRefs():
+def testIndexHeading_UnpackRefs():
     """Test IndexHeading class refs unpacking."""
     cache = IndexCache(TagsIndex())
 

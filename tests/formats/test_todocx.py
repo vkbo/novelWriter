@@ -39,7 +39,7 @@ from tests.helpers import DOCX_IGNORE, cmpFiles, xmlToText
 
 
 @pytest.mark.core
-def testFmtToDocX_NovelHeadingStyles(mockGUI):
+def testToDocX_NovelHeadingStyles(mockGUI):
     """Test formatting of novel headings."""
     project = NWProject()
     doc = ToDocX(project)
@@ -145,7 +145,7 @@ def testFmtToDocX_NovelHeadingStyles(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToDocX_NotesHeadingStyles(mockGUI):
+def testToDocX_NotesHeadingStyles(mockGUI):
     """Test formatting of notes headings."""
     project = NWProject()
     doc = ToDocX(project)
@@ -209,7 +209,7 @@ def testFmtToDocX_NotesHeadingStyles(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToDocX_ParagraphStyles(mockGUI):
+def testToDocX_ParagraphStyles(mockGUI):
     """Test formatting of paragraphs."""
     project = NWProject()
     doc = ToDocX(project)
@@ -339,7 +339,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToDocX_Links(mockGUI):
+def testToDocX_Links(mockGUI):
     """Test formatting of links."""
     project = NWProject()
     doc = ToDocX(project)
@@ -381,7 +381,7 @@ def testFmtToDocX_Links(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToDocX_ParagraphFormatting(mockGUI):
+def testToDocX_ParagraphFormatting(mockGUI):
     """Test formatting of paragraphs."""
     project = NWProject()
     doc = ToDocX(project)
@@ -489,7 +489,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToDocX_TextFormatting(mockGUI):
+def testToDocX_TextFormatting(mockGUI):
     """Test formatting of text."""
     project = NWProject()
     doc = ToDocX(project)
@@ -605,7 +605,7 @@ def testFmtToDocX_TextFormatting(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToDocX_Footnotes(mockGUI):
+def testToDocX_Footnotes(mockGUI):
     """Test formatting of footnotes."""
     project = NWProject()
     doc = ToDocX(project)
@@ -658,7 +658,7 @@ def testFmtToDocX_Footnotes(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToDocX_Fields(mockGUI):
+def testToDocX_Fields(mockGUI):
     """Test formatting of footnotes."""
     project = NWProject()
     doc = ToDocX(project)
@@ -697,7 +697,7 @@ def testFmtToDocX_Fields(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToDocX_MinimalClose(mockGUI):
+def testToDocX_MinimalClose(mockGUI):
     """Test closing a document with no header format and no counts."""
     project = NWProject()
     doc = ToDocX(project)
@@ -742,7 +742,7 @@ def testFmtToDocX_MinimalClose(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToDocX_ParagraphEdgeCases():
+def testToDocX_ParagraphEdgeCases():
     """Test edge cases of the DocXParagraph class."""
     par = DocXParagraph()
 
@@ -757,7 +757,7 @@ def testFmtToDocX_ParagraphEdgeCases():
 
 
 @pytest.mark.core
-def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
+def testToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
     """Test document output."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -840,7 +840,7 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
 
 
 @pytest.mark.core
-def testFmtToDocX_MkTag():
+def testToDocX_MkTag():
     """Test the tag maker function."""
     assert _mkTag("r", "id") == f"{{{OOXML_SCM}/officeDocument/2006/relationships}}id"
     assert _mkTag("w", "t") == f"{{{OOXML_SCM}/wordprocessingml/2006/main}}t"

@@ -33,7 +33,7 @@ from tests.helpers import C, buildTestProject
 
 
 @pytest.mark.gui
-def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+def testGuiLipsum_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the Lorem Ipsum tool."""
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aLipsumText.activate(QAction.ActionEvent.Trigger)

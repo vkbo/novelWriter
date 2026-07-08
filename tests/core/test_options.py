@@ -34,7 +34,7 @@ from tests.mocked import causeOSError
 
 
 @pytest.mark.core
-def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
+def testOptionState_LoadSave(monkeypatch, mockGUI, fncPath):
     """Test loading and saving from the OptionState class."""
     project = NWProject()
     options = OptionState(project)
@@ -109,7 +109,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
 
 
 @pytest.mark.core
-def testCoreOptions_SetGet(mockGUI):
+def testOptionState_SetGet(mockGUI):
     """Test setting and getting values from the OptionState class."""
     project = NWProject()
     options = OptionState(project)

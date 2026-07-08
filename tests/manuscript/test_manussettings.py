@@ -38,7 +38,7 @@ from tests.helpers import C, buildTestProject
 
 
 @pytest.mark.gui
-def testManusBuildSettings_Init(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+def testGuiBuildSettings_Init(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the initialisation of the GuiBuildSettings dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -119,7 +119,7 @@ def testManusBuildSettings_Init(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
-def testManusBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
+def testGuiBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     """Test the Filter Tab of the GuiBuildSettings dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -346,7 +346,7 @@ def testManusBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
-def testManusBuildSettings_Headings(qtbot, nwGUI):
+def testGuiBuildSettings_Headings(qtbot, nwGUI):
     """Test the Headings Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
@@ -540,7 +540,7 @@ def testManusBuildSettings_Headings(qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testManusBuildSettings_FormatTextContent(qtbot, nwGUI):
+def testGuiBuildSettings_FormatTextContent(qtbot, nwGUI):
     """Test the Text Content settings."""
     build = BuildSettings()
 
@@ -612,7 +612,7 @@ def testManusBuildSettings_FormatTextContent(qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testManusBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
+def testGuiBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
     """Test the Text Format settings."""
     build = BuildSettings()
 
@@ -698,7 +698,7 @@ def testManusBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testManusBuildSettings_FormatHeadingFormat(monkeypatch, qtbot, nwGUI):
+def testGuiBuildSettings_FormatHeadingFormat(monkeypatch, qtbot, nwGUI):
     """Test the Heading Format settings."""
     build = BuildSettings()
 
@@ -742,7 +742,7 @@ def testManusBuildSettings_FormatHeadingFormat(monkeypatch, qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testManusBuildSettings_FormatFirstLineIndent(monkeypatch, qtbot, nwGUI):
+def testGuiBuildSettings_FormatFirstLineIndent(monkeypatch, qtbot, nwGUI):
     """Test the First Line Indent settings."""
     build = BuildSettings()
 
@@ -785,7 +785,7 @@ def testManusBuildSettings_FormatFirstLineIndent(monkeypatch, qtbot, nwGUI):
     # qtbot.stop()
 
 
-def testManusBuildSettings_SizeAndMargins(monkeypatch, qtbot, nwGUI):
+def testGuiBuildSettings_SizeAndMargins(monkeypatch, qtbot, nwGUI):
     """Test the Size & Margins settings."""
     build = BuildSettings()
 
@@ -922,7 +922,7 @@ def testManusBuildSettings_SizeAndMargins(monkeypatch, qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testManusBuildSettings_FormatPageLayout(monkeypatch, qtbot, nwGUI):
+def testGuiBuildSettings_FormatPageLayout(monkeypatch, qtbot, nwGUI):
     """Test the First Line Indent settings."""
     build = BuildSettings()
 
@@ -987,7 +987,7 @@ def testManusBuildSettings_FormatPageLayout(monkeypatch, qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testManusBuildSettings_FormatOutput(qtbot, nwGUI):
+def testGuiBuildSettings_FormatOutput(qtbot, nwGUI):
     """Test the format-specific settings."""
     build = BuildSettings()
 

@@ -41,7 +41,7 @@ KEY_DELAY = 1
 
 
 @pytest.mark.gui
-def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
+def testGuiPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     """Test the preferences dialog loading."""
     monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: [("en", "English [en]")])
     monkeypatch.setattr(GuiPreferences, "exec", lambda *a: None)
@@ -88,7 +88,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
 
 
 @pytest.mark.gui
-def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
+def testGuiPreferences_Actions(qtbot, monkeypatch, nwGUI):
     """Test the preferences dialog actions."""
     monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: [("en", "English [en]")])
     prefs = GuiPreferences(nwGUI)
@@ -146,7 +146,7 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
 
 
 @pytest.mark.gui
-def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
+def testGuiPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     """Test the preferences dialog settings."""
     spelling = [("en", "English [en]"), ("de", "Deutch [de]")]
     monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: spelling)

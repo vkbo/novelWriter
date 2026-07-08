@@ -67,7 +67,7 @@ class MockWheelEvent(QWheelEvent):
 
 
 @pytest.mark.gui
-def testExtModified_NDialog(qtbot, monkeypatch):
+def testNDialog_Main(qtbot, monkeypatch):
     """Test the NDialog class."""
     widget = QWidget()
     dialog = NDialog(widget)
@@ -82,7 +82,7 @@ def testExtModified_NDialog(qtbot, monkeypatch):
 
 
 @pytest.mark.gui
-def testExtModified_NToolDialog(qtbot, nwGUI):
+def testNToolDialog_Main(qtbot, nwGUI):
     """Test the NToolDialog class."""
     dialog = NToolDialog(nwGUI)
     qtbot.addWidget(dialog)
@@ -91,7 +91,7 @@ def testExtModified_NToolDialog(qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testExtModified_NNonBlockingDialog(qtbot):
+def testNNonBlockingDialog_Main(qtbot):
     """Test the NNonBlockingDialog class."""
     dialog = NNonBlockingDialog()
     qtbot.addWidget(dialog)
@@ -99,7 +99,7 @@ def testExtModified_NNonBlockingDialog(qtbot):
     dialog.close()
 
 
-def testExtModified_NFontDialog(qtbot, monkeypatch, nwGUI):
+def testNFontDialog_Main(qtbot, monkeypatch, nwGUI):
     """Test the NFontDialog class."""
     current = QFont()
     other = QFont()
@@ -128,7 +128,7 @@ def testExtModified_NFontDialog(qtbot, monkeypatch, nwGUI):
 
 
 @pytest.mark.gui
-def testExtModified_NTreeView(qtbot, monkeypatch):
+def testNTreeView_Main(qtbot, monkeypatch):
     """Test the NTreeView class."""
     model = QStandardItemModel(1, 1)
     model.insertRow(0, QStandardItem("Hello World"))
@@ -167,7 +167,7 @@ def testExtModified_NTreeView(qtbot, monkeypatch):
 
 
 @pytest.mark.gui
-def testExtModified_NComboBox(qtbot, monkeypatch):
+def testNComboBox_Main(qtbot, monkeypatch):
     """Test the NComboBox class."""
     widget = NComboBox()
     widget.addItem("Item 1", 1)
@@ -192,7 +192,7 @@ def testExtModified_NComboBox(qtbot, monkeypatch):
 
 
 @pytest.mark.gui
-def testExtModified_NSpinBox(qtbot, monkeypatch):
+def testNSpinBox_Main(qtbot, monkeypatch):
     """Test the NSpinBox class."""
     widget = NSpinBox()
     widget.setMinimum(0)
@@ -218,7 +218,7 @@ def testExtModified_NSpinBox(qtbot, monkeypatch):
 
 
 @pytest.mark.gui
-def testExtModified_NDoubleSpinBox(qtbot, monkeypatch):
+def testNDoubleSpinBox_Main(qtbot, monkeypatch):
     """Test the NDoubleSpinBox class."""
     widget = NDoubleSpinBox()
     widget.setMinimum(0.0)
@@ -244,7 +244,7 @@ def testExtModified_NDoubleSpinBox(qtbot, monkeypatch):
 
 
 @pytest.mark.gui
-def testExtModified_NClickableLabel(qtbot):
+def testNClickableLabel_Main(qtbot):
     """Test the NClickableLabel class."""
     widget = NClickableLabel()
     dialog = SimpleDialog(widget)
@@ -267,7 +267,7 @@ def testExtModified_NClickableLabel(qtbot):
 
 
 @pytest.mark.gui
-def testExtModified_ToolButtons(qtbot, mockGUI):
+def testNToolButtons_Main(qtbot, mockGUI):
     """Test the NIconToolButton and NIconToggleButton classes."""
     dialog = SimpleDialog(None)
 

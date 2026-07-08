@@ -40,7 +40,7 @@ from tests.mocked import causeException
 
 
 @pytest.mark.core
-def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
+def testIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
     """Test core functionality of scanning, saving, loading and checking
     the index cache file.
     """
@@ -203,7 +203,7 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
 
 
 @pytest.mark.core
-def testCoreIndex_ScanThis(mockGUI):
+def testIndex_ScanThis(mockGUI):
     """Test the tag scanner function scanThis."""
     project = NWProject()
     index = project.index
@@ -259,7 +259,7 @@ def testCoreIndex_ScanThis(mockGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_CheckThese(nwGUI, fncPath, mockRnd):
+def testIndex_CheckThese(nwGUI, fncPath, mockRnd):
     """Test the tag checker function checkThese."""
     project = NWProject()
     mockRnd.reset()
@@ -373,7 +373,7 @@ def testCoreIndex_CheckThese(nwGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
+def testIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     """Check the index text scanner."""
     project = NWProject()
     mockRnd.reset()
@@ -621,7 +621,7 @@ def testCoreIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_ChangedRefsSignal(qtbot, nwGUI, fncPath, mockRnd):
+def testIndex_ChangedRefsSignal(qtbot, nwGUI, fncPath, mockRnd):
     """Check that scanning emits updated backreference handles."""
     project = NWProject()
     mockRnd.reset()
@@ -653,7 +653,7 @@ def testCoreIndex_ChangedRefsSignal(qtbot, nwGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_CommentKeys(monkeypatch, nwGUI, fncPath, mockRnd):
+def testIndex_CommentKeys(monkeypatch, nwGUI, fncPath, mockRnd):
     """Check the index comment key generator."""
     project = NWProject()
     mockRnd.reset()
@@ -690,7 +690,7 @@ def testCoreIndex_CommentKeys(monkeypatch, nwGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
+def testIndex_ExtractData(nwGUI, fncPath, mockRnd):
     """Check the index data extraction functions."""
     project = NWProject()
     mockRnd.reset()
@@ -1036,7 +1036,7 @@ def testCoreIndex_ExtractData(nwGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_TagsIndex():
+def testTagsIndex_Main():
     """Check the TagsIndex class."""
     tagsIndex = TagsIndex()
     assert tagsIndex._tags == {}
@@ -1226,7 +1226,7 @@ def testCoreIndex_TagsIndex():
 
 
 @pytest.mark.core
-def testCoreIndex_ItemIndex(nwGUI, fncPath, mockRnd):
+def testItemIndex_Main(nwGUI, fncPath, mockRnd):
     """Check the ItemIndex class."""
     project = NWProject()
     mockRnd.reset()

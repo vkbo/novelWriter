@@ -31,7 +31,7 @@ from tests.mocked import causeException
 
 
 @pytest.mark.base
-def testBaseError_LogException(caplog):
+def testError_LogException(caplog):
     """Test that logging an exception outside of an except block, where
     there is no active exception, does nothing.
     """
@@ -41,7 +41,7 @@ def testBaseError_LogException(caplog):
 
 
 @pytest.mark.base
-def testBaseError_Dialog(qtbot, monkeypatch, nwGUI):
+def testError_Dialog(qtbot, monkeypatch, nwGUI):
     """Test the error dialog."""
     nwErr = NWErrorMessage(nwGUI)
     qtbot.addWidget(nwErr)
@@ -83,7 +83,7 @@ def testBaseError_Dialog(qtbot, monkeypatch, nwGUI):
 
 
 @pytest.mark.base
-def testBaseError_Handler(qtbot, monkeypatch, nwGUI):
+def testError_Handler(qtbot, monkeypatch, nwGUI):
     """Test the error handler. This test doesn't have any asserts, but
     it checks that the error handler handles potential exceptions. The
     test will fail if exceptions are not handled.

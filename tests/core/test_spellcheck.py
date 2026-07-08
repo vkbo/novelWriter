@@ -37,7 +37,7 @@ from tests.mocked import causeOSError
 
 
 @pytest.mark.core
-def testCoreSpell_UserDictionary(monkeypatch, mockGUI, fncPath):
+def testUserDictionary_Main(monkeypatch, mockGUI, fncPath):
     """Test the UserDictionary class."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -106,7 +106,7 @@ def testCoreSpell_UserDictionary(monkeypatch, mockGUI, fncPath):
 
 
 @pytest.mark.core
-def testCoreSpell_FakeEnchant(monkeypatch, mockGUI, fncPath):
+def testFakeEnchant_Main(monkeypatch, mockGUI, fncPath):
     """Test the FakeEnchant spell checker fallback."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -139,7 +139,7 @@ def testCoreSpell_FakeEnchant(monkeypatch, mockGUI, fncPath):
 
 
 @pytest.mark.core
-def testCoreSpell_Enchant(monkeypatch, mockGUI, fncPath):
+def testNWSpellEnchant_Main(monkeypatch, mockGUI, fncPath):
     """Test the pyenchant spell checker."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -196,7 +196,7 @@ def testCoreSpell_Enchant(monkeypatch, mockGUI, fncPath):
 
 
 @pytest.mark.core
-def testCoreSpell_Cache(monkeypatch, mockGUI, fncPath):
+def testNWSpellEnchant_Cache(monkeypatch, mockGUI, fncPath):
     """Test the spell checker word cache."""
     project = NWProject()
     buildTestProject(project, fncPath)

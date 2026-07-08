@@ -38,7 +38,7 @@ class MockProject:
 
 
 @pytest.mark.core
-def testCoreProjectData_Uuid(mockGUI):
+def testNWProjectData_Uuid(mockGUI):
     """Test the setUuid setter."""
     project = MockProject()
     data = NWProjectData(project)  # type: ignore
@@ -61,7 +61,7 @@ def testCoreProjectData_Uuid(mockGUI):
 
 
 @pytest.mark.core
-def testCoreProjectData_Language(mockGUI):
+def testNWProjectData_Language(mockGUI):
     """Test the setLanguage setter."""
     project = MockProject()
     data = NWProjectData(project)  # type: ignore
@@ -77,7 +77,7 @@ def testCoreProjectData_Language(mockGUI):
 
 
 @pytest.mark.core
-def testCoreProjectData_LastHandle(mockGUI):
+def testNWProjectData_LastHandle(mockGUI):
     """Test the setLastHandle and setLastHandles setters."""
     project = MockProject()
     data = NWProjectData(project)  # type: ignore
@@ -102,7 +102,7 @@ def testCoreProjectData_LastHandle(mockGUI):
 
 
 @pytest.mark.core
-def testCoreProjectData_CurrCounts(mockGUI):
+def testNWProjectData_CurrCounts(mockGUI):
     """Test the setCurrCounts setter."""
     project = MockProject()
     data = NWProjectData(project)  # type: ignore
@@ -116,7 +116,7 @@ def testCoreProjectData_CurrCounts(mockGUI):
 
 
 @pytest.mark.core
-def testCoreProjectData_AutoReplace(mockGUI):
+def testNWProjectData_AutoReplace(mockGUI):
     """Test the setAutoReplace setter."""
     project = MockProject()
     data = NWProjectData(project)  # type: ignore

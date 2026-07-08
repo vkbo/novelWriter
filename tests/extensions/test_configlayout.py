@@ -31,7 +31,7 @@ from tests.helpers import SimpleDialog
 
 
 @pytest.mark.gui
-def testExtConfigLayout_ScrollableForm(qtbot, mockGUI):
+def testNScrollableForm_Main(qtbot, mockGUI):
     """Test the NScrollableForm class."""
     dialog = SimpleDialog()
     form = NScrollableForm(dialog)

@@ -32,7 +32,7 @@ from tests.mocked import causeOSError
 
 
 @pytest.mark.core
-def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
+def testNWDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     """Test loading and saving a document with the NWDocument class."""
     monkeypatch.setattr("novelwriter.core.document.time", lambda: MOCK_TIME)
 
@@ -220,7 +220,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreDocument_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
+def testNWDocument_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     """Test other methods of the NWDocument class."""
     monkeypatch.setattr("novelwriter.core.document.time", lambda: MOCK_TIME)
 
