@@ -22,6 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import time
+import weakref
 
 from pathlib import Path
 from xml.etree import ElementTree as ET
@@ -74,6 +75,7 @@ from novelwriter.common import (
     openExternalPath,
     processDialogSymbols,
     processLangCode,
+    qtWeakLambda,
     readTextFile,
     safeExists,
     safeIsDir,
@@ -931,6 +933,30 @@ def testCommon_openExternalPath(monkeypatch, tstPaths):
     assert openExternalPath(Path("/foo/bar")) is False
     assert openExternalPath(tstPaths.tmpDir) is True
     assert lastUrl.startswith("file://")
+
+
+@pytest.mark.base
+def testCommon_qtWeakLambda():
+    """Test the qtWeakLambda function."""
+
+    class Counter:
+        count = 0
+
+        def add(self, step: int) -> None:
+            self.count += step
+
+    obj = Counter()
+    wrapper = qtWeakLambda(obj.add, 2)
+
+    # The wrapper calls the method, but does not keep the object alive
+    wrapper()
+    assert obj.count == 2
+
+    # When the object is gone, the wrapper does nothing
+    ref = weakref.ref(obj)
+    del obj
+    assert ref() is None
+    wrapper()
 
 
 @pytest.mark.base

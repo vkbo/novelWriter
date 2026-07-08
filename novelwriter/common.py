@@ -25,6 +25,7 @@ import json
 import logging
 import unicodedata
 import uuid
+import weakref
 import xml.etree.ElementTree as ET
 
 from configparser import ConfigParser
@@ -45,6 +46,7 @@ from novelwriter.error import logException
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Generator
+    from types import MethodType
 
 logger = logging.getLogger(__name__)
 
@@ -543,6 +545,22 @@ def qtLambda(func: Callable, *args: Any, **kwargs: Any) -> Callable:
 
     def wrapper(*a_: Any) -> None:
         func(*args, **kwargs)
+
+    return wrapper
+
+
+def qtWeakLambda(method: MethodType, *args: Any, **kwargs: Any) -> Callable:
+    """A qtLambda that only holds a weak reference to the bound method.
+    Use this instead of qtLambda when the slot is a method of the object
+    that also owns the signal, as the strong reference in qtLambda would
+    otherwise keep the object alive until the cyclic garbage collector
+    runs.
+    """  # noqa: D401
+    ref = weakref.WeakMethod(method)
+
+    def wrapper(*a_: Any) -> None:
+        if func := ref():
+            func(*args, **kwargs)
 
     return wrapper
 
