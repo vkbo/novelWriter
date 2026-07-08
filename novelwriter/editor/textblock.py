@@ -33,6 +33,8 @@ RX_FMT_SV = REGEX_PATTERNS.shortcodeValue
 RX_MULTI_SPACE = re.compile(r" {2,}")
 RX_TRAIL_SPACE = re.compile(r"[ \t]+$")
 
+T_TextCheckResult = list[tuple[int, int, str]]
+
 
 class TextBlockData(QTextBlockUserData):
     """Custom QTextBlock Data.
@@ -164,7 +166,7 @@ class TextBlockData(QTextBlockUserData):
         return self._formatErrors
 
 
-def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
+def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> T_TextCheckResult:
     """Spell check a piece of text and return the list of errors. This
     function does not touch any Qt document classes, so it is safe to
     call from a worker thread.
@@ -183,13 +185,13 @@ def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> list[t
     ]
 
 
-def formatCheckText(text: str, offset: int, utf16Map: list[int] | None) -> list[tuple[int, int, str]]:
+def formatCheckText(text: str, offset: int, utf16Map: list[int] | None) -> T_TextCheckResult:
     """Check a piece of text for runs of multiple spaces and trailing
     whitespace, and return the list of matches. This function does not
     touch any Qt document classes, so it is safe to call from a worker
     thread.
     """
-    results = []
+    results: T_TextCheckResult = []
     for res in RX_MULTI_SPACE.finditer(text, offset):
         s, e = res.start(0), res.end(0)
         if utf16Map:

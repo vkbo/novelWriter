@@ -75,8 +75,8 @@ from novelwriter.editor.editordocument import GuiTextDocument
 from novelwriter.editor.editsearch import GuiDocEditSearch
 from novelwriter.editor.edittoolbar import GuiDocToolBar
 from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE
-from novelwriter.editor.runnables import BackgroundTextCheck, BackgroundWordCounter
-from novelwriter.editor.textblock import TextBlockData
+from novelwriter.editor.runnables import BackgroundTextCheck, BackgroundWordCounter, T_TextCheckPayload
+from novelwriter.editor.textblock import T_TextCheckResult, TextBlockData
 from novelwriter.enum import (
     nwChange,
     nwComment,
@@ -131,6 +131,9 @@ from novelwriter.types import (
 )
 
 logger = logging.getLogger(__name__)
+
+T_TextCheckBlock = tuple[QTextBlock, TextBlockData, int]
+T_TextCheckJob = tuple[int, list[T_TextCheckBlock]]
 
 
 class _SelectAction(Enum):
@@ -270,7 +273,7 @@ class GuiDocEditor(QTextEdit):
         self._suppressed = False
         self._checkPassNo = -1
         self._spellPassNotify = False
-        self._checkJob: tuple[int, list[tuple[QTextBlock, TextBlockData, int]]] | None = None
+        self._checkJob: T_TextCheckJob | None = None
         self._checkJobId = 0
 
         # Context Menu Translation
@@ -1474,12 +1477,11 @@ class GuiDocEditor(QTextEdit):
         pass, but modified blocks are covered by the debounce anyway.
         """
         if self._checkJob is not None:
-            # There is already a job running, and a new dispatch is
-            # made when its results come in
+            # There is already a job running, and a new dispatch is made when its results come in
             return
 
-        job = []
-        payload = []
+        job: list[T_TextCheckBlock] = []
+        payload: T_TextCheckPayload = []
         while self._dirtyBlocks and len(job) < nwConst.CHECK_PASS_CHUNK:
             _, block = self._dirtyBlocks.popitem()
             if block.isValid() and isinstance(data := block.userData(), TextBlockData):  # pragma: no branch
@@ -1511,10 +1513,8 @@ class GuiDocEditor(QTextEdit):
             self._spellPassNotify = False
             SHARED.newStatusMessage(self.tr("Spell check complete"))
 
-    @pyqtSlot(int, object)
-    def _textCheckResults(
-        self, jobId: int, results: list[tuple[int, list[tuple[int, int, str]], list[tuple[int, int, str]]]]
-    ) -> None:
+    @pyqtSlot(int, list)
+    def _textCheckResults(self, jobId: int, results: list[tuple[int, T_TextCheckResult, T_TextCheckResult]]) -> None:
         """Process the results from the spell/format check worker.
         Results are discarded if the job was cancelled, or per block if
         the block was modified or removed while the worker was running.

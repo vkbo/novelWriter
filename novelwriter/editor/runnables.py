@@ -27,13 +27,15 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
 
-from novelwriter.editor.textblock import formatCheckText, spellCheckText
+from novelwriter.editor.textblock import T_TextCheckResult, formatCheckText, spellCheckText
 from novelwriter.text.counting import standardCounter
 
 if TYPE_CHECKING:
     from novelwriter.editor.editor import GuiDocEditor
 
 logger = logging.getLogger(__name__)
+
+T_TextCheckPayload = list[tuple[int, str, str, int, list[int] | None]]
 
 
 class BackgroundWordCounter(QRunnable):
@@ -90,7 +92,7 @@ class BackgroundTextCheck(QRunnable):
     def __init__(
         self,
         jobId: int,
-        payload: list[tuple[int, str, str, int, list[int] | None]],
+        payload: T_TextCheckPayload,
         checkSpell: bool,
         checkFormat: bool,
     ) -> None:
@@ -104,7 +106,7 @@ class BackgroundTextCheck(QRunnable):
     @pyqtSlot()
     def run(self) -> None:
         """Spell and format check the text snapshots and emit the results."""
-        results = []
+        results: list[tuple[int, T_TextCheckResult, T_TextCheckResult]] = []
         for index, spellText, formatText, offset, utf16Map in self._payload:
             spellErrors = spellCheckText(spellText, offset, utf16Map) if self._checkSpell else []
             formatErrors = formatCheckText(formatText, offset, utf16Map) if self._checkFormat else []
@@ -117,4 +119,4 @@ class BackgroundTextCheckSignals(QObject):
     to hold the text check result signal.
     """
 
-    resultsReady = pyqtSignal(int, object)
+    resultsReady = pyqtSignal(int, list)
