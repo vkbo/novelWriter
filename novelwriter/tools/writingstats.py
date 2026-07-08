@@ -44,7 +44,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt, checkIntTuple, formatTime, minmax, qtLambda
+from novelwriter.common import checkInt, checkIntTuple, formatTime, minmax
 from novelwriter.constants import nwConst
 from novelwriter.enum import nwStandardButton
 from novelwriter.error import formatException
@@ -278,14 +278,15 @@ class GuiWritingStats(NToolDialog):
         self.btnClose.setAutoDefault(False)
 
         self.saveJSON = QAction(self.tr("JSON Data File (.json)"), self)
-        self.saveJSON.triggered.connect(qtLambda(self._saveData, self.FMT_JSON))
+        self.saveJSON.setData(self.FMT_JSON)
 
         self.saveCSV = QAction(self.tr("CSV Data File (.csv)"), self)
-        self.saveCSV.triggered.connect(qtLambda(self._saveData, self.FMT_CSV))
+        self.saveCSV.setData(self.FMT_CSV)
 
         self.saveMenu = QMenu(self)
         self.saveMenu.addAction(self.saveJSON)
         self.saveMenu.addAction(self.saveCSV)
+        self.saveMenu.triggered.connect(self._saveMenuTriggered)
 
         self.btnSave = NPushButton(self, self.tr("Save As"), bSz, "btn_save", "action")
         self.btnSave.setAutoDefault(False)
@@ -479,6 +480,11 @@ class GuiWritingStats(NToolDialog):
     ##
     #  Private Slots
     ##
+
+    @pyqtSlot(QAction)
+    def _saveMenuTriggered(self, action: QAction) -> None:
+        """Save the data in the format set on the menu action."""
+        self._saveData(action.data())
 
     @pyqtSlot()
     def _updateListBox(self) -> None:

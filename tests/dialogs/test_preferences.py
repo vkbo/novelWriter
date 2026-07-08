@@ -308,7 +308,8 @@ def testGuiPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     prefs.dottedModCodes.setChecked(True)
     prefs.showMultiSpaces.setChecked(True)
 
-    prefs._insertDialogLineSymbol(nwUnicode.U_ENDASH)
+    actions = {a.data(): a for a in prefs.mnLineSymbols.actions()}
+    actions[nwUnicode.U_ENDASH].trigger()
     assert prefs.dialogLine.text() == f"{nwUnicode.U_ENDASH} {nwUnicode.U_EMDASH}"
 
     assert CONFIG.dialogStyle == 2

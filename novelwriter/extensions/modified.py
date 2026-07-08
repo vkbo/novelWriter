@@ -151,7 +151,11 @@ class NFontDialog(QFontDialog):
         dialog.exec()
         CONFIG.setFontWinSize(dialog.geometry())
 
-        return dialog.selectedFont(), dialog.result() == 1
+        font = dialog.selectedFont()
+        status = dialog.result() == 1
+        dialog.setParent(None)  # type: ignore
+
+        return font, status
 
 
 class NTreeView(QTreeView):
