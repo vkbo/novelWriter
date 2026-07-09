@@ -1,6 +1,6 @@
 """
-novelWriter – Novel Details Tool Tester
-=======================================
+novelWriter – Novel Details Tool Tests
+======================================
 
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors

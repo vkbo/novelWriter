@@ -1,6 +1,6 @@
 """
-novelWriter – Manuscript Build Dialog Tester
-============================================
+novelWriter – Manuscript Build Dialog Tests
+===========================================
 
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors

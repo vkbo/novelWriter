@@ -1,6 +1,6 @@
 """
-novelWriter – Document Editor Class Tester
-==========================================
+novelWriter – Document Editor Tests
+===================================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors

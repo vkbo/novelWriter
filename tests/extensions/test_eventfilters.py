@@ -1,6 +1,6 @@
 """
-novelWriter – Wheel Event Filter Tester
-=======================================
+novelWriter – Wheel Event Filter Tests
+======================================
 
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors

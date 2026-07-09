@@ -1,6 +1,6 @@
 """
-novelWriter – Main GUI Viewer Panel Class Tester
-================================================
+novelWriter – Document Viewer Panel Tests
+=========================================
 
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors

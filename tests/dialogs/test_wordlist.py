@@ -1,6 +1,6 @@
 """
-novelWriter – Other Dialog Classes Tester
-=========================================
+novelWriter – Word List Tests
+=============================
 
 This file is a part of novelWriter
 Copyright (C) 2021 Veronica Berglyd Olsen and novelWriter contributors

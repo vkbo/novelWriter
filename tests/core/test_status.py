@@ -1,6 +1,6 @@
 """
-novelWriter – NWStatus Class Tester
-===================================
+novelWriter – Project Status Tests
+==================================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors

@@ -1,6 +1,6 @@
 """
-novelWriter – Main GUI Project Search Tester
-============================================
+novelWriter – GUI Project Search Tests
+======================================
 
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors

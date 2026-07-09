@@ -1,6 +1,6 @@
 """
-novelWriter – NWTree Class Tester
-=================================
+novelWriter – Project Tree Tests
+================================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
