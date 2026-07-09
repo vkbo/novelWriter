@@ -51,7 +51,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class NWBuildDocument:
+class DocumentBuilder:
     """Core: Manuscript Document Build Class.
 
     This is the core tool that assembles a project and outputs a

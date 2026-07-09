@@ -37,7 +37,6 @@ from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSearch, DocS
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
 from novelwriter.manuscript.buildsettings import BuildSettings
-from novelwriter.manuscript.docbuild import NWBuildDocument
 
 from tests.helpers import NWD_IGNORE, XML_IGNORE, C, buildTestProject, cmpFiles
 from tests.mocked import causeOSError
@@ -659,7 +658,7 @@ def testCoreTools_ProjectBuilderA(monkeypatch, fncPath, tstPaths, mockGUI, mockR
 
     build = BuildSettings()
 
-    docBuild = NWBuildDocument(project, build)
+    docBuild = DocumentBuilder(project, build)
     docBuild.queueAll()
 
     testFile = tstPaths.outDir / "coreTools_ProjectBuilderA_Project.md"
@@ -707,7 +706,7 @@ def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths, mockGUI, mockR
 
     build = BuildSettings()
 
-    docBuild = NWBuildDocument(project, build)
+    docBuild = DocumentBuilder(project, build)
     docBuild.queueAll()
 
     testFile = tstPaths.outDir / "coreTools_ProjectBuilderB_Project.md"

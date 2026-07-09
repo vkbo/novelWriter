@@ -69,7 +69,6 @@ from novelwriter.formats.tokenizer import HeadingFormatter
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.manuscript.buildsettings import BuildCollection, BuildSettings
-from novelwriter.manuscript.docbuild import NWBuildDocument
 from novelwriter.manuscript.manusbuild import GuiManuscriptBuild
 from novelwriter.manuscript.manussettings import GuiBuildSettings
 from novelwriter.types import QtAlignCenter, QtAlignRight, QtAlignTop, QtSizeExpanding, QtSizeIgnored, QtUserRole
@@ -392,7 +391,7 @@ class GuiManuscript(NToolDialog):
         # Make sure editor content is saved before we start
         SHARED.saveEditor()
 
-        docBuild = NWBuildDocument(SHARED.project, build)
+        docBuild = DocumentBuilder(SHARED.project, build)
         docBuild.queueAll()
 
         self.docPreview.beginNewBuild(len(docBuild))
