@@ -330,7 +330,7 @@ def testNWProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
 
     # Fail checking items should still pass
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.tree.NWTree.checkConsistency", lambda *a: (1, 0))
+        mp.setattr("novelwriter.core.tree.ProjectTree.checkConsistency", lambda *a: (1, 0))
         assert project.openProject(fncPath, clearLock=True) is True
 
     # Trigger an index rebuild

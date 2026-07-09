@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 MAX_DEPTH = 999  # Cap of tree traversing for loops (recursion limit)
 
 
-class NWTree:
+class ProjectTree:
     """Core: Project Tree Data Class.
 
     Only one instance of this class should exist in the project class.
@@ -69,11 +69,11 @@ class NWTree:
         self._docs: list[str] = []
         self._trash = None
         self._ready = False
-        logger.debug("Ready: NWTree")
+        logger.debug("Ready: ProjectTree")
 
     def __del__(self) -> None:  # pragma: no cover
         """Class destructor."""
-        logger.debug("Delete: NWTree")
+        logger.debug("Delete: ProjectTree")
 
     def __len__(self) -> int:
         """Return the number of items in the project."""

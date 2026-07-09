@@ -50,7 +50,7 @@ from novelwriter.core.projectdata import ProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.sessions import SessionLog
 from novelwriter.core.storage import NWStorage, NWStorageOpen
-from novelwriter.core.tree import NWTree
+from novelwriter.core.tree import ProjectTree
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 
@@ -96,7 +96,7 @@ class NWProject:
         self._options = OptionState(self)  # Project-specific GUI options
         self._storage = NWStorage(self)  # The project storage handler
         self._data = ProjectData(self)  # The project settings
-        self._tree = NWTree(self)  # The project tree
+        self._tree = ProjectTree(self)  # The project tree
         self._index = Index(self)  # The project index
         self._session = SessionLog(self)  # The session record
 
@@ -137,7 +137,7 @@ class NWProject:
         return self._data
 
     @property
-    def tree(self) -> NWTree:
+    def tree(self) -> ProjectTree:
         return self._tree
 
     @property

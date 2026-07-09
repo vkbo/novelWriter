@@ -44,7 +44,7 @@ from novelwriter.types import (
 )
 
 if TYPE_CHECKING:
-    from novelwriter.core.tree import NWTree
+    from novelwriter.core.tree import ProjectTree
 
 logger = logging.getLogger(__name__)
 
@@ -306,7 +306,7 @@ class ProjectModel(QAbstractItemModel):
 
     __slots__ = ("_root", "_tree")
 
-    def __init__(self, tree: NWTree) -> None:
+    def __init__(self, tree: ProjectTree) -> None:
         super().__init__()
         self._tree = tree
         self._root = ProjectNode(NWItem(tree.project, INV_ROOT))

@@ -31,14 +31,14 @@ import pytest
 from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
-from novelwriter.core.tree import NWTree
+from novelwriter.core.tree import ProjectTree
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 
 from tests.helpers import C, buildTestProject
 from tests.mocked import causeOSError
 
 
-def assertTreeModelConsistency(tree: NWTree) -> None:
+def assertTreeModelConsistency(tree: ProjectTree) -> None:
     """Assert map and model consistency for the loaded tree."""
     modelNodes = tree.model.root.allChildren()
     modelHandles = {node.item.itemHandle for node in modelNodes}
@@ -75,10 +75,10 @@ def mockItems(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testNWTree_Populate(monkeypatch, mockGUI, mockItems):
+def testProjectTree_Populate(monkeypatch, mockGUI, mockItems):
     """Test populating the project tree."""
     project = NWProject()
-    tree = NWTree(project)
+    tree = ProjectTree(project)
 
     # Check that tree is empty
     assert bool(tree) is False
@@ -227,10 +227,10 @@ def testNWTree_Populate(monkeypatch, mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testNWTree_ManipulateTree(monkeypatch, mockGUI, mockItems):
+def testProjectTree_ManipulateTree(monkeypatch, mockGUI, mockItems):
     """Check create, add, remove and duplicate items."""
     project = NWProject()
-    tree = NWTree(project)
+    tree = ProjectTree(project)
     tree.unpack(mockItems)
     assertTreeModelConsistency(tree)
     assert len(tree) == 9
@@ -430,10 +430,10 @@ def testNWTree_ManipulateTree(monkeypatch, mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testNWTree_PickParent(mockGUI, mockItems):
+def testProjectTree_PickParent(mockGUI, mockItems):
     """Check the parent item picker."""
     project = NWProject()
-    tree = NWTree(project)
+    tree = ProjectTree(project)
     assert len(tree) == 0
 
     # Case 1: Root and Folder
@@ -569,10 +569,10 @@ def testNWTree_PickParent(mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testNWTree_ItemMethods(monkeypatch, mockGUI, mockItems):
+def testProjectTree_ItemMethods(monkeypatch, mockGUI, mockItems):
     """Check the item methods of the tree."""
     project = NWProject()
-    tree = NWTree(project)
+    tree = ProjectTree(project)
     tree.unpack(mockItems)
     assert len(tree) == 9
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
@@ -659,7 +659,7 @@ def testNWTree_ItemMethods(monkeypatch, mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testNWTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
+def testProjectTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
     """Check other methods in the tree."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -714,14 +714,14 @@ def testNWTree_OtherMethods(qtbot, monkeypatch, mockGUI, fncPath, mockRnd):
     assert tree._trash is None
 
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.tree.NWTree.create", lambda *a, **k: None)
+        mp.setattr("novelwriter.core.tree.ProjectTree.create", lambda *a, **k: None)
         tree._trash = trash
         assert tree.trash is None
         assert tree._getTrashNode() is None
 
 
 @pytest.mark.core
-def testNWTree_CheckConsistency(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
+def testProjectTree_CheckConsistency(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     """Check the project tree's consistency."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -798,16 +798,16 @@ def testNWTree_CheckConsistency(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     project.tree.remove(yHandle)
     (contentPath / f"{yHandle}.nwd").write_text("### Stuff", encoding="utf-8")
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.tree.NWTree.add", lambda *a: False)
+        mp.setattr("novelwriter.core.tree.ProjectTree.add", lambda *a: False)
         assert project.tree.checkConsistency("Recovered") == (1, 0)
 
 
 @pytest.mark.core
-def testNWTree_MakeHandles(mockGUI):
+def testProjectTree_MakeHandles(mockGUI):
     """Test generating item handles."""
     random.seed(42)
     project = NWProject()
-    tree = NWTree(project)
+    tree = ProjectTree(project)
 
     handles = ["1c803a3b1799d", "bdd6406671ad1", "3eb1346685257", "23b8c392456de"]
 
@@ -830,10 +830,10 @@ def testNWTree_MakeHandles(mockGUI):
 
 
 @pytest.mark.core
-def testNWTree_DuplicateHandleGuards(mockGUI, mockItems):
+def testProjectTree_DuplicateHandleGuards(mockGUI, mockItems):
     """Test duplicate handle guards in add and _addItems."""
     project = NWProject()
-    tree = NWTree(project)
+    tree = ProjectTree(project)
     tree.unpack(mockItems)
     assertTreeModelConsistency(tree)
 
@@ -861,10 +861,10 @@ def testNWTree_DuplicateHandleGuards(mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testNWTree_RootParentIsNormalisedToTopLevel(mockGUI, mockItems):
+def testProjectTree_RootParentIsNormalisedToTopLevel(mockGUI, mockItems):
     """Check malformed root parent references are normalised."""
     project = NWProject()
-    tree = NWTree(project)
+    tree = ProjectTree(project)
     tree.unpack(mockItems)
     assertTreeModelConsistency(tree)
 
@@ -893,10 +893,10 @@ def testNWTree_RootParentIsNormalisedToTopLevel(mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testNWTree_UnresolvedItemsKeepLoadedTreeConsistent(monkeypatch, mockGUI, mockItems):
+def testProjectTree_UnresolvedItemsKeepLoadedTreeConsistent(monkeypatch, mockGUI, mockItems):
     """Check unresolved unpack entries do not break loaded tree consistency."""
     project = NWProject()
-    tree = NWTree(project)
+    tree = ProjectTree(project)
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.tree.MAX_DEPTH", 1)
@@ -913,10 +913,10 @@ def testNWTree_UnresolvedItemsKeepLoadedTreeConsistent(monkeypatch, mockGUI, moc
 
 
 @pytest.mark.core
-def testNWTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
+def testProjectTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
     """Test writing the ToC.txt file."""
     project = NWProject()
-    tree = NWTree(project)
+    tree = ProjectTree(project)
     tree.unpack(mockItems)
 
     def mockIsFile(fileName):

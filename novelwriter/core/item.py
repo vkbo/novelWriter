@@ -43,8 +43,8 @@ class NWItem:
 
     This class holds all the project information about a project item.
     Each item must be associated with a project and have a valid handle.
-    Only the NWTree class should create instances of this class, and
-    must ensure that the handle is valid for all items in the tree.
+    Only the ProjectTree class should create instances of this class,
+    and must ensure that the handle is valid for all items in the tree.
     """
 
     __slots__ = (
@@ -103,7 +103,7 @@ class NWItem:
         """Check the truthiness of the class. The handle used to be
         initiated to None, but this is no longer the case. It should
         always evaluate to True since 2.1-beta1, although unpack and the
-        NWTree class can leave it as an empty string.
+        ProjectTree class can leave it as an empty string.
         """
         return bool(self._handle)
 
