@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 T_LastHandle = Literal["editor", "viewer", "novel", "outline"]
 
 
-class NWProjectData:
+class ProjectData:
     """Core: Project Data Class.
 
     The class holds all project data from the main XML file, aside from

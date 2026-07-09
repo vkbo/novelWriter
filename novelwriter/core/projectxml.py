@@ -43,7 +43,7 @@ from novelwriter.common import (
 )
 
 if TYPE_CHECKING:
-    from novelwriter.core.projectdata import NWProjectData
+    from novelwriter.core.projectdata import ProjectData
     from novelwriter.core.status import NWStatus
 
 logger = logging.getLogger(__name__)
@@ -77,7 +77,7 @@ class XMLReadState(Enum):
 class ProjectXMLReader:
     """Core: Project XML Reader.
 
-    All data is read into a NWProjectData instance, which must be
+    All data is read into a ProjectData instance, which must be
     provided.
 
     File Format Version Change History
@@ -171,7 +171,7 @@ class ProjectXMLReader:
     #  Methods
     ##
 
-    def read(self, data: NWProjectData, content: list) -> bool:
+    def read(self, data: ProjectData, content: list) -> bool:
         """Read and parse the project XML file."""
         tStart = time()
         logger.debug("Reading project XML")
@@ -229,7 +229,7 @@ class ProjectXMLReader:
     #  Internal Functions
     ##
 
-    def _parseProjectMeta(self, xSection: ET.Element, data: NWProjectData) -> None:
+    def _parseProjectMeta(self, xSection: ET.Element, data: ProjectData) -> None:
         """Parse the project section of the XML file."""
         logger.debug("Parsing <project> section")
 
@@ -256,7 +256,7 @@ class ProjectXMLReader:
                 elif xItem.tag == "editTime":  # Moved to attribute in 1.5
                     data.setEditTime(xItem.text)
 
-    def _parseProjectSettings(self, xSection: ET.Element, data: NWProjectData) -> None:
+    def _parseProjectSettings(self, xSection: ET.Element, data: ProjectData) -> None:
         """Parse the settings section of the XML file."""
         logger.debug("Parsing <settings> section")
 
@@ -294,7 +294,7 @@ class ProjectXMLReader:
                 elif xItem.tag == "notesWordCount":  # Moved to content attribute in 1.5
                     data.setInitCounts(wNotes=xItem.text)
 
-    def _parseProjectContent(self, xSection: ET.Element, data: NWProjectData, content: list) -> None:
+    def _parseProjectContent(self, xSection: ET.Element, data: ProjectData, content: list) -> None:
         """Parse the content section of the XML file."""
         logger.debug("Parsing <content> section")
 
@@ -352,7 +352,7 @@ class ProjectXMLReader:
                 "nameAttr": name,
             })
 
-    def _parseProjectContentLegacy(self, xSection: ET.Element, data: NWProjectData, content: list) -> None:
+    def _parseProjectContentLegacy(self, xSection: ET.Element, data: ProjectData, content: list) -> None:
         """Parse the content section of the XML file for older versions."""
         logger.debug("Parsing <content> section (legacy format)")
 
@@ -470,7 +470,7 @@ class ProjectXMLWriter:
     #  Methods
     ##
 
-    def write(self, data: NWProjectData, content: list, saveTime: float, editTime: int) -> bool:
+    def write(self, data: ProjectData, content: list, saveTime: float, editTime: int) -> bool:
         """Write the project data and content to the XML files."""
         tStart = time()
         logger.debug("Writing project XML")

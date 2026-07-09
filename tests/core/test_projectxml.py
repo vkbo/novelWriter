@@ -32,7 +32,7 @@ import pytest
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
-from novelwriter.core.projectdata import NWProjectData
+from novelwriter.core.projectdata import ProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.status import CUSTOM_COL, NWStatus
 from novelwriter.enum import nwStatusShape
@@ -44,7 +44,7 @@ from tests.mocked import causeOSError
 class MockProject:
     """Fake project object."""
 
-    data: NWProjectData
+    data: ProjectData
 
     def setProjectChanged(self, *a):
         """Fake project method."""
@@ -68,7 +68,7 @@ def testProjectXMLReader_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     # With no valid files, the read should fail
@@ -134,7 +134,7 @@ def testProjectXMLReader_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     assert xmlReader.state == XMLReadState.WAS_LEGACY
 
     # Reset data objects
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     # Parse a valid, complete file
@@ -283,7 +283,7 @@ def testProjectXMLReader_ReadLegacy10(tstPaths, fncPath, mockGUI, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -441,7 +441,7 @@ def testProjectXMLReader_ReadLegacy11(tstPaths, fncPath, mockGUI, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -599,7 +599,7 @@ def testProjectXMLReader_ReadLegacy12(tstPaths, fncPath, mockGUI, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -760,7 +760,7 @@ def testProjectXMLReader_ReadLegacy13(tstPaths, fncPath, mockGUI, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -921,7 +921,7 @@ def testProjectXMLReader_ReadLegacy14(tstPaths, fncPath, mockGUI, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
