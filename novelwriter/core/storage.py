@@ -33,7 +33,7 @@ from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile
 from novelwriter import CONFIG
 from novelwriter.common import isHandle, minmax, safeExists, safeIsDir, safeIsFile, safeIterDir
 from novelwriter.constants import nwFiles
-from novelwriter.core.document import NWDocument
+from novelwriter.core.document import ProjectDocument
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.error import logException
@@ -275,11 +275,11 @@ class NWStorage:
             return ProjectXMLWriter(self._runtimePath / nwFiles.PROJ_FILE)
         return None
 
-    def getDocument(self, tHandle: str | None) -> NWDocument:
+    def getDocument(self, tHandle: str | None) -> ProjectDocument:
         """Return a document wrapper object."""
         if isinstance(self._runtimePath, Path) and self._ready:
-            return NWDocument(self._project, tHandle)
-        return NWDocument(self._project, None)
+            return ProjectDocument(self._project, tHandle)
+        return ProjectDocument(self._project, None)
 
     def getMetaFile(self, fileName: str) -> Path | None:
         """Return the path to a file in the project meta folder."""
@@ -290,7 +290,7 @@ class NWStorage:
     def getDocumentText(self, tHandle: str) -> str:
         """Return the text of a document in a fast and efficient way."""
         if isinstance(self._runtimePath, Path):
-            return NWDocument.quickReadText(self._runtimePath / "content", tHandle)
+            return ProjectDocument.quickReadText(self._runtimePath / "content", tHandle)
         return ""
 
     def scanContent(self) -> list[str]:

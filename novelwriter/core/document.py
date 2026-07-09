@@ -39,8 +39,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class NWDocument:
-    """Core: Document Class.
+class ProjectDocument:
+    """Core: Project Document Class.
 
     A Class wrapping a single novelWriter document file. It represents
     a project item of nwItemType FILE. The file is not guaranteed to
@@ -68,7 +68,7 @@ class NWDocument:
 
     def __repr__(self) -> str:
         """Return a string representation of the document."""
-        return f"<NWDocument handle={self._handle}>"
+        return f"<ProjectDocument handle={self._handle}>"
 
     def __bool__(self) -> bool:
         """Return True if the document has a valid handle and item."""

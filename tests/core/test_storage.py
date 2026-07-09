@@ -30,7 +30,7 @@ import pytest
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwFiles
-from novelwriter.core.document import NWDocument
+from novelwriter.core.document import ProjectDocument
 from novelwriter.core.project import NWProject
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
 from novelwriter.core.storage import NWStorage, NWStorageCreate, NWStorageOpen, _LegacyStorage
@@ -160,8 +160,8 @@ def testNWStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
     # We should now have access to project resources
     assert isinstance(storage.getXmlReader(), ProjectXMLReader)
     assert isinstance(storage.getXmlWriter(), ProjectXMLWriter)
-    assert isinstance(storage.getDocument(C.hSceneDoc), NWDocument)
-    assert repr(storage.getDocument(C.hSceneDoc)) == f"<NWDocument handle={C.hSceneDoc}>"
+    assert isinstance(storage.getDocument(C.hSceneDoc), ProjectDocument)
+    assert repr(storage.getDocument(C.hSceneDoc)) == f"<ProjectDocument handle={C.hSceneDoc}>"
 
     # We can directly access the content of a document
     assert storage.getDocumentText(C.hSceneDoc) == "### New Scene\n\n"

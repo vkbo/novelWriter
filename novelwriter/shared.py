@@ -50,7 +50,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-NWWidget = TypeVar("NWWidget", bound=QWidget)
+NWidget = TypeVar("NWidget", bound=QWidget)
 T_Msg = str | list[str]
 
 RX_HTML = re.compile(r"<.*?>")
@@ -322,7 +322,7 @@ class SharedData(QObject):
 
         return NFontDialog.selectFont(current, self.mainGui, self.tr("Select Font"), native)
 
-    def findTopLevelWidget(self, kind: type[NWWidget]) -> NWWidget | None:
+    def findTopLevelWidget(self, kind: type[NWidget]) -> NWidget | None:
         """Find a top level widget."""
         for widget in self.mainGui.children():
             if isinstance(widget, kind):
