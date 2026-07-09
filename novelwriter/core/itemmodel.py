@@ -31,7 +31,7 @@ from PyQt6.QtGui import QFont, QIcon
 from novelwriter import CONFIG
 from novelwriter.common import decodeMimeHandles, encodeMimeHandles, minmax
 from novelwriter.constants import nwConst
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.enum import nwItemClass
 from novelwriter.types import (
     QtAccessibleTextRole,
@@ -79,18 +79,18 @@ class ProjectNode:
     The project tree structure is saved as nodes in a tree, starting
     from a root node. This class makes up these nodes.
 
-    Each node is a wrapper around an NWItem object. The NWItem is the
-    object representing a single item in the project, and it only
+    Each node is a wrapper around an ProjectItem object. The ProjectItem
+    is the object representing a single item in the project, and it only
     contains a reference to its parent as well as it top level root, but
     is itself not structured in a hierarchy in memory.
 
     This class provides the necessary hierarchical structure, as well as
     the data entries needed for populating the GUI project tree. It also
-    handles pushing and pulling information from its NWItem when
+    handles pushing and pulling information from its ProjectItem when
     necessary.
 
     The data to be displayed could in principle be pulled from the
-    NWItem whenever it is needed, but for performance reason it is
+    ProjectItem whenever it is needed, but for performance reason it is
     cached, as the GUI will pull this information often.
     """
 
@@ -101,7 +101,7 @@ class ProjectNode:
 
     __slots__ = ("_cache", "_children", "_count", "_flags", "_item", "_parent", "_row")
 
-    def __init__(self, item: NWItem) -> None:
+    def __init__(self, item: ProjectItem) -> None:
         self._item = item
         self._children: list[ProjectNode] = []
         self._parent: ProjectNode | None = None
@@ -131,7 +131,7 @@ class ProjectNode:
     ##
 
     @property
-    def item(self) -> NWItem:
+    def item(self) -> ProjectItem:
         """The project item of the node."""
         return self._item
 
@@ -309,7 +309,7 @@ class ProjectModel(QAbstractItemModel):
     def __init__(self, tree: ProjectTree) -> None:
         super().__init__()
         self._tree = tree
-        self._root = ProjectNode(NWItem(tree.project, INV_ROOT))
+        self._root = ProjectNode(ProjectItem(tree.project, INV_ROOT))
         self._root.item.setName("Invisible Root")
         logger.debug("Ready: ProjectModel")
 

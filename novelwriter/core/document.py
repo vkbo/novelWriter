@@ -33,7 +33,7 @@ from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.error import formatException, logException
 
 if TYPE_CHECKING:
-    from novelwriter.core.item import NWItem
+    from novelwriter.core.item import ProjectItem
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
@@ -99,8 +99,8 @@ class ProjectDocument:
         return self._docMeta.get("updated", "Unknown")
 
     @property
-    def nwItem(self) -> NWItem | None:
-        """Return a pointer to the currently open NWItem."""
+    def nwItem(self) -> ProjectItem | None:
+        """Return a pointer to the currently open ProjectItem."""
         return self._item
 
     ##

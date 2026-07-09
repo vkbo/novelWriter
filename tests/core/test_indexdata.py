@@ -26,7 +26,7 @@ import pytest
 from novelwriter import CONFIG
 from novelwriter.core.index import IndexCache, TagsIndex
 from novelwriter.core.indexdata import IndexHeading, IndexNode
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment
 
@@ -36,7 +36,7 @@ def testIndexData_IndexNode(mockGUI):
     """Test the IndexNode class."""
     handle = "0123456789abc"
     project = NWProject()
-    item = NWItem(project, handle)
+    item = ProjectItem(project, handle)
     cache = IndexCache(TagsIndex())
 
     # Defaults
@@ -115,7 +115,7 @@ def testIndexData_IndexNodePackUnpack(mockGUI):
     """Test the pack and unpack methods of the IndexNode class."""
     handle = "0123456789abc"
     project = NWProject()
-    item = NWItem(project, handle)
+    item = ProjectItem(project, handle)
     cache = IndexCache(TagsIndex())
     node = IndexNode(cache, handle, item)
 

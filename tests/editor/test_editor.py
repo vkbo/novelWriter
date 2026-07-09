@@ -49,7 +49,7 @@ from PyQt6.QtWidgets import QApplication, QMenu, QTextEdit
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles, utf16CharMap
 from novelwriter.constants import nwKeyWords, nwUnicode
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.core.spellcheck import SpellEnchant
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.editor.autoreplace import TextAutoReplace
@@ -2483,7 +2483,7 @@ def testGuiDocEditor_MoveTextToNewDocument(qtbot, monkeypatch, nwGUI, projPath, 
     docEditor.setCursorLine(6)
     docEditor.docAction(nwDocAction.MOVE_TEXT)
     item = SHARED.project.tree[nHandle]
-    assert isinstance(item, NWItem)
+    assert isinstance(item, ProjectItem)
     assert item.itemName == "New Scene (1)"
     assert nwGUI.openDocument(nHandle) is True
     assert docEditor.getText() == "### New Scene (1)\n\n{0}\n".format("\n\n".join(ipsumText[2:]))
@@ -2505,7 +2505,7 @@ def testGuiDocEditor_MoveTextToNewDocument(qtbot, monkeypatch, nwGUI, projPath, 
     # Move to new document
     docEditor.docAction(nwDocAction.MOVE_TEXT)
     item = SHARED.project.tree[nHandle]
-    assert isinstance(item, NWItem)
+    assert isinstance(item, ProjectItem)
     assert item.itemName == "Another Scene"
     assert nwGUI.openDocument(nHandle) is True
     assert docEditor.getText() == f"### Another Scene\n\n{ipsumText[3]}\n"

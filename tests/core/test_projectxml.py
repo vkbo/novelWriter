@@ -31,7 +31,7 @@ import pytest
 
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.core.projectdata import ProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.status import CUSTOM_COL, NWStatus
@@ -244,7 +244,7 @@ def testProjectXMLReader_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     mockProject = MockProject()
     mockProject.data = data
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")  # type: ignore
+        item = ProjectItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         packedContent.append(item.pack())
 
@@ -389,7 +389,7 @@ def testProjectXMLReader_ReadLegacy10(tstPaths, fncPath, mockGUI, mockRnd):
     mockProject.data = data
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")  # type: ignore
+        item = ProjectItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
@@ -547,7 +547,7 @@ def testProjectXMLReader_ReadLegacy11(tstPaths, fncPath, mockGUI, mockRnd):
     mockProject.data = data
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")  # type: ignore
+        item = ProjectItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
@@ -705,7 +705,7 @@ def testProjectXMLReader_ReadLegacy12(tstPaths, fncPath, mockGUI, mockRnd):
     mockProject.data = data
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")  # type: ignore
+        item = ProjectItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
@@ -866,7 +866,7 @@ def testProjectXMLReader_ReadLegacy13(tstPaths, fncPath, mockGUI, mockRnd):
     mockProject.data = data
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")  # type: ignore
+        item = ProjectItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
@@ -1026,7 +1026,7 @@ def testProjectXMLReader_ReadLegacy14(tstPaths, fncPath, mockGUI, mockRnd):
     mockProject.data = data
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")  # type: ignore
+        item = ProjectItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())

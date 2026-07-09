@@ -29,7 +29,7 @@ from pathlib import Path
 import pytest
 
 from novelwriter.constants import nwFiles
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.core.project import NWProject
 from novelwriter.core.tree import ProjectTree
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
@@ -381,7 +381,7 @@ def testProjectTree_ManipulateTree(monkeypatch, mockGUI, mockItems):
         assert tree.remove(bHandle) is False
 
     # Add item with non-existing parent
-    item = NWItem(project, tree._makeHandle())
+    item = ProjectItem(project, tree._makeHandle())
     item.setParent(tree._makeHandle())
     assert tree.add(item) is False
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
@@ -400,7 +400,7 @@ def testProjectTree_ManipulateTree(monkeypatch, mockGUI, mockItems):
     ]
 
     # Add item with non parent, that isn't a root
-    item = NWItem(project, tree._makeHandle())
+    item = ProjectItem(project, tree._makeHandle())
     item.setType(nwItemType.FOLDER)
     assert tree.add(item) is False
     assert [n.item.itemName for n in tree.model.root.allChildren()] == [
@@ -741,7 +741,7 @@ def testProjectTree_CheckConsistency(monkeypatch, caplog, mockGUI, fncPath, mock
     assert project.tree.checkConsistency("Recovered") == (1, 1)
     assert xHandle in project.tree
     itemX = project.tree[xHandle]
-    assert isinstance(itemX, NWItem)
+    assert isinstance(itemX, ProjectItem)
 
     # It should by default be added as a Novel file
     assert itemX.itemParent == C.hNovelRoot
@@ -760,7 +760,7 @@ def testProjectTree_CheckConsistency(monkeypatch, caplog, mockGUI, fncPath, mock
     assert project.tree.checkConsistency("Recovered") == (1, 1)
     assert xHandle in project.tree
     itemX = project.tree[xHandle]
-    assert isinstance(itemX, NWItem)
+    assert isinstance(itemX, ProjectItem)
 
     # It should again be added as a Novel file
     assert itemX.itemParent == C.hNovelRoot
@@ -784,7 +784,7 @@ def testProjectTree_CheckConsistency(monkeypatch, caplog, mockGUI, fncPath, mock
     )
     assert project.tree.checkConsistency("Recovered") == (1, 1)
     itemY = project.tree[yHandle]
-    assert isinstance(itemY, NWItem)
+    assert isinstance(itemY, ProjectItem)
     assert itemY.itemParent == C.hNovelRoot
 
     # If the tree is empty, a new root folder is created
@@ -842,7 +842,7 @@ def testProjectTree_DuplicateHandleGuards(mockGUI, mockItems):
     beforeNodes = len(tree._nodes)
 
     # add() should reject duplicate handles
-    dupAdd = NWItem(project, C.hNovelRoot)
+    dupAdd = ProjectItem(project, C.hNovelRoot)
     dupAdd.setType(nwItemType.ROOT)
     dupAdd.setClass(nwItemClass.NOVEL)
     assert tree.add(dupAdd) is False
@@ -850,7 +850,7 @@ def testProjectTree_DuplicateHandleGuards(mockGUI, mockItems):
     assert len(tree._nodes) == beforeNodes
 
     # _addItems() should also skip duplicate handles
-    dupUnpack = NWItem(project, C.hNovelRoot)
+    dupUnpack = ProjectItem(project, C.hNovelRoot)
     dupUnpack.setType(nwItemType.ROOT)
     dupUnpack.setClass(nwItemClass.NOVEL)
     assert tree._addItems({C.hNovelRoot: dupUnpack}) == {}
@@ -868,7 +868,7 @@ def testProjectTree_RootParentIsNormalisedToTopLevel(mockGUI, mockItems):
     tree.unpack(mockItems)
     assertTreeModelConsistency(tree)
 
-    badRootOne = NWItem(project, tree._makeHandle())
+    badRootOne = ProjectItem(project, tree._makeHandle())
     badRootOne.setName("Bad Root One")
     badRootOne.setType(nwItemType.ROOT)
     badRootOne.setClass(nwItemClass.NOVEL)
@@ -879,7 +879,7 @@ def testProjectTree_RootParentIsNormalisedToTopLevel(mockGUI, mockItems):
     assert badRootOne.itemRoot == badRootOne.itemHandle
     assert tree.nodes[badRootOne.itemHandle].parent() is tree.model.root
 
-    badRootTwo = NWItem(project, tree._makeHandle())
+    badRootTwo = ProjectItem(project, tree._makeHandle())
     badRootTwo.setName("Bad Root Two")
     badRootTwo.setType(nwItemType.ROOT)
     badRootTwo.setClass(nwItemClass.PLOT)

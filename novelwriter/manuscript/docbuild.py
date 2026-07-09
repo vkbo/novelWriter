@@ -29,7 +29,7 @@ from PyQt6.QtGui import QFont
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwLabels
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.enum import nwBuildFmt, nwComment
 from novelwriter.error import formatException, logException
 from novelwriter.formats.todocx import ToDocX
@@ -364,7 +364,7 @@ class DocumentBuilder:
     def _doBuild(self, bldObj: Tokenizer, tHandle: str, convert: bool = True) -> bool:
         """Build a single document and add it to the build object."""
         tItem = self._project.tree[tHandle]
-        if isinstance(tItem, NWItem):
+        if isinstance(tItem, ProjectItem):
             try:
                 if tItem.isRootType():
                     if tItem.isNovelLike():

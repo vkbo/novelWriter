@@ -48,7 +48,7 @@ from PyQt6.QtWidgets import (
 from novelwriter import SHARED
 from novelwriter.common import makeFileNameSafe, openExternalPath, safeExists, safeIsDir
 from novelwriter.constants import nwLabels
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.enum import nwBuildFmt, nwStandardButton, nwToolButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog, NIconToolButton, NPushButton
@@ -382,7 +382,7 @@ class GuiManuscriptBuild(NDialog):
             if filtered.get(tHandle, (False, 0))[0]:
                 if rHandle not in rootMap:
                     rItem = SHARED.project.tree[rHandle]
-                    if isinstance(rItem, NWItem):
+                    if isinstance(rItem, ProjectItem):
                         rootMap[rHandle] = rItem.itemName
 
                 rootName = rootMap.get(rHandle, "??????")

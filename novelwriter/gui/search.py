@@ -59,7 +59,7 @@ from novelwriter.types import (
 )
 
 if TYPE_CHECKING:
-    from novelwriter.core.item import NWItem
+    from novelwriter.core.item import ProjectItem
 
 logger = logging.getLogger(__name__)
 
@@ -324,7 +324,7 @@ class GuiProjectSearch(QWidget):
     #  Internal Functions
     ##
 
-    def _displayResultSet(self, nwItem: NWItem | None, results: list[tuple[int, int, str]], capped: bool) -> None:
+    def _displayResultSet(self, nwItem: ProjectItem | None, results: list[tuple[int, int, str]], capped: bool) -> None:
         """Populate the result tree."""
         if results and nwItem:
             tHandle = nwItem.itemHandle

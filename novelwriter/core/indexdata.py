@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from collections.abc import ItemsView, Sequence
 
     from novelwriter.core.index import IndexCache
-    from novelwriter.core.item import NWItem
+    from novelwriter.core.item import ProjectItem
     from novelwriter.enum import nwComment
 
 logger = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ NOTE_TYPES: list[T_NoteTypes] = ["footnotes", "comments"]
 class IndexNode:
     """Core: Single Index Item Node Class.
 
-    This object represents the index data of a project item (NWItem).
+    This object represents the index data of a project item.
     It holds a record of all the headings in the text, and the meta data
     associated with each heading. It also holds a pointer to the project
     item. The main heading level of the item is also held here since it
@@ -56,7 +56,7 @@ class IndexNode:
 
     __slots__ = ("_cache", "_count", "_handle", "_headings", "_item", "_notes")
 
-    def __init__(self, cache: IndexCache, tHandle: str, nwItem: NWItem) -> None:
+    def __init__(self, cache: IndexCache, tHandle: str, nwItem: ProjectItem) -> None:
         self._cache = cache
         self._handle = tHandle
         self._item = nwItem
@@ -90,7 +90,7 @@ class IndexNode:
         return self._handle
 
     @property
-    def item(self) -> NWItem:
+    def item(self) -> ProjectItem:
         """Return the project item of the index item."""
         return self._item
 

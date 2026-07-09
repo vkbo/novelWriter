@@ -41,7 +41,7 @@ from novelwriter.core.storage import ProjectStorageCreate
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from novelwriter.core.item import NWItem
+    from novelwriter.core.item import ProjectItem
 
 logger = logging.getLogger(__name__)
 
@@ -303,7 +303,9 @@ class DocSearch:
         """Set the escape flag to the opposite state."""
         self._escape = not state
 
-    def iterSearch(self, project: NWProject, search: str) -> Iterable[tuple[NWItem, list[tuple[int, int, str]], bool]]:
+    def iterSearch(
+        self, project: NWProject, search: str
+    ) -> Iterable[tuple[ProjectItem, list[tuple[int, int, str]], bool]]:
         """Iterate through documents in a project and apply search."""
         self._regEx = re.compile(self._buildPattern(search), self._opts)
         logger.debug("Searching with pattern '%s'", self._regEx.pattern)

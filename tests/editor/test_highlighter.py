@@ -26,7 +26,7 @@ import pytest
 from PyQt6.QtGui import QTextCharFormat, QTextCursor, QTextDocument
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.core.spellcheck import SpellEnchant
 from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE, GuiDocHighlighter
 from novelwriter.editor.textblock import TextBlockData
@@ -60,11 +60,11 @@ def syntax(nwGUI):
     syntax = GuiDocHighlighter(doc)
 
     # Add a Mock Item
-    tRoot = NWItem(SHARED.project, R_HANDLE)
+    tRoot = ProjectItem(SHARED.project, R_HANDLE)
     tRoot.setClass(nwItemClass.NOVEL)
     tRoot.setType(nwItemType.ROOT)
 
-    tItem = NWItem(SHARED.project, T_HANDLE)
+    tItem = ProjectItem(SHARED.project, T_HANDLE)
     tItem.setParent(R_HANDLE)
     tItem.setLayout(nwItemLayout.NOTE)
     tItem.setClass(nwItemClass.NOVEL)

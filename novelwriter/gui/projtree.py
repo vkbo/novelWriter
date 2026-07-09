@@ -43,7 +43,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import qtAddAction, qtAddMenu, qtLambda, qtWeakLambda
 from novelwriter.constants import nwLabels, nwStyles, nwUnicode, trConst
 from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.core.itemmodel import ProjectModel, ProjectNode
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
@@ -408,7 +408,7 @@ class GuiProjectToolBar(QWidget):
         actually be added.
         """
         nwItem = SHARED.project.tree[tHandle]
-        allowDoc = isinstance(nwItem, NWItem) and nwItem.documentAllowed()
+        allowDoc = isinstance(nwItem, ProjectItem) and nwItem.documentAllowed()
         self.aAddScene.setVisible(allowDoc)
         self.aAddChap.setVisible(allowDoc)
         self.aAddPart.setVisible(allowDoc)

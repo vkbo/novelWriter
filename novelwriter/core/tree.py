@@ -32,7 +32,7 @@ from PyQt6.QtCore import QModelIndex
 from novelwriter import SHARED
 from novelwriter.common import safeIsFile
 from novelwriter.constants import nwFiles, nwLabels, nwStyles, trConst
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.core.itemmodel import ProjectModel, ProjectNode
 from novelwriter.enum import nwChange, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
@@ -52,7 +52,7 @@ class ProjectTree:
 
     Only one instance of this class should exist in the project class.
     This class holds all the project items of the project as instances
-    of NWItem.
+    of ProjectItem.
 
     Each item has a handle, which is a random hex string of length 13.
     The handle is the name of the item everywhere in novelWriter, and is
@@ -64,7 +64,7 @@ class ProjectTree:
     def __init__(self, project: NWProject) -> None:
         self._project = project
         self._model = ProjectModel(self)
-        self._items: dict[str, NWItem] = {}
+        self._items: dict[str, ProjectItem] = {}
         self._nodes: dict[str, ProjectNode] = {}
         self._docs: list[str] = []
         self._trash = None
@@ -83,7 +83,7 @@ class ProjectTree:
         """Return True if there are any items in the project."""
         return bool(self._items)
 
-    def __getitem__(self, tHandle: str | None) -> NWItem | None:
+    def __getitem__(self, tHandle: str | None) -> ProjectItem | None:
         """Return a project item based on its handle. Returns None if
         the handle doesn't exist in the project.
         """
@@ -96,7 +96,7 @@ class ProjectTree:
         """Check if a handle exists in the tree."""
         return tHandle in self._items
 
-    def __iter__(self) -> Iterator[NWItem]:
+    def __iter__(self) -> Iterator[ProjectItem]:
         """Iterate through project items."""
         for node in self._model.root.allChildren():
             yield node.item
@@ -146,7 +146,7 @@ class ProjectTree:
         oldModel.deleteLater()
         del oldModel
 
-    def add(self, item: NWItem, pos: int = -1) -> bool:
+    def add(self, item: ProjectItem, pos: int = -1) -> bool:
         """Add a project item into the project tree."""
         if item.itemHandle in self._nodes or item.itemHandle in self._items:
             logger.error("Item handle '%s' already exists in project tree", item.itemHandle)
@@ -232,7 +232,7 @@ class ProjectTree:
         parent = None if itemType == nwItemType.ROOT else parent
         if parent is None or parent in self._nodes:
             tHandle = self._makeHandle()
-            nwItem = NWItem(self._project, tHandle)
+            nwItem = ProjectItem(self._project, tHandle)
             nwItem.setName(label)
             nwItem.setParent(parent)
             nwItem.setType(itemType)
@@ -241,10 +241,10 @@ class ProjectTree:
                 return tHandle
         return None
 
-    def duplicate(self, sHandle: str, pHandle: str | None, putAfter: bool) -> NWItem | None:
+    def duplicate(self, sHandle: str, pHandle: str | None, putAfter: bool) -> ProjectItem | None:
         """Duplicate an item and set a new handle."""
         if sNode := self._nodes.get(sHandle):
-            nItem = NWItem.duplicate(sNode.item, self._makeHandle())
+            nItem = ProjectItem.duplicate(sNode.item, self._makeHandle())
             nItem.setParent(pHandle)
             if self.add(nItem, (sNode.row() + 1) if putAfter else -1):
                 logger.info("Duplicated item '%s' -> '%s'", sHandle, nItem.itemHandle)
@@ -265,9 +265,9 @@ class ProjectTree:
         project tree.
         """
         self.clear()
-        items: dict[str, NWItem] = self._items.copy()
+        items: dict[str, ProjectItem] = self._items.copy()
         for item in data:
-            nwItem = NWItem(self._project, "")
+            nwItem = ProjectItem(self._project, "")
             if nwItem.unpack(item):
                 items[nwItem.itemHandle] = nwItem
 
@@ -383,7 +383,7 @@ class ProjectTree:
             assert oParent is not None  # Otherwise there's an issue with self.create()
 
             # Create a new item
-            newItem = NWItem(self._project, cHandle)
+            newItem = ProjectItem(self._project, cHandle)
             newItem.setName(f"[{prefix}] {oName}")
             newItem.setParent(oParent)
             newItem.setType(nwItemType.FILE)
@@ -504,7 +504,7 @@ class ProjectTree:
             rootClasses.add(node.item.itemClass)
         return rootClasses
 
-    def iterRoots(self, itemClass: nwItemClass | None) -> Iterable[tuple[str, NWItem]]:
+    def iterRoots(self, itemClass: nwItemClass | None) -> Iterable[tuple[str, ProjectItem]]:
         """Iterate over all root items of a given class in order."""
         for node in self._model.root.children:
             if node.item.isRootType() and (itemClass is None or node.item.itemClass == itemClass):
@@ -522,7 +522,7 @@ class ProjectTree:
     #  Internal Functions
     ##
 
-    def _itemChange(self, item: NWItem, change: nwChange) -> None:
+    def _itemChange(self, item: ProjectItem, change: nwChange) -> None:
         """Signal item change and notify project."""
         tHandle = item.itemHandle
         logger.debug("Item change: %s -> %s", tHandle, change.name)
@@ -541,11 +541,11 @@ class ProjectTree:
             return self._nodes.get(handle)
         return None
 
-    def _addItems(self, items: dict[str, NWItem]) -> dict[str, NWItem]:
+    def _addItems(self, items: dict[str, ProjectItem]) -> dict[str, ProjectItem]:
         """Add a dictionary of items to the project tree. Returns a new
         dictionary of items that could not be added yet, but can be.
         """
-        remains: dict[str, NWItem] = {}
+        remains: dict[str, ProjectItem] = {}
         for handle, item in items.items():
             if handle in self._nodes or handle in self._items:
                 logger.warning("Skipping duplicate item handle '%s' while unpacking project tree", handle)
