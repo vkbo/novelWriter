@@ -68,7 +68,7 @@ logger = logging.getLogger(__name__)
 class GuiWritingStats(NToolDialog):
     """GUI Tools: Writing Statistics.
 
-    Displays data from the NWSessionLog object.
+    Displays data from the SessionLog object.
     """
 
     C_TIME = 0

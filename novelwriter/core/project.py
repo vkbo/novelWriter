@@ -48,7 +48,7 @@ from novelwriter.core.index import Index
 from novelwriter.core.options import OptionState
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
-from novelwriter.core.sessions import NWSessionLog
+from novelwriter.core.sessions import SessionLog
 from novelwriter.core.storage import NWStorage, NWStorageOpen
 from novelwriter.core.tree import NWTree
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
@@ -98,7 +98,7 @@ class NWProject:
         self._data = NWProjectData(self)  # The project settings
         self._tree = NWTree(self)  # The project tree
         self._index = Index(self)  # The project index
-        self._session = NWSessionLog(self)  # The session record
+        self._session = SessionLog(self)  # The session record
 
         # Project Status
         self._langData = {}  # Localisation data
@@ -145,7 +145,7 @@ class NWProject:
         return self._index
 
     @property
-    def session(self) -> NWSessionLog:
+    def session(self) -> SessionLog:
         return self._session
 
     @property

@@ -1,6 +1,6 @@
 """
-novelWriter – Project Session Log Class
-=======================================
+novelWriter – Project Session Log
+=================================
 
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
@@ -41,7 +41,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class NWSessionLog:
+class SessionLog:
     """Core: Session JSON Lines Log File.
 
     The class that wraps the session log file, which is in JSON Lines
