@@ -1,6 +1,6 @@
 """
-novelWriter – NWItem Class Tester
-=================================
+novelWriter – Project Item Tests
+================================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
@@ -28,7 +28,7 @@ import pytest
 from PyQt6.QtGui import QIcon
 
 from novelwriter import CONFIG
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 
@@ -36,12 +36,12 @@ from tests.helpers import C, buildTestProject
 
 
 @pytest.mark.core
-def testNWItem_Setters(mockGUI, mockRnd, fncPath):
-    """Test all the simple setters for the NWItem class."""
+def testProjectItem_Setters(mockGUI, mockRnd, fncPath):
+    """Test all the simple setters for the ProjectItem class."""
     project = NWProject()
     mockRnd.reset()
     buildTestProject(project, fncPath)
-    item = NWItem(project, "0000000000000")
+    item = ProjectItem(project, "0000000000000")
     assert item.itemHandle == "0000000000000"
 
     statusKeys = ["s000000", "s000001", "s000002", "s000003"]
@@ -189,12 +189,12 @@ def testNWItem_Setters(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testNWItem_Methods(mockGUI, mockRnd, fncPath):
-    """Test the simple methods of the NWItem class."""
+def testProjectItem_Methods(mockGUI, mockRnd, fncPath):
+    """Test the simple methods of the ProjectItem class."""
     project = NWProject()
     mockRnd.reset()
     buildTestProject(project, fncPath)
-    item = NWItem(project, "0000000000000")
+    item = ProjectItem(project, "0000000000000")
 
     # Describe Me
     # ===========
@@ -271,14 +271,14 @@ def testNWItem_Methods(mockGUI, mockRnd, fncPath):
 
     item.setName("New Item")
     item.setParent("1111111111111")
-    assert repr(item) == "<NWItem handle=0000000000000, parent=1111111111111, name='New Item'>"
+    assert repr(item) == "<ProjectItem handle=0000000000000, parent=1111111111111, name='New Item'>"
 
     # Truthiness
     # ==========
 
     # Is True if the handle evaluates to True
-    assert bool(NWItem(project, "0000000000000")) is True
-    assert bool(NWItem(project, "")) is False
+    assert bool(ProjectItem(project, "0000000000000")) is True
+    assert bool(ProjectItem(project, "")) is False
 
     # Copy an Item
     # ============
@@ -307,7 +307,7 @@ def testNWItem_Methods(mockGUI, mockRnd, fncPath):
 
     # Get the scene item
     scItem = project.tree[C.hSceneDoc]
-    assert isinstance(scItem, NWItem)
+    assert isinstance(scItem, ProjectItem)
 
     # Duplicate and update the expected content with a new handle
     cpHandle = project.tree._makeHandle()
@@ -315,8 +315,8 @@ def testNWItem_Methods(mockGUI, mockRnd, fncPath):
     cpData["itemAttr"]["handle"] = cpHandle
 
     # Duplicate the scene item
-    cpItem = NWItem.duplicate(scItem, cpHandle)
-    assert isinstance(cpItem, NWItem)
+    cpItem = ProjectItem.duplicate(scItem, cpHandle)
+    assert isinstance(cpItem, ProjectItem)
     assert scItem is not cpItem
 
     # They should both point to the same project instance
@@ -332,12 +332,12 @@ def testNWItem_Methods(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testNWItem_TypeSetter(mockGUI):
-    """Test the setter for all the nwItemType values for the NWItem
+def testProjectItem_TypeSetter(mockGUI):
+    """Test the setter for all the nwItemType values for the ProjectItem
     class.
     """
     project = NWProject()
-    item = NWItem(project, "0000000000000")
+    item = ProjectItem(project, "0000000000000")
 
     # Type
     item.setType(None)
@@ -359,12 +359,12 @@ def testNWItem_TypeSetter(mockGUI):
 
 
 @pytest.mark.core
-def testNWItem_ClassSetter(mockGUI):
-    """Test the setter for all the nwItemClass values for the NWItem
-    class.
+def testProjectItem_ClassSetter(mockGUI):
+    """Test the setter for all the nwItemClass values for the
+    ProjectItem class.
     """
     project = NWProject()
-    item = NWItem(project, "0000000000000")
+    item = ProjectItem(project, "0000000000000")
     item.setType(nwItemType.FILE)
 
     # Class
@@ -463,12 +463,12 @@ def testNWItem_ClassSetter(mockGUI):
 
 
 @pytest.mark.core
-def testNWItem_LayoutSetter(mockGUI):
-    """Test the setter for all the nwItemLayout values for the NWItem
-    class.
+def testProjectItem_LayoutSetter(mockGUI):
+    """Test the setter for all the nwItemLayout values for the
+    ProjectItem class.
     """
     project = NWProject()
-    item = NWItem(project, "0000000000000")
+    item = ProjectItem(project, "0000000000000")
 
     # Faulty Layouts
     item.setLayout(None)
@@ -490,10 +490,10 @@ def testNWItem_LayoutSetter(mockGUI):
 
 
 @pytest.mark.core
-def testNWItem_ClassDefaults(mockGUI):
-    """Test the setter for the default values."""
+def testProjectItem_ClassDefaults(mockGUI):
+    """Test the setter for the default values for the ProjectItem class."""
     project = NWProject()
-    item = NWItem(project, "0000000000000")
+    item = ProjectItem(project, "0000000000000")
 
     # Root items should not have their class updated
     item.setParent(None)
@@ -543,18 +543,18 @@ def testNWItem_ClassDefaults(mockGUI):
 
 
 @pytest.mark.core
-def testNWItem_PackUnpack(mockGUI, caplog, mockRnd):
-    """Test packing and unpacking entries for the NWItem class."""
+def testProjectItem_PackUnpack(mockGUI, caplog, mockRnd):
+    """Test packing and unpacking entries for the ProjectItem class."""
     project = NWProject()
     project.data.itemStatus.add(None, "New", "#646464", "SQUARE", 0)
     project.data.itemImport.add(None, "New", "#646464", "SQUARE", 0)
 
     # Invalid
-    item = NWItem(project, "0000000000000")
+    item = ProjectItem(project, "0000000000000")
     assert item.unpack({}) is False
 
     # File
-    item = NWItem(project, "")
+    item = ProjectItem(project, "")
     assert (
         item.unpack({
             "name": "A File",
@@ -629,7 +629,7 @@ def testNWItem_PackUnpack(mockGUI, caplog, mockRnd):
     }
 
     # Folder
-    item = NWItem(project, "")
+    item = ProjectItem(project, "")
     assert (
         item.unpack({
             "name": "A Folder",
@@ -697,7 +697,7 @@ def testNWItem_PackUnpack(mockGUI, caplog, mockRnd):
     }
 
     # Root
-    item = NWItem(project, "")
+    item = ProjectItem(project, "")
     assert (
         item.unpack({
             "name": "A Novel",

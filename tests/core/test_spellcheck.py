@@ -1,6 +1,6 @@
 """
-novelWriter – Spell Check Classes Tester
-========================================
+novelWriter – Spell Check Tests
+===============================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
@@ -30,7 +30,7 @@ import pytest
 
 from novelwriter.constants import nwFiles
 from novelwriter.core.project import NWProject
-from novelwriter.core.spellcheck import FakeEnchant, NWSpellEnchant, UserDictionary
+from novelwriter.core.spellcheck import FakeEnchant, SpellEnchant, UserDictionary
 
 from tests.helpers import buildTestProject
 from tests.mocked import causeOSError
@@ -70,7 +70,7 @@ def testUserDictionary_Main(monkeypatch, mockGUI, fncPath):
 
     # Break the path check
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getMetaFile", lambda *a: None)
         userDict.save()
 
     # There should still be no file
@@ -94,7 +94,7 @@ def testUserDictionary_Main(monkeypatch, mockGUI, fncPath):
 
     # Break the path check
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getMetaFile", lambda *a: None)
         userDict.load()
 
     # No words loaded
@@ -114,18 +114,18 @@ def testFakeEnchant_Main(monkeypatch, mockGUI, fncPath):
     # Make package import fail
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "enchant", None)
-        spChk = NWSpellEnchant(project)
+        spChk = SpellEnchant(project)
         spChk.setLanguage("en_US")
         assert isinstance(spChk._enchant, FakeEnchant)
 
     # Request a non-existent dictionary
-    spChk = NWSpellEnchant(project)
+    spChk = SpellEnchant(project)
     spChk.setLanguage("whatchamajig")
     assert isinstance(spChk._enchant, FakeEnchant)
 
     # Request an empty language string
     # See issue https://github.com/vkbo/novelWriter/issues/1096
-    spChk = NWSpellEnchant(project)
+    spChk = SpellEnchant(project)
     spChk.setLanguage("")
     assert isinstance(spChk._enchant, FakeEnchant)
 
@@ -139,7 +139,7 @@ def testFakeEnchant_Main(monkeypatch, mockGUI, fncPath):
 
 
 @pytest.mark.core
-def testNWSpellEnchant_Main(monkeypatch, mockGUI, fncPath):
+def testSpellEnchant_Main(monkeypatch, mockGUI, fncPath):
     """Test the pyenchant spell checker."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -147,7 +147,7 @@ def testNWSpellEnchant_Main(monkeypatch, mockGUI, fncPath):
     # Break the enchant package, and check error handling
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "enchant", None)
-        spChk = NWSpellEnchant(project)
+        spChk = SpellEnchant(project)
         assert spChk.spellLanguage is None
         assert spChk.listDictionaries() == []
         assert spChk.describeDict() == ("", "")
@@ -163,7 +163,7 @@ def testNWSpellEnchant_Main(monkeypatch, mockGUI, fncPath):
         assert "word" in spChk._userDict
 
     # Set the dict to None, and check enchant error handling
-    spChk = NWSpellEnchant(project)
+    spChk = SpellEnchant(project)
     spChk._enchant = None  # type: ignore
     assert spChk.checkWord("word") is True
     assert spChk.suggestWords("word") == []
@@ -177,7 +177,7 @@ def testNWSpellEnchant_Main(monkeypatch, mockGUI, fncPath):
     assert spChk.describeDict() == ("", "")
 
     # Load the proper enchant package (twice)
-    spChk = NWSpellEnchant(project)
+    spChk = SpellEnchant(project)
     spChk.setLanguage("en_US")
     spChk.setLanguage("en_US")
     assert isinstance(spChk._enchant, enchant.Dict)
@@ -196,7 +196,7 @@ def testNWSpellEnchant_Main(monkeypatch, mockGUI, fncPath):
 
 
 @pytest.mark.core
-def testNWSpellEnchant_Cache(monkeypatch, mockGUI, fncPath):
+def testSpellEnchant_Cache(monkeypatch, mockGUI, fncPath):
     """Test the spell checker word cache."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -205,7 +205,7 @@ def testNWSpellEnchant_Cache(monkeypatch, mockGUI, fncPath):
         def check(self, word: str) -> bool:
             return word != "wrod"
 
-    spChk = NWSpellEnchant(project)
+    spChk = SpellEnchant(project)
     spChk._enchant = MockEnchant()
     assert spChk._cache == {}
 

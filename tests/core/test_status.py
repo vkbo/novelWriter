@@ -1,6 +1,6 @@
 """
-novelWriter – NWStatus Class Tester
-===================================
+novelWriter – Project Status Tests
+==================================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
@@ -25,7 +25,7 @@ import pytest
 
 from PyQt6.QtGui import QColor, QIcon
 
-from novelwriter.core.status import CUSTOM_COL, NWStatus, StatusEntry, _ShapeCache
+from novelwriter.core.status import CUSTOM_COL, ItemStatus, StatusEntry, _ShapeCache
 from novelwriter.enum import nwStatusShape
 
 from tests.helpers import C
@@ -35,10 +35,10 @@ importKeys = [C.iNew, C.iMinor, C.iMajor, C.iMain]
 
 
 @pytest.mark.core
-def testNWStatus_StatusEntry():
+def testItemStatus_StatusEntry():
     """Test the StatusEntry class."""
     color = QColor(255, 0, 0)
-    icon = NWStatus.createIcon(24, color, nwStatusShape.CIRCLE)
+    icon = ItemStatus.createIcon(24, color, nwStatusShape.CIRCLE)
     entry = StatusEntry("Test", color, CUSTOM_COL, nwStatusShape.CIRCLE, icon, 42)
 
     # Check values
@@ -64,10 +64,10 @@ def testNWStatus_StatusEntry():
 
 
 @pytest.mark.core
-def testNWStatus_Internal(mockGUI, mockRnd):
-    """Test all the internal functions of the NWStatus class."""
-    nStatus = NWStatus(NWStatus.STATUS)
-    nImport = NWStatus(NWStatus.IMPORT)
+def testItemStatus_Internal(mockGUI, mockRnd):
+    """Test all the internal functions of the ItemStatus class."""
+    nStatus = ItemStatus(ItemStatus.STATUS)
+    nImport = ItemStatus(ItemStatus.IMPORT)
 
     # Generate Key
     # ============
@@ -119,9 +119,9 @@ def testNWStatus_Internal(mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testNWStatus_Iterator(mockGUI, mockRnd):
-    """Test the iterator functions of the NWStatus class."""
-    nStatus = NWStatus(NWStatus.STATUS)
+def testItemStatus_Iterator(mockGUI, mockRnd):
+    """Test the iterator functions of the ItemStatus class."""
+    nStatus = ItemStatus(ItemStatus.STATUS)
     nStatus.add(None, "New", "#646464", "SQUARE", 0)
     nStatus.add(None, "Note", "#ff3f00", "CIRCLE", 1)
     nStatus.add(None, "Draft", "#ffaf00", "SQUARE", 2)
@@ -165,9 +165,9 @@ def testNWStatus_Iterator(mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testNWStatus_Entries(mockGUI, mockRnd):
-    """Test all the simple setters for the NWStatus class."""
-    nStatus = NWStatus(NWStatus.STATUS)
+def testItemStatus_Entries(mockGUI, mockRnd):
+    """Test all the simple setters for the ItemStatus class."""
+    nStatus = ItemStatus(ItemStatus.STATUS)
 
     # Add
     # ===
@@ -332,9 +332,9 @@ def testNWStatus_Entries(mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testNWStatus_RefreshIcons_Theme(mockGUIwithTheme, mockRnd):
+def testItemStatus_RefreshIcons_Theme(mockGUIwithTheme, mockRnd):
     """Test refreshing the icons with theme colours."""
-    nStatus = NWStatus(NWStatus.STATUS)
+    nStatus = ItemStatus(ItemStatus.STATUS)
     nStatus.add(None, "New", "default", "SQUARE", 0)
     nStatus.add(None, "Note", "red", "CIRCLE", 0)
     nStatus.add(None, "Draft", "yellow", "SQUARE", 0)
@@ -355,9 +355,9 @@ def testNWStatus_RefreshIcons_Theme(mockGUIwithTheme, mockRnd):
 
 
 @pytest.mark.core
-def testNWStatus_RefreshIcons_Custom(mockGUIwithTheme, mockRnd):
+def testItemStatus_RefreshIcons_Custom(mockGUIwithTheme, mockRnd):
     """Test refreshing the icons with custom colours."""
-    nStatus = NWStatus(NWStatus.STATUS)
+    nStatus = ItemStatus(ItemStatus.STATUS)
     nStatus.add(None, "New", "#707070", "SQUARE", 0)
     nStatus.add(None, "Note", "#ff0000", "CIRCLE", 0)
     nStatus.add(None, "Draft", "#ffff00", "SQUARE", 0)
@@ -383,9 +383,9 @@ def testNWStatus_RefreshIcons_Custom(mockGUIwithTheme, mockRnd):
 
 
 @pytest.mark.core
-def testNWStatus_Pack(mockGUIwithTheme, mockRnd):
-    """Test data packing of the NWStatus class."""
-    nStatus = NWStatus(NWStatus.STATUS)
+def testItemStatus_Pack(mockGUIwithTheme, mockRnd):
+    """Test data packing of the ItemStatus class."""
+    nStatus = ItemStatus(ItemStatus.STATUS)
     nStatus.add(None, "New", "#646464", "SQUARE", 0)
     nStatus.add(None, "Note", "#c83200", "CIRCLE", 0)
     nStatus.add(None, "Draft", "#c89600", "SQUARE", 0)
@@ -438,7 +438,7 @@ def testNWStatus_Pack(mockGUIwithTheme, mockRnd):
 
 
 @pytest.mark.core
-def testNWStatus_ShapeCache():
+def testItemStatus_ShapeCache():
     """Test the _ShapeCache class."""
     shapes = _ShapeCache()
 

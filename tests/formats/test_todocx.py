@@ -1,6 +1,6 @@
 """
-novelWriter – ToDocX Class Tester
-=================================
+novelWriter – DocX Format Tests
+===============================
 
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
@@ -33,7 +33,7 @@ from novelwriter.enum import nwBuildFmt, nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.todocx import OOXML_SCM, DocXParagraph, ToDocX, _mkTag, _wTag
 from novelwriter.manuscript.buildsettings import BuildSettings
-from novelwriter.manuscript.docbuild import NWBuildDocument
+from novelwriter.manuscript.docbuild import DocumentBuilder
 
 from tests.helpers import DOCX_IGNORE, cmpFiles, xmlToText
 
@@ -776,7 +776,7 @@ def testToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
     build.setValue("format.justifyOnBreak", False)
     build.setValue("doc.pageHeader", pageHeader)
 
-    docBuild = NWBuildDocument(project, build)
+    docBuild = DocumentBuilder(project, build)
     docBuild.queueAll()
 
     docPath = fncPath / "document.docx"

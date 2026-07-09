@@ -1,6 +1,6 @@
 """
-novelWriter – Syntax Highlighter Class Tester
-=============================================
+novelWriter – Syntax Highlighter Tests
+======================================
 
 This file is a part of novelWriter
 Copyright (C) 2025 Veronica Berglyd Olsen and novelWriter contributors
@@ -26,8 +26,8 @@ import pytest
 from PyQt6.QtGui import QTextCharFormat, QTextCursor, QTextDocument
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.core.item import NWItem
-from novelwriter.core.spellcheck import NWSpellEnchant
+from novelwriter.core.item import ProjectItem
+from novelwriter.core.spellcheck import SpellEnchant
 from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE, GuiDocHighlighter
 from novelwriter.editor.textblock import TextBlockData
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwTheme
@@ -60,11 +60,11 @@ def syntax(nwGUI):
     syntax = GuiDocHighlighter(doc)
 
     # Add a Mock Item
-    tRoot = NWItem(SHARED.project, R_HANDLE)
+    tRoot = ProjectItem(SHARED.project, R_HANDLE)
     tRoot.setClass(nwItemClass.NOVEL)
     tRoot.setType(nwItemType.ROOT)
 
-    tItem = NWItem(SHARED.project, T_HANDLE)
+    tItem = ProjectItem(SHARED.project, T_HANDLE)
     tItem.setParent(R_HANDLE)
     tItem.setLayout(nwItemLayout.NOTE)
     tItem.setClass(nwItemClass.NOVEL)
@@ -517,7 +517,7 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
     # Settings
     syntax._tHandle = T_HANDLE
     syntax._isNovel = True
-    monkeypatch.setattr(NWSpellEnchant, "checkWord", lambda *a: False)
+    monkeypatch.setattr(SpellEnchant, "checkWord", lambda *a: False)
 
     colHidden = theme.syntaxTheme.hidden.getRgb()
     colEmph = theme.syntaxTheme.emph.getRgb()

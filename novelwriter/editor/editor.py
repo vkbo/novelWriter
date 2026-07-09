@@ -65,7 +65,7 @@ from PyQt6.QtWidgets import QApplication, QFrame, QMenu, QTextEdit, QWidget
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles, fontMatcher, minmax, qtAddAction, qtAddMenu, qtLambda, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwStyles, nwUnicode
-from novelwriter.core.document import NWDocument
+from novelwriter.core.document import ProjectDocument
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.editor.autoreplace import TextAutoReplace
 from novelwriter.editor.completer import CommandCompleter
@@ -672,8 +672,8 @@ class GuiDocEditor(QTextEdit):
         QApplication.restoreOverrideCursor()
 
     def saveText(self) -> bool:
-        """Save the text currently in the editor to the NWDocument
-        object, and update the NWItem meta data.
+        """Save the text currently in the editor to the ProjectDocument
+        object, and update the ProjectItem meta data.
         """
         if self._nwItem is None or self._nwDocument is None:
             logger.error("Cannot save text as no document is open")
@@ -1035,7 +1035,7 @@ class GuiDocEditor(QTextEdit):
         """Tell the user where on the file system the file in the editor
         is saved.
         """
-        if isinstance(self._nwDocument, NWDocument):
+        if isinstance(self._nwDocument, ProjectDocument):
             SHARED.info(
                 [
                     self.tr("Document Details"),

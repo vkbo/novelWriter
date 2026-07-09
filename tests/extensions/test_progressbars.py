@@ -1,6 +1,6 @@
 """
-novelWriter – Progress Bar Tester
-=================================
+novelWriter – Progress Bar Tests
+================================
 
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors

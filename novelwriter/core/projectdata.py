@@ -1,6 +1,6 @@
 """
-novelWriter – Project Data Class
-================================
+novelWriter – Project Data
+==========================
 
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
@@ -27,7 +27,7 @@ import uuid
 from typing import TYPE_CHECKING, Any, Literal
 
 from novelwriter.common import checkBool, checkInt, checkStringNone, checkUuid, isHandle, makeFileNameSafe, simplified
-from novelwriter.core.status import NWStatus
+from novelwriter.core.status import ItemStatus
 
 if TYPE_CHECKING:
     from novelwriter.core.project import NWProject
@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 T_LastHandle = Literal["editor", "viewer", "novel", "outline"]
 
 
-class NWProjectData:
+class ProjectData:
     """Core: Project Data Class.
 
     The class holds all project data from the main XML file, aside from
@@ -80,8 +80,8 @@ class NWProjectData:
             "section": "",
         }
 
-        self._status = NWStatus(NWStatus.STATUS)
-        self._import = NWStatus(NWStatus.IMPORT)
+        self._status = ItemStatus(ItemStatus.STATUS)
+        self._import = ItemStatus(ItemStatus.IMPORT)
 
     ##
     #  Properties
@@ -169,12 +169,12 @@ class NWProjectData:
         return self._autoReplace
 
     @property
-    def itemStatus(self) -> NWStatus:
+    def itemStatus(self) -> ItemStatus:
         """Return the status settings object."""
         return self._status
 
     @property
-    def itemImport(self) -> NWStatus:
+    def itemImport(self) -> ItemStatus:
         """Return the importance settings object."""
         return self._import
 

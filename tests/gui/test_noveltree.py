@@ -1,6 +1,6 @@
 """
-novelWriter – GUI Novel View Class Tester
-=========================================
+novelWriter – GUI Novel View Tests
+==================================
 
 This file is a part of novelWriter
 Copyright (C) 2021 Veronica Berglyd Olsen and novelWriter contributors

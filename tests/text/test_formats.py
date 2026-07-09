@@ -1,6 +1,6 @@
 """
-novelWriter – Text Comment Tester
-=================================
+novelWriter – Text Formats Tests
+================================
 
 This file is a part of novelWriter
 Copyright (C) 2025 Veronica Berglyd Olsen and novelWriter contributors

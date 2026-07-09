@@ -1,6 +1,6 @@
 """
-novelWriter – Spell Check Classes
-=================================
+novelWriter – Spell Checks
+==========================
 
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 MAX_CACHE_SIZE = 100_000
 
 
-class NWSpellEnchant:
+class SpellEnchant:
     """Core: Enchant Spell Checking Wrapper.
 
     This is a wrapper class for Enchant to keep the API consistent
@@ -60,11 +60,11 @@ class NWSpellEnchant:
         self._language = None
         self._requested = None
         self._broker = None
-        logger.debug("Ready: NWSpellEnchant")
+        logger.debug("Ready: SpellEnchant")
 
     def __del__(self) -> None:  # pragma: no cover
         """Class destructor."""
-        logger.debug("Delete: NWSpellEnchant")
+        logger.debug("Delete: SpellEnchant")
 
     ##
     #  Properties

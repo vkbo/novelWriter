@@ -1,6 +1,6 @@
 """
-novelWriter – Main GUI Viewer Panel Class Tester
-================================================
+novelWriter – Document Viewer Panel Tests
+=========================================
 
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
@@ -27,7 +27,7 @@ from PyQt6.QtGui import QIcon
 
 from novelwriter import SHARED
 from novelwriter.constants import nwLists
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwChange
 
@@ -264,7 +264,7 @@ def testGuiDocViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mock
     assert charTab.topLevelItemCount() == 2
 
     nwJohn = SHARED.project.tree[hJohn]
-    assert isinstance(nwJohn, NWItem)
+    assert isinstance(nwJohn, ProjectItem)
     nwJohn.setActive(False)
     nwJohn.notifyToRefresh()
     assert charTab.topLevelItemCount() == 1

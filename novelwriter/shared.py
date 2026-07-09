@@ -35,7 +35,7 @@ from PyQt6.QtWidgets import QApplication, QFileDialog, QGridLayout, QMessageBox,
 
 from novelwriter.common import appendIfSet, formatFileFilter, joinLines
 from novelwriter.constants import nwFiles
-from novelwriter.core.spellcheck import NWSpellEnchant
+from novelwriter.core.spellcheck import SpellEnchant
 from novelwriter.enum import nwChange, nwItemClass, nwStandardButton
 from novelwriter.types import QtSizeExpanding, QtSizeMinimum
 
@@ -50,7 +50,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-NWWidget = TypeVar("NWWidget", bound=QWidget)
+NWidget = TypeVar("NWidget", bound=QWidget)
 T_Msg = str | list[str]
 
 RX_HTML = re.compile(r"<.*?>")
@@ -127,7 +127,7 @@ class SharedData(QObject):
         return self._project
 
     @property
-    def spelling(self) -> NWSpellEnchant:
+    def spelling(self) -> SpellEnchant:
         """Return the active NWProject instance."""
         if self._spelling is None:
             raise RuntimeError("SharedData class not fully initialised")
@@ -322,7 +322,7 @@ class SharedData(QObject):
 
         return NFontDialog.selectFont(current, self.mainGui, self.tr("Select Font"), native)
 
-    def findTopLevelWidget(self, kind: type[NWWidget]) -> NWWidget | None:
+    def findTopLevelWidget(self, kind: type[NWidget]) -> NWidget | None:
         """Find a top level widget."""
         for widget in self.mainGui.children():
             if isinstance(widget, kind):
@@ -472,7 +472,7 @@ class SharedData(QObject):
             del self._project
             del self._spelling
         self._project = NWProject()
-        self._spelling = NWSpellEnchant(self._project)
+        self._spelling = SpellEnchant(self._project)
         self.updateSpellCheckLanguage()
         self._focusMode = False
 

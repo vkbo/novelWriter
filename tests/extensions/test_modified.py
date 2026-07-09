@@ -1,6 +1,6 @@
 """
-novelWriter – Modified Widgets Tester
-=====================================
+novelWriter – Modified Widgets Tests
+====================================
 
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors

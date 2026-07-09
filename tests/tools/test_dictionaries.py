@@ -1,6 +1,6 @@
 """
-novelWriter – Dictionary Downloader Tester
-==========================================
+novelWriter – Dictionary Downloader Tests
+=========================================
 
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors

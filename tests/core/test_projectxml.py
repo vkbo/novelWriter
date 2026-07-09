@@ -1,6 +1,6 @@
 """
-novelWriter – ProjectXMLReader/Writer Class Tester
-==================================================
+novelWriter – Project XML Tests
+===============================
 
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
@@ -31,10 +31,10 @@ import pytest
 
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
-from novelwriter.core.item import NWItem
-from novelwriter.core.projectdata import NWProjectData
+from novelwriter.core.item import ProjectItem
+from novelwriter.core.projectdata import ProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
-from novelwriter.core.status import CUSTOM_COL, NWStatus
+from novelwriter.core.status import CUSTOM_COL, ItemStatus
 from novelwriter.enum import nwStatusShape
 
 from tests.helpers import cmpFiles, writeFile
@@ -44,7 +44,7 @@ from tests.mocked import causeOSError
 class MockProject:
     """Fake project object."""
 
-    data: NWProjectData
+    data: ProjectData
 
     def setProjectChanged(self, *a):
         """Fake project method."""
@@ -68,7 +68,7 @@ def testProjectXMLReader_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     # With no valid files, the read should fail
@@ -134,7 +134,7 @@ def testProjectXMLReader_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     assert xmlReader.state == XMLReadState.WAS_LEGACY
 
     # Reset data objects
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     # Parse a valid, complete file
@@ -244,7 +244,7 @@ def testProjectXMLReader_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     mockProject = MockProject()
     mockProject.data = data
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")  # type: ignore
+        item = ProjectItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         packedContent.append(item.pack())
 
@@ -283,7 +283,7 @@ def testProjectXMLReader_ReadLegacy10(tstPaths, fncPath, mockGUI, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -389,7 +389,7 @@ def testProjectXMLReader_ReadLegacy10(tstPaths, fncPath, mockGUI, mockRnd):
     mockProject.data = data
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")  # type: ignore
+        item = ProjectItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
@@ -441,7 +441,7 @@ def testProjectXMLReader_ReadLegacy11(tstPaths, fncPath, mockGUI, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -547,7 +547,7 @@ def testProjectXMLReader_ReadLegacy11(tstPaths, fncPath, mockGUI, mockRnd):
     mockProject.data = data
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")  # type: ignore
+        item = ProjectItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
@@ -599,7 +599,7 @@ def testProjectXMLReader_ReadLegacy12(tstPaths, fncPath, mockGUI, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -705,7 +705,7 @@ def testProjectXMLReader_ReadLegacy12(tstPaths, fncPath, mockGUI, mockRnd):
     mockProject.data = data
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")  # type: ignore
+        item = ProjectItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
@@ -760,7 +760,7 @@ def testProjectXMLReader_ReadLegacy13(tstPaths, fncPath, mockGUI, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -866,7 +866,7 @@ def testProjectXMLReader_ReadLegacy13(tstPaths, fncPath, mockGUI, mockRnd):
     mockProject.data = data
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")  # type: ignore
+        item = ProjectItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
@@ -921,7 +921,7 @@ def testProjectXMLReader_ReadLegacy14(tstPaths, fncPath, mockGUI, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())  # type: ignore
+    data = ProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -1026,7 +1026,7 @@ def testProjectXMLReader_ReadLegacy14(tstPaths, fncPath, mockGUI, mockRnd):
     mockProject.data = data
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")  # type: ignore
+        item = ProjectItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
@@ -1079,7 +1079,7 @@ def testProjectXMLReaderWriter_ParsePackHelpers(mockGUI, fncPath):
     xmlWriter = ProjectXMLWriter(fncPath / nwFiles.PROJ_FILE)
 
     # Non-entry elements in a status/importance list are skipped
-    status = NWStatus(NWStatus.STATUS)
+    status = ItemStatus(ItemStatus.STATUS)
     xItem = ET.fromstring('<status><entry key="s000001" color="#ff0000">New</entry><other>Ignored</other></status>')
     xmlReader._parseStatusImport(xItem, status)
     assert len(status) == 1

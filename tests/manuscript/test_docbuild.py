@@ -1,6 +1,6 @@
 """
-novelWriter – Manuscript Builder Class Tests
-============================================
+novelWriter – Manuscript Builder Tests
+======================================
 
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
@@ -37,7 +37,7 @@ from novelwriter.formats.toodt import ToOdt
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.formats.toraw import ToRaw
 from novelwriter.manuscript.buildsettings import BuildSettings
-from novelwriter.manuscript.docbuild import NWBuildDocument
+from novelwriter.manuscript.docbuild import DocumentBuilder
 
 from tests.helpers import ODT_IGNORE, C, buildTestProject, cmpFiles
 from tests.mocked import causeException, causeOSError
@@ -80,7 +80,7 @@ BUILD_CONF = {
 
 
 @pytest.mark.core
-def testNWBuildDocument_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
+def testDocumentBuilder_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test building an open document manuscript."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -88,7 +88,7 @@ def testNWBuildDocument_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, t
     build = BuildSettings()
     build.unpack(BUILD_CONF)
 
-    docBuild = NWBuildDocument(project, build)
+    docBuild = DocumentBuilder(project, build)
     docBuild._outline = True
     docBuild.queueAll()
 
@@ -186,7 +186,7 @@ def testNWBuildDocument_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, t
 
 
 @pytest.mark.core
-def testNWBuildDocument_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
+def testDocumentBuilder_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test building an HTML manuscript."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -194,7 +194,7 @@ def testNWBuildDocument_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths)
     build = BuildSettings()
     build.unpack(BUILD_CONF)
 
-    docBuild = NWBuildDocument(project, build)
+    docBuild = DocumentBuilder(project, build)
     docBuild.queueAll()
 
     assert len(docBuild) == 19
@@ -262,7 +262,7 @@ def testNWBuildDocument_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths)
 
 
 @pytest.mark.core
-def testNWBuildDocument_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
+def testDocumentBuilder_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test building an Markdown manuscript."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -270,7 +270,7 @@ def testNWBuildDocument_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPa
     build = BuildSettings()
     build.unpack(BUILD_CONF)
 
-    docBuild = NWBuildDocument(project, build)
+    docBuild = DocumentBuilder(project, build)
     docBuild.queueAll()
 
     assert len(docBuild) == 19
@@ -330,7 +330,7 @@ def testNWBuildDocument_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPa
 
 
 @pytest.mark.core
-def testNWBuildDocument_DocX(mockGUI, prjLipsum, fncPath):
+def testDocumentBuilder_DocX(mockGUI, prjLipsum, fncPath):
     """Test building a Word manuscript."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -338,7 +338,7 @@ def testNWBuildDocument_DocX(mockGUI, prjLipsum, fncPath):
     build = BuildSettings()
     build.unpack(BUILD_CONF)
 
-    docBuild = NWBuildDocument(project, build)
+    docBuild = DocumentBuilder(project, build)
     docBuild.queueAll()
 
     assert len(docBuild) == 19
@@ -363,7 +363,7 @@ def testNWBuildDocument_DocX(mockGUI, prjLipsum, fncPath):
 
 
 @pytest.mark.core
-def testNWBuildDocument_PDF(mockGUI, prjLipsum, fncPath):
+def testDocumentBuilder_PDF(mockGUI, prjLipsum, fncPath):
     """Test building a PDF manuscript."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -371,7 +371,7 @@ def testNWBuildDocument_PDF(mockGUI, prjLipsum, fncPath):
     build = BuildSettings()
     build.unpack(BUILD_CONF)
 
-    docBuild = NWBuildDocument(project, build)
+    docBuild = DocumentBuilder(project, build)
     docBuild.queueAll()
 
     assert len(docBuild) == 19
@@ -395,7 +395,7 @@ def testNWBuildDocument_PDF(mockGUI, prjLipsum, fncPath):
 
 
 @pytest.mark.core
-def testNWBuildDocument_NWD(mockGUI, prjLipsum, fncPath, tstPaths):
+def testDocumentBuilder_NWD(mockGUI, prjLipsum, fncPath, tstPaths):
     """Test building a NWD manuscript."""
     project = NWProject()
     project.openProject(prjLipsum)
@@ -403,7 +403,7 @@ def testNWBuildDocument_NWD(mockGUI, prjLipsum, fncPath, tstPaths):
     build = BuildSettings()
     build.unpack(BUILD_CONF)
 
-    docBuild = NWBuildDocument(project, build)
+    docBuild = DocumentBuilder(project, build)
     docBuild.queueAll()
 
     assert len(docBuild) == 19
@@ -450,7 +450,7 @@ def testNWBuildDocument_NWD(mockGUI, prjLipsum, fncPath, tstPaths):
 
 
 @pytest.mark.core
-def testNWBuildDocument_Custom(mockGUI, fncPath: Path, mockRnd):
+def testDocumentBuilder_Custom(mockGUI, fncPath: Path, mockRnd):
     """Test custom builds and some error handling."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -458,7 +458,7 @@ def testNWBuildDocument_Custom(mockGUI, fncPath: Path, mockRnd):
     build = BuildSettings()
     build.unpack(BUILD_CONF)
 
-    docBuild = NWBuildDocument(project, build)
+    docBuild = DocumentBuilder(project, build)
     docBuild.queueAll()
     assert len(docBuild) == 4
 
@@ -529,7 +529,7 @@ def testNWBuildDocument_Custom(mockGUI, fncPath: Path, mockRnd):
 
 
 @pytest.mark.core
-def testNWBuildDocument_IterBuild(mockGUI, fncPath: Path, mockRnd):
+def testDocumentBuilder_IterBuild(mockGUI, fncPath: Path, mockRnd):
     """Test iter build wrapper."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -542,7 +542,7 @@ def testNWBuildDocument_IterBuild(mockGUI, fncPath: Path, mockRnd):
     project.storage.getDocument(hPlotDoc).writeDocument("# Main Plot\n**Text**")
     project.storage.getDocument(hCharDoc).writeDocument("# Jane Doe\n~~Text~~")
 
-    docBuild = NWBuildDocument(project, build)
+    docBuild = DocumentBuilder(project, build)
     docBuild.queueAll()
     assert len(docBuild) == 8
 

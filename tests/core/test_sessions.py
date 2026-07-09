@@ -1,6 +1,6 @@
 """
-novelWriter – NWSessionLog Class Tester
-=======================================
+novelWriter – Session Log Tests
+===============================
 
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
@@ -28,7 +28,7 @@ import pytest
 
 from novelwriter.constants import nwFiles
 from novelwriter.core.project import NWProject
-from novelwriter.core.sessions import NWSessionLog
+from novelwriter.core.sessions import SessionLog
 
 from tests.helpers import buildTestProject
 from tests.mocked import causeOSError
@@ -36,7 +36,7 @@ from tests.mocked import causeOSError
 
 @pytest.mark.core
 def testNWSessionLog_Main(monkeypatch, mockGUI, fncPath):
-    """Test log file handling of the NWSessionLog class."""
+    """Test log file handling of the SessionLog class."""
     project = NWProject()
     buildTestProject(project, fncPath)
 
@@ -49,7 +49,7 @@ def testNWSessionLog_Main(monkeypatch, mockGUI, fncPath):
 
     # The project init should already have created the session
     sessLog = project.session
-    assert isinstance(sessLog, NWSessionLog)
+    assert isinstance(sessLog, SessionLog)
     assert sessLog.start > 0.0
 
     # Starting the session again should reset the timer
@@ -95,7 +95,7 @@ def testNWSessionLog_Main(monkeypatch, mockGUI, fncPath):
 
     # Make file path unresolvable, and try appending another record
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getMetaFile", lambda *a: None)
         assert sessLog.appendSession(1.6) is False
     assert len(list(sessLog.iterRecords())) == 3
 
@@ -112,5 +112,5 @@ def testNWSessionLog_Main(monkeypatch, mockGUI, fncPath):
 
     # Make file path unresolvable
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getMetaFile", lambda *a: None)
         assert len(list(sessLog.iterRecords())) == 0

@@ -1,6 +1,6 @@
 """
-novelWriter – Project Data Class Tester
-=======================================
+novelWriter – Project Data Tests
+================================
 
 This file is a part of novelWriter
 Copyright (C) 2026 Veronica Berglyd Olsen and novelWriter contributors
@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import pytest
 
-from novelwriter.core.projectdata import NWProjectData
+from novelwriter.core.projectdata import ProjectData
 
 
 class MockProject:
@@ -38,10 +38,10 @@ class MockProject:
 
 
 @pytest.mark.core
-def testNWProjectData_Uuid(mockGUI):
+def testProjectData_Uuid(mockGUI):
     """Test the setUuid setter."""
     project = MockProject()
-    data = NWProjectData(project)  # type: ignore
+    data = ProjectData(project)  # type: ignore
 
     # An empty/invalid value generates a new uuid
     data.setUuid("not-a-uuid")
@@ -61,10 +61,10 @@ def testNWProjectData_Uuid(mockGUI):
 
 
 @pytest.mark.core
-def testNWProjectData_Language(mockGUI):
+def testProjectData_Language(mockGUI):
     """Test the setLanguage setter."""
     project = MockProject()
-    data = NWProjectData(project)  # type: ignore
+    data = ProjectData(project)  # type: ignore
 
     data.setLanguage("en_GB")
     assert data.language == "en_GB"
@@ -77,10 +77,10 @@ def testNWProjectData_Language(mockGUI):
 
 
 @pytest.mark.core
-def testNWProjectData_LastHandle(mockGUI):
+def testProjectData_LastHandle(mockGUI):
     """Test the setLastHandle and setLastHandles setters."""
     project = MockProject()
-    data = NWProjectData(project)  # type: ignore
+    data = ProjectData(project)  # type: ignore
 
     # Setting with a non-string component does nothing
     project.changed = 0
@@ -102,10 +102,10 @@ def testNWProjectData_LastHandle(mockGUI):
 
 
 @pytest.mark.core
-def testNWProjectData_CurrCounts(mockGUI):
+def testProjectData_CurrCounts(mockGUI):
     """Test the setCurrCounts setter."""
     project = MockProject()
-    data = NWProjectData(project)  # type: ignore
+    data = ProjectData(project)  # type: ignore
 
     data.setCurrCounts(1, 2, 3, 4)
     assert data.currCounts == (1, 2, 3, 4)
@@ -116,10 +116,10 @@ def testNWProjectData_CurrCounts(mockGUI):
 
 
 @pytest.mark.core
-def testNWProjectData_AutoReplace(mockGUI):
+def testProjectData_AutoReplace(mockGUI):
     """Test the setAutoReplace setter."""
     project = MockProject()
-    data = NWProjectData(project)  # type: ignore
+    data = ProjectData(project)  # type: ignore
 
     # Requires a dict
     project.changed = 0

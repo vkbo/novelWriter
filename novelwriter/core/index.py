@@ -42,7 +42,7 @@ from novelwriter.text.formats import processComment, processHeading
 if TYPE_CHECKING:
     from collections.abc import ItemsView, Iterable
 
-    from novelwriter.core.item import NWItem
+    from novelwriter.core.item import ProjectItem
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
@@ -58,14 +58,15 @@ class Index:
     contains the data that isn't stored in the project items themselves.
     The content of the index is updated every time a file item is saved.
 
-    Some information needed by the NWItem object of a project item can
-    only be known after a text file has been scanned by the indexer, so
-    this data is set directly by the indexer class in the NWItem object.
+    Some information needed by the ProjectItem object of a project item
+    can only be known after a text file has been scanned by the indexer,
+    so this data is set directly by the indexer class in the ProjectItem
+    object.
 
     The primary index data is contained in a single instance of the
     ItemIndex class. This object contains an IndexNode representing each
-    NWItem of the project. Each IndexNode holds an IndexHeading object
-    for each heading of the item's text.
+    ProjectItem of the project. Each IndexNode holds an IndexHeading
+    object for each heading of the item's text.
 
     A reverse index of all tags is contained in a single instance of the
     TagsIndex class. This is duplicate information used for quicker
@@ -218,7 +219,7 @@ class Index:
             self._appendSubTreeToModel(tHandle, model)
             model.endResetModel()
 
-    def updateNovelModelData(self, nwItem: NWItem) -> bool:
+    def updateNovelModelData(self, nwItem: ProjectItem) -> bool:
         """Refresh a novel model."""
         if (
             (rHandle := nwItem.itemRoot)
@@ -374,7 +375,7 @@ class Index:
     #  Internal Indexer Helpers
     ##
 
-    def _scanActive(self, tHandle: str, nwItem: NWItem, text: str, tags: dict[str, bool]) -> None:
+    def _scanActive(self, tHandle: str, nwItem: ProjectItem, text: str, tags: dict[str, bool]) -> None:
         """Scan an active document for meta data."""
         nTitle = 0  # Line Number of the previous title
         cTitle = TT_NONE  # Tag of the current title
@@ -438,7 +439,7 @@ class Index:
             if updated or deleted:  # pragma: no branch
                 SHARED.emitIndexChangedTags(self._project, updated, deleted)
 
-    def _scanInactive(self, nwItem: NWItem, text: str) -> None:
+    def _scanInactive(self, nwItem: ProjectItem, text: str) -> None:
         """Scan an inactive document for meta data."""
         for line in text.splitlines():
             if line.startswith("#"):
@@ -965,7 +966,7 @@ class ItemIndex:
         """Clear the index."""
         self._items = {}
 
-    def add(self, tHandle: str, nwItem: NWItem) -> None:
+    def add(self, tHandle: str, nwItem: ProjectItem) -> None:
         """Add a new item to the index. This will overwrite the item if
         it already exists.
         """

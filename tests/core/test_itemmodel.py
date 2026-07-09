@@ -1,6 +1,6 @@
 """
-novelWriter – Item Model Tester
-===============================
+novelWriter – Item Model Tests
+==============================
 
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
@@ -28,7 +28,7 @@ from PyQt6.QtTest import QAbstractItemModelTester
 
 from novelwriter.common import decodeMimeHandles, encodeMimeHandles
 from novelwriter.constants import nwConst
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.core.itemmodel import INV_ROOT, NODE_FLAGS, ProjectModel, ProjectNode
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwItemLayout, nwItemType
@@ -41,7 +41,7 @@ from tests.helpers import buildTestProject
 def testProjectNode_Root(mockGUI):
     """Test the project node class for the root."""
     project = NWProject()
-    root = ProjectNode(NWItem(project, INV_ROOT))
+    root = ProjectNode(ProjectItem(project, INV_ROOT))
 
     # Defaults
     assert bool(root) is True
@@ -547,7 +547,7 @@ def testProjectModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     assert model.removeChild(novelIdx, 99) is None
 
     # _moveNode should return False for detached nodes
-    orphan = ProjectNode(NWItem(project, "123456789abcd"))
+    orphan = ProjectNode(ProjectItem(project, "123456789abcd"))
     orphan.detach()
     assert model._moveNode(orphan, novelIdx, -1) is False
 

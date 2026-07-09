@@ -1,6 +1,6 @@
 """
-novelWriter – Document Editor Class Tester
-==========================================
+novelWriter – Document Editor Tests
+===================================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
@@ -49,8 +49,8 @@ from PyQt6.QtWidgets import QApplication, QMenu, QTextEdit
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles, utf16CharMap
 from novelwriter.constants import nwKeyWords, nwUnicode
-from novelwriter.core.item import NWItem
-from novelwriter.core.spellcheck import NWSpellEnchant
+from novelwriter.core.item import ProjectItem
+from novelwriter.core.spellcheck import SpellEnchant
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.editor.autoreplace import TextAutoReplace
 from novelwriter.editor.completer import CommandCompleter
@@ -621,7 +621,7 @@ def testGuiDocEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     # The test must not depend on which dictionaries are available on
     # the host system, so all words are accepted from the start, and
     # the spell check worker must run synchronously
-    monkeypatch.setattr(NWSpellEnchant, "checkWord", lambda *a: True)
+    monkeypatch.setattr(SpellEnchant, "checkWord", lambda *a: True)
     monkeypatch.setattr(SHARED, "runInThreadPool", lambda r: r.run())
 
     assert nwGUI.openDocument(C.hSceneDoc) is True
@@ -674,7 +674,7 @@ def testGuiDocEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     blockPos = cursor.block().position()
     data._spellErrors = [(0, 5, "Lorem"), (6, 11, "ipsum")]
     with monkeypatch.context() as mp:
-        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [])
+        mp.setattr(SpellEnchant, "suggestWords", lambda *a: [])
         assert docEditor._qDocument.spellErrorAtPos(blockPos + 8) == ("ipsum", 6, 11, [])
 
     # No entry matches the given position
@@ -706,7 +706,7 @@ def testGuiDocEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
 
     # With Suggestion
     with monkeypatch.context() as mp:
-        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [LORAX])
+        mp.setattr(SpellEnchant, "suggestWords", lambda *a: [LORAX])
         suggestion = f"{nwUnicode.U_ENDASH} {LORAX}"
 
         ctxMenu = getMenuForPos(docEditor, 16)
@@ -725,7 +725,7 @@ def testGuiDocEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
 
     # Without Suggestion
     with monkeypatch.context() as mp:
-        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [])
+        mp.setattr(SpellEnchant, "suggestWords", lambda *a: [])
 
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
@@ -737,7 +737,7 @@ def testGuiDocEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
 
     # Add to Dictionary
     with monkeypatch.context() as mp:
-        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [])
+        mp.setattr(SpellEnchant, "suggestWords", lambda *a: [])
 
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
@@ -755,7 +755,7 @@ def testGuiDocEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
 
     # No spelling error at the clicked position: no spelling actions
     with monkeypatch.context() as mp:
-        mp.setattr(NWSpellEnchant, "suggestWords", lambda *a: [])
+        mp.setattr(SpellEnchant, "suggestWords", lambda *a: [])
 
         ctxMenu = getMenuForPos(docEditor, blockPos + 20)
         assert ctxMenu is not None
@@ -2483,7 +2483,7 @@ def testGuiDocEditor_MoveTextToNewDocument(qtbot, monkeypatch, nwGUI, projPath, 
     docEditor.setCursorLine(6)
     docEditor.docAction(nwDocAction.MOVE_TEXT)
     item = SHARED.project.tree[nHandle]
-    assert isinstance(item, NWItem)
+    assert isinstance(item, ProjectItem)
     assert item.itemName == "New Scene (1)"
     assert nwGUI.openDocument(nHandle) is True
     assert docEditor.getText() == "### New Scene (1)\n\n{0}\n".format("\n\n".join(ipsumText[2:]))
@@ -2505,7 +2505,7 @@ def testGuiDocEditor_MoveTextToNewDocument(qtbot, monkeypatch, nwGUI, projPath, 
     # Move to new document
     docEditor.docAction(nwDocAction.MOVE_TEXT)
     item = SHARED.project.tree[nHandle]
-    assert isinstance(item, NWItem)
+    assert isinstance(item, ProjectItem)
     assert item.itemName == "Another Scene"
     assert nwGUI.openDocument(nHandle) is True
     assert docEditor.getText() == f"### Another Scene\n\n{ipsumText[3]}\n"

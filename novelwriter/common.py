@@ -796,7 +796,7 @@ def openExternalPath(path: Path) -> bool:
 _T_Enum = TypeVar("_T_Enum", bound=Enum)
 
 
-class NWConfigParser(ConfigParser):
+class NConfigParser(ConfigParser):
     """Common: Adapted Config Parser.
 
     This is a subclass of the standard config parser that adds type safe

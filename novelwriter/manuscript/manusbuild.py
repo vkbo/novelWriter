@@ -48,12 +48,12 @@ from PyQt6.QtWidgets import (
 from novelwriter import SHARED
 from novelwriter.common import makeFileNameSafe, openExternalPath, safeExists, safeIsDir
 from novelwriter.constants import nwLabels
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.enum import nwBuildFmt, nwStandardButton, nwToolButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog, NIconToolButton, NPushButton
 from novelwriter.extensions.progressbars import NProgressSimple
-from novelwriter.manuscript.docbuild import NWBuildDocument
+from novelwriter.manuscript.docbuild import DocumentBuilder
 from novelwriter.types import QtAlignCenter, QtRoleAction, QtRoleDestruct, QtUserRole
 
 if TYPE_CHECKING:
@@ -332,7 +332,7 @@ class GuiManuscriptBuild(NDialog):
 
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
-        docBuild = NWBuildDocument(SHARED.project, self._build)
+        docBuild = DocumentBuilder(SHARED.project, self._build)
         docBuild.queueAll()
 
         self.buildProgress.setMaximum(len(docBuild))
@@ -382,7 +382,7 @@ class GuiManuscriptBuild(NDialog):
             if filtered.get(tHandle, (False, 0))[0]:
                 if rHandle not in rootMap:
                     rItem = SHARED.project.tree[rHandle]
-                    if isinstance(rItem, NWItem):
+                    if isinstance(rItem, ProjectItem):
                         rootMap[rHandle] = rItem.itemName
 
                 rootName = rootMap.get(rHandle, "??????")

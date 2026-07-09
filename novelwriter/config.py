@@ -47,7 +47,7 @@ from PyQt6.QtGui import QFont, QFontDatabase, QFontMetrics
 from PyQt6.QtWidgets import QApplication
 
 from novelwriter.common import (
-    NWConfigParser,
+    NConfigParser,
     checkInt,
     checkPath,
     describeFont,
@@ -67,7 +67,7 @@ from novelwriter.error import formatException, logException
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from novelwriter.core.projectdata import NWProjectData
+    from novelwriter.core.projectdata import ProjectData
     from novelwriter.splash import NSplashScreen
 
 logger = logging.getLogger(__name__)
@@ -743,7 +743,7 @@ class Config:
 
         logger.debug("Loading config file")
 
-        conf = NWConfigParser()
+        conf = NConfigParser()
         cnfPath = self._confPath / nwFiles.CONF_FILE
 
         if not safeExists(cnfPath):
@@ -894,7 +894,7 @@ class Config:
         """Save the current preferences to file."""
         logger.debug("Saving config file")
 
-        conf = NWConfigParser()
+        conf = NConfigParser()
 
         conf["Meta"] = {
             "timestamp": formatTimeStamp(time()),
@@ -1107,7 +1107,7 @@ class RecentProjects:
             (str(k), str(e["title"]), checkInt(e["words"], 0), checkInt(e["time"], 0)) for k, e in self._data.items()
         ]
 
-    def update(self, path: str | Path, data: NWProjectData, saved: float | int) -> None:
+    def update(self, path: str | Path, data: ProjectData, saved: float | int) -> None:
         """Add or update recent cache information on a given project."""
         try:
             if (remove := self._map.get(data.uuid)) and (remove != str(path)):

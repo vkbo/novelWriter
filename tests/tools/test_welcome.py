@@ -1,6 +1,6 @@
 """
-novelWriter – Welcome Window Tester
-===================================
+novelWriter – Welcome Dialog Tests
+==================================
 
 This file is a part of novelWriter
 Copyright (C) 2023 Veronica Berglyd Olsen and novelWriter contributors
@@ -34,7 +34,7 @@ from PyQt6.QtWidgets import QFileDialog, QMenu
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
-from novelwriter.core.projectdata import NWProjectData
+from novelwriter.core.projectdata import ProjectData
 from novelwriter.enum import nwItemClass
 from novelwriter.shared import _GuiAlert
 from novelwriter.tools.welcome import SAMPLE_KEY, SAMPLE_NAME, GuiWelcome, _ProjectListEntry
@@ -142,8 +142,8 @@ def testGuiWelcome_Open(qtbot, monkeypatch, nwGUI):
     monkeypatch.setattr(QMenu, "exec", lambda *a: None)
     monkeypatch.setattr(QMenu, "setParent", lambda *a: None)
 
-    data1 = NWProjectData(SHARED.project)
-    data2 = NWProjectData(SHARED.project)
+    data1 = ProjectData(SHARED.project)
+    data2 = ProjectData(SHARED.project)
 
     data1.setUuid(None)
     data2.setUuid(None)

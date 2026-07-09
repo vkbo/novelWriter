@@ -49,7 +49,7 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter, qtAddAction, qtLambda, simplified
 from novelwriter.constants import nwLabels, trConst
-from novelwriter.core.status import CUSTOM_COL, NWStatus, StatusEntry
+from novelwriter.core.status import CUSTOM_COL, ItemStatus, StatusEntry
 from novelwriter.enum import nwStandardButton, nwStatusShape, nwToolButton
 from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollableForm
 from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton
@@ -420,7 +420,7 @@ class _StatusPage(NFixedPage):
         def buildMenu(menu: QMenu | None, items: dict[nwStatusShape, str]) -> None:
             if menu is not None:  # pragma: no branch
                 for shape, label in items.items():
-                    icon = NWStatus.createIcon(self._iPx, iColor, shape)
+                    icon = ItemStatus.createIcon(self._iPx, iColor, shape)
                     action = qtAddAction(menu, trConst(label))
                     action.setIcon(icon)
                     action.triggered.connect(qtLambda(self._selectShape, shape))
@@ -537,7 +537,7 @@ class _StatusPage(NFixedPage):
         """Create a new status item."""
         color = QColor(100, 100, 100)
         shape = nwStatusShape.SQUARE
-        icon = NWStatus.createIcon(self._iPx, color, shape)
+        icon = ItemStatus.createIcon(self._iPx, color, shape)
         theme = str(self.iconColor.currentData())
         self._addItem(None, StatusEntry(self.tr("New Item"), color, theme, shape, icon, 0))
         self._changed = True
@@ -639,7 +639,7 @@ class _StatusPage(NFixedPage):
     def _updateIcon(self) -> None:
         """Apply changes made to a status icon."""
         if item := self._getSelectedItem():
-            icon = NWStatus.createIcon(self._iPx, self._pickColor(), self._shape)
+            icon = ItemStatus.createIcon(self._iPx, self._pickColor(), self._shape)
             entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
             entry.color = self._color
             entry.shape = self._shape
@@ -687,7 +687,7 @@ class _StatusPage(NFixedPage):
 
     def _setButtonIcons(self) -> None:
         """Set the colour of the colour button."""
-        icon = NWStatus.createIcon(self._iPx, self._pickColor(), nwStatusShape.SQUARE)
+        icon = ItemStatus.createIcon(self._iPx, self._pickColor(), nwStatusShape.SQUARE)
         self.iconColor.setCurrentData(self._theme, CUSTOM_COL)
         self.colorButton.setIcon(icon)
         self.shapeButton.setIcon(self._icons[self._shape])

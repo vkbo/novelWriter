@@ -1,6 +1,6 @@
 """
-novelWriter – Index Class Tester
-================================
+novelWriter – Index Tests
+=========================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
@@ -30,7 +30,7 @@ import pytest
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
 from novelwriter.core.index import Index, TagsIndex
-from novelwriter.core.item import NWItem
+from novelwriter.core.item import ProjectItem
 from novelwriter.core.novelmodel import NovelModel
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment, nwItemClass, nwItemLayout, nwNovelExtra
@@ -89,7 +89,7 @@ def testIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
 
     # No folder for saving
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getMetaFile", lambda *a: None)
         assert index.saveIndex() is False
 
     # Make the save fail
@@ -141,7 +141,7 @@ def testIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
 
     # No folder for loading
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getMetaFile", lambda *a: None)
         assert index.loadIndex() is False
 
     # Make the load fail
@@ -277,9 +277,9 @@ def testIndex_CheckThese(nwGUI, fncPath, mockRnd):
     nItem = project.tree[nHandle]
     cItem = project.tree[cHandle]
     wItem = project.tree[wHandle]
-    assert isinstance(nItem, NWItem)
-    assert isinstance(cItem, NWItem)
-    assert isinstance(wItem, NWItem)
+    assert isinstance(nItem, ProjectItem)
+    assert isinstance(cItem, ProjectItem)
+    assert isinstance(wItem, ProjectItem)
 
     assert index.rootChangedSince(C.hNovelRoot, 0) is False
     assert index.rootChangedSince(None, 0) is False
@@ -388,7 +388,7 @@ def testIndex_ScanText(monkeypatch, nwGUI, fncPath, mockRnd):
     assert isinstance(xHandle, str)
 
     xItem = project.tree[xHandle]
-    assert isinstance(xItem, NWItem)
+    assert isinstance(xItem, ProjectItem)
     xItem.setLayout(nwItemLayout.NO_LAYOUT)
 
     # Check invalid data
