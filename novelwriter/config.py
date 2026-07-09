@@ -47,7 +47,7 @@ from PyQt6.QtGui import QFont, QFontDatabase, QFontMetrics
 from PyQt6.QtWidgets import QApplication
 
 from novelwriter.common import (
-    NWConfigParser,
+    NConfigParser,
     checkInt,
     checkPath,
     describeFont,
@@ -743,7 +743,7 @@ class Config:
 
         logger.debug("Loading config file")
 
-        conf = NWConfigParser()
+        conf = NConfigParser()
         cnfPath = self._confPath / nwFiles.CONF_FILE
 
         if not safeExists(cnfPath):
@@ -894,7 +894,7 @@ class Config:
         """Save the current preferences to file."""
         logger.debug("Saving config file")
 
-        conf = NWConfigParser()
+        conf = NConfigParser()
 
         conf["Meta"] = {
             "timestamp": formatTimeStamp(time()),

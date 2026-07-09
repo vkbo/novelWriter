@@ -60,12 +60,12 @@ def formatException(exc: BaseException) -> str:
     return f"{type(exc).__name__}: {exc!s}"
 
 
-class NWErrorMessage(QDialog):
+class ErrorMessage(QDialog):
     """GUI: Error Dialog."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
-        self.setObjectName("NWErrorMessage")
+        self.setObjectName("ErrorMessage")
 
         # Widgets
         self.msgIcon = QLabel()
@@ -192,7 +192,7 @@ def exceptionHandler(exType: type, exValue: BaseException, exTrace: TracebackTyp
             logger.warning("Could not find main GUI window so cannot open error dialog")
             return
 
-        errMsg = NWErrorMessage(nwGUI)
+        errMsg = ErrorMessage(nwGUI)
         errMsg.setMessage(exType, exValue, exTrace)
         errMsg.exec()
 

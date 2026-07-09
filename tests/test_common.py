@@ -33,7 +33,7 @@ from PyQt6.QtCore import QMimeData, QUrl
 from PyQt6.QtGui import QDesktopServices, QFont, QFontDatabase, QFontInfo
 
 from novelwriter.common import (
-    NWConfigParser,
+    NConfigParser,
     appendIfSet,
     checkBool,
     checkFloat,
@@ -960,8 +960,8 @@ def testCommon_qtWeakLambda():
 
 
 @pytest.mark.base
-def testCommon_NWConfigParser(fncPath):
-    """Test the NWConfigParser subclass."""
+def testCommon_NConfigParser(fncPath):
+    """Test the NConfigParser subclass."""
     conf = fncPath / "test.cfg"
     writeFile(
         conf,
@@ -982,7 +982,7 @@ def testCommon_NWConfigParser(fncPath):
         ),
     )
 
-    parser = NWConfigParser()
+    parser = NConfigParser()
     parser.read(conf)
 
     # Readers

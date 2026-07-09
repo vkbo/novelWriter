@@ -25,7 +25,7 @@ import sys
 
 import pytest
 
-from novelwriter.error import NWErrorMessage, exceptionHandler, logException
+from novelwriter.error import ErrorMessage, exceptionHandler, logException
 
 from tests.mocked import causeException
 
@@ -43,7 +43,7 @@ def testError_LogException(caplog):
 @pytest.mark.base
 def testError_Dialog(qtbot, monkeypatch, nwGUI):
     """Test the error dialog."""
-    nwErr = NWErrorMessage(nwGUI)
+    nwErr = ErrorMessage(nwGUI)
     qtbot.addWidget(nwErr)
     nwErr.show()
 
@@ -90,27 +90,27 @@ def testError_Handler(qtbot, monkeypatch, nwGUI):
     """
     # Normal shutdown
     with monkeypatch.context() as mp:
-        mp.setattr(NWErrorMessage, "exec", lambda *a: None)
+        mp.setattr(ErrorMessage, "exec", lambda *a: None)
         mp.setattr("PyQt6.QtWidgets.QApplication.exit", lambda *a: None)
         exceptionHandler(Exception, "Error Message", None)  # type: ignore
 
     # Should not crash when no GUI is found
     with monkeypatch.context() as mp:
-        mp.setattr(NWErrorMessage, "exec", lambda *a: None)
+        mp.setattr(ErrorMessage, "exec", lambda *a: None)
         mp.setattr("PyQt6.QtWidgets.QApplication.exit", lambda *a: None)
         mp.setattr("PyQt6.QtWidgets.QApplication.topLevelWidgets", list)
         exceptionHandler(Exception, "Error Message", None)  # type: ignore
 
     # Should handle QApplication failing
     with monkeypatch.context() as mp:
-        mp.setattr(NWErrorMessage, "exec", lambda *a: None)
+        mp.setattr(ErrorMessage, "exec", lambda *a: None)
         mp.setattr("PyQt6.QtWidgets.QApplication.exit", lambda *a: None)
         mp.setattr("PyQt6.QtWidgets.QApplication.topLevelWidgets", causeException)
         exceptionHandler(Exception, "Error Message", None)  # type: ignore
 
     # Should handle failing to close main GUI
     with monkeypatch.context() as mp:
-        mp.setattr(NWErrorMessage, "exec", lambda *a: None)
+        mp.setattr(ErrorMessage, "exec", lambda *a: None)
         mp.setattr("PyQt6.QtWidgets.QApplication.exit", lambda *a: None)
         mp.setattr("novelwriter.guimain.GuiMain.closeMain", causeException)
         exceptionHandler(Exception, "Error Message", None)  # type: ignore
