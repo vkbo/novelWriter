@@ -34,7 +34,7 @@ from novelwriter.constants import nwFiles
 from novelwriter.core.item import ProjectItem
 from novelwriter.core.projectdata import ProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
-from novelwriter.core.status import CUSTOM_COL, NWStatus
+from novelwriter.core.status import CUSTOM_COL, ItemStatus
 from novelwriter.enum import nwStatusShape
 
 from tests.helpers import cmpFiles, writeFile
@@ -1079,7 +1079,7 @@ def testProjectXMLReaderWriter_ParsePackHelpers(mockGUI, fncPath):
     xmlWriter = ProjectXMLWriter(fncPath / nwFiles.PROJ_FILE)
 
     # Non-entry elements in a status/importance list are skipped
-    status = NWStatus(NWStatus.STATUS)
+    status = ItemStatus(ItemStatus.STATUS)
     xItem = ET.fromstring('<status><entry key="s000001" color="#ff0000">New</entry><other>Ignored</other></status>')
     xmlReader._parseStatusImport(xItem, status)
     assert len(status) == 1

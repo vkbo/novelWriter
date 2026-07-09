@@ -44,7 +44,7 @@ from novelwriter.common import (
 
 if TYPE_CHECKING:
     from novelwriter.core.projectdata import ProjectData
-    from novelwriter.core.status import NWStatus
+    from novelwriter.core.status import ItemStatus
 
 logger = logging.getLogger(__name__)
 
@@ -424,7 +424,7 @@ class ProjectXMLReader:
                 "nameAttr": name,
             })
 
-    def _parseStatusImport(self, xItem: ET.Element, sObject: NWStatus) -> None:
+    def _parseStatusImport(self, xItem: ET.Element, sObject: ItemStatus) -> None:
         """Parse a status or importance entry."""
         for xEntry in xItem:
             if xEntry.tag == "entry":

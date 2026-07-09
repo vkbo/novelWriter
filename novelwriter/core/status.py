@@ -70,7 +70,7 @@ T_UpdateEntry = list[tuple[str | None, StatusEntry]]
 T_StatusKind = Literal["s", "i"]
 
 
-class NWStatus:
+class ItemStatus:
     """Core: Status/Importance Label Class."""
 
     STATUS = "s"
@@ -86,7 +86,7 @@ class NWStatus:
 
     def __del__(self) -> None:  # pragma: no cover
         """Class destructor."""
-        logger.debug("Delete: NWStatus")
+        logger.debug("Delete: ItemStatus")
 
     def __len__(self) -> int:
         """Return the number of entries in the status list."""
@@ -185,7 +185,7 @@ class NWStatus:
             shape = nwStatusShape[str(data[0])]
             color = QColor(str(data[1]))
             theme = CUSTOM_COL if data[1].startswith("#") else data[1]
-            icon = NWStatus.createIcon(self._height, color, shape)
+            icon = ItemStatus.createIcon(self._height, color, shape)
             return StatusEntry(simplified(data[2]), color, theme, shape, icon)
         except Exception:
             logger.error("Could not parse entry %s", data)
@@ -196,7 +196,7 @@ class NWStatus:
         for entry in self._store.values():
             if entry.theme != CUSTOM_COL:
                 entry.color = SHARED.theme.parseColor(entry.theme)
-            entry.icon = NWStatus.createIcon(self._height, entry.color, entry.shape)
+            entry.icon = ItemStatus.createIcon(self._height, entry.color, entry.shape)
 
     @staticmethod
     def createIcon(height: int, color: QColor, shape: nwStatusShape) -> QIcon:

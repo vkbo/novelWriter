@@ -563,7 +563,7 @@ class NWProject:
 
     def countStatus(self) -> None:
         """Count how many times the various status flags are used in the
-        project tree. The counts themselves are kept in the NWStatus
+        project tree. The counts themselves are kept in the ItemStatus
         objects. This is essentially a refresh.
         """
         self._data.itemStatus.resetCounts()

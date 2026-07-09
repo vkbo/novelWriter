@@ -27,7 +27,7 @@ import uuid
 from typing import TYPE_CHECKING, Any, Literal
 
 from novelwriter.common import checkBool, checkInt, checkStringNone, checkUuid, isHandle, makeFileNameSafe, simplified
-from novelwriter.core.status import NWStatus
+from novelwriter.core.status import ItemStatus
 
 if TYPE_CHECKING:
     from novelwriter.core.project import NWProject
@@ -80,8 +80,8 @@ class ProjectData:
             "section": "",
         }
 
-        self._status = NWStatus(NWStatus.STATUS)
-        self._import = NWStatus(NWStatus.IMPORT)
+        self._status = ItemStatus(ItemStatus.STATUS)
+        self._import = ItemStatus(ItemStatus.IMPORT)
 
     ##
     #  Properties
@@ -169,12 +169,12 @@ class ProjectData:
         return self._autoReplace
 
     @property
-    def itemStatus(self) -> NWStatus:
+    def itemStatus(self) -> ItemStatus:
         """Return the status settings object."""
         return self._status
 
     @property
-    def itemImport(self) -> NWStatus:
+    def itemImport(self) -> ItemStatus:
         """Return the importance settings object."""
         return self._import
 

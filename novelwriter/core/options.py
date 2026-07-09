@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-NWEnum = TypeVar("NWEnum", bound=Enum)
+_T_Enum = TypeVar("_T_Enum", bound=Enum)
 
 VALID_MAP: dict[str, set[str]] = {
     "GuiWritingStats": {
@@ -248,7 +248,7 @@ class OptionState:
             return checkBool(self._state[group].get(name, default), default)
         return default
 
-    def getEnum(self, group: str, name: str, lookup: type, default: NWEnum) -> NWEnum:
+    def getEnum(self, group: str, name: str, lookup: type, default: _T_Enum) -> _T_Enum:
         """Return the value mapped to an enum. Otherwise return the
         default value.
         """
