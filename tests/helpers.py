@@ -22,9 +22,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import difflib
+import gc
+import weakref
 import xml.etree.ElementTree as ET
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from datetime import datetime
 from pathlib import Path
 
@@ -202,6 +204,45 @@ def buildTestProject(obj: object, path: Path) -> None:
         nwGUI.novelView.openProjectTasks()
 
     return
+
+
+def checkDialogFreedOnClose(qtbot, factory: Callable[[], QDialog]) -> None:
+    """Check that a dialog is freed by reference count alone when it is
+    closed. This guards against PyQt6 reference loops where a closure
+    connected to a signal captures the dialog that owns the sender, in
+    which case the dialog lingers until the cyclic garbage collector
+    runs. The dialog must be created by the factory so that the check
+    holds the only reference to it.
+    """
+    dialog = factory()
+    dialog.show()
+    qtbot.wait(20)
+    ref = weakref.ref(dialog)
+    gc.disable()
+    try:
+        dialog.close()
+        qtbot.wait(20)
+        del dialog
+        assert ref() is None, "Dialog was not freed by reference count on close"
+    finally:
+        gc.enable()
+
+
+def checkWidgetFreedOnRelease(factory: Callable[[], QWidget]) -> None:
+    """Check that a transient widget, like a context menu, is freed by
+    reference count alone when its parent is cleared and the last
+    reference is dropped. The widget must be created by the factory so
+    that the check holds the only reference to it.
+    """
+    widget = factory()
+    ref = weakref.ref(widget)
+    gc.disable()
+    try:
+        widget.setParent(None)  # type: ignore
+        del widget
+        assert ref() is None, "Widget was not freed by reference count on release"
+    finally:
+        gc.enable()
 
 
 class SimpleDialog(QDialog):

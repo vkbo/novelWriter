@@ -34,7 +34,7 @@ from novelwriter.manuscript.buildsettings import BuildSettings, FilterMode
 from novelwriter.manuscript.manussettings import GuiBuildSettings, _FilterTab, _FormattingTab, _HeadingsTab
 from novelwriter.shared import _GuiAlert
 
-from tests.helpers import C, buildTestProject
+from tests.helpers import C, buildTestProject, checkDialogFreedOnClose
 
 
 @pytest.mark.gui
@@ -1046,3 +1046,16 @@ def testGuiBuildSettings_FormatOutput(qtbot, nwGUI):
     # Finish
     bSettings._dialogButtonClicked(bSettings.btnClose)
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiBuildSettings_MemoryLeakRegression(qtbot, nwGUI, projPath, mockRnd):
+    """Test that the dialog is freed when it is closed."""
+    buildTestProject(nwGUI, projPath)
+
+    def factory() -> GuiBuildSettings:
+        dialog = GuiBuildSettings(nwGUI, BuildSettings())
+        dialog.loadContent()
+        return dialog
+
+    checkDialogFreedOnClose(qtbot, factory)

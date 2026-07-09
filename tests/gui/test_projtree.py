@@ -47,7 +47,7 @@ from novelwriter.types import (
     QtScrollAsNeeded,
 )
 
-from tests.helpers import C, buildTestProject
+from tests.helpers import C, buildTestProject, checkWidgetFreedOnRelease
 from tests.mocked import causeOSError
 
 
@@ -2296,3 +2296,22 @@ def testGuiProjectTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert projBar.mTemplates.menuAction().isVisible() is False
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiProjectTree_MemoryLeakRegression(qtbot, nwGUI, projPath, mockRnd):
+    """Test that the context menu is freed when it is released."""
+    buildTestProject(nwGUI, projPath)
+    projTree = nwGUI.projView.projTree
+    model = SHARED.project.tree.model
+    node = SHARED.project.tree.nodes[C.hSceneDoc]
+    indices = [model.indexFromHandle(C.hSceneDoc)]
+
+    def build(builder: str) -> _TreeContextMenu:
+        ctxMenu = _TreeContextMenu(projTree, model, node, indices)
+        getattr(ctxMenu, builder)()
+        return ctxMenu
+
+    checkWidgetFreedOnRelease(lambda: build("buildSingleSelectMenu"))
+    checkWidgetFreedOnRelease(lambda: build("buildMultiSelectMenu"))
+    checkWidgetFreedOnRelease(lambda: build("buildTrashMenu"))

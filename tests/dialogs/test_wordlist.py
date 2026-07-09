@@ -32,7 +32,7 @@ from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.types import QtAccepted
 
-from tests.helpers import buildTestProject
+from tests.helpers import buildTestProject, checkDialogFreedOnClose
 from tests.mocked import causeOSError
 
 
@@ -176,3 +176,10 @@ def testGuiWordList_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     assert "word_i" in userDict
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiWordList_MemoryLeakRegression(qtbot, nwGUI, projPath):
+    """Test that the dialog is freed when it is closed."""
+    buildTestProject(nwGUI, projPath)
+    checkDialogFreedOnClose(qtbot, lambda: GuiWordList(nwGUI))
