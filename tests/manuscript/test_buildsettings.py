@@ -470,7 +470,7 @@ def testBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRnd):
 
     # Check errors: No valid path
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getMetaFile", lambda *a: None)
         assert builds._loadCollection() is False
         assert builds._saveCollection() is False
 

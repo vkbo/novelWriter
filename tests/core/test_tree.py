@@ -933,7 +933,7 @@ def testProjectTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
 
     # Block extraction of the path
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.contentPath", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.contentPath", lambda *a: None)
         assert tree.writeToCFile() is False
 
     # Block opening the file

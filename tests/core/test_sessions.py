@@ -95,7 +95,7 @@ def testNWSessionLog_Main(monkeypatch, mockGUI, fncPath):
 
     # Make file path unresolvable, and try appending another record
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getMetaFile", lambda *a: None)
         assert sessLog.appendSession(1.6) is False
     assert len(list(sessLog.iterRecords())) == 3
 
@@ -112,5 +112,5 @@ def testNWSessionLog_Main(monkeypatch, mockGUI, fncPath):
 
     # Make file path unresolvable
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getMetaFile", lambda *a: None)
         assert len(list(sessLog.iterRecords())) == 0

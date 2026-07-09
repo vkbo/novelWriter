@@ -49,7 +49,7 @@ from novelwriter.core.options import OptionState
 from novelwriter.core.projectdata import ProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.sessions import SessionLog
-from novelwriter.core.storage import NWStorage, NWStorageOpen
+from novelwriter.core.storage import ProjectStorage, ProjectStorageOpen
 from novelwriter.core.tree import ProjectTree
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
@@ -94,7 +94,7 @@ class NWProject:
 
         # Core Elements
         self._options = OptionState(self)  # Project-specific GUI options
-        self._storage = NWStorage(self)  # The project storage handler
+        self._storage = ProjectStorage(self)  # The project storage handler
         self._data = ProjectData(self)  # The project settings
         self._tree = ProjectTree(self)  # The project tree
         self._index = Index(self)  # The project index
@@ -129,7 +129,7 @@ class NWProject:
         return self._options
 
     @property
-    def storage(self) -> NWStorage:
+    def storage(self) -> ProjectStorage:
         return self._storage
 
     @property
@@ -301,24 +301,24 @@ class NWProject:
         logger.info("Opening project: %s", projPath)
 
         status = self._storage.initProjectStorage(projPath, clearLock)
-        if status != NWStorageOpen.READY:
-            if status == NWStorageOpen.UNKOWN:
+        if status != ProjectStorageOpen.READY:
+            if status == ProjectStorageOpen.UNKOWN:
                 SHARED.error(
                     self.tr("Not a known project file format."),
                     info=self.tr("Path: {0}").format(str(projPath)),
                 )
-            elif status == NWStorageOpen.NOT_FOUND:
+            elif status == ProjectStorageOpen.NOT_FOUND:
                 SHARED.error(
                     self.tr("Project file not found."),
                     info=self.tr("Path: {0}").format(str(projPath)),
                 )
-            elif status == NWStorageOpen.FAILED:
+            elif status == ProjectStorageOpen.FAILED:
                 SHARED.error(
                     self.tr("Failed to open project."),
                     info=self.tr("Path: {0}").format(str(projPath)),
                     exc=self._storage.exc,
                 )
-            elif status == NWStorageOpen.LOCKED:
+            elif status == ProjectStorageOpen.LOCKED:
                 self._state = NWProjectState.LOCKED
             else:  # pragma: no cover
                 pass

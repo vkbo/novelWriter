@@ -70,7 +70,7 @@ def testUserDictionary_Main(monkeypatch, mockGUI, fncPath):
 
     # Break the path check
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getMetaFile", lambda *a: None)
         userDict.save()
 
     # There should still be no file
@@ -94,7 +94,7 @@ def testUserDictionary_Main(monkeypatch, mockGUI, fncPath):
 
     # Break the path check
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getMetaFile", lambda *a: None)
         userDict.load()
 
     # No words loaded

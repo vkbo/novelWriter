@@ -33,7 +33,7 @@ from novelwriter.constants import nwFiles
 from novelwriter.core.document import ProjectDocument
 from novelwriter.core.project import NWProject
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
-from novelwriter.core.storage import NWStorage, NWStorageCreate, NWStorageOpen, _LegacyStorage
+from novelwriter.core.storage import ProjectStorage, ProjectStorageCreate, ProjectStorageOpen, _LegacyStorage
 
 from tests.helpers import C, buildTestProject
 from tests.mocked import causeOSError
@@ -44,18 +44,18 @@ class MockProject:
 
 
 @pytest.mark.core
-def testNWStorage_CreateNewProject(mockGUI, fncPath):
+def testProjectStorage_CreateNewProject(mockGUI, fncPath):
     """Test creating a project in a folder."""
     project = NWProject()
 
     # Create instance
-    storage = NWStorage(project)
+    storage = ProjectStorage(project)
 
     # Check defaults
     assert storage.storagePath is None
     assert storage.runtimePath is None
     assert storage.contentPath is None
-    assert storage._openMode == NWStorage.MODE_INACTIVE
+    assert storage._openMode == ProjectStorage.MODE_INACTIVE
     assert storage._ready is False
 
     # Check closed project return values
@@ -69,34 +69,34 @@ def testNWStorage_CreateNewProject(mockGUI, fncPath):
 
     # Cannot prepare a non-empty folder
     (fncPath / "foobar.txt").touch()
-    assert storage.createNewProject(fncPath) == NWStorageCreate.NOT_EMPTY
+    assert storage.createNewProject(fncPath) == ProjectStorageCreate.NOT_EMPTY
 
     # Try creating in a non-existent subfolder instead
-    assert storage.createNewProject(fncPath / "project1") == NWStorageCreate.READY
+    assert storage.createNewProject(fncPath / "project1") == ProjectStorageCreate.READY
     assert (fncPath / "project1").is_dir()
     assert (fncPath / "project1" / "meta").is_dir()
     assert (fncPath / "project1" / "content").is_dir()
 
     # However, the parent folder must exist
-    assert storage.createNewProject(fncPath / "foobar" / "project1") == NWStorageCreate.OS_ERROR
+    assert storage.createNewProject(fncPath / "foobar" / "project1") == ProjectStorageCreate.OS_ERROR
     assert isinstance(storage.exc, FileNotFoundError)
 
     project.closeProject()
 
 
 @pytest.mark.core
-def testNWStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
+def testProjectStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
     """Test initialising a project in a folder."""
     project = NWProject()
 
     # Create instance
-    storage = NWStorage(project)
+    storage = ProjectStorage(project)
 
     # Check defaults
     assert storage.storagePath is None
     assert storage.runtimePath is None
     assert storage.contentPath is None
-    assert storage._openMode == NWStorage.MODE_INACTIVE
+    assert storage._openMode == ProjectStorage.MODE_INACTIVE
     assert storage._ready is False
 
     # Check closed project return values
@@ -113,48 +113,48 @@ def testNWStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
     # Init with the wrong file
     foo = fncPath / "foobar.txt"
     foo.touch()
-    assert storage.initProjectStorage(fncPath / "foobar.txt") == NWStorageOpen.UNKOWN
+    assert storage.initProjectStorage(fncPath / "foobar.txt") == ProjectStorageOpen.UNKOWN
     foo.unlink()
     storage._clearLockFile()
     storage.clear()
 
     # Init with the user's home dir
-    assert storage.initProjectStorage(Path.home()) == NWStorageOpen.NOT_FOUND
+    assert storage.initProjectStorage(Path.home()) == ProjectStorageOpen.NOT_FOUND
     storage._clearLockFile()
     storage.clear()
 
     # Init with the project folder is OK
-    assert storage.initProjectStorage(fncPath) == NWStorageOpen.READY
+    assert storage.initProjectStorage(fncPath) == ProjectStorageOpen.READY
     assert storage.runtimePath == fncPath
     assert storage.storagePath == fncPath
     assert storage.contentPath == fncPath / "content"
-    assert storage._openMode == NWStorage.MODE_INPLACE
+    assert storage._openMode == ProjectStorage.MODE_INPLACE
     storage._clearLockFile()
     storage.clear()
 
     # Init with the project main file is OK
-    assert storage.initProjectStorage(fncPath / nwFiles.PROJ_FILE) == NWStorageOpen.READY
+    assert storage.initProjectStorage(fncPath / nwFiles.PROJ_FILE) == ProjectStorageOpen.READY
     assert storage.runtimePath == fncPath
     assert storage.storagePath == fncPath
     assert storage.contentPath == fncPath / "content"
-    assert storage._openMode == NWStorage.MODE_INPLACE
+    assert storage._openMode == ProjectStorage.MODE_INPLACE
     storage._clearLockFile()
     storage.clear()
 
     # Locking does nothing before the storage is ready
-    unreadyStorage = NWStorage(MockProject())  # type: ignore
+    unreadyStorage = ProjectStorage(MockProject())  # type: ignore
     unreadyStorage.lockSession()
 
     # Open twice, where second should fail due to lockfile
     # Note that locking is only possible after a successful open
-    assert storage.initProjectStorage(fncPath) == NWStorageOpen.READY
+    assert storage.initProjectStorage(fncPath) == ProjectStorageOpen.READY
     storage.lockSession()
-    assert storage.initProjectStorage(fncPath) == NWStorageOpen.LOCKED
+    assert storage.initProjectStorage(fncPath) == ProjectStorageOpen.LOCKED
     assert isinstance(storage.lockStatus, list)
     assert len(storage.lockStatus) == 4
 
     # But open again with clear lock file flag set is OK
-    assert storage.initProjectStorage(fncPath, clearLock=True) == NWStorageOpen.READY
+    assert storage.initProjectStorage(fncPath, clearLock=True) == ProjectStorageOpen.READY
     assert storage.lockStatus is None
 
     # We should now have access to project resources
@@ -170,18 +170,18 @@ def testNWStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testNWStorage_InitProjectStorage_Invalid(monkeypatch, mockGUI, fncPath):
+def testProjectStorage_InitProjectStorage_Invalid(monkeypatch, mockGUI, fncPath):
     """Test initialising a project in an invalid folder."""
     project = NWProject()
 
     # Create instance
-    storage = NWStorage(project)
+    storage = ProjectStorage(project)
 
     # Check defaults
     assert storage.storagePath is None
     assert storage.runtimePath is None
     assert storage.contentPath is None
-    assert storage._openMode == NWStorage.MODE_INACTIVE
+    assert storage._openMode == ProjectStorage.MODE_INACTIVE
     assert storage._ready is False
 
     # Check closed project return values
@@ -197,28 +197,28 @@ def testNWStorage_InitProjectStorage_Invalid(monkeypatch, mockGUI, fncPath):
     (fncPath / "content").touch()  # These are now files but should be folders
 
     # Try opening the folder, but there is no project file
-    assert storage.initProjectStorage(fncPath) == NWStorageOpen.NOT_FOUND
+    assert storage.initProjectStorage(fncPath) == ProjectStorageOpen.NOT_FOUND
 
     # Add the project file, and we should now fail on the folders
     (fncPath / nwFiles.PROJ_FILE).touch()
-    assert storage.initProjectStorage(fncPath) == NWStorageOpen.FAILED
+    assert storage.initProjectStorage(fncPath) == ProjectStorageOpen.FAILED
 
     # Remove the files blocking the folders, but make the legacy storage scan fail
     (fncPath / "meta").unlink()
     (fncPath / "content").unlink()
     with monkeypatch.context() as mp:
         mp.setattr(_LegacyStorage, "deprecatedFiles", causeOSError)
-        assert storage.initProjectStorage(fncPath) == NWStorageOpen.FAILED
+        assert storage.initProjectStorage(fncPath) == ProjectStorageOpen.FAILED
 
     project.closeProject()
 
 
 @pytest.mark.core
-def testNWStorage_LockFile(monkeypatch, fncPath):
+def testProjectStorage_LockFile(monkeypatch, fncPath):
     """Test the project lock file."""
     monkeypatch.setattr("novelwriter.core.storage.time", lambda: 1000.0)
 
-    storage = NWStorage(MockProject())  # type: ignore
+    storage = ProjectStorage(MockProject())  # type: ignore
     assert storage.isOpen() is False
 
     # Project not open, so cannot read/write lock file
@@ -278,7 +278,7 @@ def testNWStorage_LockFile(monkeypatch, fncPath):
 
 
 @pytest.mark.core
-def testNWStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
+def testProjectStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
     """Test making a zip archive of a project."""
     zipFile = tstPaths.tmpDir / "project.zip"
 
@@ -317,10 +317,10 @@ def testNWStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
 
 
 @pytest.mark.core
-def testNWStorage_LegacyDataFolder(monkeypatch, fncPath):
+def testProjectStorage_LegacyDataFolder(monkeypatch, fncPath):
     """Test project file format 1.0 folder structure conversion."""
     project = MockProject()
-    storage = NWStorage(project)  # type: ignore
+    storage = ProjectStorage(project)  # type: ignore
     assert storage.isOpen() is False
     storage._runtimePath = fncPath
     (fncPath / nwFiles.PROJ_FILE).touch()
@@ -377,16 +377,16 @@ def testNWStorage_LegacyDataFolder(monkeypatch, fncPath):
         assert not (fncPath / "content" / "9000000000009.nwd").exists()
 
     # Run the remaining through the prepare storage call
-    assert storage.initProjectStorage(fncPath, clearLock=True) == NWStorageOpen.READY
+    assert storage.initProjectStorage(fncPath, clearLock=True) == ProjectStorageOpen.READY
     for c in "0123456789abcdef":
         assert (fncPath / "content" / f"{c}00000000000{c}.nwd").exists()
 
 
 @pytest.mark.core
-def testNWStorage_DeprecatedFiles(monkeypatch, fncPath):
+def testProjectStorage_DeprecatedFiles(monkeypatch, fncPath):
     """Test cleanup of deprecated files."""
     project = MockProject()
-    storage = NWStorage(project)  # type: ignore
+    storage = ProjectStorage(project)  # type: ignore
     assert storage.isOpen() is False
     storage._runtimePath = fncPath
     (fncPath / nwFiles.PROJ_FILE).touch()
@@ -424,7 +424,7 @@ def testNWStorage_DeprecatedFiles(monkeypatch, fncPath):
 
 
 @pytest.mark.core
-def testNWStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
+def testProjectStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
     """Test cleanup of deprecated files that needs to be converted."""
     project = NWProject()
     buildTestProject(project, fncPath)

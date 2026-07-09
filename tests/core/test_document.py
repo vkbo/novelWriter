@@ -60,7 +60,7 @@ def testProjectDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
 
     # No content path
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.contentPath", property(lambda *a: None))
+        mp.setattr("novelwriter.core.storage.ProjectStorage.contentPath", property(lambda *a: None))
         doc = ProjectDocument(project, C.hSceneDoc)
         assert doc.readDocument() is None
         assert doc.fileExists() is False
@@ -91,7 +91,7 @@ def testProjectDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
 
     # No content path
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.contentPath", property(lambda *a: None))
+        mp.setattr("novelwriter.core.storage.ProjectStorage.contentPath", property(lambda *a: None))
         doc = ProjectDocument(project, xHandle)
         assert doc.writeDocument("") is False
 
@@ -202,7 +202,7 @@ def testProjectDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
 
     # No content path
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.contentPath", property(lambda *a: None))
+        mp.setattr("novelwriter.core.storage.ProjectStorage.contentPath", property(lambda *a: None))
         doc = ProjectDocument(project, xHandle)
         assert doc.deleteDocument() is False
 

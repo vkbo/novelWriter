@@ -36,7 +36,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import isHandle, minmax, safeExists, safeIsFile, simplified
 from novelwriter.constants import nwConst, nwFiles, nwItemClass, nwStats
 from novelwriter.core.project import NWProject
-from novelwriter.core.storage import NWStorageCreate
+from novelwriter.core.storage import ProjectStorageCreate
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -392,10 +392,10 @@ class ProjectBuilder:
         """Build a blank project from a data dictionary."""
         project = NWProject()
         status = project.storage.createNewProject(path)
-        if status == NWStorageCreate.NOT_EMPTY:
+        if status == ProjectStorageCreate.NOT_EMPTY:
             SHARED.error(self.tr("The target folder is not empty. Please choose another folder."))
             return False
-        elif status == NWStorageCreate.OS_ERROR:
+        elif status == ProjectStorageCreate.OS_ERROR:
             SHARED.error(
                 self.tr("An error occurred while trying to create the project."),
                 exc=project.storage.exc,

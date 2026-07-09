@@ -280,7 +280,7 @@ def testNWProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
 
     # Fail getting xml reader
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getXmlReader", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getXmlReader", lambda *a: None)
         assert project.openProject(fncPath, clearLock=True) is False
 
     # Not a novelwriter XML file
@@ -325,7 +325,7 @@ def testNWProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
 
     # If the storage path is unavailable, recent projects are not updated
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.storagePath", property(lambda *a: None))
+        mp.setattr("novelwriter.core.storage.ProjectStorage.storagePath", property(lambda *a: None))
         assert project.openProject(fncPath, clearLock=True) is True
 
     # Fail checking items should still pass
@@ -358,7 +358,7 @@ def testNWProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
 
     # Fail getting xml writer
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getXmlWriter", lambda *a: None)
+        mp.setattr("novelwriter.core.storage.ProjectStorage.getXmlWriter", lambda *a: None)
         assert project.saveProject() is False
 
     # Fail writing
@@ -372,7 +372,7 @@ def testNWProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
 
     # If the storage path is unavailable, recent projects are not updated
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.storagePath", property(lambda *a: None))
+        mp.setattr("novelwriter.core.storage.ProjectStorage.storagePath", property(lambda *a: None))
         assert project.saveProject() is True
 
     project.closeProject()
