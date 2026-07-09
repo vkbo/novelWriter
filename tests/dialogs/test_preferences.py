@@ -37,6 +37,8 @@ from novelwriter.extensions.modified import NFontDialog
 from novelwriter.gui.theme import ThemeEntry
 from novelwriter.types import QtKeyEscape, QtModNone
 
+from tests.helpers import checkDialogFreedOnClose
+
 KEY_DELAY = 1
 
 
@@ -490,3 +492,10 @@ def testGuiPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     ]
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiPreferences_MemoryLeakRegression(qtbot, monkeypatch, nwGUI):
+    """Test that the dialog is freed when it is closed."""
+    monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: [("en", "English [en]")])
+    checkDialogFreedOnClose(qtbot, lambda: GuiPreferences(nwGUI))

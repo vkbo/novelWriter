@@ -33,7 +33,7 @@ from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import nwItemType, nwStatusShape
 from novelwriter.types import QtAccepted, QtMouseLeft
 
-from tests.helpers import C, buildTestProject
+from tests.helpers import C, buildTestProject, checkDialogFreedOnClose
 from tests.mocked import causeOSError
 
 KEY_DELAY = 1
@@ -517,3 +517,10 @@ def testGuiProjectSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
     assert project.data.autoReplace == {"A": "B", "C": "D", "This": "With This Stuff"}
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiProjectSettings_MemoryLeakRegression(qtbot, nwGUI, projPath, mockRnd):
+    """Test that the dialog is freed when it is closed."""
+    buildTestProject(nwGUI, projPath)
+    checkDialogFreedOnClose(qtbot, lambda: GuiProjectSettings(nwGUI))

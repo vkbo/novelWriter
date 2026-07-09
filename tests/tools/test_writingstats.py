@@ -34,7 +34,7 @@ from novelwriter.constants import nwFiles
 from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.types import QtMouseLeft
 
-from tests.helpers import buildTestProject
+from tests.helpers import buildTestProject, checkDialogFreedOnClose
 from tests.mocked import causeOSError
 
 
@@ -848,3 +848,10 @@ def testGuiWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     sessLog.closeDialog()
     nwGUI.closeProject()
+
+
+@pytest.mark.gui
+def testGuiWritingStats_MemoryLeakRegression(qtbot, nwGUI, projPath):
+    """Test that the dialog is freed when it is closed."""
+    buildTestProject(nwGUI, projPath)
+    checkDialogFreedOnClose(qtbot, lambda: GuiWritingStats(nwGUI))
