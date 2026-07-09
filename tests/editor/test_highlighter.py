@@ -27,7 +27,7 @@ from PyQt6.QtGui import QTextCharFormat, QTextCursor, QTextDocument
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.core.item import NWItem
-from novelwriter.core.spellcheck import NWSpellEnchant
+from novelwriter.core.spellcheck import SpellEnchant
 from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE, GuiDocHighlighter
 from novelwriter.editor.textblock import TextBlockData
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwTheme
@@ -517,7 +517,7 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
     # Settings
     syntax._tHandle = T_HANDLE
     syntax._isNovel = True
-    monkeypatch.setattr(NWSpellEnchant, "checkWord", lambda *a: False)
+    monkeypatch.setattr(SpellEnchant, "checkWord", lambda *a: False)
 
     colHidden = theme.syntaxTheme.hidden.getRgb()
     colEmph = theme.syntaxTheme.emph.getRgb()

@@ -1,6 +1,6 @@
 """
-novelWriter – Project Tree Class
-================================
+novelWriter – Project Tree
+==========================
 
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors

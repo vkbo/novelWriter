@@ -1,6 +1,6 @@
 """
-novelWriter – Project Item Status Class
-=======================================
+novelWriter – Project Item Status
+=================================
 
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors

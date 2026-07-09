@@ -1,6 +1,6 @@
 """
-novelWriter – Project Storage Class
-===================================
+novelWriter – Project Storage
+=============================
 
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors

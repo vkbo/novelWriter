@@ -35,7 +35,7 @@ from PyQt6.QtWidgets import QApplication, QFileDialog, QGridLayout, QMessageBox,
 
 from novelwriter.common import appendIfSet, formatFileFilter, joinLines
 from novelwriter.constants import nwFiles
-from novelwriter.core.spellcheck import NWSpellEnchant
+from novelwriter.core.spellcheck import SpellEnchant
 from novelwriter.enum import nwChange, nwItemClass, nwStandardButton
 from novelwriter.types import QtSizeExpanding, QtSizeMinimum
 
@@ -127,7 +127,7 @@ class SharedData(QObject):
         return self._project
 
     @property
-    def spelling(self) -> NWSpellEnchant:
+    def spelling(self) -> SpellEnchant:
         """Return the active NWProject instance."""
         if self._spelling is None:
             raise RuntimeError("SharedData class not fully initialised")
@@ -472,7 +472,7 @@ class SharedData(QObject):
             del self._project
             del self._spelling
         self._project = NWProject()
-        self._spelling = NWSpellEnchant(self._project)
+        self._spelling = SpellEnchant(self._project)
         self.updateSpellCheckLanguage()
         self._focusMode = False
 

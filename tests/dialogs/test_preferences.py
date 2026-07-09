@@ -30,7 +30,7 @@ from PyQt6.QtWidgets import QFileDialog
 from novelwriter import CONFIG, SHARED
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_TREECOL
 from novelwriter.constants import nwUnicode
-from novelwriter.core.spellcheck import NWSpellEnchant
+from novelwriter.core.spellcheck import SpellEnchant
 from novelwriter.dialogs.preferences import GuiNeedsUpdate, GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.modified import NFontDialog
@@ -45,7 +45,7 @@ KEY_DELAY = 1
 @pytest.mark.gui
 def testGuiPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     """Test the preferences dialog loading."""
-    monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: [("en", "English [en]")])
+    monkeypatch.setattr(SpellEnchant, "listDictionaries", lambda *a: [("en", "English [en]")])
     monkeypatch.setattr(GuiPreferences, "exec", lambda *a: None)
 
     # Load GUI with standard values
@@ -92,7 +92,7 @@ def testGuiPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
 @pytest.mark.gui
 def testGuiPreferences_Actions(qtbot, monkeypatch, nwGUI):
     """Test the preferences dialog actions."""
-    monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: [("en", "English [en]")])
+    monkeypatch.setattr(SpellEnchant, "listDictionaries", lambda *a: [("en", "English [en]")])
     prefs = GuiPreferences(nwGUI)
     with qtbot.waitExposed(prefs):
         prefs.show()
@@ -151,7 +151,7 @@ def testGuiPreferences_Actions(qtbot, monkeypatch, nwGUI):
 def testGuiPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     """Test the preferences dialog settings."""
     spelling = [("en", "English [en]"), ("de", "Deutch [de]")]
-    monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: spelling)
+    monkeypatch.setattr(SpellEnchant, "listDictionaries", lambda *a: spelling)
 
     (fncPath / "nw_en_US.qm").touch()
     (fncPath / "project_en_US.json").touch()
@@ -497,5 +497,5 @@ def testGuiPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
 @pytest.mark.gui
 def testGuiPreferences_MemoryLeakRegression(qtbot, monkeypatch, nwGUI):
     """Test that the dialog is freed when it is closed."""
-    monkeypatch.setattr(NWSpellEnchant, "listDictionaries", lambda *a: [("en", "English [en]")])
+    monkeypatch.setattr(SpellEnchant, "listDictionaries", lambda *a: [("en", "English [en]")])
     checkDialogFreedOnClose(qtbot, lambda: GuiPreferences(nwGUI))
