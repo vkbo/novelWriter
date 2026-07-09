@@ -53,6 +53,7 @@ from novelwriter.enum import nwBuildFmt, nwStandardButton, nwToolButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog, NIconToolButton, NPushButton
 from novelwriter.extensions.progressbars import NProgressSimple
+from novelwriter.manuscript.docbuild import DocumentBuilder
 from novelwriter.types import QtAlignCenter, QtRoleAction, QtRoleDestruct, QtUserRole
 
 if TYPE_CHECKING:

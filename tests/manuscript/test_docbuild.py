@@ -37,6 +37,7 @@ from novelwriter.formats.toodt import ToOdt
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.formats.toraw import ToRaw
 from novelwriter.manuscript.buildsettings import BuildSettings
+from novelwriter.manuscript.docbuild import DocumentBuilder
 
 from tests.helpers import ODT_IGNORE, C, buildTestProject, cmpFiles
 from tests.mocked import causeException, causeOSError

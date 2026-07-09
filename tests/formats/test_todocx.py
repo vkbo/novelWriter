@@ -33,6 +33,7 @@ from novelwriter.enum import nwBuildFmt, nwComment
 from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.todocx import OOXML_SCM, DocXParagraph, ToDocX, _mkTag, _wTag
 from novelwriter.manuscript.buildsettings import BuildSettings
+from novelwriter.manuscript.docbuild import DocumentBuilder
 
 from tests.helpers import DOCX_IGNORE, cmpFiles, xmlToText
 
