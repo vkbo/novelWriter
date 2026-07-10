@@ -165,6 +165,12 @@ def testGuiDocEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     docEditor.docHeader.outlineMenu.actions()[0].trigger()
     assert docEditor.getCursorPosition() == 0
 
+    # Non-integer data is ignored
+    otherAction = QAction(docEditor.docHeader)
+    otherAction.setData("not-an-int")
+    docEditor.docHeader._gotoBlock(otherAction)
+    assert docEditor.getCursorPosition() == 0
+
     # Select item from header
     with qtbot.waitSignal(docEditor.requestProjectItemSelected, timeout=1000) as signal:
         docEditor.docHeader._processLabelLink(f"#{docEditor.docHeader._docHandle}")

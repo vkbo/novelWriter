@@ -26,7 +26,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from PyQt6.QtCore import QMimeData, QPointF, Qt, QUrl
-from PyQt6.QtGui import QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent
+from PyQt6.QtGui import QAction, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent
 from PyQt6.QtWidgets import QApplication, QMenu, QTextBrowser
 
 from novelwriter import CONFIG, SHARED
@@ -397,6 +397,14 @@ def testGuiDocViewer_HeaderTitle(qtbot, nwGUI, projPath, mockRnd):
     docViewer.docHeader._docOutline = {}
     docViewer.docHeader.setOutline({"T0000": ("Title", 1), "T0001": ("Chapter One", 1)})
     assert [a.text() for a in docViewer.docHeader.outlineMenu.actions()] == ["Chapter One"]
+
+    # Selecting an entry from the outline menu navigates to it
+    docViewer.docHeader.outlineMenu.actions()[0].trigger()
+
+    # Non-string data is ignored
+    otherAction = QAction(docViewer.docHeader)
+    otherAction.setData(1)
+    docViewer.docHeader._gotoHeader(otherAction)
 
 
 @pytest.mark.gui
