@@ -44,7 +44,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt, checkIntTuple, formatTime, minmax
+from novelwriter.common import checkInt, checkIntTuple, formatTime, minmax, qtAddAction
 from novelwriter.constants import nwConst
 from novelwriter.enum import nwStandardButton
 from novelwriter.error import formatException
@@ -277,16 +277,10 @@ class GuiWritingStats(NToolDialog):
         self.btnClose.clicked.connect(self.closeDialog)
         self.btnClose.setAutoDefault(False)
 
-        self.saveJSON = QAction(self.tr("JSON Data File (.json)"), self)
-        self.saveJSON.setData(self.FMT_JSON)
-
-        self.saveCSV = QAction(self.tr("CSV Data File (.csv)"), self)
-        self.saveCSV.setData(self.FMT_CSV)
-
         self.saveMenu = QMenu(self)
-        self.saveMenu.addAction(self.saveJSON)
-        self.saveMenu.addAction(self.saveCSV)
         self.saveMenu.triggered.connect(self._saveMenuTriggered)
+        qtAddAction(self.saveMenu, self.tr("JSON Data File (.json)"), data=self.FMT_JSON)
+        qtAddAction(self.saveMenu, self.tr("CSV Data File (.csv)"), data=self.FMT_CSV)
 
         self.btnSave = NPushButton(self, self.tr("Save As"), bSz, "btn_save", "action")
         self.btnSave.setAutoDefault(False)
