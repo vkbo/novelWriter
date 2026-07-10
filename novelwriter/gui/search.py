@@ -43,9 +43,10 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt, qtAddAction
+from novelwriter.common import checkInt
 from novelwriter.core.coretools import DocSearch
 from novelwriter.enum import nwDocMode
+from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.types import (
     QtAlignMiddle,
     QtAlignRight,
@@ -106,20 +107,26 @@ class GuiProjectSearch(QWidget):
         self.searchOpt.setIconSize(iSz)
         self.searchOpt.setContentsMargins(0, 0, 0, 0)
 
-        self.toggleCase = qtAddAction(self.searchOpt, self.tr("Case Sensitive"))
-        self.toggleCase.setCheckable(True)
-        self.toggleCase.setChecked(CONFIG.searchProjCase)
-        self.toggleCase.toggled.connect(self._toggleCase)
+        self.tbCase = NIconToolButton(self, iSz, "search_case", "tool")
+        self.tbCase.setToolTip(self.tr("Case Sensitive"))
+        self.tbCase.setCheckable(True)
+        self.tbCase.setChecked(CONFIG.searchProjCase)
+        self.tbCase.clicked.connect(self._toggleCase)
+        self.searchOpt.addWidget(self.tbCase)
 
-        self.toggleWord = qtAddAction(self.searchOpt, self.tr("Whole Words Only"))
-        self.toggleWord.setCheckable(True)
-        self.toggleWord.setChecked(CONFIG.searchProjWord)
-        self.toggleWord.toggled.connect(self._toggleWord)
+        self.tbWord = NIconToolButton(self, iSz, "search_word", "tool")
+        self.tbWord.setToolTip(self.tr("Whole Words Only"))
+        self.tbWord.setCheckable(True)
+        self.tbWord.setChecked(CONFIG.searchProjWord)
+        self.tbWord.clicked.connect(self._toggleWord)
+        self.searchOpt.addWidget(self.tbWord)
 
-        self.toggleRegEx = qtAddAction(self.searchOpt, self.tr("RegEx Mode"))
-        self.toggleRegEx.setCheckable(True)
-        self.toggleRegEx.setChecked(CONFIG.searchProjRegEx)
-        self.toggleRegEx.toggled.connect(self._toggleRegEx)
+        self.tbRegEx = NIconToolButton(self, iSz, "search_regex", "tool")
+        self.tbRegEx.setToolTip(self.tr("RegEx Mode"))
+        self.tbRegEx.setCheckable(True)
+        self.tbRegEx.setChecked(CONFIG.searchProjRegEx)
+        self.tbRegEx.clicked.connect(self._toggleRegEx)
+        self.searchOpt.addWidget(self.tbRegEx)
 
         # Search Box
         self.searchAction = QAction("", self)
@@ -164,7 +171,7 @@ class GuiProjectSearch(QWidget):
         self.outerBox.setSpacing(2)
 
         self.setLayout(self.outerBox)
-        self.updateTheme()
+        self.updateTheme(onInit=True)
 
         logger.debug("Ready: GuiProjectSearch")
 
@@ -172,7 +179,7 @@ class GuiProjectSearch(QWidget):
     #  Methods
     ##
 
-    def updateTheme(self) -> None:
+    def updateTheme(self, onInit: bool = False) -> None:
         """Update theme elements."""
         logger.debug("Theme Update: GuiProjectSearch")
 
@@ -181,15 +188,15 @@ class GuiProjectSearch(QWidget):
         colFocus = palette.highlight().color().name(QtHexArgb)
 
         self.setStyleSheet(
-            "QToolBar {padding: 0; background: none;} "
             f"QLineEdit {{border: 1px solid {colBase}; padding: 2px;}} "
             f"QLineEdit:focus {{border: 1px solid {colFocus};}} "
         )
 
         self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
-        self.toggleCase.setIcon(SHARED.theme.getIcon("search_case", "tool"))
-        self.toggleWord.setIcon(SHARED.theme.getIcon("search_word", "tool"))
-        self.toggleRegEx.setIcon(SHARED.theme.getIcon("search_regex", "tool"))
+        if not onInit:
+            self.tbCase.refreshTheme()
+            self.tbWord.refreshTheme()
+            self.tbRegEx.refreshTheme()
 
     def processReturn(self) -> None:
         """Process a return keypress forwarded from the main GUI."""
@@ -275,9 +282,9 @@ class GuiProjectSearch(QWidget):
             self._map = {}
             self.searchResult.clear()
             if text := self.searchText.text():
-                self._search.setUserRegEx(self.toggleRegEx.isChecked())
-                self._search.setCaseSensitive(self.toggleCase.isChecked())
-                self._search.setWholeWords(self.toggleWord.isChecked())
+                self._search.setUserRegEx(self.tbRegEx.isChecked())
+                self._search.setCaseSensitive(self.tbCase.isChecked())
+                self._search.setWholeWords(self.tbWord.isChecked())
                 for item, results, capped in self._search.iterSearch(SHARED.project, text):
                     self._displayResultSet(item, results, capped)
             logger.debug("Search took %.3f ms", 1000 * (time() - start))
