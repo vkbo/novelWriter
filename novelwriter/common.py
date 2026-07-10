@@ -565,10 +565,12 @@ def qtWeakLambda(method: MethodType, *args: Any, **kwargs: Any) -> Callable:
     return wrapper
 
 
-def qtAddAction(parent: QWidget, label: str) -> QAction:
+def qtAddAction(parent: QWidget, label: str, data: Any | None = None) -> QAction:
     """Helper to add action to widget and always return the action."""  # noqa: D401
     action = QAction(label, parent)
     parent.addAction(action)
+    if data is not None:
+        action.setData(data)
     return action
 
 
