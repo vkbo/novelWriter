@@ -25,7 +25,15 @@ from typing import Final
 
 from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
-from novelwriter.enum import nwBuildFmt, nwComment, nwItemClass, nwItemLayout, nwOutline, nwStatusShape, nwTheme
+from novelwriter.enum import (
+    nwBuildFmt,
+    nwComment,
+    nwItemClass,
+    nwItemLayout,
+    nwOutline,
+    nwStatusShape,
+    nwTheme,
+)
 
 
 def trConst(text: str) -> str:
@@ -509,6 +517,12 @@ class nwLabels:
         nwTheme.AUTO: QT_TRANSLATE_NOOP("Constant", "System Theme"),
         nwTheme.LIGHT: QT_TRANSLATE_NOOP("Constant", "Light Theme"),
         nwTheme.DARK: QT_TRANSLATE_NOOP("Constant", "Dark Theme"),
+    }
+    BACKUP_INTERVAL: Final[dict[str, str]] = {
+        "session": QT_TRANSLATE_NOOP("Constant", "Per Session"),
+        "daily": QT_TRANSLATE_NOOP("Constant", "Daily"),
+        "weekly": QT_TRANSLATE_NOOP("Constant", "Weekly"),
+        "monthly": QT_TRANSLATE_NOOP("Constant", "Monthly"),
     }
 
 
