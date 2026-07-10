@@ -436,6 +436,17 @@ class GuiPreferences(NDialog):
             editable="backupPath",
         )
 
+        # Backup Interval
+        self.backupInterval = NComboBox(self)
+        for key, label in nwLabels.BACKUP_INTERVAL.items():
+            self.backupInterval.addItem(trConst(label), key)
+        self.backupInterval.setCurrentData(CONFIG.backupInterval, "session")
+        self.mainForm.addRow(
+            self.tr("Backup frequency"),
+            self.backupInterval,
+            self.tr("Keeps one backup for each time period."),
+        )
+
         # Run When Closing
         self.backupOnClose = NSwitch(self)
         self.backupOnClose.setChecked(CONFIG.backupOnClose)
@@ -1198,6 +1209,7 @@ class GuiPreferences(NDialog):
 
         # Project Backup
         CONFIG.setBackupPath(self.backupPath)
+        CONFIG.backupInterval = self.backupInterval.currentData()
         CONFIG.backupOnClose = self.backupOnClose.isChecked()
         CONFIG.askBeforeBackup = self.askBeforeBackup.isChecked()
 

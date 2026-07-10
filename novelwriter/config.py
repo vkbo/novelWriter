@@ -121,6 +121,7 @@ class Config:
         "autoScroll",
         "autoScrollPos",
         "autoSelect",
+        "backupInterval",
         "backupOnClose",
         "countUnit",
         "cursorWidth",
@@ -315,6 +316,7 @@ class Config:
         self.autoSaveDoc = 30  # Interval for auto-saving document, in seconds
         self.emphLabels = False  # Add emphasis to H1 and H2 item labels
         self.backupOnClose = True  # Flag for running automatic backups
+        self.backupInterval = "session"  # Backup interval
         self.askBeforeBackup = True  # Flag for asking before running automatic backup
         self.askBeforeExit = True  # Flag for asking before exiting the app
 
@@ -799,6 +801,7 @@ class Config:
         self.emphLabels = conf.rdBool(sec, "emphlabels", self.emphLabels)
         self._backupPath = conf.rdPath(sec, "backuppath", self._backupPath)
         self.backupOnClose = conf.rdBool(sec, "backuponclose", self.backupOnClose)
+        self.backupInterval = conf.rdStr(sec, "backupinterval", self.backupInterval)
         self.askBeforeBackup = conf.rdBool(sec, "askbeforebackup", self.askBeforeBackup)
         self.askBeforeExit = conf.rdBool(sec, "askbeforeexit", self.askBeforeExit)
         self._lastAuthor = conf.rdStr(sec, "lastauthor", self._lastAuthor)
@@ -934,6 +937,7 @@ class Config:
             "emphlabels": str(self.emphLabels),
             "backuppath": str(self._backupPath),
             "backuponclose": str(self.backupOnClose),
+            "backupinterval": str(self.backupInterval),
             "askbeforebackup": str(self.askBeforeBackup),
             "askbeforeexit": str(self.askBeforeExit),
             "lastauthor": str(self._lastAuthor),

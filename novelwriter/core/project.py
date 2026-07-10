@@ -503,7 +503,16 @@ class NWProject:
             SHARED.error(self.tr("Could not create backup folder."), exc=exc)
             return False
 
-        timeStamp = formatTimeStamp(time(), fileSafe=True)
+        match CONFIG.backupInterval:
+            case "day":
+                timeStamp = formatTimeStamp(time(), fileSafe=True, fmt="%Y-%m-%d")
+            case "week":
+                timeStamp = formatTimeStamp(time(), fileSafe=True, fmt="%Y-%V")
+            case "month":
+                timeStamp = formatTimeStamp(time(), fileSafe=True, fmt="%Y-%m")
+            case _:  # session interval setting falls through here
+                timeStamp = formatTimeStamp(time(), fileSafe=True)
+
         archName = baseDir / f"{cleanName} {timeStamp}.zip"
         if self._storage.zipIt(archName, compression=2):
             if doNotify:

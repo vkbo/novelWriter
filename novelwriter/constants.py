@@ -510,6 +510,12 @@ class nwLabels:
         nwTheme.LIGHT: QT_TRANSLATE_NOOP("Constant", "Light Theme"),
         nwTheme.DARK: QT_TRANSLATE_NOOP("Constant", "Dark Theme"),
     }
+    BACKUP_INTERVAL: Final[dict[str, str]] = {
+        "session": QT_TRANSLATE_NOOP("Constant", "Per Session"),
+        "day": QT_TRANSLATE_NOOP("Constant", "Per Day"),
+        "week": QT_TRANSLATE_NOOP("Constant", "Per Week"),
+        "month": QT_TRANSLATE_NOOP("Constant", "Per Month"),
+    }
 
 
 class nwHeadFmt:

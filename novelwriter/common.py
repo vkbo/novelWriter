@@ -233,10 +233,12 @@ def formatInt(value: int) -> str:
     return str(value)
 
 
-def formatTimeStamp(value: float, fileSafe: bool = False) -> str:
+def formatTimeStamp(value: float, fileSafe: bool = False, fmt: str | None = None) -> str:
     """Take a number (on the format returned by time.time()) and convert
     it to a timestamp string.
     """
+    if fmt is not None:
+        return datetime.fromtimestamp(value).strftime(fmt)
     if fileSafe:
         return datetime.fromtimestamp(value).strftime(nwConst.FMT_FSTAMP)
     else:
