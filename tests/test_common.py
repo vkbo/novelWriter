@@ -356,6 +356,7 @@ def testCommon_firstFloat():
 def testCommon_formatTimeStamp():
     """Test the formatTimeStamp function."""
     tTime = time.mktime(time.gmtime(0))
+    assert formatTimeStamp(tTime, True, "%Y") == "1970"
     assert formatTimeStamp(tTime, False) == "1970-01-01 00:00:00"
     assert formatTimeStamp(tTime, True) == "1970-01-01 00.00.00"
 

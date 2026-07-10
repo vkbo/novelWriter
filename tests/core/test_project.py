@@ -21,6 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+from datetime import datetime
 from shutil import copyfile
 from zipfile import ZipFile
 
@@ -529,3 +530,28 @@ def testNWProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
 
     # Check that the main project file was restored
     assert cmpFiles(fncPath / "nwProject.nwx", tstPaths.tmpDir / "extract" / "nwProject.nwx")
+
+    # Test intervals
+    fixedTime = 1783722600.0
+    fixedLocal = datetime.fromtimestamp(fixedTime)
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.project.time", lambda *a, **k: fixedTime)
+        CONFIG.backupInterval = "session"
+        assert project.backupProject(doNotify=False) is True
+        stamp = fixedLocal.strftime("%Y-%m-%d %H.%M.%S")
+        assert (tstPaths.tmpDir / "Test Minimal" / f"Test Minimal {stamp}.zip").exists()
+
+        CONFIG.backupInterval = "day"
+        assert project.backupProject(doNotify=False) is True
+        stamp = fixedLocal.strftime("%Y-%m-%d")
+        assert (tstPaths.tmpDir / "Test Minimal" / f"Test Minimal {stamp}.zip").exists()
+
+        CONFIG.backupInterval = "week"
+        assert project.backupProject(doNotify=False) is True
+        stamp = fixedLocal.strftime("%Y-%V")
+        assert (tstPaths.tmpDir / "Test Minimal" / f"Test Minimal {stamp}.zip").exists()
+
+        CONFIG.backupInterval = "month"
+        assert project.backupProject(doNotify=False) is True
+        stamp = fixedLocal.strftime("%Y-%m")
+        assert (tstPaths.tmpDir / "Test Minimal" / f"Test Minimal {stamp}.zip").exists()

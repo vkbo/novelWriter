@@ -238,11 +238,14 @@ def testGuiPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
         mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: str(tstPaths.testDir))
         prefs.backupGetPath.click()
         assert prefs.backupPath == str(tstPaths.testDir)
+
+    prefs.backupInterval.setCurrentData("day", "session")
     prefs.backupOnClose.setChecked(True)
     assert prefs.askBeforeBackup.isEnabled() is True
     prefs.askBeforeBackup.setChecked(False)
 
     assert CONFIG._backupPath != tstPaths.testDir
+    assert CONFIG.backupInterval == "session"
     assert CONFIG.backupOnClose is False
     assert CONFIG.askBeforeBackup is True
 
@@ -425,6 +428,7 @@ def testGuiPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
 
     # Project Backup
     assert CONFIG._backupPath == tstPaths.testDir
+    assert CONFIG.backupInterval == "day"
     assert CONFIG.backupOnClose is True
     assert CONFIG.askBeforeBackup is False
 
