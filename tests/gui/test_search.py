@@ -28,6 +28,7 @@ import pytest
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwChange, nwDocMode, nwView
 from novelwriter.gui.search import GuiProjectSearch
 from novelwriter.types import QtKeyDown, QtKeyReturn, QtKeyRight, QtKeyUp
@@ -112,11 +113,13 @@ def testGuiProjectSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
             qtbot.keyClick(search, QtKeyReturn)
 
     # Case Sensitive
-    search.tbCase.setChecked(True)
-    search.searchAction.activate(QAction.ActionEvent.Trigger)
+    # A real click, rather than setChecked, also triggers a refresh of the current search
+    qtbot.mouseClick(search.tbCase, Qt.MouseButton.LeftButton)
+    assert CONFIG.searchProjCase is True
     assert search.searchResult.topLevelItemCount() == 7
     assert totalCount() == 18
-    search.tbCase.setChecked(False)
+    qtbot.mouseClick(search.tbCase, Qt.MouseButton.LeftButton)
+    assert CONFIG.searchProjCase is False
 
     # Whole Words
     search.searchText.setText("dolor")
@@ -127,13 +130,14 @@ def testGuiProjectSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert search.searchResult.topLevelItemCount() == 10
     assert totalCount() == 34
 
-    search.tbWord.setChecked(True)
-    search.searchAction.activate(QAction.ActionEvent.Trigger)
+    qtbot.mouseClick(search.tbWord, Qt.MouseButton.LeftButton)
+    assert CONFIG.searchProjWord is True
     assert search.searchResult.topLevelItemCount() == 10
     assert totalCount() == 33
 
     # RegEx
-    search.tbRegEx.setChecked(True)
+    qtbot.mouseClick(search.tbRegEx, Qt.MouseButton.LeftButton)
+    assert CONFIG.searchProjRegEx is True
     search.beginSearch("(dolor|dolorem)")
     search.searchAction.activate(QAction.ActionEvent.Trigger)
     assert search.searchResult.topLevelItemCount() == 10

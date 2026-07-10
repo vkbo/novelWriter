@@ -284,3 +284,9 @@ def testNToolButtons_Main(qtbot, mockGUI):
     dialog.addWidget(button1)
     dialog.addWidget(button2)
     dialog.show()
+
+    # Uncheckable buttons skip the toggle style
+    button1.setCheckable(True)
+    assert button1.isCheckable() is True
+    button1.setCheckable(False)
+    assert button1.isCheckable() is False
