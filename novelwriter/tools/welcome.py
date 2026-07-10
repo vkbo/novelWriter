@@ -644,16 +644,25 @@ class _NewProjectForm(QWidget):
 
         self.fillMenu = QMenu(self.browseFill)
 
-        self.fillBlank = qtAddAction(self.fillMenu, self.tr("Create a fresh project"))
-        self.fillBlank.setIcon(SHARED.theme.getIcon("document", "file"))
+        self.fillBlank = qtAddAction(
+            self.fillMenu,
+            self.tr("Create a fresh project"),
+            icon=SHARED.theme.getIcon("document", "file"),
+        )
         self.fillBlank.triggered.connect(self._setFillBlank)
 
-        self.fillSample = qtAddAction(self.fillMenu, self.tr("Create an example project"))
-        self.fillSample.setIcon(SHARED.theme.getIcon("document_add", "add"))
+        self.fillSample = qtAddAction(
+            self.fillMenu,
+            self.tr("Create an example project"),
+            icon=SHARED.theme.getIcon("document_add", "add"),
+        )
         self.fillSample.triggered.connect(self._setFillSample)
 
-        self.fillCopy = qtAddAction(self.fillMenu, self.tr("Copy an existing project"))
-        self.fillCopy.setIcon(SHARED.theme.getIcon("project_copy", "action"))
+        self.fillCopy = qtAddAction(
+            self.fillMenu,
+            self.tr("Copy an existing project"),
+            icon=SHARED.theme.getIcon("project_copy", "action"),
+        )
         self.fillCopy.triggered.connect(self._setFillCopy)
 
         self.browseFill.setMenu(self.fillMenu)
