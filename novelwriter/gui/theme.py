@@ -576,9 +576,6 @@ class GuiTheme:
             self._guiPalette.setBrush(QtColInactive, QPalette.ColorRole.Accent, self.accentCol)
             self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Accent, grey)
 
-        self.toggleCol = QColor(self.accentCol)
-        self.toggleCol.setAlpha(128)
-
         # Set project override colours
         if (override := CONFIG.iconColTree) != DEF_TREECOL:
             color = self._qColors.get(override, QtBlack)
