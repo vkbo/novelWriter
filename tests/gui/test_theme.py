@@ -755,6 +755,7 @@ def testGuiTheme_CheckTheme(theme):
             "link",
             "linkvisited",
             "accent",
+            "toggle",
         ],
         "GUI": [
             "helptext",

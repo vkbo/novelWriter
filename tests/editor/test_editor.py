@@ -3110,8 +3110,8 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert abs(docEditor.getCursorPosition() - 1531) < 3
 
     # Activate loop search
-    docSearch.toggleLoop.activate(QAction.ActionEvent.Trigger)
-    assert docSearch.toggleLoop.isChecked()
+    docSearch.tbLoop.click()
+    assert docSearch.tbLoop.isChecked()
     assert CONFIG.searchLoop is True
 
     # Find next by menu Search > Find Next
@@ -3119,7 +3119,7 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert abs(docEditor.getCursorPosition() - 665) < 3
 
     # Close search
-    docSearch.cancelSearch.activate(QAction.ActionEvent.Trigger)
+    docSearch.tbCancel.click()
     assert docSearch.isVisible() is False
     docEditor.setCursorPosition(15)
 
@@ -3135,8 +3135,8 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert docEditor.getCursorPosition() < 3  # No result
 
     # Enable RegEx search
-    docSearch.toggleRegEx.activate(QAction.ActionEvent.Trigger)
-    assert docSearch.toggleRegEx.isChecked()
+    docSearch.tbRegEx.click()
+    assert docSearch.tbRegEx.isChecked()
     assert CONFIG.searchRegEx is True
 
     # Set invalid RegEx
@@ -3164,8 +3164,8 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert abs(docEditor.getCursorPosition() - 241) < 3
 
     # Make RegEx case sensitive
-    docSearch.toggleCase.activate(QAction.ActionEvent.Trigger)
-    assert docSearch.toggleCase.isChecked()
+    docSearch.tbCase.click()
+    assert docSearch.tbCase.isChecked()
     assert CONFIG.searchCase is True
 
     # Find next/prev (one result)
@@ -3181,13 +3181,13 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     docSearch.setReplaceText("foo")
 
     # Disable RegEx case sensitive
-    docSearch.toggleCase.activate(QAction.ActionEvent.Trigger)
-    assert docSearch.toggleCase.isChecked() is False
+    docSearch.tbCase.click()
+    assert docSearch.tbCase.isChecked() is False
     assert CONFIG.searchCase is False
 
     # Toggle replace preserve case
-    docSearch.toggleMatchCap.activate(QAction.ActionEvent.Trigger)
-    assert docSearch.toggleMatchCap.isChecked()
+    docSearch.tbMatchCap.click()
+    assert docSearch.tbMatchCap.isChecked()
     assert CONFIG.searchMatchCap is True
 
     # Replace "Sus" with "Foo" via menu
@@ -3214,12 +3214,12 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert docEditor.getText() == origText
 
     # Disable RegEx search
-    docSearch.toggleRegEx.activate(QAction.ActionEvent.Trigger)
-    assert not docSearch.toggleRegEx.isChecked()
+    docSearch.tbRegEx.click()
+    assert not docSearch.tbRegEx.isChecked()
     assert CONFIG.searchRegEx is False
 
     # Close search and select "est" again
-    docSearch.cancelSearch.activate(QAction.ActionEvent.Trigger)
+    docSearch.tbCancel.click()
     docEditor.setCursorPosition(663)
     docEditor._makeSelection(QtSelectWord)
     cursor = docEditor.textCursor()
@@ -3231,8 +3231,8 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert docSearch.searchText == "est"
 
     # Enable full word search
-    docSearch.toggleWord.activate(QAction.ActionEvent.Trigger)
-    assert docSearch.toggleWord.isChecked()
+    docSearch.tbWord.click()
+    assert docSearch.tbWord.isChecked()
     assert CONFIG.searchWord is True
 
     # Only one match
@@ -3256,8 +3256,8 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
         assert docEditor.getCursorPosition() == cursorPos
 
     # Enable next doc search
-    docSearch.toggleProject.activate(QAction.ActionEvent.Trigger)
-    assert docSearch.toggleProject.isChecked()
+    docSearch.tbProject.click()
+    assert docSearch.tbProject.isChecked()
     assert CONFIG.searchNextFile is True
 
     # Next match
@@ -3314,11 +3314,11 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Replace Text
     # ============
-    docSearch.toggleCase.setChecked(True)
-    docSearch.toggleWord.setChecked(False)
-    docSearch.toggleRegEx.setChecked(False)
-    docSearch.toggleLoop.setChecked(False)
-    docSearch.toggleProject.setChecked(False)
+    docSearch.tbCase.setChecked(True)
+    docSearch.tbWord.setChecked(False)
+    docSearch.tbRegEx.setChecked(False)
+    docSearch.tbLoop.setChecked(False)
+    docSearch.tbProject.setChecked(False)
     docEditor.setCursorPosition(0)
 
     # Replace Next

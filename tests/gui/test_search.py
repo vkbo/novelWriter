@@ -112,11 +112,11 @@ def testGuiProjectSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
             qtbot.keyClick(search, QtKeyReturn)
 
     # Case Sensitive
-    search.toggleCase.setChecked(True)
+    search.tbCase.setChecked(True)
     search.searchAction.activate(QAction.ActionEvent.Trigger)
     assert search.searchResult.topLevelItemCount() == 7
     assert totalCount() == 18
-    search.toggleCase.setChecked(False)
+    search.tbCase.setChecked(False)
 
     # Whole Words
     search.searchText.setText("dolor")
@@ -127,13 +127,13 @@ def testGuiProjectSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert search.searchResult.topLevelItemCount() == 10
     assert totalCount() == 34
 
-    search.toggleWord.setChecked(True)
+    search.tbWord.setChecked(True)
     search.searchAction.activate(QAction.ActionEvent.Trigger)
     assert search.searchResult.topLevelItemCount() == 10
     assert totalCount() == 33
 
     # RegEx
-    search.toggleRegEx.setChecked(True)
+    search.tbRegEx.setChecked(True)
     search.beginSearch("(dolor|dolorem)")
     search.searchAction.activate(QAction.ActionEvent.Trigger)
     assert search.searchResult.topLevelItemCount() == 10
