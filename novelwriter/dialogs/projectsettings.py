@@ -27,7 +27,7 @@ import logging
 from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QCloseEvent, QColor
+from PyQt6.QtGui import QAction, QCloseEvent, QColor
 from PyQt6.QtWidgets import (
     QAbstractItemView,
     QApplication,
@@ -421,10 +421,7 @@ class _StatusPage(NFixedPage):
             if menu is not None:  # pragma: no branch
                 for shape, label in items.items():
                     icon = ItemStatus.createIcon(self._iPx, iColor, shape)
-                    action = qtAddAction(menu, trConst(label))
-                    action.setIcon(icon)
-                    action.triggered.connect(qtLambda(self._selectShape, shape))
-                    menu.addAction(action)
+                    qtAddAction(menu, trConst(label), icon=icon, data=shape)
                     self._icons[shape] = icon
 
         self.shapeMenu = QMenu(self)
@@ -432,6 +429,7 @@ class _StatusPage(NFixedPage):
         buildMenu(self.shapeMenu.addMenu(self.tr("Circles ...")), nwLabels.SHAPES_CIRCLE)
         buildMenu(self.shapeMenu.addMenu(self.tr("Bars ...")), nwLabels.SHAPES_BARS)
         buildMenu(self.shapeMenu.addMenu(self.tr("Blocks ...")), nwLabels.SHAPES_BLOCKS)
+        self.shapeMenu.triggered.connect(self._selectShape)
 
         self.shapeButton = NIconToolButton(self, iSz)
         self.shapeButton.setMenu(self.shapeMenu)
@@ -626,15 +624,17 @@ class _StatusPage(NFixedPage):
             except Exception as exc:
                 SHARED.error("Could not write file.", exc=exc)
 
+    @pyqtSlot(QAction)
+    def _selectShape(self, action: QAction) -> None:
+        """Set the current shape."""
+        if isinstance(shape := action.data(), nwStatusShape):
+            self._shape = shape
+            self._setButtonIcons()
+            self._updateIcon()
+
     ##
     #  Internal Functions
     ##
-
-    def _selectShape(self, shape: nwStatusShape) -> None:
-        """Set the current shape."""
-        self._shape = shape
-        self._setButtonIcons()
-        self._updateIcon()
 
     def _updateIcon(self) -> None:
         """Apply changes made to a status icon."""

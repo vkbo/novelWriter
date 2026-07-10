@@ -750,7 +750,7 @@ class GuiPreferences(NDialog):
         self.mnLineSymbols = QMenu(self)
         for symbol in nwQuotes.ALLOWED:
             label = trConst(nwQuotes.SYMBOLS.get(symbol, nwQuotes.DASHES.get(symbol, "None")))
-            qtAddAction(self.mnLineSymbols, f"[ {symbol} ] {label}", symbol)
+            qtAddAction(self.mnLineSymbols, f"[ {symbol} ] {label}", data=symbol)
 
         self.mnLineSymbols.triggered.connect(self._insertDialogLineSymbol)
 
