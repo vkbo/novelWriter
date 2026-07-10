@@ -429,7 +429,7 @@ class _StatusPage(NFixedPage):
         buildMenu(self.shapeMenu.addMenu(self.tr("Circles ...")), nwLabels.SHAPES_CIRCLE)
         buildMenu(self.shapeMenu.addMenu(self.tr("Bars ...")), nwLabels.SHAPES_BARS)
         buildMenu(self.shapeMenu.addMenu(self.tr("Blocks ...")), nwLabels.SHAPES_BLOCKS)
-        self.shapeMenu.triggered.connect(self._selectShape)
+        self.shapeMenu.triggered.connect(self._shapeSelected)
 
         self.shapeButton = NIconToolButton(self, iSz)
         self.shapeButton.setMenu(self.shapeMenu)
@@ -625,8 +625,8 @@ class _StatusPage(NFixedPage):
                 SHARED.error("Could not write file.", exc=exc)
 
     @pyqtSlot(QAction)
-    def _selectShape(self, action: QAction) -> None:
-        """Set the current shape."""
+    def _shapeSelected(self, action: QAction) -> None:
+        """Update the status icon shape."""
         if isinstance(shape := action.data(), nwStatusShape):
             self._shape = shape
             self._setButtonIcons()

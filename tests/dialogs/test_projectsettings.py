@@ -235,13 +235,13 @@ def testGuiProjectSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, moc
         status.colorButton.click()
         shapeAction = QAction(status)
         shapeAction.setData(nwStatusShape.CIRCLE)
-        status._selectShape(shapeAction)
+        status._shapeSelected(shapeAction)
         assert status.listBox.topLevelItemCount() == 4
 
         # Non-shape data is ignored
         otherAction = QAction(status)
         otherAction.setData("not-a-shape")
-        status._selectShape(otherAction)
+        status._shapeSelected(otherAction)
 
     assert status.changed is True
     update = status.getNewList()
@@ -309,7 +309,7 @@ def testGuiProjectSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, moc
         importance.colorButton.click()
         shapeAction = QAction(importance)
         shapeAction.setData(nwStatusShape.TRIANGLE)
-        importance._selectShape(shapeAction)
+        importance._shapeSelected(shapeAction)
         assert importance.listBox.topLevelItemCount() == 4
 
     assert importance.changed is True
