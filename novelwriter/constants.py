@@ -520,9 +520,9 @@ class nwLabels:
     }
     BACKUP_INTERVAL: Final[dict[str, str]] = {
         "session": QT_TRANSLATE_NOOP("Constant", "Per Session"),
-        "daily": QT_TRANSLATE_NOOP("Constant", "Daily"),
-        "weekly": QT_TRANSLATE_NOOP("Constant", "Weekly"),
-        "monthly": QT_TRANSLATE_NOOP("Constant", "Monthly"),
+        "day": QT_TRANSLATE_NOOP("Constant", "Per Day"),
+        "week": QT_TRANSLATE_NOOP("Constant", "Per Week"),
+        "month": QT_TRANSLATE_NOOP("Constant", "Per Month"),
     }
 
 

@@ -440,11 +440,11 @@ class GuiPreferences(NDialog):
         self.backupInterval = NComboBox(self)
         for key, label in nwLabels.BACKUP_INTERVAL.items():
             self.backupInterval.addItem(trConst(label), key)
-        self.backupInterval.setCurrentText(CONFIG.backupInterval)
+        self.backupInterval.setCurrentData(CONFIG.backupInterval, "session")
         self.mainForm.addRow(
-            self.tr("Backup retention"),
+            self.tr("Backup frequency"),
             self.backupInterval,
-            self.tr("Keeps one backup for each interval."),
+            self.tr("Keeps one backup for each time period."),
         )
 
         # Run When Closing
