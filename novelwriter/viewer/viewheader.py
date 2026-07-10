@@ -26,7 +26,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import pyqtSlot
-from PyQt6.QtGui import QPalette
+from PyQt6.QtGui import QAction, QPalette
 from PyQt6.QtWidgets import QHBoxLayout, QMenu, QWidget
 
 from novelwriter import CONFIG, SHARED
@@ -78,6 +78,7 @@ class GuiDocViewHeader(QWidget):
 
         # Other Widgets
         self.outlineMenu = QMenu(self)
+        self.outlineMenu.triggered.connect(self._gotoHeader)
 
         # Buttons
         self.outlineButton = NIconToolButton(self, iSz)
@@ -167,8 +168,7 @@ class GuiDocViewHeader(QWidget):
                     minLevel = min(minLevel, level)
             for title, text, level in entries[:30]:
                 indent = "    " * (level - minLevel)
-                action = qtAddAction(self.outlineMenu, f"{indent}{text}")
-                action.triggered.connect(lambda _, title=title: self.docViewer.navigateTo(f"#{tHandle}:{title}"))
+                qtAddAction(self.outlineMenu, f"{indent}{text}", data=f"#{tHandle}:{title}")
             self._docOutline = data
 
     def updateFont(self) -> None:
@@ -264,3 +264,9 @@ class GuiDocViewHeader(QWidget):
         """Process an activated link in the label."""
         if link.startswith("#"):
             self.docViewer.requestProjectItemSelected.emit(link.lstrip("#"), True)
+
+    @pyqtSlot(QAction)
+    def _gotoHeader(self, action: QAction) -> None:
+        """Move cursor to a specific heading."""
+        if isinstance(data := action.data(), str):
+            self.docViewer.navigateTo(data)
