@@ -853,12 +853,12 @@ class _HeadingsTab(NScrollablePage):
         logger.debug("Theme Update: _HeadingsTab")
 
         if not onInit:
-            self.btnPart.refreshIcon()
-            self.btnChapter.refreshIcon()
-            self.btnUnnumbered.refreshIcon()
-            self.btnScene.refreshIcon()
-            self.btnAScene.refreshIcon()
-            self.btnSection.refreshIcon()
+            self.btnPart.refreshTheme()
+            self.btnChapter.refreshTheme()
+            self.btnUnnumbered.refreshTheme()
+            self.btnScene.refreshTheme()
+            self.btnAScene.refreshTheme()
+            self.btnSection.refreshTheme()
 
         self.formSyntax.initHighlighter()
         self.formSyntax.rehighlight()
@@ -1477,16 +1477,16 @@ class _FormattingTab(NScrollableForm):
         logger.debug("Theme Update: _FormattingTab")
 
         if not onInit:
-            self.ignoredKeywordsButton.refreshIcon()
-            self.btnTextFont.refreshIcon()
-            self.btnPageHeader.refreshIcon()
-            self.btnTitleProps.refreshIcon()
-            self.btnH1Props.refreshIcon()
-            self.btnH2Props.refreshIcon()
-            self.btnH3Props.refreshIcon()
-            self.btnH4Props.refreshIcon()
-            self.btnTextProps.refreshIcon()
-            self.btnSepProps.refreshIcon()
+            self.ignoredKeywordsButton.refreshTheme()
+            self.btnTextFont.refreshTheme()
+            self.btnPageHeader.refreshTheme()
+            self.btnTitleProps.refreshTheme()
+            self.btnH1Props.refreshTheme()
+            self.btnH2Props.refreshTheme()
+            self.btnH3Props.refreshTheme()
+            self.btnH4Props.refreshTheme()
+            self.btnTextProps.refreshTheme()
+            self.btnSepProps.refreshTheme()
 
         iPx = SHARED.theme.baseIconHeight
 

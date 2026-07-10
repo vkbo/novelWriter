@@ -208,6 +208,7 @@ class GuiTheme:
         "syntaxTheme",
         "textNHeight",
         "textNWidth",
+        "toggleCol",
         "toolButtonIconSize",
     )
 
@@ -223,6 +224,7 @@ class GuiTheme:
         self.fadedText = QColor(0, 0, 0)
         self.errorText = QColor(255, 0, 0)
         self.accentCol = QColor(255, 0, 255)  # Needed until we move to Qt 6.6
+        self.toggleCol = QColor(0, 0, 255)
 
         # Theme Data
         self._meta = ThemeMeta()
@@ -488,6 +490,7 @@ class GuiTheme:
             self._setPalette(parser, sec, "link", QPalette.ColorRole.Link)
             self._setPalette(parser, sec, "linkvisited", QPalette.ColorRole.LinkVisited)
             self.accentCol = self._readColor(parser, sec, "accent")  # Special handling 'til Qt 6.6
+            self.toggleCol = self._readColor(parser, sec, "toggle")
 
         # GUI
         sec = "GUI"
@@ -572,6 +575,9 @@ class GuiTheme:
             self._guiPalette.setBrush(QtColActive, QPalette.ColorRole.Accent, self.accentCol)
             self._guiPalette.setBrush(QtColInactive, QPalette.ColorRole.Accent, self.accentCol)
             self._guiPalette.setBrush(QtColDisabled, QPalette.ColorRole.Accent, grey)
+
+        self.toggleCol = QColor(self.accentCol)
+        self.toggleCol.setAlpha(128)
 
         # Set project override colours
         if (override := CONFIG.iconColTree) != DEF_TREECOL:

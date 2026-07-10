@@ -26,7 +26,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QRegularExpression, Qt, pyqtSlot
-from PyQt6.QtGui import QAction, QPalette
+from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QApplication, QFrame, QGridLayout, QLabel, QLineEdit, QToolBar
 
 from novelwriter import CONFIG, SHARED
@@ -84,61 +84,68 @@ class GuiDocEditSearch(QFrame):
 
         self.resultLabel = QLabel("?/?", self)
 
-        self.toggleCase = QAction(self.tr("Case Sensitive"), self)
-        self.toggleCase.setCheckable(True)
-        self.toggleCase.setChecked(CONFIG.searchCase)
-        self.toggleCase.toggled.connect(self._doToggleCase)
-        self.searchOpt.addAction(self.toggleCase)
+        self.tbCase = NIconToolButton(self, iSz, "search_case", "tool")
+        self.tbCase.setToolTip(self.tr("Case Sensitive"))
+        self.tbCase.setCheckable(True)
+        self.tbCase.setChecked(CONFIG.searchCase)
+        self.tbCase.clicked.connect(self._doToggleCase)
+        self.searchOpt.addWidget(self.tbCase)
 
-        self.toggleWord = QAction(self.tr("Whole Words Only"), self)
-        self.toggleWord.setCheckable(True)
-        self.toggleWord.setChecked(CONFIG.searchWord)
-        self.toggleWord.toggled.connect(self._doToggleWord)
-        self.searchOpt.addAction(self.toggleWord)
+        self.tbWord = NIconToolButton(self, iSz, "search_word", "tool")
+        self.tbWord.setToolTip(self.tr("Whole Words Only"))
+        self.tbWord.setCheckable(True)
+        self.tbWord.setChecked(CONFIG.searchWord)
+        self.tbWord.clicked.connect(self._doToggleWord)
+        self.searchOpt.addWidget(self.tbWord)
 
-        self.toggleRegEx = QAction(self.tr("RegEx Mode"), self)
-        self.toggleRegEx.setCheckable(True)
-        self.toggleRegEx.setChecked(CONFIG.searchRegEx)
-        self.toggleRegEx.toggled.connect(self._doToggleRegEx)
-        self.searchOpt.addAction(self.toggleRegEx)
+        self.tbRegEx = NIconToolButton(self, iSz, "search_regex", "tool")
+        self.tbRegEx.setToolTip(self.tr("RegEx Mode"))
+        self.tbRegEx.setCheckable(True)
+        self.tbRegEx.setChecked(CONFIG.searchRegEx)
+        self.tbRegEx.clicked.connect(self._doToggleRegEx)
+        self.searchOpt.addWidget(self.tbRegEx)
 
-        self.toggleLoop = QAction(self.tr("Loop Search"), self)
-        self.toggleLoop.setCheckable(True)
-        self.toggleLoop.setChecked(CONFIG.searchLoop)
-        self.toggleLoop.toggled.connect(self._doToggleLoop)
-        self.searchOpt.addAction(self.toggleLoop)
+        self.tbLoop = NIconToolButton(self, iSz, "search_loop", "tool")
+        self.tbLoop.setToolTip(self.tr("Loop Search"))
+        self.tbLoop.setCheckable(True)
+        self.tbLoop.setChecked(CONFIG.searchLoop)
+        self.tbLoop.clicked.connect(self._doToggleLoop)
+        self.searchOpt.addWidget(self.tbLoop)
 
-        self.toggleProject = QAction(self.tr("Search Next File"), self)
-        self.toggleProject.setCheckable(True)
-        self.toggleProject.setChecked(CONFIG.searchNextFile)
-        self.toggleProject.toggled.connect(self._doToggleProject)
-        self.searchOpt.addAction(self.toggleProject)
-
-        self.searchOpt.addSeparator()
-
-        self.toggleMatchCap = QAction(self.tr("Preserve Case"), self)
-        self.toggleMatchCap.setCheckable(True)
-        self.toggleMatchCap.setChecked(CONFIG.searchMatchCap)
-        self.toggleMatchCap.toggled.connect(self._doToggleMatchCap)
-        self.searchOpt.addAction(self.toggleMatchCap)
+        self.tbProject = NIconToolButton(self, iSz, "search_project", "tool")
+        self.tbProject.setToolTip(self.tr("Search Next File"))
+        self.tbProject.setCheckable(True)
+        self.tbProject.setChecked(CONFIG.searchNextFile)
+        self.tbProject.clicked.connect(self._doToggleProject)
+        self.searchOpt.addWidget(self.tbProject)
 
         self.searchOpt.addSeparator()
 
-        self.cancelSearch = QAction(self.tr("Close Search"), self)
-        self.cancelSearch.triggered.connect(self.closeSearch)
-        self.searchOpt.addAction(self.cancelSearch)
+        self.tbMatchCap = NIconToolButton(self, iSz, "search_preserve", "tool")
+        self.tbMatchCap.setToolTip(self.tr("Preserve Case"))
+        self.tbMatchCap.setCheckable(True)
+        self.tbMatchCap.setChecked(CONFIG.searchMatchCap)
+        self.tbMatchCap.clicked.connect(self._doToggleMatchCap)
+        self.searchOpt.addWidget(self.tbMatchCap)
+
+        self.searchOpt.addSeparator()
+
+        self.tbCancel = NIconToolButton(self, iSz, "search_cancel", "tool")
+        self.tbCancel.setToolTip(self.tr("Close Search"))
+        self.tbCancel.clicked.connect(self.closeSearch)
+        self.searchOpt.addWidget(self.tbCancel)
 
         # Buttons
         # =======
 
-        self.showReplace = NIconToggleButton(self, iSz)
+        self.showReplace = NIconToggleButton(self, iSz, "unfold", "default")
         self.showReplace.toggled.connect(self._doToggleReplace)
 
-        self.searchButton = NIconToolButton(self, iSz)
+        self.searchButton = NIconToolButton(self, iSz, "search", "action")
         self.searchButton.setToolTip(self.tr("Find in current document"))
         self.searchButton.clicked.connect(self._doSearch)
 
-        self.replaceButton = NIconToolButton(self, iSz)
+        self.replaceButton = NIconToolButton(self, iSz, "search_replace", "apply")
         self.replaceButton.setToolTip(self.tr("Find and replace in current document"))
         self.replaceButton.clicked.connect(self._doReplace)
 
@@ -167,7 +174,7 @@ class GuiDocEditSearch(QFrame):
         self.adjustSize()
 
         self.updateFont()
-        self.updateTheme()
+        self.updateTheme(onInit=True)
 
         logger.debug("Ready: GuiDocEditSearch")
 
@@ -252,7 +259,7 @@ class GuiDocEditSearch(QFrame):
         self.resultLabel.setFont(SHARED.theme.guiFontSmall)
         self.resultLabel.setMinimumWidth(SHARED.theme.getTextWidth("?/?", SHARED.theme.guiFontSmall))
 
-    def updateTheme(self) -> None:
+    def updateTheme(self, onInit: bool = False) -> None:
         """Update theme elements."""
         logger.debug("Theme Update: GuiDocEditSearch")
 
@@ -262,16 +269,17 @@ class GuiDocEditSearch(QFrame):
         self.replaceBox.setPalette(palette)
 
         # Set icons
-        self.toggleCase.setIcon(SHARED.theme.getIcon("search_case", "tool"))
-        self.toggleWord.setIcon(SHARED.theme.getIcon("search_word", "tool"))
-        self.toggleRegEx.setIcon(SHARED.theme.getIcon("search_regex", "tool"))
-        self.toggleLoop.setIcon(SHARED.theme.getIcon("search_loop", "tool"))
-        self.toggleProject.setIcon(SHARED.theme.getIcon("search_project", "tool"))
-        self.toggleMatchCap.setIcon(SHARED.theme.getIcon("search_preserve", "tool"))
-        self.cancelSearch.setIcon(SHARED.theme.getIcon("search_cancel", "tool"))
-        self.searchButton.setThemeIcon("search", "action")
-        self.replaceButton.setThemeIcon("search_replace", "apply")
-        self.showReplace.setThemeIcon("unfold", "default")
+        if not onInit:
+            self.tbCase.refreshTheme()
+            self.tbWord.refreshTheme()
+            self.tbRegEx.refreshTheme()
+            self.tbLoop.refreshTheme()
+            self.tbProject.refreshTheme()
+            self.tbMatchCap.refreshTheme()
+            self.tbCancel.refreshTheme()
+            self.searchButton.refreshTheme()
+            self.replaceButton.refreshTheme()
+            self.showReplace.refreshTheme()
 
         # Set stylesheets
         self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")

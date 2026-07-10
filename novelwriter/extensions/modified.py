@@ -43,7 +43,7 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwStandardButton
-from novelwriter.types import QtMouseLeft, QtMouseMiddle, QtRoleAccept, QtRoleReject
+from novelwriter.types import QtHexArgb, QtMouseLeft, QtMouseMiddle, QtRoleAccept, QtRoleReject
 
 if TYPE_CHECKING:
     from enum import Enum
@@ -324,22 +324,37 @@ class NIconToolButton(QToolButton):
         if icon and color:
             self.setThemeIcon(icon, color)
 
+    def setCheckable(self, checkable: bool) -> None:
+        """Overload the checkable setter to change the button style."""
+        super().setCheckable(checkable)
+        if checkable:
+            col = SHARED.theme.toggleCol.name(QtHexArgb)
+            self.setStyleSheet(f"QToolButton:checked {{background: {col};}}")
+
     def setThemeIcon(self, icon: str, color: str) -> None:
         """Set an icon from the current theme."""
         self._icon = icon
         self._color = color
         self.setIcon(SHARED.theme.getIcon(icon, color))
 
-    def refreshIcon(self) -> None:
+    def refreshTheme(self) -> None:
         """Refresh the icon for theme updates."""
         self.setIcon(SHARED.theme.getIcon(self._icon, self._color))
+        if self.isCheckable():
+            col = SHARED.theme.toggleCol.name(QtHexArgb)
+            self.setStyleSheet(f"QToolButton:checked {{background: {col};}}")
 
 
 class NIconToggleButton(QToolButton):
     """Custom: Modified QToolButton.
 
-    A quicker way to create a toggle button using the app theme.
+    A quicker way to create a toggle button that switches icon when
+    toggled, using the app theme. For toggle buttons that only need to
+    change background colour, use NIconToolButton with
+    setCheckable(True) instead.
     """
+
+    __slots__ = ("_color", "_icon", "_size")
 
     def __init__(self, parent: QWidget, iconSize: QSize, icon: str | None = None, color: str | None = None) -> None:
         super().__init__(parent=parent)
@@ -353,8 +368,14 @@ class NIconToggleButton(QToolButton):
 
     def setThemeIcon(self, icon: str, color: str) -> None:
         """Set an icon from the current theme."""
-        size = self.iconSize()
-        self.setIcon(SHARED.theme.getToggleIcon(icon, (size.width(), size.height()), color))
+        self._icon = icon
+        self._color = color
+        self._size = self.iconSize()
+        self.setIcon(SHARED.theme.getToggleIcon(icon, (self._size.width(), self._size.height()), color))
+
+    def refreshTheme(self) -> None:
+        """Refresh the icon for theme updates."""
+        self.setIcon(SHARED.theme.getToggleIcon(self._icon, (self._size.width(), self._size.height()), self._color))
 
 
 class NClickableLabel(QLabel):
