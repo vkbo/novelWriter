@@ -90,9 +90,7 @@ class CommandCompleter(QMenu):
             return False
 
         for value in options:
-            rep = value + suffix
-            action = qtAddAction(self, value)
-            action.setData(CompleterAction(pos=offset, length=length, value=rep))
+            qtAddAction(self, value, data=CompleterAction(pos=offset, length=length, value=value + suffix))
 
         return True
 
@@ -140,8 +138,11 @@ class CommandCompleter(QMenu):
             if options:
                 for value in options:
                     rep = value + suffix
-                    action = qtAddAction(self, rep.rstrip(":. "))
-                    action.setData(CompleterAction(pos=offset, length=length, value=rep))
+                    qtAddAction(
+                        self,
+                        rep.rstrip(":. "),
+                        data=CompleterAction(pos=offset, length=length, value=rep),
+                    )
                 return True
 
         return False

@@ -26,7 +26,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QEvent, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
+from PyQt6.QtGui import QAction, QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt6.QtWidgets import (
     QAbstractButton,
     QAbstractItemView,
@@ -1070,11 +1070,9 @@ class _FormattingTab(NScrollableForm):
         self.ignoredKeywords = QLineEdit(self)
 
         self.mnKeywords = QMenu(self)
+        self.mnKeywords.triggered.connect(self._ignoredKeywordSelected)
         for keyword in nwKeyWords.VALID_KEYS:
-            self.mnKeywords.addAction(
-                trConst(nwLabels.KEY_NAME[keyword]),
-                lambda keyword=keyword: self._updateIgnoredKeywords(keyword),
-            )
+            qtAddAction(self.mnKeywords, trConst(nwLabels.KEY_NAME[keyword]), data=keyword)
 
         self.ignoredKeywordsButton = NIconToolButton(self, iSz, "add", "add")
         self.ignoredKeywordsButton.setToolTip(self.tr("Select Keyword"))
@@ -1890,6 +1888,12 @@ class _FormattingTab(NScrollableForm):
         self.textMarginB.setEnabled(enabled)
         self.sepMarginT.setEnabled(enabled)
         self.sepMarginB.setEnabled(enabled)
+
+    @pyqtSlot(QAction)
+    def _ignoredKeywordSelected(self, action: QAction) -> None:
+        """Process the user selecting an ignored keyword from the menu."""
+        if isinstance(keyword := action.data(), str):
+            self._updateIgnoredKeywords(keyword)
 
     ##
     #  Internal Functions

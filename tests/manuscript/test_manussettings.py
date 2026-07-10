@@ -24,7 +24,7 @@ from __future__ import annotations
 import pytest
 
 from PyQt6.QtCore import pyqtSlot
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QAction, QFont
 
 from novelwriter import SHARED
 from novelwriter.common import describeFont
@@ -590,6 +590,17 @@ def testGuiBuildSettings_FormatTextContent(qtbot, nwGUI):
     fmtTab.ignoredKeywords.setText("@stuff, @pizza, @object")  # First two are invalid
     fmtTab._updateIgnoredKeywords("@custom")  # Adding a new should trigger cleanup
     assert fmtTab.ignoredKeywords.text() in ("@custom, @object", "@object, @custom")
+
+    # Selecting a keyword from the menu should also trigger cleanup
+    fmtTab.mnKeywords.actions()[0].trigger()
+    assert fmtTab.ignoredKeywords.text() != ""
+    fmtTab.ignoredKeywords.setText("@custom, @object")
+
+    # Non-string data is ignored
+    otherAction = QAction(fmtTab)
+    otherAction.setData(1)
+    fmtTab._ignoredKeywordSelected(otherAction)
+    assert fmtTab.ignoredKeywords.text() == "@custom, @object"
 
     # Save values
     fmtTab.saveContent()

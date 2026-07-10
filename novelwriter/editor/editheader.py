@@ -27,7 +27,7 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QTimer, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QPalette
+from PyQt6.QtGui import QAction, QPalette
 from PyQt6.QtWidgets import QHBoxLayout, QMenu, QWidget
 
 from novelwriter import CONFIG, SHARED
@@ -83,6 +83,7 @@ class GuiDocEditHeader(QWidget):
 
         # Other Widgets
         self.outlineMenu = QMenu(self)
+        self.outlineMenu.triggered.connect(self._gotoBlock)
 
         # Buttons
         self.tbButton = NIconToolButton(self, iSz)
@@ -162,8 +163,7 @@ class GuiDocEditHeader(QWidget):
             tStart = time()
             self.outlineMenu.clear()
             for number, text in data.items():
-                action = qtAddAction(self.outlineMenu, text)
-                action.triggered.connect(qtLambda(self._gotoBlock, number))
+                qtAddAction(self.outlineMenu, text, data=number)
             self._docOutline = data
             logger.debug("Document outline updated in %.3f ms", 1000 * (time() - tStart))
 
@@ -243,10 +243,11 @@ class GuiDocEditHeader(QWidget):
         self.clearHeader()
         self.closeDocumentRequest.emit()
 
-    @pyqtSlot(int)
-    def _gotoBlock(self, blockNumber: int) -> None:
+    @pyqtSlot(QAction)
+    def _gotoBlock(self, action: QAction) -> None:
         """Move cursor to a specific heading."""
-        self.docEditor.setCursorLine(blockNumber + 1)
+        if isinstance(blockNumber := action.data(), int):
+            self.docEditor.setCursorLine(blockNumber + 1)
 
     @pyqtSlot(bool)
     def _focusModeChanged(self, focusMode: bool) -> None:

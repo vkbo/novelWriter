@@ -378,9 +378,12 @@ class GuiProjectToolBar(QWidget):
         logger.debug("Rebuilding quick links menu")
         self.mQuick.clear()
         for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
-            action = qtAddAction(self.mQuick, nwItem.itemName)
-            action.setData(tHandle)
-            action.setIcon(SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass], "root"))
+            action = qtAddAction(
+                self.mQuick,
+                nwItem.itemName,
+                icon=SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass], "root"),
+                data=tHandle,
+            )
             action.triggered.connect(qtLambda(self.projView.setSelectedHandle, tHandle, doScroll=True))
 
     def buildTemplatesMenu(self) -> None:
@@ -422,10 +425,12 @@ class GuiProjectToolBar(QWidget):
         """Build the rood folder menu."""
 
         def addClass(itemClass: nwItemClass) -> None:
-            aNew = qtAddAction(self.mAddRoot, trConst(nwLabels.CLASS_NAME[itemClass]))
-            aNew.setIcon(SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass], "root"))
-            aNew.triggered.connect(qtLambda(self.projTree.newTreeItem, nwItemType.ROOT, itemClass))
-            self.mAddRoot.addAction(aNew)
+            action = qtAddAction(
+                self.mAddRoot,
+                trConst(nwLabels.CLASS_NAME[itemClass]),
+                icon=SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass], "root"),
+            )
+            action.triggered.connect(qtLambda(self.projTree.newTreeItem, nwItemType.ROOT, itemClass))
 
         self.mAddRoot.clear()
         addClass(nwItemClass.NOVEL)
@@ -1170,22 +1175,18 @@ class _TreeContextMenu(QMenu):
         """Add Active/Inactive actions."""
         if len(self._indices) > 1:
             mSub = qtAddMenu(self, self.tr("Set Active to ..."))
-            aOne = qtAddAction(mSub, self._tree.trActive)
-            aOne.setIcon(SHARED.theme.getIcon("checked", "accept"))
+            aOne = qtAddAction(mSub, self._tree.trActive, icon=SHARED.theme.getIcon("checked", "accept"))
             aOne.triggered.connect(qtWeakLambda(self._iterItemActive, True))
-            aTwo = qtAddAction(mSub, self._tree.trInactive)
-            aTwo.setIcon(SHARED.theme.getIcon("unchecked", "reject"))
+            aTwo = qtAddAction(mSub, self._tree.trInactive, icon=SHARED.theme.getIcon("unchecked", "reject"))
             aTwo.triggered.connect(qtWeakLambda(self._iterItemActive, False))
         else:
             action = qtAddAction(self, self.tr("Toggle Active"))
             action.triggered.connect(self._toggleItemActive)
             if self._children > 0:
                 mSub = qtAddMenu(self, self.tr("Set Children to ..."))
-                aOne = qtAddAction(mSub, self._tree.trActive)
-                aOne.setIcon(SHARED.theme.getIcon("checked", "accept"))
+                aOne = qtAddAction(mSub, self._tree.trActive, icon=SHARED.theme.getIcon("checked", "accept"))
                 aOne.triggered.connect(qtWeakLambda(self._recurseItemActive, True))
-                aTwo = qtAddAction(mSub, self._tree.trInactive)
-                aTwo.setIcon(SHARED.theme.getIcon("unchecked", "reject"))
+                aTwo = qtAddAction(mSub, self._tree.trInactive, icon=SHARED.theme.getIcon("unchecked", "reject"))
                 aTwo.triggered.connect(qtWeakLambda(self._recurseItemActive, False))
 
     def _itemStatusImport(self, multi: bool) -> None:
@@ -1197,8 +1198,7 @@ class _TreeContextMenu(QMenu):
                 name = entry.name
                 if not multi and current == key:
                     name += f" ({nwUnicode.U_CHECK})"
-                action = qtAddAction(menu, name)
-                action.setIcon(entry.icon)
+                action = qtAddAction(menu, name, icon=entry.icon)
                 if multi:
                     action.triggered.connect(qtWeakLambda(self._iterSetItemStatus, key))
                 else:
@@ -1213,8 +1213,7 @@ class _TreeContextMenu(QMenu):
                 name = entry.name
                 if not multi and current == key:
                     name += f" ({nwUnicode.U_CHECK})"
-                action = qtAddAction(menu, name)
-                action.setIcon(entry.icon)
+                action = qtAddAction(menu, name, icon=entry.icon)
                 if multi:
                     action.triggered.connect(qtWeakLambda(self._iterSetItemImport, key))
                 else:

@@ -233,8 +233,15 @@ def testGuiProjectSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, moc
         status.listBox.setCurrentItem(status.listBox.topLevelItem(3))
         status._onNameEdit("Final")
         status.colorButton.click()
-        status._selectShape(nwStatusShape.CIRCLE)
+        shapeAction = QAction(status)
+        shapeAction.setData(nwStatusShape.CIRCLE)
+        status._shapeSelected(shapeAction)
         assert status.listBox.topLevelItemCount() == 4
+
+        # Non-shape data is ignored
+        otherAction = QAction(status)
+        otherAction.setData("not-a-shape")
+        status._shapeSelected(otherAction)
 
     assert status.changed is True
     update = status.getNewList()
@@ -300,7 +307,9 @@ def testGuiProjectSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, moc
         importance.listBox.setCurrentItem(importance.listBox.topLevelItem(3))
         importance._onNameEdit("Final")
         importance.colorButton.click()
-        importance._selectShape(nwStatusShape.TRIANGLE)
+        shapeAction = QAction(importance)
+        shapeAction.setData(nwStatusShape.TRIANGLE)
+        importance._shapeSelected(shapeAction)
         assert importance.listBox.topLevelItemCount() == 4
 
     assert importance.changed is True

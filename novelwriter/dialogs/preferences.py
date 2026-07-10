@@ -40,7 +40,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import compact, describeFont, processDialogSymbols, uniqueCompact
+from novelwriter.common import compact, describeFont, processDialogSymbols, qtAddAction, uniqueCompact
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT, DEF_ICONS, DEF_TREECOL
 from novelwriter.constants import nwLabels, nwQuotes, nwUnicode, trConst
 from novelwriter.dialogs.quotes import GuiQuoteSelect
@@ -750,8 +750,7 @@ class GuiPreferences(NDialog):
         self.mnLineSymbols = QMenu(self)
         for symbol in nwQuotes.ALLOWED:
             label = trConst(nwQuotes.SYMBOLS.get(symbol, nwQuotes.DASHES.get(symbol, "None")))
-            if action := self.mnLineSymbols.addAction(f"[ {symbol} ] {label}"):  # pragma: no branch
-                action.setData(symbol)
+            qtAddAction(self.mnLineSymbols, f"[ {symbol} ] {label}", data=symbol)
 
         self.mnLineSymbols.triggered.connect(self._insertDialogLineSymbol)
 

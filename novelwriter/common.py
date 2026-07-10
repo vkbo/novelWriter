@@ -37,7 +37,7 @@ from urllib.parse import urljoin
 from urllib.request import pathname2url
 
 from PyQt6.QtCore import QCoreApplication, QLocale, QMimeData, QUrl
-from PyQt6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QFontInfo
+from PyQt6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QFontInfo, QIcon
 from PyQt6.QtWidgets import QMenu, QMenuBar, QWidget
 
 from novelwriter.constants import nwConst, nwLabels, nwQuotes, nwUnicode, trConst
@@ -565,15 +565,19 @@ def qtWeakLambda(method: MethodType, *args: Any, **kwargs: Any) -> Callable:
     return wrapper
 
 
-def qtAddAction(parent: QWidget, label: str) -> QAction:
-    """Helper to add action to widget and always return the action."""  # noqa: D401
+def qtAddAction(parent: QWidget, label: str, *, icon: QIcon | None = None, data: Any | None = None) -> QAction:
+    """Add action to a widget and always return the action."""
     action = QAction(label, parent)
+    if icon is not None:
+        action.setIcon(icon)
+    if data is not None:
+        action.setData(data)
     parent.addAction(action)
     return action
 
 
 def qtAddMenu(parent: QMenuBar | QMenu, label: str) -> QMenu:
-    """Helper to add menu to menu and always return the menu."""  # noqa: D401
+    """Add a menu to a menu and always return the menu."""
     menu = QMenu(label, parent)
     parent.addMenu(menu)
     return menu
