@@ -316,7 +316,7 @@ class Config:
         self.autoSaveDoc = 30  # Interval for auto-saving document, in seconds
         self.emphLabels = False  # Add emphasis to H1 and H2 item labels
         self.backupOnClose = True  # Flag for running automatic backups
-        self.backupInterval = "session"  # Backup interval, can be session, daily, weekly, monthly
+        self.backupInterval = "session"  # Backup interval
         self.askBeforeBackup = True  # Flag for asking before running automatic backup
         self.askBeforeExit = True  # Flag for asking before exiting the app
 
