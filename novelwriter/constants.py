@@ -25,15 +25,7 @@ from typing import Final
 
 from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
-from novelwriter.enum import (
-    nwBuildFmt,
-    nwComment,
-    nwItemClass,
-    nwItemLayout,
-    nwOutline,
-    nwStatusShape,
-    nwTheme,
-)
+from novelwriter.enum import nwBuildFmt, nwComment, nwItemClass, nwItemLayout, nwOutline, nwStatusShape, nwTheme
 
 
 def trConst(text: str) -> str:
