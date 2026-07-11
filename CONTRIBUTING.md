@@ -18,7 +18,7 @@ just make a pull request directly.
   make any larger changes to the documentation without discussing them with the maintainer first.
 * Adaptations, installation or packaging features targeting specific operating systems.
 * Using AI as a coding assistant is fine as long as the code is of good quality and the scope of
-  changes is small.
+  change is small.
 
 **Please do not:**
 
@@ -28,8 +28,11 @@ just make a pull request directly.
 * Make pull requests with AI generated code. This is not a project suitable for vibe coding.
   Outright slop will result in the account being blocked.
 
-This project uses [uv](https://docs.astral.sh/uv/) as its main developer tool. In order to run
-novelWriter directly from checked out source, simply call from the root folder:
+
+## Running from Source
+
+This project uses [uv](https://docs.astral.sh/uv/) to maintain dependencies. In order to run
+novelWriter directly from checked out source, simply call from the root folder with:
 
 ```bash
 uv run novelwriter
@@ -38,10 +41,10 @@ uv run novelwriter
 To set up a development environment with all needed dependencies, run:
 
 ```bash
-uv install
+uv sync
 ```
 
-Many tasks like building assets from source are handled by the `pkgutils.py` helper tool.
+Many tasks, like building assets from source, are handled by the `pkgutils.py` helper tool.
 This tool requires no dependencies, so you can either run it directly with Python, or `uv run`.
 
 ```bash
@@ -61,53 +64,14 @@ python pkgutils.py icons optional
 ```
 
 
-## Picking the Correct Branch for a Pull Request
-
-Pre-releases are made from the `main` branch, and full releases are made from the `release` branch.
-If you are submitting a fix to a current release you must do so from the `release` branch. If you
-make such a fix on the `main` branch, **it cannot be included in a patch release**. This also
-applies to the documentation for the latest release published on the main website.
-
-New features are only accepted on full releases, so a feature pull request must be made to the
-`main` branch. However, if the `main` branch is very close to a new full release, pull requests may
-not be merged until the release is completed.
-
-This project uses GitHub milestones to plan releases, and only pull requests included in the
-current release cycle will be merged to `main`. Milestone tickets are not set in stone and are
-often moved between them.
-
-
-## Pull Request Check List
-
-Make sure the pull request follows these rules:
-
-* The `main` branch is the default branch. For general changes, please make a new branch in your
-  own fork from the current `main` branch. Do not make pull requests from your copy of the `main`
-  branch.
-* Please provide a description of the changes in the pull request under the summary section of the
-  pull request template, and reference any related issues by providing the issue number. Do not
-  post links to issue numbers as that breaks the integration. Stating the issue number is enough.
-* Do not change the version number.
-* Do not submit files that were not actively changed but have otherwise been modified. This is
-  particularly an issue with autoformatting.
-
-
-## General Rules
-
-These are the guidelines for the project. The source code of novelWriter broadly follows the
-[PEP8](https://www.python.org/dev/peps/pep-0008) style guide, but with a few exceptions.
-
-The project uses [ruff](https://docs.astral.sh/ruff/) for linting, but the auto-formatter should
-not be used at this point. It also uses [isort](https://pycqa.github.io/isort) for import sorting.
-The latter can be auto-formatted and the settings are defined in ``pyproject.toml`.
-
-
-### Tests
+### Running Tests
 
 * New code must not break any existing tests.
-* New code must come with tests that cover the code in full. If the code has branches that only
-  runs on some OSes, they only need to be covered when test are run on that OS. The test suite runs
-  on Linux, Windows and MacOS.
+* New code must come with tests that cover the code in full. This includes branch coverage. If the
+  code has branches that only runs on some OSes, they only need to be covered when test are run on
+  that OS. The test suite runs on Linux, Windows and MacOS.
+* It is ok to use `pragma` comments with `no cover` and `no branch` if the code is not expected to
+  touch those areas or branches.
 
 A helper script is provided for running tests. It simplifies coverage reporting and a few other
 things. Run the following to see all details:
@@ -117,55 +81,65 @@ uv run run_tests.py --help
 ```
 
 
-### Code Formatting
+## Picking the Correct Branch for a Pull Request
 
-* The pull request code *must* pass the `ruff` and `isort` linting rules specified in
-  `pyproject.toml`.
-* In general, do not make large scale formatting changes to the code.
+Pre-releases are made from the `main` branch, and full releases are made from the `release` branch.
+If you are submitting a fix to a current release you must do so from the `release` branch. If you
+make such a fix on the `main` branch, **it cannot be included in a patch release**. This also
+applies to the documentation for the latest release published on the main website.
+
+New features are only added in full releases, so a feature pull request must be made to the `main`
+branch. However, if the `main` branch is very close to a new full release, pull requests may not be
+merged until the release is completed.
+
+This project uses GitHub milestones to plan releases, and only pull requests included in the
+current release cycle will be merged to `main`. Milestone tickets are not set in stone and are
+often moved to other milestones.
 
 
-### Type Annotations
+### Pull Request Check List
 
-* All functions and parameters must be type annotated, and so must variables and attributes if the
-  type cannot be inferred from the initial value. Typing rules are set in `pyproject.toml` and a
-  pull request must pass `pyright` with these settings.
-* Do not use the `Any` type when an actual type exists. `Any` is allowed for functions that
-  actually handles any kind of input and returns a standard type.
-* Do not use deprecated capitalised annotations like `Dict`, `List`, `Tuple`, etc.
-* Type annotated code must be runnable on all supported Python versions.
+Make sure the pull request follows these rules:
+
+* The `main` branch is the default branch. For general changes, please make a new branch in your
+  own fork from the current `main` branch. Do not make pull requests from your copy of the `main`
+  branch. The same applies to the `release` branch.
+* Please provide a description of the changes in the pull request under the summary section of the
+  pull request template, and reference any related issues by providing the issue number. Do not
+  post links to issue numbers as that breaks the integration. Stating the issue number is enough.
+* Do not change the version number.
+* Make sure the formatting and linting tools have been run before the pull request is made.
+
+
+## Code Style
+
+This code base uses camelCase convention for function and variable names. This differs from the
+common convention of snake_case in Python. The reason for this is that novelWriter is built on the
+Qt framework, where everything is camelCase.
+
+Pretty much everything else regarding formatting is handled by the linter and formatter. This
+project uses [ruff](https://docs.astral.sh/ruff/) for linting and formatting and
+[pyright](https://github.com/microsoft/pyright) for type checking. The settings for these tools
+are defined in ``pyproject.toml`, and any submitted code must pass the following three commands:
+
+```bash
+uv run ruff check
+uv run ruff format
+uv run pyright
+```
+
+### Line Length
+
+* The line length of the source code is enforced by the formatter, and is set to 120 characters.
+  Docstrings should be wrapped manually at 79 characters for better readability.
+* For text files, the text should be wrapped 120 character. The exception is Markdown image tags
+  and URLs which can run past that limit.
 
 
 ### Internationalisation
 
 * All comments and docstrings in the code must be in English.
 * All text presented to the user must be wrapped in calls to Qt's translation framework, and the
-  spelling of this text *must* be UK English. US English spelling is not allowed for these strings.
+  spelling of this text *must* be British English. US English spelling *is not allowed* for these
+  strings.
 * Commit descriptions and pull requests must also be in English.
-
-
-### Line Length
-
-* Source code lines can extend to the upper limit of 99 characters. Generally, if a code statement
-  requires multiple lines, the lines should wrap at 79 characters if possible. If wrapping can be
-  avoided by going to 99, then that is generally preferable. Readability has priority.
-* For text files, the text should be wrapped at 99 character. The exception is Markdown image tags
-  and URLs which can run past that limit.
-
-
-### Spaces, Indentation and Alignment
-
-* Only indentation by multiples of 4 spaces is allowed.
-* No trailing spaces should occur on any line in the source code, including empty lines.
-* Common line wrapping methods are allowed in the code except `\`, but avoid deep indentations.
-* Aligning operators and attributes in columns with multiple spaces is not allowed by PEP8. The
-  rule is relaxed a bit here. Alignment is allowed when populating large dictionaries or setting
-  many class attributes. It does improve readability in such cases, but should not be overused.
-
-
-### General Code Rules
-
-* Use f-string style for string formatting as the first choice, and `.format` functions if there is
-  a good reason for it. Do not use `%` style formatting except for logging output. For logging, `%`
-  must be used (it's a limitation in the logging library unfortunately).
-* Functions should be on camelCase form for consistency with the Qt library code. This also goes
-  for variable names for the sake of internal consistency.
