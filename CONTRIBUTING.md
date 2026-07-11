@@ -120,7 +120,7 @@ Qt framework, where everything is camelCase.
 Pretty much everything else regarding formatting is handled by the linter and formatter. This
 project uses [ruff](https://docs.astral.sh/ruff/) for linting and formatting and
 [pyright](https://github.com/microsoft/pyright) for type checking. The settings for these tools
-are defined in ``pyproject.toml`, and any submitted code must pass the following three commands:
+are defined in `pyproject.toml`, and any submitted code must pass the following three commands:
 
 ```bash
 uv run ruff check
@@ -132,8 +132,8 @@ uv run pyright
 
 * The line length of the source code is enforced by the formatter, and is set to 120 characters.
   Docstrings should be wrapped manually at 79 characters for better readability.
-* For text files, the text should be wrapped 120 character. The exception is Markdown image tags
-  and URLs which can run past that limit.
+* For text files, the text should be wrapped 120 character or less. The exception is Markdown image
+  tags and URLs which can run past that limit.
 
 
 ### Internationalisation
