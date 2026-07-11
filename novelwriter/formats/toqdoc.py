@@ -38,6 +38,8 @@ from PyQt6.QtGui import (
     QTextDocument,
     QTextFrameFormat,
     QTextLength,
+    QTextTableCellFormat,
+    QTextTableFormat,
 )
 from PyQt6.QtPrintSupport import QPrinter
 
@@ -490,36 +492,24 @@ class ToQTextDocument(Tokenizer):
         cursor.insertText(stripEscape(temp[start:]), cFmt)
 
     def _insertNewPageMarker(self, cursor: QTextCursor) -> None:
-        """Insert a new page marker."""
+        """Insert a new page marker as a dashed line."""
         if self._newPage:
-            bgCol = QColor(self._theme.text)
-            bgCol.setAlphaF(0.1)
-            fgCol = QColor(self._theme.text)
-            fgCol.setAlphaF(0.8)
+            tFmt = QTextTableFormat()
+            tFmt.setBorder(0.0)
+            tFmt.setBorderStyle(QTextFrameFormat.BorderStyle.BorderStyle_None)
+            tFmt.setCellPadding(0.0)
+            tFmt.setCellSpacing(0.0)
+            tFmt.setTopMargin(self._mSep[0])
+            tFmt.setBottomMargin(self._mSep[1])
+            tFmt.setWidth(QTextLength(QTextLength.Type.PercentageLength, 100.0))
 
-            fFmt = QTextFrameFormat()
-            fFmt.setBorderStyle(QTextFrameFormat.BorderStyle.BorderStyle_None)
-            fFmt.setBackground(bgCol)
-            fFmt.setTopMargin(self._mSep[0])
-            fFmt.setBottomMargin(self._mSep[1])
+            cFmt = QTextTableCellFormat()
+            cFmt.setBottomBorder(1.0)
+            cFmt.setBottomBorderStyle(QTextFrameFormat.BorderStyle.BorderStyle_Dashed)
+            cFmt.setBottomBorderBrush(QBrush(self._theme.text))
 
-            bFmt = QTextBlockFormat(self._blockFmt)
-            bFmt.setAlignment(QtAlignCenter)
-            bFmt.setTopMargin(0.0)
-            bFmt.setBottomMargin(0.0)
-            bFmt.setLineHeight(100.0, QtPropLineHeight)
-
-            cFmt = QTextCharFormat(self._charFmt)
-            cFmt.setFontItalic(False)
-            cFmt.setFontUnderline(False)
-            cFmt.setFontStrikeOut(False)
-            cFmt.setFontWeight(QtFontNormal)
-            cFmt.setFontPointSize(0.75 * self._textFont.pointSizeF())
-            cFmt.setForeground(fgCol)
-
-            cursor.insertFrame(fFmt)
-            cursor.setBlockFormat(bFmt)
-            cursor.insertText(self._project.localLookup("New Page"), cFmt)
+            if table := cursor.insertTable(1, 1, tFmt):  # pragma: no branch
+                table.cellAt(0, 0).setFormat(cFmt)
             if root := self._document.rootFrame():  # pragma: no branch
                 cursor.swap(root.lastCursorPosition())
 
