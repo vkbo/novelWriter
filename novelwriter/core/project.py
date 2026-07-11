@@ -507,10 +507,10 @@ class NWProject:
             case "day":
                 timeStamp = formatTimeStamp(time(), fileSafe=True, fmt="%Y-%m-%d")
             case "week":
-                timeStamp = formatTimeStamp(time(), fileSafe=True, fmt="%Y-%V")
+                timeStamp = formatTimeStamp(time(), fileSafe=True, fmt="%G-W%V")
             case "month":
                 timeStamp = formatTimeStamp(time(), fileSafe=True, fmt="%Y-%m")
-            case _:  # session interval setting falls through here
+            case _:  # Option "session" falls through here
                 timeStamp = formatTimeStamp(time(), fileSafe=True)
 
         archName = baseDir / f"{cleanName} {timeStamp}.zip"
