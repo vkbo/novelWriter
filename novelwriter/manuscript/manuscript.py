@@ -882,8 +882,17 @@ class _PreviewWidget(QTextBrowser):
         """Connect the print preview painter to the document viewer."""
         if document := self.document():  # pragma: no branch
             QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+
+            # Disable font hinting for the print job, see issues #2637 and #2640
+            origFont = document.defaultFont()
+            noHint = QFont(origFont)
+            noHint.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
+            document.setDefaultFont(noHint)
+
             printer.setPageOrientation(QPageLayout.Orientation.Portrait)
             document.print(printer)
+            document.setDefaultFont(origFont)
+
             QApplication.restoreOverrideCursor()
 
     @pyqtSlot(str)
