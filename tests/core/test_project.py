@@ -548,7 +548,7 @@ def testNWProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
 
         CONFIG.backupInterval = "week"
         assert project.backupProject(doNotify=False) is True
-        stamp = fixedLocal.strftime("%Y-%V")
+        stamp = fixedLocal.strftime("%G-W%V")
         assert (tstPaths.tmpDir / "Test Minimal" / f"Test Minimal {stamp}.zip").exists()
 
         CONFIG.backupInterval = "month"

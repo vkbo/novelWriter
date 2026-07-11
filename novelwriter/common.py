@@ -237,12 +237,11 @@ def formatTimeStamp(value: float, fileSafe: bool = False, fmt: str | None = None
     """Take a number (on the format returned by time.time()) and convert
     it to a timestamp string.
     """
-    if fmt is not None:
-        return datetime.fromtimestamp(value).strftime(fmt)
-    if fileSafe:
-        return datetime.fromtimestamp(value).strftime(nwConst.FMT_FSTAMP)
-    else:
-        return datetime.fromtimestamp(value).strftime(nwConst.FMT_TSTAMP)
+    try:
+        result = datetime.fromtimestamp(value).strftime(nwConst.FMT_TSTAMP if fmt is None else fmt)
+        return result.replace(":", ".") if fileSafe else result
+    except Exception:
+        return "ERROR"
 
 
 def formatTime(t: int) -> str:

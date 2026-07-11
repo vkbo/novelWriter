@@ -43,7 +43,6 @@ class nwConst:
 
     # Date and Time Formats
     FMT_TSTAMP = "%Y-%m-%d %H:%M:%S"  # Default format
-    FMT_FSTAMP = "%Y-%m-%d %H.%M.%S"  # FileName safe format
     FMT_DSTAMP = "%Y-%m-%d"  # Date only format
 
     # URLs
