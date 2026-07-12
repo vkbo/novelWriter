@@ -1024,7 +1024,7 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
 @pytest.mark.gui
 def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI: GuiMain, projPath, fncPath, mockRnd):
-    """Test various features of the main window."""
+    """Test opening and closing projects and documents."""
     buildTestProject(nwGUI, projPath)
 
     # Check open document and prev/next with no wraparound
@@ -1125,6 +1125,35 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI: GuiMain, projPath, fncPath,
         assert nwGUI.closeProject(isYes=True) is True
     assert questionMock.called is False
     assert backupMock.called is True
+
+
+@pytest.mark.gui
+def testGuiMain_OpenDocument_ReentrancyGuard(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test that openDocument ignores a re-entrant call made while a
+    document switch is already in progress.
+
+    This models what happens holding F3 with project-wide loop search
+    enabled: loadText calls QApplication.processEvents while a switch
+    is still in progress, and if that dispatches an already-queued
+    key-repeat event, it can re-trigger another document switch before
+    the first one has finished.
+    """
+    buildTestProject(nwGUI, projPath)
+
+    reentered = []
+    realProcessEvents = QApplication.processEvents
+
+    def reentrantProcessEvents(*args, **kwargs):
+        if not reentered:
+            reentered.append(True)
+            assert nwGUI.openDocument(C.hChapterDoc) is False
+        return realProcessEvents(*args, **kwargs)
+
+    monkeypatch.setattr(QApplication, "processEvents", staticmethod(reentrantProcessEvents))
+
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    assert reentered == [True]
+    assert nwGUI.docEditor.docHandle == C.hSceneDoc
 
 
 @pytest.mark.gui
