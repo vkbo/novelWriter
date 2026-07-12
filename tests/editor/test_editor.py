@@ -58,7 +58,16 @@ from novelwriter.editor.autoreplace import TextAutoReplace
 from novelwriter.editor.completer import CommandCompleter
 from novelwriter.editor.editor import GuiDocEditor, _TagAction
 from novelwriter.editor.textblock import TextBlockData, formatCheckText
-from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwState, nwVimMode
+from novelwriter.enum import (
+    nwComment,
+    nwDocAction,
+    nwDocInsert,
+    nwItemClass,
+    nwItemLayout,
+    nwItemType,
+    nwState,
+    nwVimMode,
+)
 from novelwriter.shared import _GuiAlert
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
@@ -230,6 +239,66 @@ def testGuiDocEditor_LoadText(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     nwGUI.saveDocument()
     assert docEditor.loadText(C.hSceneDoc) is True
     assert docEditor.toPlainText() == ""
+
+    # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiDocEditor_LoadText_UndoCache(qtbot, nwGUI, projPath, mockRnd):
+    """Test that switching away from and back to a document preserves
+    its undo history, via the document cache.
+    """
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
+
+    original = docEditor.getText()
+
+    docEditor.setCursorPosition(len(original))
+    qtbot.keyClicks(docEditor, "Some new text.")
+    edited = docEditor.getText()
+    assert edited != original
+    assert docEditor.document().isUndoAvailable() is True
+
+    # Switching to another document and back should not touch the
+    # cached text document, so the edit and its undo history survive
+    assert nwGUI.openDocument(C.hChapterDoc) is True
+    assert docEditor.docHandle == C.hChapterDoc
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    assert docEditor.docHandle == C.hSceneDoc
+
+    assert docEditor.getText() == edited
+    assert docEditor.document().isUndoAvailable() is True
+
+    docEditor.undo()
+    assert docEditor.getText() == original
+
+    # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiDocEditor_LoadText_CachedInvalidItem(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test that a cached document whose project item is no longer a
+    valid file (e.g. changed or removed out-of-band) is discarded
+    from the cache instead of being reopened.
+    """
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
+    assert C.hSceneDoc in docEditor.docCache
+
+    nwGUI.closeDocument()
+    assert C.hSceneDoc in docEditor.docCache
+
+    # Simulate the cached item becoming invalid while it isn't the
+    # active document
+    cached = docEditor.docCache.get(C.hSceneDoc)
+    assert cached is not None
+    monkeypatch.setattr(cached.nwDocument.nwItem, "_type", nwItemType.FOLDER)
+
+    assert docEditor.loadText(C.hSceneDoc) is False
+    assert docEditor.docHandle is None
+    assert C.hSceneDoc not in docEditor.docCache
 
     # qtbot.stop()
 
@@ -2848,10 +2917,9 @@ def testGuiDocEditor_LineHeight(qtbot, nwGUI, projPath, mockRnd):
     """
     buildTestProject(nwGUI, projPath)
     docEditor = nwGUI.docEditor
-    document = docEditor.document()
 
     def allBlocksHaveLineHeight(height: int) -> bool:
-        block = document.firstBlock()
+        block = docEditor.document().firstBlock()
         while block.isValid():
             if block.blockFormat().lineHeight() != height:
                 return False
@@ -2865,6 +2933,44 @@ def testGuiDocEditor_LineHeight(qtbot, nwGUI, projPath, mockRnd):
     CONFIG.lineHeight = 2.00
     docEditor.initEditor()
     assert allBlocksHaveLineHeight(200)
+
+
+@pytest.mark.gui
+def testGuiDocEditor_LineHeight_CachedDocument(qtbot, nwGUI, projPath, mockRnd):
+    """Test that initEditor refreshes the line height (and other
+    per-document settings) of cached documents that are not the one
+    currently visible, so they aren't stale when swapped back in.
+    """
+    buildTestProject(nwGUI, projPath)
+    docEditor = nwGUI.docEditor
+
+    def allBlocksHaveLineHeight(height: int) -> bool:
+        block = docEditor.document().firstBlock()
+        while block.isValid():
+            if block.blockFormat().lineHeight() != height:
+                return False
+            block = block.next()
+        return True
+
+    CONFIG.lineHeight = 1.50
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    assert allBlocksHaveLineHeight(150)
+
+    # Move to another document, leaving hSceneDoc cached but inactive
+    assert nwGUI.openDocument(C.hChapterDoc) is True
+    assert docEditor.docHandle == C.hChapterDoc
+    assert C.hSceneDoc in docEditor.docCache
+
+    CONFIG.lineHeight = 2.00
+    docEditor.initEditor()
+    assert allBlocksHaveLineHeight(200)  # The active document, hChapterDoc
+
+    # Switching back should show the refreshed line height, not a
+    # stale value from when hSceneDoc was cached
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    assert allBlocksHaveLineHeight(200)
+
+    # qtbot.stop()
 
 
 @pytest.mark.gui

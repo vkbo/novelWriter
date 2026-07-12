@@ -31,7 +31,7 @@ from PyQt6.QtCore import QThreadPool, QUrl
 from PyQt6.QtGui import QDesktopServices
 from PyQt6.QtWidgets import QFileDialog, QWidget
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.core.project import NWProject
 from novelwriter.shared import SharedData, _GuiAlert
 
@@ -84,6 +84,34 @@ def testSharedData_Functions(monkeypatch):
         shared.openWebsite("http://www.example.com")
         assert openUrl.called is True
         assert openUrl.call_args[0][0] == QUrl("http://www.example.com")
+
+
+@pytest.mark.base
+def testSharedData_CloseDocument(monkeypatch, mockGUI):
+    """Test that closeDocument only removes a specific handle from the
+    document cache when one is given, and always closes the editor
+    and viewer panels when no handle is given.
+    """
+    closeDoc = MagicMock()
+    closeViewer = MagicMock()
+    monkeypatch.setattr(mockGUI, "closeDocument", closeDoc, raising=False)
+    monkeypatch.setattr(mockGUI, "closeViewerPanel", closeViewer, raising=False)
+
+    mockGUI.docEditor.docHandle = "aaaaaaaaaaaaa"
+    mockGUI.docViewer.docHandle = "bbbbbbbbbbbbb"
+
+    # A specific handle is always removed from the cache, but the
+    # panels are only closed if the handle matches what's open
+    SHARED.closeDocument("ccccccccccccc")
+    mockGUI.docEditor.docCache.remove.assert_called_once_with("ccccccccccccc")
+    closeDoc.assert_not_called()
+    closeViewer.assert_not_called()
+
+    # No handle closes both panels, and does not touch the cache
+    SHARED.closeDocument()
+    mockGUI.docEditor.docCache.remove.assert_called_once()  # Unchanged
+    closeDoc.assert_called_once()
+    closeViewer.assert_called_once()
 
 
 @pytest.mark.base
