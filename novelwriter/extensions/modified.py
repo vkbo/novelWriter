@@ -64,7 +64,7 @@ class NDialog(QDialog):
         done with the object, we instead set the dialog's parent to None
         so that it gets garbage collected when it runs out of scope.
         """
-        self.setParent(None)  # type: ignore
+        self.setParent(None)
 
     @pyqtSlot()
     def closeDialog(self) -> None:
@@ -153,7 +153,7 @@ class NFontDialog(QFontDialog):
 
         font = dialog.selectedFont()
         status = dialog.result() == 1
-        dialog.setParent(None)  # type: ignore
+        dialog.setParent(None)
 
         return font, status
 
