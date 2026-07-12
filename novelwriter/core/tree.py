@@ -143,7 +143,7 @@ class ProjectTree:
         self._nodes.clear()
         self._ready = False
         self._trash = None
-        oldModel.deleteLater()
+        oldModel.setParent(None)
         del oldModel
 
     def add(self, item: ProjectItem, pos: int = -1) -> bool:

@@ -80,7 +80,7 @@ class GuiTextDocument(QTextDocument):
         done with the object, we instead set the document's parent to
         None so that it gets garbage collected when it runs out of scope.
         """
-        self.setParent(None)  # type: ignore
+        self.setParent(None)
 
     def setTextContent(self, text: str, tHandle: str) -> None:
         """Set the text content of the document."""
