@@ -304,6 +304,28 @@ def testGuiDocEditor_LoadText_CachedInvalidItem(qtbot, monkeypatch, nwGUI, projP
 
 
 @pytest.mark.gui
+def testGuiDocEditor_LoadText_NewDocumentFont(qtbot, nwGUI, projPath, mockRnd):
+    """Test that a document that isn't already in the document cache
+    is created with the user's configured font applied, rather than
+    Qt's default font for a new QTextDocument.
+    """
+    buildTestProject(nwGUI, projPath)
+    docEditor = nwGUI.docEditor
+
+    font = QFont()
+    font.setPointSize(31)
+    CONFIG.textFont = font
+
+    # This document has not been opened yet this session, so it must
+    # go through the "not cached" branch of loadText
+    assert C.hSceneDoc not in docEditor.docCache
+    assert docEditor.loadText(C.hSceneDoc) is True
+    assert docEditor.document().defaultFont().pointSize() == 31
+
+    # qtbot.stop()
+
+
+@pytest.mark.gui
 def testGuiDocEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumText, mockRnd):
     """Test saving text from the editor."""
     buildTestProject(nwGUI, projPath)

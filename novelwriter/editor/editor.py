@@ -309,7 +309,7 @@ class GuiDocEditor(QTextEdit):
 
         # Create Custom Document
         self._docCache = DocumentCache()
-        self._emptyDocument = GuiTextDocument(self)
+        self._emptyDocument = self._newTextDocument()
         self._qDocument = self._emptyDocument
         self.setDocument(self._qDocument)
 
@@ -556,13 +556,7 @@ class GuiDocEditor(QTextEdit):
         self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
 
         # Also set the document text options for the document text flow
-        options = QTextOption()
-        if CONFIG.doJustify:
-            options.setAlignment(QtAlignJustify)
-        if CONFIG.showTabsNSpaces:
-            options.setFlags(options.flags() | QTextOption.Flag.ShowTabsAndSpaces)
-        if CONFIG.showLineEndings:
-            options.setFlags(options.flags() | QTextOption.Flag.ShowLineAndParagraphSeparators)
+        options = self._documentTextOptions()
 
         # Refresh settings on the active document, plus any cached
         # documents that are not currently visible
@@ -639,7 +633,7 @@ class GuiDocEditor(QTextEdit):
         if cached:
             self._setActiveDocument(cached.qDocument)
         else:
-            self._setActiveDocument(GuiTextDocument(self))
+            self._setActiveDocument(self._newTextDocument())
             self._allowAutoReplace(False)
             self._qDocument.setTextContent(text, tHandle)
             self._allowAutoReplace(True)
@@ -810,6 +804,27 @@ class GuiDocEditor(QTextEdit):
     ##
     #  Internal Core Methods
     ##
+
+    def _documentTextOptions(self) -> QTextOption:
+        """Build the document text options for the document text flow
+        from the current user settings.
+        """
+        options = QTextOption()
+        if CONFIG.doJustify:
+            options.setAlignment(QtAlignJustify)
+        if CONFIG.showTabsNSpaces:
+            options.setFlags(options.flags() | QTextOption.Flag.ShowTabsAndSpaces)
+        if CONFIG.showLineEndings:
+            options.setFlags(options.flags() | QTextOption.Flag.ShowLineAndParagraphSeparators)
+        return options
+
+    def _newTextDocument(self) -> GuiTextDocument:
+        """Create a new text document with the current user settings."""
+        qDocument = GuiTextDocument(self)
+        qDocument.setDefaultFont(fontMatcher(CONFIG.textFont))
+        qDocument.setDocumentMargin(4)
+        qDocument.setDefaultTextOption(self._documentTextOptions())
+        return qDocument
 
     def _setActiveDocument(self, qDocument: GuiTextDocument) -> None:
         """Attach a text document to the editor widget, moving the

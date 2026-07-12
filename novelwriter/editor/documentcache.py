@@ -80,20 +80,22 @@ class DocumentCache:
         self._entries[tHandle] = CacheEntry(nwDocument, qDocument)
         self._entries.move_to_end(tHandle)
         while len(self._entries) > self._maxSize:
-            _, evicted = self._entries.popitem(last=False)
-            logger.debug("Evicting document '%s' from cache", evicted.nwDocument.fileLocation)
+            eHandle, evicted = self._entries.popitem(last=False)
+            logger.debug("Evicted document '%s' from cache", eHandle)
             evicted.qDocument.deleteLater()
 
     def remove(self, tHandle: str) -> None:
         """Remove and discard a cached entry, if present."""
         if entry := self._entries.pop(tHandle, None):
             entry.qDocument.deleteLater()
+            logger.debug("Removed document '%s' from cache", tHandle)
 
     def clear(self) -> None:
         """Discard all cached entries."""
         for entry in self._entries.values():
             entry.qDocument.deleteLater()
         self._entries.clear()
+        logger.debug("Cleared document cache")
 
     def documents(self) -> list[GuiTextDocument]:
         """Return the text documents of all cached entries."""
