@@ -101,6 +101,10 @@ class GuiMain(QMainWindow):
         # Core Classes
         # ============
 
+        # Internal Variables
+        self._lastTotalCount = 0
+        self._switchingDocument = False
+
         # Initialise UserData Instance
         SHARED.initSharedData(self)
 
@@ -303,9 +307,6 @@ class GuiMain(QMainWindow):
         self.keyEscape = QShortcut(self)
         self.keyEscape.setKey("Esc")
         self.keyEscape.activated.connect(self._keyPressEscape)
-
-        # Internal Variables
-        self._lastTotalCount = 0
 
         # Initialise Main GUI
         self.initMain()
@@ -532,6 +533,10 @@ class GuiMain(QMainWindow):
             logger.error("Nothing to open")
             return False
 
+        if self._switchingDocument:
+            logger.debug("Ignoring re-entrant request to open '%s'", tHandle)
+            return False
+
         if sTitle and tLine is None and (hItem := SHARED.project.index.getItemHeading(tHandle, sTitle)):
             tLine = hItem.line
 
@@ -539,11 +544,15 @@ class GuiMain(QMainWindow):
         if tHandle == self.docEditor.docHandle:
             self.docEditor.setCursorLine(tLine)
         else:
-            self.closeDocument()
-            if self.docEditor.loadText(tHandle, tLine):
-                self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
-            else:
-                return False
+            self._switchingDocument = True
+            try:
+                self.closeDocument()
+                if self.docEditor.loadText(tHandle, tLine):
+                    self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
+                else:
+                    return False
+            finally:
+                self._switchingDocument = False
 
         if changeFocus:
             self.docEditor.setFocus()

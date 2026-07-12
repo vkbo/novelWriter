@@ -21,7 +21,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import gc
+import weakref
+
 from unittest.mock import MagicMock
+
+from PyQt6.QtCore import QObject
 
 from novelwriter.editor.documentcache import DocumentCache
 
@@ -32,6 +37,17 @@ def _entry() -> tuple[MagicMock, MagicMock]:
     nwDocument.fileLocation = "mock.nwd"
     qDocument = MagicMock()
     return nwDocument, qDocument
+
+
+class _StubDocument(QObject):
+    """Minimal real QObject with a genuine softDelete, so eviction can
+    be checked to actually free memory rather than just having its
+    mocked softDelete method called.
+    """
+
+    def softDelete(self) -> None:
+        """Detach from any Qt parent, matching GuiTextDocument.softDelete."""
+        self.setParent(None)  # type: ignore
 
 
 def testEditorDocCache_GetStoreRemove():
@@ -55,7 +71,7 @@ def testEditorDocCache_GetStoreRemove():
     assert len(cache) == 0
     assert "aaa" not in cache
     assert cache.get("aaa") is None
-    qDoc.deleteLater.assert_called_once()
+    qDoc.softDelete.assert_called_once()
 
     # Removing a handle that isn't cached should be a no-op
     cache.remove("aaa")
@@ -72,7 +88,7 @@ def testEditorDocCache_StoreReplacesExistingEntry():
     nwDocA, qDocA = _entry()
     cache.store("aaa", nwDocA, qDocA)
     assert cache.get("aaa") is not None
-    qDocA.deleteLater.assert_not_called()
+    qDocA.softDelete.assert_not_called()
 
     nwDocB, qDocB = _entry()
     cache.store("aaa", nwDocB, qDocB)
@@ -82,13 +98,13 @@ def testEditorDocCache_StoreReplacesExistingEntry():
     assert entry is not None
     assert entry.nwDocument is nwDocB
     assert entry.qDocument is qDocB
-    qDocA.deleteLater.assert_called_once()
-    qDocB.deleteLater.assert_not_called()
+    qDocA.softDelete.assert_called_once()
+    qDocB.softDelete.assert_not_called()
 
     # Re-storing the same document under its own handle should not
     # trigger a deletion of itself
     cache.store("aaa", nwDocB, qDocB)
-    qDocB.deleteLater.assert_not_called()
+    qDocB.softDelete.assert_not_called()
 
 
 def testEditorDocCache_Eviction():
@@ -112,9 +128,9 @@ def testEditorDocCache_Eviction():
     assert "a" not in cache
     assert "b" in cache
     assert "c" in cache
-    qDocA.deleteLater.assert_called_once()
-    qDocB.deleteLater.assert_not_called()
-    qDocC.deleteLater.assert_not_called()
+    qDocA.softDelete.assert_called_once()
+    qDocB.softDelete.assert_not_called()
+    qDocC.softDelete.assert_not_called()
 
 
 def testEditorDocCache_GetPromotesToMostRecentlyUsed():
@@ -137,8 +153,8 @@ def testEditorDocCache_GetPromotesToMostRecentlyUsed():
     assert "a" in cache
     assert "b" not in cache
     assert "c" in cache
-    qDocB.deleteLater.assert_called_once()
-    qDocA.deleteLater.assert_not_called()
+    qDocB.softDelete.assert_called_once()
+    qDocA.softDelete.assert_not_called()
 
 
 def testEditorDocCache_Clear():
@@ -154,8 +170,8 @@ def testEditorDocCache_Clear():
 
     assert len(cache) == 0
     assert cache.documents() == []
-    qDocA.deleteLater.assert_called_once()
-    qDocB.deleteLater.assert_called_once()
+    qDocA.softDelete.assert_called_once()
+    qDocB.softDelete.assert_called_once()
 
 
 def testEditorDocCache_Documents():
@@ -168,3 +184,26 @@ def testEditorDocCache_Documents():
     cache.store("b", MagicMock(), qDocB)
 
     assert set(cache.documents()) == {qDocA, qDocB}
+
+
+def testEditorDocCache_EvictionFreesDocument(qtbot):
+    """Test that an evicted document is freed by reference count alone
+    (with the cyclic GC disabled) once the cache and the test both
+    drop their references to it, i.e. that eviction doesn't leak.
+    Mirrors the checkWidgetFreedOnRelease pattern used elsewhere in
+    this codebase for the same class of QObject lifetime check.
+    """
+    cache = DocumentCache(maxSize=1)
+
+    qDocA = _StubDocument()
+    ref = weakref.ref(qDocA)
+    cache.store("a", MagicMock(), qDocA)  # type: ignore[arg-type]
+    del qDocA
+
+    gc.disable()
+    try:
+        # Storing a second entry evicts "a" and calls its softDelete
+        cache.store("b", MagicMock(), _StubDocument())  # type: ignore[arg-type]
+        assert ref() is None, "Evicted document was not freed by reference count alone"
+    finally:
+        gc.enable()

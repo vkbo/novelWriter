@@ -75,25 +75,25 @@ class DocumentCache:
         evicting the least recently used entry if the cache is full.
         """
         if (old := self._entries.get(tHandle)) and old.qDocument is not qDocument:
-            old.qDocument.deleteLater()
+            old.qDocument.softDelete()
 
         self._entries[tHandle] = CacheEntry(nwDocument, qDocument)
         self._entries.move_to_end(tHandle)
         while len(self._entries) > self._maxSize:
             eHandle, evicted = self._entries.popitem(last=False)
             logger.debug("Evicted document '%s' from cache", eHandle)
-            evicted.qDocument.deleteLater()
+            evicted.qDocument.softDelete()
 
     def remove(self, tHandle: str) -> None:
         """Remove and discard a cached entry, if present."""
         if entry := self._entries.pop(tHandle, None):
-            entry.qDocument.deleteLater()
+            entry.qDocument.softDelete()
             logger.debug("Removed document '%s' from cache", tHandle)
 
     def clear(self) -> None:
         """Discard all cached entries."""
         for entry in self._entries.values():
-            entry.qDocument.deleteLater()
+            entry.qDocument.softDelete()
         self._entries.clear()
         logger.debug("Cleared document cache")
 

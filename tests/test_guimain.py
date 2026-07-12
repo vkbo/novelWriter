@@ -1128,6 +1128,38 @@ def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI: GuiMain, projPath, fncPath,
 
 
 @pytest.mark.gui
+def testGuiMain_OpenDocument_ReentrancyGuard(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test that openDocument ignores a re-entrant call made while a
+    document switch is already in progress, instead of letting it
+    clobber the in-progress switch and the document cache.
+
+    This models what happens holding F3 with project-wide loop search
+    enabled: loadText calls QApplication.processEvents while a switch
+    is still in progress, and if that dispatches an already-queued
+    key-repeat event, it can re-trigger another document switch before
+    the first one has finished setting up the cache and editor state.
+    """
+    buildTestProject(nwGUI, projPath)
+
+    reentered = []
+    realProcessEvents = QApplication.processEvents
+
+    def reentrantProcessEvents(*args, **kwargs):
+        if not reentered:
+            reentered.append(True)
+            assert nwGUI.openDocument(C.hChapterDoc) is False
+        return realProcessEvents(*args, **kwargs)
+
+    monkeypatch.setattr(QApplication, "processEvents", staticmethod(reentrantProcessEvents))
+
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    assert reentered == [True]
+    assert nwGUI.docEditor.docHandle == C.hSceneDoc
+    assert C.hSceneDoc in nwGUI.docEditor.docCache
+    assert C.hChapterDoc not in nwGUI.docEditor.docCache
+
+
+@pytest.mark.gui
 def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test switching focus and view of the main window."""
     buildTestProject(nwGUI, projPath)

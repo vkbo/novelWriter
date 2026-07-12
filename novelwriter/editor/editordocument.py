@@ -74,6 +74,14 @@ class GuiTextDocument(QTextDocument):
     #  Methods
     ##
 
+    def softDelete(self) -> None:
+        """Since calling deleteLater is sometimes not safe from Python,
+        as the C++ object can be deleted before the Python process is
+        done with the object, we instead set the document's parent to
+        None so that it gets garbage collected when it runs out of scope.
+        """
+        self.setParent(None)  # type: ignore
+
     def setTextContent(self, text: str, tHandle: str) -> None:
         """Set the text content of the document."""
         self._syntax.setHandle(tHandle)
