@@ -386,6 +386,7 @@ class GuiMain(QMainWindow):
 
         if saveOK:
             self.closeDocument()
+            self.docEditor.docCache.clear()
             self.docViewer.clearNavHistory()
             self.closeViewerPanel(byUser=False)
 

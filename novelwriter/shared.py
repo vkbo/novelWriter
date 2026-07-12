@@ -198,6 +198,8 @@ class SharedData(QObject):
 
     def closeDocument(self, tHandle: str | None = None) -> None:
         """Close the document editor, optionally a specific document."""
+        if tHandle is not None:
+            self.mainGui.docEditor.docCache.remove(tHandle)
         if tHandle is None or tHandle == self.mainGui.docEditor.docHandle:
             self.mainGui.closeDocument()
         if tHandle is None or tHandle == self.mainGui.docViewer.docHandle:

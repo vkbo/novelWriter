@@ -45,6 +45,7 @@ from PyQt6.QtGui import (
     QDragEnterEvent,
     QDragMoveEvent,
     QDropEvent,
+    QFont,
     QInputMethodEvent,
     QKeyEvent,
     QKeySequence,
@@ -69,6 +70,7 @@ from novelwriter.core.document import ProjectDocument
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.editor.autoreplace import TextAutoReplace
 from novelwriter.editor.completer import CommandCompleter
+from novelwriter.editor.documentcache import DocumentCache
 from novelwriter.editor.editfooter import GuiDocEditFooter
 from novelwriter.editor.editheader import GuiDocEditHeader
 from novelwriter.editor.editordocument import GuiTextDocument
@@ -160,8 +162,10 @@ class GuiDocEditor(QTextEdit):
         "_completer",
         "_dirtyBlocks",
         "_doReplace",
+        "_docCache",
         "_docChanged",
         "_docHandle",
+        "_emptyDocument",
         "_followTagEdit",
         "_followTagView",
         "_formatErrFormat",
@@ -304,7 +308,9 @@ class GuiDocEditor(QTextEdit):
         self._completer.insertText.connect(self._insertCompletion)
 
         # Create Custom Document
-        self._qDocument = GuiTextDocument(self)
+        self._docCache = DocumentCache()
+        self._emptyDocument = GuiTextDocument(self)
+        self._qDocument = self._emptyDocument
         self.setDocument(self._qDocument)
 
         # Connect Editor and Document Signals
@@ -437,8 +443,13 @@ class GuiDocEditor(QTextEdit):
         """Check if the current document is empty."""
         return self._qDocument.isEmpty()
 
+    @property
+    def docCache(self) -> DocumentCache:
+        """Return the document cache."""
+        return self._docCache
+
     ##
-    #  Methods
+    #  Core Methods
     ##
 
     def clearEditor(self) -> None:
@@ -447,7 +458,7 @@ class GuiDocEditor(QTextEdit):
         """
         self._nwDocument = None
         self.setReadOnly(True)
-        self.clear()
+        self._setActiveDocument(self._emptyDocument)
         self._timerDoc.stop()
         self._timerSel.stop()
 
@@ -535,18 +546,12 @@ class GuiDocEditor(QTextEdit):
         # Set the font. See issues #1862 and #1875.
         font = fontMatcher(CONFIG.textFont)
         self.setFont(font)
-        self._qDocument.setDefaultFont(font)
         self.docHeader.updateFont()
         self.docFooter.updateFont()
         self.docSearch.updateFont()
 
-        # Update highlighter settings
-        self._qDocument.syntaxHighlighter.initHighlighter()
-
-        # Set default text margins
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
-        self._qDocument.setDocumentMargin(4)
         self._vpMargin = max(CONFIG.textMargin - 4, 0)
         self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
 
@@ -558,7 +563,13 @@ class GuiDocEditor(QTextEdit):
             options.setFlags(options.flags() | QTextOption.Flag.ShowTabsAndSpaces)
         if CONFIG.showLineEndings:
             options.setFlags(options.flags() | QTextOption.Flag.ShowLineAndParagraphSeparators)
-        self._qDocument.setDefaultTextOption(options)
+
+        # Refresh settings on the active document, plus any cached
+        # documents that are not currently visible
+        self._refreshDocumentSettings(self._qDocument, font, options)
+        for qDocument in self._docCache.documents():
+            if qDocument is not self._qDocument:
+                self._refreshDocumentSettings(qDocument, font, options)
 
         # Scrolling
         if CONFIG.hideVScroll:
@@ -583,9 +594,6 @@ class GuiDocEditor(QTextEdit):
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
         if self._docHandle:
-            self._qDocument.setLineHeight(CONFIG.lineHeight)
-            self._qDocument.syntaxHighlighter.rehighlight()
-            self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
             self._beginCheckPass()
             self.docHeader.setHandle(self._docHandle)
         else:
@@ -601,16 +609,26 @@ class GuiDocEditor(QTextEdit):
         happen if the file contains binary elements or an encoding that
         novelWriter does not support. If loading is successful, or the
         document is new (empty string), we set up the editor for editing
-        the file.
+        the file. If the document was recently open, it is instead
+        restored from the document cache, along with its undo history.
         """
-        self._nwDocument = SHARED.project.storage.getDocument(tHandle)
-        self._nwItem = self._nwDocument.nwItem
+        cached = self._docCache.get(tHandle)
+        if cached:
+            self._nwDocument = cached.nwDocument
+            self._nwItem = self._nwDocument.nwItem
+        else:
+            self._nwDocument = SHARED.project.storage.getDocument(tHandle)
+            self._nwItem = self._nwDocument.nwItem
+
         if not (self._nwItem and self._nwItem.itemType == nwItemType.FILE):
             logger.debug("Requested item '%s' is not a document", tHandle)
+            if cached:
+                self._docCache.remove(tHandle)
             self.clearEditor()
             return False
 
-        if (text := self._nwDocument.readDocument()) is None:
+        text = ""
+        if cached is None and (text := self._nwDocument.readDocument()) is None:
             # There was an I/O error
             self.clearEditor()
             return False
@@ -618,9 +636,14 @@ class GuiDocEditor(QTextEdit):
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self._docHandle = tHandle
 
-        self._allowAutoReplace(False)
-        self._qDocument.setTextContent(text, tHandle)
-        self._allowAutoReplace(True)
+        if cached:
+            self._setActiveDocument(cached.qDocument)
+        else:
+            self._setActiveDocument(GuiTextDocument(self))
+            self._allowAutoReplace(False)
+            self._qDocument.setTextContent(text, tHandle)
+            self._allowAutoReplace(True)
+
         self._beginCheckPass()
         QApplication.processEvents()
 
@@ -639,15 +662,21 @@ class GuiDocEditor(QTextEdit):
         self.docHeader.setHandle(tHandle)
         self.docFooter.setHandle(tHandle)
 
-        # This is a hack to fix invisible cursor on an empty document
-        if self._qDocument.characterCount() <= 1:
-            self.setPlainText("\n")
-            self.setPlainText("")
-            self.setCursorPosition(0)
+        if cached is None:
+            # This is a hack to fix invisible cursor on an empty document
+            if self._qDocument.characterCount() <= 1:
+                self.setPlainText("\n")
+                self.setPlainText("")
+                self.setCursorPosition(0)
 
-        QApplication.processEvents()
-        self.setDocumentChanged(False)
-        self._qDocument.clearUndoRedoStacks()
+            QApplication.processEvents()
+            self.setDocumentChanged(False)
+            self._qDocument.clearUndoRedoStacks()
+            self._docCache.store(tHandle, self._nwDocument, self._qDocument)
+        else:
+            QApplication.processEvents()
+            self.setDocumentChanged(False)
+
         self.docToolBar.setVisible(CONFIG.showEditToolBar)
 
         # Process State Changes
@@ -777,6 +806,34 @@ class GuiDocEditor(QTextEdit):
             if frameFormat.bottomMargin() != bottomMargin:
                 frameFormat.setBottomMargin(bottomMargin)
                 rootFrame.setFrameFormat(frameFormat)
+
+    ##
+    #  Internal Core Methods
+    ##
+
+    def _setActiveDocument(self, qDocument: GuiTextDocument) -> None:
+        """Attach a text document to the editor widget, moving the
+        contentsChange signal connection over to the new document.
+        """
+        if qDocument is not self._qDocument:
+            self._qDocument.contentsChange.disconnect(self._docChange)
+            self._qDocument = qDocument
+            self.setDocument(self._qDocument)
+            self._qDocument.contentsChange.connect(self._docChange)
+
+    def _refreshDocumentSettings(self, qDocument: GuiTextDocument, font: QFont, options: QTextOption) -> None:
+        """Apply the current user settings to a single text document.
+        Used to keep cached, currently invisible documents in sync
+        with editor settings, so they don't show stale formatting
+        when swapped back into view.
+        """
+        qDocument.setDefaultFont(font)
+        qDocument.syntaxHighlighter.initHighlighter()
+        qDocument.setDocumentMargin(4)
+        qDocument.setDefaultTextOption(options)
+        qDocument.setLineHeight(CONFIG.lineHeight)
+        qDocument.syntaxHighlighter.rehighlight()
+        qDocument.markContentsDirty(0, qDocument.characterCount())
 
     ##
     #  Getters
