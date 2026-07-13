@@ -28,22 +28,24 @@ from enum import Enum
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QGridLayout, QLabel, QWidget
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import elide
 from novelwriter.constants import nwLabels, nwStats, trConst, trStats
 from novelwriter.enum import nwChange
+from novelwriter.extensions.expandpanel import NExpandablePanel
 from novelwriter.types import QtAlignLeft, QtAlignLeftBase, QtAlignRight, QtAlignRightBase, QtAlignRightMiddle
 
 logger = logging.getLogger(__name__)
 
 
-class GuiItemDetails(QWidget):
+class GuiItemDetails(NExpandablePanel):
     """GUI: Project Item Details Panel."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiItemDetails")
+        self.setTitle(self.tr("Details"))
 
         # Internal Variables
         self._handle = None
@@ -168,7 +170,8 @@ class GuiItemDetails(QWidget):
         self.mainBox.setVerticalSpacing(1)
         self.mainBox.setContentsMargins(6, 6, 6, 6)
 
-        self.setLayout(self.mainBox)
+        self.setContentLayout(self.mainBox)
+        self.setExpanded(CONFIG.showDetailsPanel)
 
         self.updateTheme()
 
@@ -205,6 +208,7 @@ class GuiItemDetails(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        super().updateTheme()
         logger.debug("Theme Update: GuiItemDetails")
         self.updateViewBox(self._handle)
 

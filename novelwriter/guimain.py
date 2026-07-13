@@ -849,6 +849,7 @@ class GuiMain(QMainWindow):
             if self.docViewerPanel.isVisible():
                 CONFIG.viewPanePos = self.splitView.sizes()
 
+        CONFIG.showDetailsPanel = self.itemDetails.isExpanded()
         CONFIG.showViewerPanel = self.docViewerPanel.isVisible()
         wFull = Qt.WindowState.WindowFullScreen
         if self.windowState() & wFull != wFull:
