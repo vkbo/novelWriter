@@ -27,8 +27,9 @@ from time import time
 
 import pytest
 
-from PyQt6.QtCore import QModelIndex, Qt
-from PyQt6.QtGui import QAction
+from PyQt6.QtCore import QModelIndex, QRect, Qt
+from PyQt6.QtGui import QAction, QPainter, QPixmap
+from PyQt6.QtWidgets import QStyleOptionViewItem
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwChange, nwDocMode, nwView
@@ -284,4 +285,42 @@ def testGuiProjectSearch_EdgeCases(nwGUI, fncPath, mockRnd, ipsumText):
 
     search.closeProjectTasks()
     assert model.rowCount(root) == 0
+
+
+@pytest.mark.gui
+def testGuiProjectSearch_DelegatePaint(nwGUI, fncPath, mockRnd):
+    """Test the search result delegate's paint code directly for the
+    branches not exercised by normal interaction: leaning toward the
+    shorter side when centring isn't possible, and a zero-length match.
+    """
+    mockRnd.reset()
+    buildTestProject(nwGUI, fncPath)
+    item = SHARED.project.tree[C.hSceneDoc]
+    assert item is not None
+
+    nwGUI._changeView(nwView.SEARCH)
+    search = nwGUI.projSearch
+    model = search._model
+    delegate = search._matchDelegate
+    root = QModelIndex()
+
+    option = QStyleOptionViewItem()
+    option.rect = QRect(0, 0, 80, 20)
+    option.font = search.searchResult.font()
+    pixmap = QPixmap(80, 20)
+
+    # A long preceding context and no following text leans the visible
+    # window toward the left instead of trying to centre it
+    model.setResult(item, [(0, 5, "a" * 50 + "MATCH", 50)], False)
+    matchIdx = model.index(0, 0, model.index(0, 0, root))
+    painter = QPainter(pixmap)
+    delegate.paint(painter, option, matchIdx)
+    painter.end()
+
+    # A zero-length match skips the highlight fill, but still renders
+    model.setResult(item, [(5, 0, "some context text", 5)], False)
+    matchIdx = model.index(0, 0, model.index(0, 0, root))
+    painter = QPainter(pixmap)
+    delegate.paint(painter, option, matchIdx)
+    painter.end()
     assert search.searchText.text() == ""

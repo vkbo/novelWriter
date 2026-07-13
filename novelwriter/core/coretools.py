@@ -327,15 +327,40 @@ class DocSearch:
         for res in self._regEx.finditer(text):
             pos = res.start(0)
             num = len(res.group(0))
-            lim = text[:pos].rfind("\n") + 1
-            cut = text[lim:pos].rfind(" ") + lim + 1
-            context = text[cut : cut + 100].partition("\n")[0]
+            end = pos + num
+
+            lStart = text.rfind("\n", 0, pos) + 1
+            lEndPos = text.find("\n", end)
+            lEnd = lEndPos if lEndPos != -1 else len(text)
+
+            left = max(lStart, pos - 100)
+            if left > lStart:
+                sentence = -1
+                for term in (". ", "! ", "? "):
+                    found = text.rfind(term, left, pos)
+                    if found != -1:
+                        sentence = max(sentence, found + len(term))
+                if sentence != -1:
+                    left = sentence
+                else:
+                    space = text.find(" ", left, pos)
+                    if space != -1:
+                        left = space + 1
+
+            right = min(lEnd, end + 100)
+            if right < lEnd:
+                space = text.rfind(" ", end, right)
+                if space != -1:
+                    right = space
+
+            context = text[left:right]
             if context:
-                results.append((pos, num, context, pos - cut))
+                results.append((pos, num, context, pos - left))
                 count += 1
                 if count >= nwConst.MAX_SEARCH_RESULT:
                     capped = True
                     break
+
         return results, capped
 
     ##

@@ -62,6 +62,7 @@ QtTextUserProperty = QTextFormat.Property.UserProperty
 
 QtPropLineHeight = 1  # QTextBlockFormat.LineHeightTypes.ProportionalHeight
 
+QtElideLeft = Qt.TextElideMode.ElideLeft
 QtElideRight = Qt.TextElideMode.ElideRight
 
 # Painter Types
