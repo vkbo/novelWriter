@@ -28,25 +28,28 @@ from enum import Enum
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QGridLayout, QLabel, QWidget
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import elide
 from novelwriter.constants import nwLabels, nwStats, trConst, trStats
 from novelwriter.enum import nwChange
+from novelwriter.extensions.expandpanel import NExpandablePanel
 from novelwriter.types import QtAlignLeft, QtAlignLeftBase, QtAlignRight, QtAlignRightBase, QtAlignRightMiddle
 
 logger = logging.getLogger(__name__)
 
 
-class GuiItemDetails(QWidget):
+class GuiItemDetails(NExpandablePanel):
     """GUI: Project Item Details Panel."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiItemDetails")
+        self.setTitle(self.tr("Details"))
 
         # Internal Variables
         self._handle = None
+        self._refresh = None
 
         # Predefined
         fntLabel = SHARED.theme.guiFontSmallB
@@ -168,9 +171,11 @@ class GuiItemDetails(QWidget):
         self.mainBox.setVerticalSpacing(1)
         self.mainBox.setContentsMargins(6, 6, 6, 6)
 
-        self.setLayout(self.mainBox)
-
+        self.setContentLayout(self.mainBox)
+        self.setExpanded(CONFIG.showDetailsPanel)
         self.updateTheme()
+
+        self.expandedStateChanged.connect(self._expandedStateChanged)
 
         # Make sure the columns for flags and counts don't resize too often
         flagWidth = SHARED.theme.getTextWidth("Mm", fntValue)
@@ -205,11 +210,16 @@ class GuiItemDetails(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        super().updateTheme()
         logger.debug("Theme Update: GuiItemDetails")
         self.updateViewBox(self._handle)
 
     def updateViewBox(self, tHandle: str | None) -> None:
         """Populate the details box from a given handle."""
+        if not self.isExpanded():
+            self._refresh = {"handle": tHandle}
+            return
+
         if not (tHandle and (nwItem := SHARED.project.tree[tHandle])):
             self.clearDetails()
             return
@@ -218,35 +228,25 @@ class GuiItemDetails(QWidget):
         iPx = round(0.9 * SHARED.theme.baseIconHeight)
 
         # Label
-        # =====
-
         _, icon = nwItem.getActiveStatus()
         self.labelIcon.setPixmap(icon.pixmap(iPx, iPx))
         self.labelData.setText(elide(nwItem.itemName, 100))
 
         # Status
-        # ======
-
         status, icon = nwItem.getImportStatus()
         self.statusIcon.setPixmap(icon.pixmap(iPx, iPx))
         self.statusData.setText(status)
 
         # Class
-        # =====
-
         classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass], "root")
         self.classIcon.setPixmap(classIcon.pixmap(iPx, iPx))
         self.classData.setText(trConst(nwLabels.CLASS_NAME[nwItem.itemClass]))
 
         # Layout
-        # ======
-
         self.usageIcon.setPixmap(nwItem.getMainIcon().pixmap(iPx, iPx))
         self.usageData.setText(nwItem.describeMe())
 
         # Counts
-        # ======
-
         if nwItem.isFileType():
             self.cCountData.setText(f"{nwItem.charCount:n}")
             self.wCountData.setText(f"{nwItem.wordCount:n}")
@@ -255,6 +255,8 @@ class GuiItemDetails(QWidget):
             self.cCountData.setText("–")
             self.wCountData.setText("–")
             self.pCountData.setText("–")
+
+        self._refresh = None
 
         return
 
@@ -270,3 +272,13 @@ class GuiItemDetails(QWidget):
                 self.updateViewBox(tHandle)
             elif change == nwChange.DELETE:
                 self.updateViewBox(None)
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(bool)
+    def _expandedStateChanged(self, state: bool) -> None:
+        """Process the expanded state change."""
+        if state and isinstance(self._refresh, dict):
+            self.updateViewBox(self._refresh.get("handle"))
