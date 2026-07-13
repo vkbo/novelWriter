@@ -517,7 +517,7 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     result = [(i.itemHandle, r, c) for i, r, c in search.iterSearch(project, "Scene")]
     assert result[0] == (C.hTitlePage, [], False)
     assert result[1] == (C.hChapterDoc, [], False)
-    assert result[2] == (C.hSceneDoc, [(8, 5, "Scene")], False)
+    assert result[2] == (C.hSceneDoc, [(8, 5, "Scene", 0)], False)
 
     # Patterns
     # ========
@@ -537,7 +537,7 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
 
     def pruneResult(result, index):
         temp = [(i.itemHandle, r, c) for i, r, c in result][index][1]
-        return [(s, n, c.split()[0]) for s, n, c in temp]
+        return [(s, n, c.split()[0]) for s, n, c, _ in temp]
 
     # Defaults
     assert pruneResult(search.iterSearch(project, "Lorem"), 2) == [

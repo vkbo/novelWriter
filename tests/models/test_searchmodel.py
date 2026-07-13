@@ -29,7 +29,7 @@ from PyQt6.QtWidgets import QApplication
 
 from novelwriter.core.project import NWProject
 from novelwriter.models.searchmodel import SearchNode, SearchResultModel
-from novelwriter.types import QtDisplayRole, QtForegroundRole
+from novelwriter.types import QtDisplayRole, QtForegroundRole, QtUserRole
 
 from tests.helpers import C, buildTestProject
 
@@ -76,9 +76,9 @@ def testSearchModel_ModelTest(mockGUI, mockRnd, fncPath):
     model = SearchResultModel()
     QAbstractItemModelTester(model)
 
-    model.setResult(title, [(0, 4, "Text one")], False)
-    model.setResult(scene, [(0, 4, "Text two"), (10, 5, "Text three")], False)
-    model.setResult(title, [(0, 4, "Text one"), (20, 4, "Text four")], False)
+    model.setResult(title, [(0, 4, "Text one", 0)], False)
+    model.setResult(scene, [(0, 4, "Text two", 0), (10, 5, "Text three", 0)], False)
+    model.setResult(title, [(0, 4, "Text one", 0), (20, 4, "Text four", 0)], False)
     model.updateTheme()
     model.clear()
 
@@ -110,8 +110,8 @@ def testSearchModel_Interface(mockGUI, mockRnd, fncPath):
     assert model.indexFromHandle(title.itemHandle).isValid() is False
 
     # Populate with two documents, one capped
-    model.setResult(title, [(0, 4, "Text one")], False)
-    model.setResult(scene, [(0, 4, "Text two"), (10, 5, "Text three")], True)
+    model.setResult(title, [(0, 4, "Text one", 0)], False)
+    model.setResult(scene, [(0, 4, "Text two", 5), (10, 5, "Text three", 5)], True)
     assert model.rowCount(root) == 2
 
     titleIdx = model.index(0, 0, root)
@@ -139,6 +139,10 @@ def testSearchModel_Interface(mockGUI, mockRnd, fncPath):
     assert model.handle(match0) == scene.itemHandle
     assert model.result(match0) == (scene.itemHandle, 0, 4)
     assert model.result(match1) == (scene.itemHandle, 10, 5)
+
+    # Match-level highlight span, clamped to the context text's bounds
+    assert model.data(match0, QtUserRole) == (5, 8)
+    assert model.data(match1, QtUserRole) == (5, 10)
 
     # Parent lookups
     assert model.parent(match0) == sceneIdx
@@ -175,9 +179,9 @@ def testSearchModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     assert model.rowCount(root) == 0
 
     # Documents are appended in the order they are added
-    model.setResult(title, [(0, 4, "one")], False)
-    model.setResult(chapter, [(0, 4, "two")], False)
-    model.setResult(scene, [(0, 4, "three")], False)
+    model.setResult(title, [(0, 4, "one", 0)], False)
+    model.setResult(chapter, [(0, 4, "two", 0)], False)
+    model.setResult(scene, [(0, 4, "three", 0)], False)
     assert [model.data(model.index(i, 0, root), QtDisplayRole) for i in range(3)] == [
         "Title Page",
         "New Chapter",
@@ -185,7 +189,7 @@ def testSearchModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     ]
 
     # Updating a document replaces it in its own row, leaving siblings alone
-    model.setResult(chapter, [(0, 5, "updated")], False)
+    model.setResult(chapter, [(0, 5, "updated", 0)], False)
     assert model.rowCount(root) == 3
     assert [model.data(model.index(i, 0, root), QtDisplayRole) for i in range(3)] == [
         "Title Page",
@@ -200,7 +204,7 @@ def testSearchModel_Edit(qtbot, mockGUI, mockRnd, fncPath):
     # allows a live per-document refresh to tell a stale result apart
     firstEntry = model.entry(chapter.itemHandle)
     assert firstEntry is not None
-    model.setResult(chapter, [(0, 5, "updated again")], False)
+    model.setResult(chapter, [(0, 5, "updated again", 0)], False)
     secondEntry = model.entry(chapter.itemHandle)
     assert secondEntry is not None
     assert secondEntry[0] == firstEntry[0]

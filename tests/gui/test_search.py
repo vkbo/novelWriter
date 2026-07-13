@@ -234,6 +234,12 @@ def testGuiProjectSearch_LiveRefresh(nwGUI, fncPath, mockRnd, ipsumText):
     search.textChanged(C.hTitlePage, time() + 1000.0)
     assert model.entry(C.hTitlePage) is None
 
+    # A live refresh that yields no results is a no-op, leaving the stale entry
+    nwGUI.docEditor.setPlainText("### New Scene\n\nNothing to see here.")
+    search.textChanged(C.hSceneDoc, time() + 2000.0)
+    sceneIdx = model.index(0, 0, root)
+    assert model.rowCount(sceneIdx) == 2
+
 
 @pytest.mark.gui
 def testGuiProjectSearch_EdgeCases(nwGUI, fncPath, mockRnd, ipsumText):

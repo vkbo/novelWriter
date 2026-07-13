@@ -27,8 +27,8 @@ from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QModelIndex, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QAction, QCursor, QKeyEvent, QPalette
+from PyQt6.QtCore import QModelIndex, QRect, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QAction, QCursor, QKeyEvent, QPainter, QPalette
 from PyQt6.QtWidgets import (
     QAbstractItemView,
     QApplication,
@@ -36,6 +36,9 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QStyle,
+    QStyledItemDelegate,
+    QStyleOptionViewItem,
     QToolBar,
     QTreeView,
     QVBoxLayout,
@@ -55,6 +58,8 @@ from novelwriter.types import (
     QtKeyDown,
     QtKeyUp,
     QtModShift,
+    QtSelected,
+    QtUserRole,
 )
 
 if TYPE_CHECKING:
@@ -141,6 +146,9 @@ class GuiProjectSearch(QWidget):
         self.searchResult.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.searchResult.doubleClicked.connect(self._searchResultDoubleClicked)
         self.searchResult.setAccessibleName(self.viewLabel.text())
+
+        self._matchDelegate = _SearchResultDelegate(self.searchResult)
+        self.searchResult.setItemDelegateForColumn(SearchNode.C_NAME, self._matchDelegate)
 
         if header := self.searchResult.header():  # pragma: no branch
             header.setStretchLastSection(False)
@@ -274,8 +282,17 @@ class GuiProjectSearch(QWidget):
                 self._search.setUserRegEx(self.tbRegEx.isChecked())
                 self._search.setCaseSensitive(self.tbCase.isChecked())
                 self._search.setWholeWords(self.tbWord.isChecked())
+                handles = []
                 for item, results, capped in self._search.iterSearch(SHARED.project, text):
-                    self._addResult(item, results, capped)
+                    if results:
+                        self._model.setResult(item, results, capped)
+                        handles.append(item.itemHandle)
+                # Expanding a row forces the tree view to lay out all
+                # currently loaded rows, so this is deferred until after
+                # all results are in the model to avoid doing it once
+                # per document as the tree grows
+                for handle in handles:
+                    self._expandResult(handle)
             logger.debug("Search took %.3f ms", 1000 * (time() - start))
             QApplication.restoreOverrideCursor()
         self._blocked = False
@@ -317,12 +334,71 @@ class GuiProjectSearch(QWidget):
     #  Internal Functions
     ##
 
-    def _addResult(self, nwItem: ProjectItem, results: list[tuple[int, int, str]], capped: bool) -> None:
+    def _addResult(self, nwItem: ProjectItem, results: list[tuple[int, int, str, int]], capped: bool) -> None:
         """Add or update a document's results, and update the view."""
         if results:
             self._model.setResult(nwItem, results, capped)
-            parent = self._model.indexFromHandle(nwItem.itemHandle)
-            for row in range(self._model.rowCount(parent)):
-                self.searchResult.setFirstColumnSpanned(row, parent, True)
-            self.searchResult.setExpanded(parent, True)
+            self._expandResult(nwItem.itemHandle)
             QApplication.processEvents()
+
+    def _expandResult(self, handle: str) -> None:
+        """Span and expand a document's rows in the result tree."""
+        parent = self._model.indexFromHandle(handle)
+        for row in range(self._model.rowCount(parent)):
+            self.searchResult.setFirstColumnSpanned(row, parent, True)
+        self.searchResult.setExpanded(parent, True)
+
+
+class _SearchResultDelegate(QStyledItemDelegate):
+    """GUI: Search Result Match Delegate.
+
+    Paints the match column, highlighting the matched substring of a
+    match-level row with the palette's highlight colour. Document-level
+    rows have no span data and are left to the default rendering.
+    """
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        """Paint a search result entry, highlighting the match, if any."""
+        span = index.data(QtUserRole)
+        if not isinstance(span, tuple):
+            super().paint(painter, option, index)
+            return
+
+        opt = QStyleOptionViewItem(option)
+        self.initStyleOption(opt, index)
+        text = opt.text or ""
+        opt.text = ""
+
+        style = (opt.widget.style() if opt.widget else None) or QApplication.style()
+        if style is None:  # pragma: no cover
+            super().paint(painter, option, index)
+            return
+
+        style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget)
+
+        hlStart, hlEnd = span
+        rect = style.subElementRect(QStyle.SubElement.SE_ItemViewItemText, opt, opt.widget)
+        selected = bool(opt.state & QtSelected)
+        palette = opt.palette
+        plainColor = palette.highlightedText().color() if selected else palette.text().color()
+        matchColor = plainColor if selected else palette.highlight().color()
+
+        painter.save()
+        painter.setFont(opt.font)
+        painter.setClipRect(rect)
+
+        metrics = painter.fontMetrics()
+        flags = int(Qt.TextFlag.TextSingleLine) | int(QtAlignMiddle)
+        x = rect.x()
+        for chunk, color in (
+            (text[:hlStart], plainColor),
+            (text[hlStart:hlEnd], matchColor),
+            (text[hlEnd:], plainColor),
+        ):
+            if chunk:
+                width = metrics.horizontalAdvance(chunk)
+                painter.setPen(color)
+                painter.drawText(QRect(x, rect.y(), width, rect.height()), flags, chunk)
+                x += width
+
+        painter.restore()

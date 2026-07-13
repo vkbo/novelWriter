@@ -305,7 +305,7 @@ class DocSearch:
 
     def iterSearch(
         self, project: NWProject, search: str
-    ) -> Iterable[tuple[ProjectItem, list[tuple[int, int, str]], bool]]:
+    ) -> Iterable[tuple[ProjectItem, list[tuple[int, int, str, int]], bool]]:
         """Iterate through documents in a project and apply search."""
         self._regEx = re.compile(self._buildPattern(search), self._opts)
         logger.debug("Searching with pattern '%s'", self._regEx.pattern)
@@ -319,7 +319,7 @@ class DocSearch:
         SHARED.clearMainProgress()
         return
 
-    def searchText(self, text: str) -> tuple[list[tuple[int, int, str]], bool]:
+    def searchText(self, text: str) -> tuple[list[tuple[int, int, str, int]], bool]:
         """Search a piece of text for RegEx matches."""
         count = 0
         capped = False
@@ -331,7 +331,7 @@ class DocSearch:
             cut = text[lim:pos].rfind(" ") + lim + 1
             context = text[cut : cut + 100].partition("\n")[0]
             if context:
-                results.append((pos, num, context))
+                results.append((pos, num, context, pos - cut))
                 count += 1
                 if count >= nwConst.MAX_SEARCH_RESULT:
                     capped = True
