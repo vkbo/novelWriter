@@ -21,147 +21,261 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import re
+
 from time import time
 
 import pytest
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QModelIndex, Qt
 from PyQt6.QtGui import QAction
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwChange, nwDocMode, nwView
-from novelwriter.gui.search import GuiProjectSearch
-from novelwriter.types import QtKeyDown, QtKeyReturn, QtKeyRight, QtKeyUp
+from novelwriter.types import QtDisplayRole, QtKeyDown, QtKeyReturn, QtKeyUp
+
+from tests.helpers import C, buildTestProject
 
 
 @pytest.mark.gui
-def testGuiProjectSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
-    """Test navigating the novel tree."""
-    nwGUI.openProject(prjLipsum)
+def testGuiProjectSearch_Interaction(qtbot, monkeypatch, nwGUI, fncPath, mockRnd, ipsumText):
+    """Test running a search and interacting with the result tree via
+    the keyboard, mouse and selection.
+    """
+    mockRnd.reset()
+    buildTestProject(nwGUI, fncPath)
+    project = SHARED.project
+    project.storage.getDocument(C.hChapterDoc).writeDocument("## New Chapter\n\n" + ipsumText[0])
+    project.storage.getDocument(C.hSceneDoc).writeDocument("### New Scene\n\n" + ipsumText[1])
+
     nwGUI._changeView(nwView.SEARCH)
     search = nwGUI.projSearch
+    model = search._model
+    root = QModelIndex()
 
-    def totalCount():
-        res = search.searchResult
-        return sum(
-            int(res.topLevelItem(i).text(GuiProjectSearch.C_COUNT).strip("()")) for i in range(res.topLevelItemCount())
-        )
-
-    # Plain search
-    search.searchText.setText("Lorem")
+    # Run a search that hits both documents
+    search.beginSearch("Lorem")
     search.searchAction.activate(QAction.ActionEvent.Trigger)
-    assert search.searchResult.topLevelItemCount() == 14
-    assert totalCount() == 43
+    assert model.rowCount(root) == 2
 
-    firstDoc = search.searchResult.topLevelItem(0)
-    firstResult = firstDoc.child(0)
-    assert firstDoc is not None
-    handle = firstDoc.data(GuiProjectSearch.C_RESULT, GuiProjectSearch.D_HANDLE)
-    result = firstResult.data(GuiProjectSearch.C_RESULT, GuiProjectSearch.D_RESULT)
-    assert result == (handle, 3, 5)
+    # Pressing return while the search box has focus re-runs the search
+    search.searchText.setFocus()
+    search.processReturn()
+    assert model.rowCount(root) == 2
 
-    # Move down
+    chapterIdx = model.index(0, 0, root)
+    sceneIdx = model.index(1, 0, root)
+    assert model.data(chapterIdx, QtDisplayRole) == "New Chapter"
+    assert model.data(sceneIdx, QtDisplayRole) == "New Scene"
+
+    firstResult = model.index(0, 0, chapterIdx)
+    handle, start, length = model.result(firstResult)
+    assert handle == C.hChapterDoc
+
+    # Move down from the search box selects the first result
     search.searchText.setFocus()
     qtbot.keyClick(search, QtKeyDown)
-    assert firstDoc.isSelected() is True
+    assert search.searchResult.currentIndex() == chapterIdx
 
-    # Move up
+    # Right does nothing special, and doesn't clear the selection
+    qtbot.keyClick(search, Qt.Key.Key_Right)
+    assert search.searchResult.currentIndex() == chapterIdx
+
+    # Move up from the top result returns focus to the search box
     qtbot.keyClick(search, QtKeyUp)
-    assert firstDoc.isSelected() is False
+    assert search.searchText.hasFocus() is True
 
-    # Move right does nothing
-    qtbot.keyClick(search, QtKeyRight)
-    assert firstDoc.isSelected() is False
+    # Selecting a document-level row emits its handle
+    search.searchResult.setCurrentIndex(chapterIdx)
+    assert nwGUI.itemDetails._handle == C.hChapterDoc
 
-    # Selecting updates details
-    firstDoc.setSelected(True)
+    # Selecting a match row emits its document's handle
+    search.searchResult.setCurrentIndex(firstResult)
     assert nwGUI.itemDetails._handle == handle
 
-    # Other change types for the selected item are ignored
+    # Other change types for the selected item are ignored by the details panel
     nwGUI.itemDetails.onProjectItemChanged(handle, nwChange.CREATE)
+    assert nwGUI.itemDetails._handle == handle
 
-    # Press return
+    # Press return on the selected match to open it at its position
     search.searchResult.setFocus()
-    search.searchResult.clearSelection()
-    firstResult.setSelected(True)
     with monkeypatch.context() as mp:
         mp.setattr(search.searchResult, "hasFocus", lambda *a: True)
         with qtbot.waitSignal(search.openDocumentSelectRequest, timeout=1000) as signal:
             qtbot.keyClick(search, QtKeyReturn)
-            assert signal.args == [handle, 3, 5, False]
+        assert signal.args == [handle, start, length, False]
+
         with qtbot.waitSignal(search.openDocumentRequest, timeout=1000) as signal:
             qtbot.keyClick(search, QtKeyReturn, Qt.KeyboardModifier.ShiftModifier)
-            assert signal.args == [handle, nwDocMode.VIEW, "", True]
+        assert signal.args == [handle, nwDocMode.VIEW, "", True]
 
     assert nwGUI.docEditor.docHandle == handle
-    assert nwGUI.docEditor.textCursor().selectedText() == "Lorem"
 
-    # Double-click
+    # Double-click on a match opens it at its position
     with qtbot.waitSignal(search.openDocumentSelectRequest, timeout=1000) as signal:
-        search._searchResultDoubleClicked(firstResult, 0)
-        assert signal.args == [handle, 3, 5, True]
+        search._searchResultDoubleClicked(firstResult)
+    assert signal.args == [handle, start, length, True]
 
     # Double-click on a document-level entry does nothing
     with qtbot.assertNotEmitted(search.openDocumentSelectRequest):
-        search._searchResultDoubleClicked(firstDoc, 0)
+        search._searchResultDoubleClicked(chapterIdx)
 
     # Press return with no selection does nothing
-    search.searchResult.clearSelection()
+    search.searchResult.setCurrentIndex(QModelIndex())
     with monkeypatch.context() as mp:
         mp.setattr(search.searchResult, "hasFocus", lambda *a: True)
         with qtbot.assertNotEmitted(search.openDocumentSelectRequest):
             qtbot.keyClick(search, QtKeyReturn)
 
+
+@pytest.mark.gui
+def testGuiProjectSearch_Options(qtbot, nwGUI, fncPath, mockRnd, ipsumText):
+    """Test the case sensitive, whole word, and RegEx search options."""
+    mockRnd.reset()
+    buildTestProject(nwGUI, fncPath)
+    project = SHARED.project
+    sceneText = ipsumText[0] + "\n\n" + ipsumText[1]
+    project.storage.getDocument(C.hSceneDoc).writeDocument("### New Scene\n\n" + sceneText)
+
+    nwGUI._changeView(nwView.SEARCH)
+    search = nwGUI.projSearch
+    model = search._model
+    root = QModelIndex()
+
+    def totalCount() -> int:
+        return sum(model.rowCount(model.index(i, 0, root)) for i in range(model.rowCount(root)))
+
     # Case Sensitive
+    # The text has both "Lorem" and a lower case "lorem"
+    caseSensitive = len(re.findall(r"Lorem", sceneText))
+    caseInsensitive = len(re.findall(r"Lorem", sceneText, re.IGNORECASE))
+    assert caseInsensitive > caseSensitive > 0
+
+    search.beginSearch("Lorem")
+    search.searchAction.activate(QAction.ActionEvent.Trigger)
+    assert totalCount() == caseInsensitive
+
     # A real click, rather than setChecked, also triggers a refresh of the current search
     qtbot.mouseClick(search.tbCase, Qt.MouseButton.LeftButton)
     assert CONFIG.searchProjCase is True
-    assert search.searchResult.topLevelItemCount() == 7
-    assert totalCount() == 18
+    assert totalCount() == caseSensitive
     qtbot.mouseClick(search.tbCase, Qt.MouseButton.LeftButton)
     assert CONFIG.searchProjCase is False
 
     # Whole Words
-    search.searchText.setText("dolor")
-    with monkeypatch.context() as mp:
-        mp.setattr(search.searchText, "hasFocus", lambda *a: True)
-        qtbot.keyClick(search, QtKeyReturn)
-
-    assert search.searchResult.topLevelItemCount() == 10
-    assert totalCount() == 34
+    # "Lor" only ever occurs as part of a longer word, so it has hits as a
+    # substring, but none as a whole word
+    search.beginSearch("Lor")
+    search.searchAction.activate(QAction.ActionEvent.Trigger)
+    assert totalCount() > 0
 
     qtbot.mouseClick(search.tbWord, Qt.MouseButton.LeftButton)
     assert CONFIG.searchProjWord is True
-    assert search.searchResult.topLevelItemCount() == 10
-    assert totalCount() == 33
+    assert totalCount() == 0
+    qtbot.mouseClick(search.tbWord, Qt.MouseButton.LeftButton)
+    assert CONFIG.searchProjWord is False
 
     # RegEx
-    qtbot.mouseClick(search.tbRegEx, Qt.MouseButton.LeftButton)
-    assert CONFIG.searchProjRegEx is True
+    # As plain text, the pattern below is not found, but it is as an alternation
     search.beginSearch("(dolor|dolorem)")
     search.searchAction.activate(QAction.ActionEvent.Trigger)
-    assert search.searchResult.topLevelItemCount() == 10
-    assert totalCount() == 34
+    assert totalCount() == 0
 
-    # Re-run search should not change the result
-    search.textChanged(handle, time() + 1000.0)
-    assert search.searchResult.topLevelItemCount() == 10
-    assert totalCount() == 34
+    # The result is empty at this point, so the toggle itself has nothing to
+    # refresh, and the search must be re-run explicitly
+    qtbot.mouseClick(search.tbRegEx, Qt.MouseButton.LeftButton)
+    assert CONFIG.searchProjRegEx is True
+    search.searchAction.activate(QAction.ActionEvent.Trigger)
+    expected = len(re.findall(r"dolor|dolorem", sceneText, re.IGNORECASE))
+    assert expected > 0
+    assert totalCount() == expected
+    qtbot.mouseClick(search.tbRegEx, Qt.MouseButton.LeftButton)
+    assert CONFIG.searchProjRegEx is False
+
+
+@pytest.mark.gui
+def testGuiProjectSearch_LiveRefresh(nwGUI, fncPath, mockRnd, ipsumText):
+    """Test the live per-document refresh triggered while a document is
+    being edited, which keeps stale match positions from lingering.
+    """
+    mockRnd.reset()
+    buildTestProject(nwGUI, fncPath)
+    project = SHARED.project
+    project.storage.getDocument(C.hSceneDoc).writeDocument("### New Scene\n\n" + ipsumText[0])
+
+    nwGUI._changeView(nwView.SEARCH)
+    search = nwGUI.projSearch
+    model = search._model
+    root = QModelIndex()
+
+    search.beginSearch("Lorem")
+    search.searchAction.activate(QAction.ActionEvent.Trigger)
+    assert model.rowCount(root) == 1
+    sceneIdx = model.index(0, 0, root)
+    assert model.rowCount(sceneIdx) == 1
+
+    firstEntry = model.entry(C.hSceneDoc)
+    assert firstEntry is not None
+
+    # Open the document and add another occurrence, but don't save it
+    assert nwGUI.openDocument(C.hSceneDoc)
+    nwGUI.docEditor.setPlainText(nwGUI.docEditor.getText() + "\n\nLorem again.")
+
+    # An older timestamp is considered stale and is ignored
+    search.textChanged(C.hSceneDoc, firstEntry[1] - 1.0)
+    assert model.rowCount(sceneIdx) == 1
+
+    # A newer timestamp triggers a re-search of the live, unsaved editor text
+    search.textChanged(C.hSceneDoc, time() + 1000.0)
+    sceneIdx = model.index(0, 0, root)
+    assert model.rowCount(sceneIdx) == 2
+
+    # A document that has never been searched is ignored
+    search.textChanged(C.hTitlePage, time() + 1000.0)
+    assert model.entry(C.hTitlePage) is None
+
+
+@pytest.mark.gui
+def testGuiProjectSearch_EdgeCases(nwGUI, fncPath, mockRnd, ipsumText):
+    """Test empty search text, re-entrant search calls, and closing the project."""
+    mockRnd.reset()
+    buildTestProject(nwGUI, fncPath)
+    project = SHARED.project
+    project.storage.getDocument(C.hSceneDoc).writeDocument("### New Scene\n\n" + ipsumText[0])
+
+    nwGUI._changeView(nwView.SEARCH)
+    search = nwGUI.projSearch
+    model = search._model
+    root = QModelIndex()
+
+    # Refresh with no prior search does nothing
+    search.refreshCurrentSearch()
+    assert model.rowCount(root) == 0
+
+    # An explicit theme update also refreshes the toolbar icons
+    search.updateTheme()
+
+    # Run a search
+    search.beginSearch("Lorem")
+    search.searchAction.activate(QAction.ActionEvent.Trigger)
+    assert model.rowCount(root) == 1
 
     # A re-entrant search call is a no-op
     search._blocked = True
     search._processSearch()
-    assert search.searchResult.topLevelItemCount() == 10
+    assert model.rowCount(root) == 1
     search._blocked = False
 
     # An empty search text clears the result without searching
     search.searchText.setText("")
     search.searchAction.activate(QAction.ActionEvent.Trigger)
-    assert search.searchResult.topLevelItemCount() == 0
+    assert model.rowCount(root) == 0
 
-    # Refresh with no prior search does nothing
-    search.refreshCurrentSearch()
-    assert search.searchResult.topLevelItemCount() == 0
+    # Re-run the search, then close the project, which clears the model
+    search.beginSearch("Lorem")
+    search.searchAction.activate(QAction.ActionEvent.Trigger)
+    assert model.rowCount(root) == 1
 
-    # qtbot.stop()
-    nwGUI.closeProject()
+    search.closeProjectTasks()
+    assert model.rowCount(root) == 0
+    assert search.searchText.text() == ""

@@ -33,9 +33,9 @@ from novelwriter import SHARED, __hexversion__
 from novelwriter.common import formatTimeStamp, isHandle, isItemClass, isTitleTag, jsonCombine, jsonEncode, safeExists
 from novelwriter.constants import nwFiles, nwKeyWords, nwStyles
 from novelwriter.core.indexdata import NOTE_TYPES, TT_NONE, IndexHeading, IndexNode, T_NoteTypes
-from novelwriter.core.novelmodel import NovelModel
 from novelwriter.enum import nwComment, nwItemClass, nwItemLayout, nwItemType, nwNovelExtra
 from novelwriter.error import logException
+from novelwriter.models.novelmodel import NovelModel
 from novelwriter.text.counting import standardCounter
 from novelwriter.text.formats import processComment, processHeading
 

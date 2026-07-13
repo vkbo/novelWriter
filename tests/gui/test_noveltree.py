@@ -29,9 +29,9 @@ from PyQt6.QtCore import QModelIndex, QPoint
 from PyQt6.QtWidgets import QInputDialog, QToolTip
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.core.novelmodel import NovelModel
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwFocus, nwItemType, nwNovelExtra, nwView
+from novelwriter.models.novelmodel import NovelModel
 from novelwriter.types import QtDisplayRole
 
 from tests.helpers import C, buildTestProject
