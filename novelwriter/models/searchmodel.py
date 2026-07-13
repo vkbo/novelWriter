@@ -178,9 +178,9 @@ class SearchResultModel(QAbstractItemModel):
         parent = parent or QModelIndex()
         if self.hasIndex(row, column, parent):
             if parent.isValid():
-                if child := parent.internalPointer().child(row):
+                if child := parent.internalPointer().child(row):  # pragma: no branch
                     return self.createIndex(row, column, child)
-            elif row < len(self._rows):
+            elif row < len(self._rows):  # pragma: no branch
                 return self.createIndex(row, column, self._rows[row])
         return QModelIndex()
 

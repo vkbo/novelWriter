@@ -28,10 +28,37 @@ from PyQt6.QtTest import QAbstractItemModelTester
 from PyQt6.QtWidgets import QApplication
 
 from novelwriter.core.project import NWProject
-from novelwriter.models.searchmodel import SearchResultModel
+from novelwriter.models.searchmodel import SearchNode, SearchResultModel
 from novelwriter.types import QtDisplayRole, QtForegroundRole
 
 from tests.helpers import C, buildTestProject
+
+
+@pytest.mark.core
+def testSearchNode_Basics():
+    """Test the search node class in isolation."""
+    node = SearchNode("0000000000001")
+
+    # A fresh node has no children and no result
+    assert node.handle == "0000000000001"
+    assert node.result is None
+    assert node.row() == 0
+    assert node.parent() is None
+    assert node.childCount() == 0
+    assert node.child(0) is None
+    assert node.child(-1) is None
+
+    # Setting children updates their parent and row
+    child = SearchNode("0000000000001", (0, 4))
+    node.setChildren([child])
+    assert node.childCount() == 1
+    assert node.child(0) is child
+    assert node.child(1) is None
+    assert child.parent() is node
+    assert child.row() == 0
+
+    node.setRow(3)
+    assert node.row() == 3
 
 
 @pytest.mark.core
@@ -76,6 +103,7 @@ def testSearchModel_Interface(mockGUI, mockRnd, fncPath):
     assert model.columnCount(root) == 2
     assert model.index(0, 0, root).isValid() is False
     assert model.parent(root).isValid() is False
+    assert model.data(root, QtDisplayRole) is None
     assert model.handle(root) is None
     assert model.result(root) is None
     assert model.entry(title.itemHandle) is None

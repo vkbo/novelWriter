@@ -31,7 +31,7 @@ from PyQt6.QtCore import QModelIndex, Qt
 from PyQt6.QtGui import QAction
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocMode, nwView
+from novelwriter.enum import nwChange, nwDocMode, nwView
 from novelwriter.types import QtDisplayRole, QtKeyDown, QtKeyReturn, QtKeyUp
 
 from tests.helpers import C, buildTestProject
@@ -56,6 +56,11 @@ def testGuiProjectSearch_Interaction(qtbot, monkeypatch, nwGUI, fncPath, mockRnd
     # Run a search that hits both documents
     search.beginSearch("Lorem")
     search.searchAction.activate(QAction.ActionEvent.Trigger)
+    assert model.rowCount(root) == 2
+
+    # Pressing return while the search box has focus re-runs the search
+    search.searchText.setFocus()
+    search.processReturn()
     assert model.rowCount(root) == 2
 
     chapterIdx = model.index(0, 0, root)
@@ -86,6 +91,10 @@ def testGuiProjectSearch_Interaction(qtbot, monkeypatch, nwGUI, fncPath, mockRnd
 
     # Selecting a match row emits its document's handle
     search.searchResult.setCurrentIndex(firstResult)
+    assert nwGUI.itemDetails._handle == handle
+
+    # Other change types for the selected item are ignored by the details panel
+    nwGUI.itemDetails.onProjectItemChanged(handle, nwChange.CREATE)
     assert nwGUI.itemDetails._handle == handle
 
     # Press return on the selected match to open it at its position
@@ -242,6 +251,9 @@ def testGuiProjectSearch_EdgeCases(nwGUI, fncPath, mockRnd, ipsumText):
     # Refresh with no prior search does nothing
     search.refreshCurrentSearch()
     assert model.rowCount(root) == 0
+
+    # An explicit theme update also refreshes the toolbar icons
+    search.updateTheme()
 
     # Run a search
     search.beginSearch("Lorem")
