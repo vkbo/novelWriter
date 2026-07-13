@@ -42,11 +42,11 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax, qtAddAction, qtAddMenu, qtLambda
 from novelwriter.constants import nwKeyWords, nwLabels, trConst
-from novelwriter.core.novelmodel import NovelModel
 from novelwriter.enum import nwChange, nwDocMode, nwNovelExtra, nwOutline
 from novelwriter.extensions.modified import NIconToolButton, NTreeView
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
+from novelwriter.models.novelmodel import NovelModel
 from novelwriter.types import QtHeaderStretch, QtHeaderToContents, QtScrollAlwaysOff, QtScrollAsNeeded, QtSizeExpanding
 
 logger = logging.getLogger(__name__)
