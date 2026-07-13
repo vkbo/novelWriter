@@ -1063,9 +1063,9 @@ class GuiMain(QMainWindow):
 
         if updateFlags.theme:
             self.refreshThemeColors(syntax=updateFlags.syntax, force=True)
-        if updateFlags.editor or updateFlags.theme:
+        if updateFlags.editor or updateFlags.syntax or updateFlags.theme:
             self.docEditor.initEditor()
-        if updateFlags.viewer or updateFlags.theme:
+        if updateFlags.viewer or updateFlags.syntax or updateFlags.theme:
             self.docViewer.initViewer()
 
         self.projView.initSettings()

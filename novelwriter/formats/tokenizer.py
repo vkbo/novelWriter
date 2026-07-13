@@ -1055,12 +1055,15 @@ class Tokenizer(ABC):
         allChars = self._counts.get(nwStats.CHARS, 0)
         textChars = self._counts.get(nwStats.CHARS_TEXT, 0)
         titleChars = self._counts.get(nwStats.CHARS_TITLE, 0)
+        dialogChars = self._counts.get(nwStats.CHARS_DIALOG, 0)
 
         allWordChars = self._counts.get(nwStats.WCHARS_ALL, 0)
         textWordChars = self._counts.get(nwStats.WCHARS_TEXT, 0)
         titleWordChars = self._counts.get(nwStats.WCHARS_TITLE, 0)
 
-        for tType, _, tText, _, _ in self._blocks:
+        countDialog = self._hlightDialog
+
+        for tType, _, tText, tFmt, _ in self._blocks:
             tText = tText.replace(nwUnicode.U_ENDASH, " ")
             tText = tText.replace(nwUnicode.U_EMDASH, " ")
 
@@ -1075,11 +1078,37 @@ class Tokenizer(ABC):
                 nPChars = len(tText)
                 nPWChars = len("".join(tPWords))
 
+                dCount = 0
+                if countDialog and tFmt:
+                    intervals = []
+                    dStart = None
+                    aStart = None
+                    for pos, _, meta in tFmt:
+                        if meta == "dialog" and dStart is None:
+                            dStart = pos
+                        elif meta == "enddialog" and dStart is not None:
+                            intervals.append((dStart, pos))
+                            dStart = None
+                        elif meta == "altdialog" and aStart is None:
+                            aStart = pos
+                        elif meta == "endaltdialog" and aStart is not None:
+                            intervals.append((aStart, pos))
+                            aStart = None
+
+                    # Dialogue and alt-dialogue markers may overlap, so the
+                    # intervals are merged to avoid double-counting
+                    prevEnd = -1
+                    for iStart, iEnd in sorted(intervals):
+                        if iEnd > prevEnd:
+                            dCount += iEnd - max(iStart, prevEnd)
+                            prevEnd = iEnd
+
                 paragraphCount += 1
                 allWords += nPWords
                 textWords += nPWords
                 allChars += nPChars
                 textChars += nPChars
+                dialogChars += dCount
                 allWordChars += nPWChars
                 textWordChars += nPWChars
 
@@ -1113,6 +1142,7 @@ class Tokenizer(ABC):
         self._counts[nwStats.CHARS] = allChars
         self._counts[nwStats.CHARS_TEXT] = textChars
         self._counts[nwStats.CHARS_TITLE] = titleChars
+        self._counts[nwStats.CHARS_DIALOG] = dialogChars
 
         self._counts[nwStats.WCHARS_ALL] = allWordChars
         self._counts[nwStats.WCHARS_TEXT] = textWordChars
@@ -1237,11 +1267,11 @@ class Tokenizer(ABC):
             if self._dialogParser.enabled:
                 for pos, end in self._dialogParser(text):
                     temp.append((pos, 0, TextFmt.COL_B, "dialog"))
-                    temp.append((end, 0, TextFmt.COL_E, ""))
+                    temp.append((end, 0, TextFmt.COL_E, "enddialog"))
             if self._rxAltDialog:
                 for res in self._rxAltDialog.finditer(text):
                     temp.append((res.start(0), 0, TextFmt.COL_B, "altdialog"))
-                    temp.append((res.end(0), 0, TextFmt.COL_E, ""))
+                    temp.append((res.end(0), 0, TextFmt.COL_E, "endaltdialog"))
 
         # Post-process text and format
         result = text

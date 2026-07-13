@@ -321,7 +321,7 @@ class NIconToolButton(QToolButton):
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.setIconSize(iconSize)
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
-        if icon and color:
+        if icon and color:  # pragma: no branch
             self.setThemeIcon(icon, color)
 
     def setCheckable(self, checkable: bool) -> None:
@@ -363,7 +363,7 @@ class NIconToggleButton(QToolButton):
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self.setCheckable(True)
         self.setStyleSheet("border: none; background: transparent;")
-        if icon and color:
+        if icon and color:  # pragma: no branch
             self.setThemeIcon(icon, color)
 
     def setThemeIcon(self, icon: str, color: str) -> None:

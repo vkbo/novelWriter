@@ -212,7 +212,7 @@ class GuiDocEditFooter(QWidget):
             cPos = cursor.position() + 1
             cLine = cursor.blockNumber() + 1
             cCount = max(document.characterCount(), 1)
-            self.linesText.setText(self._trLineCount.format(f"{cLine:n}", f"{100 * cPos // cCount:d} %"))
+            self.linesText.setText(self._trLineCount.format(f"{cLine:n}", f"{100 * cPos // cCount:d}\u202f%"))
 
     def updateMainCount(self, count: int, selection: bool) -> None:
         """Update main counter information."""

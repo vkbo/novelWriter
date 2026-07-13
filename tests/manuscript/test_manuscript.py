@@ -33,7 +33,7 @@ from PyQt6.QtPrintSupport import QPrintPreviewDialog
 from PyQt6.QtWidgets import QListWidgetItem
 
 from novelwriter import SHARED
-from novelwriter.constants import nwHeadFmt
+from novelwriter.constants import nwHeadFmt, nwStats
 from novelwriter.manuscript.buildsettings import BuildSettings
 from novelwriter.manuscript.manusbuild import GuiManuscriptBuild
 from novelwriter.manuscript.manuscript import GuiManuscript
@@ -323,14 +323,23 @@ def testGuiManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
         assert openUrl.call_args[0][0] == QUrl("http://www.example.com")
 
     # Check Preview Stats
-    assert manus.docStats.mainStack.currentWidget() == manus.docStats.minWidget
-    assert manus.docStats.minWordCount.text() == "25"
-    assert manus.docStats.minCharCount.text() == "117"
+    assert manus.countsLabel.text() == "Words: 25\u2003Characters: 117"
+    assert manus.buildStats.cWords.text(1) == "25"
+    assert manus.buildStats.cChars.text(1) == "117"
+    assert manus.buildStats.cDialog.text(1) == "\u2014"
 
-    manus.docStats.toggleButton.toggle()
-    assert manus.docStats.mainStack.currentWidget() == manus.docStats.maxWidget
-    assert manus.docStats.maxTotalWords.text() == "25"
-    assert manus.docStats.maxTotalChars.text() == "117"
+    # Check Preview Stats w/Dialogue
+    dialogData = {
+        nwStats.WORDS: 25,
+        nwStats.CHARS: 117,
+        nwStats.CHARS_TEXT: 100,
+        nwStats.CHARS_DIALOG: 25,
+    }
+    manus._updateCountsLabel(dialogData, True)
+    assert manus.countsLabel.text() == "Words: 25\u2003Characters: 117\u2003Dialogue: 25.0\u202f%"
+    manus.buildStats.updateStats(dialogData, True)
+    assert manus.buildStats.cDialog.text(1) == "25.0\u202f%"
+    assert manus.buildStats.cDialogChars.text(1) == "25"
 
     # Tests are too fast to trigger this one, so we trigger it manually to ensure it isn't failing
     manus.docPreview._postUpdate()
