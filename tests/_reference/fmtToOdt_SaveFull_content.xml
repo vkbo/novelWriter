@@ -25,6 +25,7 @@
         <text:user-field-decl office:value-type="float" office:value="1471" text:name="ManuscriptAllChars" />
         <text:user-field-decl office:value-type="float" office:value="1441" text:name="ManuscriptTextChars" />
         <text:user-field-decl office:value-type="float" office:value="30" text:name="ManuscriptTitleChars" />
+        <text:user-field-decl office:value-type="float" office:value="0" text:name="ManuscriptDialogChars" />
         <text:user-field-decl office:value-type="float" office:value="1258" text:name="ManuscriptAllWordChars" />
         <text:user-field-decl office:value-type="float" office:value="1231" text:name="ManuscriptTextWordChars" />
         <text:user-field-decl office:value-type="float" office:value="27" text:name="ManuscriptTitleWordChars" />

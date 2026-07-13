@@ -16,6 +16,7 @@
     <w:docVar w:name="ManuscriptAllChars" w:val="27164" />
     <w:docVar w:name="ManuscriptTextChars" w:val="24964" />
     <w:docVar w:name="ManuscriptTitleChars" w:val="123" />
+    <w:docVar w:name="ManuscriptDialogChars" w:val="0" />
     <w:docVar w:name="ManuscriptAllWordChars" w:val="23208" />
     <w:docVar w:name="ManuscriptTextWordChars" w:val="21296" />
     <w:docVar w:name="ManuscriptTitleWordChars" w:val="113" />

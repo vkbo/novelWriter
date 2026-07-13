@@ -147,12 +147,20 @@ def testOptionState_SetGet(mockGUI):
     assert options.getBool("GuiNovelDetails", "mockItem", None) is None  # type: ignore
     assert options.getEnum("GuiNovelView", "lastCol", nwNovelExtra, nwColHidden) == nwColHidden
 
+    # Get list
+    assert options.setValue("GuiManuscript", "statsExpanded", [True, False]) is True
+    assert options.getList("GuiManuscript", "statsExpanded", []) == [True, False]
+    assert options.setValue("GuiManuscript", "detailsExpanded", "notAList") is True
+    assert options.getList("GuiManuscript", "detailsExpanded", []) == []
+    assert options.getList("GuiManuscript", "mockItem", []) == []
+
     # Get enum, invalid value
     assert options.setValue("GuiNovelView", "lastCol", "invalidValue") is True
     assert options.getEnum("GuiNovelView", "lastCol", nwNovelExtra, nwColHidden) == nwColHidden
 
     # Get from non-existent groups
     assert options.getValue("SomeGroup", "mockItem", None) is None
+    assert options.getList("SomeGroup", "mockItem", []) == []
     assert options.getString("SomeGroup", "mockItem", None) is None  # type: ignore
     assert options.getInt("SomeGroup", "mockItem", None) is None  # type: ignore
     assert options.getFloat("SomeGroup", "mockItem", None) is None  # type: ignore

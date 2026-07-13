@@ -2421,6 +2421,7 @@ def testTokenizer_CountStats(mockGUI, ipsumText):
         "allChars": 15,
         "textChars": 0,
         "titleChars": 15,
+        "dialogChars": 0,
         "allWordChars": 13,
         "textWordChars": 0,
         "titleWordChars": 13,
@@ -2443,6 +2444,7 @@ def testTokenizer_CountStats(mockGUI, ipsumText):
         "allChars": 20,
         "textChars": 0,
         "titleChars": 20,
+        "dialogChars": 0,
         "allWordChars": 16,
         "textWordChars": 0,
         "titleWordChars": 16,
@@ -2463,6 +2465,7 @@ def testTokenizer_CountStats(mockGUI, ipsumText):
         "allChars": 47,
         "textChars": 47,
         "titleChars": 0,
+        "dialogChars": 0,
         "allWordChars": 40,
         "textWordChars": 40,
         "titleWordChars": 0,
@@ -2485,6 +2488,7 @@ def testTokenizer_CountStats(mockGUI, ipsumText):
         "allChars": 20,
         "textChars": 8,
         "titleChars": 7,
+        "dialogChars": 0,
         "allWordChars": 18,
         "textWordChars": 8,
         "titleWordChars": 7,
@@ -2509,6 +2513,7 @@ def testTokenizer_CountStats(mockGUI, ipsumText):
         "allChars": 26,
         "textChars": 4,
         "titleChars": 7,
+        "dialogChars": 0,
         "allWordChars": 25,
         "textWordChars": 4,
         "titleWordChars": 7,
@@ -2533,6 +2538,7 @@ def testTokenizer_CountStats(mockGUI, ipsumText):
         "allChars": 35,
         "textChars": 4,
         "titleChars": 7,
+        "dialogChars": 0,
         "allWordChars": 33,
         "textWordChars": 4,
         "titleWordChars": 7,
@@ -2557,6 +2563,7 @@ def testTokenizer_CountStats(mockGUI, ipsumText):
         "allChars": 25,
         "textChars": 4,
         "titleChars": 7,
+        "dialogChars": 0,
         "allWordChars": 24,
         "textWordChars": 4,
         "titleWordChars": 7,
@@ -2581,6 +2588,7 @@ def testTokenizer_CountStats(mockGUI, ipsumText):
         "allChars": 30,
         "textChars": 4,
         "titleChars": 7,
+        "dialogChars": 0,
         "allWordChars": 27,
         "textWordChars": 4,
         "titleWordChars": 7,
@@ -2639,10 +2647,70 @@ def testTokenizer_CountStats(mockGUI, ipsumText):
         "allChars": 3859,
         "textChars": 3513,
         "titleChars": 46,
+        "dialogChars": 0,
         "allWordChars": 3289,
         "textWordChars": 2990,
         "titleWordChars": 38,
     }
+
+
+@pytest.mark.core
+def testTokenizer_CountStats_Dialogue(mockGUI):
+    """Test the dialogue character counter of the Tokenizer class."""
+    CONFIG.fmtDQuoteOpen = "\u201c"
+    CONFIG.fmtDQuoteClose = "\u201d"
+    CONFIG.fmtSQuoteOpen = "\u2018"
+    CONFIG.fmtSQuoteClose = "\u2019"
+    CONFIG.dialogStyle = 3
+    CONFIG.altDialogOpen = "::"
+    CONFIG.altDialogClose = "::"
+
+    project = NWProject()
+    project.data.setLanguage("en")
+    project._loadProjectLocalisation()
+    tokens = BareTokenizer(project)
+    tokens._isNovel = True
+
+    # Highlighting disabled: no dialogue is counted, even if present
+    tokens._text = "Text with \u201cdialogue,\u201d and ::alt dialogue::, too.\n\n"
+    tokens._counts = {}
+    tokens.setDialogHighlight(False)
+    tokens.tokenizeText()
+    tokens.countStats()
+    assert tokens.textStats["dialogChars"] == 0
+
+    # Highlighting enabled: quoted dialogue is counted
+    tokens._text = "Text with \u201cdialogue one\u201d and \u201cdialogue two\u201d, too.\n\n"
+    tokens._counts = {}
+    tokens.setDialogHighlight(True)
+    tokens.tokenizeText()
+    tokens.countStats()
+    assert tokens.textStats["dialogChars"] == len("\u201cdialogue one\u201d") + len("\u201cdialogue two\u201d")
+
+    # Highlighting enabled: alt-dialogue syntax is also counted
+    tokens._text = "Text with ::alt dialogue one:: and ::alt dialogue two::, too.\n\n"
+    tokens._counts = {}
+    tokens.setDialogHighlight(True)
+    tokens.tokenizeText()
+    tokens.countStats()
+    assert tokens.textStats["dialogChars"] == len("::alt dialogue one::") + len("::alt dialogue two::")
+
+    # Highlighting enabled: both regular and alt dialogue are combined
+    tokens._text = "Text with \u201cdialogue\u201d and ::alt dialogue::, too.\n\n"
+    tokens._counts = {}
+    tokens.setDialogHighlight(True)
+    tokens.tokenizeText()
+    tokens.countStats()
+    assert tokens.textStats["dialogChars"] == len("\u201cdialogue\u201d") + len("::alt dialogue::")
+
+    # Highlighting enabled: unrelated formatting markers within the same
+    # paragraph should be skipped when scanning for dialogue markers
+    tokens._text = "Text with \u201c**bold** dialogue\u201d, too.\n\n"
+    tokens._counts = {}
+    tokens.setDialogHighlight(True)
+    tokens.tokenizeText()
+    tokens.countStats()
+    assert tokens.textStats["dialogChars"] == len("\u201cbold dialogue\u201d")
 
 
 @pytest.mark.core

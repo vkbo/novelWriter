@@ -235,10 +235,12 @@ def formatInt(value: int) -> str:
 
 def formatPercent(value: float | int, *, divisor: float | int | None = None, prec: int = 1) -> str:
     """Format a number and optionally a divisor as a percentage."""
+    if not isinstance(value, (float, int)):
+        return "ERR"
     if isinstance(divisor, (float, int)) and divisor != 0:
         value = value / divisor
     fmt = f"{{0:.{prec}f}}\u202f%"
-    return fmt.format(value * 100.0) if isinstance(value, (float, int)) else "ERR"
+    return fmt.format(value * 100.0)
 
 
 def formatTimeStamp(value: float, fileSafe: bool = False, fmt: str | None = None) -> str:

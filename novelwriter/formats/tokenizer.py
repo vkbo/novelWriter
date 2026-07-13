@@ -1082,9 +1082,9 @@ class Tokenizer(ABC):
                 if countDialog and tFmt:
                     start = None
                     for pos, _, meta in tFmt:
-                        if meta == "dialog" and start is None:
+                        if meta in ("dialog", "altdialog") and start is None:
                             start = pos
-                        elif meta == "enddialog" and start is not None:
+                        elif meta in ("enddialog", "endaltdialog") and start is not None:
                             dCount += pos - start
                             start = None
 
