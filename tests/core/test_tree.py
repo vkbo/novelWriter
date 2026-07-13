@@ -377,7 +377,7 @@ def testProjectTree_ManipulateTree(monkeypatch, mockGUI, mockItems):
 
     # Remove where the model refuses to remove the child
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.itemmodel.ProjectModel.removeChild", lambda *a: False)
+        mp.setattr("novelwriter.models.itemmodel.ProjectModel.removeChild", lambda *a: False)
         assert tree.remove(bHandle) is False
 
     # Add item with non-existing parent

@@ -33,9 +33,9 @@ from novelwriter import SHARED
 from novelwriter.common import safeIsFile
 from novelwriter.constants import nwFiles, nwLabels, nwStyles, trConst
 from novelwriter.core.item import ProjectItem
-from novelwriter.core.itemmodel import ProjectModel, ProjectNode
 from novelwriter.enum import nwChange, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
+from novelwriter.models.itemmodel import ProjectModel, ProjectNode
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator

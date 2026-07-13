@@ -29,9 +29,9 @@ from PyQt6.QtTest import QAbstractItemModelTester
 from novelwriter.common import decodeMimeHandles, encodeMimeHandles
 from novelwriter.constants import nwConst
 from novelwriter.core.item import ProjectItem
-from novelwriter.core.itemmodel import INV_ROOT, NODE_FLAGS, ProjectModel, ProjectNode
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwItemLayout, nwItemType
+from novelwriter.models.itemmodel import INV_ROOT, NODE_FLAGS, ProjectModel, ProjectNode
 from novelwriter.types import QtDisplayRole, QtToolTipRole
 
 from tests.helpers import buildTestProject

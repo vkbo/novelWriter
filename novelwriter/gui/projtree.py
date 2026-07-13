@@ -44,7 +44,6 @@ from novelwriter.common import qtAddAction, qtAddMenu, qtLambda, qtWeakLambda
 from novelwriter.constants import nwLabels, nwStyles, nwUnicode, trConst
 from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
 from novelwriter.core.item import ProjectItem
-from novelwriter.core.itemmodel import ProjectModel, ProjectNode
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -52,6 +51,7 @@ from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import nwChange, nwDocMode, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
+from novelwriter.models.itemmodel import ProjectModel, ProjectNode
 from novelwriter.types import (
     QtHeaderFixed,
     QtHeaderStretch,
