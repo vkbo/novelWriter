@@ -204,6 +204,7 @@ class GuiTheme:
         "iconCache",
         "isDarkTheme",
         "pushButtonIconSize",
+        "searchCol",
         "sidebarIconSize",
         "syntaxTheme",
         "textNHeight",
@@ -225,6 +226,7 @@ class GuiTheme:
         self.errorText = QColor(255, 0, 0)
         self.accentCol = QColor(255, 0, 255)  # Needed until we move to Qt 6.6
         self.toggleCol = QColor(0, 0, 255)
+        self.searchCol = QColor(255, 196, 0, 96)
 
         # Theme Data
         self._meta = ThemeMeta()
@@ -491,6 +493,7 @@ class GuiTheme:
             self._setPalette(parser, sec, "linkvisited", QPalette.ColorRole.LinkVisited)
             self.accentCol = self._readColor(parser, sec, "accent")  # Special handling 'til Qt 6.6
             self.toggleCol = self._readColor(parser, sec, "toggle")
+            self.searchCol = self._readColor(parser, sec, "searchmatch")
 
         # GUI
         sec = "GUI"

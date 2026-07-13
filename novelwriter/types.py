@@ -62,6 +62,8 @@ QtTextUserProperty = QTextFormat.Property.UserProperty
 
 QtPropLineHeight = 1  # QTextBlockFormat.LineHeightTypes.ProportionalHeight
 
+QtElideRight = Qt.TextElideMode.ElideRight
+
 # Painter Types
 
 QtTransparent = QColor(0, 0, 0, 0)

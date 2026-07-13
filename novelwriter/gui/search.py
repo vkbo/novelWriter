@@ -53,6 +53,7 @@ from novelwriter.models.searchmodel import SearchNode, SearchResultModel
 from novelwriter.types import (
     QtAlignMiddle,
     QtDisplayRole,
+    QtElideRight,
     QtHeaderStretch,
     QtHeaderToContents,
     QtHexArgb,
@@ -363,7 +364,7 @@ class _SearchResultDelegate(QStyledItemDelegate):
     rows have no span data and are left to the default rendering.
     """
 
-    __slots__ = ("_hlCol", "_hlTextCol", "_textCol")
+    __slots__ = ("_rectColM", "_rectColS", "_textColP", "_textColS")
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -371,9 +372,10 @@ class _SearchResultDelegate(QStyledItemDelegate):
 
     def updateTheme(self) -> None:
         """Refresh the cached theme colours."""
-        self._textCol = QApplication.palette().text().color()
-        self._hlCol = QApplication.palette().highlight().color()
-        self._hlTextCol = QApplication.palette().highlightedText().color()
+        self._textColP = QApplication.palette().text().color()
+        self._textColS = QApplication.palette().highlightedText().color()
+        self._rectColS = QApplication.palette().highlight().color()
+        self._rectColM = SHARED.theme.searchCol
 
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         """Paint a search result entry, highlighting the match, if any."""
@@ -384,36 +386,30 @@ class _SearchResultDelegate(QStyledItemDelegate):
         text = index.data(QtDisplayRole) or ""
         sPos, ePos = span
         rect = option.rect
+        selected = bool(option.state & QtSelected)
 
         painter.save()
         painter.setClipRect(rect)
         painter.setFont(option.font)
-        if bool(option.state & QtSelected):
-            painter.fillRect(rect, self._hlCol)
-            plainColor = self._hlTextCol
-            matchColor = plainColor
-        else:
-            plainColor = self._textCol
-            matchColor = self._hlCol
+
+        if selected:
+            painter.fillRect(rect, self._rectColS)
 
         metrics = painter.fontMetrics()
         avail = max(0, rect.width() - RESULT_MARGIN)
-        text = metrics.elidedText(text, Qt.TextElideMode.ElideRight, avail)
+        text = metrics.elidedText(text, QtElideRight, avail)
         sPos = minmax(sPos, 0, len(text))
         ePos = minmax(ePos, sPos, len(text))
 
         x = rect.x() + RESULT_MARGIN
         y = rect.y()
         h = rect.height()
-        for chunk, color in (
-            (text[:sPos], plainColor),
-            (text[sPos:ePos], matchColor),
-            (text[ePos:], plainColor),
-        ):
-            if chunk:
-                width = metrics.horizontalAdvance(chunk)
-                painter.setPen(color)
-                painter.drawText(QRect(x, y, width, h), RESULT_FLAGS, chunk)
-                x += width
+        if ePos > sPos:
+            wPre = metrics.horizontalAdvance(text[:sPos])
+            wMatch = metrics.horizontalAdvance(text[sPos:ePos])
+            painter.fillRect(QRect(x + wPre, y, wMatch, h), self._rectColM)
+
+        painter.setPen(self._textColS if selected else self._textColP)
+        painter.drawText(QRect(x, y, rect.right() - x, h), RESULT_FLAGS, text)
 
         painter.restore()
