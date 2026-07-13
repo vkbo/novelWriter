@@ -89,6 +89,7 @@ QtAccessibleTextRole = Qt.ItemDataRole.AccessibleTextRole
 QtDecorationRole = Qt.ItemDataRole.DecorationRole
 QtDisplayRole = Qt.ItemDataRole.DisplayRole
 QtFontRole = Qt.ItemDataRole.FontRole
+QtForegroundRole = Qt.ItemDataRole.ForegroundRole
 QtTextAlignmentRole = Qt.ItemDataRole.TextAlignmentRole
 QtToolTipRole = Qt.ItemDataRole.ToolTipRole
 QtUserRole = Qt.ItemDataRole.UserRole

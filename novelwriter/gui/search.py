@@ -27,36 +27,34 @@ from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QModelIndex, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QAction, QCursor, QKeyEvent, QPalette
 from PyQt6.QtWidgets import (
+    QAbstractItemView,
     QApplication,
     QFrame,
     QHBoxLayout,
     QLabel,
     QLineEdit,
     QToolBar,
-    QTreeWidget,
-    QTreeWidgetItem,
+    QTreeView,
     QVBoxLayout,
     QWidget,
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt
 from novelwriter.core.coretools import DocSearch
 from novelwriter.enum import nwDocMode
 from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.models.searchmodel import SearchNode, SearchResultModel
 from novelwriter.types import (
     QtAlignMiddle,
-    QtAlignRight,
     QtHeaderStretch,
     QtHeaderToContents,
     QtHexArgb,
     QtKeyDown,
     QtKeyUp,
     QtModShift,
-    QtUserRole,
 )
 
 if TYPE_CHECKING:
@@ -67,13 +65,6 @@ logger = logging.getLogger(__name__)
 
 class GuiProjectSearch(QWidget):
     """GUI: Project Search Panel."""
-
-    C_NAME = 0
-    C_RESULT = 0
-    C_COUNT = 1
-
-    D_HANDLE = QtUserRole
-    D_RESULT = QtUserRole + 1
 
     selectedItemChanged = pyqtSignal(str)
     openDocumentRequest = pyqtSignal(str, Enum, str, bool)
@@ -87,10 +78,9 @@ class GuiProjectSearch(QWidget):
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
 
-        self._time = time()
         self._search = DocSearch()
+        self._model = SearchResultModel()
         self._blocked = False
-        self._map: dict[str, tuple[int, float]] = {}
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setBackgroundRole(QPalette.ColorRole.Base)
@@ -139,22 +129,26 @@ class GuiProjectSearch(QWidget):
         self.searchText.addAction(self.searchAction, QLineEdit.ActionPosition.TrailingPosition)
 
         # Search Result
-        self.searchResult = QTreeWidget(self)
+        self.searchResult = QTreeView(self)
+        self.searchResult.setModel(self._model)
         self.searchResult.setHeaderHidden(True)
-        self.searchResult.setColumnCount(2)
         self.searchResult.setIconSize(iSz)
         self.searchResult.setIndentation(iPx)
         self.searchResult.setFrameStyle(QFrame.Shape.NoFrame)
         self.searchResult.setUniformRowHeights(True)
         self.searchResult.setAllColumnsShowFocus(True)
-        self.searchResult.itemDoubleClicked.connect(self._searchResultDoubleClicked)
-        self.searchResult.itemSelectionChanged.connect(self._searchResultSelected)
+        self.searchResult.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.searchResult.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.searchResult.doubleClicked.connect(self._searchResultDoubleClicked)
         self.searchResult.setAccessibleName(self.viewLabel.text())
 
         if header := self.searchResult.header():  # pragma: no branch
             header.setStretchLastSection(False)
-            header.setSectionResizeMode(self.C_NAME, QtHeaderStretch)
-            header.setSectionResizeMode(self.C_COUNT, QtHeaderToContents)
+            header.setSectionResizeMode(SearchNode.C_NAME, QtHeaderStretch)
+            header.setSectionResizeMode(SearchNode.C_COUNT, QtHeaderToContents)
+
+        if selModel := self.searchResult.selectionModel():  # pragma: no branch
+            selModel.currentChanged.connect(self._searchResultSelected)
 
         # Assemble
         self.headerBox = QHBoxLayout()
@@ -193,6 +187,7 @@ class GuiProjectSearch(QWidget):
         )
 
         self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
+        self._model.updateTheme()
         if not onInit:
             self.tbCase.refreshTheme()
             self.tbWord.refreshTheme()
@@ -202,16 +197,12 @@ class GuiProjectSearch(QWidget):
         """Process a return keypress forwarded from the main GUI."""
         if self.searchText.hasFocus():
             self._processSearch()
-        elif (
-            self.searchResult.hasFocus()
-            and (items := self.searchResult.selectedItems())
-            and (data := items[0].data(0, self.D_RESULT))
-            and len(data) == 3
-        ):
+        elif self.searchResult.hasFocus() and (result := self._model.result(self.searchResult.currentIndex())):
+            handle, start, length = result
             if QApplication.keyboardModifiers() == QtModShift:
-                self.openDocumentRequest.emit(str(data[0]), nwDocMode.VIEW, "", True)
+                self.openDocumentRequest.emit(handle, nwDocMode.VIEW, "", True)
             else:
-                self.openDocumentSelectRequest.emit(str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1), False)
+                self.openDocumentSelectRequest.emit(handle, start, length, False)
 
     def beginSearch(self, text: str = "") -> None:
         """Focus the search box and select its text, if any."""
@@ -223,13 +214,12 @@ class GuiProjectSearch(QWidget):
 
     def closeProjectTasks(self) -> None:
         """Run close project tasks."""
-        self._map = {}
         self.searchText.clear()
-        self.searchResult.clear()
+        self._model.clear()
 
     def refreshCurrentSearch(self) -> None:
         """Refresh the search if there is one."""
-        if self.searchResult.topLevelItemCount() > 0:
+        if self._model.rowCount(QModelIndex()) > 0:
             self._processSearch()
 
     ##
@@ -240,16 +230,16 @@ class GuiProjectSearch(QWidget):
         """Process key press events. This handles up and down arrow key
         presses to jump between search text box and result tree.
         """
-        if event.key() == QtKeyDown and self.searchText.hasFocus() and (first := self.searchResult.topLevelItem(0)):
-            first.setSelected(True)
+        if event.key() == QtKeyDown and self.searchText.hasFocus() and (first := self._model.index(0, 0)).isValid():
+            self.searchResult.setCurrentIndex(first)
             self.searchResult.setFocus()
         elif (
             event.key() == QtKeyUp
             and self.searchResult.hasFocus()
-            and (first := self.searchResult.topLevelItem(0))
-            and first.isSelected()
+            and (first := self._model.index(0, 0)).isValid()
+            and self.searchResult.currentIndex() == first
         ):
-            first.setSelected(False)
+            self.searchResult.clearSelection()
             self.searchText.setFocus()
         else:
             super().keyPressEvent(event)
@@ -261,10 +251,10 @@ class GuiProjectSearch(QWidget):
     @pyqtSlot(str, float)
     def textChanged(self, tHandle: str, timeStamp: float) -> None:
         """Update search result for a specific document."""
-        if (entry := self._map.get(tHandle)) and timeStamp > entry[1]:
+        if (entry := self._model.entry(tHandle)) and timeStamp > entry[1] and (nwItem := SHARED.project.tree[tHandle]):
             start = time()
             results, capped = self._search.searchText(SHARED.mainGui.docEditor.getText())
-            self._displayResultSet(SHARED.project.tree[tHandle], results, capped)
+            self._addResult(nwItem, results, capped)
             logger.debug("Updated search for '%s' in %.3f ms", tHandle, 1000 * (time() - start))
 
     ##
@@ -279,35 +269,31 @@ class GuiProjectSearch(QWidget):
             start = time()
             SHARED.saveEditor()
             self._blocked = True
-            self._map = {}
-            self.searchResult.clear()
+            self._model.clear()
             if text := self.searchText.text():
                 self._search.setUserRegEx(self.tbRegEx.isChecked())
                 self._search.setCaseSensitive(self.tbCase.isChecked())
                 self._search.setWholeWords(self.tbWord.isChecked())
                 for item, results, capped in self._search.iterSearch(SHARED.project, text):
-                    self._displayResultSet(item, results, capped)
+                    self._addResult(item, results, capped)
             logger.debug("Search took %.3f ms", 1000 * (time() - start))
-            self._time = time()
             QApplication.restoreOverrideCursor()
         self._blocked = False
 
-    @pyqtSlot()
-    def _searchResultSelected(self) -> None:
+    @pyqtSlot(QModelIndex, QModelIndex)
+    def _searchResultSelected(self, current: QModelIndex, previous: QModelIndex) -> None:
         """Process search result selection."""
-        if items := self.searchResult.selectedItems():
-            if (data := items[0].data(0, self.D_RESULT)) and len(data) == 3:
-                self.selectedItemChanged.emit(str(data[0]))
-            elif data := items[0].data(0, self.D_HANDLE):
-                self.selectedItemChanged.emit(str(data))
-            else:  # pragma: no cover
-                pass
+        if result := self._model.result(current):
+            self.selectedItemChanged.emit(result[0])
+        elif handle := self._model.handle(current):
+            self.selectedItemChanged.emit(handle)
 
-    @pyqtSlot("QTreeWidgetItem*", int)
-    def _searchResultDoubleClicked(self, item: QTreeWidgetItem, column: int) -> None:
+    @pyqtSlot(QModelIndex)
+    def _searchResultDoubleClicked(self, index: QModelIndex) -> None:
         """Process search result double click."""
-        if (data := item.data(0, self.D_RESULT)) and len(data) == 3:
-            self.openDocumentSelectRequest.emit(str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1), True)
+        if result := self._model.result(index):
+            handle, start, length = result
+            self.openDocumentSelectRequest.emit(handle, start, length, True)
 
     @pyqtSlot(bool)
     def _toggleCase(self, state: bool) -> None:
@@ -331,37 +317,12 @@ class GuiProjectSearch(QWidget):
     #  Internal Functions
     ##
 
-    def _displayResultSet(self, nwItem: ProjectItem | None, results: list[tuple[int, int, str]], capped: bool) -> None:
-        """Populate the result tree."""
-        if results and nwItem:
-            tHandle = nwItem.itemHandle
-            ext = "+" if capped else ""
-
-            tItem = QTreeWidgetItem()
-            tItem.setText(self.C_NAME, nwItem.itemName)
-            tItem.setIcon(self.C_NAME, nwItem.getMainIcon())
-            tItem.setData(self.C_NAME, self.D_HANDLE, tHandle)
-            tItem.setText(self.C_COUNT, f"({len(results):n}{ext})")
-            tItem.setTextAlignment(self.C_COUNT, QtAlignRight)
-            tItem.setForeground(self.C_COUNT, self.palette().highlight())
-
-            index = self._map.get(tHandle, (self.searchResult.topLevelItemCount(), 0.0))[0]
-            self.searchResult.takeTopLevelItem(index)
-            self.searchResult.insertTopLevelItem(index, tItem)
-            self._map[tHandle] = (index, time())
-
-            rItems = []
-            for start, length, context in results:
-                rItem = QTreeWidgetItem()
-                rItem.setText(0, context)
-                rItem.setData(0, self.D_RESULT, (tHandle, start, length))
-                rItems.append(rItem)
-
-            tItem.addChildren(rItems)
-            tItem.setExpanded(True)
-
-            parent = self.searchResult.indexFromItem(tItem)
-            for i in range(tItem.childCount()):
-                self.searchResult.setFirstColumnSpanned(i, parent, True)
-
+    def _addResult(self, nwItem: ProjectItem, results: list[tuple[int, int, str]], capped: bool) -> None:
+        """Add or update a document's results, and update the view."""
+        if results:
+            self._model.setResult(nwItem, results, capped)
+            parent = self._model.indexFromHandle(nwItem.itemHandle)
+            for row in range(self._model.rowCount(parent)):
+                self.searchResult.setFirstColumnSpanned(row, parent, True)
+            self.searchResult.setExpanded(parent, True)
             QApplication.processEvents()
