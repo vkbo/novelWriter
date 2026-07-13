@@ -36,7 +36,6 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QStyle,
     QStyledItemDelegate,
     QStyleOptionViewItem,
     QToolBar,
@@ -46,12 +45,14 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import minmax
 from novelwriter.core.coretools import DocSearch
 from novelwriter.enum import nwDocMode
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.models.searchmodel import SearchNode, SearchResultModel
 from novelwriter.types import (
     QtAlignMiddle,
+    QtDisplayRole,
     QtHeaderStretch,
     QtHeaderToContents,
     QtHexArgb,
@@ -196,6 +197,7 @@ class GuiProjectSearch(QWidget):
 
         self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
         self._model.updateTheme()
+        self._matchDelegate.updateTheme()
         if not onInit:
             self.tbCase.refreshTheme()
             self.tbWord.refreshTheme()
@@ -349,6 +351,10 @@ class GuiProjectSearch(QWidget):
         self.searchResult.setExpanded(parent, True)
 
 
+RESULT_FLAGS = int(Qt.TextFlag.TextSingleLine) | int(QtAlignMiddle)
+RESULT_MARGIN = 4
+
+
 class _SearchResultDelegate(QStyledItemDelegate):
     """GUI: Search Result Match Delegate.
 
@@ -357,48 +363,57 @@ class _SearchResultDelegate(QStyledItemDelegate):
     rows have no span data and are left to the default rendering.
     """
 
+    __slots__ = ("_hlCol", "_hlTextCol", "_textCol")
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+        self.updateTheme()
+
+    def updateTheme(self) -> None:
+        """Refresh the cached theme colours."""
+        self._textCol = QApplication.palette().text().color()
+        self._hlCol = QApplication.palette().highlight().color()
+        self._hlTextCol = QApplication.palette().highlightedText().color()
+
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         """Paint a search result entry, highlighting the match, if any."""
-        span = index.data(QtUserRole)
-        if not isinstance(span, tuple):
+        if not isinstance(span := index.data(QtUserRole), tuple):
             super().paint(painter, option, index)
             return
 
-        opt = QStyleOptionViewItem(option)
-        self.initStyleOption(opt, index)
-        text = opt.text or ""
-        opt.text = ""
-
-        style = (opt.widget.style() if opt.widget else None) or QApplication.style()
-        if style is None:  # pragma: no cover
-            super().paint(painter, option, index)
-            return
-
-        style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget)
-
-        hlStart, hlEnd = span
-        rect = style.subElementRect(QStyle.SubElement.SE_ItemViewItemText, opt, opt.widget)
-        selected = bool(opt.state & QtSelected)
-        palette = opt.palette
-        plainColor = palette.highlightedText().color() if selected else palette.text().color()
-        matchColor = plainColor if selected else palette.highlight().color()
+        text = index.data(QtDisplayRole) or ""
+        sPos, ePos = span
+        rect = option.rect
 
         painter.save()
-        painter.setFont(opt.font)
         painter.setClipRect(rect)
+        painter.setFont(option.font)
+        if bool(option.state & QtSelected):
+            painter.fillRect(rect, self._hlCol)
+            plainColor = self._hlTextCol
+            matchColor = plainColor
+        else:
+            plainColor = self._textCol
+            matchColor = self._hlCol
 
         metrics = painter.fontMetrics()
-        flags = int(Qt.TextFlag.TextSingleLine) | int(QtAlignMiddle)
-        x = rect.x()
+        avail = max(0, rect.width() - RESULT_MARGIN)
+        text = metrics.elidedText(text, Qt.TextElideMode.ElideRight, avail)
+        sPos = minmax(sPos, 0, len(text))
+        ePos = minmax(ePos, sPos, len(text))
+
+        x = rect.x() + RESULT_MARGIN
+        y = rect.y()
+        h = rect.height()
         for chunk, color in (
-            (text[:hlStart], plainColor),
-            (text[hlStart:hlEnd], matchColor),
-            (text[hlEnd:], plainColor),
+            (text[:sPos], plainColor),
+            (text[sPos:ePos], matchColor),
+            (text[ePos:], plainColor),
         ):
             if chunk:
                 width = metrics.horizontalAdvance(chunk)
                 painter.setPen(color)
-                painter.drawText(QRect(x, rect.y(), width, rect.height()), flags, chunk)
+                painter.drawText(QRect(x, y, width, h), RESULT_FLAGS, chunk)
                 x += width
 
         painter.restore()
