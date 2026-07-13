@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QHBoxLayout, QLayout, QVBoxLayout, QWidget
 
 from novelwriter import SHARED
@@ -35,6 +35,8 @@ class NExpandablePanel(QWidget):
     The header contains a title and an optional icon, and the content
     area can contain any widget.
     """
+
+    expandedStateChanged = pyqtSignal(bool)
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -97,5 +99,7 @@ class NExpandablePanel(QWidget):
     @pyqtSlot(bool)
     def _toggleExpanded(self, state: bool) -> None:
         """Toggle the expanded state of the panel."""
-        self._ep_expanded = state
-        self._ep_widget.setVisible(state)
+        if self._ep_expanded != state:
+            self._ep_expanded = state
+            self._ep_widget.setVisible(state)
+            self.expandedStateChanged.emit(state)

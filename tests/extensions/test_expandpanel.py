@@ -40,6 +40,9 @@ def testNExpandablePanel_Main(qtbot, mockGUI):
     dialog.show()
     qtbot.addWidget(dialog)
 
+    changes = []
+    panel.expandedStateChanged.connect(changes.append)
+
     # Default state is expanded, with a default title
     assert panel.isExpanded() is True
     assert panel._ep_widget.isVisible() is True
@@ -61,28 +64,40 @@ def testNExpandablePanel_Main(qtbot, mockGUI):
     assert panel.isExpanded() is False
     assert panel._ep_widget.isVisible() is False
     assert panel._ep_toggle.isChecked() is False
+    assert changes == [False]
 
     # Click the title label to expand the panel again
     qtbot.mouseClick(panel._ep_label, QtMouseLeft)
     assert panel.isExpanded() is True
     assert panel._ep_widget.isVisible() is True
     assert panel._ep_toggle.isChecked() is True
+    assert changes == [False, True]
 
-    # Set the expanded state directly
+    # Set the expanded state directly, which must also update the toggle
+    # button so its icon stays in sync with the actual state
     panel.setExpanded(False)
     assert panel.isExpanded() is False
     assert panel._ep_widget.isVisible() is False
     assert panel._ep_toggle.isChecked() is False
+    assert changes == [False, True, False]
 
     panel.setExpanded(True)
     assert panel.isExpanded() is True
     assert panel._ep_widget.isVisible() is True
     assert panel._ep_toggle.isChecked() is True
+    assert changes == [False, True, False, True]
 
-    # Setting the same state again should not change anything
+    # Setting the same state again should not change anything, or emit
     panel.setExpanded(True)
     assert panel.isExpanded() is True
     assert panel._ep_widget.isVisible() is True
+    assert changes == [False, True, False, True]
+
+    # The internal slot itself also guards against a redundant state,
+    # regardless of how it is invoked
+    panel._toggleExpanded(True)
+    assert panel.isExpanded() is True
+    assert changes == [False, True, False, True]
 
     # Update the theme
     panel.updateTheme()
