@@ -72,7 +72,16 @@ from novelwriter.manuscript.buildsettings import BuildCollection, BuildSettings
 from novelwriter.manuscript.docbuild import DocumentBuilder
 from novelwriter.manuscript.manusbuild import GuiManuscriptBuild
 from novelwriter.manuscript.manussettings import GuiBuildSettings
-from novelwriter.types import QtAlignCenter, QtAlignRight, QtAlignTop, QtSizeExpanding, QtSizeIgnored, QtUserRole
+from novelwriter.types import (
+    QtAlignCenter,
+    QtAlignRight,
+    QtAlignTop,
+    QtHeaderStretch,
+    QtHeaderToContents,
+    QtSizeExpanding,
+    QtSizeIgnored,
+    QtUserRole,
+)
 
 if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
@@ -161,9 +170,13 @@ class GuiManuscript(NToolDialog):
 
         self.buildOutline = _OutlineWidget(self)
 
+        self.buildStats = _StatisticsWidget(self)
+        self.buildStats.setExpandedState(SHARED.project.options.getList("GuiManuscript", "statsExpanded", []))
+
         self.detailsTabs = QTabWidget(self)
         self.detailsTabs.addTab(self.buildDetails, self.tr("Details"))
         self.detailsTabs.addTab(self.buildOutline, self.tr("Outline"))
+        self.detailsTabs.addTab(self.buildStats, self.tr("Statistics"))
 
         self.buildSplit = QSplitter(Qt.Orientation.Vertical, self)
         self.buildSplit.addWidget(self.buildList)
@@ -412,6 +425,7 @@ class GuiManuscript(NToolDialog):
 
         self.docStats.updateStats(buildObj.textStats)
         self.buildOutline.updateOutline(buildObj.textOutline)
+        self.buildStats.updateStats(buildObj.textStats)
 
         logger.debug("Build completed in %.3f ms", 1000 * (time() - start))
 
@@ -464,6 +478,7 @@ class GuiManuscript(NToolDialog):
         buildSplit = self.buildSplit.sizes()
         detailsWidth = self.buildDetails.getColumnWidth()
         detailsExpanded = self.buildDetails.getExpandedState()
+        statsExpanded = self.buildStats.getExpandedState()
         showNewPage = self.swtNewPage.isChecked()
 
         logger.debug("Saving State: GuiManuscript")
@@ -476,6 +491,7 @@ class GuiManuscript(NToolDialog):
         pOptions.setValue("GuiManuscript", "detailsHeight", buildSplit[1])
         pOptions.setValue("GuiManuscript", "detailsWidth", detailsWidth)
         pOptions.setValue("GuiManuscript", "detailsExpanded", detailsExpanded)
+        pOptions.setValue("GuiManuscript", "statsExpanded", statsExpanded)
         pOptions.setValue("GuiManuscript", "showNewPage", showNewPage)
         pOptions.saveSettings()
 
@@ -522,6 +538,8 @@ class GuiManuscript(NToolDialog):
 
 
 class _DetailsWidget(QWidget):
+    """The details of the selected build settings."""
+
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
@@ -580,7 +598,7 @@ class _DetailsWidget(QWidget):
     def updateInfo(self, build: BuildSettings) -> None:
         """Load the build settings info into the table."""
         if self._initExpanded:
-            previous = SHARED.project.options.getValue("GuiManuscript", "detailsExpanded", [])
+            previous = SHARED.project.options.getList("GuiManuscript", "detailsExpanded", [])
             expanded = [bool(s) for s in previous]
             self._initExpanded = False
         else:
@@ -666,6 +684,8 @@ class _DetailsWidget(QWidget):
 
 
 class _OutlineWidget(QWidget):
+    """The outline of the manuscript."""
+
     D_LINE = QtUserRole
 
     outlineEntryClicked = pyqtSignal(str)
@@ -735,6 +755,127 @@ class _OutlineWidget(QWidget):
     def _onItemClick(self, item: QTreeWidgetItem) -> None:
         """Process tree item click."""
         self.outlineEntryClicked.emit(str(item.data(0, self.D_LINE)))
+
+
+class _StatisticsWidget(QWidget):
+    """The statistics of the manuscript."""
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+
+        self._initExpanded = True
+
+        # Tree Widget
+        self.listView = QTreeWidget(self)
+        self.listView.setHeaderLabels([self.tr("Count"), self.tr("Value")])
+        self.listView.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.listView.setIndentation(SHARED.theme.baseIconHeight)
+
+        # Entries
+        self.cTitles = QTreeWidgetItem(self.listView, [trStats(nwLabels.STATS_NAME[nwStats.TITLES]), ""])
+        self.cParagraphs = QTreeWidgetItem(self.listView, [trStats(nwLabels.STATS_NAME[nwStats.PARAGRAPHS]), ""])
+        self.cDialog = QTreeWidgetItem(self.listView, [trStats(nwLabels.STATS_NAME[nwStats.DIALOG_RATIO]), ""])
+        self.cWords = QTreeWidgetItem(self.listView, [trStats(nwLabels.STATS_NAME[nwStats.WORDS]), ""])
+        self.cChars = QTreeWidgetItem(self.listView, [trStats(nwLabels.STATS_NAME[nwStats.CHARS]), ""])
+
+        self.cTextWords = QTreeWidgetItem(self.cWords, [trStats(nwLabels.STATS_NAME[nwStats.WORDS_TEXT]), ""])
+        self.cTitlesWords = QTreeWidgetItem(self.cWords, [trStats(nwLabels.STATS_NAME[nwStats.WORDS_TITLE]), ""])
+
+        self.cWChars = QTreeWidgetItem(self.cChars, [trStats(nwLabels.STATS_NAME[nwStats.WCHARS_ALL]), ""])
+        self.cTextChars = QTreeWidgetItem(self.cChars, [trStats(nwLabels.STATS_NAME[nwStats.CHARS_TEXT]), ""])
+        self.cTextWChars = QTreeWidgetItem(self.cChars, [trStats(nwLabels.STATS_NAME[nwStats.WCHARS_TEXT]), ""])
+        self.cDialogChars = QTreeWidgetItem(self.cChars, [trStats(nwLabels.STATS_NAME[nwStats.CHARS_DIALOG]), ""])
+        self.cTitlesChars = QTreeWidgetItem(self.cChars, [trStats(nwLabels.STATS_NAME[nwStats.CHARS_TITLE]), ""])
+        self.cTitleWChars = QTreeWidgetItem(self.cChars, [trStats(nwLabels.STATS_NAME[nwStats.WCHARS_TITLE]), ""])
+
+        self.cTitles.setTextAlignment(1, QtAlignRight)
+        self.cParagraphs.setTextAlignment(1, QtAlignRight)
+        self.cDialog.setTextAlignment(1, QtAlignRight)
+        self.cWords.setTextAlignment(1, QtAlignRight)
+        self.cChars.setTextAlignment(1, QtAlignRight)
+        self.cTextWords.setTextAlignment(1, QtAlignRight)
+        self.cTitlesWords.setTextAlignment(1, QtAlignRight)
+        self.cTextChars.setTextAlignment(1, QtAlignRight)
+        self.cTitlesChars.setTextAlignment(1, QtAlignRight)
+        self.cDialogChars.setTextAlignment(1, QtAlignRight)
+        self.cWChars.setTextAlignment(1, QtAlignRight)
+        self.cTextWChars.setTextAlignment(1, QtAlignRight)
+        self.cTitleWChars.setTextAlignment(1, QtAlignRight)
+
+        # Assemble
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(self.listView)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.outerBox)
+
+    ##
+    #  Getters
+    ##
+
+    def getExpandedState(self) -> list[bool]:
+        """Get the expanded state of each top level item."""
+        state = []
+        for i in range(self.listView.topLevelItemCount()):
+            item = self.listView.topLevelItem(i)
+            if isinstance(item, QTreeWidgetItem):  # pragma: no branch
+                state.append(item.isExpanded())
+        return state
+
+    ##
+    #  Setters
+    ##
+
+    def setExpandedState(self, state: list[bool]) -> None:
+        """Set the expanded state of each top level item."""
+        count = len(state)
+        for i in range(self.listView.topLevelItemCount()):
+            item = self.listView.topLevelItem(i)
+            if isinstance(item, QTreeWidgetItem):  # pragma: no branch
+                item.setExpanded((state[i] if i < count else True) and item.childCount() > 0)
+
+    ##
+    #  Methods
+    ##
+
+    def updateStats(self, data: dict[str, int]) -> None:
+        """Update the stats values from a Tokenizer stats dict."""
+        titles = data.get(nwStats.TITLES, 0)
+        paragraphs = data.get(nwStats.PARAGRAPHS, 0)
+        words = data.get(nwStats.WORDS, 0)
+        chars = data.get(nwStats.CHARS, 0)
+
+        textWords = data.get(nwStats.WORDS_TEXT, 0)
+        titleWords = data.get(nwStats.WORDS_TITLE, 0)
+
+        wChars = data.get(nwStats.WCHARS_ALL, 0)
+        textWChars = data.get(nwStats.WCHARS_TEXT, 0)
+        textChars = data.get(nwStats.CHARS_TEXT, 0)
+        dialogChars = data.get(nwStats.CHARS_DIALOG, 0)
+        titleChars = data.get(nwStats.CHARS_TITLE, 0)
+        titleWChars = data.get(nwStats.WCHARS_TITLE, 0)
+
+        dialogRatio = f"{(dialogChars / textChars * 100.0):.1f}%" if chars > 0 else "N/A"
+
+        self.cTitles.setText(1, f"{titles:n}")
+        self.cParagraphs.setText(1, f"{paragraphs:n}")
+        self.cDialog.setText(1, dialogRatio)
+        self.cWords.setText(1, f"{words:n}")
+        self.cChars.setText(1, f"{chars:n}")
+
+        self.cTextWords.setText(1, f"{textWords:n}")
+        self.cTitlesWords.setText(1, f"{titleWords:n}")
+
+        self.cWChars.setText(1, f"{wChars:n}")
+        self.cTextWChars.setText(1, f"{textWChars:n}")
+        self.cTextChars.setText(1, f"{textChars:n}")
+        self.cDialogChars.setText(1, f"{dialogChars:n}" if dialogChars > 0 else "N/A")
+        self.cTitlesChars.setText(1, f"{titleChars:n}")
+        self.cTitleWChars.setText(1, f"{titleWChars:n}")
+
+        if header := self.listView.header():  # pragma: no branch
+            header.setStretchLastSection(False)
+            header.setSectionResizeMode(0, QtHeaderStretch)
+            header.setSectionResizeMode(1, QtHeaderToContents)
 
 
 class _PreviewWidget(QTextBrowser):

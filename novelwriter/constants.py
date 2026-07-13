@@ -266,6 +266,7 @@ class nwStats:
     WORDS = "allWords"
     WORDS_TEXT = "textWords"
     WORDS_TITLE = "titleWords"
+    DIALOG_RATIO = "dialogRatio"
 
     # Note: The order here affects the order of menu entries
     ALL_FIELDS: Final[list[str]] = [
@@ -397,10 +398,12 @@ class nwLabels:
         nwStats.WORDS: QT_TRANSLATE_NOOP("Stats", "Words"),
         nwStats.WORDS_TEXT: QT_TRANSLATE_NOOP("Stats", "Words in text"),
         nwStats.WORDS_TITLE: QT_TRANSLATE_NOOP("Stats", "Words in headings"),
+        nwStats.DIALOG_RATIO: QT_TRANSLATE_NOOP("Stats", "Dialogue"),
     }
     STATS_DISPLAY: Final[dict[str, str]] = {
         nwStats.CHARS: QT_TRANSLATE_NOOP("Stats", "Characters: {0} ({1})"),
         nwStats.WORDS: QT_TRANSLATE_NOOP("Stats", "Words: {0} ({1})"),
+        nwStats.DIALOG_RATIO: QT_TRANSLATE_NOOP("Stats", "Dialogue: {0}%"),
     }
     BUILD_FMT: Final[dict[nwBuildFmt, str]] = {
         nwBuildFmt.ODT: QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)"),
