@@ -1001,6 +1001,10 @@ class _StatsWidget(QWidget):
         self.maxTotalChars.setText(f"{data.get(nwStats.CHARS, 0):n}")
         self.maxHeaderChars.setText(f"{data.get(nwStats.CHARS_TITLE, 0):n}")
         self.maxTextChars.setText(f"{data.get(nwStats.CHARS_TEXT, 0):n}")
+        if (dialog := data.get(nwStats.CHARS_DIALOG, 0)) > 0:
+            self.maxDialogChars.setText(f"{dialog:n}")
+        else:
+            self.maxDialogChars.setText("N/A")
 
         self.maxTotalWordChars.setText(f"{data.get(nwStats.WCHARS_ALL, 0):n}")
         self.maxHeadWordChars.setText(f"{data.get(nwStats.WCHARS_TITLE, 0):n}")
@@ -1040,6 +1044,7 @@ class _StatsWidget(QWidget):
         trAllChars = trStats(nwLabels.STATS_NAME[nwStats.CHARS])
         trTextChars = trStats(nwLabels.STATS_NAME[nwStats.CHARS_TEXT])
         trTitleChars = trStats(nwLabels.STATS_NAME[nwStats.CHARS_TITLE])
+        trDialogChars = trStats(nwLabels.STATS_NAME[nwStats.CHARS_DIALOG])
         trParagraphCount = trStats(nwLabels.STATS_NAME[nwStats.PARAGRAPHS])
         trTitleCount = trStats(nwLabels.STATS_NAME[nwStats.TITLES])
         trAllWordChars = trStats(nwLabels.STATS_NAME[nwStats.WCHARS_ALL])
@@ -1080,6 +1085,7 @@ class _StatsWidget(QWidget):
         self.maxTotalChars = QLabel(self)
         self.maxHeaderChars = QLabel(self)
         self.maxTextChars = QLabel(self)
+        self.maxDialogChars = QLabel(self)
         self.maxTotalWordChars = QLabel(self)
         self.maxHeadWordChars = QLabel(self)
         self.maxTextWordChars = QLabel(self)
@@ -1087,6 +1093,7 @@ class _StatsWidget(QWidget):
         self.maxTotalChars.setAlignment(QtAlignRight)
         self.maxHeaderChars.setAlignment(QtAlignRight)
         self.maxTextChars.setAlignment(QtAlignRight)
+        self.maxDialogChars.setAlignment(QtAlignRight)
         self.maxTotalWordChars.setAlignment(QtAlignRight)
         self.maxHeadWordChars.setAlignment(QtAlignRight)
         self.maxTextWordChars.setAlignment(QtAlignRight)
@@ -1095,6 +1102,7 @@ class _StatsWidget(QWidget):
         self.rightForm.addRow(trAllChars, self.maxTotalChars)
         self.rightForm.addRow(trAllWordChars, self.maxTotalWordChars)
         self.rightForm.addRow(trTextChars, self.maxTextChars)
+        self.rightForm.addRow(trDialogChars, self.maxDialogChars)
         self.rightForm.addRow(trTextWordChars, self.maxTextWordChars)
         self.rightForm.addRow(trTitleChars, self.maxHeaderChars)
         self.rightForm.addRow(trTitleWordChars, self.maxHeadWordChars)

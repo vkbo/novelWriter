@@ -1721,9 +1721,9 @@ def testTokenizer_Dialogue(mockGUI):
             "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019",
             [
                 (10, TextFmt.COL_B, "dialog"),
-                (25, TextFmt.COL_E, ""),
+                (25, TextFmt.COL_E, "enddialog"),
                 (30, TextFmt.COL_B, "dialog"),
-                (45, TextFmt.COL_E, ""),
+                (45, TextFmt.COL_E, "enddialog"),
             ],
             BlockFmt.NONE,
         )
@@ -1739,9 +1739,9 @@ def testTokenizer_Dialogue(mockGUI):
             "Text with \u201cdialogue one,\u201d and \u201cdialogue two.\u201d",
             [
                 (10, TextFmt.COL_B, "dialog"),
-                (25, TextFmt.COL_E, ""),
+                (25, TextFmt.COL_E, "enddialog"),
                 (30, TextFmt.COL_B, "dialog"),
-                (45, TextFmt.COL_E, ""),
+                (45, TextFmt.COL_E, "enddialog"),
             ],
             BlockFmt.NONE,
         )
@@ -1757,9 +1757,9 @@ def testTokenizer_Dialogue(mockGUI):
             "Text with ::dialogue one,:: and ::dialogue two.::",
             [
                 (10, TextFmt.COL_B, "altdialog"),
-                (27, TextFmt.COL_E, ""),
+                (27, TextFmt.COL_E, "endaltdialog"),
                 (32, TextFmt.COL_B, "altdialog"),
-                (49, TextFmt.COL_E, ""),
+                (49, TextFmt.COL_E, "endaltdialog"),
             ],
             BlockFmt.NONE,
         )
@@ -1780,7 +1780,7 @@ def testTokenizer_Dialogue(mockGUI):
             "\u2013 Dialogue line without narrator break.",
             [
                 (0, TextFmt.COL_B, "dialog"),
-                (39, TextFmt.COL_E, ""),
+                (39, TextFmt.COL_E, "enddialog"),
             ],
             BlockFmt.NONE,
         )
@@ -1801,9 +1801,9 @@ def testTokenizer_Dialogue(mockGUI):
             "\u2013 Dialogue with a narrator break, \u2013he said\u2013, see?",
             [
                 (0, TextFmt.COL_B, "dialog"),
-                (34, TextFmt.COL_E, ""),
+                (34, TextFmt.COL_E, "enddialog"),
                 (44, TextFmt.COL_B, "dialog"),
-                (49, TextFmt.COL_E, ""),
+                (49, TextFmt.COL_E, "enddialog"),
             ],
             BlockFmt.NONE,
         )
@@ -1823,7 +1823,7 @@ def testTokenizer_Dialogue(mockGUI):
             [
                 (0, TextFmt.I_B, ""),
                 (0, TextFmt.COL_B, "dialog"),
-                (16, TextFmt.COL_E, ""),
+                (16, TextFmt.COL_E, "enddialog"),
                 (16, TextFmt.I_E, ""),
             ],
             BlockFmt.NONE,

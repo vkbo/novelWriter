@@ -257,6 +257,7 @@ class nwStats:
     CHARS = "allChars"
     CHARS_TEXT = "textChars"
     CHARS_TITLE = "titleChars"
+    CHARS_DIALOG = "dialogChars"
     PARAGRAPHS = "paragraphCount"
     TITLES = "titleCount"
     WCHARS_ALL = "allWordChars"
@@ -387,6 +388,7 @@ class nwLabels:
         nwStats.CHARS: QT_TRANSLATE_NOOP("Stats", "Characters"),
         nwStats.CHARS_TEXT: QT_TRANSLATE_NOOP("Stats", "Characters in text"),
         nwStats.CHARS_TITLE: QT_TRANSLATE_NOOP("Stats", "Characters in headings"),
+        nwStats.CHARS_DIALOG: QT_TRANSLATE_NOOP("Stats", "Characters in dialogue"),
         nwStats.PARAGRAPHS: QT_TRANSLATE_NOOP("Stats", "Paragraphs"),
         nwStats.TITLES: QT_TRANSLATE_NOOP("Stats", "Headings"),
         nwStats.WCHARS_ALL: QT_TRANSLATE_NOOP("Stats", "Characters, no spaces"),
