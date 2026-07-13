@@ -39,6 +39,12 @@ logger = logging.getLogger(__name__)
 
 C_FACTOR = 0x0100
 
+C_LABEL_TEXT = 0x0000 | QtDisplayRole
+C_LABEL_ICON = 0x0000 | QtDecorationRole
+C_COUNT_TEXT = 0x0100 | QtDisplayRole
+C_COUNT_ALIGN = 0x0100 | QtTextAlignmentRole
+C_COUNT_COLOR = 0x0100 | QtForegroundRole
+
 T_SearchData = str | QIcon | QBrush | Qt.AlignmentFlag | None
 
 
@@ -111,15 +117,15 @@ class SearchNode:
 
     def setDocumentData(self, name: str, icon: QIcon, count: str, color: QBrush) -> None:
         """Set the display data for a document-level node."""
-        self._cache[C_FACTOR * self.C_NAME | QtDisplayRole] = name
-        self._cache[C_FACTOR * self.C_NAME | QtDecorationRole] = icon
-        self._cache[C_FACTOR * self.C_COUNT | QtDisplayRole] = count
-        self._cache[C_FACTOR * self.C_COUNT | QtTextAlignmentRole] = QtAlignRight
-        self._cache[C_FACTOR * self.C_COUNT | QtForegroundRole] = color
+        self._cache[C_LABEL_TEXT] = name
+        self._cache[C_LABEL_ICON] = icon
+        self._cache[C_COUNT_TEXT] = count
+        self._cache[C_COUNT_ALIGN] = QtAlignRight
+        self._cache[C_COUNT_COLOR] = color
 
     def setMatchData(self, context: str) -> None:
         """Set the display data for a match-level node."""
-        self._cache[C_FACTOR * self.C_NAME | QtDisplayRole] = context
+        self._cache[C_LABEL_TEXT] = context
 
     def setChildren(self, children: list[SearchNode]) -> None:
         """Set the node's children, and update their parent and row."""
