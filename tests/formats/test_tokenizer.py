@@ -2712,6 +2712,26 @@ def testTokenizer_CountStats_Dialogue(mockGUI):
     tokens.countStats()
     assert tokens.textStats["dialogChars"] == len("\u201cbold dialogue\u201d")
 
+    # Highlighting enabled: a nested alt-dialogue marker fully contained
+    # within a regular dialogue quote overlaps, and must not be double
+    # counted, nor cause the overlapping regions to be dropped
+    tokens._text = "Text with \u201c::dialogue::\u201d, too.\n\n"
+    tokens._counts = {}
+    tokens.setDialogHighlight(True)
+    tokens.tokenizeText()
+    tokens.countStats()
+    assert tokens.textStats["dialogChars"] == len("\u201c::dialogue::\u201d")
+
+    # Highlighting enabled: a dialogue quote and an alt-dialogue marker
+    # that cross each other, rather than nest, must still be merged into
+    # a single non-overlapping span
+    tokens._text = "Text with \u201cdialog and ::alt\u201d dialog:: in it.\n\n"
+    tokens._counts = {}
+    tokens.setDialogHighlight(True)
+    tokens.tokenizeText()
+    tokens.countStats()
+    assert tokens.textStats["dialogChars"] == len("\u201cdialog and ::alt\u201d dialog::")
+
 
 @pytest.mark.core
 def testTokenizer_SceneSeparators(mockGUI):

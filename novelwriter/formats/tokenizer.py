@@ -1080,13 +1080,28 @@ class Tokenizer(ABC):
 
                 dCount = 0
                 if countDialog and tFmt:
-                    start = None
+                    intervals = []
+                    dStart = None
+                    aStart = None
                     for pos, _, meta in tFmt:
-                        if meta in ("dialog", "altdialog") and start is None:
-                            start = pos
-                        elif meta in ("enddialog", "endaltdialog") and start is not None:
-                            dCount += pos - start
-                            start = None
+                        if meta == "dialog" and dStart is None:
+                            dStart = pos
+                        elif meta == "enddialog" and dStart is not None:
+                            intervals.append((dStart, pos))
+                            dStart = None
+                        elif meta == "altdialog" and aStart is None:
+                            aStart = pos
+                        elif meta == "endaltdialog" and aStart is not None:
+                            intervals.append((aStart, pos))
+                            aStart = None
+
+                    # Dialogue and alt-dialogue markers may overlap, so the
+                    # intervals are merged to avoid double-counting
+                    prevEnd = -1
+                    for iStart, iEnd in sorted(intervals):
+                        if iEnd > prevEnd:
+                            dCount += iEnd - max(iStart, prevEnd)
+                            prevEnd = iEnd
 
                 paragraphCount += 1
                 allWords += nPWords
