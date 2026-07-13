@@ -44,7 +44,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt, checkIntTuple, formatTime, minmax, qtAddAction
+from novelwriter.common import checkInt, checkIntTuple, formatPercent, formatTime, minmax, qtAddAction
 from novelwriter.constants import nwConst
 from novelwriter.enum import nwStandardButton
 from novelwriter.error import formatException
@@ -566,8 +566,7 @@ class GuiWritingStats(NToolDialog):
             if showIdleTime:
                 idleEntry = formatTime(sIdle)
             else:
-                sRatio = sIdle / sDiff if sDiff > 0.0 else 0.0
-                idleEntry = f"{round(100.0 * sRatio)} %"
+                idleEntry = formatPercent(sIdle, divisor=sDiff, prec=0)
 
             newItem = QTreeWidgetItem()
             newItem.setText(self.C_TIME, sStart)

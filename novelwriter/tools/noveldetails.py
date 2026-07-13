@@ -43,8 +43,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import SHARED
-from novelwriter.common import formatTime, numberToRoman
-from novelwriter.constants import nwUnicode
+from novelwriter.common import formatPercent, formatTime, numberToRoman
 from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollablePage
 from novelwriter.extensions.modified import NNonBlockingDialog
@@ -463,9 +462,8 @@ class _ContentsPage(NFixedPage):
                 progText = ""
             else:
                 cPage = tPages - fstPage
-                pgProg = 100.0 * (cPage - 1) / pMax if pMax > 0 else 0.0
                 progPage = f"{cPage:n}"
-                progText = f"{pgProg:.1f}{nwUnicode.U_THSP}%"
+                progText = formatPercent(cPage - 1, divisor=pMax, prec=1)
 
             hDec = SHARED.theme.getHeaderDecoration(tLevel)
             if tTitle.strip() == "":

@@ -730,7 +730,7 @@ def testGuiWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     # Toggle Idle Time
     item = sessLog.listBox.topLevelItem(7)
     assert item is not None
-    assert item.text(sessLog.C_IDLE) == "4 %"
+    assert item.text(sessLog.C_IDLE) == "4\u202f%"
 
     qtbot.mouseClick(sessLog.swtShowIdleTime, QtMouseLeft)
 
