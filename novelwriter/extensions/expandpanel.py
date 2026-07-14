@@ -23,10 +23,10 @@ from __future__ import annotations
 
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QPalette
-from PyQt6.QtWidgets import QWIDGETSIZE_MAX, QHBoxLayout, QLayout, QSplitter, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QWIDGETSIZE_MAX, QHBoxLayout, QLayout, QSplitter, QSplitterHandle, QVBoxLayout, QWidget
 
 from novelwriter import SHARED
-from novelwriter.extensions.modified import NClickableLabel, NIconToggleButton
+from novelwriter.extensions.modified import NClickableLabel, NIconToggleButton, NSplitterHandle
 
 
 class NExpandablePanel(QWidget):
@@ -132,11 +132,16 @@ class NExpandablePanelGroup(QSplitter):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(Qt.Orientation.Vertical, parent)
         self.setChildrenCollapsible(False)
+        self.setHandleWidth(4)
         self._expandedSizes: dict[NExpandablePanel, int] = {}
 
     ##
     #  Methods
     ##
+
+    def createHandle(self) -> QSplitterHandle:
+        """Return a custom splitter handle that only lights up on hover."""
+        return NSplitterHandle(self.orientation(), self)
 
     def addWidget(self, widget: QWidget) -> None:
         """Add a widget or expandable panel to the group."""
