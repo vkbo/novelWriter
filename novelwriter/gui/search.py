@@ -455,20 +455,22 @@ class _SearchFilters(NExpandablePanel):
 
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
-        self.filterOpt.clear()
-        self._buildStandardFilters()
-        self._buildProjectFilters()
+        self._buildFilterOptions()
+        self.filterOpt.setSwitchState(SHARED.project.options.getDict("GuiProjectSearch", "searchFilters", {}))
 
     def closeProjectTasks(self) -> None:
         """Run close project tasks."""
+        SHARED.project.options.setValue("GuiProjectSearch", "searchFilters", self.filterOpt.getSwitchState())
         self.filterOpt.clear()
 
     ##
     #  Internal Functions
     ##
 
-    def _buildStandardFilters(self) -> None:
-        """Build the standard filter options."""
+    def _buildFilterOptions(self) -> None:
+        """Build the filter options list."""
+        self.filterOpt.clear()
+
         # Text Content
         self.filterOpt.addLabel(trConst(nwLabels.FILTER_GROUPS["content"]))
         self.filterOpt.addItem(
@@ -495,9 +497,9 @@ class _SearchFilters(NExpandablePanel):
             "text:includeBody",
             default=True,
         )
+        self.filterOpt.addSeparator()
 
         # Document Types
-        self.filterOpt.addSeparator()
         self.filterOpt.addLabel(trConst(nwLabels.FILTER_GROUPS["documents"]))
         self.filterOpt.addItem(
             SHARED.theme.getIcon("prj_scene", "scene"),
@@ -517,17 +519,15 @@ class _SearchFilters(NExpandablePanel):
             "docs:includeInactive",
             default=True,
         )
-
-    def _buildProjectFilters(self) -> None:
-        """Build the project filter options."""
         self.filterOpt.addSeparator()
+
+        # Root Folders
         self.filterOpt.addLabel(self.tr("Root Folders"))
         for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
-            print(f"Root: {tHandle} - {nwItem.itemName}")
-            if not nwItem.isInactiveClass():
+            if nwItem.isSearchableClass():
                 self.filterOpt.addItem(
                     nwItem.getMainIcon(),
                     nwItem.itemName,
                     f"root:{tHandle}",
-                    default=True,
+                    default=not nwItem.isInactiveClass(),
                 )

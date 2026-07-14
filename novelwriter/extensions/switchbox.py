@@ -49,13 +49,36 @@ class NSwitchBox(QScrollArea):
         self._hSwitch = baseSize
         self._wSwitch = 2 * self._hSwitch
         self._sIcon = baseSize
-        self._widgets = []
+        self._switches = {}
         self.clear()
+
+    ##
+    #  State Methods
+    ##
+
+    def setSwitchState(self, state: dict[str, bool]) -> None:
+        """Set the state of the switches in the box."""
+        if isinstance(state, dict):  # pragma: no branch
+            for identifier, value in state.items():
+                if isinstance(switch := self._switches.get(identifier), NSwitch):  # pragma: no branch
+                    switch.setChecked(bool(value))
+
+    def getSwitchState(self) -> dict[str, bool]:
+        """Get the state of the switches in the box."""
+        state = {}
+        for identifier, switch in self._switches.items():
+            if isinstance(switch, NSwitch):  # pragma: no branch
+                state[identifier] = switch.isChecked()
+        return state
+
+    ##
+    #  Builder Methods
+    ##
 
     def clear(self) -> None:
         """Rebuild the content of the core widget."""
         self._index = 0
-        self._widgets = []
+        self._switches.clear()
 
         self._content = QGridLayout()
         self._content.setColumnStretch(1, 1)
@@ -72,7 +95,6 @@ class NSwitchBox(QScrollArea):
         label = QLabel(text, self)
         label.setFont(SHARED.theme.guiFontB)
         self._content.addWidget(label, self._index, 0, 1, 3, QtAlignLeft)
-        self._widgets.append(label)
         self._bumpIndex()
 
     def addItem(self, qIcon: QIcon, text: str, identifier: str, default: bool = False) -> None:
@@ -91,7 +113,7 @@ class NSwitchBox(QScrollArea):
         self._content.addWidget(switch, self._index, 2, QtAlignRight)
 
         label.setBuddy(switch)
-        self._widgets.append(switch)
+        self._switches[identifier] = switch
         self._bumpIndex()
 
     def addSeparator(self) -> None:
@@ -99,7 +121,6 @@ class NSwitchBox(QScrollArea):
         spacer = QWidget(self)
         spacer.setFixedHeight(int(0.5 * self._sIcon))
         self._content.addWidget(spacer, self._index, 0, 1, 3, QtAlignLeft)
-        self._widgets.append(spacer)
         self._bumpIndex()
 
     ##

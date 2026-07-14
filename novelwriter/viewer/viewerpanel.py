@@ -126,7 +126,7 @@ class GuiDocViewerPanel(QWidget):
 
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
-        colWidths = SHARED.project.options.getValue("GuiDocViewerPanel", "colWidths", {})
+        colWidths = SHARED.project.options.getDict("GuiDocViewerPanel", "colWidths", {})
         hideInactive = SHARED.project.options.getBool("GuiDocViewerPanel", "hideInactive", False)
         self.aInactive.setChecked(hideInactive)
         if isinstance(colWidths, dict):

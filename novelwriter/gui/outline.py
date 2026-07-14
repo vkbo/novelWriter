@@ -585,7 +585,7 @@ class GuiOutlineTree(QTreeWidget):
         """
         # Load whatever we saved last time, regardless of whether it
         # contains the correct names or number of columns.
-        colState = SHARED.project.options.getValue("GuiOutline", "columnState", {})
+        colState = SHARED.project.options.getDict("GuiOutline", "columnState", {})
 
         tmpOrder = []
         tmpHidden = {}

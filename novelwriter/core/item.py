@@ -411,6 +411,14 @@ class ProjectItem:
             nwItemClass.TRASH,
         )
 
+    def isSearchableClass(self) -> bool:
+        """Check if the item is in a searchable class."""
+        return self._class not in (
+            nwItemClass.NO_CLASS,
+            nwItemClass.TEMPLATE,
+            nwItemClass.TRASH,
+        )
+
     def isRootType(self) -> bool:
         """Check if item is a root item."""
         return self._type == nwItemType.ROOT
