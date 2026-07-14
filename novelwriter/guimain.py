@@ -236,6 +236,7 @@ class GuiMain(QMainWindow):
         SHARED.rootFolderChanged.connect(self.novelView.updateRootItem)
         SHARED.rootFolderChanged.connect(self.outlineView.updateRootItem)
         SHARED.rootFolderChanged.connect(self.projView.updateRootItem)
+        SHARED.rootFolderChanged.connect(self.projSearch.updateRootItem)
         SHARED.spellLanguageChanged.connect(self.docEditor.processSpellCheckChange)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
         SHARED.statusLabelsChanged.connect(self.docViewerPanel.updateStatusLabels)
