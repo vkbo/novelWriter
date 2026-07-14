@@ -41,6 +41,7 @@ from tests.helpers import clearLogHandlers
 @pytest.mark.base
 def testInit_Launch(caplog, monkeypatch, fncPath):
     """Check launching the main GUI."""
+    monkeypatch.setattr(NSplashScreen, "show", lambda *a: None)
     monkeypatch.setattr(NSplashScreen, "finish", lambda *a: None)
     monkeypatch.setattr("novelwriter.splash.sleep", lambda *a: None)
     monkeypatch.setattr("novelwriter._createApp", lambda *a: Mock())
@@ -108,6 +109,7 @@ def testInit_CreateApp(caplog, monkeypatch, fncPath):
 @pytest.mark.base
 def testInit_Options(monkeypatch, fncPath):
     """Test command line options for logging level."""
+    monkeypatch.setattr(NSplashScreen, "show", lambda *a: None)
     monkeypatch.setattr(NSplashScreen, "finish", lambda *a: None)
     monkeypatch.setattr("novelwriter.splash.sleep", lambda *a: None)
 
