@@ -501,17 +501,12 @@ class _SearchFilters(NExpandablePanel):
         super().updateTheme()
         self.filterOpt.updateTheme()
 
-    ##
-    #  Public Slots
-    ##
-
-    @pyqtSlot(str, nwChange)
     def updateRootItem(self, tHandle: str, change: nwChange) -> None:
-        """Rebuild the root folder filters when the tree changes."""
+        """Update the root folder filters when there was a change."""
         match change:
             case nwChange.CREATE | nwChange.UPDATE:
                 if nwItem := SHARED.project.tree[tHandle]:
-                    self._appendRootFilter(nwItem)
+                    self._processRootFilterEntry(nwItem)
             case nwChange.DELETE:
                 self.filterOpt.removeItem(f"root:{tHandle}")
             case _:  # pragma: no cover
@@ -617,12 +612,12 @@ class _SearchFilters(NExpandablePanel):
         # Root Folders
         self.filterOpt.addLabel(self.tr("Root Folders"))
         for _, nwItem in SHARED.project.tree.iterRoots(None):
-            self._appendRootFilter(nwItem)
+            self._processRootFilterEntry(nwItem)
 
         self.setExpanded(expanded)
 
-    def _appendRootFilter(self, nwItem: ProjectItem) -> None:
-        """Append a root filter option to the list."""
+    def _processRootFilterEntry(self, nwItem: ProjectItem) -> None:
+        """Append or update a root filter option."""
         if nwItem.isSearchableClass():
             name, color = nwItem.getMainIconStyle()
             self.filterOpt.addItem(
