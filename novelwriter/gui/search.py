@@ -53,7 +53,6 @@ from novelwriter.models.searchmodel import SearchNode, SearchResultModel
 from novelwriter.types import (
     QtAlignMiddle,
     QtDisplayRole,
-    QtElideLeft,
     QtElideRight,
     QtHeaderStretch,
     QtHeaderToContents,
@@ -397,35 +396,10 @@ class _SearchResultDelegate(QStyledItemDelegate):
             painter.fillRect(rect, self._rectColS)
 
         metrics = painter.fontMetrics()
+        avail = max(0, rect.width() - RESULT_MARGIN)
+        text = metrics.elidedText(text, QtElideRight, avail)
         sPos = minmax(sPos, 0, len(text))
         ePos = minmax(ePos, sPos, len(text))
-        tLeft, tMatch, tRight = text[:sPos], text[sPos:ePos], text[ePos:]
-
-        # Centre the match in the available width, leaning toward
-        # whichever side has less text if there isn't room to fully
-        # centre it, rather than wasting space on the shorter side
-        avail = max(0, rect.width() - RESULT_MARGIN)
-        wMatch = metrics.horizontalAdvance(tMatch)
-        wLeft = metrics.horizontalAdvance(tLeft)
-        wRight = metrics.horizontalAdvance(tRight)
-        remain = max(0, avail - wMatch)
-        half = remain / 2
-
-        if wLeft <= half and wRight <= half:
-            bLeft, bRight = wLeft, wRight
-        elif wLeft <= half:
-            bLeft, bRight = wLeft, remain - wLeft
-        elif wRight <= half:
-            bLeft, bRight = remain - wRight, wRight
-        else:
-            bLeft = bRight = half
-
-        tLeft = metrics.elidedText(tLeft, QtElideLeft, int(bLeft)) if tLeft else ""
-        tRight = metrics.elidedText(tRight, QtElideRight, int(bRight)) if tRight else ""
-
-        text = tLeft + tMatch + tRight
-        sPos = len(tLeft)
-        ePos = sPos + len(tMatch)
 
         x = rect.x() + RESULT_MARGIN
         y = rect.y()

@@ -333,28 +333,15 @@ class DocSearch:
             lEndPos = text.find("\n", end)
             lEnd = lEndPos if lEndPos != -1 else len(text)
 
-            left = max(lStart, pos - 100)
-            if left > lStart:
-                sentence = -1
-                for term in (". ", "! ", "? "):
-                    found = text.rfind(term, left, pos)
-                    if found != -1:
-                        sentence = max(sentence, found + len(term))
-                if sentence != -1:
-                    left = sentence
-                else:
-                    space = text.find(" ", left, pos)
-                    if space != -1:
-                        left = space + 1
+            left = max(lStart, pos - 20)
+            if left > lStart and (space := text.find(" ", left, pos)) != -1:
+                left = space + 1
 
-            right = min(lEnd, end + 100)
-            if right < lEnd:
-                space = text.rfind(" ", end, right)
-                if space != -1:
-                    right = space
+            right = min(lEnd, end + 80)
+            if right < lEnd and (space := text.rfind(" ", end, right)) != -1:
+                right = space
 
-            context = text[left:right]
-            if context:
+            if context := text[left:right]:
                 results.append((pos, num, context, pos - left))
                 count += 1
                 if count >= nwConst.MAX_SEARCH_RESULT:
