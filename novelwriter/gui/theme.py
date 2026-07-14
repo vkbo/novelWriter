@@ -188,6 +188,7 @@ class GuiTheme:
         "getHeaderDecorationNarrow",
         "getIcon",
         "getItemIcon",
+        "getItemIconStyle",
         "getPixmap",
         "getStandardButton",
         "getToggleIcon",
@@ -244,6 +245,7 @@ class GuiTheme:
         self.getToggleIcon = self.iconCache.getToggleIcon
         self.getDecoration = self.iconCache.getDecoration
         self.getToolButton = self.iconCache.getToolButton
+        self.getItemIconStyle = self.iconCache.getItemIconStyle
         self.getStandardButton = self.iconCache.getStandardButton
         self.getHeaderDecoration = self.iconCache.getHeaderDecoration
         self.getHeaderDecorationNarrow = self.iconCache.getHeaderDecorationNarrow
@@ -937,7 +939,22 @@ class GuiIcons:
         """Get the correct icon for a project item based on type, class
         and heading level.
         """
-        name = None
+        name, color = self.getItemIconStyle(tType, tClass, tLayout, hLevel)
+        if name:
+            return self.getIcon(name, color)
+        return self._noIcon
+
+    def getItemIconStyle(
+        self,
+        tType: nwItemType,
+        tClass: nwItemClass,
+        tLayout: nwItemLayout,
+        hLevel: str = "H0",
+    ) -> tuple[str, str]:
+        """Get the correct icon styles for a project item based on type,
+        class and heading level.
+        """
+        name = ""
         color = "default"
         if tType == nwItemType.ROOT:
             name = nwLabels.CLASS_ICON[tClass]
@@ -962,10 +979,8 @@ class GuiIcons:
             elif tLayout == nwItemLayout.NOTE:
                 name = "prj_note"
                 color = "note"
-        if name is None:
-            return self._noIcon
 
-        return self.getIcon(name, color)
+        return name, color
 
     def getPixmap(self, name: str, size: tuple[int, int], color: str | None = None) -> QPixmap:
         """Return an icon from the icon buffer as a QPixmap. If it

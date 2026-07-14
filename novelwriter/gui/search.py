@@ -216,8 +216,10 @@ class GuiProjectSearch(QWidget):
         self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
         self._model.updateTheme()
         self._matchDelegate.updateTheme()
+        self.searchFilters.updateTheme()
         if viewport := self.searchResult.viewport():  # pragma: no branch
             viewport.update()
+
         if not onInit:
             self.tbCase.refreshTheme()
             self.tbWord.refreshTheme()
@@ -479,6 +481,10 @@ class _SearchFilters(NExpandablePanel):
         SHARED.project.options.setValue("GuiProjectSearch", "searchFilters", self.filterOpt.getSwitchState())
         self.filterOpt.clear()
 
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        self.filterOpt.updateTheme()
+
     ##
     #  Private Slots
     ##
@@ -515,32 +521,38 @@ class _SearchFilters(NExpandablePanel):
 
     def _buildFilterOptions(self) -> None:
         """Build the filter options list."""
+        expanded = self.isExpanded()
+        self.setExpanded(False)
         self.filterOpt.clear()
 
         # Text Content
         self.filterOpt.addLabel(trConst(nwLabels.FILTER_GROUPS["content"]))
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("filter", "altaction"),
             trConst(nwLabels.FILTER_TYPES["headings"]),
             "text:includeHeadings",
+            icon="filter",
+            color="altaction",
             default=True,
         )
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("filter", "altaction"),
             trConst(nwLabels.FILTER_TYPES["meta"]),
             "text:includeMeta",
+            icon="filter",
+            color="altaction",
             default=True,
         )
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("filter", "altaction"),
             trConst(nwLabels.FILTER_TYPES["comments"]),
             "text:includeComments",
+            icon="filter",
+            color="altaction",
             default=True,
         )
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("filter", "altaction"),
             trConst(nwLabels.FILTER_TYPES["text"]),
             "text:includeBody",
+            icon="filter",
+            color="altaction",
             default=True,
         )
         self.filterOpt.addSeparator()
@@ -548,21 +560,24 @@ class _SearchFilters(NExpandablePanel):
         # Document Types
         self.filterOpt.addLabel(trConst(nwLabels.FILTER_GROUPS["documents"]))
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("prj_scene", "scene"),
             trConst(nwLabels.FILTER_TYPES["novel"]),
             "docs:includeNovel",
+            icon="prj_scene",
+            color="scene",
             default=True,
         )
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("prj_note", "note"),
             trConst(nwLabels.FILTER_TYPES["notes"]),
             "docs:includeNotes",
+            icon="prj_note",
+            color="note",
             default=True,
         )
         self.filterOpt.addItem(
-            SHARED.theme.getIcon("unchecked", "reject"),
             trConst(nwLabels.FILTER_TYPES["inactive"]),
             "docs:includeInactive",
+            icon="unchecked",
+            color="reject",
             default=True,
         )
         self.filterOpt.addSeparator()
@@ -571,9 +586,13 @@ class _SearchFilters(NExpandablePanel):
         self.filterOpt.addLabel(self.tr("Root Folders"))
         for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
             if nwItem.isSearchableClass():
+                name, color = nwItem.getMainIconStyle()
                 self.filterOpt.addItem(
-                    nwItem.getMainIcon(),
                     nwItem.itemName,
                     f"root:{tHandle}",
+                    icon=name,
+                    color=color,
                     default=not nwItem.isInactiveClass(),
                 )
+
+        self.setExpanded(expanded)

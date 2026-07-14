@@ -21,17 +21,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QGridLayout, QLabel, QScrollArea, QWidget
 
 from novelwriter import SHARED
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeft, QtAlignRight, QtAlignRightMiddle, QtSizeMinimum, QtSizeMinimumExpanding
-
-if TYPE_CHECKING:
-    from PyQt6.QtGui import QIcon
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtSizeMinimum, QtSizeMinimumExpanding
 
 
 class NSwitchBox(QScrollArea):
@@ -49,6 +44,7 @@ class NSwitchBox(QScrollArea):
         self._hSwitch = baseSize
         self._wSwitch = 2 * self._hSwitch
         self._sIcon = baseSize
+        self._icons = {}
         self._switches = {}
         self.clear()
 
@@ -71,6 +67,13 @@ class NSwitchBox(QScrollArea):
                 state[identifier] = switch.isChecked()
         return state
 
+    def updateTheme(self) -> None:
+        """Update the theme of the switches in the box."""
+        for pix, icon, color in self._icons.values():
+            qIcon = SHARED.theme.getIcon(icon, color)
+            pix.setFixedSize(self._sIcon, self._sIcon)
+            pix.setPixmap(qIcon.pixmap(self._sIcon, self._sIcon))
+
     ##
     #  Builder Methods
     ##
@@ -79,6 +82,7 @@ class NSwitchBox(QScrollArea):
         """Rebuild the content of the core widget."""
         self._index = 0
         self._switches.clear()
+        self._icons.clear()
 
         self._content = QGridLayout()
         self._content.setColumnStretch(1, 1)
@@ -97,12 +101,24 @@ class NSwitchBox(QScrollArea):
         self._content.addWidget(label, self._index, 0, 1, 3, QtAlignLeft)
         self._bumpIndex()
 
-    def addItem(self, qIcon: QIcon, text: str, identifier: str, default: bool = False) -> None:
+    def addItem(
+        self,
+        text: str,
+        identifier: str,
+        *,
+        icon: str | None = None,
+        color: str = "default",
+        default: bool = False,
+    ) -> None:
         """Add an item to the content box."""
-        icon = QLabel("", self)
-        icon.setAlignment(QtAlignRightMiddle)
-        icon.setPixmap(qIcon.pixmap(self._sIcon, self._sIcon))
-        self._content.addWidget(icon, self._index, 0, QtAlignLeft)
+        pix = QLabel("", self)
+        if icon:
+            qIcon = SHARED.theme.getIcon(icon, color)
+            pix.setFixedSize(self._sIcon, self._sIcon)
+            pix.setPixmap(qIcon.pixmap(self._sIcon, self._sIcon))
+            self._icons[identifier] = (pix, icon, color)
+
+        self._content.addWidget(pix, self._index, 0, QtAlignLeft)
 
         label = QLabel(text, self)
         self._content.addWidget(label, self._index, 1, QtAlignLeft)
