@@ -495,6 +495,7 @@ class _SearchFilters(NExpandablePanel):
             notes=switches.get("docs:includeNotes", True),
             inactive=switches.get("docs:includeInactive", True),
         )
+        self._search.setSkipRoots([k.partition(":")[2] for k, v in switches.items() if k.startswith("root:") and not v])
 
         self._parent.refreshCurrentSearch()
 

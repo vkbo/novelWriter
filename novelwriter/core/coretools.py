@@ -284,6 +284,17 @@ class DocSearch:
     A global document search class.
     """
 
+    __slots__ = (
+        "_escape",
+        "_includeInactive",
+        "_includeNotes",
+        "_includeNovel",
+        "_opts",
+        "_regEx",
+        "_skipRoots",
+        "_words",
+    )
+
     def __init__(self) -> None:
         self._regEx = re.compile(r"")
         self._opts = re.IGNORECASE
@@ -294,6 +305,7 @@ class DocSearch:
         self._includeNovel = True
         self._includeNotes = True
         self._includeInactive = True
+        self._skipRoots: list[str] = []
 
     ##
     #  Setters
@@ -317,6 +329,10 @@ class DocSearch:
         self._includeNotes = notes
         self._includeInactive = inactive
 
+    def setSkipRoots(self, roots: list[str]) -> None:
+        """Set the list of root handles to skip during the search."""
+        self._skipRoots = roots
+
     ##
     #  Methods
     ##
@@ -331,6 +347,7 @@ class DocSearch:
             SHARED.incMainProgress()
             if (
                 item.isFileType()
+                and item.itemRoot not in self._skipRoots
                 and ((self._includeNovel and item.isDocumentLayout()) or (self._includeNotes and item.isNoteLayout()))
                 and (item.isActive or (self._includeInactive and not item.isActive))
             ):
