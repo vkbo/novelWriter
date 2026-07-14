@@ -515,22 +515,22 @@ class _FilterTab(NFixedPage):
     def _populateFilters(self) -> None:
         """Populate the filter options switches."""
         self.filterOpt.clear()
-        self.filterOpt.addLabel(self._build.getLabel("filter"))
+        self.filterOpt.addLabel(trConst(nwLabels.FILTER_GROUPS["documents"]))
         self.filterOpt.addItem(
             SHARED.theme.getIcon("prj_scene", "scene"),
-            self._build.getLabel("filter.includeNovel"),
+            trConst(nwLabels.FILTER_TYPES["novel"]),
             "doc:filter.includeNovel",
             default=self._build.getBool("filter.includeNovel"),
         )
         self.filterOpt.addItem(
             SHARED.theme.getIcon("prj_note", "note"),
-            self._build.getLabel("filter.includeNotes"),
+            trConst(nwLabels.FILTER_TYPES["notes"]),
             "doc:filter.includeNotes",
             default=self._build.getBool("filter.includeNotes"),
         )
         self.filterOpt.addItem(
             SHARED.theme.getIcon("unchecked", "reject"),
-            self._build.getLabel("filter.includeInactive"),
+            trConst(nwLabels.FILTER_TYPES["inactive"]),
             "doc:filter.includeInactive",
             default=self._build.getBool("filter.includeInactive"),
         )

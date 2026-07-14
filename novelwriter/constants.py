@@ -519,6 +519,19 @@ class nwLabels:
         "week": QT_TRANSLATE_NOOP("Constant", "Per Week"),
         "month": QT_TRANSLATE_NOOP("Constant", "Per Month"),
     }
+    FILTER_GROUPS: Final[dict[str, str]] = {
+        "documents": QT_TRANSLATE_NOOP("Constant", "Document Filters"),
+        "content": QT_TRANSLATE_NOOP("Constant", "Content Filters"),
+    }
+    FILTER_TYPES: Final[dict[str, str]] = {
+        "novel": QT_TRANSLATE_NOOP("Constant", "Novel documents"),
+        "notes": QT_TRANSLATE_NOOP("Constant", "Project notes"),
+        "inactive": QT_TRANSLATE_NOOP("Constant", "Inactive documents"),
+        "headings": QT_TRANSLATE_NOOP("Constant", "Headings"),
+        "text": QT_TRANSLATE_NOOP("Constant", "Body text paragraphs"),
+        "meta": QT_TRANSLATE_NOOP("Constant", "Tags and references"),
+        "comments": QT_TRANSLATE_NOOP("Constant", "Comments and footnotes"),
+    }
 
 
 class nwHeadFmt:
