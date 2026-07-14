@@ -117,9 +117,10 @@ A colour theme ``.conf`` file consists of the following settings:
    linkvisited     = blue
    accent          = #3087c6
    toggle          = blue:96
+   searchmatch     = orange:96
 
    [GUI]
-   helptext  = #5c5c5c
+   helpmeet  = #5c5c5c
    fadedtext = #6c6c6c
    errortext = red
 
@@ -203,7 +204,7 @@ There are several ways to enter colour values:
    if the theme is included in the app, but not for user themes.
 
 .. versionadded:: 26.2
-   The ``toggle`` setting was added to the ``[Palette]`` section.
+   The ``toggle`` and ``searchmatch`` settings were added to the ``[Palette]`` section.
 
 
 Icon Themes
