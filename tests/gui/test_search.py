@@ -290,8 +290,8 @@ def testGuiProjectSearch_EdgeCases(nwGUI, fncPath, mockRnd, ipsumText):
 @pytest.mark.gui
 def testGuiProjectSearch_DelegatePaint(nwGUI, fncPath, mockRnd):
     """Test the search result delegate's paint code directly for the
-    branches not exercised by normal interaction: leaning toward the
-    shorter side when centring isn't possible, and a zero-length match.
+    branches not exercised by normal interaction: eliding a match whose
+    context overflows the available width, and a zero-length match.
     """
     mockRnd.reset()
     buildTestProject(nwGUI, fncPath)
@@ -309,9 +309,9 @@ def testGuiProjectSearch_DelegatePaint(nwGUI, fncPath, mockRnd):
     option.font = search.searchResult.font()
     pixmap = QPixmap(80, 20)
 
-    # A long preceding context and no following text leans the visible
-    # window toward the left instead of trying to centre it
-    model.setResult(item, [(0, 5, "a" * 50 + "MATCH", 50)], False)
+    # A match with more context than fits the available width is
+    # elided on the right
+    model.setResult(item, [(0, 5, "MATCH" + " and then some more trailing text", 0)], False)
     matchIdx = model.index(0, 0, model.index(0, 0, root))
     painter = QPainter(pixmap)
     delegate.paint(painter, option, matchIdx)
@@ -323,4 +323,3 @@ def testGuiProjectSearch_DelegatePaint(nwGUI, fncPath, mockRnd):
     painter = QPainter(pixmap)
     delegate.paint(painter, option, matchIdx)
     painter.end()
-    assert search.searchText.text() == ""

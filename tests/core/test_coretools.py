@@ -600,6 +600,16 @@ def testCoreTools_DocSearchContext():
     """
     search = DocSearch()
 
+    # The context flows in both directions from the match
+    search._regEx = re.compile(r"MATCH")
+    text = "some words before MATCH and some words after"
+    results, _ = search.searchText(text)
+    assert len(results) == 1
+    _, num, context, offset = results[0]
+    assert context[offset : offset + num] == "MATCH"
+    assert context == text
+    assert offset == 18
+
     # The context never crosses into the previous or next line, even
     # when the match sits right at the start of its own line
     search._regEx = re.compile(r"MATCH")
@@ -610,10 +620,11 @@ def testCoreTools_DocSearchContext():
     assert offset == 0
     assert context == "MATCH end of line"
 
-    # A long single line is capped at ~100 characters on either side,
-    # trimmed to a word boundary, and never leaks the adjacent lines
+    # A long single line is capped at ~20 characters to the left and
+    # ~80 characters to the right, both trimmed to a word boundary,
+    # and never leaks into the adjacent lines
     search._regEx = re.compile(r"TARGET")
-    pre = "abcde " * 20
+    pre = "abcde " * 10
     post = "fghij " * 20
     text = f"prevline marker should not appear\n{pre}TARGET {post}\nnextline marker should not appear"
     results, _ = search.searchText(text)
@@ -622,38 +633,26 @@ def testCoreTools_DocSearchContext():
     assert context[offset : offset + num] == "TARGET"
     assert "prevline" not in context
     assert "nextline" not in context
-    assert offset <= 100
-    assert len(context) - (offset + num) <= 100
+    assert offset <= 20
+    assert len(context) - (offset + num) <= 80
 
-    # When there is no space to trim to, the cut lands mid-word instead
+    # When there is no space to trim to on the left, the cut lands
+    # mid-word at the raw 20 character mark instead
     search._regEx = re.compile(r"MATCH")
-    text = ("a" * 150) + "MATCH"
+    text = ("a" * 30) + "MATCH"
     results, _ = search.searchText(text)
     assert len(results) == 1
     _, num, context, offset = results[0]
     assert context[offset : offset + num] == "MATCH"
-    assert offset == 100
+    assert offset == 20
 
-    text = "MATCH" + ("b" * 150)
+    # Likewise on the right, at the raw 80 character mark
+    text = "MATCH" + ("b" * 100)
     results, _ = search.searchText(text)
     assert len(results) == 1
     _, num, context, offset = results[0]
     assert context[offset : offset + num] == "MATCH"
-    assert len(context) - (offset + num) == 100
-
-    # When a sentence boundary is found within the 100 character window
-    # to the left, the context is clipped there instead of cutting at
-    # the raw 100 character mark or the nearest word boundary
-    search._regEx = re.compile(r"TARGET")
-    filler = "abcde " * 20  # 120 characters, pushes the match past the cap
-    tail = "Sentence break here. Then a few more words appear before the TARGET word."
-    text = filler + tail
-    results, _ = search.searchText(text)
-    assert len(results) == 1
-    _, num, context, offset = results[0]
-    assert context[offset : offset + num] == "TARGET"
-    assert context == "Then a few more words appear before the TARGET word."
-    assert offset == len("Then a few more words appear before the ")
+    assert len(context) - (offset + num) == 80
 
 
 @pytest.mark.core

@@ -199,6 +199,8 @@ class GuiProjectSearch(QWidget):
         self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
         self._model.updateTheme()
         self._matchDelegate.updateTheme()
+        if viewport := self.searchResult.viewport():  # pragma: no branch
+            viewport.update()
         if not onInit:
             self.tbCase.refreshTheme()
             self.tbWord.refreshTheme()
@@ -353,7 +355,6 @@ class GuiProjectSearch(QWidget):
 
 
 RESULT_FLAGS = int(Qt.TextFlag.TextSingleLine) | int(QtAlignMiddle)
-RESULT_MARGIN = 4
 
 
 class _SearchResultDelegate(QStyledItemDelegate):
@@ -396,12 +397,12 @@ class _SearchResultDelegate(QStyledItemDelegate):
             painter.fillRect(rect, self._rectColS)
 
         metrics = painter.fontMetrics()
-        avail = max(0, rect.width() - RESULT_MARGIN)
+        avail = max(0, rect.width() - 4)
         text = metrics.elidedText(text, QtElideRight, avail)
         sPos = minmax(sPos, 0, len(text))
         ePos = minmax(ePos, sPos, len(text))
 
-        x = rect.x() + RESULT_MARGIN
+        x = rect.x() + 4
         y = rect.y()
         h = rect.height()
         if ePos > sPos:

@@ -30,7 +30,6 @@ from PyQt6.QtCore import QAbstractItemModel, QModelIndex, Qt
 from PyQt6.QtGui import QBrush, QIcon
 from PyQt6.QtWidgets import QApplication
 
-from novelwriter import SHARED
 from novelwriter.common import minmax
 from novelwriter.types import (
     QtAlignRight,
@@ -69,11 +68,12 @@ class SearchNode:
     C_NAME = 0
     C_COUNT = 1
 
-    __slots__ = ("_cache", "_children", "_handle", "_parent", "_result", "_row")
+    __slots__ = ("_cache", "_children", "_handle", "_item", "_parent", "_result", "_row")
 
     def __init__(self, handle: str, result: tuple[int, int] | None = None) -> None:
         self._handle = handle
         self._result = result
+        self._item: ProjectItem | None = None
         self._parent: SearchNode | None = None
         self._children: list[SearchNode] = []
         self._row = 0
@@ -125,17 +125,19 @@ class SearchNode:
     #  Data Edit
     ##
 
-    def setDocumentData(self, name: str, icon: QIcon, count: str, color: QBrush) -> None:
+    def setDocumentData(self, item: ProjectItem, count: str, color: QBrush) -> None:
         """Set the display data for a document-level node."""
-        self._cache[C_LABEL_TEXT] = name
-        self._cache[C_LABEL_ICON] = icon
+        self._item = item
+        self._cache[C_LABEL_TEXT] = item.itemName
+        self._cache[C_LABEL_ICON] = item.getMainIcon()
         self._cache[C_COUNT_TEXT] = count
         self._cache[C_COUNT_ALIGN] = QtAlignRight
         self._cache[C_COUNT_COLOR] = color
 
-    def setIcon(self, icon: QIcon) -> None:
-        """Update the cached icon of a document-level node."""
-        self._cache[C_LABEL_ICON] = icon
+    def refreshIcon(self) -> None:
+        """Refresh the cached icon from the node's project item."""
+        if self._item is not None:  # pragma: no branch
+            self._cache[C_LABEL_ICON] = self._item.getMainIcon()
 
     def setMatchData(self, context: str, span: tuple[int, int]) -> None:
         """Set the display data for a match-level node."""
@@ -261,7 +263,7 @@ class SearchResultModel(QAbstractItemModel):
         ext = "+" if capped else ""
 
         node = SearchNode(handle)
-        node.setDocumentData(nwItem.itemName, nwItem.getMainIcon(), f"({len(results):n}{ext})", self._color)
+        node.setDocumentData(nwItem, f"({len(results):n}{ext})", self._color)
         node.setChildren(self._buildMatches(handle, results))
 
         row = self._map.get(handle, (len(self._rows), 0.0))[0]
@@ -286,8 +288,7 @@ class SearchResultModel(QAbstractItemModel):
         self._color = QApplication.palette().highlight()
         if self._rows:
             for node in self._rows:
-                if item := SHARED.project.tree[node.handle]:
-                    node.setIcon(item.getMainIcon())
+                node.refreshIcon()
             first = self.index(0, SearchNode.C_NAME)
             last = self.index(len(self._rows) - 1, SearchNode.C_COUNT)
             self.dataChanged.emit(first, last)

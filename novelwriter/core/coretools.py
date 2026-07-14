@@ -321,34 +321,30 @@ class DocSearch:
 
     def searchText(self, text: str) -> tuple[list[tuple[int, int, str, int]], bool]:
         """Search a piece of text for RegEx matches."""
-        count = 0
-        capped = False
-        results = []
+        result = []
         for res in self._regEx.finditer(text):
             pos = res.start(0)
             num = len(res.group(0))
             end = pos + num
 
-            lStart = text.rfind("\n", 0, pos) + 1
-            lEndPos = text.find("\n", end)
-            lEnd = lEndPos if lEndPos != -1 else len(text)
+            sBr = text.rfind("\n", 0, pos) + 1
+            eBr = text.find("\n", end)
+            eBr = eBr if eBr != -1 else len(text)
 
-            left = max(lStart, pos - 20)
-            if left > lStart and (space := text.find(" ", left, pos)) != -1:
+            left = max(sBr, pos - 20)
+            if left > sBr and (space := text.find(" ", left, pos)) != -1:
                 left = space + 1
 
-            right = min(lEnd, end + 80)
-            if right < lEnd and (space := text.rfind(" ", end, right)) != -1:
+            right = min(eBr, end + 80)
+            if right < eBr and (space := text.rfind(" ", end, right)) != -1:
                 right = space
 
             if context := text[left:right]:
-                results.append((pos, num, context, pos - left))
-                count += 1
-                if count >= nwConst.MAX_SEARCH_RESULT:
-                    capped = True
-                    break
+                result.append((pos, num, context, pos - left))
+                if len(result) >= nwConst.MAX_SEARCH_RESULT:
+                    return result, True
 
-        return results, capped
+        return result, False
 
     ##
     #  Internal Functions
