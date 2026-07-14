@@ -169,7 +169,7 @@ class GuiItemDetails(NExpandablePanel):
 
         self.mainBox.setHorizontalSpacing(6)
         self.mainBox.setVerticalSpacing(1)
-        self.mainBox.setContentsMargins(6, 6, 6, 6)
+        self.mainBox.setContentsMargins(6, 2, 6, 6)
 
         self.setContentLayout(self.mainBox)
         self.setExpanded(CONFIG.showDetailsPanel)

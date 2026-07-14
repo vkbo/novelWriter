@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import QGridLayout, QLabel, QScrollArea, QWidget
+from PyQt6.QtWidgets import QFrame, QGridLayout, QLabel, QScrollArea, QWidget
 
 from novelwriter import SHARED
 from novelwriter.extensions.switch import NSwitch
@@ -47,6 +47,7 @@ class NSwitchBox(QScrollArea):
         self._icons = {}
         self._switches = {}
         self.clear()
+        self.setFrameStyle(QFrame.Shape.NoFrame)
 
     ##
     #  State Methods

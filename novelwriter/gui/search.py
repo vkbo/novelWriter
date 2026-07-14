@@ -36,7 +36,6 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QSplitter,
     QStyledItemDelegate,
     QStyleOptionViewItem,
     QToolBar,
@@ -50,7 +49,7 @@ from novelwriter.common import minmax
 from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.projectsearch import DocSearch
 from novelwriter.enum import nwDocMode
-from novelwriter.extensions.expandpanel import NExpandablePanel
+from novelwriter.extensions.expandpanel import NExpandablePanel, NExpandablePanelGroup
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.models.searchmodel import SearchNode, SearchResultModel
@@ -179,19 +178,12 @@ class GuiProjectSearch(QWidget):
         self.headerBox.setContentsMargins(0, 0, 0, 0)
         self.headerBox.setSpacing(0)
 
-        self.searchSplit = QSplitter(Qt.Orientation.Vertical, self)
+        self.searchSplit = NExpandablePanelGroup(self)
         self.searchSplit.addWidget(self.searchFilters)
         self.searchSplit.addWidget(self.searchResult)
         self.searchSplit.setStretchFactor(0, 0)
         self.searchSplit.setStretchFactor(1, 1)
-        self.searchSplit.setCollapsible(0, False)
-
-        # The splitter size is only meaningful while the filter panel is
-        # expanded, so the last expanded size is tracked separately and
-        # restored whenever the panel is expanded again
-        self._filterSplitPos = list(CONFIG.searchPanePos)
-        self.searchSplit.setSizes(self._filterSplitPos if self.searchFilters.isExpanded() else [0, 1])
-        self.searchFilters.expandedStateChanged.connect(self._filterExpandedChanged)
+        self.searchSplit.setPanelSizes(list(CONFIG.searchPanePos))
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.headerBox, 0)
@@ -212,9 +204,7 @@ class GuiProjectSearch(QWidget):
 
     def splitSizes(self) -> list[int]:
         """Get the sizes of the splitter widget in its expanded state."""
-        if self.searchFilters.isExpanded():
-            return self.searchSplit.sizes()
-        return self._filterSplitPos
+        return self.searchSplit.panelSizes()
 
     ##
     #  Methods
@@ -320,15 +310,6 @@ class GuiProjectSearch(QWidget):
     ##
     #  Private Slots
     ##
-
-    @pyqtSlot(bool)
-    def _filterExpandedChanged(self, expanded: bool) -> None:
-        """Resize the splitter when the filter panel is toggled."""
-        if expanded:
-            self.searchSplit.setSizes(self._filterSplitPos)
-        else:
-            self._filterSplitPos = self.searchSplit.sizes()
-            self.searchSplit.setSizes([0, 1])
 
     @pyqtSlot()
     def _processSearch(self) -> None:
@@ -512,6 +493,7 @@ class _SearchFilters(NExpandablePanel):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        super().updateTheme()
         self.filterOpt.updateTheme()
 
     ##

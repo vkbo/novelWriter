@@ -21,8 +21,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-from PyQt6.QtCore import pyqtSignal, pyqtSlot
-from PyQt6.QtWidgets import QHBoxLayout, QLayout, QVBoxLayout, QWidget
+from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QPalette
+from PyQt6.QtWidgets import QWIDGETSIZE_MAX, QHBoxLayout, QLayout, QSplitter, QVBoxLayout, QWidget
 
 from novelwriter import SHARED
 from novelwriter.extensions.modified import NClickableLabel, NIconToggleButton
@@ -51,16 +52,21 @@ class NExpandablePanel(QWidget):
         self._ep_label.setFont(SHARED.theme.guiFontB)
         self._ep_label.mouseClicked.connect(self._ep_toggle.click)
 
+        self._ep_headerBox = QWidget(self)
+        self._ep_headerBox.setContentsMargins(0, 2, 0, 2)
+
         self._ep_header = QHBoxLayout()
         self._ep_header.setContentsMargins(0, 0, 0, 0)
         self._ep_header.addWidget(self._ep_toggle)
         self._ep_header.addWidget(self._ep_label)
         self._ep_header.setSpacing(2)
+        self._ep_headerBox.setLayout(self._ep_header)
 
         self._ep_layout = QVBoxLayout()
         self._ep_layout.setContentsMargins(0, 0, 0, 0)
-        self._ep_layout.addLayout(self._ep_header)
+        self._ep_layout.addWidget(self._ep_headerBox)
         self._ep_layout.addWidget(self._ep_widget)
+        self._ep_layout.setSpacing(0)
 
         self.setLayout(self._ep_layout)
 
@@ -79,6 +85,11 @@ class NExpandablePanel(QWidget):
     def setContentLayout(self, layout: QLayout) -> None:
         """Set the content layout of the panel."""
         self._ep_widget.setLayout(layout)
+
+    def setHeaderBackgroundRole(self, role: QPalette.ColorRole) -> None:
+        """Set the background role of the header."""
+        self._ep_headerBox.setBackgroundRole(role)
+        self._ep_headerBox.setAutoFillBackground(True)
 
     ##
     #  Methods
@@ -102,4 +113,98 @@ class NExpandablePanel(QWidget):
         if self._ep_expanded != state:
             self._ep_expanded = state
             self._ep_widget.setVisible(state)
+            if state:
+                self.setMaximumHeight(QWIDGETSIZE_MAX)
+            else:
+                self.setMaximumHeight(self.minimumSizeHint().height())
             self.expandedStateChanged.emit(state)
+
+
+class NExpandablePanelGroup(QSplitter):
+    """Custom Widget: Expandable Panel Group.
+
+    A vertical stack of widgets and expandable panels. Expandable
+    panels are locked to their header-only size while collapsed, and
+    freely resizable while expanded. The size a panel had before it was
+    collapsed is tracked internally, and restored when expanded again.
+    """
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(Qt.Orientation.Vertical, parent)
+        self.setChildrenCollapsible(False)
+        self._expandedSizes: dict[NExpandablePanel, int] = {}
+
+    ##
+    #  Methods
+    ##
+
+    def addWidget(self, widget: QWidget) -> None:
+        """Add a widget or expandable panel to the group."""
+        super().addWidget(widget)
+        if isinstance(widget, NExpandablePanel):
+            self._expandedSizes[widget] = widget.sizeHint().height()
+            widget.expandedStateChanged.connect(self._panelToggled)
+            widget.setHeaderBackgroundRole(QPalette.ColorRole.Window)
+            if not widget.isExpanded():
+                self._collapse(widget)
+
+    def setPanelSizes(self, sizes: list[int]) -> None:
+        """Set the sizes of the widgets in the group. For a collapsed
+        panel, the size given is instead remembered as the size to
+        restore once the panel is expanded again, and the panel itself
+        is kept locked to its header size.
+        """
+        applied = list(sizes)
+        for i, size in enumerate(sizes):
+            widget = self.widget(i)
+            if isinstance(widget, NExpandablePanel):
+                if size > 0:
+                    self._expandedSizes[widget] = size
+                if not widget.isExpanded():
+                    applied[i] = 0
+        self.setSizes(applied)
+
+    def panelSizes(self) -> list[int]:
+        """Return the sizes of the widgets in the group, substituting the
+        tracked expanded size for any panel that is currently collapsed.
+        """
+        sizes = self.sizes()
+        for i in range(self.count()):
+            widget = self.widget(i)
+            if isinstance(widget, NExpandablePanel) and not widget.isExpanded():
+                sizes[i] = self._expandedSizes.get(widget, sizes[i])
+        return sizes
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(bool)
+    def _panelToggled(self, state: bool) -> None:
+        """Collapse or expand a panel when its state changes."""
+        panel = self.sender()
+        if isinstance(panel, NExpandablePanel):
+            if state:
+                self._expand(panel)
+            else:
+                self._collapse(panel)
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _collapse(self, panel: NExpandablePanel) -> None:
+        """Lock a panel to its header size, and remember its size."""
+        index = self.indexOf(panel)
+        sizes = self.sizes()
+        if sizes[index] > 0:
+            self._expandedSizes[panel] = sizes[index]
+        sizes[index] = 0
+        self.setSizes(sizes)
+
+    def _expand(self, panel: NExpandablePanel) -> None:
+        """Restore a panel to its last known expanded size."""
+        index = self.indexOf(panel)
+        sizes = self.sizes()
+        sizes[index] = self._expandedSizes.get(panel, panel.sizeHint().height())
+        self.setSizes(sizes)
