@@ -41,8 +41,8 @@ from novelwriter.types import (
 )
 
 if TYPE_CHECKING:
-    from novelwriter.core.coretools import T_SearchResults
     from novelwriter.core.item import ProjectItem
+    from novelwriter.core.projectsearch import T_SearchResults
 
 logger = logging.getLogger(__name__)
 
