@@ -287,8 +287,13 @@ class DocSearch:
         self._words = False
         self._escape = True
 
+        # Filters
+        self._includeNovel = True
+        self._includeNotes = True
+        self._includeInactive = True
+
     ##
-    #  Methods
+    #  Setters
     ##
 
     def setCaseSensitive(self, state: bool) -> None:
@@ -303,6 +308,16 @@ class DocSearch:
         """Set the escape flag to the opposite state."""
         self._escape = not state
 
+    def setDocumentFilters(self, novel: bool, notes: bool, inactive: bool) -> None:
+        """Set the document type filters."""
+        self._includeNovel = novel
+        self._includeNotes = notes
+        self._includeInactive = inactive
+
+    ##
+    #  Methods
+    ##
+
     def iterSearch(
         self, project: NWProject, search: str
     ) -> Iterable[tuple[ProjectItem, list[tuple[int, int, str, int]], bool]]:
@@ -313,7 +328,11 @@ class DocSearch:
         SHARED.initMainProgress(len(project.tree))
         for item in project.tree:
             SHARED.incMainProgress()
-            if item.isFileType():
+            if (
+                item.isFileType()
+                and ((self._includeNovel and item.isDocumentLayout()) or (self._includeNotes and item.isNoteLayout()))
+                and (item.isActive or (self._includeInactive and not item.isActive))
+            ):
                 results, capped = self.searchText(storage.getDocumentText(item.itemHandle))
                 yield item, results, capped
         SHARED.clearMainProgress()

@@ -93,6 +93,7 @@ class GuiProjectSearch(QWidget):
         self._search = DocSearch()
         self._model = SearchResultModel()
         self._blocked = False
+        self._activeSearch = False
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setBackgroundRole(QPalette.ColorRole.Base)
@@ -189,6 +190,11 @@ class GuiProjectSearch(QWidget):
 
         logger.debug("Ready: GuiProjectSearch")
 
+    @property
+    def searchObject(self) -> DocSearch:
+        """Return the search object."""
+        return self._search
+
     ##
     #  Methods
     ##
@@ -246,10 +252,11 @@ class GuiProjectSearch(QWidget):
         self.searchFilters.setExpanded(False)
         self.searchText.clear()
         self._model.clear()
+        self._activeSearch = False
 
     def refreshCurrentSearch(self) -> None:
         """Refresh the search if there is one."""
-        if self._model.rowCount(QModelIndex()) > 0:
+        if self._activeSearch:
             self._processSearch()
 
     ##
@@ -298,14 +305,17 @@ class GuiProjectSearch(QWidget):
             QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             start = time()
             SHARED.saveEditor()
+            searchText = self.searchText.text()
+
             self._blocked = True
             self._model.clear()
-            if text := self.searchText.text():
+            self._activeSearch = bool(searchText)
+            if searchText:
                 self._search.setUserRegEx(self.tbRegEx.isChecked())
                 self._search.setCaseSensitive(self.tbCase.isChecked())
                 self._search.setWholeWords(self.tbWord.isChecked())
                 handles = []
-                for item, results, capped in self._search.iterSearch(SHARED.project, text):
+                for item, results, capped in self._search.iterSearch(SHARED.project, searchText):
                     if results:
                         self._model.setResult(item, results, capped)
                         handles.append(item.itemHandle)
@@ -317,6 +327,7 @@ class GuiProjectSearch(QWidget):
                     self._expandResult(handle)
             logger.debug("Search took %.3f ms", 1000 * (time() - start))
             QApplication.restoreOverrideCursor()
+
         self._blocked = False
 
     @pyqtSlot(QModelIndex, QModelIndex)
@@ -433,8 +444,11 @@ class _SearchResultDelegate(QStyledItemDelegate):
 class _SearchFilters(NExpandablePanel):
     """GUI: Search Filters Panel."""
 
-    def __init__(self, parent: QWidget) -> None:
+    def __init__(self, parent: GuiProjectSearch) -> None:
         super().__init__(parent=parent)
+
+        self._parent = parent
+        self._search = parent.searchObject
 
         self.setTitle(self.tr("Filters"))
 
@@ -442,6 +456,7 @@ class _SearchFilters(NExpandablePanel):
 
         self.filterOpt = NSwitchBox(self, baseSize=iPx)
         self.filterOpt.setMaximumHeight(15 * iPx)
+        self.filterOpt.switchToggled.connect(self._buildFilterToggled)
 
         self.settingsBox = QVBoxLayout()
         self.settingsBox.addWidget(self.filterOpt, 0)
@@ -462,6 +477,25 @@ class _SearchFilters(NExpandablePanel):
         """Run close project tasks."""
         SHARED.project.options.setValue("GuiProjectSearch", "searchFilters", self.filterOpt.getSwitchState())
         self.filterOpt.clear()
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(str, bool)
+    def _buildFilterToggled(self, identifier: str, state: bool) -> None:
+        """Handle a filter option being toggled."""
+        logger.debug("Filter toggled: %s = %s", identifier, state)
+
+        switches = self.filterOpt.getSwitchState()
+
+        self._search.setDocumentFilters(
+            novel=switches.get("docs:includeNovel", True),
+            notes=switches.get("docs:includeNotes", True),
+            inactive=switches.get("docs:includeInactive", True),
+        )
+
+        self._parent.refreshCurrentSearch()
 
     ##
     #  Internal Functions
