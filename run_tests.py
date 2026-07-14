@@ -11,34 +11,6 @@ import sys
 
 from pathlib import Path
 
-
-def _genCoverageConfig(path: Path) -> None:
-    """Generate a config file for coverage.py."""
-    exclude = []  # ["if TYPE_CHECKING:"]
-    if sys.platform != "linux":
-        exclude.append(r'\s*(if|elif) sys\.platform == "linux":')
-        exclude.append(r"\s*(if|elif) (CONFIG|self)\.osLinux")
-    if sys.platform != "darwin":
-        exclude.append(r'\s*(if|elif) sys\.platform == "darwin":')
-        exclude.append(r"\s*(if|elif) (CONFIG|self)\.osDarwin")
-    if sys.platform != "win32":
-        exclude.append(r'\s*(if|elif) sys\.platform == "win32":')
-        exclude.append(r"\s*(if|elif) (CONFIG|self)\.osWindows")
-
-    config = [
-        "[run]",
-        "branch = true",
-        "source = novelwriter",
-        "",
-        "[report]",
-        "precision = 2",
-        "exclude_also =",
-    ]
-    config.extend(f"    {ex}" for ex in exclude)
-
-    path.write_text("\n".join(config), encoding="utf-8")
-
-
 if __name__ == "__main__":
     """Parse command line options and run the commands."""
     parser = argparse.ArgumentParser(usage="run_tests.py [--flags]")
@@ -46,7 +18,6 @@ if __name__ == "__main__":
     parser.add_argument("-r", action="store_true", help="Generate reports")
     parser.add_argument("-t", action="store_true", help="Generate terminal report")
     parser.add_argument("-u", action="store_true", help="Generate uncovered terminal report")
-    parser.add_argument("-x", action="store_true", help="Ignore OS-specific tests in reports")
     parser.add_argument("-lf", action="store_true", help="Re-run failed tests")
     parser.add_argument("-sw", action="store_true", help="Run tests stepwise")
     parser.add_argument("-m", help="Test modules", metavar="MARKEXPR")
@@ -59,8 +30,6 @@ if __name__ == "__main__":
     tmpConf = Path(__file__).parent / ".coveragerc"
 
     if args.r or args.t or args.u:
-        if args.x:
-            _genCoverageConfig(tmpConf)
         cmd = ["coverage", "run"]
         if args.lf or args.sw:
             cmd += ["--append"]

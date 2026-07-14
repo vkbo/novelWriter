@@ -82,13 +82,13 @@ class NToolDialog(NDialog):
     def __init__(self, parent: GuiMain) -> None:
         super().__init__(parent=parent)
         self.setModal(False)
-        if CONFIG.osDarwin:
+        if CONFIG.osDarwin:  # pragma: no cover
             self.setWindowFlag(Qt.WindowType.Tool)
 
     def activateDialog(self) -> None:
         """Activate dialog on various operating systems."""
         self.show()
-        if CONFIG.osWindows:
+        if CONFIG.osWindows:  # pragma: no cover
             self.activateWindow()
         self.raise_()
         QApplication.processEvents()
@@ -104,7 +104,7 @@ class NNonBlockingDialog(NDialog):
     def activateDialog(self) -> None:
         """Activate dialog on various operating systems."""
         self.show()
-        if CONFIG.osWindows:
+        if CONFIG.osWindows:  # pragma: no cover
             self.activateWindow()
         self.raise_()
         QApplication.processEvents()

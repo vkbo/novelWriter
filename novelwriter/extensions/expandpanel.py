@@ -189,7 +189,7 @@ class NExpandablePanelGroup(QSplitter):
     def _panelToggled(self, state: bool) -> None:
         """Collapse or expand a panel when its state changes."""
         panel = self.sender()
-        if isinstance(panel, NExpandablePanel):
+        if isinstance(panel, NExpandablePanel):  # pragma: no branch
             if state:
                 self._expand(panel)
             else:
@@ -225,5 +225,5 @@ class NExpandablePanelGroup(QSplitter):
             before = self.widget(i - 1)
             after = self.widget(i)
             locked = any(isinstance(w, NExpandablePanel) and not w.isExpanded() for w in (before, after))
-            if isinstance(handle := self.handle(i), NSplitterHandle):
+            if isinstance(handle := self.handle(i), NSplitterHandle):  # pragma: no branch
                 handle.setResizable(not locked)
