@@ -275,6 +275,9 @@ class DocDuplicator:
         return result
 
 
+T_SearchResults = list[tuple[int, int, str, int]]
+
+
 class DocSearch:
     """Tool: Search Documents.
 
@@ -318,9 +321,7 @@ class DocSearch:
     #  Methods
     ##
 
-    def iterSearch(
-        self, project: NWProject, search: str
-    ) -> Iterable[tuple[ProjectItem, list[tuple[int, int, str, int]], bool]]:
+    def iterSearch(self, project: NWProject, search: str) -> Iterable[tuple[ProjectItem, T_SearchResults, bool]]:
         """Iterate through documents in a project and apply search."""
         self._regEx = re.compile(self._buildPattern(search), self._opts)
         logger.debug("Searching with pattern '%s'", self._regEx.pattern)
@@ -338,7 +339,7 @@ class DocSearch:
         SHARED.clearMainProgress()
         return
 
-    def searchText(self, text: str) -> tuple[list[tuple[int, int, str, int]], bool]:
+    def searchText(self, text: str) -> tuple[T_SearchResults, bool]:
         """Search a piece of text for RegEx matches."""
         result = []
         prev = -1

@@ -68,6 +68,7 @@ from novelwriter.types import (
 )
 
 if TYPE_CHECKING:
+    from novelwriter.core.coretools import T_SearchResults
     from novelwriter.core.item import ProjectItem
 
 logger = logging.getLogger(__name__)
@@ -367,7 +368,7 @@ class GuiProjectSearch(QWidget):
     #  Internal Functions
     ##
 
-    def _addResult(self, nwItem: ProjectItem, results: list[tuple[int, int, str, int]], capped: bool) -> None:
+    def _addResult(self, nwItem: ProjectItem, results: T_SearchResults, capped: bool) -> None:
         """Add or update a document's results, and update the view."""
         if results:
             self._model.setResult(nwItem, results, capped)

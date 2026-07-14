@@ -41,6 +41,7 @@ from novelwriter.types import (
 )
 
 if TYPE_CHECKING:
+    from novelwriter.core.coretools import T_SearchResults
     from novelwriter.core.item import ProjectItem
 
 logger = logging.getLogger(__name__)
@@ -254,7 +255,7 @@ class SearchResultModel(QAbstractItemModel):
         self._map = {}
         self.endResetModel()
 
-    def setResult(self, nwItem: ProjectItem, results: list[tuple[int, int, str, int]], capped: bool) -> None:
+    def setResult(self, nwItem: ProjectItem, results: T_SearchResults, capped: bool) -> None:
         """Insert or update the search results for a document."""
         if not results:
             return
@@ -297,7 +298,7 @@ class SearchResultModel(QAbstractItemModel):
     #  Internal Functions
     ##
 
-    def _buildMatches(self, handle: str, results: list[tuple[int, int, str, int]]) -> list[SearchNode]:
+    def _buildMatches(self, handle: str, results: T_SearchResults) -> list[SearchNode]:
         """Build the child match nodes for a document."""
         matches = []
         for start, length, context, offset in results:
