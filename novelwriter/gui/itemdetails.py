@@ -138,7 +138,7 @@ class GuiItemDetails(NExpandablePanel):
         self.pCountData.setAlignment(QtAlignRight)
 
         # Assemble
-        self.mainBox = QGridLayout(self)
+        self.mainBox = QGridLayout()
         self.mainBox.addWidget(self.labelName, 0, 0, 1, 1)
         self.mainBox.addWidget(self.labelIcon, 0, 1, 1, 1)
         self.mainBox.addWidget(self.labelData, 0, 2, 1, 3)
