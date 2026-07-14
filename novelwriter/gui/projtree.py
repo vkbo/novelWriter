@@ -40,7 +40,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import qtAddAction, qtAddMenu, qtLambda, qtWeakLambda
+from novelwriter.common import elide, qtAddAction, qtAddMenu, qtLambda, qtWeakLambda
 from novelwriter.constants import nwLabels, nwStyles, nwUnicode, trConst
 from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
 from novelwriter.core.item import ProjectItem
@@ -380,7 +380,7 @@ class GuiProjectToolBar(QWidget):
         for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
             action = qtAddAction(
                 self.mQuick,
-                nwItem.itemName,
+                elide(nwItem.itemName, 50),
                 icon=SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass], "root"),
                 data=tHandle,
             )

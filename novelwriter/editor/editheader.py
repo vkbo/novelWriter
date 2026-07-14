@@ -31,7 +31,7 @@ from PyQt6.QtGui import QAction, QPalette
 from PyQt6.QtWidgets import QHBoxLayout, QMenu, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import qtAddAction, qtLambda
+from novelwriter.common import elide, qtAddAction, qtLambda
 from novelwriter.enum import nwState
 from novelwriter.extensions.configlayout import NPathColorLabel
 from novelwriter.extensions.modified import NIconToolButton
@@ -163,7 +163,7 @@ class GuiDocEditHeader(QWidget):
             tStart = time()
             self.outlineMenu.clear()
             for number, text in data.items():
-                qtAddAction(self.outlineMenu, text, data=number)
+                qtAddAction(self.outlineMenu, elide(text, 50), data=number)
             self._docOutline = data
             logger.debug("Document outline updated in %.3f ms", 1000 * (time() - tStart))
 

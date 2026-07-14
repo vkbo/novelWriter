@@ -30,7 +30,7 @@ from PyQt6.QtGui import QAction, QPalette
 from PyQt6.QtWidgets import QHBoxLayout, QMenu, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import qtAddAction
+from novelwriter.common import elide, qtAddAction
 from novelwriter.enum import nwDocMode, nwState
 from novelwriter.extensions.configlayout import NPathColorLabel
 from novelwriter.extensions.modified import NIconToolButton
@@ -168,7 +168,7 @@ class GuiDocViewHeader(QWidget):
                     minLevel = min(minLevel, level)
             for title, text, level in entries[:30]:
                 indent = "    " * (level - minLevel)
-                qtAddAction(self.outlineMenu, f"{indent}{text}", data=f"#{tHandle}:{title}")
+                qtAddAction(self.outlineMenu, f"{indent}{elide(text, 50)}", data=f"#{tHandle}:{title}")
             self._docOutline = data
 
     def updateFont(self) -> None:
