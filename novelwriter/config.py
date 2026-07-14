@@ -184,6 +184,7 @@ class Config:
         "searchLoop",
         "searchMatchCap",
         "searchNextFile",
+        "searchPanePos",
         "searchProjCase",
         "searchProjRegEx",
         "searchProjWord",
@@ -310,6 +311,7 @@ class Config:
         self.mainPanePos = [300, 800]  # Last position of the main window splitter
         self.viewPanePos = [500, 150]  # Last position of the document viewer splitter
         self.outlinePanePos = [500, 150]  # Last position of the outline panel splitter
+        self.searchPanePos = [150, 500]  # Last position of the project search splitter
         self.moveMainWin = True  # Move main window to the screen middle on startup
 
         # Project Settings
@@ -794,6 +796,7 @@ class Config:
         self.mainPanePos = conf.rdIntList(sec, "mainpane", self.mainPanePos)
         self.viewPanePos = conf.rdIntList(sec, "viewpane", self.viewPanePos)
         self.outlinePanePos = conf.rdIntList(sec, "outlinepane", self.outlinePanePos)
+        self.searchPanePos = conf.rdIntList(sec, "searchpane", self.searchPanePos)
         self.moveMainWin = conf.rdBool(sec, "movemainwin", self.moveMainWin)
 
         # Project
@@ -931,6 +934,7 @@ class Config:
             "mainpane": self._packList(self.mainPanePos),
             "viewpane": self._packList(self.viewPanePos),
             "outlinepane": self._packList(self.outlinePanePos),
+            "searchpane": self._packList(self.searchPanePos),
             "movemainwin": str(self.moveMainWin),
         }
 

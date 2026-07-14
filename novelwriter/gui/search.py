@@ -46,9 +46,12 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax
-from novelwriter.core.coretools import DocSearch
+from novelwriter.constants import nwLabels, trConst
+from novelwriter.core.projectsearch import DocSearch
 from novelwriter.enum import nwDocMode
+from novelwriter.extensions.expandpanel import NExpandablePanel, NExpandablePanelGroup
 from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.models.searchmodel import SearchNode, SearchResultModel
 from novelwriter.types import (
     QtAlignMiddle,
@@ -66,6 +69,7 @@ from novelwriter.types import (
 
 if TYPE_CHECKING:
     from novelwriter.core.item import ProjectItem
+    from novelwriter.core.projectsearch import T_SearchResults
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +94,7 @@ class GuiProjectSearch(QWidget):
         self._search = DocSearch()
         self._model = SearchResultModel()
         self._blocked = False
+        self._activeSearch = False
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setBackgroundRole(QPalette.ColorRole.Base)
@@ -137,6 +142,10 @@ class GuiProjectSearch(QWidget):
         self.searchText.setClearButtonEnabled(True)
         self.searchText.addAction(self.searchAction, QLineEdit.ActionPosition.TrailingPosition)
 
+        # Search Filters
+        self.searchFilters = _SearchFilters(self)
+        self.searchFilters.setExpanded(False)
+
         # Search Result
         self.searchResult = QTreeView(self)
         self.searchResult.setModel(self._model)
@@ -169,10 +178,17 @@ class GuiProjectSearch(QWidget):
         self.headerBox.setContentsMargins(0, 0, 0, 0)
         self.headerBox.setSpacing(0)
 
+        self.searchSplit = NExpandablePanelGroup(self)
+        self.searchSplit.addWidget(self.searchFilters)
+        self.searchSplit.addWidget(self.searchResult)
+        self.searchSplit.setStretchFactor(0, 0)
+        self.searchSplit.setStretchFactor(1, 1)
+        self.searchSplit.setPanelSizes(list(CONFIG.searchPanePos))
+
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.headerBox, 0)
         self.outerBox.addWidget(self.searchText, 0)
-        self.outerBox.addWidget(self.searchResult, 1)
+        self.outerBox.addWidget(self.searchSplit, 1)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setSpacing(2)
 
@@ -180,6 +196,15 @@ class GuiProjectSearch(QWidget):
         self.updateTheme(onInit=True)
 
         logger.debug("Ready: GuiProjectSearch")
+
+    @property
+    def searchObject(self) -> DocSearch:
+        """Return the search object."""
+        return self._search
+
+    def splitSizes(self) -> list[int]:
+        """Get the sizes of the splitter widget in its expanded state."""
+        return self.searchSplit.panelSizes()
 
     ##
     #  Methods
@@ -201,8 +226,10 @@ class GuiProjectSearch(QWidget):
         self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
         self._model.updateTheme()
         self._matchDelegate.updateTheme()
+        self.searchFilters.updateTheme()
         if viewport := self.searchResult.viewport():  # pragma: no branch
             viewport.update()
+
         if not onInit:
             self.tbCase.refreshTheme()
             self.tbWord.refreshTheme()
@@ -227,14 +254,22 @@ class GuiProjectSearch(QWidget):
             self.searchText.setText(text.partition("\n")[0])
             self.searchText.selectAll()
 
+    def openProjectTasks(self) -> None:
+        """Run open project tasks."""
+        self.searchFilters.openProjectTasks()
+        self.searchFilters.setExpanded(False)
+
     def closeProjectTasks(self) -> None:
         """Run close project tasks."""
+        self.searchFilters.closeProjectTasks()
+        self.searchFilters.setExpanded(False)
         self.searchText.clear()
         self._model.clear()
+        self._activeSearch = False
 
     def refreshCurrentSearch(self) -> None:
         """Refresh the search if there is one."""
-        if self._model.rowCount(QModelIndex()) > 0:
+        if self._activeSearch:
             self._processSearch()
 
     ##
@@ -283,14 +318,17 @@ class GuiProjectSearch(QWidget):
             QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             start = time()
             SHARED.saveEditor()
+            searchText = self.searchText.text()
+
             self._blocked = True
             self._model.clear()
-            if text := self.searchText.text():
+            self._activeSearch = bool(searchText)
+            if searchText:
                 self._search.setUserRegEx(self.tbRegEx.isChecked())
                 self._search.setCaseSensitive(self.tbCase.isChecked())
                 self._search.setWholeWords(self.tbWord.isChecked())
                 handles = []
-                for item, results, capped in self._search.iterSearch(SHARED.project, text):
+                for item, results, capped in self._search.iterSearch(SHARED.project, searchText):
                     if results:
                         self._model.setResult(item, results, capped)
                         handles.append(item.itemHandle)
@@ -302,6 +340,7 @@ class GuiProjectSearch(QWidget):
                     self._expandResult(handle)
             logger.debug("Search took %.3f ms", 1000 * (time() - start))
             QApplication.restoreOverrideCursor()
+
         self._blocked = False
 
     @pyqtSlot(QModelIndex, QModelIndex)
@@ -341,7 +380,7 @@ class GuiProjectSearch(QWidget):
     #  Internal Functions
     ##
 
-    def _addResult(self, nwItem: ProjectItem, results: list[tuple[int, int, str, int]], capped: bool) -> None:
+    def _addResult(self, nwItem: ProjectItem, results: T_SearchResults, capped: bool) -> None:
         """Add or update a document's results, and update the view."""
         if results:
             self._model.setResult(nwItem, results, capped)
@@ -413,3 +452,158 @@ class _SearchResultDelegate(QStyledItemDelegate):
         painter.drawText(QRect(x, y, rect.right() - x, h), RESULT_FLAGS, text)
 
         painter.restore()
+
+
+class _SearchFilters(NExpandablePanel):
+    """GUI: Search Filters Panel."""
+
+    def __init__(self, parent: GuiProjectSearch) -> None:
+        super().__init__(parent=parent)
+
+        self._parent = parent
+        self._search = parent.searchObject
+
+        self.setTitle(self.tr("Filters"))
+
+        iPx = SHARED.theme.baseIconHeight
+
+        self.filterOpt = NSwitchBox(self, baseSize=iPx)
+        self.filterOpt.setMinimumHeight(4 * iPx)
+        self.filterOpt.switchToggled.connect(self._buildFilterToggled)
+
+        self.settingsBox = QVBoxLayout()
+        self.settingsBox.addWidget(self.filterOpt, 0)
+        self.settingsBox.setContentsMargins(0, 0, 0, 0)
+
+        self.setContentLayout(self.settingsBox)
+
+    ##
+    #  Methods
+    ##
+
+    def openProjectTasks(self) -> None:
+        """Run open project tasks."""
+        self._buildFilterOptions()
+        self.filterOpt.setSwitchState(SHARED.project.options.getDict("GuiProjectSearch", "searchFilters", {}))
+
+    def closeProjectTasks(self) -> None:
+        """Run close project tasks."""
+        SHARED.project.options.setValue("GuiProjectSearch", "searchFilters", self.filterOpt.getSwitchState())
+        self.filterOpt.clear()
+
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        super().updateTheme()
+        self.filterOpt.updateTheme()
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(str, bool)
+    def _buildFilterToggled(self, identifier: str, state: bool) -> None:
+        """Handle a filter option being toggled."""
+        logger.debug("Filter toggled: %s = %s", identifier, state)
+
+        switches = self.filterOpt.getSwitchState()
+
+        self._search.setDocumentFilters(
+            novel=switches.get("docs:includeNovel", True),
+            notes=switches.get("docs:includeNotes", True),
+            inactive=switches.get("docs:includeInactive", True),
+        )
+        self._search.setContentFilters(
+            headings=switches.get("text:includeHeadings", True),
+            meta=switches.get("text:includeMeta", True),
+            comments=switches.get("text:includeComments", True),
+            body=switches.get("text:includeBody", True),
+        )
+        self._search.setSkipRoots([
+            rIdentifier.partition(":")[2]
+            for rIdentifier, rState in switches.items()
+            if rIdentifier.startswith("root:") and not rState
+        ])
+
+        self._parent.refreshCurrentSearch()
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _buildFilterOptions(self) -> None:
+        """Build the filter options list."""
+        expanded = self.isExpanded()
+        self.setExpanded(False)
+        self.filterOpt.clear()
+
+        # Text Content
+        self.filterOpt.addLabel(trConst(nwLabels.FILTER_GROUPS["content"]))
+        self.filterOpt.addItem(
+            trConst(nwLabels.FILTER_TYPES["headings"]),
+            "text:includeHeadings",
+            icon="filter",
+            color="altaction",
+            default=True,
+        )
+        self.filterOpt.addItem(
+            trConst(nwLabels.FILTER_TYPES["meta"]),
+            "text:includeMeta",
+            icon="filter",
+            color="altaction",
+            default=True,
+        )
+        self.filterOpt.addItem(
+            trConst(nwLabels.FILTER_TYPES["comments"]),
+            "text:includeComments",
+            icon="filter",
+            color="altaction",
+            default=True,
+        )
+        self.filterOpt.addItem(
+            trConst(nwLabels.FILTER_TYPES["text"]),
+            "text:includeBody",
+            icon="filter",
+            color="altaction",
+            default=True,
+        )
+        self.filterOpt.addSeparator()
+
+        # Document Types
+        self.filterOpt.addLabel(trConst(nwLabels.FILTER_GROUPS["documents"]))
+        self.filterOpt.addItem(
+            trConst(nwLabels.FILTER_TYPES["novel"]),
+            "docs:includeNovel",
+            icon="prj_scene",
+            color="scene",
+            default=True,
+        )
+        self.filterOpt.addItem(
+            trConst(nwLabels.FILTER_TYPES["notes"]),
+            "docs:includeNotes",
+            icon="prj_note",
+            color="note",
+            default=True,
+        )
+        self.filterOpt.addItem(
+            trConst(nwLabels.FILTER_TYPES["inactive"]),
+            "docs:includeInactive",
+            icon="unchecked",
+            color="reject",
+            default=True,
+        )
+        self.filterOpt.addSeparator()
+
+        # Root Folders
+        self.filterOpt.addLabel(self.tr("Root Folders"))
+        for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
+            if nwItem.isSearchableClass():
+                name, color = nwItem.getMainIconStyle()
+                self.filterOpt.addItem(
+                    nwItem.itemName,
+                    f"root:{tHandle}",
+                    icon=name,
+                    color=color,
+                    default=not nwItem.isInactiveClass(),
+                )
+
+        self.setExpanded(expanded)

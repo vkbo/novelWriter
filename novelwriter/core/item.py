@@ -340,6 +340,10 @@ class ProjectItem:
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
+    def getMainIconStyle(self) -> tuple[str, str]:
+        """Get the main item icon style."""
+        return SHARED.theme.getItemIconStyle(self._type, self._class, self._layout, self._heading)
+
     def getMainIcon(self) -> QIcon:
         """Get the main item icon."""
         return SHARED.theme.getItemIcon(self._type, self._class, self._layout, self._heading)
@@ -407,6 +411,14 @@ class ProjectItem:
         return self._class in (
             nwItemClass.NO_CLASS,
             nwItemClass.ARCHIVE,
+            nwItemClass.TEMPLATE,
+            nwItemClass.TRASH,
+        )
+
+    def isSearchableClass(self) -> bool:
+        """Check if the item is in a searchable class."""
+        return self._class not in (
+            nwItemClass.NO_CLASS,
             nwItemClass.TEMPLATE,
             nwItemClass.TRASH,
         )

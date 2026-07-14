@@ -464,6 +464,7 @@ class GuiMain(QMainWindow):
         self.projView.openProjectTasks()
         self.novelView.openProjectTasks()
         self.outlineView.openProjectTasks()
+        self.projSearch.openProjectTasks()
         self.docViewerPanel.openProjectTasks()
         self._updateStatusWordCount()
 
@@ -846,6 +847,7 @@ class GuiMain(QMainWindow):
         if not SHARED.focusMode:
             CONFIG.mainPanePos = self.splitMain.sizes()
             CONFIG.outlinePanePos = self.outlineView.splitSizes()
+            CONFIG.searchPanePos = self.projSearch.splitSizes()
             if self.docViewerPanel.isVisible():
                 CONFIG.viewPanePos = self.splitView.sizes()
 

@@ -132,11 +132,6 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_BuildValue]] = {
 }
 
 SETTINGS_LABELS = {
-    "filter":                  QT_TRANSLATE_NOOP("Builds", "Document Filters"),
-    "filter.includeNovel":     QT_TRANSLATE_NOOP("Builds", "Novel Documents"),
-    "filter.includeNotes":     QT_TRANSLATE_NOOP("Builds", "Project Notes"),
-    "filter.includeInactive":  QT_TRANSLATE_NOOP("Builds", "Inactive Documents"),
-
     "headings":                QT_TRANSLATE_NOOP("Builds", "Headings"),
     "headings.fmtPart":        QT_TRANSLATE_NOOP("Builds", "Partition format"),
     "headings.fmtChapter":     QT_TRANSLATE_NOOP("Builds", "Chapter format"),
@@ -155,8 +150,8 @@ SETTINGS_LABELS = {
     "text.includeComments":    QT_TRANSLATE_NOOP("Builds", "Include comments"),
     "text.includeStory":       QT_TRANSLATE_NOOP("Builds", "Include story structure"),
     "text.includeNotes":       QT_TRANSLATE_NOOP("Builds", "Include manuscript notes"),
-    "text.includeKeywords":    QT_TRANSLATE_NOOP("Builds", "Include keywords"),
-    "text.ignoredKeywords":    QT_TRANSLATE_NOOP("Builds", "Ignore these keywords"),
+    "text.includeKeywords":    QT_TRANSLATE_NOOP("Builds", "Include tags and references"),
+    "text.ignoredKeywords":    QT_TRANSLATE_NOOP("Builds", "Ignore these keys"),
     "text.addNoteHeadings":    QT_TRANSLATE_NOOP("Builds", "Add titles for note root folders"),
 
     "format.grpFormat":        QT_TRANSLATE_NOOP("Builds", "Text Format"),

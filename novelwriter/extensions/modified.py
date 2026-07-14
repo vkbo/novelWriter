@@ -25,7 +25,8 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QEvent, QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QPainter, QPaintEvent, QPalette
 from PyQt6.QtWidgets import (
     QApplication,
     QComboBox,
@@ -36,6 +37,8 @@ from PyQt6.QtWidgets import (
     QLabel,
     QPushButton,
     QSpinBox,
+    QSplitter,
+    QSplitterHandle,
     QToolButton,
     QTreeView,
     QWidget,
@@ -79,13 +82,13 @@ class NToolDialog(NDialog):
     def __init__(self, parent: GuiMain) -> None:
         super().__init__(parent=parent)
         self.setModal(False)
-        if CONFIG.osDarwin:
+        if CONFIG.osDarwin:  # pragma: no cover
             self.setWindowFlag(Qt.WindowType.Tool)
 
     def activateDialog(self) -> None:
         """Activate dialog on various operating systems."""
         self.show()
-        if CONFIG.osWindows:
+        if CONFIG.osWindows:  # pragma: no cover
             self.activateWindow()
         self.raise_()
         QApplication.processEvents()
@@ -101,7 +104,7 @@ class NNonBlockingDialog(NDialog):
     def activateDialog(self) -> None:
         """Activate dialog on various operating systems."""
         self.show()
-        if CONFIG.osWindows:
+        if CONFIG.osWindows:  # pragma: no cover
             self.activateWindow()
         self.raise_()
         QApplication.processEvents()
@@ -388,3 +391,56 @@ class NClickableLabel(QLabel):
         if event.button() == QtMouseLeft:
             self.mouseClicked.emit()
         return super().mousePressEvent(event)
+
+
+class NSplitterHandle(QSplitterHandle):
+    """Custom Widget: Highlighted Splitter Handle.
+
+    A splitter handle that is invisible until hovered or dragged, at
+    which point it lights up in the highlight colour.
+    """
+
+    def __init__(self, orientation: Qt.Orientation, parent: QSplitter) -> None:
+        super().__init__(orientation, parent)
+        self.setAttribute(Qt.WidgetAttribute.WA_Hover, True)
+        self._active = False
+        self._resizable = True
+
+    def setResizable(self, resizable: bool) -> None:
+        """Enable or disable the hover/drag highlight and the resize
+        cursor, for use when the adjacent pane cannot actually be resized.
+        """
+        self._resizable = resizable
+        if resizable:
+            isHorizontal = self.orientation() == Qt.Orientation.Horizontal
+            self.setCursor(Qt.CursorShape.SplitHCursor if isHorizontal else Qt.CursorShape.SplitVCursor)
+        else:
+            self._active = False
+            self.setCursor(Qt.CursorShape.ArrowCursor)
+        self.update()
+
+    def event(self, event: QEvent | None) -> bool:
+        """Track hover state to trigger a repaint."""
+        if event is not None and event.type() in (QEvent.Type.HoverEnter, QEvent.Type.HoverLeave):
+            self._active = self._resizable and event.type() == QEvent.Type.HoverEnter
+            self.update()
+        return super().event(event)
+
+    def mousePressEvent(self, event: QMouseEvent | None) -> None:
+        """Keep the handle highlighted while being dragged."""
+        if self._resizable:
+            self._active = True
+            self.update()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event: QMouseEvent | None) -> None:
+        """Drop the highlight if the cursor has left the handle."""
+        super().mouseReleaseEvent(event)
+        self._active = self._resizable and self.underMouse()
+        self.update()
+
+    def paintEvent(self, event: QPaintEvent | None) -> None:
+        """Paint the handle in the highlight colour when active."""
+        if self._active:
+            painter = QPainter(self)
+            painter.fillRect(self.rect(), self.palette().color(QPalette.ColorRole.Highlight))

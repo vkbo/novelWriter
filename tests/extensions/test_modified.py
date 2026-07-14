@@ -27,7 +27,7 @@ import pytest
 
 from PyQt6.QtCore import QEvent, QPoint, QPointF, QSize, Qt
 from PyQt6.QtGui import QFont, QKeyEvent, QMouseEvent, QStandardItem, QStandardItemModel, QWheelEvent
-from PyQt6.QtWidgets import QFontDialog, QWidget
+from PyQt6.QtWidgets import QFontDialog, QSplitter, QWidget
 
 from novelwriter.extensions.modified import (
     NClickableLabel,
@@ -39,6 +39,7 @@ from novelwriter.extensions.modified import (
     NIconToolButton,
     NNonBlockingDialog,
     NSpinBox,
+    NSplitterHandle,
     NToolDialog,
     NTreeView,
 )
@@ -290,3 +291,66 @@ def testNToolButtons_Main(qtbot, mockGUI):
     assert button1.isCheckable() is True
     button1.setCheckable(False)
     assert button1.isCheckable() is False
+
+
+@pytest.mark.gui
+def testNSplitterHandle_Main(qtbot):
+    """Test the NSplitterHandle class."""
+    splitter = QSplitter(Qt.Orientation.Vertical)
+    handle = NSplitterHandle(Qt.Orientation.Vertical, splitter)
+    dialog = SimpleDialog(splitter)
+    dialog.show()
+    qtbot.addWidget(dialog)
+    qtbot.wait(10)
+
+    # Starts out resizable, with the vertical split cursor, and inactive
+    assert handle._resizable is True
+    assert handle.cursor().shape() == Qt.CursorShape.SplitVCursor
+    assert handle._active is False
+
+    # Paint while inactive draws nothing but must not fail
+    handle.repaint()
+
+    # Hovering activates the highlight, and leaving drops it again
+    handle.event(QEvent(QEvent.Type.HoverEnter))
+    assert handle._active is True
+    handle.event(QEvent(QEvent.Type.HoverLeave))
+    assert handle._active is False
+
+    # A mouse press keeps it highlighted while dragging, and the highlight
+    # is now actually painted
+    position = QPointF(handle.rect().center())
+    press = QMouseEvent(QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModNone)
+    handle.mousePressEvent(press)
+    assert handle._active is True
+    handle.repaint()
+
+    # On release, the highlight follows whether the cursor is still over it
+    release = QMouseEvent(QEvent.Type.MouseButtonRelease, position, QtMouseLeft, QtMouseLeft, QtModNone)
+    handle.mouseReleaseEvent(release)
+    assert handle._active is handle.underMouse()
+
+    # Marking it non-resizable drops any active highlight, switches to a
+    # plain arrow cursor, and suppresses further hover/press highlighting
+    handle.setResizable(False)
+    assert handle._resizable is False
+    assert handle._active is False
+    assert handle.cursor().shape() == Qt.CursorShape.ArrowCursor
+
+    handle.event(QEvent(QEvent.Type.HoverEnter))
+    assert handle._active is False
+    handle.mousePressEvent(press)
+    assert handle._active is False
+
+    # Marking it resizable again restores the highlight cursor
+    handle.setResizable(True)
+    assert handle._resizable is True
+    assert handle.cursor().shape() == Qt.CursorShape.SplitVCursor
+
+    # The horizontal orientation uses the horizontal split cursor instead
+    hSplitter = QSplitter(Qt.Orientation.Horizontal)
+    hHandle = NSplitterHandle(Qt.Orientation.Horizontal, hSplitter)
+    assert hHandle.cursor().shape() == Qt.CursorShape.SplitHCursor
+    hHandle.setResizable(False)
+    hHandle.setResizable(True)
+    assert hHandle.cursor().shape() == Qt.CursorShape.SplitHCursor

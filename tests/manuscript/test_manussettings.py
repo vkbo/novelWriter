@@ -126,13 +126,13 @@ def testGuiBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     build = BuildSettings()
 
     switchMap = {
-        "incNovel": 1,
-        "incNotes": 2,
-        "incInactive": 3,
-        "novelRoot": 6,
-        "plotRoot": 7,
-        "charRoot": 8,
-        "worldRoot": 9,
+        "incNovel": "doc:filter.includeNovel",
+        "incNotes": "doc:filter.includeNotes",
+        "incInactive": "doc:filter.includeInactive",
+        "novelRoot": f"root:{C.hNovelRoot}",
+        "plotRoot": f"root:{C.hPlotRoot}",
+        "charRoot": f"root:{C.hCharRoot}",
+        "worldRoot": f"root:{C.hWorldRoot}",
     }
 
     hPlotDoc = SHARED.project.newFile("Main Plot", C.hPlotRoot)
@@ -158,25 +158,25 @@ def testGuiBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     assert filterTab.filterOpt._index == 10  # 2 headers, 1 sep, 3 opt and 4 roots
 
     # Un-toggle note folders
-    filterTab.filterOpt._widgets[switchMap["worldRoot"]].setChecked(False)  # World Root
+    filterTab.filterOpt._switches[switchMap["worldRoot"]].setChecked(False)  # World Root
     assert filterTab.optTree.topLevelItemCount() == 3
     assert C.hWorldRoot in sBuild._skipRoot
 
-    filterTab.filterOpt._widgets[switchMap["charRoot"]].setChecked(False)  # Char Root
+    filterTab.filterOpt._switches[switchMap["charRoot"]].setChecked(False)  # Char Root
     assert filterTab.optTree.topLevelItemCount() == 2
     assert C.hCharRoot in sBuild._skipRoot
 
-    filterTab.filterOpt._widgets[switchMap["plotRoot"]].setChecked(False)  # Plot Root
+    filterTab.filterOpt._switches[switchMap["plotRoot"]].setChecked(False)  # Plot Root
     assert filterTab.optTree.topLevelItemCount() == 1
     assert C.hPlotRoot in sBuild._skipRoot
 
     # Reset Plot and Char
-    filterTab.filterOpt._widgets[switchMap["plotRoot"]].setChecked(True)
-    filterTab.filterOpt._widgets[switchMap["charRoot"]].setChecked(True)
+    filterTab.filterOpt._switches[switchMap["plotRoot"]].setChecked(True)
+    filterTab.filterOpt._switches[switchMap["charRoot"]].setChecked(True)
     assert filterTab.optTree.topLevelItemCount() == 3
 
     # Switch off novel docs
-    filterTab.filterOpt._widgets[switchMap["incNovel"]].setChecked(False)
+    filterTab.filterOpt._switches[switchMap["incNovel"]].setChecked(False)
     assert sBuild.buildItemFilter(SHARED.project) == {
         C.hNovelRoot: (False, FilterMode.SKIPPED),
         C.hTitlePage: (False, FilterMode.FILTERED),
@@ -192,7 +192,7 @@ def testGuiBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     }
 
     # Switch on note docs
-    filterTab.filterOpt._widgets[switchMap["incNotes"]].setChecked(True)
+    filterTab.filterOpt._switches[switchMap["incNotes"]].setChecked(True)
     assert sBuild.buildItemFilter(SHARED.project) == {
         C.hNovelRoot: (False, FilterMode.SKIPPED),
         C.hTitlePage: (False, FilterMode.FILTERED),
@@ -208,7 +208,7 @@ def testGuiBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     }
 
     # Switch on inactive docs
-    filterTab.filterOpt._widgets[switchMap["incInactive"]].setChecked(True)
+    filterTab.filterOpt._switches[switchMap["incInactive"]].setChecked(True)
     assert sBuild.buildItemFilter(SHARED.project) == {
         C.hNovelRoot: (False, FilterMode.SKIPPED),
         C.hTitlePage: (False, FilterMode.FILTERED),
@@ -261,7 +261,7 @@ def testGuiBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     }
 
     # Switch on novel docs
-    filterTab.filterOpt._widgets[switchMap["incNovel"]].setChecked(True)
+    filterTab.filterOpt._switches[switchMap["incNovel"]].setChecked(True)
     assert sBuild.buildItemFilter(SHARED.project) == {
         C.hNovelRoot: (False, FilterMode.SKIPPED),
         C.hTitlePage: (True, FilterMode.FILTERED),  # Now enabled

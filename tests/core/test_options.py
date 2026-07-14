@@ -53,6 +53,7 @@ def testOptionState_LoadSave(monkeypatch, mockGUI, fncPath):
                     "replaceColW": 130,
                     "statusColW": 130,
                     "importColW": 130,
+                    "mockItem": None,
                 },
                 "MockGroup": {
                     "mockItem": None,
@@ -154,6 +155,13 @@ def testOptionState_SetGet(mockGUI):
     assert options.getList("GuiManuscript", "detailsExpanded", []) == []
     assert options.getList("GuiManuscript", "mockItem", []) == []
 
+    # Get dict
+    assert options.setValue("GuiProjectSearch", "searchFilters", {"a": True, "b": False}) is True
+    assert options.getDict("GuiProjectSearch", "searchFilters", {}) == {"a": True, "b": False}
+    assert options.setValue("GuiProjectSearch", "searchFilters", "notADict") is True
+    assert options.getDict("GuiProjectSearch", "searchFilters", {}) == {}
+    assert options.getDict("GuiProjectSearch", "mockItem", {}) == {}
+
     # Get enum, invalid value
     assert options.setValue("GuiNovelView", "lastCol", "invalidValue") is True
     assert options.getEnum("GuiNovelView", "lastCol", nwNovelExtra, nwColHidden) == nwColHidden
@@ -161,6 +169,7 @@ def testOptionState_SetGet(mockGUI):
     # Get from non-existent groups
     assert options.getValue("SomeGroup", "mockItem", None) is None
     assert options.getList("SomeGroup", "mockItem", []) == []
+    assert options.getDict("SomeGroup", "mockItem", {}) == {}
     assert options.getString("SomeGroup", "mockItem", None) is None  # type: ignore
     assert options.getInt("SomeGroup", "mockItem", None) is None  # type: ignore
     assert options.getFloat("SomeGroup", "mockItem", None) is None  # type: ignore

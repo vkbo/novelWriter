@@ -32,6 +32,7 @@ from PyQt6.QtGui import QAction, QPainter, QPixmap
 from PyQt6.QtWidgets import QStyleOptionViewItem
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.constants import nwItemClass
 from novelwriter.enum import nwChange, nwDocMode, nwView
 from novelwriter.types import QtDisplayRole, QtKeyDown, QtKeyReturn, QtKeyUp
 
@@ -192,6 +193,69 @@ def testGuiProjectSearch_Options(qtbot, nwGUI, fncPath, mockRnd, ipsumText):
     assert totalCount() == expected
     qtbot.mouseClick(search.tbRegEx, Qt.MouseButton.LeftButton)
     assert CONFIG.searchProjRegEx is False
+
+
+@pytest.mark.gui
+def testGuiProjectSearch_FilterPanel(nwGUI, fncPath, mockRnd, ipsumText):
+    """Test that toggling the switches in the search filter panel
+    updates the underlying DocSearch filters and triggers a live
+    refresh of the current search.
+    """
+    mockRnd.reset()
+    buildTestProject(nwGUI, fncPath)
+    project = SHARED.project
+    project.storage.getDocument(C.hSceneDoc).writeDocument("### Lorem Heading\n\n" + ipsumText[0])
+
+    # A Trash root is not a searchable class, and must be skipped when
+    # building the list of root folder filters
+    project.newRoot(nwItemClass.TRASH)
+
+    nwGUI._changeView(nwView.SEARCH)
+    search = nwGUI.projSearch
+    search.openProjectTasks()
+
+    docSearch = search.searchObject
+    switches = search.searchFilters.filterOpt._switches
+    model = search._model
+    root = QModelIndex()
+
+    def totalCount() -> int:
+        return sum(model.rowCount(model.index(i, 0, root)) for i in range(model.rowCount(root)))
+
+    # There is one match in the heading, and one in the body text
+    search.beginSearch("Lorem")
+    search.searchAction.activate(QAction.ActionEvent.Trigger)
+    withHeading = totalCount()
+    assert withHeading == 2
+
+    # Excluding headings drops the heading match, but keeps the body match,
+    # and toggling it back on restores the original count
+    switches["text:includeHeadings"].setChecked(False)
+    assert docSearch._textHeadings is False
+    assert totalCount() == 1
+    switches["text:includeHeadings"].setChecked(True)
+    assert docSearch._textHeadings is True
+    assert totalCount() == withHeading
+
+    # Excluding novel documents drops every match, since the test project
+    # has no other documents with content
+    switches["docs:includeNovel"].setChecked(False)
+    assert docSearch._docsNovel is False
+    assert totalCount() == 0
+    switches["docs:includeNovel"].setChecked(True)
+    assert docSearch._docsNovel is True
+    assert totalCount() == withHeading
+
+    # Deselecting the Novel root folder switch is equivalent to skipping it
+    rootSwitch = switches[f"root:{C.hNovelRoot}"]
+    rootSwitch.setChecked(False)
+    assert docSearch._skipRoots == [C.hNovelRoot]
+    assert totalCount() == 0
+    rootSwitch.setChecked(True)
+    assert docSearch._skipRoots == []
+    assert totalCount() == withHeading
+
+    search.closeProjectTasks()
 
 
 @pytest.mark.gui

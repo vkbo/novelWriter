@@ -22,7 +22,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
-import re
 import shutil
 
 from functools import partial
@@ -34,14 +33,13 @@ from PyQt6.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import isHandle, minmax, safeExists, safeIsFile, simplified
-from novelwriter.constants import nwConst, nwFiles, nwItemClass, nwStats
+from novelwriter.constants import nwFiles, nwItemClass, nwStats
 from novelwriter.core.project import NWProject
 from novelwriter.core.storage import ProjectStorageCreate
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from novelwriter.core.item import ProjectItem
 
 logger = logging.getLogger(__name__)
 
@@ -273,97 +271,6 @@ class DocDuplicator:
                     break
             SHARED.clearMainProgress()
         return result
-
-
-class DocSearch:
-    """Tool: Search Documents.
-
-    A global document search class.
-    """
-
-    def __init__(self) -> None:
-        self._regEx = re.compile(r"")
-        self._opts = re.IGNORECASE
-        self._words = False
-        self._escape = True
-
-    ##
-    #  Methods
-    ##
-
-    def setCaseSensitive(self, state: bool) -> None:
-        """Set the case sensitive search flag."""
-        self._opts = 0 if state else re.IGNORECASE
-
-    def setWholeWords(self, state: bool) -> None:
-        """Set the whole words search flag."""
-        self._words = state
-
-    def setUserRegEx(self, state: bool) -> None:
-        """Set the escape flag to the opposite state."""
-        self._escape = not state
-
-    def iterSearch(
-        self, project: NWProject, search: str
-    ) -> Iterable[tuple[ProjectItem, list[tuple[int, int, str, int]], bool]]:
-        """Iterate through documents in a project and apply search."""
-        self._regEx = re.compile(self._buildPattern(search), self._opts)
-        logger.debug("Searching with pattern '%s'", self._regEx.pattern)
-        storage = project.storage
-        SHARED.initMainProgress(len(project.tree))
-        for item in project.tree:
-            SHARED.incMainProgress()
-            if item.isFileType():
-                results, capped = self.searchText(storage.getDocumentText(item.itemHandle))
-                yield item, results, capped
-        SHARED.clearMainProgress()
-        return
-
-    def searchText(self, text: str) -> tuple[list[tuple[int, int, str, int]], bool]:
-        """Search a piece of text for RegEx matches."""
-        result = []
-        prev = -1
-        for res in self._regEx.finditer(text):
-            pos = res.start(0)
-            num = len(res.group(0))
-            end = pos + num
-
-            # Ignore zero length matches at the same position as the previous match
-            if num == 0 and pos == prev:
-                continue
-            prev = end
-
-            sBr = text.rfind("\n", 0, pos) + 1
-            eBr = text.find("\n", end)
-            eBr = eBr if eBr != -1 else len(text)
-
-            left = max(sBr, pos - 20)
-            if left > sBr and (space := text.find(" ", left, pos)) != -1:
-                left = space + 1
-
-            # Cap the context at 100 characters in total
-            right = min(eBr, end + 80, left + 100)
-            if right < eBr and (space := text.rfind(" ", end, right)) != -1:
-                right = space
-
-            if context := text[left:right]:
-                result.append((pos, num, context, pos - left))
-                if len(result) >= nwConst.MAX_SEARCH_RESULT:
-                    return result, True
-
-        return result, False
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _buildPattern(self, search: str) -> str:
-        """Build the search pattern string."""
-        if self._escape:
-            search = re.escape(search)
-        if self._words:
-            search = f"(?:^|\\b){search}(?:$|\\b)"
-        return search
 
 
 class ProjectBuilder:

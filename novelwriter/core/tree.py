@@ -335,7 +335,6 @@ class ProjectTree:
         for node in reversed(self._model.root.allChildren()):
             node.refresh()
             node.updateCount(propagate=False)
-        self._model.root.refresh()
         self._model.root.updateCount(propagate=False)
         self._model.layoutChanged.emit()
 
