@@ -691,6 +691,95 @@ def testCoreTools_DocSearchNoDuplicates():
 
 
 @pytest.mark.core
+def testCoreTools_DocSearchContentFilters():
+    """Test that the content type filters exclude matches on headings,
+    meta data and comment lines as expected, and that masking those
+    lines out doesn't shift the position or context of matches on the
+    remaining lines.
+    """
+    search = DocSearch()
+    search._regEx = re.compile(r"TARGET")
+    text = (
+        "# Heading TARGET\n"
+        "@char: TARGET\n"
+        "% comment TARGET\n"
+        "\n"
+        "Body text TARGET here\n"
+    )
+
+    def pruneResult(result):
+        return [(pos, num, context) for pos, num, context, _ in result]
+
+    # By default, all content types are searched
+    results, capped = search.searchText(text)
+    assert capped is False
+    assert pruneResult(results) == [
+        (10, 6, "# Heading TARGET"),
+        (24, 6, "@char: TARGET"),
+        (41, 6, "% comment TARGET"),
+        (59, 6, "Body text TARGET here"),
+    ]
+
+    # Excluding headings removes only the heading match, and the
+    # position and context of the other matches is unaffected
+    search.setContentFilters(headings=False, meta=True, comments=True, body=True)
+    results, _ = search.searchText(text)
+    assert pruneResult(results) == [
+        (24, 6, "@char: TARGET"),
+        (41, 6, "% comment TARGET"),
+        (59, 6, "Body text TARGET here"),
+    ]
+
+    # Excluding meta data removes only the meta match
+    search.setContentFilters(headings=True, meta=False, comments=True, body=True)
+    results, _ = search.searchText(text)
+    assert pruneResult(results) == [
+        (10, 6, "# Heading TARGET"),
+        (41, 6, "% comment TARGET"),
+        (59, 6, "Body text TARGET here"),
+    ]
+
+    # Excluding comments removes only the comment match
+    search.setContentFilters(headings=True, meta=True, comments=False, body=True)
+    results, _ = search.searchText(text)
+    assert pruneResult(results) == [
+        (10, 6, "# Heading TARGET"),
+        (24, 6, "@char: TARGET"),
+        (59, 6, "Body text TARGET here"),
+    ]
+
+    # Excluding body text removes only the body match
+    search.setContentFilters(headings=True, meta=True, comments=True, body=False)
+    results, _ = search.searchText(text)
+    assert pruneResult(results) == [
+        (10, 6, "# Heading TARGET"),
+        (24, 6, "@char: TARGET"),
+        (41, 6, "% comment TARGET"),
+    ]
+
+    # Excluding everything but body text leaves only the body match
+    search.setContentFilters(headings=False, meta=False, comments=False, body=True)
+    results, _ = search.searchText(text)
+    assert pruneResult(results) == [(59, 6, "Body text TARGET here")]
+
+    # Excluding everything yields no matches at all
+    search.setContentFilters(headings=False, meta=False, comments=False, body=False)
+    results, _ = search.searchText(text)
+    assert results == []
+
+    # Restore full text search, and confirm the result is identical
+    # to the initial, unfiltered search
+    search.setContentFilters(headings=True, meta=True, comments=True, body=True)
+    results, _ = search.searchText(text)
+    assert pruneResult(results) == [
+        (10, 6, "# Heading TARGET"),
+        (24, 6, "@char: TARGET"),
+        (41, 6, "% comment TARGET"),
+        (59, 6, "Body text TARGET here"),
+    ]
+
+
+@pytest.mark.core
 def testCoreTools_ProjectBuilderWrapper(monkeypatch, caplog, fncPath, mockGUI):
     """Test the wrapper function of the project builder."""
     builder = ProjectBuilder()

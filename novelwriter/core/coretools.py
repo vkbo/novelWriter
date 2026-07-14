@@ -285,13 +285,18 @@ class DocSearch:
     """
 
     __slots__ = (
+        "_docsInactive",
+        "_docsNotes",
+        "_docsNovel",
         "_escape",
-        "_includeInactive",
-        "_includeNotes",
-        "_includeNovel",
+        "_fullText",
         "_opts",
         "_regEx",
         "_skipRoots",
+        "_textBody",
+        "_textComments",
+        "_textHeadings",
+        "_textMeta",
         "_words",
     )
 
@@ -302,10 +307,15 @@ class DocSearch:
         self._escape = True
 
         # Filters
-        self._includeNovel = True
-        self._includeNotes = True
-        self._includeInactive = True
+        self._docsNovel = True
+        self._docsNotes = True
+        self._docsInactive = True
         self._skipRoots: list[str] = []
+        self._textHeadings = True
+        self._textMeta = True
+        self._textComments = True
+        self._textBody = True
+        self._fullText = True
 
     ##
     #  Setters
@@ -325,13 +335,21 @@ class DocSearch:
 
     def setDocumentFilters(self, novel: bool, notes: bool, inactive: bool) -> None:
         """Set the document type filters."""
-        self._includeNovel = novel
-        self._includeNotes = notes
-        self._includeInactive = inactive
+        self._docsNovel = novel
+        self._docsNotes = notes
+        self._docsInactive = inactive
 
     def setSkipRoots(self, roots: list[str]) -> None:
         """Set the list of root handles to skip during the search."""
         self._skipRoots = roots
+
+    def setContentFilters(self, headings: bool, meta: bool, comments: bool, body: bool) -> None:
+        """Set the content type filters."""
+        self._textHeadings = headings
+        self._textMeta = meta
+        self._textComments = comments
+        self._textBody = body
+        self._fullText = headings and meta and comments and body
 
     ##
     #  Methods
@@ -348,8 +366,8 @@ class DocSearch:
             if (
                 item.isFileType()
                 and item.itemRoot not in self._skipRoots
-                and ((self._includeNovel and item.isDocumentLayout()) or (self._includeNotes and item.isNoteLayout()))
-                and (item.isActive or (self._includeInactive and not item.isActive))
+                and ((self._docsNovel and item.isDocumentLayout()) or (self._docsNotes and item.isNoteLayout()))
+                and (item.isActive or (self._docsInactive and not item.isActive))
             ):
                 results, capped = self.searchText(storage.getDocumentText(item.itemHandle))
                 yield item, results, capped
@@ -360,6 +378,27 @@ class DocSearch:
         """Search a piece of text for RegEx matches."""
         result = []
         prev = -1
+
+        if not self._fullText:
+            filtered = []
+            for line in text.splitlines(keepends=True):
+                if line.strip():
+                    overwrite = 0
+                    temp = line.rstrip("\n")
+                    if line[0] == "#":
+                        overwrite = 0 if self._textHeadings else len(temp)
+                    elif line[0] == "@":
+                        overwrite = 0 if self._textMeta else len(temp)
+                    elif line[0] == "%":
+                        overwrite = 0 if self._textComments else len(temp)
+                    else:
+                        overwrite = 0 if self._textBody else len(temp)
+                    filtered.append((" " * overwrite) + line[overwrite:])
+                else:
+                    filtered.append(line)
+
+            text = "".join(filtered)
+
         for res in self._regEx.finditer(text):
             pos = res.start(0)
             num = len(res.group(0))
