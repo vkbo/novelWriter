@@ -49,8 +49,11 @@ ToC.txt
 /prof/
 /htmlcov/
 /tests/temp
+/tests/_temp
 /tests/lipsum/cache
 /tests/lipsum/meta
+/tests/_lipsum/cache
+/tests/_lipsum/meta
 /.pytest_cache
 /pytestdebug.log
 
