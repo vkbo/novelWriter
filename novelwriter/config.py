@@ -534,7 +534,10 @@ class Config:
             self.guiFont = fontMatcher(value)
         elif value and isinstance(value, str):
             font = QFont()
-            font.fromString(value)
+            if self.checkMinQtVersion(0x060B00):  # Qt 6.11+
+                font.fromString(value)
+            else:
+                font.fromString(",".join(value.split(",")[:16]))
             self.guiFont = fontMatcher(font)
         else:
             font = QFont()
@@ -556,7 +559,10 @@ class Config:
             self.textFont = fontMatcher(value)
         elif value and isinstance(value, str):
             font = QFont()
-            font.fromString(value)
+            if self.checkMinQtVersion(0x060B00):  # Qt 6.11+
+                font.fromString(value)
+            else:
+                font.fromString(",".join(value.split(",")[:16]))
             self.textFont = fontMatcher(font)
         else:
             fontFam = QFontDatabase.families()
