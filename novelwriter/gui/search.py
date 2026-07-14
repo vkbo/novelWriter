@@ -47,7 +47,7 @@ from PyQt6.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax
 from novelwriter.constants import nwLabels, trConst
-from novelwriter.core.coretools import DocSearch
+from novelwriter.core.projectsearch import DocSearch
 from novelwriter.enum import nwDocMode
 from novelwriter.extensions.expandpanel import NExpandablePanel
 from novelwriter.extensions.modified import NIconToolButton
@@ -68,8 +68,8 @@ from novelwriter.types import (
 )
 
 if TYPE_CHECKING:
-    from novelwriter.core.coretools import T_SearchResults
     from novelwriter.core.item import ProjectItem
+    from novelwriter.core.projectsearch import T_SearchResults
 
 logger = logging.getLogger(__name__)
 
