@@ -45,6 +45,8 @@ class NSwitchBox(QScrollArea):
         self._wSwitch = 2 * self._hSwitch
         self._size = baseSize
         self._icons = {}
+        self._labels = {}
+        self._pixmaps = {}
         self._switches = {}
         self.clear()
         self.setFrameStyle(QFrame.Shape.NoFrame)
@@ -84,6 +86,8 @@ class NSwitchBox(QScrollArea):
         self._index = 0
         self._switches.clear()
         self._icons.clear()
+        self._labels.clear()
+        self._pixmaps.clear()
 
         self._content = QGridLayout()
         self._content.setColumnStretch(1, 1)
@@ -111,18 +115,31 @@ class NSwitchBox(QScrollArea):
         color: str = "default",
         default: bool = False,
     ) -> None:
-        """Add an item to the content box."""
-        pix = QLabel("", self)
-        if icon:  # pragma: no branch
-            qIcon = SHARED.theme.getIcon(icon, color)
-            pix.setFixedSize(self._size, self._size)
-            pix.setPixmap(qIcon.pixmap(self._size, self._size))
-            self._icons[identifier] = (pix, icon, color)
+        """Add an item to the content box. If the identifier is already
+        in use, the existing entry is updated in place instead, which
+        keeps its position and current switch state.
+        """
+        if switch := self._switches.get(identifier):
+            if label := self._labels.get(identifier):  # pragma: no branch
+                label.setText(text)
+            if icon and (pixmap := self._pixmaps.get(identifier)):  # pragma: no branch
+                qIcon = SHARED.theme.getIcon(icon, color)
+                pixmap.setPixmap(qIcon.pixmap(self._size, self._size))
+                self._icons[identifier] = (pixmap, icon, color)
+            return
 
-        self._content.addWidget(pix, self._index, 0, QtAlignLeft)
+        if icon:  # pragma: no branch
+            pixmap = QLabel("", self)
+            qIcon = SHARED.theme.getIcon(icon, color)
+            pixmap.setFixedSize(self._size, self._size)
+            pixmap.setPixmap(qIcon.pixmap(self._size, self._size))
+            self._icons[identifier] = (pixmap, icon, color)
+            self._pixmaps[identifier] = pixmap
+            self._content.addWidget(pixmap, self._index, 0, QtAlignLeft)
 
         label = QLabel(text, self)
         self._content.addWidget(label, self._index, 1, QtAlignLeft)
+        self._labels[identifier] = label
 
         switch = NSwitch(self, height=self._hSwitch)
         switch.setChecked(default)
@@ -132,6 +149,19 @@ class NSwitchBox(QScrollArea):
         label.setBuddy(switch)
         self._switches[identifier] = switch
         self._bumpIndex()
+
+    def removeItem(self, identifier: str) -> None:
+        """Remove an item from the content box, if it exists."""
+        if switch := self._switches.pop(identifier, None):
+            self._content.removeWidget(switch)
+            switch.setParent(None)
+        if label := self._labels.pop(identifier, None):
+            self._content.removeWidget(label)
+            label.setParent(None)
+        if pixmap := self._pixmaps.pop(identifier, None):
+            self._content.removeWidget(pixmap)
+            pixmap.setParent(None)
+        self._icons.pop(identifier, None)
 
     def addSeparator(self) -> None:
         """Add a blank entry in the content box."""

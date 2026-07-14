@@ -48,7 +48,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax
 from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.projectsearch import DocSearch
-from novelwriter.enum import nwDocMode
+from novelwriter.enum import nwChange, nwDocMode
 from novelwriter.extensions.expandpanel import NExpandablePanel, NExpandablePanelGroup
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.switchbox import NSwitchBox
@@ -298,6 +298,11 @@ class GuiProjectSearch(QWidget):
     #  Public Slots
     ##
 
+    @pyqtSlot(str, nwChange)
+    def updateRootItem(self, tHandle: str, change: nwChange) -> None:
+        """Forward root item changes to the search filters."""
+        self.searchFilters.updateRootItem(tHandle, change)
+
     @pyqtSlot(str, float)
     def textChanged(self, tHandle: str, timeStamp: float) -> None:
         """Update search result for a specific document."""
@@ -496,6 +501,17 @@ class _SearchFilters(NExpandablePanel):
         super().updateTheme()
         self.filterOpt.updateTheme()
 
+    def updateRootItem(self, tHandle: str, change: nwChange) -> None:
+        """Update the root folder filters when there was a change."""
+        match change:
+            case nwChange.CREATE | nwChange.UPDATE:
+                if nwItem := SHARED.project.tree[tHandle]:
+                    self._processRootFilterEntry(nwItem)
+            case nwChange.DELETE:
+                self.filterOpt.removeItem(f"root:{tHandle}")
+            case _:  # pragma: no cover
+                pass
+
     ##
     #  Private Slots
     ##
@@ -595,15 +611,19 @@ class _SearchFilters(NExpandablePanel):
 
         # Root Folders
         self.filterOpt.addLabel(self.tr("Root Folders"))
-        for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
-            if nwItem.isSearchableClass():
-                name, color = nwItem.getMainIconStyle()
-                self.filterOpt.addItem(
-                    nwItem.itemName,
-                    f"root:{tHandle}",
-                    icon=name,
-                    color=color,
-                    default=not nwItem.isInactiveClass(),
-                )
+        for _, nwItem in SHARED.project.tree.iterRoots(None):
+            self._processRootFilterEntry(nwItem)
 
         self.setExpanded(expanded)
+
+    def _processRootFilterEntry(self, nwItem: ProjectItem) -> None:
+        """Append or update a root filter option."""
+        if nwItem.isSearchableClass():
+            name, color = nwItem.getMainIconStyle()
+            self.filterOpt.addItem(
+                nwItem.itemName,
+                f"root:{nwItem.itemHandle}",
+                icon=name,
+                color=color,
+                default=not nwItem.isInactiveClass(),
+            )
