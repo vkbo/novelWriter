@@ -847,6 +847,7 @@ class GuiMain(QMainWindow):
         if not SHARED.focusMode:
             CONFIG.mainPanePos = self.splitMain.sizes()
             CONFIG.outlinePanePos = self.outlineView.splitSizes()
+            CONFIG.searchPanePos = self.projSearch.splitSizes()
             if self.docViewerPanel.isVisible():
                 CONFIG.viewPanePos = self.splitView.sizes()
 
