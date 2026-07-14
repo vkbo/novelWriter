@@ -149,9 +149,10 @@ class NExpandablePanelGroup(QSplitter):
         if isinstance(widget, NExpandablePanel):
             self._expandedSizes[widget] = widget.sizeHint().height()
             widget.expandedStateChanged.connect(self._panelToggled)
-            widget.setHeaderBackgroundRole(QPalette.ColorRole.Window)
+            widget.setHeaderBackgroundRole(QPalette.ColorRole.AlternateBase)
             if not widget.isExpanded():
                 self._collapse(widget)
+        self._updateHandles()
 
     def setPanelSizes(self, sizes: list[int]) -> None:
         """Set the sizes of the widgets in the group. For a collapsed
@@ -206,6 +207,7 @@ class NExpandablePanelGroup(QSplitter):
             self._expandedSizes[panel] = sizes[index]
         sizes[index] = 0
         self.setSizes(sizes)
+        self._updateHandles()
 
     def _expand(self, panel: NExpandablePanel) -> None:
         """Restore a panel to its last known expanded size."""
@@ -213,3 +215,15 @@ class NExpandablePanelGroup(QSplitter):
         sizes = self.sizes()
         sizes[index] = self._expandedSizes.get(panel, panel.sizeHint().height())
         self.setSizes(sizes)
+        self._updateHandles()
+
+    def _updateHandles(self) -> None:
+        """Disable handles next to a panel that cannot be resized because
+        it is collapsed, since dragging them would have no effect.
+        """
+        for i in range(1, self.count()):
+            before = self.widget(i - 1)
+            after = self.widget(i)
+            locked = any(isinstance(w, NExpandablePanel) and not w.isExpanded() for w in (before, after))
+            if isinstance(handle := self.handle(i), NSplitterHandle):
+                handle.setResizable(not locked)
