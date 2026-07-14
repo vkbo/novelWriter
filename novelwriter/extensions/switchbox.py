@@ -25,8 +25,9 @@ from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QFrame, QGridLayout, QLabel, QScrollArea, QWidget
 
 from novelwriter import SHARED
+from novelwriter.extensions.modified import NClipLabel
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeft, QtAlignRight, QtSizeMinimum, QtSizeMinimumExpanding
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtSizeExpanding, QtSizeMinimum
 
 
 class NSwitchBox(QScrollArea):
@@ -93,7 +94,7 @@ class NSwitchBox(QScrollArea):
         self._content.setColumnStretch(1, 1)
 
         self._widget = QWidget(self)
-        self._widget.setSizePolicy(QtSizeMinimumExpanding, QtSizeMinimum)
+        self._widget.setSizePolicy(QtSizeExpanding, QtSizeMinimum)
         self._widget.setLayout(self._content)
 
         self.setWidgetResizable(True)
@@ -101,7 +102,7 @@ class NSwitchBox(QScrollArea):
 
     def addLabel(self, text: str) -> None:
         """Add a header label to the content box."""
-        label = QLabel(text, self)
+        label = NClipLabel(text, self)
         label.setFont(SHARED.theme.guiFontB)
         self._content.addWidget(label, self._index, 0, 1, 3, QtAlignLeft)
         self._bumpIndex()
@@ -137,7 +138,7 @@ class NSwitchBox(QScrollArea):
             self._pixmaps[identifier] = pixmap
             self._content.addWidget(pixmap, self._index, 0, QtAlignLeft)
 
-        label = QLabel(text, self)
+        label = NClipLabel(text, self)
         self._content.addWidget(label, self._index, 1, QtAlignLeft)
         self._labels[identifier] = label
 
