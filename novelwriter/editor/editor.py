@@ -860,6 +860,7 @@ class GuiDocEditor(QTextEdit):
             cursor.setPosition(start, QtMoveAnchor)
             cursor.setPosition(start + length, QtKeepAnchor)
             self.setTextCursor(cursor)
+            self.ensureCursorVisible(centre=True)
 
     ##
     #  Spell Checking
