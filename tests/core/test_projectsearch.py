@@ -209,6 +209,57 @@ def testProjectSearch_SearchContext():
 
 
 @pytest.mark.core
+def testProjectSearch_DocumentFilters(mockGUI, fncPath, mockRnd):
+    """Test that the document type and root folder filters exclude the
+    expected documents from the project-wide search.
+    """
+    project = NWProject()
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+
+    # Add a note under the Character root, and mark the scene document
+    # as inactive, then add the search term to all three documents
+    noteHandle = project.newFile("Jane", C.hCharRoot)
+    assert noteHandle is not None
+    project.storage.getDocument(noteHandle).writeDocument("@tag: Jane\n\nTARGET\n")
+    project.tree[C.hSceneDoc].setActive(False)  # type: ignore
+    project.storage.getDocument(C.hSceneDoc).writeDocument("### New Scene\n\nTARGET\n")
+    project.storage.getDocument(C.hChapterDoc).writeDocument("## New Chapter\n\nTARGET\n")
+
+    search = DocSearch()
+
+    def handles(result):
+        return [i.itemHandle for i, r, _ in result if r]
+
+    # By default, novel documents, notes, and inactive documents are all included
+    assert handles(search.iterSearch(project, "TARGET")) == [C.hChapterDoc, C.hSceneDoc, noteHandle]
+
+    # Excluding notes removes the character note
+    search.setDocumentFilters(novel=True, notes=False, inactive=True)
+    assert handles(search.iterSearch(project, "TARGET")) == [C.hChapterDoc, C.hSceneDoc]
+
+    # Excluding novel documents leaves only the note
+    search.setDocumentFilters(novel=False, notes=True, inactive=True)
+    assert handles(search.iterSearch(project, "TARGET")) == [noteHandle]
+
+    # Excluding inactive documents removes the inactive scene
+    search.setDocumentFilters(novel=True, notes=True, inactive=False)
+    assert handles(search.iterSearch(project, "TARGET")) == [C.hChapterDoc, noteHandle]
+
+    # Restore the document filter defaults
+    search.setDocumentFilters(novel=True, notes=True, inactive=True)
+
+    # Skipping the Character root excludes the note even though the
+    # document filters above would otherwise allow it
+    search.setSkipRoots([C.hCharRoot])
+    assert handles(search.iterSearch(project, "TARGET")) == [C.hChapterDoc, C.hSceneDoc]
+
+    # Clearing the skip list restores the note to the results
+    search.setSkipRoots([])
+    assert handles(search.iterSearch(project, "TARGET")) == [C.hChapterDoc, C.hSceneDoc, noteHandle]
+
+
+@pytest.mark.core
 def testProjectSearch_NoDuplicates():
     """Test that a RegEx that can produce a zero-length match right
     after a preceding match, such as `.*`, does not yield a
@@ -222,7 +273,7 @@ def testProjectSearch_NoDuplicates():
 
 
 @pytest.mark.core
-def testPProjectSearch_ContentFilters():
+def testProjectSearch_ContentFilters():
     """Test that the content type filters exclude matches on headings,
     meta data and comment lines as expected, and that masking those
     lines out doesn't shift the position or context of matches on the

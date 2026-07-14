@@ -28,6 +28,7 @@ from PyQt6.QtGui import QIcon
 from novelwriter import SHARED
 from novelwriter.constants import nwLists
 from novelwriter.core.item import ProjectItem
+from novelwriter.core.options import OptionState
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwChange
 
@@ -297,6 +298,11 @@ def testGuiDocViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mock
 
     SHARED.project.options.setValue("GuiDocViewerPanel", "colWidths", {"CHARACTER": "not-a-list", "BOGUS": [1, 2]})
     viewPanel.openProjectTasks()
+
+    # A sanity check also guards against a non-dict getting past getDict itself
+    with monkeypatch.context() as mp:
+        mp.setattr(OptionState, "getDict", lambda *a, **k: "not-a-dict")
+        viewPanel.openProjectTasks()
 
     # A column width list that's too short is ignored
     widths = charTab.getColumnWidths()

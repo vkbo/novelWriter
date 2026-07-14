@@ -179,6 +179,15 @@ def testProjectItem_Setters(mockGUI, mockRnd, fncPath):
     assert item.mainCount == 1234
     CONFIG.useCharCount = False
 
+    # InitCount
+    item._wordInit = 12
+    item._charInit = 34
+    CONFIG.useCharCount = False
+    assert item.initCount == 34
+    CONFIG.useCharCount = True
+    assert item.initCount == 12
+    CONFIG.useCharCount = False
+
     # CursorPos
     item.setCursorPos(None)
     assert item.cursorPos == 0
@@ -378,6 +387,7 @@ def testProjectItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is True
+    assert item.isSearchableClass() is False
     assert item.isTemplateFile() is False
 
     item.setClass("NOVEL")
@@ -385,6 +395,7 @@ def testProjectItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is True
     assert item.documentAllowed() is True
     assert item.isInactiveClass() is False
+    assert item.isSearchableClass() is True
     assert item.isTemplateFile() is False
 
     item.setClass("PLOT")
@@ -392,6 +403,7 @@ def testProjectItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isSearchableClass() is True
     assert item.isTemplateFile() is False
 
     item.setClass("CHARACTER")
@@ -399,6 +411,7 @@ def testProjectItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isSearchableClass() is True
     assert item.isTemplateFile() is False
 
     item.setClass("WORLD")
@@ -406,6 +419,7 @@ def testProjectItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isSearchableClass() is True
     assert item.isTemplateFile() is False
 
     item.setClass("TIMELINE")
@@ -413,6 +427,7 @@ def testProjectItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isSearchableClass() is True
     assert item.isTemplateFile() is False
 
     item.setClass("OBJECT")
@@ -420,6 +435,7 @@ def testProjectItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isSearchableClass() is True
     assert item.isTemplateFile() is False
 
     item.setClass("ENTITY")
@@ -427,6 +443,7 @@ def testProjectItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isSearchableClass() is True
     assert item.isTemplateFile() is False
 
     item.setClass("CUSTOM")
@@ -434,6 +451,7 @@ def testProjectItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isSearchableClass() is True
     assert item.isTemplateFile() is False
 
     item.setClass("ARCHIVE")
@@ -441,6 +459,7 @@ def testProjectItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is True
     assert item.documentAllowed() is True
     assert item.isInactiveClass() is True
+    assert item.isSearchableClass() is True
     assert item.isTemplateFile() is False
 
     item.setClass("TEMPLATE")
@@ -448,6 +467,7 @@ def testProjectItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is True
     assert item.documentAllowed() is True
     assert item.isInactiveClass() is True
+    assert item.isSearchableClass() is False
     assert item.isTemplateFile() is True
 
     item.setClass("TRASH")
@@ -455,6 +475,7 @@ def testProjectItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is False
     assert item.documentAllowed() is True
     assert item.isInactiveClass() is True
+    assert item.isSearchableClass() is False
     assert item.isTemplateFile() is False
 
     # Alternative
