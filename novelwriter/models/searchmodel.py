@@ -30,6 +30,7 @@ from PyQt6.QtCore import QAbstractItemModel, QModelIndex, Qt
 from PyQt6.QtGui import QBrush, QIcon
 from PyQt6.QtWidgets import QApplication
 
+from novelwriter import SHARED
 from novelwriter.common import minmax
 from novelwriter.types import (
     QtAlignRight,
@@ -131,6 +132,10 @@ class SearchNode:
         self._cache[C_COUNT_TEXT] = count
         self._cache[C_COUNT_ALIGN] = QtAlignRight
         self._cache[C_COUNT_COLOR] = color
+
+    def setIcon(self, icon: QIcon) -> None:
+        """Update the cached icon of a document-level node."""
+        self._cache[C_LABEL_ICON] = icon
 
     def setMatchData(self, context: str, span: tuple[int, int]) -> None:
         """Set the display data for a match-level node."""
@@ -277,10 +282,13 @@ class SearchResultModel(QAbstractItemModel):
     ##
 
     def updateTheme(self) -> None:
-        """Update the highlight color used for the count column."""
+        """Update the highlight color and document icons."""
         self._color = QApplication.palette().highlight()
         if self._rows:
-            first = self.index(0, SearchNode.C_COUNT)
+            for node in self._rows:
+                if item := SHARED.project.tree[node.handle]:
+                    node.setIcon(item.getMainIcon())
+            first = self.index(0, SearchNode.C_NAME)
             last = self.index(len(self._rows) - 1, SearchNode.C_COUNT)
             self.dataChanged.emit(first, last)
 
