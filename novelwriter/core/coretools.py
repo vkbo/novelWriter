@@ -322,10 +322,16 @@ class DocSearch:
     def searchText(self, text: str) -> tuple[list[tuple[int, int, str, int]], bool]:
         """Search a piece of text for RegEx matches."""
         result = []
+        prev = -1
         for res in self._regEx.finditer(text):
             pos = res.start(0)
             num = len(res.group(0))
             end = pos + num
+
+            # Ignore zero length matches at the same position as the previous match
+            if num == 0 and pos == prev:
+                continue
+            prev = end
 
             sBr = text.rfind("\n", 0, pos) + 1
             eBr = text.find("\n", end)
@@ -335,7 +341,8 @@ class DocSearch:
             if left > sBr and (space := text.find(" ", left, pos)) != -1:
                 left = space + 1
 
-            right = min(eBr, end + 80)
+            # Cap the context at 100 characters in total
+            right = min(eBr, end + 80, left + 100)
             if right < eBr and (space := text.rfind(" ", end, right)) != -1:
                 right = space
 

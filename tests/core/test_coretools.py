@@ -654,6 +654,41 @@ def testCoreTools_DocSearchContext():
     assert context[offset : offset + num] == "MATCH"
     assert len(context) - (offset + num) == 80
 
+    # A match that is itself much longer than the total context cap,
+    # such as a greedy RegEx like `.*` grabbing a whole paragraph, is
+    # truncated so the context never exceeds 100 characters in total
+    search._regEx = re.compile(r".*")
+    text = "x" * 30 + "y" * 300
+    results, _ = search.searchText(text)
+    assert len(results) == 1
+    pos, num, context, offset = results[0]
+    assert pos == 0
+    assert num == 330
+    assert offset == 0
+    assert len(context) == 100
+
+    # The same cap applies when there is context on the left as well
+    search._regEx = re.compile(r"MATCH.*")
+    text = "some words " + "MATCH" + ("z" * 300)
+    results, _ = search.searchText(text)
+    assert len(results) == 1
+    _, num, context, offset = results[0]
+    assert context[offset : offset + 5] == "MATCH"
+    assert len(context) == 100
+
+
+@pytest.mark.core
+def testCoreTools_DocSearchNoDuplicates():
+    """Test that a RegEx that can produce a zero-length match right
+    after a preceding match, such as `.*`, does not yield a
+    near-duplicate result.
+    """
+    search = DocSearch()
+    search._regEx = re.compile(r".*")
+    text = "Hello world\nSecond line here\n"
+    results, _ = search.searchText(text)
+    assert [(pos, num) for pos, num, _, _ in results] == [(0, 11), (12, 16)]
+
 
 @pytest.mark.core
 def testCoreTools_ProjectBuilderWrapper(monkeypatch, caplog, fncPath, mockGUI):
