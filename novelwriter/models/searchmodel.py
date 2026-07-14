@@ -30,7 +30,15 @@ from PyQt6.QtCore import QAbstractItemModel, QModelIndex, Qt
 from PyQt6.QtGui import QBrush, QIcon
 from PyQt6.QtWidgets import QApplication
 
-from novelwriter.types import QtAlignRight, QtDecorationRole, QtDisplayRole, QtForegroundRole, QtTextAlignmentRole
+from novelwriter.common import minmax
+from novelwriter.types import (
+    QtAlignRight,
+    QtDecorationRole,
+    QtDisplayRole,
+    QtForegroundRole,
+    QtTextAlignmentRole,
+    QtUserRole,
+)
 
 if TYPE_CHECKING:
     from novelwriter.core.item import ProjectItem
@@ -41,11 +49,12 @@ C_FACTOR = 0x0100
 
 C_LABEL_TEXT = 0x0000 | QtDisplayRole
 C_LABEL_ICON = 0x0000 | QtDecorationRole
+C_LABEL_SPAN = 0x0000 | QtUserRole
 C_COUNT_TEXT = 0x0100 | QtDisplayRole
 C_COUNT_ALIGN = 0x0100 | QtTextAlignmentRole
 C_COUNT_COLOR = 0x0100 | QtForegroundRole
 
-T_SearchData = str | QIcon | QBrush | Qt.AlignmentFlag | None
+T_SearchData = str | QIcon | QBrush | Qt.AlignmentFlag | tuple[int, int] | None
 
 
 class SearchNode:
@@ -59,11 +68,12 @@ class SearchNode:
     C_NAME = 0
     C_COUNT = 1
 
-    __slots__ = ("_cache", "_children", "_handle", "_parent", "_result", "_row")
+    __slots__ = ("_cache", "_children", "_handle", "_item", "_parent", "_result", "_row")
 
     def __init__(self, handle: str, result: tuple[int, int] | None = None) -> None:
         self._handle = handle
         self._result = result
+        self._item: ProjectItem | None = None
         self._parent: SearchNode | None = None
         self._children: list[SearchNode] = []
         self._row = 0
@@ -115,17 +125,24 @@ class SearchNode:
     #  Data Edit
     ##
 
-    def setDocumentData(self, name: str, icon: QIcon, count: str, color: QBrush) -> None:
+    def setDocumentData(self, item: ProjectItem, count: str, color: QBrush) -> None:
         """Set the display data for a document-level node."""
-        self._cache[C_LABEL_TEXT] = name
-        self._cache[C_LABEL_ICON] = icon
+        self._item = item
+        self._cache[C_LABEL_TEXT] = item.itemName
+        self._cache[C_LABEL_ICON] = item.getMainIcon()
         self._cache[C_COUNT_TEXT] = count
         self._cache[C_COUNT_ALIGN] = QtAlignRight
         self._cache[C_COUNT_COLOR] = color
 
-    def setMatchData(self, context: str) -> None:
+    def refreshIcon(self) -> None:
+        """Refresh the cached icon from the node's project item."""
+        if self._item is not None:  # pragma: no branch
+            self._cache[C_LABEL_ICON] = self._item.getMainIcon()
+
+    def setMatchData(self, context: str, span: tuple[int, int]) -> None:
         """Set the display data for a match-level node."""
         self._cache[C_LABEL_TEXT] = context
+        self._cache[C_LABEL_SPAN] = span
 
     def setChildren(self, children: list[SearchNode]) -> None:
         """Set the node's children, and update their parent and row."""
@@ -237,7 +254,7 @@ class SearchResultModel(QAbstractItemModel):
         self._map = {}
         self.endResetModel()
 
-    def setResult(self, nwItem: ProjectItem, results: list[tuple[int, int, str]], capped: bool) -> None:
+    def setResult(self, nwItem: ProjectItem, results: list[tuple[int, int, str, int]], capped: bool) -> None:
         """Insert or update the search results for a document."""
         if not results:
             return
@@ -246,7 +263,7 @@ class SearchResultModel(QAbstractItemModel):
         ext = "+" if capped else ""
 
         node = SearchNode(handle)
-        node.setDocumentData(nwItem.itemName, nwItem.getMainIcon(), f"({len(results):n}{ext})", self._color)
+        node.setDocumentData(nwItem, f"({len(results):n}{ext})", self._color)
         node.setChildren(self._buildMatches(handle, results))
 
         row = self._map.get(handle, (len(self._rows), 0.0))[0]
@@ -267,10 +284,12 @@ class SearchResultModel(QAbstractItemModel):
     ##
 
     def updateTheme(self) -> None:
-        """Update the highlight color used for the count column."""
+        """Update the highlight color and document icons."""
         self._color = QApplication.palette().highlight()
         if self._rows:
-            first = self.index(0, SearchNode.C_COUNT)
+            for node in self._rows:
+                node.refreshIcon()
+            first = self.index(0, SearchNode.C_NAME)
             last = self.index(len(self._rows) - 1, SearchNode.C_COUNT)
             self.dataChanged.emit(first, last)
 
@@ -278,11 +297,13 @@ class SearchResultModel(QAbstractItemModel):
     #  Internal Functions
     ##
 
-    def _buildMatches(self, handle: str, results: list[tuple[int, int, str]]) -> list[SearchNode]:
+    def _buildMatches(self, handle: str, results: list[tuple[int, int, str, int]]) -> list[SearchNode]:
         """Build the child match nodes for a document."""
         matches = []
-        for start, length, context in results:
+        for start, length, context, offset in results:
             match = SearchNode(handle, (start, length))
-            match.setMatchData(context)
+            hlStart = minmax(offset, 0, len(context))
+            hlEnd = minmax(offset + length, hlStart, len(context))
+            match.setMatchData(context, (hlStart, hlEnd))
             matches.append(match)
         return matches

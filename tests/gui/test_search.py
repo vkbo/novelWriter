@@ -27,8 +27,9 @@ from time import time
 
 import pytest
 
-from PyQt6.QtCore import QModelIndex, Qt
-from PyQt6.QtGui import QAction
+from PyQt6.QtCore import QModelIndex, QRect, Qt
+from PyQt6.QtGui import QAction, QPainter, QPixmap
+from PyQt6.QtWidgets import QStyleOptionViewItem
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwChange, nwDocMode, nwView
@@ -234,6 +235,12 @@ def testGuiProjectSearch_LiveRefresh(nwGUI, fncPath, mockRnd, ipsumText):
     search.textChanged(C.hTitlePage, time() + 1000.0)
     assert model.entry(C.hTitlePage) is None
 
+    # A live refresh that yields no results is a no-op, leaving the stale entry
+    nwGUI.docEditor.setPlainText("### New Scene\n\nNothing to see here.")
+    search.textChanged(C.hSceneDoc, time() + 2000.0)
+    sceneIdx = model.index(0, 0, root)
+    assert model.rowCount(sceneIdx) == 2
+
 
 @pytest.mark.gui
 def testGuiProjectSearch_EdgeCases(nwGUI, fncPath, mockRnd, ipsumText):
@@ -278,4 +285,41 @@ def testGuiProjectSearch_EdgeCases(nwGUI, fncPath, mockRnd, ipsumText):
 
     search.closeProjectTasks()
     assert model.rowCount(root) == 0
-    assert search.searchText.text() == ""
+
+
+@pytest.mark.gui
+def testGuiProjectSearch_DelegatePaint(nwGUI, fncPath, mockRnd):
+    """Test the search result delegate's paint code directly for the
+    branches not exercised by normal interaction: eliding a match whose
+    context overflows the available width, and a zero-length match.
+    """
+    mockRnd.reset()
+    buildTestProject(nwGUI, fncPath)
+    item = SHARED.project.tree[C.hSceneDoc]
+    assert item is not None
+
+    nwGUI._changeView(nwView.SEARCH)
+    search = nwGUI.projSearch
+    model = search._model
+    delegate = search._matchDelegate
+    root = QModelIndex()
+
+    option = QStyleOptionViewItem()
+    option.rect = QRect(0, 0, 80, 20)
+    option.font = search.searchResult.font()
+    pixmap = QPixmap(80, 20)
+
+    # A match with more context than fits the available width is
+    # elided on the right
+    model.setResult(item, [(0, 5, "MATCH" + " and then some more trailing text", 0)], False)
+    matchIdx = model.index(0, 0, model.index(0, 0, root))
+    painter = QPainter(pixmap)
+    delegate.paint(painter, option, matchIdx)
+    painter.end()
+
+    # A zero-length match skips the highlight fill, but still renders
+    model.setResult(item, [(5, 0, "some context text", 5)], False)
+    matchIdx = model.index(0, 0, model.index(0, 0, root))
+    painter = QPainter(pixmap)
+    delegate.paint(painter, option, matchIdx)
+    painter.end()

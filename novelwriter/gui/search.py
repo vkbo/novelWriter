@@ -27,8 +27,8 @@ from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QModelIndex, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QAction, QCursor, QKeyEvent, QPalette
+from PyQt6.QtCore import QModelIndex, QRect, Qt, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QAction, QCursor, QKeyEvent, QPainter, QPalette
 from PyQt6.QtWidgets import (
     QAbstractItemView,
     QApplication,
@@ -36,6 +36,8 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QStyledItemDelegate,
+    QStyleOptionViewItem,
     QToolBar,
     QTreeView,
     QVBoxLayout,
@@ -43,18 +45,23 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import minmax
 from novelwriter.core.coretools import DocSearch
 from novelwriter.enum import nwDocMode
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.models.searchmodel import SearchNode, SearchResultModel
 from novelwriter.types import (
     QtAlignMiddle,
+    QtDisplayRole,
+    QtElideRight,
     QtHeaderStretch,
     QtHeaderToContents,
     QtHexArgb,
     QtKeyDown,
     QtKeyUp,
     QtModShift,
+    QtSelected,
+    QtUserRole,
 )
 
 if TYPE_CHECKING:
@@ -142,6 +149,9 @@ class GuiProjectSearch(QWidget):
         self.searchResult.doubleClicked.connect(self._searchResultDoubleClicked)
         self.searchResult.setAccessibleName(self.viewLabel.text())
 
+        self._matchDelegate = _SearchResultDelegate(self.searchResult)
+        self.searchResult.setItemDelegateForColumn(SearchNode.C_NAME, self._matchDelegate)
+
         if header := self.searchResult.header():  # pragma: no branch
             header.setStretchLastSection(False)
             header.setSectionResizeMode(SearchNode.C_NAME, QtHeaderStretch)
@@ -188,6 +198,9 @@ class GuiProjectSearch(QWidget):
 
         self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
         self._model.updateTheme()
+        self._matchDelegate.updateTheme()
+        if viewport := self.searchResult.viewport():  # pragma: no branch
+            viewport.update()
         if not onInit:
             self.tbCase.refreshTheme()
             self.tbWord.refreshTheme()
@@ -274,8 +287,17 @@ class GuiProjectSearch(QWidget):
                 self._search.setUserRegEx(self.tbRegEx.isChecked())
                 self._search.setCaseSensitive(self.tbCase.isChecked())
                 self._search.setWholeWords(self.tbWord.isChecked())
+                handles = []
                 for item, results, capped in self._search.iterSearch(SHARED.project, text):
-                    self._addResult(item, results, capped)
+                    if results:
+                        self._model.setResult(item, results, capped)
+                        handles.append(item.itemHandle)
+                # Expanding a row forces the tree view to lay out all
+                # currently loaded rows, so this is deferred until after
+                # all results are in the model to avoid doing it once
+                # per document as the tree grows
+                for handle in handles:
+                    self._expandResult(handle)
             logger.debug("Search took %.3f ms", 1000 * (time() - start))
             QApplication.restoreOverrideCursor()
         self._blocked = False
@@ -317,12 +339,78 @@ class GuiProjectSearch(QWidget):
     #  Internal Functions
     ##
 
-    def _addResult(self, nwItem: ProjectItem, results: list[tuple[int, int, str]], capped: bool) -> None:
+    def _addResult(self, nwItem: ProjectItem, results: list[tuple[int, int, str, int]], capped: bool) -> None:
         """Add or update a document's results, and update the view."""
         if results:
             self._model.setResult(nwItem, results, capped)
-            parent = self._model.indexFromHandle(nwItem.itemHandle)
-            for row in range(self._model.rowCount(parent)):
-                self.searchResult.setFirstColumnSpanned(row, parent, True)
-            self.searchResult.setExpanded(parent, True)
+            self._expandResult(nwItem.itemHandle)
             QApplication.processEvents()
+
+    def _expandResult(self, handle: str) -> None:
+        """Span and expand a document's rows in the result tree."""
+        parent = self._model.indexFromHandle(handle)
+        for row in range(self._model.rowCount(parent)):
+            self.searchResult.setFirstColumnSpanned(row, parent, True)
+        self.searchResult.setExpanded(parent, True)
+
+
+RESULT_FLAGS = int(Qt.TextFlag.TextSingleLine) | int(QtAlignMiddle)
+
+
+class _SearchResultDelegate(QStyledItemDelegate):
+    """GUI: Search Result Match Delegate.
+
+    Paints the match column, highlighting the matched substring of a
+    match-level row with the palette's highlight colour. Document-level
+    rows have no span data and are left to the default rendering.
+    """
+
+    __slots__ = ("_rectColM", "_rectColS", "_textColP", "_textColS")
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+        self.updateTheme()
+
+    def updateTheme(self) -> None:
+        """Refresh the cached theme colours."""
+        self._textColP = QApplication.palette().text().color()
+        self._textColS = QApplication.palette().highlightedText().color()
+        self._rectColS = QApplication.palette().highlight().color()
+        self._rectColM = SHARED.theme.searchCol
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        """Paint a search result entry, highlighting the match, if any."""
+        if not isinstance(span := index.data(QtUserRole), tuple):
+            super().paint(painter, option, index)
+            return
+
+        text = index.data(QtDisplayRole) or ""
+        sPos, ePos = span
+        rect = option.rect
+        selected = bool(option.state & QtSelected)
+
+        painter.save()
+        painter.setClipRect(rect)
+        painter.setFont(option.font)
+
+        if selected:
+            painter.fillRect(rect, self._rectColS)
+
+        metrics = painter.fontMetrics()
+        avail = max(0, rect.width() - 4)
+        text = metrics.elidedText(text, QtElideRight, avail)
+        sPos = minmax(sPos, 0, len(text))
+        ePos = minmax(ePos, sPos, len(text))
+
+        x = rect.x() + 4
+        y = rect.y()
+        h = rect.height()
+        if ePos > sPos:
+            wPos = metrics.horizontalAdvance(text[:sPos])
+            wMatch = metrics.horizontalAdvance(text[sPos:ePos])
+            painter.fillRect(QRect(x + wPos, y, wMatch, h), self._rectColM)
+
+        painter.setPen(self._textColS if selected else self._textColP)
+        painter.drawText(QRect(x, y, rect.right() - x, h), RESULT_FLAGS, text)
+
+        painter.restore()

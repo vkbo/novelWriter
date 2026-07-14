@@ -517,7 +517,7 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     result = [(i.itemHandle, r, c) for i, r, c in search.iterSearch(project, "Scene")]
     assert result[0] == (C.hTitlePage, [], False)
     assert result[1] == (C.hChapterDoc, [], False)
-    assert result[2] == (C.hSceneDoc, [(8, 5, "Scene")], False)
+    assert result[2] == (C.hSceneDoc, [(8, 5, "### New Scene", 8)], False)
 
     # Patterns
     # ========
@@ -537,16 +537,16 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
 
     def pruneResult(result, index):
         temp = [(i.itemHandle, r, c) for i, r, c in result][index][1]
-        return [(s, n, c.split()[0]) for s, n, c in temp]
+        return [(s, n, c[o : o + n]) for s, n, c, o in temp]
 
     # Defaults
     assert pruneResult(search.iterSearch(project, "Lorem"), 2) == [
         (15, 5, "Lorem"),
         (754, 5, "lorem"),
-        (2056, 5, "lorem,"),
+        (2056, 5, "lorem"),
         (2209, 5, "lorem"),
         (2425, 5, "lorem"),
-        (2840, 5, "lorem."),
+        (2840, 5, "lorem"),
         (3399, 5, "lorem"),
     ]
 
@@ -555,23 +555,23 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     assert pruneResult(search.iterSearch(project, "Lor"), 2) == []
     search.setWholeWords(False)
     assert pruneResult(search.iterSearch(project, "Lor"), 2) == [
-        (15, 3, "Lorem"),
-        (29, 3, "dolor"),
-        (754, 3, "lorem"),
-        (2056, 3, "lorem,"),
-        (2209, 3, "lorem"),
-        (2425, 3, "lorem"),
-        (2840, 3, "lorem."),
-        (3328, 3, "dolor."),
-        (3399, 3, "lorem"),
+        (15, 3, "Lor"),
+        (29, 3, "lor"),
+        (754, 3, "lor"),
+        (2056, 3, "lor"),
+        (2209, 3, "lor"),
+        (2425, 3, "lor"),
+        (2840, 3, "lor"),
+        (3328, 3, "lor"),
+        (3399, 3, "lor"),
     ]
 
     # As RegEx
     search.setWholeWords(False)
     search.setUserRegEx(True)
     assert pruneResult(search.iterSearch(project, r"Lor\b"), 2) == [
-        (29, 3, "dolor"),
-        (3328, 3, "dolor."),
+        (29, 3, "lor"),
+        (3328, 3, "lor"),
     ]
 
     # Max Results
@@ -580,7 +580,7 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
         assert pruneResult(search.iterSearch(project, "Lorem"), 2) == [
             (15, 5, "Lorem"),
             (754, 5, "lorem"),
-            (2056, 5, "lorem,"),
+            (2056, 5, "lorem"),
         ]
 
     # Case Sensitive
@@ -588,9 +588,71 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     assert pruneResult(search.iterSearch(project, "Lorem"), 2) == [(15, 5, "Lorem")]
     search.setCaseSensitive(False)
 
-    # A match with no preceding context text yields nothing
+    # A match on an empty line yields no context in either direction
     search._regEx = re.compile(r"$")
-    assert search.searchText("word ") == ([], False)
+    assert search.searchText("") == ([], False)
+
+
+@pytest.mark.core
+def testCoreTools_DocSearchContext():
+    """Test that the search context flows in both directions from the
+    match, but is clipped at the line boundary.
+    """
+    search = DocSearch()
+
+    # The context flows in both directions from the match
+    search._regEx = re.compile(r"MATCH")
+    text = "some words before MATCH and some words after"
+    results, _ = search.searchText(text)
+    assert len(results) == 1
+    _, num, context, offset = results[0]
+    assert context[offset : offset + num] == "MATCH"
+    assert context == text
+    assert offset == 18
+
+    # The context never crosses into the previous or next line, even
+    # when the match sits right at the start of its own line
+    search._regEx = re.compile(r"MATCH")
+    text = "Previous line text that must never appear here\nMATCH end of line\n"
+    results, _ = search.searchText(text)
+    assert len(results) == 1
+    _, _, context, offset = results[0]
+    assert offset == 0
+    assert context == "MATCH end of line"
+
+    # A long single line is capped at ~20 characters to the left and
+    # ~80 characters to the right, both trimmed to a word boundary,
+    # and never leaks into the adjacent lines
+    search._regEx = re.compile(r"TARGET")
+    pre = "abcde " * 10
+    post = "fghij " * 20
+    text = f"prevline marker should not appear\n{pre}TARGET {post}\nnextline marker should not appear"
+    results, _ = search.searchText(text)
+    assert len(results) == 1
+    _, num, context, offset = results[0]
+    assert context[offset : offset + num] == "TARGET"
+    assert "prevline" not in context
+    assert "nextline" not in context
+    assert offset <= 20
+    assert len(context) - (offset + num) <= 80
+
+    # When there is no space to trim to on the left, the cut lands
+    # mid-word at the raw 20 character mark instead
+    search._regEx = re.compile(r"MATCH")
+    text = ("a" * 30) + "MATCH"
+    results, _ = search.searchText(text)
+    assert len(results) == 1
+    _, num, context, offset = results[0]
+    assert context[offset : offset + num] == "MATCH"
+    assert offset == 20
+
+    # Likewise on the right, at the raw 80 character mark
+    text = "MATCH" + ("b" * 100)
+    results, _ = search.searchText(text)
+    assert len(results) == 1
+    _, num, context, offset = results[0]
+    assert context[offset : offset + num] == "MATCH"
+    assert len(context) - (offset + num) == 80
 
 
 @pytest.mark.core

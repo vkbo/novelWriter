@@ -305,7 +305,7 @@ class DocSearch:
 
     def iterSearch(
         self, project: NWProject, search: str
-    ) -> Iterable[tuple[ProjectItem, list[tuple[int, int, str]], bool]]:
+    ) -> Iterable[tuple[ProjectItem, list[tuple[int, int, str, int]], bool]]:
         """Iterate through documents in a project and apply search."""
         self._regEx = re.compile(self._buildPattern(search), self._opts)
         logger.debug("Searching with pattern '%s'", self._regEx.pattern)
@@ -319,24 +319,32 @@ class DocSearch:
         SHARED.clearMainProgress()
         return
 
-    def searchText(self, text: str) -> tuple[list[tuple[int, int, str]], bool]:
+    def searchText(self, text: str) -> tuple[list[tuple[int, int, str, int]], bool]:
         """Search a piece of text for RegEx matches."""
-        count = 0
-        capped = False
-        results = []
+        result = []
         for res in self._regEx.finditer(text):
             pos = res.start(0)
             num = len(res.group(0))
-            lim = text[:pos].rfind("\n") + 1
-            cut = text[lim:pos].rfind(" ") + lim + 1
-            context = text[cut : cut + 100].partition("\n")[0]
-            if context:
-                results.append((pos, num, context))
-                count += 1
-                if count >= nwConst.MAX_SEARCH_RESULT:
-                    capped = True
-                    break
-        return results, capped
+            end = pos + num
+
+            sBr = text.rfind("\n", 0, pos) + 1
+            eBr = text.find("\n", end)
+            eBr = eBr if eBr != -1 else len(text)
+
+            left = max(sBr, pos - 20)
+            if left > sBr and (space := text.find(" ", left, pos)) != -1:
+                left = space + 1
+
+            right = min(eBr, end + 80)
+            if right < eBr and (space := text.rfind(" ", end, right)) != -1:
+                right = space
+
+            if context := text[left:right]:
+                result.append((pos, num, context, pos - left))
+                if len(result) >= nwConst.MAX_SEARCH_RESULT:
+                    return result, True
+
+        return result, False
 
     ##
     #  Internal Functions

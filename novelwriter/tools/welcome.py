@@ -437,15 +437,15 @@ class _ProjectListItem(QStyledItemDelegate):
 
         self._icon = SHARED.theme.getPixmap("proj_nwx", (iPx, iPx))
 
-    def paint(self, painter: QPainter, opt: QStyleOptionViewItem, index: QModelIndex) -> None:
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         """Paint a project entry on the canvas."""
         if isinstance(entry := index.data(QtDisplayRole), _ProjectListEntry):  # pragma: no branch
-            rect = opt.rect
+            rect = option.rect
             tFlag = Qt.TextFlag.TextSingleLine
             x, y = self._pPx
 
             painter.save()
-            if opt.state & QtSelected == QtSelected:
+            if bool(option.state & QtSelected):
                 painter.setOpacity(0.25)
                 painter.fillRect(rect, QApplication.palette().text())
                 painter.setOpacity(1.0)
