@@ -464,6 +464,7 @@ class GuiMain(QMainWindow):
         self.projView.openProjectTasks()
         self.novelView.openProjectTasks()
         self.outlineView.openProjectTasks()
+        self.projSearch.openProjectTasks()
         self.docViewerPanel.openProjectTasks()
         self._updateStatusWordCount()
 

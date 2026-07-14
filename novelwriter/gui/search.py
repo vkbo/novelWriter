@@ -46,9 +46,12 @@ from PyQt6.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax
+from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.coretools import DocSearch
 from novelwriter.enum import nwDocMode
+from novelwriter.extensions.expandpanel import NExpandablePanel
 from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.models.searchmodel import SearchNode, SearchResultModel
 from novelwriter.types import (
     QtAlignMiddle,
@@ -137,6 +140,10 @@ class GuiProjectSearch(QWidget):
         self.searchText.setClearButtonEnabled(True)
         self.searchText.addAction(self.searchAction, QLineEdit.ActionPosition.TrailingPosition)
 
+        # Search Filters
+        self.searchFilters = _SearchFilters(self)
+        self.searchFilters.setExpanded(False)
+
         # Search Result
         self.searchResult = QTreeView(self)
         self.searchResult.setModel(self._model)
@@ -172,6 +179,7 @@ class GuiProjectSearch(QWidget):
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.headerBox, 0)
         self.outerBox.addWidget(self.searchText, 0)
+        self.outerBox.addWidget(self.searchFilters, 0)
         self.outerBox.addWidget(self.searchResult, 1)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setSpacing(2)
@@ -227,8 +235,15 @@ class GuiProjectSearch(QWidget):
             self.searchText.setText(text.partition("\n")[0])
             self.searchText.selectAll()
 
+    def openProjectTasks(self) -> None:
+        """Run open project tasks."""
+        self.searchFilters.openProjectTasks()
+        self.searchFilters.setExpanded(False)
+
     def closeProjectTasks(self) -> None:
         """Run close project tasks."""
+        self.searchFilters.closeProjectTasks()
+        self.searchFilters.setExpanded(False)
         self.searchText.clear()
         self._model.clear()
 
@@ -413,3 +428,106 @@ class _SearchResultDelegate(QStyledItemDelegate):
         painter.drawText(QRect(x, y, rect.right() - x, h), RESULT_FLAGS, text)
 
         painter.restore()
+
+
+class _SearchFilters(NExpandablePanel):
+    """GUI: Search Filters Panel."""
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+
+        self.setTitle(self.tr("Filters"))
+
+        iPx = SHARED.theme.baseIconHeight
+
+        self.filterOpt = NSwitchBox(self, baseSize=iPx)
+        self.filterOpt.setMaximumHeight(15 * iPx)
+
+        self.settingsBox = QVBoxLayout()
+        self.settingsBox.addWidget(self.filterOpt, 0)
+        self.settingsBox.setContentsMargins(0, 0, 0, 0)
+
+        self.setContentLayout(self.settingsBox)
+
+    ##
+    #  Methods
+    ##
+
+    def openProjectTasks(self) -> None:
+        """Run open project tasks."""
+        self.filterOpt.clear()
+        self._buildStandardFilters()
+        self._buildProjectFilters()
+
+    def closeProjectTasks(self) -> None:
+        """Run close project tasks."""
+        self.filterOpt.clear()
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _buildStandardFilters(self) -> None:
+        """Build the standard filter options."""
+        # Text Content
+        self.filterOpt.addLabel(trConst(nwLabels.FILTER_GROUPS["content"]))
+        self.filterOpt.addItem(
+            SHARED.theme.getIcon("filter", "altaction"),
+            trConst(nwLabels.FILTER_TYPES["headings"]),
+            "text:includeHeadings",
+            default=True,
+        )
+        self.filterOpt.addItem(
+            SHARED.theme.getIcon("filter", "altaction"),
+            trConst(nwLabels.FILTER_TYPES["meta"]),
+            "text:includeMeta",
+            default=True,
+        )
+        self.filterOpt.addItem(
+            SHARED.theme.getIcon("filter", "altaction"),
+            trConst(nwLabels.FILTER_TYPES["comments"]),
+            "text:includeComments",
+            default=True,
+        )
+        self.filterOpt.addItem(
+            SHARED.theme.getIcon("filter", "altaction"),
+            trConst(nwLabels.FILTER_TYPES["text"]),
+            "text:includeBody",
+            default=True,
+        )
+
+        # Document Types
+        self.filterOpt.addSeparator()
+        self.filterOpt.addLabel(trConst(nwLabels.FILTER_GROUPS["documents"]))
+        self.filterOpt.addItem(
+            SHARED.theme.getIcon("prj_scene", "scene"),
+            trConst(nwLabels.FILTER_TYPES["novel"]),
+            "docs:includeNovel",
+            default=True,
+        )
+        self.filterOpt.addItem(
+            SHARED.theme.getIcon("prj_note", "note"),
+            trConst(nwLabels.FILTER_TYPES["notes"]),
+            "docs:includeNotes",
+            default=True,
+        )
+        self.filterOpt.addItem(
+            SHARED.theme.getIcon("unchecked", "reject"),
+            trConst(nwLabels.FILTER_TYPES["inactive"]),
+            "docs:includeInactive",
+            default=True,
+        )
+
+    def _buildProjectFilters(self) -> None:
+        """Build the project filter options."""
+        self.filterOpt.addSeparator()
+        self.filterOpt.addLabel(self.tr("Root Folders"))
+        for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
+            print(f"Root: {tHandle} - {nwItem.itemName}")
+            if not nwItem.isInactiveClass():
+                self.filterOpt.addItem(
+                    nwItem.getMainIcon(),
+                    nwItem.itemName,
+                    f"root:{tHandle}",
+                    default=True,
+                )
