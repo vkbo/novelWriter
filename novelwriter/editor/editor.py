@@ -860,7 +860,7 @@ class GuiDocEditor(QTextEdit):
             cursor.setPosition(start, QtMoveAnchor)
             cursor.setPosition(start + length, QtKeepAnchor)
             self.setTextCursor(cursor)
-            self.ensureCursorVisible(centre=True)
+            self.ensureCursorVisible(centre=False)
 
     ##
     #  Spell Checking
@@ -1821,7 +1821,7 @@ class GuiDocEditor(QTextEdit):
         cursor.setPosition(resS[resIdx], QtMoveAnchor)
         cursor.setPosition(resE[resIdx], QtKeepAnchor)
         self.setTextCursor(cursor)
-        self.ensureCursorVisible(centre=True)
+        self.ensureCursorVisible(centre=False)
 
         self.docSearch.setResultCount(resIdx + 1, len(resS))
         self._lastFind = (resS[resIdx], resE[resIdx])
