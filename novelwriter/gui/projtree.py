@@ -1061,6 +1061,7 @@ class _UpdatableMenu(QMenu):
         """Remove a template item."""
         if action := self._map.pop(tHandle, None):
             self.removeAction(action)
+            action.setParent(None)
         if not self._map:
             self.setActionsVisible(False)
 
