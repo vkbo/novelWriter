@@ -341,6 +341,44 @@ def testProjectItem_Methods(mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
+def testProjectItem_Duplicate(mockGUI, mockRnd, fncPath):
+    """Test that duplicating an item copies every attribute of the
+    source item, except the handle, which must be unique and is
+    therefore provided separately. This loops over the class' declared
+    __slots__ rather than naming each attribute, so the test also
+    catches a new attribute being added to the class without a
+    matching update to ProjectItem.duplicate.
+    """
+    project = NWProject()
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+
+    # Give every slot a distinct sentinel value, except the handle and
+    # the project reference, which are excluded from the duplicate
+    # copy loop below and are checked separately
+    source = ProjectItem(project, "000000000000f")
+    for i, slot in enumerate(ProjectItem.__slots__):
+        if slot not in ("_handle", "_project"):
+            setattr(source, slot, f"sentinel-{i}")
+
+    duplicate = ProjectItem.duplicate(source, "0000000000010")
+
+    # The duplicate is a distinct instance with a new, unique handle
+    assert duplicate is not source
+    assert duplicate.itemHandle == "0000000000010"
+    assert duplicate.itemHandle != source.itemHandle
+
+    # But it points to the same project instance as the source
+    assert duplicate._project is source._project
+
+    # Every other declared attribute must be copied from the source as-is
+    for slot in ProjectItem.__slots__:
+        if slot in ("_handle", "_project"):
+            continue
+        assert getattr(duplicate, slot) == getattr(source, slot), f"Attribute '{slot}' was not duplicated"
+
+
+@pytest.mark.core
 def testProjectItem_TypeSetter(mockGUI):
     """Test the setter for all the nwItemType values for the ProjectItem
     class.

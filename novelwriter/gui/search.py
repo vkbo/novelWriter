@@ -501,7 +501,11 @@ class _SearchFilters(NExpandablePanel):
             comments=switches.get("text:includeComments", True),
             body=switches.get("text:includeBody", True),
         )
-        self._search.setSkipRoots([k.partition(":")[2] for k, v in switches.items() if k.startswith("root:") and not v])
+        self._search.setSkipRoots([
+            rIdentifier.partition(":")[2]
+            for rIdentifier, rState in switches.items()
+            if rIdentifier.startswith("root:") and not rState
+        ])
 
         self._parent.refreshCurrentSearch()
 
