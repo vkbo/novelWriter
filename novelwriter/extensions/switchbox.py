@@ -43,7 +43,7 @@ class NSwitchBox(QScrollArea):
         self._index = 0
         self._hSwitch = baseSize
         self._wSwitch = 2 * self._hSwitch
-        self._sIcon = baseSize
+        self._size = baseSize
         self._icons = {}
         self._switches = {}
         self.clear()
@@ -69,10 +69,10 @@ class NSwitchBox(QScrollArea):
 
     def updateTheme(self) -> None:
         """Update the theme of the switches in the box."""
-        for pix, icon, color in self._icons.values():
-            qIcon = SHARED.theme.getIcon(icon, color)
-            pix.setFixedSize(self._sIcon, self._sIcon)
-            pix.setPixmap(qIcon.pixmap(self._sIcon, self._sIcon))
+        for pix, name, color in self._icons.values():
+            icon = SHARED.theme.getIcon(name, color)
+            pix.setFixedSize(self._size, self._size)
+            pix.setPixmap(icon.pixmap(self._size, self._size))
 
     ##
     #  Builder Methods
@@ -112,10 +112,10 @@ class NSwitchBox(QScrollArea):
     ) -> None:
         """Add an item to the content box."""
         pix = QLabel("", self)
-        if icon:
+        if icon:  # pragma: no branch
             qIcon = SHARED.theme.getIcon(icon, color)
-            pix.setFixedSize(self._sIcon, self._sIcon)
-            pix.setPixmap(qIcon.pixmap(self._sIcon, self._sIcon))
+            pix.setFixedSize(self._size, self._size)
+            pix.setPixmap(qIcon.pixmap(self._size, self._size))
             self._icons[identifier] = (pix, icon, color)
 
         self._content.addWidget(pix, self._index, 0, QtAlignLeft)
@@ -135,7 +135,7 @@ class NSwitchBox(QScrollArea):
     def addSeparator(self) -> None:
         """Add a blank entry in the content box."""
         spacer = QWidget(self)
-        spacer.setFixedHeight(int(0.5 * self._sIcon))
+        spacer.setFixedHeight(int(0.5 * self._size))
         self._content.addWidget(spacer, self._index, 0, 1, 3, QtAlignLeft)
         self._bumpIndex()
 
