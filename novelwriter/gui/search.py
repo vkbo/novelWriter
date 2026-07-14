@@ -69,6 +69,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+RESULT_FLAGS = int(Qt.TextFlag.TextSingleLine) | int(QtAlignMiddle)
+
 
 class GuiProjectSearch(QWidget):
     """GUI: Project Search Panel."""
@@ -352,9 +354,6 @@ class GuiProjectSearch(QWidget):
         for row in range(self._model.rowCount(parent)):
             self.searchResult.setFirstColumnSpanned(row, parent, True)
         self.searchResult.setExpanded(parent, True)
-
-
-RESULT_FLAGS = int(Qt.TextFlag.TextSingleLine) | int(QtAlignMiddle)
 
 
 class _SearchResultDelegate(QStyledItemDelegate):

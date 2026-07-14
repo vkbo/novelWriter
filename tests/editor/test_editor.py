@@ -57,6 +57,7 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.editor.autoreplace import TextAutoReplace
 from novelwriter.editor.completer import CommandCompleter
 from novelwriter.editor.editor import GuiDocEditor, _TagAction
+from novelwriter.editor.editsearch import GuiDocEditSearch
 from novelwriter.editor.textblock import TextBlockData, formatCheckText
 from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwState, nwVimMode
 from novelwriter.shared import _GuiAlert
@@ -3120,8 +3121,8 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mock
         SHARED.project.index.reIndexHandle(handle)
 
     assert nwGUI.openDocument(C.hSceneDoc) is True
-    docEditor = nwGUI.docEditor
-    docSearch = docEditor.docSearch
+    docEditor: GuiDocEditor = nwGUI.docEditor
+    docSearch: GuiDocEditSearch = docEditor.docSearch
 
     text = "### A Scene\n\n{0}".format("\n\n".join(ipsumText[:3]))
     docEditor.replaceText(text)
@@ -3313,7 +3314,7 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mock
         assert docEditor.getCursorPosition() == wordMatches[-1][1]
 
         cursorPos = docEditor.getCursorPosition()
-        docEditor._openNextFindDocument(docEditor, False)
+        docEditor.openNextFindDocument(docEditor, False)
         assert docEditor.getCursorPosition() == cursorPos
 
     # Enable next doc search

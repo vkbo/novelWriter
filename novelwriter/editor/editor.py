@@ -1773,7 +1773,7 @@ class GuiDocEditor(QTextEdit):
             self.docSearch.setResultCount(0, 0)
             self._lastFind = None
             if CONFIG.searchNextFile:
-                self._openNextFindDocument(prevFocus, goBack)
+                self.openNextFindDocument(prevFocus, goBack)
             return
 
         cursor = self.textCursor()
@@ -1787,7 +1787,7 @@ class GuiDocEditor(QTextEdit):
 
         if (resIdx < 0 and goBack) or (resIdx > maxIdx and not goBack):
             if self._docHandle and CONFIG.searchNextFile:
-                self._openNextFindDocument(prevFocus, goBack)
+                self.openNextFindDocument(prevFocus, goBack)
                 return
             elif goBack:
                 resIdx = maxIdx if doLoop else 0
@@ -1796,11 +1796,11 @@ class GuiDocEditor(QTextEdit):
 
             resIdx = max(0, min(resIdx, maxIdx))
 
-        self._setFindSelection(resS, resE, resIdx)
+        self.selectFindSelection(resS, resE, resIdx)
 
         return
 
-    def _openNextFindDocument(self, prevFocus: QWidget, goBack: bool) -> None:
+    def openNextFindDocument(self, prevFocus: QWidget, goBack: bool) -> None:
         """Open the adjacent document and select its edge-most match."""
         if self._docHandle:
             self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop, goBack)
@@ -1812,14 +1812,15 @@ class GuiDocEditor(QTextEdit):
             if len(resS) == 0:
                 return
 
-            self._setFindSelection(resS, resE, len(resS) - 1 if goBack else 0)
+            self.selectFindSelection(resS, resE, len(resS) - 1 if goBack else 0)
 
-    def _setFindSelection(self, resS: list[int], resE: list[int], resIdx: int) -> None:
+    def selectFindSelection(self, resS: list[int], resE: list[int], resIdx: int) -> None:
         """Select one search result and update the search state."""
         cursor = self.textCursor()
         cursor.setPosition(resS[resIdx], QtMoveAnchor)
         cursor.setPosition(resE[resIdx], QtKeepAnchor)
         self.setTextCursor(cursor)
+        self.ensureCursorVisible(centre=True)
 
         self.docSearch.setResultCount(resIdx + 1, len(resS))
         self._lastFind = (resS[resIdx], resE[resIdx])
@@ -1868,27 +1869,9 @@ class GuiDocEditor(QTextEdit):
             cursor.setPosition(origA)
 
         self.setTextCursor(cursor)
-        self._setSearchSelections(resS, resE)
+        self.highlightSearchSelections(resS, resE)
 
         return resS, resE
-
-    def clearSearchSelections(self) -> None:
-        """Clear the highlight of all search results in the document."""
-        self._setSearchSelections([], [])
-
-    def _setSearchSelections(self, resS: list[int], resE: list[int]) -> None:
-        """Highlight all search results in the document."""
-        selections = []
-        for start, end in zip(resS, resE, strict=True):
-            cursor = QTextCursor(self._qDocument)
-            cursor.setPosition(start)
-            cursor.setPosition(end, QtKeepAnchor)
-            selection = QTextEdit.ExtraSelection()
-            selection.format = self._searchFormat
-            selection.cursor = cursor
-            selections.append(selection)
-        self._searchSelections = selections
-        self._applyExtraSelections()
 
     def replaceNext(self) -> None:
         """Search for the next occurrence of the search bar text in the
@@ -1952,6 +1935,24 @@ class GuiDocEditor(QTextEdit):
         self.findNext()
 
         return
+
+    def clearSearchSelections(self) -> None:
+        """Clear the highlight of all search results in the document."""
+        self.highlightSearchSelections([], [])
+
+    def highlightSearchSelections(self, resS: list[int], resE: list[int]) -> None:
+        """Highlight all search results in the document."""
+        selections = []
+        for start, end in zip(resS, resE, strict=True):
+            cursor = QTextCursor(self._qDocument)
+            cursor.setPosition(start)
+            cursor.setPosition(end, QtKeepAnchor)
+            selection = QTextEdit.ExtraSelection()
+            selection.format = self._searchFormat
+            selection.cursor = cursor
+            selections.append(selection)
+        self._searchSelections = selections
+        self._applyExtraSelections()
 
     ##
     #  Internal Functions : Text Manipulation
