@@ -408,7 +408,7 @@ class _SearchResultDelegate(QStyledItemDelegate):
         if ePos > sPos:
             wPos = metrics.horizontalAdvance(text[:sPos])
             wMatch = metrics.horizontalAdvance(text[sPos:ePos])
-            painter.fillRect(QRect(x + wPos, y, wMatch, h), self._rectColM)
+            painter.fillRect(QRect(x + wPos, y + 1, wMatch, h - 2), self._rectColM)
 
         painter.setPen(self._textColS if selected else self._textColP)
         painter.drawText(QRect(x, y, rect.right() - x, h), RESULT_FLAGS, text)

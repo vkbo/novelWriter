@@ -515,10 +515,8 @@ class GuiDocEditor(QTextEdit):
         self._formatErrFormat.setUnderlineColor(syntax.error)
         self._formatErrFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SingleUnderline)
 
-        searchColor = self.palette().color(QPalette.ColorRole.Highlight)
-        searchColor.setAlpha(128)
         self._searchFormat = QTextCharFormat()
-        self._searchFormat.setBackground(searchColor)
+        self._searchFormat.setBackground(SHARED.theme.searchCol)
 
     def initEditor(self) -> None:
         """Initialise or re-initialise the editor with the user's
