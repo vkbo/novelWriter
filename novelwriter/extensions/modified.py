@@ -304,7 +304,7 @@ class NPushButton(QPushButton):
     def updateIcon(self) -> None:
         """Update the theme icon."""
         if self._icon and self._color:
-            self.setIcon(SHARED.theme.getIcon(self._icon, self._color))
+            self.setIcon(SHARED.theme.getIcon(f"{self._icon}:{self._color}"))
 
     def setText(self, text: str) -> None:
         """Overload the text setter to add padding."""
@@ -338,11 +338,11 @@ class NIconToolButton(QToolButton):
         """Set an icon from the current theme."""
         self._icon = icon
         self._color = color
-        self.setIcon(SHARED.theme.getIcon(icon, color))
+        self.setIcon(SHARED.theme.getIcon(f"{icon}:{color}"))
 
     def refreshTheme(self) -> None:
         """Refresh the icon for theme updates."""
-        self.setIcon(SHARED.theme.getIcon(self._icon, self._color))
+        self.setIcon(SHARED.theme.getIcon(f"{self._icon}:{self._color}"))
         if self.isCheckable():
             col = SHARED.theme.toggleCol.name(QtHexArgb)
             self.setStyleSheet(f"QToolButton:checked {{background: {col};}}")
@@ -374,11 +374,11 @@ class NIconToggleButton(QToolButton):
         self._icon = icon
         self._color = color
         self._size = self.iconSize()
-        self.setIcon(SHARED.theme.getToggleIcon(icon, (self._size.width(), self._size.height()), color))
+        self.setIcon(SHARED.theme.getToggleIcon(f"{icon}:{color}", self._size.width(), self._size.height()))
 
     def refreshTheme(self) -> None:
         """Refresh the icon for theme updates."""
-        self.setIcon(SHARED.theme.getToggleIcon(self._icon, (self._size.width(), self._size.height()), self._color))
+        self.setIcon(SHARED.theme.getToggleIcon(f"{self._icon}:{self._color}", self._size.width(), self._size.height()))
 
 
 class NClickableLabel(QLabel):

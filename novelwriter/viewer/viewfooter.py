@@ -135,7 +135,7 @@ class GuiDocViewFooter(QWidget):
         logger.debug("Theme Update: GuiDocViewFooter")
 
         fPx = int(0.9 * SHARED.theme.fontPixelSize)
-        bulletIcon = SHARED.theme.getToggleIcon("bullet", (fPx, fPx), "action")
+        bulletIcon = SHARED.theme.getToggleIcon("bullet:action", fPx, fPx)
 
         self.showHide.setThemeIcon("panel", "default")
         self.showComments.setIcon(bulletIcon)

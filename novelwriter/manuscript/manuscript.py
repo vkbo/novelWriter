@@ -513,7 +513,7 @@ class GuiManuscript(NToolDialog):
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
-            bItem.setIcon(SHARED.theme.getIcon("build_settings", "action"))
+            bItem.setIcon(SHARED.theme.getIcon("build_settings:action"))
             bItem.setData(self.D_KEY, key)
             self.buildList.addItem(bItem)
             self._buildMap[key] = bItem
@@ -620,8 +620,8 @@ class _DetailsWidget(QWidget):
 
         self.listView.clear()
 
-        on = SHARED.theme.getIcon("bullet-on", "action")
-        off = SHARED.theme.getIcon("bullet-off", "action")
+        on = SHARED.theme.getIcon("bullet-on:action")
+        off = SHARED.theme.getIcon("bullet-off:action")
 
         # Name
         item = QTreeWidgetItem()

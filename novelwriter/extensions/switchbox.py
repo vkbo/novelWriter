@@ -46,10 +46,10 @@ class NSwitchBox(QScrollArea):
         self._hSwitch = baseSize
         self._wSwitch = 2 * self._hSwitch
         self._size = baseSize
-        self._icons = {}
-        self._labels = {}
-        self._pixmaps = {}
-        self._switches = {}
+        self._icons: dict[str, tuple[QLabel, str]] = {}
+        self._labels: dict[str, QLabel] = {}
+        self._pixmaps: dict[str, QLabel] = {}
+        self._switches: dict[str, NSwitch] = {}
         self.clear()
         self.setFrameStyle(QFrame.Shape.NoFrame)
 
@@ -74,8 +74,8 @@ class NSwitchBox(QScrollArea):
 
     def updateTheme(self) -> None:
         """Update the theme of the switches in the box."""
-        for pix, name, color in self._icons.values():
-            icon = SHARED.theme.getIcon(name, color)
+        for pix, name in self._icons.values():
+            icon = SHARED.theme.getIcon(name)
             pix.setFixedSize(self._size, self._size)
             pix.setPixmap(icon.pixmap(self._size, self._size))
 
@@ -114,7 +114,6 @@ class NSwitchBox(QScrollArea):
         identifier: str,
         *,
         icon: str | None = None,
-        color: str = "default",
         default: bool = False,
     ) -> None:
         """Add an item to the content box. If the identifier is already
@@ -125,17 +124,17 @@ class NSwitchBox(QScrollArea):
             if label := self._labels.get(identifier):  # pragma: no branch
                 label.setText(text)
             if icon and (pixmap := self._pixmaps.get(identifier)):  # pragma: no branch
-                qIcon = SHARED.theme.getIcon(icon, color)
+                qIcon = SHARED.theme.getIcon(icon)
                 pixmap.setPixmap(qIcon.pixmap(self._size, self._size))
-                self._icons[identifier] = (pixmap, icon, color)
+                self._icons[identifier] = (pixmap, icon)
             return
 
         if icon:  # pragma: no branch
             pixmap = QLabel("", self)
-            qIcon = SHARED.theme.getIcon(icon, color)
+            qIcon = SHARED.theme.getIcon(icon)
             pixmap.setFixedSize(self._size, self._size)
             pixmap.setPixmap(qIcon.pixmap(self._size, self._size))
-            self._icons[identifier] = (pixmap, icon, color)
+            self._icons[identifier] = (pixmap, icon)
             self._pixmaps[identifier] = pixmap
             self._content.addWidget(pixmap, self._index, 0, QtAlignLeft)
 

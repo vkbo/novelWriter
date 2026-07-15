@@ -141,10 +141,10 @@ class GuiMainStatus(QStatusBar):
         logger.debug("Theme Update: GuiMainStatus")
 
         iPx = SHARED.theme.baseIconHeight
-        self.langIcon.setPixmap(SHARED.theme.getPixmap("language", (iPx, iPx)))
-        self.statsIcon.setPixmap(SHARED.theme.getPixmap("stats", (iPx, iPx)))
-        self.timePixmap = SHARED.theme.getPixmap("timer", (iPx, iPx))
-        self.idlePixmap = SHARED.theme.getPixmap("timer_off", (iPx, iPx))
+        self.langIcon.setPixmap(SHARED.theme.getPixmap("language", iPx, iPx))
+        self.statsIcon.setPixmap(SHARED.theme.getPixmap("stats", iPx, iPx))
+        self.timePixmap = SHARED.theme.getPixmap("timer", iPx, iPx)
+        self.idlePixmap = SHARED.theme.getPixmap("timer_off", iPx, iPx)
         self.timeIcon.setPixmap(self.timePixmap)
 
         colNone = SHARED.theme.getBaseColor("default")
@@ -289,7 +289,7 @@ class _MessageWidget(QWidget):
         """Set a status bar message with a timeout."""
         iSz = SHARED.theme.baseIconHeight
         icon = severity.replace("warning", "warn")
-        self._icon.setPixmap(SHARED.theme.getPixmap(f"alert_{icon}", (iSz, iSz), severity))
+        self._icon.setPixmap(SHARED.theme.getPixmap(f"alert_{icon}:{severity}", iSz, iSz))
         self._text.setText(message)
         QTimer.singleShot(timeout, self.clearMessage)
 

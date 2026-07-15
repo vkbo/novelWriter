@@ -555,16 +555,16 @@ class _GuiAlert(QMessageBox):
 
         pSz = 2 * self._theme.fontPixelSize
         if level == self.INFO:
-            self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz), "info"))
+            self.setIconPixmap(self._theme.getPixmap("alert_info:info", pSz, pSz))
             self.setWindowTitle(self.tr("Information"))
         elif level == self.WARN:
-            self.setIconPixmap(self._theme.getPixmap("alert_warn", (pSz, pSz), "warning"))
+            self.setIconPixmap(self._theme.getPixmap("alert_warn:warning", pSz, pSz))
             self.setWindowTitle(self.tr("Warning"))
         elif level == self.ERROR:
-            self.setIconPixmap(self._theme.getPixmap("alert_error", (pSz, pSz), "error"))
+            self.setIconPixmap(self._theme.getPixmap("alert_error:error", pSz, pSz))
             self.setWindowTitle(self.tr("Error"))
         elif level == self.ASK:
-            self.setIconPixmap(self._theme.getPixmap("alert_question", (pSz, pSz), "info"))
+            self.setIconPixmap(self._theme.getPixmap("alert_question:info", pSz, pSz))
             self.setWindowTitle(self.tr("Question"))
         else:  # pragma: no cover
             pass

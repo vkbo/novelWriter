@@ -65,9 +65,9 @@ class VersionInfoWidget(QWidget):
         iPx = SHARED.theme.baseIconHeight
 
         self._pixDate = QLabel(self)
-        self._pixDate.setPixmap(SHARED.theme.getPixmap("calendar", (iPx, iPx), "default"))
+        self._pixDate.setPixmap(SHARED.theme.getPixmap("calendar:default", iPx, iPx))
         self._pixNotes = QLabel(self)
-        self._pixNotes.setPixmap(SHARED.theme.getPixmap("link", (iPx, iPx), "default"))
+        self._pixNotes.setPixmap(SHARED.theme.getPixmap("link:default", iPx, iPx))
 
         self._lblVersion = QLabel(f"{trVersion} {formatVersion(__version__)}", self)
         self._lblDate = QLabel(CONFIG.localDate(datetime.strptime(__date__, "%Y-%m-%d")), self)

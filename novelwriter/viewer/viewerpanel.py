@@ -274,8 +274,8 @@ class _ViewPanelBackRefs(QTreeWidget):
             header.setSectionsMovable(False)
 
         # Cache Icons Locally
-        self._editIcon = SHARED.theme.getIcon("edit", "change")
-        self._viewIcon = SHARED.theme.getIcon("view", "action")
+        self._editIcon = SHARED.theme.getIcon("edit:change")
+        self._viewIcon = SHARED.theme.getIcon("view:action")
 
         # Signals
         self.clicked.connect(self._treeItemClicked)
@@ -285,8 +285,8 @@ class _ViewPanelBackRefs(QTreeWidget):
         """Update theme elements."""
         logger.debug("Theme Update: _ViewPanelBackRefs")
 
-        self._editIcon = SHARED.theme.getIcon("edit", "change")
-        self._viewIcon = SHARED.theme.getIcon("view", "action")
+        self._editIcon = SHARED.theme.getIcon("edit:change")
+        self._viewIcon = SHARED.theme.getIcon("view:action")
         for i in range(self.topLevelItemCount()):
             if item := self.topLevelItem(i):  # pragma: no branch
                 item.setIcon(self.C_EDIT, self._editIcon)
@@ -421,9 +421,9 @@ class _ViewPanelKeyWords(QTreeWidget):
         """Update theme elements."""
         logger.debug("Theme Update: _ViewPanelKeyWords")
 
-        self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[self._class], "root")
-        self._editIcon = SHARED.theme.getIcon("edit", "change")
-        self._viewIcon = SHARED.theme.getIcon("view", "action")
+        self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[self._class])
+        self._editIcon = SHARED.theme.getIcon("edit:change")
+        self._viewIcon = SHARED.theme.getIcon("view:action")
 
     def countEntries(self) -> int:
         """Return the number of items in the list."""

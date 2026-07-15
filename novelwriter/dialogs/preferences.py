@@ -89,7 +89,7 @@ class GuiPreferences(NDialog):
         )
 
         # Search Box
-        self.searchAction = QAction(SHARED.theme.getIcon("search", "apply"), "")
+        self.searchAction = QAction(SHARED.theme.getIcon("search:apply"), "")
         self.searchAction.triggered.connect(self._gotoSearch)
 
         self.searchText = QLineEdit(self)
@@ -426,7 +426,7 @@ class GuiPreferences(NDialog):
 
         # Backup Path
         self.backupPath = CONFIG.backupPath()
-        self.backupGetPath = QPushButton(SHARED.theme.getIcon("browse", "systemio"), self.tr("Browse"), self)
+        self.backupGetPath = QPushButton(SHARED.theme.getIcon("browse:systemio"), self.tr("Browse"), self)
         self.backupGetPath.setIconSize(iSz)
         self.backupGetPath.clicked.connect(self._backupFolder)
         self.mainForm.addRow(

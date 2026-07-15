@@ -337,9 +337,9 @@ class _FilterTab(NFixedPage):
 
         self._statusFlags: dict[int, QIcon] = {
             self.F_NONE: QIcon(),
-            self.F_FILTERED: SHARED.theme.getIcon("filter", "altaction"),
-            self.F_INCLUDED: SHARED.theme.getIcon("pin", "action"),
-            self.F_EXCLUDED: SHARED.theme.getIcon("exclude", "reject"),
+            self.F_FILTERED: SHARED.theme.getIcon("filter:altaction"),
+            self.F_INCLUDED: SHARED.theme.getIcon("pin:action"),
+            self.F_EXCLUDED: SHARED.theme.getIcon("exclude:reject"),
         }
 
         self._trIncluded = self.tr("Included in manuscript")
@@ -445,9 +445,9 @@ class _FilterTab(NFixedPage):
         logger.debug("Theme Update: _FilterTab, init=%s", init)
 
         if not init:
-            self._statusFlags[self.F_FILTERED] = SHARED.theme.getIcon("filter", "altaction")
-            self._statusFlags[self.F_INCLUDED] = SHARED.theme.getIcon("pin", "action")
-            self._statusFlags[self.F_EXCLUDED] = SHARED.theme.getIcon("exclude", "reject")
+            self._statusFlags[self.F_FILTERED] = SHARED.theme.getIcon("filter:altaction")
+            self._statusFlags[self.F_INCLUDED] = SHARED.theme.getIcon("pin:action")
+            self._statusFlags[self.F_EXCLUDED] = SHARED.theme.getIcon("exclude:reject")
             self.loadContent()
 
         self.includedButton.setIcon(self._statusFlags[self.F_INCLUDED])
@@ -519,22 +519,19 @@ class _FilterTab(NFixedPage):
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["novel"]),
             "doc:filter.includeNovel",
-            icon="prj_scene",
-            color="scene",
+            icon="prj_scene:scene",
             default=self._build.getBool("filter.includeNovel"),
         )
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["notes"]),
             "doc:filter.includeNotes",
-            icon="prj_note",
-            color="note",
+            icon="prj_note:note",
             default=self._build.getBool("filter.includeNotes"),
         )
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["inactive"]),
             "doc:filter.includeInactive",
-            icon="unchecked",
-            color="reject",
+            icon="unchecked:reject",
             default=self._build.getBool("filter.includeInactive"),
         )
 
@@ -544,12 +541,10 @@ class _FilterTab(NFixedPage):
         self.filterOpt.addLabel(self.tr("Select Root Folders"))
         for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
             if not nwItem.isInactiveClass():
-                name, color = nwItem.getMainIconStyle()
                 self.filterOpt.addItem(
                     nwItem.itemName,
                     f"root:{tHandle}",
-                    icon=name,
-                    color=color,
+                    icon=nwItem.getMainIconStyle(),
                     default=self._build.isRootAllowed(tHandle),
                 )
 
@@ -1495,15 +1490,15 @@ class _FormattingTab(NScrollableForm):
 
         iPx = SHARED.theme.baseIconHeight
 
-        fSize = SHARED.theme.getPixmap("fmt_size", (iPx, iPx))
+        fSize = SHARED.theme.getPixmap("fmt_size", iPx, iPx)
         self.pixH0S.setPixmap(fSize)
         self.pixH1S.setPixmap(fSize)
         self.pixH2S.setPixmap(fSize)
         self.pixH3S.setPixmap(fSize)
         self.pixH4S.setPixmap(fSize)
 
-        tMargin = SHARED.theme.getPixmap("margin_top", (iPx, iPx))
-        bMargin = SHARED.theme.getPixmap("margin_bottom", (iPx, iPx))
+        tMargin = SHARED.theme.getPixmap("margin_top", iPx, iPx)
+        bMargin = SHARED.theme.getPixmap("margin_bottom", iPx, iPx)
         self.pixH0T.setPixmap(tMargin)
         self.pixH0B.setPixmap(bMargin)
         self.pixH1T.setPixmap(tMargin)
@@ -1521,10 +1516,10 @@ class _FormattingTab(NScrollableForm):
         self.pixPMT.setPixmap(tMargin)
         self.pixPMB.setPixmap(bMargin)
 
-        self.pixPSH.setPixmap(SHARED.theme.getPixmap("fit_height", (iPx, iPx)))
-        self.pixPSW.setPixmap(SHARED.theme.getPixmap("fit_width", (iPx, iPx)))
-        self.pixPML.setPixmap(SHARED.theme.getPixmap("margin_left", (iPx, iPx)))
-        self.pixPMR.setPixmap(SHARED.theme.getPixmap("margin_right", (iPx, iPx)))
+        self.pixPSH.setPixmap(SHARED.theme.getPixmap("fit_height", iPx, iPx))
+        self.pixPSW.setPixmap(SHARED.theme.getPixmap("fit_width", iPx, iPx))
+        self.pixPML.setPixmap(SHARED.theme.getPixmap("margin_left", iPx, iPx))
+        self.pixPMR.setPixmap(SHARED.theme.getPixmap("margin_right", iPx, iPx))
 
         self.pageSize.updateStyle()
         self.pageUnit.updateStyle()
