@@ -302,18 +302,18 @@ class nwLabels:
         nwItemClass.TRASH: QT_TRANSLATE_NOOP("Constant", "Trash"),
     }
     CLASS_ICON: Final[dict[nwItemClass, str]] = {
-        nwItemClass.NO_CLASS: "cls_none",
-        nwItemClass.NOVEL: "cls_novel",
-        nwItemClass.PLOT: "cls_plot",
-        nwItemClass.CHARACTER: "cls_character",
-        nwItemClass.WORLD: "cls_world",
-        nwItemClass.TIMELINE: "cls_timeline",
-        nwItemClass.OBJECT: "cls_object",
-        nwItemClass.ENTITY: "cls_entity",
-        nwItemClass.CUSTOM: "cls_custom",
-        nwItemClass.ARCHIVE: "cls_archive",
-        nwItemClass.TEMPLATE: "cls_template",
-        nwItemClass.TRASH: "cls_trash",
+        nwItemClass.NO_CLASS: "cls_none:root",
+        nwItemClass.NOVEL: "cls_novel:root",
+        nwItemClass.PLOT: "cls_plot:root",
+        nwItemClass.CHARACTER: "cls_character:root",
+        nwItemClass.WORLD: "cls_world:root",
+        nwItemClass.TIMELINE: "cls_timeline:root",
+        nwItemClass.OBJECT: "cls_object:root",
+        nwItemClass.ENTITY: "cls_entity:root",
+        nwItemClass.CUSTOM: "cls_custom:root",
+        nwItemClass.ARCHIVE: "cls_archive:root",
+        nwItemClass.TEMPLATE: "cls_template:root",
+        nwItemClass.TRASH: "cls_trash:root",
     }
     LAYOUT_NAME: Final[dict[nwItemLayout, str]] = {
         nwItemLayout.NO_LAYOUT: QT_TRANSLATE_NOOP("Constant", "None"),
@@ -331,9 +331,9 @@ class nwLabels:
         "doc_h4": QT_TRANSLATE_NOOP("Constant", "Novel Section"),
         "note": QT_TRANSLATE_NOOP("Constant", "Project Note"),
     }
-    ACTIVE_NAME: Final[dict[str, str]] = {
-        "checked": QT_TRANSLATE_NOOP("Constant", "Active"),
-        "unchecked": QT_TRANSLATE_NOOP("Constant", "Inactive"),
+    ACTIVE_NAME: Final[dict[bool, str]] = {
+        True: QT_TRANSLATE_NOOP("Constant", "Active"),
+        False: QT_TRANSLATE_NOOP("Constant", "Inactive"),
     }
     KEY_NAME: Final[dict[str, str]] = {
         nwKeyWords.TAG_KEY: QT_TRANSLATE_NOOP("Constant", "Tag"),
@@ -504,9 +504,9 @@ class nwLabels:
         "purple": QT_TRANSLATE_NOOP("Constant", "Purple"),
     }
     THEME_MODE_ICON: Final[dict[nwTheme, str]] = {
-        nwTheme.AUTO: "theme_auto",
-        nwTheme.LIGHT: "theme_light",
-        nwTheme.DARK: "theme_dark",
+        nwTheme.AUTO: "theme_auto:sidebar",
+        nwTheme.LIGHT: "theme_light:sidebar",
+        nwTheme.DARK: "theme_dark:sidebar",
     }
     THEME_MODE_LABEL: Final[dict[nwTheme, str]] = {
         nwTheme.AUTO: QT_TRANSLATE_NOOP("Constant", "System Theme"),

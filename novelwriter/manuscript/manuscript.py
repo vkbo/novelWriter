@@ -120,19 +120,19 @@ class GuiManuscript(NToolDialog):
         # Build Controls
         # ==============
 
-        self.tbAdd = NIconToolButton(self, iSz)
+        self.tbAdd = NIconToolButton(self, iSz, "add:add")
         self.tbAdd.setToolTip(self.tr("Add New Build"))
         self.tbAdd.clicked.connect(self._createNewBuild)
 
-        self.tbDel = NIconToolButton(self, iSz)
+        self.tbDel = NIconToolButton(self, iSz, "remove:remove")
         self.tbDel.setToolTip(self.tr("Delete Selected Build"))
         self.tbDel.clicked.connect(self._deleteSelectedBuild)
 
-        self.tbCopy = NIconToolButton(self, iSz)
+        self.tbCopy = NIconToolButton(self, iSz, "copy:action")
         self.tbCopy.setToolTip(self.tr("Duplicate Selected Build"))
         self.tbCopy.clicked.connect(self._copySelectedBuild)
 
-        self.tbEdit = NIconToolButton(self, iSz)
+        self.tbEdit = NIconToolButton(self, iSz, "edit:change")
         self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
         self.tbEdit.clicked.connect(self._editSelectedBuild)
 
@@ -292,15 +292,10 @@ class GuiManuscript(NToolDialog):
         logger.debug("Theme Update: GuiManuscript, init=%s", init)
 
         if not init:
-            self.btnPreview.updateIcon()
-            self.btnPrint.updateIcon()
-            self.btnBuild.updateIcon()
-            self.btnClose.updateIcon()
-
-        self.tbAdd.setThemeIcon("add", "add")
-        self.tbDel.setThemeIcon("remove", "remove")
-        self.tbCopy.setThemeIcon("copy", "action")
-        self.tbEdit.setThemeIcon("edit", "change")
+            self.btnPreview.refreshTheme()
+            self.btnPrint.refreshTheme()
+            self.btnBuild.refreshTheme()
+            self.btnClose.refreshTheme()
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbAdd.setStyleSheet(buttonStyle)
@@ -513,7 +508,7 @@ class GuiManuscript(NToolDialog):
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
-            bItem.setIcon(SHARED.theme.getIcon("build_settings", "action"))
+            bItem.setIcon(SHARED.theme.getIcon("build_settings:action"))
             bItem.setData(self.D_KEY, key)
             self.buildList.addItem(bItem)
             self._buildMap[key] = bItem
@@ -620,8 +615,8 @@ class _DetailsWidget(QWidget):
 
         self.listView.clear()
 
-        on = SHARED.theme.getIcon("bullet-on", "action")
-        off = SHARED.theme.getIcon("bullet-off", "action")
+        on = SHARED.theme.getIcon("bullet-on:action")
+        off = SHARED.theme.getIcon("bullet-off:action")
 
         # Name
         item = QTreeWidgetItem()

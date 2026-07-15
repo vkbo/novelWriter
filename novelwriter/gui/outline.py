@@ -271,9 +271,9 @@ class GuiOutlineToolBar(QToolBar):
 
         self.setStyleSheet("QToolBar {border: 0px;}")
         self.novelValue.refreshNovelList()
-        self.aRefresh.setIcon(SHARED.theme.getIcon("refresh", "change"))
-        self.aExport.setIcon(SHARED.theme.getIcon("export", "action"))
-        self.tbColumns.setIcon(SHARED.theme.getIcon("more_vertical", "default"))
+        self.aRefresh.setIcon(SHARED.theme.getIcon("refresh:change"))
+        self.aExport.setIcon(SHARED.theme.getIcon("export:action"))
+        self.tbColumns.setIcon(SHARED.theme.getIcon("more_vertical:default"))
         self.tbColumns.setStyleSheet("QToolButton::menu-indicator {image: none;}")
         self.novelLabel.setTextColors(color=self.palette().windowText().color())
 

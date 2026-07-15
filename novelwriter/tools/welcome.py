@@ -103,7 +103,7 @@ class GuiWelcome(NDialog):
         self.nwImage = SHARED.theme.getDecoration("nw-text", h=36)
 
         self.nwLogo = QLabel(self)
-        self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (128, 128)))
+        self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", 128, 128))
 
         self.nwLabel = QLabel(self)
         self.nwLabel.setPixmap(self.nwImage)
@@ -282,7 +282,7 @@ class _OpenProjectPage(QWidget):
 
         # Info / Tool
         self.aMissing = QAction(self)
-        self.aMissing.setIcon(SHARED.theme.getIcon("alert_warn", "warning"))
+        self.aMissing.setIcon(SHARED.theme.getIcon("alert_warn:warning"))
         self.aMissing.setToolTip(self.tr("The project path is not reachable."))
 
         self.selectedPath = QLineEdit(self)
@@ -435,7 +435,7 @@ class _ProjectListItem(QStyledItemDelegate):
         self._dFont = SHARED.theme.guiFont
         self._dPen = QPen(SHARED.theme.helpText)
 
-        self._icon = SHARED.theme.getPixmap("proj_nwx", (iPx, iPx))
+        self._icon = SHARED.theme.getPixmap("proj_nwx", iPx, iPx)
 
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         """Paint a project entry on the canvas."""
@@ -624,7 +624,7 @@ class _NewProjectForm(QWidget):
         self.projPath = QLineEdit(self)
         self.projPath.setReadOnly(True)
 
-        self.browsePath = NIconToolButton(self, iSz, "browse", "systemio")
+        self.browsePath = NIconToolButton(self, iSz, "browse:systemio")
         self.browsePath.setToolTip(self.tr("Browse for new project path"))
         self.browsePath.clicked.connect(self._doBrowse)
 
@@ -639,7 +639,7 @@ class _NewProjectForm(QWidget):
         self.projFill = QLineEdit(self)
         self.projFill.setReadOnly(True)
 
-        self.browseFill = NIconToolButton(self, iSz, "document_add", "add")
+        self.browseFill = NIconToolButton(self, iSz, "document_add:add")
         self.browseFill.setToolTip(self.tr("Fill new project"))
 
         self.fillMenu = QMenu(self.browseFill)
@@ -647,21 +647,21 @@ class _NewProjectForm(QWidget):
         self.fillBlank = qtAddAction(
             self.fillMenu,
             self.tr("Create a fresh project"),
-            icon=SHARED.theme.getIcon("document", "file"),
+            icon=SHARED.theme.getIcon("document:file"),
         )
         self.fillBlank.triggered.connect(self._setFillBlank)
 
         self.fillSample = qtAddAction(
             self.fillMenu,
             self.tr("Create an example project"),
-            icon=SHARED.theme.getIcon("document_add", "add"),
+            icon=SHARED.theme.getIcon("document_add:add"),
         )
         self.fillSample.triggered.connect(self._setFillSample)
 
         self.fillCopy = qtAddAction(
             self.fillMenu,
             self.tr("Copy an existing project"),
-            icon=SHARED.theme.getIcon("project_copy", "action"),
+            icon=SHARED.theme.getIcon("project_copy:action"),
         )
         self.fillCopy.triggered.connect(self._setFillCopy)
 

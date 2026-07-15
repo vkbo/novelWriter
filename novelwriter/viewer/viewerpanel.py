@@ -79,7 +79,7 @@ class GuiDocViewerPanel(QWidget):
         self.aInactive.setCheckable(True)
         self.aInactive.toggled.connect(self._toggleHideInactive)
 
-        self.optsButton = NIconToolButton(self, iSz)
+        self.optsButton = NIconToolButton(self, iSz, "more_vertical:default")
         self.optsButton.setToolTip(self.tr("Options"))
         self.optsButton.setMenu(self.optsMenu)
         self.optsButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
@@ -102,7 +102,7 @@ class GuiDocViewerPanel(QWidget):
         self.outerBox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerBox)
-        self.updateTheme(updateTabs=False)
+        self.updateTheme(init=True)
 
         logger.debug("Ready: GuiDocViewerPanel")
 
@@ -110,14 +110,14 @@ class GuiDocViewerPanel(QWidget):
     #  Methods
     ##
 
-    def updateTheme(self, updateTabs: bool = True) -> None:
+    def updateTheme(self, *, init: bool = False) -> None:
         """Update theme elements."""
         logger.debug("Theme Update: GuiDocViewerPanel")
 
-        self.optsButton.setThemeIcon("more_vertical", "default")
         self.optsButton.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON))
         self.mainTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
-        if updateTabs:
+        if not init:
+            self.optsButton.refreshTheme()
             self.tabBackRefs.updateTheme()
             self.tabBackRefs.refreshContent(self._lastHandle)
             for tab in self.kwTabs.values():
@@ -274,8 +274,8 @@ class _ViewPanelBackRefs(QTreeWidget):
             header.setSectionsMovable(False)
 
         # Cache Icons Locally
-        self._editIcon = SHARED.theme.getIcon("edit", "change")
-        self._viewIcon = SHARED.theme.getIcon("view", "action")
+        self._editIcon = SHARED.theme.getIcon("edit:change")
+        self._viewIcon = SHARED.theme.getIcon("view:action")
 
         # Signals
         self.clicked.connect(self._treeItemClicked)
@@ -285,8 +285,8 @@ class _ViewPanelBackRefs(QTreeWidget):
         """Update theme elements."""
         logger.debug("Theme Update: _ViewPanelBackRefs")
 
-        self._editIcon = SHARED.theme.getIcon("edit", "change")
-        self._viewIcon = SHARED.theme.getIcon("view", "action")
+        self._editIcon = SHARED.theme.getIcon("edit:change")
+        self._viewIcon = SHARED.theme.getIcon("view:action")
         for i in range(self.topLevelItemCount()):
             if item := self.topLevelItem(i):  # pragma: no branch
                 item.setIcon(self.C_EDIT, self._editIcon)
@@ -421,9 +421,9 @@ class _ViewPanelKeyWords(QTreeWidget):
         """Update theme elements."""
         logger.debug("Theme Update: _ViewPanelKeyWords")
 
-        self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[self._class], "root")
-        self._editIcon = SHARED.theme.getIcon("edit", "change")
-        self._viewIcon = SHARED.theme.getIcon("view", "action")
+        self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[self._class])
+        self._editIcon = SHARED.theme.getIcon("edit:change")
+        self._viewIcon = SHARED.theme.getIcon("view:action")
 
     def countEntries(self) -> int:
         """Return the number of items in the list."""

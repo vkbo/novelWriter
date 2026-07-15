@@ -257,17 +257,17 @@ class GuiProjectToolBar(QWidget):
         self.mQuick = QMenu(self)
         self.mQuick.triggered.connect(self._onQuickLinkSelected)
 
-        self.tbQuick = NIconToolButton(self, iSz)
+        self.tbQuick = NIconToolButton(self, iSz, "bookmarks:action")
         self.tbQuick.setToolTip("{0} [Ctrl+L]".format(self.tr("Quick Links")))
         self.tbQuick.setShortcut("Ctrl+L")
         self.tbQuick.setMenu(self.mQuick)
 
         # Move Buttons
-        self.tbMoveU = NIconToolButton(self, iSz)
+        self.tbMoveU = NIconToolButton(self, iSz, "chevron_up:action")
         self.tbMoveU.setToolTip("{0} [Ctrl+Up]".format(self.tr("Move Up")))
         self.tbMoveU.clicked.connect(self.projTree.moveItemUp)
 
-        self.tbMoveD = NIconToolButton(self, iSz)
+        self.tbMoveD = NIconToolButton(self, iSz, "chevron_down:action")
         self.tbMoveD.setToolTip("{0} [Ctrl+Down]".format(self.tr("Move Down")))
         self.tbMoveD.clicked.connect(self.projTree.moveItemDown)
 
@@ -301,7 +301,7 @@ class GuiProjectToolBar(QWidget):
         self.mAddRoot.triggered.connect(self._onAddRootSelected)
         self._buildRootMenu()
 
-        self.tbAdd = NIconToolButton(self, iSz)
+        self.tbAdd = NIconToolButton(self, iSz, "add:add")
         self.tbAdd.setToolTip("{0} [Ctrl+N]".format(self.tr("Add Item")))
         self.tbAdd.setShortcut("Ctrl+N")
         self.tbAdd.setMenu(self.mAdd)
@@ -318,7 +318,7 @@ class GuiProjectToolBar(QWidget):
         self.aEmptyTrash = qtAddAction(self.mMore, self.tr("Empty Trash"))
         self.aEmptyTrash.triggered.connect(self.projTree.emptyTrash)
 
-        self.tbMore = NIconToolButton(self, iSz)
+        self.tbMore = NIconToolButton(self, iSz, "more_vertical:default")
         self.tbMore.setToolTip(self.tr("More Options"))
         self.tbMore.setMenu(self.mMore)
 
@@ -334,7 +334,7 @@ class GuiProjectToolBar(QWidget):
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
-        self.updateTheme()
+        self.updateTheme(init=True)
 
         logger.debug("Ready: GuiProjectToolBar")
 
@@ -342,7 +342,7 @@ class GuiProjectToolBar(QWidget):
     #  Methods
     ##
 
-    def updateTheme(self) -> None:
+    def updateTheme(self, *, init: bool = False) -> None:
         """Update theme elements."""
         logger.debug("Theme Update: GuiProjectToolBar")
 
@@ -353,18 +353,19 @@ class GuiProjectToolBar(QWidget):
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbMore.setStyleSheet(buttonStyle)
 
-        self.tbQuick.setThemeIcon("bookmarks", "action")
-        self.tbMoveU.setThemeIcon("chevron_up", "action")
-        self.tbMoveD.setThemeIcon("chevron_down", "action")
-        self.tbAdd.setThemeIcon("add", "add")
-        self.tbMore.setThemeIcon("more_vertical", "default")
+        if not init:
+            self.tbQuick.refreshTheme()
+            self.tbMoveU.refreshTheme()
+            self.tbMoveD.refreshTheme()
+            self.tbAdd.refreshTheme()
+            self.tbMore.refreshTheme()
 
-        self.aAddScene.setIcon(SHARED.theme.getIcon("prj_scene", "scene"))
-        self.aAddChap.setIcon(SHARED.theme.getIcon("prj_chapter", "chapter"))
-        self.aAddPart.setIcon(SHARED.theme.getIcon("prj_title", "title"))
-        self.aAddEmpty.setIcon(SHARED.theme.getIcon("prj_document", "file"))
-        self.aAddNote.setIcon(SHARED.theme.getIcon("prj_note", "note"))
-        self.aAddFolder.setIcon(SHARED.theme.getIcon("prj_folder", "folder"))
+        self.aAddScene.setIcon(SHARED.theme.getIcon("prj_scene:scene"))
+        self.aAddChap.setIcon(SHARED.theme.getIcon("prj_chapter:chapter"))
+        self.aAddPart.setIcon(SHARED.theme.getIcon("prj_title:title"))
+        self.aAddEmpty.setIcon(SHARED.theme.getIcon("prj_document:file"))
+        self.aAddNote.setIcon(SHARED.theme.getIcon("prj_note:note"))
+        self.aAddFolder.setIcon(SHARED.theme.getIcon("prj_folder:folder"))
 
         self.buildTemplatesMenu()
         self.buildQuickLinksMenu()
@@ -383,7 +384,7 @@ class GuiProjectToolBar(QWidget):
             qtAddAction(
                 self.mQuick,
                 elide(nwItem.itemName, 50),
-                icon=SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass], "root"),
+                icon=SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass]),
                 data=tHandle,
             )
 
@@ -445,7 +446,7 @@ class GuiProjectToolBar(QWidget):
             qtAddAction(
                 self.mAddRoot,
                 trConst(nwLabels.CLASS_NAME[itemClass]),
-                icon=SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass], "root"),
+                icon=SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass]),
                 data=itemClass,
             )
 
@@ -478,8 +479,8 @@ class GuiProjectTree(QTreeView):
         self._actHandle = None
 
         # Cached Translations
-        self.trActive = trConst(nwLabels.ACTIVE_NAME["checked"])
-        self.trInactive = trConst(nwLabels.ACTIVE_NAME["unchecked"])
+        self.trActive = trConst(nwLabels.ACTIVE_NAME[True])
+        self.trInactive = trConst(nwLabels.ACTIVE_NAME[False])
 
         # Tree Settings
         iPx = SHARED.theme.baseIconHeight
@@ -1193,18 +1194,18 @@ class _TreeContextMenu(QMenu):
         """Add Active/Inactive actions."""
         if len(self._indices) > 1:
             mSub = qtAddMenu(self, self.tr("Set Active to ..."))
-            aOne = qtAddAction(mSub, self._tree.trActive, icon=SHARED.theme.getIcon("checked", "accept"))
+            aOne = qtAddAction(mSub, self._tree.trActive, icon=SHARED.theme.getIcon("checked:accept"))
             aOne.triggered.connect(qtWeakLambda(self._iterItemActive, True))
-            aTwo = qtAddAction(mSub, self._tree.trInactive, icon=SHARED.theme.getIcon("unchecked", "reject"))
+            aTwo = qtAddAction(mSub, self._tree.trInactive, icon=SHARED.theme.getIcon("unchecked:reject"))
             aTwo.triggered.connect(qtWeakLambda(self._iterItemActive, False))
         else:
             action = qtAddAction(self, self.tr("Toggle Active"))
             action.triggered.connect(self._toggleItemActive)
             if self._children > 0:
                 mSub = qtAddMenu(self, self.tr("Set Children to ..."))
-                aOne = qtAddAction(mSub, self._tree.trActive, icon=SHARED.theme.getIcon("checked", "accept"))
+                aOne = qtAddAction(mSub, self._tree.trActive, icon=SHARED.theme.getIcon("checked:accept"))
                 aOne.triggered.connect(qtWeakLambda(self._recurseItemActive, True))
-                aTwo = qtAddAction(mSub, self._tree.trInactive, icon=SHARED.theme.getIcon("unchecked", "reject"))
+                aTwo = qtAddAction(mSub, self._tree.trInactive, icon=SHARED.theme.getIcon("unchecked:reject"))
                 aTwo.triggered.connect(qtWeakLambda(self._recurseItemActive, False))
 
     def _itemStatusImport(self, multi: bool) -> None:

@@ -340,7 +340,7 @@ class ProjectItem:
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
-    def getMainIconStyle(self) -> tuple[str, str]:
+    def getMainIconStyle(self) -> str:
         """Get the main item icon style."""
         return SHARED.theme.getItemIconStyle(self._type, self._class, self._layout, self._heading)
 
@@ -372,14 +372,12 @@ class ProjectItem:
         the current item based on its type.
         """
         if self.isFileType():
-            key = "checked" if self._active else "unchecked"
-            color = "active" if self._active else "inactive"
-            text = trConst(nwLabels.ACTIVE_NAME[key])
+            icon = "checked:active" if self._active else "unchecked:inactive"
+            text = trConst(nwLabels.ACTIVE_NAME[self._active])
         else:
-            key = "noncheckable"
-            color = "disabled"
+            icon = "noncheckable:disabled"
             text = ""
-        return text, SHARED.theme.getIcon(key, color)
+        return text, SHARED.theme.getIcon(icon)
 
     ##
     #  Checker Methods

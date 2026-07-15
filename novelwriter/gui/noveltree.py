@@ -184,12 +184,12 @@ class GuiNovelToolBar(QWidget):
         self.novelValue.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
         self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
 
-        self.tbNovel = NIconToolButton(self, iSz)
+        self.tbNovel = NIconToolButton(self, iSz, "cls_novel:root")
         self.tbNovel.setToolTip(self.tr("Novel Root"))
         self.tbNovel.clicked.connect(self.novelValue.showPopup)
 
         # Refresh Button
-        self.tbRefresh = NIconToolButton(self, iSz)
+        self.tbRefresh = NIconToolButton(self, iSz, "refresh:change")
         self.tbRefresh.setToolTip(self.tr("Refresh"))
         self.tbRefresh.clicked.connect(self.forceRefreshNovelTree)
 
@@ -208,7 +208,7 @@ class GuiNovelToolBar(QWidget):
         self.aLastColSize = qtAddAction(self.mLastCol, self.tr("Column Size"))
         self.aLastColSize.triggered.connect(self._selectLastColumnSize)
 
-        self.tbMore = NIconToolButton(self, iSz)
+        self.tbMore = NIconToolButton(self, iSz, "more_vertical:default")
         self.tbMore.setToolTip(self.tr("More Options"))
         self.tbMore.setMenu(self.mMore)
 
@@ -223,7 +223,7 @@ class GuiNovelToolBar(QWidget):
 
         self.setLayout(self.outerBox)
 
-        self.updateTheme()
+        self.updateTheme(init=True)
 
         # Connect Signals
         SHARED.novelStructureChanged.connect(self._refreshNovelTree)
@@ -234,13 +234,14 @@ class GuiNovelToolBar(QWidget):
     #  Methods
     ##
 
-    def updateTheme(self) -> None:
+    def updateTheme(self, *, init: bool = False) -> None:
         """Update theme elements."""
         logger.debug("Theme Update: GuiNovelToolBar")
 
-        self.tbNovel.setThemeIcon("cls_novel", "root")
-        self.tbRefresh.setThemeIcon("refresh", "change")
-        self.tbMore.setThemeIcon("more_vertical", "default")
+        if not init:
+            self.tbNovel.refreshTheme()
+            self.tbRefresh.refreshTheme()
+            self.tbMore.refreshTheme()
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbNovel.setStyleSheet(buttonStyle)

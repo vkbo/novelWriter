@@ -96,7 +96,7 @@ class GuiDictionaries(NNonBlockingDialog):
         self.huBrowse = SHARED.theme.getToolButton(nwToolButton.BROWSE, self)
         self.huBrowse.clicked.connect(self._doBrowseHunspell)
         self.huImport = QPushButton(self.tr("Add Dictionary"), self)
-        self.huImport.setIcon(SHARED.theme.getIcon("add", "add"))
+        self.huImport.setIcon(SHARED.theme.getIcon("add:add"))
         self.huImport.clicked.connect(self._doImportHunspell)
 
         self.huPathBox = QHBoxLayout()

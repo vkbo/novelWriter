@@ -111,21 +111,21 @@ class GuiProjectSearch(QWidget):
         self.searchOpt.setIconSize(iSz)
         self.searchOpt.setContentsMargins(0, 0, 0, 0)
 
-        self.tbCase = NIconToolButton(self, iSz, "search_case", "tool")
+        self.tbCase = NIconToolButton(self, iSz, "search_case:tool")
         self.tbCase.setToolTip(self.tr("Case Sensitive"))
         self.tbCase.setCheckable(True)
         self.tbCase.setChecked(CONFIG.searchProjCase)
         self.tbCase.clicked.connect(self._toggleCase)
         self.searchOpt.addWidget(self.tbCase)
 
-        self.tbWord = NIconToolButton(self, iSz, "search_word", "tool")
+        self.tbWord = NIconToolButton(self, iSz, "search_word:tool")
         self.tbWord.setToolTip(self.tr("Whole Words Only"))
         self.tbWord.setCheckable(True)
         self.tbWord.setChecked(CONFIG.searchProjWord)
         self.tbWord.clicked.connect(self._toggleWord)
         self.searchOpt.addWidget(self.tbWord)
 
-        self.tbRegEx = NIconToolButton(self, iSz, "search_regex", "tool")
+        self.tbRegEx = NIconToolButton(self, iSz, "search_regex:tool")
         self.tbRegEx.setToolTip(self.tr("RegEx Mode"))
         self.tbRegEx.setCheckable(True)
         self.tbRegEx.setChecked(CONFIG.searchProjRegEx)
@@ -134,7 +134,7 @@ class GuiProjectSearch(QWidget):
 
         # Search Box
         self.searchAction = QAction("", self)
-        self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
+        self.searchAction.setIcon(SHARED.theme.getIcon("search:apply"))
         self.searchAction.triggered.connect(self._processSearch)
 
         self.searchText = QLineEdit(self)
@@ -193,7 +193,7 @@ class GuiProjectSearch(QWidget):
         self.outerBox.setSpacing(2)
 
         self.setLayout(self.outerBox)
-        self.updateTheme(onInit=True)
+        self.updateTheme(init=True)
 
         logger.debug("Ready: GuiProjectSearch")
 
@@ -210,7 +210,7 @@ class GuiProjectSearch(QWidget):
     #  Methods
     ##
 
-    def updateTheme(self, onInit: bool = False) -> None:
+    def updateTheme(self, *, init: bool = False) -> None:
         """Update theme elements."""
         logger.debug("Theme Update: GuiProjectSearch")
 
@@ -223,14 +223,14 @@ class GuiProjectSearch(QWidget):
             f"QLineEdit:focus {{border: 1px solid {colFocus};}} "
         )
 
-        self.searchAction.setIcon(SHARED.theme.getIcon("search", "apply"))
+        self.searchAction.setIcon(SHARED.theme.getIcon("search:apply"))
         self._model.updateTheme()
         self._matchDelegate.updateTheme()
         self.searchFilters.updateTheme()
         if viewport := self.searchResult.viewport():  # pragma: no branch
             viewport.update()
 
-        if not onInit:
+        if not init:
             self.tbCase.refreshTheme()
             self.tbWord.refreshTheme()
             self.tbRegEx.refreshTheme()
@@ -557,29 +557,25 @@ class _SearchFilters(NExpandablePanel):
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["headings"]),
             "text:includeHeadings",
-            icon="filter",
-            color="altaction",
+            icon="filter:altaction",
             default=True,
         )
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["meta"]),
             "text:includeMeta",
-            icon="filter",
-            color="altaction",
+            icon="filter:altaction",
             default=True,
         )
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["comments"]),
             "text:includeComments",
-            icon="filter",
-            color="altaction",
+            icon="filter:altaction",
             default=True,
         )
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["text"]),
             "text:includeBody",
-            icon="filter",
-            color="altaction",
+            icon="filter:altaction",
             default=True,
         )
         self.filterOpt.addSeparator()
@@ -589,22 +585,19 @@ class _SearchFilters(NExpandablePanel):
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["novel"]),
             "docs:includeNovel",
-            icon="prj_scene",
-            color="scene",
+            icon="prj_scene:scene",
             default=True,
         )
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["notes"]),
             "docs:includeNotes",
-            icon="prj_note",
-            color="note",
+            icon="prj_note:note",
             default=True,
         )
         self.filterOpt.addItem(
             trConst(nwLabels.FILTER_TYPES["inactive"]),
             "docs:includeInactive",
-            icon="unchecked",
-            color="reject",
+            icon="unchecked:reject",
             default=True,
         )
         self.filterOpt.addSeparator()
@@ -619,11 +612,9 @@ class _SearchFilters(NExpandablePanel):
     def _processRootFilterEntry(self, nwItem: ProjectItem) -> None:
         """Append or update a root filter option."""
         if nwItem.isSearchableClass():
-            name, color = nwItem.getMainIconStyle()
             self.filterOpt.addItem(
                 nwItem.itemName,
                 f"root:{nwItem.itemHandle}",
-                icon=name,
-                color=color,
+                icon=nwItem.getMainIconStyle(),
                 default=not nwItem.isInactiveClass(),
             )

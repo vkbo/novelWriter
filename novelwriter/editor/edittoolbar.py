@@ -60,47 +60,47 @@ class GuiDocToolBar(QWidget):
         # General Buttons
         # ===============
 
-        self.tbBoldMD = NIconToolButton(self, iSz)
+        self.tbBoldMD = NIconToolButton(self, iSz, "fmt_bold:markdown")
         self.tbBoldMD.setToolTip(self.tr("Markdown Bold"))
         self.tbBoldMD.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.MD_BOLD))
 
-        self.tbItalicMD = NIconToolButton(self, iSz)
+        self.tbItalicMD = NIconToolButton(self, iSz, "fmt_italic:markdown")
         self.tbItalicMD.setToolTip(self.tr("Markdown Italic"))
         self.tbItalicMD.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.MD_ITALIC))
 
-        self.tbStrikeMD = NIconToolButton(self, iSz)
+        self.tbStrikeMD = NIconToolButton(self, iSz, "fmt_strike:markdown")
         self.tbStrikeMD.setToolTip(self.tr("Markdown Strikethrough"))
         self.tbStrikeMD.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.MD_STRIKE))
 
-        self.tbMarkMD = NIconToolButton(self, iSz)
+        self.tbMarkMD = NIconToolButton(self, iSz, "fmt_mark:markdown")
         self.tbMarkMD.setToolTip(self.tr("Markdown Highlight"))
         self.tbMarkMD.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.MD_MARK))
 
-        self.tbBold = NIconToolButton(self, iSz)
+        self.tbBold = NIconToolButton(self, iSz, "fmt_bold:shortcode")
         self.tbBold.setToolTip(self.tr("Shortcode Bold"))
         self.tbBold.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_BOLD))
 
-        self.tbItalic = NIconToolButton(self, iSz)
+        self.tbItalic = NIconToolButton(self, iSz, "fmt_italic:shortcode")
         self.tbItalic.setToolTip(self.tr("Shortcode Italic"))
         self.tbItalic.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_ITALIC))
 
-        self.tbStrike = NIconToolButton(self, iSz)
+        self.tbStrike = NIconToolButton(self, iSz, "fmt_strike:shortcode")
         self.tbStrike.setToolTip(self.tr("Shortcode Strikethrough"))
         self.tbStrike.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_STRIKE))
 
-        self.tbUnderline = NIconToolButton(self, iSz)
+        self.tbUnderline = NIconToolButton(self, iSz, "fmt_underline:shortcode")
         self.tbUnderline.setToolTip(self.tr("Shortcode Underline"))
         self.tbUnderline.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_ULINE))
 
-        self.tbMark = NIconToolButton(self, iSz)
+        self.tbMark = NIconToolButton(self, iSz, "fmt_mark:shortcode")
         self.tbMark.setToolTip(self.tr("Shortcode Highlight"))
         self.tbMark.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_MARK))
 
-        self.tbSuperscript = NIconToolButton(self, iSz)
+        self.tbSuperscript = NIconToolButton(self, iSz, "fmt_superscript:shortcode")
         self.tbSuperscript.setToolTip(self.tr("Shortcode Superscript"))
         self.tbSuperscript.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_SUP))
 
-        self.tbSubscript = NIconToolButton(self, iSz)
+        self.tbSubscript = NIconToolButton(self, iSz, "fmt_subscript:shortcode")
         self.tbSubscript.setToolTip(self.tr("Shortcode Subscript"))
         self.tbSubscript.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_SUB))
 
@@ -124,14 +124,14 @@ class GuiDocToolBar(QWidget):
         self.outerBox.setSpacing(4)
 
         self.setLayout(self.outerBox)
-        self.updateTheme()
+        self.updateTheme(init=True)
 
         # Starts as Invisible
         self.setVisible(False)
 
         logger.debug("Ready: GuiDocToolBar")
 
-    def updateTheme(self) -> None:
+    def updateTheme(self, *, init: bool = False) -> None:
         """Initialise GUI elements that depend on specific settings."""
         logger.debug("Theme Update: GuiDocToolBar")
 
@@ -142,14 +142,15 @@ class GuiDocToolBar(QWidget):
         palette.setColor(QPalette.ColorRole.Text, syntax.text)
         self.setPalette(palette)
 
-        self.tbBoldMD.setThemeIcon("fmt_bold", "markdown")
-        self.tbItalicMD.setThemeIcon("fmt_italic", "markdown")
-        self.tbStrikeMD.setThemeIcon("fmt_strike", "markdown")
-        self.tbMarkMD.setThemeIcon("fmt_mark", "markdown")
-        self.tbBold.setThemeIcon("fmt_bold", "shortcode")
-        self.tbItalic.setThemeIcon("fmt_italic", "shortcode")
-        self.tbStrike.setThemeIcon("fmt_strike", "shortcode")
-        self.tbUnderline.setThemeIcon("fmt_underline", "shortcode")
-        self.tbMark.setThemeIcon("fmt_mark", "shortcode")
-        self.tbSuperscript.setThemeIcon("fmt_superscript", "shortcode")
-        self.tbSubscript.setThemeIcon("fmt_subscript", "shortcode")
+        if not init:
+            self.tbBoldMD.refreshTheme()
+            self.tbItalicMD.refreshTheme()
+            self.tbStrikeMD.refreshTheme()
+            self.tbMarkMD.refreshTheme()
+            self.tbBold.refreshTheme()
+            self.tbItalic.refreshTheme()
+            self.tbStrike.refreshTheme()
+            self.tbUnderline.refreshTheme()
+            self.tbMark.refreshTheme()
+            self.tbSuperscript.refreshTheme()
+            self.tbSubscript.refreshTheme()

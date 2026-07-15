@@ -489,36 +489,36 @@ def testGuiTheme_LoadIcons():
     # ==========
 
     # Load an unknown icon
-    qIcon = iconCache.getIcon("stuff", "tool")
+    qIcon = iconCache.getIcon("stuff:tool")
     assert isinstance(qIcon, QIcon)
     assert qIcon == iconCache._noIcon
 
     # Load an icon, it is likely already cached
-    qIcon = iconCache.getIcon("add", "tool")
+    qIcon = iconCache.getIcon("add:tool")
     assert isinstance(qIcon, QIcon)
     assert qIcon.isNull() is False, "No image data, SVG library may be missing"
 
     # Load it as a pixmap with a size
     # If this part of the test fails, you may need to set the
     # environment variable: QT_SCALE_FACTOR=1
-    qPix = iconCache.getPixmap("add", (50, 50), "tool")
+    qPix = iconCache.getPixmap("add:tool", 50, 50)
     assert isinstance(qPix, QPixmap)
     assert qPix.isNull() is False
     assert qPix.width() == 50, "If this fails, make sure QT_SCALE_FACTOR=1"
     assert qPix.height() == 50, "If this fails, make sure QT_SCALE_FACTOR=1"
 
     # Load app icon
-    qIcon = iconCache.getIcon("novelwriter", "tool")
+    qIcon = iconCache.getIcon("novelwriter")
     assert isinstance(qIcon, QIcon)
     assert qIcon != iconCache._noIcon
 
     # Load mime icon
-    qIcon = iconCache.getIcon("proj_nwx", "tool")
+    qIcon = iconCache.getIcon("proj_nwx")
     assert isinstance(qIcon, QIcon)
     assert qIcon != iconCache._noIcon
 
     # Toggle icon
-    qIcon = iconCache.getToggleIcon("bullet", (24, 24), "tool")
+    qIcon = iconCache.getToggleIcon("bullet:tool", 24, 24)
     assert isinstance(qIcon, QIcon)
     assert qIcon != iconCache._noIcon
     pOn = qIcon.pixmap(24, 24, QIcon.Mode.Normal, QIcon.State.On)
@@ -526,7 +526,7 @@ def testGuiTheme_LoadIcons():
     assert pOn != pOff
 
     # Unknown toggle icon
-    qIcon = iconCache.getToggleIcon("stuff", (24, 24), "tool")
+    qIcon = iconCache.getToggleIcon("stuff:tool", 24, 24)
     assert isinstance(qIcon, QIcon)
     assert qIcon == iconCache._noIcon
 
@@ -536,12 +536,12 @@ def testGuiTheme_LoadIcons():
     # Root -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.ROOT, nwItemClass.NOVEL, nwItemLayout.NO_LAYOUT, hLevel="H0"
-    ) == iconCache.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL], "root")
+    ) == iconCache.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
 
     # Folder -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FOLDER, nwItemClass.NOVEL, nwItemLayout.NO_LAYOUT, hLevel="H0"
-    ) == iconCache.getIcon("prj_folder", "folder")
+    ) == iconCache.getIcon("prj_folder:folder")
 
     # Document H0 -> Not Null
     assert (
@@ -552,32 +552,32 @@ def testGuiTheme_LoadIcons():
     # Document H1 -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H1"
-    ) == iconCache.getIcon("prj_title", "title")
+    ) == iconCache.getIcon("prj_title:title")
 
     # Document H2 -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H2"
-    ) == iconCache.getIcon("prj_chapter", "chapter")
+    ) == iconCache.getIcon("prj_chapter:chapter")
 
     # Document H3 -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H3"
-    ) == iconCache.getIcon("prj_scene", "scene")
+    ) == iconCache.getIcon("prj_scene:scene")
 
     # Document H4 -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H4"
-    ) == iconCache.getIcon("prj_document", "file")
+    ) == iconCache.getIcon("prj_document:file")
 
     # Document H5 -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H5"
-    ) == iconCache.getIcon("prj_document", "file")
+    ) == iconCache.getIcon("prj_document:file")
 
     # Note -> Not Null
     assert iconCache.getItemIcon(
         nwItemType.FILE, nwItemClass.NOVEL, nwItemLayout.NOTE, hLevel="H5"
-    ) == iconCache.getIcon("prj_note", "note")
+    ) == iconCache.getIcon("prj_note:note")
 
     # No Type -> Null
     assert (

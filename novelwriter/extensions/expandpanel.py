@@ -44,7 +44,7 @@ class NExpandablePanel(QWidget):
         self._ep_expanded = True
         self._ep_widget = QWidget(self)
 
-        self._ep_toggle = NIconToggleButton(self, SHARED.theme.baseIconSize, "unfold", "default")
+        self._ep_toggle = NIconToggleButton(self, SHARED.theme.baseIconSize, "unfold:default")
         self._ep_toggle.setChecked(self._ep_expanded)
         self._ep_toggle.toggled.connect(self._toggleExpanded)
 

@@ -60,40 +60,40 @@ class GuiSideBar(QWidget):
         self.installEventFilter(StatusTipFilter(self.mainGui))
 
         # Buttons
-        self.tbProject = NIconToolButton(self, iSz)
+        self.tbProject = NIconToolButton(self, iSz, "sb_project:sidebar")
         self.tbProject.setToolTip("{0} [Ctrl+T]".format(self.tr("Project Tree View")))
         self.tbProject.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.PROJECT))
 
-        self.tbNovel = NIconToolButton(self, iSz)
+        self.tbNovel = NIconToolButton(self, iSz, "sb_novel:sidebar")
         self.tbNovel.setToolTip("{0} [Ctrl+T]".format(self.tr("Novel Tree View")))
         self.tbNovel.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.NOVEL))
 
-        self.tbSearch = NIconToolButton(self, iSz)
+        self.tbSearch = NIconToolButton(self, iSz, "sb_search:sidebar")
         self.tbSearch.setToolTip("{0} [Ctrl+Shift+F]".format(self.tr("Project Search")))
         self.tbSearch.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.SEARCH))
 
-        self.tbOutline = NIconToolButton(self, iSz)
+        self.tbOutline = NIconToolButton(self, iSz, "sb_outline:sidebar")
         self.tbOutline.setToolTip("{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
         self.tbOutline.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.OUTLINE))
 
-        self.tbTheme = NIconToolButton(self, iSz)
+        self.tbTheme = NIconToolButton(self, iSz, "sb_theme:sidebar")
         self.tbTheme.setToolTip(self.tr("Switch Colour Theme"))
         self.tbTheme.clicked.connect(self._cycleColurTheme)
 
-        self.tbDetails = NIconToolButton(self, iSz)
+        self.tbDetails = NIconToolButton(self, iSz, "sb_details:sidebar")
         self.tbDetails.setToolTip("{0} [Shift+F6]".format(self.tr("Novel Details")))
         self.tbDetails.clicked.connect(self.mainGui.showNovelDetailsDialog)
 
-        self.tbStats = NIconToolButton(self, iSz)
+        self.tbStats = NIconToolButton(self, iSz, "sb_stats:sidebar")
         self.tbStats.setToolTip("{0} [F6]".format(self.tr("Writing Statistics")))
         self.tbStats.clicked.connect(self.mainGui.showWritingStatsDialog)
 
-        self.tbBuild = NIconToolButton(self, iSz)
+        self.tbBuild = NIconToolButton(self, iSz, "sb_build:sidebar")
         self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Manuscript Build")))
         self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
 
         # Settings Menu
-        self.tbSettings = NIconToolButton(self, iSz)
+        self.tbSettings = NIconToolButton(self, iSz, "settings:sidebar")
         self.tbSettings.setToolTip(self.tr("Settings"))
 
         self.mSettings = _PopRightMenu(self.tbSettings)
@@ -120,11 +120,11 @@ class GuiSideBar(QWidget):
         self.outerBox.setSpacing(6)
 
         self.setLayout(self.outerBox)
-        self.updateTheme()
+        self.updateTheme(init=True)
 
         logger.debug("Ready: GuiSideBar")
 
-    def updateTheme(self) -> None:
+    def updateTheme(self, *, init: bool = False) -> None:
         """Initialise GUI elements that depend on specific settings."""
         logger.debug("Theme Update: GuiSideBar")
 
@@ -139,14 +139,16 @@ class GuiSideBar(QWidget):
         self.tbTheme.setStyleSheet(buttonStyle)
         self.tbSettings.setStyleSheet(buttonStyle)
 
-        self.tbProject.setThemeIcon("sb_project", "sidebar")
-        self.tbNovel.setThemeIcon("sb_novel", "sidebar")
-        self.tbSearch.setThemeIcon("sb_search", "sidebar")
-        self.tbOutline.setThemeIcon("sb_outline", "sidebar")
-        self.tbBuild.setThemeIcon("sb_build", "sidebar")
-        self.tbDetails.setThemeIcon("sb_details", "sidebar")
-        self.tbStats.setThemeIcon("sb_stats", "sidebar")
-        self.tbSettings.setThemeIcon("settings", "sidebar")
+        if not init:
+            self.tbProject.refreshTheme()
+            self.tbNovel.refreshTheme()
+            self.tbSearch.refreshTheme()
+            self.tbOutline.refreshTheme()
+            self.tbBuild.refreshTheme()
+            self.tbDetails.refreshTheme()
+            self.tbStats.refreshTheme()
+            self.tbTheme.refreshTheme()
+            self.tbSettings.refreshTheme()
 
         self._setThemeModeIcon()
 
@@ -175,7 +177,7 @@ class GuiSideBar(QWidget):
 
     def _setThemeModeIcon(self) -> None:
         """Set the theme button icon."""
-        self.tbTheme.setThemeIcon(nwLabels.THEME_MODE_ICON[CONFIG.themeMode], "sidebar")
+        self.tbTheme.setThemeIcon(nwLabels.THEME_MODE_ICON[CONFIG.themeMode])
         self.tbTheme.setToolTip(trConst(nwLabels.THEME_MODE_LABEL[CONFIG.themeMode]))
 
 

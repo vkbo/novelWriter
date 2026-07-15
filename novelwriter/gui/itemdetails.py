@@ -238,7 +238,7 @@ class GuiItemDetails(NExpandablePanel):
         self.statusData.setText(status)
 
         # Class
-        classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass], "root")
+        classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass])
         self.classIcon.setPixmap(classIcon.pixmap(iPx, iPx))
         self.classData.setText(trConst(nwLabels.CLASS_NAME[nwItem.itemClass]))
 

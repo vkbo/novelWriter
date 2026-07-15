@@ -57,7 +57,7 @@ class GuiAbout(NDialog):
         self.nwImage = SHARED.theme.getDecoration("nw-text", h=36)
 
         self.nwLogo = QLabel(self)
-        self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (128, 128)))
+        self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", 128, 128))
 
         self.nwLabel = QLabel(self)
         self.nwLabel.setPixmap(self.nwImage)

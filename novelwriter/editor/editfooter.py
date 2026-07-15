@@ -153,8 +153,8 @@ class GuiDocEditFooter(QWidget):
         logger.debug("Theme Update: GuiDocEditFooter")
 
         iPx = round(0.9 * SHARED.theme.baseIconHeight)
-        self.linesIcon.setPixmap(SHARED.theme.getPixmap("lines", (iPx, iPx)))
-        self.wordsIcon.setPixmap(SHARED.theme.getPixmap("stats", (iPx, iPx)))
+        self.linesIcon.setPixmap(SHARED.theme.getPixmap("lines", iPx, iPx))
+        self.wordsIcon.setPixmap(SHARED.theme.getPixmap("stats", iPx, iPx))
         self.matchColors()
         self._vimColor = SHARED.theme.getBaseColor("base")
         self._vimModes = {
