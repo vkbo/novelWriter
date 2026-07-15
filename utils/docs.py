@@ -27,7 +27,7 @@ import shutil
 import subprocess
 import tomllib
 
-from utils.common import ROOT_DIR, extractVersion, formatVersion, systemCall
+from utils.common import ROOT_DIR, extractVersion, formatVersion, splitVersion, systemCall
 
 
 def updateDocsTranslationSources(args: argparse.Namespace) -> None:
@@ -64,19 +64,25 @@ def updateDocsTranslationSources(args: argparse.Namespace) -> None:
     print("")
 
 
-def buildHtmlDocs(args: argparse.Namespace | None = None) -> None:
-    """Build the documentation files."""
+def buildDocs(args: argparse.Namespace | None = None, *, pdf: bool = False) -> None:
+    """Build the documentation files, either as HTML or PDF."""
     print("")
-    print("Building HTML Docs")
-    print("==================")
+    print("Building Docs Manuals" if pdf else "Building HTML Docs")
+    print("=====================" if pdf else "==================")
     print("")
 
     bldRoot = ROOT_DIR / "dist_doc" / "html"
     docsDir = ROOT_DIR / "docs"
     locsDir = ROOT_DIR / "docs" / "source" / "locales"
+    pdfFile = ROOT_DIR / "docs" / "build" / "latex" / "manual.pdf"
     locsDir.mkdir(exist_ok=True)
     bldRoot.mkdir(exist_ok=True, parents=True)
     locConf = tomllib.loads((locsDir / "config.toml").read_text(encoding="utf-8"))
+
+    currVersion = extractVersion()[0]
+    major, minor, _ = splitVersion(currVersion)
+    intVersion = major * 100 + minor
+    cutoffVersion = intVersion - 200
 
     lang = args.lang if args else ["all"]
     build = []
@@ -88,63 +94,48 @@ def buildHtmlDocs(args: argparse.Namespace | None = None) -> None:
     for code in build:
         outDir = bldRoot / code
         env = os.environ.copy()
-        env["SPHINX_I18N_VERSION"] = formatVersion(extractVersion()[0])
-        cmd = "make clean html"
+        env["SPHINX_I18N_VERSION"] = formatVersion(currVersion)
+        cmd = "make clean latexpdf" if pdf else "make clean html"
+        pdfName = "manual.pdf"
         if code != "en":
             if code not in locConf:
                 print(f"ERROR: No config for language code '{code}' in config.toml")
-            env["SPHINX_I18N_VERSION"] = formatVersion(locConf[code].get("version", ""))
+                continue
+
+            locVersion = locConf[code].get("version", "")
+            locMajor, locMinor, _ = splitVersion(locVersion)
+            locIntVersion = locMajor * 100 + locMinor
+            if locIntVersion < cutoffVersion:
+                print(f"WARNING: Skipping build for '{code}' because version is too old ({locVersion})")
+                continue
+
+            env["SPHINX_I18N_VERSION"] = formatVersion(locVersion)
             env["SPHINX_I18N_AUTHORS"] = ", ".join(locConf[code].get("authors", []))
             cmd += f" -e SPHINXOPTS=\"-D language='{code}'\""
+            pdfName = f"manual_{code}.pdf"
 
-        if (ex := subprocess.call(cmd, cwd=docsDir, env=env, shell=True)) == 0:
+        try:
+            log = subprocess.check_output(cmd, cwd=docsDir, env=env, shell=True)
+            print("\n".join(log.decode("utf-8", errors="replace").rstrip().splitlines()[-11:]))
             print("")
-            if outDir.exists():
-                shutil.rmtree(outDir)
-            (docsDir / "build" / "html").rename(outDir)
-        else:
-            raise Exception(f"Build returned error code {ex}")
+            if pdf:
+                print("")
+                pdfFile.rename(ROOT_DIR / "novelwriter" / "assets" / pdfName)
+            else:
+                if outDir.exists():
+                    shutil.rmtree(outDir)
+                (docsDir / "build" / "html").rename(outDir)
+        except subprocess.CalledProcessError as ex:
+            print(f"ERROR: Build returned error code {ex.returncode}")
 
     print("")
+
+
+def buildHtmlDocs(args: argparse.Namespace | None = None) -> None:
+    """Build the documentation files."""
+    buildDocs(args, pdf=False)
 
 
 def buildPdfDocAssets(args: argparse.Namespace | None = None) -> None:
     """Build the documentation PDF files."""
-    print("")
-    print("Building Docs Manuals")
-    print("=====================")
-    print("")
-
-    docsDir = ROOT_DIR / "docs"
-    locsDir = ROOT_DIR / "docs" / "source" / "locales"
-    pdfFile = ROOT_DIR / "docs" / "build" / "latex" / "manual.pdf"
-    locsDir.mkdir(exist_ok=True)
-    locConf = tomllib.loads((locsDir / "config.toml").read_text(encoding="utf-8"))
-
-    lang = args.lang if args else ["all"]
-    build = []
-    if lang == ["all"]:
-        build = ["en"] + [i.stem for i in locsDir.iterdir() if i.is_dir()]
-    else:
-        build = lang
-
-    for code in build:
-        env = os.environ.copy()
-        env["SPHINX_I18N_VERSION"] = formatVersion(extractVersion()[0])
-        cmd = "make clean latexpdf"
-        name = "manual.pdf"
-        if code != "en":
-            if code not in locConf:
-                print(f"ERROR: No config for language code '{code}' in config.toml")
-            env["SPHINX_I18N_VERSION"] = formatVersion(locConf[code].get("version", ""))
-            env["SPHINX_I18N_AUTHORS"] = ", ".join(locConf[code].get("authors", []))
-            cmd += f" -e SPHINXOPTS=\"-D language='{code}'\""
-            name = f"manual_{code}.pdf"
-
-        if (ex := subprocess.call(cmd, cwd=docsDir, env=env, shell=True)) == 0:
-            print("")
-            pdfFile.rename(ROOT_DIR / "novelwriter" / "assets" / name)
-        else:
-            raise Exception(f"Build returned error code {ex}")
-
-    print("")
+    buildDocs(args, pdf=True)

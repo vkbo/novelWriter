@@ -90,6 +90,23 @@ def stripVersion(version: str) -> str:
         return version
 
 
+def splitVersion(version: str) -> tuple[int, int, int]:
+    """Split a version number into its major, minor and patch parts."""
+    major, minor, patch = 0, 0, 0
+    try:
+        parts = stripVersion(version).split(".")
+        if len(parts) > 0:
+            major = int(parts[0])
+        if len(parts) > 1:
+            minor = int(parts[1])
+        if len(parts) > 2:
+            patch = int(parts[2])
+    except Exception as exc:
+        print(f"Could not split version: {version}", flush=True)
+        print(str(exc), flush=True)
+    return major, minor, patch
+
+
 def formatVersion(value: str) -> str:
     """Format a version number into a more human readable form."""
     major, _, version = value.partition(".")
