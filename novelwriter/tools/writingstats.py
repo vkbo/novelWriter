@@ -282,7 +282,7 @@ class GuiWritingStats(NToolDialog):
         qtAddAction(self.saveMenu, self.tr("JSON Data File (.json)"), data=self.FMT_JSON)
         qtAddAction(self.saveMenu, self.tr("CSV Data File (.csv)"), data=self.FMT_CSV)
 
-        self.btnSave = NPushButton(self, self.tr("Save As"), bSz, "btn_save", "action")
+        self.btnSave = NPushButton(self, self.tr("Save As"), bSz, "btn_save:action")
         self.btnSave.setAutoDefault(False)
         self.btnSave.setMenu(self.saveMenu)
 

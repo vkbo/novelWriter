@@ -71,35 +71,35 @@ STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
 
 STANDARD_BUTTONS = {
-    nwStandardButton.OK: (QT_TRANSLATE_NOOP("Button", "OK"), "btn_ok", "action"),
-    nwStandardButton.CANCEL: (QT_TRANSLATE_NOOP("Button", "Cancel"), "btn_cancel", "reject"),
-    nwStandardButton.YES: (QT_TRANSLATE_NOOP("Button", "&Yes"), "btn_yes", "accept"),
-    nwStandardButton.NO: (QT_TRANSLATE_NOOP("Button", "&No"), "btn_no", "reject"),
-    nwStandardButton.OPEN: (QT_TRANSLATE_NOOP("Button", "Open"), "btn_open", "action"),
-    nwStandardButton.CLOSE: (QT_TRANSLATE_NOOP("Button", "Close"), "btn_close", "destroy"),
-    nwStandardButton.SAVE: (QT_TRANSLATE_NOOP("Button", "Save"), "btn_save", "action"),
-    nwStandardButton.BROWSE: (QT_TRANSLATE_NOOP("Button", "Browse"), "btn_browse", "systemio"),
-    nwStandardButton.LIST: (QT_TRANSLATE_NOOP("Button", "List"), "btn_list", "action"),
-    nwStandardButton.NEW: (QT_TRANSLATE_NOOP("Button", "New"), "btn_new", "apply"),
-    nwStandardButton.CREATE: (QT_TRANSLATE_NOOP("Button", "Create"), "btn_create", "create"),
-    nwStandardButton.RESET: (QT_TRANSLATE_NOOP("Button", "Reset"), "btn_reset", "reset"),
-    nwStandardButton.INSERT: (QT_TRANSLATE_NOOP("Button", "Insert"), "btn_insert", "action"),
-    nwStandardButton.APPLY: (QT_TRANSLATE_NOOP("Button", "Apply"), "btn_apply", "apply"),
-    nwStandardButton.BUILD: (QT_TRANSLATE_NOOP("Button", "Build"), "btn_build", "action"),
-    nwStandardButton.PRINT: (QT_TRANSLATE_NOOP("Button", "Print"), "btn_print", "action"),
-    nwStandardButton.PREVIEW: (QT_TRANSLATE_NOOP("Button", "Preview"), "btn_preview", "action"),
+    nwStandardButton.OK: (QT_TRANSLATE_NOOP("Button", "OK"), "btn_ok:action"),
+    nwStandardButton.CANCEL: (QT_TRANSLATE_NOOP("Button", "Cancel"), "btn_cancel:reject"),
+    nwStandardButton.YES: (QT_TRANSLATE_NOOP("Button", "&Yes"), "btn_yes:accept"),
+    nwStandardButton.NO: (QT_TRANSLATE_NOOP("Button", "&No"), "btn_no:reject"),
+    nwStandardButton.OPEN: (QT_TRANSLATE_NOOP("Button", "Open"), "btn_open:action"),
+    nwStandardButton.CLOSE: (QT_TRANSLATE_NOOP("Button", "Close"), "btn_close:destroy"),
+    nwStandardButton.SAVE: (QT_TRANSLATE_NOOP("Button", "Save"), "btn_save:action"),
+    nwStandardButton.BROWSE: (QT_TRANSLATE_NOOP("Button", "Browse"), "btn_browse:systemio"),
+    nwStandardButton.LIST: (QT_TRANSLATE_NOOP("Button", "List"), "btn_list:action"),
+    nwStandardButton.NEW: (QT_TRANSLATE_NOOP("Button", "New"), "btn_new:apply"),
+    nwStandardButton.CREATE: (QT_TRANSLATE_NOOP("Button", "Create"), "btn_create:create"),
+    nwStandardButton.RESET: (QT_TRANSLATE_NOOP("Button", "Reset"), "btn_reset:reset"),
+    nwStandardButton.INSERT: (QT_TRANSLATE_NOOP("Button", "Insert"), "btn_insert:action"),
+    nwStandardButton.APPLY: (QT_TRANSLATE_NOOP("Button", "Apply"), "btn_apply:apply"),
+    nwStandardButton.BUILD: (QT_TRANSLATE_NOOP("Button", "Build"), "btn_build:action"),
+    nwStandardButton.PRINT: (QT_TRANSLATE_NOOP("Button", "Print"), "btn_print:action"),
+    nwStandardButton.PREVIEW: (QT_TRANSLATE_NOOP("Button", "Preview"), "btn_preview:action"),
 }
 
 TOOL_BUTTONS = {
-    nwToolButton.ADD: (QT_TRANSLATE_NOOP("Button", "Add"), "add", "add"),
-    nwToolButton.REMOVE: (QT_TRANSLATE_NOOP("Button", "Remove"), "remove", "remove"),
-    nwToolButton.MOVE_UP: (QT_TRANSLATE_NOOP("Button", "Move Up"), "chevron_up", "action"),
-    nwToolButton.MOVE_DOWN: (QT_TRANSLATE_NOOP("Button", "Move Down"), "chevron_down", "action"),
-    nwToolButton.IMPORT: (QT_TRANSLATE_NOOP("Button", "Import"), "import", "apply"),
-    nwToolButton.EXPORT: (QT_TRANSLATE_NOOP("Button", "Export"), "export", "action"),
-    nwToolButton.BROWSE: (QT_TRANSLATE_NOOP("Button", "Browse"), "browse", "systemio"),
-    nwToolButton.EDIT: (QT_TRANSLATE_NOOP("Button", "Edit"), "edit", "change"),
-    nwToolButton.REVERT: (QT_TRANSLATE_NOOP("Button", "Revert"), "revert", "reset"),
+    nwToolButton.ADD: (QT_TRANSLATE_NOOP("Button", "Add"), "add:add"),
+    nwToolButton.REMOVE: (QT_TRANSLATE_NOOP("Button", "Remove"), "remove:remove"),
+    nwToolButton.MOVE_UP: (QT_TRANSLATE_NOOP("Button", "Move Up"), "chevron_up:action"),
+    nwToolButton.MOVE_DOWN: (QT_TRANSLATE_NOOP("Button", "Move Down"), "chevron_down:action"),
+    nwToolButton.IMPORT: (QT_TRANSLATE_NOOP("Button", "Import"), "import:apply"),
+    nwToolButton.EXPORT: (QT_TRANSLATE_NOOP("Button", "Export"), "export:action"),
+    nwToolButton.BROWSE: (QT_TRANSLATE_NOOP("Button", "Browse"), "browse:systemio"),
+    nwToolButton.EDIT: (QT_TRANSLATE_NOOP("Button", "Edit"), "edit:change"),
+    nwToolButton.REVERT: (QT_TRANSLATE_NOOP("Button", "Revert"), "revert:reset"),
 }
 
 
@@ -929,9 +929,10 @@ class GuiIcons:
 
     def getToggleIcon(self, name: str, width: int, height: int) -> QIcon:
         """Return a toggle icon from the icon buffer, or load it."""
-        if name in self.TOGGLE_ICON_KEYS:
-            pOne = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], width, height)
-            pTwo = self.getPixmap(self.TOGGLE_ICON_KEYS[name][1], width, height)
+        key, _, color = name.partition(":")
+        if key in self.TOGGLE_ICON_KEYS:
+            pOne = self.getPixmap(f"{self.TOGGLE_ICON_KEYS[key][0]}:{color}", width, height)
+            pTwo = self.getPixmap(f"{self.TOGGLE_ICON_KEYS[key][1]}:{color}", width, height)
             icon = QIcon()
             icon.addPixmap(pOne, QIcon.Mode.Normal, QIcon.State.On)
             icon.addPixmap(pTwo, QIcon.Mode.Normal, QIcon.State.Off)
@@ -984,19 +985,18 @@ class GuiIcons:
 
     def getStandardButton(self, button: nwStandardButton, parent: QWidget) -> NPushButton:
         """Return a standard button with icon and text."""
-        text, icon, color = STANDARD_BUTTONS.get(button, ("", "", ""))
+        text, icon = STANDARD_BUTTONS.get(button, ("", ""))
         return NPushButton(
             parent,
             QCoreApplication.translate("Button", text),
             self._theme.pushButtonIconSize,
             icon,
-            color,
         )
 
     def getToolButton(self, button: nwToolButton, parent: QWidget) -> NIconToolButton:
         """Return a tool button with icon."""
-        toolTip, icon, color = TOOL_BUTTONS.get(button, ("", "", ""))
-        toolButton = NIconToolButton(parent, self._theme.baseIconSize, icon, color)
+        toolTip, icon = TOOL_BUTTONS.get(button, ("", ""))
+        toolButton = NIconToolButton(parent, self._theme.baseIconSize, icon)
         toolButton.setToolTip(QCoreApplication.translate("Button", toolTip))
         return toolButton
 

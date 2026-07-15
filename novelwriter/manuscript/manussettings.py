@@ -210,9 +210,9 @@ class GuiBuildSettings(NToolDialog):
         logger.debug("Theme Update: GuiBuildSettings, init=%s", init)
 
         if not init:
-            self.btnApply.updateIcon()
-            self.btnSave.updateIcon()
-            self.btnClose.updateIcon()
+            self.btnApply.refreshTheme()
+            self.btnSave.refreshTheme()
+            self.btnClose.refreshTheme()
 
             self.optTabSelect.updateTheme()
             self.optTabHeadings.updateTheme()
@@ -452,7 +452,7 @@ class _FilterTab(NFixedPage):
 
         self.includedButton.setIcon(self._statusFlags[self.F_INCLUDED])
         self.excludedButton.setIcon(self._statusFlags[self.F_EXCLUDED])
-        self.resetButton.setThemeIcon("revert", "reset")
+        self.resetButton.setThemeIcon("revert:reset")
 
     ##
     #  Slots
@@ -1074,7 +1074,7 @@ class _FormattingTab(NScrollableForm):
         for keyword in nwKeyWords.VALID_KEYS:
             qtAddAction(self.mnKeywords, trConst(nwLabels.KEY_NAME[keyword]), data=keyword)
 
-        self.ignoredKeywordsButton = NIconToolButton(self, iSz, "add", "add")
+        self.ignoredKeywordsButton = NIconToolButton(self, iSz, "add:add")
         self.ignoredKeywordsButton.setToolTip(self.tr("Select Keyword"))
         self.ignoredKeywordsButton.setMenu(self.mnKeywords)
         self.addRow(
@@ -1099,7 +1099,7 @@ class _FormattingTab(NScrollableForm):
         # Text Font
         self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
-        self.btnTextFont = NIconToolButton(self, iSz, "font", "tool")
+        self.btnTextFont = NIconToolButton(self, iSz, "font:tool")
         self.btnTextFont.setToolTip(self.tr("Select Font"))
         self.btnTextFont.clicked.connect(self._selectFont)
         self.addRow(

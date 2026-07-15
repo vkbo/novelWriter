@@ -111,21 +111,21 @@ class GuiProjectSearch(QWidget):
         self.searchOpt.setIconSize(iSz)
         self.searchOpt.setContentsMargins(0, 0, 0, 0)
 
-        self.tbCase = NIconToolButton(self, iSz, "search_case", "tool")
+        self.tbCase = NIconToolButton(self, iSz, "search_case:tool")
         self.tbCase.setToolTip(self.tr("Case Sensitive"))
         self.tbCase.setCheckable(True)
         self.tbCase.setChecked(CONFIG.searchProjCase)
         self.tbCase.clicked.connect(self._toggleCase)
         self.searchOpt.addWidget(self.tbCase)
 
-        self.tbWord = NIconToolButton(self, iSz, "search_word", "tool")
+        self.tbWord = NIconToolButton(self, iSz, "search_word:tool")
         self.tbWord.setToolTip(self.tr("Whole Words Only"))
         self.tbWord.setCheckable(True)
         self.tbWord.setChecked(CONFIG.searchProjWord)
         self.tbWord.clicked.connect(self._toggleWord)
         self.searchOpt.addWidget(self.tbWord)
 
-        self.tbRegEx = NIconToolButton(self, iSz, "search_regex", "tool")
+        self.tbRegEx = NIconToolButton(self, iSz, "search_regex:tool")
         self.tbRegEx.setToolTip(self.tr("RegEx Mode"))
         self.tbRegEx.setCheckable(True)
         self.tbRegEx.setChecked(CONFIG.searchProjRegEx)
@@ -193,7 +193,7 @@ class GuiProjectSearch(QWidget):
         self.outerBox.setSpacing(2)
 
         self.setLayout(self.outerBox)
-        self.updateTheme(onInit=True)
+        self.updateTheme(init=True)
 
         logger.debug("Ready: GuiProjectSearch")
 
@@ -210,7 +210,7 @@ class GuiProjectSearch(QWidget):
     #  Methods
     ##
 
-    def updateTheme(self, onInit: bool = False) -> None:
+    def updateTheme(self, *, init: bool = False) -> None:
         """Update theme elements."""
         logger.debug("Theme Update: GuiProjectSearch")
 
@@ -230,7 +230,7 @@ class GuiProjectSearch(QWidget):
         if viewport := self.searchResult.viewport():  # pragma: no branch
             viewport.update()
 
-        if not onInit:
+        if not init:
             self.tbCase.refreshTheme()
             self.tbWord.refreshTheme()
             self.tbRegEx.refreshTheme()

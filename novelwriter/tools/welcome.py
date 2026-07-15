@@ -624,7 +624,7 @@ class _NewProjectForm(QWidget):
         self.projPath = QLineEdit(self)
         self.projPath.setReadOnly(True)
 
-        self.browsePath = NIconToolButton(self, iSz, "browse", "systemio")
+        self.browsePath = NIconToolButton(self, iSz, "browse:systemio")
         self.browsePath.setToolTip(self.tr("Browse for new project path"))
         self.browsePath.clicked.connect(self._doBrowse)
 
@@ -639,7 +639,7 @@ class _NewProjectForm(QWidget):
         self.projFill = QLineEdit(self)
         self.projFill.setReadOnly(True)
 
-        self.browseFill = NIconToolButton(self, iSz, "document_add", "add")
+        self.browseFill = NIconToolButton(self, iSz, "document_add:add")
         self.browseFill.setToolTip(self.tr("Fill new project"))
 
         self.fillMenu = QMenu(self.browseFill)

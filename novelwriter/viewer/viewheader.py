@@ -81,32 +81,32 @@ class GuiDocViewHeader(QWidget):
         self.outlineMenu.triggered.connect(self._gotoHeader)
 
         # Buttons
-        self.outlineButton = NIconToolButton(self, iSz)
+        self.outlineButton = NIconToolButton(self, iSz, "list:action")
         self.outlineButton.setVisible(False)
         self.outlineButton.setToolTip(self.tr("Outline"))
         self.outlineButton.setMenu(self.outlineMenu)
 
-        self.backButton = NIconToolButton(self, iSz)
+        self.backButton = NIconToolButton(self, iSz, "chevron_left:action")
         self.backButton.setVisible(False)
         self.backButton.setToolTip(self.tr("Go Backward"))
         self.backButton.clicked.connect(self.docViewer.navBackward)
 
-        self.forwardButton = NIconToolButton(self, iSz)
+        self.forwardButton = NIconToolButton(self, iSz, "chevron_right:action")
         self.forwardButton.setVisible(False)
         self.forwardButton.setToolTip(self.tr("Go Forward"))
         self.forwardButton.clicked.connect(self.docViewer.navForward)
 
-        self.editButton = NIconToolButton(self, iSz)
+        self.editButton = NIconToolButton(self, iSz, "edit:change")
         self.editButton.setVisible(False)
         self.editButton.setToolTip(self.tr("Open in Editor"))
         self.editButton.clicked.connect(self._editDocument)
 
-        self.refreshButton = NIconToolButton(self, iSz)
+        self.refreshButton = NIconToolButton(self, iSz, "refresh:change")
         self.refreshButton.setVisible(False)
         self.refreshButton.setToolTip(self.tr("Reload"))
         self.refreshButton.clicked.connect(self._refreshDocument)
 
-        self.closeButton = NIconToolButton(self, iSz)
+        self.closeButton = NIconToolButton(self, iSz, "close:reject")
         self.closeButton.setVisible(False)
         self.closeButton.setToolTip(self.tr("Close"))
         self.closeButton.clicked.connect(self._closeDocument)
@@ -133,7 +133,7 @@ class GuiDocViewHeader(QWidget):
         self.setMinimumHeight(fPx + 4)
 
         self.updateFont()
-        self.updateTheme()
+        self.updateTheme(init=True)
 
         logger.debug("Ready: GuiDocViewHeader")
 
@@ -176,16 +176,17 @@ class GuiDocViewHeader(QWidget):
         self.setFont(SHARED.theme.guiFont)
         self.itemTitle.setFont(SHARED.theme.guiFontSmall)
 
-    def updateTheme(self) -> None:
+    def updateTheme(self, *, init: bool = False) -> None:
         """Update theme elements."""
         logger.debug("Theme Update: GuiDocViewHeader")
 
-        self.outlineButton.setThemeIcon("list", "action")
-        self.backButton.setThemeIcon("chevron_left", "action")
-        self.forwardButton.setThemeIcon("chevron_right", "action")
-        self.editButton.setThemeIcon("edit", "change")
-        self.refreshButton.setThemeIcon("refresh", "change")
-        self.closeButton.setThemeIcon("close", "reject")
+        if not init:
+            self.outlineButton.refreshTheme()
+            self.backButton.refreshTheme()
+            self.forwardButton.refreshTheme()
+            self.editButton.refreshTheme()
+            self.refreshButton.refreshTheme()
+            self.closeButton.refreshTheme()
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.outlineButton.setStyleSheet(buttonStyle)

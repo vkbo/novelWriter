@@ -64,7 +64,7 @@ class GuiDocViewFooter(QWidget):
         self.setAutoFillBackground(True)
 
         # Show/Hide Details
-        self.showHide = NIconToolButton(self, iSz)
+        self.showHide = NIconToolButton(self, iSz, "panel:default")
         self.showHide.setToolTip(self.tr("Show/Hide Viewer Panel"))
         self.showHide.clicked.connect(lambda: self.docViewer.togglePanelVisibility.emit())
 
@@ -130,14 +130,16 @@ class GuiDocViewFooter(QWidget):
         self.showSynopsis.setFont(SHARED.theme.guiFontSmall)
         self.showNotes.setFont(SHARED.theme.guiFontSmall)
 
-    def updateTheme(self) -> None:
+    def updateTheme(self, *, init: bool = False) -> None:
         """Update theme elements."""
         logger.debug("Theme Update: GuiDocViewFooter")
 
         fPx = int(0.9 * SHARED.theme.fontPixelSize)
         bulletIcon = SHARED.theme.getToggleIcon("bullet:action", fPx, fPx)
 
-        self.showHide.setThemeIcon("panel", "default")
+        if not init:
+            self.showHide.refreshTheme()
+
         self.showComments.setIcon(bulletIcon)
         self.showSynopsis.setIcon(bulletIcon)
         self.showNotes.setIcon(bulletIcon)

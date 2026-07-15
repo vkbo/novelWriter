@@ -84,35 +84,35 @@ class GuiDocEditSearch(QFrame):
 
         self.resultLabel = QLabel("?/?", self)
 
-        self.tbCase = NIconToolButton(self, iSz, "search_case", "tool")
+        self.tbCase = NIconToolButton(self, iSz, "search_case:tool")
         self.tbCase.setToolTip(self.tr("Case Sensitive"))
         self.tbCase.setCheckable(True)
         self.tbCase.setChecked(CONFIG.searchCase)
         self.tbCase.clicked.connect(self._doToggleCase)
         self.searchOpt.addWidget(self.tbCase)
 
-        self.tbWord = NIconToolButton(self, iSz, "search_word", "tool")
+        self.tbWord = NIconToolButton(self, iSz, "search_word:tool")
         self.tbWord.setToolTip(self.tr("Whole Words Only"))
         self.tbWord.setCheckable(True)
         self.tbWord.setChecked(CONFIG.searchWord)
         self.tbWord.clicked.connect(self._doToggleWord)
         self.searchOpt.addWidget(self.tbWord)
 
-        self.tbRegEx = NIconToolButton(self, iSz, "search_regex", "tool")
+        self.tbRegEx = NIconToolButton(self, iSz, "search_regex:tool")
         self.tbRegEx.setToolTip(self.tr("RegEx Mode"))
         self.tbRegEx.setCheckable(True)
         self.tbRegEx.setChecked(CONFIG.searchRegEx)
         self.tbRegEx.clicked.connect(self._doToggleRegEx)
         self.searchOpt.addWidget(self.tbRegEx)
 
-        self.tbLoop = NIconToolButton(self, iSz, "search_loop", "tool")
+        self.tbLoop = NIconToolButton(self, iSz, "search_loop:tool")
         self.tbLoop.setToolTip(self.tr("Loop Search"))
         self.tbLoop.setCheckable(True)
         self.tbLoop.setChecked(CONFIG.searchLoop)
         self.tbLoop.clicked.connect(self._doToggleLoop)
         self.searchOpt.addWidget(self.tbLoop)
 
-        self.tbProject = NIconToolButton(self, iSz, "search_project", "tool")
+        self.tbProject = NIconToolButton(self, iSz, "search_project:tool")
         self.tbProject.setToolTip(self.tr("Search Next File"))
         self.tbProject.setCheckable(True)
         self.tbProject.setChecked(CONFIG.searchNextFile)
@@ -121,7 +121,7 @@ class GuiDocEditSearch(QFrame):
 
         self.searchOpt.addSeparator()
 
-        self.tbMatchCap = NIconToolButton(self, iSz, "search_preserve", "tool")
+        self.tbMatchCap = NIconToolButton(self, iSz, "search_preserve:tool")
         self.tbMatchCap.setToolTip(self.tr("Preserve Case"))
         self.tbMatchCap.setCheckable(True)
         self.tbMatchCap.setChecked(CONFIG.searchMatchCap)
@@ -130,7 +130,7 @@ class GuiDocEditSearch(QFrame):
 
         self.searchOpt.addSeparator()
 
-        self.tbCancel = NIconToolButton(self, iSz, "search_cancel", "tool")
+        self.tbCancel = NIconToolButton(self, iSz, "search_cancel:tool")
         self.tbCancel.setToolTip(self.tr("Close Search"))
         self.tbCancel.clicked.connect(self.closeSearch)
         self.searchOpt.addWidget(self.tbCancel)
@@ -138,14 +138,14 @@ class GuiDocEditSearch(QFrame):
         # Buttons
         # =======
 
-        self.showReplace = NIconToggleButton(self, iSz, "unfold", "default")
+        self.showReplace = NIconToggleButton(self, iSz, "unfold:default")
         self.showReplace.toggled.connect(self._doToggleReplace)
 
-        self.searchButton = NIconToolButton(self, iSz, "search", "action")
+        self.searchButton = NIconToolButton(self, iSz, "search:action")
         self.searchButton.setToolTip(self.tr("Find in current document"))
         self.searchButton.clicked.connect(self._doSearch)
 
-        self.replaceButton = NIconToolButton(self, iSz, "search_replace", "apply")
+        self.replaceButton = NIconToolButton(self, iSz, "search_replace:apply")
         self.replaceButton.setToolTip(self.tr("Find and replace in current document"))
         self.replaceButton.clicked.connect(self._doReplace)
 
@@ -174,7 +174,7 @@ class GuiDocEditSearch(QFrame):
         self.adjustSize()
 
         self.updateFont()
-        self.updateTheme(onInit=True)
+        self.updateTheme(init=True)
 
         logger.debug("Ready: GuiDocEditSearch")
 
@@ -259,7 +259,7 @@ class GuiDocEditSearch(QFrame):
         self.resultLabel.setFont(SHARED.theme.guiFontSmall)
         self.resultLabel.setMinimumWidth(SHARED.theme.getTextWidth("?/?", SHARED.theme.guiFontSmall))
 
-    def updateTheme(self, onInit: bool = False) -> None:
+    def updateTheme(self, *, init: bool = False) -> None:
         """Update theme elements."""
         logger.debug("Theme Update: GuiDocEditSearch")
 
@@ -269,7 +269,7 @@ class GuiDocEditSearch(QFrame):
         self.replaceBox.setPalette(palette)
 
         # Set icons
-        if not onInit:
+        if not init:
             self.tbCase.refreshTheme()
             self.tbWord.refreshTheme()
             self.tbRegEx.refreshTheme()

@@ -504,9 +504,9 @@ class nwLabels:
         "purple": QT_TRANSLATE_NOOP("Constant", "Purple"),
     }
     THEME_MODE_ICON: Final[dict[nwTheme, str]] = {
-        nwTheme.AUTO: "theme_auto",
-        nwTheme.LIGHT: "theme_light",
-        nwTheme.DARK: "theme_dark",
+        nwTheme.AUTO: "theme_auto:sidebar",
+        nwTheme.LIGHT: "theme_light:sidebar",
+        nwTheme.DARK: "theme_dark:sidebar",
     }
     THEME_MODE_LABEL: Final[dict[nwTheme, str]] = {
         nwTheme.AUTO: QT_TRANSLATE_NOOP("Constant", "System Theme"),

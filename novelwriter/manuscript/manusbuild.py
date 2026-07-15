@@ -162,7 +162,7 @@ class GuiManuscriptBuild(NDialog):
         # Build Name
         self.lblName = QLabel(self.tr("File Name"), self)
         self.buildName = QLineEdit(self)
-        self.btnReset = NIconToolButton(self, iSz, "revert", "reset")
+        self.btnReset = NIconToolButton(self, iSz, "revert:reset")
         self.btnReset.setToolTip(self.tr("Reset file name to default"))
 
         self.nameBox = QHBoxLayout()
@@ -187,7 +187,7 @@ class GuiManuscriptBuild(NDialog):
         self.buildBox.setVerticalSpacing(4)
 
         # Dialog Buttons
-        self.btnOpen = NPushButton(self, self.tr("Open Folder"), bSz, "browse", "systemio")
+        self.btnOpen = NPushButton(self, self.tr("Open Folder"), bSz, "browse:systemio")
         self.btnOpen.setAutoDefault(False)
 
         self.btnBuild = SHARED.theme.getStandardButton(nwStandardButton.BUILD, self)

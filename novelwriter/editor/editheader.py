@@ -86,27 +86,27 @@ class GuiDocEditHeader(QWidget):
         self.outlineMenu.triggered.connect(self._gotoBlock)
 
         # Buttons
-        self.tbButton = NIconToolButton(self, iSz)
+        self.tbButton = NIconToolButton(self, iSz, "fmt_toolbar:action")
         self.tbButton.setVisible(False)
         self.tbButton.setToolTip(self.tr("Toggle Tool Bar"))
         self.tbButton.clicked.connect(qtLambda(self.toggleToolBarRequest.emit))
 
-        self.outlineButton = NIconToolButton(self, iSz)
+        self.outlineButton = NIconToolButton(self, iSz, "list:action")
         self.outlineButton.setVisible(False)
         self.outlineButton.setToolTip(self.tr("Outline"))
         self.outlineButton.setMenu(self.outlineMenu)
 
-        self.searchButton = NIconToolButton(self, iSz)
+        self.searchButton = NIconToolButton(self, iSz, "search:action")
         self.searchButton.setVisible(False)
         self.searchButton.setToolTip(self.tr("Search"))
         self.searchButton.clicked.connect(self.docEditor.toggleSearch)
 
-        self.minmaxButton = NIconToolButton(self, iSz)
+        self.minmaxButton = NIconToolButton(self, iSz, "maximise:action")
         self.minmaxButton.setVisible(False)
         self.minmaxButton.setToolTip(self.tr("Toggle Focus Mode"))
         self.minmaxButton.clicked.connect(qtLambda(self.docEditor.toggleFocusModeRequest.emit))
 
-        self.closeButton = NIconToolButton(self, iSz)
+        self.closeButton = NIconToolButton(self, iSz, "close:reject")
         self.closeButton.setVisible(False)
         self.closeButton.setToolTip(self.tr("Close"))
         self.closeButton.clicked.connect(self._closeDocument)
@@ -172,15 +172,16 @@ class GuiDocEditHeader(QWidget):
         self.setFont(SHARED.theme.guiFont)
         self.itemTitle.setFont(SHARED.theme.guiFontSmall)
 
-    def updateTheme(self) -> None:
+    def updateTheme(self, *, init: bool = False) -> None:
         """Update theme elements."""
         logger.debug("Theme Update: GuiDocEditHeader")
 
-        self.tbButton.setThemeIcon("fmt_toolbar", "action")
-        self.outlineButton.setThemeIcon("list", "action")
-        self.searchButton.setThemeIcon("search", "action")
-        self.minmaxButton.setThemeIcon("maximise", "action")
-        self.closeButton.setThemeIcon("close", "reject")
+        if not init:
+            self.tbButton.refreshTheme()
+            self.outlineButton.refreshTheme()
+            self.searchButton.refreshTheme()
+            self.minmaxButton.refreshTheme()
+            self.closeButton.refreshTheme()
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbButton.setStyleSheet(buttonStyle)
@@ -252,7 +253,7 @@ class GuiDocEditHeader(QWidget):
     @pyqtSlot(bool)
     def _focusModeChanged(self, focusMode: bool) -> None:
         """Update minimise/maximise icon of the Focus Mode button."""
-        self.minmaxButton.setThemeIcon("minimise" if focusMode else "maximise", "action")
+        self.minmaxButton.setThemeIcon("minimise:action" if focusMode else "maximise:action")
 
     @pyqtSlot()
     def _resetColourState(self) -> None:
