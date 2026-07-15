@@ -931,11 +931,11 @@ class GuiIcons:
         """Return a toggle icon from the icon buffer, or load it."""
         key, _, color = name.partition(":")
         if key in self.TOGGLE_ICON_KEYS:
-            pOne = self.getPixmap(f"{self.TOGGLE_ICON_KEYS[key][0]}:{color}", width, height)
-            pTwo = self.getPixmap(f"{self.TOGGLE_ICON_KEYS[key][1]}:{color}", width, height)
+            pix0 = self.getPixmap(f"{self.TOGGLE_ICON_KEYS[key][0]}:{color}", width, height)
+            pix1 = self.getPixmap(f"{self.TOGGLE_ICON_KEYS[key][1]}:{color}", width, height)
             icon = QIcon()
-            icon.addPixmap(pOne, QIcon.Mode.Normal, QIcon.State.On)
-            icon.addPixmap(pTwo, QIcon.Mode.Normal, QIcon.State.Off)
+            icon.addPixmap(pix0, QIcon.Mode.Normal, QIcon.State.On)
+            icon.addPixmap(pix1, QIcon.Mode.Normal, QIcon.State.Off)
             return icon
         return self._noIcon
 

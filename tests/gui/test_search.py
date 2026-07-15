@@ -215,7 +215,7 @@ def testGuiProjectSearch_FilterPanel(nwGUI, fncPath, mockRnd, ipsumText):
     search.openProjectTasks()
 
     docSearch = search.searchObject
-    switches = search.searchFilters.filterOpt._switches
+    switches = {k: v.switch for k, v in search.searchFilters.filterOpt._entries.items()}
     model = search._model
     root = QModelIndex()
 

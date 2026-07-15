@@ -40,15 +40,15 @@ def testNSwitchBox_AddAndState(qtbot, mockGUIwithTheme):
     qtbot.addWidget(dialog)
 
     box.addLabel("Group")
-    box.addItem("Alpha", "item:alpha", icon="filter", color="default", default=True)
+    box.addItem("Alpha", "item:alpha", icon="filter", default=True)
     box.addItem("Beta", "item:beta", default=False)
     box.addSeparator()
 
-    assert isinstance(box._switches["item:alpha"], NSwitch)
-    assert isinstance(box._switches["item:beta"], NSwitch)
-    assert box._labels["item:alpha"].text() == "Alpha"
-    assert "item:alpha" in box._icons
-    assert "item:beta" not in box._icons
+    assert isinstance(box._entries["item:alpha"].switch, NSwitch)
+    assert isinstance(box._entries["item:beta"].switch, NSwitch)
+    assert box._entries["item:alpha"].label.text() == "Alpha"
+    assert box._entries["item:alpha"].pixmap is not None
+    assert box._entries["item:beta"].pixmap is None
 
     assert box.getSwitchState() == {"item:alpha": True, "item:beta": False}
 
@@ -57,7 +57,7 @@ def testNSwitchBox_AddAndState(qtbot, mockGUIwithTheme):
 
     # Toggling a switch emits the identifier and the new state
     with qtbot.waitSignal(box.switchToggled, timeout=1000) as signal:
-        box._switches["item:alpha"].setChecked(True)
+        box._entries["item:alpha"].switch.setChecked(True)
     assert signal.args == ["item:alpha", True]
 
     # Updating the theme refreshes the icon pixmaps of items that have one
@@ -75,10 +75,10 @@ def testNSwitchBox_UpdateInPlace(qtbot, mockGUIwithTheme):
     dialog.addWidget(box)
     qtbot.addWidget(dialog)
 
-    box.addItem("Original Name", "item:root", icon="filter", color="default", default=True)
+    box.addItem("Original Name", "item:root", icon="filter", default=True)
     box.addItem("Other", "item:other", default=False)
-    assert len(box._switches) == 2
-    originalSwitch = box._switches["item:root"]
+    assert len(box._entries) == 2
+    originalSwitch = box._entries["item:root"].switch
 
     # The user has since toggled the switch off
     originalSwitch.setChecked(False)
@@ -86,20 +86,20 @@ def testNSwitchBox_UpdateInPlace(qtbot, mockGUIwithTheme):
     # Re-adding the same identifier must not create a new row or switch,
     # must update the label text, and must not reset the switch state
     # even though a new default is provided
-    box.addItem("Renamed", "item:root", icon="filter", color="suffix", default=True)
-    assert len(box._switches) == 2
-    assert box._switches["item:root"] is originalSwitch
-    assert box._labels["item:root"].text() == "Renamed"
+    box.addItem("Renamed", "item:root", icon="filter", default=True)
+    assert len(box._entries) == 2
+    assert box._entries["item:root"].switch is originalSwitch
+    assert box._entries["item:root"].label.text() == "Renamed"
     assert originalSwitch.isChecked() is False
 
     # The same applies to an item that has no icon, where the icon branch
     # of the in-place update must simply be skipped
-    otherSwitch = box._switches["item:other"]
+    otherSwitch = box._entries["item:other"].switch
     box.addItem("Other Renamed", "item:other", default=True)
-    assert box._switches["item:other"] is otherSwitch
-    assert box._labels["item:other"].text() == "Other Renamed"
+    assert box._entries["item:other"].switch is otherSwitch
+    assert box._entries["item:other"].label.text() == "Other Renamed"
     assert otherSwitch.isChecked() is False
-    assert "item:other" not in box._icons
+    assert box._entries["item:other"].pixmap is None
 
 
 @pytest.mark.gui
@@ -112,16 +112,13 @@ def testNSwitchBox_RemoveItem(qtbot, mockGUIwithTheme):
     dialog.addWidget(box)
     qtbot.addWidget(dialog)
 
-    box.addItem("Alpha", "item:alpha", icon="filter", color="default", default=True)
+    box.addItem("Alpha", "item:alpha", icon="filter", default=True)
     box.addItem("Beta", "item:beta", default=False)
-    assert set(box._switches) == {"item:alpha", "item:beta"}
+    assert set(box._entries) == {"item:alpha", "item:beta"}
 
-    # Removing an item drops it from every internal tracking dict
+    # Removing an item drops it from the internal tracking dict
     box.removeItem("item:alpha")
-    assert "item:alpha" not in box._switches
-    assert "item:alpha" not in box._labels
-    assert "item:alpha" not in box._pixmaps
-    assert "item:alpha" not in box._icons
+    assert "item:alpha" not in box._entries
     assert box.getSwitchState() == {"item:beta": False}
 
     # Removing an item without an icon works the same way
@@ -135,7 +132,7 @@ def testNSwitchBox_RemoveItem(qtbot, mockGUIwithTheme):
     assert box.getSwitchState() == {}
 
     # The identifier can be reused afterwards, appending a fresh row
-    box.addItem("Alpha Again", "item:alpha", icon="filter", color="default", default=True)
+    box.addItem("Alpha Again", "item:alpha", icon="filter", default=True)
     assert box.getSwitchState() == {"item:alpha": True}
 
 
@@ -150,14 +147,11 @@ def testNSwitchBox_Clear(qtbot, mockGUIwithTheme):
     qtbot.addWidget(dialog)
 
     box.addLabel("Group")
-    box.addItem("Alpha", "item:alpha", icon="filter", color="default", default=True)
+    box.addItem("Alpha", "item:alpha", icon="filter", default=True)
     assert box.getSwitchState() != {}
 
     box.clear()
-    assert box._switches == {}
-    assert box._labels == {}
-    assert box._pixmaps == {}
-    assert box._icons == {}
+    assert box._entries == {}
     assert box.getSwitchState() == {}
 
     box.addItem("Beta", "item:beta", default=True)
@@ -176,11 +170,11 @@ def testNSwitchBox_MemoryLeakRegression(qtbot, mockGUIwithTheme):
     def build() -> NSwitchBox:
         box = NSwitchBox(None, 20)  # type: ignore
         box.addLabel("Group")
-        box.addItem("Alpha", "item:alpha", icon="filter", color="default", default=True)
+        box.addItem("Alpha", "item:alpha", icon="filter", default=True)
         box.addItem("Beta", "item:beta", default=False)
         box.removeItem("item:alpha")
         box.clear()
-        box.addItem("Gamma", "item:gamma", icon="filter", color="default", default=True)
+        box.addItem("Gamma", "item:gamma", icon="filter", default=True)
         return box
 
     checkWidgetFreedOnRelease(build)

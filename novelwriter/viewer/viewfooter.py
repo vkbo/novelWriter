@@ -115,7 +115,7 @@ class GuiDocViewFooter(QWidget):
         self.setMinimumHeight(iPx + 8)
 
         self.updateFont()
-        self.updateTheme()
+        self.updateTheme(init=True)
 
         logger.debug("Ready: GuiDocViewFooter")
 

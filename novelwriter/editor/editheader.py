@@ -136,7 +136,7 @@ class GuiDocEditHeader(QWidget):
         self.setMinimumHeight(fPx + 4)
 
         self.updateFont()
-        self.updateTheme()
+        self.updateTheme(init=True)
 
         logger.debug("Ready: GuiDocEditHeader")
 

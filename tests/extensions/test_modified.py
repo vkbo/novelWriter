@@ -273,8 +273,8 @@ def testNToolButtons_Main(qtbot, mockGUI):
     dialog = SimpleDialog(None)
 
     size = QSize(16, 16)
-    button1 = NIconToolButton(dialog, size, "add", "add")
-    button2 = NIconToggleButton(dialog, size, "bullet", "action")
+    button1 = NIconToolButton(dialog, size, "add:add")
+    button2 = NIconToggleButton(dialog, size, "bullet:action")
 
     assert button1.iconSize() == size
     assert button2.iconSize() == size

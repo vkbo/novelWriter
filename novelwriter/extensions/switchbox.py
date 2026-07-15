@@ -35,7 +35,6 @@ from novelwriter.types import QtAlignLeft, QtAlignRight, QtSizeExpanding, QtSize
 
 @dataclass
 class _SwitchEntry:
-
     label: QLabel
     switch: NSwitch
     pixmap: QLabel | None = None
@@ -74,10 +73,7 @@ class NSwitchBox(QScrollArea):
 
     def getSwitchState(self) -> dict[str, bool]:
         """Get the state of the switches in the box."""
-        return {
-            identifier: entry.switch.isChecked()
-            for identifier, entry in self._entries.items()
-        }
+        return {identifier: entry.switch.isChecked() for identifier, entry in self._entries.items()}
 
     def updateTheme(self) -> None:
         """Update the theme of the switches in the box."""
