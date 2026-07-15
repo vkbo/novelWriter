@@ -425,13 +425,13 @@ class GuiProjectToolBar(QWidget):
     @pyqtSlot(QAction)
     def _onQuickLinkSelected(self, action: QAction) -> None:
         """Select a quick link item."""
-        if isinstance(tHandle := action.data(), str):
+        if isinstance(tHandle := action.data(), str):  # pragma: no branch
             self.projView.setSelectedHandle(tHandle, doScroll=True)
 
     @pyqtSlot(QAction)
     def _onAddRootSelected(self, action: QAction) -> None:
         """Add a new root item."""
-        if isinstance(itemClass := action.data(), nwItemClass):
+        if isinstance(itemClass := action.data(), nwItemClass):  # pragma: no branch
             self.projTree.newTreeItem(nwItemType.ROOT, itemClass=itemClass)
 
     ##
