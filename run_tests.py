@@ -15,8 +15,9 @@ if __name__ == "__main__":
     """Parse command line options and run the commands."""
     parser = argparse.ArgumentParser(usage="run_tests.py [--flags]")
     parser.add_argument("-o", action="store_true", help="Run off screen")
-    parser.add_argument("-r", action="store_true", help="Generate reports")
-    parser.add_argument("-t", action="store_true", help="Generate terminal report")
+    parser.add_argument("-r", action="store_true", help="Generate xml coverage report")
+    parser.add_argument("-rh", action="store_true", help="Generate html coverage report")
+    parser.add_argument("-t", action="store_true", help="Generate terminal coverage report")
     parser.add_argument("-u", action="store_true", help="Generate uncovered terminal report")
     parser.add_argument("-lf", action="store_true", help="Re-run failed tests")
     parser.add_argument("-sw", action="store_true", help="Run tests stepwise")
@@ -54,6 +55,7 @@ if __name__ == "__main__":
 
     if args.r:
         subprocess.call(["coverage", "xml"])
+    if args.rh:
         subprocess.call(["coverage", "html"])
     if args.t and not args.u:
         subprocess.call(["coverage", "report"])
