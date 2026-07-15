@@ -40,7 +40,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import qtAddAction, qtAddMenu, qtLambda, qtWeakLambda
+from novelwriter.common import elide, qtAddAction, qtAddMenu, qtLambda, qtWeakLambda
 from novelwriter.constants import nwLabels, nwStyles, nwUnicode, trConst
 from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
 from novelwriter.core.item import ProjectItem
@@ -255,6 +255,7 @@ class GuiProjectToolBar(QWidget):
 
         # Quick Links
         self.mQuick = QMenu(self)
+        self.mQuick.triggered.connect(self._onQuickLinkSelected)
 
         self.tbQuick = NIconToolButton(self, iSz)
         self.tbQuick.setToolTip("{0} [Ctrl+L]".format(self.tr("Quick Links")))
@@ -297,6 +298,7 @@ class GuiProjectToolBar(QWidget):
         self.mAdd.addMenu(self.mTemplates)
 
         self.mAddRoot = qtAddMenu(self.mAdd, trConst(nwLabels.ITEM_DESCRIPTION["root"]))
+        self.mAddRoot.triggered.connect(self._onAddRootSelected)
         self._buildRootMenu()
 
         self.tbAdd = NIconToolButton(self, iSz)
@@ -378,13 +380,12 @@ class GuiProjectToolBar(QWidget):
         logger.debug("Rebuilding quick links menu")
         self.mQuick.clear()
         for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
-            action = qtAddAction(
+            qtAddAction(
                 self.mQuick,
-                nwItem.itemName,
+                elide(nwItem.itemName, 50),
                 icon=SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass], "root"),
                 data=tHandle,
             )
-            action.triggered.connect(qtLambda(self.projView.setSelectedHandle, tHandle, doScroll=True))
 
     def buildTemplatesMenu(self) -> None:
         """Build the templates menu."""
@@ -418,6 +419,22 @@ class GuiProjectToolBar(QWidget):
         self.aAddEmpty.setVisible(allowDoc)
 
     ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(QAction)
+    def _onQuickLinkSelected(self, action: QAction) -> None:
+        """Select a quick link item."""
+        if isinstance(tHandle := action.data(), str):  # pragma: no branch
+            self.projView.setSelectedHandle(tHandle, doScroll=True)
+
+    @pyqtSlot(QAction)
+    def _onAddRootSelected(self, action: QAction) -> None:
+        """Add a new root item."""
+        if isinstance(itemClass := action.data(), nwItemClass):  # pragma: no branch
+            self.projTree.newTreeItem(nwItemType.ROOT, itemClass=itemClass)
+
+    ##
     #  Internal Functions
     ##
 
@@ -425,12 +442,12 @@ class GuiProjectToolBar(QWidget):
         """Build the rood folder menu."""
 
         def addClass(itemClass: nwItemClass) -> None:
-            action = qtAddAction(
+            qtAddAction(
                 self.mAddRoot,
                 trConst(nwLabels.CLASS_NAME[itemClass]),
                 icon=SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass], "root"),
+                data=itemClass,
             )
-            action.triggered.connect(qtLambda(self.projTree.newTreeItem, nwItemType.ROOT, itemClass))
 
         self.mAddRoot.clear()
         addClass(nwItemClass.NOVEL)
@@ -1044,6 +1061,7 @@ class _UpdatableMenu(QMenu):
         """Remove a template item."""
         if action := self._map.pop(tHandle, None):
             self.removeAction(action)
+            action.setParent(None)
         if not self._map:
             self.setActionsVisible(False)
 

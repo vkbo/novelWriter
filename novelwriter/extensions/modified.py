@@ -393,6 +393,19 @@ class NClickableLabel(QLabel):
         return super().mousePressEvent(event)
 
 
+class NClipLabel(QLabel):
+    """Custom: Clipping QLabel.
+
+    A QLabel that can be compressed narrower than its text, so long
+    labels are clipped instead of forcing a horizontal scroll bar. The
+    parent widget must have horizontal size policy set to expanding.
+    """
+
+    def minimumSizeHint(self) -> QSize:
+        """Override the minimum size hint to allow clipping."""
+        return QSize(10, super().minimumSizeHint().height())
+
+
 class NSplitterHandle(QSplitterHandle):
     """Custom Widget: Highlighted Splitter Handle.
 

@@ -26,7 +26,7 @@ import pytest
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 
-from tests.helpers import SimpleDialog
+from tests.helpers import SimpleDialog, checkWidgetFreedOnRelease
 
 
 @pytest.mark.gui
@@ -162,3 +162,25 @@ def testNSwitchBox_Clear(qtbot, mockGUIwithTheme):
 
     box.addItem("Beta", "item:beta", default=True)
     assert box.getSwitchState() == {"item:beta": True}
+
+
+@pytest.mark.gui
+def testNSwitchBox_MemoryLeakRegression(qtbot, mockGUIwithTheme):
+    """Test that the box is freed by reference count alone once
+    released, even though its switches connect back to it. This guards
+    against a self-pinning closure connected to a switch in the box's
+    own widget subtree, which would otherwise keep the box alive until
+    the cyclic garbage collector happens to run.
+    """
+
+    def build() -> NSwitchBox:
+        box = NSwitchBox(None, 20)  # type: ignore
+        box.addLabel("Group")
+        box.addItem("Alpha", "item:alpha", icon="filter", color="default", default=True)
+        box.addItem("Beta", "item:beta", default=False)
+        box.removeItem("item:alpha")
+        box.clear()
+        box.addItem("Gamma", "item:gamma", icon="filter", color="default", default=True)
+        return box
+
+    checkWidgetFreedOnRelease(build)

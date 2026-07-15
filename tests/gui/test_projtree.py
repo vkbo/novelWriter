@@ -21,6 +21,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import gc
+import weakref
+
 from unittest.mock import MagicMock
 
 import pytest
@@ -84,6 +87,7 @@ def testGuiProjectTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, 
 
     projView = nwGUI.projView
     projTree = projView.projTree
+    projBar = projView.projBar
     project = SHARED.project
     tree = project.tree
 
@@ -125,10 +129,13 @@ def testGuiProjectTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, 
         "Trash",
     ]
 
-    # Create Objects root item after Locations
+    # Create Objects root item after Locations, via the add-root menu
+    # entry rather than calling newTreeItem directly, which also
+    # exercises the toolbar's private _onAddRootSelected slot
     hObjectRoot = "0000000000011"
     projView.setSelectedHandle(C.hWorldRoot)
-    projTree.newTreeItem(nwItemType.ROOT, nwItemClass.OBJECT)
+    addObjectRoot = next(a for a in projBar.mAddRoot.actions() if a.data() == nwItemClass.OBJECT)
+    addObjectRoot.trigger()
     assert hObjectRoot in tree
     item = tree[hObjectRoot]
     assert item is not None
@@ -145,6 +152,14 @@ def testGuiProjectTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, 
         "Objects",
         "Trash",
     ]
+
+    # Creating the root item also selects it, which in turn should have
+    # rebuilt the quick links menu to include it; selecting a different
+    # entry from that menu exercises the private _onQuickLinkSelected slot
+    assert projView.getSelectedHandle() == hObjectRoot
+    selectCharRoot = next(a for a in projBar.mQuick.actions() if a.data() == C.hCharRoot)
+    selectCharRoot.trigger()
+    assert projView.getSelectedHandle() == C.hCharRoot
 
     # File/Folder Items
     # =================
@@ -2315,3 +2330,49 @@ def testGuiProjectTree_MemoryLeakRegression(qtbot, nwGUI, projPath, mockRnd):
     checkWidgetFreedOnRelease(lambda: build("buildSingleSelectMenu"))
     checkWidgetFreedOnRelease(lambda: build("buildMultiSelectMenu"))
     checkWidgetFreedOnRelease(lambda: build("buildTrashMenu"))
+
+
+@pytest.mark.gui
+def testGuiProjectToolBar_MemoryLeakRegression(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test that the toolbar's dynamic per-item menus free their actions
+    by reference count alone, since neither rebuild path routes through
+    a setParent(None)/del sequence a generic helper could drive: the
+    quick links menu is released by QMenu.clear() deleting its owned
+    actions, and a single template entry is released by
+    _UpdatableMenu.remove(), which used to only unlink the action from
+    the menu's visible action list without freeing it, as its Qt parent
+    was never cleared.
+    """
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
+    buildTestProject(nwGUI, projPath)
+    projTree = nwGUI.projView.projTree
+    projBar = nwGUI.projView.projBar
+
+    # Quick links: QMenu.clear() must free the actions it owns
+    projBar.buildQuickLinksMenu()
+    refs = [weakref.ref(a) for a in projBar.mQuick.actions()]
+    assert refs
+
+    gc.disable()
+    try:
+        projBar.buildQuickLinksMenu()
+        assert all(r() is None for r in refs), "Old quick link actions were not freed"
+    finally:
+        gc.enable()
+
+    # Templates: _UpdatableMenu.remove() must free the removed action
+    projTree.newTreeItem(nwItemType.ROOT, nwItemClass.TEMPLATE)
+    hTemplatesRoot = SHARED.project.tree.findRoot(nwItemClass.TEMPLATE)
+    assert hTemplatesRoot is not None
+    projTree.setSelectedHandle(hTemplatesRoot)
+    projTree.newTreeItem(nwItemType.FILE, hLevel=3, isNote=False)
+
+    hSceneTemplate = next(iter(projBar.mTemplates._map))
+    ref = weakref.ref(projBar.mTemplates._map[hSceneTemplate])
+
+    gc.disable()
+    try:
+        projBar.mTemplates.remove(hSceneTemplate)
+        assert ref() is None, "Template action was not freed after remove()"
+    finally:
+        gc.enable()
