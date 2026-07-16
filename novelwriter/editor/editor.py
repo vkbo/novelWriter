@@ -74,7 +74,7 @@ from novelwriter.editor.editsearch import GuiDocEditSearch
 from novelwriter.editor.edittoolbar import GuiDocToolBar
 from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE
 from novelwriter.editor.runnables import BackgroundTextCheck, BackgroundWordCounter, T_TextCheckPayload
-from novelwriter.editor.textblock import T_TextCheckResult, TextBlockData
+from novelwriter.editor.textblock import T_TextCheckList, TextBlockData
 from novelwriter.enum import (
     nwChange,
     nwComment,
@@ -1543,7 +1543,7 @@ class GuiDocEditor(QTextEdit):
             SHARED.newStatusMessage(self.tr("Spell check complete"))
 
     @pyqtSlot(int, list)
-    def _textCheckResults(self, jobId: int, results: list[tuple[int, T_TextCheckResult, T_TextCheckResult]]) -> None:
+    def _textCheckResults(self, jobId: int, results: list[tuple[int, T_TextCheckList, T_TextCheckList]]) -> None:
         """Process the results from the spell/format check worker.
         Results are discarded if the job was cancelled, or per block if
         the block was modified or removed while the worker was running.
