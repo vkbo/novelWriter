@@ -1410,6 +1410,7 @@ class GuiDocEditor(QTextEdit):
         """Tags have changed, so just in case we rehighlight them."""
         if updated or deleted:
             self._qDocument.syntaxHighlighter.rehighlightByType(BLOCK_META)
+            self._hoverCard.pruneCache(updated + deleted)
 
     @pyqtSlot(str, str)
     def processSpellCheckChange(self, language: str, provider: str) -> None:

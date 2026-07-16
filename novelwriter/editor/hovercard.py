@@ -154,6 +154,7 @@ class GuiDocHoverCard(QFrame):
         looked up from the project index, and update the label. Returns
         True if the tag resolved to any content to display.
         """
+        tag = tag.lower()
         if tag != self._tag:
             self._tag = tag
             if tag and tag not in self._cache:
@@ -168,6 +169,12 @@ class GuiDocHoverCard(QFrame):
         """
         self._tag = ""
         self._cache = {}
+
+    def pruneCache(self, remove: list[str]) -> None:
+        """Remove any cached text that has changed."""
+        self._tag = ""
+        for tag in remove:
+            self._cache.pop(tag, None)
 
     def showAt(self, pos: QPoint, viewportWidth: int, viewportHeight: int) -> None:
         """Show the hover card with its top-left corner at pos."""

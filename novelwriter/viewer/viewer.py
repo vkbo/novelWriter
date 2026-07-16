@@ -396,6 +396,12 @@ class GuiDocViewer(QTextBrowser):
             self.setFont(font)
             document.setDefaultFont(font)
 
+    @pyqtSlot(list, list)
+    def updateChangedTags(self, updated: list[str], deleted: list[str]) -> None:
+        """Tags have changed, so just in case we rehighlight them."""
+        if updated or deleted:
+            self._hoverCard.pruneCache(updated + deleted)
+
     ##
     #  Private Slots
     ##
