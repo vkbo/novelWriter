@@ -905,27 +905,42 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert SHARED.focusMode is False
     nwGUI.openDocument(C.hSceneDoc)
 
-    # Pressing Escape turns off focus mode
+    # Pressing Escape turns off focus mode. Focus mode puts focus on the
+    # editor itself, which is where GuiDocEditor.keyPressEvent handles it.
     nwGUI.toggleFocusMode()
     assert SHARED.focusMode is True
-    qtbot.keyClick(nwGUI, QtKeyEscape)
+    assert nwGUI.docEditor.hasFocus() is True
+    qtbot.keyClick(nwGUI.docEditor, QtKeyEscape)
     assert SHARED.focusMode is False
 
-    # If search is active, Escape is redirected to editor
+    # If search is active, focus is in the search box instead, and Escape
+    # there just closes the search, leaving focus mode untouched
     nwGUI.toggleFocusMode()
     assert SHARED.focusMode is True
     nwGUI.docEditor.beginSearch()
-    qtbot.keyClick(nwGUI, QtKeyEscape)
+    assert nwGUI.docEditor.docSearch.searchBox.hasFocus() is True
+    qtbot.keyClick(nwGUI.docEditor.docSearch.searchBox, QtKeyEscape)
+    assert nwGUI.docEditor.searchVisible() is False
+    assert SHARED.focusMode is True
+
+    # If search is active but focus is in the editor itself rather than
+    # the search box, Escape still closes the search, this time via the
+    # editor's own keyPressEvent rather than the search box's event filter
+    nwGUI.docEditor.beginSearch()
+    nwGUI.docEditor.setFocus()
+    assert nwGUI.docEditor.hasFocus() is True
+    assert nwGUI.docEditor.searchVisible() is True
+    qtbot.keyClick(nwGUI.docEditor, QtKeyEscape)
+    assert nwGUI.docEditor.searchVisible() is False
     assert SHARED.focusMode is True
 
     # With search closed, Vim mode off, and Focus Mode inactive, Escape
     # does nothing
-    nwGUI.docEditor.closeSearch()
     nwGUI.toggleFocusMode()
     assert nwGUI.docEditor.searchVisible() is False
     assert CONFIG.vimMode is False
     assert SHARED.focusMode is False
-    nwGUI._keyPressEscape()
+    qtbot.keyClick(nwGUI.docEditor, QtKeyEscape)
 
     # Full Screen Mode
     # ================

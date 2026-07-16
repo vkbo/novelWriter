@@ -50,7 +50,7 @@ from novelwriter.dialogs.preferences import GuiNeedsUpdate, GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.editor.editor import GuiDocEditor
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView, nwVimMode
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView
 from novelwriter.extensions.progressbars import NProgressSimple
 from novelwriter.gui.itemdetails import GuiItemDetails
 from novelwriter.gui.mainmenu import GuiMainMenu
@@ -304,10 +304,6 @@ class GuiMain(QMainWindow):
         self.keyReturn = QShortcut(self)
         self.keyReturn.setKeys(["Return", "Enter", "Shift+Return", "Shift+Enter"])
         self.keyReturn.activated.connect(self._keyPressReturn)
-
-        self.keyEscape = QShortcut(self)
-        self.keyEscape.setKey("Esc")
-        self.keyEscape.activated.connect(self._keyPressEscape)
 
         # Initialise Main GUI
         self.initMain()
@@ -1274,16 +1270,6 @@ class GuiMain(QMainWindow):
             self.projSearch.processReturn()
         else:
             self.openSelectedItem()
-
-    @pyqtSlot()
-    def _keyPressEscape(self) -> None:
-        """Process an escape keypress in the main window."""
-        if self.docEditor.searchVisible():
-            self.docEditor.closeSearch()
-        elif CONFIG.vimMode:
-            self.docEditor.setVimMode(nwVimMode.NORMAL)
-        elif SHARED.focusMode:
-            SHARED.setFocusMode(False)
 
     @pyqtSlot(int)
     def _mainStackChanged(self, index: int) -> None:

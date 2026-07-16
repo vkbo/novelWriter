@@ -752,12 +752,12 @@ class Index:
         """Return all tags used by a specific document."""
         return self._itemIndex.allItemTags(tHandle) if tHandle else []
 
-    def getKeyWordTags(self, keyWord: str) -> list[str]:
+    def getKeyWordTags(self, keyWord: str) -> set[str]:
         """Return all tags usable for a specific keyword."""
         if keyWord in nwKeyWords.CAN_LOOKUP:
             itemClass = nwKeyWords.KEY_CLASS.get(keyWord)
             return self._tagsIndex.filterTagNames(itemClass.name if itemClass else None)
-        return []
+        return set()
 
     def getTagsData(
         self, activeOnly: bool = True
@@ -794,10 +794,13 @@ class TagsIndex:
     control of the keys.
     """
 
-    __slots__ = ("_tags",)
+    _ALL = "*"
+
+    __slots__ = ("_cache", "_tags")
 
     def __init__(self) -> None:
         self._tags: dict[str, dict[str, str]] = {}
+        self._cache: dict[str, set[str]] = {}
 
     def __contains__(self, tagKey: str) -> bool:
         """Return True if the given tag key is in the index."""
@@ -805,7 +808,8 @@ class TagsIndex:
 
     def __delitem__(self, tagKey: str) -> None:
         """Delete the data dictionary for a given tag key."""
-        self._tags.pop(tagKey.lower(), None)
+        if entry := self._tags.pop(tagKey.lower(), None):
+            self._unlinkTag(entry)
 
     def __getitem__(self, tagKey: str) -> dict | None:
         """Return the data dictionary for a given tag key."""
@@ -818,6 +822,7 @@ class TagsIndex:
     def clear(self) -> None:
         """Clear the index."""
         self._tags = {}
+        self._cache = {}
 
     def items(self) -> ItemsView:
         """Return a dictionary view of all tags."""
@@ -825,13 +830,18 @@ class TagsIndex:
 
     def add(self, tagKey: str, displayName: str, tHandle: str, sTitle: str, className: str) -> None:
         """Add a key to the index and set all values."""
-        self._tags[tagKey.lower()] = {
+        lKey = tagKey.lower()
+        if entry := self._tags.get(lKey):
+            self._unlinkTag(entry)
+        self._tags[lKey] = {
             "name": tagKey,
             "display": displayName or tagKey,
             "handle": tHandle,
             "heading": sTitle,
             "class": className,
         }
+        self._cache.setdefault(className, set()).add(tagKey)
+        self._cache.setdefault(self._ALL, set()).add(tagKey)
 
     def tagName(self, tagKey: str, default: str = "") -> str:
         """Get the name of a given tag."""
@@ -853,20 +863,19 @@ class TagsIndex:
         """Get the class of a given tag."""
         return self._tags.get(tagKey.lower(), {}).get("class", None)
 
-    def filterTagNames(self, className: str | None) -> list[str]:
-        """Get a list of tag names for a given class."""
-        if className is None:
-            return [x.get("name", "") for x in self._tags.values()]
-        else:
-            return [x.get("name", "") for x in self._tags.values() if x.get("class", "") == className]
+    def filterTagNames(self, className: str | None) -> set[str]:
+        """Get the set of tag names for a given class, or all tags."""
+        return self._cache.get(self._ALL if className is None else className, set())
 
     def updateClass(self, tHandle: str, className: str) -> None:
         """Update the class name of an item. This must be called when a
         document moves to another class.
         """
         for entry in self._tags.values():
-            if entry.get("handle") == tHandle:
+            if entry.get("handle") == tHandle and entry.get("class") != className:
+                self._unlinkClassName(entry)
                 entry["class"] = className
+                self._cache.setdefault(className, set()).add(entry["name"])
 
     ##
     #  Pack/Unpack
@@ -881,6 +890,7 @@ class TagsIndex:
         that it's valid.
         """
         self._tags = {}
+        self._cache = {}
         if not isinstance(data, dict):
             raise ValueError("tagsIndex is not a dict")
 
@@ -908,6 +918,21 @@ class TagsIndex:
                 raise ValueError("tagsIndex handle must be an nwItemClass")
 
             self.add(name, display, handle, heading, className)
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _unlinkClassName(self, entry: dict[str, str]) -> None:
+        """Remove a tag entry's name from its class' cached name set."""
+        self._cache.get(entry["class"], set()).discard(entry["name"])
+
+    def _unlinkTag(self, entry: dict[str, str]) -> None:
+        """Remove a tag entry from both its class' and the all-tags
+        cached name set, i.e. fully forget the entry.
+        """
+        self._unlinkClassName(entry)
+        self._cache.get(self._ALL, set()).discard(entry["name"])
 
 
 class IndexCache:

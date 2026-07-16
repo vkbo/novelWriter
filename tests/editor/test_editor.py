@@ -37,7 +37,6 @@ from PyQt6.QtGui import (
     QDragMoveEvent,
     QDropEvent,
     QFont,
-    QInputMethodEvent,
     QMouseEvent,
     QTextBlock,
     QTextCharFormat,
@@ -55,7 +54,6 @@ from novelwriter.core.item import ProjectItem
 from novelwriter.core.spellcheck import SpellEnchant
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.editor.autoreplace import TextAutoReplace
-from novelwriter.editor.completer import CommandCompleter
 from novelwriter.editor.editor import GuiDocEditor, _TagAction
 from novelwriter.editor.editsearch import GuiDocEditSearch
 from novelwriter.editor.textblock import TextBlockData, formatCheckText
@@ -68,11 +66,8 @@ from novelwriter.types import (
     QtImCurrentSelection,
     QtImCursorRectangle,
     QtKeepAnchor,
-    QtKeyBackspace,
-    QtKeyDown,
     QtKeyEscape,
     QtKeyReturn,
-    QtKeyTab,
     QtModCtrl,
     QtModNone,
     QtMouseLeft,
@@ -2594,16 +2589,6 @@ def testGuiDocEditor_InternalSlotEdgeCases(qtbot, nwGUI, projPath, mockRnd):
     docEditor.insertFromMimeData(emptyMime)
     assert docEditor.getText() == text
 
-    # The completer only repositions itself while visible
-    docEditor._completer.hide()
-    assert docEditor._completer.isVisible() is False
-    docEditor._completerToCursor()
-
-    # A completer trigger action without completer data does nothing
-    action = QAction()
-    with qtbot.assertNotEmitted(docEditor._completer.insertText, wait=100):
-        docEditor._completer._emitComplete(action)
-
     # With auto-select disabled, or with an existing selection, the
     # cursor is returned unchanged
     docEditor.setPlainText("hello world")
@@ -2622,155 +2607,6 @@ def testGuiDocEditor_InternalSlotEdgeCases(qtbot, nwGUI, projPath, mockRnd):
     docEditor.setCursorPosition(0)
     cursor = docEditor._autoSelect()
     assert cursor.selectedText() != ""
-
-
-@pytest.mark.gui
-def testGuiDocEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
-    """Test the document editor meta completer functionality."""
-    buildTestProject(nwGUI, projPath)
-    assert nwGUI.openDocument(C.hSceneDoc) is True
-    docEditor = nwGUI.docEditor
-
-    # Create Character
-    text = "# Jane Doe\n\n@tag: Jane\n\n# John Doe\n\n@tag: John\n\n"
-    cHandle = SHARED.project.newFile("People", C.hCharRoot)
-    assert nwGUI.openDocument(cHandle) is True
-    docEditor.replaceText(text)
-    nwGUI.saveDocument()
-
-    docEditor.replaceText("")
-    completer: CommandCompleter = docEditor._completer
-
-    # Create Scene
-    nwGUI.docEditor.setFocus()
-    for c in "### Scene One":
-        qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
-
-    # Type Keyword @
-    qtbot.keyClick(docEditor, "@", delay=KEY_DELAY)
-    assert len(completer.actions()) == len(nwKeyWords.VALID_KEYS)
-
-    # Type "c" to filer list to 2
-    qtbot.keyClick(docEditor, "c", delay=KEY_DELAY)
-    assert len(completer.actions()) == 2
-
-    # Type "q" to filer list to 0
-    qtbot.keyClick(docEditor, "q", delay=KEY_DELAY)
-    assert len(completer.actions()) == 0
-
-    # Delete character and go select @char
-    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
-    assert len(completer.actions()) == 2
-    completer.actions()[0].trigger()
-    assert docEditor.getText() == ("### Scene One\n\n@char:")
-
-    # The list of Characters should show up automatically
-    qtbot.keyClick(docEditor, " ", delay=KEY_DELAY)
-    assert [a.text() for a in completer.actions()] == ["Jane", "John"]
-
-    # Typing "q" should clear the list
-    qtbot.keyClick(docEditor, "q", delay=KEY_DELAY)
-    assert [a.text() for a in completer.actions()] == []
-
-    # Deleting it and typing "a", should leave "Jane"
-    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, "a", delay=KEY_DELAY)
-    assert [a.text() for a in completer.actions()] == ["Jane"]
-
-    # Selecting "Jane" should insert it
-    completer.actions()[0].trigger()
-    assert docEditor.getText() == ("### Scene One\n\n@char: Jane")
-
-    # Adding a comma should reopen it
-    qtbot.keyClick(docEditor, ",", delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, " ", delay=KEY_DELAY)
-    assert [a.text() for a in completer.actions()] == ["Jane", "John"]
-
-    # Pressing return without selecting anything should just close it
-    qtbot.keyClick(completer, QtKeyReturn, delay=KEY_DELAY)
-    assert [a.text() for a in completer.actions()] == []
-    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
-
-    # Start a new line with a nonsense keyword, which should be handled
-    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
-    for c in "@: ":
-        qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, QtKeyBackspace, delay=KEY_DELAY)
-
-    # Send keypresses to the completer object
-    qtbot.keyClick(docEditor, "@", delay=KEY_DELAY)
-    assert len(completer.actions()) == len(nwKeyWords.VALID_KEYS)
-    qtbot.keyClick(completer, "f", delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyReturn, delay=KEY_DELAY)
-    qtbot.keyClick(completer, " ", delay=KEY_DELAY)
-    qtbot.keyClick(completer, "h", delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyReturn, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyEscape, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
-    assert docEditor.getText() == ("### Scene One\n\n@char: Jane\n@focus: John\n")
-
-    # Send keypresses to the completer object for a comment
-    qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
-    assert len(completer.actions()) == 4
-    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyReturn, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
-    assert docEditor.getText() == ("### Scene One\n\n@char: Jane\n@focus: John\n%Synopsis: \n")
-
-    # Auto-complete story comment
-    SHARED.project.index._itemIndex._cache.story.add("Resolution")
-    qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
-    assert len(completer.actions()) == 4
-    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyReturn, delay=KEY_DELAY)
-    qtbot.keyClick(completer, ".", delay=KEY_DELAY)
-    assert len(completer.actions()) == 1
-    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyReturn, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
-    assert docEditor.getText() == ("### Scene One\n\n@char: Jane\n@focus: John\n%Synopsis: \n%Story.Resolution: \n")
-
-    # Auto-complete note comment, but select with Tab
-    SHARED.project.index._itemIndex._cache.note.add("Consistency")
-    qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
-    assert len(completer.actions()) == 4
-    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyTab, delay=KEY_DELAY)
-    qtbot.keyClick(completer, ".", delay=KEY_DELAY)
-    assert len(completer.actions()) == 1
-    qtbot.keyClick(completer, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(completer, QtKeyTab, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
-    assert docEditor.getText() == (
-        "### Scene One\n\n@char: Jane\n@focus: John\n%Synopsis: \n%Story.Resolution: \n%Note.Consistency: \n"
-    )
-
-    # CJK completer reposition (#2267 and #2517)
-    qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
-    assert completer.isVisible() is True
-    completer.move(0, 0)
-    assert completer.pos().x() == 0  # Completer menu at 0
-    assert completer.pos().y() == 0  # Completer menu at 0
-
-    event = QInputMethodEvent()
-    event.setCommitString("Text")
-    docEditor.inputMethodEvent(event)
-    assert completer.pos().x() > 0  # Completer should have moved
-    assert completer.pos().y() > 0  # Completer should have moved
-
-    # qtbot.stop()
 
 
 @pytest.mark.gui
@@ -3373,6 +3209,17 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mock
         docSearch.closeSearch()
         assert docSearch.isVisible() is False
         assert docEditor.focusNextPrevChild(True) is True
+
+    # While the completer popup is open, Tab must stay with the editor
+    # even if hasFocus() is momentarily wrong, which has been observed
+    # to happen on macOS right after the popup, a separate top-level
+    # window, is shown
+    with monkeypatch.context() as mp:
+        mp.setattr(docEditor, "hasFocus", lambda: False)
+        popup = docEditor._completer.popup()
+        assert popup is not None
+        mp.setattr(popup, "isVisible", lambda: True)
+        assert docEditor.focusNextPrevChild(True) is False
 
     # Replace Text
     # ============

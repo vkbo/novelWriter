@@ -29,7 +29,6 @@ from time import time
 
 from PyQt6 import sip
 from PyQt6.QtCore import (
-    QAbstractAnimation,
     QMimeData,
     QPoint,
     QPropertyAnimation,
@@ -47,7 +46,6 @@ from PyQt6.QtGui import (
     QDropEvent,
     QInputMethodEvent,
     QKeyEvent,
-    QKeySequence,
     QMouseEvent,
     QPalette,
     QResizeEvent,
@@ -92,12 +90,17 @@ from novelwriter.text.counting import standardCounter
 from novelwriter.text.formats import processHeading
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
+    QAnimDeleteWhenStopped,
+    QKeyRedo,
+    QKeySelectAll,
+    QKeyUndo,
     QtAlignJustify,
     QtImCurrentSelection,
     QtImCursorRectangle,
     QtKeepAnchor,
     QtKeyDown,
     QtKeyEnter,
+    QtKeyEscape,
     QtKeyLeft,
     QtKeyPageDown,
     QtKeyPageUp,
@@ -134,6 +137,9 @@ logger = logging.getLogger(__name__)
 
 T_TextCheckBlock = tuple[QTextBlock, TextBlockData, int]
 T_TextCheckJob = tuple[int, list[T_TextCheckBlock]]
+
+MOVE_KEYS = (QtKeyLeft, QtKeyRight, QtKeyUp, QtKeyDown, QtKeyPageUp, QtKeyPageDown)
+ENTER_KEYS = (QtKeyReturn, QtKeyEnter)
 
 
 class _SelectAction(Enum):
@@ -222,10 +228,6 @@ class GuiDocEditor(QTextEdit):
         "wheelEventFilter",
     )
 
-    MOVE_KEYS = (QtKeyLeft, QtKeyRight, QtKeyUp, QtKeyDown, QtKeyPageUp, QtKeyPageDown)
-    ENTER_KEYS = (QtKeyReturn, QtKeyEnter)
-
-    # Custom Signals
     closeEditorRequest = pyqtSignal()
     docTextChanged = pyqtSignal(str, float)
     editedStatusChanged = pyqtSignal(bool)
@@ -1152,9 +1154,22 @@ class GuiDocEditor(QTextEdit):
           * We also handle automatic scrolling here.
         """
         self._lastActive = time()
+        key = event.key()
+
+        if self._completer.handleKeyPress(event, key):
+            return
+
+        if key == QtKeyEscape:
+            if self.searchVisible():
+                self.closeSearch()
+            elif CONFIG.vimMode:
+                self.setVimMode(nwVimMode.NORMAL)
+            elif SHARED.focusMode:
+                SHARED.setFocusMode(False)
+            event.ignore()
+            return
 
         if CONFIG.vimMode and self._vim.mode != nwVimMode.INSERT:
-            # Process Vim modes
             if self._handleVimNormalModeModeSwitching(event):
                 return
 
@@ -1165,15 +1180,15 @@ class GuiDocEditor(QTextEdit):
 
             return
 
-        if self.docSearch.anyFocus() and event.key() in self.ENTER_KEYS:
+        if self.docSearch.anyFocus() and key in ENTER_KEYS:
             return
-        elif event == QKeySequence.StandardKey.Redo:
+        elif event == QKeyRedo:
             self.docAction(nwDocAction.REDO)
             return
-        elif event == QKeySequence.StandardKey.Undo:
+        elif event == QKeyUndo:
             self.docAction(nwDocAction.UNDO)
             return
-        elif event == QKeySequence.StandardKey.SelectAll:
+        elif event == QKeySelectAll:
             self.docAction(nwDocAction.SEL_ALL)
             return
 
@@ -1183,8 +1198,7 @@ class GuiDocEditor(QTextEdit):
             nPos = self.cursorRect().topLeft().y()
             kMod = event.modifiers()
             okMod = kMod in (QtModNone, QtModShift)
-
-            okKey = event.key() not in self.MOVE_KEYS
+            okKey = key not in MOVE_KEYS
             if nPos != cPos and okMod and okKey and (viewport := self.viewport()):
                 mPos = CONFIG.autoScrollPos * 0.01 * viewport.height()
                 if cPos > mPos and (vBar := self.verticalScrollBar()):
@@ -1193,7 +1207,7 @@ class GuiDocEditor(QTextEdit):
                     anim.setDuration(120)
                     anim.setStartValue(vBar.value())
                     anim.setEndValue(vBar.value() + cMov)
-                    anim.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
+                    anim.start(QAnimDeleteWhenStopped)
         else:
             self._dispatchKeyPress(event)
 
@@ -1227,7 +1241,12 @@ class GuiDocEditor(QTextEdit):
         allow the editor to insert a tab. If the search bar has focus,
         we forward the call to the search object.
         """
-        if self.hasFocus():
+        if self.hasFocus() or ((popup := self._completer.popup()) and popup.isVisible()):
+            # QWidget.event() consults this before keyPressEvent() ever
+            # runs, so while the completer popup is open, Tab must stay
+            # with the editor even if hasFocus() is momentarily wrong
+            # (observed on macOS after the popup, a separate top-level
+            # window, is shown).
             return False
         elif self.docSearch.isVisible():
             return self.docSearch.cycleFocus()
@@ -1273,7 +1292,10 @@ class GuiDocEditor(QTextEdit):
         if event.commitString():
             # See issues #2267 and #2517
             self.ensureCursorVisible(centre=False)
-            self._completerToCursor()
+            # cursorRect() is still stale immediately after the commit,
+            # so positioning the popup must wait for the next event
+            # loop iteration
+            QTimer.singleShot(0, self._completerToCursor)
 
     def inputMethodQuery(self, query: Qt.InputMethodQuery) -> QRect | QVariant:
         """Adjust completion windows for CJK input methods to consider
@@ -1393,8 +1415,16 @@ class GuiDocEditor(QTextEdit):
                     else:
                         show = self._completer.updateCommentText(text, bPos)
                     if show:
-                        self._completer.show()
-                        self._completerToCursor()
+                        # cursorRect() is still stale at this point, as the
+                        # block's text layout hasn't caught up with this
+                        # edit yet, so positioning the popup must wait for
+                        # the next event loop iteration
+                        QTimer.singleShot(0, self._showCompleter)
+                    elif popup := self._completer.popup():  # pragma: no branch
+                        # Otherwise, make sure a popup from an earlier
+                        # keystroke that no longer has any matches is
+                        # not left open with stale content
+                        popup.hide()
 
             if self._doReplace and added == 1:
                 cursor = self.textCursor()
@@ -1531,14 +1561,15 @@ class GuiDocEditor(QTextEdit):
 
     @pyqtSlot(int, int, str)
     def _insertCompletion(self, pos: int, length: int, text: str) -> None:
-        """Insert choice from the completer menu."""
+        """Insert choice from the completer popup."""
         cursor = self.textCursor()
         if (block := cursor.block()).isValid():  # pragma: no branch
             check = pos + block.position()
             cursor.setPosition(check, QtMoveAnchor)
             cursor.setPosition(check + length, QtKeepAnchor)
             cursor.insertText(text)
-            self._completer.close()
+            if popup := self._completer.popup():  # pragma: no branch
+                popup.hide()
 
     @pyqtSlot()
     def _openContextFromCursor(self) -> None:
@@ -2698,7 +2729,7 @@ class GuiDocEditor(QTextEdit):
         block formatting, so the heuristic serves no purpose here, and
         can be bypassed entirely by inserting the new block directly.
         """
-        if event.key() in self.ENTER_KEYS and event.modifiers() == QtModNone:
+        if event.key() in ENTER_KEYS and event.modifiers() == QtModNone:
             cursor = self.textCursor()
             cursor.insertBlock()
             self.setTextCursor(cursor)
@@ -2747,11 +2778,33 @@ class GuiDocEditor(QTextEdit):
             self._dispatchTextCheck()
         self._updateCheckSelections()
 
+    def _showCompleter(self) -> None:
+        """Show, or reposition, the completer popup at the cursor."""
+        self._completer.complete(self._completerRect())
+
     def _completerToCursor(self) -> None:
-        """Make sure the completer menu is positioned by the cursor."""
-        if self._completer.isVisible() and (viewport := self.viewport()):
-            point = self.cursorRect().bottomLeft()
-            self._completer.move(viewport.mapToGlobal(point))
+        """Make sure the completer popup is positioned by the cursor."""
+        if (popup := self._completer.popup()) and popup.isVisible():
+            self._showCompleter()
+
+    def _completerRect(self) -> QRect:
+        """Build the rect QCompleter positions its popup from. It maps
+        the rect through the editor widget itself, but cursorRect() is
+        in viewport coordinates, so that must be translated first (see
+        issues #2267 and #2517), or the popup ends up offset by the
+        viewport's margins. The rect is then widened to fit the
+        popup's own content, or QCompleter renders it just as wide as
+        the thin cursor blinker.
+        """
+        vM = self.viewportMargins()
+        rect = self.cursorRect()
+        rect.translate(vM.left(), vM.top())
+        if popup := self._completer.popup():  # pragma: no branch
+            width = popup.sizeHintForColumn(0)
+            if bar := popup.verticalScrollBar():  # pragma: no branch
+                width += bar.sizeHint().width()
+            rect.setWidth(width)
+        return rect
 
     def _correctWord(self, cursor: QTextCursor, word: str) -> None:
         """Slot for the spell check context menu triggering the

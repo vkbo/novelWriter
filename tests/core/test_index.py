@@ -127,6 +127,9 @@ def testIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
     bItem.setClass(nwItemClass.CHARACTER)
     index.reIndexHandle(bHandle)
 
+    # Refreshing a handle that isn't in the project tree does nothing
+    index.refreshHandle("0000000000000")
+
     # Delete a handle
     assert index._tagsIndex["Bod"] is not None
     assert index._itemIndex[bHandle] is not None
@@ -153,6 +156,7 @@ def testIndex_LoadSave(qtbot, monkeypatch, prjLipsum, nwGUI, tstPaths):
     # Make the load pass
     assert index.loadIndex() is True
     assert index.indexBroken is False
+    assert index.indexUpgrade is False
 
     assert str(index._tagsIndex.packData()) == tagIndex
     assert str(index._itemIndex.packData()) == itemsIndex
@@ -788,6 +792,12 @@ def testIndex_ExtractData(nwGUI, fncPath, mockRnd):
     assert refs["@pov"] == ["Jane"]
     assert refs["@char"] == ["Jane", "John"]
 
+    # A title that doesn't match any heading in the file yields no references
+    refs = index.getReferences(nHandle, "T9999")
+    assert refs["@tag"] == []
+    assert refs["@pov"] == []
+    assert refs["@char"] == []
+
     # getReferenceForHeader
     # =====================
     assert index.getReferenceForHeader(nHandle, 1, "@pov") == ["Jane"]
@@ -822,10 +832,10 @@ def testIndex_ExtractData(nwGUI, fncPath, mockRnd):
 
     # getKeyWordTags
     # ==============
-    assert index.getKeyWordTags("@mention") == ["Jane", "John", "Scene"]
-    assert index.getKeyWordTags("@char") == ["Jane", "John"]
-    assert index.getKeyWordTags("@plot") == []
-    assert index.getKeyWordTags("@tag") == []
+    assert index.getKeyWordTags("@mention") == {"Jane", "John", "Scene"}
+    assert index.getKeyWordTags("@char") == {"Jane", "John"}
+    assert index.getKeyWordTags("@plot") == set()
+    assert index.getKeyWordTags("@tag") == set()
 
     # getTagsData
     # ===========
@@ -1072,6 +1082,27 @@ def testTagsIndex_Main():
     tagsIndex.add("Tag3", "Tag 3", "0000000000003", "T0003", "PLOT")
     assert tagsIndex._tags == content
 
+    # The per-class name cache is kept in sync with the added tags, as
+    # is the "*" bucket holding the set of all tag names regardless
+    # of class, used when filterTagNames is called with None
+    assert tagsIndex.filterTagNames(nwItemClass.NOVEL.name) == {"Tag1"}
+    assert tagsIndex.filterTagNames(nwItemClass.CHARACTER.name) == {"Tag2"}
+    assert tagsIndex.filterTagNames(nwItemClass.PLOT.name) == {"Tag3"}
+    assert tagsIndex.filterTagNames(nwItemClass.WORLD.name) == set()
+    assert tagsIndex.filterTagNames(None) == {"Tag1", "Tag2", "Tag3"}
+
+    # Re-adding a tag under a different class moves it in the cache
+    # rather than leaving a stale entry behind in the old class, and
+    # it stays a single entry in the all-tags bucket
+    tagsIndex.add("Tag1", "Tag 1", "0000000000001", "T0001", "CHARACTER")
+    assert tagsIndex.filterTagNames(nwItemClass.NOVEL.name) == set()
+    assert tagsIndex.filterTagNames(nwItemClass.CHARACTER.name) == {"Tag1", "Tag2"}
+    assert tagsIndex.filterTagNames(None) == {"Tag1", "Tag2", "Tag3"}
+    tagsIndex.add("Tag1", "Tag 1", "0000000000001", "T0001", "NOVEL")
+    assert tagsIndex.filterTagNames(nwItemClass.NOVEL.name) == {"Tag1"}
+    assert tagsIndex.filterTagNames(nwItemClass.CHARACTER.name) == {"Tag2"}
+    assert tagsIndex.filterTagNames(None) == {"Tag1", "Tag2", "Tag3"}
+
     # Get items
     assert tagsIndex["Tag1"] == content["tag1"]
     assert tagsIndex["Tag2"] == content["tag2"]
@@ -1114,31 +1145,56 @@ def testTagsIndex_Main():
     assert tagsIndex.tagClass("Tag3") == nwItemClass.PLOT.name
     assert tagsIndex.tagClass("Tag4") is None
 
-    # Change class of item
+    # Change class of item. This must not touch the all-tags bucket,
+    # since the tag itself isn't being added or removed
     tagsIndex.updateClass("0000000000003", nwItemClass.WORLD.name)
     assert tagsIndex.tagClass("Tag3") == nwItemClass.WORLD.name
+    assert tagsIndex.filterTagNames(nwItemClass.PLOT.name) == set()
+    assert tagsIndex.filterTagNames(nwItemClass.WORLD.name) == {"Tag3"}
+    assert tagsIndex.filterTagNames(None) == {"Tag1", "Tag2", "Tag3"}
     tagsIndex.updateClass("0000000000003", nwItemClass.PLOT.name)
     assert tagsIndex.tagClass("Tag3") == nwItemClass.PLOT.name
+    assert tagsIndex.filterTagNames(nwItemClass.WORLD.name) == set()
+    assert tagsIndex.filterTagNames(nwItemClass.PLOT.name) == {"Tag3"}
+    assert tagsIndex.filterTagNames(None) == {"Tag1", "Tag2", "Tag3"}
+
+    # Calling updateClass with the class the item already has is a no-op
+    tagsIndex.updateClass("0000000000003", nwItemClass.PLOT.name)
+    assert tagsIndex.filterTagNames(nwItemClass.PLOT.name) == {"Tag3"}
+
+    # Calling updateClass with a handle that isn't in the index does nothing
+    tagsIndex.updateClass("0000000000099", nwItemClass.WORLD.name)
+    assert tagsIndex.filterTagNames(nwItemClass.WORLD.name) == set()
 
     # Pack Data
     assert tagsIndex.packData() == content
 
-    # Delete the second key and a non-existant key
+    # Delete the second key and a non-existant key. Deleting must also
+    # drop the tag from the all-tags bucket, unlike a reclassification
     del tagsIndex["Tag2"]
     del tagsIndex["Tag4"]
     assert "Tag1" in tagsIndex
     assert "Tag2" not in tagsIndex
     assert "Tag3" in tagsIndex
     assert "Tag4" not in tagsIndex
+    assert tagsIndex.filterTagNames(nwItemClass.CHARACTER.name) == set()
+    assert tagsIndex.filterTagNames(None) == {"Tag1", "Tag3"}
 
     # Clear and reload
     tagsIndex.clear()
     assert tagsIndex._tags == {}
+    assert tagsIndex._cache == {}
     assert tagsIndex.packData() == {}
+    assert tagsIndex.filterTagNames(nwItemClass.NOVEL.name) == set()
+    assert tagsIndex.filterTagNames(None) == set()
 
     tagsIndex.unpackData(content)
     assert tagsIndex._tags == content
     assert tagsIndex.packData() == content
+    assert tagsIndex.filterTagNames(nwItemClass.NOVEL.name) == {"Tag1"}
+    assert tagsIndex.filterTagNames(nwItemClass.CHARACTER.name) == {"Tag2"}
+    assert tagsIndex.filterTagNames(nwItemClass.PLOT.name) == {"Tag3"}
+    assert tagsIndex.filterTagNames(None) == {"Tag1", "Tag2", "Tag3"}
 
     # Unpack Errors
     # =============
