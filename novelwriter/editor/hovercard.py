@@ -26,7 +26,7 @@ import logging
 
 from enum import Enum
 
-from PyQt6.QtCore import QEvent, QPoint, QRectF, Qt, QTimer, pyqtSignal
+from PyQt6.QtCore import QEvent, QPoint, QRectF, Qt, QTimer, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QColor, QEnterEvent, QPainter, QPainterPath, QPaintEvent, QPen, QRegion
 from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QToolButton, QVBoxLayout, QWidget
 
@@ -181,6 +181,10 @@ class GuiDocHoverCard(QFrame):
         """
         self._hideTimer.start()
 
+    ##
+    #  Events
+    ##
+
     def enterEvent(self, event: QEnterEvent) -> None:
         """Cancel a pending hide when the mouse enters the card."""
         self._hideTimer.stop()
@@ -207,20 +211,26 @@ class GuiDocHoverCard(QFrame):
         painter.end()
 
     ##
-    #  Internal Functions
+    #  Private Slots
     ##
 
+    @pyqtSlot()
     def _onViewClicked(self) -> None:
         """Forward a view request for the currently shown tag."""
         tHandle, sTitle = SHARED.project.index.getTagSource(self._tag)
         if tHandle:
             self.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, sTitle, True)
 
+    @pyqtSlot()
     def _onEditClicked(self) -> None:
         """Forward an edit request for the currently shown tag."""
         tHandle, sTitle = SHARED.project.index.getTagSource(self._tag)
         if tHandle:
             self.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle, True)
+
+    ##
+    #  Internal Functions
+    ##
 
     def _roundedPath(self, inset: float = 0.0) -> QPainterPath:
         """Return a rounded rectangle path covering the widget, used for
