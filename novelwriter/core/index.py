@@ -748,6 +748,10 @@ class Index:
         sTitle = self._tagsIndex.tagHeading(tagKey)
         return tHandle, sTitle
 
+    def getTagDisplay(self, tagKey: str) -> str:
+        """Return the display name of a given tag."""
+        return self._tagsIndex.tagDisplay(tagKey)
+
     def getDocumentTags(self, tHandle: str | None) -> list[str]:
         """Return all tags used by a specific document."""
         return self._itemIndex.allItemTags(tHandle) if tHandle else []
