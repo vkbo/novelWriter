@@ -121,7 +121,9 @@ def testGuiDocHoverCard_TagContent(qtbot, nwGUI, projPath, mockRnd):
     assert cHandle is not None
     assert nwGUI.openDocument(cHandle) is True
     nwGUI.docEditor.replaceText(
-        "# Jane Doe\n\n@tag: Jane | Janey\n\n%Synopsis: A short synopsis.\n\n# Solo Person\n\n@tag: Solo\n\n"
+        "# Jane Doe\n\n@tag: Jane | Janey\n\n%Synopsis: A short synopsis.\n\n"
+        "# Solo Person\n\n@tag: Solo\n\n"
+        "# Multi Person\n\n@tag: Multi\n\n%Synopsis: First part.\n\n%Synopsis: Second part.\n\n"
     )
     nwGUI.saveDocument()
 
@@ -147,6 +149,14 @@ def testGuiDocHoverCard_TagContent(qtbot, nwGUI, projPath, mockRnd):
     assert text.count("<p>") == 2
     assert "Solo Person" in text
     assert "A short synopsis." not in text
+
+    # A synopsis with two paragraphs, separated by a blank line, is
+    # rendered as two separate <p> blocks rather than one run-on block
+    assert card.setTag("Multi") is True
+    text = card._label.text()
+    assert text.count("<p>") == 4
+    assert "First part." in text
+    assert "Second part." in text
 
     # An unknown tag never resolves to any content
     assert card.setTag("DoesNotExist") is False

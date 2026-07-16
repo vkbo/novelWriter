@@ -271,6 +271,7 @@ class GuiDocHoverCard(QFrame):
                 style = f"color: {syntax.head.name()}; font-size: {titleSize}pt; font-weight: 600;"
                 lines.append(f'<p><span style="{style}">{title}</span></p>')
             if synopsis := hItem.synopsis:
-                lines.append(f'<p><span style="color: {syntax.note.name()};">{html.escape(synopsis)}</span></p>')
+                for para in synopsis.split("\n\n"):
+                    lines.append(f'<p><span style="color: {syntax.note.name()};">{html.escape(para)}</span></p>')
 
         return "".join(lines)
