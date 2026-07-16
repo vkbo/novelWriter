@@ -108,9 +108,7 @@ class TextBlockData(QTextBlockUserData):
         return self._text, self._rawText, self._offset, self._utf16Map
 
     def setMetaData(self, metaData: T_TextMetaList) -> None:
-        """Store meta data only, leaving the cached check text and any
-        existing spell/format errors untouched.
-        """
+        """Store meta data only as an alternative to processText."""
         self._metaData = metaData
 
     def setSpellErrors(self, errors: T_TextCheckList) -> None:
@@ -121,13 +119,7 @@ class TextBlockData(QTextBlockUserData):
         """Store format error data computed from a text snapshot."""
         self._formatErrors = errors
 
-    def processText(
-        self,
-        text: str,
-        offset: int,
-        utf16Map: list[int] | None,
-        metaData: T_TextMetaList | None = None,
-    ) -> None:
+    def processText(self, text: str, offset: int, utf16Map: list[int] | None) -> None:
         """Extract meta data from the text. The map, when set, converts
         cached positions to UTF-16 units.
 
@@ -138,7 +130,7 @@ class TextBlockData(QTextBlockUserData):
         Leaving them in place until then risks briefly rendering marker
         selections that spill into the following block.
         """
-        self._metaData = metaData or []
+        self._metaData = []
         self._spellErrors = []
         self._formatErrors = []
         self._rawText = text

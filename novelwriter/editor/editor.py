@@ -1299,9 +1299,6 @@ class GuiDocEditor(QTextEdit):
             self._hoverPos = pos
             self._timerHover.start()
         else:
-            # Not over any tag, but still within the editor, e.g. in
-            # the gap between the text and the card below it, so the
-            # hide is delayed to give the mouse a chance to reach it
             self._timerHover.stop()
             self._hoverCard.scheduleHide()
         super().mouseMoveEvent(event)
@@ -1514,11 +1511,6 @@ class GuiDocEditor(QTextEdit):
             self._hoverCard.showAt(viewport.mapToGlobal(pos), viewport.width(), viewport.height())
         else:
             self._hoverCard.scheduleHide()
-
-    def _hideHoverCard(self) -> None:
-        """Stop the hover timer and hide the hover card, if visible."""
-        self._timerHover.stop()
-        self._hoverCard.hide()
 
     @pyqtSlot()
     def _updateCheckSelections(self) -> None:
@@ -2813,6 +2805,11 @@ class GuiDocEditor(QTextEdit):
             event.accept()
         else:
             super().keyPressEvent(event)
+
+    def _hideHoverCard(self) -> None:
+        """Stop the hover timer and hide the hover card, if visible."""
+        self._timerHover.stop()
+        self._hoverCard.hide()
 
     def _applyExtraSelections(self) -> None:
         """Set the editor's extra selections from the line highlight

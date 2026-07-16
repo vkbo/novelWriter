@@ -79,9 +79,6 @@ class GuiDocHoverCard(QFrame):
         self._backColor = QColor()
         self._borderColor = QColor()
 
-        # The mouse is allowed to move from the editor onto the card
-        # itself, so a hide requested elsewhere is delayed rather than
-        # immediate, and cancelled again if the mouse enters the card
         self._hideTimer = QTimer(self)
         self._hideTimer.setSingleShot(True)
         self._hideTimer.setInterval(self.HIDE_DELAY)
@@ -144,9 +141,7 @@ class GuiDocHoverCard(QFrame):
             button.setFont(SHARED.theme.guiFontSmall)
             button.setStyleSheet(buttonStyle)
 
-        # The cached text has the syntax colours baked into its HTML,
-        # so it must be rebuilt against the new theme too
-        self.clearCache()
+        self.clearCache()  # The HTML has hardcoded colours
         self.update()
 
     def setTag(self, tag: str) -> bool:
@@ -208,13 +203,7 @@ class GuiDocHoverCard(QFrame):
         super().leaveEvent(event)
 
     def paintEvent(self, event: QPaintEvent) -> None:
-        """Hand-paint the rounded background and border, since a
-        stylesheet border does not align cleanly with the hard-edged
-        mask used to clip the widget's corners. The background fills
-        the same path the mask is built from, so nothing is clipped,
-        while the border is stroked on a slightly inset copy so the
-        full 1px line stays inside the mask.
-        """
+        """Hand-paint the rounded background and border."""
         painter = QPainter(self)
         painter.setRenderHint(QtPaintAntiAlias, True)
         painter.fillPath(self._roundedPath(), self._backColor)
