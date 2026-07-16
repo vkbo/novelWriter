@@ -171,8 +171,8 @@ class GuiDocHoverCard(QFrame):
 
     def showAt(self, pos: QPoint, viewportWidth: int, viewportHeight: int) -> None:
         """Show the hover card with its top-left corner at pos."""
-        self._label.setMaximumWidth(viewportWidth // 2)
-        self._label.setMaximumHeight(viewportHeight // 4)
+        self._label.setMaximumWidth(min(viewportWidth // 2, 600))
+        self._label.setMaximumHeight(min(viewportHeight // 4, 600))
         self._hideTimer.stop()
         self.adjustSize()
         self.setMask(QRegion(self._roundedPath().toFillPolygon().toPolygon()))

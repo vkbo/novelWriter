@@ -86,7 +86,7 @@ def testGuiDocHoverCard_Widget(qtbot, nwGUI, projPath, mockRnd):
     # from the same rounded path used to hand-paint its background and
     # border, which also exercises paintEvent()
     with qtbot.waitExposed(card):
-        card.showAt(QPoint(50, 50))
+        card.showAt(QPoint(50, 50), 400, 800)
     assert not card.mask().isEmpty()
     card.repaint()
 
@@ -102,10 +102,10 @@ def testGuiDocHoverCard_Widget(qtbot, nwGUI, projPath, mockRnd):
     assert card.isVisible() is False
 
     # showAt() itself also cancels any pending scheduled hide
-    card.showAt(QPoint(60, 60))
+    card.showAt(QPoint(60, 60), 400, 800)
     card.scheduleHide()
     assert card._hideTimer.isActive() is True
-    card.showAt(QPoint(70, 70))
+    card.showAt(QPoint(70, 70), 400, 800)
     assert card._hideTimer.isActive() is False
 
 
