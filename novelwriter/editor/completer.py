@@ -27,12 +27,12 @@ import logging
 from typing import NamedTuple
 
 from PyQt6.QtCore import QModelIndex, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QKeyEvent, QStandardItem, QStandardItemModel
+from PyQt6.QtGui import QBrush, QColor, QKeyEvent, QStandardItem, QStandardItemModel
 from PyQt6.QtWidgets import QCompleter, QWidget
 
 from novelwriter import SHARED
 from novelwriter.constants import nwKeyWords
-from novelwriter.types import QtKeyEnter, QtKeyEscape, QtKeyLeft, QtKeyReturn, QtKeyTab
+from novelwriter.types import QtKeyEnter, QtKeyEscape, QtKeyLeft, QtKeyReturn, QtKeyTab, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +79,7 @@ class CommandCompleter(QCompleter):
             suffix = "" if sep else ":"
             self.setFilterMode(Qt.MatchFlag.MatchStartsWith)
             options = sorted(nwKeyWords.VALID_KEYS)
+            color = SHARED.theme.syntaxTheme.key
         else:
             status, tBits, tPos = SHARED.project.index.scanThis(text)
             if not status:
@@ -90,9 +91,10 @@ class CommandCompleter(QCompleter):
             suffix = ""
             self.setFilterMode(Qt.MatchFlag.MatchContains)
             options = sorted(SHARED.project.index.getKeyWordTags(kw.strip()))
+            color = SHARED.theme.syntaxTheme.tag
 
         for value in options:
-            self._addOption(value, CompleterAction(pos=offset, length=length, value=value + suffix))
+            self._addOption(value, CompleterAction(pos=offset, length=length, value=value + suffix), color)
 
         self.setCompletionPrefix(lookup)
         return self.completionCount() > 0
@@ -113,6 +115,7 @@ class CommandCompleter(QCompleter):
             suffix = "" if sep else ": "
             self.setFilterMode(Qt.MatchFlag.MatchStartsWith)
             options = sorted(SHARED.project.index.getStoryKeys())
+            color = SHARED.theme.syntaxTheme.val
         elif clean[:5] == "note.":
             pre, _, key = cmd.partition(".")
             lookup = key.rstrip()
@@ -121,6 +124,7 @@ class CommandCompleter(QCompleter):
             suffix = "" if sep else ": "
             self.setFilterMode(Qt.MatchFlag.MatchStartsWith)
             options = sorted(SHARED.project.index.getNoteKeys())
+            color = SHARED.theme.syntaxTheme.val
         elif pos < 12:
             lookup = cmd.rstrip()
             offset = 0
@@ -128,12 +132,13 @@ class CommandCompleter(QCompleter):
             suffix = ""
             self.setFilterMode(Qt.MatchFlag.MatchStartsWith)
             options = ["%Synopsis: ", "%Short: ", "%Story", "%Note"]
+            color = SHARED.theme.syntaxTheme.mod
         else:
             return False
 
         for value in options:
             rep = value + suffix
-            self._addOption(rep.rstrip(":. "), CompleterAction(pos=offset, length=length, value=rep))
+            self._addOption(rep.rstrip(":. "), CompleterAction(pos=offset, length=length, value=rep), color)
 
         self.setCompletionPrefix(lookup)
         return self.completionCount() > 0
@@ -173,16 +178,17 @@ class CommandCompleter(QCompleter):
     @pyqtSlot(QModelIndex)
     def _emitComplete(self, index: QModelIndex) -> None:
         """Emit the signal to indicate a selection has been made."""
-        if isinstance(data := index.data(Qt.ItemDataRole.UserRole), CompleterAction):
+        if isinstance(data := index.data(QtUserRole), CompleterAction):
             self.insertText.emit(data.pos, data.length, data.value)
 
     ##
     #  Internal Functions
     ##
 
-    def _addOption(self, label: str, data: CompleterAction) -> None:
+    def _addOption(self, label: str, data: CompleterAction, color: QColor) -> None:
         """Add a single entry to the popup's model."""
         item = QStandardItem(label)
         item.setEditable(False)
-        item.setData(data, Qt.ItemDataRole.UserRole)
+        item.setData(data, QtUserRole)
+        item.setForeground(QBrush(color))
         self._model.appendRow(item)

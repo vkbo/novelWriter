@@ -23,21 +23,21 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt6.QtCore import QModelIndex, Qt
-from PyQt6.QtGui import QInputMethodEvent
+from PyQt6.QtCore import QModelIndex
+from PyQt6.QtGui import QColor, QInputMethodEvent
 from PyQt6.QtWidgets import QWidget
 
 from novelwriter import SHARED
 from novelwriter.constants import nwKeyWords
 from novelwriter.editor.completer import CommandCompleter, CompleterAction
-from novelwriter.types import QtKeyDown, QtKeyEscape, QtKeyLeft, QtKeyReturn, QtKeyTab
+from novelwriter.types import QtForegroundRole, QtKeyDown, QtKeyEscape, QtKeyLeft, QtKeyReturn, QtKeyTab, QtUserRole
 
 from tests.helpers import C, buildTestProject
 
 KEY_DELAY = 1
 
 
-def testCompleter_EmitComplete(qtbot):
+def testCompleter_EmitComplete(qtbot, mockGUI):
     """Test the low-level wiring from a selected model row to the
     insertText signal, independent of how the row got there. This is
     the mechanism the editor listens on to actually insert a chosen
@@ -54,13 +54,17 @@ def testCompleter_EmitComplete(qtbot):
         completer._emitComplete(QModelIndex())
 
     # A populated row round-trips its CompleterAction through the
-    # model's UserRole data
-    completer._addOption("Jane", CompleterAction(pos=1, length=2, value="Jane"))
+    # model's UserRole data, and its text colour through the
+    # ForegroundRole, so the popup entry looks like the highlighted
+    # text it stands for
+    color = QColor(255, 0, 0)
+    completer._addOption("Jane", CompleterAction(pos=1, length=2, value="Jane"), color)
     model = completer.model()
     assert model is not None
     index = model.index(0, 0)
     assert index.data() == "Jane"
-    assert index.data(Qt.ItemDataRole.UserRole) == CompleterAction(pos=1, length=2, value="Jane")
+    assert index.data(QtUserRole) == CompleterAction(pos=1, length=2, value="Jane")
+    assert index.data(QtForegroundRole).color() == color
 
     with qtbot.waitSignal(completer.insertText, timeout=1000) as blocker:
         completer._emitComplete(index)
@@ -103,11 +107,16 @@ def testCompleter_KeywordAndTagOptions(qtbot, nwGUI, projPath, mockRnd):
         return [model.index(i, 0).data() for i in range(model.rowCount())]
 
     def action(row: int) -> CompleterAction | None:
-        return completer.completionModel().index(row, 0).data(Qt.ItemDataRole.UserRole)
+        return completer.completionModel().index(row, 0).data(QtUserRole)
 
-    # A bare "@" lists every valid keyword
+    def color(row: int) -> QColor:
+        return completer.completionModel().index(row, 0).data(QtForegroundRole).color()
+
+    # A bare "@" lists every valid keyword, coloured like a keyword
+    # in the syntax highlighter
     assert completer.updateMetaText("@", 1) is True
     assert set(labels()) == nwKeyWords.VALID_KEYS
+    assert color(0) == SHARED.theme.syntaxTheme.key
 
     # A keyword prefix narrows the list, and the stored action appends
     # the missing colon since the line doesn't have one yet
@@ -120,10 +129,12 @@ def testCompleter_KeywordAndTagOptions(qtbot, nwGUI, projPath, mockRnd):
     assert completer.completionModel().rowCount() == 0
 
     # Past the colon, options come from the tag index instead, and are
-    # filtered by substring match on the partial tag being typed
+    # filtered by substring match on the partial tag being typed, now
+    # coloured like a tag reference instead of a keyword
     assert completer.updateMetaText("@char: Ja", 9) is True
     assert labels() == ["Jane"]
     assert action(0) == CompleterAction(pos=7, length=2, value="Jane")
+    assert color(0) == SHARED.theme.syntaxTheme.tag
 
     # With nothing typed after the colon yet, every known tag is offered
     assert completer.updateMetaText("@char: ", 7) is True
@@ -151,26 +162,35 @@ def testCompleter_CommentOptions(qtbot, nwGUI, projPath, mockRnd):
         return [model.index(i, 0).data() for i in range(model.rowCount())]
 
     def action(row: int) -> CompleterAction | None:
-        return completer.completionModel().index(row, 0).data(Qt.ItemDataRole.UserRole)
+        return completer.completionModel().index(row, 0).data(QtUserRole)
 
-    # A bare "%" lists all four top-level comment commands
+    def color(row: int) -> QColor:
+        return completer.completionModel().index(row, 0).data(QtForegroundRole).color()
+
+    # A bare "%" lists all four top-level comment commands, coloured
+    # like a comment modifier in the syntax highlighter
     assert completer.updateCommentText("%", 1) is True
     assert labels() == ["%Synopsis", "%Short", "%Story", "%Note"]
+    assert color(0) == SHARED.theme.syntaxTheme.mod
 
     # A prefix narrows the top-level list to a single match
     assert completer.updateCommentText("%Sy", 3) is True
     assert labels() == ["%Synopsis"]
     assert action(0) == CompleterAction(pos=0, length=3, value="%Synopsis: ")
 
-    # A "%Story." prefix switches to filtering the project's story keys
+    # A "%Story." prefix switches to filtering the project's story
+    # keys, coloured like a comment value instead of a modifier
     assert completer.updateCommentText("%Story.Reso", 11) is True
     assert labels() == ["Resolution"]
     assert action(0) == CompleterAction(pos=7, length=4, value="Resolution: ")
+    assert color(0) == SHARED.theme.syntaxTheme.val
 
-    # A "%Note." prefix switches to filtering the project's note keys
+    # A "%Note." prefix switches to filtering the project's note keys,
+    # also coloured like a comment value
     assert completer.updateCommentText("%Note.Cons", 10) is True
     assert labels() == ["Consistency"]
     assert action(0) == CompleterAction(pos=6, length=4, value="Consistency: ")
+    assert color(0) == SHARED.theme.syntaxTheme.val
 
     # Past the point where a top-level command could still be typed,
     # and not matching Story./Note., there are no options
