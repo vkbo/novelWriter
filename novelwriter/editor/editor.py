@@ -1490,12 +1490,18 @@ class GuiDocEditor(QTextEdit):
     def _showHoverCard(self) -> None:
         """Show the reference tag hover card if the position last
         recorded by mouseMoveEvent is still over a tag once the hover
-        delay has elapsed.
+        delay has elapsed. Past the end of a line, cursorForPosition
+        clamps to the nearest character, so the resolved cursor's own
+        rect is checked against the actual mouse position to reject
+        hovers over the empty space beyond the text.
         """
         cursor = self.cursorForPosition(self._hoverPos)
-        mData, mType = self._qDocument.metaDataAtPos(cursor.position())
+        rect = self.cursorRect(cursor)
+        onText = abs(self._hoverPos.x() - rect.x()) <= self.fontMetrics().averageCharWidth()
+        mData, mType = self._qDocument.metaDataAtPos(cursor.position()) if onText else ("", "")
         if mData and mType == "tag" and self._hoverCard.setTag(mData) and (viewport := self.viewport()):
-            self._hoverCard.showAt(viewport.mapToGlobal(self._hoverPos + QPoint(0, 20)))
+            pos = QPoint(self._hoverPos.x(), rect.bottom() + 4)
+            self._hoverCard.showAt(viewport.mapToGlobal(pos))
         else:
             self._hoverCard.hide()
 

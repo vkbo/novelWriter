@@ -24,11 +24,13 @@ from __future__ import annotations
 import html
 import logging
 
-from PyQt6.QtCore import QPoint, Qt
+from PyQt6.QtCore import QPoint, QRectF, Qt
+from PyQt6.QtGui import QColor, QPainter, QPainterPath, QPaintEvent, QPen, QRegion
 from PyQt6.QtWidgets import QFrame, QLabel, QVBoxLayout, QWidget
 
 from novelwriter import SHARED
 from novelwriter.core.indexdata import TT_NONE
+from novelwriter.types import QtPaintAntiAlias
 
 logger = logging.getLogger(__name__)
 
@@ -43,18 +45,19 @@ class GuiDocHoverCard(QFrame):
     hovered again.
     """
 
-    __slots__ = ("_cache", "_label", "_layout", "_tag")
+    __slots__ = ("_backColor", "_borderColor", "_cache", "_label", "_layout", "_tag")
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent, Qt.WindowType.ToolTip)
 
         self.setObjectName("GuiDocHoverCard")
         self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
-        self.setFrameStyle(QFrame.Shape.Box | QFrame.Shadow.Plain)
-        self.setLineWidth(1)
+        self.setFrameStyle(QFrame.Shape.NoFrame)
 
         self._tag = ""
         self._cache: dict[str, str] = {}
+        self._backColor = QColor()
+        self._borderColor = QColor()
 
         self._label = QLabel(self)
         self._label.setFrameStyle(QFrame.Shape.NoFrame)
@@ -63,7 +66,7 @@ class GuiDocHoverCard(QFrame):
 
         self._layout = QVBoxLayout()
         self._layout.addWidget(self._label)
-        self._layout.setContentsMargins(6, 6, 6, 6)
+        self._layout.setContentsMargins(8, 6, 8, 6)
 
         self.setLayout(self._layout)
 
@@ -73,10 +76,10 @@ class GuiDocHoverCard(QFrame):
     def updateTheme(self) -> None:
         """Update the widget's colours to match the editor's theme."""
         syntax = SHARED.theme.syntaxTheme
-        self.setStyleSheet(
-            f"#GuiDocHoverCard {{ background: {syntax.back.name()}; border: 1px solid {syntax.text.name()}; }}"
-        )
-        self._label.setStyleSheet(f"border: none; color: {syntax.text.name()};")
+        self._backColor = syntax.back
+        self._borderColor = syntax.hidden
+        self._label.setStyleSheet(f"color: {syntax.text.name()};")
+        self.update()
 
     def setTag(self, tag: str) -> bool:
         """Assemble and cache the hover text for a given reference tag,
@@ -101,8 +104,39 @@ class GuiDocHoverCard(QFrame):
     def showAt(self, pos: QPoint) -> None:
         """Show the hover card with its top-left corner at pos."""
         self.adjustSize()
+        self.setMask(QRegion(self._roundedPath().toFillPolygon().toPolygon()))
         self.move(pos)
         self.show()
+
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Hand-paint the rounded background and border, since a
+        stylesheet border does not align cleanly with the hard-edged
+        mask used to clip the widget's corners. The background fills
+        the same path the mask is built from, so nothing is clipped,
+        while the border is stroked on a slightly inset copy so the
+        full 1px line stays inside the mask.
+        """
+        painter = QPainter(self)
+        painter.setRenderHint(QtPaintAntiAlias, True)
+        painter.fillPath(self._roundedPath(), self._backColor)
+        painter.setPen(QPen(self._borderColor, 1))
+        painter.drawPath(self._roundedPath(0.5))
+        painter.end()
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _roundedPath(self, inset: float = 0.0) -> QPainterPath:
+        """Return a rounded rectangle path covering the widget, used for
+        both the widget mask and the hand-painted background/border.
+        """
+        rect = QRectF(self.rect())
+        if inset:
+            rect = rect.adjusted(inset, inset, -inset, -inset)
+        path = QPainterPath()
+        path.addRoundedRect(rect, 6, 6)
+        return path
 
     def _buildText(self, tag: str) -> str:
         """Assemble the HTML hover text for a given reference tag."""
