@@ -29,9 +29,10 @@ from time import time
 from typing import Final
 
 from PyQt6.QtCore import QT_TRANSLATE_NOOP, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtGui import QAction, QIcon, QShortcut
 from PyQt6.QtWidgets import (
     QAbstractItemView,
+    QApplication,
     QFileDialog,
     QFrame,
     QGridLayout,
@@ -61,10 +62,12 @@ from novelwriter.types import (
     QtAlignRight,
     QtAlignRightTop,
     QtDecorationRole,
+    QtModShift,
     QtScrollAlwaysOff,
     QtScrollAsNeeded,
     QtSizeExpanding,
     QtUserRole,
+    QtWidgetShortcut,
 )
 
 logger = logging.getLogger(__name__)
@@ -98,6 +101,12 @@ class GuiOutlineView(QWidget):
         self.outerBox.addWidget(self.splitOutline)
 
         self.setLayout(self.outerBox)
+
+        # Keyboard Shortcuts
+        self.keyOpenItem = QShortcut(self.outlineTree)
+        self.keyOpenItem.setKeys(["Return", "Enter", "Shift+Return", "Shift+Enter"])
+        self.keyOpenItem.setContext(QtWidgetShortcut)
+        self.keyOpenItem.activated.connect(self.outlineTree.openSelectedItem)
 
         # Connect Signals
         self.outlineTree.hiddenStateChanged.connect(self._updateMenuColumns)
@@ -520,6 +529,14 @@ class GuiOutlineTree(QTreeWidget):
     ##
     #  Public Slots
     ##
+
+    @pyqtSlot()
+    def openSelectedItem(self) -> None:
+        """Open the currently selected item, or view it if Shift is held."""
+        tHandle, sTitle = self.getSelectedHandle()
+        if tHandle:
+            mode = nwDocMode.VIEW if QApplication.keyboardModifiers() == QtModShift else nwDocMode.EDIT
+            self.outlineView.openDocumentRequest.emit(tHandle, mode, sTitle or "", False)
 
     @pyqtSlot(bool, Enum)
     def menuColumnToggled(self, isChecked: bool, hItem: nwOutline) -> None:

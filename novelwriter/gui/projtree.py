@@ -29,6 +29,7 @@ from PyQt6.QtCore import QModelIndex, QPoint, Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QAction, QIcon, QMouseEvent, QPainter, QPalette, QShortcut
 from PyQt6.QtWidgets import (
     QAbstractItemView,
+    QApplication,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -56,6 +57,7 @@ from novelwriter.types import (
     QtHeaderFixed,
     QtHeaderStretch,
     QtHeaderToContents,
+    QtModShift,
     QtMouseLeft,
     QtMouseMiddle,
     QtScrollAlwaysOff,
@@ -131,6 +133,11 @@ class GuiProjectView(QWidget):
         self.keyContext.setKey("Ctrl+.")
         self.keyContext.setContext(QtWidgetShortcut)
         self.keyContext.activated.connect(self.projTree.openContextMenu)
+
+        self.keyOpenItem = QShortcut(self.projTree)
+        self.keyOpenItem.setKeys(["Return", "Enter", "Shift+Return", "Shift+Enter"])
+        self.keyOpenItem.setContext(QtWidgetShortcut)
+        self.keyOpenItem.activated.connect(self.projTree.openSelectedItem)
 
         # Signals
         self.selectedItemChanged.connect(self.projBar.treeSelectionChanged)
@@ -821,6 +828,13 @@ class GuiProjectTree(QTreeView):
     ##
     #  Public Slots
     ##
+
+    @pyqtSlot()
+    def openSelectedItem(self) -> None:
+        """Open the currently selected file, or view it if Shift is held."""
+        if (node := self._getNode(self.currentIndex())) and node.item.isFileType():
+            mode = nwDocMode.VIEW if QApplication.keyboardModifiers() == QtModShift else nwDocMode.EDIT
+            self.projView.openDocumentRequest.emit(node.item.itemHandle, mode, "", False)
 
     @pyqtSlot()
     def moveItemUp(self) -> None:

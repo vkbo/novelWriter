@@ -29,7 +29,7 @@ from pathlib import Path
 from time import time
 
 from PyQt6.QtCore import QEvent, Qt, QTimer, pyqtSlot
-from PyQt6.QtGui import QCloseEvent, QCursor, QIcon, QShortcut
+from PyQt6.QtGui import QCloseEvent, QCursor, QIcon
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -299,11 +299,6 @@ class GuiMain(QMainWindow):
         # Set Up Auto-Save Document Timer
         self.asDocTimer = QTimer(self)
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
-
-        # Shortcuts
-        self.keyReturn = QShortcut(self)
-        self.keyReturn.setKeys(["Return", "Enter", "Shift+Return", "Shift+Enter"])
-        self.keyReturn.activated.connect(self._keyPressReturn)
 
         # Initialise Main GUI
         self.initMain()
@@ -1262,14 +1257,6 @@ class GuiMain(QMainWindow):
                     cTotal = SHARED.project.data.currCounts[0]
 
             self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
-
-    @pyqtSlot()
-    def _keyPressReturn(self) -> None:
-        """Process a return or enter keypress in the main window."""
-        if self.projStack.currentWidget() == self.projSearch:
-            self.projSearch.processReturn()
-        else:
-            self.openSelectedItem()
 
     @pyqtSlot(int)
     def _mainStackChanged(self, index: int) -> None:
