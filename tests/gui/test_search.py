@@ -40,7 +40,7 @@ from tests.helpers import C, buildTestProject
 
 
 @pytest.mark.gui
-def testGuiProjectSearch_Interaction(qtbot, monkeypatch, nwGUI, fncPath, mockRnd, ipsumText):
+def testGuiProjectSearch_Interaction(qtbot, nwGUI, fncPath, mockRnd, ipsumText):
     """Test running a search and interacting with the result tree via
     the keyboard, mouse and selection.
     """
@@ -62,7 +62,7 @@ def testGuiProjectSearch_Interaction(qtbot, monkeypatch, nwGUI, fncPath, mockRnd
 
     # Pressing return while the search box has focus re-runs the search
     search.searchText.setFocus()
-    search.processReturn()
+    qtbot.keyClick(search.searchText, QtKeyReturn)
     assert model.rowCount(root) == 2
 
     chapterIdx = model.index(0, 0, root)
@@ -101,15 +101,13 @@ def testGuiProjectSearch_Interaction(qtbot, monkeypatch, nwGUI, fncPath, mockRnd
 
     # Press return on the selected match to open it at its position
     search.searchResult.setFocus()
-    with monkeypatch.context() as mp:
-        mp.setattr(search.searchResult, "hasFocus", lambda *a: True)
-        with qtbot.waitSignal(search.openDocumentSelectRequest, timeout=1000) as signal:
-            qtbot.keyClick(search, QtKeyReturn)
-        assert signal.args == [handle, start, length, False]
+    with qtbot.waitSignal(search.openDocumentSelectRequest, timeout=1000) as signal:
+        qtbot.keyClick(search.searchResult, QtKeyReturn)
+    assert signal.args == [handle, start, length, False]
 
-        with qtbot.waitSignal(search.openDocumentRequest, timeout=1000) as signal:
-            qtbot.keyClick(search, QtKeyReturn, Qt.KeyboardModifier.ShiftModifier)
-        assert signal.args == [handle, nwDocMode.VIEW, "", True]
+    with qtbot.waitSignal(search.openDocumentRequest, timeout=1000) as signal:
+        qtbot.keyClick(search.searchResult, QtKeyReturn, Qt.KeyboardModifier.ShiftModifier)
+    assert signal.args == [handle, nwDocMode.VIEW, "", True]
 
     assert nwGUI.docEditor.docHandle == handle
 
@@ -124,10 +122,9 @@ def testGuiProjectSearch_Interaction(qtbot, monkeypatch, nwGUI, fncPath, mockRnd
 
     # Press return with no selection does nothing
     search.searchResult.setCurrentIndex(QModelIndex())
-    with monkeypatch.context() as mp:
-        mp.setattr(search.searchResult, "hasFocus", lambda *a: True)
-        with qtbot.assertNotEmitted(search.openDocumentSelectRequest):
-            qtbot.keyClick(search, QtKeyReturn)
+    search.searchResult.setFocus()
+    with qtbot.assertNotEmitted(search.openDocumentSelectRequest):
+        qtbot.keyClick(search.searchResult, QtKeyReturn)
 
 
 @pytest.mark.gui
