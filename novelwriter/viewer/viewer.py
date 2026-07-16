@@ -433,7 +433,7 @@ class GuiDocViewer(QTextBrowser):
         if tag and self._hoverCard.setTag(tag) and (viewport := self.viewport()):
             rect = self.cursorRect(self.cursorForPosition(self._hoverPos))
             pos = QPoint(self._hoverPos.x(), rect.bottom() + 4)
-            self._hoverCard.showAt(viewport.mapToGlobal(pos))
+            self._hoverCard.showAt(viewport.mapToGlobal(pos), viewport.width(), viewport.height())
         else:
             self._hoverCard.scheduleHide()
 

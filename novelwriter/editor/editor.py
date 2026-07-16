@@ -1510,7 +1510,7 @@ class GuiDocEditor(QTextEdit):
         mData, mType = self._qDocument.metaDataAtPos(cursor.position()) if onText else ("", "")
         if mData and mType == "tag" and self._hoverCard.setTag(mData) and (viewport := self.viewport()):
             pos = QPoint(self._hoverPos.x(), rect.bottom() + 4)
-            self._hoverCard.showAt(viewport.mapToGlobal(pos))
+            self._hoverCard.showAt(viewport.mapToGlobal(pos), viewport.width(), viewport.height())
         else:
             self._hoverCard.scheduleHide()
 
