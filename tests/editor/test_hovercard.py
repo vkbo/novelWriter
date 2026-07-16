@@ -82,6 +82,28 @@ def testGuiDocHoverCard_Widget(qtbot, nwGUI, projPath, mockRnd):
     assert card._cache == {}
     assert card._tag == ""
 
+    # Tags are matched case-insensitively, mirroring the index, so a
+    # differently-cased hover reuses the same lower-cased cache entry
+    card._cache["mixed"] = "<p>Mixed</p>"
+    assert card.setTag("Mixed") is True
+    assert card._tag == "mixed"
+    assert card._label.text() == "<p>Mixed</p>"
+
+    # pruneCache() drops cached entries by their (already lower-cased)
+    # tag key, and resets the current tag so the next setTag() rebuilds
+    # it rather than treating it as a no-op
+    card._cache = {"jane": "<p>Jane</p>", "solo": "<p>Solo</p>"}
+    card._tag = "jane"
+    card.pruneCache(["jane"])
+    assert card._cache == {"solo": "<p>Solo</p>"}
+    assert card._tag == ""
+
+    # A prune that removes nothing still resets the current tag
+    card._tag = "solo"
+    card.pruneCache([])
+    assert card._cache == {"solo": "<p>Solo</p>"}
+    assert card._tag == ""
+
     # Showing the card unhides it, and builds a non-empty clip mask
     # from the same rounded path used to hand-paint its background and
     # border, which also exercises paintEvent()
@@ -161,6 +183,14 @@ def testGuiDocHoverCard_TagContent(qtbot, nwGUI, projPath, mockRnd):
     # An unknown tag never resolves to any content
     assert card.setTag("DoesNotExist") is False
     assert card._label.text() == ""
+
+    # The index treats tags as case-insensitive, so a differently-cased
+    # hover still resolves the same tag and its cached HTML
+    card.clearCache()
+    assert card.setTag("JANE") is True
+    text = card._label.text()
+    assert "Jane Doe" in text
+    assert list(card._cache) == ["jane"]
 
     # The View/Edit buttons resolve the current tag via the index and
     # re-emit openDocumentRequest with the matching mode

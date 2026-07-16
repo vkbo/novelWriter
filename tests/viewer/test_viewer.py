@@ -361,6 +361,20 @@ def testGuiDocViewer_HoverCard(qtbot, nwGUI, projPath, mockRnd):
     assert docViewer._timerHover.isActive() is False
     assert docViewer._hoverCard._hideTimer.isActive() is True
 
+    # A tag update prunes the corresponding hover card cache entry, by
+    # its lower-cased key, so a stale synopsis or title cannot be shown
+    # after the tag it belongs to has changed
+    docViewer._hoverCard._cache["bob"] = "<p>Stale</p>"
+    docViewer._hoverCard._tag = "bob"
+    docViewer.updateChangedTags(["bob"], [])
+    assert "bob" not in docViewer._hoverCard._cache
+    assert docViewer._hoverCard._tag == ""
+
+    # No updated or deleted tags is a no-op
+    docViewer._hoverCard._cache["bob"] = "<p>Cached</p>"
+    docViewer.updateChangedTags([], [])
+    assert docViewer._hoverCard._cache == {"bob": "<p>Cached</p>"}
+
 
 @pytest.mark.gui
 def testGuiDocViewer_MouseNavigation(qtbot, nwGUI, projPath, mockRnd, ipsumText):

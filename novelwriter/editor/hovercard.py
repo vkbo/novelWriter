@@ -283,4 +283,6 @@ class GuiDocHoverCard(QFrame):
                 for para in synopsis.split("\n\n"):
                     lines.append(f'<p><span style="color: {syntax.note.name()};">{html.escape(para)}</span></p>')
 
+        logger.debug("Built hover card text for tag '%s'", tag)
+
         return "".join(lines)

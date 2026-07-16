@@ -2479,6 +2479,20 @@ def testGuiDocEditor_HoverCard(qtbot, nwGUI, projPath, mockRnd):
     assert docEditor._timerHover.isActive() is False
     assert docEditor._hoverCard._hideTimer.isActive() is True
 
+    # A tag update prunes the corresponding hover card cache entry, by
+    # its lower-cased key, so a stale synopsis or title cannot be shown
+    # after the tag it belongs to has changed
+    docEditor._hoverCard._cache["jane"] = "<p>Stale</p>"
+    docEditor._hoverCard._tag = "jane"
+    docEditor.updateChangedTags(["jane"], [])
+    assert "jane" not in docEditor._hoverCard._cache
+    assert docEditor._hoverCard._tag == ""
+
+    # No updated or deleted tags is a no-op
+    docEditor._hoverCard._cache["jane"] = "<p>Cached</p>"
+    docEditor.updateChangedTags([], [])
+    assert docEditor._hoverCard._cache == {"jane": "<p>Cached</p>"}
+
 
 @pytest.mark.gui
 def testGuiDocEditor_ProcessTagEdgeCases(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
