@@ -1280,7 +1280,7 @@ class GuiDocEditor(QTextEdit):
         """
         if event.modifiers() & QtModCtrl == QtModCtrl:
             cursor = self.cursorForPosition(event.pos())
-            mData, mType, _ = self._qDocument.metaDataAtPos(cursor.position())
+            mData, mType = self._qDocument.metaDataAtPos(cursor.position())
             if mData and mType == "url":
                 SHARED.openWebsite(mData)
             else:
@@ -1507,14 +1507,9 @@ class GuiDocEditor(QTextEdit):
         cursor = self.cursorForPosition(self._hoverPos)
         rect = self.cursorRect(cursor)
         onText = abs(self._hoverPos.x() - rect.x()) <= self.fontMetrics().averageCharWidth()
-        mData, mType, mStart = self._qDocument.metaDataAtPos(cursor.position()) if onText else ("", "", -1)
+        mData, mType = self._qDocument.metaDataAtPos(cursor.position()) if onText else ("", "")
         if mData and mType == "tag" and self._hoverCard.setTag(mData) and (viewport := self.viewport()):
-            # Anchor to the start of the tag rather than the mouse, so
-            # the card doesn't shift about and is easy to reach
-            startCursor = QTextCursor(self._qDocument)
-            startCursor.setPosition(mStart)
-            left = self.cursorRect(startCursor).x()
-            pos = QPoint(left, rect.bottom() + 4)
+            pos = QPoint(self._hoverPos.x(), rect.bottom() + 4)
             self._hoverCard.showAt(viewport.mapToGlobal(pos))
         else:
             self._hoverCard.scheduleHide()
@@ -1670,7 +1665,7 @@ class GuiDocEditor(QTextEdit):
             action.triggered.connect(qtLambda(self._emitRenameItem, pBlock))
 
         # URL
-        mData, mType, _ = self._qDocument.metaDataAtPos(pCursor.position())
+        mData, mType = self._qDocument.metaDataAtPos(pCursor.position())
         if mData and mType == "url":
             action = qtAddAction(ctxMenu, self._trOpenURL)
             action.triggered.connect(qtLambda(SHARED.openWebsite, mData))
