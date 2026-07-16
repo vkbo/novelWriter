@@ -24,7 +24,7 @@ from __future__ import annotations
 from typing import Literal
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor, QFont, QPainter, QPalette, QTextCharFormat, QTextCursor, QTextFormat
+from PyQt6.QtGui import QColor, QFont, QKeySequence, QPainter, QPalette, QTextCharFormat, QTextCursor, QTextFormat
 from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QHeaderView, QSizePolicy, QStyle
 
 # Custom Types
@@ -114,6 +114,10 @@ QtKeyBackspace = Qt.Key.Key_Backspace
 QtModCtrl = Qt.KeyboardModifier.ControlModifier
 QtModNone = Qt.KeyboardModifier.NoModifier
 QtModShift = Qt.KeyboardModifier.ShiftModifier
+
+QKeyRedo = QKeySequence.StandardKey.Redo
+QKeyUndo = QKeySequence.StandardKey.Undo
+QKeySelectAll = QKeySequence.StandardKey.SelectAll
 
 QtMouseLeft = Qt.MouseButton.LeftButton
 QtMouseMiddle = Qt.MouseButton.MiddleButton

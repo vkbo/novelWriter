@@ -25,14 +25,14 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QRegularExpression, Qt, pyqtSlot
-from PyQt6.QtGui import QPalette
+from PyQt6.QtCore import QEvent, QObject, QRegularExpression, Qt, pyqtSlot
+from PyQt6.QtGui import QKeyEvent, QPalette
 from PyQt6.QtWidgets import QApplication, QFrame, QGridLayout, QLabel, QLineEdit, QToolBar
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwConst
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
-from novelwriter.types import QtAlignLeft, QtAlignRight, QtModShift
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtKeyEscape, QtModShift
 
 if TYPE_CHECKING:
     from novelwriter.editor.editor import GuiDocEditor
@@ -69,10 +69,12 @@ class GuiDocEditSearch(QFrame):
         self.searchBox = QLineEdit(self)
         self.searchBox.setPlaceholderText(self.tr("Search for"))
         self.searchBox.returnPressed.connect(self._doSearch)
+        self.searchBox.installEventFilter(self)
 
         self.replaceBox = QLineEdit(self)
         self.replaceBox.setPlaceholderText(self.tr("Replace with"))
         self.replaceBox.returnPressed.connect(self._doReplace)
+        self.replaceBox.installEventFilter(self)
 
         self.searchOpt = QToolBar(self)
         self.searchOpt.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
@@ -300,6 +302,26 @@ class GuiDocEditSearch(QFrame):
     def anyFocus(self) -> bool:
         """Return True if any of the input boxes have focus."""
         return self.hasFocus() or self.isAncestorOf(QApplication.focusWidget())
+
+    ##
+    #  Events and Overloads
+    ##
+
+    def eventFilter(self, obj: QObject | None, event: QEvent | None) -> bool:
+        """Close the search box on Escape while either input box has
+        focus. GuiDocEditor.keyPressEvent handles Escape for the
+        editor itself, but doesn't see key events sent directly to
+        these child line edits.
+        """
+        if (
+            event is not None
+            and event.type() == QEvent.Type.KeyPress
+            and isinstance(event, QKeyEvent)
+            and event.key() == QtKeyEscape
+        ):
+            self.closeSearch()
+            return True
+        return super().eventFilter(obj, event)
 
     ##
     #  Public Slots

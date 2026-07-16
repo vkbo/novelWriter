@@ -30,7 +30,6 @@ from time import time
 from PyQt6 import sip
 from PyQt6.QtCore import (
     QAbstractAnimation,
-    QEvent,
     QMimeData,
     QPoint,
     QPropertyAnimation,
@@ -48,7 +47,6 @@ from PyQt6.QtGui import (
     QDropEvent,
     QInputMethodEvent,
     QKeyEvent,
-    QKeySequence,
     QMouseEvent,
     QPalette,
     QResizeEvent,
@@ -93,6 +91,9 @@ from novelwriter.text.counting import standardCounter
 from novelwriter.text.formats import processHeading
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
+    QKeyRedo,
+    QKeySelectAll,
+    QKeyUndo,
     QtAlignJustify,
     QtImCurrentSelection,
     QtImCursorRectangle,
@@ -1144,25 +1145,6 @@ class GuiDocEditor(QTextEdit):
     #  Events and Overloads
     ##
 
-    def event(self, event: QEvent) -> bool:
-        """Claim the Escape key while the completer popup is open, so
-        that it isn't stolen first by novelWriter's own global Escape
-        shortcut (see GuiMain._keyPressEscape). Qt intentionally keeps
-        window-level shortcuts active while a QCompleter popup is
-        shown, unlike for a QMenu, since the popup's focus proxy is
-        the editor itself (see qWidgetShortcutContextMatcher in Qt).
-        """
-        if (
-            event.type() == QEvent.Type.ShortcutOverride
-            and isinstance(event, QKeyEvent)
-            and event.key() == QtKeyEscape
-            and (popup := self._completer.popup())
-            and popup.isVisible()
-        ):
-            event.accept()
-            return True
-        return super().event(event)
-
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Intercept key press events.
         We need to intercept a few key sequences:
@@ -1179,17 +1161,8 @@ class GuiDocEditor(QTextEdit):
             key = event.key()
             if key in (QtKeyReturn, QtKeyEnter, QtKeyTab):
                 if (selection := popup.selectionModel()) and selection.selectedIndexes():
-                    # An entry has been explicitly highlighted with Up
-                    # or Down, so let the completer's own popup accept
-                    # it instead of treating this as a newline/tab/etc
-                    # (see completer.py). Note that currentIndex() is
-                    # not a suitable check here: UnfilteredPopupCompletion
-                    # always defaults it to row 0 even without a
-                    # selection, which would swallow a plain Return.
                     event.ignore()
                     return
-                # Nothing is highlighted, so this key still does its
-                # normal job, and the stale popup just closes
                 popup.hide()
             elif key == QtKeyEscape:
                 popup.hide()
@@ -1197,6 +1170,16 @@ class GuiDocEditor(QTextEdit):
                 return
             elif key == QtKeyLeft:
                 popup.hide()
+
+        if event.key() == QtKeyEscape:
+            if self.searchVisible():
+                self.closeSearch()
+            elif CONFIG.vimMode:
+                self.setVimMode(nwVimMode.NORMAL)
+            elif SHARED.focusMode:
+                SHARED.setFocusMode(False)
+            event.ignore()
+            return
 
         if CONFIG.vimMode and self._vim.mode != nwVimMode.INSERT:
             # Process Vim modes
@@ -1212,13 +1195,13 @@ class GuiDocEditor(QTextEdit):
 
         if self.docSearch.anyFocus() and event.key() in self.ENTER_KEYS:
             return
-        elif event == QKeySequence.StandardKey.Redo:
+        elif event == QKeyRedo:
             self.docAction(nwDocAction.REDO)
             return
-        elif event == QKeySequence.StandardKey.Undo:
+        elif event == QKeyUndo:
             self.docAction(nwDocAction.UNDO)
             return
-        elif event == QKeySequence.StandardKey.SelectAll:
+        elif event == QKeySelectAll:
             self.docAction(nwDocAction.SEL_ALL)
             return
 
