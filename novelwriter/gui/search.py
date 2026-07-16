@@ -28,7 +28,7 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QModelIndex, QRect, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QAction, QCursor, QKeyEvent, QPainter, QPalette
+from PyQt6.QtGui import QAction, QCursor, QKeyEvent, QPainter, QPalette, QShortcut
 from PyQt6.QtWidgets import (
     QAbstractItemView,
     QApplication,
@@ -65,6 +65,7 @@ from novelwriter.types import (
     QtModShift,
     QtSelected,
     QtUserRole,
+    QtWidgetShortcut,
 )
 
 if TYPE_CHECKING:
@@ -141,6 +142,7 @@ class GuiProjectSearch(QWidget):
         self.searchText.setPlaceholderText(self.tr("Search for"))
         self.searchText.setClearButtonEnabled(True)
         self.searchText.addAction(self.searchAction, QLineEdit.ActionPosition.TrailingPosition)
+        self.searchText.returnPressed.connect(self._processSearch)
 
         # Search Filters
         self.searchFilters = _SearchFilters(self)
@@ -170,6 +172,12 @@ class GuiProjectSearch(QWidget):
 
         if selModel := self.searchResult.selectionModel():  # pragma: no branch
             selModel.currentChanged.connect(self._searchResultSelected)
+
+        # Keyboard Shortcuts
+        self.keyOpenResult = QShortcut(self.searchResult)
+        self.keyOpenResult.setKeys(["Return", "Enter", "Shift+Return", "Shift+Enter"])
+        self.keyOpenResult.setContext(QtWidgetShortcut)
+        self.keyOpenResult.activated.connect(self._openSelectedResult)
 
         # Assemble
         self.headerBox = QHBoxLayout()
@@ -234,17 +242,6 @@ class GuiProjectSearch(QWidget):
             self.tbCase.refreshTheme()
             self.tbWord.refreshTheme()
             self.tbRegEx.refreshTheme()
-
-    def processReturn(self) -> None:
-        """Process a return keypress forwarded from the main GUI."""
-        if self.searchText.hasFocus():
-            self._processSearch()
-        elif self.searchResult.hasFocus() and (result := self._model.result(self.searchResult.currentIndex())):
-            handle, start, length = result
-            if QApplication.keyboardModifiers() == QtModShift:
-                self.openDocumentRequest.emit(handle, nwDocMode.VIEW, "", True)
-            else:
-                self.openDocumentSelectRequest.emit(handle, start, length, False)
 
     def beginSearch(self, text: str = "") -> None:
         """Focus the search box and select its text, if any."""
@@ -315,6 +312,16 @@ class GuiProjectSearch(QWidget):
     ##
     #  Private Slots
     ##
+
+    @pyqtSlot()
+    def _openSelectedResult(self) -> None:
+        """Open the currently selected search result."""
+        if result := self._model.result(self.searchResult.currentIndex()):
+            handle, start, length = result
+            if QApplication.keyboardModifiers() == QtModShift:
+                self.openDocumentRequest.emit(handle, nwDocMode.VIEW, "", True)
+            else:
+                self.openDocumentSelectRequest.emit(handle, start, length, False)
 
     @pyqtSlot()
     def _processSearch(self) -> None:

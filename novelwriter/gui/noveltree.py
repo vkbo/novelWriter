@@ -26,9 +26,10 @@ import logging
 from enum import Enum
 
 from PyQt6.QtCore import QModelIndex, QPoint, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QActionGroup, QPainter, QPalette, QResizeEvent
+from PyQt6.QtGui import QActionGroup, QPainter, QPalette, QResizeEvent, QShortcut
 from PyQt6.QtWidgets import (
     QAbstractItemView,
+    QApplication,
     QFrame,
     QHBoxLayout,
     QInputDialog,
@@ -47,7 +48,15 @@ from novelwriter.extensions.modified import NIconToolButton, NTreeView
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.models.novelmodel import NovelModel
-from novelwriter.types import QtHeaderStretch, QtHeaderToContents, QtScrollAlwaysOff, QtScrollAsNeeded, QtSizeExpanding
+from novelwriter.types import (
+    QtHeaderStretch,
+    QtHeaderToContents,
+    QtModShift,
+    QtScrollAlwaysOff,
+    QtScrollAsNeeded,
+    QtSizeExpanding,
+    QtWidgetShortcut,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +84,12 @@ class GuiNovelView(QWidget):
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
+
+        # Keyboard Shortcuts
+        self.keyOpenItem = QShortcut(self.novelTree)
+        self.keyOpenItem.setKeys(["Return", "Enter", "Shift+Return", "Shift+Enter"])
+        self.keyOpenItem.setContext(QtWidgetShortcut)
+        self.keyOpenItem.activated.connect(self.novelTree.openSelectedItem)
 
         # Function Mappings
         self.setActive = self.novelBar.setActive
@@ -482,6 +497,18 @@ class GuiNovelTree(NTreeView):
         """Process size changed."""
         super().resizeEvent(event)
         self.resizeColumns()
+
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot()
+    def openSelectedItem(self) -> None:
+        """Open the currently selected item, or view it if Shift is held."""
+        index = self.currentIndex()
+        if (model := self._getModel()) and (tHandle := model.handle(index)) and (sTitle := model.key(index)):
+            mode = nwDocMode.VIEW if QApplication.keyboardModifiers() == QtModShift else nwDocMode.EDIT
+            self.novelView.openDocumentRequest.emit(tHandle, mode, sTitle, False)
 
     ##
     #  Private Slots
