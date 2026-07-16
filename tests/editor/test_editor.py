@@ -3210,6 +3210,17 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mock
         assert docSearch.isVisible() is False
         assert docEditor.focusNextPrevChild(True) is True
 
+    # While the completer popup is open, Tab must stay with the editor
+    # even if hasFocus() is momentarily wrong, which has been observed
+    # to happen on macOS right after the popup, a separate top-level
+    # window, is shown
+    with monkeypatch.context() as mp:
+        mp.setattr(docEditor, "hasFocus", lambda: False)
+        popup = docEditor._completer.popup()
+        assert popup is not None
+        mp.setattr(popup, "isVisible", lambda: True)
+        assert docEditor.focusNextPrevChild(True) is False
+
     # Replace Text
     # ============
     assert nwGUI.openDocument(C.hSceneDoc) is True

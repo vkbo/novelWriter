@@ -1241,7 +1241,12 @@ class GuiDocEditor(QTextEdit):
         allow the editor to insert a tab. If the search bar has focus,
         we forward the call to the search object.
         """
-        if self.hasFocus():
+        if self.hasFocus() or ((popup := self._completer.popup()) and popup.isVisible()):
+            # QWidget.event() consults this before keyPressEvent() ever
+            # runs, so while the completer popup is open, Tab must stay
+            # with the editor even if hasFocus() is momentarily wrong
+            # (observed on macOS after the popup, a separate top-level
+            # window, is shown).
             return False
         elif self.docSearch.isVisible():
             return self.docSearch.cycleFocus()
