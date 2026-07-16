@@ -152,13 +152,14 @@ class CommandCompleter(QCompleter):
         if popup is None or not popup.isVisible():
             return False
         if key in (QtKeyReturn, QtKeyEnter, QtKeyTab):
-            if (selection := popup.selectionModel()) and selection.selectedIndexes():
+            if (selection := popup.selectionModel()) and (indexes := selection.selectedIndexes()):
                 # An entry has been explicitly highlighted with Up or
-                # Down, so accept it instead of treating this as a
-                # newline/tab/etc. Note that currentIndex() is not a
-                # suitable check here: it can be valid even without an
-                # explicit selection, which would swallow a plain Return.
-                event.ignore()
+                # Down, so accept it directly. Note that currentIndex()
+                # is not a suitable check here: it can be valid even
+                # without an explicit selection, which would swallow a
+                # plain Return.
+                self._emitComplete(indexes[0])
+                popup.hide()
                 return True
             # Nothing is highlighted, so this key still does its
             # normal job, and the stale popup just closes

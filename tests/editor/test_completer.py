@@ -1,6 +1,6 @@
 """
 novelWriter – Command Completer Tests
-======================================
+=====================================
 
 This file is a part of novelWriter
 Copyright (C) 2026 Veronica Berglyd Olsen and novelWriter contributors
@@ -279,12 +279,19 @@ def testGuiDocEditor_CompleterKeyRouting(qtbot, nwGUI, projPath, mockRnd):
     assert popup.isVisible() is False
     assert docEditor.getText() == "@tag:"
 
-    # Comment completion supports Tab as an alternative accept key
+    # Comment completion supports Tab as an alternative accept key. Tab
+    # is sent to the editor rather than the popup here, unlike the
+    # other navigation keys above: the popup never holds real keyboard
+    # focus in this design (that's the whole point of using QCompleter
+    # over a QMenu), so a real Tab keystroke is always delivered to the
+    # editor, not the popup. Routing it through the popup instead relies
+    # on QCompleter's own C++ event forwarding, which isn't reliable
+    # across platforms for Tab specifically.
     docEditor.replaceText("")
     qtbot.keyClick(docEditor, "%", delay=KEY_DELAY)
     assert popup.isVisible() is True
     qtbot.keyClick(popup, QtKeyDown, delay=KEY_DELAY)
-    qtbot.keyClick(popup, QtKeyTab, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, QtKeyTab, delay=KEY_DELAY)
     assert popup.isVisible() is False
     assert docEditor.getText() == "%Synopsis: "
 
