@@ -29,7 +29,6 @@ from time import time
 
 from PyQt6 import sip
 from PyQt6.QtCore import (
-    QAbstractAnimation,
     QMimeData,
     QPoint,
     QPropertyAnimation,
@@ -59,7 +58,7 @@ from PyQt6.QtGui import (
     QTextOption,
     QWheelEvent,
 )
-from PyQt6.QtWidgets import QApplication, QFrame, QMenu, QTextEdit, QWidget
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QFrame, QMenu, QTextEdit, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles, fontMatcher, minmax, qtAddAction, qtAddMenu, qtLambda, transferCase
@@ -91,6 +90,7 @@ from novelwriter.text.counting import standardCounter
 from novelwriter.text.formats import processHeading
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
+    QAnimDeleteWhenStopped,
     QKeyRedo,
     QKeySelectAll,
     QKeyUndo,
@@ -138,6 +138,9 @@ logger = logging.getLogger(__name__)
 
 T_TextCheckBlock = tuple[QTextBlock, TextBlockData, int]
 T_TextCheckJob = tuple[int, list[T_TextCheckBlock]]
+
+MOVE_KEYS = (QtKeyLeft, QtKeyRight, QtKeyUp, QtKeyDown, QtKeyPageUp, QtKeyPageDown)
+ENTER_KEYS = (QtKeyReturn, QtKeyEnter)
 
 
 class _SelectAction(Enum):
@@ -226,10 +229,6 @@ class GuiDocEditor(QTextEdit):
         "wheelEventFilter",
     )
 
-    MOVE_KEYS = (QtKeyLeft, QtKeyRight, QtKeyUp, QtKeyDown, QtKeyPageUp, QtKeyPageDown)
-    ENTER_KEYS = (QtKeyReturn, QtKeyEnter)
-
-    # Custom Signals
     closeEditorRequest = pyqtSignal()
     docTextChanged = pyqtSignal(str, float)
     editedStatusChanged = pyqtSignal(bool)
@@ -1156,22 +1155,12 @@ class GuiDocEditor(QTextEdit):
           * We also handle automatic scrolling here.
         """
         self._lastActive = time()
+        key = event.key()
 
-        if (popup := self._completer.popup()) and popup.isVisible():
-            key = event.key()
-            if key in (QtKeyReturn, QtKeyEnter, QtKeyTab):
-                if (selection := popup.selectionModel()) and selection.selectedIndexes():
-                    event.ignore()
-                    return
-                popup.hide()
-            elif key == QtKeyEscape:
-                popup.hide()
-                event.ignore()
-                return
-            elif key == QtKeyLeft:
-                popup.hide()
+        if (popup := self._completer.popup()) and popup.isVisible() and self._completerKeyPressEvent(event, key, popup):
+            return
 
-        if event.key() == QtKeyEscape:
+        if key == QtKeyEscape:
             if self.searchVisible():
                 self.closeSearch()
             elif CONFIG.vimMode:
@@ -1182,7 +1171,6 @@ class GuiDocEditor(QTextEdit):
             return
 
         if CONFIG.vimMode and self._vim.mode != nwVimMode.INSERT:
-            # Process Vim modes
             if self._handleVimNormalModeModeSwitching(event):
                 return
 
@@ -1193,7 +1181,7 @@ class GuiDocEditor(QTextEdit):
 
             return
 
-        if self.docSearch.anyFocus() and event.key() in self.ENTER_KEYS:
+        if self.docSearch.anyFocus() and key in ENTER_KEYS:
             return
         elif event == QKeyRedo:
             self.docAction(nwDocAction.REDO)
@@ -1211,8 +1199,7 @@ class GuiDocEditor(QTextEdit):
             nPos = self.cursorRect().topLeft().y()
             kMod = event.modifiers()
             okMod = kMod in (QtModNone, QtModShift)
-
-            okKey = event.key() not in self.MOVE_KEYS
+            okKey = key not in MOVE_KEYS
             if nPos != cPos and okMod and okKey and (viewport := self.viewport()):
                 mPos = CONFIG.autoScrollPos * 0.01 * viewport.height()
                 if cPos > mPos and (vBar := self.verticalScrollBar()):
@@ -1221,7 +1208,7 @@ class GuiDocEditor(QTextEdit):
                     anim.setDuration(120)
                     anim.setStartValue(vBar.value())
                     anim.setEndValue(vBar.value() + cMov)
-                    anim.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
+                    anim.start(QAnimDeleteWhenStopped)
         else:
             self._dispatchKeyPress(event)
 
@@ -2738,7 +2725,7 @@ class GuiDocEditor(QTextEdit):
         block formatting, so the heuristic serves no purpose here, and
         can be bypassed entirely by inserting the new block directly.
         """
-        if event.key() in self.ENTER_KEYS and event.modifiers() == QtModNone:
+        if event.key() in ENTER_KEYS and event.modifiers() == QtModNone:
             cursor = self.textCursor()
             cursor.insertBlock()
             self.setTextCursor(cursor)
@@ -2746,6 +2733,24 @@ class GuiDocEditor(QTextEdit):
             event.accept()
         else:
             super().keyPressEvent(event)
+
+    def _completerKeyPressEvent(self, event: QKeyEvent, key: int, popup: QAbstractItemView) -> bool:
+        """Handle a key press while the completer popup is visible.
+        Returns True if the event has been fully handled, in which
+        case keyPressEvent should return without further processing.
+        """
+        if key in (QtKeyReturn, QtKeyEnter, QtKeyTab):
+            if (selection := popup.selectionModel()) and selection.selectedIndexes():
+                event.ignore()
+                return True
+            popup.hide()
+        elif key == QtKeyEscape:
+            popup.hide()
+            event.ignore()
+            return True
+        elif key == QtKeyLeft:
+            popup.hide()
+        return False
 
     def _applyExtraSelections(self) -> None:
         """Set the editor's extra selections from the line highlight

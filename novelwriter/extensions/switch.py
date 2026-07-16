@@ -21,12 +21,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-from PyQt6.QtCore import QAbstractAnimation, QPropertyAnimation, Qt, pyqtProperty, pyqtSlot  # pyright: ignore
+from PyQt6.QtCore import QPropertyAnimation, Qt, pyqtProperty, pyqtSlot  # pyright: ignore
 from PyQt6.QtGui import QEnterEvent, QPainter, QPaintEvent, QResizeEvent
 from PyQt6.QtWidgets import QAbstractButton, QWidget
 
 from novelwriter import SHARED
-from novelwriter.types import QtNoPen, QtPaintAntiAlias, QtSizeFixed
+from novelwriter.types import QAnimDeleteWhenStopped, QtNoPen, QtPaintAntiAlias, QtSizeFixed
 
 
 class NSwitch(QAbstractButton):
@@ -117,4 +117,4 @@ class NSwitch(QAbstractButton):
         anim.setDuration(120)
         anim.setStartValue(self._offset)
         anim.setEndValue((self._xW - self._xR) if checked else self._xR)
-        anim.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
+        anim.start(QAnimDeleteWhenStopped)
