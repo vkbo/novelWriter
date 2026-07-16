@@ -66,11 +66,14 @@ def testCompleter_EmitComplete(qtbot):
         completer._emitComplete(index)
     assert blocker.args == [1, 2, "Jane"]
 
-    # A fresh update call clears out any previous options
+    # A fresh update call clears out any previous options. The source
+    # model still holds the full, unfiltered keyword list (QCompleter
+    # does the filtering itself), so it's the completionModel, i.e.
+    # what the popup actually shows, that must be empty.
     assert completer.updateMetaText("@zzz", 4) is False
-    model = completer.model()
-    assert model is not None
-    assert model.rowCount() == 0
+    completionModel = completer.completionModel()
+    assert completionModel is not None
+    assert completionModel.rowCount() == 0
 
 
 @pytest.mark.gui
@@ -92,11 +95,15 @@ def testCompleter_KeywordAndTagOptions(qtbot, nwGUI, projPath, mockRnd):
     nwGUI.saveDocument()
 
     def labels() -> list[str]:
-        model = completer.model()
+        # completionModel(), not model(): filtering by the typed prefix
+        # is now done by QCompleter itself, so the source model always
+        # holds the full, unfiltered candidate list, and it's the
+        # completionModel that reflects what the popup actually shows.
+        model = completer.completionModel()
         return [model.index(i, 0).data() for i in range(model.rowCount())]
 
     def action(row: int) -> CompleterAction | None:
-        return completer.model().index(row, 0).data(Qt.ItemDataRole.UserRole)
+        return completer.completionModel().index(row, 0).data(Qt.ItemDataRole.UserRole)
 
     # A bare "@" lists every valid keyword
     assert completer.updateMetaText("@", 1) is True
@@ -110,7 +117,7 @@ def testCompleter_KeywordAndTagOptions(qtbot, nwGUI, projPath, mockRnd):
 
     # A keyword that matches nothing yields no options at all
     assert completer.updateMetaText("@q", 2) is False
-    assert completer.model().rowCount() == 0
+    assert completer.completionModel().rowCount() == 0
 
     # Past the colon, options come from the tag index instead, and are
     # filtered by substring match on the partial tag being typed
@@ -140,11 +147,11 @@ def testCompleter_CommentOptions(qtbot, nwGUI, projPath, mockRnd):
     SHARED.project.index._itemIndex._cache.note.add("Consistency")
 
     def labels() -> list[str]:
-        model = completer.model()
+        model = completer.completionModel()
         return [model.index(i, 0).data() for i in range(model.rowCount())]
 
     def action(row: int) -> CompleterAction | None:
-        return completer.model().index(row, 0).data(Qt.ItemDataRole.UserRole)
+        return completer.completionModel().index(row, 0).data(Qt.ItemDataRole.UserRole)
 
     # A bare "%" lists all four top-level comment commands
     assert completer.updateCommentText("%", 1) is True
@@ -197,7 +204,7 @@ def testGuiDocEditor_CompleterKeyRouting(qtbot, nwGUI, projPath, mockRnd):
     # narrows the option list as a side effect
     qtbot.keyClick(docEditor, "@", delay=KEY_DELAY)
     assert popup.isVisible() is True
-    assert completer.model().rowCount() == len(nwKeyWords.VALID_KEYS)
+    assert completer.completionModel().rowCount() == len(nwKeyWords.VALID_KEYS)
 
     # Sent to the popup, not the editor, since that's where a real
     # keystroke would land while the popup is open (Qt::Popup grabs
@@ -206,7 +213,7 @@ def testGuiDocEditor_CompleterKeyRouting(qtbot, nwGUI, projPath, mockRnd):
     # of using QCompleter over a QMenu here (issue #2510).
     qtbot.keyClick(popup, "c", delay=KEY_DELAY)
     assert docEditor.getText() == "@c"
-    assert completer.model().rowCount() == 2
+    assert completer.completionModel().rowCount() == 2
 
     # Escape cancels the popup without touching the document. This
     # also exercises GuiDocEditor.event(): novelWriter has its own
@@ -234,7 +241,8 @@ def testGuiDocEditor_CompleterKeyRouting(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(docEditor, "@", delay=KEY_DELAY)
     qtbot.keyClick(popup, "t", delay=KEY_DELAY)
     qtbot.keyClick(popup, "a", delay=KEY_DELAY)
-    assert [completer.model().index(i, 0).data() for i in range(completer.model().rowCount())] == ["@tag"]
+    cModel = completer.completionModel()
+    assert [cModel.index(i, 0).data() for i in range(cModel.rowCount())] == ["@tag"]
 
     qtbot.keyClick(popup, QtKeyDown, delay=KEY_DELAY)
     qtbot.keyClick(popup, QtKeyReturn, delay=KEY_DELAY)

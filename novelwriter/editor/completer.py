@@ -51,12 +51,6 @@ class CommandCompleter(QCompleter):
     and keys. It also helps to type the meta data keyword on a new
     line starting with @ or %. The update functions should be called
     on every keystroke on a line starting with @ or %.
-
-    Unlike a QMenu, a QCompleter popup never takes keyboard focus, so
-    the editor keeps receiving key events directly while it is open.
-    The editor's keyPressEvent is responsible for letting Return,
-    Enter, Tab and Escape fall through to this popup instead of
-    processing them itself while it is visible.
     """
 
     __slots__ = ("_model",)
@@ -68,7 +62,8 @@ class CommandCompleter(QCompleter):
         self._model = QStandardItemModel(self)
         self.setModel(self._model)
         self.setWidget(parent)
-        self.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
+        self.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.setMaxVisibleItems(15)
         self.activated[QModelIndex].connect(self._emitComplete)  # type: ignore[index]
 
@@ -77,79 +72,70 @@ class CommandCompleter(QCompleter):
         self._model.clear()
         kw, sep, _ = text.partition(":")
         if pos <= len(kw):
+            lookup = kw.rstrip()
             offset = 0
-            length = len(kw.rstrip())
+            length = len(lookup)
             suffix = "" if sep else ":"
-            options = sorted(filter(lambda x: x.startswith(kw.rstrip()), nwKeyWords.VALID_KEYS))
+            self.setFilterMode(Qt.MatchFlag.MatchStartsWith)
+            options = sorted(nwKeyWords.VALID_KEYS)
         else:
             status, tBits, tPos = SHARED.project.index.scanThis(text)
             if not status:
                 return False
             index = bisect.bisect_right(tPos, pos) - 1
-            lookup = tBits[index].lower() if index > 0 else ""
+            lookup = tBits[index] if index > 0 else ""
             offset = tPos[index] if lookup else pos
             length = len(lookup)
             suffix = ""
-            options = sorted(filter(lambda x: lookup in x.lower(), SHARED.project.index.getKeyWordTags(kw.strip())))[
-                :15
-            ]
-
-        if not options:
-            return False
+            self.setFilterMode(Qt.MatchFlag.MatchContains)
+            options = sorted(SHARED.project.index.getKeyWordTags(kw.strip()))
 
         for value in options:
             self._addOption(value, CompleterAction(pos=offset, length=length, value=value + suffix))
 
-        return True
+        self.setCompletionPrefix(lookup)
+        return self.completionCount() > 0
 
     def updateCommentText(self, text: str, pos: int) -> bool:
         """Update the popup options based on the line of comment text."""
         self._model.clear()
         cmd, sep, _ = text.partition(":")
-        if pos <= len(cmd):
-            clean = text[1:].lstrip()[:6].lower()
-            if clean[:6] == "story.":
-                pre, _, key = cmd.partition(".")
-                offset = len(pre) + 1
-                length = len(key)
-                suffix = "" if sep else ": "
-                options = sorted(
-                    filter(
-                        lambda x: x.startswith(key.rstrip()),
-                        SHARED.project.index.getStoryKeys(),
-                    )
-                )
-            elif clean[:5] == "note.":
-                pre, _, key = cmd.partition(".")
-                offset = len(pre) + 1
-                length = len(key)
-                suffix = "" if sep else ": "
-                options = sorted(
-                    filter(
-                        lambda x: x.startswith(key.rstrip()),
-                        SHARED.project.index.getNoteKeys(),
-                    )
-                )
-            elif pos < 12:
-                offset = 0
-                length = len(cmd.rstrip())
-                suffix = ""
-                options = list(
-                    filter(
-                        lambda x: x.startswith(cmd.rstrip()),
-                        ["%Synopsis: ", "%Short: ", "%Story", "%Note"],
-                    )
-                )
-            else:
-                return False
+        if pos > len(cmd):
+            return False
 
-            if options:
-                for value in options:
-                    rep = value + suffix
-                    self._addOption(rep.rstrip(":. "), CompleterAction(pos=offset, length=length, value=rep))
-                return True
+        clean = text[1:].lstrip()[:6].lower()
+        if clean[:6] == "story.":
+            pre, _, key = cmd.partition(".")
+            lookup = key.rstrip()
+            offset = len(pre) + 1
+            length = len(lookup)
+            suffix = "" if sep else ": "
+            self.setFilterMode(Qt.MatchFlag.MatchStartsWith)
+            options = sorted(SHARED.project.index.getStoryKeys())
+        elif clean[:5] == "note.":
+            pre, _, key = cmd.partition(".")
+            lookup = key.rstrip()
+            offset = len(pre) + 1
+            length = len(lookup)
+            suffix = "" if sep else ": "
+            self.setFilterMode(Qt.MatchFlag.MatchStartsWith)
+            options = sorted(SHARED.project.index.getNoteKeys())
+        elif pos < 12:
+            lookup = cmd.rstrip()
+            offset = 0
+            length = len(lookup)
+            suffix = ""
+            self.setFilterMode(Qt.MatchFlag.MatchStartsWith)
+            options = ["%Synopsis: ", "%Short: ", "%Story", "%Note"]
+        else:
+            return False
 
-        return False
+        for value in options:
+            rep = value + suffix
+            self._addOption(rep.rstrip(":. "), CompleterAction(pos=offset, length=length, value=rep))
+
+        self.setCompletionPrefix(lookup)
+        return self.completionCount() > 0
 
     ##
     #  Internal Functions
