@@ -295,12 +295,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         offset = 0
         rules = None
-        meta: T_TextMetaList = []
         if text.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(BLOCK_META)
             index = SHARED.project.index
             isValid, bits, loc = index.scanThis(text)
             isGood = index.checkThese(bits, self._tHandle)
+            meta: T_TextMetaList = []
             if isValid:
                 for n, bit in enumerate(bits):
                     pos = utf16Map[loc[n]] if utf16Map else loc[n]
@@ -319,8 +319,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         self.setFormat(pos, length, self._hStyles["invalid"])
 
             # We never want to run the spell checker on keyword/values,
-            # so we clear the cached data and force a return here
-            self._clearBlockData()
+            # so we clear the cached check text and force a return here,
+            # but the tag positions are kept for the hover card
+            data = self.currentBlockUserData()
+            if not isinstance(data, TextBlockData):
+                data = TextBlockData()
+                self.setCurrentBlockUserData(data)
+            data.clear()
+            data.setMetaData(meta)
             return
 
         elif text.startswith(("# ", "#! ", "## ", "##! ", "### ", "###! ", "#### ")):

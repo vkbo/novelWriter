@@ -107,6 +107,12 @@ class TextBlockData(QTextBlockUserData):
         """
         return self._text, self._rawText, self._offset, self._utf16Map
 
+    def setMetaData(self, metaData: T_TextMetaList) -> None:
+        """Store meta data only, leaving the cached check text and any
+        existing spell/format errors untouched.
+        """
+        self._metaData = metaData
+
     def setSpellErrors(self, errors: T_TextCheckList) -> None:
         """Store spell error data computed from a text snapshot."""
         self._spellErrors = errors
