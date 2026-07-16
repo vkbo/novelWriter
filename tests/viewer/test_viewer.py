@@ -25,8 +25,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from PyQt6.QtCore import QMimeData, QPointF, Qt, QUrl
-from PyQt6.QtGui import QAction, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent
+from PyQt6.QtCore import QEvent, QMimeData, QPointF, Qt, QUrl
+from PyQt6.QtGui import QAction, QDesktopServices, QDragEnterEvent, QDragMoveEvent, QDropEvent, QMouseEvent, QTextCursor
 from PyQt6.QtWidgets import QApplication, QMenu, QTextBrowser
 
 from novelwriter import CONFIG, SHARED
@@ -277,6 +277,89 @@ def testGuiDocViewer_Links(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         mp.setattr(QDesktopServices, "openUrl", openUrl)
         docViewer._linkClicked(QUrl("mailto:test@example.com"))
         assert openUrl.called is False
+
+
+@pytest.mark.gui
+def testGuiDocViewer_HoverCard(qtbot, nwGUI, projPath, mockRnd):
+    """Test the mouse-driven reference tag hover card in the viewer:
+    the debounce timer only starts when hovering a '#tag_' anchor,
+    showing the card requires _showHoverCard() to also resolve the
+    anchor into a tag, and moving off the anchor or leaving the viewer
+    entirely schedules a delayed hide rather than closing it outright.
+    """
+    buildTestProject(nwGUI, projPath)
+    docEditor = nwGUI.docEditor
+    docViewer = nwGUI.docViewer
+
+    hBob = "0000000000010"
+    text = "### Scene\n\n@char: Bob\n\nSome text mentioning Bob.\n"
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor.setPlainText(text)
+    nwGUI.saveDocument()
+    cursor = docEditor.textCursor()
+    cursor.setPosition(text.index("Bob"))
+    docEditor._processTag(cursor, create=True)
+    assert hBob in SHARED.project.tree
+
+    nwGUI.viewDocument(C.hSceneDoc)
+
+    document = docViewer.document()
+    assert document is not None
+
+    def charCentre(position: int) -> QPointF:
+        # The midpoint between the cursor rects on either side of the
+        # character lands solidly inside its glyph, unlike a cursor
+        # boundary rect's own centre, which anchorAt() may not hit-test
+        # as being over the character on either side of it
+        left = QTextCursor(document)
+        left.setPosition(position)
+        right = QTextCursor(document)
+        right.setPosition(position + 1)
+        leftRect = docViewer.cursorRect(left)
+        rightRect = docViewer.cursorRect(right)
+        return QPointF((leftRect.x() + rightRect.x()) / 2, leftRect.center().y())
+
+    def moveTo(position: int) -> None:
+        point = charCentre(position)
+        event = QMouseEvent(QEvent.Type.MouseMove, point, Qt.MouseButton.NoButton, Qt.MouseButton.NoButton, QtModNone)
+        docViewer.mouseMoveEvent(event)
+
+    plainText = docViewer.toPlainText()
+    anchorPos = plainText.find("Bob")
+    assert anchorPos >= 0
+    plainPos = plainText.find("Some text")
+    assert plainPos >= 0
+
+    # Hovering over the tag anchor starts the debounce timer, and once
+    # it fires, the card resolves and shows the tag
+    moveTo(anchorPos + 1)
+    assert docViewer._timerHover.isActive() is True
+    docViewer._showHoverCard()
+    assert docViewer._hoverCard.isVisible() is True
+    assert "Bob" in docViewer._hoverCard._label.text()
+
+    # A position with no anchor at all stops the timer and schedules a
+    # hide instead of closing the card immediately. _hoverPos is only
+    # ever updated on the anchor branch of mouseMoveEvent, so it must
+    # be set directly here to point _showHoverCard() at the plain text.
+    moveTo(plainPos + 1)
+    assert docViewer._timerHover.isActive() is False
+    assert docViewer._hoverCard._hideTimer.isActive() is True
+    docViewer._hoverCard._hideTimer.stop()
+
+    # _showHoverCard() re-checks the position itself, and also
+    # schedules a hide if it no longer resolves to a tag anchor
+    docViewer._hoverPos = charCentre(plainPos + 1).toPoint()
+    docViewer._showHoverCard()
+    assert docViewer._hoverCard._hideTimer.isActive() is True
+    docViewer._hoverCard._hideTimer.stop()
+
+    # Leaving the viewer entirely also schedules a delayed hide, giving
+    # the mouse a chance to reach the card itself
+    moveTo(anchorPos + 1)
+    docViewer.leaveEvent(QEvent(QEvent.Type.Leave))
+    assert docViewer._timerHover.isActive() is False
+    assert docViewer._hoverCard._hideTimer.isActive() is True
 
 
 @pytest.mark.gui

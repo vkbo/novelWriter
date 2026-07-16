@@ -686,6 +686,7 @@ def testGuiDocEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
 
     # Meta data lookup follows the same pattern
     data._metaData = [(0, 5, "Lorem", "url"), (6, 11, "ipsum", "url")]
+    assert docEditor._qDocument.metaDataAtPos(-1) == ("", "")
     assert docEditor._qDocument.metaDataAtPos(blockPos + 8) == ("ipsum", "url")
     assert docEditor._qDocument.metaDataAtPos(blockPos + 20) == ("", "")
 
@@ -2415,6 +2416,68 @@ def testGuiDocEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor._processTag() == _TagAction.NONE
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiDocEditor_HoverCard(qtbot, nwGUI, projPath, mockRnd):
+    """Test the mouse-driven reference tag hover card: the debounce
+    timer is only started when the block under the cursor holds any
+    meta data at all, showing the card requires the more precise
+    position check inside _showHoverCard() to also resolve to a tag,
+    and moving off a tag or leaving the editor entirely schedules a
+    delayed hide rather than closing it outright.
+    """
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
+
+    cHandle = SHARED.project.newFile("Jane Doe", C.hCharRoot)
+    assert nwGUI.openDocument(cHandle) is True
+    docEditor.replaceText("# Jane Doe\n\n@tag: Jane\n\n")
+    nwGUI.saveDocument()
+
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor.replaceText("### A Scene\n\n@char: Jane\n\n")
+
+    def moveTo(position: int) -> QPoint:
+        docEditor.setCursorPosition(position)
+        point = docEditor.cursorRect().center()
+        event = QMouseEvent(
+            QEvent.Type.MouseMove, QPointF(point), Qt.MouseButton.NoButton, Qt.MouseButton.NoButton, QtModNone
+        )
+        docEditor.mouseMoveEvent(event)
+        return point
+
+    # Hovering over the "Jane" tag starts the debounce timer, and once
+    # it fires, the card resolves and shows the tag
+    moveTo(22)
+    assert docEditor._timerHover.isActive() is True
+    docEditor._showHoverCard()
+    assert docEditor._hoverCard.isVisible() is True
+    assert "Jane" in docEditor._hoverCard._label.text()
+
+    # A position within the same block that isn't over the tag itself
+    # does not resolve, so _showHoverCard() schedules a hide instead
+    # of showing the card, even though the block holds meta data
+    docEditor.setCursorPosition(15)
+    docEditor._hoverPos = docEditor.cursorRect().center()
+    docEditor._showHoverCard()
+    assert docEditor._hoverCard._hideTimer.isActive() is True
+    docEditor._hoverCard._hideTimer.stop()
+
+    # Moving onto a block with no meta data at all stops the timer and
+    # schedules a hide without ever re-checking the exact position
+    moveTo(4)
+    assert docEditor._timerHover.isActive() is False
+    assert docEditor._hoverCard._hideTimer.isActive() is True
+    docEditor._hoverCard._hideTimer.stop()
+
+    # Leaving the editor entirely also schedules a delayed hide, giving
+    # the mouse a chance to reach the card itself
+    moveTo(22)
+    docEditor.leaveEvent(QEvent(QEvent.Type.Leave))
+    assert docEditor._timerHover.isActive() is False
+    assert docEditor._hoverCard._hideTimer.isActive() is True
 
 
 @pytest.mark.gui
