@@ -144,6 +144,9 @@ class GuiDocHoverCard(QFrame):
             button.setFont(SHARED.theme.guiFontSmall)
             button.setStyleSheet(buttonStyle)
 
+        # The cached text has the syntax colours baked into its HTML,
+        # so it must be rebuilt against the new theme too
+        self.clearCache()
         self.update()
 
     def setTag(self, tag: str) -> bool:
