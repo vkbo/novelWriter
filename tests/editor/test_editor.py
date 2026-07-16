@@ -686,8 +686,8 @@ def testGuiDocEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
 
     # Meta data lookup follows the same pattern
     data._metaData = [(0, 5, "Lorem", "url"), (6, 11, "ipsum", "url")]
-    assert docEditor._qDocument.metaDataAtPos(blockPos + 8) == ("ipsum", "url")
-    assert docEditor._qDocument.metaDataAtPos(blockPos + 20) == ("", "")
+    assert docEditor._qDocument.metaDataAtPos(blockPos + 8) == ("ipsum", "url", blockPos + 6)
+    assert docEditor._qDocument.metaDataAtPos(blockPos + 20) == ("", "", -1)
 
     data._spellErrors = [(0, 5, "Lorem")]
 

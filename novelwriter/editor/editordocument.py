@@ -108,9 +108,10 @@ class GuiTextDocument(QTextDocument):
         cursor.select(QTextCursor.SelectionType.Document)
         cursor.mergeBlockFormat(blockFormat)
 
-    def metaDataAtPos(self, pos: int) -> tuple[str, str]:
+    def metaDataAtPos(self, pos: int) -> tuple[str, str, int]:
         """Check if there is meta data available at a given position in
-        the document, and if so, return it.
+        the document, and if so, return it along with the absolute
+        document position where the meta data span starts.
         """
         cursor = QTextCursor(self)
         cursor.setPosition(pos)
@@ -119,8 +120,8 @@ class GuiTextDocument(QTextDocument):
         if block.isValid() and isinstance(data, TextBlockData) and (check := pos - block.position()) >= 0:
             for cPos, cEnd, cData, cType in data.metaData:
                 if cPos <= check <= cEnd:
-                    return cData, cType
-        return "", ""
+                    return cData, cType, block.position() + cPos
+        return "", "", -1
 
     def spellErrorAtPos(self, pos: int) -> tuple[str, int, int, list[str]]:
         """Check if there is a misspelled word at a given position in

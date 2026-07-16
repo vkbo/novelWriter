@@ -404,6 +404,7 @@ class GuiDocEditor(QTextEdit):
 
         # Set Up Reference Tag Hover Card
         self._hoverCard = GuiDocHoverCard(self)
+        self._hoverCard.openDocumentRequest.connect(self.openDocumentRequest)
         self._hoverPos = QPoint()
         self._timerHover = QTimer(self)
         self._timerHover.timeout.connect(self._showHoverCard)
@@ -1279,7 +1280,7 @@ class GuiDocEditor(QTextEdit):
         """
         if event.modifiers() & QtModCtrl == QtModCtrl:
             cursor = self.cursorForPosition(event.pos())
-            mData, mType = self._qDocument.metaDataAtPos(cursor.position())
+            mData, mType, _ = self._qDocument.metaDataAtPos(cursor.position())
             if mData and mType == "url":
                 SHARED.openWebsite(mData)
             else:
@@ -1298,12 +1299,20 @@ class GuiDocEditor(QTextEdit):
             self._hoverPos = pos
             self._timerHover.start()
         else:
-            self._hideHoverCard()
+            # Not over any tag, but still within the editor, e.g. in
+            # the gap between the text and the card below it, so the
+            # hide is delayed to give the mouse a chance to reach it
+            self._timerHover.stop()
+            self._hoverCard.scheduleHide()
         super().mouseMoveEvent(event)
 
     def leaveEvent(self, event: QEvent) -> None:
-        """Hide the hover card when the mouse leaves the editor."""
-        self._hideHoverCard()
+        """Request that the hover card be hidden when the mouse leaves
+        the editor. The hide is delayed rather than immediate, so the
+        mouse has time to move onto the card itself, which cancels it.
+        """
+        self._timerHover.stop()
+        self._hoverCard.scheduleHide()
         super().leaveEvent(event)
 
     def wheelEvent(self, event: QWheelEvent) -> None:
@@ -1498,12 +1507,17 @@ class GuiDocEditor(QTextEdit):
         cursor = self.cursorForPosition(self._hoverPos)
         rect = self.cursorRect(cursor)
         onText = abs(self._hoverPos.x() - rect.x()) <= self.fontMetrics().averageCharWidth()
-        mData, mType = self._qDocument.metaDataAtPos(cursor.position()) if onText else ("", "")
+        mData, mType, mStart = self._qDocument.metaDataAtPos(cursor.position()) if onText else ("", "", -1)
         if mData and mType == "tag" and self._hoverCard.setTag(mData) and (viewport := self.viewport()):
-            pos = QPoint(self._hoverPos.x(), rect.bottom() + 4)
+            # Anchor to the start of the tag rather than the mouse, so
+            # the card doesn't shift about and is easy to reach
+            startCursor = QTextCursor(self._qDocument)
+            startCursor.setPosition(mStart)
+            left = self.cursorRect(startCursor).x()
+            pos = QPoint(left, rect.bottom() + 4)
             self._hoverCard.showAt(viewport.mapToGlobal(pos))
         else:
-            self._hoverCard.hide()
+            self._hoverCard.scheduleHide()
 
     def _hideHoverCard(self) -> None:
         """Stop the hover timer and hide the hover card, if visible."""
@@ -1656,7 +1670,7 @@ class GuiDocEditor(QTextEdit):
             action.triggered.connect(qtLambda(self._emitRenameItem, pBlock))
 
         # URL
-        (mData, mType) = self._qDocument.metaDataAtPos(pCursor.position())
+        mData, mType, _ = self._qDocument.metaDataAtPos(pCursor.position())
         if mData and mType == "url":
             action = qtAddAction(ctxMenu, self._trOpenURL)
             action.triggered.connect(qtLambda(SHARED.openWebsite, mData))

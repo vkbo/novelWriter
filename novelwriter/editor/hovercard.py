@@ -24,12 +24,16 @@ from __future__ import annotations
 import html
 import logging
 
-from PyQt6.QtCore import QPoint, QRectF, Qt
-from PyQt6.QtGui import QColor, QPainter, QPainterPath, QPaintEvent, QPen, QRegion
-from PyQt6.QtWidgets import QFrame, QLabel, QVBoxLayout, QWidget
+from enum import Enum
+
+from PyQt6.QtCore import QEvent, QPoint, QRectF, Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QColor, QEnterEvent, QPainter, QPainterPath, QPaintEvent, QPen, QRegion
+from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QToolButton, QVBoxLayout, QWidget
 
 from novelwriter import SHARED
 from novelwriter.core.indexdata import TT_NONE
+from novelwriter.enum import nwDocMode
+from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import QtPaintAntiAlias
 
 logger = logging.getLogger(__name__)
@@ -45,7 +49,23 @@ class GuiDocHoverCard(QFrame):
     hovered again.
     """
 
-    __slots__ = ("_backColor", "_borderColor", "_cache", "_label", "_layout", "_tag")
+    openDocumentRequest = pyqtSignal(str, Enum, str, bool)
+
+    HIDE_DELAY = 200
+
+    __slots__ = (
+        "_backColor",
+        "_borderColor",
+        "_buttonBox",
+        "_cache",
+        "_editBtn",
+        "_hideTimer",
+        "_label",
+        "_layout",
+        "_separator",
+        "_tag",
+        "_viewBtn",
+    )
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent, Qt.WindowType.ToolTip)
@@ -59,13 +79,47 @@ class GuiDocHoverCard(QFrame):
         self._backColor = QColor()
         self._borderColor = QColor()
 
+        # The mouse is allowed to move from the editor onto the card
+        # itself, so a hide requested elsewhere is delayed rather than
+        # immediate, and cancelled again if the mouse enters the card
+        self._hideTimer = QTimer(self)
+        self._hideTimer.setSingleShot(True)
+        self._hideTimer.setInterval(self.HIDE_DELAY)
+        self._hideTimer.timeout.connect(self.hide)
+
         self._label = QLabel(self)
         self._label.setFrameStyle(QFrame.Shape.NoFrame)
         self._label.setTextFormat(Qt.TextFormat.RichText)
         self._label.setWordWrap(True)
 
+        self._separator = QWidget(self)
+        self._separator.setFixedHeight(1)
+
+        self._viewBtn = QToolButton(self)
+        self._viewBtn.setText(self.tr("View"))
+        self._viewBtn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self._viewBtn.setAutoRaise(True)
+        self._viewBtn.clicked.connect(self._onViewClicked)
+
+        self._editBtn = QToolButton(self)
+        self._editBtn.setText(self.tr("Edit"))
+        self._editBtn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self._editBtn.setAutoRaise(True)
+        self._editBtn.clicked.connect(self._onEditClicked)
+
+        self._buttonBox = QHBoxLayout()
+        self._buttonBox.addWidget(self._viewBtn)
+        self._buttonBox.addWidget(self._editBtn)
+        self._buttonBox.addStretch(1)
+        self._buttonBox.setContentsMargins(0, 0, 0, 0)
+
         self._layout = QVBoxLayout()
         self._layout.addWidget(self._label)
+        self._layout.addSpacing(6)
+        self._layout.addWidget(self._separator)
+        self._layout.addSpacing(2)
+        self._layout.addLayout(self._buttonBox)
+        self._layout.setSpacing(0)
         self._layout.setContentsMargins(8, 6, 8, 6)
 
         self.setLayout(self._layout)
@@ -76,9 +130,20 @@ class GuiDocHoverCard(QFrame):
     def updateTheme(self) -> None:
         """Update the widget's colours to match the editor's theme."""
         syntax = SHARED.theme.syntaxTheme
+        iSz = SHARED.theme.baseIconSize
+
         self._backColor = syntax.back
         self._borderColor = syntax.hidden
         self._label.setStyleSheet(f"color: {syntax.text.name()};")
+        self._separator.setStyleSheet(f"background-color: {syntax.hidden.name()};")
+
+        buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
+        for button, icon in ((self._viewBtn, "view:action"), (self._editBtn, "edit:change")):
+            button.setIcon(SHARED.theme.getIcon(icon))
+            button.setIconSize(iSz)
+            button.setFont(SHARED.theme.guiFontSmall)
+            button.setStyleSheet(buttonStyle)
+
         self.update()
 
     def setTag(self, tag: str) -> bool:
@@ -103,10 +168,28 @@ class GuiDocHoverCard(QFrame):
 
     def showAt(self, pos: QPoint) -> None:
         """Show the hover card with its top-left corner at pos."""
+        self._hideTimer.stop()
         self.adjustSize()
         self.setMask(QRegion(self._roundedPath().toFillPolygon().toPolygon()))
         self.move(pos)
         self.show()
+
+    def scheduleHide(self) -> None:
+        """Request that the card be hidden after a short delay, so the
+        mouse has time to move from the editor onto the card itself
+        without it closing, similar to VS Code's hover widget.
+        """
+        self._hideTimer.start()
+
+    def enterEvent(self, event: QEnterEvent) -> None:
+        """Cancel a pending hide when the mouse enters the card."""
+        self._hideTimer.stop()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event: QEvent) -> None:
+        """Hide the card once the mouse leaves it."""
+        self.hide()
+        super().leaveEvent(event)
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Hand-paint the rounded background and border, since a
@@ -126,6 +209,18 @@ class GuiDocHoverCard(QFrame):
     ##
     #  Internal Functions
     ##
+
+    def _onViewClicked(self) -> None:
+        """Forward a view request for the currently shown tag."""
+        tHandle, sTitle = SHARED.project.index.getTagSource(self._tag)
+        if tHandle:
+            self.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, sTitle, True)
+
+    def _onEditClicked(self) -> None:
+        """Forward an edit request for the currently shown tag."""
+        tHandle, sTitle = SHARED.project.index.getTagSource(self._tag)
+        if tHandle:
+            self.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle, True)
 
     def _roundedPath(self, inset: float = 0.0) -> QPainterPath:
         """Return a rounded rectangle path covering the widget, used for
