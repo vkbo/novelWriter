@@ -138,6 +138,16 @@ class CommandCompleter(QCompleter):
         return self.completionCount() > 0
 
     ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(QModelIndex)
+    def _emitComplete(self, index: QModelIndex) -> None:
+        """Emit the signal to indicate a selection has been made."""
+        if isinstance(data := index.data(Qt.ItemDataRole.UserRole), CompleterAction):
+            self.insertText.emit(data.pos, data.length, data.value)
+
+    ##
     #  Internal Functions
     ##
 
@@ -147,13 +157,3 @@ class CommandCompleter(QCompleter):
         item.setEditable(False)
         item.setData(data, Qt.ItemDataRole.UserRole)
         self._model.appendRow(item)
-
-    ##
-    #  Internal Slots
-    ##
-
-    @pyqtSlot(QModelIndex)
-    def _emitComplete(self, index: QModelIndex) -> None:
-        """Emit the signal to indicate a selection has been made."""
-        if isinstance(data := index.data(Qt.ItemDataRole.UserRole), CompleterAction):
-            self.insertText.emit(data.pos, data.length, data.value)
