@@ -27,11 +27,12 @@ import logging
 from typing import NamedTuple
 
 from PyQt6.QtCore import QModelIndex, Qt, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QStandardItem, QStandardItemModel
+from PyQt6.QtGui import QKeyEvent, QStandardItem, QStandardItemModel
 from PyQt6.QtWidgets import QCompleter, QWidget
 
 from novelwriter import SHARED
 from novelwriter.constants import nwKeyWords
+from novelwriter.types import QtKeyEnter, QtKeyEscape, QtKeyLeft, QtKeyReturn, QtKeyTab
 
 logger = logging.getLogger(__name__)
 
@@ -136,6 +137,34 @@ class CommandCompleter(QCompleter):
 
         self.setCompletionPrefix(lookup)
         return self.completionCount() > 0
+
+    def handleKeyPress(self, event: QKeyEvent, key: int) -> bool:
+        """Handle a key press while the popup is visible. Returns True
+        if the event has been fully handled, in which case the caller
+        should stop further processing of the event.
+        """
+        popup = self.popup()
+        if popup is None or not popup.isVisible():
+            return False
+        if key in (QtKeyReturn, QtKeyEnter, QtKeyTab):
+            if (selection := popup.selectionModel()) and selection.selectedIndexes():
+                # An entry has been explicitly highlighted with Up or
+                # Down, so accept it instead of treating this as a
+                # newline/tab/etc. Note that currentIndex() is not a
+                # suitable check here: it can be valid even without an
+                # explicit selection, which would swallow a plain Return.
+                event.ignore()
+                return True
+            # Nothing is highlighted, so this key still does its
+            # normal job, and the stale popup just closes
+            popup.hide()
+        elif key == QtKeyEscape:
+            popup.hide()
+            event.ignore()
+            return True
+        elif key == QtKeyLeft:
+            popup.hide()
+        return False
 
     ##
     #  Private Slots

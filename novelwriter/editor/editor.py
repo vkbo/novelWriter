@@ -58,7 +58,7 @@ from PyQt6.QtGui import (
     QTextOption,
     QWheelEvent,
 )
-from PyQt6.QtWidgets import QAbstractItemView, QApplication, QFrame, QMenu, QTextEdit, QWidget
+from PyQt6.QtWidgets import QApplication, QFrame, QMenu, QTextEdit, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles, fontMatcher, minmax, qtAddAction, qtAddMenu, qtLambda, transferCase
@@ -106,7 +106,6 @@ from novelwriter.types import (
     QtKeyPageUp,
     QtKeyReturn,
     QtKeyRight,
-    QtKeyTab,
     QtKeyUp,
     QtModCtrl,
     QtModNone,
@@ -1157,7 +1156,7 @@ class GuiDocEditor(QTextEdit):
         self._lastActive = time()
         key = event.key()
 
-        if (popup := self._completer.popup()) and popup.isVisible() and self._completerKeyPressEvent(event, key, popup):
+        if self._completer.handleKeyPress(event, key):
             return
 
         if key == QtKeyEscape:
@@ -2733,24 +2732,6 @@ class GuiDocEditor(QTextEdit):
             event.accept()
         else:
             super().keyPressEvent(event)
-
-    def _completerKeyPressEvent(self, event: QKeyEvent, key: int, popup: QAbstractItemView) -> bool:
-        """Handle a key press while the completer popup is visible.
-        Returns True if the event has been fully handled, in which
-        case keyPressEvent should return without further processing.
-        """
-        if key in (QtKeyReturn, QtKeyEnter, QtKeyTab):
-            if (selection := popup.selectionModel()) and selection.selectedIndexes():
-                event.ignore()
-                return True
-            popup.hide()
-        elif key == QtKeyEscape:
-            popup.hide()
-            event.ignore()
-            return True
-        elif key == QtKeyLeft:
-            popup.hide()
-        return False
 
     def _applyExtraSelections(self) -> None:
         """Set the editor's extra selections from the line highlight
