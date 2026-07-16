@@ -32,7 +32,7 @@ from PyQt6.QtGui import QBrush, QColor, QSyntaxHighlighter, QTextCharFormat, QTe
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, utf16CharMap
 from novelwriter.constants import nwUnicode
-from novelwriter.editor.textblock import TextBlockData
+from novelwriter.editor.textblock import T_TextMetaList, TextBlockData
 from novelwriter.enum import nwComment
 from novelwriter.text.formats import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
@@ -295,6 +295,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         offset = 0
         rules = None
+        meta: T_TextMetaList = []
         if text.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(BLOCK_META)
             index = SHARED.project.index
@@ -310,6 +311,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         a, b = index.parseValue(bit)
                         aLen = utf16Map[loc[n] + len(a)] - pos if utf16Map else len(a)
                         self.setFormat(pos, aLen, self._hStyles["tag"])
+                        meta.append((pos, pos + aLen, a, "tag"))
                         if b:
                             bLen = utf16Map[loc[n] + len(b)] - pos if utf16Map else len(b)
                             self.setFormat(pos + length - bLen, bLen, self._hStyles["optional"])
