@@ -923,6 +923,17 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert nwGUI.docEditor.searchVisible() is False
     assert SHARED.focusMode is True
 
+    # If search is active but focus is in the editor itself rather than
+    # the search box, Escape still closes the search, this time via the
+    # editor's own keyPressEvent rather than the search box's event filter
+    nwGUI.docEditor.beginSearch()
+    nwGUI.docEditor.setFocus()
+    assert nwGUI.docEditor.hasFocus() is True
+    assert nwGUI.docEditor.searchVisible() is True
+    qtbot.keyClick(nwGUI.docEditor, QtKeyEscape)
+    assert nwGUI.docEditor.searchVisible() is False
+    assert SHARED.focusMode is True
+
     # With search closed, Vim mode off, and Focus Mode inactive, Escape
     # does nothing
     nwGUI.toggleFocusMode()

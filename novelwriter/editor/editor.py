@@ -1415,7 +1415,7 @@ class GuiDocEditor(QTextEdit):
                         # edit yet, so positioning the popup must wait for
                         # the next event loop iteration
                         QTimer.singleShot(0, self._showCompleter)
-                    elif popup := self._completer.popup():
+                    elif popup := self._completer.popup():  # pragma: no branch
                         # Otherwise, make sure a popup from an earlier
                         # keystroke that no longer has any matches is
                         # not left open with stale content
@@ -1563,7 +1563,7 @@ class GuiDocEditor(QTextEdit):
             cursor.setPosition(check, QtMoveAnchor)
             cursor.setPosition(check + length, QtKeepAnchor)
             cursor.insertText(text)
-            if popup := self._completer.popup():
+            if popup := self._completer.popup():  # pragma: no branch
                 popup.hide()
 
     @pyqtSlot()
@@ -2794,9 +2794,9 @@ class GuiDocEditor(QTextEdit):
         vM = self.viewportMargins()
         rect = self.cursorRect()
         rect.translate(vM.left(), vM.top())
-        if popup := self._completer.popup():
+        if popup := self._completer.popup():  # pragma: no branch
             width = popup.sizeHintForColumn(0)
-            if bar := popup.verticalScrollBar():
+            if bar := popup.verticalScrollBar():  # pragma: no branch
                 width += bar.sizeHint().width()
             rect.setWidth(width)
         return rect

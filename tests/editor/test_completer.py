@@ -143,6 +143,10 @@ def testCompleter_KeywordAndTagOptions(qtbot, nwGUI, projPath, mockRnd):
     # A partial tag that matches nothing yields no options
     assert completer.updateMetaText("@char: xx", 9) is False
 
+    # A malformed meta line past the colon fails the scanThis check
+    # entirely, and is also rejected
+    assert completer.updateMetaText("@:", 2) is False
+
 
 @pytest.mark.gui
 def testCompleter_CommentOptions(qtbot, nwGUI, projPath, mockRnd):
@@ -244,6 +248,12 @@ def testGuiDocEditor_CompleterKeyRouting(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(popup, QtKeyEscape, delay=KEY_DELAY)
     assert popup.isVisible() is False
     assert docEditor.getText() == "@c"
+
+    # A CJK commit reposition request that lands while the popup is
+    # already hidden (e.g. a stray deferred call after the popup closed
+    # some other way) must not try to show it again
+    docEditor._completerToCursor()
+    assert popup.isVisible() is False
 
     # Left also cancels the popup, but still moves the cursor as normal.
     # The popup is hidden at this point, so this keystroke goes to the
