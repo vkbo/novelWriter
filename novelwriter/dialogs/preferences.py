@@ -1321,48 +1321,20 @@ class GuiPreferences(NDialog):
         CONFIG.showMultiSpaces = showMultiSpaces
 
         # Text Automation
-        doReplace = self.doReplace.isChecked()
-        doReplaceSQuote = self.doReplaceSQuote.isChecked()
-        doReplaceDQuote = self.doReplaceDQuote.isChecked()
-        doReplaceDash = self.doReplaceDash.isChecked()
-        doReplaceDots = self.doReplaceDots.isChecked()
-        fmtPadBefore = uniqueCompact(self.fmtPadBefore.text())
-        fmtPadAfter = uniqueCompact(self.fmtPadAfter.text())
-        fmtPadThin = self.fmtPadThin.isChecked()
-
-        initEditor |= CONFIG.doReplace != doReplace
-        initEditor |= CONFIG.doReplaceSQuote != doReplaceSQuote
-        initEditor |= CONFIG.doReplaceDQuote != doReplaceDQuote
-        initEditor |= CONFIG.doReplaceDash != doReplaceDash
-        initEditor |= CONFIG.doReplaceDots != doReplaceDots
-        initEditor |= CONFIG.fmtPadBefore != fmtPadBefore
-        initEditor |= CONFIG.fmtPadAfter != fmtPadAfter
-        initEditor |= CONFIG.fmtPadThin != fmtPadThin
-
-        CONFIG.doReplace = doReplace
-        CONFIG.doReplaceSQuote = doReplaceSQuote
-        CONFIG.doReplaceDQuote = doReplaceDQuote
-        CONFIG.doReplaceDash = doReplaceDash
-        CONFIG.doReplaceDots = doReplaceDots
-        CONFIG.fmtPadBefore = fmtPadBefore
-        CONFIG.fmtPadAfter = fmtPadAfter
-        CONFIG.fmtPadThin = fmtPadThin
+        CONFIG.doReplace = self.doReplace.isChecked()
+        CONFIG.doReplaceSQuote = self.doReplaceSQuote.isChecked()
+        CONFIG.doReplaceDQuote = self.doReplaceDQuote.isChecked()
+        CONFIG.doReplaceDash = self.doReplaceDash.isChecked()
+        CONFIG.doReplaceDots = self.doReplaceDots.isChecked()
+        CONFIG.fmtPadBefore = uniqueCompact(self.fmtPadBefore.text())
+        CONFIG.fmtPadAfter = uniqueCompact(self.fmtPadAfter.text())
+        CONFIG.fmtPadThin = self.fmtPadThin.isChecked()
 
         # Quotation Style
-        fmtSQuoteOpen = self.fmtSQuoteOpen.text()
-        fmtSQuoteClose = self.fmtSQuoteClose.text()
-        fmtDQuoteOpen = self.fmtDQuoteOpen.text()
-        fmtDQuoteClose = self.fmtDQuoteClose.text()
-
-        initEditor |= CONFIG.fmtSQuoteOpen != fmtSQuoteOpen
-        initEditor |= CONFIG.fmtSQuoteClose != fmtSQuoteClose
-        initEditor |= CONFIG.fmtDQuoteOpen != fmtDQuoteOpen
-        initEditor |= CONFIG.fmtDQuoteClose != fmtDQuoteClose
-
-        CONFIG.fmtSQuoteOpen = fmtSQuoteOpen
-        CONFIG.fmtSQuoteClose = fmtSQuoteClose
-        CONFIG.fmtDQuoteOpen = fmtDQuoteOpen
-        CONFIG.fmtDQuoteClose = fmtDQuoteClose
+        CONFIG.fmtSQuoteOpen = self.fmtSQuoteOpen.text()
+        CONFIG.fmtSQuoteClose = self.fmtSQuoteClose.text()
+        CONFIG.fmtDQuoteOpen = self.fmtDQuoteOpen.text()
+        CONFIG.fmtDQuoteClose = self.fmtDQuoteClose.text()
 
         # Features
         vimMode = self.vimMode.isChecked()

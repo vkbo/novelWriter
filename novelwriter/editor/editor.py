@@ -546,8 +546,6 @@ class GuiDocEditor(QTextEdit):
         settings. This function is both called when the editor is
         created, and when the user changes the main editor preferences.
         """
-        # Auto-Replace
-        self._autoReplace.initSettings()
         self.docFooter.initSettings()
 
         # Reload spell check and dictionaries

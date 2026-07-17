@@ -117,7 +117,7 @@ def testGuiDocEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert qDoc.defaultTextOption().alignment() == QtAlignLeft
     assert docEditor.verticalScrollBarPolicy() == QtScrollAsNeeded
     assert docEditor.horizontalScrollBarPolicy() == QtScrollAsNeeded
-    assert docEditor._autoReplace._padChar == nwUnicode.U_NBSP
+    assert CONFIG.fmtPadThin is False
     assert docEditor.docHeader.itemTitle.text() == (
         "<font style='color: #ff303030'>"
         "<a href='#0000000000008' style='color: #ff303030; text-decoration: none'>Novel</a>"
@@ -148,7 +148,7 @@ def testGuiDocEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert qDoc.defaultTextOption().flags() & QTextOption.Flag.ShowLineAndParagraphSeparators
     assert docEditor.verticalScrollBarPolicy() == QtScrollAlwaysOff
     assert docEditor.horizontalScrollBarPolicy() == QtScrollAlwaysOff
-    assert docEditor._autoReplace._padChar == nwUnicode.U_THNBSP
+    assert CONFIG.fmtPadThin is True
     assert docEditor.docHeader.itemTitle.text() == (
         "<font style='color: #ff303030'>"
         "<a href='#000000000000f' style='color: #ff303030; text-decoration: none'>New Scene</a>"
@@ -3472,7 +3472,6 @@ def testGuiDocEditor_TextAutoReplaceProcess():
     # Pad Before, Normal
     CONFIG.fmtPadBefore = ":\u00bb"
     CONFIG.fmtPadThin = False
-    ar.initSettings()
     assert ar.process(*prep("Text:")) is True
     assert doc.toRawText() == "Text\u00a0:"
     assert ar.process(*prep("Text :")) is True  # See #1061
@@ -3485,7 +3484,6 @@ def testGuiDocEditor_TextAutoReplaceProcess():
     # Pad Before, Thin
     CONFIG.fmtPadBefore = ":\u00bb"
     CONFIG.fmtPadThin = True
-    ar.initSettings()
     assert ar.process(*prep("Text:")) is True
     assert doc.toRawText() == "Text\u202f:"
     assert ar.process(*prep("Text :")) is True  # See #1061
@@ -3494,14 +3492,12 @@ def testGuiDocEditor_TextAutoReplaceProcess():
     # Pad After, Normal
     CONFIG.fmtPadAfter = "\u00ab"
     CONFIG.fmtPadThin = False
-    ar.initSettings()
     assert ar.process(*prep('Text "')) is True
     assert doc.toRawText() == "Text «\u00a0"
 
     # Pad After, Thin
     CONFIG.fmtPadAfter = "\u00ab"
     CONFIG.fmtPadThin = True
-    ar.initSettings()
     assert ar.process(*prep('Text "')) is True
     assert doc.toRawText() == "Text «\u202f"
 
