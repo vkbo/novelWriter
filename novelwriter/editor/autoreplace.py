@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 class TextAutoReplace:
     """Encapsulates the editor auto replace feature."""
 
-    def process(self, text: str, cursor: QTextCursor) -> bool:
+    def __call__(self, text: str, cursor: QTextCursor) -> bool:
         """Auto-replace text elements based on main configuration.
         Returns True if anything was changed.
         """

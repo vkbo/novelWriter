@@ -1474,7 +1474,7 @@ class GuiDocEditor(QTextEdit):
 
             if self._doReplace and added == 1:
                 cursor = self.textCursor()
-                if self._autoReplace.process(text, cursor):
+                if self._autoReplace(text, cursor):
                     self._qDocument.syntaxHighlighter.rehighlightBlock(cursor.block())
 
     @pyqtSlot()

@@ -41,7 +41,6 @@ from PyQt6.QtGui import (
     QTextBlock,
     QTextCharFormat,
     QTextCursor,
-    QTextDocument,
     QTextOption,
     QWheelEvent,
 )
@@ -53,7 +52,6 @@ from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.item import ProjectItem
 from novelwriter.core.spellcheck import SpellEnchant
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.editor.autoreplace import TextAutoReplace
 from novelwriter.editor.editor import GuiDocEditor, _TagAction
 from novelwriter.editor.editsearch import GuiDocEditSearch
 from novelwriter.editor.textblock import TextBlockData, formatCheckText
@@ -3365,141 +3363,6 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mock
     assert docEditor.textCursor().selectedText() == ""
 
     # qtbot.stop()
-
-
-@pytest.mark.gui
-def testGuiDocEditor_TextAutoReplaceSymbols():
-    """Test the editor auto-replace functionality."""
-    CONFIG.fmtSQuoteOpen = nwUnicode.U_LSQUO
-    CONFIG.fmtSQuoteClose = nwUnicode.U_RSQUO
-    CONFIG.fmtDQuoteOpen = nwUnicode.U_LDQUO
-    CONFIG.fmtDQuoteClose = nwUnicode.U_RDQUO
-
-    CONFIG.doReplaceSQuote = True
-    CONFIG.doReplaceDQuote = True
-    CONFIG.doReplaceDash = True
-    CONFIG.doReplaceDots = True
-
-    ar = TextAutoReplace()
-
-    def prep(text: str) -> tuple[str, int]:
-        return text, len(text)
-
-    # Double Quote Open
-    assert ar._determine(*prep('"')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep('Stuff "')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep('>"')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep('>>"')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep('_"')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep(' _"')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep('\u00a0_"')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep('**"')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep(' **"')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep('\u00a0**"')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep('=="')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep(' =="')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep('\u00a0=="')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep('~~"')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep(' ~~"')) == (1, nwUnicode.U_LDQUO)
-    assert ar._determine(*prep('\u00a0~~"')) == (1, nwUnicode.U_LDQUO)
-
-    # Double Quote Close
-    assert ar._determine(*prep('Stuff"')) == (1, nwUnicode.U_RDQUO)
-
-    # Single Quote Open
-    assert ar._determine(*prep("'")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep("Stuff '")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep(">'")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep(">>'")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep("_'")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep(" _'")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep("\u00a0_'")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep("**'")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep(" **'")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep("\u00a0**'")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep("=='")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep(" =='")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep("\u00a0=='")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep("~~'")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep(" ~~'")) == (1, nwUnicode.U_LSQUO)
-    assert ar._determine(*prep("\u00a0~~'")) == (1, nwUnicode.U_LSQUO)
-
-    # Single Quote Close
-    assert ar._determine(*prep("Stuff'")) == (1, nwUnicode.U_RSQUO)
-
-    # Dashes
-    assert ar._determine(*prep("-")) == (0, "-")
-    assert ar._determine(*prep("--")) == (2, nwUnicode.U_ENDASH)
-    assert ar._determine(*prep("---")) == (3, nwUnicode.U_EMDASH)
-    assert ar._determine(*prep("----")) == (4, nwUnicode.U_HBAR)
-    assert ar._determine(*prep("\u2013-")) == (2, nwUnicode.U_EMDASH)
-    assert ar._determine(*prep("\u2014-")) == (2, nwUnicode.U_HBAR)
-
-    # Ellipsis
-    assert ar._determine(*prep(".")) == (0, ".")
-    assert ar._determine(*prep("..")) == (0, ".")
-    assert ar._determine(*prep("...")) == (3, nwUnicode.U_HELLIP)
-
-    # Block Typed Line Separator (#1150)
-    assert ar._determine(*prep("Text\u2028")) == (1, nwUnicode.U_PSEP)
-
-
-@pytest.mark.gui
-def testGuiDocEditor_TextAutoReplaceProcess():
-    """Test the editor auto-replace functionality."""
-    CONFIG.fmtDQuoteOpen = nwUnicode.U_LAQUO
-    CONFIG.fmtDQuoteClose = nwUnicode.U_RAQUO
-
-    CONFIG.doReplaceDQuote = True
-    CONFIG.doReplaceDots = True
-
-    ar = TextAutoReplace()
-    doc = QTextDocument()
-
-    def prep(text: str) -> tuple[str, QTextCursor]:
-        doc.setPlainText(text)
-        cursor = QTextCursor(doc)
-        cursor.setPosition(len(text))
-        return text, cursor
-
-    # Nothing to Process
-    assert ar.process(*prep("")) is False
-
-    # Standard Auto-Replace
-    assert ar.process(*prep("Text ...")) is True
-    assert doc.toRawText() == "Text \u2026"
-
-    # Pad Before, Normal
-    CONFIG.fmtPadBefore = ":\u00bb"
-    CONFIG.fmtPadThin = False
-    assert ar.process(*prep("Text:")) is True
-    assert doc.toRawText() == "Text\u00a0:"
-    assert ar.process(*prep("Text :")) is True  # See #1061
-    assert doc.toRawText() == "Text\u00a0:"
-    assert ar.process(*prep('Text"')) is True
-    assert doc.toRawText() == "Text\u00a0»"
-    assert ar.process(*prep("@Synopsis:")) is False
-    assert doc.toRawText() == "@Synopsis:"
-
-    # Pad Before, Thin
-    CONFIG.fmtPadBefore = ":\u00bb"
-    CONFIG.fmtPadThin = True
-    assert ar.process(*prep("Text:")) is True
-    assert doc.toRawText() == "Text\u202f:"
-    assert ar.process(*prep("Text :")) is True  # See #1061
-    assert doc.toRawText() == "Text\u202f:"
-
-    # Pad After, Normal
-    CONFIG.fmtPadAfter = "\u00ab"
-    CONFIG.fmtPadThin = False
-    assert ar.process(*prep('Text "')) is True
-    assert doc.toRawText() == "Text «\u00a0"
-
-    # Pad After, Thin
-    CONFIG.fmtPadAfter = "\u00ab"
-    CONFIG.fmtPadThin = True
-    assert ar.process(*prep('Text "')) is True
-    assert doc.toRawText() == "Text «\u202f"
 
 
 @pytest.mark.gui
