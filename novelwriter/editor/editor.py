@@ -197,6 +197,7 @@ class GuiDocEditor(QTextEdit):
         "_nwItem",
         "_prevLine",
         "_qDocument",
+        "_queuePos",
         "_searchFormat",
         "_searchSelections",
         "_selCounter",
@@ -326,7 +327,9 @@ class GuiDocEditor(QTextEdit):
         self.setDocument(self._qDocument)
 
         # Connect Editor and Document Signals
+        self._queuePos = None  # Queue cursor position for large documents
         self._qDocument.contentsChange.connect(self._docChange)
+        self._qDocument.layoutSettled.connect(self._onLayoutSettled)
         self.selectionChanged.connect(self._updateSelectedStatus)
         self.cursorPositionChanged.connect(self._cursorMoved)
 
@@ -474,6 +477,7 @@ class GuiDocEditor(QTextEdit):
         self.clear()
         self._timerDoc.stop()
         self._timerSel.stop()
+        self._queuePos = None
 
         self._docHandle = None
         self._lastEdit = 0.0
@@ -592,11 +596,16 @@ class GuiDocEditor(QTextEdit):
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
         if self._docHandle:
+            self._qDocument.markLayoutBusy()
+            self.setReadOnly(self._qDocument.isLayoutBusy())
             self._qDocument.setLineHeight(CONFIG.lineHeight)
             self._qDocument.syntaxHighlighter.rehighlight()
             self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
-            self._beginCheckPass()
+            if not self._qDocument.isLayoutBusy():
+                self._beginCheckPass()
             self.docHeader.setHandle(self._docHandle)
+            # Restart the settle countdown one last time
+            self._qDocument.markLayoutBusy()
         else:
             self.clearEditor()
 
@@ -659,20 +668,25 @@ class GuiDocEditor(QTextEdit):
         self._allowAutoReplace(False)
         self._qDocument.setTextContent(text, tHandle)
         self._allowAutoReplace(True)
-        self._beginCheckPass()
+        if not self._qDocument.isLayoutBusy():
+            self._beginCheckPass()
         QApplication.processEvents()
 
         self._lastEdit = time()
         self._lastActive = time()
         self._runDocumentTasks()
 
-        self.setReadOnly(False)
         self.updateDocMargins()
 
         if isinstance(tLine, int):
             self.setCursorLine(tLine)
         else:
-            self.setCursorPosition(self._nwItem.cursorPos)
+            self.moveCursorAfterLoad(self._nwItem.cursorPos)
+
+        if self._queuePos is None:
+            # Covers tLine being 0 or an invalid line, which setCursorLine
+            # silently no-ops on, and would otherwise skip clearing read-only.
+            self.setReadOnly(False)
 
         self.docHeader.setHandle(tHandle)
         self.docFooter.setHandle(tHandle)
@@ -808,13 +822,7 @@ class GuiDocEditor(QTextEdit):
         lM = max(self._vpMargin, fH)
         self.setViewportMargins(tM, uM, tM, lM)
 
-        # Scroll Past End
-        if rootFrame := self._qDocument.rootFrame():  # pragma: no branch
-            frameFormat = rootFrame.frameFormat()
-            bottomMargin = max(wH - 2 * tB - uM - lM - sH, 0) if CONFIG.scrollPastEnd else 0
-            if frameFormat.bottomMargin() != bottomMargin:
-                frameFormat.setBottomMargin(bottomMargin)
-                rootFrame.setFrameFormat(frameFormat)
+        self._qDocument.setBottomMargin(max(wH - 2 * tB - uM - lM - sH, 0) if CONFIG.scrollPastEnd else 0)
 
     ##
     #  Getters
@@ -890,8 +898,19 @@ class GuiDocEditor(QTextEdit):
         if isinstance(line, int) and line != 0:
             line = self._qDocument.blockCount() + line if line < 0 else line - 1
             if (block := self._qDocument.findBlockByNumber(line)).isValid():
-                self.setCursorPosition(block.position())
+                self.moveCursorAfterLoad(block.position())
                 logger.debug("Cursor moved to line %d", line + 1)
+
+    def moveCursorAfterLoad(self, position: int) -> None:
+        """Move the cursor to a position, queuing the move until the
+        document layout is ready.
+        """
+        self._qDocument.markLayoutBusy()
+        if position > 0 and self._qDocument.isLayoutBusy():
+            self._queuePos = position
+        else:
+            self.setReadOnly(False)
+            self.setCursorPosition(position)
 
     def setCursorSelection(self, start: int, length: int) -> None:
         """Make a text selection."""
@@ -936,7 +955,8 @@ class GuiDocEditor(QTextEdit):
         """
         logger.debug("Running spell checker")
         self._spellPassNotify = SHARED.project.data.spellCheck
-        self._beginCheckPass()
+        if not self._qDocument.isLayoutBusy():
+            self._beginCheckPass()
 
     ##
     #  General Class Methods
@@ -1494,6 +1514,23 @@ class GuiDocEditor(QTextEdit):
                 cursor = self.textCursor()
                 if self._autoReplace(text, cursor):
                     self._qDocument.syntaxHighlighter.rehighlightBlock(cursor.block())
+
+    @pyqtSlot()
+    def _onLayoutSettled(self) -> None:
+        """Restore full interactivity once a busy-marked full-document
+        operation (see GuiTextDocument.markLayoutBusy) has settled, and
+        apply any cursor position that was queued while it was busy.
+        Read-only is unconditionally cleared here: every call site that
+        marks the document busy only does so while a document is open
+        and meant to end up editable.
+        """
+        if self._queuePos is not None:
+            position = self._queuePos
+            self._queuePos = None
+            self.setCursorPosition(position)
+        self.setReadOnly(False)
+        self.updateDocMargins()
+        self._beginCheckPass()
 
     @pyqtSlot()
     def _cursorMoved(self) -> None:

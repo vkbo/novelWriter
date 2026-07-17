@@ -63,6 +63,7 @@ class nwConst:
     STATUS_MSG_TIMEOUT = 15000  # milliseconds
     MAX_SEARCH_RESULT = 1000
     CHECK_PASS_CHUNK = 100  # Chunk size for spell and format checking
+    BIG_DOC_LIMIT = 500000  # Doc size above which the initial cursor move is queued
 
 
 class nwRegEx:

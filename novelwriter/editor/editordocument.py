@@ -26,10 +26,12 @@ import logging
 from time import time
 from typing import TYPE_CHECKING
 
+from PyQt6.QtCore import QSizeF, QTimer, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QTextBlock, QTextBlockFormat, QTextCursor, QTextDocument
 from PyQt6.QtWidgets import QApplication
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.constants import nwConst
 from novelwriter.editor.highlighter import GuiDocHighlighter
 from novelwriter.editor.textblock import TextBlockData
 from novelwriter.types import QtPropLineHeight
@@ -41,6 +43,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+LAYOUT_SETTLE_DELAY = 150  # milliseconds of quiet before the layout is considered settled
+
 
 class GuiTextDocument(QTextDocument):
     """Custom: Modified QTextDocument.
@@ -49,11 +53,24 @@ class GuiTextDocument(QTextDocument):
     features including spell checking.
     """
 
+    layoutSettled = pyqtSignal()
+
     def __init__(self, parent: QObject) -> None:
         super().__init__(parent=parent)
 
         self._handle = None
         self._syntax = GuiDocHighlighter(self)
+
+        # Layout Busy Tracking
+        # QTextDocument builds its layout lazily in the background, in
+        # bursts of work reported via documentSizeChanged.
+        self._layoutBusy = False
+        self._settleTimer = QTimer(self)
+        self._settleTimer.setSingleShot(True)
+        self._settleTimer.setInterval(LAYOUT_SETTLE_DELAY)
+        self._settleTimer.timeout.connect(self._layoutHasSettled)
+        if layout := self.documentLayout():  # pragma: no branch
+            layout.documentSizeChanged.connect(self._layoutGrew)
 
         logger.debug("Ready: GuiTextDocument")
 
@@ -71,8 +88,43 @@ class GuiTextDocument(QTextDocument):
         return self._syntax
 
     ##
+    #  Setters
+    ##
+
+    def setLineHeight(self, height: float) -> None:
+        """Apply a line height to all blocks in the document."""
+        self.markLayoutBusy()
+        blockFormat = QTextBlockFormat()
+        blockFormat.setLineHeight(int(height * 100), QtPropLineHeight)
+        cursor = QTextCursor(self)
+        cursor.select(QTextCursor.SelectionType.Document)
+        cursor.mergeBlockFormat(blockFormat)
+
+    def setBottomMargin(self, margin: float) -> None:
+        """Set the bottom margin of the document's root frame."""
+        if not self.isLayoutBusy() and (rootFrame := self.rootFrame()):  # pragma: no branch
+            frameFormat = rootFrame.frameFormat()
+            if frameFormat.bottomMargin() != margin:
+                frameFormat.setBottomMargin(margin)
+                rootFrame.setFrameFormat(frameFormat)
+
+    ##
     #  Methods
     ##
+
+    def isLayoutBusy(self) -> bool:
+        """Return True if the document's lazily built layout is
+        currently mid-burst after a full-document change.
+        """
+        return self._layoutBusy
+
+    def markLayoutBusy(self) -> None:
+        """Flag the layout as busy ahead of an operation that forces a
+        re-layout. Must be called before such an operation.
+        """
+        if self.characterCount() > nwConst.BIG_DOC_LIMIT:
+            self._layoutBusy = True
+            self._settleTimer.start()
 
     def setTextContent(self, text: str, tHandle: str) -> None:
         """Set the text content of the document."""
@@ -95,18 +147,12 @@ class GuiTextDocument(QTextDocument):
         self._syntax.rehighlight()
         QApplication.processEvents()
 
+        self.markLayoutBusy()
+
         tEnd = time()
 
         logger.debug("Loaded %d text blocks in %.3f ms", count, 1000 * (tMid - tStart))
         logger.debug("Highlighted document in %.3f ms", 1000 * (tEnd - tMid))
-
-    def setLineHeight(self, height: float) -> None:
-        """Apply a line height to all blocks in the document."""
-        blockFormat = QTextBlockFormat()
-        blockFormat.setLineHeight(int(height * 100), QtPropLineHeight)
-        cursor = QTextCursor(self)
-        cursor.select(QTextCursor.SelectionType.Document)
-        cursor.mergeBlockFormat(blockFormat)
 
     def metaDataAtPos(self, pos: int) -> tuple[str, str]:
         """Check if there is meta data available at a given position in
@@ -146,3 +192,24 @@ class GuiTextDocument(QTextDocument):
                 count += 1
                 yield block
         return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(QSizeF)
+    def _layoutGrew(self, size: QSizeF) -> None:
+        """Restart the settle debounce whenever the lazily built layout
+        grows, while a busy-marked operation is in progress.
+        """
+        if self._layoutBusy:
+            self._settleTimer.start()
+
+    @pyqtSlot()
+    def _layoutHasSettled(self) -> None:
+        """Fire once the layout has been quiet for LAYOUT_SETTLE_DELAY
+        ms, meaning it's safe to do things that need it, such as
+        ensureCursorVisible.
+        """
+        self._layoutBusy = False
+        self.layoutSettled.emit()
