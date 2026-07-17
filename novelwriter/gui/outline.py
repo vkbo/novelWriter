@@ -130,6 +130,7 @@ class GuiOutlineView(QWidget):
         self.outlineBar.updateTheme()
         self.outlineTree.updateTheme()
         self.outlineTree.refreshTree(rootHandle=SHARED.project.data.getLastHandle("outline"), overRide=True)
+        self.outlineData.clearDetails()
 
     def initViewport(self) -> None:
         """Initialise viewport settings."""
