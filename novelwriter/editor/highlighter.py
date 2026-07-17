@@ -46,6 +46,8 @@ BLOCK_TEXT = 1
 BLOCK_META = 2
 BLOCK_TITLE = 4
 
+MAX_BLOCK_LENGTH = 20000
+
 
 class GuiDocHighlighter(QSyntaxHighlighter):
     """GUI: Editor Syntax Highlighter."""
@@ -284,9 +286,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self._clearBlockData()
             return
 
+        origLen = len(text)
         blockLen = self.currentBlock().length()
+        if origLen > MAX_BLOCK_LENGTH:
+            text = text[:MAX_BLOCK_LENGTH]
+
         utf16Map = None
-        if blockLen > len(text) + 1:
+        if blockLen > origLen + 1:
             # If the lengths are different, the line contains 4 byte
             # Unicode characters, and we must use a map between Python
             # string indices and the UTF-16 indices used by Qt, where a

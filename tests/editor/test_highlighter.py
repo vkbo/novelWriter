@@ -76,7 +76,7 @@ def syntax(nwGUI):
     yield syntax  # noqa: PT022 (This is deliberate to keep the objects in scope)
 
 
-def getFragments(syntax: GuiDocHighlighter) -> tuple[list[tuple[int, str]], list[QTextCharFormat]]:
+def getFragments(syntax: GuiDocHighlighter) -> tuple[list[tuple[int, int, int, str]], list[QTextCharFormat]]:
     """Extract all syntax highlighter fragments from a document."""
     pieces = []
     formats = []
@@ -635,6 +635,37 @@ def testGuiDocHighlighter_Text(monkeypatch, syntax):
     pieces, formats = getFragments(syntax)
     assert all(f.foreground().color().getRgb() != colDialogue for f in formats)
     syntax._isNovel = True
+
+
+@pytest.mark.gui
+def testGuiDocHighlighter_MaxBlockLength(monkeypatch, syntax):
+    """Content beyond the max block length cap must be ignored
+    entirely: no syntax highlighting, and no spell/format checking.
+    """
+    monkeypatch.setattr("novelwriter.editor.highlighter.MAX_BLOCK_LENGTH", 30)
+    monkeypatch.setattr(SpellEnchant, "checkWord", lambda *a: False)
+
+    doc = syntax.document()
+    assert doc is not None
+    syntax._tHandle = T_HANDLE
+    syntax._isNovel = True
+
+    # "Alpha"/"bold" sit well within the 30 character cap, while
+    # "Bravo"/"also" start well beyond it
+    padding = "x" * 40
+    doc.setPlainText(f"Alpha **bold** {padding} Bravo **also**\n")
+    syntax.rehighlight()
+
+    pieces, _ = getFragments(syntax)
+    fragments = [p[3] for p in pieces]
+    assert "bold" in fragments
+    assert "also" not in fragments
+
+    data = doc.findBlockByNumber(0).userData()
+    assert isinstance(data, TextBlockData)
+    words = {w for _, _, w in data.spellCheck()}
+    assert "Alpha" in words
+    assert "Bravo" not in words
 
 
 @pytest.mark.gui

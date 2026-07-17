@@ -46,6 +46,7 @@ T_TextMeta = tuple[int, int, str, str]
 T_TextCheck = tuple[int, int, str]
 T_TextMetaList = list[T_TextMeta]
 T_TextCheckList = list[T_TextCheck]
+T_TextCheckCache = list[QTextEdit.ExtraSelection]
 
 
 class TextBlockData(QTextBlockUserData):
@@ -79,8 +80,12 @@ class TextBlockData(QTextBlockUserData):
         self._metaData: T_TextMetaList = []
         self._spellErrors: T_TextCheckList = []
         self._formatErrors: T_TextCheckList = []
-        self._spellSelCache: list[QTextEdit.ExtraSelection] | None = None
-        self._formatSelCache: list[QTextEdit.ExtraSelection] | None = None
+        self._spellSelCache: T_TextCheckCache | None = None
+        self._formatSelCache: T_TextCheckCache | None = None
+
+    ##
+    #  Properties
+    ##
 
     @property
     def metaData(self) -> T_TextMetaList:
@@ -101,6 +106,10 @@ class TextBlockData(QTextBlockUserData):
     def revision(self) -> int:
         """Return the revision number of the cached text."""
         return self._revision
+
+    ##
+    #  Methods
+    ##
 
     def clear(self) -> None:
         """Clear all cached data."""
@@ -140,18 +149,14 @@ class TextBlockData(QTextBlockUserData):
         """Extract meta data from the text. The map, when set, converts
         cached positions to UTF-16 units.
 
-        The cached spell and format errors are also invalidated here,
-        since they may hold positions from before this edit that no
-        longer fit within the block's new, possibly shorter, text. They
-        are recomputed by the debounced background check shortly after.
-        Leaving them in place until then risks briefly rendering marker
-        selections that spill into the following block.
+        Cached spell and format errors before the edit are kept, since
+        they haven't moved; everything from the edit onward is cleared
+        and left for the debounced background check to recompute.
         """
+        old = self._rawText
+        new = text
+
         self._metaData = []
-        self._spellErrors = []
-        self._formatErrors = []
-        self._spellSelCache = None
-        self._formatSelCache = None
         self._rawText = text
         if "[" in text:
             # Strip shortcodes
@@ -177,6 +182,18 @@ class TextBlockData(QTextBlockUserData):
         self._revision += 1
         self._utf16Map = utf16Map
 
+        # Clear cached errors after the first changed character
+        prefix = end = min(len(old), len(new))
+        for i in range(end):
+            if old[i] != new[i]:
+                prefix = i
+                break
+
+        self._spellErrors = [e for e in self._spellErrors if e[1] <= prefix]
+        self._formatErrors = [e for e in self._formatErrors if e[1] <= prefix]
+        self._spellSelCache = None
+        self._formatSelCache = None
+
     def spellCheck(self) -> T_TextCheckList:
         """Run the spell checker and cache the result, and return the
         list of spell check errors.
@@ -193,46 +210,52 @@ class TextBlockData(QTextBlockUserData):
         self._formatSelCache = None
         return self._formatErrors
 
-    def spellSelections(self, block: QTextBlock, fmt: QTextCharFormat) -> list[QTextEdit.ExtraSelection]:
+    def spellSelections(self, block: QTextBlock, fmt: QTextCharFormat) -> T_TextCheckCache:
         """Return the extra selections for the cached spell errors,
         building and caching them on first access. The cache is
         invalidated whenever the underlying error list changes, so an
         edit to one block never rebuilds the selections of another.
         """
         if self._spellSelCache is None or len(self._spellSelCache) != len(self._spellErrors):
-            self._spellSelCache = _buildSelections(block, fmt, self._spellErrors)
+            self._spellSelCache = self._buildSelections(block, fmt, self._spellErrors)
         return self._spellSelCache
 
-    def formatSelections(self, block: QTextBlock, fmt: QTextCharFormat) -> list[QTextEdit.ExtraSelection]:
+    def formatSelections(self, block: QTextBlock, fmt: QTextCharFormat) -> T_TextCheckCache:
         """Return the extra selections for the cached format errors,
         building and caching them on first access. See spellSelections
         for details on cache invalidation.
         """
         if self._formatSelCache is None or len(self._formatSelCache) != len(self._formatErrors):
-            self._formatSelCache = _buildSelections(block, fmt, self._formatErrors)
+            self._formatSelCache = self._buildSelections(block, fmt, self._formatErrors)
         return self._formatSelCache
 
+    ##
+    #  Internal Functions
+    ##
 
-def _buildSelections(
-    block: QTextBlock, fmt: QTextCharFormat, errors: T_TextCheckList
-) -> list[QTextEdit.ExtraSelection]:
-    """Build a list of extra selections from a block's cached error
-    positions. The returned QTextCursor objects track the document
-    automatically, so they stay valid even as edits elsewhere shift
-    the block's absolute position.
-    """
-    document = block.document()
-    position = block.position()
-    selections = []
-    for start, end, _ in errors:
-        cursor = QTextCursor(document)
-        cursor.setPosition(position + start)
-        cursor.setPosition(position + end, QtKeepAnchor)
-        selection = QTextEdit.ExtraSelection()
-        selection.format = fmt
-        selection.cursor = cursor
-        selections.append(selection)
-    return selections
+    def _buildSelections(
+        self,
+        block: QTextBlock,
+        fmt: QTextCharFormat,
+        errors: T_TextCheckList,
+    ) -> list[QTextEdit.ExtraSelection]:
+        """Build a list of extra selections from a block's cached error
+        positions. The returned QTextCursor objects track the document
+        automatically, so they stay valid even as edits elsewhere shift
+        the block's absolute position.
+        """
+        document = block.document()
+        position = block.position()
+        selections = []
+        for start, end, _ in errors:
+            cursor = QTextCursor(document)
+            cursor.setPosition(position + start)
+            cursor.setPosition(position + end, QtKeepAnchor)
+            selection = QTextEdit.ExtraSelection()
+            selection.format = fmt
+            selection.cursor = cursor
+            selections.append(selection)
+        return selections
 
 
 def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> T_TextCheckList:
