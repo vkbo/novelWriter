@@ -320,8 +320,8 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
     theme.loadTheme()
     assert theme.isDarkTheme is True
 
-    nwGUI._processConfigChanges(GuiNeedsUpdate(False, True, False, False, False, False, False))
-    nwGUI._processConfigChanges(GuiNeedsUpdate(True, True, True, True, True, True, True))
+    nwGUI._processConfigChanges(GuiNeedsUpdate(False, True, False, False, False, False, False, False))
+    nwGUI._processConfigChanges(GuiNeedsUpdate(True, True, True, True, True, True, True, True))
 
     # Check editor syntax
     syntax = SHARED.theme.syntaxTheme

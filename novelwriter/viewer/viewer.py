@@ -209,7 +209,17 @@ class GuiDocViewer(QTextBrowser):
         if document := self.document():  # pragma: no branch
             document.setDocumentMargin(0)
 
-        # Scroll bars
+        self.initViewport()
+
+        # Refresh the tab stops
+        self.setTabStopDistance(CONFIG.tabWidth)
+
+        # If we have a document open, we should reload it in case the font changed
+        self.reloadText()
+
+    def initViewport(self) -> None:
+        """Initialise the settings of the viewer viewport."""
+        # Scrolling
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
@@ -220,11 +230,7 @@ class GuiDocViewer(QTextBrowser):
         else:
             self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
 
-        # Refresh the tab stops
-        self.setTabStopDistance(CONFIG.tabWidth)
-
-        # If we have a document open, we should reload it in case the font changed
-        self.reloadText()
+        self.updateDocMargins()
 
     def loadText(self, tHandle: str, updateHistory: bool = True) -> bool:
         """Load text into the viewer from an item handle."""

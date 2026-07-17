@@ -1681,19 +1681,19 @@ def testGuiProjectTree_Other(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     projView = nwGUI.projView
     projTree = projView.projTree
 
-    # Method: initSettings
+    # Method: initViewport
     # ====================
 
     # Test that the scrollbar setting works
     CONFIG.hideVScroll = True
     CONFIG.hideHScroll = True
-    projView.initSettings()
+    projView.initViewport()
     assert projTree.verticalScrollBarPolicy() == QtScrollAlwaysOff
     assert projTree.horizontalScrollBarPolicy() == QtScrollAlwaysOff
 
     CONFIG.hideVScroll = False
     CONFIG.hideHScroll = False
-    projView.initSettings()
+    projView.initViewport()
     assert projTree.verticalScrollBarPolicy() == QtScrollAsNeeded
     assert projTree.horizontalScrollBarPolicy() == QtScrollAsNeeded
 

@@ -400,9 +400,10 @@ def testGuiPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
                     tree=True,
                     theme=True,
                     syntax=True,
-                    editor=True,
-                    viewer=True,
                     spelling=True,
+                    editor=True,
+                    viewport=True,
+                    viewer=True,
                 )
             ]
 

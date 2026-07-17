@@ -155,9 +155,9 @@ class GuiProjectView(QWidget):
         logger.debug("Theme Update: GuiProjectView")
         self.projBar.updateTheme()
 
-    def initSettings(self) -> None:
-        """Initialise GUI elements that depend on specific settings."""
-        self.projTree.initSettings()
+    def initViewport(self) -> None:
+        """Initialise viewport settings."""
+        self.projTree.initViewport()
 
     def closeProjectTasks(self) -> None:
         """Clear project-related GUI content."""
@@ -519,12 +519,12 @@ class GuiProjectTree(QTreeView):
         self.expanded.connect(self._onNodeExpanded)
 
         # Set custom settings
-        self.initSettings()
+        self.initViewport()
 
         logger.debug("Ready: GuiProjectTree")
 
-    def initSettings(self) -> None:
-        """Set or update tree widget settings."""
+    def initViewport(self) -> None:
+        """Initialise viewport settings."""
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:

@@ -74,13 +74,13 @@ def testGuiNovelView_Content(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     CONFIG.hideVScroll = True
     CONFIG.hideHScroll = True
-    novelView.initSettings()
+    novelView.initViewport()
     assert not novelTree.verticalScrollBar().isVisible()
     assert not novelTree.horizontalScrollBar().isVisible()
 
     CONFIG.hideVScroll = False
     CONFIG.hideHScroll = False
-    novelView.initSettings()
+    novelView.initViewport()
     assert novelTree.verticalScrollBar().isEnabled()
     assert novelTree.horizontalScrollBar().isEnabled()
 

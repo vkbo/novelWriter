@@ -61,9 +61,10 @@ class GuiNeedsUpdate(NamedTuple):
     tree: bool
     theme: bool
     syntax: bool
+    spelling: bool
     editor: bool
     viewer: bool
-    spelling: bool
+    viewport: bool
 
 
 class GuiPreferences(NDialog):
@@ -1143,10 +1144,11 @@ class GuiPreferences(NDialog):
         updateTheme = False
         needsRestart = False
         updateSyntax = False
+        updateSpelling = False
         refreshTree = False
         initEditor = False
         initViewer = False
-        updateSpelling = False
+        initViewport = False
 
         # Appearance
         guiLocale = self.guiLocale.currentData()
@@ -1165,10 +1167,8 @@ class GuiPreferences(NDialog):
         refreshTree |= CONFIG.useCharCount != useCharCount
         updateSyntax |= CONFIG.lightTheme != lightTheme
         updateSyntax |= CONFIG.darkTheme != darkTheme
-        initEditor |= CONFIG.hideVScroll != hideVScroll
-        initEditor |= CONFIG.hideHScroll != hideHScroll
-        initViewer |= CONFIG.hideVScroll != hideVScroll
-        initViewer |= CONFIG.hideHScroll != hideHScroll
+        initViewport |= CONFIG.hideVScroll != hideVScroll
+        initViewport |= CONFIG.hideHScroll != hideHScroll
 
         CONFIG.guiLocale = guiLocale
         CONFIG.lightTheme = lightTheme
@@ -1230,18 +1230,15 @@ class GuiPreferences(NDialog):
         tabWidth = self.tabWidth.value()
         lineHeight = self.lineHeight.value()
 
-        initEditor |= CONFIG.textWidth != textWidth
-        initEditor |= CONFIG.focusWidth != focusWidth
         initEditor |= CONFIG.doJustify != doJustify
-        initEditor |= CONFIG.textMargin != textMargin
         initEditor |= CONFIG.tabWidth != tabWidth
         initEditor |= CONFIG.lineHeight != lineHeight
-        initViewer |= CONFIG.textWidth != textWidth
-        initViewer |= CONFIG.focusWidth != focusWidth
         initViewer |= CONFIG.doJustify != doJustify
-        initViewer |= CONFIG.textMargin != textMargin
         initViewer |= CONFIG.tabWidth != tabWidth
         initViewer |= CONFIG.lineHeight != lineHeight
+        initViewport |= CONFIG.textWidth != textWidth
+        initViewport |= CONFIG.focusWidth != focusWidth
+        initViewport |= CONFIG.textMargin != textMargin
 
         CONFIG.textWidth = textWidth
         CONFIG.focusWidth = focusWidth
@@ -1280,7 +1277,7 @@ class GuiPreferences(NDialog):
         # Editor Scrolling
         scrollPastEnd = self.scrollPastEnd.isChecked()
 
-        initEditor |= CONFIG.scrollPastEnd != scrollPastEnd
+        initViewport |= CONFIG.scrollPastEnd != scrollPastEnd
 
         CONFIG.autoScroll = self.autoScroll.isChecked()  # Read on every keyPressEvent
         CONFIG.autoScrollPos = self.autoScrollPos.value()  # Read on every keyPressEvent
@@ -1357,9 +1354,10 @@ class GuiPreferences(NDialog):
                 tree=refreshTree,
                 theme=updateTheme,
                 syntax=updateSyntax,
+                spelling=updateSpelling,
                 editor=initEditor,
                 viewer=initViewer,
-                spelling=updateSpelling,
+                viewport=initViewport,
             )
         )
 

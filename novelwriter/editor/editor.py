@@ -562,12 +562,8 @@ class GuiDocEditor(QTextEdit):
         # Update highlighter settings
         self._qDocument.syntaxHighlighter.initHighlighter()
 
-        # Set default text margins
-        # Due to cursor visibility, a part of the margin must be
-        # allocated to the document itself. See issue #1112.
-        self._qDocument.setDocumentMargin(4)
-        self._vpMargin = max(CONFIG.textMargin - 4, 0)
-        self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
+        # Update the viewport
+        self.initViewport()
 
         # Also set the document text options for the document text flow
         options = QTextOption()
@@ -578,17 +574,6 @@ class GuiDocEditor(QTextEdit):
         if CONFIG.showLineEndings:
             options.setFlags(options.flags() | QTextOption.Flag.ShowLineAndParagraphSeparators)
         self._qDocument.setDefaultTextOption(options)
-
-        # Scrolling
-        if CONFIG.hideVScroll:
-            self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
-        else:
-            self.setVerticalScrollBarPolicy(QtScrollAsNeeded)
-
-        if CONFIG.hideHScroll:
-            self.setHorizontalScrollBarPolicy(QtScrollAlwaysOff)
-        else:
-            self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
 
         # Refresh sizes
         self.setTabStopDistance(CONFIG.tabWidth)
@@ -612,6 +597,28 @@ class GuiDocEditor(QTextEdit):
 
         # Refresh Vim Mode
         self.setVimMode(nwVimMode.NORMAL)
+
+    def initViewport(self) -> None:
+        """Initialise the settings of the editor viewport."""
+        # Set default text margins
+        # Due to cursor visibility, a part of the margin must be
+        # allocated to the document itself. See issue #1112.
+        self._qDocument.setDocumentMargin(4)
+        self._vpMargin = max(CONFIG.textMargin - 4, 0)
+        self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
+
+        # Scrolling
+        if CONFIG.hideVScroll:
+            self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
+        else:
+            self.setVerticalScrollBarPolicy(QtScrollAsNeeded)
+
+        if CONFIG.hideHScroll:
+            self.setHorizontalScrollBarPolicy(QtScrollAlwaysOff)
+        else:
+            self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
+
+        self.updateDocMargins()
 
     def loadText(self, tHandle: str, tLine: int | None = None) -> bool:
         """Load text from a document into the editor. If we have an I/O

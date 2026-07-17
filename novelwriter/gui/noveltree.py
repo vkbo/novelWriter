@@ -105,9 +105,9 @@ class GuiNovelView(QWidget):
         logger.debug("Theme Update: GuiNovelView")
         self.novelBar.updateTheme()
 
-    def initSettings(self) -> None:
-        """Initialise GUI elements that depend on specific settings."""
-        self.novelTree.initSettings()
+    def initViewport(self) -> None:
+        """Initialise viewport settings."""
+        self.novelTree.initViewport()
 
     def clearNovelView(self) -> None:
         """Clear project-related GUI content."""
@@ -390,12 +390,12 @@ class GuiNovelTree(NTreeView):
         self.middleClicked.connect(self._onMiddleClick)
 
         # Set custom settings
-        self.initSettings()
+        self.initViewport()
 
         logger.debug("Ready: GuiNovelTree")
 
-    def initSettings(self) -> None:
-        """Set or update tree widget settings."""
+    def initViewport(self) -> None:
+        """Initialise viewport settings."""
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:

@@ -1051,14 +1051,18 @@ class GuiMain(QMainWindow):
             self.docEditor.initEditor()
         if updateFlags.viewer or updateFlags.syntax or updateFlags.theme:
             self.docViewer.initViewer()
-
-        self.projView.initSettings()
-        self.novelView.initSettings()
-        self.outlineView.initSettings()
-        self.mainStatus.initSettings()
-
+        if updateFlags.viewport:
+            if not updateFlags.editor:
+                self.docEditor.initViewport()
+            if not updateFlags.viewer:
+                self.docViewer.initViewport()
+            self.projView.initViewport()
+            self.novelView.initViewport()
+            self.outlineView.initViewport()
         if updateFlags.spelling:
             SHARED.updateSpellCheckLanguage(reload=True)
+
+        self.mainStatus.initSettings()
 
         # Force update of word count
         self._lastTotalCount = 0
