@@ -1536,6 +1536,7 @@ class GuiDocEditor(QTextEdit):
         """
         checkSpell = SHARED.project.data.spellCheck
         checkFormat = CONFIG.showMultiSpaces
+
         spellSelections = []
         formatSelections = []
         suppressed = False
@@ -1554,6 +1555,7 @@ class GuiDocEditor(QTextEdit):
                                 suppressed = True
                                 continue
                             spellSelections.append(selection)
+
                     if checkFormat:
                         selections = data.formatSelections(block, self._formatErrFormat)
                         for (start, end, kind), selection in zip(data.formatErrors, selections, strict=True):
@@ -1562,7 +1564,9 @@ class GuiDocEditor(QTextEdit):
                                 suppressed = True
                                 continue
                             formatSelections.append(selection)
+
                 block = block.next()
+
         self._suppressed = suppressed
         self._spellSelections = spellSelections
         self._formatSelections = formatSelections
