@@ -63,6 +63,7 @@ class GuiNeedsUpdate(NamedTuple):
     syntax: bool
     editor: bool
     viewer: bool
+    spelling: bool
 
 
 class GuiPreferences(NDialog):
@@ -1145,6 +1146,7 @@ class GuiPreferences(NDialog):
         refreshTree = False
         initEditor = False
         initViewer = False
+        updateSpelling = False
 
         # Appearance
         guiLocale = self.guiLocale.currentData()
@@ -1218,26 +1220,36 @@ class GuiPreferences(NDialog):
         CONFIG.userIdleTime = round(self.userIdleTime.value() * 60)
 
         # Text Flow
+        textWidth = self.textWidth.value()
+        focusWidth = self.focusWidth.value()
         doJustify = self.doJustify.isChecked()
+        textMargin = self.textMargin.value()
         tabWidth = self.tabWidth.value()
         lineHeight = self.lineHeight.value()
 
+        initEditor |= CONFIG.textWidth != textWidth
+        initEditor |= CONFIG.focusWidth != focusWidth
         initEditor |= CONFIG.doJustify != doJustify
+        initEditor |= CONFIG.textMargin != textMargin
         initEditor |= CONFIG.tabWidth != tabWidth
         initEditor |= CONFIG.lineHeight != lineHeight
+        initViewer |= CONFIG.textWidth != textWidth
+        initViewer |= CONFIG.focusWidth != focusWidth
         initViewer |= CONFIG.doJustify != doJustify
+        initViewer |= CONFIG.textMargin != textMargin
         initViewer |= CONFIG.tabWidth != tabWidth
         initViewer |= CONFIG.lineHeight != lineHeight
 
-        CONFIG.textWidth = self.textWidth.value()
-        CONFIG.focusWidth = self.focusWidth.value()
+        CONFIG.textWidth = textWidth
+        CONFIG.focusWidth = focusWidth
         CONFIG.hideFocusFooter = self.hideFocusFooter.isChecked()
         CONFIG.doJustify = doJustify
-        CONFIG.textMargin = self.textMargin.value()
+        CONFIG.textMargin = textMargin
         CONFIG.tabWidth = tabWidth
         CONFIG.lineHeight = lineHeight
 
         # Text Editing
+        spellLanguage = self.spellLanguage.currentData()
         cursorWidth = self.cursorWidth.value()
         scaleHeadings = self.scaleHeadings.isChecked()
         singleStarBold = self.singleStarBold.isChecked()
@@ -1251,8 +1263,9 @@ class GuiPreferences(NDialog):
         initEditor |= CONFIG.cursorWidth != cursorWidth
         initEditor |= CONFIG.showTabsNSpaces != showTabsNSpaces
         initEditor |= CONFIG.showLineEndings != showLineEndings
+        updateSpelling |= CONFIG.spellLanguage != spellLanguage
 
-        CONFIG.spellLanguage = self.spellLanguage.currentData()
+        CONFIG.spellLanguage = spellLanguage
         CONFIG.autoSelect = self.autoSelect.isChecked()
         CONFIG.cursorWidth = cursorWidth
         CONFIG.scaleHeadings = scaleHeadings
@@ -1262,9 +1275,13 @@ class GuiPreferences(NDialog):
         CONFIG.showLineEndings = showLineEndings
 
         # Editor Scrolling
-        CONFIG.autoScroll = self.autoScroll.isChecked()
-        CONFIG.autoScrollPos = self.autoScrollPos.value()
-        CONFIG.scrollPastEnd = self.scrollPastEnd.isChecked()
+        scrollPastEnd = self.scrollPastEnd.isChecked()
+
+        initEditor |= CONFIG.scrollPastEnd != scrollPastEnd
+
+        CONFIG.autoScroll = self.autoScroll.isChecked()  # Read on every keyPressEvent
+        CONFIG.autoScrollPos = self.autoScrollPos.value()  # Read on every keyPressEvent
+        CONFIG.scrollPastEnd = scrollPastEnd
 
         # Text Highlighting
         dialogueStyle = self.dialogStyle.currentData()
@@ -1301,20 +1318,48 @@ class GuiPreferences(NDialog):
         CONFIG.showMultiSpaces = showMultiSpaces
 
         # Text Automation
-        CONFIG.doReplace = self.doReplace.isChecked()
-        CONFIG.doReplaceSQuote = self.doReplaceSQuote.isChecked()
-        CONFIG.doReplaceDQuote = self.doReplaceDQuote.isChecked()
-        CONFIG.doReplaceDash = self.doReplaceDash.isChecked()
-        CONFIG.doReplaceDots = self.doReplaceDots.isChecked()
-        CONFIG.fmtPadBefore = uniqueCompact(self.fmtPadBefore.text())
-        CONFIG.fmtPadAfter = uniqueCompact(self.fmtPadAfter.text())
-        CONFIG.fmtPadThin = self.fmtPadThin.isChecked()
+        doReplace = self.doReplace.isChecked()
+        doReplaceSQuote = self.doReplaceSQuote.isChecked()
+        doReplaceDQuote = self.doReplaceDQuote.isChecked()
+        doReplaceDash = self.doReplaceDash.isChecked()
+        doReplaceDots = self.doReplaceDots.isChecked()
+        fmtPadBefore = uniqueCompact(self.fmtPadBefore.text())
+        fmtPadAfter = uniqueCompact(self.fmtPadAfter.text())
+        fmtPadThin = self.fmtPadThin.isChecked()
+
+        initEditor |= CONFIG.doReplace != doReplace
+        initEditor |= CONFIG.doReplaceSQuote != doReplaceSQuote
+        initEditor |= CONFIG.doReplaceDQuote != doReplaceDQuote
+        initEditor |= CONFIG.doReplaceDash != doReplaceDash
+        initEditor |= CONFIG.doReplaceDots != doReplaceDots
+        initEditor |= CONFIG.fmtPadBefore != fmtPadBefore
+        initEditor |= CONFIG.fmtPadAfter != fmtPadAfter
+        initEditor |= CONFIG.fmtPadThin != fmtPadThin
+
+        CONFIG.doReplace = doReplace
+        CONFIG.doReplaceSQuote = doReplaceSQuote
+        CONFIG.doReplaceDQuote = doReplaceDQuote
+        CONFIG.doReplaceDash = doReplaceDash
+        CONFIG.doReplaceDots = doReplaceDots
+        CONFIG.fmtPadBefore = fmtPadBefore
+        CONFIG.fmtPadAfter = fmtPadAfter
+        CONFIG.fmtPadThin = fmtPadThin
 
         # Quotation Style
-        CONFIG.fmtSQuoteOpen = self.fmtSQuoteOpen.text()
-        CONFIG.fmtSQuoteClose = self.fmtSQuoteClose.text()
-        CONFIG.fmtDQuoteOpen = self.fmtDQuoteOpen.text()
-        CONFIG.fmtDQuoteClose = self.fmtDQuoteClose.text()
+        fmtSQuoteOpen = self.fmtSQuoteOpen.text()
+        fmtSQuoteClose = self.fmtSQuoteClose.text()
+        fmtDQuoteOpen = self.fmtDQuoteOpen.text()
+        fmtDQuoteClose = self.fmtDQuoteClose.text()
+
+        initEditor |= CONFIG.fmtSQuoteOpen != fmtSQuoteOpen
+        initEditor |= CONFIG.fmtSQuoteClose != fmtSQuoteClose
+        initEditor |= CONFIG.fmtDQuoteOpen != fmtDQuoteOpen
+        initEditor |= CONFIG.fmtDQuoteClose != fmtDQuoteClose
+
+        CONFIG.fmtSQuoteOpen = fmtSQuoteOpen
+        CONFIG.fmtSQuoteClose = fmtSQuoteClose
+        CONFIG.fmtDQuoteOpen = fmtDQuoteOpen
+        CONFIG.fmtDQuoteClose = fmtDQuoteClose
 
         # Features
         vimMode = self.vimMode.isChecked()
@@ -1324,6 +1369,9 @@ class GuiPreferences(NDialog):
                 self.tr("This changes how the editor accepts input."),
             ])
         self.vimMode.setChecked(vimMode)
+
+        initEditor |= CONFIG.vimMode != vimMode
+
         CONFIG.vimMode = vimMode
 
         # Finalise
@@ -1336,6 +1384,7 @@ class GuiPreferences(NDialog):
                 syntax=updateSyntax,
                 editor=initEditor,
                 viewer=initViewer,
+                spelling=updateSpelling,
             )
         )
 

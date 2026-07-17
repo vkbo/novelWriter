@@ -1057,6 +1057,9 @@ class GuiMain(QMainWindow):
         self.outlineView.initSettings()
         self.mainStatus.initSettings()
 
+        if updateFlags.spelling:
+            SHARED.updateSpellCheckLanguage(reload=True)
+
         # Force update of word count
         self._lastTotalCount = 0
         self._updateStatusWordCount()
