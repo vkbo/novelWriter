@@ -1458,8 +1458,7 @@ class GuiDocEditor(QTextEdit):
                 self._dirtyBlocks[block.blockNumber()] = block
                 block = block.next()
             self._timerTextCheck.start()
-
-        self._timerCheck.start()
+            self._timerCheck.start()
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
@@ -1529,7 +1528,7 @@ class GuiDocEditor(QTextEdit):
         """Rebuild the spell and format error markers for all visible
         blocks. Both are cached per block, so a single pass over the
         visible blocks is enough to build both sets of markers. A
-        trailing space under the caret is not flagged, since it is a
+        trailing space under the cursor is not flagged, since it is a
         natural, transient state while the line is still being typed.
         See issue discussion #1347.
         """
@@ -1548,7 +1547,7 @@ class GuiDocEditor(QTextEdit):
                     if checkSpell:
                         for start, end, _ in data.spellErrors:
                             if position + start < cPos <= position + end:
-                                # Don't underline the word under the caret
+                                # Don't underline the word under the cursor
                                 suppressed = True
                                 continue
                             cursor = QTextCursor(self._qDocument)
