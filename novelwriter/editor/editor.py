@@ -620,6 +620,13 @@ class GuiDocEditor(QTextEdit):
 
         self.updateDocMargins()
 
+    def initSettings(self, updateVimMode: bool = False) -> None:
+        """Initialise non-expensive settings."""
+        if self._docHandle:
+            self.docHeader.setHandle(self._docHandle)
+        if updateVimMode:
+            self.setVimMode(nwVimMode.NORMAL)
+
     def loadText(self, tHandle: str, tLine: int | None = None) -> bool:
         """Load text from a document into the editor. If we have an I/O
         error, we must handle this and clear the editor so that we don't

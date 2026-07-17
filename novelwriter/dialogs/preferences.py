@@ -62,6 +62,7 @@ class GuiNeedsUpdate(NamedTuple):
     theme: bool
     syntax: bool
     spelling: bool
+    vim: bool
     editor: bool
     viewer: bool
     viewport: bool
@@ -1145,6 +1146,7 @@ class GuiPreferences(NDialog):
         needsRestart = False
         updateSyntax = False
         updateSpelling = False
+        updateVimMode = False
         refreshTree = False
         initEditor = False
         initViewer = False
@@ -1182,14 +1184,11 @@ class GuiPreferences(NDialog):
 
         # Document Style
         textFont = self._textFont
-        showFullPath = self.showFullPath.isChecked()
 
         initEditor |= CONFIG.textFont != textFont
         initViewer |= CONFIG.textFont != textFont
-        initEditor |= CONFIG.showFullPath != showFullPath
-        initViewer |= CONFIG.showFullPath != showFullPath
 
-        CONFIG.showFullPath = showFullPath
+        CONFIG.showFullPath = self.showFullPath.isChecked()
         CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
         CONFIG.setTextFont(textFont)
 
@@ -1342,7 +1341,7 @@ class GuiPreferences(NDialog):
             ])
         self.vimMode.setChecked(vimMode)
 
-        initEditor |= CONFIG.vimMode != vimMode
+        updateVimMode |= CONFIG.vimMode != vimMode
 
         CONFIG.vimMode = vimMode
 
@@ -1355,6 +1354,7 @@ class GuiPreferences(NDialog):
                 theme=updateTheme,
                 syntax=updateSyntax,
                 spelling=updateSpelling,
+                vim=updateVimMode,
                 editor=initEditor,
                 viewer=initViewer,
                 viewport=initViewport,

@@ -232,6 +232,11 @@ class GuiDocViewer(QTextBrowser):
 
         self.updateDocMargins()
 
+    def initSettings(self) -> None:
+        """Initialise non-expensive settings."""
+        if self._docHandle:
+            self.docHeader.setHandle(self._docHandle)
+
     def loadText(self, tHandle: str, updateHistory: bool = True) -> bool:
         """Load text into the viewer from an item handle."""
         self._timerHover.stop()
