@@ -61,8 +61,11 @@ class GuiNeedsUpdate(NamedTuple):
     tree: bool
     theme: bool
     syntax: bool
+    spelling: bool
+    vim: bool
     editor: bool
     viewer: bool
+    viewport: bool
 
 
 class GuiPreferences(NDialog):
@@ -1142,9 +1145,12 @@ class GuiPreferences(NDialog):
         updateTheme = False
         needsRestart = False
         updateSyntax = False
+        updateSpelling = False
+        updateVimMode = False
         refreshTree = False
         initEditor = False
         initViewer = False
+        initViewport = False
 
         # Appearance
         guiLocale = self.guiLocale.currentData()
@@ -1163,10 +1169,8 @@ class GuiPreferences(NDialog):
         refreshTree |= CONFIG.useCharCount != useCharCount
         updateSyntax |= CONFIG.lightTheme != lightTheme
         updateSyntax |= CONFIG.darkTheme != darkTheme
-        initEditor |= CONFIG.hideVScroll != hideVScroll
-        initEditor |= CONFIG.hideHScroll != hideHScroll
-        initViewer |= CONFIG.hideVScroll != hideVScroll
-        initViewer |= CONFIG.hideHScroll != hideHScroll
+        initViewport |= CONFIG.hideVScroll != hideVScroll
+        initViewport |= CONFIG.hideHScroll != hideHScroll
 
         CONFIG.guiLocale = guiLocale
         CONFIG.lightTheme = lightTheme
@@ -1218,7 +1222,10 @@ class GuiPreferences(NDialog):
         CONFIG.userIdleTime = round(self.userIdleTime.value() * 60)
 
         # Text Flow
+        textWidth = self.textWidth.value()
+        focusWidth = self.focusWidth.value()
         doJustify = self.doJustify.isChecked()
+        textMargin = self.textMargin.value()
         tabWidth = self.tabWidth.value()
         lineHeight = self.lineHeight.value()
 
@@ -1228,16 +1235,20 @@ class GuiPreferences(NDialog):
         initViewer |= CONFIG.doJustify != doJustify
         initViewer |= CONFIG.tabWidth != tabWidth
         initViewer |= CONFIG.lineHeight != lineHeight
+        initViewport |= CONFIG.textWidth != textWidth
+        initViewport |= CONFIG.focusWidth != focusWidth
+        initViewport |= CONFIG.textMargin != textMargin
 
-        CONFIG.textWidth = self.textWidth.value()
-        CONFIG.focusWidth = self.focusWidth.value()
+        CONFIG.textWidth = textWidth
+        CONFIG.focusWidth = focusWidth
         CONFIG.hideFocusFooter = self.hideFocusFooter.isChecked()
         CONFIG.doJustify = doJustify
-        CONFIG.textMargin = self.textMargin.value()
+        CONFIG.textMargin = textMargin
         CONFIG.tabWidth = tabWidth
         CONFIG.lineHeight = lineHeight
 
         # Text Editing
+        spellLanguage = self.spellLanguage.currentData()
         cursorWidth = self.cursorWidth.value()
         scaleHeadings = self.scaleHeadings.isChecked()
         singleStarBold = self.singleStarBold.isChecked()
@@ -1251,8 +1262,9 @@ class GuiPreferences(NDialog):
         initEditor |= CONFIG.cursorWidth != cursorWidth
         initEditor |= CONFIG.showTabsNSpaces != showTabsNSpaces
         initEditor |= CONFIG.showLineEndings != showLineEndings
+        updateSpelling |= CONFIG.spellLanguage != spellLanguage
 
-        CONFIG.spellLanguage = self.spellLanguage.currentData()
+        CONFIG.spellLanguage = spellLanguage
         CONFIG.autoSelect = self.autoSelect.isChecked()
         CONFIG.cursorWidth = cursorWidth
         CONFIG.scaleHeadings = scaleHeadings
@@ -1262,9 +1274,13 @@ class GuiPreferences(NDialog):
         CONFIG.showLineEndings = showLineEndings
 
         # Editor Scrolling
-        CONFIG.autoScroll = self.autoScroll.isChecked()
-        CONFIG.autoScrollPos = self.autoScrollPos.value()
-        CONFIG.scrollPastEnd = self.scrollPastEnd.isChecked()
+        scrollPastEnd = self.scrollPastEnd.isChecked()
+
+        initViewport |= CONFIG.scrollPastEnd != scrollPastEnd
+
+        CONFIG.autoScroll = self.autoScroll.isChecked()  # Read on every keyPressEvent
+        CONFIG.autoScrollPos = self.autoScrollPos.value()  # Read on every keyPressEvent
+        CONFIG.scrollPastEnd = scrollPastEnd
 
         # Text Highlighting
         dialogueStyle = self.dialogStyle.currentData()
@@ -1324,6 +1340,9 @@ class GuiPreferences(NDialog):
                 self.tr("This changes how the editor accepts input."),
             ])
         self.vimMode.setChecked(vimMode)
+
+        updateVimMode |= CONFIG.vimMode != vimMode
+
         CONFIG.vimMode = vimMode
 
         # Finalise
@@ -1334,8 +1353,11 @@ class GuiPreferences(NDialog):
                 tree=refreshTree,
                 theme=updateTheme,
                 syntax=updateSyntax,
+                spelling=updateSpelling,
+                vim=updateVimMode,
                 editor=initEditor,
                 viewer=initViewer,
+                viewport=initViewport,
             )
         )
 

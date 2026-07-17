@@ -130,11 +130,12 @@ class GuiOutlineView(QWidget):
         self.outlineBar.updateTheme()
         self.outlineTree.updateTheme()
         self.outlineTree.refreshTree(rootHandle=SHARED.project.data.getLastHandle("outline"), overRide=True)
+        self.outlineData.clearDetails()
 
-    def initSettings(self) -> None:
-        """Initialise GUI elements that depend on specific settings."""
-        self.outlineTree.initSettings()
-        self.outlineData.initSettings()
+    def initViewport(self) -> None:
+        """Initialise viewport settings."""
+        self.outlineTree.initViewport()
+        self.outlineData.initViewport()
 
     def refreshTree(self) -> None:
         """Refresh the current tree."""
@@ -415,7 +416,7 @@ class GuiOutlineTree(QTreeWidget):
         self._lastBuild = 0
 
         self.updateTheme()
-        self.initSettings()
+        self.initViewport()
         self.clearContent()
 
         self.hiddenStateChanged.emit()
@@ -439,8 +440,8 @@ class GuiOutlineTree(QTreeWidget):
     #  Methods
     ##
 
-    def initSettings(self) -> None:
-        """Set or update outline settings."""
+    def initViewport(self) -> None:
+        """Initialise viewport settings."""
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
@@ -986,12 +987,12 @@ class GuiOutlineDetails(QScrollArea):
         self.setWidgetResizable(True)
         self.setFrameStyle(QFrame.Shape.NoFrame)
 
-        self.initSettings()
+        self.initViewport()
 
         logger.debug("Ready: GuiOutlineDetails")
 
-    def initSettings(self) -> None:
-        """Set or update outline settings."""
+    def initViewport(self) -> None:
+        """Initialise viewport settings."""
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
@@ -1000,7 +1001,6 @@ class GuiOutlineDetails(QScrollArea):
             self.setHorizontalScrollBarPolicy(QtScrollAlwaysOff)
         else:
             self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
-        self.updateClasses()
 
     def loadGuiSettings(self) -> None:
         """Run open project tasks."""

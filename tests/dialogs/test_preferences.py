@@ -395,7 +395,17 @@ def testGuiPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
         with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
             prefs.btnSave.click()
             assert signal.args == [
-                GuiNeedsUpdate(restart=True, tree=True, theme=True, syntax=True, editor=True, viewer=True)
+                GuiNeedsUpdate(
+                    restart=True,
+                    tree=True,
+                    theme=True,
+                    syntax=True,
+                    spelling=True,
+                    vim=True,
+                    editor=True,
+                    viewport=True,
+                    viewer=True,
+                )
             ]
 
     # Check Settings
