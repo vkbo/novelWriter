@@ -401,6 +401,7 @@ def testGuiPreferences_Settings(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
                     theme=True,
                     syntax=True,
                     spelling=True,
+                    vim=True,
                     editor=True,
                     viewport=True,
                     viewer=True,
