@@ -384,8 +384,15 @@ def testGuiMain_ProcessConfigChanges_LightweightSettings(qtbot, nwGUI, projPath,
     # A save where nothing relevant changed, and Vim was not touched,
     # must still refresh the headers, but must not reset Vim mode
     noChange = GuiNeedsUpdate(
-        restart=False, tree=False, theme=False, syntax=False, spelling=False,
-        vim=False, editor=False, viewer=False, viewport=False,
+        restart=False,
+        tree=False,
+        theme=False,
+        syntax=False,
+        spelling=False,
+        vim=False,
+        editor=False,
+        viewer=False,
+        viewport=False,
     )
     nwGUI._processConfigChanges(noChange)
     assert docEditor.docHeader._docHandle == C.hSceneDoc
@@ -394,8 +401,15 @@ def testGuiMain_ProcessConfigChanges_LightweightSettings(qtbot, nwGUI, projPath,
 
     # A save where the Vim setting changed must reset the mode to Normal
     vimChanged = GuiNeedsUpdate(
-        restart=False, tree=False, theme=False, syntax=False, spelling=False,
-        vim=True, editor=False, viewer=False, viewport=False,
+        restart=False,
+        tree=False,
+        theme=False,
+        syntax=False,
+        spelling=False,
+        vim=True,
+        editor=False,
+        viewer=False,
+        viewport=False,
     )
     nwGUI._processConfigChanges(vimChanged)
     assert docEditor._vim.mode == nwVimMode.NORMAL
@@ -404,8 +418,15 @@ def testGuiMain_ProcessConfigChanges_LightweightSettings(qtbot, nwGUI, projPath,
     # additionally run the lightweight path
     docEditor._vim.setMode(nwVimMode.INSERT)
     fullReinit = GuiNeedsUpdate(
-        restart=False, tree=False, theme=False, syntax=False, spelling=False,
-        vim=False, editor=True, viewer=True, viewport=False,
+        restart=False,
+        tree=False,
+        theme=False,
+        syntax=False,
+        spelling=False,
+        vim=False,
+        editor=True,
+        viewer=True,
+        viewport=False,
     )
     nwGUI._processConfigChanges(fullReinit)
     assert docEditor._vim.mode == nwVimMode.NORMAL
@@ -415,8 +436,15 @@ def testGuiMain_ProcessConfigChanges_LightweightSettings(qtbot, nwGUI, projPath,
     CONFIG.hideVScroll = True
     CONFIG.hideHScroll = True
     viewportOnly = GuiNeedsUpdate(
-        restart=False, tree=False, theme=False, syntax=False, spelling=False,
-        vim=False, editor=False, viewer=False, viewport=True,
+        restart=False,
+        tree=False,
+        theme=False,
+        syntax=False,
+        spelling=False,
+        vim=False,
+        editor=False,
+        viewer=False,
+        viewport=True,
     )
     nwGUI._processConfigChanges(viewportOnly)
     assert docEditor.verticalScrollBarPolicy() == QtScrollAlwaysOff
