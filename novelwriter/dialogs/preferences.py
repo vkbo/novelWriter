@@ -1182,11 +1182,14 @@ class GuiPreferences(NDialog):
 
         # Document Style
         textFont = self._textFont
+        showFullPath = self.showFullPath.isChecked()
 
         initEditor |= CONFIG.textFont != textFont
         initViewer |= CONFIG.textFont != textFont
+        initEditor |= CONFIG.showFullPath != showFullPath
+        initViewer |= CONFIG.showFullPath != showFullPath
 
-        CONFIG.showFullPath = self.showFullPath.isChecked()
+        CONFIG.showFullPath = showFullPath
         CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
         CONFIG.setTextFont(textFont)
 
