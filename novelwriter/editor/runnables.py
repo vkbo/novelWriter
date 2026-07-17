@@ -23,15 +23,10 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
-
 from PyQt6.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
 
 from novelwriter.editor.textblock import T_TextCheckList, formatCheckText, spellCheckText
 from novelwriter.text.counting import standardCounter
-
-if TYPE_CHECKING:
-    from novelwriter.editor.editor import GuiDocEditor
 
 logger = logging.getLogger(__name__)
 
@@ -42,13 +37,13 @@ class BackgroundWordCounter(QRunnable):
     """The Off-GUI Thread Word Counter.
 
     A runnable for the word counter to be run in the thread pool off the
-    main GUI thread.
+    main GUI thread. It only receives a plain text snapshot, and never
+    touches the text document itself.
     """
 
-    def __init__(self, docEditor: GuiDocEditor, forSelection: bool = False) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self._docEditor = docEditor
-        self._forSelection = forSelection
+        self._text = ""
         self._isRunning = False
         self.signals = BackgroundWordCounterSignals()
 
@@ -56,18 +51,17 @@ class BackgroundWordCounter(QRunnable):
         """Return True if the word counter is already running."""
         return self._isRunning
 
+    def setText(self, text: str) -> None:
+        """Set the text snapshot to be counted on the next run."""
+        self._text = text
+
     @pyqtSlot()
     def run(self) -> None:
         """Overloaded run function for the word counter, forwarding the
         call to the function that does the actual counting.
         """
         self._isRunning = True
-        if self._forSelection:
-            text = self._docEditor.getSelectedText()
-        else:
-            text = self._docEditor.getText()
-
-        cC, wC, pC = standardCounter(text)
+        cC, wC, pC = standardCounter(self._text)
         self.signals.countsReady.emit(cC, wC, pC)
         self._isRunning = False
 

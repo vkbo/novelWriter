@@ -373,7 +373,7 @@ class GuiDocEditor(QTextEdit):
         self._timerDoc.setSingleShot(True)
         self._timerDoc.setInterval(5000)
 
-        self._wCounterDoc = BackgroundWordCounter(self)
+        self._wCounterDoc = BackgroundWordCounter()
         self._wCounterDoc.setAutoDelete(False)
         self._wCounterDoc.signals.countsReady.connect(self._updateDocCounts)
 
@@ -383,7 +383,7 @@ class GuiDocEditor(QTextEdit):
         self._timerSel.setSingleShot(True)
         self._timerSel.setInterval(500)
 
-        self._wCounterSel = BackgroundWordCounter(self, forSelection=True)
+        self._wCounterSel = BackgroundWordCounter()
         self._wCounterSel.setAutoDelete(False)
         self._wCounterSel.signals.countsReady.connect(self._updateSelCounts)
 
@@ -1745,6 +1745,7 @@ class GuiDocEditor(QTextEdit):
         if self._docHandle:
             logger.debug("Running document tasks")
             if not self._wCounterDoc.isRunning():
+                self._wCounterDoc.setText(self.getText())
                 SHARED.runInThreadPool(self._wCounterDoc)
 
             self.docHeader.setOutline({
@@ -1822,6 +1823,7 @@ class GuiDocEditor(QTextEdit):
             if self._wCounterSel.isRunning():
                 logger.debug("Selection word counter is busy")
                 return
+            self._wCounterSel.setText(self.getSelectedText())
             SHARED.runInThreadPool(self._wCounterSel)
         return
 
