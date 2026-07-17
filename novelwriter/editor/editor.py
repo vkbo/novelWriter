@@ -29,6 +29,7 @@ from time import time
 
 from PyQt6 import sip
 from PyQt6.QtCore import (
+    QEvent,
     QMimeData,
     QPoint,
     QPropertyAnimation,
@@ -73,8 +74,9 @@ from novelwriter.editor.editordocument import GuiTextDocument
 from novelwriter.editor.editsearch import GuiDocEditSearch
 from novelwriter.editor.edittoolbar import GuiDocToolBar
 from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE
+from novelwriter.editor.hovercard import GuiDocHoverCard
 from novelwriter.editor.runnables import BackgroundTextCheck, BackgroundWordCounter, T_TextCheckPayload
-from novelwriter.editor.textblock import T_TextCheckResult, TextBlockData
+from novelwriter.editor.textblock import T_TextCheckList, TextBlockData
 from novelwriter.enum import (
     nwChange,
     nwComment,
@@ -172,6 +174,8 @@ class GuiDocEditor(QTextEdit):
         "_followTagView",
         "_formatErrFormat",
         "_formatSelections",
+        "_hoverCard",
+        "_hoverPos",
         "_keyContext",
         "_lastActive",
         "_lastEdit",
@@ -191,6 +195,7 @@ class GuiDocEditor(QTextEdit):
         "_suppressed",
         "_timerCheck",
         "_timerDoc",
+        "_timerHover",
         "_timerSel",
         "_timerTextCheck",
         "_trActions",
@@ -397,6 +402,18 @@ class GuiDocEditor(QTextEdit):
         self._timerTextCheck.setSingleShot(True)
         self._timerTextCheck.setInterval(300)
 
+        # Set Up Reference Tag Hover Card
+        self._hoverCard = GuiDocHoverCard(self)
+        self._hoverCard.openDocumentRequest.connect(self.openDocumentRequest)
+        self._hoverPos = QPoint()
+        self._timerHover = QTimer(self)
+        self._timerHover.timeout.connect(self._showHoverCard)
+        self._timerHover.setSingleShot(True)
+        self._timerHover.setInterval(250)
+
+        if viewport := self.viewport():  # pragma: no branch
+            viewport.setMouseTracking(True)
+
         # Install Event Filter for Mouse Wheel
         self.wheelEventFilter = WheelEventFilter(self)
         self.installEventFilter(self.wheelEventFilter)
@@ -466,6 +483,9 @@ class GuiDocEditor(QTextEdit):
 
         self._timerCheck.stop()
         self._timerTextCheck.stop()
+        self._timerHover.stop()
+        self._hoverCard.hide()
+        self._hoverCard.clearCache()
         self._checkPassNo = -1
         self._spellPassNotify = False
         self._checkJob = None
@@ -504,6 +524,7 @@ class GuiDocEditor(QTextEdit):
 
         self.docHeader.matchColors()
         self.docFooter.matchColors()
+        self._hoverCard.updateTheme()
 
         self._lineColor = syntax.line
         self._selection.format.setBackground(self._lineColor)
@@ -1266,8 +1287,34 @@ class GuiDocEditor(QTextEdit):
                 self._processTag(cursor)
         super().mouseReleaseEvent(event)
 
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        """Track mouse movement to trigger the reference tag hover card.
+        The hover check itself is debounced by a timer, and is only
+        started at all if the block under the cursor holds any meta
+        data, so idle moves over plain text stay cheap.
+        """
+        pos = event.pos()
+        data = self.cursorForPosition(pos).block().userData()
+        if isinstance(data, TextBlockData) and data.metaData:
+            self._hoverPos = pos
+            self._timerHover.start()
+        else:
+            self._timerHover.stop()
+            self._hoverCard.scheduleHide()
+        super().mouseMoveEvent(event)
+
+    def leaveEvent(self, event: QEvent) -> None:
+        """Request that the hover card be hidden when the mouse leaves
+        the editor. The hide is delayed rather than immediate, so the
+        mouse has time to move onto the card itself, which cancels it.
+        """
+        self._timerHover.stop()
+        self._hoverCard.scheduleHide()
+        super().leaveEvent(event)
+
     def wheelEvent(self, event: QWheelEvent) -> None:
         """Zoom the editor font with Ctrl+Scroll wheel."""
+        self._hideHoverCard()
         if event.modifiers() & QtModCtrl == QtModCtrl:
             delta = event.angleDelta().y() // 120
             if delta > 0:
@@ -1360,6 +1407,7 @@ class GuiDocEditor(QTextEdit):
         """Tags have changed, so just in case we rehighlight them."""
         if updated or deleted:
             self._qDocument.syntaxHighlighter.rehighlightByType(BLOCK_META)
+            self._hoverCard.pruneCache(updated + deleted)
 
     @pyqtSlot(str, str)
     def processSpellCheckChange(self, language: str, provider: str) -> None:
@@ -1434,6 +1482,7 @@ class GuiDocEditor(QTextEdit):
     @pyqtSlot()
     def _cursorMoved(self) -> None:
         """Triggered when the cursor moved in the editor."""
+        self._hideHoverCard()
         self.docFooter.updateLineCount(self.textCursor())
         if self._suppressed:
             # An underline was suppressed at the previous cursor
@@ -1443,6 +1492,25 @@ class GuiDocEditor(QTextEdit):
             self._selection.cursor = self.textCursor()
             self._selection.cursor.clearSelection()
             self._applyExtraSelections()
+
+    @pyqtSlot()
+    def _showHoverCard(self) -> None:
+        """Show the reference tag hover card if the position last
+        recorded by mouseMoveEvent is still over a tag once the hover
+        delay has elapsed. Past the end of a line, cursorForPosition
+        clamps to the nearest character, so the resolved cursor's own
+        rect is checked against the actual mouse position to reject
+        hovers over the empty space beyond the text.
+        """
+        cursor = self.cursorForPosition(self._hoverPos)
+        rect = self.cursorRect(cursor)
+        onText = abs(self._hoverPos.x() - rect.x()) <= self.fontMetrics().averageCharWidth()
+        mData, mType = self._qDocument.metaDataAtPos(cursor.position()) if onText else ("", "")
+        if mData and mType == "tag" and self._hoverCard.setTag(mData) and (viewport := self.viewport()):
+            pos = QPoint(self._hoverPos.x(), rect.bottom() + 4)
+            self._hoverCard.showAt(viewport.mapToGlobal(pos), viewport.width(), viewport.height())
+        else:
+            self._hoverCard.scheduleHide()
 
     @pyqtSlot()
     def _updateCheckSelections(self) -> None:
@@ -1543,7 +1611,7 @@ class GuiDocEditor(QTextEdit):
             SHARED.newStatusMessage(self.tr("Spell check complete"))
 
     @pyqtSlot(int, list)
-    def _textCheckResults(self, jobId: int, results: list[tuple[int, T_TextCheckResult, T_TextCheckResult]]) -> None:
+    def _textCheckResults(self, jobId: int, results: list[tuple[int, T_TextCheckList, T_TextCheckList]]) -> None:
         """Process the results from the spell/format check worker.
         Results are discarded if the job was cancelled, or per block if
         the block was modified or removed while the worker was running.
@@ -1590,7 +1658,7 @@ class GuiDocEditor(QTextEdit):
             action.triggered.connect(qtLambda(self._emitRenameItem, pBlock))
 
         # URL
-        (mData, mType) = self._qDocument.metaDataAtPos(pCursor.position())
+        mData, mType = self._qDocument.metaDataAtPos(pCursor.position())
         if mData and mType == "url":
             action = qtAddAction(ctxMenu, self._trOpenURL)
             action.triggered.connect(qtLambda(SHARED.openWebsite, mData))
@@ -2737,6 +2805,11 @@ class GuiDocEditor(QTextEdit):
             event.accept()
         else:
             super().keyPressEvent(event)
+
+    def _hideHoverCard(self) -> None:
+        """Stop the hover timer and hide the hover card, if visible."""
+        self._timerHover.stop()
+        self._hoverCard.hide()
 
     def _applyExtraSelections(self) -> None:
         """Set the editor's extra selections from the line highlight

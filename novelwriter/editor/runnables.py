@@ -27,7 +27,7 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
 
-from novelwriter.editor.textblock import T_TextCheckResult, formatCheckText, spellCheckText
+from novelwriter.editor.textblock import T_TextCheckList, formatCheckText, spellCheckText
 from novelwriter.text.counting import standardCounter
 
 if TYPE_CHECKING:
@@ -106,7 +106,7 @@ class BackgroundTextCheck(QRunnable):
     @pyqtSlot()
     def run(self) -> None:
         """Spell and format check the text snapshots and emit the results."""
-        results: list[tuple[int, T_TextCheckResult, T_TextCheckResult]] = []
+        results: list[tuple[int, T_TextCheckList, T_TextCheckList]] = []
         for index, spellText, formatText, offset, utf16Map in self._payload:
             spellErrors = spellCheckText(spellText, offset, utf16Map) if self._checkSpell else []
             formatErrors = formatCheckText(formatText, offset, utf16Map) if self._checkFormat else []

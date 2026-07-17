@@ -25,7 +25,7 @@ import logging
 
 from enum import Enum
 
-from PyQt6.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QEvent, QPoint, Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import (
     QCursor,
     QDesktopServices,
@@ -42,6 +42,7 @@ from PyQt6.QtWidgets import QApplication, QFrame, QMenu, QTextBrowser, QWidget
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles, fontMatcher, qtAddAction, qtLambda
 from novelwriter.constants import nwConst, nwStyles, nwUnicode
+from novelwriter.editor.hovercard import GuiDocHoverCard
 from novelwriter.enum import nwChange, nwComment, nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -100,6 +101,18 @@ class GuiDocViewer(QTextBrowser):
         # Signals
         self.anchorClicked.connect(self._linkClicked)
 
+        # Set Up Reference Tag Hover Card
+        self._hoverCard = GuiDocHoverCard(self)
+        self._hoverCard.openDocumentRequest.connect(self.openDocumentRequest)
+        self._hoverPos = QPoint()
+        self._timerHover = QTimer(self)
+        self._timerHover.timeout.connect(self._showHoverCard)
+        self._timerHover.setSingleShot(True)
+        self._timerHover.setInterval(250)
+
+        if viewport := self.viewport():  # pragma: no branch
+            viewport.setMouseTracking(True)
+
         # Install Event Filter for Mouse Wheel
         self.wheelEventFilter = WheelEventFilter(self)
         self.installEventFilter(self.wheelEventFilter)
@@ -141,6 +154,9 @@ class GuiDocViewer(QTextBrowser):
         self.setSearchPaths([""])
         self._docHandle = None
         self.docHeader.clearHeader()
+        self._timerHover.stop()
+        self._hoverCard.hide()
+        self._hoverCard.clearCache()
 
     def updateTheme(self) -> None:
         """Update theme elements."""
@@ -187,6 +203,8 @@ class GuiDocViewer(QTextBrowser):
         self._docTheme.dialog = syntax.dialN
         self._docTheme.altdialog = syntax.dialA
 
+        self._hoverCard.updateTheme()
+
         # Set default text margins
         if document := self.document():  # pragma: no branch
             document.setDocumentMargin(0)
@@ -210,6 +228,8 @@ class GuiDocViewer(QTextBrowser):
 
     def loadText(self, tHandle: str, updateHistory: bool = True) -> bool:
         """Load text into the viewer from an item handle."""
+        self._timerHover.stop()
+        self._hoverCard.hide()
         if not SHARED.project.tree.checkType(tHandle, nwItemType.FILE):
             logger.warning("Item not found")
             self.documentLoaded.emit("")
@@ -376,6 +396,12 @@ class GuiDocViewer(QTextBrowser):
             self.setFont(font)
             document.setDefaultFont(font)
 
+    @pyqtSlot(list, list)
+    def updateChangedTags(self, updated: list[str], deleted: list[str]) -> None:
+        """Tags have changed, so just in case we rehighlight them."""
+        if updated or deleted:
+            self._hoverCard.pruneCache(updated + deleted)
+
     ##
     #  Private Slots
     ##
@@ -401,6 +427,21 @@ class GuiDocViewer(QTextBrowser):
                 self.navigateTo(link)
             elif link.startswith("http"):
                 QDesktopServices.openUrl(QUrl(url))
+
+    @pyqtSlot()
+    def _showHoverCard(self) -> None:
+        """Show the reference tag hover card if the position last
+        recorded by mouseMoveEvent is still over a tag anchor once the
+        hover delay has elapsed.
+        """
+        href = self.anchorAt(self._hoverPos)
+        tag = href[5:] if href.startswith("#tag_") else ""
+        if tag and self._hoverCard.setTag(tag) and (viewport := self.viewport()):
+            rect = self.cursorRect(self.cursorForPosition(self._hoverPos))
+            pos = QPoint(self._hoverPos.x(), rect.bottom() + 4)
+            self._hoverCard.showAt(viewport.mapToGlobal(pos), viewport.width(), viewport.height())
+        else:
+            self._hoverCard.scheduleHide()
 
     @pyqtSlot("QPoint")
     def _openContextMenu(self, point: QPoint) -> None:
@@ -438,6 +479,30 @@ class GuiDocViewer(QTextBrowser):
         """Update document margins when widget is resized."""
         self.updateDocMargins()
         super().resizeEvent(event)
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        """Track mouse movement to trigger the reference tag hover
+        card. Unlike the editor, anchorAt() is a proper hit test
+        against the rendered link, so no extra care is needed to
+        reject hovers past the end of a line.
+        """
+        pos = event.pos()
+        if self.anchorAt(pos).startswith("#tag_"):
+            self._hoverPos = pos
+            self._timerHover.start()
+        else:
+            self._timerHover.stop()
+            self._hoverCard.scheduleHide()
+        super().mouseMoveEvent(event)
+
+    def leaveEvent(self, event: QEvent) -> None:
+        """Request that the hover card be hidden when the mouse leaves
+        the viewer. The hide is delayed rather than immediate, so the
+        mouse has time to move onto the card itself, which cancels it.
+        """
+        self._timerHover.stop()
+        self._hoverCard.scheduleHide()
+        super().leaveEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         """Capture mouse click events on the document."""

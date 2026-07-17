@@ -32,7 +32,7 @@ from PyQt6.QtGui import QBrush, QColor, QSyntaxHighlighter, QTextCharFormat, QTe
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, utf16CharMap
 from novelwriter.constants import nwUnicode
-from novelwriter.editor.textblock import TextBlockData
+from novelwriter.editor.textblock import T_TextMetaList, TextBlockData
 from novelwriter.enum import nwComment
 from novelwriter.text.formats import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
@@ -300,6 +300,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             index = SHARED.project.index
             isValid, bits, loc = index.scanThis(text)
             isGood = index.checkThese(bits, self._tHandle)
+            meta: T_TextMetaList = []
             if isValid:
                 for n, bit in enumerate(bits):
                     pos = utf16Map[loc[n]] if utf16Map else loc[n]
@@ -310,6 +311,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         a, b = index.parseValue(bit)
                         aLen = utf16Map[loc[n] + len(a)] - pos if utf16Map else len(a)
                         self.setFormat(pos, aLen, self._hStyles["tag"])
+                        meta.append((pos, pos + aLen, a, "tag"))
                         if b:
                             bLen = utf16Map[loc[n] + len(b)] - pos if utf16Map else len(b)
                             self.setFormat(pos + length - bLen, bLen, self._hStyles["optional"])
@@ -317,8 +319,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         self.setFormat(pos, length, self._hStyles["invalid"])
 
             # We never want to run the spell checker on keyword/values,
-            # so we clear the cached data and force a return here
-            self._clearBlockData()
+            # so we clear the cached check text and force a return here,
+            # but the tag positions are kept for the hover card
+            data = self.currentBlockUserData()
+            if not isinstance(data, TextBlockData):
+                data = TextBlockData()
+                self.setCurrentBlockUserData(data)
+            data.clear()
+            data.setMetaData(meta)
             return
 
         elif text.startswith(("# ", "#! ", "## ", "##! ", "### ", "###! ", "#### ")):

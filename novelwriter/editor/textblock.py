@@ -33,7 +33,10 @@ RX_FMT_SV = REGEX_PATTERNS.shortcodeValue
 RX_MULTI_SPACE = re.compile(r" {2,}")
 RX_TRAIL_SPACE = re.compile(r"[ \t]+$")
 
-T_TextCheckResult = list[tuple[int, int, str]]
+T_TextMeta = tuple[int, int, str, str]
+T_TextCheck = tuple[int, int, str]
+T_TextMetaList = list[T_TextMeta]
+T_TextCheckList = list[T_TextCheck]
 
 
 class TextBlockData(QTextBlockUserData):
@@ -62,22 +65,22 @@ class TextBlockData(QTextBlockUserData):
         self._offset = 0
         self._revision = 0
         self._utf16Map: list[int] | None = None
-        self._metaData: list[tuple[int, int, str, str]] = []
-        self._spellErrors: list[tuple[int, int, str]] = []
-        self._formatErrors: list[tuple[int, int, str]] = []
+        self._metaData: T_TextMetaList = []
+        self._spellErrors: T_TextCheckList = []
+        self._formatErrors: T_TextCheckList = []
 
     @property
-    def metaData(self) -> list[tuple[int, int, str, str]]:
+    def metaData(self) -> T_TextMetaList:
         """Return meta data from last check."""
         return self._metaData
 
     @property
-    def spellErrors(self) -> list[tuple[int, int, str]]:
+    def spellErrors(self) -> T_TextCheckList:
         """Return spell error data from last check."""
         return self._spellErrors
 
     @property
-    def formatErrors(self) -> list[tuple[int, int, str]]:
+    def formatErrors(self) -> T_TextCheckList:
         """Return format error data from last check."""
         return self._formatErrors
 
@@ -104,11 +107,15 @@ class TextBlockData(QTextBlockUserData):
         """
         return self._text, self._rawText, self._offset, self._utf16Map
 
-    def setSpellErrors(self, errors: list[tuple[int, int, str]]) -> None:
+    def setMetaData(self, metaData: T_TextMetaList) -> None:
+        """Store meta data only as an alternative to processText."""
+        self._metaData = metaData
+
+    def setSpellErrors(self, errors: T_TextCheckList) -> None:
         """Store spell error data computed from a text snapshot."""
         self._spellErrors = errors
 
-    def setFormatErrors(self, errors: list[tuple[int, int, str]]) -> None:
+    def setFormatErrors(self, errors: T_TextCheckList) -> None:
         """Store format error data computed from a text snapshot."""
         self._formatErrors = errors
 
@@ -151,14 +158,14 @@ class TextBlockData(QTextBlockUserData):
         self._revision += 1
         self._utf16Map = utf16Map
 
-    def spellCheck(self) -> list[tuple[int, int, str]]:
+    def spellCheck(self) -> T_TextCheckList:
         """Run the spell checker and cache the result, and return the
         list of spell check errors.
         """
         self._spellErrors = spellCheckText(self._text, self._offset, self._utf16Map)
         return self._spellErrors
 
-    def formatCheck(self) -> list[tuple[int, int, str]]:
+    def formatCheck(self) -> T_TextCheckList:
         """Run the multi-space and trailing-space check and cache the
         result, and return the list of format errors.
         """
@@ -166,7 +173,7 @@ class TextBlockData(QTextBlockUserData):
         return self._formatErrors
 
 
-def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> T_TextCheckResult:
+def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> T_TextCheckList:
     """Spell check a piece of text and return the list of errors. This
     function does not touch any Qt document classes, so it is safe to
     call from a worker thread.
@@ -185,13 +192,13 @@ def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> T_Text
     ]
 
 
-def formatCheckText(text: str, offset: int, utf16Map: list[int] | None) -> T_TextCheckResult:
+def formatCheckText(text: str, offset: int, utf16Map: list[int] | None) -> T_TextCheckList:
     """Check a piece of text for runs of multiple spaces and trailing
     whitespace, and return the list of matches. This function does not
     touch any Qt document classes, so it is safe to call from a worker
     thread.
     """
-    results: T_TextCheckResult = []
+    results: T_TextCheckList = []
     for res in RX_MULTI_SPACE.finditer(text, offset):
         s, e = res.start(0), res.end(0)
         if utf16Map:
