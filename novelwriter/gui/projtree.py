@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import logging
 
+from contextlib import suppress
 from enum import Enum
 
 from PyQt6.QtCore import QModelIndex, QPoint, Qt, pyqtSignal, pyqtSlot
@@ -564,7 +565,9 @@ class GuiProjectTree(QTreeView):
     def loadModel(self) -> None:
         """Load and prepare a new project model."""
         if selectModelOld := self.selectionModel():
-            selectModelOld.disconnect()
+            with suppress(TypeError):
+                selectModelOld.currentChanged.disconnect(self._onSelectionChange)
+            selectModelOld.setParent(None)
 
         self.setModel(SHARED.project.tree.model)
 
