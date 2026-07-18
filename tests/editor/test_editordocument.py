@@ -24,6 +24,7 @@ from __future__ import annotations
 import pytest
 
 from novelwriter.constants import nwConst
+from novelwriter.core.project import NWProject
 
 from tests.helpers import C, buildTestProject
 
@@ -33,7 +34,8 @@ def testGuiTextDocument_LayoutBusy(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """Test that only a document over the size limit enters the busy
     state, and that it settles again once the layout catches up.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
     qDoc = nwGUI.docEditor._qDocument
 
@@ -66,7 +68,8 @@ def testGuiTextDocument_BigDocOperations(qtbot, monkeypatch, nwGUI, projPath, ip
     all respect the layout busy state on a document over the size limit.
     """
     monkeypatch.setattr(nwConst, "BIG_DOC_LIMIT", 10)
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
     qDoc = nwGUI.docEditor._qDocument
 

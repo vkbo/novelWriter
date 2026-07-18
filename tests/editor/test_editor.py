@@ -4035,7 +4035,8 @@ def testGuiDocEditor_BigDocLifecycle(qtbot, nwGUI, projPath, ipsumText, mockRnd)
     """Test that loading, navigating, and refreshing a large document
     queues cursor moves and keeps the editor read-only until settled.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
 
