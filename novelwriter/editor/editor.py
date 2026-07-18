@@ -1816,21 +1816,18 @@ class GuiDocEditor(QTextEdit):
     @pyqtSlot()
     def _runSelCounter(self) -> None:
         """Update the selection word count."""
-        if self._docHandle:
-            if self._selCounterBusy:
-                logger.debug("Selection word counter is busy")
-                return
+        if self._docHandle and not self._selCounterBusy and (text := self.getSelectedText()):
             self._selCounterBusy = True
-            counter = BackgroundWordCounter(self.getSelectedText())
+            counter = BackgroundWordCounter(text)
             counter.signals.countsReady.connect(self._updateSelCounts)
             SHARED.runInThreadPool(counter)
-        return
 
     @pyqtSlot(int, int, int)
     def _updateSelCounts(self, cCount: int, wCount: int, pCount: int) -> None:
         """Update the counts on the counter's finished signal."""
         self._selCounterBusy = False
         if self._docHandle and self._nwItem:
+            logger.debug("Updating selection count")
             self.docFooter.updateMainCount(cCount if CONFIG.useCharCount else wCount, True)
             self._timerSel.stop()
 

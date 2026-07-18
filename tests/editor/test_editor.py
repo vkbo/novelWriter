@@ -2948,8 +2948,10 @@ def testGuiDocEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText
 
     with monkeypatch.context() as mp:
         mp.setattr(docEditor, "_selCounterBusy", True)
+        docEditor.docAction(nwDocAction.SEL_ALL)
         docEditor._runSelCounter()
         assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+        docEditor.setCursorPosition(0)
 
     # Opening the document already dispatched its own initial word count,
     # which must complete before the real dispatch below can proceed
