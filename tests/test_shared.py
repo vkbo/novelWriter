@@ -160,6 +160,11 @@ def testSharedData_EdgeCases(qtbot, monkeypatch, mockGUI):
     shared.initTheme(mockTheme)  # type: ignore
     shared.initSharedData(mockGui)  # type: ignore
 
+    # No project open: saving the editor is a no-op
+    assert shared.hasProject is False
+    shared.saveEditor()
+    assert mockGui.docEditor.saveText.called is False
+
     # No requested spell check language yet: nothing to report
     assert shared.spelling.requestedLanguage is None
     shared.reportSpellCheckStatus()  # Should not raise or warn

@@ -532,6 +532,17 @@ def testGuiProjectTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, 
         "Trash",
     ]
 
+    # Add a root item with no current selection, which means it is
+    # appended at the end rather than placed after the selected root
+    projTree._clearSelection()
+    hNewRoot = "000000000001c"
+    projTree.newTreeItem(nwItemType.ROOT, nwItemClass.ARCHIVE)
+    assert hNewRoot in tree
+    item = tree[hNewRoot]
+    assert item is not None
+    assert item.itemClass == nwItemClass.ARCHIVE
+    assert tree.model.root.allChildren()[-1].item.itemHandle == hNewRoot
+
     # Rename Item
     # ===========
 

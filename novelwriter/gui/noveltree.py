@@ -469,7 +469,7 @@ class GuiNovelTree(NTreeView):
 
     def resizeColumns(self) -> None:
         """Set the correct column sizes."""
-        if (header := self.header()) and (model := self._getModel()) and (vp := self.viewport()):
+        if (header := self.header()) and (model := self._getModel()) and (vp := self.viewport()):  # pragma: no branch
             header.setStretchLastSection(False)
             header.setMinimumSectionSize(SHARED.theme.baseIconHeight + 6)
             header.setSectionResizeMode(0, QtHeaderStretch)
