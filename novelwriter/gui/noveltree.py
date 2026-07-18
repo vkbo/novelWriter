@@ -41,7 +41,7 @@ from PyQt6.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import minmax, qtAddAction, qtAddMenu, qtLambda
+from novelwriter.common import minmax, qtAddAction, qtAddMenu, qtWeakLambda
 from novelwriter.constants import nwKeyWords, nwLabels, trConst
 from novelwriter.enum import nwChange, nwDocMode, nwNovelExtra, nwOutline
 from novelwriter.extensions.modified import NIconToolButton, NTreeView
@@ -352,7 +352,7 @@ class GuiNovelToolBar(QWidget):
         aLast = qtAddAction(self.mLastCol, actionLabel)
         aLast.setCheckable(True)
         aLast.setActionGroup(self.gLastCol)
-        aLast.triggered.connect(qtLambda(self.setLastColType, colType))
+        aLast.triggered.connect(qtWeakLambda(self.setLastColType, colType))
         self.aLastCol[colType] = aLast
 
 
@@ -469,7 +469,7 @@ class GuiNovelTree(NTreeView):
 
     def resizeColumns(self) -> None:
         """Set the correct column sizes."""
-        if (header := self.header()) and (model := self._getModel()) and (vp := self.viewport()):
+        if (header := self.header()) and (model := self._getModel()) and (vp := self.viewport()):  # pragma: no branch
             header.setStretchLastSection(False)
             header.setMinimumSectionSize(SHARED.theme.baseIconHeight + 6)
             header.setSectionResizeMode(0, QtHeaderStretch)

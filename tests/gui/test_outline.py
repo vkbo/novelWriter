@@ -32,6 +32,7 @@ from PyQt6.QtWidgets import QFileDialog, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords
+from novelwriter.core.project import NWProject
 from novelwriter.enum import nwItemClass, nwOutline, nwView
 from novelwriter.types import QtScrollAlwaysOff, QtScrollAsNeeded
 
@@ -42,7 +43,8 @@ from tests.helpers import buildTestProject, cmpFiles, writeFile
 def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
     """Test the outline view."""
     # Create a project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     nwGUI.rebuildIndex()
     nwGUI._changeView(nwView.OUTLINE)
@@ -278,7 +280,12 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert outlineData.titleValue.text() == "Scene One"
 
     # Click POV Link
-    assert outlineData.tagValues[nwKeyWords.POV_KEY][1].text() == "<a href='Bod'>Bod</a>"
+    povLabel = outlineData.tagValues[nwKeyWords.POV_KEY][1]
+    assert povLabel.text() == "<a href='Bod'>Bod</a>"
+    with qtbot.waitSignal(outlineData.itemTagClicked, timeout=1000) as signal:
+        povLabel.linkActivated.emit("Bod")
+    assert signal.args == ["Bod"]
+
     outlineView._tagClicked("Bod")
     assert nwGUI.docViewer.docHandle == "4c4f28287af27"
 

@@ -28,6 +28,7 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QFileDialog
 
 from novelwriter import SHARED
+from novelwriter.core.project import NWProject
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.types import QtAccepted
@@ -39,14 +40,12 @@ from tests.mocked import causeOSError
 @pytest.mark.gui
 def testGuiWordList_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     """Test the word list editor."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     monkeypatch.setattr(GuiWordList, "exec", lambda *a: None)
     monkeypatch.setattr(GuiWordList, "result", lambda *a: QtAccepted)
     monkeypatch.setattr(GuiWordList, "accept", lambda *a: None)
-
-    # Open project
-    nwGUI.openProject(projPath)
 
     # Load the dialog
     nwGUI.mainMenu.aEditWordList.activate(QAction.ActionEvent.Trigger)
@@ -181,5 +180,6 @@ def testGuiWordList_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
 @pytest.mark.gui
 def testGuiWordList_MemoryLeakRegression(qtbot, nwGUI, projPath):
     """Test that the dialog is freed when it is closed."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     checkDialogFreedOnClose(qtbot, lambda: GuiWordList(nwGUI))

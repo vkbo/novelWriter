@@ -30,6 +30,7 @@ from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QHBoxLayout, QToolButton, QWidget
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import qtWeakLambda
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 
@@ -66,7 +67,7 @@ class GuiDocViewFooter(QWidget):
         # Show/Hide Details
         self.showHide = NIconToolButton(self, iSz, "panel:default")
         self.showHide.setToolTip(self.tr("Show/Hide Viewer Panel"))
-        self.showHide.clicked.connect(lambda: self.docViewer.togglePanelVisibility.emit())
+        self.showHide.clicked.connect(qtWeakLambda(self._emitTogglePanelVisibility))
 
         # Show Comments
         self.showComments = QToolButton(self)
@@ -166,6 +167,11 @@ class GuiDocViewFooter(QWidget):
     ##
     #  Private Slots
     ##
+
+    @pyqtSlot()
+    def _emitTogglePanelVisibility(self) -> None:
+        """Forward a toggle panel visibility request."""
+        self.docViewer.togglePanelVisibility.emit()
 
     @pyqtSlot(bool)
     def _doToggleComments(self, state: bool) -> None:

@@ -29,7 +29,7 @@ from PyQt6.QtCore import QEvent, QPoint, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QMenu, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import qtLambda
+from novelwriter.common import qtWeakLambda
 from novelwriter.constants import nwLabels, trConst
 from novelwriter.enum import nwTheme, nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
@@ -62,19 +62,19 @@ class GuiSideBar(QWidget):
         # Buttons
         self.tbProject = NIconToolButton(self, iSz, "sb_project:sidebar")
         self.tbProject.setToolTip("{0} [Ctrl+T]".format(self.tr("Project Tree View")))
-        self.tbProject.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.PROJECT))
+        self.tbProject.clicked.connect(qtWeakLambda(self._emitViewChange, nwView.PROJECT))
 
         self.tbNovel = NIconToolButton(self, iSz, "sb_novel:sidebar")
         self.tbNovel.setToolTip("{0} [Ctrl+T]".format(self.tr("Novel Tree View")))
-        self.tbNovel.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.NOVEL))
+        self.tbNovel.clicked.connect(qtWeakLambda(self._emitViewChange, nwView.NOVEL))
 
         self.tbSearch = NIconToolButton(self, iSz, "sb_search:sidebar")
         self.tbSearch.setToolTip("{0} [Ctrl+Shift+F]".format(self.tr("Project Search")))
-        self.tbSearch.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.SEARCH))
+        self.tbSearch.clicked.connect(qtWeakLambda(self._emitViewChange, nwView.SEARCH))
 
         self.tbOutline = NIconToolButton(self, iSz, "sb_outline:sidebar")
         self.tbOutline.setToolTip("{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
-        self.tbOutline.clicked.connect(qtLambda(self.requestViewChange.emit, nwView.OUTLINE))
+        self.tbOutline.clicked.connect(qtWeakLambda(self._emitViewChange, nwView.OUTLINE))
 
         self.tbTheme = NIconToolButton(self, iSz)
         self.tbTheme.setToolTip(self.tr("Switch Colour Theme"))
@@ -170,6 +170,11 @@ class GuiSideBar(QWidget):
                 pass
         self.mainGui.checkThemeUpdate()
         self._setThemeModeIcon()
+
+    @pyqtSlot(nwView)
+    def _emitViewChange(self, view: nwView) -> None:
+        """Forward a view change request."""
+        self.requestViewChange.emit(view)
 
     ##
     #  Internal Functions

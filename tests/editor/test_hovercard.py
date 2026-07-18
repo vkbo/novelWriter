@@ -29,6 +29,7 @@ from PyQt6.QtWidgets import QWidget
 
 from novelwriter import SHARED
 from novelwriter.core.indexdata import TT_NONE
+from novelwriter.core.project import NWProject
 from novelwriter.editor.hovercard import GuiDocHoverCard
 from novelwriter.enum import nwDocMode
 
@@ -42,7 +43,8 @@ def testGuiDocHoverCard_Widget(qtbot, nwGUI, projPath, mockRnd):
     since setTag() looks up SHARED.project.index even for tags that
     turn out not to exist.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     parent = QWidget()
     qtbot.addWidget(parent)
@@ -137,7 +139,8 @@ def testGuiDocHoverCard_TagContent(qtbot, nwGUI, projPath, mockRnd):
     display alias, title and synopsis, and that the View/Edit buttons
     resolve the current tag and re-emit openDocumentRequest.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     cHandle = SHARED.project.newFile("People", C.hCharRoot)
     assert cHandle is not None
@@ -221,7 +224,8 @@ def testGuiDocHoverCard_NoHeadingTitle(monkeypatch, qtbot, nwGUI, projPath, mock
     indexed at all, so the heading key is substituted directly on an
     otherwise normally-indexed tag to exercise the guard.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     cHandle = SHARED.project.newFile("People", C.hCharRoot)
     assert cHandle is not None
     assert nwGUI.openDocument(cHandle) is True
@@ -252,7 +256,8 @@ def testGuiDocHoverCard_NoHeadingItem(monkeypatch, qtbot, nwGUI, projPath, mockR
     name, since a resolved heading is one of its own preconditions, so
     it is patched directly to exercise the guard.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     cHandle = SHARED.project.newFile("People", C.hCharRoot)
     assert cHandle is not None
     assert nwGUI.openDocument(cHandle) is True

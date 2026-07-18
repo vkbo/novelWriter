@@ -62,7 +62,16 @@ from PyQt6.QtGui import (
 from PyQt6.QtWidgets import QApplication, QFrame, QMenu, QTextEdit, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import decodeMimeHandles, fontMatcher, minmax, qtAddAction, qtAddMenu, qtLambda, transferCase
+from novelwriter.common import (
+    decodeMimeHandles,
+    fontMatcher,
+    minmax,
+    qtAddAction,
+    qtAddMenu,
+    qtLambda,
+    qtWeakLambda,
+    transferCase,
+)
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwStyles, nwUnicode
 from novelwriter.core.document import ProjectDocument
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -352,22 +361,22 @@ class GuiDocEditor(QTextEdit):
         self._followTagView = QShortcut(self)
         self._followTagView.setKeys(["Ctrl+Return", "Ctrl+Enter"])
         self._followTagView.setContext(QtWidgetShortcut)
-        self._followTagView.activated.connect(qtLambda(self._processTag))
+        self._followTagView.activated.connect(qtWeakLambda(self._processTag))
 
         self._followTagEdit = QShortcut(self)
         self._followTagEdit.setKeys(["Ctrl+Shift+Return", "Ctrl+Shift+Enter"])
         self._followTagEdit.setContext(QtWidgetShortcut)
-        self._followTagEdit.activated.connect(qtLambda(self._processTag, edit=True))
+        self._followTagEdit.activated.connect(qtWeakLambda(self._processTag, edit=True))
 
         self._prevLine = QShortcut(self)
         self._prevLine.setKey("Ctrl+Up")
         self._prevLine.setContext(QtWidgetShortcut)
-        self._prevLine.activated.connect(qtLambda(self._skipToParagraph, -1))
+        self._prevLine.activated.connect(qtWeakLambda(self._skipToParagraph, -1))
 
         self._nextLine = QShortcut(self)
         self._nextLine.setKey("Ctrl+Down")
         self._nextLine.setContext(QtWidgetShortcut)
-        self._nextLine.activated.connect(qtLambda(self._skipToParagraph, 1))
+        self._nextLine.activated.connect(qtWeakLambda(self._skipToParagraph, 1))
 
         # Set Up Document Word Counter
         self._timerDoc = QTimer(self)
@@ -390,7 +399,7 @@ class GuiDocEditor(QTextEdit):
         self._timerCheck.setInterval(0)
 
         if vBar := self.verticalScrollBar():  # pragma: no branch
-            vBar.valueChanged.connect(qtLambda(self._timerCheck.start))
+            vBar.valueChanged.connect(qtWeakLambda(self._restartCheckTimer))
 
         # Set Up Spell Check Debounce
         self._timerTextCheck = QTimer(self)
@@ -1518,6 +1527,11 @@ class GuiDocEditor(QTextEdit):
             self._hoverCard.showAt(viewport.mapToGlobal(pos), viewport.width(), viewport.height())
         else:
             self._hoverCard.scheduleHide()
+
+    @pyqtSlot()
+    def _restartCheckTimer(self) -> None:
+        """Restart the debounced spell/format marker refresh timer."""
+        self._timerCheck.start()
 
     @pyqtSlot()
     def _updateCheckSelections(self) -> None:

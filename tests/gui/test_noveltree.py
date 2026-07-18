@@ -29,6 +29,7 @@ from PyQt6.QtCore import QModelIndex, QPoint
 from PyQt6.QtWidgets import QInputDialog, QToolTip
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.core.project import NWProject
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwFocus, nwItemType, nwNovelExtra, nwView
 from novelwriter.models.novelmodel import NovelModel
@@ -42,7 +43,8 @@ def testGuiNovelView_Content(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test navigating the novel tree."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     nwGUI._switchFocus(nwFocus.TREE)
     nwGUI.projView.projTree.clearSelection()
@@ -51,7 +53,7 @@ def testGuiNovelView_Content(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     contentPath = SHARED.project.storage.contentPath
     assert isinstance(contentPath, Path)
-    cHandle = "0000000000010"
+    cHandle = "0000000000011"
 
     (contentPath / f"{cHandle}.nwd").write_text("# Jane Doe\n\n@tag: Jane\n\n", encoding="utf-8")
     (contentPath / f"{C.hSceneDoc}.nwd").write_text(

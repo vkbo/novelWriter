@@ -28,6 +28,7 @@ import pytest
 from PyQt6.QtWidgets import QApplication, QDialog
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.core.project import NWProject
 from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
@@ -55,7 +56,8 @@ def testGuiI18n_Localisation(qtbot, monkeypatch, language, nwGUI, projPath):
     CONFIG.guiLocale = language
     CONFIG.initLocalisation(QApplication.instance())  # type: ignore
 
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     nwGUI.show()
 
     def showDialog(func, dType) -> None:

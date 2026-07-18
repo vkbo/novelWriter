@@ -26,6 +26,7 @@ import pytest
 from PyQt6.QtGui import QAction
 
 from novelwriter import SHARED
+from novelwriter.core.project import NWProject
 from novelwriter.enum import nwDocInsert
 from novelwriter.tools.lipsum import GuiLipsum
 
@@ -39,7 +40,8 @@ def testGuiLipsum_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.mainMenu.aLipsumText.activate(QAction.ActionEvent.Trigger)
     assert SHARED.findTopLevelWidget(GuiLipsum) is None
 
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     nwLipsum = GuiLipsum(nwGUI)
 
     # Generate paragraphs

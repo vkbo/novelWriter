@@ -37,6 +37,7 @@ from novelwriter import CONFIG, SHARED, __hexversion__
 from novelwriter.common import jsonEncode
 from novelwriter.config import DEF_GUI_DARK, DEF_GUI_LIGHT
 from novelwriter.constants import nwFiles
+from novelwriter.core.project import NWProject
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.preferences import GuiNeedsUpdate
 from novelwriter.editor.editor import GuiDocEditor
@@ -105,7 +106,8 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath, fncPath):
     """Test the handling of launch tasks."""
     monkeypatch.setattr(GuiWelcome, "exec", lambda *a: None)
     CONFIG.lastNotes = "0x0"
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     # Open Lipsum project
     nwGUI.postLaunchTasks(projPath)
@@ -229,7 +231,10 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath, fncPath):
 @pytest.mark.gui
 def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test handling of project tree items based on GUI focus states."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
+    nwGUI.rebuildIndex()  # A project built off-GUI has no index cache to load
+    nwGUI.closeDocument()  # Opening the project auto-restores a document
 
     sHandle = "000000000000f"
     nwGUI.openSelectedItem()
@@ -367,7 +372,8 @@ def testGuiMain_ProcessConfigChanges_LightweightSettings(qtbot, nwGUI, projPath,
     Vim mode when the Vim setting itself changed (issue: an unrelated
     preferences save must not silently drop the user out of Insert mode).
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
     assert nwGUI.viewDocument(C.hSceneDoc)
 
@@ -464,7 +470,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     # Create new, save, close project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
 
@@ -889,7 +896,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 @pytest.mark.gui
 def testGuiMain_Viewing(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the document viewer."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     nwGUI.closeProject()
 
     # View before a project is open does nothing
@@ -985,7 +993,9 @@ def testGuiMain_Viewing(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test various features of the main window."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
+    nwGUI.closeDocument()  # Opening the project auto-restores a document
     cHandle = SHARED.project.newFile("Jane", C.hCharRoot)
     newDoc = SHARED.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# Jane\n\n@tag: Jane\n\n")
@@ -1180,7 +1190,8 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiMain_OpenClose(qtbot, monkeypatch, nwGUI: GuiMain, projPath, fncPath, mockRnd):
     """Test opening and closing projects and documents."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     # Check open document and prev/next with no wraparound
     nwGUI.openNextDocument(C.hSceneDoc, False, True)  # Backwards
@@ -1293,7 +1304,8 @@ def testGuiMain_OpenDocument_ReentrancyGuard(qtbot, monkeypatch, nwGUI, projPath
     key-repeat event, it can re-trigger another document switch before
     the first one has finished.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     reentered = []
     realProcessEvents = QApplication.processEvents
@@ -1314,7 +1326,8 @@ def testGuiMain_OpenDocument_ReentrancyGuard(qtbot, monkeypatch, nwGUI, projPath
 @pytest.mark.gui
 def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test switching focus and view of the main window."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     nwGUI.openDocument(C.hSceneDoc)
     nwGUI.viewDocument(C.hSceneDoc)

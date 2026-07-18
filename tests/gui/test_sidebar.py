@@ -25,7 +25,23 @@ import pytest
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwLabels
-from novelwriter.enum import nwTheme
+from novelwriter.enum import nwTheme, nwView
+
+
+@pytest.mark.gui
+def testGuiSideBar_ViewChange(qtbot, nwGUI):
+    """Test the view change buttons on the side bar."""
+    sidebar = nwGUI.sideBar
+    buttons = [
+        (sidebar.tbProject, nwView.PROJECT),
+        (sidebar.tbNovel, nwView.NOVEL),
+        (sidebar.tbSearch, nwView.SEARCH),
+        (sidebar.tbOutline, nwView.OUTLINE),
+    ]
+    for button, view in buttons:
+        with qtbot.waitSignal(sidebar.requestViewChange, timeout=1000) as signal:
+            button.click()
+        assert signal.args == [view]
 
 
 @pytest.mark.gui

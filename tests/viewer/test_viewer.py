@@ -32,6 +32,7 @@ from PyQt6.QtWidgets import QApplication, QMenu, QTextBrowser
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles
 from novelwriter.constants import nwUnicode
+from novelwriter.core.project import NWProject
 from novelwriter.enum import nwChange, nwDocAction
 from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.types import QtModNone, QtMouseLeft, QtMouseMiddle, QtSelectBlock, QtSelectWord
@@ -45,7 +46,8 @@ def testGuiDocViewer_OpenAndNavigate(qtbot, nwGUI, projPath, mockRnd):
     """Test opening documents in the viewer and navigating to them via
     the project tree and the header link.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     docEditor = nwGUI.docEditor
     docViewer = nwGUI.docViewer
 
@@ -100,7 +102,8 @@ def testGuiDocViewer_Selection(qtbot, monkeypatch, nwGUI, projPath, mockRnd, ips
     """Test text selection and document actions in the viewer, and the
     context menu these selections feed into.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     docEditor = nwGUI.docEditor
     docViewer = nwGUI.docViewer
 
@@ -203,7 +206,8 @@ def testGuiDocViewer_Zoom(qtbot, nwGUI, projPath, mockRnd, ipsumText):
     """Test zooming the viewer font via docAction, and resetting it
     back to the configured font size.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     docEditor = nwGUI.docEditor
     docViewer = nwGUI.docViewer
 
@@ -231,12 +235,13 @@ def testGuiDocViewer_Zoom(qtbot, nwGUI, projPath, mockRnd, ipsumText):
 @pytest.mark.gui
 def testGuiDocViewer_Links(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test clicking links in the document viewer."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     docEditor = nwGUI.docEditor
     docViewer = nwGUI.docViewer
 
     # Create a tagged character to link to
-    hBob = "0000000000010"
+    hBob = "0000000000011"
     text = "### Scene\n\n@char: Bob\n\nSome text mentioning Bob.\n"
     nwGUI.openDocument(C.hSceneDoc)
     docEditor.setPlainText(text)
@@ -287,7 +292,8 @@ def testGuiDocViewer_HoverCard(qtbot, nwGUI, projPath, mockRnd):
     anchor into a tag, and moving off the anchor or leaving the viewer
     entirely schedules a delayed hide rather than closing it outright.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     docEditor = nwGUI.docEditor
     docViewer = nwGUI.docViewer
 
@@ -381,7 +387,8 @@ def testGuiDocViewer_MouseNavigation(qtbot, nwGUI, projPath, mockRnd, ipsumText)
     """Test navigating the view history with the mouse back/forward
     buttons, including the edge cases at either end of the history.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     docEditor = nwGUI.docEditor
     docViewer = nwGUI.docViewer
 
@@ -428,7 +435,8 @@ def testGuiDocViewer_ScrollAndMargins(qtbot, monkeypatch, nwGUI, projPath, mockR
     """Test the scroll bar and document margin behaviour of the
     viewer, along with the navigateTo edge cases.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     docViewer = nwGUI.docViewer
 
     nwGUI.viewDocument(C.hSceneDoc)
@@ -463,7 +471,8 @@ def testGuiDocViewer_ScrollAndMargins(qtbot, monkeypatch, nwGUI, projPath, mockR
 @pytest.mark.gui
 def testGuiDocViewer_HeaderTitle(qtbot, nwGUI, projPath, mockRnd):
     """Test the document header title breadcrumb and outline menu."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     docViewer = nwGUI.docViewer
 
     nwGUI.viewDocument(C.hChapterDoc)
@@ -510,7 +519,8 @@ def testGuiDocViewer_FooterAndErrors(qtbot, monkeypatch, nwGUI, projPath, mockRn
     comments and notes, as well as error handling when rendering
     fails.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     docEditor = nwGUI.docEditor
     docViewer = nwGUI.docViewer
 
@@ -526,6 +536,9 @@ def testGuiDocViewer_FooterAndErrors(qtbot, monkeypatch, nwGUI, projPath, mockRn
 
     nwGUI.viewDocument(C.hSceneDoc)
     fullLength = len(docViewer.toPlainText())
+
+    with qtbot.waitSignal(docViewer.togglePanelVisibility, timeout=1000):
+        docViewer.docFooter.showHide.click()
 
     docViewer.docFooter._doToggleSynopsis(False)
     noSynopLength = len(docViewer.toPlainText())
@@ -558,7 +571,8 @@ def testGuiDocViewer_DragAndDrop(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test drag and drop in the viewer."""
     docViewer = nwGUI.docViewer
 
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     assert nwGUI.openDocument(C.hTitlePage) is True
     assert nwGUI.viewDocument(C.hTitlePage) is True
     assert docViewer.docHandle == C.hTitlePage

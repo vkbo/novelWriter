@@ -33,6 +33,7 @@ from PyQt6.QtWidgets import QStyleOptionViewItem
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwItemClass
+from novelwriter.core.project import NWProject
 from novelwriter.enum import nwChange, nwDocMode, nwView
 from novelwriter.types import QtDisplayRole, QtKeyDown, QtKeyReturn, QtKeyUp
 
@@ -45,7 +46,8 @@ def testGuiProjectSearch_Interaction(qtbot, nwGUI, fncPath, mockRnd, ipsumText):
     the keyboard, mouse and selection.
     """
     mockRnd.reset()
-    buildTestProject(nwGUI, fncPath)
+    buildTestProject(NWProject(), fncPath)
+    nwGUI.openProject(fncPath)
     project = SHARED.project
     project.storage.getDocument(C.hChapterDoc).writeDocument("## New Chapter\n\n" + ipsumText[0])
     project.storage.getDocument(C.hSceneDoc).writeDocument("### New Scene\n\n" + ipsumText[1])
@@ -131,7 +133,8 @@ def testGuiProjectSearch_Interaction(qtbot, nwGUI, fncPath, mockRnd, ipsumText):
 def testGuiProjectSearch_Options(qtbot, nwGUI, fncPath, mockRnd, ipsumText):
     """Test the case sensitive, whole word, and RegEx search options."""
     mockRnd.reset()
-    buildTestProject(nwGUI, fncPath)
+    buildTestProject(NWProject(), fncPath)
+    nwGUI.openProject(fncPath)
     project = SHARED.project
     sceneText = ipsumText[0] + "\n\n" + ipsumText[1]
     project.storage.getDocument(C.hSceneDoc).writeDocument("### New Scene\n\n" + sceneText)
@@ -199,7 +202,8 @@ def testGuiProjectSearch_FilterPanel(nwGUI, fncPath, mockRnd, ipsumText):
     refresh of the current search.
     """
     mockRnd.reset()
-    buildTestProject(nwGUI, fncPath)
+    buildTestProject(NWProject(), fncPath)
+    nwGUI.openProject(fncPath)
     project = SHARED.project
     project.storage.getDocument(C.hSceneDoc).writeDocument("### Lorem Heading\n\n" + ipsumText[0])
 
@@ -261,7 +265,8 @@ def testGuiProjectSearch_LiveRefresh(nwGUI, fncPath, mockRnd, ipsumText):
     being edited, which keeps stale match positions from lingering.
     """
     mockRnd.reset()
-    buildTestProject(nwGUI, fncPath)
+    buildTestProject(NWProject(), fncPath)
+    nwGUI.openProject(fncPath)
     project = SHARED.project
     project.storage.getDocument(C.hSceneDoc).writeDocument("### New Scene\n\n" + ipsumText[0])
 
@@ -307,7 +312,8 @@ def testGuiProjectSearch_LiveRefresh(nwGUI, fncPath, mockRnd, ipsumText):
 def testGuiProjectSearch_EdgeCases(nwGUI, fncPath, mockRnd, ipsumText):
     """Test empty search text, re-entrant search calls, and closing the project."""
     mockRnd.reset()
-    buildTestProject(nwGUI, fncPath)
+    buildTestProject(NWProject(), fncPath)
+    nwGUI.openProject(fncPath)
     project = SHARED.project
     project.storage.getDocument(C.hSceneDoc).writeDocument("### New Scene\n\n" + ipsumText[0])
 
@@ -355,7 +361,8 @@ def testGuiProjectSearch_DelegatePaint(nwGUI, fncPath, mockRnd):
     context overflows the available width, and a zero-length match.
     """
     mockRnd.reset()
-    buildTestProject(nwGUI, fncPath)
+    buildTestProject(NWProject(), fncPath)
+    nwGUI.openProject(fncPath)
     item = SHARED.project.tree[C.hSceneDoc]
     assert item is not None
 

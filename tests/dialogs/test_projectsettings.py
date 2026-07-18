@@ -27,6 +27,7 @@ from PyQt6.QtGui import QAction, QColor
 from PyQt6.QtWidgets import QColorDialog, QFileDialog, QToolButton
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.core.project import NWProject
 from novelwriter.core.spellcheck import SpellEnchant
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
@@ -104,7 +105,8 @@ def testGuiProjectSettings_SettingsPage(qtbot, monkeypatch, nwGUI, fncPath, proj
     CONFIG._nwLangPath = fncPath
 
     # Create new project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     mockRnd.reset()
     CONFIG.setBackupPath(fncPath)
 
@@ -159,7 +161,8 @@ def testGuiProjectSettings_SettingsPage(qtbot, monkeypatch, nwGUI, fncPath, proj
 def testGuiProjectSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the status and importance pages of the dialog."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     # Set some values
     project = SHARED.project
@@ -174,9 +177,9 @@ def testGuiProjectSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, moc
     nwGUI.projView.projTree.setSelectedHandle(C.hWorldRoot)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
 
-    hPlotNote = "0000000000010"
-    hCharNote = "0000000000011"
-    hWorldNote = "0000000000012"
+    hPlotNote = "0000000000011"
+    hCharNote = "0000000000012"
+    hWorldNote = "0000000000013"
 
     project.tree[hPlotNote].setImport(C.iMajor)  # type: ignore
     project.tree[hCharNote].setImport(C.iMajor)  # type: ignore
@@ -186,7 +189,9 @@ def testGuiProjectSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, moc
     project.countStatus()
 
     assert [e.count for _, e in project.data.itemStatus.iterItems()] == [2, 0, 2, 1]
-    assert [e.count for _, e in project.data.itemImport.iterItems()] == [3, 0, 2, 1]
+    # The Trash root, created when the project is opened, also counts
+    # towards the default "New" import flag
+    assert [e.count for _, e in project.data.itemImport.iterItems()] == [4, 0, 2, 1]
 
     # Create Dialog
     projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.PAGE_STATUS)
@@ -342,13 +347,13 @@ def testGuiProjectSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, moc
     assert statusItems[C.sNew].name == "New"
     assert statusItems[C.sDraft].name == "Draft"
     assert statusItems[C.sFinished].name == "Finished"
-    assert statusItems["s000013"].name == "Final"
+    assert statusItems["s000014"].name == "Final"
 
     importItems = dict(project.data.itemImport.iterItems())
     assert importItems[C.iNew].name == "New"
     assert importItems[C.iMajor].name == "Major"
     assert importItems[C.iMain].name == "Main"
-    assert importItems["i000014"].name == "Final"
+    assert importItems["i000015"].name == "Final"
 
     # qtbot.stop()
 
@@ -356,7 +361,8 @@ def testGuiProjectSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, moc
 @pytest.mark.gui
 def testGuiProjectSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the status and importance import/export."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     # Create Dialog
     projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.PAGE_STATUS)
@@ -446,7 +452,8 @@ def testGuiProjectSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPat
 def testGuiProjectSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the auto-replace page of the dialog."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     # Set some values
     project = SHARED.project
@@ -531,5 +538,6 @@ def testGuiProjectSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
 @pytest.mark.gui
 def testGuiProjectSettings_MemoryLeakRegression(qtbot, nwGUI, projPath, mockRnd):
     """Test that the dialog is freed when it is closed."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     checkDialogFreedOnClose(qtbot, lambda: GuiProjectSettings(nwGUI))
