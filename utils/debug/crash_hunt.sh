@@ -1,13 +1,14 @@
 #!/bin/bash
 
-# A debug script that will run the test suite repeatedly for an hour,
-# looking for crashes.
+# A debug script that will run the test suite repeatedly, looking for
+# crashes. Takes the number of attempts as $1 (default 10).
+
+COUNT=${1:-10}
 
 mkdir -p ./debug
 LOGDIR=./debug
-END=$((SECONDS + 3600))
 i=0
-while [ $SECONDS -lt $END ]; do
+while [ $i -lt "$COUNT" ]; do
   i=$((i + 1))
   echo "=== Attempt $i ($(date '+%H:%M:%S')) ==="
   QT_QPA_PLATFORM=offscreen gdb --batch \
@@ -22,4 +23,4 @@ while [ $SECONDS -lt $END ]; do
   fi
   rm -f "$LOGDIR/crash_hunt_run_$i.log"
 done
-echo "Stopped after $i attempt(s), $((SECONDS / 60)) min elapsed."
+echo "Stopped after $i/$COUNT attempt(s), $((SECONDS / 60)) min elapsed."
