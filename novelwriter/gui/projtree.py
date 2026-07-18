@@ -301,7 +301,7 @@ class GuiProjectToolBar(QWidget):
 
         self.mTemplates = _UpdatableMenu(self.mAdd)
         self.mTemplates.setActionsVisible(False)
-        self.mTemplates.menuItemTriggered.connect(lambda h: self.newDocumentFromTemplate.emit(h))
+        self.mTemplates.menuItemTriggered.connect(self._forwardTemplateTriggered)
         self.mAdd.addMenu(self.mTemplates)
 
         self.mAddRoot = qtAddMenu(self.mAdd, trConst(nwLabels.ITEM_DESCRIPTION["root"]))
@@ -441,6 +441,11 @@ class GuiProjectToolBar(QWidget):
         """Add a new root item."""
         if isinstance(itemClass := action.data(), nwItemClass):  # pragma: no branch
             self.projTree.newTreeItem(nwItemType.ROOT, itemClass=itemClass)
+
+    @pyqtSlot(str)
+    def _forwardTemplateTriggered(self, tHandle: str) -> None:
+        """Forward the template menu's selected item handle."""
+        self.newDocumentFromTemplate.emit(tHandle)
 
     ##
     #  Internal Functions

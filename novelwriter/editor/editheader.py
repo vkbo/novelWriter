@@ -31,7 +31,7 @@ from PyQt6.QtGui import QAction, QPalette
 from PyQt6.QtWidgets import QHBoxLayout, QMenu, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import elide, qtAddAction, qtLambda
+from novelwriter.common import elide, qtAddAction, qtWeakLambda
 from novelwriter.enum import nwState
 from novelwriter.extensions.configlayout import NPathColorLabel
 from novelwriter.extensions.modified import NIconToolButton
@@ -89,7 +89,7 @@ class GuiDocEditHeader(QWidget):
         self.tbButton = NIconToolButton(self, iSz, "fmt_toolbar:action")
         self.tbButton.setVisible(False)
         self.tbButton.setToolTip(self.tr("Toggle Tool Bar"))
-        self.tbButton.clicked.connect(qtLambda(self.toggleToolBarRequest.emit))
+        self.tbButton.clicked.connect(qtWeakLambda(self._emitToggleToolBar))
 
         self.outlineButton = NIconToolButton(self, iSz, "list:action")
         self.outlineButton.setVisible(False)
@@ -104,7 +104,7 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton = NIconToolButton(self, iSz, "maximise:action")
         self.minmaxButton.setVisible(False)
         self.minmaxButton.setToolTip(self.tr("Toggle Focus Mode"))
-        self.minmaxButton.clicked.connect(qtLambda(self.docEditor.toggleFocusModeRequest.emit))
+        self.minmaxButton.clicked.connect(qtWeakLambda(self._emitToggleFocusMode))
 
         self.closeButton = NIconToolButton(self, iSz, "close:reject")
         self.closeButton.setVisible(False)
@@ -243,6 +243,16 @@ class GuiDocEditHeader(QWidget):
         """Trigger the close editor on the main window."""
         self.clearHeader()
         self.closeDocumentRequest.emit()
+
+    @pyqtSlot()
+    def _emitToggleToolBar(self) -> None:
+        """Forward a toggle tool bar request."""
+        self.toggleToolBarRequest.emit()
+
+    @pyqtSlot()
+    def _emitToggleFocusMode(self) -> None:
+        """Forward a toggle focus mode request."""
+        self.docEditor.toggleFocusModeRequest.emit()
 
     @pyqtSlot(QAction)
     def _gotoBlock(self, action: QAction) -> None:

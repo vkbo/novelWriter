@@ -25,12 +25,12 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QVBoxLayout, QWidget
 
 from novelwriter import SHARED
-from novelwriter.common import qtLambda
+from novelwriter.common import qtWeakLambda
 from novelwriter.enum import nwDocAction
 from novelwriter.extensions.modified import NIconToolButton
 
@@ -62,47 +62,47 @@ class GuiDocToolBar(QWidget):
 
         self.tbBoldMD = NIconToolButton(self, iSz, "fmt_bold:markdown")
         self.tbBoldMD.setToolTip(self.tr("Markdown Bold"))
-        self.tbBoldMD.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.MD_BOLD))
+        self.tbBoldMD.clicked.connect(qtWeakLambda(self._emitDocAction, nwDocAction.MD_BOLD))
 
         self.tbItalicMD = NIconToolButton(self, iSz, "fmt_italic:markdown")
         self.tbItalicMD.setToolTip(self.tr("Markdown Italic"))
-        self.tbItalicMD.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.MD_ITALIC))
+        self.tbItalicMD.clicked.connect(qtWeakLambda(self._emitDocAction, nwDocAction.MD_ITALIC))
 
         self.tbStrikeMD = NIconToolButton(self, iSz, "fmt_strike:markdown")
         self.tbStrikeMD.setToolTip(self.tr("Markdown Strikethrough"))
-        self.tbStrikeMD.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.MD_STRIKE))
+        self.tbStrikeMD.clicked.connect(qtWeakLambda(self._emitDocAction, nwDocAction.MD_STRIKE))
 
         self.tbMarkMD = NIconToolButton(self, iSz, "fmt_mark:markdown")
         self.tbMarkMD.setToolTip(self.tr("Markdown Highlight"))
-        self.tbMarkMD.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.MD_MARK))
+        self.tbMarkMD.clicked.connect(qtWeakLambda(self._emitDocAction, nwDocAction.MD_MARK))
 
         self.tbBold = NIconToolButton(self, iSz, "fmt_bold:shortcode")
         self.tbBold.setToolTip(self.tr("Shortcode Bold"))
-        self.tbBold.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_BOLD))
+        self.tbBold.clicked.connect(qtWeakLambda(self._emitDocAction, nwDocAction.SC_BOLD))
 
         self.tbItalic = NIconToolButton(self, iSz, "fmt_italic:shortcode")
         self.tbItalic.setToolTip(self.tr("Shortcode Italic"))
-        self.tbItalic.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_ITALIC))
+        self.tbItalic.clicked.connect(qtWeakLambda(self._emitDocAction, nwDocAction.SC_ITALIC))
 
         self.tbStrike = NIconToolButton(self, iSz, "fmt_strike:shortcode")
         self.tbStrike.setToolTip(self.tr("Shortcode Strikethrough"))
-        self.tbStrike.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_STRIKE))
+        self.tbStrike.clicked.connect(qtWeakLambda(self._emitDocAction, nwDocAction.SC_STRIKE))
 
         self.tbUnderline = NIconToolButton(self, iSz, "fmt_underline:shortcode")
         self.tbUnderline.setToolTip(self.tr("Shortcode Underline"))
-        self.tbUnderline.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_ULINE))
+        self.tbUnderline.clicked.connect(qtWeakLambda(self._emitDocAction, nwDocAction.SC_ULINE))
 
         self.tbMark = NIconToolButton(self, iSz, "fmt_mark:shortcode")
         self.tbMark.setToolTip(self.tr("Shortcode Highlight"))
-        self.tbMark.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_MARK))
+        self.tbMark.clicked.connect(qtWeakLambda(self._emitDocAction, nwDocAction.SC_MARK))
 
         self.tbSuperscript = NIconToolButton(self, iSz, "fmt_superscript:shortcode")
         self.tbSuperscript.setToolTip(self.tr("Shortcode Superscript"))
-        self.tbSuperscript.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_SUP))
+        self.tbSuperscript.clicked.connect(qtWeakLambda(self._emitDocAction, nwDocAction.SC_SUP))
 
         self.tbSubscript = NIconToolButton(self, iSz, "fmt_subscript:shortcode")
         self.tbSubscript.setToolTip(self.tr("Shortcode Subscript"))
-        self.tbSubscript.clicked.connect(qtLambda(self.requestDocAction.emit, nwDocAction.SC_SUB))
+        self.tbSubscript.clicked.connect(qtWeakLambda(self._emitDocAction, nwDocAction.SC_SUB))
 
         # Assemble
         # ========
@@ -154,3 +154,12 @@ class GuiDocToolBar(QWidget):
             self.tbMark.refreshTheme()
             self.tbSuperscript.refreshTheme()
             self.tbSubscript.refreshTheme()
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(nwDocAction)
+    def _emitDocAction(self, action: nwDocAction) -> None:
+        """Forward a document action request."""
+        self.requestDocAction.emit(action)

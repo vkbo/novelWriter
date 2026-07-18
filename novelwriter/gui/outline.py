@@ -252,7 +252,7 @@ class GuiOutlineToolBar(QToolBar):
 
         # Column Menu
         self.mColumns = GuiOutlineHeaderMenu(self)
-        self.mColumns.columnToggled.connect(lambda isChecked, tItem: self.viewColumnToggled.emit(isChecked, tItem))
+        self.mColumns.columnToggled.connect(self._forwardColumnToggled)
 
         self.tbColumns = QToolButton(self)
         self.tbColumns.setMenu(self.mColumns)
@@ -317,6 +317,11 @@ class GuiOutlineToolBar(QToolBar):
     def _exportRequested(self) -> None:
         """Emit a signal that an export of the outline was requested."""
         self.outlineExportRequest.emit()
+
+    @pyqtSlot(bool, Enum)
+    def _forwardColumnToggled(self, isChecked: bool, tItem: Enum) -> None:
+        """Forward the column toggled signal from the header menu."""
+        self.viewColumnToggled.emit(isChecked, tItem)
 
 
 class GuiOutlineTree(QTreeWidget):
@@ -826,9 +831,8 @@ class GuiOutlineHeaderMenu(QMenu):
                 continue
             self.actionMap[hItem] = QAction(trConst(nwLabels.OUTLINE_COLS[hItem]), self)
             self.actionMap[hItem].setCheckable(True)
-            self.actionMap[hItem].toggled.connect(
-                lambda isChecked, tItem=hItem: self.columnToggled.emit(isChecked, tItem)
-            )
+            self.actionMap[hItem].setData(hItem)
+            self.actionMap[hItem].toggled.connect(self._forwardToggled)
             self.addAction(self.actionMap[hItem])
 
     def setHiddenState(self, hiddenState: dict[nwOutline, bool]) -> None:
@@ -843,6 +847,12 @@ class GuiOutlineHeaderMenu(QMenu):
             self.actionMap[hItem].setChecked(not hiddenState[hItem])
 
         self.acceptToggle = True
+
+    @pyqtSlot(bool)
+    def _forwardToggled(self, isChecked: bool) -> None:
+        """Forward the toggled state of the sending action's column."""
+        if isinstance(action := self.sender(), QAction) and isinstance(tItem := action.data(), nwOutline):
+            self.columnToggled.emit(isChecked, tItem)
 
 
 class GuiOutlineDetails(QScrollArea):
@@ -960,7 +970,7 @@ class GuiOutlineDetails(QScrollArea):
             label.setFont(bFont)
             value = QLabel("", self)
             value.setWordWrap(True)
-            value.linkActivated.connect(lambda x: self.itemTagClicked.emit(x))
+            value.linkActivated.connect(self._forwardTagClicked)
             layout = QHBoxLayout()
             layout.addWidget(value, 1)
             n = len(self.tagValues)
@@ -1037,7 +1047,7 @@ class GuiOutlineDetails(QScrollArea):
         self.updateClasses()
 
     ##
-    #  Slots
+    #  Public Slots
     ##
 
     @pyqtSlot(str, str)
@@ -1077,6 +1087,19 @@ class GuiOutlineDetails(QScrollArea):
                 label, value = self.tagValues[key]
                 label.setVisible(visible)
                 value.setVisible(visible)
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(str)
+    def _forwardTagClicked(self, link: str) -> None:
+        """Forward a tag link activation from any of the tag labels."""
+        self.itemTagClicked.emit(link)
+
+    ##
+    #  Internal Functions
+    ##
 
     @staticmethod
     def _formatTags(refs: dict[str, list[str]], key: str) -> str:
