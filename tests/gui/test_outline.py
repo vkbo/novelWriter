@@ -32,6 +32,7 @@ from PyQt6.QtWidgets import QFileDialog, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords
+from novelwriter.core.project import NWProject
 from novelwriter.enum import nwItemClass, nwOutline, nwView
 from novelwriter.types import QtScrollAlwaysOff, QtScrollAsNeeded
 
@@ -42,7 +43,8 @@ from tests.helpers import buildTestProject, cmpFiles, writeFile
 def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
     """Test the outline view."""
     # Create a project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     nwGUI.rebuildIndex()
     nwGUI._changeView(nwView.OUTLINE)

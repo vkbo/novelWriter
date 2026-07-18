@@ -29,6 +29,7 @@ from novelwriter import SHARED
 from novelwriter.constants import nwLists
 from novelwriter.core.item import ProjectItem
 from novelwriter.core.options import OptionState
+from novelwriter.core.project import NWProject
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwChange
 
@@ -40,7 +41,8 @@ def testGuiDocViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
     """Test the document viewer backreference panel."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     nwGUI.projView.projTree.expandAll()
     viewPanel = nwGUI.docViewerPanel
     tabBackRefs = viewPanel.tabBackRefs
@@ -58,7 +60,7 @@ def testGuiDocViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
     assert tabBackRefs.topLevelItemCount() == 0
 
     # Add Two Tags
-    hJane = "0000000000010"
+    hJane = "0000000000011"
     nwGUI.docEditor.setPlainText("### New Scene\n\n@char: Jane, John\n\n")
     nwGUI.saveDocument()
     cursor = nwGUI.docEditor.textCursor()
@@ -164,7 +166,8 @@ def testGuiDocViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mock
     """Test the document viewer tags panels."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     nwGUI.projView.projTree.expandAll()
     viewPanel = nwGUI.docViewerPanel
 
@@ -175,8 +178,8 @@ def testGuiDocViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mock
     assert len(viewPanel.idTabs) == len(nwLists.USER_CLASSES)
 
     # Add Two Tags
-    hJane = "0000000000010"
-    hJohn = "0000000000011"
+    hJane = "0000000000011"
+    hJohn = "0000000000012"
     nwGUI.docEditor.setPlainText("### New Scene\n\n@char: Jane, John\n\n")
     nwGUI.saveDocument()
     cursor = nwGUI.docEditor.textCursor()

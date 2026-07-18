@@ -29,6 +29,7 @@ from PyQt6.QtWidgets import QWidget
 
 from novelwriter import SHARED
 from novelwriter.constants import nwKeyWords
+from novelwriter.core.project import NWProject
 from novelwriter.editor.completer import CommandCompleter, CompleterAction
 from novelwriter.types import QtForegroundRole, QtKeyDown, QtKeyEscape, QtKeyLeft, QtKeyReturn, QtKeyTab, QtUserRole
 
@@ -87,7 +88,8 @@ def testCompleter_KeywordAndTagOptions(qtbot, nwGUI, projPath, mockRnd):
     tag-value phase (after the colon), which uses a bisect lookup
     into the line's parsed elements.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
     completer = nwGUI.docEditor._completer
 
@@ -155,7 +157,8 @@ def testCompleter_CommentOptions(qtbot, nwGUI, projPath, mockRnd):
     Story./Note. dotted-key lookups, and the branches that bail out
     without offering any options.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
     completer = nwGUI.docEditor._completer
     SHARED.project.index._itemIndex._cache.story.add("Resolution")
@@ -213,7 +216,8 @@ def testGuiDocEditor_CompleterKeyRouting(qtbot, nwGUI, projPath, mockRnd):
     to the popup while it is visible, and that CJK input commits keep
     it positioned at the cursor (issues #2267, #2510, #2517).
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
     docEditor = nwGUI.docEditor
     docEditor.replaceText("")

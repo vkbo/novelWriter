@@ -29,6 +29,7 @@ from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QPushButton
 
 from novelwriter import SHARED
 from novelwriter.constants import nwLabels
+from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
 from novelwriter.manuscript.buildsettings import BuildSettings
 from novelwriter.manuscript.manusbuild import GuiManuscriptBuild
@@ -40,7 +41,7 @@ from tests.helpers import C, buildTestProject
 @pytest.mark.gui
 def testGuiManuscriptBuild_Main(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockRnd):
     """Test the GuiManuscriptBuild dialog."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
     nwGUI.openProject(projPath)
     build = BuildSettings()
     build.setLastBuildPath(fncPath)
@@ -101,7 +102,7 @@ def testGuiManuscriptBuild_Main(monkeypatch, qtbot, nwGUI, fncPath, projPath, mo
 @pytest.mark.gui
 def testGuiManuscriptBuild_ErrorHandling(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockRnd):
     """Test error handling in the GuiManuscriptBuild dialog."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
     nwGUI.openProject(projPath)
     build = BuildSettings()
     build.setName("Test Build")
@@ -170,7 +171,7 @@ def testGuiManuscriptBuild_ErrorHandling(monkeypatch, qtbot, nwGUI, fncPath, pro
 @pytest.mark.gui
 def testGuiManuscriptBuild_EdgeCases(monkeypatch, qtbot, nwGUI, fncPath, projPath, mockRnd):
     """Test edge cases in the GuiManuscriptBuild dialog."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
     nwGUI.openProject(projPath)
     build = BuildSettings()
     build.setLastBuildPath(fncPath)

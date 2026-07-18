@@ -34,6 +34,7 @@ from PyQt6.QtWidgets import QMenu
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.core.coretools import DocMerger
+from novelwriter.core.project import NWProject
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -96,7 +97,8 @@ def testGuiProjectTree_NewTreeItem(qtbot, caplog, monkeypatch, nwGUI, projPath, 
     assert len(tree) == 0
 
     # Create a project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     trash = tree.trash
     assert trash is not None
     assert len(tree) == 9
@@ -552,7 +554,8 @@ def testGuiProjectTree_RenameCancelled(qtbot, monkeypatch, nwGUI, projPath, mock
     """Test that cancelling the rename dialog leaves the item name
     unchanged.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     project = SHARED.project
     projView = nwGUI.projView
 
@@ -575,7 +578,8 @@ def testGuiProjectTree_NewTreeItemFailures(qtbot, monkeypatch, nwGUI, projPath, 
     project = SHARED.project
     tree = project.tree
 
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     # No valid parent handle is found for the new item
     with monkeypatch.context() as mp:
@@ -603,9 +607,6 @@ def testGuiProjectTree_SimpleOperations(qtbot, monkeypatch, nwGUI, projPath, moc
 
     projView = nwGUI.projView
     projTree = projView.projTree
-    project = SHARED.project
-    tree = project.tree
-    model = tree.model
 
     # The default model is empty
     assert projView.getSelectedHandle() is None
@@ -614,7 +615,11 @@ def testGuiProjectTree_SimpleOperations(qtbot, monkeypatch, nwGUI, projPath, moc
     assert projTree._getNode(QModelIndex()) is None
 
     # Create a project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
+    project = SHARED.project
+    tree = project.tree
+    model = tree.model
     trash = tree.trash
     assert trash is not None
     assert len(tree) == 9
@@ -780,9 +785,6 @@ def testGuiProjectTree_MouseClicks(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
 
     projView = nwGUI.projView
     projTree = projView.projTree
-    project = SHARED.project
-    tree = project.tree
-    model = tree.model
 
     # The default model is empty
     assert projView.getSelectedHandle() is None
@@ -791,7 +793,11 @@ def testGuiProjectTree_MouseClicks(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
     assert projTree._getNode(QModelIndex()) is None
 
     # Create a project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
+    project = SHARED.project
+    tree = project.tree
+    model = tree.model
     trash = tree.trash
     assert trash is not None
     assert len(tree) == 9
@@ -802,6 +808,9 @@ def testGuiProjectTree_MouseClicks(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
     assert signal.args[0] == C.hNovelRoot
 
     # Double click on folder expands/collapses it
+    # Opening the project auto-restores the last edited document, which
+    # leaves its ancestry expanded, so start from a known collapsed state
+    projTree.setExpanded(model.indexFromHandle(C.hNovelRoot), False)
     assert [n.item.itemHandle for n in [model.node(i) for i in model.allExpanded()] if n] == []
     projTree._onDoubleClick(model.indexFromHandle(C.hNovelRoot))
     assert [n.item.itemHandle for n in [model.node(i) for i in model.allExpanded()] if n] == [C.hNovelRoot]
@@ -850,7 +859,8 @@ def testGuiProjectTree_MouseAndNavEdgeCases(qtbot, nwGUI, projPath, mockRnd):
     projTree = projView.projTree
     model = SHARED.project.tree.model
 
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     projTree.expandAll()
 
     eType = QEvent.Type.MouseButtonPress
@@ -890,7 +900,8 @@ def testGuiProjectTree_DeleteRequest(qtbot, caplog, monkeypatch, nwGUI, projPath
     tree = project.tree
 
     # Create a project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     trash = tree.trash
     assert trash is not None
     assert len(tree) == 9
@@ -1174,7 +1185,8 @@ def testGuiProjectTree_DeleteEdgeCases(qtbot, monkeypatch, nwGUI, projPath, mock
     project = SHARED.project
     tree = project.tree
 
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     # Move a scene to trash so there is one valid trash handle
     projTree.processDeleteRequest([C.hSceneDoc], askFirst=False)
@@ -1219,7 +1231,8 @@ def testGuiProjectTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockR
     tree = project.tree
 
     # Create a project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     trash = tree.trash
     assert trash is not None
     assert len(tree) == 9
@@ -1388,7 +1401,8 @@ def testGuiProjectTree_MergeTargetHandleEdgeCase(qtbot, monkeypatch, nwGUI, proj
     projTree = projView.projTree
     project = SHARED.project
 
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     hChapter1 = project.newFile("Chapter 1", C.hNovelRoot)
     assert hChapter1 is not None
@@ -1417,7 +1431,8 @@ def testGuiProjectTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRn
     tree = project.tree
 
     # Create a project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     trash = tree.trash
     assert trash is not None
     assert len(tree) == 9
@@ -1561,7 +1576,8 @@ def testGuiProjectTree_Duplicate(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     tree = project.tree
 
     # Create a project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     trash = tree.trash
     assert trash is not None
     assert len(tree) == 9
@@ -1677,7 +1693,8 @@ def testGuiProjectTree_Other(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test various parts of the project tree class not covered by
     other tests.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     projView = nwGUI.projView
     projTree = projView.projTree
 
@@ -1716,7 +1733,8 @@ def testGuiProjectTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
     model = tree.model
 
     # Create a project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     trash = tree.trash
     assert trash is not None
     assert len(tree) == 9
@@ -2117,11 +2135,12 @@ def testGuiProjectTree_ContextMenuEdgeCases(qtbot, monkeypatch, nwGUI, projPath,
 
     projView = nwGUI.projView
     projTree = projView.projTree
+
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     project = SHARED.project
     tree = project.tree
     model = tree.model
-
-    buildTestProject(nwGUI, projPath)
 
     # Trash menu with no children in the Trash folder
     trashNode = tree.trash
@@ -2144,12 +2163,13 @@ def testGuiProjectTree_ContextMenuEdgeCases(qtbot, monkeypatch, nwGUI, projPath,
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert "Rename to Heading" not in actions
 
-    # Toggling active on a folder does nothing
+    # Toggling active on a folder does nothing, since only files track
+    # an active state; folders are always normalised to inactive
     folderNode = tree.nodes[C.hChapterDir]
     ctxMenu = _TreeContextMenu(projTree, model, folderNode, [model.indexFromHandle(C.hChapterDir)])
-    assert folderNode.item.isActive is True
+    assert folderNode.item.isActive is False
     ctxMenu._toggleItemActive()
-    assert folderNode.item.isActive is True
+    assert folderNode.item.isActive is False
 
     # Iterating active status skips non-file items in the selection
     fileNode = tree.nodes[C.hChapterDoc]
@@ -2220,7 +2240,8 @@ def testGuiProjectTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     tree = project.tree
 
     # Create a project
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     trash = tree.trash
     assert trash is not None
     assert len(tree) == 9
@@ -2316,7 +2337,8 @@ def testGuiProjectTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiProjectTree_MemoryLeakRegression(qtbot, nwGUI, projPath, mockRnd):
     """Test that the context menu is freed when it is released."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     projTree = nwGUI.projView.projTree
     model = SHARED.project.tree.model
     node = SHARED.project.tree.nodes[C.hSceneDoc]
@@ -2344,7 +2366,8 @@ def testGuiProjectToolBar_MemoryLeakRegression(qtbot, monkeypatch, nwGUI, projPa
     was never cleared.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     projTree = nwGUI.projView.projTree
     projBar = nwGUI.projView.projBar
 

@@ -31,6 +31,7 @@ from PyQt6.QtWidgets import QFileDialog
 
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
+from novelwriter.core.project import NWProject
 from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.types import QtMouseLeft
 
@@ -42,7 +43,8 @@ from tests.mocked import causeOSError
 def testGuiWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     """Test the full writing stats tool."""
     # Create a project to work on
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     project = SHARED.project
     assert nwGUI.saveProject()
     sessFile = projPath / "meta" / nwFiles.SESS_FILE
@@ -107,7 +109,8 @@ def testGuiWritingStats_Export(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     """Test the export feature."""
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
 
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     project = SHARED.project
     assert nwGUI.saveProject()
     sessFile = projPath / "meta" / nwFiles.SESS_FILE
@@ -265,7 +268,8 @@ def testGuiWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     """Test the filters."""
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
 
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     project = SHARED.project
     assert nwGUI.saveProject()
     sessFile = projPath / "meta" / nwFiles.SESS_FILE
@@ -854,5 +858,6 @@ def testGuiWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 @pytest.mark.gui
 def testGuiWritingStats_MemoryLeakRegression(qtbot, nwGUI, projPath):
     """Test that the dialog is freed when it is closed."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     checkDialogFreedOnClose(qtbot, lambda: GuiWritingStats(nwGUI))

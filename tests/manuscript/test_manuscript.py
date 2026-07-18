@@ -34,6 +34,7 @@ from PyQt6.QtWidgets import QListWidgetItem
 
 from novelwriter import SHARED
 from novelwriter.constants import nwHeadFmt, nwStats
+from novelwriter.core.project import NWProject
 from novelwriter.manuscript.buildsettings import BuildSettings
 from novelwriter.manuscript.manusbuild import GuiManuscriptBuild
 from novelwriter.manuscript.manuscript import GuiManuscript
@@ -45,7 +46,7 @@ from tests.helpers import C, buildTestProject
 @pytest.mark.gui
 def testGuiManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     """Test the init/main functionality of the GuiManuscript dialog."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
     nwGUI.openProject(projPath)
     SHARED.project.storage.getDocument(C.hChapterDoc).writeDocument("## A Chapter\n\n\t\tHi")
     allText = "New Novel\nBy Jane Doe\n\n\nA Chapter\n\t\tHi"
@@ -84,7 +85,7 @@ def testGuiManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiManuscript_Builds(qtbot, nwGUI, projPath):
     """Test the handling of builds in the GuiManuscript dialog."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
     nwGUI.openProject(projPath)
 
     manus = GuiManuscript(nwGUI)
@@ -217,7 +218,7 @@ def testGuiManuscript_Builds(qtbot, nwGUI, projPath):
 @pytest.mark.gui
 def testGuiManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     """Test other features of the GuiManuscript dialog."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
     nwGUI.openProject(projPath)
 
     nwGUI.openDocument(C.hTitlePage)
@@ -397,7 +398,7 @@ def testGuiManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
 @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
 def testGuiManuscript_Print(monkeypatch, qtbot, nwGUI, projPath):
     """Test the print feature of the GuiManuscript dialog."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
     nwGUI.openProject(projPath)
 
     manus = GuiManuscript(nwGUI)

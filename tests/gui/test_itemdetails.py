@@ -26,6 +26,7 @@ import pytest
 from novelwriter import SHARED
 from novelwriter.common import elide
 from novelwriter.constants import nwLabels, trConst
+from novelwriter.core.project import NWProject
 from novelwriter.enum import nwChange
 
 from tests.helpers import C, buildTestProject
@@ -36,7 +37,8 @@ def testGuiItemDetails_Display(qtbot, nwGUI, projPath, mockRnd):
     """Test that the details panel displays the data of the currently
     selected item, and updates or clears it as expected.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     itemDetails = nwGUI.itemDetails
     tree = SHARED.project.tree
 
@@ -96,7 +98,8 @@ def testGuiItemDetails_DelayedRefresh(qtbot, nwGUI, projPath, mockRnd):
     """Test that the details panel does not refresh its content while
     collapsed, and instead applies the pending update once expanded.
     """
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     itemDetails = nwGUI.itemDetails
     chapter = SHARED.project.tree[C.hChapterDoc]
     assert chapter is not None

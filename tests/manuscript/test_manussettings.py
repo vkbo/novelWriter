@@ -29,6 +29,7 @@ from PyQt6.QtGui import QAction, QFont
 from novelwriter import SHARED
 from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt, nwStyles
+from novelwriter.core.project import NWProject
 from novelwriter.extensions.modified import NFontDialog
 from novelwriter.manuscript.buildsettings import BuildSettings, FilterMode
 from novelwriter.manuscript.manussettings import GuiBuildSettings, _FilterTab, _FormattingTab, _HeadingsTab
@@ -40,7 +41,7 @@ from tests.helpers import C, buildTestProject, checkDialogFreedOnClose
 @pytest.mark.gui
 def testGuiBuildSettings_Init(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the initialisation of the GuiBuildSettings dialog."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
     nwGUI.openProject(projPath)
     build = BuildSettings()
 
@@ -121,7 +122,7 @@ def testGuiBuildSettings_Init(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     """Test the Filter Tab of the GuiBuildSettings dialog."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
     nwGUI.openProject(projPath)
     build = BuildSettings()
 
@@ -1062,7 +1063,8 @@ def testGuiBuildSettings_FormatOutput(qtbot, nwGUI):
 @pytest.mark.gui
 def testGuiBuildSettings_MemoryLeakRegression(qtbot, nwGUI, projPath, mockRnd):
     """Test that the dialog is freed when it is closed."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     def factory() -> GuiBuildSettings:
         dialog = GuiBuildSettings(nwGUI, BuildSettings())

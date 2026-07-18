@@ -29,10 +29,14 @@ import xml.etree.ElementTree as ET
 from collections.abc import Callable, Sequence
 from datetime import datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QWidget
 
 from novelwriter import logger
+
+if TYPE_CHECKING:
+    from novelwriter.core.project import NWProject
 
 XML_IGNORE = ("<novelWriterXML", "<project")
 ODT_IGNORE = ("<meta:generator", "<meta:creation-date", "<dc:date", "<meta:editing")
@@ -143,24 +147,11 @@ def clearLogHandlers():
         logger.removeHandler(handler)
 
 
-def buildTestProject(obj: object, path: Path) -> None:
-    """Build a standard test project in projPath using the project
-    object as the parent.
+def buildTestProject(project: NWProject, path: Path) -> None:
+    """Build a standard test project in path using the given project
+    object.
     """
-    from novelwriter.core.project import NWProject
     from novelwriter.enum import nwItemClass
-    from novelwriter.guimain import GuiMain
-
-    if isinstance(obj, NWProject):
-        nwGUI = None
-        project = obj
-    elif isinstance(obj, GuiMain):
-        from novelwriter import SHARED
-
-        nwGUI = obj
-        project = SHARED.project
-    else:
-        return
 
     project.storage.createNewProject(path)
     project.setDefaultStatusImport()
@@ -198,12 +189,6 @@ def buildTestProject(obj: object, path: Path) -> None:
     project.saveProject(autoSave=True)
     project._valid = True
     project._tree._ready = True
-
-    if nwGUI is not None:
-        nwGUI.projView.openProjectTasks()
-        nwGUI.novelView.openProjectTasks()
-
-    return
 
 
 def checkDialogFreedOnClose(qtbot, factory: Callable[[], QDialog]) -> None:

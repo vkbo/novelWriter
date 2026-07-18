@@ -26,6 +26,7 @@ import time
 import pytest
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.core.project import NWProject
 
 from tests.helpers import C, buildTestProject
 
@@ -33,7 +34,8 @@ from tests.helpers import C, buildTestProject
 @pytest.mark.gui
 def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the various features of the status bar."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
     cHandle = SHARED.project.newFile("A Note", C.hCharRoot)
     newDoc = SHARED.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# A Note\n\n")
@@ -97,6 +99,7 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert status.langText.text() == "American English"
 
     # Project Stats
+    SHARED.project.data._initCounts = [0, 0, 0, 0]
     CONFIG.incNotesWCount = False
     nwGUI._lastTotalCount = 0
     nwGUI._updateStatusWordCount()

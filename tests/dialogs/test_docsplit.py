@@ -24,6 +24,7 @@ from __future__ import annotations
 import pytest
 
 from novelwriter import SHARED
+from novelwriter.core.project import NWProject
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.types import QtAccepted, QtRejected
@@ -36,7 +37,8 @@ def testGuiDocSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the split document tool."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
     monkeypatch.setattr(GuiDocSplit, "exec", lambda *a: None)
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     project = SHARED.project
     docText = (

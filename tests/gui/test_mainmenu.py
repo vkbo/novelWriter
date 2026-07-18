@@ -30,6 +30,7 @@ from PyQt6.QtWidgets import QFileDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwShortcode, nwStats, nwUnicode
+from novelwriter.core.project import NWProject
 from novelwriter.editor.editor import GuiDocEditor
 from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.shared import _GuiAlert
@@ -41,7 +42,8 @@ from tests.helpers import C, buildTestProject, writeFile
 @pytest.mark.gui
 def testGuiMainMenu_Slots(qtbot, monkeypatch, nwGUI, projPath):
     """Test the main menu slots."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     # Open Manual
     with monkeypatch.context() as mp:
@@ -383,7 +385,8 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 @pytest.mark.gui
 def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     """Test the Insert menu."""
-    buildTestProject(nwGUI, projPath)
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     assert nwGUI.openDocument(C.hSceneDoc) is True
     mainMenu = nwGUI.mainMenu
