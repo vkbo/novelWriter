@@ -75,7 +75,7 @@ from novelwriter.editor.editsearch import GuiDocEditSearch
 from novelwriter.editor.edittoolbar import GuiDocToolBar
 from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE
 from novelwriter.editor.hovercard import GuiDocHoverCard
-from novelwriter.editor.runnables import BackgroundTextCheck, BackgroundWordCounter, T_TextCheckPayload
+from novelwriter.editor.runnables import BackgroundTextCheck, T_TextCheckPayload, WordCounterDispatcher
 from novelwriter.editor.textblock import T_TextCheckList, TextBlockData
 from novelwriter.enum import (
     nwChange,
@@ -169,7 +169,7 @@ class GuiDocEditor(QTextEdit):
         "_dirtyBlocks",
         "_doReplace",
         "_docChanged",
-        "_docCounterBusy",
+        "_docCounter",
         "_docHandle",
         "_followTagEdit",
         "_followTagView",
@@ -189,7 +189,7 @@ class GuiDocEditor(QTextEdit):
         "_qDocument",
         "_searchFormat",
         "_searchSelections",
-        "_selCounterBusy",
+        "_selCounter",
         "_selection",
         "_spellErrFormat",
         "_spellPassNotify",
@@ -372,14 +372,14 @@ class GuiDocEditor(QTextEdit):
         self._timerDoc.timeout.connect(self._runDocumentTasks)
         self._timerDoc.setSingleShot(True)
         self._timerDoc.setInterval(5000)
-        self._docCounterBusy = False
+        self._docCounter = WordCounterDispatcher(self, self._updateDocCounts)
 
         # Set Up Selection Word Counter
         self._timerSel = QTimer(self)
         self._timerSel.timeout.connect(self._runSelCounter)
         self._timerSel.setSingleShot(True)
         self._timerSel.setInterval(500)
-        self._selCounterBusy = False
+        self._selCounter = WordCounterDispatcher(self, self._updateSelCounts)
 
         # Set Up Spell Underline Refresh
         self._timerCheck = QTimer(self)
@@ -1738,11 +1738,8 @@ class GuiDocEditor(QTextEdit):
         """Run timer document tasks."""
         if self._docHandle:
             logger.debug("Running document tasks")
-            if not self._docCounterBusy:
-                self._docCounterBusy = True
-                counter = BackgroundWordCounter(self.getText())
-                counter.signals.countsReady.connect(self._updateDocCounts)
-                SHARED.runInThreadPool(counter)
+            if not self._docCounter.busy:
+                self._docCounter.count(self.getText())
 
             self.docHeader.setOutline({
                 block.blockNumber(): block.text() for block in self._qDocument.iterBlockByType(BLOCK_TITLE, maxCount=30)
@@ -1787,7 +1784,6 @@ class GuiDocEditor(QTextEdit):
     @pyqtSlot(int, int, int)
     def _updateDocCounts(self, cCount: int, wCount: int, pCount: int) -> None:
         """Process the word counter's finished signal."""
-        self._docCounterBusy = False
         if self._docHandle and self._nwItem:
             logger.debug("Updating word count")
             mCount = cCount if CONFIG.useCharCount else wCount
@@ -1816,16 +1812,12 @@ class GuiDocEditor(QTextEdit):
     @pyqtSlot()
     def _runSelCounter(self) -> None:
         """Update the selection word count."""
-        if self._docHandle and not self._selCounterBusy and (text := self.getSelectedText()):
-            self._selCounterBusy = True
-            counter = BackgroundWordCounter(text)
-            counter.signals.countsReady.connect(self._updateSelCounts)
-            SHARED.runInThreadPool(counter)
+        if self._docHandle and not self._selCounter.busy and (text := self.getSelectedText()):
+            self._selCounter.count(text)
 
     @pyqtSlot(int, int, int)
     def _updateSelCounts(self, cCount: int, wCount: int, pCount: int) -> None:
         """Update the counts on the counter's finished signal."""
-        self._selCounterBusy = False
         if self._docHandle and self._nwItem:
             logger.debug("Updating selection count")
             self.docFooter.updateMainCount(cCount if CONFIG.useCharCount else wCount, True)

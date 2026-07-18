@@ -2945,12 +2945,12 @@ def testGuiDocEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText
 
     # Check that a busy counter is blocked
     with monkeypatch.context() as mp:
-        mp.setattr(docEditor, "_docCounterBusy", True)
+        mp.setattr(docEditor._docCounter, "_busy", True)
         docEditor._runDocumentTasks()
         assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     with monkeypatch.context() as mp:
-        mp.setattr(docEditor, "_selCounterBusy", True)
+        mp.setattr(docEditor._selCounter, "_busy", True)
         docEditor.docAction(nwDocAction.SEL_ALL)
         docEditor._runSelCounter()
         assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
@@ -2961,16 +2961,22 @@ def testGuiDocEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     runnable = threadPool.runnable()
     assert runnable is not None
     runnable.run()
-    assert docEditor._docCounterBusy is False
+    assert docEditor._docCounter.busy is False
 
     # Run the full word counter
     docEditor._runDocumentTasks()
-    assert docEditor._docCounterBusy is True
+    assert docEditor._docCounter.busy is True
+
+    # The dispatcher also guards against re-dispatch on its own, not
+    # just via the busy check in the calling code
+    dispatched = threadPool.runnable()
+    docEditor._docCounter.count("some other text")
+    assert threadPool.runnable() is dispatched
 
     runnable = threadPool.runnable()
     assert runnable is not None
     runnable.run()
-    assert docEditor._docCounterBusy is False
+    assert docEditor._docCounter.busy is False
     assert SHARED.project.tree[C.hSceneDoc]._charCount == cC  # type: ignore
     assert SHARED.project.tree[C.hSceneDoc]._wordCount == wC  # type: ignore
     assert SHARED.project.tree[C.hSceneDoc]._paraCount == pC  # type: ignore
@@ -2988,12 +2994,12 @@ def testGuiDocEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     # Select all text and run the selection word counter
     docEditor.docAction(nwDocAction.SEL_ALL)
     docEditor._runSelCounter()
-    assert docEditor._selCounterBusy is True
+    assert docEditor._selCounter.busy is True
 
     runnable = threadPool.runnable()
     assert runnable is not None
     runnable.run()
-    assert docEditor._selCounterBusy is False
+    assert docEditor._selCounter.busy is False
     assert docEditor.docFooter.wordsText.text() == f"Selected: {wC}"
 
     # Document tasks run regardless of how long ago the last edit was,
