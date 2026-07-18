@@ -1458,8 +1458,7 @@ class GuiDocEditor(QTextEdit):
                 self._dirtyBlocks[block.blockNumber()] = block
                 block = block.next()
             self._timerTextCheck.start()
-
-        self._timerCheck.start()
+            self._timerCheck.start()
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
@@ -1527,9 +1526,11 @@ class GuiDocEditor(QTextEdit):
     @pyqtSlot()
     def _updateCheckSelections(self) -> None:
         """Rebuild the spell and format error markers for all visible
-        blocks. Both are cached per block, so a single pass over the
-        visible blocks is enough to build both sets of markers. A
-        trailing space under the caret is not flagged, since it is a
+        blocks. The extra selections themselves are cached per block by
+        TextBlockData, and only rebuilt there when that block's own
+        error data changes, so an edit to one block doesn't force every
+        other visible block's markers to be reconstructed here. A
+        trailing space under the cursor is not flagged, since it is a
         natural, transient state while the line is still being typed.
         See issue discussion #1347.
         """
@@ -1546,30 +1547,20 @@ class GuiDocEditor(QTextEdit):
                 if isinstance(data := block.userData(), TextBlockData):
                     position = block.position()
                     if checkSpell:
-                        for start, end, _ in data.spellErrors:
+                        selections = data.spellSelections(block, self._spellErrFormat)
+                        for (start, end, _), selection in zip(data.spellErrors, selections, strict=True):
                             if position + start < cPos <= position + end:
-                                # Don't underline the word under the caret
+                                # Don't underline the word under the cursor
                                 suppressed = True
                                 continue
-                            cursor = QTextCursor(self._qDocument)
-                            cursor.setPosition(position + start)
-                            cursor.setPosition(position + end, QtKeepAnchor)
-                            selection = QTextEdit.ExtraSelection()
-                            selection.format = self._spellErrFormat
-                            selection.cursor = cursor
                             spellSelections.append(selection)
                     if checkFormat:
-                        for start, end, kind in data.formatErrors:
+                        selections = data.formatSelections(block, self._formatErrFormat)
+                        for (start, end, kind), selection in zip(data.formatErrors, selections, strict=True):
                             if kind == "trail" and position + start < cPos <= position + end:
                                 # Not yet a real trailing space, still being typed
                                 suppressed = True
                                 continue
-                            cursor = QTextCursor(self._qDocument)
-                            cursor.setPosition(position + start)
-                            cursor.setPosition(position + end, QtKeepAnchor)
-                            selection = QTextEdit.ExtraSelection()
-                            selection.format = self._formatErrFormat
-                            selection.cursor = cursor
                             formatSelections.append(selection)
                 block = block.next()
         self._suppressed = suppressed

@@ -19,12 +19,21 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """  # noqa
 
+from __future__ import annotations
+
 import re
 
-from PyQt6.QtGui import QTextBlockUserData
+from typing import TYPE_CHECKING
+
+from PyQt6.QtGui import QTextBlockUserData, QTextCursor
+from PyQt6.QtWidgets import QTextEdit
 
 from novelwriter import SHARED
 from novelwriter.text.patterns import REGEX_PATTERNS
+from novelwriter.types import QtKeepAnchor
+
+if TYPE_CHECKING:
+    from PyQt6.QtGui import QTextBlock, QTextCharFormat
 
 RX_URL = REGEX_PATTERNS.url
 RX_WORDS = REGEX_PATTERNS.wordSplit
@@ -49,11 +58,13 @@ class TextBlockData(QTextBlockUserData):
 
     __slots__ = (
         "_formatErrors",
+        "_formatSelCache",
         "_metaData",
         "_offset",
         "_rawText",
         "_revision",
         "_spellErrors",
+        "_spellSelCache",
         "_text",
         "_utf16Map",
     )
@@ -68,6 +79,8 @@ class TextBlockData(QTextBlockUserData):
         self._metaData: T_TextMetaList = []
         self._spellErrors: T_TextCheckList = []
         self._formatErrors: T_TextCheckList = []
+        self._spellSelCache: list[QTextEdit.ExtraSelection] | None = None
+        self._formatSelCache: list[QTextEdit.ExtraSelection] | None = None
 
     @property
     def metaData(self) -> T_TextMetaList:
@@ -99,6 +112,8 @@ class TextBlockData(QTextBlockUserData):
         self._metaData = []
         self._spellErrors = []
         self._formatErrors = []
+        self._spellSelCache = None
+        self._formatSelCache = None
 
     def checkData(self) -> tuple[str, str, int, list[int] | None]:
         """Return a snapshot of the text for external spell and format
@@ -114,10 +129,12 @@ class TextBlockData(QTextBlockUserData):
     def setSpellErrors(self, errors: T_TextCheckList) -> None:
         """Store spell error data computed from a text snapshot."""
         self._spellErrors = errors
+        self._spellSelCache = None
 
     def setFormatErrors(self, errors: T_TextCheckList) -> None:
         """Store format error data computed from a text snapshot."""
         self._formatErrors = errors
+        self._formatSelCache = None
 
     def processText(self, text: str, offset: int, utf16Map: list[int] | None) -> None:
         """Extract meta data from the text. The map, when set, converts
@@ -133,6 +150,8 @@ class TextBlockData(QTextBlockUserData):
         self._metaData = []
         self._spellErrors = []
         self._formatErrors = []
+        self._spellSelCache = None
+        self._formatSelCache = None
         self._rawText = text
         if "[" in text:
             # Strip shortcodes
@@ -163,6 +182,7 @@ class TextBlockData(QTextBlockUserData):
         list of spell check errors.
         """
         self._spellErrors = spellCheckText(self._text, self._offset, self._utf16Map)
+        self._spellSelCache = None
         return self._spellErrors
 
     def formatCheck(self) -> T_TextCheckList:
@@ -170,7 +190,49 @@ class TextBlockData(QTextBlockUserData):
         result, and return the list of format errors.
         """
         self._formatErrors = formatCheckText(self._rawText, self._offset, self._utf16Map)
+        self._formatSelCache = None
         return self._formatErrors
+
+    def spellSelections(self, block: QTextBlock, fmt: QTextCharFormat) -> list[QTextEdit.ExtraSelection]:
+        """Return the extra selections for the cached spell errors,
+        building and caching them on first access. The cache is
+        invalidated whenever the underlying error list changes, so an
+        edit to one block never rebuilds the selections of another.
+        """
+        if self._spellSelCache is None or len(self._spellSelCache) != len(self._spellErrors):
+            self._spellSelCache = _buildSelections(block, fmt, self._spellErrors)
+        return self._spellSelCache
+
+    def formatSelections(self, block: QTextBlock, fmt: QTextCharFormat) -> list[QTextEdit.ExtraSelection]:
+        """Return the extra selections for the cached format errors,
+        building and caching them on first access. See spellSelections
+        for details on cache invalidation.
+        """
+        if self._formatSelCache is None or len(self._formatSelCache) != len(self._formatErrors):
+            self._formatSelCache = _buildSelections(block, fmt, self._formatErrors)
+        return self._formatSelCache
+
+
+def _buildSelections(
+    block: QTextBlock, fmt: QTextCharFormat, errors: T_TextCheckList
+) -> list[QTextEdit.ExtraSelection]:
+    """Build a list of extra selections from a block's cached error
+    positions. The returned QTextCursor objects track the document
+    automatically, so they stay valid even as edits elsewhere shift
+    the block's absolute position.
+    """
+    document = block.document()
+    position = block.position()
+    selections = []
+    for start, end, _ in errors:
+        cursor = QTextCursor(document)
+        cursor.setPosition(position + start)
+        cursor.setPosition(position + end, QtKeepAnchor)
+        selection = QTextEdit.ExtraSelection()
+        selection.format = fmt
+        selection.cursor = cursor
+        selections.append(selection)
+    return selections
 
 
 def spellCheckText(text: str, offset: int, utf16Map: list[int] | None) -> T_TextCheckList:
