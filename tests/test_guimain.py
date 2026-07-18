@@ -403,7 +403,13 @@ def testGuiMain_OSThemeChangeAndClose(qtbot, monkeypatch, nwGUI, projPath):
         nwGUI.closeEvent(event)
         assert event.isAccepted() is False
 
-    # With no theme hints object, closing skips the disconnect call
+    # With no theme hints object, closing skips the disconnect call.
+    # The real connection is on the process-wide QGuiApplication
+    # styleHints() singleton, not on anything owned by this GuiMain, so
+    # it must be disconnected explicitly here -- otherwise the closure,
+    # which captures self, stays connected to the singleton after this
+    # GuiMain is torn down, and fires into a deleted object later.
+    nwGUI._themeHints.colorSchemeChanged.disconnect(nwGUI._themeChangedSlot)
     nwGUI._themeHints = None
     event = QCloseEvent()
     nwGUI.closeEvent(event)
