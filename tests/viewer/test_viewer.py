@@ -537,6 +537,9 @@ def testGuiDocViewer_FooterAndErrors(qtbot, monkeypatch, nwGUI, projPath, mockRn
     nwGUI.viewDocument(C.hSceneDoc)
     fullLength = len(docViewer.toPlainText())
 
+    with qtbot.waitSignal(docViewer.togglePanelVisibility, timeout=1000):
+        docViewer.docFooter.showHide.click()
+
     docViewer.docFooter._doToggleSynopsis(False)
     noSynopLength = len(docViewer.toPlainText())
     assert noSynopLength < fullLength

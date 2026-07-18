@@ -185,6 +185,14 @@ def testGuiDocEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     docEditor.docHeader.setHandle(C.hInvalid)
     assert docEditor.docHeader.itemTitle.text() == titleBefore
 
+    # Toggle tool bar from header
+    with qtbot.waitSignal(docEditor.docHeader.toggleToolBarRequest, timeout=1000):
+        docEditor.docHeader.tbButton.click()
+
+    # Toggle focus mode from header
+    with qtbot.waitSignal(docEditor.toggleFocusModeRequest, timeout=1000):
+        docEditor.docHeader.minmaxButton.click()
+
     # Close from header
     with qtbot.waitSignal(docEditor.docHeader.closeDocumentRequest, timeout=1000):
         docEditor.docHeader.closeButton.click()

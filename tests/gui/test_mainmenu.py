@@ -32,7 +32,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwShortcode, nwStats, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.editor.editor import GuiDocEditor
-from novelwriter.enum import nwDocAction, nwDocInsert
+from novelwriter.enum import nwDocAction, nwDocInsert, nwFocus, nwView
 from novelwriter.shared import _GuiAlert
 from novelwriter.types import QtKeepAnchor, QtMoveRight, QtSelectWord
 
@@ -602,5 +602,24 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
     mainMenu.aFileDetails.activate(QAction.ActionEvent.Trigger)
     path = str(projPath / "content" / "000000000000f.nwd")
     assert SHARED.lastAlert[-1] == f"File Location: {path}"
+
+    # Focus and View Change
+    # ======================
+
+    with qtbot.waitSignal(mainMenu.requestFocusChange, timeout=1000) as signal:
+        mainMenu.aFocusTree.activate(QAction.ActionEvent.Trigger)
+    assert signal.args == [nwFocus.TREE]
+
+    with qtbot.waitSignal(mainMenu.requestFocusChange, timeout=1000) as signal:
+        mainMenu.aFocusDocument.activate(QAction.ActionEvent.Trigger)
+    assert signal.args == [nwFocus.DOCUMENT]
+
+    with qtbot.waitSignal(mainMenu.requestFocusChange, timeout=1000) as signal:
+        mainMenu.aFocusOutline.activate(QAction.ActionEvent.Trigger)
+    assert signal.args == [nwFocus.OUTLINE]
+
+    with qtbot.waitSignal(mainMenu.requestViewChange, timeout=1000) as signal:
+        mainMenu.aFindProj.activate(QAction.ActionEvent.Trigger)
+    assert signal.args == [nwView.SEARCH]
 
     # qtbot.stop()

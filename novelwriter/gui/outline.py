@@ -851,7 +851,9 @@ class GuiOutlineHeaderMenu(QMenu):
     @pyqtSlot(bool)
     def _forwardToggled(self, isChecked: bool) -> None:
         """Forward the toggled state of the sending action's column."""
-        if isinstance(action := self.sender(), QAction) and isinstance(tItem := action.data(), nwOutline):
+        if isinstance(action := self.sender(), QAction) and isinstance(
+            tItem := action.data(), nwOutline
+        ):  # pragma: no branch
             self.columnToggled.emit(isChecked, tItem)
 
 

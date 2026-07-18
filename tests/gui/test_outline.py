@@ -280,7 +280,12 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert outlineData.titleValue.text() == "Scene One"
 
     # Click POV Link
-    assert outlineData.tagValues[nwKeyWords.POV_KEY][1].text() == "<a href='Bod'>Bod</a>"
+    povLabel = outlineData.tagValues[nwKeyWords.POV_KEY][1]
+    assert povLabel.text() == "<a href='Bod'>Bod</a>"
+    with qtbot.waitSignal(outlineData.itemTagClicked, timeout=1000) as signal:
+        povLabel.linkActivated.emit("Bod")
+    assert signal.args == ["Bod"]
+
     outlineView._tagClicked("Bod")
     assert nwGUI.docViewer.docHandle == "4c4f28287af27"
 

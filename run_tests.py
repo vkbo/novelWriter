@@ -16,11 +16,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage="run_tests.py [--flags]")
     parser.add_argument("-o", action="store_true", help="Run off screen")
     parser.add_argument("-r", action="store_true", help="Generate xml coverage report")
-    parser.add_argument("-rh", action="store_true", help="Generate html coverage report")
+    parser.add_argument("--html", action="store_true", help="Generate html coverage report")
     parser.add_argument("-t", action="store_true", help="Generate terminal coverage report")
     parser.add_argument("-u", action="store_true", help="Generate uncovered terminal report")
-    parser.add_argument("-lf", action="store_true", help="Re-run failed tests")
-    parser.add_argument("-sw", action="store_true", help="Run tests stepwise")
+    parser.add_argument("-l", action="store_true", help="Generate uncovered terminal report with missing lines")
+    parser.add_argument("--failed", action="store_true", help="Re-run failed tests")
+    parser.add_argument("--step", action="store_true", help="Run tests stepwise")
     parser.add_argument("-m", help="Test modules", metavar="MARKEXPR")
     parser.add_argument("-k", help="Test filters", metavar="EXPRESSION")
 
@@ -32,7 +33,7 @@ if __name__ == "__main__":
 
     if args.r or args.t or args.u:
         cmd = ["coverage", "run"]
-        if args.lf or args.sw:
+        if args.failed or args.step:
             cmd += ["--append"]
         cmd += ["-m"]
     else:
@@ -41,9 +42,9 @@ if __name__ == "__main__":
     cmd += ["pytest", "-vv"]
     if args.o:
         env["QT_QPA_PLATFORM"] = "offscreen"
-    if args.lf:
+    if args.failed:
         cmd += ["--last-failed"]
-    if args.sw:
+    if args.step:
         cmd += ["--stepwise"]
     if args.m:
         cmd += ["-m", args.m]
@@ -55,11 +56,13 @@ if __name__ == "__main__":
 
     if args.r:
         subprocess.call(["coverage", "xml"])
-    if args.rh:
+    if args.html:
         subprocess.call(["coverage", "html"])
     if args.t and not args.u:
         subprocess.call(["coverage", "report"])
     if args.u:
         subprocess.call(["coverage", "report", "--skip-covered"])
+    if args.l:
+        subprocess.call(["coverage", "report", "--skip-covered", "--show-missing"])
 
     tmpConf.unlink(missing_ok=True)
