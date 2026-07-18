@@ -36,34 +36,25 @@ T_TextCheckPayload = list[tuple[int, str, str, int, list[int] | None]]
 class BackgroundWordCounter(QRunnable):
     """The Off-GUI Thread Word Counter.
 
-    A runnable for the word counter to be run in the thread pool off the
-    main GUI thread. It only receives a plain text snapshot, and never
-    touches the text document itself.
+    A one-shot runnable for the word counter, run in the thread pool
+    off the main GUI thread. It only receives a plain text snapshot,
+    and never touches the text document itself. A new instance is
+    created for every count, and auto-deleted by the thread pool once
+    run, so it never outlives the call that dispatched it.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, text: str) -> None:
         super().__init__()
-        self._text = ""
-        self._isRunning = False
-        self.signals = BackgroundWordCounterSignals()
-
-    def isRunning(self) -> bool:
-        """Return True if the word counter is already running."""
-        return self._isRunning
-
-    def setText(self, text: str) -> None:
-        """Set the text snapshot to be counted on the next run."""
         self._text = text
+        self.signals = BackgroundWordCounterSignals()
 
     @pyqtSlot()
     def run(self) -> None:
         """Overloaded run function for the word counter, forwarding the
         call to the function that does the actual counting.
         """
-        self._isRunning = True
         cC, wC, pC = standardCounter(self._text)
         self.signals.countsReady.emit(cC, wC, pC)
-        self._isRunning = False
 
 
 class BackgroundWordCounterSignals(QObject):
