@@ -2913,6 +2913,9 @@ def testGuiDocEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText
         def runnable(self):
             return self._runObj
 
+        def waitForDone(self, msecs=-1):
+            return True
+
     threadPool = MockThreadPool()
     monkeypatch.setattr(QThreadPool, "globalInstance", lambda *a: threadPool)
     docEditor._timerDoc.blockSignals(True)

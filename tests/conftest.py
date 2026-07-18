@@ -29,7 +29,7 @@ from pathlib import Path
 
 import pytest
 
-from PyQt6.QtCore import QLocale
+from PyQt6.QtCore import QLocale, QThreadPool
 from PyQt6.QtWidgets import QMessageBox
 
 sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
@@ -204,7 +204,13 @@ def nwGUI(qtbot, monkeypatch, functionFixture):
     nwGUI.show()
     qtbot.wait(20)
 
-    return nwGUI
+    yield nwGUI
+
+    # Let any in-flight background jobs (word counter, text checker)
+    # finish and deliver their queued signals before the widget tree
+    # below them is closed and scheduled for deletion
+    if globalPool := QThreadPool.globalInstance():
+        globalPool.waitForDone(7000)
 
 
 ##
