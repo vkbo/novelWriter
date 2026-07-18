@@ -42,12 +42,6 @@ T_TextCheckPayload = list[tuple[int, str, str, int, list[int] | None]]
 class WordCounterDispatcher(QObject):
     """Dispatches BackgroundWordCounter jobs to the thread pool, one at
     a time, and forwards the results to a fixed callback.
-
-    Meant to be held as a single, permanent instance parented to the
-    object requesting counts, so the signal it owns is only ever
-    created and destroyed on the main thread, unlike the one-shot
-    runnables it dispatches, which the thread pool auto-deletes on the
-    worker thread once run.
     """
 
     _countsReady = pyqtSignal(int, int, int)
@@ -82,13 +76,7 @@ class BackgroundWordCounter(QRunnable):
     """The Off-GUI Thread Word Counter.
 
     A one-shot runnable for the word counter, run in the thread pool
-    off the main GUI thread. It only receives a plain text snapshot,
-    and never touches the text document itself. A new instance is
-    created for every count, and auto-deleted by the thread pool once
-    run, so it never outlives the call that dispatched it. The result
-    signal it emits into is owned by the dispatcher that created it,
-    not the runnable, since it must only ever be created and destroyed
-    on the main thread.
+    off the main GUI thread.
     """
 
     def __init__(self, text: str, signal: pyqtBoundSignal) -> None:
@@ -108,12 +96,6 @@ class BackgroundWordCounter(QRunnable):
 class TextCheckDispatcher(QObject):
     """Dispatches BackgroundTextCheck jobs to the thread pool and
     forwards the results to a fixed callback.
-
-    Meant to be held as a single, permanent instance parented to the
-    object requesting checks, so the signal it owns is only ever
-    created and destroyed on the main thread, unlike the one-shot
-    runnables it dispatches, which the thread pool auto-deletes on the
-    worker thread once run.
     """
 
     _resultsReady = pyqtSignal(int, list)
@@ -132,10 +114,6 @@ class BackgroundTextCheck(QRunnable):
 
     A one-shot runnable that spell and/or format checks a batch of
     text block snapshots in the thread pool off the main GUI thread.
-    It only receives plain text snapshots, and never touches the text
-    document itself. The result signal it emits into is owned by the
-    dispatcher that created it, not the runnable, since it must only
-    ever be created and destroyed on the main thread.
     """
 
     def __init__(
