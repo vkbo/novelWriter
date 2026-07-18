@@ -30,7 +30,7 @@ from unittest.mock import MagicMock, Mock
 import pytest
 
 from PyQt6.QtCore import QRect, QSize, Qt
-from PyQt6.QtGui import QPalette
+from PyQt6.QtGui import QCloseEvent, QGuiApplication, QPalette, QStyleHints
 from PyQt6.QtWidgets import QApplication, QFileDialog, QInputDialog, QWidget
 
 from novelwriter import CONFIG, SHARED, __hexversion__
@@ -348,14 +348,66 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
 
     # Update by check
     CONFIG.themeMode = nwTheme.LIGHT
-    nwGUI.refreshColorTheme()
+    nwGUI.checkThemeUpdate()
     assert theme.isDarkTheme is False
 
     # Checking again without any further change does nothing
-    nwGUI.refreshColorTheme()
+    nwGUI.checkThemeUpdate()
     assert theme.isDarkTheme is False
 
     # qtbot.stop()
+
+
+@pytest.mark.gui
+@pytest.mark.skipif(not CONFIG.checkMinQtVersion(0x060500), reason="Requires Qt 6.5+")
+def testGuiMain_OSThemeChangeAndClose(qtbot, monkeypatch, nwGUI, projPath):
+    """Test that the OS colour scheme change signal reaches the theme
+    loader via the connected slot, that isDesktopDarkMode falls back to
+    the palette check when there is no styleHints object, and that the
+    close event handles both a blocked close and a missing theme hints
+    object.
+    """
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
+
+    CONFIG.themeMode = nwTheme.AUTO
+    CONFIG.darkTheme = DEF_GUI_DARK
+    CONFIG.lightTheme = DEF_GUI_LIGHT
+
+    # Emitting the real OS signal reaches the connected slot, which
+    # feeds the explicit colour scheme through to the theme loader. The
+    # desktop hint is mocked to agree, since checkThemeUpdate's own
+    # refreshThemeColors() call reloads the theme again without the
+    # explicit scheme, falling back to the live desktop hint.
+    assert nwGUI._themeHints is not None
+    with monkeypatch.context() as mp:
+        mp.setattr(QStyleHints, "colorScheme", lambda *a: Qt.ColorScheme.Dark)
+        nwGUI._themeHints.colorSchemeChanged.emit(Qt.ColorScheme.Dark)
+    assert SHARED.theme.isDarkTheme is True
+
+    with monkeypatch.context() as mp:
+        mp.setattr(QStyleHints, "colorScheme", lambda *a: Qt.ColorScheme.Light)
+        nwGUI._themeHints.colorSchemeChanged.emit(Qt.ColorScheme.Light)
+    assert SHARED.theme.isDarkTheme is False
+
+    # With no styleHints object at all, isDesktopDarkMode falls back to
+    # the palette check instead of raising
+    with monkeypatch.context() as mp:
+        mp.setattr(QGuiApplication, "styleHints", staticmethod(lambda: None))
+        SHARED.theme.isDesktopDarkMode()
+
+    # A blocked close ignores the event and leaves the hints connected
+    with monkeypatch.context() as mp:
+        mp.setattr(_GuiAlert, "finalState", False)
+        event = QCloseEvent()
+        nwGUI.closeEvent(event)
+        assert event.isAccepted() is False
+
+    # With no theme hints object, closing skips the disconnect call
+    nwGUI._themeHints = None
+    event = QCloseEvent()
+    nwGUI.closeEvent(event)
+    assert event.isAccepted() is True
 
 
 @pytest.mark.gui

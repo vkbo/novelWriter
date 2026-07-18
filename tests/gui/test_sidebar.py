@@ -49,7 +49,7 @@ def testGuiSideBar_CycleColourTheme(monkeypatch, nwGUI):
     """Test theme cycle feature on the side bar."""
     CONFIG.themeMode = nwTheme.AUTO
     sidebar = nwGUI.sideBar
-    monkeypatch.setattr(sidebar.mainGui, "refreshColorTheme", lambda *a: None)
+    monkeypatch.setattr(sidebar.mainGui, "checkThemeUpdate", lambda *a: None)
 
     # Run 3 Cycles
     for _ in range(3):

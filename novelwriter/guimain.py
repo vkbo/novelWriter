@@ -297,11 +297,11 @@ class GuiMain(QMainWindow):
         self._themeChangedSlot = None
         if CONFIG.checkMinQtVersion(0x060500):  # pragma: no branch
             self._themeHints = QGuiApplication.styleHints()
-            if self._themeHints is not None:
+            if self._themeHints is not None:  # pragma: no branch
 
                 @pyqtSlot(Qt.ColorScheme)
-                def colorSchemeChangedSlot(colorScheme: Qt.ColorScheme) -> None:
-                    self.checkThemeUpdate(colorScheme=colorScheme)
+                def colorSchemeChangedSlot(schemeHint: Qt.ColorScheme) -> None:
+                    self.checkThemeUpdate(schemeHint=schemeHint)
 
                 self._themeHints.colorSchemeChanged.connect(colorSchemeChangedSlot)
                 self._themeChangedSlot = colorSchemeChangedSlot
@@ -885,9 +885,9 @@ class GuiMain(QMainWindow):
 
         return not self.splitView.isVisible()
 
-    def checkThemeUpdate(self, *, colorScheme: Any | None = None) -> None:
+    def checkThemeUpdate(self, *, schemeHint: Any | None = None) -> None:
         """Load theme if mode changed."""
-        if SHARED.theme.loadTheme(colorScheme=colorScheme):
+        if SHARED.theme.loadTheme(schemeHint=schemeHint):
             self.refreshThemeColors(syntax=True)
             self.docEditor.initEditor()
             self.docViewer.initViewer()
