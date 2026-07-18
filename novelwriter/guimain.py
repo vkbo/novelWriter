@@ -860,6 +860,9 @@ class GuiMain(QMainWindow):
             self.closeProject(True)
         CONFIG.saveConfig()
 
+        self.asProjTimer.stop()
+        self.asDocTimer.stop()
+
         QApplication.quit()
 
         return True
@@ -926,6 +929,7 @@ class GuiMain(QMainWindow):
         if self.closeMain():
             if self._themeHints is not None:
                 self._themeHints.colorSchemeChanged.disconnect(self._themeChangedSlot)
+            self.docEditor.clearEditor()  # Extra safety to clear widgets
             event.accept()
         else:
             event.ignore()

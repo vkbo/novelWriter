@@ -907,6 +907,7 @@ class GuiDocEditor(QTextEdit):
         """
         self._qDocument.markLayoutBusy()
         if position > 0 and self._qDocument.isLayoutBusy():
+            self.setReadOnly(True)  # Just for safety
             self._queuePos = position
         else:
             self.setReadOnly(False)

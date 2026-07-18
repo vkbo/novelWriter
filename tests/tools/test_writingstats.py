@@ -95,6 +95,7 @@ def testGuiWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     sessFile.write_text(data, encoding="utf-8")
     sessLog._loadLogFile()
     assert len(sessLog.logData) == 1
+    sessLog.closeDialog()
 
     # Grouping by day with no log data does nothing
     emptyLog = GuiWritingStats(nwGUI)

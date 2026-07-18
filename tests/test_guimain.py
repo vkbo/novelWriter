@@ -1206,19 +1206,31 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Reopening the manuscript and writing stats dialogs reuses the
     # existing instance rather than creating a new one
     nwGUI.showBuildManuscriptDialog()
-    dialog = SHARED.findTopLevelWidget(GuiManuscript)
-    assert dialog is not None
+    manuscriptDialog = SHARED.findTopLevelWidget(GuiManuscript)
+    assert manuscriptDialog is not None
     nwGUI.showBuildManuscriptDialog()
-    assert SHARED.findTopLevelWidget(GuiManuscript) is dialog
+    assert SHARED.findTopLevelWidget(GuiManuscript) is manuscriptDialog
+    manuscriptDialog.close()
+    manuscriptDialog.softDelete()
 
     nwGUI.showWritingStatsDialog()
-    dialog = SHARED.findTopLevelWidget(GuiWritingStats)
-    assert dialog is not None
+    statsDialog = SHARED.findTopLevelWidget(GuiWritingStats)
+    assert statsDialog is not None
     nwGUI.showWritingStatsDialog()
-    assert SHARED.findTopLevelWidget(GuiWritingStats) is dialog
+    assert SHARED.findTopLevelWidget(GuiWritingStats) is statsDialog
+    statsDialog.close()
+    statsDialog.softDelete()
 
-    # Closing Down
-    # ============
+    # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiMain_CloseMain(qtbot, nwGUI, projPath, mockRnd):
+    """Test closeMain's pane-size and window-state save skips, across a
+    project close/reopen cycle..
+    """
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     # closeMain skips saving pane sizes while Focus Mode is active
     assert nwGUI.openDocument(C.hSceneDoc)
@@ -1230,8 +1242,6 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert nwGUI.openProject(projPath) is True
     nwGUI.setWindowState(nwGUI.windowState() | Qt.WindowState.WindowFullScreen)
     assert nwGUI.closeMain() is True
-
-    # qtbot.stop()
 
 
 @pytest.mark.gui

@@ -1867,6 +1867,10 @@ def testGuiDocEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd
     qtbot.keyClick(docEditor, Qt.Key.Key_Y, modifier=QtModCtrl, delay=KEY_DELAY)
     assert docEditor.getText() == ""
 
+    # Let the auto-scroll animation, if one was triggered by a cursor
+    # move above, finish before the widget tree is torn down
+    qtbot.wait(150)
+
     # qtbot.stop()
 
 
@@ -2954,6 +2958,9 @@ def testGuiDocEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText
 
         def waitForDone(self, msecs=-1):
             return True
+
+        def clear(self):
+            pass
 
     threadPool = MockThreadPool()
     monkeypatch.setattr(QThreadPool, "globalInstance", lambda *a: threadPool)

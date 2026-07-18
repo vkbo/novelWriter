@@ -315,3 +315,7 @@ def testGuiDocEditor_CompleterKeyRouting(qtbot, nwGUI, projPath, mockRnd):
     # cursorRect() is still stale immediately after the commit
     qtbot.waitUntil(lambda: popup.pos().x() > 0)
     assert popup.pos().y() > 0
+
+    # Let the event loop settle before closing the popup
+    qtbot.wait(50)
+    popup.hide()

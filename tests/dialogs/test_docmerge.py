@@ -93,6 +93,7 @@ def testGuiDocMerge_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Reset with no handle set does nothing
     nwMerge._data.pop("sHandle", None)
     nwMerge._resetList()
+    nwMerge.close()
 
     # Test Class Method
     with monkeypatch.context() as mp:
