@@ -13,7 +13,11 @@ on:
 jobs:
   testMac:
     runs-on: macos-latest
-    name: Test Python 3.14
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    name: Test Python ${{ matrix.python-version }}
     permissions:
       contents: read
     steps:
@@ -27,7 +31,7 @@ jobs:
       - name: Install UV and Python
         uses: astral-sh/setup-uv@v8.2.0
         with:
-          python-version: "3.14"
+          python-version: ${{ matrix.python-version }}
           enable-cache: true
 
       - name: Install Dependencies
@@ -39,9 +43,52 @@ jobs:
           uv run --no-sync pkgutils.py sample
 
       - name: Run Tests
+        if: true
         run: |
           export QT_QPA_PLATFORM=offscreen
           uv run --no-sync coverage run -m pytest -v --timeout=60
+          uv run --no-sync coverage xml
+
+      - name: Run Tests (Debug)
+        if: false
+        run: |
+          export QT_QPA_PLATFORM=offscreen
+          # The last crash trapped inside libsystem_malloc itself
+          # (xzone allocator) on a totally unrelated QString allocation,
+          # which is macOS's heap-corruption detector firing on damage
+          # done earlier -- not a bug at the allocation site. These make
+          # corruption trip closer to its real source instead of a
+          # random later victim.
+          export MallocNanoZone=0
+          export MallocScribble=1
+          export MallocPreScribble=1
+          export MallocGuardEdges=1
+          # TEMPORARY: run under lldb to capture a full, all-threads
+          # backtrace if the recurring PR #2861 segfault hits, since the
+          # bare faulthandler dump only covers the faulting thread and
+          # truncates the C stack. Revert to a plain "uv run --no-sync
+          # coverage run -m pytest ..." once this is resolved.
+          # A stop-hook fires synchronously as part of the stop event
+          # itself, unlike a plain trailing -o command, which never ran
+          # last time -- lldb's batch driver didn't continue past the
+          # fatal EXC_BAD_ACCESS stop to reach it.
+          lldb --batch \
+            -o "settings set target.process.stop-on-exec false" \
+            -o "target stop-hook add -o 'thread backtrace all'" \
+            -o "run" \
+            -o "quit" \
+            -- .venv/bin/python -m coverage run -m pytest -v --timeout=60 \
+            2>&1 | tee test_output.log
+          # Pytest's summary line is wrapped in "====" decoration and
+          # ANSI colour codes (e.g. "==[1m614 passed[0m, ..=="), so it
+          # never starts at column 1 -- match the count+word anywhere.
+          if ! grep -qE "[0-9]+ (passed|failed|errors?|skipped)" test_output.log; then
+            echo "::error::Test run did not complete normally (likely crashed) -- see backtrace above"
+            exit 1
+          fi
+          if grep -qE "[0-9]+ (failed|errors?)" test_output.log; then
+            exit 1
+          fi
           uv run --no-sync coverage xml
 
       - name: Upload to Codecov
