@@ -832,7 +832,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, QtKeyReturn, delay=KEY_DELAY)
 
-    docEditor._wCounterDoc.run()
+    docEditor._updateDocCounts(0, 0, 0)
 
     # Check Files
     # ===========

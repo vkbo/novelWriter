@@ -75,7 +75,7 @@ from novelwriter.editor.editsearch import GuiDocEditSearch
 from novelwriter.editor.edittoolbar import GuiDocToolBar
 from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE
 from novelwriter.editor.hovercard import GuiDocHoverCard
-from novelwriter.editor.runnables import BackgroundTextCheck, BackgroundWordCounter, T_TextCheckPayload
+from novelwriter.editor.runnables import T_TextCheckPayload, TextCheckDispatcher, WordCounterDispatcher
 from novelwriter.editor.textblock import T_TextCheckList, TextBlockData
 from novelwriter.enum import (
     nwChange,
@@ -162,6 +162,7 @@ class GuiDocEditor(QTextEdit):
 
     __slots__ = (
         "_autoReplace",
+        "_checkDispatcher",
         "_checkJob",
         "_checkJobId",
         "_checkPassNo",
@@ -169,6 +170,7 @@ class GuiDocEditor(QTextEdit):
         "_dirtyBlocks",
         "_doReplace",
         "_docChanged",
+        "_docCounter",
         "_docHandle",
         "_followTagEdit",
         "_followTagView",
@@ -188,6 +190,7 @@ class GuiDocEditor(QTextEdit):
         "_qDocument",
         "_searchFormat",
         "_searchSelections",
+        "_selCounter",
         "_selection",
         "_spellErrFormat",
         "_spellPassNotify",
@@ -218,8 +221,6 @@ class GuiDocEditor(QTextEdit):
         "_trViewTag",
         "_vim",
         "_vpMargin",
-        "_wCounterDoc",
-        "_wCounterSel",
         "_zoomIn",
         "_zoomOut",
         "_zoomReset",
@@ -282,6 +283,7 @@ class GuiDocEditor(QTextEdit):
         self._spellPassNotify = False
         self._checkJob: T_TextCheckJob | None = None
         self._checkJobId = 0
+        self._checkDispatcher = TextCheckDispatcher(self, self._textCheckResults)
 
         # Context Menu Translation
         self._trSetName = self.tr("Set as Document Name")
@@ -372,20 +374,14 @@ class GuiDocEditor(QTextEdit):
         self._timerDoc.timeout.connect(self._runDocumentTasks)
         self._timerDoc.setSingleShot(True)
         self._timerDoc.setInterval(5000)
-
-        self._wCounterDoc = BackgroundWordCounter(self)
-        self._wCounterDoc.setAutoDelete(False)
-        self._wCounterDoc.signals.countsReady.connect(self._updateDocCounts)
+        self._docCounter = WordCounterDispatcher(self, self._updateDocCounts)
 
         # Set Up Selection Word Counter
         self._timerSel = QTimer(self)
         self._timerSel.timeout.connect(self._runSelCounter)
         self._timerSel.setSingleShot(True)
         self._timerSel.setInterval(500)
-
-        self._wCounterSel = BackgroundWordCounter(self, forSelection=True)
-        self._wCounterSel.setAutoDelete(False)
-        self._wCounterSel.signals.countsReady.connect(self._updateSelCounts)
+        self._selCounter = WordCounterDispatcher(self, self._updateSelCounts)
 
         # Set Up Spell Underline Refresh
         self._timerCheck = QTimer(self)
@@ -1536,6 +1532,7 @@ class GuiDocEditor(QTextEdit):
         """
         checkSpell = SHARED.project.data.spellCheck
         checkFormat = CONFIG.showMultiSpaces
+
         spellSelections = []
         formatSelections = []
         suppressed = False
@@ -1554,6 +1551,7 @@ class GuiDocEditor(QTextEdit):
                                 suppressed = True
                                 continue
                             spellSelections.append(selection)
+
                     if checkFormat:
                         selections = data.formatSelections(block, self._formatErrFormat)
                         for (start, end, kind), selection in zip(data.formatErrors, selections, strict=True):
@@ -1562,7 +1560,9 @@ class GuiDocEditor(QTextEdit):
                                 suppressed = True
                                 continue
                             formatSelections.append(selection)
+
                 block = block.next()
+
         self._suppressed = suppressed
         self._spellSelections = spellSelections
         self._formatSelections = formatSelections
@@ -1601,14 +1601,12 @@ class GuiDocEditor(QTextEdit):
         if job:
             self._checkJobId += 1
             self._checkJob = (self._checkJobId, job)
-            runnable = BackgroundTextCheck(
+            self._checkDispatcher.dispatch(
                 self._checkJobId,
                 payload,
                 checkSpell=SHARED.project.data.spellCheck,
                 checkFormat=CONFIG.showMultiSpaces,
             )
-            runnable.signals.resultsReady.connect(self._textCheckResults)
-            SHARED.runInThreadPool(runnable)
         elif self._spellPassNotify:
             self._spellPassNotify = False
             SHARED.newStatusMessage(self.tr("Spell check complete"))
@@ -1740,8 +1738,8 @@ class GuiDocEditor(QTextEdit):
         """Run timer document tasks."""
         if self._docHandle:
             logger.debug("Running document tasks")
-            if not self._wCounterDoc.isRunning():
-                SHARED.runInThreadPool(self._wCounterDoc)
+            if not self._docCounter.busy:
+                self._docCounter.count(self.getText())
 
             self.docHeader.setOutline({
                 block.blockNumber(): block.text() for block in self._qDocument.iterBlockByType(BLOCK_TITLE, maxCount=30)
@@ -1814,17 +1812,14 @@ class GuiDocEditor(QTextEdit):
     @pyqtSlot()
     def _runSelCounter(self) -> None:
         """Update the selection word count."""
-        if self._docHandle:
-            if self._wCounterSel.isRunning():
-                logger.debug("Selection word counter is busy")
-                return
-            SHARED.runInThreadPool(self._wCounterSel)
-        return
+        if self._docHandle and not self._selCounter.busy and (text := self.getSelectedText()):
+            self._selCounter.count(text)
 
     @pyqtSlot(int, int, int)
     def _updateSelCounts(self, cCount: int, wCount: int, pCount: int) -> None:
         """Update the counts on the counter's finished signal."""
         if self._docHandle and self._nwItem:
+            logger.debug("Updating selection count")
             self.docFooter.updateMainCount(cCount if CONFIG.useCharCount else wCount, True)
             self._timerSel.stop()
 

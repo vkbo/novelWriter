@@ -2905,13 +2905,16 @@ def testGuiDocEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText
 
     class MockThreadPool:
         def __init__(self):
-            self._objID = None
+            self._runObj = None
 
         def start(self, runObj, priority=0):
-            self._objID = id(runObj)
+            self._runObj = runObj
 
-        def objectID(self):
-            return self._objID
+        def runnable(self):
+            return self._runObj
+
+        def waitForDone(self, msecs=-1):
+            return True
 
     threadPool = MockThreadPool()
     monkeypatch.setattr(QThreadPool, "globalInstance", lambda *a: threadPool)
@@ -2942,20 +2945,38 @@ def testGuiDocEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText
 
     # Check that a busy counter is blocked
     with monkeypatch.context() as mp:
-        mp.setattr(docEditor._wCounterDoc, "isRunning", lambda *a: True)
+        mp.setattr(docEditor._docCounter, "_busy", True)
         docEditor._runDocumentTasks()
         assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     with monkeypatch.context() as mp:
-        mp.setattr(docEditor._wCounterSel, "isRunning", lambda *a: True)
+        mp.setattr(docEditor._selCounter, "_busy", True)
+        docEditor.docAction(nwDocAction.SEL_ALL)
         docEditor._runSelCounter()
         assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+        docEditor.setCursorPosition(0)
+
+    # Opening the document already dispatched its own initial word count,
+    # which must complete before the real dispatch below can proceed
+    runnable = threadPool.runnable()
+    assert runnable is not None
+    runnable.run()
+    assert docEditor._docCounter.busy is False
 
     # Run the full word counter
     docEditor._runDocumentTasks()
-    assert threadPool.objectID() == id(docEditor._wCounterDoc)
+    assert docEditor._docCounter.busy is True
 
-    docEditor._wCounterDoc.run()
+    # The dispatcher also guards against re-dispatch on its own, not
+    # just via the busy check in the calling code
+    dispatched = threadPool.runnable()
+    docEditor._docCounter.count("some other text")
+    assert threadPool.runnable() is dispatched
+
+    runnable = threadPool.runnable()
+    assert runnable is not None
+    runnable.run()
+    assert docEditor._docCounter.busy is False
     assert SHARED.project.tree[C.hSceneDoc]._charCount == cC  # type: ignore
     assert SHARED.project.tree[C.hSceneDoc]._wordCount == wC  # type: ignore
     assert SHARED.project.tree[C.hSceneDoc]._paraCount == pC  # type: ignore
@@ -2973,18 +2994,21 @@ def testGuiDocEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     # Select all text and run the selection word counter
     docEditor.docAction(nwDocAction.SEL_ALL)
     docEditor._runSelCounter()
-    assert threadPool.objectID() == id(docEditor._wCounterSel)
+    assert docEditor._selCounter.busy is True
 
-    docEditor._wCounterSel.run()
+    runnable = threadPool.runnable()
+    assert runnable is not None
+    runnable.run()
+    assert docEditor._selCounter.busy is False
     assert docEditor.docFooter.wordsText.text() == f"Selected: {wC}"
 
     # Document tasks run regardless of how long ago the last edit was,
     # since the timer is only started in response to an actual edit,
     # fires once, and then stops rather than polling indefinitely
-    threadPool._objID = None
+    threadPool._runObj = None
     docEditor._lastEdit = time() - 100.0
     docEditor._runDocumentTasks()
-    assert threadPool.objectID() == id(docEditor._wCounterDoc)
+    assert threadPool.runnable() is not None
 
     assert docEditor._timerDoc.isSingleShot() is True
     assert docEditor._timerSel.isSingleShot() is True
