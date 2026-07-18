@@ -105,13 +105,37 @@ class BackgroundWordCounter(QRunnable):
         self._signal.emit(cC, wC, pC)
 
 
+class TextCheckDispatcher(QObject):
+    """Dispatches BackgroundTextCheck jobs to the thread pool and
+    forwards the results to a fixed callback.
+
+    Meant to be held as a single, permanent instance parented to the
+    object requesting checks, so the signal it owns is only ever
+    created and destroyed on the main thread, unlike the one-shot
+    runnables it dispatches, which the thread pool auto-deletes on the
+    worker thread once run.
+    """
+
+    _resultsReady = pyqtSignal(int, list)
+
+    def __init__(self, parent: QObject, callback: Callable[[int, list], None]) -> None:
+        super().__init__(parent)
+        self._resultsReady.connect(callback)
+
+    def dispatch(self, jobId: int, payload: T_TextCheckPayload, checkSpell: bool, checkFormat: bool) -> None:
+        """Dispatch a new text check job."""
+        SHARED.runInThreadPool(BackgroundTextCheck(jobId, payload, checkSpell, checkFormat, self._resultsReady))
+
+
 class BackgroundTextCheck(QRunnable):
     """The Off-GUI Thread Text Checker.
 
-    A runnable that spell and/or format checks a batch of text block
-    snapshots in the thread pool off the main GUI thread. It only
-    receives plain text snapshots, and never touches the text document
-    itself.
+    A one-shot runnable that spell and/or format checks a batch of
+    text block snapshots in the thread pool off the main GUI thread.
+    It only receives plain text snapshots, and never touches the text
+    document itself. The result signal it emits into is owned by the
+    dispatcher that created it, not the runnable, since it must only
+    ever be created and destroyed on the main thread.
     """
 
     def __init__(
@@ -120,13 +144,14 @@ class BackgroundTextCheck(QRunnable):
         payload: T_TextCheckPayload,
         checkSpell: bool,
         checkFormat: bool,
+        signal: pyqtBoundSignal,
     ) -> None:
         super().__init__()
         self._jobId = jobId
         self._payload = payload
         self._checkSpell = checkSpell
         self._checkFormat = checkFormat
-        self.signals = BackgroundTextCheckSignals()
+        self._signal = signal
 
     @pyqtSlot()
     def run(self) -> None:
@@ -136,12 +161,4 @@ class BackgroundTextCheck(QRunnable):
             spellErrors = spellCheckText(spellText, offset, utf16Map) if self._checkSpell else []
             formatErrors = formatCheckText(formatText, offset, utf16Map) if self._checkFormat else []
             results.append((index, spellErrors, formatErrors))
-        self.signals.resultsReady.emit(self._jobId, results)
-
-
-class BackgroundTextCheckSignals(QObject):
-    """The QRunnable cannot emit a signal, so we need a simple QObject
-    to hold the text check result signal.
-    """
-
-    resultsReady = pyqtSignal(int, list)
+        self._signal.emit(self._jobId, results)

@@ -75,7 +75,7 @@ from novelwriter.editor.editsearch import GuiDocEditSearch
 from novelwriter.editor.edittoolbar import GuiDocToolBar
 from novelwriter.editor.highlighter import BLOCK_META, BLOCK_TITLE
 from novelwriter.editor.hovercard import GuiDocHoverCard
-from novelwriter.editor.runnables import BackgroundTextCheck, T_TextCheckPayload, WordCounterDispatcher
+from novelwriter.editor.runnables import T_TextCheckPayload, TextCheckDispatcher, WordCounterDispatcher
 from novelwriter.editor.textblock import T_TextCheckList, TextBlockData
 from novelwriter.enum import (
     nwChange,
@@ -162,6 +162,7 @@ class GuiDocEditor(QTextEdit):
 
     __slots__ = (
         "_autoReplace",
+        "_checkDispatcher",
         "_checkJob",
         "_checkJobId",
         "_checkPassNo",
@@ -282,6 +283,7 @@ class GuiDocEditor(QTextEdit):
         self._spellPassNotify = False
         self._checkJob: T_TextCheckJob | None = None
         self._checkJobId = 0
+        self._checkDispatcher = TextCheckDispatcher(self, self._textCheckResults)
 
         # Context Menu Translation
         self._trSetName = self.tr("Set as Document Name")
@@ -1599,14 +1601,12 @@ class GuiDocEditor(QTextEdit):
         if job:
             self._checkJobId += 1
             self._checkJob = (self._checkJobId, job)
-            runnable = BackgroundTextCheck(
+            self._checkDispatcher.dispatch(
                 self._checkJobId,
                 payload,
                 checkSpell=SHARED.project.data.spellCheck,
                 checkFormat=CONFIG.showMultiSpaces,
             )
-            runnable.signals.resultsReady.connect(self._textCheckResults)
-            SHARED.runInThreadPool(runnable)
         elif self._spellPassNotify:
             self._spellPassNotify = False
             SHARED.newStatusMessage(self.tr("Spell check complete"))
