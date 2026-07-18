@@ -26,7 +26,7 @@ import logging
 from configparser import ConfigParser
 from dataclasses import dataclass
 from math import ceil
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
 from PyQt6.QtCore import QT_TRANSLATE_NOOP, QCoreApplication, QSize, Qt
 from PyQt6.QtGui import (
@@ -359,17 +359,21 @@ class GuiTheme:
         self.iconCache.initIcons()
         self.loadTheme()
 
-    def isDesktopDarkMode(self) -> bool:
+    def isDesktopDarkMode(self, schemeHint: Any | None = None) -> bool:
         """Check if the desktop is in dark mode."""
-        if CONFIG.checkMinQtVersion(0x060500) and (hint := QGuiApplication.styleHints()):
-            return hint.colorScheme() == Qt.ColorScheme.Dark
+        if CONFIG.checkMinQtVersion(0x060500):
+            # Qt.ColorScheme was added in Qt 6.5
+            if schemeHint is not None:
+                return schemeHint == Qt.ColorScheme.Dark
+            elif schemeHint := QGuiApplication.styleHints():
+                return schemeHint.colorScheme() == Qt.ColorScheme.Dark
 
         palette = QPalette()
         text = palette.windowText().color()
         window = palette.window().color()
         return text.lightnessF() > window.lightnessF()
 
-    def loadTheme(self, *, scheme: Qt.ColorScheme | None = None, force: bool = False) -> bool:
+    def loadTheme(self, *, colorScheme: Any | None = None, force: bool = False) -> bool:
         """Load the currently specified GUI theme. The boolean return
         can be used to determine if the GUI needs refreshing.
         """
@@ -379,7 +383,7 @@ class GuiTheme:
             case nwTheme.DARK:
                 darkMode = True
             case _:
-                darkMode = self.isDesktopDarkMode() if scheme is None else (scheme == Qt.ColorScheme.Dark)
+                darkMode = self.isDesktopDarkMode(schemeHint=colorScheme)
 
         theme = CONFIG.darkTheme if darkMode else CONFIG.lightTheme
         if theme not in self._allThemes:

@@ -168,7 +168,7 @@ class GuiSideBar(QWidget):
                 CONFIG.themeMode = nwTheme.AUTO
             case _:  # pragma: no cover
                 pass
-        self.mainGui.refreshColorTheme()
+        self.mainGui.checkThemeUpdate()
         self._setThemeModeIcon()
 
     @pyqtSlot(nwView)
