@@ -45,25 +45,25 @@ def testGuiSideBar_ViewChange(qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testGuiSideBar_CycleColourTheme(nwGUI):
+def testGuiSideBar_CycleColourTheme(monkeypatch, nwGUI):
     """Test theme cycle feature on the side bar."""
     CONFIG.themeMode = nwTheme.AUTO
     sidebar = nwGUI.sideBar
-    sidebar.mainGui.checkThemeUpdate = lambda *a: None
+    monkeypatch.setattr(sidebar.mainGui, "refreshColorTheme", lambda *a: None)
 
     # Run 3 Cycles
     for _ in range(3):
         # Cycle Light
-        sidebar._cycleColurTheme()
+        sidebar._cycleColorTheme()
         assert CONFIG.themeMode == nwTheme.LIGHT
         assert sidebar.tbTheme.toolTip() == nwLabels.THEME_MODE_LABEL[nwTheme.LIGHT]
 
         # Cycle Dark
-        sidebar._cycleColurTheme()
+        sidebar._cycleColorTheme()
         assert CONFIG.themeMode == nwTheme.DARK
         assert sidebar.tbTheme.toolTip() == nwLabels.THEME_MODE_LABEL[nwTheme.DARK]
 
         # Cycle Auto
-        sidebar._cycleColurTheme()
+        sidebar._cycleColorTheme()
         assert CONFIG.themeMode == nwTheme.AUTO
         assert sidebar.tbTheme.toolTip() == nwLabels.THEME_MODE_LABEL[nwTheme.AUTO]

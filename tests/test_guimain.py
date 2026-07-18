@@ -348,19 +348,12 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
 
     # Update by check
     CONFIG.themeMode = nwTheme.LIGHT
-    nwGUI.checkThemeUpdate()
+    nwGUI.refreshColorTheme()
     assert theme.isDarkTheme is False
 
     # Checking again without any further change does nothing
-    nwGUI.checkThemeUpdate()
+    nwGUI.refreshColorTheme()
     assert theme.isDarkTheme is False
-
-    # Through change event
-    event = Mock()
-    event.type.return_value = 210
-    CONFIG.themeMode = nwTheme.DARK
-    nwGUI.changeEvent(event)
-    assert theme.isDarkTheme is True
 
     # qtbot.stop()
 

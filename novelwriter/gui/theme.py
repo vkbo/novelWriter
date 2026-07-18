@@ -369,7 +369,7 @@ class GuiTheme:
         window = palette.window().color()
         return text.lightnessF() > window.lightnessF()
 
-    def loadTheme(self, force: bool = False) -> bool:
+    def loadTheme(self, *, scheme: Qt.ColorScheme | None = None, force: bool = False) -> bool:
         """Load the currently specified GUI theme. The boolean return
         can be used to determine if the GUI needs refreshing.
         """
@@ -379,7 +379,7 @@ class GuiTheme:
             case nwTheme.DARK:
                 darkMode = True
             case _:
-                darkMode = self.isDesktopDarkMode()
+                darkMode = self.isDesktopDarkMode() if scheme is None else (scheme == Qt.ColorScheme.Dark)
 
         theme = CONFIG.darkTheme if darkMode else CONFIG.lightTheme
         if theme not in self._allThemes:

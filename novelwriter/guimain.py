@@ -28,8 +28,8 @@ from datetime import datetime
 from pathlib import Path
 from time import time
 
-from PyQt6.QtCore import QEvent, Qt, QTimer, pyqtSlot
-from PyQt6.QtGui import QCloseEvent, QCursor, QIcon
+from PyQt6.QtCore import Qt, QTimer, pyqtSlot
+from PyQt6.QtGui import QCloseEvent, QCursor, QGuiApplication, QIcon
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -240,6 +240,9 @@ class GuiMain(QMainWindow):
         SHARED.spellLanguageChanged.connect(self.docEditor.processSpellCheckChange)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
         SHARED.statusLabelsChanged.connect(self.docViewerPanel.updateStatusLabels)
+
+        if CONFIG.checkMinQtVersion(0x060500) and (hints := QGuiApplication.styleHints()):  # pragma: no branch
+            hints.colorSchemeChanged.connect(self.refreshColorTheme)
 
         self.mainMenu.requestDocAction.connect(self._passDocumentAction)
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
@@ -868,13 +871,6 @@ class GuiMain(QMainWindow):
 
         return not self.splitView.isVisible()
 
-    def checkThemeUpdate(self) -> None:
-        """Load theme if mode changed."""
-        if SHARED.theme.loadTheme():
-            self.refreshThemeColors(syntax=True)
-            self.docEditor.initEditor()
-            self.docViewer.initViewer()
-
     def refreshThemeColors(self, syntax: bool = False, force: bool = False) -> None:
         """Refresh the GUI theme."""
         SHARED.theme.loadTheme(force=force)
@@ -901,11 +897,6 @@ class GuiMain(QMainWindow):
     ##
     #  Events
     ##
-
-    def changeEvent(self, event: QEvent) -> None:
-        """Capture application change events."""
-        if int(event.type()) == 210:  # ThemeChange
-            self.checkThemeUpdate()
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """Capture the closing event of the GUI and call the close
@@ -939,6 +930,14 @@ class GuiMain(QMainWindow):
         """Toggle focus mode."""
         if self.docEditor.docHandle:
             SHARED.setFocusMode(not SHARED.focusMode)
+
+    @pyqtSlot(Qt.ColorScheme)
+    def refreshColorTheme(self, scheme: Qt.ColorScheme | None = None) -> None:
+        """Load theme if mode changed."""
+        if SHARED.theme.loadTheme(scheme=scheme):
+            self.refreshThemeColors(syntax=True)
+            self.docEditor.initEditor()
+            self.docViewer.initViewer()
 
     ##
     #  Private Slots
