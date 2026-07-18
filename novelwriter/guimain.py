@@ -241,8 +241,10 @@ class GuiMain(QMainWindow):
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
         SHARED.statusLabelsChanged.connect(self.docViewerPanel.updateStatusLabels)
 
-        if CONFIG.checkMinQtVersion(0x060500) and (hints := QGuiApplication.styleHints()):  # pragma: no branch
-            hints.colorSchemeChanged.connect(self.refreshColorTheme)
+        self._themeHints = QGuiApplication.styleHints() if CONFIG.checkMinQtVersion(0x060500) else None
+        self._themeChangedSlot = self.refreshColorTheme
+        if self._themeHints is not None:  # pragma: no branch
+            self._themeHints.colorSchemeChanged.connect(self._themeChangedSlot)
 
         self.mainMenu.requestDocAction.connect(self._passDocumentAction)
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
@@ -902,7 +904,12 @@ class GuiMain(QMainWindow):
         """Capture the closing event of the GUI and call the close
         function to handle all the close process steps.
         """
-        event.accept() if self.closeMain() else event.ignore()
+        if self.closeMain():
+            if self._themeHints is not None:
+                self._themeHints.colorSchemeChanged.disconnect(self._themeChangedSlot)
+            event.accept()
+        else:
+            event.ignore()
 
     ##
     #  Public Slots
