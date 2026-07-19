@@ -148,6 +148,8 @@ logger = logging.getLogger(__name__)
 
 T_TextCheckBlock = tuple[QTextBlock, TextBlockData, int]
 T_TextCheckJob = tuple[int, list[T_TextCheckBlock]]
+T_Selections = list[QTextEdit.ExtraSelection]
+T_SelCache = dict[int, tuple[T_TextCheckList, T_Selections]]
 
 MOVE_KEYS = (QtKeyLeft, QtKeyRight, QtKeyUp, QtKeyDown, QtKeyPageUp, QtKeyPageDown)
 ENTER_KEYS = (QtKeyReturn, QtKeyEnter)
@@ -200,6 +202,8 @@ class GuiDocEditor(QTextEdit):
         "_queuePos",
         "_searchFormat",
         "_searchSelections",
+        "_selCacheFormat",
+        "_selCacheSpell",
         "_selCounter",
         "_selection",
         "_spellErrFormat",
@@ -280,13 +284,15 @@ class GuiDocEditor(QTextEdit):
 
         # Search Variables
         self._searchFormat = QTextCharFormat()
-        self._searchSelections: list[QTextEdit.ExtraSelection] = []
+        self._searchSelections: T_Selections = []
 
         # Spell and Format Check Variables
         self._spellErrFormat = QTextCharFormat()
         self._formatErrFormat = QTextCharFormat()
-        self._spellSelections: list[QTextEdit.ExtraSelection] = []
-        self._formatSelections: list[QTextEdit.ExtraSelection] = []
+        self._spellSelections: T_Selections = []
+        self._formatSelections: T_Selections = []
+        self._selCacheSpell: T_SelCache = {}
+        self._selCacheFormat: T_SelCache = {}
         self._dirtyBlocks: dict[int, QTextBlock] = {}
         self._suppressed = False
         self._checkPassNo = -1
@@ -501,6 +507,8 @@ class GuiDocEditor(QTextEdit):
         self._dirtyBlocks.clear()
         self._spellSelections.clear()
         self._formatSelections.clear()
+        self._selCacheSpell.clear()
+        self._selCacheFormat.clear()
         self._searchSelections.clear()
         self.setExtraSelections([])
 
@@ -589,6 +597,8 @@ class GuiDocEditor(QTextEdit):
         self.setCursorWidth(CONFIG.cursorWidth)
         self._spellSelections.clear()
         self._formatSelections.clear()
+        self._selCacheSpell.clear()
+        self._selCacheFormat.clear()
         self.setExtraSelections([])
         self._cursorMoved()
 
@@ -1574,13 +1584,15 @@ class GuiDocEditor(QTextEdit):
     @pyqtSlot()
     def _updateCheckSelections(self) -> None:
         """Rebuild the spell and format error markers for all visible
-        blocks. The extra selections themselves are cached per block by
-        TextBlockData, and only rebuilt there when that block's own
-        error data changes, so an edit to one block doesn't force every
-        other visible block's markers to be reconstructed here. A
-        trailing space under the cursor is not flagged, since it is a
-        natural, transient state while the line is still being typed.
-        See issue discussion #1347.
+        blocks. The extra selections for a block are cached here, keyed
+        by its TextBlockData identity, and only rebuilt when that
+        block's own error list has changed, so an edit to one block
+        doesn't force every other visible block's markers to be
+        reconstructed. The cache is owned solely by this widget so its
+        lifetime is tied to plain Python reference counting rather than
+        Qt's block/document teardown order. A trailing space under the
+        cursor is not flagged, since it is a natural, transient state
+        while the line is still being typed. See issue discussion #1347.
         """
         checkSpell = SHARED.project.data.spellCheck
         checkFormat = CONFIG.showMultiSpaces
@@ -1594,10 +1606,18 @@ class GuiDocEditor(QTextEdit):
             block = self.cursorForPosition(viewport.rect().topLeft()).block()
             while block.isValid() and block.blockNumber() <= last:
                 if isinstance(data := block.userData(), TextBlockData):
+                    key = id(data)
                     position = block.position()
+
                     if checkSpell:
-                        selections = data.spellSelections(block, self._spellErrFormat)
-                        for (start, end, _), selection in zip(data.spellErrors, selections, strict=True):
+                        cached = self._selCacheSpell.get(key)
+                        if cached is None or cached[0] != data.spellErrors:
+                            cached = (
+                                data.spellErrors,
+                                self._buildSelections(block, self._spellErrFormat, data.spellErrors),
+                            )
+                            self._selCacheSpell[key] = cached
+                        for (start, end, _), selection in zip(data.spellErrors, cached[1], strict=True):
                             if position + start < cPos <= position + end:
                                 # Don't underline the word under the cursor
                                 suppressed = True
@@ -1605,8 +1625,14 @@ class GuiDocEditor(QTextEdit):
                             spellSelections.append(selection)
 
                     if checkFormat:
-                        selections = data.formatSelections(block, self._formatErrFormat)
-                        for (start, end, kind), selection in zip(data.formatErrors, selections, strict=True):
+                        cached = self._selCacheFormat.get(key)
+                        if cached is None or cached[0] != data.formatErrors:
+                            cached = (
+                                data.formatErrors,
+                                self._buildSelections(block, self._formatErrFormat, data.formatErrors),
+                            )
+                            self._selCacheFormat[key] = cached
+                        for (start, end, kind), selection in zip(data.formatErrors, cached[1], strict=True):
                             if kind == "trail" and position + start < cPos <= position + end:
                                 # Not yet a real trailing space, still being typed
                                 suppressed = True
@@ -1619,6 +1645,24 @@ class GuiDocEditor(QTextEdit):
         self._spellSelections = spellSelections
         self._formatSelections = formatSelections
         self._applyExtraSelections()
+
+    def _buildSelections(self, block: QTextBlock, fmt: QTextCharFormat, errors: T_TextCheckList) -> T_Selections:
+        """Build a list of extra selections from a block's cached error
+        positions. The returned QTextCursor objects track the document
+        automatically, so they stay valid even as edits elsewhere shift
+        the block's absolute position.
+        """
+        position = block.position()
+        selections = []
+        for start, end, _ in errors:
+            cursor = QTextCursor(self._qDocument)
+            cursor.setPosition(position + start)
+            cursor.setPosition(position + end, QtKeepAnchor)
+            selection = QTextEdit.ExtraSelection()
+            selection.format = fmt
+            selection.cursor = cursor
+            selections.append(selection)
+        return selections
 
     @pyqtSlot()
     def _dispatchTextCheck(self) -> None:
