@@ -122,6 +122,8 @@ ignore = [
     "RUF001",  # ambiguous-unicode-character-string
     "RUF015",  # unnecessary-iterable-allocation-for-first-element
     "RUF067",  # non-empty-init-module
+    "RUF105",  # noqa-comments
+    "RUF201",  # rule-codes-in-selectors
     "SIM108",  # if-else-block-instead-of-if-exp
     "UP015",   # redundant-open-modes
     "UP030",   # format-literals
