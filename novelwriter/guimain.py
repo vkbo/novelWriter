@@ -1088,6 +1088,7 @@ class GuiMain(QMainWindow):
         if not update.viewer:
             self.docViewer.initSettings()
 
+        self.projSearch.initSettings()
         self.mainStatus.initSettings()
 
         # Force update of word count
