@@ -24,10 +24,11 @@ from __future__ import annotations
 import pytest
 
 from PyQt6.QtGui import QTextCursor, QTextDocument
+from PyQt6.QtWidgets import QLineEdit
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
-from novelwriter.text.autoreplace import TextAutoReplace
+from novelwriter.text.autoreplace import LineEditAutoReplace, TextAutoReplace
 
 
 @pytest.mark.gui
@@ -140,7 +141,7 @@ def testTextAutoReplace_Process():
     assert ar(*prep("Text :")) is True  # See #1061
     assert doc.toRawText() == "Text\u00a0:"
     assert ar(*prep('Text"')) is True
-    assert doc.toRawText() == "Text\u00a0»"
+    assert doc.toRawText() == "Text\u00a0\u00bb"
     assert ar(*prep("@Synopsis:")) is False
     assert doc.toRawText() == "@Synopsis:"
 
@@ -156,10 +157,52 @@ def testTextAutoReplace_Process():
     CONFIG.fmtPadAfter = "\u00ab"
     CONFIG.fmtPadThin = False
     assert ar(*prep('Text "')) is True
-    assert doc.toRawText() == "Text «\u00a0"
+    assert doc.toRawText() == "Text \u00ab\u00a0"
 
     # Pad After, Thin
     CONFIG.fmtPadAfter = "\u00ab"
     CONFIG.fmtPadThin = True
     assert ar(*prep('Text "')) is True
-    assert doc.toRawText() == "Text «\u202f"
+    assert doc.toRawText() == "Text \u00ab\u202f"
+
+
+@pytest.mark.gui
+def testTextAutoReplace_LineEdit(qtbot):
+    """Test the line edit auto-replace functionality."""
+    CONFIG.fmtDQuoteOpen = nwUnicode.U_LAQUO
+    CONFIG.fmtDQuoteClose = nwUnicode.U_RAQUO
+
+    CONFIG.doReplaceDQuote = True
+    CONFIG.doReplaceDots = True
+
+    ar = LineEditAutoReplace()
+    edit = QLineEdit()
+    qtbot.addWidget(edit)
+
+    def prep(text: str) -> QLineEdit:
+        edit.setText(text)
+        edit.setCursorPosition(len(text))
+        return edit
+
+    # Nothing to Process
+    assert ar(prep("")) is False
+    assert ar(prep("Text")) is False
+
+    # Standard Auto-Replace
+    assert ar(prep("Text ...")) is True
+    assert edit.text() == "Text \u2026"
+
+    # Double Quote Open
+    assert ar(prep('Text "')) is True
+    assert edit.text() == "Text \u00ab"
+
+    # Double Quote Close
+    assert ar(prep('Text"')) is True
+    assert edit.text() == "Text\u00bb"
+
+    # Cursor Not at the End of the Text
+    edit.setText('Text "More')
+    edit.setCursorPosition(6)
+    assert ar(edit) is True
+    assert edit.text() == "Text \u00abMore"
+    assert edit.cursorPosition() == 6

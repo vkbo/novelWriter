@@ -32,7 +32,7 @@ from PyQt6.QtGui import QAction, QPainter, QPixmap
 from PyQt6.QtWidgets import QStyleOptionViewItem
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.constants import nwItemClass
+from novelwriter.constants import nwItemClass, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwChange, nwDocMode, nwView
 from novelwriter.types import QtDisplayRole, QtKeyDown, QtKeyReturn, QtKeyUp
@@ -193,6 +193,33 @@ def testGuiProjectSearch_Options(qtbot, nwGUI, fncPath, mockRnd, ipsumText):
     assert totalCount() == expected
     qtbot.mouseClick(search.tbRegEx, Qt.MouseButton.LeftButton)
     assert CONFIG.searchProjRegEx is False
+
+
+@pytest.mark.gui
+def testGuiProjectSearch_AutoReplace(qtbot, nwGUI, fncPath, mockRnd):
+    """Test the auto-replace symbols feature of the search box."""
+    mockRnd.reset()
+    buildTestProject(NWProject(), fncPath)
+    nwGUI.openProject(fncPath)
+
+    nwGUI._changeView(nwView.SEARCH)
+    search = nwGUI.projSearch
+
+    # Auto-replace is off by default, so typed text is left untouched
+    assert CONFIG.searchProjAuto is False
+    qtbot.keyClicks(search.searchText, "Test...")
+    assert search.searchText.text() == "Test..."
+
+    search.searchText.clear()
+
+    # Turn auto-replace on, and check that it now converts the text as it is typed
+    qtbot.mouseClick(search.tbAuto, Qt.MouseButton.LeftButton)
+    assert CONFIG.searchProjAuto is True
+    qtbot.keyClicks(search.searchText, "Test...")
+    assert search.searchText.text() == f"Test{nwUnicode.U_HELLIP}"
+
+    qtbot.mouseClick(search.tbAuto, Qt.MouseButton.LeftButton)
+    assert CONFIG.searchProjAuto is False
 
 
 @pytest.mark.gui

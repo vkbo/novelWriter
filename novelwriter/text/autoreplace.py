@@ -154,14 +154,13 @@ class LineEditAutoReplace(TextAutoReplace):
         if length < 1:
             return False
 
-        edit.setSelection(max(0, pos - 4), pos)
+        edit.setSelection(max(0, pos - 4), min(4, pos))
         last = edit.selectedText()
         edit.deselect()
         delete, insert = self._determine(last, pos)
 
         if delete > 0:
-            edit.setCursorPosition(pos)
-            edit.setSelection(max(0, pos - delete), pos)
+            edit.setSelection(max(0, pos - delete), min(delete, pos))
             edit.insert(insert)
             edit.deselect()
             return True
