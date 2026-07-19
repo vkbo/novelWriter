@@ -32,6 +32,7 @@ from PyQt6.QtWidgets import QApplication, QFrame, QGridLayout, QLabel, QLineEdit
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwConst
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
+from novelwriter.text.autoreplace import LineEditAutoReplace
 from novelwriter.types import QtAlignLeft, QtAlignRight, QtKeyEscape, QtModShift
 
 if TYPE_CHECKING:
@@ -66,14 +67,18 @@ class GuiDocEditSearch(QFrame):
         # Text Boxes
         # ==========
 
+        self.autoReplace = LineEditAutoReplace()
+
         self.searchBox = QLineEdit(self)
         self.searchBox.setPlaceholderText(self.tr("Search for"))
         self.searchBox.returnPressed.connect(self._doSearch)
+        self.searchBox.textEdited.connect(self._editSearchText)
         self.searchBox.installEventFilter(self)
 
         self.replaceBox = QLineEdit(self)
         self.replaceBox.setPlaceholderText(self.tr("Replace with"))
         self.replaceBox.returnPressed.connect(self._doReplace)
+        self.replaceBox.textEdited.connect(self._editReplaceText)
         self.replaceBox.installEventFilter(self)
 
         self.searchOpt = QToolBar(self)
@@ -85,6 +90,13 @@ class GuiDocEditSearch(QFrame):
         self.searchLabel.setIndent(6)
 
         self.resultLabel = QLabel("?/?", self)
+
+        self.tbAuto = NIconToolButton(self, iSz, "search_auto:tool")
+        self.tbAuto.setToolTip(self.tr("Auto-Replace Symbols"))
+        self.tbAuto.setCheckable(True)
+        self.tbAuto.setChecked(CONFIG.searchAuto)
+        self.tbAuto.clicked.connect(self._doToggleAuto)
+        self.searchOpt.addWidget(self.tbAuto)
 
         self.tbCase = NIconToolButton(self, iSz, "search_case:tool")
         self.tbCase.setToolTip(self.tr("Case Sensitive"))
@@ -350,6 +362,18 @@ class GuiDocEditSearch(QFrame):
         """Call the replace action function for the document editor."""
         self.docEditor.replaceNext()
 
+    @pyqtSlot(str)
+    def _editSearchText(self, text: str) -> None:
+        """Update the search results when the search text changes."""
+        if CONFIG.searchAuto:
+            self.autoReplace(self.searchBox)
+
+    @pyqtSlot(str)
+    def _editReplaceText(self, text: str) -> None:
+        """Update the replace box when the text changes."""
+        if CONFIG.searchAuto:
+            self.autoReplace(self.replaceBox)
+
     @pyqtSlot(bool)
     def _doToggleReplace(self, state: bool) -> None:
         """Toggle the show/hide of the replace box."""
@@ -357,6 +381,11 @@ class GuiDocEditSearch(QFrame):
         self.replaceButton.setVisible(state)
         self.adjustSize()
         self.docEditor.updateDocMargins()
+
+    @pyqtSlot(bool)
+    def _doToggleAuto(self, state: bool) -> None:
+        """Enable/disable auto-replace mode."""
+        CONFIG.searchAuto = state
 
     @pyqtSlot(bool)
     def _doToggleCase(self, state: bool) -> None:
