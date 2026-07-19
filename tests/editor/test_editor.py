@@ -3441,6 +3441,43 @@ def testGuiDocEditor_Search(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mock
 
 
 @pytest.mark.gui
+def testGuiDocEditor_SearchAutoReplace(qtbot, nwGUI, projPath, mockRnd):
+    """Test the auto-replace symbols feature of the search and replace boxes."""
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+
+    docEditor = nwGUI.docEditor
+    docSearch: GuiDocEditSearch = docEditor.docSearch
+
+    docEditor.toggleSearch()
+    assert docSearch.isVisible()
+
+    # Auto-replace is off by default, so typed text is left untouched
+    assert CONFIG.searchAuto is False
+    qtbot.keyClicks(docSearch.searchBox, "Test...", delay=KEY_DELAY)
+    assert docSearch.searchText == "Test..."
+
+    qtbot.keyClicks(docSearch.replaceBox, "Test...", delay=KEY_DELAY)
+    assert docSearch.replaceText == "Test..."
+
+    docSearch.searchBox.clear()
+    docSearch.replaceBox.clear()
+
+    # Turn auto-replace on, and check that it now converts the text as it is typed
+    docSearch.tbAuto.click()
+    assert CONFIG.searchAuto is True
+    qtbot.keyClicks(docSearch.searchBox, "Test...", delay=KEY_DELAY)
+    assert docSearch.searchText == f"Test{nwUnicode.U_HELLIP}"
+
+    qtbot.keyClicks(docSearch.replaceBox, "Test...", delay=KEY_DELAY)
+    assert docSearch.replaceText == f"Test{nwUnicode.U_HELLIP}"
+
+    docSearch.tbAuto.click()
+    assert CONFIG.searchAuto is False
+
+
+@pytest.mark.gui
 def testGuiDocEditor_BigFixes(qtbot, nwGUI):
     """Test specific bug fixes in the editor."""
     docEditor = nwGUI.docEditor

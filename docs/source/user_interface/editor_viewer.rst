@@ -102,11 +102,12 @@ Pressing :kbd:`Return` while in the search box will search for the next occurren
 highlighted text and move to the next result.
 
 There are a number of settings for the search tool available as toggle switches above the search
-box. They allow you to search for, in order: matched case only, whole word results only, search
-using regular expressions, loop search when reaching the end of the document, and move to the next
-document when reaching the end. There is also a switch that will try to match the case of the word
-when the replacement is made. That is, it will try to keep the word upper, lower, or capitalised to
-match the word being replaced.
+box. They allow you to enable, in order: auto-replace of symbols as you type in the search and
+replace boxes (see :ref:`docs_ui_edit_view_auto`), matched case only, whole word results only,
+search using regular expressions, loop search when reaching the end of the document, and move to
+the next document when reaching the end. There is also a switch that will try to match the case of
+the word when the replacement is made. That is, it will try to keep the word upper, lower, or
+capitalised to match the word being replaced.
 
 
 .. _docs_ui_edit_view_auto:

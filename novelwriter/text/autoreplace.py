@@ -30,6 +30,7 @@ from novelwriter.types import QtKeepAnchor, QtMoveLeft
 
 if TYPE_CHECKING:
     from PyQt6.QtGui import QTextCursor
+    from PyQt6.QtWidgets import QLineEdit
 
 logger = logging.getLogger(__name__)
 
@@ -138,3 +139,30 @@ class TextAutoReplace:
             return 1, "\u2029"  # Paragraph separator
 
         return 0, t1
+
+
+class LineEditAutoReplace(TextAutoReplace):
+    """Encapsulates the line edit auto replace feature."""
+
+    def __call__(self, edit: QLineEdit) -> bool:
+        """Auto-replace text elements based on main configuration.
+        Returns True if anything was changed.
+        """
+        pos = edit.cursorPosition()
+        text = edit.text()
+        length = len(text)
+        if length < 1:
+            return False
+
+        edit.setSelection(max(0, pos - 4), min(4, pos))
+        last = edit.selectedText()
+        edit.deselect()
+        delete, insert = self._determine(last, pos)
+
+        if delete > 0:
+            edit.setSelection(max(0, pos - delete), min(delete, pos))
+            edit.insert(insert)
+            edit.deselect()
+            return True
+
+        return False

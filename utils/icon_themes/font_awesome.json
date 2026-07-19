@@ -35,6 +35,7 @@
     "fmt_toolbar": "square",
 
     "search": "magnifying-glass",
+    "search_auto": "wand-magic-sparkles",
     "search_cancel": "xmark",
     "search_case": "font",
     "search_loop": "repeat",
