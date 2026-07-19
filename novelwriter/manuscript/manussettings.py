@@ -57,6 +57,7 @@ from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.manuscript.buildsettings import BuildSettings, FilterMode
+from novelwriter.text.autoreplace import TextAutoReplace
 from novelwriter.types import (
     QtAlignCenter,
     QtAlignLeft,
@@ -733,6 +734,10 @@ class _HeadingsTab(NScrollablePage):
 
         self.formSyntax = _HeadingSyntaxHighlighter(self.editTextBox.document())
 
+        self._autoReplace = TextAutoReplace()
+        if document := self.editTextBox.document():  # pragma: no branch
+            document.contentsChange.connect(self._editTextBoxChanged)
+
         self.mInsert = QMenu(self)
         self.aInsTitle = qtAddAction(self.mInsert, self.tr("Title"))
         self.aInsChNum = qtAddAction(self.mInsert, self.tr("Chapter Number"))
@@ -960,6 +965,13 @@ class _HeadingsTab(NScrollablePage):
     ##
     #  Private Slots
     ##
+
+    @pyqtSlot(int, int, int)
+    def _editTextBoxChanged(self, pos: int, removed: int, added: int) -> None:
+        """Apply auto-replace as the user types in the edit box."""
+        if CONFIG.doReplace and added == 1:
+            cursor = self.editTextBox.textCursor()
+            self._autoReplace(cursor.block().text(), cursor)
 
     @pyqtSlot()
     def _saveFormat(self) -> None:
