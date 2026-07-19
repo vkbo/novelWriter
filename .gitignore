@@ -66,6 +66,7 @@ __pycache__
 # IDE
 .vscode
 .ruff_cache
+.claude/
 
 # Debug
 /debug/
