@@ -180,11 +180,13 @@ class Config:
         "prefsWinSize",
         "scaleHeadings",
         "scrollPastEnd",
+        "searchAuto",
         "searchCase",
         "searchLoop",
         "searchMatchCap",
         "searchNextFile",
         "searchPanePos",
+        "searchProjAuto",
         "searchProjCase",
         "searchProjRegEx",
         "searchProjWord",
@@ -394,12 +396,14 @@ class Config:
         self.viewNotes = True  # Notes are shown in the viewer
 
         # Search Box States
+        self.searchAuto = False
         self.searchCase = False
         self.searchWord = False
         self.searchRegEx = False
         self.searchLoop = False
         self.searchNextFile = False
         self.searchMatchCap = False
+        self.searchProjAuto = False
         self.searchProjCase = False
         self.searchProjWord = False
         self.searchProjRegEx = False
@@ -874,12 +878,14 @@ class Config:
         self.viewComments = conf.rdBool(sec, "viewcomments", self.viewComments)
         self.viewSynopsis = conf.rdBool(sec, "viewsynopsis", self.viewSynopsis)
         self.viewNotes = conf.rdBool(sec, "viewnotes", self.viewNotes)
+        self.searchAuto = conf.rdBool(sec, "searchauto", self.searchAuto)
         self.searchCase = conf.rdBool(sec, "searchcase", self.searchCase)
         self.searchWord = conf.rdBool(sec, "searchword", self.searchWord)
         self.searchRegEx = conf.rdBool(sec, "searchregex", self.searchRegEx)
         self.searchLoop = conf.rdBool(sec, "searchloop", self.searchLoop)
         self.searchNextFile = conf.rdBool(sec, "searchnextfile", self.searchNextFile)
         self.searchMatchCap = conf.rdBool(sec, "searchmatchcap", self.searchMatchCap)
+        self.searchProjAuto = conf.rdBool(sec, "searchprojauto", self.searchProjAuto)
         self.searchProjCase = conf.rdBool(sec, "searchprojcase", self.searchProjCase)
         self.searchProjWord = conf.rdBool(sec, "searchprojword", self.searchProjWord)
         self.searchProjRegEx = conf.rdBool(sec, "searchprojregex", self.searchProjRegEx)
@@ -1012,12 +1018,14 @@ class Config:
             "viewcomments": str(self.viewComments),
             "viewsynopsis": str(self.viewSynopsis),
             "viewnotes": str(self.viewNotes),
+            "searchauto": str(self.searchAuto),
             "searchcase": str(self.searchCase),
             "searchword": str(self.searchWord),
             "searchregex": str(self.searchRegEx),
             "searchloop": str(self.searchLoop),
             "searchnextfile": str(self.searchNextFile),
             "searchmatchcap": str(self.searchMatchCap),
+            "searchprojauto": str(self.searchProjAuto),
             "searchprojcase": str(self.searchProjCase),
             "searchprojword": str(self.searchProjWord),
             "searchprojregex": str(self.searchProjRegEx),
