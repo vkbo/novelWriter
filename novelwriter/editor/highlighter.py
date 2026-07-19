@@ -25,6 +25,7 @@ import logging
 import re
 
 from time import time
+from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor, QSyntaxHighlighter, QTextCharFormat, QTextDocument
@@ -37,6 +38,9 @@ from novelwriter.enum import nwComment
 from novelwriter.text.formats import processComment
 from novelwriter.text.patterns import REGEX_PATTERNS, DialogParser
 from novelwriter.types import QtFontBold, QtTextUserProperty
+
+if TYPE_CHECKING:
+    from novelwriter.editor.editordocument import GuiTextDocument
 
 logger = logging.getLogger(__name__)
 
@@ -257,6 +261,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     ##
     #  Methods
     ##
+
+    def rehighlight(self) -> None:
+        """Mark the document layout busy before a full rehighlight."""
+        doc: GuiTextDocument = self.document()  # type: ignore[assignment]
+        if hasattr(doc, "markLayoutBusy"):
+            doc.markLayoutBusy()
+        super().rehighlight()
 
     def rehighlightByType(self, cType: int) -> None:
         """Loop through all blocks and re-highlight those of a given

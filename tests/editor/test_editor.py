@@ -48,7 +48,7 @@ from PyQt6.QtWidgets import QApplication, QMenu, QTextEdit
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import decodeMimeHandles, utf16CharMap
-from novelwriter.constants import nwKeyWords, nwUnicode
+from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
 from novelwriter.core.item import ProjectItem
 from novelwriter.core.project import NWProject
 from novelwriter.core.spellcheck import SpellEnchant
@@ -1867,6 +1867,10 @@ def testGuiDocEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd
     qtbot.keyClick(docEditor, Qt.Key.Key_Y, modifier=QtModCtrl, delay=KEY_DELAY)
     assert docEditor.getText() == ""
 
+    # Let the auto-scroll animation, if one was triggered by a cursor
+    # move above, finish before the widget tree is torn down
+    qtbot.wait(150)
+
     # qtbot.stop()
 
 
@@ -2955,6 +2959,9 @@ def testGuiDocEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText
         def waitForDone(self, msecs=-1):
             return True
 
+        def clear(self):
+            pass
+
     threadPool = MockThreadPool()
     monkeypatch.setattr(QThreadPool, "globalInstance", lambda *a: threadPool)
     docEditor._timerDoc.blockSignals(True)
@@ -4028,3 +4035,72 @@ def testGuiDocEditor_Vim_NormalMode(qtbot, nwGUI, projPath, mockRnd):
     qtbot.keyClick(docEditor, "G", delay=inputDelay)  # Bottom of buffer
     cursorPos = docEditor.textCursor().position()
     assert cursorPos == len(docEditor.getText())
+
+
+@pytest.mark.gui
+def testGuiDocEditor_BigDocLifecycle(qtbot, nwGUI, projPath, ipsumText, mockRnd):
+    """Test that loading, navigating, and refreshing a large document
+    queues cursor moves and keeps the editor read-only until settled.
+    """
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
+
+    unit = "\n\n".join(ipsumText)
+    reps = nwConst.BIG_DOC_LIMIT // len(unit) + 2
+    text = "### Big Doc\n\n" + "\n\n".join([unit] * reps)
+
+    docEditor.replaceText(text)
+    nwGUI.saveDocument()
+    nwGUI.closeDocument()
+
+    cursPos = len(text) - 500
+    item = SHARED.project.tree[C.hSceneDoc]
+    assert item is not None
+    item.setCursorPos(cursPos)
+
+    # Loading queues the saved cursor position and stays read-only
+    assert docEditor.loadText(C.hSceneDoc) is True
+    assert docEditor._qDocument.isLayoutBusy() is True
+    assert docEditor.isReadOnly() is True
+    assert docEditor._queuePos == cursPos
+    assert docEditor.getCursorPosition() != cursPos
+
+    # A spell check pass is also skipped while busy
+    docEditor._checkPassNo = 99
+    docEditor.spellCheckDocument()
+    assert docEditor._checkPassNo == 99
+
+    with qtbot.waitSignal(docEditor._qDocument.layoutSettled, timeout=5000):
+        pass
+
+    assert docEditor._qDocument.isLayoutBusy() is False
+    assert docEditor.isReadOnly() is False
+    assert docEditor._queuePos is None
+    assert docEditor.getCursorPosition() == cursPos
+
+    # Moving to a line in the still-large, now settled document queues again
+    targetLine = docEditor._qDocument.blockCount()
+    assert targetLine > 1
+    docEditor.setCursorLine(targetLine)
+    assert docEditor._qDocument.isLayoutBusy() is True
+    assert docEditor._queuePos is not None
+
+    with qtbot.waitSignal(docEditor._qDocument.layoutSettled, timeout=5000):
+        pass
+
+    assert docEditor._queuePos is None
+    block = docEditor._qDocument.findBlockByNumber(targetLine - 1)
+    assert docEditor.getCursorPosition() == block.position()
+
+    # Refreshing the editor, e.g. on a settings change, re-marks it busy too
+    docEditor.initEditor()
+    assert docEditor._qDocument.isLayoutBusy() is True
+    assert docEditor.isReadOnly() is True
+
+    with qtbot.waitSignal(docEditor._qDocument.layoutSettled, timeout=5000):
+        pass
+
+    assert docEditor._qDocument.isLayoutBusy() is False
+    assert docEditor.isReadOnly() is False

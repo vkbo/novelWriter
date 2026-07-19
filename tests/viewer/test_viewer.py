@@ -381,6 +381,8 @@ def testGuiDocViewer_HoverCard(qtbot, nwGUI, projPath, mockRnd):
     docViewer.updateChangedTags([], [])
     assert docViewer._hoverCard._cache == {"bob": "<p>Cached</p>"}
 
+    docViewer._hoverCard.hide()
+
 
 @pytest.mark.gui
 def testGuiDocViewer_MouseNavigation(qtbot, nwGUI, projPath, mockRnd, ipsumText):

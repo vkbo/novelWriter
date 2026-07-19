@@ -447,6 +447,8 @@ def testGuiProjectSettings_StatusImportExport(qtbot, monkeypatch, nwGUI, projPat
         status._importLabels()
     assert status.listBox.topLevelItemCount() == 9
 
+    projSettings.close()
+
 
 @pytest.mark.gui
 def testGuiProjectSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):

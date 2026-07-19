@@ -100,6 +100,7 @@ def testGuiDocSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Reloading does nothing if no handle has been set yet
     nwSplit._data.pop("sHandle", None)
     nwSplit._reloadList()
+    nwSplit.close()
 
     # An invalid saved split level does not preselect an entry
     SHARED.project.options.setValue("GuiDocSplit", "spLevel", 99)

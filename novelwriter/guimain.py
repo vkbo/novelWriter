@@ -27,9 +27,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from time import time
+from typing import Any
 
-from PyQt6.QtCore import QEvent, Qt, QTimer, pyqtSlot
-from PyQt6.QtGui import QCloseEvent, QCursor, QIcon
+from PyQt6.QtCore import Qt, QTimer, pyqtSlot
+from PyQt6.QtGui import QCloseEvent, QCursor, QGuiApplication, QIcon
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -288,6 +289,22 @@ class GuiMain(QMainWindow):
 
         self.outlineView.loadDocumentTagRequest.connect(self._followTag)
         self.outlineView.openDocumentRequest.connect(self._openDocument)
+
+        # OS Theme Support
+        # ================
+
+        self._themeHints = None
+        self._themeChangedSlot = None
+        if CONFIG.checkMinQtVersion(0x060500):  # pragma: no branch
+            self._themeHints = QGuiApplication.styleHints()
+            if self._themeHints is not None:  # pragma: no branch
+
+                @pyqtSlot(Qt.ColorScheme)
+                def colorSchemeChangedSlot(schemeHint: Qt.ColorScheme) -> None:
+                    self.checkThemeUpdate(schemeHint=schemeHint)
+
+                self._themeHints.colorSchemeChanged.connect(colorSchemeChangedSlot)
+                self._themeChangedSlot = colorSchemeChangedSlot
 
         # Finalise Initialisation
         # =======================
@@ -843,6 +860,9 @@ class GuiMain(QMainWindow):
             self.closeProject(True)
         CONFIG.saveConfig()
 
+        self.asProjTimer.stop()
+        self.asDocTimer.stop()
+
         QApplication.quit()
 
         return True
@@ -868,9 +888,9 @@ class GuiMain(QMainWindow):
 
         return not self.splitView.isVisible()
 
-    def checkThemeUpdate(self) -> None:
+    def checkThemeUpdate(self, *, schemeHint: Any | None = None) -> None:
         """Load theme if mode changed."""
-        if SHARED.theme.loadTheme():
+        if SHARED.theme.loadTheme(schemeHint=schemeHint):
             self.refreshThemeColors(syntax=True)
             self.docEditor.initEditor()
             self.docViewer.initViewer()
@@ -902,16 +922,17 @@ class GuiMain(QMainWindow):
     #  Events
     ##
 
-    def changeEvent(self, event: QEvent) -> None:
-        """Capture application change events."""
-        if int(event.type()) == 210:  # ThemeChange
-            self.checkThemeUpdate()
-
     def closeEvent(self, event: QCloseEvent) -> None:
         """Capture the closing event of the GUI and call the close
         function to handle all the close process steps.
         """
-        event.accept() if self.closeMain() else event.ignore()
+        if self.closeMain():
+            if self._themeHints is not None:
+                self._themeHints.colorSchemeChanged.disconnect(self._themeChangedSlot)
+            self.docEditor.clearEditor()  # Extra safety to clear widgets
+            event.accept()
+        else:
+            event.ignore()
 
     ##
     #  Public Slots

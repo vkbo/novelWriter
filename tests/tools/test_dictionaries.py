@@ -166,4 +166,7 @@ def testGuiDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     assert nwDicts.infoBox.blockCount() == blockCount
     nwDicts._installPath = installPath
 
+    nwDicts.close()
+    nwDicts.softDelete()
+
     # qtbot.stop()

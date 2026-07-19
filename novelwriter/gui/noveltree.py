@@ -439,8 +439,11 @@ class GuiNovelTree(NTreeView):
         """Set the current novel model."""
         if tHandle and (model := SHARED.project.index.getNovelModel(tHandle)):
             if model is not self.model():
+                selectModelOld = self.selectionModel()
                 self.setModel(model)
                 self.resizeColumns()
+                if selectModelOld is not None:
+                    selectModelOld.setParent(None)
         else:
             self.clearContent()
 

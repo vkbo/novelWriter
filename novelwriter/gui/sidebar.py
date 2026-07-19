@@ -78,7 +78,7 @@ class GuiSideBar(QWidget):
 
         self.tbTheme = NIconToolButton(self, iSz)
         self.tbTheme.setToolTip(self.tr("Switch Colour Theme"))
-        self.tbTheme.clicked.connect(self._cycleColurTheme)
+        self.tbTheme.clicked.connect(self._cycleColorTheme)
 
         self.tbDetails = NIconToolButton(self, iSz, "sb_details:sidebar")
         self.tbDetails.setToolTip("{0} [Shift+F6]".format(self.tr("Novel Details")))
@@ -157,8 +157,8 @@ class GuiSideBar(QWidget):
     ##
 
     @pyqtSlot()
-    def _cycleColurTheme(self) -> None:
-        """Go to nex colour theme."""
+    def _cycleColorTheme(self) -> None:
+        """Go to next colour theme."""
         match CONFIG.themeMode:
             case nwTheme.AUTO:
                 CONFIG.themeMode = nwTheme.LIGHT

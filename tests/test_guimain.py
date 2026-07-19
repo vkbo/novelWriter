@@ -30,7 +30,7 @@ from unittest.mock import MagicMock, Mock
 import pytest
 
 from PyQt6.QtCore import QRect, QSize, Qt
-from PyQt6.QtGui import QPalette
+from PyQt6.QtGui import QCloseEvent, QGuiApplication, QPalette, QStyleHints
 from PyQt6.QtWidgets import QApplication, QFileDialog, QInputDialog, QWidget
 
 from novelwriter import CONFIG, SHARED, __hexversion__
@@ -355,14 +355,61 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
     nwGUI.checkThemeUpdate()
     assert theme.isDarkTheme is False
 
-    # Through change event
-    event = Mock()
-    event.type.return_value = 210
-    CONFIG.themeMode = nwTheme.DARK
-    nwGUI.changeEvent(event)
-    assert theme.isDarkTheme is True
-
     # qtbot.stop()
+
+
+@pytest.mark.gui
+@pytest.mark.skipif(not CONFIG.checkMinQtVersion(0x060500), reason="Requires Qt 6.5+")
+def testGuiMain_OSThemeChangeAndClose(qtbot, monkeypatch, nwGUI, projPath):
+    """Test that the OS colour scheme change signal reaches the theme
+    loader via the connected slot, that isDesktopDarkMode falls back to
+    the palette check when there is no styleHints object, and that the
+    close event handles both a blocked close and a missing theme hints
+    object.
+    """
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
+
+    CONFIG.themeMode = nwTheme.AUTO
+    CONFIG.darkTheme = DEF_GUI_DARK
+    CONFIG.lightTheme = DEF_GUI_LIGHT
+
+    # Emitting the real OS signal reaches the connected slot, which
+    # feeds the explicit colour scheme through to the theme loader. The
+    # desktop hint is mocked to agree, since checkThemeUpdate's own
+    # refreshThemeColors() call reloads the theme again without the
+    # explicit scheme, falling back to the live desktop hint.
+    assert nwGUI._themeHints is not None
+    with monkeypatch.context() as mp:
+        mp.setattr(QStyleHints, "colorScheme", lambda *a: Qt.ColorScheme.Dark)
+        nwGUI._themeHints.colorSchemeChanged.emit(Qt.ColorScheme.Dark)
+    assert SHARED.theme.isDarkTheme is True
+
+    with monkeypatch.context() as mp:
+        mp.setattr(QStyleHints, "colorScheme", lambda *a: Qt.ColorScheme.Light)
+        nwGUI._themeHints.colorSchemeChanged.emit(Qt.ColorScheme.Light)
+    assert SHARED.theme.isDarkTheme is False
+
+    # With no styleHints object at all, isDesktopDarkMode falls back to
+    # the palette check instead of raising
+    with monkeypatch.context() as mp:
+        mp.setattr(QGuiApplication, "styleHints", staticmethod(lambda: None))
+        SHARED.theme.isDesktopDarkMode()
+
+    # A blocked close ignores the event and leaves the hints connected
+    with monkeypatch.context() as mp:
+        mp.setattr(_GuiAlert, "finalState", False)
+        event = QCloseEvent()
+        nwGUI.closeEvent(event)
+        assert event.isAccepted() is False
+
+    # The theme hint object must be explicitly disconnected, since it is
+    # connected to a singleton and will therefore bleed over into other tests
+    nwGUI._themeHints.colorSchemeChanged.disconnect(nwGUI._themeChangedSlot)
+    nwGUI._themeHints = None
+    event = QCloseEvent()
+    nwGUI.closeEvent(event)
+    assert event.isAccepted() is True
 
 
 @pytest.mark.gui
@@ -1159,19 +1206,31 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Reopening the manuscript and writing stats dialogs reuses the
     # existing instance rather than creating a new one
     nwGUI.showBuildManuscriptDialog()
-    dialog = SHARED.findTopLevelWidget(GuiManuscript)
-    assert dialog is not None
+    manuscriptDialog = SHARED.findTopLevelWidget(GuiManuscript)
+    assert manuscriptDialog is not None
     nwGUI.showBuildManuscriptDialog()
-    assert SHARED.findTopLevelWidget(GuiManuscript) is dialog
+    assert SHARED.findTopLevelWidget(GuiManuscript) is manuscriptDialog
+    manuscriptDialog.close()
+    manuscriptDialog.softDelete()
 
     nwGUI.showWritingStatsDialog()
-    dialog = SHARED.findTopLevelWidget(GuiWritingStats)
-    assert dialog is not None
+    statsDialog = SHARED.findTopLevelWidget(GuiWritingStats)
+    assert statsDialog is not None
     nwGUI.showWritingStatsDialog()
-    assert SHARED.findTopLevelWidget(GuiWritingStats) is dialog
+    assert SHARED.findTopLevelWidget(GuiWritingStats) is statsDialog
+    statsDialog.close()
+    statsDialog.softDelete()
 
-    # Closing Down
-    # ============
+    # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiMain_CloseMain(qtbot, nwGUI, projPath, mockRnd):
+    """Test closeMain's pane-size and window-state save skips, across a
+    project close/reopen cycle..
+    """
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
 
     # closeMain skips saving pane sizes while Focus Mode is active
     assert nwGUI.openDocument(C.hSceneDoc)
@@ -1183,8 +1242,6 @@ def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert nwGUI.openProject(projPath) is True
     nwGUI.setWindowState(nwGUI.windowState() | Qt.WindowState.WindowFullScreen)
     assert nwGUI.closeMain() is True
-
-    # qtbot.stop()
 
 
 @pytest.mark.gui
