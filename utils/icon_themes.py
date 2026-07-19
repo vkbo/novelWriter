@@ -81,6 +81,7 @@ ICONS = [
     "fmt_underline",
     "fmt_toolbar",
     "search",
+    "search_auto",
     "search_cancel",
     "search_case",
     "search_loop",

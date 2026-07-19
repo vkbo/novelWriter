@@ -35,6 +35,7 @@
     "fmt_toolbar": "panel-left-dashed",
 
     "search": "search",
+    "search_auto": "pencil-sparkles",
     "search_cancel": "x",
     "search_case": "case-sensitive",
     "search_loop": "repeat-2",

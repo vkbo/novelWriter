@@ -35,6 +35,7 @@
     "fmt_toolbar": "text_format",
 
     "search": "search",
+    "search_auto": "published_with_changes",
     "search_cancel": "close",
     "search_case": "match_case",
     "search_loop": "laps",

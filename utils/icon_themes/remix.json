@@ -35,6 +35,7 @@
     "fmt_toolbar": "scroll-to-bottom",
 
     "search": "search-line",
+    "search_auto": "magic",
     "search_cancel": "close-large-fill",
     "search_case": "font-size",
     "search_loop": "repeat-2",
