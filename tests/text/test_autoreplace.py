@@ -27,7 +27,7 @@ from PyQt6.QtGui import QTextCursor, QTextDocument
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
-from novelwriter.editor.autoreplace import TextAutoReplace
+from novelwriter.text.autoreplace import TextAutoReplace
 
 
 @pytest.mark.gui

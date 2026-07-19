@@ -75,7 +75,6 @@ from novelwriter.common import (
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwStyles, nwUnicode
 from novelwriter.core.document import ProjectDocument
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.editor.autoreplace import TextAutoReplace
 from novelwriter.editor.completer import CommandCompleter
 from novelwriter.editor.editfooter import GuiDocEditFooter
 from novelwriter.editor.editheader import GuiDocEditHeader
@@ -97,6 +96,7 @@ from novelwriter.enum import (
     nwVimMode,
 )
 from novelwriter.extensions.eventfilters import WheelEventFilter
+from novelwriter.text.autoreplace import TextAutoReplace
 from novelwriter.text.counting import standardCounter
 from novelwriter.text.formats import processHeading
 from novelwriter.tools.lipsum import GuiLipsum
