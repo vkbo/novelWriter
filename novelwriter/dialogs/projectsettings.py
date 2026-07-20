@@ -343,6 +343,18 @@ class _GoalsPage(NScrollableForm):
         self.addRow(
             self.tr("Project target"),
             self.targetWordCount,
+            self.tr("Set to zero to disable."),
+            unit=self.tr("words"),
+        )
+
+        # Daily Goal
+        self.dailyGoal = NSpinBox(self, minVal=0, maxVal=99999, step=100)
+        self.dailyGoal.setFixedNumbersWidth(5)
+        self.dailyGoal.setValue(data.dailyGoal)
+        self.addRow(
+            self.tr("Daily writing goal"),
+            self.dailyGoal,
+            self.tr("Set to zero to disable."),
             unit=self.tr("words"),
         )
 
@@ -361,20 +373,10 @@ class _GoalsPage(NScrollableForm):
             button=self.targetDeadlineEnabled,
         )
 
-        # Daily Goal
-        self.dailyGoal = NSpinBox(self, minVal=0, maxVal=99999, step=100)
-        self.dailyGoal.setFixedNumbersWidth(5)
-        self.dailyGoal.setValue(data.dailyGoal)
-        self.addRow(
-            self.tr("Daily writing goal"),
-            self.dailyGoal,
-            unit=self.tr("words"),
-        )
-
         # Calculate Daily Goal Automatically
         self.dailyGoalAuto = NSwitch(self)
         self.dailyGoalAuto.setChecked(data.dailyGoalAuto)
-        self.targetDeadline.setEnabled(self.targetDeadlineEnabled.isChecked())
+        self.dailyGoalAuto.setEnabled(self.targetDeadlineEnabled.isChecked())
         self.addRow(
             self.tr("Calculate daily goal automatically"),
             self.dailyGoalAuto,

@@ -24,6 +24,7 @@ from __future__ import annotations
 import time
 import weakref
 
+from datetime import date
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -36,6 +37,7 @@ from novelwriter.common import (
     NConfigParser,
     appendIfSet,
     checkBool,
+    checkDateNone,
     checkFloat,
     checkInt,
     checkIntTuple,
@@ -215,6 +217,19 @@ def testCommon_checkPath():
     assert checkPath(None, None) is None  # type: ignore
     assert checkPath("", None) is None  # type: ignore
     assert checkPath("   ", None) is None  # type: ignore
+
+
+@pytest.mark.base
+def testCommon_checkDateNone():
+    """Test the checkDateNone function."""
+    fallback = date(2020, 1, 1)
+    assert checkDateNone(date(2026, 7, 20), fallback) == date(2026, 7, 20)
+    assert checkDateNone("2026-07-20", fallback) == date(2026, 7, 20)
+    assert checkDateNone("not-a-date", fallback) == fallback
+    assert checkDateNone("", fallback) == fallback
+    assert checkDateNone("   ", fallback) == fallback
+    assert checkDateNone(None, fallback) == fallback
+    assert checkDateNone(1234, fallback) == fallback  # type: ignore
 
 
 @pytest.mark.base

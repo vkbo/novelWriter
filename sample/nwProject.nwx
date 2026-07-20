@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="26.2a1" hexVersion="0x260200a1" fileVersion="1.5" fileRevision="7" timeStamp="2026-07-20 19:56:55">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2378" autoCount="430" editTime="110484">
+<novelWriterXML appVersion="26.2a1" hexVersion="0x260200a1" fileVersion="1.5" fileRevision="7" timeStamp="2026-07-20 21:47:35">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2379" autoCount="430" editTime="110592">
     <name>Sample Project</name>
     <author>Jane Smith</author>
   </project>
@@ -8,7 +8,7 @@
     <doBackup>no</doBackup>
     <language>en_GB</language>
     <spellChecking auto="yes">None</spellChecking>
-    <projectTarget date="2026-08-20">15000</projectTarget>
+    <projectTarget date="None">15000</projectTarget>
     <dailyTarget auto="no" last="100" date="2026-07-20">1000</dailyTarget>
     <lastHandle>
       <entry key="editor">636b6aa9b697b</entry>
