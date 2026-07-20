@@ -289,6 +289,7 @@ class GuiDocEditSearch(QFrame):
 
         # Set icons
         if not init:
+            self.tbAuto.refreshTheme()
             self.tbCase.refreshTheme()
             self.tbWord.refreshTheme()
             self.tbRegEx.refreshTheme()

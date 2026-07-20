@@ -255,6 +255,7 @@ class GuiProjectSearch(QWidget):
             viewport.update()
 
         if not init:
+            self.tbAuto.refreshTheme()
             self.tbCase.refreshTheme()
             self.tbWord.refreshTheme()
             self.tbRegEx.refreshTheme()
