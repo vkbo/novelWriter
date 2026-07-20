@@ -334,14 +334,14 @@ class ProjectData:
     def setProjectTarget(self, wCount: Any, deadline: Any) -> None:
         """Set the project goal."""
         if wCount != self._targetWordCount or deadline != self._targetDeadline:
-            self._targetWordCount = checkInt(wCount, self._targetWordCount)
+            self._targetWordCount = checkInt(wCount, 0)
             self._targetDeadline = checkDateNone(deadline, None)
             self._project.setProjectChanged(True)
 
     def setDailyTarget(self, value: Any, auto: Any) -> None:
         """Set the daily goal."""
         if value != self._dailyGoal or auto != self._dailyGoalAuto:
-            self._dailyGoal = checkInt(value, self._dailyGoal)
+            self._dailyGoal = checkInt(value, 0)
             self._dailyGoalAuto = checkBool(auto, False)
             self._project.setProjectChanged(True)
 

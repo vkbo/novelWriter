@@ -38,7 +38,7 @@ from novelwriter import logger
 if TYPE_CHECKING:
     from novelwriter.core.project import NWProject
 
-XML_IGNORE = ("<novelWriterXML", "<project")
+XML_IGNORE = ("<novelWriterXML ", "<project ", "<dailyTarget ")
 ODT_IGNORE = ("<meta:generator", "<meta:creation-date", "<dc:date", "<meta:editing")
 EPUB_IGNORE = ('<meta property="dcterms:date">', '<meta property="dcterms:modified">', "<dc:date>")
 NWD_IGNORE = ("%%~date:",)

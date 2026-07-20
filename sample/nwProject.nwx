@@ -9,7 +9,7 @@
     <language>en_GB</language>
     <spellChecking auto="yes">None</spellChecking>
     <projectTarget date="2026-08-20">100000</projectTarget>
-    <dailyTarget auto="yes" last="0" date="2026-07-20">0</dailyTarget>
+    <dailyTarget auto="no" last="100" date="2026-07-20">1000</dailyTarget>
     <lastHandle>
       <entry key="editor">636b6aa9b697b</entry>
       <entry key="viewer">636b6aa9b697b</entry>

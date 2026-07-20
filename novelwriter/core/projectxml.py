@@ -50,7 +50,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 FILE_VERSION = "1.5"  # The current project file format version
-FILE_REVISION = "6"  # The current project file format revision
+FILE_REVISION = "7"  # The current project file format revision
 HEX_VERSION = 0x0105
 
 NUM_VERSION = {
@@ -117,6 +117,8 @@ class ProjectXMLReader:
                node. 2.7 RC 1.
         Rev 6: Replaced red, green and blue attributes with a single
                color attribute. 2.8 Beta 1.
+        Rev 7: Added projectTarget and dailyTarget nodes to settings.
+               26.2 Beta 1.
     """
 
     def __init__(self, path: str | Path) -> None:
