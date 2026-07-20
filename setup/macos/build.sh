@@ -1,13 +1,18 @@
 #! /bin/bash
 
 if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
-    echo "Not enouch input arguments"
+    echo "Not enough input arguments"
     exit 1
 fi
 
 PYTHON="$1"
 ARCH="$2"
 CONDA="$3"
+
+TIMESTAMP=$(date "+%s")
+
+CONDA_ENV_NAME="novelWriter_${CONDA}_${TIMESTAMP}"
+CONDA_PATH="$HOME/miniconda_novelWriter_${ARCH}_${TIMESTAMP}"
 
 echo "Python Version: $PYTHON"
 echo "Architecture: $ARCH"
@@ -50,6 +55,8 @@ else
     echo "Missing: setup/macos/Info.plist"
     exit 1
 fi
+echo "Generating requirements.txt"
+python3 pkgutils.py gen-req
 
 # Check that other assets are present
 echo "Checking assets"
@@ -90,13 +97,13 @@ pushd "$BUILD_DIR"/ || exit 1
 
 echo "Downloading Miniconda ..."
 curl -LO https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-$CONDA.sh
-bash Miniconda3-latest-MacOSX-$CONDA.sh -b -p ~/miniconda -f
+bash Miniconda3-latest-MacOSX-$CONDA.sh -b -p$CONDA_PATH -f
 rm Miniconda3-latest-MacOSX-$CONDA.sh 
-export PATH="$HOME/miniconda/bin:$PATH"
+export PATH="$CONDA_PATH/bin:$PATH"
 
 echo "Creating Conda env ..."
-conda create -n novelWriter -c conda-forge python=$PYTHON --yes
-source activate novelWriter
+conda create -n $CONDA_ENV_NAME -c conda-forge python=$PYTHON --yes
+source activate $CONDA_ENV_NAME
 
 echo "Installing dictionaries ..."
 conda install -c conda-forge enchant hunspell-en --yes
@@ -104,7 +111,6 @@ conda install -c conda-forge enchant hunspell-en --yes
 # Install dependencies
 echo "Installing Python dependencies ..."
 pip install -r "$SRC_DIR/requirements.txt"
-pip install pyenchant==3.3.0rc1
 
 # Leave conda env
 conda deactivate
@@ -119,11 +125,11 @@ mkdir novelWriter.app/Contents/MacOS novelWriter.app/Contents/Resources novelWri
 cp $SRC_DIR/setup/macos/Info.plist novelWriter.app/Contents/Info.plist
 
 echo "Copying miniconda env to bundle ..."
-cp -R ~/miniconda/envs/novelWriter/* novelWriter.app/Contents/Resources/
+cp -R $CONDA_PATH/envs/$CONDA_ENV_NAME/* novelWriter.app/Contents/Resources/
 
 echo "Copying novelWriter to bundle ..."
 FILES_COPY=(
-    "CHANGELOG.md" "MANIFEST.in" "CREDITS.md" "LICENSE.md"
+    "CHANGELOG.md" "CREDITS.md" "LICENSE.md"
     "CONTRIBUTING.md" "CODE_OF_CONDUCT.md" "novelwriter"
     "novelWriter.py"
 )
@@ -166,13 +172,27 @@ rm -rf lib/python3.1
 
 # Remove web engine
 rm lib/python3.*/site-packages/PyQt6/QtWebEngine* || true
-rm -r lib/python3.*/site-packages/PyQt6/Qt/translations/qtwebengine* || true
-rm lib/python3.*/site-packages/PyQt6/Qt/resources/qtwebengine* || true
-rm -r lib/python3.*/site-packages/PyQt6/Qt/qml/QtWebEngine* || true
-rm -r lib/python3.*/site-packages/PyQt6/Qt/plugins/webview/libqtwebview* || true
-rm lib/python3.*/site-packages/PyQt6/Qt/libexec/QtWebEngineProcess* || true
-rm lib/python3.*/site-packages/PyQt6/Qt/lib/libQt5WebEngine* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/translations/qtwebengine* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/plugins/webview/libqtwebview* || true
 
+# Remove unneeded QtQuick/Declarative components
+rm lib/python3.*/site-packages/PyQt6/QtQml* || true
+rm lib/python3.*/site-packages/PyQt6/QtQuick* || true
+rm lib/python3.*/site-packages/PyQt6/WebChannel* || true
+rm lib/python3.*/site-packages/PyQt6/WebSockets* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/translations/qtdeclarative* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/translations/qtwebsockets* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/qml || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/plugins/qmlls || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/plugins/qmllint || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/lib/QtQml* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/lib/QtQuick* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/lib/QtWebChannel* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/lib/QtWebSockets* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/bindings/QtQml* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/bindings/QtQuick* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/bindings/QtWebChannel* || true
+rm -r lib/python3.*/site-packages/PyQt6/Qt6/bindings/QtWebSockets* || true
 popd || exit 1
 popd || exit 1
 
@@ -181,14 +201,16 @@ mkdir -p $RLS_DIR
 # --- Create DMG -------------------------------------------------------------------------------- #
 
 # Generate .dmg
-echo "Packageing DMG ..."
+echo "Packaging DMG ..."
 brew install create-dmg
 
 create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novelwriter.icns \
     --window-pos 200 120 --window-size 800 400 --icon-size 100 \
     --icon novelWriter.app 200 190 --hide-extension novelWriter.app \
-    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}"-$ARCH.dmg "$BUILD_DIR"/
+    --app-drop-link 600 185 $RLS_DIR/novelwriter-"${VERSION}"-$ARCH.dmg "$BUILD_DIR"/
 
 pushd $RLS_DIR || exit 1
-shasum -a 256 novelWriter-"${VERSION}"-$ARCH.dmg | tee novelWriter-"${VERSION}"-$ARCH.dmg.sha256
+shasum -a 256 novelwriter-"${VERSION}"-$ARCH.dmg | tee novelwriter-"${VERSION}"-$ARCH.dmg.sha256
 popd || exit 1
+
+rm -r $CONDA_PATH

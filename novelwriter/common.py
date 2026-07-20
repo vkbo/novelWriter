@@ -2,9 +2,6 @@
 novelWriter – Common Functions
 ==============================
 
-File History:
-Created: 2019-05-12 [0.1.0]
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,30 +17,36 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import json
 import logging
 import unicodedata
 import uuid
+import weakref
 import xml.etree.ElementTree as ET
 
-from collections.abc import Callable
 from configparser import ConfigParser
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
-from typing import Any, Literal, TypeGuard, TypeVar
+from typing import TYPE_CHECKING, Any, Literal, TypeGuard, TypeVar
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 
-from PyQt6.QtCore import QCoreApplication, QMimeData, QUrl
-from PyQt6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QFontInfo
+from PyQt6.QtCore import QCoreApplication, QLocale, QMimeData, QUrl
+from PyQt6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QFontInfo, QIcon
 from PyQt6.QtWidgets import QMenu, QMenuBar, QWidget
 
-from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
+from novelwriter.constants import nwConst, nwLabels, nwQuotes, nwUnicode, trConst
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Generator
+    from types import MethodType
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +56,7 @@ _Type = TypeVar("_Type")
 ##
 #  Checker Functions
 ##
+
 
 def checkStringNone(value: Any, default: str | None) -> str | None:
     """Check if a variable is a string or a None."""
@@ -120,9 +124,8 @@ def checkPath(value: Any, default: Path) -> Path:
     """Check if a value is a valid path."""
     if isinstance(value, Path):
         return value
-    elif isinstance(value, str):
-        if value.strip():
-            return Path(value)
+    elif isinstance(value, str) and value.strip():
+        return Path(value)
     return default
 
 
@@ -130,18 +133,16 @@ def checkPath(value: Any, default: Path) -> Path:
 #  Validator Functions
 ##
 
+
 def isHandle(value: Any) -> TypeGuard[str]:
     """Check if a string is a valid novelWriter handle.
-    Note: This is case sensitive. Must be lower case!
+    Note: This is case sensitive. Must be lower case.
     """
     if not isinstance(value, str):
         return False
     if len(value) != 13:
         return False
-    for c in value:
-        if c not in "0123456789abcdef":
-            return False
-    return True
+    return all(c in "0123456789abcdef" for c in value)
 
 
 def isTitleTag(value: Any) -> TypeGuard[str]:
@@ -152,10 +153,7 @@ def isTitleTag(value: Any) -> TypeGuard[str]:
         return False
     if not value.startswith("T"):
         return False
-    for c in value[1:]:
-        if c not in "0123456789":
-            return False
-    return True
+    return all(c in "0123456789" for c in value[1:])
 
 
 def isItemClass(value: Any) -> TypeGuard[str]:
@@ -197,9 +195,8 @@ def checkIntTuple(value: int, valid: tuple | list | set, default: int) -> int:
     """Check that an int is an element of a tuple. If it isn't, return
     the default value.
     """
-    if isinstance(value, int):
-        if value in valid:
-            return value
+    if isinstance(value, int) and value in valid:
+        return value
     return default
 
 
@@ -215,8 +212,9 @@ def firstFloat(*args: Any) -> float:
 #  Formatting Functions
 ##
 
+
 def formatInt(value: int) -> str:
-    """Formats an integer with k, M, G etc."""
+    """Format an integer with k, M, G etc."""
     if not isinstance(value, int):
         return "ERR"
 
@@ -235,14 +233,25 @@ def formatInt(value: int) -> str:
     return str(value)
 
 
-def formatTimeStamp(value: float, fileSafe: bool = False) -> str:
+def formatPercent(value: float | int, *, divisor: float | int | None = None, prec: int = 1) -> str:
+    """Format a number and optionally a divisor as a percentage."""
+    if not isinstance(value, (float, int)):
+        return "ERR"
+    if isinstance(divisor, (float, int)) and divisor != 0:
+        value = value / divisor
+    fmt = f"{{0:.{prec}f}}\u202f%"
+    return fmt.format(value * 100.0)
+
+
+def formatTimeStamp(value: float, fileSafe: bool = False, fmt: str | None = None) -> str:
     """Take a number (on the format returned by time.time()) and convert
     it to a timestamp string.
     """
-    if fileSafe:
-        return datetime.fromtimestamp(value).strftime(nwConst.FMT_FSTAMP)
-    else:
-        return datetime.fromtimestamp(value).strftime(nwConst.FMT_TSTAMP)
+    try:
+        result = datetime.fromtimestamp(value).strftime(nwConst.FMT_TSTAMP if fmt is None else fmt)
+        return result.replace(":", ".") if fileSafe else result
+    except Exception:
+        return "ERROR"
 
 
 def formatTime(t: int) -> str:
@@ -251,15 +260,25 @@ def formatTime(t: int) -> str:
     """
     if isinstance(t, int):
         if t >= 86400:
-            return f"{t//86400:d}-{t%86400//3600:02d}:{t%3600//60:02d}:{t%60:02d}"
+            return f"{t // 86400:d}-{t % 86400 // 3600:02d}:{t % 3600 // 60:02d}:{t % 60:02d}"
         else:
-            return f"{t//3600:02d}:{t%3600//60:02d}:{t%60:02d}"
+            return f"{t // 3600:02d}:{t % 3600 // 60:02d}:{t % 60:02d}"
     return "ERROR"
 
 
 def formatVersion(value: str) -> str:
     """Format a version number into a more human readable form."""
-    return value.lower().replace("a", " Alpha ").replace("b", " Beta ").replace("rc", " RC ")
+    major, _, version = value.partition(".")
+    prefix = "20" if checkInt(major, 0) >= 20 else ""
+    if "." in version:
+        version = version.replace(".", " Patch ")
+    elif "a" in version:
+        version = version.replace("a", " Alpha ")
+    elif "b" in version:
+        version = version.replace("b", " Beta ")
+    elif "rc" in version:
+        version = version.replace("rc", " RC ")
+    return f"{prefix}{major}.{version}" if major and version else ""
 
 
 def formatFileFilter(extensions: list[str | tuple[str, str]]) -> str:
@@ -275,9 +294,15 @@ def formatFileFilter(extensions: list[str | tuple[str, str]]) -> str:
     return ";;".join(result)
 
 
+def formatLink(link: str, text: str = "") -> str:
+    """Format a HTML link for use in labels."""
+    return f"<a href='{link}'>{text or link}</a>"
+
+
 ##
 #  String Functions
 ##
+
 
 def simplified(text: str) -> str:
     """Take a string and strip leading and trailing whitespaces, and
@@ -296,10 +321,43 @@ def uniqueCompact(text: str) -> str:
     return "".join(sorted(set(compact(text))))
 
 
+def joinLines(value: str | list[str], sep: str = "") -> str:
+    """Join a list of strings with a separator."""
+    if isinstance(value, list):
+        return sep.join(str(x) for x in value)
+    return str(value)
+
+
+def appendIfSet(data: list[_Type], value: _Type) -> None:
+    """Append value to list if value is set (truthy)."""
+    if value:
+        data.append(value)
+
+
+def processDialogSymbols(symbols: str) -> str:
+    """Process dialogue line symbols."""
+    result = ""
+    for c in uniqueCompact(symbols):
+        if c in nwQuotes.ALLOWED:
+            result += c
+    return result
+
+
+def processLangCode(code: str) -> str:
+    """Validate a language code."""
+    code = code.strip()
+    return QLocale(code).name().replace("_", "-") if code else ""
+
+
+def languageName(code: str) -> str:
+    """Return the local name of a language."""
+    return QLocale(code).nativeLanguageName().title()
+
+
 def elide(text: str, length: int) -> str:
     """Elide a piece of text to a maximum length."""
     if len(text) > (cut := max(4, length)):
-        return f"{text[:cut-4].rstrip()} ..."
+        return f"{text[: cut - 4].rstrip()} ..."
     return text
 
 
@@ -333,61 +391,33 @@ def transferCase(source: str, target: str) -> str:
 def fuzzyTime(seconds: int) -> str:
     """Convert a time difference in seconds into a fuzzy time string."""
     if seconds < 0:
-        return QCoreApplication.translate(
-            "Common", "in the future"
-        )
+        return QCoreApplication.translate("Common", "in the future")
     elif seconds < 30:
-        return QCoreApplication.translate(
-            "Common", "just now"
-        )
+        return QCoreApplication.translate("Common", "just now")
     elif seconds < 90:
-        return QCoreApplication.translate(
-            "Common", "a minute ago"
-        )
+        return QCoreApplication.translate("Common", "a minute ago")
     elif seconds < 3300:  # 55 minutes
-        return QCoreApplication.translate(
-            "Common", "{0} minutes ago"
-        ).format(int(round(seconds/60)))
+        return QCoreApplication.translate("Common", "{0} minutes ago").format(round(seconds / 60))
     elif seconds < 5400:  # 90 minutes
-        return QCoreApplication.translate(
-            "Common", "an hour ago"
-        )
+        return QCoreApplication.translate("Common", "an hour ago")
     elif seconds < 84600:  # 23.5 hours
-        return QCoreApplication.translate(
-            "Common", "{0} hours ago"
-        ).format(int(round(seconds/3600)))
+        return QCoreApplication.translate("Common", "{0} hours ago").format(round(seconds / 3600))
     elif seconds < 129600:  # 1.5 days
-        return QCoreApplication.translate(
-            "Common", "a day ago"
-        )
+        return QCoreApplication.translate("Common", "a day ago")
     elif seconds < 561600:  # 6.5 days
-        return QCoreApplication.translate(
-            "Common", "{0} days ago"
-        ).format(int(round(seconds/86400)))
+        return QCoreApplication.translate("Common", "{0} days ago").format(round(seconds / 86400))
     elif seconds < 907200:  # 10.5 days
-        return QCoreApplication.translate(
-            "Common", "a week ago"
-        )
+        return QCoreApplication.translate("Common", "a week ago")
     elif seconds < 2419200:  # 28 days
-        return QCoreApplication.translate(
-            "Common", "{0} weeks ago"
-        ).format(int(round(seconds/604800)))
+        return QCoreApplication.translate("Common", "{0} weeks ago").format(round(seconds / 604800))
     elif seconds < 3888000:  # 45 days
-        return QCoreApplication.translate(
-            "Common", "a month ago"
-        )
+        return QCoreApplication.translate("Common", "a month ago")
     elif seconds < 29808000:  # 345 days
-        return QCoreApplication.translate(
-            "Common", "{0} months ago"
-        ).format(int(round(seconds/2592000)))
+        return QCoreApplication.translate("Common", "{0} months ago").format(round(seconds / 2592000))
     elif seconds < 47336400:  # 1.5 years
-        return QCoreApplication.translate(
-            "Common", "a year ago"
-        )
+        return QCoreApplication.translate("Common", "a year ago")
     else:
-        return QCoreApplication.translate(
-            "Common", "{0} years ago"
-        ).format(int(round(seconds/31557600)))
+        return QCoreApplication.translate("Common", "{0} years ago").format(round(seconds / 31557600))
 
 
 def numberToRoman(value: int, toLower: bool = False) -> str:
@@ -398,24 +428,94 @@ def numberToRoman(value: int, toLower: bool = False) -> str:
         return "OOR"
 
     lookup = [
-        (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"), (100, "C"), (90, "XC"),
-        (50, "L"), (40, "XL"), (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I"),
+        (1000, "M"),
+        (900, "CM"),
+        (500, "D"),
+        (400, "CD"),
+        (100, "C"),
+        (90, "XC"),
+        (50, "L"),
+        (40, "XL"),
+        (10, "X"),
+        (9, "IX"),
+        (5, "V"),
+        (4, "IV"),
+        (1, "I"),
     ]
 
     roman = ""
     for divisor, symbol in lookup:
-        n = value//divisor
-        roman += n*symbol
-        value -= n*divisor
+        n = value // divisor
+        roman += n * symbol
+        value -= n * divisor
         if value <= 0:
             break
+    else:  # pragma: no cover
+        pass
 
     return roman.lower() if toLower else roman
 
 
 ##
+#  Safe I/O Wrappers
+##
+
+
+def safeIterDir(path: Path, *, alert: bool = False) -> Generator[Path, None, None]:
+    """Call Path.iterdir() with exception handling."""
+    try:
+        yield from path.iterdir()
+    except Exception as exc:
+        logException()
+        if alert:
+            from novelwriter import SHARED
+
+            SHARED.newStatusMessage(exc, "warning")
+
+
+def safeExists(path: Path, *, alert: bool = False) -> bool:
+    """Call Path.exists() with exception handling."""
+    try:
+        return path.exists()
+    except Exception as exc:
+        logException()
+        if alert:
+            from novelwriter import SHARED
+
+            SHARED.newStatusMessage(exc, "warning")
+        return False
+
+
+def safeIsFile(path: Path, *, alert: bool = False) -> bool:
+    """Call Path.is_file() with exception handling."""
+    try:
+        return path.is_file()
+    except Exception as exc:
+        logException()
+        if alert:
+            from novelwriter import SHARED
+
+            SHARED.newStatusMessage(exc, "warning")
+        return False
+
+
+def safeIsDir(path: Path, *, alert: bool = False) -> bool:
+    """Call Path.is_dir() with exception handling."""
+    try:
+        return path.is_dir()
+    except Exception as exc:
+        logException()
+        if alert:
+            from novelwriter import SHARED
+
+            SHARED.newStatusMessage(exc, "warning")
+        return False
+
+
+##
 #  Qt Helpers
 ##
+
 
 def describeFont(font: QFont) -> str:
     """Describe a font in a way that can be displayed on the GUI."""
@@ -423,7 +523,7 @@ def describeFont(font: QFont) -> str:
         info = QFontInfo(font)
         family = info.family()
         styles = [v for v in info.styleName().split() if v not in family]
-        return " ".join([f"{info.pointSize()} pt", family] + styles)
+        return " ".join([f"{info.pointSize()} pt", family, *styles])
     return "Error"
 
 
@@ -433,6 +533,7 @@ def fontMatcher(font: QFont) -> QFont:
     default Qt font matching algorithm doesn't handle well changing
     application fonts at runtime.
     """
+    font.setStyleName(None)  # Make sure no font style name is set from config, see #2502
     info = QFontInfo(font)
     if (famRequest := font.family()) != (famActual := info.family()):
         logger.warning("Font mismatch: Requested '%s', but got '%s'", famRequest, famActual)
@@ -451,21 +552,43 @@ def fontMatcher(font: QFont) -> QFont:
 
 
 def qtLambda(func: Callable, *args: Any, **kwargs: Any) -> Callable:
-    """A replacement for Python lambdas that works for Qt slots."""
+    """A replacement for Python lambdas that works for Qt slots."""  # noqa: D401
+
     def wrapper(*a_: Any) -> None:
         func(*args, **kwargs)
+
     return wrapper
 
 
-def qtAddAction(parent: QWidget, label: str) -> QAction:
-    """Helper to add action to widget and always return the action."""
+def qtWeakLambda(method: MethodType, *args: Any, **kwargs: Any) -> Callable:
+    """A qtLambda that only holds a weak reference to the bound method.
+    Use this instead of qtLambda when the slot is a method of the object
+    that also owns the signal, as the strong reference in qtLambda would
+    otherwise keep the object alive until the cyclic garbage collector
+    runs.
+    """  # noqa: D401
+    ref = weakref.WeakMethod(method)
+
+    def wrapper(*a_: Any) -> None:
+        if func := ref():
+            func(*args, **kwargs)
+
+    return wrapper
+
+
+def qtAddAction(parent: QWidget, label: str, *, icon: QIcon | None = None, data: Any | None = None) -> QAction:
+    """Add action to a widget and always return the action."""
     action = QAction(label, parent)
+    if icon is not None:
+        action.setIcon(icon)
+    if data is not None:
+        action.setData(data)
     parent.addAction(action)
     return action
 
 
 def qtAddMenu(parent: QMenuBar | QMenu, label: str) -> QMenu:
-    """Helper to add menu to menu and always return the menu."""
+    """Add a menu to a menu and always return the menu."""
     menu = QMenu(label, parent)
     parent.addMenu(menu)
     return menu
@@ -474,7 +597,6 @@ def qtAddMenu(parent: QMenuBar | QMenu, label: str) -> QMenu:
 def encodeMimeHandles(mimeData: QMimeData, handles: list[str]) -> None:
     """Encode handles into a mime data object."""
     mimeData.setData(nwConst.MIME_HANDLE, b"|".join(h.encode() for h in handles))
-    return
 
 
 def decodeMimeHandles(mimeData: QMimeData) -> list[str]:
@@ -482,15 +604,31 @@ def decodeMimeHandles(mimeData: QMimeData) -> list[str]:
     return mimeData.data(nwConst.MIME_HANDLE).data().decode().split("|")
 
 
+def utf16CharMap(text: str) -> list[int]:
+    """Compute mapping from Python string index to QString index.
+    Python strings are always one character per position in either
+    ASCII, UCS-2 or UCS-4. QStrings are in UTF-16, so wide characters
+    use 2 indices, and thus create an offset.
+    """
+    utf16Map = list(range(len(text) + 1))
+    offset = 0
+    for i, c in enumerate(text, 1):
+        if ord(c) > 0xFFFF:
+            offset += 1
+        utf16Map[i] = i + offset
+    return utf16Map
+
+
 ##
 #  Encoder Functions
 ##
+
 
 def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
     """Encode a dictionary, list or tuple as a json object or array, and
     indent from level n up to a max level nmax if nmax is larger than 0.
     """
-    if not isinstance(data, (dict, list, tuple)):
+    if not isinstance(data, dict | list | tuple):
         return "[]"
 
     buffer = []
@@ -507,22 +645,22 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
 
         elif first in ("{", "["):
             n += 1
-            indent = "\n"+"  "*n
-            if n > nmax and nmax > 0:
+            indent = "\n" + "  " * n
+            if n > nmax > 0:
                 buffer.append(chunk)
             else:
                 buffer.append(chunk[0] + indent + chunk[1:])
 
         elif first in ("}", "]"):
             n -= 1
-            indent = "\n"+"  "*n
-            if n >= nmax and nmax > 0:
+            indent = "\n" + "  " * n
+            if n >= nmax > 0:
                 buffer.append(chunk)
             else:
                 buffer.append(indent + chunk)
 
         elif first == ",":
-            if n > nmax and nmax > 0:
+            if n > nmax > 0:
                 buffer.append(chunk)
             else:
                 buffer.append(chunk[0] + indent + chunk[1:].lstrip())
@@ -533,16 +671,22 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
     return "".join(buffer)
 
 
+def jsonCombine(data: dict[str, str]) -> str:
+    """Combine multiple already packed JSON strings."""
+    payload = ",\n".join(f'  "{k}": {v}' for k, v in data.items())
+    return f"{{\n{payload}\n}}\n"
+
+
 ##
 #  XML Helpers
 ##
 
-def xmlIndent(tree: ET.Element | ET.ElementTree) -> None:
+
+def xmlIndent(xml: ET.Element | ET.ElementTree) -> None:
     """A modified version of the XML indent function in the standard
     library. It behaves more closely to how the one from lxml does.
-    """
-    if isinstance(tree, ET.ElementTree):
-        tree = tree.getroot()
+    """  # noqa: D401
+    tree = xml.getroot() if isinstance(xml, ET.ElementTree) else xml
     if not isinstance(tree, ET.Element):
         return
 
@@ -571,8 +715,6 @@ def xmlIndent(tree: ET.Element | ET.ElementTree) -> None:
         if last is not None:
             last.tail = indentations[level]
 
-        return
-
     if len(tree):
         indentChildren(tree, 0)
     tree.tail = "\n"
@@ -587,7 +729,7 @@ def xmlElement(
     attrib: dict | None = None,
     tail: str | None = None,
 ) -> ET.Element:
-    """A custom implementation of Element with more arguments."""
+    """A custom implementation of Element with more arguments."""  # noqa: D401
     xSub = ET.Element(tag, attrib=attrib or {})
     if text is not None:
         if isinstance(text, bool):
@@ -607,7 +749,7 @@ def xmlSubElem(
     attrib: dict | None = None,
     tail: str | None = None,
 ) -> ET.Element:
-    """A custom implementation of SubElement with more arguments."""
+    """A custom implementation of SubElement with more arguments."""  # noqa: D401
     xSub = ET.SubElement(parent, tag, attrib=attrib or {})
     if text is not None:
         if isinstance(text, bool):
@@ -622,6 +764,7 @@ def xmlSubElem(
 ##
 #  File and File System Functions
 ##
+
 
 def readTextFile(path: str | Path) -> str:
     """Read the content of a text file in a robust manner."""
@@ -638,6 +781,7 @@ def readTextFile(path: str | Path) -> str:
 
 def makeFileNameSafe(text: str) -> str:
     """Return a filename-safe string.
+
     See: https://unicode.org/reports/tr15/#Norm_Forms
     """
     text = unicodedata.normalize("NFKC", text).strip()
@@ -655,9 +799,7 @@ def getFileSize(path: Path) -> int:
 def openExternalPath(path: Path) -> bool:
     """Open a path by passing it to the desktop environment."""
     if Path(path).exists():
-        QDesktopServices.openUrl(
-            QUrl(urljoin("file:", pathname2url(str(path))))
-        )
+        QDesktopServices.openUrl(QUrl(urljoin("file:", pathname2url(str(path)))))
         return True
     return False
 
@@ -666,16 +808,19 @@ def openExternalPath(path: Path) -> bool:
 #  Classes
 ##
 
-class NWConfigParser(ConfigParser):
-    """Common: Adapted Config Parser
+_T_Enum = TypeVar("_T_Enum", bound=Enum)
+
+
+class NConfigParser(ConfigParser):
+    """Common: Adapted Config Parser.
 
     This is a subclass of the standard config parser that adds type safe
-    helper functions, and support for lists.
+    helper functions, and support for lists. It also turns off
+    interpolation, which would require % symbols to be escaped (#2455).
     """
 
     def __init__(self) -> None:
-        super().__init__()
-        return
+        super().__init__(interpolation=None)
 
     def rdStr(self, section: str, option: str, default: str) -> str:
         """Read string value."""
@@ -726,3 +871,10 @@ class NWConfigParser(ConfigParser):
             for i in range(min(len(data), len(result))):
                 result[i] = checkInt(data[i].strip(), result[i])
         return result
+
+    def rdEnum(self, section: str, option: str, default: _T_Enum) -> _T_Enum:
+        """Read enum value."""
+        if self.has_option(section, option):
+            data = self.get(section, option, fallback="")
+            return type(default).__members__.get(data.upper(), default)
+        return default

@@ -17,63 +17,50 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import argparse
-import os
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 import zipfile
 
 from pathlib import Path
 
 from utils.common import ROOT_DIR, writeFile
+from utils.docs import buildPdfDocAssets
 
 
-def buildPdfManual(args: argparse.Namespace | None = None) -> None:
-    """This function will build the documentation as manual.pdf."""
-    print("")
-    print("Building PDF Manual")
-    print("===================")
-    print("")
+def _normaliseTsLocations(tsFile: Path) -> tuple[int, int]:
+    """Strip volatile TS line locations and merge duplicate file locations."""
+    tree = ET.parse(tsFile)
+    root = tree.getroot()
 
-    buildFile = ROOT_DIR / "docs" / "build" / "latex" / "manual.pdf"
-    finalFile = ROOT_DIR / "novelwriter" / "assets" / "manual.pdf"
-    finalFile.unlink(missing_ok=True)
+    nLines = 0
+    nMerged = 0
 
-    try:
-        subprocess.call(["make", "clean"], cwd="docs")
-        exCode = subprocess.call(["make", "latexpdf"], cwd="docs")
-        if exCode == 0:
-            print("")
-            buildFile.rename(finalFile)
-        else:
-            raise Exception(f"Build returned error code {exCode}")
+    for message in root.findall("./context/message"):
+        seenFiles: set[str] = set()
+        for location in list(message.findall("location")):
+            if "line" in location.attrib:
+                del location.attrib["line"]
+                nLines += 1
 
-        print("PDF manual build: OK")
-        print("")
+            if (filename := location.attrib.get("filename", "")) in seenFiles:
+                message.remove(location)
+                nMerged += 1
+            else:
+                seenFiles.add(filename)
 
-    except Exception as exc:
-        print("PDF manual build: FAILED")
-        print("")
-        print(str(exc))
-        print("")
-        print("Dependencies:")
-        print(" * pip install sphinx")
-        print(" * Package latexmk")
-        print(" * LaTeX build system")
-        print("")
-        print(" On Debian/Ubuntu, install: python3-sphinx latexmk texlive texlive-latex-extra")
-        print("")
-        sys.exit(1)
+    if nLines > 0 or nMerged > 0:
+        ET.indent(tree, space="  ")
+        header = '<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE TS>\n'
+        xmlBody = ET.tostring(root, encoding="unicode", short_empty_elements=True)
+        tsFile.write_text(f"{header}{xmlBody}\n", encoding="utf-8")
 
-    if not finalFile.is_file():
-        print("No output file was found!")
-        print("")
-        sys.exit(1)
-
-    return
+    return nLines, nMerged
 
 
 def buildSampleZip(args: argparse.Namespace | None = None) -> None:
@@ -90,7 +77,7 @@ def buildSampleZip(args: argparse.Namespace | None = None) -> None:
 
     if srcSample.is_dir():
         dstSample.unlink(missing_ok=True)
-        with zipfile.ZipFile(dstSample, "w") as zipObj:
+        with zipfile.ZipFile(dstSample, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=3) as zipObj:
             print("Compressing: nwProject.nwx")
             zipObj.write(srcSample / "nwProject.nwx", "nwProject.nwx")
             for doc in (srcSample / "content").iterdir():
@@ -102,10 +89,8 @@ def buildSampleZip(args: argparse.Namespace | None = None) -> None:
         sys.exit(1)
 
     print("")
-    print("Built file: %s" % dstSample)
+    print(f"Built file: {dstSample}")
     print("")
-
-    return
 
 
 def importI18nUpdates(args: argparse.Namespace) -> None:
@@ -137,8 +122,6 @@ def importI18nUpdates(args: argparse.Namespace) -> None:
 
     print("")
 
-    return
-
 
 def updateTranslationSources(args: argparse.Namespace) -> None:
     """Build the lang.ts files for Qt Linguist."""
@@ -158,7 +141,6 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
     print("")
 
     sources = list((ROOT_DIR / "novelwriter").glob("**/*.py"))
-    sources.insert(0, ROOT_DIR / "i18n" / "qtbase.py")
     for source in sources:
         print(source.relative_to(ROOT_DIR))
 
@@ -179,11 +161,14 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
             continue
         else:  # Create an empty new language file
             langCode = item.name[3:-3]
-            writeFile(item, (
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                "<!DOCTYPE TS>\n"
-                f"<TS version=\"2.0\" language=\"{langCode}\" sourcelanguage=\"en_GB\"/>\n"
-            ))
+            writeFile(
+                item,
+                (
+                    '<?xml version="1.0" encoding="utf-8"?>\n'
+                    "<!DOCTYPE TS>\n"
+                    f'<TS version="2.0" language="{langCode}" sourcelanguage="en_GB"/>\n'
+                ),
+            )
             translations.append(item)
             print(f"Created: {item}")
 
@@ -199,8 +184,25 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
     )
 
     print("")
+    print("Normalising TS Location Metadata:")
+    print("")
 
-    return
+    for item in translations:
+        nLines, nMerged = _normaliseTsLocations(item)
+        if nLines > 0 or nMerged > 0:
+            print(f"Updated: {item} ({nLines} line refs, {nMerged} merged)")
+        else:
+            print(f"No Change: {item}")
+
+    print("")
+
+
+def getLReleaseExec() -> str | None:
+    """Look for the lrelease executable."""
+    for entry in ["lrelease-qt6", "lrelease"]:
+        if subprocess.call(f"type {entry}", shell=True) == 0:
+            return entry
+    return None
 
 
 def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
@@ -227,7 +229,10 @@ def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
     print("")
 
     try:
-        subprocess.call(["lrelease", "-verbose", *srcList])
+        if lrelease := getLReleaseExec():
+            subprocess.call([lrelease, "-verbose", *srcList])
+        else:
+            raise FileNotFoundError("No lrelease executable found")
     except Exception as exc:
         print("Qt Linguist tools seem to be missing")
         print("On Debian/Ubuntu, install: qttools5-dev-tools")
@@ -242,89 +247,9 @@ def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
     for item in srcDir.iterdir():
         if item.is_file() and item.suffix == ".qm":
             item.rename(dstDir / item.name)
-            print("Moved: %s -> %s" % (item.relative_to(ROOT_DIR), dstRel / item.name))
+            print(f"Moved: {item.relative_to(ROOT_DIR)} -> {dstRel / item.name}")
 
     print("")
-
-    return
-
-
-def updateDocsTranslationSources(args: argparse.Namespace) -> None:
-    """Build the documentation .po files."""
-    print("")
-    print("Building Docs Translation Files")
-    print("===============================")
-    print("")
-
-    docsDir = ROOT_DIR / "docs"
-    locsDir = ROOT_DIR / "docs" / "source" / "locales"
-    locsDir.mkdir(exist_ok=True)
-
-    print("Generating POT Files")
-    subprocess.call(["make", "gettext"], cwd=docsDir)
-    print("")
-
-    lang = args.lang
-    update = []
-    if lang == ["all"]:
-        update = [i.stem for i in locsDir.iterdir() if i.is_dir()]
-    else:
-        update = lang
-
-    print("Generating PO Files")
-    print("Languages: ", update)
-    print("")
-
-    for code in update:
-        subprocess.call(["sphinx-intl", "update", "-p", "build/gettext", "-l", code], cwd=docsDir)
-        print("")
-
-    print("Done")
-    print("")
-
-    return
-
-
-def buildDocsTranslationAssets(args: argparse.Namespace | None = None) -> None:
-    """Build the documentation i18n PDF files."""
-    from PyQt6.QtCore import QLocale
-
-    print("")
-    print("Building Docs Manuals")
-    print("=====================")
-    print("")
-
-    docsDir = ROOT_DIR / "docs"
-    locsDir = ROOT_DIR / "docs" / "source" / "locales"
-    pdfFile = ROOT_DIR / "docs" / "build" / "latex" / "manual.pdf"
-    locsDir.mkdir(exist_ok=True)
-
-    lang = args.lang if args else ["all"]
-    build = []
-    if lang == ["all"]:
-        build = [i.stem for i in locsDir.iterdir() if i.is_dir()]
-    else:
-        build = lang
-
-    for code in build:
-        data = (locsDir / f"authors_{code}.conf").read_text(encoding="utf-8")
-        authors = [x for x in data.splitlines() if x and not x.startswith("#")]
-        env = os.environ.copy()
-        env["SPHINX_I18N_AUTHORS"] = ", ".join(authors)
-        exCode = subprocess.call(
-            f"make -e SPHINXOPTS=\"-D language='{code}'\" clean latexpdf",
-            cwd=docsDir, env=env, shell=True
-        )
-        if exCode == 0:
-            print("")
-            name = f"manual_{QLocale(code).name()}.pdf"
-            pdfFile.rename(ROOT_DIR / "novelwriter" / "assets" / name)
-        else:
-            raise Exception(f"Build returned error code {exCode}")
-
-    print("")
-
-    return
 
 
 def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
@@ -344,14 +269,10 @@ def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
 
     print("")
 
-    return
-
 
 def buildAllAssets(args: argparse.Namespace) -> None:
     """Build all assets."""
     cleanBuiltAssets()
-    buildPdfManual()
     buildSampleZip()
     buildTranslationAssets()
-    buildDocsTranslationAssets()
-    return
+    buildPdfDocAssets()

@@ -1,5 +1,795 @@
 # novelWriter Changelog
 
+## Version 26.1.1 [2026-06-28]
+
+### Release Notes
+
+This is a patch release that adds Catalan language to the app, and updates translation files for
+other languages. Some user interface labels for the Manuscript tool have been improved, and the
+documentation updated. A small fix resolves an error message printed to the log when launching the
+app on Linux.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed a DBus error message from Qt on Linux. PR #2790.
+
+**Improvements**
+
+* Clarified some of the GUI labels on the Manuscript tool. Issue #2762. PR #2768.
+
+**Internationalisation**
+
+* Catalan translations added by @jaumeplanas. PR #2793.
+* Norwegian and US English translations updated by @vkbo. PR #2793.
+* Japanese translation updated bu @hebekeg. PR #2793.
+* German translation updated by @HeyMyian. PR #2793.
+* Polish translation updated by @Nauthizz. PR #2793.
+* Dutch translation updated by @risingphoenix73. PR #2793.
+* Italian translation updated by Lou Cyper. PR #2793.
+* Chinese translation updated by wcxu21 and @longqzh. PR #2793.
+
+**Documentation**
+
+* Fixed some typos in the documentation. PR #2773.
+* Improved the documentation for the Manuscript tool. Issue #2763. PR #2768.
+* Switched the documentation back to using `uv` for examples. PR #2766.
+
+----
+
+## Version 26.1 [2026-04-26]
+
+### Release Notes
+
+The 2026.1 release is based on the features added in 2026.1 Beta 1, Beta 2, RC 1.
+
+See the website for complete [Release Notes](https://novelwriter.io/releases/release_26_1.html).
+
+### Detailed Changelog
+
+**Improvements**
+
+* When exporting manuscripts to DocX (Word), the document will no longer expand hard line breaks by
+  when default when justified margins are enabled. Issue #2690. PR #2732.
+* The "Add titles for notes" label in **Manuscript Build** settings has been updated and should now
+  be clearer. Issue #2727. PR #2729.
+
+**Internationalisation**
+
+* A missing translation string for projects was added. Issue #2730. PR #2731.
+* Norwegian and US English translations updated by @vkbo. PR #2738.
+* Japanese translation updated bu @hebekeg. PR #2738.
+* Dutch translation updated by @risingphoenix73. PR #2738.
+* German translation updated by @HeyMyian. PR #2738.
+* Polish translation updated by @Nauthizz. PR #2738.
+* Latin American Spanish translation updated by @tmarplatt. PR #2738.
+* Czech translation updated by Tomáš Zmek. PR #2738.
+* Italian translation updated by Lou Cyper. PR #2738.
+
+----
+
+## Version 26.1 RC 1 [2026-04-13]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+Note: There are no longer any Mac releases produced for novelWriter. See #2618.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where the editor and viewer header no longer changed colour when losing or gaining
+  focus. Issue #2716. PR #2717.
+* Fixed the project list tooltip on the Welcome dialog. Issue #2714. PR #2715.
+* Fixed the size of spin boxes on config forms. Issue #2703. PR #2711.
+
+**Features**
+
+* A new setting in Preferences allows for the usage of single asterisks for bold formatting.
+  Enabling this setting does not disable double asterisk bold. Issue #2718. PR #2719.
+
+**User Interface**
+
+* Adjusted some colours of icons in several themes to bring them visually in line with the rest of
+  the theme. Contributed by @HeyMyian. PR #2712.
+
+**Internationalisation**
+
+* Updated translation strings. PRs #2721 and #2722.
+* Updated Dutch translation by @risingphoenix73. PRs #2721 and #2722.
+* Updated US English and Norwegian translation by @vkbo. PRs #2721 and #2722.
+
+**Other Changes**
+
+* GUI font emphasis is now handled by the theme class, and bold text on the GUI has been reduced in
+  weight to semibold. Issue #2709. PR #2710.
+
+----
+
+## Version 26.1 Beta 2 [2026-04-04]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+Note: There are no longer any Mac releases produced for novelWriter. See #2618.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* An unchecked dependency on Qt 6.9 has been fixed. If the app was running in an environment with
+  an older Qt version, the app would crash when opening one of the settings dialogs. This should
+  only affect the Debian packages since the Windows and AppImage releases bundle Qt 6.11.
+  Issue #2706. PR #2704.
+
+----
+
+## Version 26.1 Beta 1 [2026-04-02]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+Note: There are no longer any Mac releases produced for novelWriter. See #2618.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The URL highlighting now also works if the URL has an exclamation point. Issue #2693. PR #2695.
+* The margin settings in Manuscript Build settings now correctly shows icons to indicate margin
+  type. PR #2647.
+
+**Features**
+
+* The novelWriter version number is now year-based. Instead of the next release being 2.9, it is
+  now 26.1 or 2026.1 as shown in the app. Discussion #2667. PR #2669.
+* Added the Lucide icon theme as a user-selectable icon theme. Issue #2605. PR #2632.
+* It is now possible to split a document via text selection, or at the cursor position, from the
+  right-click menu in the editor. Issues #1486 and #2571. PR #2688.
+* The shortcuts `Ctrl+Up` and `Ctrl+Down` now move the cursor between paragraphs in the editor.
+  Issue #2635. PR #2679.
+* The size of the different heading levels can now be adjusted in the Manuscript Build settings
+  tool. Issue #2439. PR #2650.
+* Added a setting for manuscripts to use blank lines instead of margins in manuscript document
+  formats. Issue #2648. Discussion #2646. PR #2649.
+* A new "Heading Format" sections is available in Manuscript Build settings. The settings for bold
+  and colourised headings have been moved there, and a new setting to make them uppercase has been
+  added. PR #2647.
+
+**Improvements**
+
+* Added word or character units to count tooltip labels in project tree and novel view. PR #2698.
+* The note document associated with a reference can now be opened in the editor from the
+  right-click menu. Issue #2448. PR #2697.
+* The `Shift+Enter` shortcut now also works in the project search, and opens the document in the
+  viewer. However, it cannot show the actual search result since the search itself is performed on
+  the raw plain text document and doesn't apply to the generated document in the viewer.
+  Issue #2661. PR #2697.
+* Backward searches in the editor can now also iterate backwards in project documents if the option
+  to continue search in the next document is enabled. Issue #1451. PR #2696.
+* Error handling when encountering file system issues has been improved and hardened. It should
+  further prevent application crashes when encountering such issues. Issues #2529 and #2671.
+  PRs #2675 and #2683.
+* The document header in the editor and viewer panels have been improved. An issue with clipping of
+  the descending characters have been fixed, and each part of the path can be clicked to highlight
+  it in the project tree. Issues #2664 and #2674. PR #2677.
+* Added a setting in Preferences that turns off scaling of headings in the editor, which is more
+  consistent with plain text where all text is the same size. Issue #2636. PR #2670.
+* Improved the way version numbers are shown in the Welcome dialog, allows the selected project to
+  be opened with the Enter key, and using the arrow keys will move the selection up and down
+  without first having to switch focus to the recent projects list. PR #2668.
+
+**Accessibility**
+
+* Improved screen reader support for remaining buttons, and improved reading of settings pages in
+  various dialogs. Issue #2338. PR #2698.
+* Two new light colour themes for colour blindness has been added. They are "Today Deuteranopia"
+  for red/green colour blindness, and "Today Tritanopia" for blue colour blindness. Issue #2689.
+  PR #2694.
+* Added an option in Preference to show dotted lines under formatting codes in the editor. This is
+  a visual aid in addition to highlighting colours. Issue #2691. PR #2692.
+
+**Internationalisation**
+
+* Updated translation files with some new translations since the 2.8 release. PR #2699.
+
+**Other Changes**
+
+* The fun Discworld themed titles shown on error windows have been extended with new titles to
+  randomly select from. PR #2684.
+* PDM has replaced UV as the dependency manager for development and testing. This should not matter
+  to end users. Issue #2685. PR #2678.
+
+----
+
+## Version 2.8.2 [2026-01-25]
+
+### Release Notes
+
+This is a patch release that fixes an issue with launching novelWriter via a project file on
+Windows, adds an alert when the spell check dictionary cannot be loaded, handles headings in HTML
+manuscripts the same way as for documents, and updates the documentation on how heading levels are
+handled in the manuscript build process.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue with the exe launcher on Windows where it didn't support spaces in the path when
+  the user tried to open novelWriter from a project file. Issue #2643. PR #2645.
+* Fixed an issue with the PDF manuscript format which stopped after about 600-700 pages when
+  generating A4 pages. The limit is now in the 11000 pages range. Issue #2637. PRs #2638 and #2639.
+
+**Improvements**
+
+* Added an alert box when the spell check language selected for a project could not be loaded.
+  Issue #2631. PR #2654.
+* The HTML manuscript format now exports novel title and partition titles as paragraphs with a
+  larger font size instead of HTML headings. This is more consistent with the other formatted
+  document formats. Issue #2641. PR #2653.
+
+**Documentation**
+
+* Added information to the documentation about heading level promotion when building the
+  manuscript. Issue #2641. PR #2653.
+
+----
+
+## Version 2.8.1 [2025-12-28]
+
+### Release Notes
+
+This is a patch release that fixes an issue where the application could crash due to a change in
+PyQt/Qt 6.10. The issue is related to certain input methods, and is at least triggered when using
+Spotlight on MacOS.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where the inputMethodQuery call to the Qt library returns an object that PyQt6
+  cannot convert to a Python object. The fix just disables the conversion since the return value is
+  passed back to the Qt library anyway. The problem affects Qt/PyQt 6.10 and is triggered in MacOS
+  at least, but it is not known if it affects other platforms. Issue #2622. PR #2623.
+
+**Documentation**
+
+* Removed references to the old colour theme system in the documentation. Issue #2619. PR #2625.
+
+----
+
+## Version 2.8 [2025-12-14]
+
+### Release Notes
+
+The 2.8 release is based on the features added in 2.8 beta 1 and 2.8 RC 1.
+
+See the website for complete [Release Notes](https://novelwriter.io/releases/release_2_8.html).
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where the app could crash when the user pasted from an empty clipboard. This
+  appears to be a Qt or PyQt bug, and is not present on the later releases, but a fix has been
+  added that ensures the bug is not triggered. Issue #2598. PR #2602.
+
+**Documentation**
+
+* Fixed a broken link in the updated 2.8 docs. PR #2595.
+
+**Internationalisation**
+
+* Updated Czech, German, US English, Italian, Japanese, Norwegian and Chinese translation files
+  from the Crowdin project page. PR #2608.
+
+**Packaging**
+
+* Added `qt6-svg-plugins` as a direct dependency of novelWriter on Debian. This package was not
+  always installed on some distros. Issue #2604. PR #2607.
+
+----
+
+## Version 2.8 RC 1 [2025-11-30]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed a bug that would block the return key in the editor if French style space padding was
+  enabled in Preferences. Issue #2586. PR #2587.
+* Fixed an issue where dialog state was no longer saved properly when they were closed for many
+  dialogs. This may be due to a change in the Qt framework, or a bug from a previous release.
+  PR #2585.
+* Fixed an issue where a confusing error would show up if the user cancelled the file dialog during
+  example project creation. A new dialog now tells you what the actual issue was and sends you back
+  to the welcome dialog. Issue #2590. PR #2592.
+
+**Features**
+
+* Vim mode has been added to the editor, and can now be enabled in Preferences. Contributed by
+  @idealemu. Issue #2493. PRs #2499 and #2588.
+
+**Improvements**
+
+* Using format button from the editor toolbar will not apply the formatting on lines that cannot
+  take formatting, like headings and meta data lines. Issue #2560. PR #2575.
+* Added an option in Preferences that will try to centre the main app windows during startup. This
+  effect is always triggered if the main window is scaled down at startup due to being opened on a
+  smaller screen. Issue #2579. PRs #2580 and #2581.
+* The example project has been updated and improved. Issue #2570. PRs #2572 and #2574.
+* The spacing between icon and text in push buttons has been increased. PR #2582.
+* The font selection dialog now remembers its previous size, and uses the new standard push buttons
+  instead of the Qt defaults. PR #2584.
+* It is now possible to override the manuscript language meta value for document formats that have
+  this. The IETF BCP 47 language tag is used. Issue #2328. PR #2593.
+
+**Internationalisation**
+
+* Updated US English, Italian, Norwegian, and Japanese translations. PR #2589.
+
+----
+
+## Version 2.8 Beta 1 [2025-10-29]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The editor now properly supports 4 byte Unicode characters without breaking the syntax
+  highlighting and spell checker. Issue #2449. PR #2451.
+* Fixed a bug in the font matching code where the style name property for the font was set,
+  preventing Qt from picking a proper styled font. Issue #2502. PR #2503.
+* Spell check dictionaries in the main menu are now updated when new dictionaries are installed
+  using the add dictionaries tool. Contributed by @Reproog. Issue #2558. PR #2562.
+* Fixed an issue where the Novel Tree panel heading would be greyed out if there was only one Novel
+  root folder. Issue #2482. PR #2556.
+
+**Features**
+
+* Current line highlighting has been added and can be enabled in Preferences. Issue #1321.
+  PR #2405.
+* The Status and Importance labels can now use theme colours in addition to a user defined custom
+  colour. The settings for these labels have also been made clearer. Issues #2357, #2366 and
+  #2452. PRs #2400 and #2461.
+* Markdown style highlighting tags are now supported in the editor. Issue #1894. PR #2412.
+* Synopsis/short comments, story comments, and story notes can now be used multiple times under a
+  heading. The text is just appended as a new paragraph each time the annotated comment type is
+  encountered. Issue #2483. PR #2543.
+
+**Improvements**
+
+* You can now press `Ctrl+T` and `Ctrl+Shift+T` when in Focus Mode to exit the Focus Mode
+  automatically and switch to the Project Tree or Outline View. Issue #1294. PR #2479.
+* When creating a new document from a template, the first title of the template document is
+  replaced with the label text set for the new document. Issue #2238. PR #2477.
+* When the app is performing a potentially bulky and time consuming task, a small progress bar will
+  appear at the top of the status bar to show the progress of the task. It is currently used when
+  the index is rebuilt and when processing multiple documents in the Project Tree. Issue #2243.
+  PR #2478.
+* The auto-replace feature in the editor is now better at detecting opening and closing quotes when
+  used in relation to markdown style markup. Issue #2488. PR #2489.
+* The application window is now blocked from resizing itself to a size larger than the screen when
+  opened on a smaller screen than it was previously opened on. Like for instance when it was
+  connected to an external screen from a laptop. Issue #2354. PR #2369.
+* Improved the CSS styling of HTML manuscript documents. Issue #2358. PR #2404.
+* Trailing spaces are no longer highlighted in the editor with an error underline. Multiple spaces
+  between words still are. Issue #2501. PR #2505.
+* The rebuild index dialog is no longer showed if the index is rebuilt due to index structure
+  changes when a project is opened for the first time in a newer version of novelWriter. This was
+  confusing to some users who thought the dialog indicated an error. Issue #2513. PR #2537.
+* A switch on the Manuscript Build Settings dialog now allows for automatic preview of the build
+  when Apply or Save is clicked. Issue #2486. PR #2553.
+* Formatting and handling of Story Comments and Story Notes have been improved, and they can be
+  filtered separately in the viewer panel. PR #2421.
+
+**User Interface**
+
+* The GUI and syntax themes have been merged into a single theme, which means there are no longer
+  separate settings for the general GUI and the document colour theme. Issue #2335. PR #2373.
+* There are now two GUI theme settings in Preferences, one for light and one for dark mode. A new
+  button on the sidebar allows you to switch between them, or it can be set to auto mode that
+  follows the operating system's light/dark mode. Issues #1173 and #2487.
+  PRs #2373 and #2545.
+* More themeable settings have been added. The document active flag, the theme base colour, and the
+  new GUI accent colour (if Qt version is high enough) is now available. Issue #2382. PR #2384.
+* The highlighting colour for special white spaces, like non-breaking spaces, can now be set in the
+  theme. Previously it used the emphasis colour. Issue #2547. PR #2548.
+* The Welcome dialog background now follows the theme colours. Issue #2379. PR #2380.
+* The dialog buttons now use icons from the selected theme, not from the host OS. Issues #2498,
+  #2551 and #2561. PRs #2544, #2546, #2553, #2557 and #2563.
+* Added semantic categories for icon colours which can be defined in the colour theme. PR #2549.
+* Primer Dark and Primer Light themes added by @HeyMyian. Issue #2376. PRs #2377 and #2419.
+* Horizon, Otium, Paragon, Selenium, Sepia, Sultana, Vivid, Warpgate, and Waterlily themes added by
+  @HeyMyian. Issue #2407. PR #2495.
+* Aura, B2T Garden, B2T Suburb, B4T Classic-O, B4T Modern-C, Everforest, New Moon, Full Moon, Nord,
+  Nordlicht, Castle, Chernozem, Chalky Soil, Floral, Ruby themes added by @HeyMyian. PR #2450.
+* Blue Streak themes added. PR #2388.
+* LCARS theme added. PR #2399.
+* Espresso and Noctis themes added. PR #2422.
+* Various improvements to existing and new themes by @vkbo. PRs #2396, #2418, #2475 and #2481.
+* Various improvements to existing and new themes by @HeyMyian. PRs #2506 and #2494.
+
+**Packaging**
+
+* The license info for novelWriter has been updated to include `GPL-3.0-or-later`, `Apache-2.0`,
+  and `CC-BY-4.0`. Issue #2444. PR #2446.
+* Updated Debian package build and added Qt6 plugin for WebP images as a dependency. PR #2401.
+
+**Documentation**
+
+* Added some info on how to get around the line heigh issue in the editor in the Tips & Tricks
+  section of the documentation. Issue #2559. PR #2564.
+* Fixed some typos in the documentation. PR #2542.
+
+**Code Maintenance**
+
+* Improved linting and added more mapped Qt constants. PR #2536.
+* Added test coverage of the theme files to ensure they are up to date. PR #2378.
+* Updated credits and license information of icon themes. PR #2474.
+* Some fields have been dropped from icon and colour themes. PRs #2466 and #2423.
+* Changed a few default settings in config, added automatic rebuild of the index in new projects,
+  and fixed tests. PR #2395.
+* Added test coverage and support for Python 3.14. PR #2538.
+* Improved logging formatting by stripping HTML content. PR #2402.
+* Cleaned up and improved pkgutils CLI tool. PR #2541.
+* The project now uses UV as the primary dependency handling tool for development. PR #2540.
+* Fixed the run_tests helper script for HighDPI monitors. PR #2496.
+
+----
+
+## Version 2.7.5 [2025-09-14]
+
+### Release Notes
+
+This is a patch release that fixes an issue related to crashes when using the completer menu under
+certain conditions, and improves positioning of the input box for CJK languages.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where the app would crash of deleting the `@` character with the completer menu
+  visible and the text margins of the editor set to "justified". This is likely crashing due to
+  some unhandled corner case in the Qt library, but the implementation of the completer menu in
+  novelWriter uses a small hack to bypass some intended behaviour of the menu. Extra steps have
+  been added to the implementation that seems to avoid the crash. Issue #2510. PR #2511.
+* Fixed an issue where the input box that shows up when typing CJK languages were covering the text
+  due to an incorrect offset of the box location. The incorrect offset is caused by the text
+  margins not being taken into account. Fix by @Euophrys based on solution by @Jack-name.
+  Issues #2267 and #2517. PR #2518.
+
+----
+
+## Version 2.7.4 [2025-07-15]
+
+### Release Notes
+
+This is a patch release that updates the Czech and French translations, and makes some changes to
+the available Material Symbols icon themes. Additional icon themes are no longer automatically
+included in all release packages due to license constraints.
+
+### Detailed Changelog
+
+**Internationalisation**
+
+* The Czech and French translations are now complete. PR #2469.
+
+**Packaging**
+
+* Only the Material Symbols icons are included by default in packages. Other icon themes are
+  included depending on licensing restrictions for free and non-free requirements. The Material
+  Symbols Bold themes have been dropped, and a Sharp theme added. Issue #2462. PR #2467.
+
+----
+
+## Version 2.7.3 [2025-07-07]
+
+### Release Notes
+
+This is a patch release that fixes a bug in, and makes a few improvement to, Preferences.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixes an issue where novelWriter would crash if a `%` was added to any of the free text settings
+  fields in Preferences. Issue #2455. PR #2456.
+
+**Improvements**
+
+* The "Dialogue line symbols" setting in Preferences now has an "Add" button with a dropdown menu
+  for all the symbols allowed in this field. Since virtually none of them are available on a
+  regular keyboard, this makes it easier to add them and more transparent which symbols are allowed
+  in the box. Issue #2453. PR #2457.
+* The switch for the "Allow open-ended dialogue" setting in Preferences has been moved up one line
+  so it is clearer that it only applies to quoted dialogue, and not to the alternative dialogue
+  settings. Issue #2454. PR #2457.
+
+**Packaging**
+
+* Package license information has been updated to also list the licenses for the new icon themes.
+  Issue #2434. PRs #2435 and #2458.
+
+----
+
+## Version 2.7.2 [2025-06-24]
+
+### Release Notes
+
+This is a patch release that fixes several issues related to DocX and PDF manuscript documents,
+improves how line breaks, alignment and indentation is processed, and fixes some issues with
+displaying tags for novel documents on the user interface.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where escaped markup characters were not replaced properly in DocX and PDF
+  documents, and in previews. Issue #2410. PR #2411.
+* Fixed an issue where titles with line breaks in them would have page breaks applied to both lines
+  for preview and PDF documents. Issue #2415. PR #2416.
+* Fixed an issue where the justified text setting would not be properly applied to a paragraph in a
+  manuscript document if there was a line break in the paragraph, but single line breaks were set
+  to be ignored. Issue #2426. PR #2427.
+* Fixed an issue where the "Tag" field of the Outline View details panel remained blank even if a
+  tag was set for the novel document. Issue #2428. PR #2429.
+
+**Improvements**
+
+* When comments are enabled in the viewer, story comments should also be visible. A separate filter
+  button will be added for this in 2.8. PR #2420.
+* When a paragraph has line breaks in it, the alignment tag will now override first line
+  indentation even if the alignment tag is not on the first line. This is more consistent with the
+  alignment behaviour for multi-line paragraphs in general. Issue #2425. PR #2427.
+* Tags will now be shown in the Novel View tooltip pop-out under the triangle button, together with
+  all the other meta data collected about a document or heading. PR #2429.
+
+**Documentation**
+
+* The documentation on how alignment and first line indentation works in conjunction with
+  in-paragraph line breaks, the setting to keep or ignore such line breaks, and the forced line
+  break shortcode, has been improved. Issue #2425. PR #2427.
+
+----
+
+## Version 2.7.1 [2025-06-09]
+
+### Release Notes
+
+This is a patch release that fixes some issues with tags and references, an issue with the
+auto-complete menu on Windows, and some issues with the AppImage on Linux. The Czech translation
+for 2.7 has also been completed.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix a bug where tags would be listed in the auto-complete menu for mentions even if the file
+  defining it had been moved to Archive or Trash. Issue #2387. PR #2389.
+* Fixed a bug that seems to only have occurred on Windows where the auto-complete menu would hold
+  on to the return and arrow keys even when it was hidden. Issue #2386. PR #2389.
+
+**Improvements**
+
+* The auto-complete menu in the editor no longer shows any suggestions when defining the tag.
+  This never made sense anyway. PR #2389.
+
+**Internationalisation**
+
+* Updated the Czech. PR #2393.
+
+**Packaging**
+
+* Fixed an issue with the AppImage release where on some platforms `libxcb-cursor0` was missing.
+  The library is now included in the AppImage. Issue #2374. PR #2392.
+
+----
+
+## Version 2.7 [2025-06-01]
+
+### Release Notes
+
+The 2.7 release updates the 2.7 RC 1 release and makes an improvement to the build settings tool.
+It also updates most translations and updates the French version of the documentation.
+
+See the website for complete [Release Notes](https://novelwriter.io/releases/release_2_7.html).
+
+### Detailed Changelog
+
+**Improvement**
+
+* The Manuscript Build Settings dialog now works on a copy of the settings so that if the dialog
+  box is closed without saving, all changes are discarded. It should also now detect any change
+  made to properly raise a confirmation prompt when closing without saving. Issue #2350. PR #2351.
+
+**Documentation**
+
+* The user documentation has been restructured, and the Getting Started section has been made less
+  technical. The install instructions have been moved out and into the main website. The technical
+  and in-depth parts of the documentation have been kept, but moved further back so that the
+  documentation can be read from the start and to the point where the user has enough information.
+  The larger sections have also been split up so that it should be easier to find the wanted
+  information directly from the menu. Issue #2345. PR #2355.
+
+**Internationalisation**
+
+* Updated US English, Japanese, Norwegian. German, Italian, Polish, Brazilian Portuguese and
+  Chinese translation files. PR #2353.
+* French documentation updated by @Karduin. Issue #2360. PR #2361.
+
+----
+
+## Version 2.7 RC 1 [2025-05-19]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+### Detailed Changelog
+
+**New Features**
+
+* It is now possible to set character count as the main statistics displayed on the GUI instead of
+  word count. The setting is available under the "Appearance" section in Preferences. Issue #1657.
+  PR #2323.
+* Comments can now be marked as "Manuscript Notes" with the `%Note.term:` syntax. The term is a
+  free form value that is displayed alongside the note when exported to the manuscript. Each term
+  is also added as a column in exports from the Outline View. Issue #1133. PR #2346.
+* A completer drop down menu has been added to comments as well in the editor. It is triggered when
+  a new line starts with `%`. It will show the options of Synopsis, Short, Story and Note, and when
+  a period is added after the latter two, show a list of previously used Story and Note keys.
+  Issue #1784. PR #2290.
+
+**Improvements**
+
+* The dialogue colour of the Snazzy Light syntax theme has changed from yellow to blue, which
+  should make it easier to read. PR #2336.
+* The Snazzy Light theme has also been added as a GUI theme. PR #2334.
+* The auto-generated title page for new projects should now make a little more sense in terms of
+  default values filled in for the author. PR #2333.
+* The new project form on the Welcome dialog now remembers the previous author name filled in, so
+  there should be no need to type it again every time. PR #2333.
+* Project name and author name values are now also used for new example projects. PR #2333.
+* The narrator break symbol settings for dialogue have been changed from a free text field to a
+  dropdown list of dashes. This helps to avoid misunderstandings where the field was populated with
+  other symbols, like quote symbols (see #2320). Issue #2324. PR #2327.
+* A splash screen is now shown at startup, providing some information about the initialisation
+  steps the startup script is running before the GUI is launched. Since loading system fonts can be
+  quote heavy, this at least gives some user feedback to users running on systems where there is a
+  significant delay. In particular, there is a long delay when loading fonts with poor Unicode
+  support, in which case the Qt library will look for replacement glyphs when the symbols are first
+  encountered. Previously, the delay happened when the Welcome dialog was being drawn, since this
+  is the first time a non-Ascii Unicode character is used. Now these Unicode characters are probed
+  when the config is loaded, with progress output on the splash screen. Issue #2315. PR #2316.
+
+**Bugfixes**
+
+* Moving a note between root folders of a different type will now update the class the tags defined
+  within the note are associated with. This association is used to populate the tag auto-completion
+  in the editor. Issue #2330. PR #2343.
+* The story structure comments now appear under the correct column when exported to CSV from the
+  Outline View. Issue #2313. PR #2343.
+* A new unique ID is now assigned to new example projects. Creating multiple example projects would
+  previously retain the original ID, causing the Welcome dialog to override them rather than list
+  them as unique projects. PR #2333.
+* In Qt6, or probably in PyQt6, the datetime type from Python was truncated to a date variable when
+  localising it. This has been fixed by explicitly converting the Python datetime to a QDateTime
+  before passing it to the PyQt wrapper. This is probably a bug in PyQt6. Issue #2325. PR #2326.
+* A missing Remix icon for project copy has been added. Issue #2314. PR #2317.
+
+**Accessibility**
+
+* Trees and lists on the GUI have been assigned names so that screen readers can more easily
+  identify them. Switches on the GUI have also been associated with their labels so the screen
+  reader can pick up the label text. Icons on the project tree also have an accessibility label.
+  Issues #2106 and #2107. PR #2337.
+* Switches should now show a highlighted border when they have focus, and the toggle animation also
+  now works properly when a switch is toggled using the keyboard. This should improve keyboard
+  navigation. PR #2337.
+* The default status and importance labels for new projects now use shapes for icons, to make the
+  defaults more accessible for people with reduced colour vision. Issue #2332. PR #2333.
+
+**Code Improvements**
+
+* New tests have been added for the custom data models, using the Qt model tester framework that
+  ensures the models have all the virtual methods implemented. PR #2331.
+
+----
+
+## Version 2.7 Beta 1 [2025-04-20]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+### Detailed Changelog
+
+**New Features**
+
+* The TypIcons icon set has been dropped and all individual icon files removed. Instead, three new
+  icon themes have been added in a total of nine different variations. These icon themes are kept
+  in single files and generated from official sources. They are also colourised at runtime using
+  the GUI theme colours for consistency. Issue #2159. PRs #2171, #2174, #2177, #2178 and #2203.
+* Support for Story Structure comments have been added. These are special in-text comments that can
+  be used for analysing the story structure using various writing techniques. The comments are
+  indexed by novelWriter and can be included in manuscripts as well as exported to CSV files from
+  the Outline View for use with spread sheet software. Idea and documentation by Alan Langford
+  (@instancezero). Issues #1784, #2288, #2289 and #2296. PRs #2255, #2284, #2293, #2295 and #2298.
+
+**Improvements**
+
+* The thickness of the editor cursor can now be set in Preferences. Issue #2219. PR #2230.
+* The Novel View has been rewritten from scratch using a model/view framework. Several minor issues
+  were resolved in the process. Issues #942 and #2253. PR #2272.
+* The logic of where new documents are added in the project tree has been rewritten and improved.
+  The algorithm should now avoid adding chapters within chapters when a scene inside a chapter is
+  selected. Otherwise the behaviour should be similar to before, but it will now also apply the
+  same logic when new documents are created from templates. Issue #2260. PR #2302.
+* Dialogue highlighting should now work a little better for single quoted dialogue when it
+  encounters apostrophes in the same text. Issue #2271. PR #2300.
+* Quoted text is no longer highlighted as dialogue in the editor when the document is a project
+  note. This is consistent with how the viewer and manuscript tool work. Issue #2297. PR #2299.
+
+**Documentation**
+
+* Internationalisation for the documentation is now properly supported in the code base, and new
+  contributions are possible. Discussion #1834. PRs #2224 and #2227.
+
+**Internationalisation**
+
+* French translation files for the documentation were added by @Karduin. PR #2226.
+
+**Packaging and Installation**
+
+* The move to Qt6 is complete, and the new minimum requirement is Qt 6.4. Issues #864, #1142,
+  #2192, #2193, #2194 and #2195. PRs #2184, #2187, #2190, #2191, #2196, #2204, #2301 and #2306.
+* Support for Python 3.9 has been dropped. Due to the Qt6 change, older distros are no longer
+  supported. The oldest Ubuntu release still supported is 24.04. PR #2182.
+* The Windows release now uses a custom novelWriter.exe launcher rather than calling the Python exe
+  directly with novelWriter.pyw as an argument. This means novelWriter can also be launched from
+  its install folder, and desktop shortcuts created directly. It also simplifies the registry
+  entries. PRs #2197, #2198 and #2199.
+* The Appdata XML files used with AppImage releases has been updated and broken links fixed.
+  PR #2229.
+* RPM packages are now available for the 2.6.3 release on Fedora 41 and 42. Several minor
+  adjustments to the code base has been made to make the packaging process easier for the 2.7
+  release. The Fedora releases are maintained by Benson Muite (@bkmgit). Issues #907, #2276 and
+  #2303. PRs #2305 and #2307.
+* The shebang from the launch script on Windows has been removed. Issue #1284. PR #2280.
+
+**Code Improvements**
+
+* The log output now obeys the `NO_COLOR` and `FORCE_COLOR` environment variables. PR #2228.
+* The CI/CD pipeline now runs type checking on the code base using Pyright. PR #2279.
+* The CI/CD pipeline now uses Ruff to check code style and format. PRs #2281, #2282 and #2287.
+* The code base has been updated to conform to new linting rules. PR #2201.
+
+----
+
 ## Version 2.6.3 [2025-02-16]
 
 ### Release Notes
@@ -452,7 +1242,7 @@ See the website for complete [Release Notes](https://novelwriter.io/releases/rel
 * Portuguese translation updated by Oli Maia. PR #1955.
 * Japanese translation updated by @hebekeg. PR #1955.
 * French translation updated by Albert Aribaud (@aaribaud). PR #1955.
-* Polish translation added by Anna Maria Polak (@Nauthiz). PR #1955.
+* Polish translation added by Anna Maria Polak (@Nauthizz). PR #1955.
 
 **Packaging**
 
@@ -1173,7 +1963,7 @@ _These Release Notes also include the changes from the 2.2 Beta 1 and 2.2 RC 1 r
 **Usability**
 
 * Use `Ctrl+K, H` for inserting short description comments (alias to synopsis), drop the space
-  after the `%` symbol when inserting special comments, add a browse icon to the open open project
+  after the `%` symbol when inserting special comments, add a browse icon to the open project
   dialog, and remove the popup warning for Alpha releases. PR #1626.
 * Menu entries no longer clear the status bar message when they are hovered. This was caused by a
   status tip feature in Qt, which prints a blank message to the status bar. PR #1630.
@@ -5461,7 +6251,7 @@ helpful feedback and issue reports for the new features added in this, and previ
   more fault tolerant, and will automatically rebuild a corrupt index loaded from cache. PR #140.
 * The way that dialog options (which options were selected last time a dialog was open) has been
   rewritten. All data is now stored in a single JSON file in the project meta folder. PR #175.
-* Since the config class is instanciated before the GUI, error reporting to the user was tricky. An
+* Since the config class is instantiated before the GUI, error reporting to the user was tricky. An
   error cache has now been added to allow non-critical errors to be displayed after the GUI is
   built. PR #176.
 * All source files now have the minimal GPLv3 license note at the top. PR #188.
@@ -5525,7 +6315,7 @@ helpful feedback and issue reports for the new features added in this, and previ
 * Added keyboard shortcuts and menu entries for formatting headers, comments, and removing block
   formats. PR #155.
 * Disable re-highlighting of open file when resizing window. This is potentially a slow process if
-  the spell checker is on and the file is large. There is no need to do this just for reflowing
+  the spell checker is on and the file is large. There is no need to do this just for re-flowing
   text, so it is now disabled on resize events. Issue #150, PR #153.
 * Improved the speed of the syntax highlighter by about 40% by not using regular expressions for
   highlighting block formats and by skipping empty lines entirely. PR #154.
@@ -5811,7 +6601,7 @@ helpful feedback and issue reports for the new features added in this, and previ
 
 **Code Improvements**
 
-* Spell checking is now handled by a standard class that can be subclassed to support different
+* Spell checking is now handled by a standard class that can be sub-classed to support different
   spell check tools. This was done because pyenchant is no longer maintained and having a standard
   wrapper makes it easier to support other tools. PR #31.
 

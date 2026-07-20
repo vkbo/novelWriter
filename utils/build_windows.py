@@ -17,20 +17,30 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import argparse
 import compileall
 import shutil
-import subprocess
 import sys
 import urllib.request
 import zipfile
 
 from pathlib import Path
 
-from utils.common import ROOT_DIR, SETUP_DIR, copySourceCode, extractVersion, readFile, writeFile
+from utils.common import (
+    ROOT_DIR,
+    SETUP_DIR,
+    copySourceCode,
+    extractReqs,
+    extractVersion,
+    readFile,
+    removeRedundantQt,
+    systemCall,
+    writeFile,
+)
 
 
 def prepareCode(outDir: Path) -> None:
@@ -43,11 +53,9 @@ def prepareCode(outDir: Path) -> None:
     files = [
         ROOT_DIR / "CREDITS.md",
         ROOT_DIR / "LICENSE.md",
-        ROOT_DIR / "requirements.txt",
         SETUP_DIR / "iss_license.txt",
         SETUP_DIR / "windows" / "novelWriter.ico",
         SETUP_DIR / "windows" / "novelWriter.exe",
-
     ]
     for item in files:
         shutil.copyfile(item, outDir / item.name)
@@ -58,19 +66,17 @@ def prepareCode(outDir: Path) -> None:
     print("Done")
     print("")
 
-    return
-
 
 def embedPython(bldDir: Path, outDir: Path) -> None:
     """Embed Python library."""
     print("Adding Python embeddable ...")
 
-    pyVers = "%d.%d.%d" % (sys.version_info[:3])
+    pyVers = ".".join(str(v) for v in sys.version_info[:3])
     zipFile = f"python-{pyVers}-embed-amd64.zip"
     pyZip = bldDir / zipFile
     if not pyZip.is_file():
         pyUrl = f"https://www.python.org/ftp/python/{pyVers}/{zipFile}"
-        print("Downloading: %s" % pyUrl)
+        print(f"Downloading: {pyUrl}")
         urllib.request.urlretrieve(pyUrl, pyZip)
 
     print("Extracting ...")
@@ -80,106 +86,13 @@ def embedPython(bldDir: Path, outDir: Path) -> None:
     print("Done")
     print("")
 
-    return
-
 
 def installRequirements(libDir: Path) -> None:
     """Install dependencies."""
     print("Install dependencies ...")
-
-    try:
-        subprocess.call([
-            sys.executable, "-m",
-            "pip", "install", "-r", "requirements.txt", "--target", str(libDir)
-        ])
-    except Exception as exc:
-        print("Failed with error:")
-        print(str(exc))
-        sys.exit(1)
-
+    systemCall([sys.executable, "-m", "pip", "install", *extractReqs(["app"]), "--target", libDir])
     print("Done")
     print("")
-
-    return
-
-
-def removeRedundantQt(libDir: Path) -> None:
-    """Delete Qt files that are not needed"""
-
-    def unlinkIfFound(file: Path) -> None:
-        if file.is_file():
-            file.unlink()
-            print(f"Deleted: {file}")
-
-    def deleteFolder(folder: Path) -> None:
-        if folder.is_dir():
-            shutil.rmtree(folder)
-            print(f"Deleted: {folder}")
-
-    def unlinkIfPrefix(folder: Path, prefix: tuple[str, ...]) -> None:
-        if folder.is_dir():
-            for item in folder.iterdir():
-                if item.name.startswith(prefix):
-                    if item.is_file():
-                        unlinkIfFound(item)
-                    elif item.is_dir():
-                        deleteFolder(item)
-
-    print("Deleting Redundant Files")
-    print("========================")
-    print("")
-
-    pyQt6Dir = libDir / "PyQt6"
-    bindDir  = libDir / "PyQt6" / "bindings"
-    qt6Dir   = libDir / "PyQt6" / "Qt6"
-    binDir   = libDir / "PyQt6" / "Qt6" / "bin"
-    plugDir  = libDir / "PyQt6" / "Qt6" / "plugins"
-    qmDir    = libDir / "PyQt6" / "Qt6" / "translations"
-    dictDir  = libDir / "enchant" / "data" / "mingw64" / "share" / "enchant" / "hunspell"
-
-    for item in dictDir.iterdir():
-        if not item.name.startswith(("en_GB", "en_US")):
-            unlinkIfFound(item)
-
-    for item in qmDir.iterdir():
-        if not item.name.startswith("qtbase"):
-            unlinkIfFound(item)
-
-    bulkDel = ("QtQml", "Qt6Qml", "QtQuick", "Qt6Quick")
-    unlinkIfPrefix(pyQt6Dir, bulkDel)
-    unlinkIfPrefix(bindDir, bulkDel)
-    unlinkIfPrefix(binDir, bulkDel)
-
-    delQt6 = [
-        "Qt6Bluetooth", "Qt6DBus", "Qt6Designer", "Qt6Help", "Qt6Multimedia",
-        "Qt6MultimediaWidgets", "Qt6Network", "Qt6Nfc", "Qt6OpenGL", "Qt6Positioning",
-        "Qt6PositioningQuick", "Qt6Sensors", "Qt6SerialPort", "Qt6Sql", "Qt6Test",
-        "Qt6TextToSpeech", "Qt6WebChannel", "Qt6WebSockets", "Qt6Xml",
-    ]
-    for item in delQt6:
-        qtItem = item.replace("Qt6", "Qt")
-        unlinkIfFound(binDir / f"{item}.dll")
-        unlinkIfFound(pyQt6Dir / f"{qtItem}.pyd")
-        unlinkIfFound(pyQt6Dir / f"{qtItem}.pyi")
-        deleteFolder(bindDir / qtItem)
-
-    delList = [
-        binDir / "opengl32sw.dll",
-        qt6Dir / "qml",
-        plugDir / "renderers",
-        plugDir / "sensors",
-        plugDir / "sqldrivers",
-        plugDir / "texttospeech",
-        plugDir / "webview",
-    ]
-    for item in delList:
-        unlinkIfFound(item)
-        deleteFolder(item)
-
-    print("Done")
-    print("")
-
-    return
 
 
 def main(args: argparse.Namespace) -> None:
@@ -192,7 +105,7 @@ def main(args: argparse.Namespace) -> None:
     print("")
 
     numVers, _, _ = extractVersion()
-    print("Version: %s" % numVers)
+    print(f"Version: {numVers}")
 
     bldDir = ROOT_DIR / "dist"
     outDir = bldDir / "novelWriter"
@@ -213,18 +126,20 @@ def main(args: argparse.Namespace) -> None:
     shutil.copyfile(libDir / "PyQt6" / "Qt6" / "bin" / "msvcp140.dll", outDir / "msvcp140.dll")
 
     print("Updating starting script ...")
-    writeFile(outDir / "novelWriter.pyw", (
-        "#!/usr/bin/env python3\n"
-        "import os\n"
-        "import sys\n"
-        "\n"
-        "os.curdir = os.path.abspath(os.path.dirname(__file__))\n"
-        "sys.path.insert(0, os.path.join(os.curdir, \"lib\"))\n"
-        "\n"
-        "if __name__ == \"__main__\":\n"
-        "    import novelwriter\n"
-        "    novelwriter.main(sys.argv[1:])\n"
-    ))
+    writeFile(
+        outDir / "novelWriter.pyw",
+        (
+            "import os\n"
+            "import sys\n"
+            "\n"
+            "os.curdir = os.path.abspath(os.path.dirname(__file__))\n"
+            'sys.path.insert(0, os.path.join(os.curdir, "lib"))\n'
+            "\n"
+            'if __name__ == "__main__":\n'
+            "    import novelwriter\n"
+            "    novelwriter.main(sys.argv[1:])\n"
+        ),
+    )
     print("Done")
     print("")
 
@@ -239,15 +154,8 @@ def main(args: argparse.Namespace) -> None:
     writeFile(ROOT_DIR / "setup.iss", issData)
     print("")
 
-    try:
-        subprocess.call(["iscc", "setup.iss"])
-    except Exception as exc:
-        print("Inno Setup failed with error:")
-        print(str(exc))
-        sys.exit(1)
+    systemCall(["iscc", "setup.iss"])
 
     print("")
     print("Done")
     print("")
-
-    return

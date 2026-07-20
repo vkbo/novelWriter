@@ -2,9 +2,6 @@
 novelWriter – Edit Label Dialog
 ===============================
 
-File History:
-Created: 2022-06-11 [2.0rc1] GuiEditLabel
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,22 +17,26 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
 
 from PyQt6.QtWidgets import QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit, QVBoxLayout, QWidget
 
+from novelwriter import SHARED
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NDialog
-from novelwriter.types import QtAccepted, QtDialogCancel, QtDialogOk
+from novelwriter.types import QtAccepted, QtRoleAccept, QtRoleReject
 
 logger = logging.getLogger(__name__)
 
 
 class GuiEditLabel(NDialog):
+    """GUI: Edit Item Label Dialog."""
 
-    def __init__(self, parent: QWidget, text: str = "") -> None:
+    def __init__(self, parent: QWidget, text: str = "", info: str = "") -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiEditLabel")
@@ -43,48 +44,57 @@ class GuiEditLabel(NDialog):
         self.setWindowTitle(self.tr("Item Label"))
 
         # Item Label
-        self.labelValue = QLineEdit(self)
-        self.labelValue.setMinimumWidth(220)
-        self.labelValue.setMaxLength(200)
-        self.labelValue.setText(text)
-        self.labelValue.selectAll()
+        self.edtValue = QLineEdit(self)
+        self.edtValue.setMinimumWidth(220)
+        self.edtValue.setMaxLength(200)
+        self.edtValue.setText(text)
+        self.edtValue.selectAll()
+
+        self.lblValue = QLabel(self.tr("Label"), self)
+        self.lblValue.setBuddy(self.lblValue)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnOk = SHARED.theme.getStandardButton(nwStandardButton.OK, self)
+        self.btnOk.clicked.connect(self.accept)
+
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.reject)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnOk, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
 
         # Assemble
         self.innerBox = QHBoxLayout()
-        self.innerBox.addWidget(QLabel(self.tr("Label"), self), 0)
-        self.innerBox.addWidget(self.labelValue, 1)
+        self.innerBox.addWidget(self.lblValue, 0)
+        self.innerBox.addWidget(self.edtValue, 1)
         self.innerBox.setSpacing(12)
 
         self.outerBox = QVBoxLayout()
         self.outerBox.setSpacing(12)
+        if info:
+            self.outerBox.addWidget(QLabel(info), 0)
         self.outerBox.addLayout(self.innerBox, 1)
-        self.outerBox.addWidget(self.buttonBox, 0)
+        self.outerBox.addWidget(self.btnBox, 0)
 
         self.setLayout(self.outerBox)
 
         logger.debug("Ready: GuiEditLabel")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiEditLabel")
-        return
 
     @property
     def itemLabel(self) -> str:
-        return self.labelValue.text()
+        return self.edtValue.text()
 
     @classmethod
-    def getLabel(cls, parent: QWidget, text: str) -> tuple[str, bool]:
+    def getLabel(cls, parent: QWidget, text: str, info: str = "") -> tuple[str, bool]:
         """Pop the dialog and return the result."""
-        cls = GuiEditLabel(parent, text=text)
-        cls.exec()
-        label = cls.itemLabel
-        accepted = cls.result() == QtAccepted
-        cls.softDelete()
+        dialog = cls(parent, text=text, info=info)
+        dialog.exec()
+        label = dialog.itemLabel
+        accepted = dialog.result() == QtAccepted
+        dialog.softDelete()
         return label, accepted

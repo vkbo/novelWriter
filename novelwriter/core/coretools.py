@@ -2,12 +2,6 @@
 novelWriter – Project Document Tools
 ====================================
 
-File History:
-Created: 2022-10-02 [2.0rc1] DocMerger
-Created: 2022-10-11 [2.0rc1] DocSplitter
-Created: 2022-11-03 [2.0rc2] ProjectBuilder
-Created: 2023-07-20 [2.1b1]  DocDuplicator
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -23,32 +17,37 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
-import re
 import shutil
 
-from collections.abc import Iterable
 from functools import partial
 from pathlib import Path
+from typing import TYPE_CHECKING
 from zipfile import ZipFile, is_zipfile
 
 from PyQt6.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import isHandle, minmax, simplified
-from novelwriter.constants import nwConst, nwFiles, nwItemClass, nwStats
-from novelwriter.core.item import NWItem
+from novelwriter.common import isHandle, minmax, safeExists, safeIsFile, simplified
+from novelwriter.constants import nwFiles, nwItemClass, nwStats
 from novelwriter.core.project import NWProject
-from novelwriter.core.storage import NWStorageCreate
+from novelwriter.core.storage import ProjectStorageCreate
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
 
 logger = logging.getLogger(__name__)
 
 
 class DocMerger:
-    """Document tool for merging a set of documents into a single new
+    """Tool: Merge Documents.
+
+    Document tool for merging a set of documents into a single new
     document. The parameters are defined by the user using the
     GuiDocMerge dialog.
     """
@@ -58,7 +57,6 @@ class DocMerger:
         self._error = ""
         self._target = None
         self._text = []
-        return
 
     @property
     def targetHandle(self) -> str | None:
@@ -81,7 +79,6 @@ class DocMerger:
         """
         self._target = self._project.tree[tHandle]
         self._text = []
-        return
 
     def newTargetDoc(self, sHandle: str, label: str) -> None:
         """Create a brand new target document based on a source handle
@@ -90,14 +87,13 @@ class DocMerger:
         sItem = self._project.tree[sHandle]
         if sItem and sItem.itemParent:
             tHandle = self._project.newFile(label, sItem.itemParent)
-            if nwItem := self._project.tree[tHandle]:
+            if nwItem := self._project.tree[tHandle]:  # pragma: no branch
                 nwItem.setLayout(sItem.itemLayout)
                 nwItem.setStatus(sItem.itemStatus)
                 nwItem.setImport(sItem.itemImport)
                 nwItem.notifyToRefresh()
                 self._target = nwItem
                 self._text = []
-        return
 
     def appendText(self, sHandle: str, addComment: bool, cmtPrefix: str) -> None:
         """Append text from an existing document to the text buffer."""
@@ -108,7 +104,6 @@ class DocMerger:
                 status, _ = item.getImportStatus()
                 text = f"% {cmtPrefix} {info}: {item.itemName} [{status}]\n\n{text}"
             self._text.append(text)
-        return
 
     def writeTargetDoc(self) -> bool:
         """Write the accumulated text into the designated target
@@ -154,7 +149,9 @@ class DocSplitter:
             self._srcHandle = sHandle
             self._srcItem = srcItem
 
-        return
+    def __len__(self) -> int:
+        """Return the number of raw data entries."""
+        return len(self._rawData)
 
     ##
     #  Methods
@@ -170,7 +167,6 @@ class DocSplitter:
         """
         self._parHandle = pHandle
         self._inFolder = False
-        return
 
     def newParentFolder(self, pHandle: str, folderLabel: str) -> None:
         """Create a new folder that will be the top level parent item
@@ -184,7 +180,6 @@ class DocSplitter:
                 nwItem.notifyToRefresh()
             self._parHandle = nHandle
             self._inFolder = True
-        return
 
     def splitDocument(self, splitData: list, splitText: list[str]) -> None:
         """Loop through the split data record and perform the split job
@@ -196,18 +191,14 @@ class DocSplitter:
             chunk = buffer[lineNo:]
             buffer = buffer[:lineNo]
             self._rawData.insert(0, (chunk, hLevel, hLabel))
-        return
 
     def writeDocuments(self, docHierarchy: bool) -> Iterable[bool]:
-        """An iterator that will write each document in the buffer, and
-        return its new handle, parent handle, and sibling handle.
-        """
+        """Write each document in the buffer and yield if successful."""
         if self._srcHandle and self._srcItem and self._parHandle:
             pHandle = self._parHandle
             hHandle = [self._parHandle, None, None, None, None]
             pLevel = 0
             for docText, hLevel, docLabel in self._rawData:
-
                 hLevel = minmax(hLevel, 1, 4)
                 if pLevel == 0:
                     pLevel = hLevel
@@ -221,11 +212,10 @@ class DocSplitter:
                         pHandle = hHandle[2] or hHandle[1] or hHandle[0]
                     elif hLevel == 4:
                         pHandle = hHandle[3] or hHandle[2] or hHandle[1] or hHandle[0]
+                    else:  # pragma: no cover
+                        pass
 
-                if (
-                    (dHandle := self._project.newFile(docLabel, pHandle))
-                    and (nwItem := self._project.tree[dHandle])
-                ):
+                if (dHandle := self._project.newFile(docLabel, pHandle)) and (nwItem := self._project.tree[dHandle]):
                     hHandle[hLevel] = dHandle
                     nwItem.setStatus(self._srcItem.itemStatus)
                     nwItem.setImport(self._srcItem.itemImport)
@@ -252,7 +242,6 @@ class DocDuplicator:
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
-        return
 
     ##
     #  Methods
@@ -265,8 +254,10 @@ class DocDuplicator:
         result = []
         after = True
         if items:
-            hMap: dict[str, str | None] = {t: None for t in items}
+            hMap: dict[str, str | None] = dict.fromkeys(items)
+            SHARED.initMainProgress(len(items))
             for tHandle in items:
+                SHARED.incMainProgress()
                 if oldItem := self._project.tree[tHandle]:
                     pHandle = hMap.get(oldItem.itemParent or "") or oldItem.itemParent
                     if newItem := self._project.tree.duplicate(tHandle, pHandle, after):
@@ -278,82 +269,8 @@ class DocDuplicator:
                     after = False
                 else:
                     break
+            SHARED.clearMainProgress()
         return result
-
-
-class DocSearch:
-
-    def __init__(self) -> None:
-        self._regEx = re.compile("")
-        self._opts = re.UNICODE | re.IGNORECASE
-        self._words = False
-        self._escape = True
-        return
-
-    ##
-    #  Methods
-    ##
-
-    def setCaseSensitive(self, state: bool) -> None:
-        """Set the case sensitive search flag."""
-        self._opts = re.UNICODE
-        if not state:
-            self._opts |= re.IGNORECASE
-        return
-
-    def setWholeWords(self, state: bool) -> None:
-        """Set the whole words search flag."""
-        self._words = state
-        return
-
-    def setUserRegEx(self, state: bool) -> None:
-        """Set the escape flag to the opposite state."""
-        self._escape = not state
-        return
-
-    def iterSearch(
-        self, project: NWProject, search: str
-    ) -> Iterable[tuple[NWItem, list[tuple[int, int, str]], bool]]:
-        """Iteratively search through documents in a project."""
-        self._regEx = re.compile(self._buildPattern(search), self._opts)
-        logger.debug("Searching with pattern '%s'", self._regEx.pattern)
-        storage = project.storage
-        for item in project.tree:
-            if item.isFileType():
-                results, capped = self.searchText(storage.getDocumentText(item.itemHandle))
-                yield item, results, capped
-        return
-
-    def searchText(self, text: str) -> tuple[list[tuple[int, int, str]], bool]:
-        """Search a piece of text for RegEx matches."""
-        count = 0
-        capped = False
-        results = []
-        for res in self._regEx.finditer(text):
-            pos = res.start(0)
-            num = len(res.group(0))
-            lim = text[:pos].rfind("\n") + 1
-            cut = text[lim:pos].rfind(" ") + lim + 1
-            context = text[cut:cut+100].partition("\n")[0]
-            if context:
-                results.append((pos, num, context))
-                count += 1
-                if count >= nwConst.MAX_SEARCH_RESULT:
-                    capped = True
-                    break
-        return results, capped
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _buildPattern(self, search: str) -> str:
-        """Build the search pattern string."""
-        if self._escape:
-            search = re.escape(search)
-        if self._words:
-            search = f"(?:^|\\b){search}(?:$|\\b)"
-        return search
 
 
 class ProjectBuilder:
@@ -364,7 +281,6 @@ class ProjectBuilder:
     def __init__(self) -> None:
         self._path = None
         self.tr = partial(QCoreApplication.translate, "ProjectBuilder")
-        return
 
     @property
     def projPath(self) -> Path | None:
@@ -378,11 +294,13 @@ class ProjectBuilder:
     def buildProject(self, data: dict) -> bool:
         """Build or copy a project from a data dictionary."""
         if isinstance(data, dict):
-            path = data.get("path", None) or None
-            if isinstance(path, (str, Path)):
+            path = data.get("path") or None
+            if author := data.get("author"):
+                CONFIG.setLastAuthor(author)
+            if isinstance(path, str | Path):
                 self._path = Path(path).resolve()
-                if data.get("sample", False):
-                    return self._extractSampleProject(self._path)
+                if data.get("sample"):
+                    return self._extractSampleProject(self._path, data)
                 elif data.get("template"):
                     return self._copyProject(self._path, data)
                 else:
@@ -398,93 +316,90 @@ class ProjectBuilder:
         """Build a blank project from a data dictionary."""
         project = NWProject()
         status = project.storage.createNewProject(path)
-        if status == NWStorageCreate.NOT_EMPTY:
-            SHARED.error(self.tr(
-                "The target folder is not empty. "
-                "Please choose another folder."
-            ))
+        if status == ProjectStorageCreate.NOT_EMPTY:
+            SHARED.error(self.tr("The target folder is not empty. Please choose another folder."))
             return False
-        elif status == NWStorageCreate.OS_ERROR:
-            SHARED.error(self.tr(
-                "An error occurred while trying to create the project."
-            ), exc=project.storage.exc)
+        elif status == ProjectStorageCreate.OS_ERROR:
+            SHARED.error(
+                self.tr("An error occurred while trying to create the project."),
+                exc=project.storage.exc,
+            )
             return False
 
         self._path = project.storage.storagePath
 
-        lblNewProject = self.tr("New Project")
-        lblTitlePage  = self.tr("Title Page")
+        trName = self.tr("New Project")
+        trAuthor = self.tr("Author Name")
+        trTitlePage = self.tr("Title Page")
 
         # Settings
         project.data.setUuid(None)
-        project.data.setName(data.get("name", lblNewProject))
-        project.data.setAuthor(data.get("author", ""))
+        project.data.setName(data.get("name", trName))
+        project.data.setAuthor(data.get("author", trAuthor))
         project.data.setLanguage(CONFIG.guiLocale)
         project.setDefaultStatusImport()
         project.session.startSession()
 
         # Add Root Folders
         hNovelRoot = project.newRoot(nwItemClass.NOVEL)
-        hTitlePage = project.newFile(lblTitlePage, hNovelRoot)
+        hTitlePage = project.newFile(trTitlePage, hNovelRoot)
 
         # Generate Title Page
         aDoc = project.storage.getDocument(hTitlePage)
-        aDoc.writeDocument((
-            "{author}[br]\n"
-            "{address} 1[br]\n"
-            "{address} 2 <<\n"
-            "\n"
-            "[vspace:5]\n"
-            "\n"
-            "#! {title}\n"
-            "\n"
-            ">> **{by} {author}** <<\n"
-            "\n"
-            ">> {count}: [field:{field}] <<\n"
-        ).format(
-            author=project.data.author or "None",
-            address=self.tr("Address"),
-            title=project.data.name or "None",
-            by=self.tr("By"),
-            count=self.tr("Word Count"),
-            field=nwStats.WORDS_TEXT,
-        ))
-
-        # Create a project structure based on selected root folders
-        # and a number of chapters and scenes selected in the
-        # wizard's custom page.
+        aDoc.writeDocument(
+            (
+                "{author}[br]\n"
+                "{address} 1[br]\n"
+                "{address} 2 <<\n"
+                "\n"
+                "[vspace:5]\n"
+                "\n"
+                "#! {title}\n"
+                "\n"
+                ">> **{by} {author}** <<\n"
+                "\n"
+                ">> {count}: [field:{field}] <<\n"
+            ).format(
+                author=project.data.author or trAuthor,
+                address=self.tr("Address Line"),
+                title=project.data.name or trName,
+                by=self.tr("By"),
+                count=self.tr("Word Count"),
+                field=nwStats.WORDS_TEXT,
+            )
+        )
 
         # Create chapters and scenes
         numChapters = data.get("chapters", 0)
         numScenes = data.get("scenes", 0)
 
-        chSynop = self.tr("Summary of the chapter.")
-        scSynop = self.tr("Summary of the scene.")
-        bfNote = self.tr("A short description.")
+        trChSynop = self.tr("Summary of the chapter.")
+        trScSynop = self.tr("Summary of the scene.")
+        trNoteDesc = self.tr("A short description.")
 
         # Create chapters
         if numChapters > 0:
             for ch in range(numChapters):
-                chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
+                chTitle = self.tr("Chapter {0}").format(f"{ch + 1:d}")
                 cHandle = project.newFile(chTitle, hNovelRoot)
                 aDoc = project.storage.getDocument(cHandle)
-                aDoc.writeDocument(f"## {chTitle}\n\n%Synopsis: {chSynop}\n\n")
+                aDoc.writeDocument(f"## {chTitle}\n\n%Synopsis: {trChSynop}\n\n")
 
                 # Create chapter scenes
                 if numScenes > 0 and cHandle:
                     for sc in range(numScenes):
-                        scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
+                        scTitle = self.tr("Scene {0}").format(f"{ch + 1:d}.{sc + 1:d}")
                         sHandle = project.newFile(scTitle, cHandle)
                         aDoc = project.storage.getDocument(sHandle)
-                        aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {scSynop}\n\n")
+                        aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {trScSynop}\n\n")
 
         # Create scenes (no chapters)
         elif numScenes > 0:
             for sc in range(numScenes):
-                scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
+                scTitle = self.tr("Scene {0}").format(f"{sc + 1:d}")
                 sHandle = project.newFile(scTitle, hNovelRoot)
                 aDoc = project.storage.getDocument(sHandle)
-                aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {scSynop}\n\n")
+                aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {trScSynop}\n\n")
 
         # Create notes folders
         noteTitles = {
@@ -495,21 +410,17 @@ class ProjectBuilder:
 
         addNotes = data.get("notes", False)
         for newRoot in data.get("roots", []):
-            if newRoot in nwItemClass:
+            if isinstance(newRoot, nwItemClass):
                 rHandle = project.newRoot(newRoot)
                 if addNotes:
                     aHandle = project.newFile(noteTitles[newRoot], rHandle)
                     ntTag = simplified(noteTitles[newRoot]).replace(" ", "")
                     aDoc = project.storage.getDocument(aHandle)
-                    aDoc.writeDocument(
-                        f"# {noteTitles[newRoot]}\n\n"
-                        f"@tag: {ntTag}\n\n"
-                        f"%Short: {bfNote}\n\n"
-                    )
+                    aDoc.writeDocument(f"# {noteTitles[newRoot]}\n\n@tag: {ntTag}\n\n%Short: {trNoteDesc}\n\n")
 
         # Also add the archive and trash folders
         project.newRoot(nwItemClass.ARCHIVE)
-        project.tree.trash  # Triggers the creation of Trash
+        _ = project.tree.trash  # Triggers the creation of Trash
 
         project.saveProject()
         project.closeProject()
@@ -521,17 +432,15 @@ class ProjectBuilder:
         update new settings.
         """
         source = data.get("template")
-        if not (isinstance(source, Path) and source.is_file()
-                and (source.name == nwFiles.PROJ_FILE or is_zipfile(source))):
+        if not (
+            isinstance(source, Path) and safeIsFile(source) and (source.name == nwFiles.PROJ_FILE or is_zipfile(source))
+        ):
             logger.error("Could not access source project: %s", source)
             return False
 
         logger.info("Copying project: %s", source)
-        if path.exists():
-            SHARED.error(self.tr(
-                "The target folder already exists. "
-                "Please choose another folder."
-            ))
+        if safeExists(path):
+            SHARED.error(self.tr("The target folder already exists. Please choose another folder."))
             return False
 
         # Begin copying
@@ -545,9 +454,7 @@ class ProjectBuilder:
             if is_zipfile(source):
                 with ZipFile(source) as zipObj:
                     for member in zipObj.namelist():
-                        if member == nwFiles.PROJ_FILE:
-                            zipObj.extract(member, dstPath)
-                        elif member.startswith("content") and member.endswith(".nwd"):
+                        if member == nwFiles.PROJ_FILE or (member.startswith("content") and member.endswith(".nwd")):
                             zipObj.extract(member, dstPath)
             else:
                 shutil.copy2(srcPath / nwFiles.PROJ_FILE, dstPath)
@@ -559,45 +466,66 @@ class ProjectBuilder:
             return False
 
         # Open the copied project and update settings
+        self._resetProject(dstPath, data)
+
+        return True
+
+    def _extractSampleProject(self, path: Path, data: dict) -> bool:
+        """Make a copy of the sample project by extracting the
+        sample.zip file to the new path.
+        """
+        if safeExists(path):
+            SHARED.error(self.tr("The target folder already exists. Please choose another folder."))
+            return False
+
+        if safeIsFile(sample := CONFIG.assetPath("sample.zip")):
+            try:
+                shutil.unpack_archive(sample, path)
+                self._resetProject(path, data)
+            except Exception as exc:
+                SHARED.error(self.tr("Failed to create a new example project."), exc=exc)
+                return False
+        else:
+            SHARED.error(
+                self.tr(
+                    "Failed to create a new example project. "
+                    "Could not find the necessary files. "
+                    "They seem to be missing from this installation."
+                )
+            )
+            return False
+
+        return True
+
+    def _resetProject(self, path: Path, data: dict) -> None:
+        """Open a project and reset/update its settings."""
         project = NWProject()
-        project.openProject(dstPath)
+        project.openProject(path)
+        isSample = project.data.uuid == "e2be99af-f9bf-4403-857a-c3d1ac25abea"
+
+        # Project Data
         project.data.setUuid("")  # Creates a fresh uuid
-        project.data.setName(data.get("name", "None"))
-        project.data.setAuthor(data.get("author", ""))
+        if name := data.get("name", ""):
+            project.data.setName(name)
+        if author := data.get("author", ""):
+            project.data.setAuthor(author)
+        if isSample:
+            project.data.setLastHandle("974e400180a99", "editor")
+            project.data.setLastHandle("53b69b83cdafc", "viewer")
+
+        # Reset Items
+        for item in project.tree:
+            item.setCursorPos(0)
+            item.setExpanded(True)
+
+        # Settings
         project.data.setSpellCheck(True)
         project.data.setSpellLang(None)
         project.data.setDoBackup(True)
         project.data.setSaveCount(0)
         project.data.setAutoCount(0)
         project.data.setEditTime(0)
+
+        project.index.rebuild()
         project.saveProject()
         project.closeProject()
-
-        return True
-
-    def _extractSampleProject(self, path: Path) -> bool:
-        """Make a copy of the sample project by extracting the
-        sample.zip file to the new path.
-        """
-        if path.exists():
-            SHARED.error(self.tr(
-                "The target folder already exists. "
-                "Please choose another folder."
-            ))
-            return False
-
-        if (sample := CONFIG.assetPath("sample.zip")).is_file():
-            try:
-                shutil.unpack_archive(sample, path)
-            except Exception as exc:
-                SHARED.error(self.tr("Failed to create a new example project."), exc=exc)
-                return False
-        else:
-            SHARED.error(self.tr(
-                "Failed to create a new example project. "
-                "Could not find the necessary files. "
-                "They seem to be missing from this installation."
-            ))
-            return False
-
-        return True

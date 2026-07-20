@@ -114,23 +114,6 @@ You can now test the translation in novelWriter. The Preferences dialog should l
 language, so go ahead and select it.
 
 
-### Missing QtBase Translations
-
-The default Qt dialogs also have translations, for instance for standard buttons like "Yes", "No",
-"Ok", "Cancel", etc. Generally, these translation files are installed with the Qt libraries on your
-system, and novelWriter will collect those translations from there. However, these translations are
-missing for many languages.
-
-As a starting point, there is no need to translate any entries in the `.ts` files that are under
-elements starting with the letter "Q", like "QPlatformTheme", "QWizard", etc. If these turn up in
-English in novelWriter after activating a translation, it means they are probably missing in the Qt
-library, and you may also need to translate these.
-
-These additional translation entries are generated from a file named `i18n/qtbase.py`, which is not
-a file that novelWriter uses. It is there only to generate these additional entries for the `.ts`
-files.
-
-
 ## Project Localisation
 
 Projects can have a different language setting than the GUI itself. The files with format

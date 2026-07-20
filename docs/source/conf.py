@@ -1,7 +1,7 @@
 """
 Configuration file for the Sphinx documentation builder.
 Documentation: http://www.sphinx-doc.org/en/master/config
-"""
+"""  # noqa
 
 # -- Imports -----------------------------------------------------------------
 
@@ -12,25 +12,24 @@ import time
 # -- Project Information -----------------------------------------------------
 
 project = "novelWriter"
-copyright = f"{datetime.date.today().year}"
+copyright = f"{datetime.date.today().year}"  # noqa: A001
 
-tmp_authors = ["Veronica Berglyd Olsen"]
-if additional := os.environ.get("SPHINX_I18N_AUTHORS"):
-    tmp_authors.extend(a.strip() for a in additional.split(","))
+if override_authors := os.environ.get("SPHINX_I18N_AUTHORS"):
+    author = override_authors
+else:
+    author = "Veronica Berglyd Olsen"
 
-author = ", ".join(tmp_authors)
-
-initFile = os.path.join(
-    os.path.dirname(__file__), os.pardir, os.pardir,
-    "novelwriter", "__init__.py"
-)
-with open(initFile) as inFile:
-    for aLine in inFile:
-        if aLine.startswith("__version__"):
-            release = aLine.split('"')[1].strip()
-            break
-    else:
-        release = "unknown"
+if override_version := os.environ.get("SPHINX_I18N_VERSION"):
+    release = override_version
+else:
+    initFile = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "novelwriter", "__init__.py")
+    with open(initFile, encoding="utf-8") as inFile:
+        for aLine in inFile:
+            if aLine.startswith("__version__"):
+                release = "20" + aLine.split('"')[1].strip()
+                break
+        else:
+            release = "unknown"
 
 version = release.partition("-")[0]
 
@@ -40,9 +39,9 @@ os.environ["TZ"] = "Europe/Oslo"
 time.tzset()
 
 needs_sphinx = "5.0"
-extensions = ["sphinx_design"]
+extensions = ["sphinx_design", "sphinx_copybutton"]
 templates_path = ["_templates"]
-source_suffix = ".rst"
+source_suffix = {".rst": "restructuredtext"}
 master_doc = "index"
 today_fmt = "%A, %d %B %Y at %H:%M"
 language = "en"
@@ -67,8 +66,8 @@ html_theme_options = {
     "navigation_with_keys": True,
     "use_repository_button": True,
     "use_issues_button": True,
-    "pygment_light_style": "tango",
-    "pygment_dark_style": "dracula",
+    "pygments_light_style": "tango",
+    "pygments_dark_style": "dracula",
 }
 html_sidebars = {
     "**": ["navbar-logo", "sidebar-title", "sbt-sidebar-nav"],
@@ -79,13 +78,8 @@ html_sidebars = {
 latex_elements = {
     "papersize": "a4paper",
     "pointsize": "11pt",
-    "preamble": (
-        "\\usepackage[utf8]{inputenc}\n"
-        "\\DeclareUnicodeCharacter{2212}{\\textendash}\n"
-    ),
+    "preamble": ("\\usepackage[utf8]{inputenc}\n\\DeclareUnicodeCharacter{2212}{\\textendash}\n"),
     "figure_align": "htbp",
 }
 latex_logo = "_static/novelwriter-pdf.png"
-latex_documents = [(
-    master_doc, "manual.tex", None, author, "manual"
-)]
+latex_documents = [(master_doc, "manual.tex", None, author, "manual")]

@@ -1,9 +1,6 @@
 """
-novelWriter – Project Storage Class
-===================================
-
-File History:
-Created: 2022-11-01 [2.0rc2] NWStorage
+novelWriter – Project Storage
+=============================
 
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import json
@@ -33,44 +31,46 @@ from typing import TYPE_CHECKING
 from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile
 
 from novelwriter import CONFIG
-from novelwriter.common import isHandle, minmax
+from novelwriter.common import isHandle, minmax, safeExists, safeIsDir, safeIsFile, safeIterDir
 from novelwriter.constants import nwFiles
-from novelwriter.core.document import NWDocument
+from novelwriter.core.document import ProjectDocument
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.error import logException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
 
-class NWStorageOpen(Enum):
+class ProjectStorageOpen(Enum):
+    """The status of a storage location."""
 
-    UNKOWN    = 0
+    UNKOWN = 0
     NOT_FOUND = 1
-    LOCKED    = 2
-    FAILED    = 3
-    READY     = 4
+    LOCKED = 2
+    FAILED = 3
+    READY = 4
 
 
-class NWStorageCreate(Enum):
+class ProjectStorageCreate(Enum):
+    """The status of a new storage location."""
 
     NOT_EMPTY = 0
-    OS_ERROR  = 1
-    READY     = 2
+    OS_ERROR = 1
+    READY = 2
 
 
-class NWStorage:
-    """Core: Project Storage Class
+class ProjectStorage:
+    """Core: Project Storage Class.
 
     The class that handles all paths related to the project storage.
     """
 
     MODE_INACTIVE = 0
-    MODE_INPLACE  = 1
-    MODE_ARCHIVE  = 2
+    MODE_INPLACE = 1
+    MODE_ARCHIVE = 2
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
@@ -81,7 +81,6 @@ class NWStorage:
         self._openMode = self.MODE_INACTIVE
         self._ready = False
         self._exception = None
-        return
 
     def clear(self) -> None:
         """Reset internal variables."""
@@ -90,7 +89,6 @@ class NWStorage:
         self._lockFilePath = None
         self._openMode = self.MODE_INACTIVE
         self._ready = False
-        return
 
     ##
     #  Properties
@@ -111,10 +109,8 @@ class NWStorage:
         """Return the path used for project content. The folder must
         already exist, otherwise this property is None.
         """
-        if isinstance(self._runtimePath, Path):
-            contentPath = self._runtimePath / "content"
-            if contentPath.is_dir():
-                return contentPath
+        if isinstance(self._runtimePath, Path) and safeIsDir(contentPath := self._runtimePath / "content", alert=True):
+            return contentPath
         logger.error("Content path cannot be resolved")
         return None
 
@@ -138,12 +134,12 @@ class NWStorage:
         """Check if the storage location is open."""
         return self._ready and self._runtimePath is not None
 
-    def createNewProject(self, path: str | Path) -> NWStorageCreate:
+    def createNewProject(self, path: str | Path) -> ProjectStorageCreate:
         """Create a new project at the given location."""
         inPath = Path(path).resolve()
-        if inPath.is_dir() and len(list(inPath.iterdir())) > 0:
+        if safeIsDir(inPath) and len(list(safeIterDir(inPath))) > 0:
             logger.error("Folder is not empty: %s", inPath)
-            return NWStorageCreate.NOT_EMPTY
+            return ProjectStorageCreate.NOT_EMPTY
 
         self._storagePath = inPath
         self._runtimePath = inPath
@@ -161,13 +157,13 @@ class NWStorage:
             self._exception = exc
             logger.error("Failed to create project folders", exc_info=exc)
             self.clear()
-            return NWStorageCreate.OS_ERROR
+            return ProjectStorageCreate.OS_ERROR
 
         self._ready = True
 
-        return NWStorageCreate.READY
+        return ProjectStorageCreate.READY
 
-    def initProjectStorage(self, path: str | Path, clearLock: bool = False) -> NWStorageOpen:
+    def initProjectStorage(self, path: str | Path, clearLock: bool = False) -> ProjectStorageOpen:
         """Initialise a novelWriter project location."""
         inPath = Path(path).resolve()
 
@@ -177,22 +173,22 @@ class NWStorage:
         # Check what we're opening. Only two options are allowed:
         # 1. A folder with an nwProject.nwx file in it (not home)
         # 2. A full path to an nwProject.nwx file
-        if inPath.is_dir() and inPath != Path.home().resolve():
+        if safeIsDir(inPath, alert=True) and inPath != Path.home().resolve():
             nwxFile = inPath / nwFiles.PROJ_FILE
-        elif inPath.is_file():
+        elif safeIsFile(inPath, alert=True):
             if inPath.name == nwFiles.PROJ_FILE:
                 nwxFile = inPath
             else:
                 logger.error("Not a novelWriter project")
-                return NWStorageOpen.UNKOWN
+                return ProjectStorageOpen.UNKOWN
         else:
             logger.error("Not found: %s", inPath)
-            return NWStorageOpen.NOT_FOUND
+            return ProjectStorageOpen.NOT_FOUND
 
-        if not nwxFile.exists():
+        if not safeExists(nwxFile, alert=True):
             # The .nwx file must exist to continue
             logger.error("Not found: %s", nwxFile)
-            return NWStorageOpen.NOT_FOUND
+            return ProjectStorageOpen.NOT_FOUND
 
         nwxPath = nwxFile.parent
 
@@ -210,7 +206,7 @@ class NWStorage:
         self._readLockFile()
         if self._lockedBy:
             logger.error("Project is locked, so not opening")
-            return NWStorageOpen.LOCKED
+            return ProjectStorageOpen.LOCKED
         else:
             logger.debug("Project is not locked")
 
@@ -226,18 +222,23 @@ class NWStorage:
         except Exception as exc:
             logger.error("Failed to create project folders", exc_info=exc)
             self.clear()
-            return NWStorageOpen.FAILED
+            return ProjectStorageOpen.FAILED
 
         # Check for legacy data folders
-        legacy = _LegacyStorage(self._project)
-        legacy.deprecatedFiles(basePath)
-        for child in basePath.iterdir():
-            if child.is_dir() and child.name.startswith("data_"):
-                legacy.legacyDataFolder(basePath, child)
+        try:
+            legacy = _LegacyStorage(self._project)
+            legacy.deprecatedFiles(basePath)
+            for child in basePath.iterdir():
+                if child.is_dir() and child.name.startswith("data_"):
+                    legacy.legacyDataFolder(basePath, child)
+        except Exception as exc:
+            logger.error("Failed to scan project folder content", exc_info=exc)
+            self.clear()
+            return ProjectStorageOpen.FAILED
 
         self._ready = True
 
-        return NWStorageOpen.READY
+        return ProjectStorageOpen.READY
 
     def runPostSaveTasks(self, autoSave: bool = False) -> bool:  # pragma: no cover
         """Run tasks after the project has been saved.
@@ -252,13 +253,11 @@ class NWStorage:
         """Lock the session when the project is successfully opened."""
         if self._ready:
             self._writeLockFile()
-        return
 
     def closeSession(self) -> None:
         """Run tasks related to closing the session."""
         self._clearLockFile()
         self.clear()
-        return
 
     ##
     #  Content Access Methods
@@ -276,11 +275,11 @@ class NWStorage:
             return ProjectXMLWriter(self._runtimePath / nwFiles.PROJ_FILE)
         return None
 
-    def getDocument(self, tHandle: str | None) -> NWDocument:
+    def getDocument(self, tHandle: str | None) -> ProjectDocument:
         """Return a document wrapper object."""
         if isinstance(self._runtimePath, Path) and self._ready:
-            return NWDocument(self._project, tHandle)
-        return NWDocument(self._project, None)
+            return ProjectDocument(self._project, tHandle)
+        return ProjectDocument(self._project, None)
 
     def getMetaFile(self, fileName: str) -> Path | None:
         """Return the path to a file in the project meta folder."""
@@ -291,7 +290,7 @@ class NWStorage:
     def getDocumentText(self, tHandle: str) -> str:
         """Return the text of a document in a fast and efficient way."""
         if isinstance(self._runtimePath, Path):
-            return NWDocument.quickReadText(self._runtimePath / "content", tHandle)
+            return ProjectDocument.quickReadText(self._runtimePath / "content", tHandle)
         return ""
 
     def scanContent(self) -> list[str]:
@@ -299,10 +298,11 @@ class NWStorage:
         found in it. Files that do not match the pattern are ignored.
         """
         contentPath = self.contentPath
-        return [
-            item.stem for item in contentPath.iterdir()
-            if item.suffix == ".nwd" and isHandle(item.stem)
-        ] if contentPath else []
+        return (
+            [item.stem for item in safeIterDir(contentPath) if item.suffix == ".nwd" and isHandle(item.stem)]
+            if contentPath
+            else []
+        )
 
     def zipIt(self, target: str | Path, compression: int | None = None) -> bool:
         """Zip the content of the project at its runtime location into a
@@ -314,24 +314,24 @@ class NWStorage:
             logger.error("No path set")
             return False
 
-        baseMeta = basePath / "meta"
-        baseCont = basePath / "content"
-        files = [
-            (basePath / nwFiles.PROJ_FILE,   nwFiles.PROJ_FILE),
-            (baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"),
-            (baseMeta / nwFiles.INDEX_FILE,  f"meta/{nwFiles.INDEX_FILE}"),
-            (baseMeta / nwFiles.OPTS_FILE,   f"meta/{nwFiles.OPTS_FILE}"),
-            (baseMeta / nwFiles.DICT_FILE,   f"meta/{nwFiles.DICT_FILE}"),
-            (baseMeta / nwFiles.SESS_FILE,   f"meta/{nwFiles.SESS_FILE}"),
-        ]
-        for contItem in baseCont.iterdir():
-            name = contItem.name
-            if contItem.is_file() and len(name) == 17 and name.endswith(".nwd"):
-                files.append((contItem, f"content/{name}"))
-
-        comp = ZIP_STORED if compression is None else ZIP_DEFLATED
-        level = minmax(compression, 0, 9) if isinstance(compression, int) else None
         try:
+            baseMeta = basePath / "meta"
+            baseCont = basePath / "content"
+            files = [
+                (basePath / nwFiles.PROJ_FILE, nwFiles.PROJ_FILE),
+                (baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"),
+                (baseMeta / nwFiles.INDEX_FILE, f"meta/{nwFiles.INDEX_FILE}"),
+                (baseMeta / nwFiles.OPTS_FILE, f"meta/{nwFiles.OPTS_FILE}"),
+                (baseMeta / nwFiles.DICT_FILE, f"meta/{nwFiles.DICT_FILE}"),
+                (baseMeta / nwFiles.SESS_FILE, f"meta/{nwFiles.SESS_FILE}"),
+            ]
+            for contItem in baseCont.iterdir():
+                name = contItem.name
+                if contItem.is_file() and len(name) == 17 and name.endswith(".nwd"):
+                    files.append((contItem, f"content/{name}"))
+
+            comp = ZIP_STORED if compression is None else ZIP_DEFLATED
+            level = minmax(compression, 0, 9) if isinstance(compression, int) else None
             with ZipFile(target, mode="w", compression=comp, compresslevel=level) as zipObj:
                 logger.info("Creating archive: %s", target)
                 for srcPath, zipPath in files:
@@ -353,7 +353,7 @@ class NWStorage:
         """Read the project lock file."""
         self._lockedBy = None
         path = self._lockFilePath
-        if isinstance(path, Path) and path.exists():
+        if isinstance(path, Path) and safeExists(path):
             try:
                 self._lockedBy = path.read_text(encoding="utf-8").strip().split(";")
             except Exception:
@@ -370,7 +370,7 @@ class NWStorage:
         try:
             self._lockFilePath.write_text(
                 f"{CONFIG.hostName};{CONFIG.osType};{CONFIG.kernelVer};{int(time())}",
-                encoding="utf-8"
+                encoding="utf-8",
             )
         except Exception:
             logger.error("Failed to write project lockfile")
@@ -382,7 +382,7 @@ class NWStorage:
         """Remove the lock file, if it exists."""
         if self._lockFilePath is None:
             return False
-        if self._lockFilePath.exists():
+        if safeExists(self._lockFilePath):
             try:
                 self._lockFilePath.unlink()
             except Exception:
@@ -394,7 +394,7 @@ class NWStorage:
 
 
 class _LegacyStorage:
-    """Core: Legacy Storage Converter Utils
+    """Core: Legacy Storage Converter Utils.
 
     A class with various functions to convert old file formats and
     file/folder layouts to the current project format.
@@ -402,7 +402,6 @@ class _LegacyStorage:
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
-        return
 
     def legacyDataFolder(self, path: Path, child: Path) -> None:
         """Handle the content of a legacy data folder from a version 1.0
@@ -447,31 +446,28 @@ class _LegacyStorage:
     def deprecatedFiles(self, path: Path) -> None:
         """Handle files that are no longer used by novelWriter."""
         self._convertOldWordList(  # Changed in 2.1 Beta 1
-            path / "meta" / "wordlist.txt",
-            path / "meta" / nwFiles.DICT_FILE
+            path / "meta" / "wordlist.txt", path / "meta" / nwFiles.DICT_FILE
         )
         self._convertOldLogFile(  # Changed in 2.1 Beta 1
-            path / "meta" / "sessionStats.log",
-            path / "meta" / nwFiles.SESS_FILE
+            path / "meta" / "sessionStats.log", path / "meta" / nwFiles.SESS_FILE
         )
         self._convertOldOptionsFile(  # Changed in 2.1 Beta 1
-            path / "meta" / "guiOptions.json",
-            path / "meta" / nwFiles.OPTS_FILE
+            path / "meta" / "guiOptions.json", path / "meta" / nwFiles.OPTS_FILE
         )
 
         # Delete removed files
         remove = [
-            path / "meta" / "tagsIndex.json",          # Renamed in 2.1 Beta 1
-            path / "meta" / "mainOptions.json",        # Replaced in 0.5
-            path / "meta" / "exportOptions.json",      # Replaced in 0.5
-            path / "meta" / "outlineOptions.json",     # Replaced in 0.5
-            path / "meta" / "timelineOptions.json",    # Replaced in 0.5
-            path / "meta" / "docMergeOptions.json",    # Replaced in 0.5
+            path / "meta" / "tagsIndex.json",  # Renamed in 2.1 Beta 1
+            path / "meta" / "mainOptions.json",  # Replaced in 0.5
+            path / "meta" / "exportOptions.json",  # Replaced in 0.5
+            path / "meta" / "outlineOptions.json",  # Replaced in 0.5
+            path / "meta" / "timelineOptions.json",  # Replaced in 0.5
+            path / "meta" / "docMergeOptions.json",  # Replaced in 0.5
             path / "meta" / "sessionLogOptions.json",  # Replaced in 0.5
-            path / "cache" / "prevBuild.json",         # Dropped in 2.1 Beta 1
-            path / "cache",                            # Dropped in 2.1 Beta 1
-            path / "ToC.json",                         # Dropped in 1.0 RC 1
-            path / "nwProject.bak",                    # Dropped in 2.3 Beta 1
+            path / "cache" / "prevBuild.json",  # Dropped in 2.1 Beta 1
+            path / "cache",  # Dropped in 2.1 Beta 1
+            path / "ToC.json",  # Dropped in 1.0 RC 1
+            path / "nwProject.bak",  # Dropped in 2.3 Beta 1
         ]
         for item in remove:
             if item.exists():
@@ -483,8 +479,6 @@ class _LegacyStorage:
                     logger.info("Deleted: %s", item)
                 except Exception as exc:
                     logger.warning("Failed to delete: %s", item, exc_info=exc)
-
-        return
 
     ##
     #  Internal Functions
@@ -501,8 +495,7 @@ class _LegacyStorage:
             logger.info("Converting: %s", wordList)
             with open(wordList, mode="r", encoding="utf-8") as fObj:
                 for line in fObj:
-                    word = line.strip()
-                    if word:
+                    if word := line.strip():
                         userDict.add(word)
 
             # Save dictionary and clean up old file
@@ -533,13 +526,15 @@ class _LegacyStorage:
                     if record.startswith("# Offset") and nBits == 3:
                         offset = int(bits[2])
                     elif not record.startswith("#") and nBits > 5:
-                        data.append(session.createRecord(
-                            start=f"{bits[0]} {bits[1]}",
-                            end=f"{bits[2]} {bits[3]}",
-                            novel=int(bits[4]),
-                            notes=int(bits[5]),
-                            idle=int(bits[6]) if nBits > 6 else 0,
-                        ))
+                        data.append(
+                            session.createRecord(
+                                start=f"{bits[0]} {bits[1]}",
+                                end=f"{bits[2]} {bits[3]}",
+                                novel=int(bits[4]),
+                                notes=int(bits[5]),
+                                idle=int(bits[6]) if nBits > 6 else 0,
+                            )
+                        )
 
             with open(sessJson, mode="a+", encoding="utf-8") as fObj:
                 fObj.write(session.createInitial(offset))

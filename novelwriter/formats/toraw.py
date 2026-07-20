@@ -2,9 +2,6 @@
 novelWriter – Raw NW Text Format
 ================================
 
-File History:
-Created: 2024-10-15 [2.6b1] ToRaw
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,34 +17,40 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import json
 import logging
 
-from pathlib import Path
 from time import time
+from typing import TYPE_CHECKING
 
 from novelwriter.common import formatTimeStamp
-from novelwriter.core.project import NWProject
 from novelwriter.formats.tokenizer import Tokenizer
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
 
 class ToRaw(Tokenizer):
-    """Core: Raw novelWriter Text Writer
+    """Core: Raw novelWriter Text Writer.
 
     A class that will collect the minimally altered original source text
     and write it to either a text or JSON file.
     """
 
+    __slots__ = ("_keepRaw", "_noTokens")
+
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
         self._keepRaw = True
         self._noTokens = True
-        return
 
     def doConvert(self) -> None:
         """No conversion to perform."""
@@ -70,7 +73,7 @@ class ToRaw(Tokenizer):
                 },
                 "text": {
                     "nwd": [page.rstrip("\n").split("\n") for page in self._raw],
-                }
+                },
             }
             with open(path, mode="w", encoding="utf-8") as fObj:
                 json.dump(data, fObj, indent=2)
@@ -82,10 +85,7 @@ class ToRaw(Tokenizer):
 
         logger.info("Wrote file: %s", path)
 
-        return
-
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = " ") -> None:
         """Replace tabs with spaces."""
-        spaces = spaceChar*nSpaces
+        spaces = spaceChar * nSpaces
         self._raw = [p.replace("\t", spaces) for p in self._raw]
-        return

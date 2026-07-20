@@ -1,0 +1,263 @@
+"""
+novelWriter – Project Document Tests
+====================================
+
+This file is a part of novelWriter
+Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""  # noqa
+
+from __future__ import annotations
+
+import pytest
+
+from novelwriter.core.document import ProjectDocument
+from novelwriter.core.project import NWProject
+from novelwriter.enum import nwItemClass, nwItemLayout
+
+from tests.helpers import MOCK_TIME, C, buildTestProject, readFile, writeFile
+from tests.mocked import causeOSError
+
+
+@pytest.mark.core
+def testProjectDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
+    """Test loading and saving a document with the ProjectDocument class."""
+    monkeypatch.setattr("novelwriter.core.document.time", lambda: MOCK_TIME)
+
+    project = NWProject()
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+
+    # Read Document
+    # =============
+
+    # Not a valid handle
+    doc = ProjectDocument(project, "stuff")
+    assert bool(doc) is False
+    assert doc.readDocument() is None
+    assert doc.fileExists() is False
+    assert doc.hashError is False
+    assert doc.createdDate == "Unknown"
+    assert doc.updatedDate == "Unknown"
+
+    # Non-existent handle
+    doc = ProjectDocument(project, C.hInvalid)
+    assert doc.readDocument() is None
+    assert doc._lastHash == ""
+    assert doc.fileExists() is False
+
+    # No content path
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.ProjectStorage.contentPath", property(lambda *a: None))
+        doc = ProjectDocument(project, C.hSceneDoc)
+        assert doc.readDocument() is None
+        assert doc.fileExists() is False
+
+    # Cause open() to fail while loading
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        doc = ProjectDocument(project, C.hSceneDoc)
+        assert doc.fileExists() is True
+        assert doc.readDocument() is None
+        assert doc.getError() == "OSError: Mock OSError"
+
+    # Load the text
+    doc = ProjectDocument(project, C.hSceneDoc)
+    assert doc.fileExists() is True
+    assert doc.readDocument() == "### New Scene\n\n"
+
+    # Try to open a new (non-existent) file
+    xHandle = project.newFile("New File", C.hNovelRoot)
+    assert xHandle is not None
+    doc = ProjectDocument(project, xHandle)
+    assert bool(doc) is True
+    assert repr(doc) == f"<ProjectDocument handle={xHandle}>"
+    assert doc.readDocument() == ""
+
+    # Write Document
+    # ==============
+
+    # No content path
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.ProjectStorage.contentPath", property(lambda *a: None))
+        doc = ProjectDocument(project, xHandle)
+        assert doc.writeDocument("") is False
+
+    # Set handle and save
+    text = "### Test File\n\nText ...\n\n"
+    doc = ProjectDocument(project, xHandle)
+    assert doc.writeDocument(text) is True
+
+    # Save again to ensure temp file and previous file is handled
+    assert doc.writeDocument(text) is True
+
+    # Check file content
+    docPath = fncPath / "content" / f"{xHandle}.nwd"
+    assert readFile(docPath) == (
+        "%%~name: New File\n"
+        f"%%~path: {C.hNovelRoot}/{xHandle}\n"
+        "%%~kind: NOVEL/DOCUMENT\n"
+        "%%~hash: b288c3ab03181027d9a16d7fd2291262f5de9ac8\n"
+        "%%~date: 2019-05-10 18:52:00/2019-05-10 18:52:00\n"
+        "### Test File\n\n"
+        "Text ...\n\n"
+    )
+
+    # Alter the document on disk and save again
+    writeFile(docPath, "blablabla")
+    assert doc.writeDocument(text) is False
+
+    # Force the overwrite
+    assert doc.writeDocument(text, forceWrite=True) is True
+
+    # Force no meta data
+    doc._item = None
+    assert doc.writeDocument(text) is True
+    assert readFile(docPath) == text
+
+    # Cause open() to fail while saving
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert doc.writeDocument(text) is False
+        assert doc.getError() == "OSError: Mock OSError"
+
+    doc._docError = ""
+    assert doc.getError() == ""
+
+    # Cause os.replace() to fail while saving
+    with monkeypatch.context() as mp:
+        mp.setattr("pathlib.Path.replace", causeOSError)
+        assert doc.writeDocument(text) is False
+        assert doc.getError() == "OSError: Mock OSError"
+
+    doc._docError = ""
+    assert doc.getError() == ""
+
+    # Saving with no handle
+    doc._handle = None
+    assert doc.writeDocument(text) is False
+
+    # Trailing line break
+    doc = ProjectDocument(project, xHandle)
+    assert doc.writeDocument("") is True
+    assert doc.readDocument() == ""
+    assert doc.writeDocument("Stuff") is True
+    assert doc.readDocument() == "Stuff\n"
+    assert doc.writeDocument("Stuff\n") is True
+    assert doc.readDocument() == "Stuff\n"
+    assert doc.writeDocument("Stuff\n\n") is True
+    assert doc.readDocument() == "Stuff\n\n"
+
+    # Quick Read
+    # ==========
+
+    doc = ProjectDocument(project, xHandle)
+    assert doc.writeDocument("### Test File\n\nText ...\n\n") is True
+
+    contPath = fncPath / "content"
+    assert ProjectDocument.quickReadText(contPath, xHandle) == ("### Test File\n\nText ...\n\n")
+
+    # Check read text fallback
+    assert ProjectDocument.quickReadText(contPath, "0000000000000") == ""
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert ProjectDocument.quickReadText(contPath, xHandle) == ""
+
+    # A document with more than 10 consecutive meta lines returns the 10th line onwards
+    (contPath / f"{xHandle}.nwd").write_text("".join(f"%%~meta{i}\n" for i in range(15)), encoding="utf-8")
+    assert ProjectDocument.quickReadText(contPath, xHandle) == "".join(f"%%~meta{i}\n" for i in range(9, 15))
+
+    # A document that is all meta data lines returns just the trailing content
+    doc = ProjectDocument(project, xHandle)
+    metaOnly = "".join(f"%%~meta{i}\n" for i in range(9)) + "%%~kind: NOVEL/DOCUMENT\nTrailing Text\n"
+    (contPath / f"{xHandle}.nwd").write_text(metaOnly, encoding="utf-8")
+    assert doc.readDocument() == "Trailing Text\n"
+
+    # Malformed meta lines are parsed defensively and otherwise ignored
+    doc._parseMeta("%%~path: onlyonepart\n")
+    doc._parseMeta("%%~path: notahandle/alsonotahandle\n")
+    doc._parseMeta("%%~kind: onlyonepart\n")
+    doc._parseMeta("%%~kind: BADCLASS/BADLAYOUT\n")
+    doc._parseMeta("%%~date: onlyonepart\n")
+
+    # Delete Document
+    # ===============
+
+    # Delete a non-existing document
+    doc = ProjectDocument(project, "stuff")
+    assert doc.deleteDocument() is False
+    assert docPath.exists()
+
+    # No content path
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.ProjectStorage.contentPath", property(lambda *a: None))
+        doc = ProjectDocument(project, xHandle)
+        assert doc.deleteDocument() is False
+
+    # Cause the delete to fail
+    with monkeypatch.context() as mp:
+        mp.setattr("pathlib.Path.unlink", causeOSError)
+        doc = ProjectDocument(project, xHandle)
+        assert doc.deleteDocument() is False
+        assert doc.getError() == "OSError: Mock OSError"
+
+    # Make the delete pass
+    doc = ProjectDocument(project, xHandle)
+    assert doc.deleteDocument() is True
+    assert not docPath.exists()
+
+
+@pytest.mark.core
+def testProjectDocument_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
+    """Test other methods of the ProjectDocument class."""
+    monkeypatch.setattr("novelwriter.core.document.time", lambda: MOCK_TIME)
+
+    project = NWProject()
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+
+    doc = ProjectDocument(project, C.hSceneDoc)
+    docPath = fncPath / "content" / f"{C.hSceneDoc}.nwd"
+
+    assert doc.readDocument() == "### New Scene\n\n"
+
+    # Check location
+    assert doc.fileLocation == str(docPath)
+
+    # Check the item
+    assert doc.nwItem is not None
+    assert doc.nwItem.itemHandle == C.hSceneDoc  # type: ignore
+
+    # Check the meta
+    name, parent, itemClass, itemLayout = doc.getMeta()
+    assert name == "New Scene"
+    assert parent == C.hChapterDir
+    assert itemClass == nwItemClass.NOVEL
+    assert itemLayout == nwItemLayout.DOCUMENT
+
+    # Add meta data garbage
+    assert doc.writeDocument("%%~ stuff\n### Test File\n\nText ...\n\n")
+    assert readFile(docPath) == (
+        "%%~name: New Scene\n"
+        f"%%~path: {C.hChapterDir}/{C.hSceneDoc}\n"
+        "%%~kind: NOVEL/DOCUMENT\n"
+        "%%~hash: dd350c602de803554b2a7c17f191ae25dea1df63\n"
+        "%%~date: 2019-05-10 18:52:00/2019-05-10 18:52:00\n"
+        "%%~ stuff\n"
+        "### Test File\n\n"
+        "Text ...\n\n"
+    )
+
+    assert doc.readDocument() == "### Test File\n\nText ...\n\n"

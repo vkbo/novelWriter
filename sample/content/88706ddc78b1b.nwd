@@ -1,19 +1,13 @@
 %%~name: Chapter Two
 %%~path: 7031beac91f75/88706ddc78b1b
 %%~kind: NOVEL/DOCUMENT
-%%~hash: ca68d1134e1b7870b7bf0fcbd8c0d67384970717
-%%~date: Unknown/2023-08-25 16:52:00
-## Where has John Gone?
+%%~hash: 4310d3f9d399b5cf1eef66d7d7caa8b022fc6663
+%%~date: Unknown/2025-11-01 16:12:13
+## So it Begins
 
 @pov: Jane
-@location: Space
+@location: Earth
 
-% Further chapters can be added by adding another chapter file. This time we can add a quick scene in the same file to introduce it.
+%Synopsis: We can add a chapter document, but keep the scene files separate. In the chapter document we can set the meta data that applies to the whole chapter if we wish to. You can add the scenes as child documents directly under the chapter.
 
-### Jane Cannot Find John
-
-@pov: Jane
-@focus: John
-@location: Space
-
-Jane has been looking all over for John. He’s nowhere to be found on Earth, so Jane goes to space.
+A chapter can contain leading text before the first scene, like this piece of text.

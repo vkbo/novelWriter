@@ -2,9 +2,6 @@
 novelWriter – GUI Main Window Status Bar
 ========================================
 
-File History:
-Created: 2019-04-20 [0.0.1] GuiMainStatus
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,29 +17,35 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
 
-from datetime import datetime, date
+from datetime import date, datetime
 from time import time
+from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QLocale, pyqtSlot
+from PyQt6.QtCore import QTimer, pyqtSlot
 from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QApplication, QLabel, QStatusBar, QWidget
+from PyQt6.QtWidgets import QApplication, QHBoxLayout, QLabel, QStatusBar, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatTime
-from novelwriter.constants import nwConst
+from novelwriter.common import formatTime, languageName
+from novelwriter.constants import nwConst, nwLabels, nwStats, trStats
 from novelwriter.extensions.modified import NClickableLabel
 from novelwriter.extensions.progressbars import NProgressGoal
 from novelwriter.extensions.statusled import StatusLED
+
+if TYPE_CHECKING:
+    from novelwriter.types import T_MsgSeverity
 
 logger = logging.getLogger(__name__)
 
 
 class GuiMainStatus(QStatusBar):
+    """GUI: Main Window Status Bar."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -54,6 +57,9 @@ class GuiMainStatus(QStatusBar):
         self._debugInfo = False
 
         iPx = SHARED.theme.baseIconHeight
+
+        self.messageBox = _MessageWidget(self)
+        self.insertWidget(0, self.messageBox)
 
         # Permanent Widgets
         # =================
@@ -69,9 +75,7 @@ class GuiMainStatus(QStatusBar):
         self.projBar = NProgressGoal(self, SHARED.theme.getTextWidth("Session: 0000/0000"), 20, 1)
         self.projBar.setValue(0)
         self.projBar.setMaximum(1)
-        self.projBar.setToolTip(
-            f"Project Word Count: {self.projBar.value()}/{self.projBar.maximum()}"
-        )
+        self.projBar.setToolTip(f"Project Word Count: {self.projBar.value()}/{self.projBar.maximum()}")
         self.projBar.setVisible(CONFIG.showProjectGoal)
         self.addPermanentWidget(self.projBar)
 
@@ -127,10 +131,18 @@ class GuiMainStatus(QStatusBar):
 
         logger.debug("Ready: GuiMainStatus")
 
+        self.initSettings()
         self.updateTheme()
         self.clearStatus()
 
-        return
+    def initSettings(self) -> None:
+        """Apply user settings."""
+        if CONFIG.useCharCount:
+            self._trStatsCount = trStats(nwLabels.STATS_DISPLAY[nwStats.CHARS])
+            self._trStatsTip = self.tr("Total character count (session change)")
+        else:
+            self._trStatsCount = trStats(nwLabels.STATS_DISPLAY[nwStats.WORDS])
+            self._trStatsTip = self.tr("Total word count (session change)")
 
     def clearStatus(self) -> None:
         """Reset all widgets on the status bar to default values."""
@@ -140,24 +152,23 @@ class GuiMainStatus(QStatusBar):
         self.setProjectStatus(None)
         self.setDocumentStatus(None)
         self.updateTime()
-        return
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        logger.debug("Theme Update: GuiMainStatus")
+
         iPx = SHARED.theme.baseIconHeight
-        self.langIcon.setPixmap(SHARED.theme.getPixmap("language", (iPx, iPx)))
-        self.statsIcon.setPixmap(SHARED.theme.getPixmap("stats", (iPx, iPx)))
-        self.timePixmap = SHARED.theme.getPixmap("timer", (iPx, iPx))
-        self.idlePixmap = SHARED.theme.getPixmap("timer_off", (iPx, iPx))
+        self.langIcon.setPixmap(SHARED.theme.getPixmap("language", iPx, iPx))
+        self.statsIcon.setPixmap(SHARED.theme.getPixmap("stats", iPx, iPx))
+        self.timePixmap = SHARED.theme.getPixmap("timer", iPx, iPx)
+        self.idlePixmap = SHARED.theme.getPixmap("timer_off", iPx, iPx)
         self.timeIcon.setPixmap(self.timePixmap)
 
-        colNone = SHARED.theme.getIconColor("default").darker(150)
-        colSaved = SHARED.theme.getIconColor("green").darker(150)
-        colUnsaved = SHARED.theme.getIconColor("red").darker(150)
+        colNone = SHARED.theme.getBaseColor("default")
+        colSaved = SHARED.theme.getBaseColor("green")
+        colUnsaved = SHARED.theme.getBaseColor("red")
         self.docIcon.setColors(colNone, colSaved, colUnsaved)
         self.projIcon.setColors(colNone, colSaved, colUnsaved)
-
-        return
 
     ##
     #  Setters
@@ -166,17 +177,14 @@ class GuiMainStatus(QStatusBar):
     def setRefTime(self, refTime: float) -> None:
         """Set the reference time for the status bar clock."""
         self._refTime = refTime
-        return
 
     def setProjectStatus(self, state: bool | None) -> None:
         """Set the project status colour icon."""
         self.projIcon.setState(state)
-        return
 
     def setDocumentStatus(self, state: bool | None) -> None:
         """Set the document status colour icon."""
         self.docIcon.setState(state)
-        return
 
     def setUserIdle(self, idle: bool) -> None:
         """Change the idle status icon."""
@@ -188,17 +196,15 @@ class GuiMainStatus(QStatusBar):
             else:
                 self.timeIcon.setPixmap(self.timePixmap)
             self._userIdle = idle
-        return
 
     def setProjectStats(self, pWC: int, sWC: int) -> None:
         """Update the current project statistics."""
-
         self.statsText.setText(self.tr("Words: {0} ({1})").format(f"{pWC:n}", f"{sWC:+n}"))
 
         if SHARED.project.data.sessGoalAuto:
             days_remaining = (SHARED.project.data.projDeadline - date.today()).days
             if days_remaining == 0:
-                days_remaining == 1
+                days_remaining = 1
             logger.debug("Days remaining: %d", days_remaining)
             SHARED.project.data._sessGoal = SHARED.project.data.projGoal // days_remaining
             SHARED.project.setProjectChanged(True)
@@ -206,32 +212,28 @@ class GuiMainStatus(QStatusBar):
         self.setGoals(SHARED.project.data.projGoal, int(sessGoal))
 
         val = sWC if sWC > 0 else 0
-        if val > self.sessBar.maximum():
-            val = self.sessBar.maximum()
+        val = min(val, self.sessBar.maximum())
         self.sessBar.setValue(val)
         self.sessBar.setCentreText(f"Session: {sWC}/{self.sessBar.maximum()}")
         self.sessBar.resetColors()
         if sWC >= sessGoal:
-            self.sessBar.setColors(bar=QColor(SHARED.theme.getIconColor("green")).darker(150))
+            self.sessBar.setColors(bar=QColor(SHARED.theme.getBaseColor("green")).darker(150))
         elif sWC < 0:
             self.sessBar.setColors(
-                track=QColor(SHARED.theme.getIconColor("red")),
-                bar=QColor(SHARED.theme.getIconColor("red"))
+                track=QColor(SHARED.theme.getBaseColor("red")), bar=QColor(SHARED.theme.getBaseColor("red"))
             )
 
         val = pWC if pWC > 0 else 0
-        if val > self.projBar.maximum():
-            val = self.projBar.maximum()
+        val = min(val, self.projBar.maximum())
         self.projBar.setValue(val)
         self.projBar.setToolTip(f"Project Word Count: {pWC}/{self.projBar.maximum()}")
-        self.projBar.setCentreText(f"Project: {pWC/self.projBar.maximum():.0%}")
+        self.projBar.setCentreText(f"Project: {pWC / self.projBar.maximum():.0%}")
         self.projBar.resetColors()
         if pWC >= SHARED.project.data.projGoal:
-            self.projBar.setColors(bar=QColor(SHARED.theme.getIconColor("green")).darker(150))
+            self.projBar.setColors(bar=QColor(SHARED.theme.getBaseColor("green")).darker(150))
         elif pWC < 0:
             self.projBar.setColors(
-                track=QColor(SHARED.theme.getIconColor("red")),
-                bar=QColor(SHARED.theme.getIconColor("red"))
+                track=QColor(SHARED.theme.getBaseColor("red")), bar=QColor(SHARED.theme.getBaseColor("red"))
             )
 
         logger.debug("Project Stats: %d (%d)", pWC, sWC)
@@ -239,7 +241,6 @@ class GuiMainStatus(QStatusBar):
             self.statsText.setToolTip(self.tr("Project word count (session change)"))
         else:
             self.statsText.setToolTip(self.tr("Novel word count (session change)"))
-        return
 
     def setGoals(self, projGoal: int, sessGoal: int) -> None:
         """Set the project and session goals."""
@@ -247,11 +248,8 @@ class GuiMainStatus(QStatusBar):
             sessGoal = 1
         self.sessBar.setMaximum(sessGoal)
         self.projBar.setMaximum(projGoal)
-        self.projBar.setToolTip(
-            f"Project Word Count: {self.projBar.value()}/{self.projBar.maximum()}"
-        )
+        self.projBar.setToolTip(f"Project Word Count: {self.projBar.value()}/{self.projBar.maximum()}")
         self.sessBar.setCentreText(f"Session: {self.sessBar.value()}/{self.sessBar.maximum()}")
-        return
 
     def updateTime(self, idleTime: float = 0.0) -> None:
         """Update the session clock."""
@@ -263,18 +261,16 @@ class GuiMainStatus(QStatusBar):
             else:
                 sessTime = round(time() - self._refTime)
             self.timeText.setText(formatTime(sessTime))
-        return
 
     ##
     #  Public Slots
     ##
 
-    @pyqtSlot(str)
-    def setStatusMessage(self, message: str) -> None:
+    @pyqtSlot(str, str)
+    def setStatusMessage(self, message: str, severity: T_MsgSeverity = "info") -> None:
         """Set the status bar message to display."""
-        self.showMessage(message, nwConst.STATUS_MSG_TIMEOUT)
+        self.messageBox.setMessage(message, severity, nwConst.STATUS_MSG_TIMEOUT)
         QApplication.processEvents()
-        return
 
     @pyqtSlot(str, str)
     def setLanguage(self, language: str, provider: str) -> None:
@@ -283,21 +279,18 @@ class GuiMainStatus(QStatusBar):
             self.langText.setText(self.tr("None"))
             self.langText.setToolTip("")
         else:
-            self.langText.setText(QLocale(language).nativeLanguageName().title())
+            self.langText.setText(languageName(language))
             self.langText.setToolTip(f"{language} ({provider})" if provider else language)
-        return
 
     @pyqtSlot(bool)
     def updateProjectStatus(self, status: bool) -> None:
         """Update the project status."""
         self.setProjectStatus(not status)
-        return
 
     @pyqtSlot(bool)
     def updateDocumentStatus(self, status: bool) -> None:
         """Update the document status."""
         self.setDocumentStatus(not status)
-        return
 
     ##
     #  Private Slots
@@ -309,7 +302,6 @@ class GuiMainStatus(QStatusBar):
         state = not CONFIG.showSessionTime
         self.timeText.setVisible(state)
         CONFIG.showSessionTime = state
-        return
 
     ##
     #  Debug
@@ -339,9 +331,36 @@ class GuiMainStatus(QStatusBar):
         stamp = datetime.now().strftime("%H:%M:%S")
         message = (
             f"Widgets: {count} \u2013 "
-            f"{self._traceMallocRef} Memory: {current/1024:,.2f} kiB \u2013 "
-            f"Peak: {peak/1024:,.2f} kiB"
+            f"{self._traceMallocRef} Memory: {current / 1024:,.2f} kiB \u2013 "
+            f"Peak: {peak / 1024:,.2f} kiB"
         )
         self.showMessage(f"Debug [{stamp}] {message}", 6000)
         logger.debug("[MEMINFO] %s", message)
-        return
+
+
+class _MessageWidget(QWidget):
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent)
+        self._icon = QLabel(self)
+        self._text = QLabel(self)
+
+        self._layout = QHBoxLayout()
+        self._layout.addWidget(self._icon)
+        self._layout.addWidget(self._text)
+        self._layout.setSpacing(4)
+        self._layout.setContentsMargins(4, 0, 0, 0)
+        self.setLayout(self._layout)
+
+    def setMessage(self, message: str, severity: str, timeout: int) -> None:
+        """Set a status bar message with a timeout."""
+        iSz = SHARED.theme.baseIconHeight
+        icon = severity.replace("warning", "warn")
+        self._icon.setPixmap(SHARED.theme.getPixmap(f"alert_{icon}:{severity}", iSz, iSz))
+        self._text.setText(message)
+        QTimer.singleShot(timeout, self.clearMessage)
+
+    @pyqtSlot()
+    def clearMessage(self) -> None:
+        """Clear the current status bar message and icon."""
+        self._icon.clear()
+        self._text.clear()

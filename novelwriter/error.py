@@ -2,9 +2,6 @@
 novelWriter – Exception Handling
 ================================
 
-File History:
-Created: 2020-08-02 [0.10.2]
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -32,11 +30,17 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QFont, QFontDatabase
 from PyQt6.QtWidgets import (
-    QApplication, QDialog, QDialogButtonBox, QGridLayout, QLabel,
-    QPlainTextEdit, QStyle, QWidget
+    QApplication,
+    QDialog,
+    QDialogButtonBox,
+    QGridLayout,
+    QLabel,
+    QPlainTextEdit,
+    QStyle,
+    QWidget,
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from types import TracebackType
 
 logger = logging.getLogger(__name__)
@@ -46,36 +50,34 @@ def logException() -> None:
     """Log the content of an exception message."""
     exType, exValue, _ = sys.exc_info()
     if exType is not None:
-        logger.error(f"{exType.__name__}: {str(exValue)}", stacklevel=2)
-    return
+        logger.error(f"{exType.__name__}: {exValue!s}", stacklevel=2)  # noqa: G004
 
 
 def formatException(exc: BaseException) -> str:
     """Format an exception as a string the same way the default
     exception handler does.
     """
-    return f"{type(exc).__name__}: {str(exc)}"
+    return f"{type(exc).__name__}: {exc!s}"
 
 
-class NWErrorMessage(QDialog):
+class ErrorMessage(QDialog):
+    """GUI: Error Dialog."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
-        self.setObjectName("NWErrorMessage")
+        self.setObjectName("ErrorMessage")
 
         # Widgets
         self.msgIcon = QLabel()
-        if style := QApplication.style():
-            self.msgIcon.setPixmap(
-                style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical).pixmap(64, 64)
-            )
+        if style := QApplication.style():  # pragma: no branch
+            self.msgIcon.setPixmap(style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical).pixmap(64, 64))
 
         self.msgHead = QLabel()
         self.msgHead.setOpenExternalLinks(True)
         self.msgHead.setWordWrap(True)
 
         font = QFont()
-        font.setPointSize(round(0.9*self.font().pointSize()))
+        font.setPointSize(round(0.9 * self.font().pointSize()))
         font.setFamily(QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont).family())
 
         self.msgBody = QPlainTextEdit()
@@ -90,18 +92,22 @@ class NWErrorMessage(QDialog):
         self.mainBox.addWidget(self.msgIcon, 0, 0, 2, 1, Qt.AlignmentFlag.AlignTop)
         self.mainBox.addWidget(self.msgHead, 0, 1, 1, 1, Qt.AlignmentFlag.AlignTop)
         self.mainBox.addWidget(self.msgBody, 1, 1, 1, 1)
-        self.mainBox.addWidget(self.btnBox,  2, 0, 1, 2)
+        self.mainBox.addWidget(self.btnBox, 2, 0, 1, 2)
         self.mainBox.setSpacing(16)
 
         # Pick a random window title from a set of error messages by
         # Hex the computer, Unseen University, Ankh-Morpork, Discworld
-        self.setWindowTitle([
-            "+++ Out of Cheese Error +++",
-            "+++ Divide by Cucumber Error +++",
-            "+++ Whoops! Here Comes The Cheese! +++",
-            "+++ Please Reinstall Universe and Reboot +++",
-            "+++ Error At Address 14, Treacle Mine Road +++",
-        ][random.randint(0, 4)])
+        # and other Discworld references
+        self.setWindowTitle(
+            [
+                "+++ Out of Cheese Error +++",
+                "+++ Divide by Cucumber Error +++",
+                "+++ Please Reinstall Universe and Reboot +++",
+                "+++ Error At Address 14, Treacle Mine Road +++",
+                "+++ Abomination Unto Nuggan Error +++",
+                "+++ Anoia Error: Cutlery Stuck in Drawer +++",
+            ][random.randint(0, 5)]
+        )
 
         self.setLayout(self.mainBox)
 
@@ -109,8 +115,6 @@ class NWErrorMessage(QDialog):
         self.setMinimumHeight(300)
         self.setSizeGripEnabled(True)
         self.resize(800, 400)
-
-        return
 
     def setMessage(self, exType: type, exValue: BaseException, exTrace: TracebackType) -> None:
         """Generate a message and append session data, error info and
@@ -138,26 +142,25 @@ class NWErrorMessage(QDialog):
 
         try:
             import enchant
+
             enchantVersion = enchant.__version__
         except Exception:
             enchantVersion = "Unknown"
 
         try:
-            txtTrace = "\n".join(format_tb(exTrace))
-            self.msgBody.setPlainText((
+            trace = "\n".join(format_tb(exTrace))
+            self.msgBody.setPlainText(
                 "Environment:\n"
                 f"novelWriter Version: {__version__}\n"
                 f"Host OS: {sys.platform} ({kernelVersion})\n"
                 f"Python: {sys.version.split()[0]} ({sys.hexversion:#x})\n"
                 f"Qt: {QT_VERSION_STR}, PyQt: {PYQT_VERSION_STR}\n"
                 f"enchant: {enchantVersion}\n\n"
-                f"{exType.__name__}:\n{str(exValue)}\n\n"
-                f"Traceback:\n{txtTrace}\n"
-            ))
+                f"{exType.__name__}:\n{exValue!s}\n\n"
+                f"Traceback:\n{trace}\n"
+            )
         except Exception:
             self.msgBody.setPlainText("Failed to generate error report ...")
-
-        return
 
     ##
     #  Slots
@@ -167,22 +170,21 @@ class NWErrorMessage(QDialog):
     def _doClose(self) -> None:
         """Close the dialog."""
         self.close()
-        return
 
 
 def exceptionHandler(exType: type, exValue: BaseException, exTrace: TracebackType) -> None:
-    """Function to catch unhandled global exceptions."""
+    """Catch unhandled global exceptions."""
     from traceback import print_tb
 
     from PyQt6.QtWidgets import QApplication
 
-    logger.critical("%s: %s", exType.__name__, str(exValue))
+    logger.critical("%s: %s", exType.__name__, exValue)
     print_tb(exTrace)
 
     try:
         nwGUI = None
         for qWin in QApplication.topLevelWidgets():
-            if qWin.objectName() == "GuiMain":
+            if qWin.objectName() == "GuiMain":  # pragma: no branch (this branch is flaky)
                 nwGUI = qWin
                 break
 
@@ -190,7 +192,7 @@ def exceptionHandler(exType: type, exValue: BaseException, exTrace: TracebackTyp
             logger.warning("Could not find main GUI window so cannot open error dialog")
             return
 
-        errMsg = NWErrorMessage(nwGUI)
+        errMsg = ErrorMessage(nwGUI)
         errMsg.setMessage(exType, exValue, exTrace)
         errMsg.exec()
 

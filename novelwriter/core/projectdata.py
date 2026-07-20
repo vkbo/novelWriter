@@ -1,9 +1,6 @@
 """
-novelWriter – Project Data Class
-================================
-
-File History:
-Created: 2022-10-30 [2.0rc2] NWProjectData
+novelWriter – Project Data
+==========================
 
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
@@ -20,30 +17,29 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
 import uuid
 
-
 from datetime import date
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
-from novelwriter.common import (
-    checkBool, checkInt, checkStringNone, checkUuid, isHandle,
-    makeFileNameSafe, simplified
-)
-from novelwriter.core.status import NWStatus
+from novelwriter.common import checkBool, checkInt, checkStringNone, checkUuid, isHandle, makeFileNameSafe, simplified
+from novelwriter.core.status import ItemStatus
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
+T_LastHandle = Literal["editor", "viewer", "novel", "outline"]
 
-class NWProjectData:
-    """Core: Project Data Class
+
+class ProjectData:
+    """Core: Project Data Class.
 
     The class holds all project data from the main XML file, aside from
     the list of project items.
@@ -72,27 +68,25 @@ class NWProjectData:
         self._spellLang = None
 
         # Project Dictionaries
-        self._initCounts = [0, 0]
-        self._currCounts = [0, 0]
+        self._initCounts = [0, 0, 0, 0]
+        self._currCounts = [0, 0, 0, 0]
         self._lastHandle: dict[str, str | None] = {
-            "editor":    None,
-            "viewer":    None,
-            "novelTree": None,
-            "outline":   None,
+            "editor": None,
+            "viewer": None,
+            "novel": None,
+            "outline": None,
         }
         self._autoReplace: dict[str, str] = {}
         self._titleFormat: dict[str, str] = {
-            "title":      "%title%",
-            "chapter":    "%title%",
+            "title": "%title%",
+            "chapter": "%title%",
             "unnumbered": "%title%",
-            "scene":      "* * *",
-            "section":    "",
+            "scene": "* * *",
+            "section": "",
         }
 
-        self._status = NWStatus(NWStatus.STATUS)
-        self._import = NWStatus(NWStatus.IMPORT)
-
-        return
+        self._status = ItemStatus(ItemStatus.STATUS)
+        self._import = ItemStatus(ItemStatus.IMPORT)
 
     ##
     #  Properties
@@ -174,18 +168,18 @@ class NWProjectData:
         return self._spellLang
 
     @property
-    def initCounts(self) -> tuple[int, int]:
-        """Return the initial count of words for novel and note
-        documents.
+    def initCounts(self) -> tuple[int, int, int, int]:
+        """Return the initial count of words and characters for novel
+        and note documents.
         """
-        return self._initCounts[0], self._initCounts[1]
+        return self._initCounts[0], self._initCounts[1], self._initCounts[2], self._initCounts[3]
 
     @property
-    def currCounts(self) -> tuple[int, int]:
-        """Return the current count of words for novel and note
-        documents.
+    def currCounts(self) -> tuple[int, int, int, int]:
+        """Return the current count of words and characters for novel
+        and note documents.
         """
-        return self._currCounts[0], self._currCounts[1]
+        return self._currCounts[0], self._currCounts[1], self._currCounts[2], self._currCounts[3]
 
     @property
     def lastHandle(self) -> dict[str, str | None]:
@@ -200,12 +194,12 @@ class NWProjectData:
         return self._autoReplace
 
     @property
-    def itemStatus(self) -> NWStatus:
+    def itemStatus(self) -> ItemStatus:
         """Return the status settings object."""
         return self._status
 
     @property
-    def itemImport(self) -> NWStatus:
+    def itemImport(self) -> ItemStatus:
         """Return the importance settings object."""
         return self._import
 
@@ -217,13 +211,11 @@ class NWProjectData:
         """Increment the save count by one."""
         self._saveCount += 1
         self._project.setProjectChanged(True)
-        return
 
     def incAutoCount(self) -> None:
         """Increment the auto save count by one."""
         self._autoCount += 1
         self._project.setProjectChanged(True)
-        return
 
     ##
     #  Getters
@@ -245,104 +237,89 @@ class NWProjectData:
         elif value != self._uuid:
             self._uuid = value
             self._project.setProjectChanged(True)
-        return
 
     def setName(self, value: str | None) -> None:
         """Set a new project name."""
         if value != self._name:
             self._name = simplified(str(value or ""))
             self._project.setProjectChanged(True)
-        return
 
     def setAuthor(self, value: str | None) -> None:
         """Set the author value."""
         if value != self._author:
             self._author = simplified(str(value or ""))
             self._project.setProjectChanged(True)
-        return
 
     def setSaveCount(self, value: Any) -> None:
         """Set the save count from last session."""
         self._saveCount = checkInt(value, 0)
         self._project.setProjectChanged(True)
-        return
 
     def setAutoCount(self, value: Any) -> None:
         """Set the auto save count from last session."""
         self._autoCount = checkInt(value, 0)
         self._project.setProjectChanged(True)
-        return
 
     def setEditTime(self, value: Any) -> None:
         """Set the edit time from last session."""
         self._editTime = checkInt(value, 0)
         self._project.setProjectChanged(True)
-        return
 
     def setDoBackup(self, value: Any) -> None:
         """Set the do write backup flag."""
         if value != self._doBackup:
             self._doBackup = checkBool(value, False)
             self._project.setProjectChanged(True)
-        return
 
     def setProjGoal(self, value: Any) -> None:
         """Set the project goal."""
         if value != self._projGoal:
             self._projGoal = checkInt(value, self._projGoal)
             self._project.setProjectChanged(True)
-        return
 
     def setProjDeadline(self, value: Any) -> None:
         """Set the project deadline."""
         if value != self._projDeadline and isinstance(value, date):
             self._projDeadline = value
             self._project.setProjectChanged(True)
-        return
 
     def setSessGoal(self, value: Any) -> None:
         """Set the session goal."""
         if value != self._sessGoal:
             self._sessGoal = checkInt(value, self._sessGoal)
             self._project.setProjectChanged(True)
-        return
 
     def setSessGoalAuto(self, value: Any) -> None:
         """Set the session goal."""
         if value != self._sessGoalAuto:
             self._sessGoalAuto = checkBool(value, False)
             self._project.setProjectChanged(True)
-        return
 
     def setLanguage(self, value: str | None) -> None:
         """Set the project language."""
         if value != self._language:
             self._language = checkStringNone(value, None)
             self._project.setProjectChanged(True)
-        return
 
     def setSpellCheck(self, value: Any) -> None:
         """Set the spell check flag."""
         if value != self._spellCheck:
             self._spellCheck = checkBool(value, False)
             self._project.setProjectChanged(True)
-        return
 
     def setSpellLang(self, value: str | None) -> None:
         """Set the spell check language."""
         if value != self._spellLang:
             self._spellLang = checkStringNone(value, None)
             self._project.setProjectChanged(True)
-        return
 
-    def setLastHandle(self, value: str | None, component: str) -> None:
+    def setLastHandle(self, value: str | None, component: T_LastHandle) -> None:
         """Set a last used handle into the handle registry for a given
         component.
         """
         if isinstance(component, str):
             self._lastHandle[component] = checkStringNone(value, None)
             self._project.setProjectChanged(True)
-        return
 
     def setLastHandles(self, value: dict) -> None:
         """Set the full last handles dictionary to a new set of values.
@@ -353,25 +330,36 @@ class NWProjectData:
                 if key in self._lastHandle:
                     self._lastHandle[key] = str(entry) if isHandle(entry) else None
             self._project.setProjectChanged(True)
-        return
 
-    def setInitCounts(self, novel: Any = None, notes: Any = None) -> None:
-        """Set the word count totals for novel and note files."""
-        if novel is not None:
-            self._initCounts[0] = checkInt(novel, 0)
-            self._currCounts[0] = checkInt(novel, 0)
-        if notes is not None:
-            self._initCounts[1] = checkInt(notes, 0)
-            self._currCounts[1] = checkInt(notes, 0)
-        return
+    def setInitCounts(self, wNovel: Any = None, wNotes: Any = None, cNovel: Any = None, cNotes: Any = None) -> None:
+        """Set the count totals for novel and note files."""
+        if wNovel is not None:
+            count = checkInt(wNovel, 0)
+            self._initCounts[0] = count
+            self._currCounts[0] = count
+        if wNotes is not None:
+            count = checkInt(wNotes, 0)
+            self._initCounts[1] = count
+            self._currCounts[1] = count
+        if cNovel is not None:
+            count = checkInt(cNovel, 0)
+            self._initCounts[2] = count
+            self._currCounts[2] = count
+        if cNotes is not None:
+            count = checkInt(cNotes, 0)
+            self._initCounts[3] = count
+            self._currCounts[3] = count
 
-    def setCurrCounts(self, novel: Any = None, notes: Any = None) -> None:
-        """Set the word count totals for novel and note files."""
-        if novel is not None:
-            self._currCounts[0] = checkInt(novel, 0)
-        if notes is not None:
-            self._currCounts[1] = checkInt(notes, 0)
-        return
+    def setCurrCounts(self, wNovel: Any = None, wNotes: Any = None, cNovel: Any = None, cNotes: Any = None) -> None:
+        """Set the count totals for novel and note files."""
+        if wNovel is not None:
+            self._currCounts[0] = checkInt(wNovel, 0)
+        if wNotes is not None:
+            self._currCounts[1] = checkInt(wNotes, 0)
+        if cNovel is not None:
+            self._currCounts[2] = checkInt(cNovel, 0)
+        if cNotes is not None:
+            self._currCounts[3] = checkInt(cNotes, 0)
 
     def setAutoReplace(self, value: dict) -> None:
         """Set the auto-replace dictionary."""
@@ -381,4 +369,3 @@ class NWProjectData:
                 if isinstance(entry, str):
                     self._autoReplace[key] = simplified(entry)
             self._project.setProjectChanged(True)
-        return

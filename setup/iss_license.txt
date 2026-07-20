@@ -1,6 +1,6 @@
 novelWriter License
 
-Copyright (C) 2018-2025  Veronica Berglyd Olsen
+Copyright (C) Veronica Berglyd Olsen and novelWriter contributors
 License: GPL v3+ <https://www.gnu.org/licenses/gpl-3.0.html>
 
 This program is free software: you can redistribute it and/or modify

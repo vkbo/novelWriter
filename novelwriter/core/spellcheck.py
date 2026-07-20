@@ -1,10 +1,6 @@
 """
-novelWriter – Spell Check Classes
-=================================
-
-File History:
-Created: 2019-06-11 [0.1.5] NWSpellEnchant
-Created: 2023-06-13 [2.1b1] UserDictionary
+novelWriter – Spell Checks
+==========================
 
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
@@ -21,46 +17,54 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import json
 import logging
 
-from collections.abc import Iterator
 from pathlib import Path
+from threading import Lock
 from typing import TYPE_CHECKING
 
-from PyQt6.QtCore import QLocale
-
+from novelwriter.common import languageName
 from novelwriter.constants import nwFiles
 from novelwriter.error import logException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
+MAX_CACHE_SIZE = 100_000
 
-class NWSpellEnchant:
-    """Core: Enchant Spell Checking Wrapper
 
-    This is a rapper class for Enchant to keep the API consistent
+class SpellEnchant:
+    """Core: Enchant Spell Checking Wrapper.
+
+    This is a wrapper class for Enchant to keep the API consistent
     between spell check tools.
     """
+
+    __slots__ = ("_broker", "_cache", "_enchant", "_language", "_lock", "_project", "_requested", "_userDict")
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
         self._enchant = FakeEnchant()
         self._userDict = UserDictionary(project)
+        self._cache: dict[str, bool] = {}
+        self._lock = Lock()
         self._language = None
+        self._requested = None
         self._broker = None
-        logger.debug("Ready: NWSpellEnchant")
-        return
+        logger.debug("Ready: SpellEnchant")
 
     def __del__(self) -> None:  # pragma: no cover
-        logger.debug("Delete: NWSpellEnchant")
-        return
+        """Class destructor."""
+        logger.debug("Delete: SpellEnchant")
 
     ##
     #  Properties
@@ -68,7 +72,13 @@ class NWSpellEnchant:
 
     @property
     def spellLanguage(self) -> str | None:
+        """Return the current spell check language."""
         return self._language
+
+    @property
+    def requestedLanguage(self) -> str | None:
+        """Return the requested spell check language."""
+        return self._requested
 
     ##
     #  Setters
@@ -77,61 +87,85 @@ class NWSpellEnchant:
     def setLanguage(self, language: str | None) -> None:
         """Load a dictionary for the language specified in the config.
         If that fails, we load a mock dictionary so that lookups don't
-        crash. Note that enchant will allow loading an empty string as
-        a tag, but this will fail later on. See issue #1096.
+        crash.
+
+        Note:
+        * Enchant will allow loading an empty string as a tag, but this
+          will fail later on. See issue #1096.
+        * The whole swap is locked so that a worker thread never sees a
+          partially loaded dictionary.
+
         """
-        self._enchant = FakeEnchant()
-        self._broker = None
-        self._language = None
-
-        try:
-            import enchant
-
-            if language and enchant.dict_exists(language):
-                self._broker = enchant.Broker()
-                self._enchant = self._broker.request_dict(language)
-                self._language = language
-                logger.debug("Enchant spell checking for language '%s' loaded", language)
-            else:
-                logger.warning("Enchant found no dictionary for language '%s'", language)
-
-        except Exception:
-            logger.error("Failed to load enchant spell checking for language '%s'", language)
-
-        if self._enchant is None:
+        with self._lock:
             self._enchant = FakeEnchant()
-        else:
-            self._userDict.load()
-            for word in self._userDict:
-                self._enchant.add_to_session(word)
+            self._broker = None
+            self._language = None
+            self._requested = language or None
+            self._cache.clear()
 
-        return
+            try:
+                import enchant
+
+                if language and enchant.dict_exists(language):
+                    self._broker = enchant.Broker()
+                    self._enchant = self._broker.request_dict(language)
+                    self._language = language
+                    logger.debug("Enchant spell checking for language '%s' loaded", language)
+                else:
+                    logger.warning("Enchant found no dictionary for language '%s'", language)
+
+            except Exception:
+                logger.error("Failed to load enchant spell checking for language '%s'", language)
+
+            if self._enchant is None:
+                self._enchant = FakeEnchant()
+            else:
+                self._userDict.load()
+                for word in self._userDict:
+                    self._enchant.add_to_session(word)
 
     ##
     #  Methods
     ##
 
     def checkWord(self, word: str) -> bool:
-        """Wrapper function for pyenchant."""
-        try:
-            return bool(self._enchant.check(word))
-        except Exception:
-            return True
+        """Forward check to pyenchant.
+
+        Note:
+        * The results are cached, since the same words tend to be
+          checked over and over again.
+        * The enchant call is locked as the library is not guaranteed thread safe, but
+          cache hits are lock-free.
+
+        """
+        if (result := self._cache.get(word)) is None:
+            with self._lock:
+                try:
+                    result = bool(self._enchant.check(word))
+                except Exception:
+                    result = True
+            if len(self._cache) >= MAX_CACHE_SIZE:
+                self._cache.clear()
+            self._cache[word] = result
+        return result
 
     def suggestWords(self, word: str) -> list[str]:
-        """Wrapper function for pyenchant."""
-        try:
-            return self._enchant.suggest(word)
-        except Exception:
-            return []
+        """Ask pyenchant for suggestions."""
+        with self._lock:
+            try:
+                return self._enchant.suggest(word)
+            except Exception:
+                return []
 
     def addWord(self, word: str, save: bool = True) -> None:
         """Add a word to the project dictionary."""
         if word := word.strip():
-            try:
-                self._enchant.add_to_session(word)
-            except Exception:
-                return
+            with self._lock:
+                try:
+                    self._enchant.add_to_session(word)
+                except Exception:
+                    return
+            self._cache[word] = True
             if save and self._userDict.add(word):
                 self._userDict.save()
         return
@@ -141,8 +175,9 @@ class NWSpellEnchant:
         lang = []
         try:
             import enchant
+
             tags = [x for x, _ in enchant.list_dicts()]
-            lang = [(x, f"{QLocale(x).nativeLanguageName().title()} [{x}]") for x in set(tags)]
+            lang = [(x, f"{languageName(x)} [{x}]") for x in set(tags)]
         except Exception:
             logger.error("Failed to list languages for enchant spell checking")
         return sorted(lang, key=lambda x: x[1])
@@ -163,6 +198,8 @@ class NWSpellEnchant:
 class FakeEnchant:
     """Fallback for when Enchant is selected, but not installed."""
 
+    __slots__ = ("provider", "tag")
+
     def __init__(self) -> None:
 
         class FakeProvider:
@@ -171,29 +208,38 @@ class FakeEnchant:
         self.tag = ""
         self.provider = FakeProvider()
 
-        return
-
     def check(self, word: str) -> bool:
+        """Return True for all words."""
         return True
 
     def suggest(self, word: str) -> list[str]:
+        """Return an empty suggestion list."""
         return []
 
     def add_to_session(self, word: str) -> None:
+        """Do nothing."""
         return
 
 
 class UserDictionary:
+    """Core: User Word Dictionary.
+
+    This class holds all the user's own words for spell checking
+    purposes. The dictionary is per-project.
+    """
+
+    __slots__ = ("_project", "_words")
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
         self._words = set()
-        return
 
     def __contains__(self, word: str) -> bool:
+        """Return True if the word is in the dictionary."""
         return word in self._words
 
     def __iter__(self) -> Iterator[str]:
+        """Return an iterator over the words in the dictionary."""
         return iter(self._words)
 
     def add(self, word: str) -> bool:
@@ -209,16 +255,15 @@ class UserDictionary:
         """Load the user's dictionary."""
         self._words = set()
         wordList = self._project.storage.getMetaFile(nwFiles.DICT_FILE)
-        if isinstance(wordList, Path) and wordList.is_file():
-            try:
+        try:
+            if isinstance(wordList, Path) and wordList.is_file():
                 with open(wordList, mode="r", encoding="utf-8") as fObj:
                     data = json.load(fObj)
                 self._words = set(data.get("novelWriter.userDict", []))
                 logger.info("Loaded: %s", nwFiles.DICT_FILE)
-            except Exception:
-                logger.error("Failed to load user dictionary")
-                logException()
-        return
+        except Exception:
+            logger.error("Failed to load user dictionary")
+            logException()
 
     def save(self) -> None:
         """Save the user's dictionary."""
@@ -231,4 +276,3 @@ class UserDictionary:
             except Exception:
                 logger.error("Failed to save user dictionary")
                 logException()
-        return

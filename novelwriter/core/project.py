@@ -2,9 +2,6 @@
 novelWriter – Project Wrapper
 =============================
 
-File History:
-Created: 2018-09-29 [0.0.1] NWProject
-
 This file is a part of novelWriter
 Copyright (C) 2018 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import json
@@ -30,76 +28,97 @@ from enum import Enum
 from functools import partial
 from pathlib import Path
 from time import time
+from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__
 from novelwriter.common import (
-    checkStringNone, formatInt, formatTimeStamp, getFileSize, hexToInt,
-    makeFileNameSafe, minmax
+    checkStringNone,
+    formatInt,
+    formatTimeStamp,
+    getFileSize,
+    hexToInt,
+    makeFileNameSafe,
+    minmax,
+    safeIsFile,
 )
 from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.index import Index
 from novelwriter.core.options import OptionState
-from novelwriter.core.projectdata import NWProjectData
+from novelwriter.core.projectdata import ProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
-from novelwriter.core.sessions import NWSessionLog
-from novelwriter.core.status import T_StatusKind, T_UpdateEntry
-from novelwriter.core.storage import NWStorage, NWStorageOpen
-from novelwriter.core.tree import NWTree
+from novelwriter.core.sessions import SessionLog
+from novelwriter.core.storage import ProjectStorage, ProjectStorageOpen
+from novelwriter.core.tree import ProjectTree
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
+
+if TYPE_CHECKING:
+    from novelwriter.core.status import T_StatusKind, T_UpdateEntry
 
 logger = logging.getLogger(__name__)
 
 
 class NWProjectState(Enum):
+    """The state of the loaded project."""
 
-    UNKNOWN  = 0
-    LOCKED   = 1
+    UNKNOWN = 0
+    LOCKED = 1
     RECOVERY = 2
-    READY    = 3
+    READY = 3
 
 
 class NWProject:
+    """Core: novelWriter Project Class.
+
+    This class is the parent class of the project, and holds instances
+    of project data, the project tree, and the project index.
+    """
 
     __slots__ = (
-        "_options", "_storage", "_data", "_tree", "_index", "_session",
-        "_langData", "_changed", "_valid", "_state", "tr",
+        "_changed",
+        "_data",
+        "_index",
+        "_langData",
+        "_options",
+        "_session",
+        "_state",
+        "_storage",
+        "_tree",
+        "_valid",
+        "tr",
     )
 
     def __init__(self) -> None:
 
         # Core Elements
-        self._options = OptionState(self)    # Project-specific GUI options
-        self._storage = NWStorage(self)      # The project storage handler
-        self._data    = NWProjectData(self)  # The project settings
-        self._tree    = NWTree(self)         # The project tree
-        self._index   = Index(self)          # The project index
-        self._session = NWSessionLog(self)   # The session record
+        self._options = OptionState(self)  # Project-specific GUI options
+        self._storage = ProjectStorage(self)  # The project storage handler
+        self._data = ProjectData(self)  # The project settings
+        self._tree = ProjectTree(self)  # The project tree
+        self._index = Index(self)  # The project index
+        self._session = SessionLog(self)  # The session record
 
         # Project Status
-        self._langData = {}     # Localisation data
-        self._changed  = False  # The project has unsaved changes
-        self._valid    = False  # The project was successfully loaded
-        self._state    = NWProjectState.UNKNOWN
+        self._langData = {}  # Localisation data
+        self._changed = False  # The project has unsaved changes
+        self._valid = False  # The project was successfully loaded
+        self._state = NWProjectState.UNKNOWN
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
 
         logger.debug("Ready: NWProject")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: NWProject")
-        return
 
     def clear(self) -> None:
         """Clear the project."""
         self._tree.clear()
         self._index.clear()
-        return
 
     ##
     #  Properties
@@ -110,15 +129,15 @@ class NWProject:
         return self._options
 
     @property
-    def storage(self) -> NWStorage:
+    def storage(self) -> ProjectStorage:
         return self._storage
 
     @property
-    def data(self) -> NWProjectData:
+    def data(self) -> ProjectData:
         return self._data
 
     @property
-    def tree(self) -> NWTree:
+    def tree(self) -> ProjectTree:
         return self._tree
 
     @property
@@ -126,7 +145,7 @@ class NWProject:
         return self._index
 
     @property
-    def session(self) -> NWSessionLog:
+    def session(self) -> SessionLog:
         return self._session
 
     @property
@@ -189,16 +208,21 @@ class NWProject:
             SHARED.closeDocument(tHandle)
             doc = self._storage.getDocument(tHandle)
             if not doc.deleteDocument():
-                SHARED.error(
-                    self.tr("Could not delete document file."),
-                    info=doc.getError()
-                )
+                SHARED.error(self.tr("Could not delete document file."), info=doc.getError())
                 return False
         self._index.deleteHandle(tHandle)
         self._tree.remove(tHandle)
         return True
 
-    def writeNewFile(self, tHandle: str, hLevel: int, isDocument: bool, text: str = "") -> bool:
+    def writeNewFile(
+        self,
+        tHandle: str,
+        hLevel: int,
+        isDocument: bool,
+        text: str = "",
+        *,
+        addHeading: bool = True,
+    ) -> bool:
         """Write content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
@@ -208,8 +232,9 @@ class NWProject:
         if self._storage.getDocumentText(tHandle).strip():
             return False
 
-        indent = "#"*minmax(hLevel, 1, 4)
-        text = f"{indent} {tItem.itemName}\n\n{text}"
+        if addHeading:
+            indent = "#" * minmax(hLevel, 1, 4)
+            text = f"{indent} {tItem.itemName}\n\n{text}"
 
         if tItem.isNovelLike() and isDocument:
             tItem.setLayout(nwItemLayout.DOCUMENT)
@@ -221,7 +246,7 @@ class NWProject:
 
         return True
 
-    def copyFileContent(self, tHandle: str, sHandle: str) -> bool:
+    def copyFileContent(self, tHandle: str, sHandle: str, newTitle: str | None = None) -> bool:
         """Copy content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
@@ -236,6 +261,16 @@ class NWProject:
 
         logger.debug("Populating '%s' with text from '%s'", tHandle, sHandle)
         text = self._storage.getDocumentText(sHandle)
+        if (
+            newTitle
+            and (lines := text.split("\n"))
+            and lines
+            and lines[0].startswith(("# ", "## ", "### ", "#### ", "#! ", "##! ", "###! "))
+        ):
+            prefix, _, _ = lines[0].partition(" ")
+            lines[0] = f"{prefix} {newTitle}"
+            text = "\n".join(lines)
+
         self._storage.getDocument(tHandle).writeDocument(text)
         sItem.setLayout(tItem.itemLayout)
         self._index.reIndexHandle(tHandle)
@@ -249,10 +284,9 @@ class NWProject:
         if itemClass != nwItemClass.NO_CLASS:
             if not (rHandle := self._tree.findRoot(itemClass)):
                 rHandle = self.newRoot(itemClass)
-            if rHandle and (tHandle := SHARED.project.newFile(tag.title(), rHandle)):
+            if rHandle and (tHandle := self.newFile(tag.title(), rHandle)):
                 self.writeNewFile(tHandle, 1, False, f"@tag: {tag}\n\n")
                 self._tree.refreshItems([tHandle])
-        return
 
     ##
     #  Project Methods
@@ -267,25 +301,27 @@ class NWProject:
         logger.info("Opening project: %s", projPath)
 
         status = self._storage.initProjectStorage(projPath, clearLock)
-        if status != NWStorageOpen.READY:
-            if status == NWStorageOpen.UNKOWN:
+        if status != ProjectStorageOpen.READY:
+            if status == ProjectStorageOpen.UNKOWN:
                 SHARED.error(
                     self.tr("Not a known project file format."),
-                    info=self.tr("Path: {0}").format(str(projPath))
+                    info=self.tr("Path: {0}").format(str(projPath)),
                 )
-            elif status == NWStorageOpen.NOT_FOUND:
+            elif status == ProjectStorageOpen.NOT_FOUND:
                 SHARED.error(
                     self.tr("Project file not found."),
-                    info=self.tr("Path: {0}").format(str(projPath))
+                    info=self.tr("Path: {0}").format(str(projPath)),
                 )
-            elif status == NWStorageOpen.FAILED:
+            elif status == ProjectStorageOpen.FAILED:
                 SHARED.error(
                     self.tr("Failed to open project."),
                     info=self.tr("Path: {0}").format(str(projPath)),
-                    exc=self._storage.exc
+                    exc=self._storage.exc,
                 )
-            elif status == NWStorageOpen.LOCKED:
+            elif status == ProjectStorageOpen.LOCKED:
                 self._state = NWProjectState.LOCKED
+            else:  # pragma: no cover
+                pass
             return False
 
         # Read Project XML
@@ -295,21 +331,21 @@ class NWProject:
         if not isinstance(xmlReader, ProjectXMLReader):
             return False
 
-        self._data = NWProjectData(self)
+        self._data = ProjectData(self)
         projContent = []
         xmlParsed = xmlReader.read(self._data, projContent)
         appVersion = xmlReader.appVersion or self.tr("Unknown")
         if not xmlParsed:
             if xmlReader.state == XMLReadState.NOT_NWX_FILE:
-                SHARED.error(self.tr(
-                    "Project file does not appear to be a novelWriterXML file."
-                ))
+                SHARED.error(self.tr("Project file does not appear to be a novelWriterXML file."))
             elif xmlReader.state == XMLReadState.UNKNOWN_VERSION:
-                SHARED.error(self.tr(
-                    "Unknown or unsupported novelWriter project file format. "
-                    "The project cannot be opened by this version of novelWriter. "
-                    "The file was saved with novelWriter version {0}."
-                ).format(appVersion))
+                SHARED.error(
+                    self.tr(
+                        "Unknown or unsupported novelWriter project file format. "
+                        "The project cannot be opened by this version of novelWriter. "
+                        "The file was saved with novelWriter version {0}."
+                    ).format(appVersion)
+                )
             else:
                 SHARED.error(self.tr("Failed to parse project xml."))
             return False
@@ -317,28 +353,29 @@ class NWProject:
         # Check Legacy Upgrade
         # ====================
 
-        if xmlReader.state == XMLReadState.WAS_LEGACY:
-            msgYes = SHARED.question(self.tr(
+        if xmlReader.state == XMLReadState.WAS_LEGACY and not SHARED.question(
+            self.tr(
                 "The file format of your project is about to be updated. "
                 "If you proceed, older versions of novelWriter will no "
                 "longer be able to open this project. Continue?"
-            ))
-            if not msgYes:
-                return False
+            )
+        ):
+            return False
 
         # Check novelWriter Version
         # =========================
 
-        if xmlReader.hexVersion > hexToInt(__hexversion__):
-            msgYes = SHARED.question(self.tr(
+        if xmlReader.hexVersion > hexToInt(__hexversion__) and not SHARED.question(
+            self.tr(
                 "This project was saved by a newer version of "
                 "novelWriter, version {0}. This is version {1}. If you "
                 "continue to open the project, some attributes and "
                 "settings may not be preserved, but the overall project "
                 "should be fine. Continue opening the project?"
-            ).format(appVersion, __version__), warn=True)
-            if not msgYes:
-                return False
+            ).format(appVersion, __version__),
+            warn=True,
+        ):
+            return False
 
         # Extract Data
         # ============
@@ -355,16 +392,18 @@ class NWProject:
         # This also handles any orphaned files found
         orphans, recovered = self._tree.checkConsistency(self.tr("Recovered"))
         if orphans > 0:
-            SHARED.warn(self.tr(
-                "Found {0} orphaned file(s) in the project. {1} file(s) were recovered."
-            ).format(orphans, recovered))
+            SHARED.warn(
+                self.tr("Found {0} orphaned file(s) in the project. {1} file(s) were recovered.").format(
+                    orphans, recovered
+                )
+            )
 
         self._index.loadIndex()
         if xmlReader.state == XMLReadState.WAS_LEGACY:
             # Often, the index needs to be rebuilt when updating format
             self._index.rebuild()
 
-        self.updateWordCounts()
+        self.updateCounts()
         self._session.startSession()
         self.setProjectChanged(False)
         self._valid = True
@@ -394,7 +433,7 @@ class NWProject:
         else:
             self._data.incSaveCount()
 
-        self.updateWordCounts()
+        self.updateCounts()
         self.countStatus()
 
         xmlWriter = self._storage.getXmlWriter()
@@ -402,10 +441,11 @@ class NWProject:
             return False
 
         saveTime = time()
+        SHARED.clearErrorCache()
         editTime = self._data.editTime + max(round(saveTime - self._session.start), 0)
         content = self._tree.pack()
         if not xmlWriter.write(self._data, content, saveTime, editTime):
-            SHARED.error(self.tr("Failed to save project."), exc=xmlWriter.error)
+            self._reportErrors(self.tr("Issues encountered when saving project:"))
             return False
 
         # Save other project data
@@ -417,6 +457,8 @@ class NWProject:
         if storagePath := self._storage.storagePath:
             CONFIG.recentProjects.update(storagePath, self._data, saveTime)
 
+        self._reportErrors(self.tr("Issues encountered when saving project:"))
+
         SHARED.newStatusMessage(self.tr("Saved Project: {0}").format(self._data.name))
         self.setProjectChanged(False)
 
@@ -425,12 +467,14 @@ class NWProject:
     def closeProject(self, idleTime: float = 0.0) -> None:
         """Close the project."""
         logger.info("Closing project")
+
+        SHARED.clearErrorCache()
         self._index.clear()  # Triggers clear signal, see #1718
         self._options.saveSettings()
         self._tree.writeToCFile()
         self._session.appendSession(idleTime)
         self._storage.closeSession()
-        return
+        self._reportErrors(self.tr("Issues encountered when closing project:"))
 
     def backupProject(self, doNotify: bool) -> bool:
         """Create a zip file of the entire project."""
@@ -442,10 +486,12 @@ class NWProject:
         SHARED.newStatusMessage(self.tr("Backing up project ..."))
 
         if not self._data.name:
-            SHARED.error(self.tr(
-                "Cannot backup project because no project name is set. "
-                "Please set a Project Name in Project Settings."
-            ))
+            SHARED.error(
+                self.tr(
+                    "Cannot backup project because no project name is set. "
+                    "Please set a Project Name in Project Settings."
+                )
+            )
             return False
 
         cleanName = makeFileNameSafe(self._data.name)
@@ -457,14 +503,23 @@ class NWProject:
             SHARED.error(self.tr("Could not create backup folder."), exc=exc)
             return False
 
-        timeStamp = formatTimeStamp(time(), fileSafe=True)
+        match CONFIG.backupInterval:
+            case "day":
+                timeStamp = formatTimeStamp(time(), fileSafe=True, fmt="%Y-%m-%d")
+            case "week":
+                timeStamp = formatTimeStamp(time(), fileSafe=True, fmt="%G-W%V")
+            case "month":
+                timeStamp = formatTimeStamp(time(), fileSafe=True, fmt="%Y-%m")
+            case _:  # Option "session" falls through here
+                timeStamp = formatTimeStamp(time(), fileSafe=True)
+
         archName = baseDir / f"{cleanName} {timeStamp}.zip"
         if self._storage.zipIt(archName, compression=2):
             if doNotify:
                 size = formatInt(getFileSize(archName))
                 SHARED.info(
                     self.tr("Created a backup of your project of size {0}B.").format(size),
-                    info=self.tr("Path: {0}").format(str(backupPath))
+                    info=self.tr("Path: {0}").format(str(backupPath)),
                 )
         else:
             SHARED.error(self.tr("Could not write backup archive."))
@@ -480,15 +535,14 @@ class NWProject:
 
     def setDefaultStatusImport(self) -> None:
         """Set the default status and importance values."""
-        self._data.itemStatus.add(None, self.tr("New"),      (100, 100, 100), "SQUARE", 0)
-        self._data.itemStatus.add(None, self.tr("Note"),     (200, 50,  0),   "SQUARE", 0)
-        self._data.itemStatus.add(None, self.tr("Draft"),    (200, 150, 0),   "SQUARE", 0)
-        self._data.itemStatus.add(None, self.tr("Finished"), (50,  200, 0),   "SQUARE", 0)
-        self._data.itemImport.add(None, self.tr("New"),      (100, 100, 100), "SQUARE", 0)
-        self._data.itemImport.add(None, self.tr("Minor"),    (200, 50,  0),   "SQUARE", 0)
-        self._data.itemImport.add(None, self.tr("Major"),    (200, 150, 0),   "SQUARE", 0)
-        self._data.itemImport.add(None, self.tr("Main"),     (50,  200, 0),   "SQUARE", 0)
-        return
+        self._data.itemStatus.add(None, self.tr("New"), "faded", "STAR", 0)
+        self._data.itemStatus.add(None, self.tr("Note"), "red", "TRIANGLE", 0)
+        self._data.itemStatus.add(None, self.tr("Draft"), "yellow", "CIRCLE_T", 0)
+        self._data.itemStatus.add(None, self.tr("Finished"), "green", "STAR", 0)
+        self._data.itemImport.add(None, self.tr("New"), "purple", "SQUARE", 0)
+        self._data.itemImport.add(None, self.tr("Minor"), "purple", "BLOCK_2", 0)
+        self._data.itemImport.add(None, self.tr("Major"), "purple", "BLOCK_3", 0)
+        self._data.itemImport.add(None, self.tr("Main"), "purple", "BLOCK_4", 0)
 
     def setProjectLang(self, language: str | None) -> None:
         """Set the project-specific language."""
@@ -497,7 +551,6 @@ class NWProject:
             self._data.setLanguage(language)
             self._loadProjectLocalisation()
             self.setProjectChanged(True)
-        return
 
     def setProjectChanged(self, status: bool) -> bool:
         """Toggle the project changed flag, and propagate the
@@ -512,15 +565,14 @@ class NWProject:
     #  Class Methods
     ##
 
-    def updateWordCounts(self) -> None:
-        """Update the total word count values."""
-        novel, notes = self._tree.sumWords()
-        self._data.setCurrCounts(novel=novel, notes=notes)
-        return
+    def updateCounts(self) -> None:
+        """Update the total word and character count values."""
+        wNovel, wNotes, cNovel, cNotes = self._tree.sumCounts()
+        self._data.setCurrCounts(wNovel=wNovel, wNotes=wNotes, cNovel=cNovel, cNotes=cNotes)
 
     def countStatus(self) -> None:
         """Count how many times the various status flags are used in the
-        project tree. The counts themselves are kept in the NWStatus
+        project tree. The counts themselves are kept in the ItemStatus
         objects. This is essentially a refresh.
         """
         self._data.itemStatus.resetCounts()
@@ -530,7 +582,6 @@ class NWProject:
                 self._data.itemStatus.increment(nwItem.itemStatus)
             else:
                 self._data.itemImport.increment(nwItem.itemImport)
-        return
 
     def updateStatus(self, kind: T_StatusKind, update: T_UpdateEntry) -> None:
         """Update status or import entries."""
@@ -542,7 +593,15 @@ class NWProject:
             self._data.itemImport.update(update)
             SHARED.emitStatusLabelsChanged(self, kind)
             self._tree.refreshAllItems()
-        return
+        else:  # pragma: no cover
+            pass
+
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        logger.debug("Theme Update: NWProject")
+
+        self._data.itemStatus.refreshIcons()
+        self._data.itemImport.refreshIcons()
 
     def localLookup(self, word: str | int) -> str:
         """Look up a word or number in the translation map for the
@@ -554,16 +613,20 @@ class NWProject:
     ##
     #  Internal Functions
     ##
+    def _reportErrors(self, title: str) -> None:
+        """Report any errors from the error cache."""
+        if errors := SHARED.errorCache():
+            SHARED.error(title, "<br><br>".join(errors))
 
     def _loadProjectLocalisation(self) -> bool:
         """Load the language data for the current project language."""
-        if self._data.language is None or CONFIG._nwLangPath is None:
+        if self._data.language is None or CONFIG.nwLangPath is None:
             self._langData = {}
             return False
 
-        langFile = Path(CONFIG._nwLangPath) / f"project_{self._data.language}.json"
-        if not langFile.is_file():
-            langFile = Path(CONFIG._nwLangPath) / "project_en_GB.json"
+        langFile = Path(CONFIG.nwLangPath) / f"project_{self._data.language}.json"
+        if not safeIsFile(langFile):
+            langFile = Path(CONFIG.nwLangPath) / "project_en_GB.json"
 
         try:
             with open(langFile, mode="r", encoding="utf-8") as inFile:

@@ -2,9 +2,6 @@
 novelWriter – Custom Widget: Status LED
 =======================================
 
-File History:
-Created: 2020-05-17 [0.5.1]
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -34,8 +32,9 @@ logger = logging.getLogger(__name__)
 
 
 class StatusLED(QAbstractButton):
+    """Custom: LED Style Indicator."""
 
-    __slots__ = ("_neutral", "_postitve", "_negative", "_color", "_state")
+    __slots__ = ("_color", "_negative", "_neutral", "_postitve", "_state")
 
     def __init__(self, sW: int, sH: int, parent: QWidget | None = None) -> None:
         super().__init__(parent=parent)
@@ -46,7 +45,6 @@ class StatusLED(QAbstractButton):
         self._state = None
         self.setFixedWidth(sW)
         self.setFixedHeight(sH)
-        return
 
     @property
     def state(self) -> bool | None:
@@ -59,7 +57,6 @@ class StatusLED(QAbstractButton):
         self._postitve = positive
         self._negative = negative
         self.setState(self._state)
-        return
 
     def setState(self, state: bool | None) -> None:
         """Set the colour state."""
@@ -71,15 +68,13 @@ class StatusLED(QAbstractButton):
             self._color = self._neutral
         self._state = state
         self.update()
-        return
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Draw the LED."""
         painter = QPainter(self)
         painter.setRenderHint(QtPaintAntiAlias, True)
-        painter.setPen(self.palette().text().color())
+        painter.setPen(self.palette().light().color())
         painter.setBrush(self._color)
         painter.setOpacity(1.0)
         painter.drawEllipse(1, 1, self.width() - 2, self.height() - 2)
         painter.end()
-        return

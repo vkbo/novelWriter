@@ -2,9 +2,6 @@
 novelWriter – Types and Flags
 =============================
 
-File History:
-Created: 2024-04-01 [2.4rc1]
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,14 +17,21 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor, QFont, QPainter, QTextCharFormat, QTextCursor, QTextFormat
+from typing import Literal
+
+from PyQt6.QtCore import QAbstractAnimation, Qt
+from PyQt6.QtGui import QColor, QFont, QKeySequence, QPainter, QPalette, QTextCharFormat, QTextCursor, QTextFormat
 from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QHeaderView, QSizePolicy, QStyle
 
-# Qt Alignment Flags
+# Custom Types
+
+T_MsgSeverity = Literal["info", "warning", "error"]
+
+# Alignment Flags
 
 QtAlignAbsolute = Qt.AlignmentFlag.AlignAbsolute
 QtAlignCenter = Qt.AlignmentFlag.AlignCenter
@@ -48,14 +52,20 @@ QtVAlignNormal = QTextCharFormat.VerticalAlignment.AlignNormal
 QtVAlignSub = QTextCharFormat.VerticalAlignment.AlignSubScript
 QtVAlignSuper = QTextCharFormat.VerticalAlignment.AlignSuperScript
 
-# Qt Text Formats
+# Text Formats
 
 QtPageBreakBefore = QTextFormat.PageBreakFlag.PageBreak_AlwaysBefore
 QtPageBreakAfter = QTextFormat.PageBreakFlag.PageBreak_AlwaysAfter
+QtPageBreakAuto = QTextFormat.PageBreakFlag.PageBreak_Auto
+
+QtTextUserProperty = QTextFormat.Property.UserProperty
 
 QtPropLineHeight = 1  # QTextBlockFormat.LineHeightTypes.ProportionalHeight
 
-# Qt Painter Types
+QtElideLeft = Qt.TextElideMode.ElideLeft
+QtElideRight = Qt.TextElideMode.ElideRight
+
+# Painter Types
 
 QtTransparent = QColor(0, 0, 0, 0)
 QtBlack = QColor(0, 0, 0)
@@ -67,47 +77,92 @@ QtPaintAntiAlias = QPainter.RenderHint.Antialiasing
 QtMouseOver = QStyle.StateFlag.State_MouseOver
 QtSelected = QStyle.StateFlag.State_Selected
 
-# Qt Colour Types
+QAnimDeleteWhenStopped = QAbstractAnimation.DeletionPolicy.DeleteWhenStopped
+
+# Colour Types
 
 QtHexRgb = QColor.NameFormat.HexRgb
 QtHexArgb = QColor.NameFormat.HexArgb
 
-# Qt Tree and Table Types
+QtColActive = QPalette.ColorGroup.Active
+QtColInactive = QPalette.ColorGroup.Inactive
+QtColDisabled = QPalette.ColorGroup.Disabled
 
-QtDecoration = Qt.ItemDataRole.DecorationRole
+# Model Item Data
+
+QtAccessibleTextRole = Qt.ItemDataRole.AccessibleTextRole
+QtDecorationRole = Qt.ItemDataRole.DecorationRole
+QtDisplayRole = Qt.ItemDataRole.DisplayRole
+QtFontRole = Qt.ItemDataRole.FontRole
+QtForegroundRole = Qt.ItemDataRole.ForegroundRole
+QtTextAlignmentRole = Qt.ItemDataRole.TextAlignmentRole
+QtToolTipRole = Qt.ItemDataRole.ToolTipRole
 QtUserRole = Qt.ItemDataRole.UserRole
 
 # Keyboard and Mouse Buttons
 
+QtKeyReturn = Qt.Key.Key_Return
+QtKeyEnter = Qt.Key.Key_Enter
+QtKeyLeft = Qt.Key.Key_Left
+QtKeyRight = Qt.Key.Key_Right
+QtKeyUp = Qt.Key.Key_Up
+QtKeyDown = Qt.Key.Key_Down
+QtKeyPageUp = Qt.Key.Key_PageUp
+QtKeyPageDown = Qt.Key.Key_PageDown
+QtKeyTab = Qt.Key.Key_Tab
+QtKeyEscape = Qt.Key.Key_Escape
+QtKeyBackspace = Qt.Key.Key_Backspace
+
 QtModCtrl = Qt.KeyboardModifier.ControlModifier
 QtModNone = Qt.KeyboardModifier.NoModifier
 QtModShift = Qt.KeyboardModifier.ShiftModifier
+
+QKeyRedo = QKeySequence.StandardKey.Redo
+QKeyUndo = QKeySequence.StandardKey.Undo
+QKeySelectAll = QKeySequence.StandardKey.SelectAll
+
 QtMouseLeft = Qt.MouseButton.LeftButton
 QtMouseMiddle = Qt.MouseButton.MiddleButton
+
+QtWidgetShortcut = Qt.ShortcutContext.WidgetShortcut
 
 # Dialog Button Box Types
 
 QtAccepted = QDialog.DialogCode.Accepted
 QtRejected = QDialog.DialogCode.Rejected
 
-QtDialogApply = QDialogButtonBox.StandardButton.Apply
-QtDialogCancel = QDialogButtonBox.StandardButton.Cancel
-QtDialogClose = QDialogButtonBox.StandardButton.Close
-QtDialogOk = QDialogButtonBox.StandardButton.Ok
-QtDialogReset = QDialogButtonBox.StandardButton.Reset
-QtDialogSave = QDialogButtonBox.StandardButton.Save
-
 QtRoleAccept = QDialogButtonBox.ButtonRole.AcceptRole
 QtRoleAction = QDialogButtonBox.ButtonRole.ActionRole
 QtRoleApply = QDialogButtonBox.ButtonRole.ApplyRole
+QtRoleDestruct = QDialogButtonBox.ButtonRole.DestructiveRole
 QtRoleReject = QDialogButtonBox.ButtonRole.RejectRole
+QtRoleReset = QDialogButtonBox.ButtonRole.ResetRole
 
 # Cursor Types
 
 QtKeepAnchor = QTextCursor.MoveMode.KeepAnchor
 QtMoveAnchor = QTextCursor.MoveMode.MoveAnchor
+
 QtMoveLeft = QTextCursor.MoveOperation.Left
 QtMoveRight = QTextCursor.MoveOperation.Right
+QtMoveUp = QTextCursor.MoveOperation.Up
+QtMoveDown = QTextCursor.MoveOperation.Down
+QtMoveEndOfLine = QTextCursor.MoveOperation.EndOfLine
+QtMoveStartOfLine = QTextCursor.MoveOperation.StartOfLine
+QtMoveEnd = QTextCursor.MoveOperation.End
+QtMoveStart = QTextCursor.MoveOperation.Start
+QtMoveNextWord = QTextCursor.MoveOperation.NextWord
+QtMovePreviousWord = QTextCursor.MoveOperation.PreviousWord
+QtMoveEndOfWord = QTextCursor.MoveOperation.EndOfWord
+QtMoveNextChar = QTextCursor.MoveOperation.NextCharacter
+
+QtSelectWord = QTextCursor.SelectionType.WordUnderCursor
+QtSelectLine = QTextCursor.SelectionType.LineUnderCursor
+QtSelectBlock = QTextCursor.SelectionType.BlockUnderCursor
+QtSelectDocument = QTextCursor.SelectionType.Document
+
+QtImCursorRectangle = Qt.InputMethodQuery.ImCursorRectangle
+QtImCurrentSelection = Qt.InputMethodQuery.ImCurrentSelection
 
 # Size Policy
 
@@ -125,25 +180,32 @@ QtHeaderFixed = QHeaderView.ResizeMode.Fixed
 
 # Scroll Bar Policy
 
+QtScrollAlwaysOn = Qt.ScrollBarPolicy.ScrollBarAlwaysOn
 QtScrollAlwaysOff = Qt.ScrollBarPolicy.ScrollBarAlwaysOff
 QtScrollAsNeeded = Qt.ScrollBarPolicy.ScrollBarAsNeeded
+
+# Font Weight
+
+QtFontNormal = QFont.Weight.Normal
+QtFontSemiBold = QFont.Weight.DemiBold
+QtFontBold = QFont.Weight.Bold
 
 # Maps
 
 FONT_WEIGHTS: dict[int, int] = {
-    QFont.Weight.Thin:       100,
+    QFont.Weight.Thin: 100,
     QFont.Weight.ExtraLight: 200,
-    QFont.Weight.Light:      300,
-    QFont.Weight.Normal:     400,
-    QFont.Weight.Medium:     500,
-    QFont.Weight.DemiBold:   600,
-    QFont.Weight.Bold:       700,
-    QFont.Weight.ExtraBold:  800,
-    QFont.Weight.Black:      900,
+    QFont.Weight.Light: 300,
+    QFont.Weight.Normal: 400,
+    QFont.Weight.Medium: 500,
+    QFont.Weight.DemiBold: 600,
+    QFont.Weight.Bold: 700,
+    QFont.Weight.ExtraBold: 800,
+    QFont.Weight.Black: 900,
 }
 
 FONT_STYLE: dict[QFont.Style, str] = {
-    QFont.Style.StyleNormal:  "normal",
-    QFont.Style.StyleItalic:  "italic",
+    QFont.Style.StyleNormal: "normal",
+    QFont.Style.StyleItalic: "italic",
     QFont.Style.StyleOblique: "oblique",
 }

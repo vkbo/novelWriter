@@ -2,9 +2,6 @@
 novelWriter – Lorem Ipsum Tool
 ==============================
 
-File History:
-Created: 2022-04-02 [2.0rc1] GuiLipsum
-
 This file is a part of novelWriter
 Copyright (C) 2022 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,28 +17,28 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
 import random
 
 from PyQt6.QtCore import pyqtSlot
-from PyQt6.QtWidgets import (
-    QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel, QSpinBox, QVBoxLayout,
-    QWidget
-)
+from PyQt6.QtWidgets import QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel, QSpinBox, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import readTextFile
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeft, QtAlignRight, QtDialogClose, QtRoleAction
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtRoleApply, QtRoleDestruct
 
 logger = logging.getLogger(__name__)
 
 
 class GuiLipsum(NDialog):
+    """GUI: Lorem Ipsum Text Tool."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -57,7 +54,7 @@ class GuiLipsum(NDialog):
 
         # Icon
         self.docIcon = QLabel(self)
-        self.docIcon.setPixmap(SHARED.theme.getPixmap("text", (64, 64), "blue"))
+        self.docIcon.setPixmap(SHARED.theme.getPixmap("text:info", 64, 64))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.setSpacing(4)
@@ -75,8 +72,9 @@ class GuiLipsum(NDialog):
         self.paraCount.setMaximum(100)
         self.paraCount.setValue(5)
 
-        self.randLabel = QLabel(self.tr("Randomise order"), self)
         self.randSwitch = NSwitch(self)
+        self.randLabel = QLabel(self.tr("Randomise order"), self)
+        self.randLabel.setBuddy(self.randSwitch)
 
         self.formBox = QGridLayout()
         self.formBox.addWidget(self.headLabel, 0, 0, 1, 2, QtAlignLeft)
@@ -89,32 +87,30 @@ class GuiLipsum(NDialog):
         self.innerBox.addLayout(self.formBox)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnInsert = SHARED.theme.getStandardButton(nwStandardButton.INSERT, self)
+        self.btnInsert.clicked.connect(self._doInsert)
+        self.btnInsert.setAutoDefault(False)
 
-        self.btnClose = self.buttonBox.addButton(QtDialogClose)
-        if self.btnClose:
-            self.btnClose.setAutoDefault(False)
+        self.btnClose = SHARED.theme.getStandardButton(nwStandardButton.CLOSE, self)
+        self.btnClose.clicked.connect(self.closeDialog)
+        self.btnClose.setAutoDefault(False)
 
-        self.btnInsert = self.buttonBox.addButton(self.tr("Insert"), QtRoleAction)
-        if self.btnInsert:
-            self.btnInsert.clicked.connect(self._doInsert)
-            self.btnInsert.setAutoDefault(False)
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnInsert, QtRoleApply)
+        self.btnBox.addButton(self.btnClose, QtRoleDestruct)
 
         # Assemble
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.innerBox)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
         self.outerBox.setSpacing(16)
         self.setLayout(self.outerBox)
 
         logger.debug("Ready: GuiLipsum")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiLipsum")
-        return
 
     @property
     def lipsumText(self) -> str:
@@ -124,10 +120,10 @@ class GuiLipsum(NDialog):
     @classmethod
     def getLipsum(cls, parent: QWidget) -> str:
         """Pop the dialog and return the lipsum text."""
-        cls = GuiLipsum(parent)
-        cls.exec()
-        text = cls.lipsumText
-        cls.softDelete()
+        dialog = cls(parent)
+        dialog.exec()
+        text = dialog.lipsumText
+        dialog.softDelete()
         return text
 
     ##
@@ -144,4 +140,3 @@ class GuiLipsum(NDialog):
         pCount = self.paraCount.value()
         self._lipsumText = "\n\n".join(lipsumText[0:pCount]) + "\n\n"
         self.close()
-        return

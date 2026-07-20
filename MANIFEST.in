@@ -1,6 +1,0 @@
-include pkgutils.py
-include LICENSE.md
-include CREDITS.md
-include CHANGELOG.md
-recursive-include novelwriter/assets *
-recursive-include setup *

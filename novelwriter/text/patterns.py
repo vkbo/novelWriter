@@ -2,10 +2,6 @@
 novelWriter – Text Pattern Functions
 ====================================
 
-File History:
-Created: 2024-06-01 [2.5rc1] RegExPatterns
-Created: 2024-11-04 [2.6b1]  DialogParser
-
 This file is a part of novelWriter
 Copyright (C) 2024 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import re
@@ -32,18 +29,21 @@ from novelwriter.constants import nwRegEx, nwUnicode
 
 
 class RegExPatterns:
+    """Compiled RegEx Patterns."""
 
     AMBIGUOUS = (nwUnicode.U_APOS, nwUnicode.U_RSQUO)
 
     # Static RegExes
-    _rxUrl     = re.compile(nwRegEx.URL, re.ASCII)
-    _rxWords   = re.compile(nwRegEx.WORDS, re.UNICODE)
-    _rxBreak   = re.compile(nwRegEx.BREAK, re.UNICODE)
-    _rxItalic  = re.compile(nwRegEx.FMT_EI, re.UNICODE)
-    _rxBold    = re.compile(nwRegEx.FMT_EB, re.UNICODE)
-    _rxStrike  = re.compile(nwRegEx.FMT_ST, re.UNICODE)
-    _rxSCPlain = re.compile(nwRegEx.FMT_SC, re.UNICODE)
-    _rxSCValue = re.compile(nwRegEx.FMT_SV, re.UNICODE)
+    _rxUrl = re.compile(nwRegEx.URL, re.ASCII)
+    _rxWords = re.compile(nwRegEx.WORDS)
+    _rxBreak = re.compile(nwRegEx.BREAK)
+    _rxItalic = re.compile(nwRegEx.FMT_IT)
+    _rxBold1 = re.compile(nwRegEx.FMT_B1)
+    _rxBold2 = re.compile(nwRegEx.FMT_B2)
+    _rxStrike = re.compile(nwRegEx.FMT_ST)
+    _rxMark = re.compile(nwRegEx.FMT_HL)
+    _rxSCPlain = re.compile(nwRegEx.FMT_SC)
+    _rxSCValue = re.compile(nwRegEx.FMT_SV)
 
     @property
     def url(self) -> re.Pattern:
@@ -68,12 +68,17 @@ class RegExPatterns:
     @property
     def markdownBold(self) -> re.Pattern:
         """Markdown bold style."""
-        return self._rxBold
+        return self._rxBold1 if CONFIG.singleStarBold else self._rxBold2
 
     @property
     def markdownStrike(self) -> re.Pattern:
         """Markdown strikethrough style."""
         return self._rxStrike
+
+    @property
+    def markdownMark(self) -> re.Pattern:
+        """Markdown highlight style."""
+        return self._rxMark
 
     @property
     def shortcodePlain(self) -> re.Pattern:
@@ -93,7 +98,7 @@ class RegExPatterns:
             if CONFIG.dialogStyle in (1, 3):
                 qO = CONFIG.fmtSQuoteOpen.strip()[:1]
                 qC = CONFIG.fmtSQuoteClose.strip()[:1]
-                if qO == qC:
+                if qO == qC or qC in self.AMBIGUOUS:
                     rx.append(f"(?:\\B{qO}.+?{qC}\\B)")
                 else:
                     rx.append(f"(?:{qO}[^{qO}]+{qC})")
@@ -102,13 +107,13 @@ class RegExPatterns:
             if CONFIG.dialogStyle in (2, 3):
                 qO = CONFIG.fmtDQuoteOpen.strip()[:1]
                 qC = CONFIG.fmtDQuoteClose.strip()[:1]
-                if qO == qC:
+                if qO == qC or qC in self.AMBIGUOUS:
                     rx.append(f"(?:\\B{qO}.+?{qC}\\B)")
                 else:
                     rx.append(f"(?:{qO}[^{qO}]+{qC})")
                 if CONFIG.allowOpenDial:
                     rx.append(f"(?:{qO}.+?$)")
-            return re.compile("|".join(rx), re.UNICODE)
+            return re.compile("|".join(rx))
         return None
 
     @property
@@ -118,7 +123,7 @@ class RegExPatterns:
             qO = re.escape(compact(CONFIG.altDialogOpen))
             qC = re.escape(compact(CONFIG.altDialogClose))
             qB = r"\B" if (qO == qC or qC in self.AMBIGUOUS) else ""
-            return re.compile(f"{qO}.*?{qC}{qB}", re.UNICODE)
+            return re.compile(f"{qO}.*?{qC}{qB}")
         return None
 
 
@@ -126,11 +131,9 @@ REGEX_PATTERNS = RegExPatterns()
 
 
 class DialogParser:
+    """A callable parser for finding dialog regions in text."""
 
-    __slots__ = (
-        "_quotes", "_dialog", "_alternate", "_enabled",
-        "_narrator", "_breakD", "_breakQ", "_mode",
-    )
+    __slots__ = ("_alternate", "_breakD", "_breakQ", "_dialog", "_enabled", "_mode", "_narrator", "_quotes")
 
     def __init__(self) -> None:
         self._quotes = None
@@ -141,7 +144,6 @@ class DialogParser:
         self._breakD = None
         self._breakQ = None
         self._mode = ""
-        return
 
     @property
     def enabled(self) -> bool:
@@ -163,12 +165,10 @@ class DialogParser:
         # Build narrator break RegExes
         if narrator := CONFIG.narratorBreak.strip()[:1]:
             punct = re.escape(".,:;!?")
-            self._breakD = re.compile(f"{narrator}.*?(?:{narrator}[{punct}]?|$)", re.UNICODE)
-            self._breakQ = re.compile(f"{narrator}.*?(?:{narrator}[{punct}]?)", re.UNICODE)
+            self._breakD = re.compile(f"{narrator}.*?(?:{narrator}[{punct}]?|$)")
+            self._breakQ = re.compile(f"{narrator}.*?(?:{narrator}[{punct}]?)")
             self._narrator = narrator
             self._mode = f" {narrator}"
-
-        return
 
     def __call__(self, text: str) -> list[tuple[int, int]]:
         """Caller wrapper for dialogue processing."""
@@ -203,7 +203,7 @@ class DialogParser:
                 pos = 0
                 for num, bit in enumerate(text.split(self._alternate)):
                     length = len(bit) + (1 if num > 0 else 0)
-                    if num%2:
+                    if num % 2:
                         temp.append(pos)
                         temp.append(pos + length)
                     pos += length

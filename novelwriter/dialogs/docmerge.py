@@ -2,10 +2,6 @@
 novelWriter – GUI Doc Merge Dialog
 ==================================
 
-File History:
-Created:   2020-01-23 [0.4.3]  GuiDocMerge
-Rewritten: 2022-10-06 [2.0rc1] GuiDocMerge
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -21,27 +17,36 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
 
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtWidgets import (
-    QAbstractItemView, QDialogButtonBox, QGridLayout, QLabel, QListWidget,
-    QListWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView,
+    QDialogButtonBox,
+    QGridLayout,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from novelwriter import SHARED
+from novelwriter.enum import nwStandardButton
 from novelwriter.extensions.configlayout import NColorLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAccepted, QtDialogCancel, QtDialogOk, QtDialogReset, QtUserRole
+from novelwriter.types import QtAccepted, QtRoleAccept, QtRoleReject, QtRoleReset, QtUserRole
 
 logger = logging.getLogger(__name__)
 
 
 class GuiDocMerge(NDialog):
+    """GUI: Document Merge Tool."""
 
     D_HANDLE = QtUserRole
 
@@ -58,7 +63,9 @@ class GuiDocMerge(NDialog):
         self.headLabel.setFont(SHARED.theme.guiFontB)
         self.helpLabel = NColorLabel(
             self.tr("Drag and drop items to change the order, or uncheck to exclude."),
-            self, color=SHARED.theme.helpText, wrap=True
+            self,
+            color=SHARED.theme.helpText,
+            wrap=True,
         )
 
         iPx = SHARED.theme.baseIconHeight
@@ -73,23 +80,30 @@ class GuiDocMerge(NDialog):
         self.listBox.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
 
         # Merge Options
-        self.trashLabel = QLabel(self.tr("Move merged items to Trash"), self)
         self.trashSwitch = NSwitch(self, height=iPx)
+        self.trashLabel = QLabel(self.tr("Move merged items to Trash"), self)
+        self.trashLabel.setBuddy(self.trashSwitch)
 
         self.optBox = QGridLayout()
-        self.optBox.addWidget(self.trashLabel,  0, 0)
+        self.optBox.addWidget(self.trashLabel, 0, 0)
         self.optBox.addWidget(self.trashSwitch, 0, 1)
         self.optBox.setHorizontalSpacing(12)
         self.optBox.setColumnStretch(2, 1)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
+        self.btnOk = SHARED.theme.getStandardButton(nwStandardButton.OK, self)
+        self.btnOk.clicked.connect(self.accept)
 
-        self.resetButton = self.buttonBox.addButton(QtDialogReset)
-        if self.resetButton:
-            self.resetButton.clicked.connect(self._resetList)
+        self.btnCancel = SHARED.theme.getStandardButton(nwStandardButton.CANCEL, self)
+        self.btnCancel.clicked.connect(self.reject)
+
+        self.btnReset = SHARED.theme.getStandardButton(nwStandardButton.RESET, self)
+        self.btnReset.clicked.connect(self._resetList)
+
+        self.btnBox = QDialogButtonBox(self)
+        self.btnBox.addButton(self.btnOk, QtRoleAccept)
+        self.btnBox.addButton(self.btnCancel, QtRoleReject)
+        self.btnBox.addButton(self.btnReset, QtRoleReset)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -101,7 +115,7 @@ class GuiDocMerge(NDialog):
         self.outerBox.addSpacing(8)
         self.outerBox.addLayout(self.optBox)
         self.outerBox.addSpacing(12)
-        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.addWidget(self.btnBox)
         self.setLayout(self.outerBox)
 
         # Load Content
@@ -109,11 +123,9 @@ class GuiDocMerge(NDialog):
 
         logger.debug("Ready: GuiDocMerge")
 
-        return
-
     def __del__(self) -> None:  # pragma: no cover
+        """Class destructor."""
         logger.debug("Delete: GuiDocMerge")
-        return
 
     def data(self) -> dict:
         """Return the user's choices."""
@@ -131,11 +143,11 @@ class GuiDocMerge(NDialog):
     @classmethod
     def getData(cls, parent: QWidget, handle: str, items: list[str]) -> tuple[dict, bool]:
         """Pop the dialog and return the result."""
-        cls = GuiDocMerge(parent, handle, items)
-        cls.exec()
-        data = cls.data()
-        accepted = cls.result() == QtAccepted
-        cls.softDelete()
+        dialog = cls(parent, handle, items)
+        dialog.exec()
+        data = dialog.data()
+        accepted = dialog.result() == QtAccepted
+        dialog.softDelete()
         return data, accepted
 
     ##
@@ -146,10 +158,9 @@ class GuiDocMerge(NDialog):
     def _resetList(self) -> None:
         """Reset the content of the list box to its original state."""
         logger.debug("Resetting list box content")
-        sHandle = self._data.get("sHandle", None)
-        itemList = self._data.get("origItems", [])
-        self._loadContent(sHandle, itemList)
-        return
+        if sHandle := self._data.get("sHandle"):
+            itemList = self._data.get("origItems", [])
+            self._loadContent(sHandle, itemList)
 
     ##
     #  Internal Functions
@@ -169,4 +180,3 @@ class GuiDocMerge(NDialog):
                 item.setData(self.D_HANDLE, tHandle)
                 item.setCheckState(Qt.CheckState.Checked)
                 self.listBox.addItem(item)
-        return

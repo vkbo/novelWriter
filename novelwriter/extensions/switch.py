@@ -2,9 +2,6 @@
 novelWriter – Custom Widget: Switch
 ===================================
 
-File History:
-Created: 2020-05-03 [0.4.5]
-
 This file is a part of novelWriter
 Copyright (C) 2020 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,27 +17,29 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
-from PyQt6.QtCore import QPropertyAnimation, Qt, pyqtProperty
-from PyQt6.QtGui import QEnterEvent, QMouseEvent, QPainter, QPaintEvent, QResizeEvent
+from PyQt6.QtCore import QPropertyAnimation, Qt, pyqtProperty, pyqtSlot  # pyright: ignore
+from PyQt6.QtGui import QEnterEvent, QPainter, QPaintEvent, QResizeEvent
 from PyQt6.QtWidgets import QAbstractButton, QWidget
 
 from novelwriter import SHARED
-from novelwriter.types import QtMouseLeft, QtNoPen, QtPaintAntiAlias, QtSizeFixed
+from novelwriter.types import QAnimDeleteWhenStopped, QtNoPen, QtPaintAntiAlias, QtSizeFixed
 
 
 class NSwitch(QAbstractButton):
+    """Custom: Toggle Switch."""
 
-    __slots__ = ("_xW", "_xH", "_xR", "_rH", "_rR", "_offset")
+    __slots__ = ("_offset", "_rH", "_rR", "_xH", "_xR", "_xW")
 
     def __init__(self, parent: QWidget, height: int = 0) -> None:
         super().__init__(parent=parent)
 
         self._xH = height or SHARED.theme.baseButtonHeight
-        self._xW = 2*self._xH
-        self._xR = int(self._xH*0.5)
+        self._xW = 2 * self._xH
+        self._xR = int(self._xH * 0.5)
         self._rH = self._xH - 4
         self._rR = self._xR - 2
 
@@ -48,9 +47,10 @@ class NSwitch(QAbstractButton):
         self.setSizePolicy(QtSizeFixed, QtSizeFixed)
         self.setFixedWidth(self._xW)
         self.setFixedHeight(self._xH)
+        self.setUpdatesEnabled(True)
         self._offset = self._xR
 
-        return
+        self.clicked.connect(self._onClick)
 
     ##
     #  Properties
@@ -60,11 +60,10 @@ class NSwitch(QAbstractButton):
     def offset(self) -> int:  # type: ignore
         return self._offset
 
-    @offset.setter
+    @offset.setter  # type: ignore
     def offset(self, offset: int) -> None:
         self._offset = offset
         self.update()
-        return
 
     ##
     #  Getters and Setters
@@ -74,7 +73,6 @@ class NSwitch(QAbstractButton):
         """Overload setChecked to also alter the offset."""
         super().setChecked(checked)
         self._offset = (self._xW - self._xR) if checked else self._xR
-        return
 
     ##
     #  Events
@@ -84,7 +82,6 @@ class NSwitch(QAbstractButton):
         """Overload resize to ensure correct offset."""
         super().resizeEvent(event)
         self._offset = (self._xW - self._xR) if self.isChecked() else self._xR
-        return
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Drawing the switch itself."""
@@ -94,8 +91,8 @@ class NSwitch(QAbstractButton):
         painter.setRenderHint(QtPaintAntiAlias, True)
         painter.setOpacity(1.0 if self.isEnabled() else 0.5)
 
-        painter.setPen(palette.mid().color())
-        painter.setBrush(palette.highlight() if self.isChecked() else palette.alternateBase())
+        painter.setPen(palette.highlight().color() if self.hasFocus() else palette.mid().color())
+        painter.setBrush(SHARED.theme.accentCol if self.isChecked() else palette.alternateBase())
         painter.drawRoundedRect(0, 0, self._xW, self._xH, self._xR, self._xR)
 
         painter.setPen(QtNoPen)
@@ -104,21 +101,20 @@ class NSwitch(QAbstractButton):
 
         painter.end()
 
-        return
-
-    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
-        """Animate the switch on mouse release."""
-        super().mouseReleaseEvent(event)
-        if event.button() == QtMouseLeft:
-            anim = QPropertyAnimation(self, b"offset", self)
-            anim.setDuration(120)
-            anim.setStartValue(self._offset)
-            anim.setEndValue((self._xW - self._xR) if self.isChecked() else self._xR)
-            anim.start()
-        return
-
     def enterEvent(self, event: QEnterEvent) -> None:
         """Change the cursor when hovering the button."""
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         super().enterEvent(event)
-        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    @pyqtSlot(bool)
+    def _onClick(self, checked: bool) -> None:
+        """Animate the toggle action."""
+        anim = QPropertyAnimation(self, b"offset", self)
+        anim.setDuration(120)
+        anim.setStartValue(self._offset)
+        anim.setEndValue((self._xW - self._xR) if checked else self._xR)
+        anim.start(QAnimDeleteWhenStopped)

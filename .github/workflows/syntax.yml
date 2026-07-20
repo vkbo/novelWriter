@@ -1,4 +1,4 @@
-name: Flake8
+name: Syntax
 
 on:
   push:
@@ -12,19 +12,30 @@ on:
 
 jobs:
   checkSyntax:
+    name: Linting and Type Checking
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - name: Python Setup
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3
-          architecture: x64
       - name: Checkout Source
-        uses: actions/checkout@v4
-      - name: Install flake8
-        run: pip install -r requirements-dev.txt
-      - name: Syntax Check
+        uses: actions/checkout@v7
+
+      - name: Install UV and Python
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          enable-cache: true
+
+      - name: Install Dependencies
         run: |
-          flake8 --version
-          flake8 novelwriter --count --show-source --statistics
-          flake8 tests --count --show-source --statistics --extend-ignore ANN
+          uv sync --no-dev --group lint
+
+      - name: Ruff Check
+        run: |
+          uv run --no-sync ruff --version
+          uv run --no-sync ruff format --check
+          uv run --no-sync ruff check --output-format github
+
+      - name: Pyright Check
+        run: |
+          uv run --no-sync pyright --version
+          uv run --no-sync pyright

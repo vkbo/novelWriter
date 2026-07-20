@@ -2,9 +2,6 @@
 novelWriter – Markdown Text Converter
 =====================================
 
-File History:
-Created: 2021-02-06 [1.2b1] ToMarkdown
-
 This file is a part of novelWriter
 Copyright (C) 2021 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,17 +17,22 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from novelwriter.constants import nwUnicode
-from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
-from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.formats.tokenizer import COMMENT_BLOCKS, Tokenizer
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
@@ -75,27 +77,24 @@ EXT_MD = {
 
 
 class ToMarkdown(Tokenizer):
-    """Core: Markdown Document Writer
+    """Core: Markdown Document Writer.
 
     Extend the Tokenizer class to writer Markdown output. It supports
     both Standard Markdown and Extended Markdown. The class also
     supports concatenating novelWriter markup files.
     """
 
+    __slots__ = ("_extended", "_usedFields", "_usedNotes")
+
     def __init__(self, project: NWProject, extended: bool) -> None:
         super().__init__(project)
         self._extended = extended
         self._usedNotes: dict[str, int] = {}
         self._usedFields: list[tuple[int, str]] = []
-        return
 
     ##
     #  Class Methods
     ##
-
-    def getFullResultSize(self) -> int:
-        """Return the size of the full Markdown result."""
-        return sum(len(x) for x in self._pages)
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into a Markdown document."""
@@ -108,7 +107,6 @@ class ToMarkdown(Tokenizer):
 
         lines = []
         for tType, _, tText, tFormat, tStyle in self._blocks:
-
             if tType == BlockTyp.TEXT:
                 tTemp = self._formatText(tText, tFormat, mTags).replace("\n", "  \n")
                 lines.append(f"{tTemp}\n\n")
@@ -116,7 +114,7 @@ class ToMarkdown(Tokenizer):
             elif tType in (BlockTyp.TITLE, BlockTyp.PART):
                 tHead = tText.replace("\n", " - ")
                 lines.append(f"{tHead}\n")
-                lines.append("="*len(tHead) + "\n\n")
+                lines.append("=" * len(tHead) + "\n\n")
 
             elif tType == BlockTyp.HEAD1:
                 tHead = tText.replace("\n", " - ")
@@ -137,19 +135,23 @@ class ToMarkdown(Tokenizer):
             elif tType == BlockTyp.SEP:
                 lines.append(f"{tText}\n\n")
 
+            elif tType == BlockTyp.HRULE:
+                lines.append("----\n\n")
+
             elif tType == BlockTyp.SKIP:
                 lines.append(f"{cSkip}\n\n")
 
-            elif tType == BlockTyp.COMMENT:
+            elif tType in COMMENT_BLOCKS:
                 lines.append(f"{self._formatText(tText, tFormat, mTags)}\n\n")
 
             elif tType == BlockTyp.KEYWORD:
                 end = "  \n" if tStyle & BlockFmt.Z_BTM else "\n\n"
                 lines.append(f"{self._formatText(tText, tFormat, mTags)}{end}")
 
-        self._pages.append("".join(lines))
+            else:  # pragma: no cover
+                pass
 
-        return
+        self._pages.append("".join(lines))
 
     def closeDocument(self) -> None:
         """Run close document tasks."""
@@ -158,9 +160,7 @@ class ToMarkdown(Tokenizer):
             pages = len(self._pages)
             for doc, field in self._usedFields:
                 if doc >= 0 and doc < pages and (value := self._counts.get(field)) is not None:
-                    self._pages[doc] = self._pages[doc].replace(
-                        f"{{{{{field}}}}}", self._formatInt(value)
-                    )
+                    self._pages[doc] = self._pages[doc].replace(f"{{{{{field}}}}}", self._formatInt(value))
 
         # Add footnotes
         if self._usedNotes:
@@ -170,27 +170,23 @@ class ToMarkdown(Tokenizer):
             lines = []
             lines.append(f"### {footnotes}\n\n")
             for key, index in self._usedNotes.items():
-                if content := self._footnotes.get(key):
+                if content := self._footnotes.get(key):  # pragma: no branch
                     marker = f"{index}. "
                     text = self._formatText(content[0], content[1], tags)
                     lines.append(f"{marker}{text}\n")
             lines.append("\n")
             self._pages.append("".join(lines))
 
-        return
-
     def saveDocument(self, path: Path) -> None:
         """Save the data to a plain text file."""
         with open(path, mode="w", encoding="utf-8") as outFile:
             outFile.write("".join(self._pages))
         logger.info("Wrote file: %s", path)
-        return
 
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = " ") -> None:
         """Replace tabs with spaces."""
-        spaces = spaceChar*nSpaces
+        spaces = spaceChar * nSpaces
         self._pages = [p.replace("\t", spaces) for p in self._pages]
-        return
 
     ##
     #  Internal Functions
@@ -209,7 +205,7 @@ class ToMarkdown(Tokenizer):
                 else:
                     md = "[ERR]"
             elif fmt == TextFmt.FIELD:
-                if field := data.partition(":")[2]:
+                if field := data.partition(":")[2]:  # pragma: no branch
                     self._usedFields.append((len(self._pages), field))
                     md = f"{{{{{field}}}}}"
             else:

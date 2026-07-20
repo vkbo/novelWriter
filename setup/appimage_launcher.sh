@@ -24,7 +24,7 @@ cat > $HOME/.local/share/applications/novelWriter.desktop <<EOF
 [Desktop Entry]
 Type=Application
 Name=novelWriter
-Comment=A markdown-like text editor for planning and writing novels
+Comment=A plain text editor for planning and writing novels
 Exec=${IMGPATH} %f
 Icon=${ICONPATH}
 Categories=Qt;Office;WordProcessor;

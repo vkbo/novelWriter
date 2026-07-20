@@ -1,9 +1,9 @@
 # novelWriter
 
-[![Linux](https://github.com/vkbo/novelWriter/actions/workflows/test_linux.yml/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions/workflows/test_linux.yml)
-[![Windows](https://github.com/vkbo/novelWriter/actions/workflows/test_win.yml/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions/workflows/test_win.yml)
-[![MacOS](https://github.com/vkbo/novelWriter/actions/workflows/test_mac.yml/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions/workflows/test_mac.yml)
-[![Flake8](https://github.com/vkbo/novelWriter/workflows/flake8/badge.svg)](https://github.com/vkbo/novelWriter/actions)
+[![Linux](https://github.com/vkbo/novelWriter/actions/workflows/test_linux.yml/badge.svg)](https://github.com/vkbo/novelWriter/actions/workflows/test_linux.yml)
+[![Windows](https://github.com/vkbo/novelWriter/actions/workflows/test_win.yml/badge.svg)](https://github.com/vkbo/novelWriter/actions/workflows/test_win.yml)
+[![MacOS](https://github.com/vkbo/novelWriter/actions/workflows/test_mac.yml/badge.svg)](https://github.com/vkbo/novelWriter/actions/workflows/test_mac.yml)
+[![Linting](https://github.com/vkbo/novelWriter/actions/workflows/syntax.yml/badge.svg)](https://github.com/vkbo/novelWriter/actions/workflows/syntax.yml)
 [![CodeCov](https://codecov.io/gh/vkbo/novelWriter/branch/main/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
 
 <img align="left" style="margin: 0 0 4px 0;" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/novelwriter_readme.png">
@@ -12,11 +12,7 @@ novelWriter is a plain text editor designed for writing novels assembled from ma
 documents. It uses a minimal formatting syntax inspired by Markdown, and adds a meta data syntax
 for comments, synopsis, and cross-referencing. It's designed to be a simple text editor that allows
 for easy organisation of text and notes, using human readable text files as storage for robustness.
-
-The project storage is suitable for version control software, and also well suited for file
-synchronisation tools. All text is saved as plain text files with a meta data header. The core
-project structure is stored in a single project XML file. Other meta data is primarily saved as
-JSON files.
+The project format is well suited both for version control software and file synchronisation tools.
 
 For more details, and how to install and use novelWriter, please see the main website and
 documentation.
@@ -29,6 +25,8 @@ documentation.
 * PyPi Project: [pypi.org/project/novelWriter](https://pypi.org/project/novelWriter)
 * Social Media: [fosstodon.org/@novelwriter](https://fosstodon.org/@novelwriter)
 
+_This project is developed and maintained with care by actual humans._
+
 ## Sponsors
 
 <table style="border: none;">
@@ -38,22 +36,25 @@ documentation.
 </tr>
 </table>
 
+
 ## Implementation
 
-novelWriter is written with Python 3 (3.10+) using Qt6 and PyQt6 (6.4+), and is released on
-Linux, Windows and macOS. It can in principle run on any Operating System that also supports Qt,
-PyQt and Python.
+novelWriter is written in Python and uses Qt6 with PyQt6 Python binding as the UI framework. It is
+released on Linux, Windows and MacOS. It can in principle run on any Operating System that also
+supports Qt, PyQt and Python.
 
 <p align="center">
   <img width="80%" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/screenshot.png">
 </p>
 
+
 ## Project Contributions
 
 Please don't make feature pull requests without first having discussed them with the maintainer.
-You can make a feature request in the issue tracker, or if the idea isn't fully formed, start a
-discussion on the discussion page. Please also don't make pull requests to reformat or rewrite
-existing code unless there is a very good reason for doing so.
+You can make a feature request in the [issues tracker](https://github.com/vkbo/novelWriter/issues),
+or if the idea isn't fully formed, start a [discussion](https://github.com/vkbo/novelWriter/discussions).
+Please also don't make pull requests to reformat or rewrite existing code unless there is a very
+good reason for doing so. Please do not submit AI generated content.
 
 Fixes and patches are welcome. Contributions related to packaging and installing novelWriter will
 also be appreciated, but please make an issue or a discussion topic first. Before contributing any
@@ -62,9 +63,10 @@ code, please also read the full
 
 Project credits are available in [CREDITS.md](https://github.com/vkbo/novelWriter/blob/main/CREDITS.md).
 
-**Note:** As of April 2024 only pre-releases are made from the `main` branch. Full releases are
-made from the `release` branch. So if you're submitting a fix to a current release, **including
-changes to documentation**, they must be made to the `release` branch.
+**Note:** New features and pre-releases are made on the `main` branch. Full releases are made from
+the `release` branch. So if you're submitting a fix to a current release, **including changes to
+documentation**, they must be made to the `release` branch.
+
 
 ### Translations
 
@@ -73,8 +75,6 @@ can contribute translations at the [Crowdin project page](https://crowdin.com/pr
 If you have any questions, feel free to post them to the
 [Translations of novelWriter](https://github.com/vkbo/novelWriter/issues/93) issue thread.
 
-For more details, and how to use Qt Linguist for translations, see the
-[i18n instructions](https://github.com/vkbo/novelWriter/blob/main/i18n/README.md).
 
 ## Licence
 

@@ -2,9 +2,6 @@
 novelWriter – GUI Item Details Panel
 ====================================
 
-File History:
-Created: 2019-04-24 [0.0.1] GuiItemDetails
-
 This file is a part of novelWriter
 Copyright (C) 2019 Veronica Berglyd Olsen and novelWriter contributors
 
@@ -20,7 +17,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
+"""  # noqa
+
 from __future__ import annotations
 
 import logging
@@ -30,37 +28,32 @@ from enum import Enum
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QGridLayout, QLabel, QWidget
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import elide
 from novelwriter.constants import nwLabels, nwStats, trConst, trStats
 from novelwriter.enum import nwChange
-from novelwriter.types import (
-    QtAlignLeft, QtAlignLeftBase, QtAlignRight, QtAlignRightBase,
-    QtAlignRightMiddle
-)
+from novelwriter.extensions.expandpanel import NExpandablePanel
+from novelwriter.types import QtAlignLeft, QtAlignLeftBase, QtAlignRight, QtAlignRightBase, QtAlignRightMiddle
 
 logger = logging.getLogger(__name__)
 
 
-class GuiItemDetails(QWidget):
+class GuiItemDetails(NExpandablePanel):
+    """GUI: Project Item Details Panel."""
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiItemDetails")
+        self.setTitle(self.tr("Details"))
 
         # Internal Variables
         self._handle = None
+        self._refresh = None
 
-        # Sizes
-        fPt = SHARED.theme.fontPointSize
-
-        fntLabel = self.font()
-        fntLabel.setBold(True)
-        fntLabel.setPointSizeF(0.9*fPt)
-
-        fntValue = self.font()
-        fntValue.setPointSizeF(0.9*fPt)
+        # Predefined
+        fntLabel = SHARED.theme.guiFontSmallB
+        fntValue = SHARED.theme.guiFontSmall
 
         trStats1 = trStats(nwLabels.STATS_NAME[nwStats.CHARS])
         trStats2 = trStats(nwLabels.STATS_NAME[nwStats.WORDS])
@@ -145,10 +138,10 @@ class GuiItemDetails(QWidget):
         self.pCountData.setAlignment(QtAlignRight)
 
         # Assemble
-        self.mainBox = QGridLayout(self)
-        self.mainBox.addWidget(self.labelName,  0, 0, 1, 1)
-        self.mainBox.addWidget(self.labelIcon,  0, 1, 1, 1)
-        self.mainBox.addWidget(self.labelData,  0, 2, 1, 3)
+        self.mainBox = QGridLayout()
+        self.mainBox.addWidget(self.labelName, 0, 0, 1, 1)
+        self.mainBox.addWidget(self.labelIcon, 0, 1, 1, 1)
+        self.mainBox.addWidget(self.labelData, 0, 2, 1, 3)
 
         self.mainBox.addWidget(self.statusName, 1, 0, 1, 1)
         self.mainBox.addWidget(self.statusIcon, 1, 1, 1, 1)
@@ -156,15 +149,15 @@ class GuiItemDetails(QWidget):
         self.mainBox.addWidget(self.cCountName, 1, 3, 1, 1)
         self.mainBox.addWidget(self.cCountData, 1, 4, 1, 1)
 
-        self.mainBox.addWidget(self.className,  2, 0, 1, 1)
-        self.mainBox.addWidget(self.classIcon,  2, 1, 1, 1)
-        self.mainBox.addWidget(self.classData,  2, 2, 1, 1)
+        self.mainBox.addWidget(self.className, 2, 0, 1, 1)
+        self.mainBox.addWidget(self.classIcon, 2, 1, 1, 1)
+        self.mainBox.addWidget(self.classData, 2, 2, 1, 1)
         self.mainBox.addWidget(self.wCountName, 2, 3, 1, 1)
         self.mainBox.addWidget(self.wCountData, 2, 4, 1, 1)
 
-        self.mainBox.addWidget(self.usageName,  3, 0, 1, 1)
-        self.mainBox.addWidget(self.usageIcon,  3, 1, 1, 1)
-        self.mainBox.addWidget(self.usageData,  3, 2, 1, 1)
+        self.mainBox.addWidget(self.usageName, 3, 0, 1, 1)
+        self.mainBox.addWidget(self.usageIcon, 3, 1, 1, 1)
+        self.mainBox.addWidget(self.usageData, 3, 2, 1, 1)
         self.mainBox.addWidget(self.pCountName, 3, 3, 1, 1)
         self.mainBox.addWidget(self.pCountData, 3, 4, 1, 1)
 
@@ -176,21 +169,21 @@ class GuiItemDetails(QWidget):
 
         self.mainBox.setHorizontalSpacing(6)
         self.mainBox.setVerticalSpacing(1)
-        self.mainBox.setContentsMargins(6, 6, 6, 6)
+        self.mainBox.setContentsMargins(6, 2, 6, 6)
 
-        self.setLayout(self.mainBox)
-
+        self.setContentLayout(self.mainBox)
+        self.setExpanded(CONFIG.showDetailsPanel)
         self.updateTheme()
 
+        self.expandedStateChanged.connect(self._expandedStateChanged)
+
         # Make sure the columns for flags and counts don't resize too often
-        flagWidth  = SHARED.theme.getTextWidth("Mm", fntValue)
+        flagWidth = SHARED.theme.getTextWidth("Mm", fntValue)
         countWidth = SHARED.theme.getTextWidth("99,999", fntValue)
         self.mainBox.setColumnMinimumWidth(1, flagWidth)
         self.mainBox.setColumnMinimumWidth(4, countWidth)
 
         logger.debug("Ready: GuiItemDetails")
-
-        return
 
     ###
     #  Class Methods
@@ -210,7 +203,6 @@ class GuiItemDetails(QWidget):
         self.cCountData.clear()
         self.wCountData.clear()
         self.pCountData.clear()
-        return
 
     def refreshDetails(self) -> None:
         """Reload the content of the details panel."""
@@ -218,54 +210,43 @@ class GuiItemDetails(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        super().updateTheme()
+        logger.debug("Theme Update: GuiItemDetails")
         self.updateViewBox(self._handle)
-        return
 
     def updateViewBox(self, tHandle: str | None) -> None:
         """Populate the details box from a given handle."""
+        if not self.isExpanded():
+            self._refresh = {"handle": tHandle}
+            return
+
         if not (tHandle and (nwItem := SHARED.project.tree[tHandle])):
             self.clearDetails()
             return
 
         self._handle = tHandle
-        iPx = int(round(0.9*SHARED.theme.baseIconHeight))
+        iPx = round(0.9 * SHARED.theme.baseIconHeight)
 
         # Label
-        # =====
-
-        if nwItem.isFileType():
-            if nwItem.isActive:
-                self.labelIcon.setPixmap(SHARED.theme.getPixmap("checked", (iPx, iPx), "green"))
-            else:
-                self.labelIcon.setPixmap(SHARED.theme.getPixmap("unchecked", (iPx, iPx), "red"))
-        else:
-            self.labelIcon.setPixmap(SHARED.theme.getPixmap("noncheckable", (iPx, iPx), "faded"))
-
+        _, icon = nwItem.getActiveStatus()
+        self.labelIcon.setPixmap(icon.pixmap(iPx, iPx))
         self.labelData.setText(elide(nwItem.itemName, 100))
 
         # Status
-        # ======
-
         status, icon = nwItem.getImportStatus()
         self.statusIcon.setPixmap(icon.pixmap(iPx, iPx))
         self.statusData.setText(status)
 
         # Class
-        # =====
-
-        classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass], "root")
+        classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass])
         self.classIcon.setPixmap(classIcon.pixmap(iPx, iPx))
         self.classData.setText(trConst(nwLabels.CLASS_NAME[nwItem.itemClass]))
 
         # Layout
-        # ======
-
         self.usageIcon.setPixmap(nwItem.getMainIcon().pixmap(iPx, iPx))
         self.usageData.setText(nwItem.describeMe())
 
         # Counts
-        # ======
-
         if nwItem.isFileType():
             self.cCountData.setText(f"{nwItem.charCount:n}")
             self.wCountData.setText(f"{nwItem.wordCount:n}")
@@ -274,6 +255,8 @@ class GuiItemDetails(QWidget):
             self.cCountData.setText("–")
             self.wCountData.setText("–")
             self.pCountData.setText("–")
+
+        self._refresh = None
 
         return
 
@@ -289,4 +272,13 @@ class GuiItemDetails(QWidget):
                 self.updateViewBox(tHandle)
             elif change == nwChange.DELETE:
                 self.updateViewBox(None)
-        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(bool)
+    def _expandedStateChanged(self, state: bool) -> None:
+        """Process the expanded state change."""
+        if state and isinstance(self._refresh, dict):
+            self.updateViewBox(self._refresh.get("handle"))
