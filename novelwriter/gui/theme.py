@@ -644,6 +644,40 @@ class GuiTheme:
             return QColor(*result)
         return default
 
+    def generateColorRange(self, start: str, end: str, mid: str | None = None, steps: int = 10) -> list[QColor]:
+        """Generate a range of colours between start and end, optionally passing through mid."""
+        result: list[QColor] = []
+        scale = max(steps - 1, 1)
+        colS = self.parseColor(start)
+        colE = self.parseColor(end)
+        colM = self.parseColor(mid) if mid is not None else None
+
+        if colM is None:
+            for i in range(steps):
+                t = i / scale
+                r = round(colS.red() + (colE.red() - colS.red()) * t)
+                g = round(colS.green() + (colE.green() - colS.green()) * t)
+                b = round(colS.blue() + (colE.blue() - colS.blue()) * t)
+                a = round(colS.alpha() + (colE.alpha() - colS.alpha()) * t)
+                result.append(QColor(r, g, b, a))
+        else:
+            for i in range(steps):
+                t = i / scale
+                if t < 0.5:
+                    t *= 2
+                    r = round(colS.red() + (colM.red() - colS.red()) * t)
+                    g = round(colS.green() + (colM.green() - colS.green()) * t)
+                    b = round(colS.blue() + (colM.blue() - colS.blue()) * t)
+                    a = round(colS.alpha() + (colM.alpha() - colS.alpha()) * t)
+                else:
+                    t = (t - 0.5) * 2
+                    r = round(colM.red() + (colE.red() - colM.red()) * t)
+                    g = round(colM.green() + (colE.green() - colM.green()) * t)
+                    b = round(colM.blue() + (colE.blue() - colM.blue()) * t)
+                    a = round(colM.alpha() + (colE.alpha() - colM.alpha()) * t)
+                result.append(QColor(r, g, b, a))
+        return result
+
     ##
     #  Internal Functions
     ##

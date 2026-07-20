@@ -31,9 +31,10 @@ from PyQt6.QtCore import QTimer, pyqtSlot
 from PyQt6.QtWidgets import QApplication, QHBoxLayout, QLabel, QStatusBar, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatTime, languageName
+from novelwriter.common import formatPercent, formatTime, languageName
 from novelwriter.constants import nwConst, nwLabels, nwStats, trStats
 from novelwriter.extensions.modified import NClickableLabel
+from novelwriter.extensions.progressbars import NColorRangeProgress
 from novelwriter.extensions.statusled import StatusLED
 
 if TYPE_CHECKING:
@@ -53,14 +54,33 @@ class GuiMainStatus(QStatusBar):
         self._refTime = -1.0
         self._userIdle = False
         self._debugInfo = False
+        self._sessProg = 0
+        self._projProg = 0
 
         iPx = SHARED.theme.baseIconHeight
+        pPx = SHARED.theme.getTextWidth("0" * 18)
 
         self.messageBox = _MessageWidget(self)
         self.insertWidget(0, self.messageBox)
 
         # Permanent Widgets
         # =================
+
+        # The Daily Progress Bar
+        self.sessBar = NColorRangeProgress(self, pPx, iPx + 4, 1)
+        self.sessBar.setValue(0)
+        self.sessBar.setMaximum(1)
+        self.sessBar.setVisible(False)
+        self.sessBar.setBarRangeColors(start="red", mid="yellow", end="green")
+        self.addPermanentWidget(self.sessBar)
+
+        # The Project Progress Bar
+        self.projBar = NColorRangeProgress(self, pPx, iPx + 4, 1)
+        self.projBar.setValue(0)
+        self.projBar.setMaximum(1)
+        self.projBar.setVisible(False)
+        self.projBar.setBarColor("blue")
+        self.addPermanentWidget(self.projBar)
 
         # The Spell Checker Language
         self.langIcon = QLabel("", self)
@@ -115,6 +135,7 @@ class GuiMainStatus(QStatusBar):
         logger.debug("Ready: GuiMainStatus")
 
         self.initSettings()
+        self.initProjectSettings()
         self.updateTheme()
         self.clearStatus()
 
@@ -127,8 +148,18 @@ class GuiMainStatus(QStatusBar):
             self._trStatsCount = trStats(nwLabels.STATS_DISPLAY[nwStats.WORDS])
             self._trStatsTip = self.tr("Total word count (session change)")
 
+    def initProjectSettings(self) -> None:
+        """Apply project settings."""
+        self.updateGoals(self._projProg, self._sessProg)
+
     def clearStatus(self) -> None:
         """Reset all widgets on the status bar to default values."""
+        self._sessProg = 0
+        self._projProg = 0
+        self.sessBar.setVisible(False)
+        self.projBar.setVisible(False)
+        self.updateGoals(0, 0)
+
         self.setRefTime(-1.0)
         self.setLanguage(*SHARED.spelling.describeDict())
         self.setProjectStats(0, 0)
@@ -152,6 +183,9 @@ class GuiMainStatus(QStatusBar):
         colUnsaved = SHARED.theme.getBaseColor("red")
         self.docIcon.setColors(colNone, colSaved, colUnsaved)
         self.projIcon.setColors(colNone, colSaved, colUnsaved)
+
+        self.sessBar.refreshTheme()
+        self.projBar.refreshTheme()
 
     ##
     #  Setters
@@ -184,6 +218,30 @@ class GuiMainStatus(QStatusBar):
         """Update the current project statistics."""
         self.statsText.setText(self._trStatsCount.format(f"{pWC:n}", f"{sWC:+n}"))
         self.statsText.setToolTip(self._trStatsTip)
+
+    def updateGoals(self, pProg: int, sProg: int) -> None:
+        """Update the current project and session goals."""
+        data = SHARED.project.data
+        self._projProg = pProg
+        self._sessProg = sProg
+
+        if (dailyTarget := data.getEffectiveDailyGoal()) > 0:
+            self.sessBar.setVisible(True)
+            self.sessBar.setMaximum(dailyTarget)
+            self.sessBar.setValue(min(sProg, dailyTarget))
+            self.sessBar.setCentreText(formatPercent(sProg, divisor=dailyTarget, prec=1))
+            self.sessBar.setToolTip(self.tr("Daily Progress: {0}/{1}").format(f"{sProg:n}", f"{dailyTarget:n}"))
+        else:
+            self.sessBar.setVisible(False)
+
+        if (projTarget := data.targetWordCount) > 0:
+            self.projBar.setVisible(True)
+            self.projBar.setMaximum(projTarget)
+            self.projBar.setValue(min(pProg, projTarget))
+            self.projBar.setCentreText(formatPercent(pProg, divisor=projTarget, prec=1))
+            self.projBar.setToolTip(self.tr("Project Progress: {0}/{1}").format(f"{pProg:n}", f"{projTarget:n}"))
+        else:
+            self.projBar.setVisible(False)
 
     def updateTime(self, idleTime: float = 0.0) -> None:
         """Update the session clock."""

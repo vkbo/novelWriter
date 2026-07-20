@@ -69,6 +69,7 @@ QtElideRight = Qt.TextElideMode.ElideRight
 
 QtTransparent = QColor(0, 0, 0, 0)
 QtBlack = QColor(0, 0, 0)
+QtWhite = QColor(255, 255, 255)
 QtNoBrush = Qt.BrushStyle.NoBrush
 QtNoPen = Qt.PenStyle.NoPen
 QtRoundCap = Qt.PenCapStyle.RoundCap

@@ -24,9 +24,19 @@ from __future__ import annotations
 import logging
 import uuid
 
+from datetime import date
 from typing import TYPE_CHECKING, Any, Literal
 
-from novelwriter.common import checkBool, checkInt, checkStringNone, checkUuid, isHandle, makeFileNameSafe, simplified
+from novelwriter.common import (
+    checkBool,
+    checkDateNone,
+    checkInt,
+    checkStringNone,
+    checkUuid,
+    isHandle,
+    makeFileNameSafe,
+    simplified,
+)
 from novelwriter.core.status import ItemStatus
 
 if TYPE_CHECKING:
@@ -44,6 +54,35 @@ class ProjectData:
     the list of project items.
     """
 
+    __slots__ = (
+        "_author",
+        "_autoCount",
+        "_autoReplace",
+        "_currCounts",
+        "_dailyGoal",
+        "_dailyGoalAuto",
+        "_dailyLastCount",
+        "_dailyLastDate",
+        "_dailyProgress",
+        "_doBackup",
+        "_editTime",
+        "_import",
+        "_initCounts",
+        "_language",
+        "_lastHandle",
+        "_name",
+        "_project",
+        "_remainingWordCount",
+        "_saveCount",
+        "_spellCheck",
+        "_spellLang",
+        "_status",
+        "_targetDeadline",
+        "_targetWordCount",
+        "_titleFormat",
+        "_uuid",
+    )
+
     def __init__(self, project: NWProject) -> None:
 
         self._project = project
@@ -58,6 +97,14 @@ class ProjectData:
 
         # Project Settings
         self._doBackup = True
+        self._targetWordCount = 0
+        self._targetDeadline = None
+        self._remainingWordCount = 0
+        self._dailyGoal = 0
+        self._dailyGoalAuto = False
+        self._dailyProgress = 0
+        self._dailyLastCount = 0
+        self._dailyLastDate = None
         self._language = None
         self._spellCheck = False
         self._spellLang = None
@@ -126,6 +173,36 @@ class ProjectData:
     def doBackup(self) -> bool:
         """Return the backup setting."""
         return self._doBackup
+
+    @property
+    def targetWordCount(self) -> int:
+        """Return the project goal."""
+        return self._targetWordCount
+
+    @property
+    def targetDeadline(self) -> date | None:
+        """Return the project deadline."""
+        return self._targetDeadline
+
+    @property
+    def dailyGoal(self) -> int:
+        """Return the daily goal."""
+        return self._dailyGoal
+
+    @property
+    def dailyGoalAuto(self) -> bool:
+        """Return the automatic daily goal setting."""
+        return self._dailyGoalAuto
+
+    @property
+    def dailyLastCount(self) -> int:
+        """Return the current daily goal."""
+        return self._dailyLastCount
+
+    @property
+    def dailyProgress(self) -> int:
+        """Return the current daily progress."""
+        return self._dailyProgress
 
     @property
     def language(self) -> str | None:
@@ -200,6 +277,20 @@ class ProjectData:
         """Retrieve the last used handle for a given component."""
         return self._lastHandle.get(component, None)
 
+    def getEffectiveDailyGoal(self) -> int:
+        """Return the effective daily goal, which is either the set daily
+        goal or the automatically calculated goal based on project target
+        and deadline.
+        """
+        if (
+            self._dailyGoalAuto
+            and self._remainingWordCount > 0
+            and self._targetDeadline is not None
+            and self._targetDeadline >= date.today()
+        ):
+            return self._remainingWordCount // ((self._targetDeadline - date.today()).days + 1)
+        return self._dailyGoal
+
     ##
     #  Setters
     ##
@@ -245,6 +336,39 @@ class ProjectData:
         if value != self._doBackup:
             self._doBackup = checkBool(value, False)
             self._project.setProjectChanged(True)
+
+    def setProjectTarget(self, wCount: Any, deadline: Any) -> None:
+        """Set the project goal."""
+        if wCount != self._targetWordCount or deadline != self._targetDeadline:
+            self._targetWordCount = checkInt(wCount, 0)
+            self._targetDeadline = checkDateNone(deadline, None)
+            self._project.setProjectChanged(True)
+
+    def setDailyTarget(self, value: Any, auto: Any) -> None:
+        """Set the daily goal."""
+        if value != self._dailyGoal or auto != self._dailyGoalAuto:
+            self._dailyGoal = checkInt(value, 0)
+            self._dailyGoalAuto = checkBool(auto, False)
+            self._project.setProjectChanged(True)
+
+    def setDailyTargetCurrent(self, value: Any, date: Any) -> None:
+        """Set the current daily goal."""
+        self._dailyLastCount = checkInt(value, self._dailyLastCount)
+        self._dailyLastDate = checkDateNone(date, None)
+
+    def setDailyProgress(self, count: int) -> None:
+        """Set the current daily goal progress."""
+        if self._dailyLastDate != date.today():
+            # The date has changed since the last update, either because
+            # this is the first update ever, or because the clock has
+            # ticked over to a new day. Roll the last count back to what
+            # it was at the start of the new day.
+            self._dailyLastCount -= self._dailyProgress
+            self._dailyLastDate = date.today()
+
+        initial = self._initCounts[0] - self._dailyLastCount
+        self._dailyProgress = count - initial
+        self._remainingWordCount = self._targetWordCount - initial
 
     def setLanguage(self, value: str | None) -> None:
         """Set the project language."""

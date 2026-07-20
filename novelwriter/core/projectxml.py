@@ -21,6 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import datetime
 import logging
 import xml.etree.ElementTree as ET
 
@@ -49,7 +50,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 FILE_VERSION = "1.5"  # The current project file format version
-FILE_REVISION = "6"  # The current project file format revision
+FILE_REVISION = "7"  # The current project file format revision
 HEX_VERSION = 0x0105
 
 NUM_VERSION = {
@@ -116,6 +117,8 @@ class ProjectXMLReader:
                node. 2.7 RC 1.
         Rev 6: Replaced red, green and blue attributes with a single
                color attribute. 2.8 Beta 1.
+        Rev 7: Added projectTarget and dailyTarget nodes to settings.
+               26.2 Beta 1.
     """
 
     def __init__(self, path: str | Path) -> None:
@@ -267,7 +270,12 @@ class ProjectXMLReader:
                 data.setLanguage(xItem.text)
             elif xItem.tag == "spellChecking":
                 data.setSpellLang(xItem.text)
-                data.setSpellCheck(xItem.attrib.get("auto", False))
+                data.setSpellCheck(xItem.attrib.get("auto"))
+            elif xItem.tag == "projectTarget":
+                data.setProjectTarget(xItem.text, xItem.attrib.get("date"))
+            elif xItem.tag == "dailyTarget":
+                data.setDailyTarget(xItem.text, xItem.attrib.get("auto"))
+                data.setDailyTargetCurrent(xItem.attrib.get("last"), xItem.attrib.get("date"))
             elif xItem.tag == "status":
                 self._parseStatusImport(xItem, data.itemStatus)
             elif xItem.tag == "importance":
@@ -499,10 +507,21 @@ class ProjectXMLWriter:
         self._packSingleValue(xProject, "author", data.author)
 
         # Save Project Settings
+        targetAttr = {
+            "date": data.targetDeadline.isoformat() if isinstance(data.targetDeadline, datetime.date) else "None",
+        }
+        dailyAttr = {
+            "auto": yesNo(data.dailyGoalAuto),
+            "last": str(data.dailyProgress),
+            "date": formatTimeStamp(saveTime, fmt="%Y-%m-%d"),
+        }
+
         xSettings = ET.SubElement(xRoot, "settings")
         self._packSingleValue(xSettings, "doBackup", yesNo(data.doBackup))
         self._packSingleValue(xSettings, "language", data.language)
         self._packSingleValue(xSettings, "spellChecking", data.spellLang, attrib={"auto": yesNo(data.spellCheck)})
+        self._packSingleValue(xSettings, "projectTarget", str(data.targetWordCount), attrib=targetAttr)
+        self._packSingleValue(xSettings, "dailyTarget", str(data.dailyGoal), attrib=dailyAttr)
         self._packDictKeyValue(xSettings, "lastHandle", data.lastHandle)
         self._packDictKeyValue(xSettings, "autoReplace", data.autoReplace)
 

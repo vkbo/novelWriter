@@ -8,6 +8,8 @@
     <doBackup>yes</doBackup>
     <language>None</language>
     <spellChecking auto="no">None</spellChecking>
+    <projectTarget date="None">0</projectTarget>
+    <dailyTarget auto="no" last="9" date="2026-07-19">0</dailyTarget>
     <lastHandle>
       <entry key="editor">000000000000c</entry>
       <entry key="viewer">None</entry>

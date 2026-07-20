@@ -24,7 +24,7 @@ from __future__ import annotations
 import json
 import xml.etree.ElementTree as ET
 
-from datetime import datetime
+from datetime import date, datetime
 from shutil import copyfile
 
 import pytest
@@ -53,8 +53,8 @@ class MockProject:
 @pytest.fixture(autouse=True)
 def mockVersion(monkeypatch):
     """Mock the version info to prevent diff from failing."""
-    monkeypatch.setattr("novelwriter.core.projectxml.__version__", "2.7b1")
-    monkeypatch.setattr("novelwriter.core.projectxml.__hexversion__", "0x020700b1")
+    monkeypatch.setattr("novelwriter.core.projectxml.__version__", "26.2a1")
+    monkeypatch.setattr("novelwriter.core.projectxml.__hexversion__", "0x260200a1")
 
 
 @pytest.mark.core
@@ -143,28 +143,35 @@ def testProjectXMLReader_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     assert xmlReader.state == XMLReadState.PARSED_OK
     assert xmlReader.xmlRoot == "novelWriterXML"
     assert xmlReader.xmlVersion == 0x0105
-    assert xmlReader.xmlRevision == 6
-    assert xmlReader.appVersion == "2.7b1"
-    assert xmlReader.hexVersion == 0x020700B1
+    assert xmlReader.xmlRevision == 7
+    assert xmlReader.appVersion == "26.2a1"
+    assert xmlReader.hexVersion == 0x260200A1
 
     # Check loaded data
     assert data.name == "Sample Project"
     assert data.author == "Jane Smith"
-    assert data.saveCount == 2179
-    assert data.autoCount == 285
+    assert data.saveCount == 2369
+    assert data.autoCount == 429
     assert data.editTime == 1000
 
     assert data.doBackup is False
     assert data.language == "en_GB"
     assert data.spellCheck is True
     assert data.spellLang is None
-    assert data.initCounts == (1016, 416, 5602, 2285)
-    assert data.currCounts == (1016, 416, 5602, 2285)
+    assert data.initCounts == (5561, 601, 29419, 3295)
+    assert data.currCounts == (5561, 601, 29419, 3295)
 
     assert data.getLastHandle("editor") == "636b6aa9b697b"
     assert data.getLastHandle("viewer") == "636b6aa9b697b"
     assert data.getLastHandle("novel") == "7031beac91f75"
     assert data.getLastHandle("outline") == "7031beac91f75"
+
+    assert data.targetWordCount == 100000
+    assert data.targetDeadline == date.fromisoformat("2026-08-20")
+    assert data.dailyGoal == 1000
+    assert data.dailyGoalAuto is False
+    assert data._dailyLastDate == date.fromisoformat("2026-07-20")
+    assert data._dailyLastCount == 0
 
     assert data.itemStatus["sf12341"].name == "New"
     assert data.itemStatus["sf24ce6"].name == "Notes"
@@ -173,8 +180,10 @@ def testProjectXMLReader_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     assert data.itemStatus["sd51c5b"].name == "2nd Draft"
     assert data.itemStatus["s8ae72a"].name == "3rd Draft"
     assert data.itemStatus["s78ea90"].name == "Finished"
+    assert data.itemStatus["s936325"].name == "Sample"
 
     assert data.itemImport["ia857f0"].name == "None"
+    assert data.itemImport["i4a1d39"].name == "Background"
     assert data.itemImport["icfb3a5"].name == "Minor"
     assert data.itemImport["i2d7a54"].name == "Major"
     assert data.itemImport["i56be10"].name == "Main"
@@ -186,8 +195,10 @@ def testProjectXMLReader_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     assert data.itemStatus["sd51c5b"].color.getRgb() == (193, 129, 0, 255)
     assert data.itemStatus["s8ae72a"].color.getRgb() == (193, 129, 0, 255)
     assert data.itemStatus["s78ea90"].color.getRgb() == (58, 180, 58, 255)
+    assert data.itemStatus["s936325"].color.getRgb() == (0, 0, 193, 255)
 
     assert data.itemImport["ia857f0"].color.getRgb() == (100, 100, 100, 255)
+    assert data.itemImport["i4a1d39"].color.getRgb() == (220, 138, 221, 255)
     assert data.itemImport["icfb3a5"].color.getRgb() == (220, 138, 221, 255)
     assert data.itemImport["i2d7a54"].color.getRgb() == (220, 138, 221, 255)
     assert data.itemImport["i56be10"].color.getRgb() == (220, 138, 221, 255)
@@ -199,35 +210,39 @@ def testProjectXMLReader_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     assert data.itemStatus["sd51c5b"].theme == CUSTOM_COL
     assert data.itemStatus["s8ae72a"].theme == CUSTOM_COL
     assert data.itemStatus["s78ea90"].theme == CUSTOM_COL
+    assert data.itemStatus["s936325"].theme == CUSTOM_COL
 
     assert data.itemImport["ia857f0"].theme == CUSTOM_COL
+    assert data.itemImport["i4a1d39"].theme == CUSTOM_COL
     assert data.itemImport["icfb3a5"].theme == CUSTOM_COL
     assert data.itemImport["i2d7a54"].theme == CUSTOM_COL
     assert data.itemImport["i56be10"].theme == CUSTOM_COL
 
-    assert data.itemStatus["sf12341"].shape == nwStatusShape.SQUARE
-    assert data.itemStatus["sf24ce6"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["sf12341"].shape == nwStatusShape.STAR
+    assert data.itemStatus["sf24ce6"].shape == nwStatusShape.STAR
     assert data.itemStatus["sc24b8f"].shape == nwStatusShape.BARS_1
     assert data.itemStatus["s90e6c9"].shape == nwStatusShape.BARS_2
     assert data.itemStatus["sd51c5b"].shape == nwStatusShape.BARS_3
     assert data.itemStatus["s8ae72a"].shape == nwStatusShape.BARS_4
     assert data.itemStatus["s78ea90"].shape == nwStatusShape.STAR
+    assert data.itemStatus["s936325"].shape == nwStatusShape.DIAMOND
 
-    assert data.itemImport["ia857f0"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["ia857f0"].shape == nwStatusShape.STAR
     assert data.itemImport["i4a1d39"].shape == nwStatusShape.BLOCK_1
     assert data.itemImport["icfb3a5"].shape == nwStatusShape.BLOCK_2
     assert data.itemImport["i2d7a54"].shape == nwStatusShape.BLOCK_3
     assert data.itemImport["i56be10"].shape == nwStatusShape.BLOCK_4
 
-    assert data.itemStatus["sf12341"].count == 8
+    assert data.itemStatus["sf12341"].count == 7
     assert data.itemStatus["sf24ce6"].count == 2
-    assert data.itemStatus["sc24b8f"].count == 3
+    assert data.itemStatus["sc24b8f"].count == 2
     assert data.itemStatus["s90e6c9"].count == 5
-    assert data.itemStatus["sd51c5b"].count == 1
-    assert data.itemStatus["s8ae72a"].count == 1
+    assert data.itemStatus["sd51c5b"].count == 2
+    assert data.itemStatus["s8ae72a"].count == 0
     assert data.itemStatus["s78ea90"].count == 1
+    assert data.itemStatus["s936325"].count == 7
 
-    assert data.itemImport["ia857f0"].count == 5
+    assert data.itemImport["ia857f0"].count == 7
     assert data.itemImport["i4a1d39"].count == 1
     assert data.itemImport["icfb3a5"].count == 1
     assert data.itemImport["i2d7a54"].count == 2
@@ -311,6 +326,13 @@ def testProjectXMLReader_ReadLegacy10(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
     assert data.getLastHandle("novel") is None  # Doesn't exist in 1.0
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.0
+
+    assert data.targetWordCount == 0  # Doesn't exist in 1.0
+    assert data.targetDeadline is None  # Doesn't exist in 1.0
+    assert data.dailyGoal == 0  # Doesn't exist in 1.0
+    assert data.dailyGoalAuto is False  # Doesn't exist in 1.0
+    assert data._dailyLastDate is None  # Doesn't exist in 1.0
+    assert data._dailyLastCount == 0  # Doesn't exist in 1.0
 
     assert data.itemStatus["s000000"].name == "New"
     assert data.itemStatus["s000001"].name == "Notes"
@@ -470,6 +492,13 @@ def testProjectXMLReader_ReadLegacy11(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.getLastHandle("novel") is None  # Doesn't exist in 1.1
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.1
 
+    assert data.targetWordCount == 0  # Doesn't exist in 1.1
+    assert data.targetDeadline is None  # Doesn't exist in 1.1
+    assert data.dailyGoal == 0  # Doesn't exist in 1.1
+    assert data.dailyGoalAuto is False  # Doesn't exist in 1.1
+    assert data._dailyLastDate is None  # Doesn't exist in 1.1
+    assert data._dailyLastCount == 0  # Doesn't exist in 1.1
+
     assert data.itemStatus["s000000"].name == "New"
     assert data.itemStatus["s000001"].name == "Notes"
     assert data.itemStatus["s000002"].name == "Started"
@@ -627,6 +656,13 @@ def testProjectXMLReader_ReadLegacy12(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
     assert data.getLastHandle("novel") is None  # Doesn't exist in 1.2
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.2
+
+    assert data.targetWordCount == 0  # Doesn't exist in 1.2
+    assert data.targetDeadline is None  # Doesn't exist in 1.2
+    assert data.dailyGoal == 0  # Doesn't exist in 1.2
+    assert data.dailyGoalAuto is False  # Doesn't exist in 1.2
+    assert data._dailyLastDate is None  # Doesn't exist in 1.2
+    assert data._dailyLastCount == 0  # Doesn't exist in 1.2
 
     assert data.itemStatus["s000000"].name == "New"
     assert data.itemStatus["s000001"].name == "Notes"
@@ -789,6 +825,13 @@ def testProjectXMLReader_ReadLegacy13(tstPaths, fncPath, mockGUI, mockRnd):
     assert data.getLastHandle("novel") is None  # Doesn't exist in 1.3
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.3
 
+    assert data.targetWordCount == 0  # Doesn't exist in 1.3
+    assert data.targetDeadline is None  # Doesn't exist in 1.3
+    assert data.dailyGoal == 0  # Doesn't exist in 1.3
+    assert data.dailyGoalAuto is False  # Doesn't exist in 1.3
+    assert data._dailyLastDate is None  # Doesn't exist in 1.3
+    assert data._dailyLastCount == 0  # Doesn't exist in 1.3
+
     assert data.itemStatus["s000000"].name == "New"
     assert data.itemStatus["s000001"].name == "Notes"
     assert data.itemStatus["s000002"].name == "Started"
@@ -947,8 +990,15 @@ def testProjectXMLReader_ReadLegacy14(tstPaths, fncPath, mockGUI, mockRnd):
 
     assert data.getLastHandle("editor") is None  # Dropped by conversion
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
-    assert data.getLastHandle("novel") is None  # Doesn't exist in 1.3
-    assert data.getLastHandle("outline") is None  # Doesn't exist in 1.3
+    assert data.getLastHandle("novel") is None  # Doesn't exist in 1.4
+    assert data.getLastHandle("outline") is None  # Doesn't exist in 1.4
+
+    assert data.targetWordCount == 0  # Doesn't exist in 1.4
+    assert data.targetDeadline is None  # Doesn't exist in 1.4
+    assert data.dailyGoal == 0  # Doesn't exist in 1.4
+    assert data.dailyGoalAuto is False  # Doesn't exist in 1.4
+    assert data._dailyLastDate is None  # Doesn't exist in 1.4
+    assert data._dailyLastCount == 0  # Doesn't exist in 1.4
 
     assert data.itemStatus["sf12341"].name == "New"
     assert data.itemStatus["sf24ce6"].name == "Notes"

@@ -24,6 +24,7 @@ from __future__ import annotations
 import csv
 import logging
 
+from datetime import date
 from pathlib import Path
 
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
@@ -32,6 +33,7 @@ from PyQt6.QtWidgets import (
     QAbstractItemView,
     QApplication,
     QColorDialog,
+    QDateEdit,
     QDialogButtonBox,
     QFileDialog,
     QGridLayout,
@@ -52,7 +54,7 @@ from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.status import CUSTOM_COL, ItemStatus, StatusEntry
 from novelwriter.enum import nwStandardButton, nwStatusShape, nwToolButton
 from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollableForm
-from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton
+from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton, NSpinBox
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import QtRoleAccept, QtRoleReject, QtSizeMinimum, QtSizeMinimumExpanding, QtUserRole
@@ -64,9 +66,10 @@ class GuiProjectSettings(NDialog):
     """GUI: Project Settings DIalog."""
 
     PAGE_SETTINGS = 0
-    PAGE_STATUS = 1
-    PAGE_IMPORT = 2
-    PAGE_REPLACE = 3
+    PAGE_GOALS = 1
+    PAGE_STATUS = 2
+    PAGE_IMPORT = 3
+    PAGE_REPLACE = 4
 
     newProjectSettingsReady = pyqtSignal()
 
@@ -98,6 +101,7 @@ class GuiProjectSettings(NDialog):
         self.sidebar.setLabelColor(SHARED.theme.helpText)
         self.sidebar.setAccessibleName(self.titleLabel.text())
         self.sidebar.addButton(self.tr("Settings"), self.PAGE_SETTINGS)
+        self.sidebar.addButton(self.tr("Goals"), self.PAGE_GOALS)
         self.sidebar.addButton(self.tr("Status"), self.PAGE_STATUS)
         self.sidebar.addButton(self.tr("Importance"), self.PAGE_IMPORT)
         self.sidebar.addButton(self.tr("Auto-Replace"), self.PAGE_REPLACE)
@@ -118,12 +122,14 @@ class GuiProjectSettings(NDialog):
         SHARED.project.countStatus()
 
         self.settingsPage = _SettingsPage(self)
+        self.goalsPage = _GoalsPage(self)
         self.statusPage = _StatusPage(self, True)
         self.importPage = _StatusPage(self, False)
         self.replacePage = _ReplacePage(self)
 
         self.mainStack = QStackedWidget(self)
         self.mainStack.addWidget(self.settingsPage)
+        self.mainStack.addWidget(self.goalsPage)
         self.mainStack.addWidget(self.statusPage)
         self.mainStack.addWidget(self.importPage)
         self.mainStack.addWidget(self.replacePage)
@@ -176,6 +182,8 @@ class GuiProjectSettings(NDialog):
         """Process a user request to switch page."""
         if pageId == self.PAGE_SETTINGS:
             self.mainStack.setCurrentWidget(self.settingsPage)
+        elif pageId == self.PAGE_GOALS:
+            self.mainStack.setCurrentWidget(self.goalsPage)
         elif pageId == self.PAGE_STATUS:
             self.mainStack.setCurrentWidget(self.statusPage)
         elif pageId == self.PAGE_IMPORT:
@@ -189,6 +197,7 @@ class GuiProjectSettings(NDialog):
     def _doSave(self) -> None:
         """Save settings and close dialog."""
         project = SHARED.project
+
         projName = self.settingsPage.projName.text()
         projAuthor = self.settingsPage.projAuthor.text()
         projLang = self.settingsPage.projLang.currentData()
@@ -197,9 +206,18 @@ class GuiProjectSettings(NDialog):
 
         project.data.setName(projName)
         project.data.setAuthor(projAuthor)
-        project.data.setDoBackup(doBackup)
-        project.data.setSpellLang(spellLang)
         project.setProjectLang(projLang)
+        project.data.setSpellLang(spellLang)
+        project.data.setDoBackup(doBackup)
+
+        targetWordCount = self.goalsPage.targetWordCount.value()
+        targetDeadline = self.goalsPage.targetDeadline.date().toPyDate()
+        targetDeadline = targetDeadline if self.goalsPage.targetDeadlineEnabled.isChecked() else None
+        dailyGoalAuto = self.goalsPage.dailyGoalAuto.isChecked()
+        dailyGoal = self.goalsPage.dailyGoal.value()
+
+        project.data.setProjectTarget(targetWordCount, targetDeadline)
+        project.data.setDailyTarget(dailyGoal, dailyGoalAuto)
 
         if self.statusPage.changed:
             logger.debug("Updating status labels")
@@ -306,6 +324,68 @@ class _SettingsPage(NScrollableForm):
             self.noBackup,
             self.tr("Overrides main preferences."),
         )
+
+        self.finalise()
+
+
+class _GoalsPage(NScrollableForm):
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+
+        data = SHARED.project.data
+        self.setHelpTextStyle(SHARED.theme.helpText)
+        self.setRowIndent(0)
+
+        # Project Goals
+        self.targetWordCount = NSpinBox(self, minVal=0, maxVal=9999999, step=1000)
+        self.targetWordCount.setFixedNumbersWidth(7)
+        self.targetWordCount.setValue(data.targetWordCount)
+        self.addRow(
+            self.tr("Project target"),
+            self.targetWordCount,
+            self.tr("Set to zero to disable."),
+            unit=self.tr("words"),
+        )
+
+        # Daily Goal
+        self.dailyGoal = NSpinBox(self, minVal=0, maxVal=99999, step=100)
+        self.dailyGoal.setFixedNumbersWidth(5)
+        self.dailyGoal.setValue(data.dailyGoal)
+        self.addRow(
+            self.tr("Daily writing goal"),
+            self.dailyGoal,
+            self.tr("Set to zero to disable."),
+            unit=self.tr("words"),
+        )
+
+        # Project Deadline
+        self.targetDeadlineEnabled = NSwitch(self)
+        self.targetDeadlineEnabled.setChecked(data.targetDeadline is not None)
+
+        self.targetDeadline = QDateEdit(self)
+        self.targetDeadline.setDate(data.targetDeadline or date.today())
+        self.targetDeadline.setCalendarPopup(True)
+        self.targetDeadline.setEnabled(self.targetDeadlineEnabled.isChecked())
+
+        self.addRow(
+            self.tr("Planned completion date"),
+            self.targetDeadline,
+            button=self.targetDeadlineEnabled,
+        )
+
+        # Calculate Daily Goal Automatically
+        self.dailyGoalAuto = NSwitch(self)
+        self.dailyGoalAuto.setChecked(data.dailyGoalAuto)
+        self.dailyGoalAuto.setEnabled(self.targetDeadlineEnabled.isChecked())
+        self.addRow(
+            self.tr("Calculate daily goal automatically"),
+            self.dailyGoalAuto,
+            self.tr("Calculates daily goal based on target date and word count."),
+        )
+
+        # Connect Signals
+        self.targetDeadlineEnabled.toggled.connect(self.targetDeadline.setEnabled)
+        self.targetDeadlineEnabled.toggled.connect(self.dailyGoalAuto.setEnabled)
 
         self.finalise()
 

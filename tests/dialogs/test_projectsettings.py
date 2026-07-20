@@ -21,8 +21,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+from datetime import date
+
 import pytest
 
+from PyQt6.QtCore import QDate
 from PyQt6.QtGui import QAction, QColor
 from PyQt6.QtWidgets import QColorDialog, QFileDialog, QToolButton
 
@@ -69,6 +72,9 @@ def testGuiProjectSettings_Dialog(qtbot, monkeypatch, nwGUI):
     # Switch Tabs
     projSettings.sidebar.button(GuiProjectSettings.PAGE_SETTINGS).click()
     assert projSettings.mainStack.currentWidget() == projSettings.settingsPage
+
+    projSettings.sidebar.button(GuiProjectSettings.PAGE_GOALS).click()
+    assert projSettings.mainStack.currentWidget() == projSettings.goalsPage
 
     projSettings.sidebar.button(GuiProjectSettings.PAGE_STATUS).click()
     assert projSettings.mainStack.currentWidget() == projSettings.statusPage
@@ -153,6 +159,56 @@ def testGuiProjectSettings_SettingsPage(qtbot, monkeypatch, nwGUI, fncPath, proj
         noEnchant = GuiProjectSettings(nwGUI, GuiProjectSettings.PAGE_SETTINGS)
         qtbot.addWidget(noEnchant)
         assert noEnchant.settingsPage.spellLang.count() == 1
+
+    # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiProjectSettings_GoalsPage(qtbot, nwGUI, projPath, mockRnd):
+    """Test the goals page of the dialog."""
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
+
+    project = SHARED.project
+
+    # Create Dialog
+    projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.PAGE_GOALS)
+    projSettings.show()
+    qtbot.addWidget(projSettings)
+
+    goals = projSettings.goalsPage
+
+    # No deadline is set by default, so the date field and the auto-goal
+    # switch must both start out disabled
+    assert goals.targetDeadlineEnabled.isChecked() is False
+    assert goals.targetDeadline.isEnabled() is False
+    assert goals.dailyGoalAuto.isEnabled() is False
+
+    # Enabling the deadline switch enables the date field and the auto-goal switch
+    goals.targetDeadlineEnabled.setChecked(True)
+    assert goals.targetDeadline.isEnabled() is True
+    assert goals.dailyGoalAuto.isEnabled() is True
+
+    # Set some values and save
+    goals.targetWordCount.setValue(50000)
+    goals.targetDeadline.setDate(QDate(2030, 1, 1))
+    goals.dailyGoal.setValue(500)
+    goals.dailyGoalAuto.setChecked(True)
+
+    projSettings._doSave()
+    assert project.data.targetWordCount == 50000
+    assert project.data.targetDeadline == date(2030, 1, 1)
+    assert project.data.dailyGoal == 500
+    assert project.data.dailyGoalAuto is True
+
+    # Disabling the deadline switch disables the date field and the
+    # auto-goal switch again, and clears the deadline on save
+    goals.targetDeadlineEnabled.setChecked(False)
+    assert goals.targetDeadline.isEnabled() is False
+    assert goals.dailyGoalAuto.isEnabled() is False
+
+    projSettings._doSave()
+    assert project.data.targetDeadline is None
 
     # qtbot.stop()
 

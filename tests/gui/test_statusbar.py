@@ -127,6 +127,17 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         nwGUI._timeTick()
         assert status.statsText.text() == "Characters: 40 (+40)"
 
+    # Goal Progress Bars
+    SHARED.project.data.setDailyTarget(500, False)
+    SHARED.project.data.setProjectTarget(2000, None)
+    status.updateGoals(100, 50)
+    assert status.sessBar.isVisible() is True
+    assert status.sessBar.maximum() == 500
+    assert status.sessBar.value() == 50
+    assert status.projBar.isVisible() is True
+    assert status.projBar.maximum() == 2000
+    assert status.projBar.value() == 100
+
     # Set message
     status.messageBox.setMessage("Hi!", "info", 10000)
     assert status.messageBox._text.text() == "Hi!"
