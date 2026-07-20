@@ -1274,7 +1274,6 @@ class GuiMain(QMainWindow):
                 else:
                     iTotal = sum(data.initCounts[:2])
                     cTotal = sum(data.currCounts[:2])
-                pCount = sum(data.currCounts[:2])
             else:
                 if CONFIG.useCharCount:
                     iTotal = data.initCounts[2]
@@ -1282,10 +1281,9 @@ class GuiMain(QMainWindow):
                 else:
                     iTotal = data.initCounts[0]
                     cTotal = data.currCounts[0]
-                pCount = data.currCounts[0]
 
             self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
-            self.mainStatus.updateGoals(pCount, data.dailyProgress)
+            self.mainStatus.updateGoals(data.currCounts[0], data.dailyProgress)
 
     @pyqtSlot(int)
     def _mainStackChanged(self, index: int) -> None:

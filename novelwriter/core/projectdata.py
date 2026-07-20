@@ -27,7 +27,6 @@ import uuid
 from datetime import date
 from typing import TYPE_CHECKING, Any, Literal
 
-from novelwriter import CONFIG
 from novelwriter.common import (
     checkBool,
     checkDateNone,
@@ -359,20 +358,19 @@ class ProjectData:
             self._dailyLastDate = checkDateNone(date, None)
             self._project.setProjectChanged(True)
 
-    def setDailyProgress(self, wNovel: int, wNotes: int) -> None:
+    def setDailyProgress(self, count: int) -> None:
         """Set the current daily goal progress."""
-        initial = self._initCounts[0] + (self._initCounts[1] if CONFIG.incNotesWCount else 0)
-        current = wNovel + (wNotes if CONFIG.incNotesWCount else 0)
+        initial = self._initCounts[0]
         if self._dailyLastDate is None:
-            self._dailyProgress = current - initial
+            self._dailyProgress = count - initial
             self._remainingWordCount = self._targetWordCount - initial
         elif self._dailyLastDate == date.today():
-            self._dailyProgress = current - initial + self._dailyLastCount
+            self._dailyProgress = count - initial + self._dailyLastCount
             self._remainingWordCount = self._targetWordCount - initial - self._dailyLastCount
         elif self._dailyLastDate != date.today():
             self._dailyLastDate = date.today()
             self._dailyLastCount -= self._dailyProgress
-            self._dailyProgress = current - initial + self._dailyLastCount
+            self._dailyProgress = count - initial + self._dailyLastCount
             self._remainingWordCount = self._targetWordCount - initial - self._dailyLastCount
 
     def setLanguage(self, value: str | None) -> None:
