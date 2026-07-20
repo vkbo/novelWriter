@@ -2820,6 +2820,38 @@ def testGuiDocEditor_LineHeight(qtbot, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
+def testGuiDocEditor_LineHeightPaste(qtbot, nwGUI, projPath, mockRnd):
+    """Test that pasting multi-line text keeps the configured line
+    height on every resulting block, including the ones created after
+    a line break in the pasted text (Issue #2874).
+    """
+    buildTestProject(NWProject(), projPath)
+    nwGUI.openProject(projPath)
+    docEditor = nwGUI.docEditor
+    document = docEditor.document()
+
+    def allBlocksHaveLineHeight(height: int) -> bool:
+        block = document.firstBlock()
+        while block.isValid():
+            if block.blockFormat().lineHeight() != height:
+                return False
+            block = block.next()
+        return True
+
+    CONFIG.lineHeight = 1.50
+    assert docEditor.loadText(C.hSceneDoc) is True
+    assert allBlocksHaveLineHeight(150)
+
+    docEditor.setCursorPosition(0)
+    mime = QMimeData()
+    mime.setText("Pasted first line.\nPasted second line.\nPasted third line.")
+    docEditor.insertFromMimeData(mime)
+
+    assert docEditor.getText().startswith("Pasted first line.\nPasted second line.\nPasted third line.")
+    assert allBlocksHaveLineHeight(150)
+
+
+@pytest.mark.gui
 def testGuiDocEditor_LineHeightDoubleReturn(qtbot, nwGUI, projPath, mockRnd):
     """Test that a blank-line paragraph break (two consecutive Return
     presses) works normally with a non-default line height set on
