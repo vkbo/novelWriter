@@ -121,7 +121,7 @@ class NProgressSimple(QProgressBar):
 
 
 class NProgressGoal(QProgressBar):
-    """Extension: Goal Progress Widget
+    """Extension: Goal Progress Widget.
 
     A custom widget that paints a progress bar with custom styling and text.
     """
@@ -183,8 +183,8 @@ class NProgressGoal(QProgressBar):
         self.setValue(self.value())  # Triggers a redraw
 
     def paintEvent(self, event: QPaintEvent) -> None:
-        """Custom painter for the progress bar."""
-        progress = self.value() / self.maximum()
+        """Paint the progress bar."""
+        progress = (self.value() / self.maximum()) if self.maximum() > 0 else 0
         painter = QPainter(self)
         painter.setRenderHint(QtPaintAntiAlias, True)
 

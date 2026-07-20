@@ -1105,6 +1105,7 @@ class GuiMain(QMainWindow):
         SHARED.updateSpellCheckLanguage()
         self.itemDetails.refreshDetails()
         self.mainMenu.setSelectedProjectSpellCheckLanguage()
+        self.mainStatus.initProjectSettings()
         self._updateWindowTitle(SHARED.project.data.name)
 
     @pyqtSlot()
@@ -1256,31 +1257,35 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _updateStatusWordCount(self) -> None:
         """Update the word count on the status bar."""
-
         if not SHARED.hasProject:
             self.mainStatus.setProjectStats(0, 0)
+            self.mainStatus.updateGoals(0, 0)
 
         currentTotalCount = SHARED.project.currentTotalCount
         if self._lastTotalCount != currentTotalCount:
             self._lastTotalCount = currentTotalCount
 
+            data = SHARED.project.data
             SHARED.project.updateCounts()
             if CONFIG.incNotesWCount:
                 if CONFIG.useCharCount:
-                    iTotal = sum(SHARED.project.data.initCounts[2:])
-                    cTotal = sum(SHARED.project.data.currCounts[2:])
+                    iTotal = sum(data.initCounts[2:])
+                    cTotal = sum(data.currCounts[2:])
                 else:
-                    iTotal = sum(SHARED.project.data.initCounts[:2])
-                    cTotal = sum(SHARED.project.data.currCounts[:2])
+                    iTotal = sum(data.initCounts[:2])
+                    cTotal = sum(data.currCounts[:2])
+                pCount = sum(data.currCounts[:2])
             else:
                 if CONFIG.useCharCount:
-                    iTotal = SHARED.project.data.initCounts[2]
-                    cTotal = SHARED.project.data.currCounts[2]
+                    iTotal = data.initCounts[2]
+                    cTotal = data.currCounts[2]
                 else:
-                    iTotal = SHARED.project.data.initCounts[0]
-                    cTotal = SHARED.project.data.currCounts[0]
+                    iTotal = data.initCounts[0]
+                    cTotal = data.currCounts[0]
+                pCount = data.currCounts[0]
 
             self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
+            self.mainStatus.updateGoals(pCount, data.dailyProgress)
 
     @pyqtSlot(int)
     def _mainStackChanged(self, index: int) -> None:
