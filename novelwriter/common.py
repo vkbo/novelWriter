@@ -29,7 +29,7 @@ import weakref
 import xml.etree.ElementTree as ET
 
 from configparser import ConfigParser
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, TypeGuard, TypeVar
@@ -126,6 +126,18 @@ def checkPath(value: Any, default: Path) -> Path:
         return value
     elif isinstance(value, str) and value.strip():
         return Path(value)
+    return default
+
+
+def checkDateNone(value: Any, default: date | None) -> date | None:
+    """Check if a value is a valid date."""
+    if isinstance(value, date):
+        return value
+    elif isinstance(value, str) and value.strip():
+        try:
+            return date.fromisoformat(value)
+        except Exception:
+            return default
     return default
 
 

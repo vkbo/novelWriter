@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="26.2a0" hexVersion="0x260200a0" fileVersion="1.5" fileRevision="6" timeStamp="2026-06-27 23:30:50">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2350" autoCount="428" editTime="109920">
+<novelWriterXML appVersion="26.2a1" hexVersion="0x260200a1" fileVersion="1.5" fileRevision="6" timeStamp="2026-07-20 17:28:47">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2369" autoCount="429" editTime="110168">
     <name>Sample Project</name>
     <author>Jane Smith</author>
   </project>
@@ -8,6 +8,8 @@
     <doBackup>no</doBackup>
     <language>en_GB</language>
     <spellChecking auto="yes">None</spellChecking>
+    <projectTarget date="2026-08-20">100000</projectTarget>
+    <dailyTarget auto="yes" last="0" date="2026-07-20">0</dailyTarget>
     <lastHandle>
       <entry key="editor">636b6aa9b697b</entry>
       <entry key="viewer">636b6aa9b697b</entry>
@@ -59,7 +61,7 @@
       <name status="sf24ce6" import="ia857f0" active="yes">Basic Formatting</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="3003" wordCount="530" paraCount="16" cursorPos="19" />
+      <meta expanded="no" heading="H3" charCount="3003" wordCount="530" paraCount="16" cursorPos="944" />
       <name status="s90e6c9" import="ia857f0" active="yes">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">

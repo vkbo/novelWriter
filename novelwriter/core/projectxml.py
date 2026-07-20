@@ -21,10 +21,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import datetime
 import logging
 import xml.etree.ElementTree as ET
 
-import datetime
 from enum import Enum
 from pathlib import Path
 from time import time
@@ -264,20 +264,16 @@ class ProjectXMLReader:
         for xItem in xSection:
             if xItem.tag == "doBackup":
                 data.setDoBackup(xItem.text)
-            elif xItem.tag == "projGoal":
-                data.setProjGoal(xItem.text)
-            elif xItem.tag == "projDeadline":
-                date = datetime.date.fromisoformat(xItem.text)
-                data.setProjDeadline(date)
-            elif xItem.tag == "sessGoalAuto":
-                data.setSessGoalAuto(xItem.text)
-            elif xItem.tag == "sessGoal":
-                data.setSessGoal(xItem.text)
             elif xItem.tag == "language":
                 data.setLanguage(xItem.text)
             elif xItem.tag == "spellChecking":
                 data.setSpellLang(xItem.text)
-                data.setSpellCheck(xItem.attrib.get("auto", False))
+                data.setSpellCheck(xItem.attrib.get("auto"))
+            elif xItem.tag == "projectTarget":
+                data.setProjectTarget(xItem.text, xItem.attrib.get("date"))
+            elif xItem.tag == "dailyTarget":
+                data.setDailyTarget(xItem.text, xItem.attrib.get("auto"))
+                data.setDailyTargetCurrent(xItem.attrib.get("last"), xItem.attrib.get("date"))
             elif xItem.tag == "status":
                 self._parseStatusImport(xItem, data.itemStatus)
             elif xItem.tag == "importance":
@@ -509,14 +505,21 @@ class ProjectXMLWriter:
         self._packSingleValue(xProject, "author", data.author)
 
         # Save Project Settings
+        targetAttr = {
+            "date": data.targetDeadline.isoformat() if isinstance(data.targetDeadline, datetime.date) else "None",
+        }
+        dailyAttr = {
+            "auto": yesNo(data.dailyGoalAuto),
+            "last": str(data.dailyProgress),
+            "date": formatTimeStamp(saveTime, fmt="%Y-%m-%d"),
+        }
+
         xSettings = ET.SubElement(xRoot, "settings")
         self._packSingleValue(xSettings, "doBackup", yesNo(data.doBackup))
-        self._packSingleValue(xSettings, "projGoal", data.projGoal)
-        self._packSingleValue(xSettings, "projDeadline", data.projDeadline.isoformat())
-        self._packSingleValue(xSettings, "sessGoalAuto", yesNo(data.sessGoalAuto))
-        self._packSingleValue(xSettings, "sessGoal", data.sessGoal)
         self._packSingleValue(xSettings, "language", data.language)
         self._packSingleValue(xSettings, "spellChecking", data.spellLang, attrib={"auto": yesNo(data.spellCheck)})
+        self._packSingleValue(xSettings, "projectTarget", str(data.targetWordCount), attrib=targetAttr)
+        self._packSingleValue(xSettings, "dailyTarget", str(data.dailyGoal), attrib=dailyAttr)
         self._packDictKeyValue(xSettings, "lastHandle", data.lastHandle)
         self._packDictKeyValue(xSettings, "autoReplace", data.autoReplace)
 

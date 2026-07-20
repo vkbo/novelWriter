@@ -30,12 +30,10 @@ from pathlib import Path
 from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QAction, QCloseEvent, QColor
 from PyQt6.QtWidgets import (
-    QAbstractItemView, QApplication, QColorDialog, QDialogButtonBox,
-    QFileDialog, QGridLayout, QHBoxLayout, QLineEdit, QMenu, QStackedWidget,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, QDateEdit
     QAbstractItemView,
     QApplication,
     QColorDialog,
+    QDateEdit,
     QDialogButtonBox,
     QFileDialog,
     QGridLayout,
@@ -68,10 +66,10 @@ class GuiProjectSettings(NDialog):
     """GUI: Project Settings DIalog."""
 
     PAGE_SETTINGS = 0
-    PAGE_GOALS    = 1
-    PAGE_STATUS   = 2
-    PAGE_IMPORT   = 3
-    PAGE_REPLACE  = 4
+    PAGE_GOALS = 1
+    PAGE_STATUS = 2
+    PAGE_IMPORT = 3
+    PAGE_REPLACE = 4
 
     newProjectSettingsReady = pyqtSignal()
 
@@ -199,33 +197,26 @@ class GuiProjectSettings(NDialog):
     def _doSave(self) -> None:
         """Save settings and close dialog."""
         project = SHARED.project
+
         projName = self.settingsPage.projName.text()
         projAuthor = self.settingsPage.projAuthor.text()
-        projLang   = self.settingsPage.projLang.currentData()
-        spellLang  = self.settingsPage.spellLang.currentData()
-        doBackup   = not self.settingsPage.noBackup.isChecked()
-        projGoal = int(self.goalsPage.projGoal.text())
-        projDeadline = self.goalsPage.projDeadline.date().toPyDate()
-        sessGoalAuto = self.goalsPage.sessGoalAuto.isChecked()
-        if sessGoalAuto:
-            days_remaining = (projDeadline - date.today()).days
-            if days_remaining == 0:
-                days_remaining = 1
-            sessGoal = projGoal // days_remaining
-        else:
-            sessGoal = int(self.goalsPage.sessGoal.text())
+        projLang = self.settingsPage.projLang.currentData()
+        spellLang = self.settingsPage.spellLang.currentData()
+        doBackup = not self.settingsPage.noBackup.isChecked()
 
         project.data.setName(projName)
         project.data.setAuthor(projAuthor)
-        project.data.setDoBackup(doBackup)
-        project.data.setProjGoal(projGoal)
-        project.data.setProjDeadline(projDeadline)
-        project.data.setSessGoalAuto(sessGoalAuto)
-        project.data.setSessGoal(sessGoal)
-        project.data.setSpellLang(spellLang)
         project.setProjectLang(projLang)
+        project.data.setSpellLang(spellLang)
+        project.data.setDoBackup(doBackup)
 
-        SHARED.mainGui.mainStatus.setGoals(projGoal, sessGoal)
+        targetWordCount = self.goalsPage.targetWordCount.text()
+        targetDeadline = self.goalsPage.targetDeadline.date().toPyDate()
+        dailyGoalAuto = self.goalsPage.dailyGoalAuto.isChecked()
+        dailyGoal = int(self.goalsPage.dailyGoal.text())
+
+        project.data.setProjectTarget(targetWordCount, targetDeadline)
+        project.data.setDailyTarget(dailyGoal, dailyGoalAuto)
 
         if self.statusPage.changed:
             logger.debug("Updating status labels")
@@ -337,7 +328,6 @@ class _SettingsPage(NScrollableForm):
 
 
 class _GoalsPage(NScrollableForm):
-
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
@@ -346,50 +336,48 @@ class _GoalsPage(NScrollableForm):
         self.setRowIndent(0)
 
         # Project Goals
-        self.projGoal = QLineEdit(self)
-        self.projGoal.setMaxLength(200)
-        self.projGoal.setMinimumWidth(200)
-        self.projGoal.setText(str(data.projGoal))
+        self.targetWordCount = QLineEdit(self)
+        self.targetWordCount.setMaxLength(200)
+        self.targetWordCount.setMinimumWidth(200)
+        self.targetWordCount.setText(str(data.targetWordCount))
         self.addRow(
-            self.tr("Project Goal"), self.projGoal,
+            self.tr("Project Goal"),
+            self.targetWordCount,
             self.tr("Full project goal in words."),
-            stretch=(3, 2)
+            stretch=(3, 2),
         )
 
         # Project Deadline
-        self.projDeadline = QDateEdit(self, date=data.projDeadline)
-        self.projDeadline.setMinimumWidth(200)
+        self.targetDeadline = QDateEdit(self)
+        self.targetDeadline.setDate(data.targetDeadline or date.today())
+        self.targetDeadline.setMinimumWidth(200)
         self.addRow(
-            self.tr("Target Date"), self.projDeadline,
+            self.tr("Target Date"),
+            self.targetDeadline,
             self.tr("Date to complete the project."),
-            stretch=(3, 2)
+            stretch=(3, 2),
         )
 
         # Auto configure Session Goal
-        self.sessGoalAuto = NSwitch(self)
-        self.sessGoalAuto.setChecked(data.sessGoalAuto)
+        self.dailyGoalAuto = NSwitch(self)
+        self.dailyGoalAuto.setChecked(data.dailyGoalAuto)
         self.addRow(
-            self.tr("Auto populate session goal?"), self.sessGoalAuto,
+            self.tr("Auto populate session goal?"),
+            self.dailyGoalAuto,
             self.tr(
                 "Calculate Session goal based on target date assuming daily sessions. "
                 "Overrides configured session goal below."
-            )
+            ),
         )
 
         # Session Goal
-        self.sessGoal = QLineEdit(self)
-        self.sessGoal.setMaxLength(200)
-        self.sessGoal.setMinimumWidth(200)
-        self.sessGoal.setText(str(data.sessGoal))
-        self.addRow(
-            self.tr("Session Goal"), self.sessGoal,
-            self.tr("Session goal in words."),
-            stretch=(3, 2)
-        )
+        self.dailyGoal = QLineEdit(self)
+        self.dailyGoal.setMaxLength(200)
+        self.dailyGoal.setMinimumWidth(200)
+        self.dailyGoal.setText(str(data.dailyGoal))
+        self.addRow(self.tr("Session Goal"), self.dailyGoal, self.tr("Session goal in words."), stretch=(3, 2))
 
         self.finalise()
-
-        return
 
 
 class _StatusPage(NFixedPage):
