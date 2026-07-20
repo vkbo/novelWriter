@@ -322,6 +322,7 @@ class NIconToolButton(QToolButton):
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.setIconSize(iconSize)
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        self._icon = icon
         if icon:  # pragma: no branch
             self.setThemeIcon(icon)
 
@@ -339,7 +340,8 @@ class NIconToolButton(QToolButton):
 
     def refreshTheme(self) -> None:
         """Refresh the icon for theme updates."""
-        self.setIcon(SHARED.theme.getIcon(self._icon))
+        if self._icon:  # pragma: no branch
+            self.setIcon(SHARED.theme.getIcon(self._icon))
         if self.isCheckable():
             col = SHARED.theme.toggleCol.name(QtHexArgb)
             self.setStyleSheet(f"QToolButton:checked {{background: {col};}}")
@@ -363,6 +365,8 @@ class NIconToggleButton(QToolButton):
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self.setCheckable(True)
         self.setStyleSheet("border: none; background: transparent;")
+        self._icon = icon
+        self._size = iconSize
         if icon:  # pragma: no branch
             self.setThemeIcon(icon)
 
@@ -374,7 +378,8 @@ class NIconToggleButton(QToolButton):
 
     def refreshTheme(self) -> None:
         """Refresh the icon for theme updates."""
-        self.setIcon(SHARED.theme.getToggleIcon(self._icon, self._size.width(), self._size.height()))
+        if self._icon:  # pragma: no branch
+            self.setIcon(SHARED.theme.getToggleIcon(self._icon, self._size.width(), self._size.height()))
 
 
 class NClickableLabel(QLabel):

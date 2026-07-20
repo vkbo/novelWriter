@@ -211,6 +211,7 @@ class GuiProjectSearch(QWidget):
         self.outerBox.setSpacing(2)
 
         self.setLayout(self.outerBox)
+        self.initSettings()
         self.updateTheme(init=True)
 
         logger.debug("Ready: GuiProjectSearch")
@@ -223,6 +224,11 @@ class GuiProjectSearch(QWidget):
     def splitSizes(self) -> list[int]:
         """Get the sizes of the splitter widget in its expanded state."""
         return self.searchSplit.panelSizes()
+
+    def initSettings(self) -> None:
+        """Initialise the settings."""
+        self.tbAuto.setChecked(CONFIG.searchAuto if CONFIG.doReplace else False)
+        self.tbAuto.setEnabled(CONFIG.doReplace)
 
     ##
     #  Methods

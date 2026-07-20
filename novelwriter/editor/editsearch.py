@@ -94,9 +94,9 @@ class GuiDocEditSearch(QFrame):
         self.tbAuto = NIconToolButton(self, iSz, "search_auto:tool")
         self.tbAuto.setToolTip(self.tr("Auto-Replace Symbols"))
         self.tbAuto.setCheckable(True)
-        self.tbAuto.setChecked(CONFIG.searchAuto)
         self.tbAuto.clicked.connect(self._doToggleAuto)
         self.searchOpt.addWidget(self.tbAuto)
+        self.setAutoReplaceEnabled(CONFIG.doReplace)
 
         self.tbCase = NIconToolButton(self, iSz, "search_case:tool")
         self.tbCase.setToolTip(self.tr("Case Sensitive"))
@@ -260,6 +260,11 @@ class GuiDocEditSearch(QFrame):
         self.adjustSize()
         self.docEditor.updateDocMargins()
 
+    def setAutoReplaceEnabled(self, state: bool) -> None:
+        """Enable/disable auto-replace mode."""
+        self.tbAuto.setChecked(CONFIG.searchAuto if state else False)
+        self.tbAuto.setEnabled(state)
+
     ##
     #  Methods
     ##
@@ -365,13 +370,13 @@ class GuiDocEditSearch(QFrame):
     @pyqtSlot(str)
     def _editSearchText(self, text: str) -> None:
         """Update the search results when the search text changes."""
-        if CONFIG.searchAuto:
+        if CONFIG.doReplace and CONFIG.searchAuto:
             self.autoReplace(self.searchBox)
 
     @pyqtSlot(str)
     def _editReplaceText(self, text: str) -> None:
         """Update the replace box when the text changes."""
-        if CONFIG.searchAuto:
+        if CONFIG.doReplace and CONFIG.searchAuto:
             self.autoReplace(self.replaceBox)
 
     @pyqtSlot(bool)

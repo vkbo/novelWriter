@@ -648,6 +648,7 @@ class GuiDocEditor(QTextEdit):
         """Initialise non-expensive settings."""
         if self._docHandle:
             self.docHeader.setHandle(self._docHandle)
+            self.docSearch.setAutoReplaceEnabled(CONFIG.doReplace)
         if updateVimMode:
             self.setVimMode(nwVimMode.NORMAL)
 
