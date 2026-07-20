@@ -54,7 +54,7 @@ from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.status import CUSTOM_COL, ItemStatus, StatusEntry
 from novelwriter.enum import nwStandardButton, nwStatusShape, nwToolButton
 from novelwriter.extensions.configlayout import NColorLabel, NFixedPage, NScrollableForm
-from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton
+from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton, NSpinBox
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import QtRoleAccept, QtRoleReject, QtSizeMinimum, QtSizeMinimumExpanding, QtUserRole
@@ -210,10 +210,11 @@ class GuiProjectSettings(NDialog):
         project.data.setSpellLang(spellLang)
         project.data.setDoBackup(doBackup)
 
-        targetWordCount = self.goalsPage.targetWordCount.text()
+        targetWordCount = self.goalsPage.targetWordCount.value()
         targetDeadline = self.goalsPage.targetDeadline.date().toPyDate()
+        targetDeadline = targetDeadline if self.goalsPage.targetDeadlineEnabled.isChecked() else None
         dailyGoalAuto = self.goalsPage.dailyGoalAuto.isChecked()
-        dailyGoal = int(self.goalsPage.dailyGoal.text())
+        dailyGoal = self.goalsPage.dailyGoal.value()
 
         project.data.setProjectTarget(targetWordCount, targetDeadline)
         project.data.setDailyTarget(dailyGoal, dailyGoalAuto)
@@ -336,46 +337,53 @@ class _GoalsPage(NScrollableForm):
         self.setRowIndent(0)
 
         # Project Goals
-        self.targetWordCount = QLineEdit(self)
-        self.targetWordCount.setMaxLength(200)
-        self.targetWordCount.setMinimumWidth(200)
-        self.targetWordCount.setText(str(data.targetWordCount))
+        self.targetWordCount = NSpinBox(self, minVal=0, maxVal=9999999, step=1000)
+        self.targetWordCount.setFixedNumbersWidth(7)
+        self.targetWordCount.setValue(data.targetWordCount)
         self.addRow(
-            self.tr("Project Goal"),
+            self.tr("Project target"),
             self.targetWordCount,
-            self.tr("Full project goal in words."),
-            stretch=(3, 2),
+            unit=self.tr("words"),
         )
 
         # Project Deadline
+        self.targetDeadlineEnabled = NSwitch(self)
+        self.targetDeadlineEnabled.setChecked(data.targetDeadline is not None)
+
         self.targetDeadline = QDateEdit(self)
         self.targetDeadline.setDate(data.targetDeadline or date.today())
-        self.targetDeadline.setMinimumWidth(200)
+        self.targetDeadline.setCalendarPopup(True)
+        self.targetDeadline.setEnabled(self.targetDeadlineEnabled.isChecked())
+
         self.addRow(
-            self.tr("Target Date"),
+            self.tr("Planned completion date"),
             self.targetDeadline,
-            self.tr("Date to complete the project."),
-            stretch=(3, 2),
+            button=self.targetDeadlineEnabled,
         )
 
-        # Auto configure Session Goal
+        # Daily Goal
+        self.dailyGoal = NSpinBox(self, minVal=0, maxVal=99999, step=100)
+        self.dailyGoal.setFixedNumbersWidth(5)
+        self.dailyGoal.setValue(data.dailyGoal)
+        self.addRow(
+            self.tr("Daily writing goal"),
+            self.dailyGoal,
+            unit=self.tr("words"),
+        )
+
+        # Calculate Daily Goal Automatically
         self.dailyGoalAuto = NSwitch(self)
         self.dailyGoalAuto.setChecked(data.dailyGoalAuto)
+        self.targetDeadline.setEnabled(self.targetDeadlineEnabled.isChecked())
         self.addRow(
-            self.tr("Auto populate session goal?"),
+            self.tr("Calculate daily goal automatically"),
             self.dailyGoalAuto,
-            self.tr(
-                "Calculate Session goal based on target date assuming daily sessions. "
-                "Overrides configured session goal below."
-            ),
+            self.tr("Calculates daily goal based on target date and word count."),
         )
 
-        # Session Goal
-        self.dailyGoal = QLineEdit(self)
-        self.dailyGoal.setMaxLength(200)
-        self.dailyGoal.setMinimumWidth(200)
-        self.dailyGoal.setText(str(data.dailyGoal))
-        self.addRow(self.tr("Session Goal"), self.dailyGoal, self.tr("Session goal in words."), stretch=(3, 2))
+        # Connect Signals
+        self.targetDeadlineEnabled.toggled.connect(self.targetDeadline.setEnabled)
+        self.targetDeadlineEnabled.toggled.connect(self.dailyGoalAuto.setEnabled)
 
         self.finalise()
 

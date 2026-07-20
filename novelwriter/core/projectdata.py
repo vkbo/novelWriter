@@ -73,6 +73,7 @@ class ProjectData:
         "_lastHandle",
         "_name",
         "_project",
+        "_remainingWordCount",
         "_saveCount",
         "_spellCheck",
         "_spellLang",
@@ -99,6 +100,7 @@ class ProjectData:
         self._doBackup = True
         self._targetWordCount = 0
         self._targetDeadline = None
+        self._remainingWordCount = 0
         self._dailyGoal = 0
         self._dailyGoalAuto = False
         self._dailyProgress = 0
@@ -281,8 +283,13 @@ class ProjectData:
         goal or the automatically calculated goal based on project target
         and deadline.
         """
-        if self._dailyGoalAuto and self._targetWordCount > 0 and self._targetDeadline is not None:
-            return self._targetWordCount // (self._targetDeadline - date.today()).days
+        if (
+            self._dailyGoalAuto
+            and self._remainingWordCount > 0
+            and self._targetDeadline is not None
+            and self._targetDeadline >= date.today()
+        ):
+            return self._remainingWordCount // ((self._targetDeadline - date.today()).days + 1)
         return self._dailyGoal
 
     ##
@@ -354,15 +361,19 @@ class ProjectData:
 
     def setDailyProgress(self, wNovel: int, wNotes: int) -> None:
         """Set the current daily goal progress."""
-        count = wNovel - self._initCounts[0] + ((wNotes - self._initCounts[1]) if CONFIG.incNotesWCount else 0)
+        initial = self._initCounts[0] + (self._initCounts[1] if CONFIG.incNotesWCount else 0)
+        current = wNovel + (wNotes if CONFIG.incNotesWCount else 0)
         if self._dailyLastDate is None:
-            self._dailyProgress = count
+            self._dailyProgress = current - initial
+            self._remainingWordCount = self._targetWordCount - initial
         elif self._dailyLastDate == date.today():
-            self._dailyProgress = count + self._dailyLastCount
+            self._dailyProgress = current - initial + self._dailyLastCount
+            self._remainingWordCount = self._targetWordCount - initial - self._dailyLastCount
         elif self._dailyLastDate != date.today():
             self._dailyLastDate = date.today()
             self._dailyLastCount -= self._dailyProgress
-            self._dailyProgress = count + self._dailyLastCount
+            self._dailyProgress = current - initial + self._dailyLastCount
+            self._remainingWordCount = self._targetWordCount - initial - self._dailyLastCount
 
     def setLanguage(self, value: str | None) -> None:
         """Set the project language."""

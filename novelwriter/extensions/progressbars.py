@@ -219,13 +219,14 @@ class NColorRangeProgress(QProgressBar):
         painter.drawRect(self._oRect)
 
         # Draw progress bar
-        pen, brush = self._pRange.get(int(progress * self._pScale), (self._bPen, self._bBrush))
+        capped = max(0.0, min(progress, 1.0))
+        pen, brush = self._pRange.get(int(capped * self._pScale), (self._bPen, self._bBrush))
         painter.setPen(pen)
         painter.setBrush(brush)
         barRect = QRect(
             self._bRect.topLeft().x(),
             self._bRect.topLeft().y(),
-            ceil(self._bRect.width() * progress),
+            ceil(self._bRect.width() * capped),
             self._bRect.height(),
         )
         painter.drawRect(barRect)
