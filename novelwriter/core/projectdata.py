@@ -353,25 +353,22 @@ class ProjectData:
 
     def setDailyTargetCurrent(self, value: Any, date: Any) -> None:
         """Set the current daily goal."""
-        if value != self._dailyLastCount or date != self._dailyLastDate:
-            self._dailyLastCount = checkInt(value, self._dailyLastCount)
-            self._dailyLastDate = checkDateNone(date, None)
-            self._project.setProjectChanged(True)
+        self._dailyLastCount = checkInt(value, self._dailyLastCount)
+        self._dailyLastDate = checkDateNone(date, None)
 
     def setDailyProgress(self, count: int) -> None:
         """Set the current daily goal progress."""
-        initial = self._initCounts[0]
-        if self._dailyLastDate is None:
-            self._dailyProgress = count - initial
-            self._remainingWordCount = self._targetWordCount - initial
-        elif self._dailyLastDate == date.today():
-            self._dailyProgress = count - initial + self._dailyLastCount
-            self._remainingWordCount = self._targetWordCount - initial - self._dailyLastCount
-        elif self._dailyLastDate != date.today():
-            self._dailyLastDate = date.today()
+        if self._dailyLastDate != date.today():
+            # The date has changed since the last update, either because
+            # this is the first update ever, or because the clock has
+            # ticked over to a new day. Roll the last count back to what
+            # it was at the start of the new day.
             self._dailyLastCount -= self._dailyProgress
-            self._dailyProgress = count - initial + self._dailyLastCount
-            self._remainingWordCount = self._targetWordCount - initial - self._dailyLastCount
+            self._dailyLastDate = date.today()
+
+        initial = self._initCounts[0] - self._dailyLastCount
+        self._dailyProgress = count - initial
+        self._remainingWordCount = self._targetWordCount - initial
 
     def setLanguage(self, value: str | None) -> None:
         """Set the project language."""
