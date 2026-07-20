@@ -192,7 +192,7 @@ class NColorRangeProgress(QProgressBar):
         if isinstance(color, QColor):
             self.setBarRangeColors(color, color, steps=1)
 
-    def setBarRangeColors(self, start: QColor, end: QColor, mid: QColor | None = None, steps: int = 100) -> None:
+    def setBarRangeColors(self, start: QColor, end: QColor, mid: QColor | None = None, steps: int = 20) -> None:
         """Set the colours of the progress bar."""
         self._pRange = {}
         self._pScale = max(steps, 1)

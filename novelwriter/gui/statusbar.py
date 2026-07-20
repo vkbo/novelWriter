@@ -73,8 +73,8 @@ class GuiMainStatus(QStatusBar):
         self.sessBar.setVisible(False)
         self.sessBar.setBarRangeColors(
             start=SHARED.theme.getBaseColor("red"),
-            end=SHARED.theme.getBaseColor("green"),
             mid=SHARED.theme.getBaseColor("yellow"),
+            end=SHARED.theme.getBaseColor("green"),
         )
         self.addPermanentWidget(self.sessBar)
 
@@ -139,6 +139,7 @@ class GuiMainStatus(QStatusBar):
         logger.debug("Ready: GuiMainStatus")
 
         self.initSettings()
+        self.initProjectSettings()
         self.updateTheme()
         self.clearStatus()
 
@@ -153,12 +154,16 @@ class GuiMainStatus(QStatusBar):
 
     def initProjectSettings(self) -> None:
         """Apply project settings."""
-        self.sessBar.setVisible(SHARED.project.data.getEffectiveDailyGoal() > 0)
-        self.projBar.setVisible(SHARED.project.data.targetWordCount > 0)
         self.updateGoals(self._projProg, self._sessProg)
 
     def clearStatus(self) -> None:
         """Reset all widgets on the status bar to default values."""
+        self._sessProg = 0
+        self._projProg = 0
+        self.sessBar.setVisible(False)
+        self.projBar.setVisible(False)
+        self.updateGoals(0, 0)
+
         self.setRefTime(-1.0)
         self.setLanguage(*SHARED.spelling.describeDict())
         self.setProjectStats(0, 0)
@@ -228,7 +233,7 @@ class GuiMainStatus(QStatusBar):
             self.sessBar.setMaximum(dailyTarget)
             self.sessBar.setValue(min(sProg, dailyTarget))
             self.sessBar.setCentreText(formatPercent(sProg, divisor=dailyTarget, prec=1))
-            self.sessBar.setToolTip(self.tr("Session Target: {0}/{1}").format(f"{sProg:n}", f"{dailyTarget:n}"))
+            self.sessBar.setToolTip(self.tr("Daily Progress: {0}/{1}").format(f"{sProg:n}", f"{dailyTarget:n}"))
         else:
             self.sessBar.setVisible(False)
 
@@ -237,7 +242,7 @@ class GuiMainStatus(QStatusBar):
             self.projBar.setMaximum(projTarget)
             self.projBar.setValue(min(pProg, projTarget))
             self.projBar.setCentreText(formatPercent(pProg, divisor=projTarget, prec=1))
-            self.projBar.setToolTip(self.tr("Project Target: {0}/{1}").format(f"{pProg:n}", f"{projTarget:n}"))
+            self.projBar.setToolTip(self.tr("Project Progress: {0}/{1}").format(f"{pProg:n}", f"{projTarget:n}"))
         else:
             self.projBar.setVisible(False)
 

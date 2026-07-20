@@ -470,6 +470,7 @@ class GuiMain(QMainWindow):
         self._updateWindowTitle(SHARED.project.data.name)
         self.docEditor.toggleSpellCheck(SHARED.project.data.spellCheck)
         self.mainStatus.setRefTime(SHARED.project.projOpened)
+        self.mainStatus.initProjectSettings()
         self.projView.openProjectTasks()
         self.novelView.openProjectTasks()
         self.outlineView.openProjectTasks()

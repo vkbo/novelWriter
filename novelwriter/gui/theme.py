@@ -649,7 +649,7 @@ class GuiTheme:
         start: QColor,
         end: QColor,
         mid: QColor | None = None,
-        steps: int = 100,
+        steps: int = 10,
     ) -> list[QColor]:
         """Generate a range of colours between start and end, optionally passing through mid."""
         result: list[QColor] = []
