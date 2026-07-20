@@ -189,6 +189,7 @@ def testProjectData_DailyProgress(monkeypatch, mockGUI):
     # the 60 words a second time
     data.setDailyProgress(560)
     assert data.dailyProgress == 60
+    assert data.dailyLastCount == 60
     assert data._remainingWordCount == 500
 
     # More words are added in the second session

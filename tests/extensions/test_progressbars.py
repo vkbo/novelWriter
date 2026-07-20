@@ -101,6 +101,11 @@ def testNColorRangeProgress_Main(qtbot, mockGUI):
         sleep(0.0025)
         assert progress.value() == i
 
+    # A non-colour value is ignored
+    before = progress._pRange
+    progress.setBarColor(None)  # type: ignore
+    assert progress._pRange is before
+
     # A fixed, single colour range
     progress.setBarColor(QColor(0, 0, 255))
     progress.setValue(50)

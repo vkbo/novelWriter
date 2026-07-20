@@ -70,6 +70,9 @@ def testGuiProjectSettings_Dialog(qtbot, monkeypatch, nwGUI):
     projSettings.sidebar.button(GuiProjectSettings.PAGE_SETTINGS).click()
     assert projSettings.mainStack.currentWidget() == projSettings.settingsPage
 
+    projSettings.sidebar.button(GuiProjectSettings.PAGE_GOALS).click()
+    assert projSettings.mainStack.currentWidget() == projSettings.goalsPage
+
     projSettings.sidebar.button(GuiProjectSettings.PAGE_STATUS).click()
     assert projSettings.mainStack.currentWidget() == projSettings.statusPage
 
